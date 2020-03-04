@@ -189,7 +189,7 @@
     items={<>
       <list-item:default-preview label="walk dog" completed />
       <list-item:default-preview label="clean car" />
-      <list-item:editing-preview label="something else" />
+      <list-item:editing-preview />
     </>} 
     controls={<controls:default-preview />} 
   />
