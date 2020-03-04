@@ -85,6 +85,8 @@ If you're using TypeScript, then you'll probably want additional type safety aro
 
 > ✨ I also recommend that you include `*.pc.d.ts` in your `.gitignore` file so to keep the typed definition files out of GIT. 
 
+#### Writing templates
+
 After installing all of the required dependencies & setting up Webpack, you can start writing Paperclip templates! Here's a basic `hello-world.pc` example:
 
 ```html
@@ -124,7 +126,29 @@ That's all you need! At this point you can start using your Paperclip component.
 If you'd like to see more on how to use Paperclip with React, you can check out these examples:
 
 - [React TodoMVC](../../examples/react-todomvc) - Basic TODO app
-- [React Kitchen Sink](../../examples/react-kitchen-sink) - Kitchen sink example using _all_ of Paperclip's features
+
+#### Using the `styled` utility
+
+Templates that are compiled to react code expose a `styled` function that you can use to stylize HTML elements outside of the template file. For example:
+
+```html
+<!-- component.pc -->
+<style>
+  div {
+    color: red;
+  }
+</style>
+```
+
+In JS, you can do this:
+
+```javascript
+import {styled} from "./component.pc";
+const Div = styled("div");
+function SomeComponent() {
+  return <Div>This is red text</Div>;
+}
+```
 
 # More Resources
 
