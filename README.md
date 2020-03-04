@@ -13,6 +13,17 @@
   </a>
 </p>
 
+# Resources
+
+- [Getting started](./documentation/Getting%20Started)
+- [Download the VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
+- [Syntax](./documentation/Syntax)
+- [Contributing](./documentation/Contributing)
+- [Examples](./examples)
+  - [React counter](./examples/react-counter)
+  - [React TodoMVC](./examples/react-todomvc)
+
+
 <!--
 
 Notes:
@@ -267,13 +278,3 @@ Points:
 - bones of the UI
 
 -->
-
-# Resources
-
-- [Getting started](./documentation/Getting%20Started)
-- [Download the VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
-- [Syntax](./documentation/Syntax)
-- [Contributing](./documentation/Contributing)
-- [Examples](./examples)
-  - [React counter](./examples/react-counter)
-  - [React TodoMVC](./examples/react-todomvc)
