@@ -13,8 +13,6 @@
   </a>
 </p>
 
-⚠️ **This is a pre-release, so expect bugs and missing features!**
-
 # Resources
 
 - [Getting started](./documentation/Getting%20Started)
@@ -201,7 +199,7 @@ As you can see, `<part />` elements are exported as _dumb_ components that React
 <!-- 
 As you might have noticed, Paperclip just exports building blocks for your component. All of the logic remains in your application code, so you don't have to worry about  -->
 
-## Strongly Typed 🦺
+## Strongly typed 🦺
 
 Templates compile down to strongly typed code, so you don't have to guess about what your templates need. Here's a generated TypesScript definition of our React app above:
 
