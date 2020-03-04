@@ -35,7 +35,7 @@ Notes:
 
 <!-- No more juggling between the coding & debugging in the browser. Paperclip provides tooling that allows  -->
 
-Paperclip is a template language that's designed for creating primitive UI components visually within VS Code.
+Paperclip is a template language that's designed for creating primitive UI components visually, directly within VS Code.
 
 <!-- Tooling is provided that brings a real-time preview of your application directly into your code editor. -->
 
