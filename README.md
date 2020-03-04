@@ -13,8 +13,6 @@
   </a>
 </p>
 
-⚠️ **This is a pre-release, so expect bugs and missing features!**
-
 # Resources
 
 - [Getting started](./documentation/Getting%20Started)
