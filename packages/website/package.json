@@ -1,7 +1,7 @@
 {
   "name": "website",
   "private": true,
-  "version": "11.0.36",
+  "version": "11.0.41",
   "description": "",
   "main": "index.js",
   "scripts": {
