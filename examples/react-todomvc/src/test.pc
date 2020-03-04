@@ -1,8 +1,2 @@
-<style>
-  span {
-    color: rgb(68, 11, 202);
-    font-family: Helvetica;
-  }
-</style>
 
 <span>This is a test</span>

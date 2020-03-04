@@ -9,7 +9,6 @@ import {
   TextDocumentSyncKind
 } from "vscode-languageserver";
 
-import { TextDocument } from "vscode-languageserver-textdocument";
 import { Engine } from "paperclip";
 import { createServices } from "./services";
 import { VSCServiceBridge } from "./bridge";
