@@ -21,7 +21,7 @@ const documents: TextDocuments<any> = new TextDocuments(TextDocument);
 connection.onInitialize(() => {
   return {
     capabilities: {
-      textDocumentSync: TextDocumentSyncKind.Full,
+      textDocumentSync: TextDocumentSyncKind.Incremental,
       // Tell the client that the server supports code completion
       // completionProvider: {
       //   resolveProvider: true

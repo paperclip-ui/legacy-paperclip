@@ -2,7 +2,7 @@
   .app {
     font-size: 24px;
     font-family: Helvetica;
-    color: rgb(216, 213, 29)12, 31, 31);
+    color: rgb(81, 207, 22);
   }
 
   ul {
@@ -17,6 +17,7 @@
   <input type="text" placeholder="enter a new todo">
 
   <ul>  
+    
     {todoItems}
   </ul>
 </div>
@@ -24,7 +25,7 @@
 <preview>
   <self 
     todoItems={<>
-      <li>something like this</li>
+      <li>This should be a test</li>
       <li>This is text</li>
     </>}
   />
