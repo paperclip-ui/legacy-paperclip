@@ -13,7 +13,7 @@
   </a>
 </p>
 
-⚠️ **This is a pre-release, so expect a few bugs and missing features!**
+⚠️ **This is a pre-release, so expect bugs and missing features!**
 
 # Resources
 
