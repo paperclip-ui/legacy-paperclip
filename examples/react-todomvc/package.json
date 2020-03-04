@@ -1,7 +1,7 @@
 {
   "name": "react-todomvc",
   "private": true,
-  "version": "11.0.38",
+  "version": "11.0.39",
   "description": "",
   "main": "index.js",
   "scripts": {
