@@ -1,6 +1,6 @@
 #### Simple Counter
 
-Installation: `yarn install && yarn build` <br />
+Installation: `npm install && npm run build` <br />
 Running: `open dist/index.html`
 
 Commands:

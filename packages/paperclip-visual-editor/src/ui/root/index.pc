@@ -70,7 +70,6 @@
       <div class="table">
         <property-item name="something" value="vavafdsfs" />
         <property-item name="something" value="vavafdsfs" />
-        <property-item name="something" value="vavafdsfs" />
       </div>
     </div>
   </div>

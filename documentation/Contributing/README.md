@@ -11,7 +11,7 @@ Here's a simple command you can use to set up the repository locally:
 ```
 git clone git@github.com:crcn/paperclip.git
 cd paperclip
-yarn install
+npm install
 ```
 
 From there, you can start the build server:
@@ -19,8 +19,7 @@ From there, you can start the build server:
 ```
 
 # needs to be called first
-yarn build
-yarn build:watch
+npm run build && npm run build:watch
 ```
 
 ☝🏻This will build all packages & examples.

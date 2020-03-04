@@ -72,7 +72,7 @@ module.exports = {
 
 #### Generating Typed Definition Files
 
-If you're using TypeScript, then you'll probably want additional type safety around Paperclip files. To do that, you'll need to CLI tools: `yarn add paperclip-cli --dev`. You'll also need to install a compiler. For now, the only option you have is React, so add that: `yarn add paperclip-react-compiler --dev`. After that, you can generate typed definition files like so:
+If you're using TypeScript, then you'll probably want additional type safety around Paperclip files. To do that, you'll need to CLI tools: `npm install paperclip-cli --save-dev`. You'll also need to install a compiler. For now, the only option you have is React, so add that: `npm install paperclip-react-compiler --save-dev`. After that, you can generate typed definition files like so:
 
 ```
 ./node_modules/.bin/paperclip --compiler=paperclip-react-compiler --definition --write
