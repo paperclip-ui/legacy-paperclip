@@ -94,7 +94,7 @@ After installing all of the required dependencies & setting up Webpack, you can 
 
 > For more documentation on syntax, you can [check out this document](../Syntax).
 
-After that creating your first Paperclip file, go ahead and create a corresponding `hello-world.jsx` file, and type in:
+After creating your first Paperclip file, go ahead and create a corresponding `hello-world.jsx` file, and type in:
 
 ```javascript
 import React from "react";
