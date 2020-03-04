@@ -24,6 +24,8 @@ import {
   EvaluatedEvent
 } from "paperclip";
 
+import {throttle} from "lodash";
+
 import * as parseColor from "color";
 import * as fs from "fs";
 import {
@@ -42,19 +44,22 @@ import {
   LoadParams
 } from "../common/notifications";
 import { LanguageServices } from "./services";
-import { Position } from "vscode";
+
+const PERSIST_ENGINE_THROTTLE_MS = 100;
 
 export class VSCServiceBridge {
-  // private _textDocumentInfo: TextDocumentInfoDictionary;
+  private _newEngineContent: {
+    [identifier: string]: string
+  } = {};
 
   constructor(
-    engine: Engine,
+    private _engine: Engine,
     private _service: LanguageServices,
     readonly connection: Connection,
     readonly documents: TextDocuments<TextDocument>
   ) {
     // this._textDocumentInfo = new TextDocumentInfoDictionary(engine, service);
-    engine.onEvent(this._onEngineEvent);
+    _engine.onEvent(this._onEngineEvent);
     connection.onRequest(
       ColorPresentationRequest.type,
       this._onColorPresentationRequest
@@ -67,7 +72,7 @@ export class VSCServiceBridge {
     connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
 
     connection.onNotification(NotificationType.LOAD, ({ uri }: LoadParams) => {
-      engine.load(uri);
+      _engine.load(uri);
     });
 
     connection.onNotification(
@@ -80,7 +85,7 @@ export class VSCServiceBridge {
 
     documents.onDidChangeContent(event => {
       const doc: TextDocument = event.document;
-      engine.updateVirtualFileContent(doc.uri, doc.getText());
+      _engine.updateVirtualFileContent(doc.uri, doc.getText());
     });
   }
 
@@ -188,8 +193,33 @@ export class VSCServiceBridge {
   };
 
   private _onColorPresentationRequest = (params: ColorPresentationParams) => {
-    return getColorPresentations(params.color, params.range);
+
+    const presentation = getColorPresentation(params.color, params.range);
+
+    const document = this.documents.get(params.textDocument.uri);
+    let source = document.getText();
+    
+    const {textEdit:{newText, range}}  = presentation;
+    source = source.substr(0, document.offsetAt(range.start)) + newText + source.substr(document.offsetAt(range.end));
+  
+    // update virtual file content to show preview
+    this._updateEngineContent(params.textDocument.uri, source);
+
+    return [presentation];
   };
+
+  private _updateEngineContent = (uri: string, content: string) => {
+    this._newEngineContent[uri] = content;
+    this._deferPersistEngineContent();
+  }
+
+  private _deferPersistEngineContent = throttle(() => {
+    const newEngineContent = this._newEngineContent;
+    this._newEngineContent = {};
+    for (const uri in newEngineContent) {
+      this._engine.updateVirtualFileContent(uri, newEngineContent[uri]);
+    }
+  }, PERSIST_ENGINE_THROTTLE_MS);
 
   private _onEngineEvent = (event: EngineEvent) => {
     switch (event.kind) {
@@ -257,10 +287,10 @@ export class VSCServiceBridge {
 }
 
 // from https://github.com/microsoft/vscode-css-languageservice/blob/a652e5da7ebb86677bff750c9ca0cf4740adacee/src/services/cssNavigation.ts#L196
-const getColorPresentations = (
+const getColorPresentation = (
   { red, green, blue, alpha }: Color,
   range: Range
-): ColorPresentation[] => {
+): ColorPresentation => {
   const info = parseColor.rgb(
     Math.round(red * 255),
     Math.round(green * 255),
@@ -268,7 +298,7 @@ const getColorPresentations = (
     alpha
   );
   const label = info.toString();
-  return [{ label, textEdit: TextEdit.replace(range, label) }];
+  return { label, textEdit: TextEdit.replace(range, label) };
 };
 
 const createErrorDiagnostic = (

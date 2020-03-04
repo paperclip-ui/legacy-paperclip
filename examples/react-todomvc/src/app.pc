@@ -46,7 +46,7 @@
     font-size: 100px;
     font-weight: 100;
     text-align: center;
-    color: rgba(220, 95, 224, 0.979);
+    color: rgba(207, 144, 226, 0.979);
     -webkit-text-rendering: optimizeLegibility;
     -moz-text-rendering: optimizeLegibility;
     text-rendering: optimizeLegibility;
