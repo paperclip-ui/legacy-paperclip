@@ -16,8 +16,6 @@ import { VSCServiceBridge } from "./bridge";
 
 const connection = createConnection(ProposedFeatures.all);
 
-const documents: TextDocuments<any> = new TextDocuments(TextDocument);
-
 connection.onInitialize(() => {
   return {
     capabilities: {
@@ -36,8 +34,7 @@ connection.onInitialize(() => {
 });
 
 const init = async (
-  connection: Connection,
-  documents: TextDocuments<TextDocument>
+  connection: Connection
 ) => {
   // Paperclip engine for parsing & evaluating documents
   const engine = new Engine();
@@ -47,12 +44,11 @@ const init = async (
   const services = createServices(engine);
 
   // Bridges language services to VSCode
-  new VSCServiceBridge(engine, services, connection, documents);
+  new VSCServiceBridge(engine, services, connection);
 };
 
 connection.onInitialized((_params: InitializedParams) => {
-  init(connection, documents);
+  init(connection);
 });
 
-documents.listen(connection);
 connection.listen();

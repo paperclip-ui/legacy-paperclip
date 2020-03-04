@@ -29,7 +29,6 @@ import {throttle} from "lodash";
 import * as parseColor from "color";
 import * as fs from "fs";
 import {
-  TextDocument,
   Color,
   Range,
   ColorPresentation,
@@ -43,20 +42,24 @@ import {
   NotificationType,
   LoadParams
 } from "../common/notifications";
+import { TextDocument, TextDocumentContentChangeEvent } from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
+type KeyValue<TValue> = {
+  [identifier: string]: TValue
+}
+
 export class VSCServiceBridge {
-  private _newEngineContent: {
-    [identifier: string]: string
-  } = {};
+  private _newEngineContent: KeyValue<boolean> = {};
+  private _newEnginePreviewContent: KeyValue<TextDocumentContentChangeEvent> = {};
+  private _documents: KeyValue<TextDocument> = {};
 
   constructor(
     private _engine: Engine,
     private _service: LanguageServices,
-    readonly connection: Connection,
-    readonly documents: TextDocuments<TextDocument>
+    readonly connection: Connection
   ) {
     // this._textDocumentInfo = new TextDocumentInfoDictionary(engine, service);
     _engine.onEvent(this._onEngineEvent);
@@ -83,14 +86,21 @@ export class VSCServiceBridge {
       }
     );
 
-    documents.onDidChangeContent(event => {
-      const doc: TextDocument = event.document;
-      _engine.updateVirtualFileContent(doc.uri, doc.getText());
+    connection.onDidOpenTextDocument(({textDocument}) => {
+      this._documents[textDocument.uri] = TextDocument.create(textDocument.uri, textDocument.languageId, textDocument.version, textDocument.text);
+      this._engine.updateVirtualFileContent(textDocument.uri, textDocument.text);
+    });
+    connection.onDidCloseTextDocument(params => {
+      delete this._documents[params.textDocument.uri];
+    });
+
+    connection.onDidChangeTextDocument(params => {
+      this._updateTextContent(params.textDocument.uri, params.contentChanges);
     });
   }
 
   private _onDocumentLinkRequest = (params: DocumentLinkParams) => {
-    const document = this.documents.get(params.textDocument.uri);
+    const document = this._documents[params.textDocument.uri];
     const service = this._service.getService(document.uri);
     return (
       service &&
@@ -107,7 +117,7 @@ export class VSCServiceBridge {
   };
 
   private _onDefinitionRequest = (params: DefinitionParams) => {
-    const document = this.documents.get(params.textDocument.uri);
+    const document = this._documents[params.textDocument.uri];
     const service = this._service.getService(document.uri);
     const info =
       service &&
@@ -131,7 +141,7 @@ export class VSCServiceBridge {
             }
           }) => {
             const sourceDocument =
-              this.documents.get(sourceUri) ||
+              this._documents[sourceUri] ||
               TextDocument.create(
                 sourceUri,
                 "paperclip",
@@ -160,7 +170,7 @@ export class VSCServiceBridge {
   };
 
   private _onDocumentColorRequest = (params: DocumentColorParams) => {
-    const document = this.documents.get(params.textDocument.uri);
+    const document = this._documents[params.textDocument.uri];
     const service = this._service.getService(document.uri);
     return (
       service &&
@@ -172,6 +182,7 @@ export class VSCServiceBridge {
               color: [red, green, blue],
               valpha: alpha
             } = parseColor(color);
+
             return {
               range: {
                 start: document.positionAt(location.start),
@@ -196,28 +207,46 @@ export class VSCServiceBridge {
 
     const presentation = getColorPresentation(params.color, params.range);
 
-    const document = this.documents.get(params.textDocument.uri);
-    let source = document.getText();
+    let document = this._documents[params.textDocument.uri];
     
-    const {textEdit:{newText, range}}  = presentation;
-    source = source.substr(0, document.offsetAt(range.start)) + newText + source.substr(document.offsetAt(range.end));
+    const {textEdit}  = presentation;
+    const source = TextDocument.applyEdits(document, [textEdit]);
+
   
     // update virtual file content to show preview
-    this._updateEngineContent(params.textDocument.uri, source);
+    this._previewEngineContent(params.textDocument.uri, {text: source });
 
     return [presentation];
   };
 
-  private _updateEngineContent = (uri: string, content: string) => {
-    this._newEngineContent[uri] = content;
-    this._deferPersistEngineContent();
+  private _updateTextContent = (uri: string, events: TextDocumentContentChangeEvent[]) => {
+    const newDocument = TextDocument.update(this._documents[uri], events, this._documents[uri].version + 1);
+    this._documents[uri] = newDocument;
+    this._newEngineContent[uri] = true;
+    this._deferPersistEditTextContent();
   }
 
-  private _deferPersistEngineContent = throttle(() => {
+  private _previewEngineContent = (uri: string, event: TextDocumentContentChangeEvent) => {
+
+    // TODO - include this change
+    this._newEnginePreviewContent[uri] = event;
+    this._deferPreviewEngineContent();
+  }
+
+  private _deferPersistEditTextContent = throttle(() => {
     const newEngineContent = this._newEngineContent;
     this._newEngineContent = {};
     for (const uri in newEngineContent) {
-      this._engine.updateVirtualFileContent(uri, newEngineContent[uri]);
+      this._engine.updateVirtualFileContent(uri, this._documents[uri].getText());
+    }
+  }, PERSIST_ENGINE_THROTTLE_MS);
+
+  private _deferPreviewEngineContent = throttle(() => {
+    const newEngineContent = this._newEnginePreviewContent;
+    this._newEnginePreviewContent = {};
+    for (const uri in newEngineContent) {
+      const event = newEngineContent[uri];
+      this._engine.updateVirtualFileContent(uri, event.text);
     }
   }, PERSIST_ENGINE_THROTTLE_MS);
 
@@ -270,7 +299,7 @@ export class VSCServiceBridge {
   }
 
   private _sendError(uri: string, message: string, location: SourceLocation) {
-    const textDocument = this.documents.get(uri);
+    const textDocument = this._documents[uri];
     if (!textDocument) {
       return;
     }

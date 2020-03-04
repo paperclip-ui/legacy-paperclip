@@ -1,9 +1,8 @@
 <style>
   span {
-    color: rgb(143, 233, 40);
+    color: rgb(68, 11, 202);
     font-family: Helvetica;
-    font-size: 24px;
   }
 </style>
 
-<span>Something</span>
+<span>This is a test</span>
