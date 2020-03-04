@@ -1,8 +1,10 @@
 <style>
 
   :root {
-    --dark-grey: #G60;
+    --dark-grey: rgb(226, 226, 226);
     --border: var(--dark-grey);
+    --background: rgb(243, 243, 243);
+    --background-secondary: var(--dark-grey);
     --font-color: rgb(134, 134, 134);
   }
   
@@ -10,7 +12,7 @@
     font-family: Helvetica;
     color: var(--font-color);
     font-size: 11px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
   }
 
   .app {
@@ -21,26 +23,19 @@
   .right-sidebar {
     width: 250px;
     height: 100%;
-    background: rgb(245, 245, 245);
-    border-left: 1px solid rgb(218, 218, 218);
+    background: var(--background);
+    border-left: 1px solid var(--border);
     float: right;
-  }
-
-  .pane {
-
   }
 
   .pane .header {
     padding: 6px 12px;
-    background: rgb(214, 214, 214);
-  }
-
-  .table {
-
+    background: var(--background-secondary);
+    font-weight: 600;
   }
 
   .table .row {
-    border-bottom: 1px solid rgb(199, 199, 199);
+    border-bottom: 1px solid var(--border);
     padding: 6px 12px;
     display: flex;
   }
@@ -56,7 +51,7 @@
   .color-pill {
     margin-right: 4px;
     border-radius: 2px;
-    border: 1px solid rgb(139, 139, 139);
+    border: 1px solid var(--border);
     width: 0.8em;
     height: 0.8em;
     display: inline-block;
