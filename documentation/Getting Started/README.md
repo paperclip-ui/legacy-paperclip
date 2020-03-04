@@ -70,21 +70,6 @@ module.exports = {
 
 ```
 
-#### Generating Typed Definition Files
-
-If you're using TypeScript, then you'll probably want additional type safety around Paperclip files. To do that, you'll need to CLI tools: `npm install paperclip-cli --save-dev`. You'll also need to install a compiler. For now, the only option you have is React, so add that: `npm install paperclip-react-compiler --save-dev`. After that, you can generate typed definition files like so:
-
-```
-./node_modules/.bin/paperclip --compiler=paperclip-react-compiler --definition --write
-```
-
-
-> ⚠️ This command assumes that you have your `pcconfig.json` file set up. If not, refer to the docs above.
-
-> ❓For more information about using the CLI tool, you can check out the [package](../../packages/paperclip-cli). 
-
-> ✨ I also recommend that you include `*.pc.d.ts` in your `.gitignore` file so to keep the typed definition files out of GIT. 
-
 #### Writing templates
 
 After installing all of the required dependencies & setting up Webpack, you can start writing Paperclip templates! Here's a basic `hello-world.pc` example:
@@ -149,6 +134,22 @@ function SomeComponent() {
   return <Div>This is red text</Div>;
 }
 ```
+
+#### Generating Typed Definition Files
+
+If you're using TypeScript, then you'll probably want additional type safety around Paperclip files. To do that, you'll need to CLI tools: `npm install paperclip-cli --save-dev`. You'll also need to install a compiler. For now, the only option you have is React, so add that: `npm install paperclip-react-compiler --save-dev`. After that, you can generate typed definition files like so:
+
+```
+./node_modules/.bin/paperclip --compiler=paperclip-react-compiler --definition --write
+```
+
+
+> ⚠️ This command assumes that you have your `pcconfig.json` file set up. If not, refer to the docs above.
+
+> ❓For more information about using the CLI tool, you can check out the [package](../../packages/paperclip-cli). 
+
+> ✨ I also recommend that you include `*.pc.d.ts` in your `.gitignore` file so to keep the typed definition files out of GIT. 
+
 
 # More Resources
 
