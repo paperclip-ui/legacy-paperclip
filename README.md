@@ -19,6 +19,9 @@
 - [Download the VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
 - [Syntax](./documentation/Syntax)
 - [Contributing](./documentation/Contributing)
+- [Examples](./examples)
+  - [React counter](./examples/react-counter)
+  - [React TodoMVC](./examples/react-todomvc)
 
 <!--
 
