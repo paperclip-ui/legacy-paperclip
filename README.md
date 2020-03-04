@@ -64,7 +64,6 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 
 <!-- Paperclip comes with a runtime for VSCode that shows you a preview of UIs as  -->
 
-<!-- A slim, ultra efficient way to stylize your web applications.  -->
 
 <!--  that runs _while_ you write in it, and compiles down to application code in the framework of your choice. -->
 

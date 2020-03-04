@@ -32,6 +32,14 @@ Object.assign(iframe.style, {
 });
 
 iframe.onload = () => {
+  const rootStyle = document.createElement("style");
+  rootStyle.textContent = `
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+  `;
+  iframe.contentWindow.document.body.appendChild(rootStyle);
   iframe.contentWindow.document.body.appendChild(renderer.mount);
 };
 

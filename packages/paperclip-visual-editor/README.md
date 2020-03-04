@@ -1,1 +1,5 @@
 
+TODOS:
+
+- [ ] style inspector
+- [ ] 

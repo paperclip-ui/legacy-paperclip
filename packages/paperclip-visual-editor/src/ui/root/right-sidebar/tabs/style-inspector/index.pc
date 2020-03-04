@@ -1,9 +1,0 @@
-<style>
-  .container {
-    
-  }
-</style>
-
-<div class="container">
-  something
-</div>
