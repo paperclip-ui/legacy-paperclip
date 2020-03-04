@@ -94,7 +94,6 @@ function init(cwd, filesGlob, compile, shouldWatch) {
         fs.writeFileSync(outputFilePath, result);
       } else {
         console.log("Compiling %s", relativePath);
-        console.log(result);
       }
     } catch(e) {
       console.log("Err %s", relativePath);

@@ -98,7 +98,6 @@ export function HelloWorldMessage() {
 }
 ```
 
-
 ## Attribute bindings
 
 Example:
@@ -158,6 +157,39 @@ export function SomeInput() {
     defaultValue: "somrthing"
   }}>
 }
+```
+
+
+## What can go in slots?
+
+Slots accept JSX, objects, references, booleans, arrays, and numbers. Here's a kitchen sink example:
+
+```html
+<part id="some-part">
+  Value: {value}
+</part>
+
+<some-part value="something" />
+<some-part value={"something"} />
+<some-part value={5} />
+
+<some-part value={[
+  <span></span>, 
+  "some text", 
+  5, 
+  true, 
+  false
+]} />
+
+<!-- Similar to using array, but you can omit commas with this syntax -->
+<some-part value={<>
+    <span></span>
+    5 true false
+  </>
+} />
+
+<!-- You can also use objects. -->
+<span style={{background: "red"}}>Something</span>
 ```
 
 

@@ -15,7 +15,7 @@
   .right-sidebar {
     width: 200px;
     height: 100%;
-    background: rgb(235, 235, 235);
+    background: rgb(245, 245, 245);
     border-left: 1px solid rgb(218, 218, 218);
     float: right;
   }
@@ -41,6 +41,17 @@
   
   .row .cell {
     width: 100%;
+    display: inline-flex;
+    align-content: center;
+  }
+
+  .color-pill {
+    margin-right: 4px;
+    border-radius: 2px;
+    border: 1px solid rgb(139, 139, 139);
+    width: 10px;
+    height: 10px;
+    display: inline-block;
   }
 </style>
 
@@ -61,6 +72,10 @@
   </div>
 </part>
 
+<part id="color-pill">
+  <div class="color-pill" style={{background: value}}></div>
+</part>
+
 <div class="app">
   <div class="right-sidebar">
     <div class="pane">
@@ -68,8 +83,8 @@
         Styles
       </div>
       <div class="table">
-        <property-item name="something" value="vavafdsfs" />
-        <property-item name="something" value="vavafdsfs" />
+        <property-item name="font-family" value="Helvetica" />
+        <property-item name="color" value={<span><color-pill value="green" /><span>red</span></span>} />
       </div>
     </div>
   </div>

@@ -447,7 +447,7 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
           if !value.truthy() {
             continue;
           }
-          (kv_attr.name.to_string(), Some(value.to_string()))
+          (kv_attr.name.to_string(), Some(stringify_attribute_value(&kv_attr.name, &value)))
         };
 
         if name == "src" {
@@ -502,12 +502,11 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
           attributes.push(virt::Attribute {
             id: context.get_next_id(),
             name: name.to_string(),
-            value: Some(js_value.to_string()),
+            value: Some(stringify_attribute_value(&name, &js_value)),
           });
         }
       }
     };
-
   }
 
   attributes.push(virt::Attribute {
@@ -526,6 +525,20 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
     attributes,
     children
   })))
+}
+
+fn stringify_attribute_value(key: &String, value: &js_virt::JsValue) -> String {
+  if key == "style" {
+    if let js_virt::JsValue::JsObject(object) = value {
+      let mut buffer = String::new();
+      for (key, value) in object.values.iter() {
+        buffer = format!("{}{}:{};", buffer, key.to_string(), value.to_string());
+      }
+      return buffer;
+    }
+  }
+
+  return value.to_string();
 }
 
 fn evaluate_import_element<'a>(_element: &ast::Element, _context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
