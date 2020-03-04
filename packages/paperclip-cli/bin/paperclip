@@ -1,0 +1,122 @@
+#!/usr/bin/env node
+const path = require("path");
+const resolve = require("resolve");
+const chokidar = require("chokidar");
+const glob = require("glob");
+const {Engine, getPrettyMessage} = require("paperclip");
+const fs = require("fs");
+
+const argv = require("yargs")
+.option("compiler", {
+  describe: "Language compiler target",
+})
+.option("write", {
+  describe: "Write compiled file",
+})
+.option("config", {
+  describe: "Config file",
+})
+.option("watch", {
+})
+.example("$0", "Runs paperclip using pcconfig.json in cwd")
+.example("$0 **/*.pc --compiler=paperclip-react-compiler", "Compiles PC files to React")
+.example("$0 path/to/file.pc --compiler=paperclip-react-compiler --definition", "Generates a Typed Definition file")
+.example("$0 --definition --write --watch", "Writes typed definition files & re-generates them when they change")
+.argv;
+
+const argvConfig = generateConfig(argv);
+const config = argv.config || argv._.length === 0 ? require(resolve2(argv.config || path.join(process.cwd(), "/pcconfig"))) : argvConfig;
+
+const compiler = config.compilerOptions.name;
+const filesGlob = config.filesGlob;
+
+const compilerModulePath = resolve2(compiler);
+if (!compilerModulePath) {
+  console.error("Compiler \"%s\" couldn't be found", compiler);
+  process.exit();
+}
+const compileModule = require(compilerModulePath);
+
+if (!compileModule || !compileModule.compile) {
+  console.error("Compiler \"%s\" does not export compile function", compiler);
+  process.exit();
+}
+
+const {compile, getOutputFilePath} = compileModule;
+init(process.cwd(), filesGlob, compile, argv.watch);
+
+function resolve2(module) {
+  try {
+    return resolve.sync(module, { basedir: process.cwd() });
+  } catch(e) {
+    try {
+      return require.resolve(module);
+    } catch(e) {
+      return null;
+    }
+  }
+}
+
+function generateConfig(argv) {
+  return {
+    filesGlob: argv._[0],
+    moduleDirectories: argv.moduleDirectories || [],
+    compilerOptions: {
+      name: argv.compiler,
+      ...argv
+    }
+  };
+}
+
+function init(cwd, filesGlob, compile, shouldWatch) {
+  
+  const pcEngine = new Engine();
+
+  function handleError(error, filePath) {
+    console.error(getPrettyMessage(error, fs.readFileSync(filePath, "utf8"), filePath));
+  }
+
+  async function compileFile(relativePath) {
+    const fullPath = path.resolve(process.cwd(), relativePath);
+
+    const compilerOptions = Object.assign({}, argvConfig.compilerOptions, config.compilerOptions);
+    try {
+      const ast = pcEngine.parseFile(fullPath);
+
+      if (ast.error) {
+        return handleError(ast.error, fullPath);
+      }
+      const sheet = pcEngine.evaluateFileStyles(fullPath);
+      const result = compile({ ast, sheet }, fullPath, compilerOptions);
+      if (argv.write) {
+        const outputFilePath = getOutputFilePath(fullPath, compilerOptions);
+        console.log("Writing %s", outputFilePath);
+        fs.writeFileSync(outputFilePath, result);
+      } else {
+        console.log("Compiling %s", relativePath);
+        console.log(result);
+      }
+    } catch(e) {
+      console.log("Err %s", relativePath);
+      console.error(e);
+    }
+  }
+  glob(filesGlob, {
+    cwd: cwd
+  }, async function(err, filePaths) {
+    filePaths.map(compileFile);
+  });
+
+  if (shouldWatch) {
+    watch(cwd, filesGlob, compileFile);
+  }
+}
+
+function watch(cwd, filesGlob, compileFile) {
+  const watcher = chokidar.watch(filesGlob, {
+    cwd: cwd
+  });
+
+  watcher  
+    .on('change', compileFile);
+}

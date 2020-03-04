@@ -1,0 +1,12 @@
+{
+  "name": "website",
+  "private": true,
+  "version": "11.0.34",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"\""
+  },
+  "author": "",
+  "license": "MIT"
+}

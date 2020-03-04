@@ -1,0 +1,34 @@
+{
+  "name": "paperclip",
+  "displayName": "paperclip",
+  "description": "Template language that compiles to code",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.41.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "paperclip",
+        "aliases": [
+          "Paperclip",
+          "paperclip"
+        ],
+        "extensions": [
+          ".pc"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "paperclip",
+        "scopeName": "source.paperclip",
+        "path": "./syntaxes/paperclip.tmLanguage.json"
+      }
+    ]
+  }
+}

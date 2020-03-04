@@ -1,0 +1,14 @@
+<import id="canvas-layer" src="./canvas/index.pc">
+<import id="tools-layer" src="./tools/index.pc">
+
+<style>
+  .container {
+    width: 100%;
+  }
+</style>
+
+<div class="container">
+  <canvas-layer />
+  <tools-layer />
+</div>
+

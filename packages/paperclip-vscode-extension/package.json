@@ -1,0 +1,106 @@
+{
+  "name": "paperclip-vscode-extension",
+  "displayName": "Paperclip",
+  "version": "11.0.35",
+  "electronVersion": "7.1.10",
+  "publisher": "crcn",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crcn/paperclip.git"
+  },
+  "main": "lib/client/index.js",
+  "engines": {
+    "vscode": "^1.41.0"
+  },
+  "activationEvents": [
+    "onLanguage:paperclip",
+    "onWebviewPanel:paperclip-preview"
+  ],
+  "categories": [
+    "Programming Languages"
+  ],
+  "configuration": {
+    "type": "object",
+    "title": "Example configuration",
+    "properties": {
+      "paperclipLanguageServer.maxNumberOfProblems": {
+        "scope": "resource",
+        "type": "number",
+        "default": 100,
+        "description": "Controls the maximum number of problems produced by the server."
+      }
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "paperclip.openPreview",
+        "title": "Paperclip: Open Live Preview"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "paperclip.openPreview",
+          "when": "editorLangId == paperclip"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "paperclip.openPreview",
+        "key": "shift+cmd+v",
+        "when": "editorLangId == paperclip"
+      }
+    ],
+    "languages": [
+      {
+        "id": "paperclip",
+        "aliases": [
+          "paperclip",
+          "paperclip"
+        ],
+        "extensions": [
+          ".pc"
+        ],
+        "configuration": "./languages/paperclip-html-language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "paperclip",
+        "scopeName": "text.html.paperclip-html",
+        "path": "./syntaxes/paperclip-html.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.css": "css",
+          "source.js": "javascript"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "test": "echo \"\"",
+    "build": "tsc",
+    "build:watch": "npm run build -- --watch",
+    "prepublishOnly": "npm run build",
+    "publish:marketplace": "vsce package && vsce publish"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^13.1.8",
+    "@types/vscode": "^1.41.0",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "@types/react": "^16.9.20",
+    "color": "^3.1.2",
+    "paperclip": "^11.0.35",
+    "paperclip-web-renderer": "^11.0.35",
+    "vscode-languageclient": "^6.0.1",
+    "vscode-languageserver": "^6.0.1",
+    "vscode-languageserver-textdocument": "^1.0.0"
+  },
+  "gitHead": "396909b9e82118286559b98849b6fa3e8d3166d2"
+}

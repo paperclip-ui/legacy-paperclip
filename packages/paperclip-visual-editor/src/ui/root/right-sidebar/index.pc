@@ -1,0 +1,14 @@
+<import id="style-inspector" src="./tabs/style-inspector/index.pc">
+
+<style>
+  .container {
+    float: right;
+    width: 100px;
+    background: rgb(194, 194, 194);
+    height: 100%;
+  }
+</style>
+
+<div class="container">
+  <style-inspector />
+</div>

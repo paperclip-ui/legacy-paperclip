@@ -1,0 +1,31 @@
+<style>
+  .app {
+    font-size: 24px;
+    font-family: Helvetica;
+    color: rgb(216, 213, 29)12, 31, 31);
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+  }
+</style>
+
+<div class="app">
+
+  <input type="text" placeholder="enter a new todo">
+
+  <ul>  
+    {todoItems}
+  </ul>
+</div>
+
+<preview>
+  <self 
+    todoItems={<>
+      <li>something like this</li>
+      <li>This is text</li>
+    </>}
+  />
+</preview>

@@ -1,0 +1,19 @@
+<import src="styles/global.css">
+<import id="home-page" src="./pages/home.pc">
+
+<style>
+</style>
+
+<div class="website">
+  <div class="navigation">
+    <a href="nav">
+      Home
+    </a>
+  </div>
+  {page}
+</div>
+
+<preview>
+  <self page={<home-page />} />
+
+</preview>

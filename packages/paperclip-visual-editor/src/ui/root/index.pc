@@ -1,0 +1,18 @@
+<import id="right-sidebar" src="./right-sidebar/index.pc">
+<import id="center" src="./center/index.pc">
+
+<style>
+ .app {
+   background: white;
+   width: 100vw;
+   height: 100vh;
+   color: rgb(66, 66, 66);
+   display: flex;
+ }
+
+</style>
+
+<div class="app">
+  <center />
+  <right-sidebar />
+</div>

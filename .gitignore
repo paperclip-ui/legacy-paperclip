@@ -1,0 +1,10 @@
+lib/
+target/
+node_modules/
+dist/
+*.node
+*.artifacts
+tmp/
+*.pc.d.ts
+*.vsix
+*.DS_Store

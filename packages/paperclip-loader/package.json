@@ -1,0 +1,29 @@
+{
+  "name": "paperclip-loader",
+  "version": "11.0.35",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "create:symlinks": "ln -s `pwd` examples/hello-world/node_modules/paperclip-loader"
+  },
+  "author": "",
+  "license": "MIT",
+  "gitHead": "396909b9e82118286559b98849b6fa3e8d3166d2",
+  "dependencies": {
+    "@types/node": "^13.7.7",
+    "constants": "0.0.2",
+    "crc32": "^0.2.2",
+    "loader-utils": "^1.2.3",
+    "paperclip": "^11.0.35",
+    "react": "^16.12.0",
+    "resolve": "^1.15.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.41.6",
+    "webpack-virtual-modules": "0.2.1"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.3.11"
+  }
+}
