@@ -127,6 +127,7 @@ Styles are scoped to this file, so you don't have to worry about them leaking ou
 </preview>
 ```
 
+
 Here's what you see in VS Code as you type away:
 
 ![Simple todo preview](https://user-images.githubusercontent.com/757408/75791302-ff866580-5d31-11ea-8da9-1c43631f0626.gif)
