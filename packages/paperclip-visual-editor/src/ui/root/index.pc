@@ -1,8 +1,14 @@
 <style>
+
+  :root {
+    --dark-grey: #G60;
+    --border: var(--dark-grey);
+    --font-color: rgb(134, 134, 134);
+  }
   
   * {
     font-family: Helvetica;
-    color: rgb(83, 83, 83);
+    color: var(--font-color);
     font-size: 11px;
     letter-spacing: 0.04em;
   }
@@ -13,7 +19,7 @@
   }
 
   .right-sidebar {
-    width: 200px;
+    width: 250px;
     height: 100%;
     background: rgb(245, 245, 245);
     border-left: 1px solid rgb(218, 218, 218);
@@ -42,15 +48,17 @@
   .row .cell {
     width: 100%;
     display: inline-flex;
-    align-content: center;
+    align-items: center;
+    white-space: nowrap;
   }
+
 
   .color-pill {
     margin-right: 4px;
     border-radius: 2px;
     border: 1px solid rgb(139, 139, 139);
-    width: 10px;
-    height: 10px;
+    width: 0.8em;
+    height: 0.8em;
     display: inline-block;
   }
 </style>
@@ -84,7 +92,11 @@
       </div>
       <div class="table">
         <property-item name="font-family" value="Helvetica" />
-        <property-item name="color" value={<span><color-pill value="green" /><span>red</span></span>} />
+        <property-item name="color" value={<>
+          <color-pill value="rgb(218, 167, 58)"/>
+          <span>rgb(218, 167, 58)</span>
+          </>} 
+        />
       </div>
     </div>
   </div>

@@ -34,7 +34,7 @@ import * as path from "path";
 import CSS_COLOR_NAMES from "./css-color-names";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
-  `\\b(${CSS_COLOR_NAME_LIST.join("|")})\\b`,
+  `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
   "g"
 );
 
