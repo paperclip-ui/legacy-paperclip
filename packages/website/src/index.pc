@@ -8,11 +8,42 @@
 
   .section {
     padding: 25px;
+    max-height: 300px;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+  }
+
+  .navigation {
+    display: flex;
+    background: rgb(243, 243, 243);
+    padding: 12px 24px;
+  }
+
+  .navigation a {
+    color: rgb(99, 99, 99);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    font-size: 12px;
+  }
+
+  .screenshot {
+    width: 100%;
+    position: relative;
+  }
+
+  .section.navigation {
+    padding: 6px 12px;
+  }
+
+  .navigation a {
+    margin-right: 12px;
   }
 
   .section .blurb {
     max-width: 400px;
     line-height: 1.5em;
+    min-width: 300px;
   }
 
   .section .summary {
@@ -34,36 +65,60 @@
   .section.four {
     background: rgb(216, 216, 216);
   }
+
+  .site {
+    width: 100%;
+    height: 100%;
+    background: rgb(216, 216, 216);
+  }
 </style>
+<div class="site">
 
-<div class="section one">
-  <div class="blurb">
-    <h1>Paperclip</h1>
-    <div class="summary">
-      Visually create web applications, directly within VS Code.
+  <div class="navigation">
+    <a href="GitHub">
+      GitHub
+    </a>
+    <a href="GitHub">
+      Documentation
+    </a>
+    <a href="GitHub">
+      Community
+    </a>
+  </div>
+  <div class="section two">
+    <div class="blurb">
+      <h1>Paperclip</h1>
+      <div class="summary">
+        Visually create web applications, directly within VS Code.
+      </div>
+    </div>
+    <div>
+      <img class="screenshot" src="./assets/calculator-screenshot.png">
     </div>
   </div>
-</div>
 
-<div class="section two">
-  <div class="blurb">
-    <h1>A simple language that compiles as you write it.</h1>
-    <div class="summary">
-      
+  <div class="section three">
+    <div class="blurb">
+      <h1>A simple language that compiles as you write it.</h1>
+      <div class="summary">
+        Paperclip comes with a runtime that 
+      </div>
     </div>
   </div>
-</div>
 
-<div class="section three">
-  <h1>Integrates </h1>
-  <div class="summary">
-  
+  <div class="section four">
+    <div class="blurb">
+      <h1>Integrates with React</h1>
+      <div class="summary">
+        Compiles down to highly optimized React code. 
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="section four">
-  <h1>What is it?</h1>
-  <div class="summary">
-  
-  </div>
+  <!-- <div class="section four">
+    <h1>What is it?</h1>
+    <div class="summary">
+    
+    </div>
+  </div> -->
 </div>
