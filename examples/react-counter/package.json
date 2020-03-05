@@ -1,7 +1,7 @@
 {
   "name": "counter",
   "private": true,
-  "version": "11.0.42",
+  "version": "11.0.44",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "paperclip": "^11.0.42",
     "paperclip-cli": "^11.0.42",
     "paperclip-loader": "^11.0.42",
-    "paperclip-react-compiler": "^11.0.42",
+    "paperclip-react-compiler": "^11.0.44",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "style-loader": "^1.1.3",
