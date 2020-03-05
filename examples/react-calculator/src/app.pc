@@ -1,0 +1,155 @@
+<import id="pad" src="./pad.pc">
+
+<style>
+  #preview {
+    width: 400px;
+    height: 600px;
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border-radius: 15px;
+    border: 2px solid rgb(138, 138, 138);
+    overflow: hidden;
+  }
+</style>
+<style>
+  .display {
+    background-color: #858694;
+    color: white;
+    text-align: right;
+    font-weight: 200;
+    -ms-flex: 0 0 auto;
+        flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .display > div {
+    font-size: 2.5rem;
+    padding: 0.2rem 0.7rem 0.1rem 0.5rem;
+  }
+
+  .panel {
+    background-color: #858694;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: row;
+        flex-direction: row;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    -ms-flex: 1 0 auto;
+        flex: 1 0 auto;
+  }
+
+  .panel > div {
+    width: 100%;
+    margin-bottom: 1px;
+    -ms-flex: 1 0 auto;
+        flex: 1 0 auto;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .app {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    height: 100%;
+  }
+
+  #root {
+    background-color: black;
+    margin: 0;
+    padding: 0;
+    font-family: Helvetica;
+    height: 100%;
+  }
+</style>
+
+<part id="calculator">
+  <div id="root">
+    <div class="app">
+      <div class="display">
+        <div>{value}</div>
+      </div>
+      <div class="panel">
+        <div>
+          <pad onClick={onACClick}>
+            AC
+          </pad>
+          <pad onClick={onNegateClick}>
+            +/-
+          </pad>
+          <pad onClick={onPercentClick}>
+            %
+          </pad>
+          <pad orange onClick={onDivideClick}>
+            ÷
+          </pad>
+        </div>
+        <div>
+          <pad onClick={onSevenClick}>
+            7
+          </pad>
+          <pad onClick={onEightClick}>
+            8
+          </pad>
+          <pad onClick={onNineClick}>
+            9
+          </pad>
+          <pad orange onClick={onXClick}>
+            x
+          </pad>
+        </div>
+        <div>
+          <pad onClick={onFourClick}>
+            4
+          </pad>
+          <pad onClick={onFiveClick}>
+            5
+          </pad>
+          <pad onClick={onSixClick}>
+            6
+          </pad>
+          <pad orange onClick={onMinusClick}>
+            -
+          </pad>
+        </div>
+        <div>
+          <pad onClick={onOneClick}>
+            1
+          </pad>
+          <pad onClick={onTwoClick}>
+            2
+          </pad>
+          <pad onClick={onThreeClick}>
+            3
+          </pad>
+          <pad orange onClick={onPlusClick}>
+            +
+          </pad>
+        </div>
+        <div>
+          <pad wide onClick={onZeroClick}>
+            0
+          </pad>
+          <pad onClick={onDotClick}>
+            .
+          </pad>
+          <pad orange onClick={onEqualsClick}>
+            =
+          </pad>
+        </div>
+      </div>
+    </div>
+  </div>
+</part>
+
+<preview>
+  <div id="preview">
+    <calculator value={10} />
+  </div>
+</preview>

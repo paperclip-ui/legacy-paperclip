@@ -1,19 +1,69 @@
 <import src="styles/global.css">
-<import id="home-page" src="./pages/home.pc">
 
 <style>
+  h1 {
+    font-weight: 100;
+    line-height: 1.2em;
+  }
+
+  .section {
+    padding: 25px;
+  }
+
+  .section .blurb {
+    max-width: 400px;
+    line-height: 1.5em;
+  }
+
+  .section .summary {
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  .section.one {
+    background: rgb(255, 255, 255);
+  }
+
+  .section.two {
+    background: rgb(243, 243, 243);
+  }
+
+  .section.three {
+    background: rgb(233, 233, 233);
+  }
+  .section.four {
+    background: rgb(216, 216, 216);
+  }
 </style>
 
-<div class="website">
-  <div class="navigation">
-    <a href="nav">
-      Home
-    </a>
+<div class="section one">
+  <div class="blurb">
+    <h1>Paperclip</h1>
+    <div class="summary">
+      Visually create web applications, directly within VS Code.
+    </div>
   </div>
-  {page}
 </div>
 
-<preview>
-  <self page={<home-page />} />
+<div class="section two">
+  <div class="blurb">
+    <h1>A simple language that compiles as you write it.</h1>
+    <div class="summary">
+      
+    </div>
+  </div>
+</div>
 
-</preview>
+<div class="section three">
+  <h1>Integrates </h1>
+  <div class="summary">
+  
+  </div>
+</div>
+
+<div class="section four">
+  <h1>What is it?</h1>
+  <div class="summary">
+  
+  </div>
+</div>

@@ -236,7 +236,6 @@ const translateComponent = (
     )
   );
 
-  context = addBuffer(`console.log('render ${componentName}');\n `, context);
   context = addBuffer(`return `, context);
   context = translateJSXRoot(node, context);
   context = endBlock(context);
