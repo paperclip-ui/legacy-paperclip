@@ -114,7 +114,9 @@ export function resolveImportFile(fromPath: string, toPath: string) {
 function resolveModule(fromPath: string, moduleRelativePath: string) {
   const configPath = findPCConfigPath(fromPath);
   if (!configPath) return null;
-  const config = require(configPath);
+
+  // need to parse each time in case config changed.
+  const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
   if (!config.moduleDirectories) return null;
   const configPathDir = path.dirname(configPath);
   for (const moduleDirectory of config.moduleDirectories) {
@@ -128,20 +130,14 @@ function resolveModule(fromPath: string, moduleRelativePath: string) {
   return null;
 }
 
-const _triedDirectories = {};
 
 function findPCConfigPath(fromPath: string): string | null {
   let cdir: string = path.dirname(fromPath.replace("file://", ""));
-  do {
-    const configPath = _triedDirectories[cdir];
 
-    if (configPath == null) {
-      _triedDirectories[cdir] = false;
-      const configPath = path.join(cdir, PC_CONFIG_FILE_NAME);
-      if (fs.existsSync(configPath)) {
-        return (_triedDirectories[cdir] = configPath);
-      }
-    } else if (configPath) {
+  // can't cache in case PC config was moved.
+  do {    
+    const configPath = path.join(cdir, PC_CONFIG_FILE_NAME);
+    if (fs.existsSync(configPath)) {
       return configPath;
     }
     cdir = path.dirname(cdir);

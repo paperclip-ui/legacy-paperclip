@@ -87,12 +87,13 @@
   </div>
   <div class="section two">
     <div class="blurb">
-      <h1>Paperclip</h1>
-      <div class="summary">
-        Visually create web applications, directly within VS Code.
-      </div>
+      <h1>Visually create web applications, directly within VS Code.</h1>
+      <!--div class="summary">
+        Paperclip is a language for creating primitive 
+      </div-->
     </div>
     <div>
+      <!-- TODO: this needs to be a video -->
       <img class="screenshot" src="./assets/calculator-screenshot.png">
     </div>
   </div>
@@ -100,6 +101,7 @@
   <div class="section three">
     <div class="blurb">
       <h1>A simple language that compiles as you write it.</h1>
+      <!--h1>No more switching between browser & code</h1-->
       <div class="summary">
         Paperclip comes with a runtime that 
       </div>
