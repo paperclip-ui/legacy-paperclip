@@ -20,6 +20,9 @@
 - [Syntax](./documentation/Syntax)
 - [Contributing](./documentation/Contributing)
 - [Examples](./examples)
+  - [React counter](./examples/react-counter)
+  - [React TodoMVC](./examples/react-todomvc)
+  - [React Calculator](./examples/react-calculator)
 
 <!--
 
@@ -32,7 +35,7 @@ Notes:
 
 <!-- No more juggling between the coding & debugging in the browser. Paperclip provides tooling that allows  -->
 
-Paperclip is a template language that's designed for visual development. See what you're creating in real-time, directly within VS Code.
+Paperclip is a template language that's designed for creating primitive UI components visually, directly within VS Code.
 
 <!-- Tooling is provided that brings a real-time preview of your application directly into your code editor. -->
 

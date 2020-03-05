@@ -70,20 +70,7 @@ module.exports = {
 
 ```
 
-#### Generating Typed Definition Files
-
-If you're using TypeScript, then you'll probably want additional type safety around Paperclip files. To do that, you'll need to CLI tools: `npm install paperclip-cli --save-dev`. You'll also need to install a compiler. For now, the only option you have is React, so add that: `npm install paperclip-react-compiler --save-dev`. After that, you can generate typed definition files like so:
-
-```
-./node_modules/.bin/paperclip --compiler=paperclip-react-compiler --definition --write
-```
-
-
-> ⚠️ This command assumes that you have your `pcconfig.json` file set up. If not, refer to the docs above.
-
-> ❓For more information about using the CLI tool, you can check out the [package](../../packages/paperclip-cli). 
-
-> ✨ I also recommend that you include `*.pc.d.ts` in your `.gitignore` file so to keep the typed definition files out of GIT. 
+#### Writing templates
 
 After installing all of the required dependencies & setting up Webpack, you can start writing Paperclip templates! Here's a basic `hello-world.pc` example:
 
@@ -107,7 +94,7 @@ After installing all of the required dependencies & setting up Webpack, you can 
 
 > For more documentation on syntax, you can [check out this document](../Syntax).
 
-After that creating your first Paperclip file, go ahead and create a corresponding `hello-world.jsx` file, and type in:
+After creating your first Paperclip file, go ahead and create a corresponding `hello-world.jsx` file, and type in:
 
 ```javascript
 import React from "react";
@@ -124,7 +111,45 @@ That's all you need! At this point you can start using your Paperclip component.
 If you'd like to see more on how to use Paperclip with React, you can check out these examples:
 
 - [React TodoMVC](../../examples/react-todomvc) - Basic TODO app
-- [React Kitchen Sink](../../examples/react-kitchen-sink) - Kitchen sink example using _all_ of Paperclip's features
+
+#### Using the `styled` utility
+
+Templates that are compiled to react code expose a `styled` function that you can use to stylize HTML elements outside of the template file. For example:
+
+```html
+<!-- component.pc -->
+<style>
+  div {
+    color: red;
+  }
+</style>
+```
+
+In JS, you can do this:
+
+```javascript
+import {styled} from "./component.pc";
+const Div = styled("div");
+function SomeComponent() {
+  return <Div>This is red text</Div>;
+}
+```
+
+#### Generating Typed Definition Files
+
+If you're using TypeScript, then you'll probably want additional type safety around Paperclip files. To do that, you'll need to CLI tools: `npm install paperclip-cli --save-dev`. You'll also need to install a compiler. For now, the only option you have is React, so add that: `npm install paperclip-react-compiler --save-dev`. After that, you can generate typed definition files like so:
+
+```
+./node_modules/.bin/paperclip --compiler=paperclip-react-compiler --definition --write
+```
+
+
+> ⚠️ This command assumes that you have your `pcconfig.json` file set up. If not, refer to the docs above.
+
+> ❓For more information about using the CLI tool, you can check out the [package](../../packages/paperclip-cli). 
+
+> ✨ I also recommend that you include `*.pc.d.ts` in your `.gitignore` file so to keep the typed definition files out of GIT. 
+
 
 # More Resources
 
