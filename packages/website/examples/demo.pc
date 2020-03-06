@@ -1,0 +1,11 @@
+<part id="Counter">
+  <span {onClick}>Count: {currentCount}</span>
+</part>
+
+<preview> 
+  <Counter currentCount={0} />
+</preview>
+
+
+
+

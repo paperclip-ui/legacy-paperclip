@@ -1,3 +1,4 @@
 TODO:
 
-- gatsby
+- template example
+- jsx example

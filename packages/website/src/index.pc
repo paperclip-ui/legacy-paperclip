@@ -6,10 +6,13 @@
   }
   .navigation {
     padding: 24px 45px;
+    font-size: 14px;
   }
 
   .navigation .logo {
     display: inline-block;
+    font-weight: 600;
+    letter-spacing: 0.04em;
   }
 
   .navigation .links {
@@ -24,26 +27,42 @@
 
   .navigation .links.social {
     float: right;
+    opacity: 0.6;
   }
 
-  .content {
-    padding: 0px 45px;
+  .header {
+    overflow: hidden;
   }
 
   .blurb {
     max-width: 345px;
+    padding: 0px 45px;
+    min-width: 310px;
   }
 
   .blurb .title {
     font-size: 24px;
+    font-weight: 100;
+    line-height: 35px;
+    margin-bottom: 12px;
   }
+
   .blurb .desc {
-    font-size: 14;
+    font-size: 14px;
     line-height: 24px;
+  }
+
+  hr {
+    margin: 0;
   }
   
   .content {
     display: flex;
+  }
+
+  .content .blurb {
+    position: relative;
+    top: 60px;
   }
 
   .content .screenshot {
@@ -51,19 +70,35 @@
     /* transform: translateX(10%); */
     /* position: absolute; */
     max-height: 300px;
+    position: relative;
+    width: 100%;
+  }
+
+  .screenshot img {
+    max-height: 350px;
+    /* position: absolute; */
+    /* right: 0; */
+    float: right;
+  }
+
+  .divider {
+    background: rgba(0, 0, 0, 0.1);
+    height: 1px;
+    margin: 0px 45px;
   }
 </style>
 
 <div class="header">
   <div class="navigation">
-    <strong class="logo">Paperclip</strong>
+    <a class="logo" href="http://paperclip.dev">Paperclip</a>
     <div class="links">
       <a href="#">Docs</a>
       <a href="#">Contributing</a>
     </div>
     <div class="social links">
-      <a href="#">Docs</a>
-      <a href="#">Contributing</a>
+      <a href="http://github.com/crcn/paperclip"><img src="./assets/github.svg"></a>
+      <a href="https://discord.gg/H6wEVtd"><img src="./assets/discord.svg"></a>
+      <!-- <a href="#"><img src="./assets/twitter.svg"></a> -->
     </div>
   </div>
 
@@ -76,6 +111,122 @@
         No more waiting around. Paperclip is a template language that runs as you write in it.
       </div>
     </div>
-    <img class="screenshot" src="./assets/calculator-screenshot.png">
+    <div class="screenshot">
+      <img src="./assets/calculator-screenshot3.png">
+    </div>
   </div>
 </div>
+
+<div class="divider" />
+
+<style> 
+  .info .title {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+  .info .desc {
+    font-size: 14px;
+    line-height: 24px;
+  }
+</style>
+
+<style>
+  .features {
+    margin: 24px 45px;
+    display: flex;
+  }
+
+  .feature {
+    width: 33%;
+    display: inline-block;
+    padding-right: 24px;
+  }
+</style>
+<div class="features">
+  <div class="feature info">
+    <div class="title">
+      Simple syntax 
+    </div>
+    <div class="desc">
+      Paperclip just covers basic HTML, CSS, and syntax for defining presentational components.
+    </div>
+  </div>
+  <div class="feature info">
+    <div class="title">
+      Compiles to plain code
+    </div>
+    <div class="desc">
+      Paperclip templates compile to plain React code (more targets soon). No runtime needed.    
+    </div>
+  </div>
+  <div class="feature info">
+    <div class="title">
+      More Safety
+    </div>
+    <div class="desc">
+Automatically generate TypeScript definitions, and use visual regression tooling for added safety.    </div>
+  </div>
+</div>
+
+<div class="divider" />
+
+<style>
+  .examples {
+    padding: 0px 45px;
+  }
+
+  .example {
+    margin-top: 24px;
+    display: flex;
+  }
+
+  .example .info {
+    width: 100%;
+  }
+
+  .example .info .desc {
+    max-width: 250px;
+  }
+
+  .snippet {
+    background: rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 200;
+  }
+
+</style>
+<div class="examples">
+  <div class="example">
+    <div class="info">
+      <div class="title">
+        A simple template
+      </div>
+      <div class="desc">
+        TODO: talk about parts
+      </div>
+    </div>
+    <div class="snippet">
+      {paperclipSnippet}
+    </div>
+  </div>
+  <div class="example">
+    <div class="info">
+      <div class="title">
+        A functional component
+      </div>
+      <div class="desc">
+        TODO: import the parts
+      </div>
+    </div>
+    <div class="snippet">
+      {reactSnippet}
+    </div>
+  </div>
+</div>
+
+<preview>
+  <self 
+    paperclipSnippet="" 
+    reactSnippet=""
+  />
+</preview>
