@@ -1,0 +1,125 @@
+<import src="styles/global.css">
+
+<style>
+  :root {
+    --header-padding: 4px 12px;
+  }
+</style>
+
+<style>
+  .editor {
+    border: 1px solid var(--border-color-secondary);
+    display: flex;
+    border-radius: 4px;
+  }
+
+  .pane {
+    width: 100%;
+  }
+
+  .tab {
+    padding-right: 6px;
+    display: inline-block;
+    padding: var(--header-padding);
+  }
+
+  .tab .close-button {
+    margin-left: 4px;
+    visibility: hidden;
+    cursor: pointer;
+  }
+
+  .tab:hover .close-button {
+    visibility: visible;
+  }
+
+
+  .tab[active] {
+    background: var(--darker-grey);
+  }
+
+  .pane:first-child {
+    border-right: 1px solid var(--border-color);
+  }
+
+  .pane:first-child .header {
+  }  
+
+  .pane .header {
+    border-bottom: 1px solid var(--border-color);
+    background: var(--background-secondary);
+    padding: var(--header-padding);
+  }
+
+  .pane[type="files"] .header {
+    padding: 0;
+  }
+
+  .pane[type="preview"] .header {
+
+  }
+
+
+  .app {
+    padding: 20px;
+  }
+</style>
+
+<part id="tab">
+  <span class="tab" {active}>
+    {children}
+    <span class="close-button"> 
+      &times;
+    </span>
+  </span>
+</part>
+
+<part id="pane">
+  <div class="pane" {type}>
+    <div class="header">
+      {header}
+    </div>
+    <div class="content">
+      {content}
+    </div>
+  </div>
+</part>
+
+<part id="files-pane">
+  <pane type="files" header={<span>{tabs}</span>} {editor} />
+</part>
+
+<part id="display-pane">
+  <pane type="preview" header="Preview" {content} />
+</part>
+
+<part id="default">
+  <div class="editor">
+    {filesPane}
+    {displayPane}
+  </div>
+</part>
+
+<preview>
+  <div class="app">
+    <default 
+      filesPane={
+        <files-pane 
+          tabs={
+            <>
+              <tab active>index.pc</tab>
+              <tab>index.tsx</tab>
+            </>
+          }
+        />
+      }
+      displayPane={
+        <display-pane content={
+          <>
+            <div style={{background: 'red', color: 'white', padding: '10px', display: 'inline-block'}}>some content preview</div>
+          </>
+        } />
+      }
+    />
+  </div>
+</preview>

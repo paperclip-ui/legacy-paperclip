@@ -1,5 +1,0 @@
-<import src="styles/global.css">
-
-<span>
-  Something
-</span>

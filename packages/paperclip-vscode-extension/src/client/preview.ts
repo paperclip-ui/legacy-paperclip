@@ -1,5 +1,5 @@
 import { EngineEvent } from "paperclip";
-import vscode, {
+import {
   Uri,
   window,
   commands,
