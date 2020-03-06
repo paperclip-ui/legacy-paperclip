@@ -11,10 +11,14 @@
     border: 1px solid var(--border-color-secondary);
     display: flex;
     border-radius: 4px;
+    height: 350px;
   }
 
   .pane {
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   .tab {
@@ -27,6 +31,11 @@
 
   .tab[active] {
     background: var(--darker-grey);
+  }
+
+  .mount {
+    width: 100%;
+    height: 100%;
   }
 
   .pane:first-child {
@@ -48,6 +57,10 @@
 
   .pane[type="preview"] .header {
 
+  }
+
+  .pane .content {
+    height: 100%;
   }
 
 
@@ -88,19 +101,23 @@
   </div>
 </part>
 
+<part id="files-pane-preview">
+  <files-pane 
+    tabs={
+      <>
+        <tab active>index.pc</tab>
+        <tab>index.tsx</tab>
+      </>
+    }
+    editor="EDITOR HERE"
+  />
+</part>
+
 <preview>
   <div class="app">
     <default 
       filesPane={
-        <files-pane 
-          tabs={
-            <>
-              <tab active>index.pc</tab>
-              <tab>index.tsx</tab>
-            </>
-          }
-          editor="Ok"
-        />
+        <files-pane-preview />
       }
       displayPane={
         <display-pane content={

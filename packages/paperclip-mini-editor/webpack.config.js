@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 /*
  * We've enabled HtmlWebpackPlugin for you! This generates a html
  * page for you when you compile webpack, which will make you start
@@ -22,7 +22,7 @@ module.exports = {
   },
   devtool: false,
 
-  plugins: [new HtmlWebpackPlugin()],
+  plugins: [new HtmlWebpackPlugin(), new MonacoWebpackPlugin()],
 
   module: {
     rules: [
@@ -46,7 +46,7 @@ module.exports = {
         use: ["style-loader", "css-loader"]
       },
       {
-        test: /\.(png|jpe?g|gif)$/i,
+        test: /\.(png|jpe?g|gif|ttf)$/i,
         use: [
           {
             loader: "file-loader"
