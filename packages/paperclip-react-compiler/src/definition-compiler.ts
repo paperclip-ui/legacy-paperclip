@@ -6,6 +6,7 @@ import {
   getLogicElement,
   infer,
   NodeKind,
+  getPartIds,
   DEFAULT_PART_ID,
   getVisibleChildNodes,
   NO_COMPILE_TAG_NAME,
@@ -31,6 +32,7 @@ export const compile = (
   let context = createTranslateContext(
     filePath,
     getImportIds(ast),
+    getPartIds(ast),
     [],
     Boolean(getLogicElement(ast)),
     options

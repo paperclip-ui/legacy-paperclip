@@ -21,16 +21,7 @@
     padding-right: 6px;
     display: inline-block;
     padding: var(--header-padding);
-  }
-
-  .tab .close-button {
-    margin-left: 4px;
-    visibility: hidden;
     cursor: pointer;
-  }
-
-  .tab:hover .close-button {
-    visibility: visible;
   }
 
 
@@ -66,11 +57,8 @@
 </style>
 
 <part id="tab">
-  <span class="tab" {active}>
+  <span class="tab" {onClick} {active}>
     {children}
-    <span class="close-button"> 
-      &times;
-    </span>
   </span>
 </part>
 
@@ -86,7 +74,7 @@
 </part>
 
 <part id="files-pane">
-  <pane type="files" header={<span>{tabs}</span>} {editor} />
+  <pane type="files" header={<span>{tabs}</span>} content={editor} />
 </part>
 
 <part id="display-pane">
@@ -111,6 +99,7 @@
               <tab>index.tsx</tab>
             </>
           }
+          editor="Ok"
         />
       }
       displayPane={

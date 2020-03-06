@@ -24,6 +24,7 @@ import {
   AttributeValueKind,
   isVisibleNode,
   getImportIds,
+  getPartIds,
   Element,
   getStyleScopes,
   resolveImportFile,
@@ -55,6 +56,7 @@ export const compile = (
   let context = createTranslateContext(
     filePath,
     getImportIds(ast),
+    getPartIds(ast),
     getStyleScopes(ast, filePath),
     Boolean(getLogicElement(ast)),
     options
@@ -315,12 +317,18 @@ const translateJSXNode = (
   return context;
 };
 
+const getPartTagName = (name: string, context: TranslateContext) => {
+  return pascalCase(name);
+};
+
 const translateElement = (
   element: Element,
   isRoot: boolean,
   context: TranslateContext
 ) => {
-  const isComponentInstance = context.importIds.indexOf(element.tagName) !== -1;
+  const isImportComponentInstance = context.importIds.indexOf(element.tagName) !== -1;
+  const isPartComponentInstance = context.partIds.indexOf(element.tagName) !== -1;
+  const isComponentInstance = isImportComponentInstance || isPartComponentInstance;
   const id = getAttributeStringValue("id", element);
   const propsName = null;
 
@@ -330,8 +338,11 @@ const translateElement = (
   //   : isComponentInstance
   //   ? `props.${camelCase(element.tagName)}Props`
   //   : null;
-  const tag = isComponentInstance
-    ? getImportTagName(element.tagName)
+
+  const tag = isPartComponentInstance
+    ? getPartTagName(element.tagName, context)
+    : isImportComponentInstance ?
+    getImportTagName(element.tagName)
     : JSON.stringify(element.tagName);
 
   context = addBuffer(`React.createElement(${tag}, `, context);

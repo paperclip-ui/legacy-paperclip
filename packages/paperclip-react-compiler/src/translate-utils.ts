@@ -14,6 +14,7 @@ export type TranslateContext = {
   styleScopes: string[];
   indent: string;
   importIds: string[];
+  partIds: string[];
   args: Options;
   keyCount: number;
 };
@@ -21,6 +22,7 @@ export type TranslateContext = {
 export const createTranslateContext = (
   filePath: string,
   importIds: string[],
+  partIds: string[],
   styleScopes: string[],
   hasLogicFile: boolean,
   args: Options,
@@ -29,6 +31,7 @@ export const createTranslateContext = (
   buffer: "",
   filePath,
   importIds,
+  partIds,
   scopes: {},
   hasLogicFile,
   styleScopes,

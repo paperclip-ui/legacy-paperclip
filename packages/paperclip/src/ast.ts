@@ -240,7 +240,7 @@ export const isVisibleNode = (node: Node): boolean =>
 export const getVisibleChildNodes = (ast: Node): Node[] =>
   getChildren(ast).filter(isVisibleNode);
 
-export const getParts = (ast: Node): Element[] =>
+  export const getParts = (ast: Node): Element[] =>
   getChildren(ast).filter(child => {
     return (
       child.kind === NodeKind.Element &&
@@ -248,6 +248,12 @@ export const getParts = (ast: Node): Element[] =>
       hasAttribute("id", child)
     );
   }) as Element[];
+
+
+export const getPartIds = (ast: Node): string[] =>
+  getParts(ast)
+    .map(node => getAttributeStringValue("id", node))
+    .filter(Boolean) as string[];
 
 export const getDefaultPart = (ast: Node): Element =>
   getParts(ast).find(
