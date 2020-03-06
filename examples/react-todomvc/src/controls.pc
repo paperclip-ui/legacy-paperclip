@@ -60,7 +60,7 @@
   border-color: rgba(155, 15, 15, 0.1);
 }
 
-.filters li a[select] {
+.filters li a[data-select] {
   border-color: rgba(175, 47, 47, 0.2);
 }
 
@@ -90,7 +90,7 @@
 </style>
 
 <part id="filter">
-  <li><a {href} select={active}>{label}</a></li>
+  <li><a {href} data-select={active}>{label}</a></li>
 </part>
 
 <part id="default">

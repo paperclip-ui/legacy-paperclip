@@ -21,14 +21,14 @@
     padding: 6px 12px;
   }
 
-  li[done] {
+  li[data-done] {
     text-decoration: line-through;
   }
   
 </style>
 
 <part id="TodoItem">
-  <li {done}>
+  <li data-done={done}>
     <input type="checkbox" checked={done} onClick={onDoneClick}>
     {label}
   </li>

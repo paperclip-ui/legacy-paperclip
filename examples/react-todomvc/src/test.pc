@@ -1,2 +1,29 @@
+<style>
+  * {
+    font-family: Helvetica;
+  }
 
-<span>This is a test</span>
+  .header {
+    padding: 10px;
+  }
+
+  .header[data-variant="test"] {
+    color: red;
+  }
+</style>
+
+<part id="pane">
+  <div class="header" data-variant={variant}>
+    Some header {variant}
+  </div>
+</part>
+
+<part id="another-pane">
+  <!-- need to figure out how to do overrides here -->
+  <pane variant="test" />
+</part>
+
+<preview>
+  <pane />
+  <another-pane />
+</preview>

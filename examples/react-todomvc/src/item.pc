@@ -88,7 +88,7 @@
     transition: color 0.4s;
   }
 
-  .todo[completed] label {
+  .todo[data-completed] label {
     color: #d9d9d9;
     text-decoration: line-through;
   }
@@ -152,7 +152,7 @@
 </part>
 
 <part id="default">
-  <li class="todo" {completed}>
+  <li class="todo" data-completed={completed}>
     {children}
   </li>
 </part>

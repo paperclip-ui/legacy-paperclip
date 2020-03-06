@@ -439,13 +439,13 @@ In some cases, you may want to use different parts of your imported component. A
 
 ```html
 <style>
-  li[completed] {
+  li[data-completed] {
     text-decoration: line-through;
   }
 </style>
 
 <part id="default">
-  <li {completed}>
+  <li data-completed={completed}>
     <input type="checkbox" onClick={onCompleteCheckboxClick}>
     {label}
   </li>
@@ -456,7 +456,7 @@ In some cases, you may want to use different parts of your imported component. A
   compilers not to include this part.
 -->
 <part no-compile id="completed-preview">
-  <default completed {label} />
+  <default completed {label} data-{completed} />
 </part>
 
 <part no-compile id="incomplete-preview">

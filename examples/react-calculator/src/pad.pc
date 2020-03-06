@@ -9,7 +9,7 @@
         flex: 1 0 auto;
   }
 
-  .component-button[wide] {
+  .component-button[data-wide] {
     width: 50%;
   }
 
@@ -27,7 +27,7 @@
     margin-right: 0;
   }
 
-  .component-button[orange] button {
+  .component-button[data-orange] button {
     background-color: #f5923e;
     color: white;
   }
@@ -43,7 +43,7 @@
 
 
 <part id="default">
-  <div {onClick} class="component-button" {wide} {orange}>
+  <div {onClick} class="component-button" data-wide={wide} data-orange={orange}>
     <button>{children}</button>
   </div>
 </part>

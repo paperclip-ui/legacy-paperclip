@@ -29,7 +29,7 @@
   }
 
 
-  .tab[active] {
+  .tab[data-active] {
     background: var(--darker-grey);
   }
 
@@ -51,11 +51,11 @@
     padding: var(--header-padding);
   }
 
-  .pane[type="files"] .header {
+  .pane[data-type="files"] .header {
     padding: 0;
   }
 
-  .pane[type="preview"] .header {
+  .pane[data-type="preview"] .header {
 
   }
 
@@ -70,13 +70,13 @@
 </style>
 
 <part id="tab">
-  <span class="tab" {onClick} {active}>
+  <span class="tab" {onClick} data-active={active}>
     {children}
   </span>
 </part>
 
 <part id="pane">
-  <div class="pane" {type}>
+  <div class="pane" data-type={type}>
     <div class="header">
       {header}
     </div>

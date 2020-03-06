@@ -93,7 +93,7 @@ Styles are scoped to this file, so you don't have to worry about them leaking ou
     padding: 0;
   }
   
-  li[done] {
+  li[data-done] {
     text-decoration: line-through;
   }
 </style>
@@ -102,7 +102,7 @@ Styles are scoped to this file, so you don't have to worry about them leaking ou
 <part id="TodoItem">
 
   <!-- You can assign attribute bindings. -->
-  <li {done}>
+  <li data-done={done}>
     <input type="checkbox" checked={done} onClick={onDoneClick}>
 
     <!-- You can also define slots where text & elements are inserted into. -->
