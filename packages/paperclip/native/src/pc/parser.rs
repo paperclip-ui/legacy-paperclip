@@ -622,6 +622,8 @@ mod tests {
       <self-closing-element />
       <element with-attribute />
       <element data-and-an-attribute=\"value\" />
+      <part onClick={on7Click}>
+      </part>
       
       <!-- void tags -->
       <br>

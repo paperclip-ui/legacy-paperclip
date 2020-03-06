@@ -145,7 +145,7 @@
 <div class="features">
   <div class="feature info">
     <div class="title">
-      Simple syntax 
+      Easy to use
     </div>
     <div class="desc">
       Paperclip just covers basic HTML, CSS, and syntax for defining presentational components.
@@ -161,10 +161,11 @@
   </div>
   <div class="feature info">
     <div class="title">
-      More Safety
+      Added safety
     </div>
     <div class="desc">
-Automatically generate TypeScript definitions, and use visual regression tooling for added safety.    </div>
+      Comes with automatic visual 
+    </div>
   </div>
 </div>
 

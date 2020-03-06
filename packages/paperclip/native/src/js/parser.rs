@@ -121,31 +121,70 @@ fn parse_object<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, Par
   }))
 }
 
-fn parse_word<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
+fn parse_boolean<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
   let pos = tokenizer.pos;
   if let Token::Word(name) = tokenizer.next()? {
-
     if name == "true" || name == "false" {
       return Ok(ast::Statement::Boolean(ast::Boolean { value: name == "true" }));
     }
-
-    let mut path = vec![name.to_string()];
-    while !tokenizer.is_eof() && tokenizer.peek(1)? == Token::Dot {
-      tokenizer.next()?; // eat .
-      let pos = tokenizer.pos;
-      match tokenizer.next()? {
-        Token::Word(part) => {
-          path.push(part.to_string());
-        }
-        _ => {
-          return Err(ParseError::unexpected_token(pos));
-        }
-      }
-    }
-    Ok(ast::Statement::Reference(ast::Reference { path: path }))
-  } else {
-    Err(ParseError::unexpected_token(pos))
   }
+
+  Err(ParseError::unexpected_token(pos))
+}
+
+fn token_matches_var_start(token: &Token) -> bool {
+  match token {
+    Token::Byte(b'_') | Token::Byte(b'$') => true,
+    Token::Word(_) => true,
+    _ => false
+  }
+}
+
+fn token_matches_var_part(token: &Token) -> bool {
+  token_matches_var_start(token) || if let Token::Number(v) = token {
+    true
+  } else {
+    false
+  } 
+}
+fn parse_reference_name<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<String, ParseError> {
+  Ok(get_buffer(tokenizer, |tokenizer| {
+    Ok(token_matches_var_part(&tokenizer.peek(1)?))
+  })?.to_string())
+}
+
+
+fn parse_reference<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
+  let pos = tokenizer.pos;
+  let name = parse_reference_name(tokenizer)?;
+  let mut path = vec![name.to_string()];
+  while !tokenizer.is_eof() && tokenizer.peek(1)? == Token::Dot {
+    tokenizer.next()?; // eat .
+    let pos = tokenizer.pos;
+    if token_matches_var_start(&tokenizer.peek(1)?) {
+      path.push(parse_reference_name(tokenizer)?);
+    } else {
+
+      return Err(ParseError::unexpected_token(pos));
+    }
+  }
+  Ok(ast::Statement::Reference(ast::Reference { path: path }))
+}
+
+fn parse_word<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
+  let pos = tokenizer.pos;
+  let token = tokenizer.peek(1)?;
+  if let Token::Word(name) = token {
+    if name == "true" || name == "false" {
+      return parse_boolean(tokenizer);
+    }
+  }
+
+  if token_matches_var_start(&token) {
+    return parse_reference(tokenizer);
+  }
+
+  Err(ParseError::unexpected_token(pos))
 }
 
 
@@ -158,6 +197,9 @@ mod tests {
     let cases = vec![
       "[{a:1}]",
       "someReference",
+      "someR3f",
+      "_someRef",
+      "$$someRef",
       "some.nested.reference",
 
       // nodes
