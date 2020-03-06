@@ -83,13 +83,14 @@ export class Renderer {
 
   private _onStageMouseOver = (event: MouseEvent) => {
     const element = event.target as Element;
+    const elementWindow = element.ownerDocument.defaultView;
     const targetId = this._nativeNodeMap.get(element);
     if (element.nodeType !== 1 || !event.metaKey || !targetId) return;
     const rect = element.getBoundingClientRect();
     Object.assign(this._hoverOverlay.style, {
       display: "block",
-      left: `${window.scrollX + rect.left}px`,
-      top: `${window.scrollY + rect.top}px`,
+      left: `${elementWindow.document.body.scrollLeft + rect.left}px`,
+      top: `${elementWindow.document.body.scrollTop + rect.top}px`,
       width: `${rect.width}px`,
       height: `${rect.height}px`
     });

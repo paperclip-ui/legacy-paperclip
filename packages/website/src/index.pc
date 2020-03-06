@@ -161,7 +161,7 @@
   </div>
   <div class="feature info">
     <div class="title">
-      Added safety
+      Build faster
     </div>
     <div class="desc">
       Comes with automatic visual 

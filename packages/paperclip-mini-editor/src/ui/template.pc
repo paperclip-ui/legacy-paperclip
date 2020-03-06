@@ -56,13 +56,11 @@
   }
 
   .pane[data-type="preview"] .header {
-
   }
 
   .pane .content {
     height: 100%;
   }
-
 
   .app {
     padding: 20px;
@@ -76,6 +74,18 @@
 </part>
 
 <part id="pane">
+  <!--style>
+
+    :root {
+      --header: {
+        color: red;
+      }
+    }
+    
+    .header {
+      @extends var(--header);
+    }
+  </style-->
   <div class="pane" data-type={type}>
     <div class="header">
       {header}
@@ -113,6 +123,19 @@
   />
 </part>
 
+<part id="display-pane-preview">
+  <!--style>
+    display-pane::override(.header) {
+      padding: 0;
+    }
+  </style-->
+  <display-pane content={
+    <>
+      <div style={{background: 'grey', color: 'white', padding: '10px', display: 'inline-block'}}>some content preview</div>
+    </>
+  } />
+</part>
+
 <preview>
   <div class="app">
     <default 
@@ -120,11 +143,7 @@
         <files-pane-preview />
       }
       displayPane={
-        <display-pane content={
-          <>
-            <div style={{background: 'red', color: 'white', padding: '10px', display: 'inline-block'}}>some content preview</div>
-          </>
-        } />
+        <display-pane-preview />
       }
     />
   </div>

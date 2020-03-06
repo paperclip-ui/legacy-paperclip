@@ -9,6 +9,7 @@
   --background-secondary: var(--light-grey);
   --font-color: var(--dark-grey);
 }
+
 * {
   font-family: Helvetica;
   color: var(--font-color);
