@@ -14,7 +14,6 @@ import {
   Inference,
   hasAttribute
 } from "paperclip";
-import { camelCase } from "lodash";
 import {
   createTranslateContext,
   TranslateContext,

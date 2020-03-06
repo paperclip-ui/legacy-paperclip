@@ -363,6 +363,10 @@ const inferStatement = (
       );
       break;
     }
+    case StatementKind.Node: {
+      context = inferNode(statement, false, context);
+      break;
+    }
   }
   return context;
 };
