@@ -1,126 +1,81 @@
 <import src="styles/global.css">
 
 <style>
-  h1 {
-    font-weight: 100;
-    line-height: 1.2em;
-  }
+  .header {
 
-  .section {
-    padding: 25px;
-    max-height: 300px;
-    overflow: hidden;
-    display: flex;
-    position: relative;
   }
-
   .navigation {
+    padding: 24px 45px;
+  }
+
+  .navigation .logo {
+    display: inline-block;
+  }
+
+  .navigation .links {
+    display: inline-block;
+    margin-left: 24px;
+  }
+
+  .navigation .links a {
+    display: inline-block;
+    margin-left: 12px;
+  }
+
+  .navigation .links.social {
+    float: right;
+  }
+
+  .content {
+    padding: 0px 45px;
+  }
+
+  .blurb {
+    max-width: 345px;
+  }
+
+  .blurb .title {
+    font-size: 24px;
+  }
+  .blurb .desc {
+    font-size: 14;
+    line-height: 24px;
+  }
+  
+  .content {
     display: flex;
-    background: rgb(243, 243, 243);
-    padding: 12px 24px;
   }
 
-  .navigation a {
-    color: rgb(99, 99, 99);
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    font-size: 12px;
-  }
-
-  .screenshot {
-    width: 100%;
-    position: relative;
-  }
-
-  .section.navigation {
-    padding: 6px 12px;
-  }
-
-  .navigation a {
-    margin-right: 12px;
-  }
-
-  .section .blurb {
-    max-width: 400px;
-    line-height: 1.5em;
-    min-width: 300px;
-  }
-
-  .section .summary {
-    font-size: 18px;
-    font-weight: 300;
-  }
-
-  .section.one {
-    background: rgb(255, 255, 255);
-  }
-
-  .section.two {
-    background: rgb(243, 243, 243);
-  }
-
-  .section.three {
-    background: rgb(233, 233, 233);
-  }
-  .section.four {
-    background: rgb(216, 216, 216);
-  }
-
-  .site {
-    width: 100%;
-    height: 100%;
-    background: rgb(216, 216, 216);
+  .content .screenshot {
+    right: 0;
+    /* transform: translateX(10%); */
+    /* position: absolute; */
+    max-height: 300px;
   }
 </style>
-<div class="site">
 
+<div class="header">
   <div class="navigation">
-    <a href="GitHub">
-      GitHub
-    </a>
-    <a href="GitHub">
-      Documentation
-    </a>
-    <a href="GitHub">
-      Community
-    </a>
-  </div>
-  <div class="section two">
-    <div class="blurb">
-      <h1>Visually create web applications, directly within VS Code.</h1>
-      <!--div class="summary">
-        Paperclip is a language for creating primitive 
-      </div-->
+    <strong class="logo">Paperclip</strong>
+    <div class="links">
+      <a href="#">Docs</a>
+      <a href="#">Contributing</a>
     </div>
-    <div>
-      <!-- TODO: this needs to be a video -->
-      <img class="screenshot" src="./assets/calculator-screenshot.png">
+    <div class="social links">
+      <a href="#">Docs</a>
+      <a href="#">Contributing</a>
     </div>
   </div>
 
-  <div class="section three">
+  <div class="content section">
     <div class="blurb">
-      <h1>A simple language that compiles as you write it.</h1>
-      <!--h1>No more switching between browser & code</h1-->
-      <div class="summary">
-        Paperclip comes with a runtime that 
+      <div class="title">
+        Real-time previews in VS Code
+      </div>
+      <div class="desc">
+        No more waiting around. Paperclip is a template language that runs as you write in it.
       </div>
     </div>
+    <img class="screenshot" src="./assets/calculator-screenshot.png">
   </div>
-
-  <div class="section four">
-    <div class="blurb">
-      <h1>Integrates with React</h1>
-      <div class="summary">
-        Compiles down to highly optimized React code. 
-      </div>
-    </div>
-  </div>
-
-  <!-- <div class="section four">
-    <h1>What is it?</h1>
-    <div class="summary">
-    
-    </div>
-  </div> -->
 </div>
