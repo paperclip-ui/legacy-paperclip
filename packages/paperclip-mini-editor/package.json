@@ -1,6 +1,6 @@
 {
   "name": "paperclip-mini-editor",
-  "version": "1.0.0",
+  "version": "11.0.48",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,9 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "monaco-editor": "^0.20.0",
-    "paperclip": "^11.0.47",
-    "paperclip-cli": "^11.0.47",
-    "paperclip-react-compiler": "^11.0.47",
+    "paperclip": "^11.0.48",
+    "paperclip-cli": "^11.0.48",
+    "paperclip-react-compiler": "^11.0.48",
     "react": "^16.13.0",
     "react-dom": "^16.13.0"
   },
@@ -23,7 +23,7 @@
     "css-loader": "^3.4.2",
     "file-loader": "^5.1.0",
     "html-webpack-plugin": "^3.2.0",
-    "paperclip-loader": "^11.0.47",
+    "paperclip-loader": "^11.0.48",
     "style-loader": "^1.1.3",
     "ts-loader": "^6.2.1",
     "webpack": "^4.42.0",
