@@ -318,14 +318,14 @@
 
   <div class="divider" />
 
-  <examples />
+  <examples {paperclipSnippet} {reactSnippet} />
   <div class="divider" />
   <bottom />
 </div>
 
 <preview>
   <self 
-    paperclipSnippet="" 
-    reactSnippet=""
+    paperclipSnippet=" " 
+    reactSnippet=" "
   />
 </preview>
