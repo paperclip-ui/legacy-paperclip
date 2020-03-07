@@ -228,7 +228,7 @@
           A simple template
         </div>
         <div class="desc">  
-          Templates consist of <code>&lt;part /&gt;</code> elements that exposes parts of your component.
+          Templates consist of <code>&lt;part /&gt;</code> elements that exposes your component's building blocks.
         </div>
       </div>
       <div class="snippet">
