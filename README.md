@@ -71,7 +71,27 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
 
-## What is Paperclip exactly?
+
+## Features ✨
+
+- Works out of the box. Just download the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension) and start typing away. 
+- Previews are powered by a low-level runtime, so your changes appear instantly, and won't slow down as your project scales.
+- Templates can be compiled to strongly typed code.
+- Templates Integrate with your existing React application (more languages & frameworks soon).
+- Integrates with Webpack. 
+
+## Roadmap 🌄
+
+This is just the beginning! Here are just a few planned features:
+
+- Zero-setup automated visual regression testing. Just plug in your Paperclip files.
+- More compiler targets: Ruby, PHP, VueJS, AngularJS, and others.
+- More code editor integrations: Sublime, Atom.
+- More visual tooling in the preview, so you can make visual changes directly.
+- Preview against different browsers directly within your code editor.
+
+
+## What does a template look like?
 
 Paperclip just covers basic HTML, CSS, and syntax for defining _dumb_ components. Here's an example:
 
@@ -128,18 +148,20 @@ Styles are scoped to this file, so you don't have to worry about them leaking ou
 </preview>
 ```
 
+> ☝🏻This example uses just about all of the features that Paperclip has to offer. No logic, just syntax for describing how your UI looks. 
+
+The `<part />` elements expose the component's building blocks. These blocks are used in JavaScript code. More on that below 👇🏻.
 
 Here's what you see in VS Code as you type away:
 
 ![Simple todo preview](https://user-images.githubusercontent.com/757408/75791302-ff866580-5d31-11ea-8da9-1c43631f0626.gif)
 
 
-
-☝🏻This example uses just about all of the features that Paperclip has to offer. No logic, just syntax for describing how your UI looks. 
-
 ## How do I add logic? 
 
-Templates compile directly to highly optimized code. Using our list example above, here's how you might use it in a React app:
+Templates compile directly to highly optimized code. If you remember the `<part />` elements above, those are exported as building blocks that we can use to create a functional component: 
+
+<!-- Using our list example above, here's how you might use it in a React app: -->
 
 ```javascript
 
@@ -229,26 +251,6 @@ type TodoListProps = {
 
 export const TodoList: Factory<TodoListProps>;
 ```
-
-## Features ✨
-
-
-- Works out of the box. Just download the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension) and start typing away. 
-- Previews are powered by a low-level runtime, so your changes appear instantly, and won't slow down as your project scales.
-- Templates can be compiled to strongly typed code.
-- Templates Integrate with your existing React application (more languages & frameworks soon).
-- Integrates with Webpack. 
-
-## Roadmap 🌄
-
-This is just the beginning! Here are just a few planned features:
-
-- Zero-setup automated visual regression testing. Just plug in your Paperclip files.
-- More compiler targets: Ruby, PHP, VueJS, AngularJS, and others.
-- More code editor integrations: Sublime, Atom.
-- More visual tooling in the preview, so you can make visual changes directly.
-- Preview against different browsers directly within your code editor.
-- Animation tooling 
 
 ## Goals 🎯
 

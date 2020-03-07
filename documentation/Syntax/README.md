@@ -104,15 +104,15 @@ Example:
 
 ```html
 <style>
-  div[variant=red] {
+  div[data-variant=red] {
     color: red;
   }
-  div[variant=blue] {
+  div[data-variant=blue] {
     color: blue;
   }
 </style>
 
-<div variant={variant}> 
+<div data-variant={variant}> 
   Some text
 </div>
 
@@ -195,7 +195,7 @@ Slots accept JSX, objects, references, booleans, arrays, and numbers. Here's a k
 
 ## `<part />`
 
-Parts allow you to split your UI into chunks to use in app code. For example:
+Parts allow you to slice up your component building blocks to be used in your app code.
 
 ```html
 <!-- todo-item.pc -->
@@ -217,7 +217,11 @@ Parts allow you to split your UI into chunks to use in app code. For example:
 </part>
 ```
 
-In your app code, you might have something like:
+Each part is exported using their `id` attribute. The `default` part however is special in that it exports the part as the _default_ component. For example, here's how you might use the template above:
+
+<!-- The `id` prop is what's used to export the part. The `default` id tells that the part should be exported as the _default_ component (similar to how the default import works in JavaScript). All other parts are exported using their  -->
+
+<!-- In your app code, you might have something like: -->
 
 ```javascript
 // todo-item.tsx
