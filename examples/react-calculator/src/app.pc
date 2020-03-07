@@ -61,7 +61,7 @@
   }
 
   #root {
-    background-color: black;
+    background-color: rgb(255, 255, 255);
     margin: 0;
     padding: 0;
     font-family: Helvetica;

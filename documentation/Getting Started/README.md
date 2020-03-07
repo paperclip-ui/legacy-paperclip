@@ -19,12 +19,7 @@ For _now_ you can use Webpack + HMR. For this initial Alpha version though, Pape
 
 ## Using the VS Code Extension
 
-TODO:
-
-- meta clicking
-- side-by-side comparison
-- 
-
+After installing the extension, you can start using the live preview feature. Navigate to a Paperclip template file (`file-name-here.pc`), open your command palelle (`cmd + shift + p`), then select `Paperclip: Open Live Preview`.
 
 ## Setting up Webpack + React
 
@@ -110,7 +105,7 @@ That's all you need! At this point you can start using your Paperclip component.
 
 If you'd like to see more on how to use Paperclip with React, you can check out these examples:
 
-- [React TodoMVC](../../examples/react-todomvc) - Basic TODO app
+- [React TodoMVC](../../examples/react-todomvc) - Basic Todo app
 
 #### Using the `styled` utility
 

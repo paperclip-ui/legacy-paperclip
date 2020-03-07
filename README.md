@@ -90,6 +90,15 @@ This is just the beginning! Here are just a few planned features:
 - More visual tooling in the preview, so you can make visual changes directly.
 - Preview against different browsers directly within your code editor.
 
+## Goals 🎯
+
+The goal for Paperclip is to eliminate bottlenecks around HTML & CSS development, and provide tooling that helps you ship UI features quicker. More specifically:
+
+- Eliminate the lag time between writing code & seeing UI.
+- Shorten the gap between design -> code by bringing more design tooling into web development.
+- Provide better safety around building UIs with easier to use cross-browser testing tools. 
+
+
 
 ## What does a template look like?
 
@@ -251,14 +260,6 @@ type TodoListProps = {
 
 export const TodoList: Factory<TodoListProps>;
 ```
-
-## Goals 🎯
-
-The goal for Paperclip is to eliminate bottlenecks around HTML & CSS development, and provide tooling that helps you ship UI features quicker. More specifically:
-
-- Eliminate the lag time between writing code & seeing UI.
-- Shorten the gap between design -> code by bringing more design tooling into web development.
-- Provide better safety around building UIs with easier to use cross-browser testing tools. 
 
 <!-- ### What makes Paperclip special?
 
