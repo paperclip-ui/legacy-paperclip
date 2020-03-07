@@ -2,17 +2,17 @@
 // License: https://github.com/sveltejs/svelte-loader#license
 import {
   Engine,
+  getImports,
   PaperclipConfig,
   stringifyCSSSheet,
-  getImports,
-  getAttributeStringValue,
   resolveImportFile,
-  PC_CONFIG_FILE_NAME
+  PC_CONFIG_FILE_NAME,
+  getAttributeStringValue,
 } from "paperclip";
-import * as loaderUtils from "loader-utils";
-import * as resolve from "resolve";
-import * as VirtualModules from "webpack-virtual-modules";
 import * as path from "path";
+import * as resolve from "resolve";
+import * as loaderUtils from "loader-utils";
+import * as VirtualModules from "webpack-virtual-modules";
 
 let _engine: Engine;
 
