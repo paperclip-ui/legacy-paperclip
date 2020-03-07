@@ -4,7 +4,7 @@
   "description": "- real-time editing. Biggest priority is to have a bundler that  - Interoperability. Paperclip should work with any web framework.  - Type safety.  - Visually editable.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./lib/test",
+    "test": "mocha ./lib/test && cd native && cargo test",
     "build": "npm run build:wasm:node && npm run build:node",
     "build:watch": "tsc --watch & (cd native && cargo watch -i .gitignore -i \"pkg/*\" -s 'wasm-pack build --release --target nodejs')",
     "build:node": "tsc",
