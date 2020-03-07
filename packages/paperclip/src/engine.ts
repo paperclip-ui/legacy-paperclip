@@ -10,9 +10,17 @@ export type FileContent = {
   [identifier: string]: string;
 };
 
+export type EngineIO = {
+  resolveFile?: (fromPath: string, toPath: string) => string;
+  fileExists?: (filePath: string) => boolean;
+  readFile?: (filePath: string) => string;
+};
+
+
 export type EngineOptions = {
   httpuri?: string;
   renderPart?: string;
+  io?: EngineIO 
 };
 
 const mapResult = result => {
@@ -33,15 +41,21 @@ export class Engine {
   private _listeners: EngineEventListener[] = [];
 
   constructor(private _options: EngineOptions = {}) {
-    this._native = NativeEngine.new(
-      uri => {
+    const io: EngineIO = Object.assign({
+      readFile: uri => {
         return fs.readFileSync(uri.replace("file://", ""), "utf8");
       },
-      uri => {
+      fileExists: uri => {
         const filePath = uri.replace("file://", "");
         return fs.existsSync(filePath) && fs.lstatSync(filePath).isFile();
       },
-      resolveImportUri
+      resolveFile: resolveImportUri
+    }, _options.io);
+
+    this._native = NativeEngine.new(
+      io.readFile,
+      io.fileExists,
+      io.resolveFile
     );
 
     // only one native listener to for buffer performance

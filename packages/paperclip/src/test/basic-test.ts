@@ -1,30 +1,20 @@
+import * as path from "path";
 import { Engine } from "../engine";
 import { expect } from "chai";
-import * as http from "http";
 import { EngineEventKind, EvaluatedEvent } from "../events";
 import { stringifyVirtualNode } from "../stringify-virt-node";
+import { createMockEngine, Graph } from "./utils";
 
-const TEST_SERVER_PORT = 8999;
 
-xdescribe(__filename + "#", () => {
-  let server: http.Server;
-  let currentGraph = {};
-
-  before(next => {
-    server = http.createServer((req, res) => {
-      res.end(currentGraph[req.url.substr(1)]);
-    });
-    server.listen(TEST_SERVER_PORT);
-    setTimeout(next, 100);
-  });
-
-  after(() => {
-    server.close();
-  });
+describe(__filename + "#", () => {
 
   const waitForEvaluated = async (engine: Engine): Promise<EvaluatedEvent> => {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       engine.onEvent(event => {
+        if (event.kind === EngineEventKind.Error) {
+          return reject(event);
+        }
+
         if (event.kind === EngineEventKind.Evaluated) {
           resolve(event);
         }
@@ -46,7 +36,7 @@ xdescribe(__filename + "#", () => {
         "/entry.pc": `<span>more text</span>`
       },
       {},
-      `<span data-pc-3402f12b><style></style>more text</span>`
+      `<span data-pc-80f4925f><style></style>more text</span>`
     ],
 
     // styles
@@ -62,14 +52,9 @@ xdescribe(__filename + "#", () => {
         `
       },
       {},
-      `<span data-pc-3402f12b>
-        <style>
-          span[data-pc-3402f12b] { 
-            color:red;
-          }
-        </style>
-        more text
-      </span>`
+      `
+      <style>span[data-pc-80f4925f] { color:red; }</style><span data-pc-80f4925f>more text</span> 
+      `
     ],
 
     // components
@@ -81,7 +66,7 @@ xdescribe(__filename + "#", () => {
               color: red;
             }
           </style>
-          <span>{{children}}!</span>
+          <span>{children}!</span>
 
         `,
         "/entry.pc": `
@@ -90,14 +75,8 @@ xdescribe(__filename + "#", () => {
         `
       },
       {},
-      `<spandata-pc-4aa1ff40>
-        <style>
-          span[data-pc-4aa1ff40] {
-            color:red;
-          }
-        </style>
-        hello world!
-      </span>`
+      `
+      <style>span[data-pc-1d7dbc06] { color:red; }</style><span data-pc-1d7dbc06>hello world!</span>`
     ],
 
     // basic css
@@ -117,11 +96,11 @@ xdescribe(__filename + "#", () => {
             [attribute=value]  {}
             [attribute="value"]  {}
             [attribute='value']  {}
-            [attribute~='value']  {}
+            /*[attribute~='value']  {}
             [attribute^='value']  {}
             [attribute$='value']  {}
             [attribute$='value']  {}
-            [attribute*='value']  {}
+            [attribute*='value']  {}*/
             div[attr1][attr1]  {}
             :active {}
             ::active {}
@@ -167,11 +146,9 @@ xdescribe(__filename + "#", () => {
               from {top: 0px;}
               to {top: 200px;}
             }
-
-            @charset "UTF-8"; 
             
           </style>
-          <span>{{children}}!</span>
+          <span>{children}!</span>
 
         `,
         "/entry.pc": `
@@ -180,28 +157,42 @@ xdescribe(__filename + "#", () => {
         `
       },
       {},
-      `<spandata-pc-4aa1ff40>
-        <style>
-          span[data-pc-4aa1ff40] {
-            color:red;
-          }
-        </style>
-        hello world!
-      </span>`
+      `<style>.class[data-pc-1d7dbc06] { } .class1.class2[data-pc-1d7dbc06] { } .class1[data-pc-1d7dbc06] .class2[data-pc-1d7dbc06] { } #id[data-pc-1d7dbc06] { } [data-pc-1d7dbc06] { } element[data-pc-1d7dbc06] { } element.class[data-pc-1d7dbc06] { } [attribute][data-pc-1d7dbc06] { } [attribute="value"][data-pc-1d7dbc06] { } [attribute="value"][data-pc-1d7dbc06] { } [attribute="value"][data-pc-1d7dbc06] { } div[attr1][attr1][data-pc-1d7dbc06] { } :active { } ::active { } element[data-pc-1d7dbc06]::active { } ::after { } :lang(it) { } p[data-pc-1d7dbc06]:lang(it) { } [data-pc-1d7dbc06]:not(p[data-pc-1d7dbc06]) { } :nth-child(5) { } :placeholder { } element1[data-pc-1d7dbc06], element2[data-pc-1d7dbc06] { } element[data-pc-1d7dbc06], .class[data-pc-1d7dbc06], #id.class[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] element2[data-pc-1d7dbc06] { } element1.class[data-pc-1d7dbc06] element2[attr][attr2][data-pc-1d7dbc06] { } element1.class[data-pc-1d7dbc06] element2[attr][data-pc-1d7dbc06], #id.group[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] > element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] > .child[data-pc-1d7dbc06] .descendent[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] > .child[data-pc-1d7dbc06] .descendent[data-pc-1d7dbc06], [group-attr="something"][data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] + element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] ~ element2[data-pc-1d7dbc06] { } @media only screen and (max-width: 600px) { div[data-pc-1d7dbc06] { color:red; } } </style><span data-pc-1d7dbc06>hello world!</span>`
 
       // TODO - import css
+    ],
+    [
+      // parse different tag names
+      {
+        "/entry.pc": `
+          {_someRef}
+          {_some5ref}
+          {_ref}
+          {$$ref}
+          <preview>
+            <self 
+              _someRef="a" 
+              _some5ref="b" 
+              _ref="c"
+              $$ref="d"
+            />
+          </preview>
+        `
+      },
+      {},
+      `<style></style>abcd`
     ]
-  ].forEach(([graph, context, expectedHTML]) => {
+  ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
-      currentGraph = graph;
-      const engine = new Engine({
-        // httpFilePath: `http://0.0.0.0:${TEST_SERVER_PORT}/`
-      });
+      const engine = createMockEngine(graph);
+
+
+      const p = waitForEvaluated(engine);
       engine.load("/entry.pc");
-      const event = await waitForEvaluated(engine);
+      const event = await p;
       const nodeStr = stringifyVirtualNode(event.node);
-      expect(nodeStr.replace(/[\r\n\t\s]+/g, "")).to.eql(
-        String(expectedHTML).replace(/[\r\n\t\s]+/g, "")
+      expect(nodeStr.replace(/[\r\n\t\s]+/g, " ").trim()).to.eql(
+        String(expectedHTML).replace(/[\r\n\t\s]+/g, " ").trim()
       );
     });
   });

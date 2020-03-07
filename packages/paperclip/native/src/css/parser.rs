@@ -590,6 +590,7 @@ mod tests {
     [attr=value] {}
     [attr='value'] {}
     [attr=\"value\"] {}
+    [attr~=\"value\"] {}
     a, b {}
     a.b.c {}
     a#id {}
