@@ -181,6 +181,19 @@ describe(__filename + "#", () => {
       },
       {},
       `<style></style>abcd`
+    ],
+    [
+      // parse different tag names
+      {
+        "/entry.pc": `
+          {a} b
+          <preview>
+            <self a="c" />
+          </preview>
+        `
+      },
+      {},
+      `<style></style>c b`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

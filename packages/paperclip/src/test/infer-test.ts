@@ -235,6 +235,18 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {}
       }
+    ],
+    [
+      `<div a={<div>{a}</div>}></div>`,
+      {
+        kind: 0,
+        fromSpread: false,
+        properties: {
+          a: {
+            kind: 2
+          }
+        }
+      }
     ]
   ];
 
