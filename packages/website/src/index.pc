@@ -10,6 +10,8 @@
     width: 100%;
     max-width: 1024;
     margin: 0px auto;
+    padding: 0px 24px;
+    box-sizing: border-box;
   }
 
   .navigation {
@@ -131,7 +133,7 @@
         Build faster ⚡️
       </div>
       <div class="desc">
-        No more waiting around. Previews automatically update as you're writing code.
+        Previews automatically update as you're writing templates, so you can iterate faster.
 
         <!-- No more waiting around to see  Previews update as you're building user interfaces.  -->
         <!-- No more waiting around to see what your application looks like. Templates come with a preview that automatically updates as you make changes. -->
@@ -195,6 +197,7 @@
 <style>
   .examples {
     padding: 0px 0px;
+    margin-bottom: 24px;
   }
 
   .example {
@@ -248,7 +251,7 @@
   </div>
 </part>
 
-<div class="website">
+<part id="header">
   <div class="header">
     <div class="navigation">
       <a class="logo" href="http://paperclip.dev">Paperclip</a>
@@ -282,6 +285,31 @@
       </div>
     </div>
   </div>
+</part>
+
+<style>
+  .bottom {
+    margin:  0px;
+    display: none;
+  }
+</style>
+<part id="bottom">
+  <div class="bottom navigation">
+      <div class="links">
+        <a href="#">Docs</a>
+        <a href="#">Contributing</a>
+      </div>
+      <div class="social links">
+        <a href="http://github.com/crcn/paperclip"><img src="./assets/github.svg"></a>
+        <a href="https://discord.gg/H6wEVtd"><img src="./assets/discord.svg"></a>
+        <!-- <a href="#"><img src="./assets/twitter.svg"></a> -->
+      </div>
+  </div>
+</part>
+
+<div class="website">
+
+  <header />
 
   <div class="divider" />
 
@@ -291,6 +319,8 @@
   <div class="divider" />
 
   <examples />
+  <div class="divider" />
+  <bottom />
 </div>
 
 <preview>
