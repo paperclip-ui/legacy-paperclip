@@ -34,6 +34,33 @@ describe(__filename + "#", () => {
       }
     ],
     [
+      `{{a, b, c: [d, {e, f: b.d}]}}`,
+      {
+        kind: 0,
+        fromSpread: false,
+        properties: {
+          a: {
+            kind: 2
+          },
+          b: {
+            kind: 0,
+            fromSpread: false,
+            properties: {
+              d: {
+                kind: 2
+              }
+            }
+          },
+          d: {
+            kind: 2
+          },
+          e: {
+            kind: 2
+          }
+        }
+      }
+    ],
+    [
       `{a.b} {a.c}`,
       {
         kind: 0,

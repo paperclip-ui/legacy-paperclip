@@ -9,11 +9,7 @@ import {
   ConditionalBlockKind,
   EachBlock,
   Conditional,
-  ConditionalBlock,
-  PassFailConditional,
-  FinalConditional,
   Slot,
-  SlotAttributeValue,
   Attribute,
   Fragment,
   Block
@@ -21,13 +17,6 @@ import {
 import {
   Statement,
   StatementKind,
-  JsArray,
-  JsBoolean,
-  JsNumber,
-  JsNode,
-  JsString,
-  JsObject,
-  JsObjectProperty
 } from "./js-ast";
 import { PREVIEW_TAG_NAME, PART_TAG_NAME } from "./constants";
 
@@ -365,6 +354,19 @@ const inferStatement = (
     }
     case StatementKind.Node: {
       context = inferNode(statement, false, context);
+      break;
+    }
+    case StatementKind.Object: {
+      for (const property of statement.properties) {
+        context = inferStatement(property.value, context, defaultInference);
+      }
+      break;
+    }
+    case StatementKind.Array: {
+      
+      for (const value of statement.values) {
+        context = inferStatement(value, context, defaultInference);
+      }
       break;
     }
   }

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha ./lib/test && cd native && cargo test",
+    "test:watch": "mocha ./lib/test --watch & (cd native && cargo watch -x test)",
     "build": "npm run build:wasm:node && npm run build:node",
     "build:watch": "tsc --watch & (cd native && cargo watch -i .gitignore -i \"pkg/*\" -s 'wasm-pack build --release --target nodejs')",
     "build:node": "tsc",

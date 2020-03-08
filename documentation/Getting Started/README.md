@@ -62,7 +62,6 @@ module.exports = {
     ]
   }
 };
-
 ```
 
 #### Writing templates
