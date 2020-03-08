@@ -9,9 +9,7 @@ import {
   RuleKind,
   getImports,
   Block,
-  EachBlock,
   Conditional,
-  ConditionalBlock,
   BlockKind,
   ConditionalBlockKind,
   EngineEvent,
@@ -21,9 +19,9 @@ import {
   NodeParsedEvent,
   getStyleElements,
   getAttributeValue,
+  DependencyNodeContent,
   getChildren,
   AttributeValueKind,
-  getVisibleChildNodes,
   getAttributeStringValue,
   AttributeKind,
   StatementKind,
@@ -55,15 +53,13 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     return /\.pc$/.test(uri);
   }
   protected _handleEngineEvent(event: EngineEvent) {
-    if (event.kind === EngineEventKind.NodeParsed) {
-      this._handleNodeParsedEvent(event);
-    } else if (event.kind === EngineEventKind.Evaluated) {
+    if (event.kind === EngineEventKind.Evaluated) {
+      this.clear(event.uri);
       this._handleEvaluatedEvent(event);
     }
   }
-
-  private _handleNodeParsedEvent({ node, uri }: NodeParsedEvent) {
-    this._addAST(node, uri);
+  protected _getAST(uri): Node {
+    return this._engine.getLoadedAst(uri) as DependencyNodeContent;
   }
   protected _createASTInfo(root: Node, uri: string) {
     const context: HandleContext = {

@@ -32,15 +32,11 @@ export type ASTInfo = {
 
 export abstract class BaseEngineLanguageService<TAst>
   implements BaseLanguageService {
-  protected _asts: {
-    [identifier: string]: TAst;
-  };
   protected _astInfo: {
     [identifier: string]: ASTInfo;
   };
 
   constructor(protected _engine: Engine) {
-    this._asts = {};
     this._astInfo = {};
     _engine.onEvent(this._onEngineEvent);
   }
@@ -49,14 +45,8 @@ export abstract class BaseEngineLanguageService<TAst>
     this._handleEngineEvent(event);
   };
   protected abstract _handleEngineEvent(event: EngineEvent): void;
-  protected _addAST(ast: TAst, uri: string) {
-    this._asts[uri] = ast;
-    this._astInfo[uri] = undefined;
-  }
 
-  protected _getAST(uri: string) {
-    return this._asts[uri];
-  }
+  protected abstract _getAST(uri: string): TAst;
 
   getColors(uri: string) {
     return this._getASTInfo(uri).colors;
@@ -69,8 +59,14 @@ export abstract class BaseEngineLanguageService<TAst>
     return this._getASTInfo(uri).definitions;
   }
 
+  protected clear(uri: string) {
+    this._astInfo[uri] = undefined;
+  }
+
   private _getASTInfo(uri: string): ASTInfo {
-    if (!this._asts[uri]) {
+    const ast = this._getAST(uri);
+
+    if (!ast) {
       return {
         colors: [],
         links: [],
@@ -79,7 +75,7 @@ export abstract class BaseEngineLanguageService<TAst>
     }
     return (
       this._astInfo[uri] ||
-      (this._astInfo[uri] = this._createASTInfo(this._asts[uri], uri))
+      (this._astInfo[uri] = this._createASTInfo(ast, uri))
     );
   }
 

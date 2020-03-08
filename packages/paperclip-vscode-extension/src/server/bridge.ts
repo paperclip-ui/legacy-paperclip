@@ -1,5 +1,4 @@
 import {
-  TextDocuments,
   Connection,
   ColorPresentationRequest,
   ColorPresentationParams,
@@ -61,7 +60,6 @@ export class VSCServiceBridge {
     private _service: LanguageServices,
     readonly connection: Connection
   ) {
-    // this._textDocumentInfo = new TextDocumentInfoDictionary(engine, service);
     _engine.onEvent(this._onEngineEvent);
     connection.onRequest(
       ColorPresentationRequest.type,

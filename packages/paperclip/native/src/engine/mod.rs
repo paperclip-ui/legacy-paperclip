@@ -114,6 +114,14 @@ impl Engine {
     }
   }
 
+  pub fn get_loaded_ast(&self, uri: &String) -> Option<&DependencyContent> {
+    let dep_option = self.dependency_graph.dependencies.get(uri);
+    match dep_option {
+      Some(dep) => Some(&dep.content),
+      None => None
+    }
+  }
+
   pub async fn reload(&mut self, uri: &String) -> Result<(), GraphError> {
     let load_result = self.dependency_graph.load_dependency(uri, &mut self.vfs).await;
 
@@ -123,21 +131,22 @@ impl Engine {
         for uri in loaded_uris.iter() {
           let dep = self.dependency_graph.dependencies.get(uri).unwrap();
           
-          let event_option = match &dep.content {
-            DependencyContent::Node(node) => {
-              Some(EngineEvent::NodeParsed(NodeParsedEvent {
-                uri: dep.uri.to_string(),
-                node: node.clone()
-              }))
-            },
-            _ => {
-              // TODO - CSS 
-              None
-            }
-          };
-          if let Some(event) = event_option {
-            self.dispatch(event);
-          }
+          // this is slow. Don't do it. Use getLoadedAST instead
+          // let event_option = match &dep.content {
+          //   DependencyContent::Node(node) => {
+          //     Some(EngineEvent::NodeParsed(NodeParsedEvent {
+          //       uri: dep.uri.to_string(),
+          //       node: node.clone()
+          //     }))
+          //   },
+          //   _ => {
+          //     // TODO - CSS 
+          //     None
+          //   }
+          // };
+          // if let Some(event) = event_option {
+          //   self.dispatch(event);
+          // }
         }
 
         self.evaluate(uri);

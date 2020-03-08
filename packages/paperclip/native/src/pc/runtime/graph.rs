@@ -158,7 +158,8 @@ impl DependencyGraph {
 
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
+#[serde(tag = "contentKind")]
 pub enum DependencyContent {
   Node(pc_ast::Node),
   StyleSheet(css_ast::Sheet)

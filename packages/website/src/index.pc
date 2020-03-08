@@ -3,7 +3,7 @@
 <style>
 
   code {
-    color: rgb(183, 38, 219);
+    color: rgb(172, 58, 238);
   }
 
   .website {

@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { NativeEngine } from "../native/pkg/paperclip";
 import { PC_CONFIG_FILE_NAME } from "./constants";
-import { PaperclipConfig } from "./config";
+import { DependencyContent } from "./graph";
 
 export type FileContent = {
   [identifier: string]: string;
@@ -75,6 +75,9 @@ export class Engine {
   }
   parseFile(uri: string) {
     return mapResult(this._native.parse_file(uri));
+  }
+  getLoadedAst(uri: string): DependencyContent {
+    return this._native.get_loaded_ast(uri);
   }
   evaluateFileStyles(uri: string) {
     return mapResult(this._native.evaluate_file_styles(uri));
