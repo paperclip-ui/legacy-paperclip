@@ -1,10 +1,10 @@
 {
   "name": "paperclip-visual-editor",
-  "version": "11.0.50",
+  "version": "11.0.51",
   "description": "",
   "main": "index.js",
   "scripts": {},
   "author": "",
   "license": "MIT",
-  "gitHead": "1ca267476df78c310b05af4bb88d2cda54396ea5"
+  "gitHead": "54b855e1f87f4a7b6e9395f29e683a91e1cdefb2"
 }
