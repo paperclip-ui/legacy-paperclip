@@ -1,14 +1,12 @@
-import { stripFileProtocol } from "./utils";
-import { EngineEvent, EngineEventKind } from "./events";
 import * as fs from "fs";
 import * as path from "path";
 import { NativeEngine } from "../native/pkg/paperclip";
-import { PC_CONFIG_FILE_NAME } from "./constants";
-import { DependencyContent } from "./graph";
+import {DependencyContent, PC_CONFIG_FILE_NAME, EngineEvent, EngineEventKind, resolveImportUri} from "paperclip-utils";
 
 export type FileContent = {
   [identifier: string]: string;
 };
+
 
 export type EngineIO = {
   resolveFile?: (fromPath: string, toPath: string) => string;
@@ -49,7 +47,7 @@ export class Engine {
         const filePath = uri.replace("file://", "");
         return fs.existsSync(filePath) && fs.lstatSync(filePath).isFile();
       },
-      resolveFile: resolveImportUri
+      resolveFile: resolveImportUri(fs)
     }, _options.io);
 
     this._native = NativeEngine.new(
@@ -107,57 +105,4 @@ export class Engine {
       throw e;
     }
   };
-}
-
-export function resolveImportUri(fromPath: string, toPath: string) {
-  const filePath = resolveImportFile(fromPath, toPath);
-  return filePath && "file://" + filePath;
-}
-
-export function resolveImportFile(fromPath: string, toPath: string) {
-  if (/\w+:\/\//.test(toPath)) {
-    return toPath;
-  }
-
-  if (toPath.charAt(0) !== ".") {
-    return resolveModule(fromPath, toPath) || toPath;
-  }
-
-  return path.normalize(
-    path.join(stripFileProtocol(path.dirname(fromPath)), toPath)
-  );
-}
-
-function resolveModule(fromPath: string, moduleRelativePath: string) {
-  const configPath = findPCConfigPath(fromPath);
-  if (!configPath) return null;
-
-  // need to parse each time in case config changed.
-  const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  if (!config.moduleDirectories) return null;
-  const configPathDir = path.dirname(configPath);
-  for (const moduleDirectory of config.moduleDirectories) {
-    const moduleFilePath = path.normalize(
-      path.join(configPathDir, moduleDirectory, moduleRelativePath)
-    );
-    if (fs.existsSync(moduleFilePath)) {
-      return moduleFilePath;
-    }
-  }
-  return null;
-}
-
-
-function findPCConfigPath(fromPath: string): string | null {
-  let cdir: string = path.dirname(fromPath.replace("file://", ""));
-
-  // can't cache in case PC config was moved.
-  do {    
-    const configPath = path.join(cdir, PC_CONFIG_FILE_NAME);
-    if (fs.existsSync(configPath)) {
-      return configPath;
-    }
-    cdir = path.dirname(cdir);
-  } while (cdir !== "/" && cdir !== ".");
-  return null;
 }

@@ -1,9 +1,8 @@
 import { DOMNodeMap, createNativeNode } from "./native-renderer";
-import { Mutation, ActionKind } from "paperclip/src/virt-mtuation";
+import { Mutation, ActionKind } from "paperclip-utils";
+import { DOMFactory } from "./renderer";
 
-export const patchNativeNode = (mount: HTMLElement, mutations: Mutation[], protocol: string | null) => {
-
-  mount.appendChild(document.createTextNode(JSON.stringify(mutations)));
+export const patchNativeNode = (mount: HTMLElement, mutations: Mutation[], factory: DOMFactory, protocol: string | null) => {
   for (const mutation of mutations) {
     const target = getTarget(mount, mutation);
     const action = mutation.action;
@@ -14,12 +13,19 @@ export const patchNativeNode = (mount: HTMLElement, mutations: Mutation[], proto
         break;
       }
       case ActionKind.InsertChild: {
-        const newChild = createNativeNode(action.child, protocol);
+        const newChild = createNativeNode(action.child, factory, protocol);
         if (action.index >= target.childNodes.length) {
           target.appendChild(newChild);
         } else {
           target.insertBefore(newChild, target.childNodes[action.index]);
         }
+        break;
+      }
+      case ActionKind.ReplaceNode: {
+        const parent = target.parentNode;
+        parent.insertBefore(createNativeNode(action.replacement, factory, protocol), target);
+
+        target.remove();
         break;
       }
       case ActionKind.RemoveAttribute: {
@@ -35,11 +41,11 @@ export const patchNativeNode = (mount: HTMLElement, mutations: Mutation[], proto
       case ActionKind.SetText: {
         const text = target as Text;
         text.nodeValue = action.value;
-        mount.appendChild(document.createTextNode("FOUND IT"));
         break;
       }
     } 
   }
+  console.log(mount.innerHTML);
 };  
 
 const getTarget = (mount: HTMLElement, mutation: Mutation) => mutation.nodePath.reduce((current: HTMLElement, i) => current.childNodes[i], mount);

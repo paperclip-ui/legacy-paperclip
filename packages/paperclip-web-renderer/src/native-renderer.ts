@@ -1,6 +1,7 @@
 import { Html5Entities } from "html-entities";
-import { stringifyCSSSheet } from "paperclip/lib/stringify-sheet";
+import { stringifyCSSSheet } from "paperclip-utils";
 import { preventDefault } from "./utils";
+import { DOMFactory } from "./renderer";
 
 const entities = new Html5Entities();
 
@@ -20,44 +21,45 @@ export const getNativeNodePath = (root: Node, node: Node) => {
 
 export const createNativeNode = (
   node,
+  factory: DOMFactory,
   protocol: string | null
 ) => {
   if (!node) {
-    return document.createTextNode("");
+    return factory.createTextNode("");
   }
   try {
     switch (node.kind) {
       case "Text": {
-        const text = createNativeTextNode(node);
+        const text = createNativeTextNode(node, factory);
         return text;
       }
       case "Element":
-        return createNativeElement(node, protocol);
+        return createNativeElement(node, factory, protocol);
       case "StyleElement":
-        return createNativeStyle(node, protocol);
+        return createNativeStyle(node, factory, protocol);
       case "Fragment":
-        return createNativeFragment(node, protocol);
+        return createNativeFragment(node, factory, protocol);
     }
   } catch (e) {
-    return document.createTextNode(String(e.stack));
+    return factory.createTextNode(String(e.stack));
   }
 };
 
-const createNativeTextNode = node => {
-  return document.createTextNode(entities.decode(node.value));
+const createNativeTextNode = (node, factory: DOMFactory) => {
+  return factory.createTextNode(entities.decode(node.value));
 };
 
-const createNativeStyle = (element, protocol: string) => {
-  // return document.createTextNode(JSON.stringify(element.sheet, null, 2));
-  // return document.createTextNode(stringifyCSSSheet(element.sheet, protocol));
-  const nativeElement = document.createElement("style");
+const createNativeStyle = (element, factory: DOMFactory, protocol: string) => {
+  // return factory.createTextNode(JSON.stringify(element.sheet, null, 2));
+  // return factory.createTextNode(stringifyCSSSheet(element.sheet, protocol));
+  const nativeElement = factory.createElement("style");
   nativeElement.textContent = stringifyCSSSheet(element.sheet, protocol);
   return nativeElement;
 };
 
-const createNativeElement = (element, protocol: string) => {
-  // return document.createTextNode(JSON.stringify(element, null, 2));
-  const nativeElement = document.createElement(element.tagName);
+const createNativeElement = (element, factory: DOMFactory, protocol: string) => {
+  // return factory.createTextNode(JSON.stringify(element, null, 2));
+  const nativeElement = factory.createElement(element.tagName);
   for (let { name, value } of element.attributes) {
     if (name === "src" && protocol) {
       value = value.replace(/\w+:/, protocol);
@@ -66,7 +68,7 @@ const createNativeElement = (element, protocol: string) => {
     nativeElement.setAttribute(name, value);
   }
   for (const child of element.children) {
-    nativeElement.appendChild(createNativeNode(child, protocol));
+    nativeElement.appendChild(createNativeNode(child, factory, protocol));
   }
 
   // prevent redirects & vscode from asking to redirect.
@@ -78,10 +80,10 @@ const createNativeElement = (element, protocol: string) => {
   return nativeElement;
 };
 
-const createNativeFragment = (fragment, protocol: string) => {
-  const nativeFragment = document.createDocumentFragment();
+const createNativeFragment = (fragment, factory: DOMFactory, protocol: string) => {
+  const nativeFragment = factory.createDocumentFragment();
   for (const child of fragment.children) {
-    nativeFragment.appendChild(createNativeNode(child, protocol));
+    nativeFragment.appendChild(createNativeNode(child, factory, protocol));
   }
   return nativeFragment;
 };

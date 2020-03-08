@@ -49,4 +49,5 @@ const onMessage = ({ data: event }: MessageEvent) => {
   renderer.handleEngineEvent(JSON.parse(event));
 };
 
+
 window.onmessage = onMessage;

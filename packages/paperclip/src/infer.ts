@@ -12,13 +12,11 @@ import {
   Slot,
   Attribute,
   Fragment,
-  Block
-} from "./ast";
-import {
+  Block,
   Statement,
   StatementKind,
-} from "./js-ast";
-import { PREVIEW_TAG_NAME, PART_TAG_NAME } from "./constants";
+  PREVIEW_TAG_NAME, PART_TAG_NAME,
+} from "paperclip-utils";
 
 // TODO - this should be built in rust
 

@@ -32,5 +32,6 @@
     "ts-loader": "^6.2.1",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11"
-  }
+  },
+  "gitHead": "907e43d5d72c881f8db331e17e3366c27a5ea30d"
 }

@@ -46,9 +46,14 @@ pub struct SetText {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ReplaceNode {
+  pub replacement: Node
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub enum Action {
-  ReplaceNode,
+  ReplaceNode(ReplaceNode),
   InsertChild(InsertChild),
   DeleteChild(DeleteChild),
   SetAttribute(SetAttribute),

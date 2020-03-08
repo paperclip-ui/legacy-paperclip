@@ -1,6 +1,5 @@
-import { DOMNodeMap, createNativeNode } from "./native-renderer";
-import { Mutation, ActionKind } from "paperclip/src/virt-mtuation";
-import { VirtualNode, VirtualElement, VirtualText } from "paperclip/src/virt";
+import { Mutation, ActionKind } from "paperclip-utils";
+import { VirtualNode, VirtualElement } from "paperclip-utils";
 
 
 export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
@@ -20,6 +19,10 @@ export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
         const children = element.children.concat();
         children.splice(action.index, 0, action.child);
         target = {...target, children};
+        break;
+      }
+      case ActionKind.ReplaceNode: {
+        target = action.replacement;
         break;
       }
       case ActionKind.RemoveAttribute: {
@@ -64,7 +67,7 @@ export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
 };  
 
 export const getVirtTarget = (mount: VirtualElement, nodePath: number[]): VirtualNode => nodePath.reduce((current: VirtualElement, i) => current.children[i], mount);
-const updateNode = (ancestor: VirtualElement, nodePath: number[], newNode: VirtualNode, depth: number = -1) => {
+const updateNode = (ancestor: VirtualElement, nodePath: number[], newNode: VirtualNode, depth: number = 0) => {
   if (depth === nodePath.length) {
     return newNode;
   }
@@ -72,8 +75,8 @@ const updateNode = (ancestor: VirtualElement, nodePath: number[], newNode: Virtu
     ...ancestor,
     children: [
       ...ancestor.children.slice(0, nodePath[depth]),
-      newNode,
-      ...ancestor.children.slice(nodePath[depth])
+      updateNode(ancestor.children[nodePath[depth]] as VirtualElement, nodePath, newNode, depth + 1),
+      ...ancestor.children.slice(nodePath[depth] + 1)
     ]
   }
 };

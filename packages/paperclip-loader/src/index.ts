@@ -1,5 +1,6 @@
 // Some inspiration from https://github.com/sveltejs/svelte-loader/blob/master/index.js
 // License: https://github.com/sveltejs/svelte-loader#license
+import * as fs from "fs";
 import {
   Engine,
   getImports,
@@ -72,7 +73,7 @@ module.exports = async function(source: string) {
   for (const imp of imports) {
     const src = getAttributeStringValue("src", imp);
     if (/\.css$/.test(src)) {
-      const cssFilePath = resolveImportFile(resourcePath, src);
+      const cssFilePath = resolveImportFile(fs)(resourcePath, src);
       if (!_loadedStyleFiles[cssFilePath]) {
         _loadedStyleFiles[cssFilePath] = 1;
         const importedSheetCode = stringifyCSSSheet(

@@ -53,9 +53,8 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     return /\.pc$/.test(uri);
   }
   protected _handleEngineEvent(event: EngineEvent) {
-    if (event.kind === EngineEventKind.Evaluated) {
+    if (event.kind === EngineEventKind.Evaluated || event.kind === EngineEventKind.Diffed) {
       this.clear(event.uri);
-      this._handleEvaluatedEvent(event);
     }
   }
   protected _getAST(uri): Node {
@@ -80,8 +79,6 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
 
     return context.info;
   }
-
-  private _handleEvaluatedEvent(event: EvaluatedEvent) {}
 
   private _handleStyles(context: HandleContext) {
     const styleElements = getStyleElements(context.root);

@@ -15,7 +15,9 @@ export type BaseAction<TKind extends ActionKind> = {
   kind: TKind
 };
 
-export type ReplaceNode = BaseAction<ActionKind.ReplaceNode>;
+export type ReplaceNode = {
+  replacement: VirtualNode
+} & BaseAction<ActionKind.ReplaceNode>;
 export type InsertChild = {
   child: VirtualNode,
   index: number

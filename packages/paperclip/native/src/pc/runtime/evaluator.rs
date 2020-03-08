@@ -49,26 +49,37 @@ pub fn evaluate<'a>(uri: &String, graph: &'a DependencyGraph, vfs: &'a VirtualFi
   if let DependencyContent::Node(node_expr) = &dep.content {
 
     let mut context = create_context(node_expr, uri, graph, vfs, data, None);
-    let mut root_option = evaluate_instance_node(node_expr, &mut context, if let Some(part) = part_option {
+    let mut root = wrap_as_fragment(evaluate_instance_node(node_expr, &mut context, if let Some(part) = part_option {
       RenderStrategy::Part(part)
     } else {
       RenderStrategy::Preview
-    })?;
+    })?);
 
-    match root_option {
-      Some(ref mut root) => {
-        let style = evaluate_jumbo_style(node_expr, &mut context)?;
-        root.prepend_child(style);
-      },
-      _ => { }
-    }
+    let style = evaluate_jumbo_style(node_expr, &mut context)?;
+    root.prepend_child(style);
 
-    Ok(root_option)
+    Ok(Some(root))
   } else {
     Err(RuntimeError::new("Incorrect file type".to_string(), uri, &Location { start: 0, end: 0 }))
   }
 }
 
+fn wrap_as_fragment(node_option: Option<virt::Node>) -> virt::Node {
+  if let Some(node) = node_option {
+    match node {
+      virt::Node::Fragment(fragment) => virt::Node::Fragment(fragment),
+      _ => {
+        virt::Node::Fragment(virt::Fragment {
+          children: vec![node]
+        })
+      }
+    }
+  } else {
+    virt::Node::Fragment(virt::Fragment {
+      children: vec![]
+    })
+  }
+}
 
 pub fn get_instance_target_node<'a>(node_expr: &ast::Node, render_strategy: RenderStrategy) -> &ast::Node {
 
@@ -566,7 +577,18 @@ fn evaluate_children<'a>(children_expr: &Vec<ast::Node>, context: &'a mut Contex
 
   for child_expr in children_expr {
     match evaluate_node(child_expr, false, context)? {
-      Some(c) => { children.push(c); },
+      Some(c) => {
+        match c {
+          virt::Node::Fragment(mut fragment) => {
+            for child in fragment.children.drain(0..) {
+              children.push(child);
+            }
+          }
+          _ => {
+            children.push(c); 
+          }
+        }
+      },
       None => { }
     }
   }
@@ -580,9 +602,6 @@ fn evaluate_fragment<'a>(fragment: &ast::Fragment, context: &'a mut Context) -> 
 
 fn evaluate_children_as_fragment<'a>(children: &Vec<ast::Node>, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
   let mut children = evaluate_children(&children, context)?;
-  if children.len() == 1 {
-    return Ok(children.pop());
-  }
   Ok(Some(virt::Node::Fragment(virt::Fragment {
     children
   })))

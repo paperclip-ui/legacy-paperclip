@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import {
   Node,
   getImports,
@@ -57,7 +58,7 @@ export const compile = (
     filePath,
     getImportIds(ast),
     getPartIds(ast),
-    getStyleScopes(ast, filePath),
+    getStyleScopes(fs)(ast, filePath),
     Boolean(getLogicElement(ast)),
     options
   );
@@ -74,7 +75,7 @@ const translateRoot = (ast: Node, sheet: any, context: TranslateContext) => {
   if (logicElement) {
     const src = getAttributeStringValue("src", logicElement);
     if (src) {
-      const logicRelativePath = getRelativeFilePath(context.filePath, src);
+      const logicRelativePath = getRelativeFilePath(fs)(context.filePath, src);
       context = addBuffer(
         `const logic = require("${logicRelativePath}");\n`,
         context
@@ -182,7 +183,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
 
     let relativePath = path.relative(
       path.dirname(context.filePath),
-      resolveImportFile(context.filePath, src)
+      resolveImportFile(fs)(context.filePath, src)
     );
 
     if (relativePath.charAt(0) !== ".") {

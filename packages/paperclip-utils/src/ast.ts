@@ -2,7 +2,7 @@ import { Statement, StatementKind, Reference } from "./js-ast";
 import { Sheet } from "./css-ast";
 import { SourceLocation } from "./base-ast";
 import * as crc32 from "crc32";
-import { resolveImportFile } from "./engine";
+import { resolveImportFile } from "./resolve";
 import * as path from "path";
 import {
   PREVIEW_TAG_NAME,
@@ -149,11 +149,11 @@ export const getImports = (ast: Node): Element[] =>
     return hasAttribute("src", child);
   });
 
-export const getRelativeFilePath = (
+export const getRelativeFilePath = fs => (
   fromFilePath: string,
   importFilePath: string
 ) => {
-  const logicPath = resolveImportFile(fromFilePath, importFilePath);
+  const logicPath = resolveImportFile(fs)(fromFilePath, importFilePath);
   let relativePath = path.relative(path.dirname(fromFilePath), logicPath);
   if (relativePath.charAt(0) !== ".") {
     relativePath = `./${relativePath}`;
@@ -172,7 +172,7 @@ export const getChildren = (ast: Node): Node[] => {
   return [];
 };
 
-export const getStyleScopes = (ast: Node, filePath: string): string[] => {
+export const getStyleScopes = fs => (ast: Node, filePath: string): string[] => {
   const scopes: string[] = [];
   if (getStyleElements(ast).length > 0) {
     scopes.push(crc32("file://" + filePath));
@@ -181,7 +181,7 @@ export const getStyleScopes = (ast: Node, filePath: string): string[] => {
   for (const imp of getImports(ast)) {
     const src = getAttributeStringValue("src", imp);
     if (/\.css$/.test(src)) {
-      const cssFilePath = resolveImportFile(filePath, src);
+      const cssFilePath = resolveImportFile(fs)(filePath, src);
       scopes.push(crc32("file://" + cssFilePath));
     }
   }

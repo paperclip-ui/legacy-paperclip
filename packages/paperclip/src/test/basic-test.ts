@@ -1,8 +1,7 @@
 import * as path from "path";
 import { Engine } from "../engine";
 import { expect } from "chai";
-import { EngineEventKind, EvaluatedEvent } from "../events";
-import { stringifyVirtualNode } from "../stringify-virt-node";
+import { EngineEventKind, stringifyVirtualNode, EvaluatedEvent } from "paperclip-utils";
 import { createMockEngine, Graph } from "./utils";
 
 
