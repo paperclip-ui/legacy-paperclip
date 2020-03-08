@@ -22,6 +22,8 @@
     -ms-flex: 0 0 auto;
         flex: 0 0 auto;
     width: 100%;
+    padding: 12px 12px;
+    box-sizing: border-box;
   }
 
   .display > div {
