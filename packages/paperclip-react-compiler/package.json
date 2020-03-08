@@ -13,7 +13,6 @@
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "test": "echo \"\"",
     "build": "tsc",
     "build:watch": "tsc --watch"
   },

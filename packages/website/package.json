@@ -5,7 +5,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"\"",
     "build:definitions": "paperclip --definition --write"
   },
   "author": "",

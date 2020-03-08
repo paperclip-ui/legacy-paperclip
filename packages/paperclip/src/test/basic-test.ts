@@ -28,14 +28,14 @@ describe(__filename + "#", () => {
         "/entry.pc": `Hello World`
       },
       {},
-      `Hello World`
+      `<style></style>Hello World`
     ],
     [
       {
         "/entry.pc": `<span>more text</span>`
       },
       {},
-      `<span data-pc-80f4925f><style></style>more text</span>`
+      `<style></style><span data-pc-80f4925f>more text</span>`
     ],
 
     // styles
