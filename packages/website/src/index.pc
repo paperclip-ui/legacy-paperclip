@@ -256,7 +256,7 @@
     <div class="navigation">
       <a class="logo" href="http://paperclip.dev">Paperclip</a>
       <div class="links">
-        <a href="#">Docs</a>
+        <a href="">Docs</a>
         <a href="#">Contributing</a>
       </div>
       <div class="social links">
@@ -307,24 +307,24 @@
   </div>
 </part>
 
-<div class="website">
+<part id="default">
+  <div class="website">
 
-  <header />
+    <header />
 
-  <div class="divider" />
+    <div class="divider" />
+    <features />
 
+    <div class="divider" />
 
-  <features />
-
-  <div class="divider" />
-
-  <examples {paperclipSnippet} {reactSnippet} />
-  <div class="divider" />
-  <bottom />
-</div>
+    <examples {paperclipSnippet} {reactSnippet} />
+    <div class="divider" />
+    <bottom />
+  </div>
+</part>
 
 <preview>
-  <self 
+  <default 
     paperclipSnippet=" " 
     reactSnippet=" "
   />
