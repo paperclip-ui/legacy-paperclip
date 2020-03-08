@@ -209,20 +209,26 @@ impl Engine {
 
               let existing_node_option = self.virt_nodes.get(uri);
               
-              if let Some(existing_node) = existing_node_option {
-                let ret = Some(EngineEvent::Diffed(DiffedEvent {
-                  uri: uri.clone(),
-                  mutations: diff_pc(existing_node, &node)
-                }));
-                self.virt_nodes.insert(uri.clone(), node);
-                ret
-              } else {
-                self.virt_nodes.insert(uri.clone(), node);
-                Some(EngineEvent::Evaluated(EvaluatedEvent {
-                  uri: uri.clone(),
-                  node: self.virt_nodes.get(uri),
-                }))
-              }
+              // TODO
+              // if let Some(existing_node) = existing_node_option {
+              //   let ret = Some(EngineEvent::Diffed(DiffedEvent {
+              //     uri: uri.clone(),
+              //     mutations: diff_pc(existing_node, &node)
+              //   }));
+              //   self.virt_nodes.insert(uri.clone(), node);
+              //   ret
+              // } else {
+              //   self.virt_nodes.insert(uri.clone(), node);
+              //   Some(EngineEvent::Evaluated(EvaluatedEvent {
+              //     uri: uri.clone(),
+              //     node: self.virt_nodes.get(uri),
+              //   }))
+              // }
+              self.virt_nodes.insert(uri.clone(), node);
+              Some(EngineEvent::Evaluated(EvaluatedEvent {
+                uri: uri.clone(),
+                node: self.virt_nodes.get(uri),
+              }))
             } else {
               Some(EngineEvent::Evaluated(EvaluatedEvent {
                 uri: uri.clone(),
