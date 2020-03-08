@@ -18,6 +18,7 @@ import {
   EngineErrorEvent,
   EngineErrorKind,
   GraphErrorEvent,
+  DiffedEvent,
   SourceLocation,
   RuntimeErrorEvent,
   EvaluatedEvent
@@ -253,13 +254,14 @@ export class VSCServiceBridge {
       case EngineEventKind.Error: {
         return this._onEngineErrorEvent(event);
       }
+      case EngineEventKind.Diffed:
       case EngineEventKind.Evaluated: {
         return this._onEngineEvaluatedEvent(event);
       }
     }
   };
 
-  private _onEngineEvaluatedEvent(event: EvaluatedEvent) {
+  private _onEngineEvaluatedEvent(event: DiffedEvent | EvaluatedEvent) {
     // reset error diagnostics
     this.connection.sendDiagnostics({
       uri: event.uri,

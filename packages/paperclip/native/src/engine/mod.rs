@@ -144,7 +144,7 @@ impl Engine {
           let dep = self.dependency_graph.dependencies.get(uri).unwrap();
         }
 
-        self.evaluate(uri);
+        self.evaluate(uri, true);
         Ok(())
       },
       Err(error) => {
@@ -181,13 +181,13 @@ impl Engine {
     }).collect();
 
     for dep_uri in dep_uris.drain(0..).into_iter() {
-      self.evaluate(&dep_uri);
+      self.evaluate(&dep_uri, false);
     }
 
     Ok(())
   }
 
-  fn evaluate(&mut self, uri: &String) {
+  fn evaluate(&mut self, uri: &String, hard: bool) {
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
     let event_option = match &dependency.content {
@@ -208,27 +208,38 @@ impl Engine {
             if let Some(node) = node_option {
 
               let existing_node_option = self.virt_nodes.get(uri);
-              
-              // TODO
-              // if let Some(existing_node) = existing_node_option {
-              //   let ret = Some(EngineEvent::Diffed(DiffedEvent {
-              //     uri: uri.clone(),
-              //     mutations: diff_pc(existing_node, &node)
-              //   }));
-              //   self.virt_nodes.insert(uri.clone(), node);
-              //   ret
-              // } else {
+
+              // let evaluated = || {
               //   self.virt_nodes.insert(uri.clone(), node);
               //   Some(EngineEvent::Evaluated(EvaluatedEvent {
               //     uri: uri.clone(),
               //     node: self.virt_nodes.get(uri),
               //   }))
-              // }
-              self.virt_nodes.insert(uri.clone(), node);
-              Some(EngineEvent::Evaluated(EvaluatedEvent {
-                uri: uri.clone(),
-                node: self.virt_nodes.get(uri),
-              }))
+              // };
+
+              // if not hard, then try diffing
+              if !hard {
+                if let Some(existing_node) = existing_node_option {
+                  let ret = Some(EngineEvent::Diffed(DiffedEvent {
+                    uri: uri.clone(),
+                    mutations: diff_pc(existing_node, &node)
+                  }));
+                  self.virt_nodes.insert(uri.clone(), node);
+                  ret
+                } else {
+                  self.virt_nodes.insert(uri.clone(), node);
+                  Some(EngineEvent::Evaluated(EvaluatedEvent {
+                    uri: uri.clone(),
+                    node: self.virt_nodes.get(uri),
+                  }))
+                }
+              } else {
+                self.virt_nodes.insert(uri.clone(), node);
+                Some(EngineEvent::Evaluated(EvaluatedEvent {
+                  uri: uri.clone(),
+                  node: self.virt_nodes.get(uri),
+                }))
+              }
             } else {
               Some(EngineEvent::Evaluated(EvaluatedEvent {
                 uri: uri.clone(),

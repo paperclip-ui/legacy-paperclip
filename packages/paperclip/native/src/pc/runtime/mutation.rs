@@ -15,12 +15,17 @@ pub struct DeleteChild {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SourceChanged {
+  #[serde(rename = "propertyName")]
   pub property_name: String,
+  
+  #[serde(rename = "newLocation")]
   pub new_location: Location
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SourceUriChanged {
+
+  #[serde(rename = "newUri")]
   pub new_uri: String,
 }
 
@@ -55,6 +60,7 @@ pub enum Action {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Mutation {
+  #[serde(rename = "nodePath")]
   node_path: Vec<usize>,
   action: Action
 }

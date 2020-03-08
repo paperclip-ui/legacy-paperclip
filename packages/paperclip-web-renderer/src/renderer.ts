@@ -1,7 +1,9 @@
-import { createNativeNode, DOMNodeMap } from "./native-renderer";
-// import { Node as VirtNode } from "paperclip";
+import { createNativeNode, DOMNodeMap, getNativeNodePath } from "./native-renderer";
+import { Node as VirtNode } from "paperclip";
 import { EventEmitter } from "events";
 import { preventDefault } from "./utils";
+import {getVirtTarget, patchVirtNode} from "./virt-patcher";
+import { patchNativeNode } from "./dom-patcher";
 
 enum RenderEventTypes {
   META_CLICK = "META_CLICK"
@@ -9,7 +11,6 @@ enum RenderEventTypes {
 
 export class Renderer {
   private _scopeFilePath: string;
-  private _nativeNodeMap: DOMNodeMap;
   private _em: EventEmitter;
   private _hoverOverlay: HTMLElement;
   private _stage: HTMLElement;
@@ -56,16 +57,24 @@ export class Renderer {
         }
         this._scopeFilePath = event.file_path;
         this._virtualRootNode = event.node;
-        this._nativeNodeMap = new Map();
         const node = createNativeNode(
           event.node,
-          this.protocol,
-          this._nativeNodeMap
+          this.protocol
         );
         this._stage.appendChild(node);
+        break;
       }
       case "Diffed": {
-        // TODO
+        try {
+          patchNativeNode(this.mount, event.mutations, this.protocol);
+          this._virtualRootNode = patchVirtNode(this._virtualRootNode, event.mutations);
+        } catch(e) {
+          while (this._stage.childNodes.length) {
+            this._stage.removeChild(this._stage.childNodes[0]);
+          }
+          this.mount.appendChild(document.createTextNode(e.stack));
+        }
+        break;
       }
     }
   }
@@ -74,9 +83,9 @@ export class Renderer {
     event.preventDefault();
     event.stopImmediatePropagation();
     const element = event.target as Element;
-    const targetId = this._nativeNodeMap.get(element);
-    if (element.nodeType !== 1 || !targetId || !event.metaKey) return;
-    const virtNode = findVirtNodeById(targetId, this._virtualRootNode);
+    if (element.nodeType !== 1 || !event.metaKey) return;
+    const nodePath = getNativeNodePath(this.mount, element);
+    const virtNode = getVirtTarget(this._virtualRootNode, nodePath);
     if (!virtNode) return;
     this._em.emit(RenderEventTypes.META_CLICK, virtNode);
   };
@@ -84,8 +93,7 @@ export class Renderer {
   private _onStageMouseOver = (event: MouseEvent) => {
     const element = event.target as Element;
     const elementWindow = element.ownerDocument.defaultView;
-    const targetId = this._nativeNodeMap.get(element);
-    if (element.nodeType !== 1 || !event.metaKey || !targetId) return;
+    if (element.nodeType !== 1 || !event.metaKey) return;
     const rect = element.getBoundingClientRect();
     Object.assign(this._hoverOverlay.style, {
       display: "block",
