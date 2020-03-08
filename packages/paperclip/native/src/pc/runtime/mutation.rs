@@ -1,26 +1,66 @@
-use super::virt;
+use super::virt::{Node};
+use crate::base::ast::Location;
+use serde::{Serialize};
 
-pub struct InsertChild<'a> {
-  node: virt::Node<'a>,
-  index: usize
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct InsertChild {
+  pub child: Node,
+  pub index: usize
 }
 
-pub struct DeleteChild<'a> {
-  index: usize
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct DeleteChild {
+  pub index: usize
 }
 
-pub struct SetAttribute<'a> {
-  name: &'a str,
-  value: &'a str
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct SourceChanged {
+  pub property_name: String,
+  pub new_location: Location
 }
 
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct SourceUriChanged {
+  pub new_uri: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct SetAttribute {
+  pub name: String,
+  pub value: Option<String>
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct RemoveAttribute {
+  pub name: String
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct SetText {
+  pub value: String
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "kind")]
 pub enum Action {
-  InsertChild(InsertChild<'a>),
-  DeleteChild(InsertChild<'a>),
-  SetAttribute(SetAttribute<'a>)
+  ReplaceNode,
+  InsertChild(InsertChild),
+  DeleteChild(DeleteChild),
+  SetAttribute(SetAttribute),
+  SourceChanged(SourceChanged),
+  SourceUriChanged(SourceUriChanged),
+  SetText(SetText),
+  RemoveAttribute(RemoveAttribute)
 }
 
-pub enum Mutation<'a> {
-  nodePath: Vec<usize>,
-  action: Action<'a>
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Mutation {
+  node_path: Vec<usize>,
+  action: Action
+}
+
+impl Mutation {
+  pub fn new(node_path: Vec<usize>, action: Action) -> Mutation {
+    Mutation { node_path, action }
+  }
 }

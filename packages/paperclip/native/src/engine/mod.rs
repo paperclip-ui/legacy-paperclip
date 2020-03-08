@@ -4,6 +4,9 @@ use crate::pc::parser::{parse as parse_pc};
 use crate::css::parser::{parse as parse_css};
 use crate::base::parser::{ParseError};
 use crate::pc::ast as pc_ast;
+use crate::pc::runtime::diff::diff as diff_pc;
+use crate::pc::runtime::mutation as pc_mutation;
+use crate::pc::runtime::virt as pc_virt;
 use crate::pc::runtime::graph::{DependencyGraph, DependencyContent, GraphError};
 use crate::pc::runtime::vfs::{VirtualFileSystem, FileExistsFn, FileReaderFn, FileResolverFn};
 use crate::pc::runtime::evaluator::{evaluate_document_styles, evaluate as evaluate_pc};
@@ -16,9 +19,15 @@ use crate::base::utils::{get_document_style_scope};
 use ::futures::executor::block_on;
 
 #[derive(Debug, PartialEq, Serialize)]
-pub struct EvaluatedEvent {
+pub struct EvaluatedEvent<'a> {
   pub uri: String,
-  pub node: Option<runtime::virt::Node>
+  pub node: Option<&'a runtime::virt::Node>
+}
+
+#[derive(Debug, PartialEq, Serialize)]
+pub struct DiffedEvent {
+  pub uri: String,
+  pub mutations: Vec<pc_mutation::Mutation>
 }
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -38,8 +47,9 @@ pub enum EngineError {
 
 #[derive(Debug, PartialEq, Serialize)]
 #[serde(tag = "kind")]
-pub enum EngineEvent {
-  Evaluated(EvaluatedEvent),
+pub enum EngineEvent<'a> {
+  Evaluated(EvaluatedEvent<'a>),
+  Diffed(DiffedEvent),
   NodeParsed(NodeParsedEvent),
   Error(EngineError)
 }
@@ -80,6 +90,7 @@ type EngineEventListener = dyn Fn(&EngineEvent);
 pub struct Engine {
   listeners: Vec<Box<EngineEventListener>>,
   pub vfs: VirtualFileSystem,
+  pub virt_nodes: HashMap<String, pc_virt::Node>,
   pub dependency_graph: DependencyGraph,
   pub load_options: HashMap<String, EvalOptions>
 }
@@ -88,6 +99,7 @@ impl Engine {
   pub fn new(read_file: Box<FileReaderFn>, file_exists: Box<FileExistsFn>, resolve_file: Box<FileResolverFn>) -> Engine {
     Engine {
       listeners: vec![],
+      virt_nodes: HashMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
       dependency_graph: DependencyGraph::new(),
       load_options: HashMap::new()
@@ -130,23 +142,6 @@ impl Engine {
         
         for uri in loaded_uris.iter() {
           let dep = self.dependency_graph.dependencies.get(uri).unwrap();
-          
-          // this is slow. Don't do it. Use getLoadedAST instead
-          // let event_option = match &dep.content {
-          //   DependencyContent::Node(node) => {
-          //     Some(EngineEvent::NodeParsed(NodeParsedEvent {
-          //       uri: dep.uri.to_string(),
-          //       node: node.clone()
-          //     }))
-          //   },
-          //   _ => {
-          //     // TODO - CSS 
-          //     None
-          //   }
-          // };
-          // if let Some(event) = event_option {
-          //   self.dispatch(event);
-          // }
         }
 
         self.evaluate(uri);
@@ -208,10 +203,33 @@ impl Engine {
         );
 
         match node_result {
-          Ok(node) => Some(EngineEvent::Evaluated(EvaluatedEvent {
-            uri: uri.clone(),
-            node,
-          })),
+          Ok(node_option) => {
+
+            if let Some(node) = node_option {
+
+              let existing_node_option = self.virt_nodes.get(uri);
+              
+              if let Some(existing_node) = existing_node_option {
+                let ret = Some(EngineEvent::Diffed(DiffedEvent {
+                  uri: uri.clone(),
+                  mutations: diff_pc(existing_node, &node)
+                }));
+                self.virt_nodes.insert(uri.clone(), node);
+                ret
+              } else {
+                self.virt_nodes.insert(uri.clone(), node);
+                Some(EngineEvent::Evaluated(EvaluatedEvent {
+                  uri: uri.clone(),
+                  node: self.virt_nodes.get(uri),
+                }))
+              }
+            } else {
+              Some(EngineEvent::Evaluated(EvaluatedEvent {
+                uri: uri.clone(),
+                node: None,
+              }))
+            }
+          }
           Err(err) => Some(EngineEvent::Error(EngineError::Runtime(err)))
         }
       },

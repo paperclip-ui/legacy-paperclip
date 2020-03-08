@@ -2,11 +2,9 @@ extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
 
-
 #[macro_use]
 extern crate matches;
 extern crate console_error_panic_hook;
-
 
 mod base;
 mod css;
@@ -18,7 +16,6 @@ use ::futures::executor::block_on;
 use engine::{Engine};
 
 extern crate web_sys;
-
 
 #[wasm_bindgen]
 extern {
