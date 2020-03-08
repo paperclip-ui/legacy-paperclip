@@ -1,6 +1,6 @@
 {
   "name": "paperclip-web-renderer",
-  "version": "11.0.48",
+  "version": "11.0.49",
   "description": "My webpack project",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "html-entities": "^1.2.1",
-    "paperclip": "^11.0.48"
+    "paperclip": "^11.0.49"
   },
   "devDependencies": {
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
