@@ -80,16 +80,6 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 - Templates Integrate with your existing React application (more languages & frameworks soon).
 - Integrates with Webpack. 
 
-## Roadmap 🌄
-
-This is just the beginning! Here are just a few planned features:
-
-- Zero-setup automated visual regression testing. Just plug in your Paperclip files.
-- More compiler targets: Ruby, PHP, VueJS, AngularJS, and others.
-- More code editor integrations: Sublime, Atom.
-- More visual tooling in the preview, so you can make visual changes directly.
-- Preview against different browsers directly within your code editor.
-
 ## Goals 🎯
 
 The goal for Paperclip is to eliminate bottlenecks around HTML & CSS development, and provide tooling that helps you ship UI features quicker. More specifically:
@@ -281,3 +271,14 @@ Points:
 - bones of the UI
 
 -->
+
+
+## Roadmap 🌄
+
+This is just the beginning! Here are just a few planned features:
+
+- Zero-setup automated visual regression testing. Just plug in your Paperclip files.
+- More compiler targets: Ruby, PHP, VueJS, AngularJS, and others.
+- More code editor integrations: Sublime, Atom.
+- More visual tooling in the preview, so you can make visual changes directly.
+- Preview against different browsers directly within your code editor.
