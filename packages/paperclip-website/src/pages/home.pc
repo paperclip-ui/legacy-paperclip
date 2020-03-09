@@ -9,7 +9,7 @@
 
   .website {
     width: 100%;
-    max-width: 1024;
+    max-width: 1024px;
     margin: 0px auto;
     padding: 0px 24px;
     box-sizing: border-box;
@@ -278,8 +278,8 @@
         <a href="#">Contributing</a>
       </div>
       <div class="social links">
-        <a href="http://github.com/crcn/paperclip"><img src="./assets/github.svg"></a>
-        <a href="https://discord.gg/H6wEVtd"><img src="./assets/discord.svg"></a>
+        <a href="http://github.com/crcn/paperclip"><img src="../assets/github.svg"></a>
+        <a href="https://discord.gg/H6wEVtd"><img src="../assets/discord.svg"></a>
         <!-- <a href="#"><img src="./assets/twitter.svg"></a> -->
       </div>
     </div>
@@ -299,7 +299,7 @@
         </div>
       </div>
       <div class="screenshot">
-        <img src="./assets/calculator-screenshot3.png">
+        <img src="../assets/calculator-screenshot3.png">
       </div>
     </div>
   </div>
@@ -318,8 +318,8 @@
         <a href="#">Contributing</a>
       </div>
       <div class="social links">
-        <a href="http://github.com/crcn/paperclip"><img src="./assets/github.svg"></a>
-        <a href="https://discord.gg/H6wEVtd"><img src="./assets/discord.svg"></a>
+        <a href="http://github.com/crcn/paperclip"><img src="../assets/github.svg"></a>
+        <a href="https://discord.gg/H6wEVtd"><img src="../assets/discord.svg"></a>
         <!-- <a href="#"><img src="./assets/twitter.svg"></a> -->
       </div>
   </div>

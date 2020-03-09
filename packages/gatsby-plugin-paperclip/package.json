@@ -1,0 +1,15 @@
+{
+  "name": "gatsby-plugin-paperclip",
+  "version": "1.0.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "paperclip": "^11.0.53",
+    "paperclip-loader": "^11.0.53"
+  }
+}
