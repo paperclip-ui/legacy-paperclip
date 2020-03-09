@@ -80,9 +80,9 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 - Templates Integrate with your existing React application (more languages & frameworks soon).
 - Integrates with Webpack. 
 
-## Goals 🎯
+## Motivation 
 
-The goal for Paperclip is to eliminate bottlenecks around HTML & CSS development, and provide tooling that helps you ship UI features quicker. More specifically:
+The motivation behind Paperclip is to eliminate bottlenecks around HTML & CSS development, and provide tooling that helps you ship UI features quicker. More specifically:
 
 - Eliminate the lag time between writing code & seeing UI.
 - Shorten the gap between design -> code by bringing more design tooling into web development.
