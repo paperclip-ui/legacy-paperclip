@@ -3,10 +3,7 @@
   "version": "11.0.48",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "build": "webpack",
-    "build:definitions": "paperclip --definition --write"
-  },
+  "scripts": {},
   "author": "",
   "license": "ISC",
   "dependencies": {
