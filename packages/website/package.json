@@ -1,21 +1,20 @@
 {
   "name": "website",
   "private": true,
-  "version": "11.0.48",
+  "version": "11.0.51",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"\"",
     "build:definitions": "paperclip --definition --write"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "paperclip": "^11.0.51",
+    "paperclip-cli": "^11.0.51",
+    "paperclip-react-compiler": "^11.0.51",
     "react": "^16.13.0",
-    "react-dom": "^16.13.0",
-    "paperclip": "^11.0.48",
-    "paperclip-cli": "^11.0.48",
-    "paperclip-react-compiler": "^11.0.48"
+    "react-dom": "^16.13.0"
   },
   "devDependencies": {
     "@types/react": "^16.9.23",

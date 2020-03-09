@@ -18,12 +18,13 @@ import {
   EngineErrorEvent,
   EngineErrorKind,
   GraphErrorEvent,
+  DiffedEvent,
   SourceLocation,
   RuntimeErrorEvent,
   EvaluatedEvent
 } from "paperclip";
 
-import {throttle} from "lodash";
+import { throttle } from "lodash";
 
 import * as parseColor from "color";
 import * as fs from "fs";
@@ -41,18 +42,23 @@ import {
   NotificationType,
   LoadParams
 } from "../common/notifications";
-import { TextDocument, TextDocumentContentChangeEvent } from "vscode-languageserver-textdocument";
+import {
+  TextDocument,
+  TextDocumentContentChangeEvent
+} from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
 type KeyValue<TValue> = {
-  [identifier: string]: TValue
-}
+  [identifier: string]: TValue;
+};
 
 export class VSCServiceBridge {
   private _newEngineContent: KeyValue<boolean> = {};
-  private _newEnginePreviewContent: KeyValue<TextDocumentContentChangeEvent> = {};
+  private _newEnginePreviewContent: KeyValue<
+    TextDocumentContentChangeEvent
+  > = {};
   private _documents: KeyValue<TextDocument> = {};
 
   constructor(
@@ -84,9 +90,17 @@ export class VSCServiceBridge {
       }
     );
 
-    connection.onDidOpenTextDocument(({textDocument}) => {
-      this._documents[textDocument.uri] = TextDocument.create(textDocument.uri, textDocument.languageId, textDocument.version, textDocument.text);
-      this._engine.updateVirtualFileContent(textDocument.uri, textDocument.text);
+    connection.onDidOpenTextDocument(({ textDocument }) => {
+      this._documents[textDocument.uri] = TextDocument.create(
+        textDocument.uri,
+        textDocument.languageId,
+        textDocument.version,
+        textDocument.text
+      );
+      this._engine.updateVirtualFileContent(
+        textDocument.uri,
+        textDocument.text
+      );
     });
     connection.onDidCloseTextDocument(params => {
       delete this._documents[params.textDocument.uri];
@@ -202,40 +216,50 @@ export class VSCServiceBridge {
   };
 
   private _onColorPresentationRequest = (params: ColorPresentationParams) => {
-
     const presentation = getColorPresentation(params.color, params.range);
 
     let document = this._documents[params.textDocument.uri];
-    
-    const {textEdit}  = presentation;
+
+    const { textEdit } = presentation;
     const source = TextDocument.applyEdits(document, [textEdit]);
 
-  
     // update virtual file content to show preview
-    this._previewEngineContent(params.textDocument.uri, {text: source });
+    this._previewEngineContent(params.textDocument.uri, { text: source });
 
     return [presentation];
   };
 
-  private _updateTextContent = (uri: string, events: TextDocumentContentChangeEvent[]) => {
-    const newDocument = TextDocument.update(this._documents[uri], events, this._documents[uri].version + 1);
+  private _updateTextContent = (
+    uri: string,
+    events: TextDocumentContentChangeEvent[]
+  ) => {
+    const newDocument = TextDocument.update(
+      this._documents[uri],
+      events,
+      this._documents[uri].version + 1
+    );
     this._documents[uri] = newDocument;
     this._newEngineContent[uri] = true;
     this._deferPersistEditTextContent();
-  }
+  };
 
-  private _previewEngineContent = (uri: string, event: TextDocumentContentChangeEvent) => {
-
+  private _previewEngineContent = (
+    uri: string,
+    event: TextDocumentContentChangeEvent
+  ) => {
     // TODO - include this change
     this._newEnginePreviewContent[uri] = event;
     this._deferPreviewEngineContent();
-  }
+  };
 
   private _deferPersistEditTextContent = throttle(() => {
     const newEngineContent = this._newEngineContent;
     this._newEngineContent = {};
     for (const uri in newEngineContent) {
-      this._engine.updateVirtualFileContent(uri, this._documents[uri].getText());
+      this._engine.updateVirtualFileContent(
+        uri,
+        this._documents[uri].getText()
+      );
     }
   }, PERSIST_ENGINE_THROTTLE_MS);
 
@@ -253,13 +277,14 @@ export class VSCServiceBridge {
       case EngineEventKind.Error: {
         return this._onEngineErrorEvent(event);
       }
+      case EngineEventKind.Diffed:
       case EngineEventKind.Evaluated: {
         return this._onEngineEvaluatedEvent(event);
       }
     }
   };
 
-  private _onEngineEvaluatedEvent(event: EvaluatedEvent) {
+  private _onEngineEvaluatedEvent(event: DiffedEvent | EvaluatedEvent) {
     // reset error diagnostics
     this.connection.sendDiagnostics({
       uri: event.uri,

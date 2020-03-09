@@ -1,5 +1,5 @@
 use super::virt::{Node, Fragment, Element, Text, StyleElement, Attribute};
-use super::mutation::{Mutation, SourceUriChanged, Action, SourceChanged, DeleteChild, SetText, InsertChild, RemoveAttribute, SetAttribute};
+use super::mutation::{Mutation, ReplaceNode, SourceUriChanged, Action, SourceChanged, DeleteChild, SetText, InsertChild, RemoveAttribute, SetAttribute};
 use std::cmp::{min, max};
 
 /*
@@ -46,12 +46,20 @@ fn diff_node<'a>(a: &Node, b: &Node, context: &mut Context<'a>) {
     }
   }
 
-  context.mutations.push(Mutation::new(context.node_path.clone(), Action::ReplaceNode));
+  context.mutations.push(Mutation::new(context.node_path.clone(), Action::ReplaceNode(
+    ReplaceNode {
+      replacement: b.clone()
+    }
+  )));
 }
 
 fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
   if a.tag_name != b.tag_name {
-    context.mutations.push(Mutation::new(context.node_path.clone(), Action::ReplaceNode));
+    context.mutations.push(Mutation::new(context.node_path.clone(), Action::ReplaceNode(
+      ReplaceNode {
+        replacement: Node::Element(b.clone())
+      }
+    )));
     return;
   }
 
@@ -135,15 +143,15 @@ fn diff_children<'a>(a: &Vec<Node>, b: &Vec<Node>, context: &mut Context<'a>) {
     });
   }
   if a.len() > b.len() {
-    for i in a.len()..b.len() {
+    for i in b.len()..a.len() {
       context.mutations.push(Mutation::new(context.node_path.clone(), Action::DeleteChild(
         DeleteChild {
-          index: i
+          index: b.len()
         }
       )))
     }
   } else if b.len() > a.len() {
-    for i in b.len()..a.len() {
+    for i in a.len()..b.len() {
       context.mutations.push(Mutation::new(context.node_path.clone(), Action::InsertChild(
         InsertChild {
           index: i,
@@ -156,5 +164,9 @@ fn diff_children<'a>(a: &Vec<Node>, b: &Vec<Node>, context: &mut Context<'a>) {
 fn diff_style_element<'a>(a: &StyleElement, b: &StyleElement, context: &mut Context<'a>) {
 
   // will want to diff & patch styles later on
-  context.mutations.push(Mutation::new(context.node_path.clone(), Action::ReplaceNode));
+  context.mutations.push(Mutation::new(context.node_path.clone(), Action::ReplaceNode(
+    ReplaceNode {
+      replacement: Node::StyleElement(b.clone())
+    }
+  )));
 }

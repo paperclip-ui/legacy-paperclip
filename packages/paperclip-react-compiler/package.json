@@ -1,6 +1,6 @@
 {
   "name": "paperclip-react-compiler",
-  "version": "11.0.48",
+  "version": "11.0.51",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -8,16 +8,15 @@
   },
   "dependencies": {
     "lodash": "^4.17.15",
-    "paperclip": "^11.0.48",
+    "paperclip": "^11.0.51",
     "paperclip-styles-compiler": "^11.0.18",
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "test": "echo \"\"",
     "build": "tsc",
     "build:watch": "tsc --watch"
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "1ca267476df78c310b05af4bb88d2cda54396ea5"
+  "gitHead": "54b855e1f87f4a7b6e9395f29e683a91e1cdefb2"
 }

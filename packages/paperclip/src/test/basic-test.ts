@@ -1,13 +1,14 @@
 import * as path from "path";
 import { Engine } from "../engine";
 import { expect } from "chai";
-import { EngineEventKind, EvaluatedEvent } from "../events";
-import { stringifyVirtualNode } from "../stringify-virt-node";
+import {
+  EngineEventKind,
+  stringifyVirtualNode,
+  EvaluatedEvent
+} from "paperclip-utils";
 import { createMockEngine, Graph } from "./utils";
 
-
 describe(__filename + "#", () => {
-
   const waitForEvaluated = async (engine: Engine): Promise<EvaluatedEvent> => {
     return new Promise((resolve, reject) => {
       engine.onEvent(event => {
@@ -29,14 +30,14 @@ describe(__filename + "#", () => {
         "/entry.pc": `Hello World`
       },
       {},
-      `Hello World`
+      `<style></style>Hello World`
     ],
     [
       {
         "/entry.pc": `<span>more text</span>`
       },
       {},
-      `<span data-pc-80f4925f><style></style>more text</span>`
+      `<style></style><span data-pc-80f4925f>more text</span>`
     ],
 
     // styles
@@ -199,13 +200,14 @@ describe(__filename + "#", () => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
       const engine = createMockEngine(graph);
 
-
       const p = waitForEvaluated(engine);
       engine.load("/entry.pc");
       const event = await p;
       const nodeStr = stringifyVirtualNode(event.node);
       expect(nodeStr.replace(/[\r\n\t\s]+/g, " ").trim()).to.eql(
-        String(expectedHTML).replace(/[\r\n\t\s]+/g, " ").trim()
+        String(expectedHTML)
+          .replace(/[\r\n\t\s]+/g, " ")
+          .trim()
       );
     });
   });

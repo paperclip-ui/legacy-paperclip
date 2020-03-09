@@ -1,23 +1,40 @@
-import { createNativeNode, DOMNodeMap } from "./native-renderer";
-// import { Node as VirtNode } from "paperclip";
+import {
+  createNativeNode,
+  DOMNodeMap,
+  getNativeNodePath
+} from "./native-renderer";
+import {
+  Node as VirtNode,
+  EngineEvent,
+  EngineEventKind
+} from "paperclip-utils";
 import { EventEmitter } from "events";
 import { preventDefault } from "./utils";
+import { getVirtTarget, patchVirtNode } from "./virt-patcher";
+import { patchNativeNode } from "./dom-patcher";
+
+export type DOMFactory = {
+  createElement(tagName: string): HTMLElement;
+  createDocumentFragment(): DocumentFragment;
+  createTextNode(value: string): Text;
+};
 
 enum RenderEventTypes {
   META_CLICK = "META_CLICK"
 }
 
 export class Renderer {
-  private _scopeFilePath: string;
-  private _nativeNodeMap: DOMNodeMap;
   private _em: EventEmitter;
   private _hoverOverlay: HTMLElement;
   private _stage: HTMLElement;
   private _virtualRootNode: any;
-  readonly mount: HTMLDivElement;
-  constructor(readonly protocol: string) {
+  readonly mount: HTMLElement;
+  constructor(
+    readonly protocol: string,
+    private _domFactory: DOMFactory = document
+  ) {
     this._em = new EventEmitter();
-    this._hoverOverlay = document.createElement("div");
+    this._hoverOverlay = _domFactory.createElement("div");
     Object.assign(this._hoverOverlay.style, {
       position: "absolute",
       zIndex: 1024,
@@ -30,8 +47,8 @@ export class Renderer {
       left: `0px`
     });
 
-    this._stage = document.createElement("div");
-    this.mount = document.createElement("div");
+    this._stage = this._domFactory.createElement("div");
+    this.mount = this._domFactory.createElement("div");
     this.mount.appendChild(this._stage);
     this.mount.appendChild(this._hoverOverlay);
     this._stage.addEventListener("mousedown", this._onStageMouseDown, true);
@@ -44,39 +61,45 @@ export class Renderer {
     this._em.addListener(RenderEventTypes.META_CLICK, listener);
   };
 
-  handleEngineEvent(event) {
-    // only accept events scoped to current file path
-    if (event.kind !== "Evaluated" && event.file_path !== this._scopeFilePath) {
-      return;
-    }
+  handleEngineEvent = (event: EngineEvent) => {
     switch (event.kind) {
-      case "Evaluated": {
+      case EngineEventKind.Evaluated: {
         while (this._stage.childNodes.length) {
           this._stage.removeChild(this._stage.childNodes[0]);
         }
-        this._scopeFilePath = event.file_path;
         this._virtualRootNode = event.node;
-        this._nativeNodeMap = new Map();
         const node = createNativeNode(
           event.node,
-          this.protocol,
-          this._nativeNodeMap
+          this._domFactory,
+          this.protocol
         );
         this._stage.appendChild(node);
+        break;
       }
-      case "Diffed": {
-        // TODO
+      case EngineEventKind.Diffed: {
+        patchNativeNode(
+          this._stage,
+          event.mutations,
+          this._domFactory,
+          this.protocol
+        );
+        this._virtualRootNode = patchVirtNode(
+          this._virtualRootNode,
+          event.mutations
+        );
+
+        break;
       }
     }
-  }
+  };
 
   private _onStageMouseDown = (event: MouseEvent) => {
     event.preventDefault();
     event.stopImmediatePropagation();
     const element = event.target as Element;
-    const targetId = this._nativeNodeMap.get(element);
-    if (element.nodeType !== 1 || !targetId || !event.metaKey) return;
-    const virtNode = findVirtNodeById(targetId, this._virtualRootNode);
+    if (element.nodeType !== 1 || !event.metaKey) return;
+    const nodePath = getNativeNodePath(this.mount, element);
+    const virtNode = getVirtTarget(this._virtualRootNode, nodePath);
     if (!virtNode) return;
     this._em.emit(RenderEventTypes.META_CLICK, virtNode);
   };
@@ -84,8 +107,7 @@ export class Renderer {
   private _onStageMouseOver = (event: MouseEvent) => {
     const element = event.target as Element;
     const elementWindow = element.ownerDocument.defaultView;
-    const targetId = this._nativeNodeMap.get(element);
-    if (element.nodeType !== 1 || !event.metaKey || !targetId) return;
+    if (element.nodeType !== 1 || !event.metaKey) return;
     const rect = element.getBoundingClientRect();
     Object.assign(this._hoverOverlay.style, {
       display: "block",
@@ -99,23 +121,8 @@ export class Renderer {
   private _onStageMouseOut = (event: MouseEvent) => {
     const element = event.target as Node;
     if (element.nodeType !== 1) return;
-    // const targetId = this._nativeNodeMap.get(element);
     Object.assign(this._hoverOverlay.style, {
       display: "none"
     });
   };
 }
-
-// TODO - move to paperclip lib
-const findVirtNodeById = (id: string, node) => {
-  if (node.id === id) {
-    return node;
-  }
-  if (node.kind === "Element" || node.kind === "Fragment") {
-    for (const child of node.children) {
-      let ret = findVirtNodeById(id, child);
-      if (ret) return ret;
-    }
-  }
-  return null;
-};

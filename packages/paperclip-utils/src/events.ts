@@ -1,13 +1,15 @@
 import { VirtualNode } from "./virt";
 import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
+import { Mutation } from "./virt-mtuation";
 
 export enum EngineEventKind {
   Loading = "Loading",
   Updating = "Updating",
   Evaluated = "Evaluated",
   Error = "Error",
-  NodeParsed = "NodeParsed"
+  NodeParsed = "NodeParsed",
+  Diffed = "Diffed"
 }
 
 export enum EngineErrorKind {
@@ -27,6 +29,11 @@ export type EvaluatedEvent = {
   uri: string;
   node?: VirtualNode;
 } & BaseEngineEvent<EngineEventKind.Evaluated>;
+
+export type DiffedEvent = {
+  uri: string;
+  mutations: Mutation[];
+} & BaseEngineEvent<EngineEventKind.Diffed>;
 
 export type NodeParsedEvent = {
   uri: string;
@@ -85,4 +92,5 @@ export type EngineEvent =
   | EngineErrorEvent
   | NodeParsedEvent
   | LoadingEvent
-  | UpdatingEvent;
+  | UpdatingEvent
+  | DiffedEvent;

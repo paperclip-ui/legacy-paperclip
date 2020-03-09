@@ -218,8 +218,6 @@ class LivePreview {
       return;
     }
 
-    console.log("EVENT", event);
-
     this.panel.webview.postMessage(JSON.stringify(event));
   }
   private _getHTML() {

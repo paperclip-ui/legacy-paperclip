@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import { BaseEngineLanguageService, ASTInfo } from "../base";
 import {
   Rule,
@@ -53,9 +54,11 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     return /\.pc$/.test(uri);
   }
   protected _handleEngineEvent(event: EngineEvent) {
-    if (event.kind === EngineEventKind.Evaluated) {
+    if (
+      event.kind === EngineEventKind.Evaluated ||
+      event.kind === EngineEventKind.Diffed
+    ) {
       this.clear(event.uri);
-      this._handleEvaluatedEvent(event);
     }
   }
   protected _getAST(uri): Node {
@@ -80,8 +83,6 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
 
     return context.info;
   }
-
-  private _handleEvaluatedEvent(event: EvaluatedEvent) {}
 
   private _handleStyles(context: HandleContext) {
     const styleElements = getStyleElements(context.root);
@@ -137,7 +138,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       const srcAttr = getAttributeValue("src", imp);
       if (srcAttr.attrValueKind === AttributeValueKind.String) {
         context.info.links.push({
-          uri: resolveImportUri(uri, srcAttr.value),
+          uri: resolveImportUri(fs)(uri, srcAttr.value),
           location: srcAttr.location
         });
       }

@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import {
   Node,
   getImports,
@@ -11,7 +12,6 @@ import {
   PART_TAG_NAME,
   NO_COMPILE_TAG_NAME,
   BlockKind,
-  PREVIEW_TAG_NAME,
   ConditionalBlockKind,
   StatementKind,
   getAttributeStringValue,
@@ -57,7 +57,7 @@ export const compile = (
     filePath,
     getImportIds(ast),
     getPartIds(ast),
-    getStyleScopes(ast, filePath),
+    getStyleScopes(fs)(ast, filePath),
     Boolean(getLogicElement(ast)),
     options
   );
@@ -74,7 +74,7 @@ const translateRoot = (ast: Node, sheet: any, context: TranslateContext) => {
   if (logicElement) {
     const src = getAttributeStringValue("src", logicElement);
     if (src) {
-      const logicRelativePath = getRelativeFilePath(context.filePath, src);
+      const logicRelativePath = getRelativeFilePath(fs)(context.filePath, src);
       context = addBuffer(
         `const logic = require("${logicRelativePath}");\n`,
         context
@@ -180,10 +180,12 @@ const translateImports = (ast: Node, context: TranslateContext) => {
       continue;
     }
 
-    let relativePath = path.relative(
-      path.dirname(context.filePath),
-      resolveImportFile(context.filePath, src)
-    );
+    let relativePath = path
+      .relative(
+        path.dirname(context.filePath),
+        resolveImportFile(fs)(context.filePath, src)
+      )
+      .replace(/\\/g, "/");
 
     if (relativePath.charAt(0) !== ".") {
       relativePath = `./${relativePath}`;
@@ -326,9 +328,12 @@ const translateElement = (
   isRoot: boolean,
   context: TranslateContext
 ) => {
-  const isImportComponentInstance = context.importIds.indexOf(element.tagName) !== -1;
-  const isPartComponentInstance = context.partIds.indexOf(element.tagName) !== -1;
-  const isComponentInstance = isImportComponentInstance || isPartComponentInstance;
+  const isImportComponentInstance =
+    context.importIds.indexOf(element.tagName) !== -1;
+  const isPartComponentInstance =
+    context.partIds.indexOf(element.tagName) !== -1;
+  const isComponentInstance =
+    isImportComponentInstance || isPartComponentInstance;
   const id = getAttributeStringValue("id", element);
   const propsName = null;
 
@@ -341,8 +346,8 @@ const translateElement = (
 
   const tag = isPartComponentInstance
     ? getPartTagName(element.tagName, context)
-    : isImportComponentInstance ?
-    getImportTagName(element.tagName)
+    : isImportComponentInstance
+    ? getImportTagName(element.tagName)
     : JSON.stringify(element.tagName);
 
   context = addBuffer(`React.createElement(${tag}, `, context);
@@ -496,7 +501,10 @@ const translateAttribute = (
 
     // can't handle for now
     if (name !== "style") {
-      context = addBuffer(`${JSON.stringify(camelCase(name))}: `, context);
+      if (!/^data-/.test(name)) {
+        name = camelCase(name);
+      }
+      context = addBuffer(`${JSON.stringify(name)}: `, context);
       context = translateAttributeValue(
         name,
         value,

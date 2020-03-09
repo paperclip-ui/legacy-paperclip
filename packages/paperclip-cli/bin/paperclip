@@ -77,12 +77,10 @@ function init(cwd, filesGlob, compile, shouldWatch) {
   }
 
   async function compileFile(relativePath) {
-    const fullPath = path.resolve(process.cwd(), relativePath);
-
+    const fullPath = `file:///${path.resolve(process.cwd(), relativePath).replace(/\\/g, "/").replace(":", "%3A")}`;
     const compilerOptions = Object.assign({}, argvConfig.compilerOptions, config.compilerOptions);
     try {
       const ast = pcEngine.parseFile(fullPath);
-
       if (ast.error) {
         return handleError(ast.error, fullPath);
       }
@@ -91,7 +89,7 @@ function init(cwd, filesGlob, compile, shouldWatch) {
       if (argv.write) {
         const outputFilePath = getOutputFilePath(fullPath, compilerOptions);
         console.log("Writing %s", outputFilePath);
-        fs.writeFileSync(outputFilePath, result);
+        fs.writeFileSync(new URL(outputFilePath), result);
       } else {
         console.log("Compiling %s", relativePath);
         console.log(result);

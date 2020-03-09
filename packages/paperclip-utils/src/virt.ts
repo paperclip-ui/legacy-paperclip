@@ -14,7 +14,7 @@ export type VirtualAttribute = {
 };
 export type VirtualElement = {
   attributes: VirtualAttribute[];
-  children: VirtualNode;
+  children: VirtualNode[];
 } & VirtualBaseNode<VirtualNodeKind.Element>;
 
 export type VirtualText = {

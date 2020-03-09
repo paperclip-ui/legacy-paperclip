@@ -1,5 +1,7 @@
 // Some inspiration from https://github.com/sveltejs/svelte-loader/blob/master/index.js
 // License: https://github.com/sveltejs/svelte-loader#license
+import * as fs from "fs";
+import * as url from "url";
 import {
   Engine,
   getImports,
@@ -7,7 +9,7 @@ import {
   stringifyCSSSheet,
   resolveImportFile,
   PC_CONFIG_FILE_NAME,
-  getAttributeStringValue,
+  getAttributeStringValue
 } from "paperclip";
 import * as path from "path";
 import * as resolve from "resolve";
@@ -30,6 +32,8 @@ const getEngine = (): Engine => {
 
 const virtualModuleInstances = new Map();
 
+const fixPath = path => path.replace(/\\/g, "/");
+
 const _loadedStyleFiles = {};
 
 module.exports = async function(source: string) {
@@ -43,6 +47,7 @@ module.exports = async function(source: string) {
   this.cacheable();
   const callback = this.async();
   const resourcePath = this.resourcePath;
+  const resourceUrl = "file:///" + fixPath(resourcePath);
 
   const { configFile = PC_CONFIG_FILE_NAME }: Options =
     loaderUtils.getOptions(this) || {};
@@ -61,10 +66,10 @@ module.exports = async function(source: string) {
     basedir: process.cwd()
   }));
   const ast = engine.parseContent(source);
-  let code = compiler.compile({ ast }, resourcePath, config.compilerOptions);
+  let code = compiler.compile({ ast }, resourceUrl, config.compilerOptions);
 
   const sheetCode = stringifyCSSSheet(
-    engine.evaluateContentStyles(source, resourcePath),
+    engine.evaluateContentStyles(source, resourceUrl),
     null
   );
 
@@ -72,11 +77,11 @@ module.exports = async function(source: string) {
   for (const imp of imports) {
     const src = getAttributeStringValue("src", imp);
     if (/\.css$/.test(src)) {
-      const cssFilePath = resolveImportFile(resourcePath, src);
+      const cssFilePath = resolveImportFile(fs)(resourceUrl, src);
       if (!_loadedStyleFiles[cssFilePath]) {
         _loadedStyleFiles[cssFilePath] = 1;
         const importedSheetCode = stringifyCSSSheet(
-          engine.evaluateFileStyles("file://" + cssFilePath),
+          engine.evaluateFileStyles(cssFilePath),
           null
         );
         virtualModules.writeModule(cssFilePath, importedSheetCode);
@@ -84,10 +89,10 @@ module.exports = async function(source: string) {
     }
   }
 
-  const cssFileName = `${resourcePath}.css`;
-  const sheetFilePath = path.join(path.dirname(resourcePath), cssFileName);
+  const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
+  const sheetFileName = path.basename(sheetFilePath);
   virtualModules.writeModule(sheetFilePath, sheetCode);
-  code = `require("./${cssFileName}");\n${code}`;
+  code = `require("./${sheetFileName}");\n${code}`;
 
   callback(null, code);
 };

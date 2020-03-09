@@ -2,7 +2,7 @@ import { Statement, StatementKind, Reference } from "./js-ast";
 import { Sheet } from "./css-ast";
 import { SourceLocation } from "./base-ast";
 import * as crc32 from "crc32";
-import { resolveImportFile } from "./engine";
+import { resolveImportFile } from "./resolve";
 import * as path from "path";
 import {
   PREVIEW_TAG_NAME,
@@ -149,11 +149,11 @@ export const getImports = (ast: Node): Element[] =>
     return hasAttribute("src", child);
   });
 
-export const getRelativeFilePath = (
+export const getRelativeFilePath = fs => (
   fromFilePath: string,
   importFilePath: string
 ) => {
-  const logicPath = resolveImportFile(fromFilePath, importFilePath);
+  const logicPath = resolveImportFile(fs)(fromFilePath, importFilePath);
   let relativePath = path.relative(path.dirname(fromFilePath), logicPath);
   if (relativePath.charAt(0) !== ".") {
     relativePath = `./${relativePath}`;
@@ -172,17 +172,17 @@ export const getChildren = (ast: Node): Node[] => {
   return [];
 };
 
-export const getStyleScopes = (ast: Node, filePath: string): string[] => {
+export const getStyleScopes = fs => (ast: Node, uri: string): string[] => {
   const scopes: string[] = [];
   if (getStyleElements(ast).length > 0) {
-    scopes.push(crc32("file://" + filePath));
+    scopes.push(crc32(uri));
   }
 
   for (const imp of getImports(ast)) {
     const src = getAttributeStringValue("src", imp);
     if (/\.css$/.test(src)) {
-      const cssFilePath = resolveImportFile(filePath, src);
-      scopes.push(crc32("file://" + cssFilePath));
+      const cssFileUri = resolveImportFile(fs)(uri, src);
+      scopes.push(crc32(cssFileUri));
     }
   }
 
@@ -240,7 +240,7 @@ export const isVisibleNode = (node: Node): boolean =>
 export const getVisibleChildNodes = (ast: Node): Node[] =>
   getChildren(ast).filter(isVisibleNode);
 
-  export const getParts = (ast: Node): Element[] =>
+export const getParts = (ast: Node): Element[] =>
   getChildren(ast).filter(child => {
     return (
       child.kind === NodeKind.Element &&
@@ -248,7 +248,6 @@ export const getVisibleChildNodes = (ast: Node): Node[] =>
       hasAttribute("id", child)
     );
   }) as Element[];
-
 
 export const getPartIds = (ast: Node): string[] =>
   getParts(ast)
