@@ -1,7 +1,7 @@
 {
   "name": "website",
   "private": true,
-  "version": "11.0.51",
+  "version": "11.0.52",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,9 +10,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "paperclip": "^11.0.51",
-    "paperclip-cli": "^11.0.51",
-    "paperclip-react-compiler": "^11.0.51",
+    "paperclip": "^11.0.52",
+    "paperclip-cli": "^11.0.52",
+    "paperclip-react-compiler": "^11.0.52",
     "react": "^16.13.0",
     "react-dom": "^16.13.0"
   },
