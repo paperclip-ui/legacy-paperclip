@@ -27,13 +27,15 @@
     position: relative;
   }
   
-  .alphabadge {
+  .alpha-badge {
     display: inline-block;
-    padding: 10px;
-    position: absolute;
-    color: red;
-    right: 0px;
-    top: 30px;
+    padding: 2px 3px;
+    background: rgb(156, 187, 100);
+    border-radius:3px;
+    text-transform: uppercase;
+    font-size: 6px;
+    color: rgb(255, 255, 255);
+    font-weight: 600;
   }
 
   .navigation .links {
@@ -141,7 +143,7 @@
         <!-- A more efficient approach -->
         <!-- Built for development speed -->
         <!-- Build faster -->
-        Build faster ⚡️
+        Build faster
       </div>
       <div class="desc">
         Previews automatically update as you're writing templates, so you can iterate faster.
@@ -176,7 +178,7 @@
         <!-- Just the bare necessities -->
         <!-- Special purpose -->
         <!-- Easy to use -->
-        Covers just the appearance 💅
+        Covers just the appearance
         <!-- Separate UI from code -->
       </div>
       <div class="desc">
@@ -268,7 +270,7 @@
       <a class="logo" href="http://paperclip.dev">
         Paperclip
         <span class="alpha-badge">
-          aaa
+          alpha
         </span>
       </a>
       <div class="links">
