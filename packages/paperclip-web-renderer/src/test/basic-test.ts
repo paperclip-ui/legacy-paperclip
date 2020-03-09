@@ -31,10 +31,30 @@ describe(__filename + "#", () => {
           <div />
         </span>
       `
+    ],
+    [
+      `
+        <span class="block">
+        </span>
+      `,
+      `
+      <span class="block2">
+      </span>
+      `,
+      `
+      <span class="block2" id="test">
+      </span>
+      `,
+      `
+      <span id="test">
+      </span>
+      `
     ]
   ].forEach(([initial, ...changes]) => {
+    console.log(changes);
     it(`can render ${initial} -> ${changes.join("->")}`, () => {
       const engine = createMockEngine(initial);
+
 
       const renderer = new Renderer("file://", mockDOMFactory);
       engine.onEvent(renderer.handleEngineEvent);

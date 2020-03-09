@@ -132,6 +132,7 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
   // There can only be one listener, so do that & handle across all previews
   client.onNotification(NotificationType.ENGINE_EVENT, event => {
     Object.values(_previews).forEach(preview => {
+      console.log(JSON.stringify(event, null, 2));
       preview.$$handleEngineEvent(event);
     });
   });

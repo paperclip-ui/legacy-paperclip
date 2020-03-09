@@ -6,6 +6,7 @@
     color: rgb(172, 58, 238);
   }
 
+
   .website {
     width: 100%;
     max-width: 1024;
@@ -23,6 +24,16 @@
     display: inline-block;
     font-weight: 600;
     letter-spacing: 0.04em;
+    position: relative;
+  }
+  
+  .alphabadge {
+    display: inline-block;
+    padding: 10px;
+    position: absolute;
+    color: red;
+    right: 0px;
+    top: 30px;
   }
 
   .navigation .links {
@@ -254,7 +265,12 @@
 <part id="header">
   <div class="header">
     <div class="navigation">
-      <a class="logo" href="http://paperclip.dev">Paperclip</a>
+      <a class="logo" href="http://paperclip.dev">
+        Paperclip
+        <span class="alpha-badge">
+          aaa
+        </span>
+      </a>
       <div class="links">
         <a href="">Docs</a>
         <a href="#">Contributing</a>

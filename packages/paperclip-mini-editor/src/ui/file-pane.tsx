@@ -23,7 +23,6 @@ class Editor extends React.PureComponent<EditorProps> {
   private _value: string;
   componentDidUpdate(props: EditorProps) {
     if (this._value !== props.value) {
-      console.log(this._value, props.value);
       this._instance.getModel().setValue(props.value);
     }
   }

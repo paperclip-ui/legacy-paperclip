@@ -90,7 +90,7 @@ fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
 
     match attribute2_option {
       Some(attribute2) => {
-        if attribute2.value != attribute2.value {
+        if attribute1.value != attribute2.value {
           context.mutations.push(Mutation::new(context.node_path.clone(), Action::SetAttribute(SetAttribute { 
             name: attribute1.name.clone(),
             value: attribute2.value.clone(),

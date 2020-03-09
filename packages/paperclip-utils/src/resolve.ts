@@ -5,7 +5,6 @@ import { PC_CONFIG_FILE_NAME } from "./constants";
 
 export const resolveImportUri = fs => (fromPath: string, toPath: string) => {
   const filePath = resolveImportFile(fs)(fromPath, toPath);
-  console.log("RESOLVE", filePath);
   return filePath;
 };
 

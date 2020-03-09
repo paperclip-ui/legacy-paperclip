@@ -53,7 +53,6 @@ export const patchNativeNode = (
       }
     }
   }
-  console.log(mount.innerHTML);
 };
 
 const getTarget = (mount: HTMLElement, mutation: Mutation) =>
