@@ -13,6 +13,8 @@
   </a>
 </p>
 
+> ⚠️ Note that Paperclip is currently in Alpha, so expect a few bugs!
+
 # Resources
 
 - [Getting started](./documentation/Getting%20Started)

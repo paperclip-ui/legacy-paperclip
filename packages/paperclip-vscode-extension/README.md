@@ -1,3 +1,5 @@
+> ⚠️ Note that Paperclip is currently in Alpha, so expect a few bugs!
+
 #### Build UIs in real-time with [Paperclip](http://github.com/crcn/paperclip) ⚡️
 
 Paperclip is a template language that's designed for visual development. See what you're creating in real-time, directly within VS Code.
