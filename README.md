@@ -71,6 +71,15 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
 
+## Motivation 
+
+<!-- TODO: more pain point here -->
+
+The motivation behind Paperclip is to eliminate bottlenecks around HTML & CSS development, and provide tooling that helps you ship UI features quicker. More specifically:
+
+- Eliminate the lag time between writing code & seeing UI.
+- Shorten the gap between design -> code by bringing more design tooling into web development.
+- Provide better safety around building UIs with easier to use cross-browser testing tools. 
 
 ## Features ✨
 
@@ -79,14 +88,6 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 - Templates can be compiled to strongly typed code.
 - Templates Integrate with your existing React application (more languages & frameworks soon).
 - Integrates with Webpack. 
-
-## Motivation 
-
-The motivation behind Paperclip is to eliminate bottlenecks around HTML & CSS development, and provide tooling that helps you ship UI features quicker. More specifically:
-
-- Eliminate the lag time between writing code & seeing UI.
-- Shorten the gap between design -> code by bringing more design tooling into web development.
-- Provide better safety around building UIs with easier to use cross-browser testing tools. 
 
 
 
