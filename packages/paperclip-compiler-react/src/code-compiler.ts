@@ -117,6 +117,7 @@ const translateStyleSheet = (sheet: Sheet, context: TranslateContext) => {
 
 const translateUtils = (ast: Node, context: TranslateContext) => {
   context = translateStyledUtil(ast, context);
+  context = translategetDefaultUtil(ast, context);
 
   // KEEP ME: for logic
   // context = translateExtendsPropsUtil(ast, context);
@@ -149,24 +150,30 @@ const translateExtendsPropsUtil = (ast: Node, context: TranslateContext) => {
   context = addBuffer(`};\n\n`, context);
   return context;
 };
+
+const translategetDefaultUtil = (ast: Node, context: TranslateContext) => {
+  context = addBuffer(
+    `const getDefault = (module) => module.default || module;\n\n`
+  , context);
+  return context;
+};
+
+
 const translateStyledUtil = (ast: Node, context: TranslateContext) => {
   context = addBuffer(
-    `export function styled(tagName, defaultProps) {\n`,
+    `export const styled = (tagName, defaultProps) => `,
     context
   );
-  context = startBlock(context);
-  context = addBuffer(`return function(props) {\n`, context);
+  context = addBuffer(`(props) => (\n`, context);
   context = startBlock(context);
   context = addBuffer(
-    `return React.createElement(tagName, Object.assign({ `,
+    `React.createElement(tagName, Object.assign({ `,
     context
   );
   context = translateStyleScopeAttributes(context, " ");
-  context = addBuffer(`}, defaultProps, props));\n`, context);
+  context = addBuffer(`}, defaultProps, props))\n`, context);
   context = endBlock(context);
-  context = addBuffer(`};\n`, context);
-  context = endBlock(context);
-  context = addBuffer("}\n\n", context);
+  context = addBuffer(");\n\n", context);
   return context;
 };
 
@@ -559,7 +566,7 @@ const translateAttributeValue = (
   } else if (value.attrValueKind === AttributeValueKind.String) {
     let strValue = JSON.stringify(value.value);
     if (name === "src") {
-      strValue = `require(${strValue}).default`;
+      strValue = `getDefault(require(${strValue}))`;
     }
     return addBuffer(strValue, context);
   }
