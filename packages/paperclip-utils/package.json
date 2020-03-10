@@ -1,6 +1,6 @@
 {
   "name": "paperclip-utils",
-  "version": "11.0.53",
+  "version": "11.0.54",
   "description": "- real-time editing. Biggest priority is to have a bundler that  - Interoperability. Paperclip should work with any web framework.  - Type safety.  - Visually editable.",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,6 @@
     "electron": "^6.1.7",
     "electron-build-env": "^0.2.0",
     "neon-cli": "^0.3.3",
-    "paperclip": "^11.0.53"
+    "paperclip": "^11.0.54"
   }
 }
