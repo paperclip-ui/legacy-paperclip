@@ -49,8 +49,13 @@ export class Engine {
           return fs.readFileSync(new URL(uri) as any, "utf8");
         },
         fileExists: uri => {
-          const url = new URL(uri) as any;
-          return fs.existsSync(url) && fs.lstatSync(url).isFile();
+          try {
+            const url = new URL(uri) as any;
+            return fs.existsSync(url) && fs.lstatSync(url).isFile();
+          } catch(e) {
+            console.error(e);
+            return false;
+          }
         },
         resolveFile: resolveImportUri(fs)
       },
