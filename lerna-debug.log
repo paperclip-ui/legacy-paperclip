@@ -12,8 +12,8 @@
 5 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/examples/react-todomvc undefined
 6 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-loader' ]
 7 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-loader undefined
-8 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-react-compiler' ]
-9 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-react-compiler undefined
+8 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-compiler-react' ]
+9 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react undefined
 10 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-vscode-extension' ]
 11 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension undefined
 12 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-web-renderer' ]

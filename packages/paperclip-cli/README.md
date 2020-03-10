@@ -23,7 +23,7 @@ The easiest way to get setup is to first define a `pcconfig.json` file:
   "compilerOptions": {
 
     // Code compiler to use
-    "name": "paperclip-react-compiler"
+    "name": "paperclip-compiler-react"
   },
 
   //
@@ -47,7 +47,7 @@ paperclip --write
 
 ☝️ This will write JS files in the same directories as the PC files.
 
-The `paperclip-react-compiler` module has the ability to generate `*.d.ts` files if you're using TypeScript. To use that output you can simply run:
+The `paperclip-compiler-react` module has the ability to generate `*.d.ts` files if you're using TypeScript. To use that output you can simply run:
 
 ```bash
 paperclip --definition --write

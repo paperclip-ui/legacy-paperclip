@@ -26,6 +26,7 @@ export const createNativeNode = (
   factory: DOMFactory,
   protocol: string | null
 ) => {
+  // return document.createTextNode(JSON.stringify(node, null, 2));
   if (!node) {
     return factory.createTextNode("");
   }

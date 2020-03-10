@@ -3,7 +3,7 @@ import * as React from "react";
 import Home from "./home.pc";
 
 const IndexPage = () => (
-  <Home>something</Home>
+  <Home paperclipSnippet="" reactSnippet="" />
 );
 
 export default IndexPage;

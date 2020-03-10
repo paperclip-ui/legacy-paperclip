@@ -47,7 +47,9 @@ import {
 import { pascalCase, Options, getComponentName, RENAME_PROPS } from "./utils";
 import { camelCase } from "lodash";
 import * as path from "path";
+import {Html5Entities} from "html-entities";
 
+const entities = new Html5Entities();
 export const compile = (
   { ast, sheet }: { ast: Node; sheet?: any },
   filePath: string,
@@ -307,7 +309,7 @@ const translateJSXNode = (
   } else if (node.kind === NodeKind.Block) {
     context = translateBlock(node, isRoot, context);
   } else if (node.kind === NodeKind.Text) {
-    let buffer = `${JSON.stringify(node.value)}`;
+    let buffer = `${JSON.stringify(entities.decode(node.value))}`;
     if (isRoot) {
       buffer = `React.createElement("span", null, ${buffer})`;
     }

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "name": "paperclip-react-compiler"
+    "name": "paperclip-compiler-react"
   },
   "moduleDirectories": ["./src"],
   "filesGlob": "./src/**/*.pc"

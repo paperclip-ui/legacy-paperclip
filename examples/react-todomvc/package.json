@@ -8,7 +8,7 @@
     "build": "npm run build:definitions && webpack",
     "build:dist": "webpack",
     "build:watch": "npm run build:definitions -- --watch & webpack --watch",
-    "build:definitions": "paperclip --compiler=paperclip-react-compiler --definition --write"
+    "build:definitions": "paperclip --compiler=paperclip-compiler-react --definition --write"
   },
   "author": "",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "paperclip": "^11.0.51",
     "paperclip-cli": "^11.0.51",
     "paperclip-loader": "^11.0.51",
-    "paperclip-react-compiler": "^11.0.51",
+    "paperclip-compiler-react": "^11.0.51",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "style-loader": "^1.1.3",

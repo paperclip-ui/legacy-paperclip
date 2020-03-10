@@ -27,12 +27,12 @@ For this step, you'll need to be familiar with Webpack and React
 
 > ✨I'd recommend you take a look at the [React TodoMVC](../../examples/react-todomvc) example to have a better look around how to configure Paperclip with your React app. 
 
-You'll need to install `paperclip-loader`, and `paperclip-react-compiler` as dev dependencies. After that, you'll need a `pcconfig.json` that looks something like:
+You'll need to install `paperclip-loader`, and `paperclip-compiler-react` as dev dependencies. After that, you'll need a `pcconfig.json` that looks something like:
 
 ```json
 {
   "compilerOptions": {
-    "name": "paperclip-react-compiler"
+    "name": "paperclip-compiler-react"
   },
   "moduleDirectories": ["./src"],
   "filesGlob": "./src/**/*.pc"
@@ -131,10 +131,10 @@ function SomeComponent() {
 
 #### Generating Typed Definition Files
 
-If you're using TypeScript, then you'll probably want additional type safety around Paperclip files. To do that, you'll need to CLI tools: `npm install paperclip-cli --save-dev`. You'll also need to install a compiler. For now, the only option you have is React, so add that: `npm install paperclip-react-compiler --save-dev`. After that, you can generate typed definition files like so:
+If you're using TypeScript, then you'll probably want additional type safety around Paperclip files. To do that, you'll need to CLI tools: `npm install paperclip-cli --save-dev`. You'll also need to install a compiler. For now, the only option you have is React, so add that: `npm install paperclip-compiler-react --save-dev`. After that, you can generate typed definition files like so:
 
 ```
-./node_modules/.bin/paperclip --compiler=paperclip-react-compiler --definition --write
+./node_modules/.bin/paperclip --compiler=paperclip-compiler-react --definition --write
 ```
 
 

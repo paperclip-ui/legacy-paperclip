@@ -17,6 +17,6 @@
     "yargs": "^15.1.0"
   },
   "devDependencies": {
-    "paperclip-react-compiler": "^10.1.38"
+    "paperclip-compiler-react": "^10.1.38"
   }
 }

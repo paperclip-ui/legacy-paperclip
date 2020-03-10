@@ -46,7 +46,7 @@ Next, you'll need to setup a `pcconfig.json`:
   "compilerOptions": {
 
     // module name of the compiler to use
-    "name": "paperclip-react-compiler"
+    "name": "paperclip-compiler-react"
   },
 
   // Module directories where import statements resolve from.

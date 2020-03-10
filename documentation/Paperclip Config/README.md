@@ -7,7 +7,7 @@ The Paperclip Config (`pcconfig.json`) contains configuration information for th
   "compilerOptions": {
 
     // module name of the compiler to use
-    "name": "paperclip-react-compiler"
+    "name": "paperclip-compiler-react"
   },
 
   // Module directories where import statements resolve from.

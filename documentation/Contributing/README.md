@@ -29,6 +29,6 @@ npm run build && npm run build:watch
 - [papercip](../packages/paperclip) - this is contains the paperclip language, and runtime.
 - [paperclip-cli](../packages/paperclip-cli) - CLI tools
 - [paperclip-loader](../packages/paperclip-loader) - Webpack loader
-- [paperclip-react-compiler](../packages/paperclip-react-compiler) - React compiler target
+- [paperclip-compiler-react](../packages/paperclip-compiler-react) - React compiler target
 - [paperclip-web-renderer](../packages/paperclip-web-renderer) - browser renderer for previews.
 - [paperclip-vscode-extension](../packages/paperclip-vscode-extension) - VS Code extension. -->
