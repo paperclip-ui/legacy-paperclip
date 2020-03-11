@@ -29,9 +29,14 @@ pub struct Context<'a> {
   pub id_count: i32
 }
 
+impl<'a> Context<'a> {
+  pub fn get_current_render_strategy(&self) -> &(String, RenderStrategy) {
+    self.render_call_stack.get(0).unwrap()
+  }
+}
+
 #[derive(Clone, PartialEq, Debug)] 
 pub enum RenderStrategy {
-  Instance,
   Part(String),
   Preview
 }
@@ -83,14 +88,9 @@ fn wrap_as_fragment(node_option: Option<virt::Node>) -> virt::Node {
 
 pub fn get_instance_target_node<'a>(node_expr: &ast::Node, render_strategy: RenderStrategy) -> &ast::Node {
 
-  let default_part = "default".to_string();
-
   let target_node_option = match render_strategy {
-    RenderStrategy::Instance => find_child(node_expr, |child|  {
-      child.tag_name == "part" && ast::get_attribute_value("id", child) == Some(&default_part)
-    }),
     RenderStrategy::Part(id) => find_child(node_expr, |child|  {
-      child.tag_name == "part" && ast::get_attribute_value("id", child) == Some(&id)
+      ast::get_attribute_value("id", child) == Some(&id) && ast::has_attribute("component", child)
     }),
     RenderStrategy::Preview => find_child(node_expr, |child|  {
       child.tag_name == "preview"
@@ -249,8 +249,11 @@ pub fn evaluate_node<'a>(node_expr: &ast::Node, is_root: bool, context: &'a mut 
 fn evaluate_element<'a>(element: &ast::Element, is_root: bool, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
   match element.tag_name.as_str() {
     "import" => evaluate_import_element(element, context),
-    "part" => evaluate_part_element(element, is_root, context),
+
+    // DEPRECATED
     "self" => evaluate_self_element(element, context),
+
+    // DEPRECATED
     "preview" => evaluate_preview_element(element, is_root, context),
     "script" | "property" | "logic" => Ok(None),
     _ => {
@@ -259,7 +262,14 @@ fn evaluate_element<'a>(element: &ast::Element, is_root: bool, context: &'a mut 
       } else if context.part_ids.contains(&element.tag_name) {
         evaluate_part_instance_element(element, context)
       } else {
-        evaluate_basic_element(element, context)
+
+        if ast::has_attribute("component", element) {
+          evaluate_attr_component_element(element, is_root, context)
+        } else if ast::has_attribute("preview", element) {
+          evaluate_attr_preview_element(element, is_root, context)
+        } else {
+          evaluate_basic_element(element, context)
+        }
       }
     }
   }
@@ -315,7 +325,7 @@ pub fn evaluate_imported_component<'a>(element: &ast::Element, context: &'a mut 
   evaluate_component_instance(element, if let Some(part) = namespace_option {
     RenderStrategy::Part(part)
   }  else {
-    RenderStrategy::Instance
+    RenderStrategy::Part("default".to_string())
   }, dep_uri, context)
 }
 
@@ -325,7 +335,6 @@ fn in_render_stack<'a>(strategy: &RenderStrategy, context: &'a mut Context) -> b
 
 fn check_instance_loop<'a>(strategy: &RenderStrategy, element: &ast::Element, context: &'a mut Context) -> Result<(), RuntimeError> {
   let tag = match strategy {
-    RenderStrategy::Instance => "self".to_string(),
     RenderStrategy::Part(id) => id.to_string(),
     RenderStrategy::Preview => "preview".to_string(),
   };
@@ -342,7 +351,7 @@ fn check_instance_loop<'a>(strategy: &RenderStrategy, element: &ast::Element, co
 }
 
 fn evaluate_self_element<'a>(element: &ast::Element, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
-  evaluate_component_instance(element, RenderStrategy::Instance, context.uri, context)
+  evaluate_component_instance(element, RenderStrategy::Part("default".to_string()), context.uri, context)
 }
 
 fn evaluate_part_instance_element<'a>(element: &ast::Element, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
@@ -445,6 +454,10 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
   let mut attributes = vec![];
 
   let tag_name = ast::get_tag_name(element);
+
+  if tag_name == "fragment" {
+    return evaluate_children_as_fragment(&element.children, context);
+  }
 
   for attr_expr in &element.attributes {
     let attr = &attr_expr;
@@ -556,7 +569,6 @@ fn evaluate_import_element<'a>(_element: &ast::Element, _context: &'a mut Contex
   Ok(None)
 }
 
-
 fn evaluate_part_element<'a>(element: &ast::Element, is_root: bool, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
   if !is_root {
     return Ok(None)
@@ -566,10 +578,26 @@ fn evaluate_part_element<'a>(element: &ast::Element, is_root: bool, context: &'a
   evaluate_children_as_fragment(&element.children, context)
 }
 
+fn evaluate_attr_component_element<'a>(element: &ast::Element, is_root: bool, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
+  // if context.get_current_render_strategy() == (context.uri.to_string(), RenderStrategy::Part(get)) {
+
+  // }
+
+  evaluate_basic_element(element, context)
+}
+
+
+fn evaluate_attr_preview_element<'a>(element: &ast::Element, is_root: bool, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
+  if !is_root {
+    return Ok(None)
+  }
+
+  evaluate_children_as_fragment(&element.children, context)
+}
+
 fn evaluate_style_element<'a>(_element: &ast::StyleElement, _context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
   Ok(None)
 }
-  
 
 fn evaluate_children<'a>(children_expr: &Vec<ast::Node>, context: &'a mut Context) -> Result<Vec<virt::Node>, RuntimeError> {
   
@@ -778,56 +806,43 @@ mod tests {
   #[test]
   fn catches_infinite_part_loop() {
     let result = evaluate_source("
-      <part id='test'>
+      <fragment component id='test'>
         <div>
           <test a />          
         </div>
-      </part>
+      </fragment>
       <preview>
         <test />
       </preview>
     ");
     
     assert_eq!(result, Err(RuntimeError::new("Can't call <test /> here since this causes an infinite loop!".to_string(), &"some-file.pc".to_string(), &Location {
-      start: 48,
-      end: 58
+      start: 62,
+      end: 72
     })));
   }
 
   #[test]
   fn catches_recursion_in_multiple_parts() {
     let result = evaluate_source("
-      <part id='test2'>
+      <fragment component id='test2'>
         <div>
           <test />
         </div>
-      </part>
-      <part id='test'>
+      </fragment>
+      <fragment component id='test'>
         <div>
           <test2 />          
         </div>
-      </part>
+      </fragment>
       <preview>
         <test />
       </preview>
     ");
     
     assert_eq!(result, Err(RuntimeError::new("Can't call <test /> here since this causes an infinite loop!".to_string(), &"some-file.pc".to_string(), &Location {
-      start: 49,
-      end: 57
-    })))
-  }
-
-  #[test]
-  fn catches_recursion_for_self_element() {
-    let result = evaluate_source("
-      Hello world
-      <self />
-    ");
-    
-    assert_eq!(result, Err(RuntimeError::new("Can't call <self /> here since this causes an infinite loop!".to_string(), &"some-file.pc".to_string(), &Location {
-      start: 25,
-      end: 33
+      start: 63,
+      end: 71
     })))
   }
 

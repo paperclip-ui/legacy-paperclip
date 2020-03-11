@@ -322,7 +322,7 @@ pub fn get_parts<'a>(root_expr: &'a Node) -> Vec<&'a Element> {
   if children != None {
     for child in children.unwrap() {
       if let Node::Element(element) = &child {
-        if element.tag_name == "part" {
+        if has_attribute("component", element) {
           parts.push(element);
         }
       }
@@ -382,6 +382,13 @@ pub fn get_attribute_value<'a, 'b>(name: &'b str, element: &'a Element) -> Optio
   }
   None
 }
+  
+pub fn has_attribute<'a, 'b>(name: &'b str, element: &'a Element) -> bool { 
+  match get_attribute(name, element) {
+    Some(attr) => true,
+    None => false
+  }
+}
 
 pub fn get_import_ids<'a>(root_expr: &'a Node) -> Vec<&'a String> {
   let mut ids = vec![];
@@ -405,6 +412,8 @@ pub fn get_import_identifier<'a>(import: &'a Element) -> Option<&'a String> {
 
 pub fn get_part_ids<'a>(root_expr: &'a Node) -> Vec<&'a String> {
   let mut ids = vec![];
+
+  // DEPRECATED
   for part in get_parts(root_expr) {
     if let Some(id) = get_attribute_value("id", &part) {
       ids.push(id);

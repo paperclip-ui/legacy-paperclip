@@ -160,6 +160,7 @@ export const getRelativeFilePath = fs => (
   }
   return relativePath;
 };
+
 export const getImportIds = (ast: Node): string[] =>
   getImports(ast)
     .map(node => getAttributeStringValue("id", node))
