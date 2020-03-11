@@ -5,10 +5,9 @@ import * as crc32 from "crc32";
 import { resolveImportFile } from "./resolve";
 import * as path from "path";
 import {
-  PREVIEW_TAG_NAME,
-  PART_TAG_NAME,
   LOGIC_TAG_NAME,
-  DEFAULT_PART_ID
+  DEFAULT_PART_ID,
+  PREVIEW_ATTR_NAME
 } from "./constants";
 
 export enum NodeKind {
@@ -245,7 +244,7 @@ export const getParts = (ast: Node): Element[] =>
   getChildren(ast).filter(child => {
     return (
       child.kind === NodeKind.Element &&
-      child.tagName === PART_TAG_NAME &&
+      hasAttribute("component", child) &&
       hasAttribute("id", child)
     );
   }) as Element[];
@@ -393,7 +392,7 @@ export const getNestedReferences = (
     for (const child of getChildren(node)) {
       if (
         child.kind === NodeKind.Element &&
-        child.tagName === PREVIEW_TAG_NAME
+        hasAttribute(PREVIEW_ATTR_NAME, child)
       ) {
         continue;
       }

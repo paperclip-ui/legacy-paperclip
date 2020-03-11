@@ -21,31 +21,27 @@
     padding: 6px 12px;
   }
 
-  li[data-done] {
+  #TodoItem[data-done] {
     text-decoration: line-through;
   }
   
 </style>
 
-<part id="TodoItem">
-  <li data-done={done}>
-    <input type="checkbox" checked={done} onClick={onDoneClick}>
-    {label}
-  </li>
-</part>
+<li component id="TodoItem" data-done={done}>
+  <input type="checkbox" checked={done} onClick={onDoneClick}>
+  {label}
+</li>
 
-<part id="TodoList">
+<fragment component id="TodoList">
   <h1>Todos:</h1>
   <input type="text" id="new-todo-input" onKeyPress={onNewTodoKeyPress} placeholder="Add a new todo..." >
   <ul>
     {todoItems}
   </ul>
-</part>
+</fragment>
 
-<preview>
-  <TodoList todoItems={<>
-    <TodoItem label="Feed cat" done />
-    <TodoItem label="Take out trash" />
-    <TodoItem label="Walk dog" done />
-  </>} />
-</preview>
+<TodoList preview todoItems={<fragment>
+  <TodoItem label="Feed cat" done />
+  <TodoItem label="Take out trash" />
+  <TodoItem label="Walk dog" done />
+</fragment>} />

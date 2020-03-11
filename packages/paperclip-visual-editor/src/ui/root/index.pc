@@ -87,10 +87,10 @@
       </div>
       <div class="table">
         <property-item name="font-family" value="Helvetica" />
-        <property-item name="color" value={<>
+        <property-item name="color" value={<fragment>
           <color-pill value="rgb(218, 167, 58)"/>
           <span>rgb(218, 167, 58)</span>
-          </>} 
+          </fragment>} 
         />
       </div>
     </div>

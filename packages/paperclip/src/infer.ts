@@ -15,8 +15,10 @@ import {
   Block,
   Statement,
   StatementKind,
-  PREVIEW_TAG_NAME,
-  PART_TAG_NAME
+  FRAGMENT_TAG_NAME,
+  hasAttribute,
+  PREVIEW_ATTR_NAME,
+  COMPONENT_ATTR_NAME,
 } from "paperclip-utils";
 
 // TODO - this should be built in rust
@@ -284,8 +286,8 @@ const inferConditionBlock = (block: Conditional, context: Context): Context => {
 
 const inferElement = (element: Element, isRoot: boolean, context: Context) => {
   if (
-    element.tagName === PREVIEW_TAG_NAME ||
-    (element.tagName === PART_TAG_NAME && !isRoot)
+    hasAttribute(PREVIEW_ATTR_NAME, element) ||
+    (hasAttribute(COMPONENT_ATTR_NAME, element) || isRoot)
   ) {
     return context;
   }

@@ -1,12 +1,20 @@
-<div component id="something">
-  something
+<import id="Something" src="./module.pc">
+
+<style>
+  #Test {
+    color: rgb(185, 90, 90);
+  }
+</style>
+
+
+<div export component id="Test">
+  Hello {children}!
 </div>
 
-<div component id="test">
-  Hello {children}
-  <something />
-</div>
+<Test preview>
+  World
 
-<div preview>
-  this is a preview
-</div>
+  <Something>
+    okay
+  </Something>
+</Test>

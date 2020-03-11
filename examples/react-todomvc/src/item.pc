@@ -139,45 +139,43 @@
   }
 </style>
 
-<part id="label-input">
+<fragment export component id="label-input">
   <input {onKeyPress} {onBlur} default-value={label} type="text" class="edit" autofocus="autofocus">
-</part>
+</fragment>
 
-<part id="todo-label">
+<fragment export component id="todo-label">
   <div class="view">
     <input type="checkbox" class="toggle" onChange={onCheckChange} checked={completed}>
     <label onClick={onLabelClick}>{label}</label> 
     <button class="destroy"></button>
   </div> 
-</part>
+</fragment>
 
-<part id="default">
+<fragment export component id="default">
   <li class="todo" data-completed={completed}>
     {children}
   </li>
-</part>
+</fragment>
 
 <!-- variant previews -->
-<part no-compile id="default-preview">
+<fragment export component id="default-preview">
   <default {completed}>
     <todo-label {label} {completed} />
   </default>
-</part>
+</fragment>
 
-<part no-compile id="editing-preview">
+<fragment export component id="editing-preview">
   <default {completed}>
     <label-input />
   </default>
-</part>
+</fragment>
 
 <!-- main preview -->
-<preview>
-  <div class="app">
-    <ul>
-      <default-preview label="something" completed />
-      <default-preview label="something else" />
-      <default-preview label="to be continued" />
-      <edting-preview />
-    </ul>
-  </div>
-</preview>
+<div preview class="app">
+  <ul>
+    <default-preview label="something" completed />
+    <default-preview label="something else" />
+    <default-preview label="to be continued" />
+    <edting-preview />
+  </ul>
+</div>

@@ -71,7 +71,7 @@
   }
 </style>
 
-<part id="calculator">
+<div component id="calculator">
   <div id="root">
     <div class="app">
       <div class="display">
@@ -148,10 +148,8 @@
       </div>
     </div>
   </div>
-</part>
+</div>
 
-<preview>
-  <div id="preview">
-    <calculator value={10} />
-  </div>
-</preview>
+<div preview id="preview">
+  <calculator value={10} />
+</div>

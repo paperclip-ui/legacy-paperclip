@@ -136,7 +136,7 @@
     padding-right: 24px;
   }
 </style>
-<part id="features">
+<div component id="features">
   <div class="features">
     <div class="feature info">
       <div class="title">
@@ -207,7 +207,7 @@
       </div>
     </div>
   </div>
-</part>
+</div>
 
 <style>
   .examples {
@@ -242,7 +242,7 @@
 
 </style>
 
-<part id="examples">
+<div component id="examples">
   <div class="examples">
     <div class="example">
       <div class="info">
@@ -271,9 +271,9 @@
       </div>
     </div>
   </div>
-</part>
+</div>
 
-<part id="header">
+<div component id="header">
   <div class="header">
     <div class="navigation">
       <a class="logo" href="http://paperclip.dev">
@@ -312,7 +312,7 @@
       </div>
     </div>
   </div>
-</part>
+</div>
 
 <style>
   .bottom {
@@ -320,7 +320,7 @@
     display: none;
   }
 </style>
-<part id="bottom">
+<div component id="bottom">
   <div class="bottom navigation">
       <div class="links">
         <a href="#">Docs</a>
@@ -332,9 +332,9 @@
         <!-- <a href="#"><img src="./assets/twitter.svg"></a> -->
       </div>
   </div>
-</part>
+</div>
 
-<part id="default">
+<div component id="default">
   <div class="website">
 
     <header />
@@ -348,11 +348,11 @@
     <div class="divider" />
     <bottom />
   </div>
-</part>
+</div>
 
-<preview>
+<div preview>
   <default 
     paperclipSnippet={<mini-editor:code-preview />}
-    reactSnippet={"snip"}
+    reactSnippet="snip"
   />
-</preview>
+</div>

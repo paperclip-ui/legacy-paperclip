@@ -153,7 +153,7 @@
 
 </style>
 
-<div class="app-container">
+<div export component id="default" class="app-container">
   <div class="app">
 
       <!-- more non-preview code. -->
@@ -184,13 +184,13 @@
   </div>
 </div>
 
-<preview>
-  <self 
-    items={<>
+<div preview>
+  <default 
+    items={<fragment>
       <list-item:default-preview label="walk dog" completed />
       <list-item:default-preview label="clean car" />
       <list-item:editing-preview />
-    </>} 
+    </fragment>} 
     controls={<controls:default-preview />} 
   />
-</preview>
+</div>

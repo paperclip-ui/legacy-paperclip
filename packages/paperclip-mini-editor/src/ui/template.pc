@@ -67,25 +67,13 @@
   }
 </style>
 
-<part id="tab">
+<fragment component id="tab">
   <span class="tab" {onClick} data-active={active}>
     {children}
   </span>
-</part>
+</fragment>
 
-<part id="pane">
-  <!--style>
-
-    :root {
-      --header: {
-        color: red;
-      }
-    }
-    
-    .header {
-      @extends var(--header);
-    }
-  </style-->
+<fragment component id="pane">
   <div class="pane" data-type={type}>
     <div class="header">
       {header}
@@ -94,57 +82,52 @@
       {content}
     </div>
   </div>
-</part>
+</fragment>
 
-<part id="files-pane">
-  <pane type="files" header={<span>{tabs}</span>} content={editor} />
-</part>
+<fragment component id="files-pane">
+  <pane type="files" header={<span>{tabs}</span>} {editor} />
+</fragment>
 
-<part id="display-pane">
+<fragment component id="display-pane">
   <pane type="preview" header="Preview" {content} />
-</part>
+</fragment>
 
-<part id="default">
+<fragment component id="default">
   <div class="editor">
     {filesPane}
     {displayPane}
   </div>
-</part>
+</fragment>
 
-<part id="files-pane-preview">
+<fragment component id="files-pane-preview">
   <files-pane 
     tabs={
-      <>
+      <fragment>
         <tab active>index.pc</tab>
         <tab>index.tsx</tab>
-      </>
+      </fragment>
     }
     editor="EDITOR HERE"
   />
-</part>
+</fragment>
 
-<part id="display-pane-preview">
-  <!--style>
-    display-pane::override(.header) {
-      padding: 0;
-    }
-  </style-->
+<fragment component id="display-pane-preview">
   <display-pane content={
-    <>
+    <fragment>
       <div style={{background: 'grey', color: 'white', padding: '10px', display: 'inline-block'}}>some content preview</div>
-    </>
+    </fragment>
   } />
-</part>
+</fragment>
 
-<part id="code-preview">
+<div export component id="code-preview">
   <default 
     filesPane={<files-pane-preview />}
     displayPane={<display-pane-preview />}
   />
-</part>
+</div>
 
-<preview>
+<div preview>
   <div class="app">
     <code-preview />
   </div>
-</preview>
+</div>

@@ -32,24 +32,12 @@ Here's a kitchen sink example of most syntaxes:
 </div>
 
 <!-- a bunch of nodes that you can re-use -->
-<part id="message">
-  <span>Hello {children}!</span>
-</part>
+<span component id="message">Hello {children}!</span>
 
 <!-- renders as "Hello World!" -->
-<message>
+<message preview>
   World
 </message>
-
-<!-- Renders a preview of this component -->
-<preview>
-  <message>
-    Some message
-  </message>
-  <message>
-    Another message
-  </message>
-</preview>
 ```
 
 # Syntax
@@ -78,15 +66,13 @@ export function Hello() {
 `{children}` is a special slot that takes children. Here's how it's used:
 
 ```html
-<part id="message">
+<div export component id="message">
   Hello {children}
 </part>
 
-<preview>
-  <message>
-     World
-  </message>
-</preview>
+<message preview>
+    World
+</message>
 ```
 
 ☝🏻This renders `Hello World`. JSX code for this would look like:
@@ -165,9 +151,9 @@ export function SomeInput() {
 Slots accept JSX, objects, references, booleans, arrays, and numbers. Here's a kitchen sink example:
 
 ```html
-<part id="some-part">
+<div component id="some-part">
   Value: {value}
-</part>
+</div>
 
 <some-part value="something" />
 <some-part value={"something"} />
@@ -182,10 +168,10 @@ Slots accept JSX, objects, references, booleans, arrays, and numbers. Here's a k
 ]} />
 
 <!-- Similar to using array, but you can omit commas with this syntax -->
-<some-part value={<>
+<some-part value={<fragment>
     <span></span>
     5 true false
-  </>
+  </fragment>
 } />
 
 <!-- You can also use objects. -->
