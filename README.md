@@ -136,8 +136,8 @@ Styles are scoped to this file, so you don't have to worry about them leaking ou
   </ul>
 </fragment>
 
-<!-- Preview is a special attribute for development that allows you to see how all of your parts look when put together in their varying states. -->
-<TodoList preview todoItems={<fragment>
+<!-- Elements at the root can be used to preview components -->
+<TodoList todoItems={<fragment>
   <TodoItem label="Feed cat" done />
   <TodoItem label="Take out trash" />
   <TodoItem label="Walk dog" done />
