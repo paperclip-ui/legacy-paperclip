@@ -31,7 +31,7 @@ pub struct Context<'a> {
 
 impl<'a> Context<'a> {
   pub fn get_current_render_strategy(&self) -> &(String, RenderStrategy) {
-    self.render_call_stack.get(0).unwrap()
+    self.render_call_stack.get(self.render_call_stack.len() - 1).unwrap()
   }
 }
 
@@ -264,6 +264,15 @@ fn evaluate_element<'a>(element: &ast::Element, context: &'a mut Context) -> Res
       } else if context.part_ids.contains(&element.tag_name) {
         evaluate_part_instance_element(element, context)
       } else {
+
+        if ast::has_attribute("component", element){
+          if let Some(id) = ast::get_attribute_value("id", element) {
+            if context.get_current_render_strategy() != &(context.uri.to_string(), RenderStrategy::Part(id.to_string())) {
+              return Ok(None);
+            }
+          }
+        }
+
         if element.tag_name == "fragment" {
           evaluate_children_as_fragment(&element.children, context)
         } else {
@@ -439,6 +448,8 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
 
   let tag_name = ast::get_tag_name(element);
 
+  let is_component = ast::has_attribute("component", element);
+
   for attr_expr in &element.attributes {
     let attr = &attr_expr;
 
@@ -453,6 +464,14 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
           }
           (kv_attr.name.to_string(), Some(stringify_attribute_value(&kv_attr.name, &value)))
         };
+
+        if name == "export" || name == "component" {
+          continue;
+        }
+
+        if name == "id" && is_component {
+          continue;
+        }
 
         if name == "src" {
           if let Some(value) = value_option {

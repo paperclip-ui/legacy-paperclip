@@ -35,347 +35,180 @@ Here's a kitchen sink example of most syntaxes:
 <span component id="message">Hello {children}!</span>
 
 <!-- renders as "Hello World!" -->
-<message preview>
+<message>
   World
 </message>
 ```
 
 # Syntax
 
-## slots
+The syntax is basic HTML & CSS with a few additions. 
 
-Slots are areas of your template where you can add content. For example:
+## Styling
 
-```html
-<!-- hello.pc -->
-Hello {message}!
-```
-
-If you're using React & Webpack, you can import this template like so:
-
-```javascript
-import HelloView from "./hello.pc";
-export function Hello() {
-  // return <HelloView message="World" />
-  return <HelloView message={<strong>World</strong>} />;
-}
-```
-
-#### children slot 
-
-`{children}` is a special slot that takes children. Here's how it's used:
+You can style things using the native `<style />` element. Note that styles are scoped to the template. For example:
 
 ```html
-<div export component id="message">
-  Hello {children}
-</part>
+<style>
+  div {
+    color: red;
+  }
+</style>
 
-<message preview>
-    World
-</message>
+<div>Something</div>
 ```
 
-☝🏻This renders `Hello World`. JSX code for this would look like:
+The `div { }` rule here is only applied to elements within the same template file, in this case: `<div>Something</div>`. 
+
+## Components
+
+Components are useful for re-using chunks of elements & text.
+
+#### Creating components
+
+Here's an example:
+
+```html
+<div component id="Message">
+  Hello {text}
+</div>
+
+<!-- prints Hello World -->
+<Message text="World" />
+```
+
+Components are defined by adding a `component` and `id` attribute to any element at the highest level in the template document. 
+
+## Exporting components
+
+If you want to use components in JavaScript code, you'll need to define an `export` attribute. For example:
+
+```html
+<!-- counter.pc -->
+<div export component id="Counter" {onClick}>
+  Hello {currentCount}
+</div>
+```
+
+Then in JSX code, you can import component:
 
 ```javascript
-import {Message} from "./template.pc";
-export function HelloWorldMessage() {
-  return <Message>World</Message>;
-}
+import {Counter as CounterView} from "./message.pc";
+import React, {useState} from "react";
+
+export function Counter() {
+  const [currentCount, setCount] = useState(0);
+  const onClick = () => setCount(currentCount + 1);
+
+  return <CounterView 
+    currentCount={currentCount} 
+    onClick={onClick} 
+  />;
+};
 ```
 
-## Attribute bindings
+> ☝🏻This assumes that you're using a bundler.
+
+## Default components 
+
+Default exports can be defined using the `default` ID:
+
+```html
+<!-- counter.pc -->
+<div export component id="default" {onClick}>
+  Hello {currentCount}
+</div>
+```
+
+Here's how you import this component is JSX code:
+
+
+```javascript
+import Counter as CounterView from "./counter.pc";
+import React, {useState} from "react";
+
+export function Counter() {
+
+  // code here...
+  const currentCount = 0;
+  const onClick = () => {};
+  return <CounterView 
+    currentCount={currentCount} 
+    onClick={onClick} 
+  />;
+};
+```
+
+## {Bindings}
+
+Bindings help you define dynamic parts of your components. 
+
+#### slots
+
+Slots are areas of your components where you'd like to insert text or elements. For example:
+
+```html
+<div component id="Message">
+  Hello {text}
+</div>
+
+<Message text="World" />
+<Message text={<strong>World</strong>} />
+```
+
+`{children}` behaves a bit differently:
+
+```html
+<div component id="Message">
+  Hello {text}
+</div>
+
+<Message>
+  <strong>World</strong>
+</Message>
+```
+
+#### attribute bindings
 
 Example:
 
 ```html
+
 <style>
-  div[data-variant=red] {
+  .red {
     color: red;
   }
-  div[data-variant=blue] {
+  .blue {
     color: blue;
   }
 </style>
 
-<div data-variant={variant}> 
-  Some text
+<div export component id="Message" class={class}>
+  {children}
 </div>
 
-<preview>
-  <self variant="red" />
-  <self variant="blue" />
-</preview>
+<Message class="red">
+  Hello World
+</Message>
+
+<Message class="blue">
+  Hello World
+</Message>
 ```
 
-#### shorthand attributes
-
-To make things easier, you can shorten how you bind to attributes. For example:
+Since the attribute key & binding share the same name, we can use the **shorthand approach**:
 
 ```html
-<div {onClick}></div>
-```
-
-☝🏻 This is equivalent to:
-
-```html
-<div onClick={onClick}></div>
-```
-
-#### spreads (...props)
-
-You can spread properties to elements too. For example:
-
-```html
-<!-- some-input.pc -->
-<input type="text" {...inputProps}>
-```
-
-This can be used in JSX code like so:
-
-```javascript
-import SomeInputView from "./some-input.pc";
-export function SomeInput() {
-  return <SomeInputView inputProps={{
-    onKeyPress: event => {
-      // do something
-    },
-    defaultValue: "somrthing"
-  }}>
-}
-```
-
-
-## What can go in slots?
-
-Slots accept JSX, objects, references, booleans, arrays, and numbers. Here's a kitchen sink example:
-
-```html
-<div component id="some-part">
-  Value: {value}
+<!-- styles here -->
+<div export component id="Message" {class}>
+  {children}
 </div>
 
-<some-part value="something" />
-<some-part value={"something"} />
-<some-part value={5} />
-
-<some-part value={[
-  <span></span>, 
-  "some text", 
-  5, 
-  true, 
-  false
-]} />
-
-<!-- Similar to using array, but you can omit commas with this syntax -->
-<some-part value={<fragment>
-    <span></span>
-    5 true false
-  </fragment>
-} />
-
-<!-- You can also use objects. -->
-<span style={{background: "red"}}>Something</span>
+<Message class="red">
+  Hello World
+</Message>
 ```
 
-
-## `<part />`
-
-Parts allow you to slice up your component building blocks to be used in your app code.
-
-```html
-<!-- todo-item.pc -->
-<part id="LabelInput">
-  <input type="text" onChange={onChange} />
-</part>
-
-<part id="TodoLabel">
-  <div>
-    <input type="checkbox" checked={completed}>
-    <label onClick={onLabelClick}>{label}</label>
-  </div>
-</part>
-
-<part id="default">
-  <li>
-    {children}
-  </li>
-</part>
-```
-
-Each part is exported using their `id` attribute. The `default` part however is special in that it exports the part as the _default_ component. For example, here's how you might use the template above:
-
-<!-- The `id` prop is what's used to export the part. The `default` id tells that the part should be exported as the _default_ component (similar to how the default import works in JavaScript). All other parts are exported using their  -->
-
-<!-- In your app code, you might have something like: -->
-
-```javascript
-// todo-item.tsx
-import TodoItem, {TodoLabel, LabelInput} from "./todo-item.pc";
-import {useState} from "react";
-export ({item, onChange}) => {
-  const [editing, setEditing] = useState(false);
-  const onBlur = () = setEditing(false);
-  const onLabelClick = () => setEditing(true);
-
-  return <TodoItem>
-    {
-      editing ? 
-        <LabelInput onChange={onChange} onBlur={onBlur} /> : 
-        <TodoLabel 
-          onLabelClick={onLabelClick} 
-          label={label} 
-          completed={item.completed} 
-        />
-    }
-  </TodoItem>
-}
-```
-
-#### `no-compile` parameter
-
-The `no-compile` parameter for `part` elements tells the compiler to omit it. This is useful for cases where you want to define `preview` part. [You can check out more about this below](#rendering-imported-parts).
-
-#### `id="default"`
-
-Assigning `<part id="default">...</part>` makes the part the _default_ export. For example:
-
-```html
-<!-- hello.pc -->
-<part id="default">
-  Hello {message}!
-</part>
-```
-
-Which is just about the same as:
-
-```html
-Hello {message}!
-```
-
-The only difference here is how the template is used in a preview. For example:
-
-```html
-<part id="default">
-  Hello {message}!
-</part>
-
-<preview>
-
-  <!-- just call the default part -->
-  <default />
-</preview>
-```
-
-And:
-
-```html
-Hello {message}!
-
-<preview>
-
-  <!-- self refers to root nodes -->
-  <self />
-</preview>
-```
-
-Both options are used the same when imported:
-
-```html
-<!-- app.pc -->
-<import id="hello" src="./hello.pc">
-
-<!-- Render: Hello World! -->
-<hello message="World" />
-```
-
-
-## `<preview />`
-
-This is where you set up your components to see what they look like.
-
-```html
-<part id="label-input">
-  <input {onKeyPress} {onBlur} default-value={label} type="text" class="edit" autofocus="autofocus">
-</part>
-
-<part id="todo-label">
-  <div class="view">
-    <input type="checkbox" class="toggle" onChange={onCheckChange} checked={completed}>
-    <label onClick={onLabelClick}>{label}</label> 
-    <button class="destroy"></button>
-  </div> 
-</part>
-
-<part id="default">
-  <li class="todo" {completed}>
-    {children}
-  </li>
-</part>
-
-<!-- variant previews -->
-<part no-compile id="default-preview">
-  <default {completed}>
-    <todo-label {label} {completed} />
-  </default>
-</part>
-
-<part no-compile id="editing-preview">
-  <default {completed}>
-    <label-input />
-  </default>
-</part>
-
-<!-- main preview -->
-<preview>
-  <div class="app">
-    <ul>
-      <default-preview label="something" completed />
-      <default-preview label="something else" />
-      <default-preview label="to be continued" />
-      <edting-preview />
-    </ul>
-  </div>
-</preview>
-```
-
-### `<self />`
-
-Renders the `root` children. 
-
-```html
-<part id="bolder">
-  <strong>{children}</strong>
-</part>
-
-Hello {message}!
-
-<preview>
-
-  <!-- renders: Hello <strong>World!</strong>! -->
-  <self message={<bolder>World</bolder>} /> 
-</preview>
-```
-
-❗️Note that text & elements at the _root_ are combined into the same template. I find this approach to be preferable _if_ the template doesn't have any other `<part />` elements. If there _are_ multiple parts, I find it better to use a `default` part for the root nodes instead. For example:
-
-```html
-<part id="bolder">
-  <strong>{children}</strong>
-</part>
-
-<part id="default">
-  Hello {message}!
-</part>
-
-<preview>
-
-  <!-- renders: Hello <strong>World!</strong>! -->
-  <default message={<bolder>World</bolder>} /> 
-</preview>
-```
-
-☝🏻 Defining a default part does just about the same thing as defining those nodes on the root. Then in your preview, just render `<default />` instead of `<self />`.
 
 ## `<import />`
 
@@ -388,15 +221,7 @@ Hello {message}!
 Suppose you have a `todo-item.pc` file:
 
 ```html
-<li>{label}</li>
-```
-
-Or:
-
-```html
-<part id="default">
-  <li>{label}</li>
-</part>
+<li export component id="default">{label}</li>
 ```
 
 You can import that file like so:
@@ -405,27 +230,24 @@ You can import that file like so:
 <!-- todo-list.pc -->
 <import id="todo-item" src="./todo-item.pc">
 
-<part id="default">
-  <ul>
-    {todoItems}
-  </ul>
-</part>
+<ul component id="TodoItems">
+  {todoItems}
+</ul>
 
-<preview>
-  <default
-    todoItems={<>
-      <todo-item label="wash car" />
-      <todo-item label="feed dog" />
-    </>}
-  />
-</preview>
+<!-- preview -->
+<TodoItems
+  todoItems={<fragment>
+    <todo-item label="wash car" />
+    <todo-item label="feed dog" />
+  </fragment>}
+/>
 ```
 
-> The <></> Syntax defines a [Fragment](#fragments-).
+> The <fragment></fragment> Syntax defines a [Fragment](#fragments-).
 
-#### Rendering imported parts
+#### Rendering components from import
 
-In some cases, you may want to use different parts of your imported component. A good example of this is when you want to see different variants, for example:
+In some cases you may want to use different components from your imported file. For example:
 
 ```html
 <style>
@@ -434,24 +256,17 @@ In some cases, you may want to use different parts of your imported component. A
   }
 </style>
 
-<part id="default">
-  <li data-completed={completed}>
-    <input type="checkbox" onClick={onCompleteCheckboxClick}>
-    {label}
-  </li>
-</part>
-
+<li export component id="default" data-completed={completed}>
+  <input type="checkbox" onClick={onCompleteCheckboxClick}>
+  {label}
+</li>
 <!--  
   Part that is used to preview component. no-compile tells
   compilers not to include this part.
 -->
-<part no-compile id="completed-preview">
-  <default completed {label} data-{completed} />
-</part>
 
-<part no-compile id="incomplete-preview">
-  <default {label} />
-</part>
+<default export component id="CompletedPreview" {label} completed />
+<default export component id="IncompletePreview" {label} />
 ```
 
 ☝🏻`complete-preview`, and `incomplete-preview` give us different previews of our `todo-item` component. To use these parts in an import, we can do something like this:
@@ -459,31 +274,23 @@ In some cases, you may want to use different parts of your imported component. A
 ```html
 <!-- todo-list.pc -->
 
-<import id="todo-item" src="./todo-item.pc">
+<import id="TodoItem" src="./todo-item.pc">
 
-<!-- Alternatively, we can wrap this content in a part, but it's being rendered at the root for demonstration purposes -->
-<h1>Todos:</h1>
-<input type="text" onKeyPress={onNewTodoKeyPress}>
+<div export component id="TodoList">
 
-<ul>
-  {todoItems}
-</ul>
+  <h1>Todos:</h1>
+  <input type="text" onKeyPress={onNewTodoKeyPress}>
 
-<preview>
+  <ul>
+    {todoItems}
+  </ul>
+</div>
 
-  <!-- self refers to the text & elements at the root of this file -->
-  <self
-    todoItems={<>
-      <todo-item:completed-preview label="Clean car" />
-      <todo-item:incomplete-preview label="Walk dog" />
-      <todo-item:completed-preview label="Clean car" />
-    </>}
-  />
-</preview>
+<TodoList todoItems={<fragment>
+  <TodoItem:CompletedPreview label="Clean car" />
+  <TodoItem:IncompletePreview label="Walk dog" />
+</fragment>} />
 ```
-> Notice that `todo-item` corresponds with the import ID, and everything following after the colon (:) is the `part` name defined in `todo-item.pc`. In this case we're using `todo-item:completed-preview`, and `todo-item:incomplete-preview`.
-
-> ❗️ Also note that we're defining todo items in the _preview_, and not exactly where they're being used. This is because we need an area where our `todo-list.jsx` can inject dynamic todo items (`{todoItems}`).
 
 Here's what the preview looks like:
 
@@ -495,7 +302,7 @@ The JSX code for that might look something like:
 // todo-list.jsx 
 
 import React from "react";
-import TodoListView from "./todo-list.pc";
+import {TodoList as TodoListView} from "./todo-list.pc";
 
 // We're using the TodoItem component assuming that it's using the todo-list.pc template.
 import TodoItem from "./todo-item.tsx";
@@ -549,22 +356,20 @@ Assuming that you have a file `src/styles/global.css`, you can import it like th
 <import src="global.css">
 ```
 
-### Fragments (`<></>`)
+### Fragments (`<fragment></fragment>`)
 
 Fragments are useful if you're looking to render a collection of elements in a slot. For example:
 
 ```html
-<part id="default">
-  <ul>
-    {listItems}
-  </ul>
-</part>
+<ul component id="List">
+  {listItems}
+</ul>
 
-<preview>
-  <default listItems={<>
+<List
+  listItems={<fragment>
     <li>feed fish</li>
     <li>feed cat</li>
     <li>feed me</li>
-  </>} />
-</preview>
+  </fragment>}
+/>
 ```

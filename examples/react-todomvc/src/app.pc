@@ -184,13 +184,11 @@
   </div>
 </div>
 
-<div preview>
-  <default 
-    items={<fragment>
-      <list-item:default-preview label="walk dog" completed />
-      <list-item:default-preview label="clean car" />
-      <list-item:editing-preview />
-    </fragment>} 
-    controls={<controls:default-preview />} 
-  />
-</div>
+<default 
+  items={<fragment>
+    <list-item:default-preview label="walk dog" completed />
+    <list-item:default-preview label="clean car" />
+    <list-item:editing-preview />
+  </fragment>} 
+  controls={<controls:default-preview />} 
+/>

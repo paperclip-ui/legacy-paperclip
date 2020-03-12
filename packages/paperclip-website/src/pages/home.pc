@@ -350,9 +350,8 @@
   </div>
 </div>
 
-<div preview>
-  <default 
-    paperclipSnippet={<mini-editor:code-preview />}
-    reactSnippet="snip"
-  />
-</div>
+
+<default 
+  paperclipSnippet={<mini-editor:code-preview />}
+  reactSnippet="snip"
+/>

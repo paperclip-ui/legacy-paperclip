@@ -116,6 +116,4 @@
   />
 </div>
 
-<preview>
-  <default-preview />
-</preview>
+<default-preview />

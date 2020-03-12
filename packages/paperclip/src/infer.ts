@@ -287,7 +287,7 @@ const inferConditionBlock = (block: Conditional, context: Context): Context => {
 const inferElement = (element: Element, isRoot: boolean, context: Context) => {
   if (
     hasAttribute(PREVIEW_ATTR_NAME, element) ||
-    (hasAttribute(COMPONENT_ATTR_NAME, element) || isRoot)
+    (hasAttribute(COMPONENT_ATTR_NAME, element))
   ) {
     return context;
   }

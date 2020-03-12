@@ -67,7 +67,7 @@ describe(__filename + "#", () => {
               color: red;
             }
           </style>
-          <span>{children}!</span>
+          <span export component id="default">{children}!</span>
 
         `,
         "/entry.pc": `
@@ -149,7 +149,7 @@ describe(__filename + "#", () => {
             }
             
           </style>
-          <span>{children}!</span>
+          <span export component id="default">{children}!</span>
 
         `,
         "/entry.pc": `
@@ -166,35 +166,34 @@ describe(__filename + "#", () => {
       // parse different tag names
       {
         "/entry.pc": `
+          <span component id="test">
           {_someRef}
           {_some5ref}
           {_ref}
           {$$ref}
-          <preview>
-            <self 
-              _someRef="a" 
-              _some5ref="b" 
-              _ref="c"
-              $$ref="d"
-            />
-          </preview>
+          </span>
+
+          <test 
+            _someRef="a" 
+            _some5ref="b" 
+            _ref="c"
+            $$ref="d"
+          />
         `
       },
       {},
-      `<style></style>abcd`
+      `<style></style><span data-pc-80f4925f>abcd</span>`
     ],
     [
       // parse different tag names
       {
         "/entry.pc": `
-          {a} b
-          <preview>
-            <self a="c" />
-          </preview>
+          <span component id="test">{a} b</span>
+          <test a="c" />
         `
       },
       {},
-      `<style></style>c b`
+      `<style></style><span data-pc-80f4925f>c b</span>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

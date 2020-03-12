@@ -45,7 +45,6 @@
   <button>{children}</button>
 </div>
 
-
-<default preview>
+<default>
   AC
 </default>

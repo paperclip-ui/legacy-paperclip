@@ -9,12 +9,12 @@ const files= [
   {
     name: "message.pc",
     content: [
-      `<part id="message">`,
-      `  Hello {children}!`,
-      `</part>\n`,
-      `<preview>`,
-      `  <message>World</message>`,
-      `</preview>`
+      // `<part id="message">`,
+      // `  Hello {children}!`,
+      // `</part>\n`,
+      // `<preview>`,
+      // `  <message>World</message>`,
+      // `</preview>`
     ].join("\n")
   }
 ]

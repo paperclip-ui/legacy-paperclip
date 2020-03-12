@@ -40,7 +40,7 @@
   </ul>
 </fragment>
 
-<TodoList preview todoItems={<fragment>
+<TodoList todoItems={<fragment>
   <TodoItem label="Feed cat" done />
   <TodoItem label="Take out trash" />
   <TodoItem label="Walk dog" done />

@@ -150,6 +150,6 @@
   </div>
 </div>
 
-<div preview id="preview">
+<div id="preview">
   <calculator value={10} />
 </div>
