@@ -25,8 +25,6 @@ pub struct Context<'a> {
   pub scope: String,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
-  pub id_seed: String,
-  pub id_count: i32
 }
 
 impl<'a> Context<'a> {
@@ -40,13 +38,6 @@ pub enum RenderStrategy {
   Part(String),
   Preview,
   Auto
-}
-
-impl<'a> Context<'a> {
-  pub fn get_next_id(&mut self) -> String {
-    self.id_count += 1;
-    format!("{}-{}", self.id_seed, self.id_count)
-  }
 }
 
 pub fn evaluate<'a>(uri: &String, graph: &'a DependencyGraph, vfs: &'a VirtualFileSystem, data: &js_virt::JsValue, part_option: Option<String>) -> Result<Option<virt::Node>, RuntimeError>  {
@@ -179,7 +170,6 @@ pub fn evaluate_jumbo_style<'a>(entry_expr: &ast::Node, context: &'a mut Context
 
   
   Ok(virt::Node::StyleElement(virt::StyleElement {
-    id: context.get_next_id(),
     sheet
   }))
 }
@@ -196,14 +186,13 @@ pub fn evaluate_instance_node<'a>(node_expr: &ast::Node, context: &'a mut Contex
 
 fn create_context<'a>(node_expr: &'a ast::Node, uri: &'a String, graph: &'a DependencyGraph, vfs: &'a VirtualFileSystem, data: &'a js_virt::JsValue,  parent_option: Option<&'a Context>) -> Context<'a> {
 
-  let (render_call_stack, curr_id_count) = if let Some(parent) = parent_option {
-    (parent.render_call_stack.clone(), parent.id_count)
+  let render_call_stack = if let Some(parent) = parent_option {
+    parent.render_call_stack.clone()
   } else {
-    (vec![], 0)
+    vec![]
   };
 
   let scope = get_document_style_scope(uri);
-  let id_seed = create_id_seed(uri, curr_id_count);
 
   Context {
     graph,
@@ -213,14 +202,8 @@ fn create_context<'a>(node_expr: &'a ast::Node, uri: &'a String, graph: &'a Depe
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
     scope,
-    data,
-    id_seed,
-    id_count: 0
+    data
   }
-}
-
-fn create_id_seed(uri: &String, curr_id_count: i32) -> String{
-  format!("{:x}", crc32::checksum_ieee(format!("{}-{}", uri, curr_id_count).as_bytes())).to_string()
 }
 
 pub fn evaluate_node<'a>(node_expr: &ast::Node, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
@@ -235,7 +218,6 @@ pub fn evaluate_node<'a>(node_expr: &ast::Node, context: &'a mut Context) -> Res
       Ok(Some(virt::Node::Text(virt::Text { 
         // source_uri: context.uri.to_string(),
         // source_location: text.location.clone(),
-        id: context.get_next_id(),
         value: text.value.to_string()
       })))
     },
@@ -298,7 +280,6 @@ fn evaluate_slot<'a>(slot: &ast::Slot, context: &'a mut Context) -> Result<Optio
         children.push(virt::Node::Text(virt::Text {
           // location: item.location.clone(),
           // source_location: item.source_location.clone(),
-          id: context.get_next_id(),
           value:item.to_string()
         }))
       }
@@ -312,7 +293,6 @@ fn evaluate_slot<'a>(slot: &ast::Slot, context: &'a mut Context) -> Result<Optio
   }
 
   Ok(Some(virt::Node::Text(virt::Text { 
-    id: context.get_next_id(),
     // value: format!("{:?}", context.data)
     value: js_value.to_string() 
   })))
@@ -481,7 +461,6 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
         }
 
         attributes.push(virt::Attribute {
-          id: context.get_next_id(),
           name,
           value: value_option,
         });
@@ -493,7 +472,6 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
             for (key, value) in object.values.drain() {
               // data.values.insert(key.to_string(), value);
               attributes.push(virt::Attribute {
-                id: context.get_next_id(),
                 name: key.to_string(),
                 value: Some(value.to_string()),
               });
@@ -519,7 +497,6 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
 
         if js_value.truthy() {
           attributes.push(virt::Attribute {
-            id: context.get_next_id(),
             name: name.to_string(),
             value: Some(stringify_attribute_value(&name, &js_value)),
           });
@@ -529,7 +506,6 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
   }
 
   attributes.push(virt::Attribute {
-    id: context.get_next_id(),
     name: format!("data-pc-{}", context.scope.to_string()).to_string(),
     value: None
   });
@@ -537,7 +513,6 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
   let children = evaluate_children(&element.children, context)?;
 
   Ok(Some(virt::Node::Element(virt::Element {
-    id: context.get_next_id(),
     source_uri: context.uri.to_string(),
     source_location: element.location.clone(),
     tag_name: tag_name,
@@ -690,10 +665,7 @@ fn evaluate_each_block_body<'a>(body: &ast::Node, item: &js_virt::JsValue, index
     },
     _ => { }
   }  
-  context.id_count += 1;
   let mut child_context = context.clone();
-  child_context.id_count = 0;
-  child_context.id_seed = create_id_seed(context.uri, context.id_count);
   child_context.data = &data;
 
   evaluate_node(body, &mut child_context)

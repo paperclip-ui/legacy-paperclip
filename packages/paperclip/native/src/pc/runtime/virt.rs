@@ -19,8 +19,7 @@ impl fmt::Display for Fragment {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
-  
-  pub id: String,
+
   
   #[serde(rename = "sourceUri")]
   pub source_uri: String,
@@ -36,7 +35,6 @@ pub struct Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
-  pub id: String,
   pub sheet: css_virt::CSSSheet
 }
 
@@ -73,7 +71,6 @@ impl fmt::Display for Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Attribute {
-  pub id: String,
   pub name: String,
   pub value: Option<String>
 }
@@ -85,7 +82,6 @@ pub struct Text {
 
   // #[serde(rename = "sourceLocation")]
   // pub source_location: Location,
-  pub id: String,
   pub value: String
 }
 
