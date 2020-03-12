@@ -1,5 +1,5 @@
 <style>
-  span {
+  .counter {
     font-family: Comic Sans MS;
     cursor: pointer;
     color: rgb(37, 15, 228);
@@ -7,8 +7,6 @@
   }
 </style>
 
-<span {onClick}>Count: {currentCount}</span>
+<span export component id="Counter" class="counter" {onClick}>Count: {currentCount}</span>
 
-<preview> 
-  <self currentCount={} />
-</preview>
+<Counter currentCount={5} />

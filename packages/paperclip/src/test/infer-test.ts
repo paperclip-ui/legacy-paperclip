@@ -256,20 +256,26 @@ describe(__filename + "#", () => {
       }
     ],
     [
-      `<preview>{a}</preview>`,
-      {
-        kind: 0,
-        fromSpread: false,
-        properties: {}
-      }
-    ],
-    [
       `<div a={<div>{a}</div>}></div>`,
       {
         kind: 0,
         fromSpread: false,
         properties: {
           a: {
+            kind: 2
+          }
+        }
+      }
+    ],
+    [
+      `<div component id="a">
+        {a}
+      </div>{b}`,
+      {
+        kind: 0,
+        fromSpread: false,
+        properties: {
+          b: {
             kind: 2
           }
         }

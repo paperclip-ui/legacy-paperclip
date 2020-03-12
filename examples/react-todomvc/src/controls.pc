@@ -1,7 +1,5 @@
 <import src="./styles/global.css">
 
-<logic src="./controls.tsx">
-
 <style>
 
 .footer {
@@ -89,11 +87,11 @@
 }
 </style>
 
-<part id="filter">
-  <li><a {href} data-select={active}>{label}</a></li>
-</part>
+<li component id="filter">
+  <a {href} data-select={active}>{label}</a>
+</li>
 
-<part id="default">
+<div export component id="default">
   <footer class="footer">
     <span class="todo-count">
       {itemsLeftLabel}
@@ -105,9 +103,9 @@
         Clear completed
     </button>
   </footer>
-</part>
+</div>
 
-<part no-compile id="default-preview">
+<div export component id="default-preview">
   <default
     itemsLeftLabel={<span><strong>1</strong> item left</span>}
     filters={[
@@ -116,8 +114,6 @@
       <filter label="Incomplete" />
     ]}
   />
-</part>
+</div>
 
-<preview>
-  <default-preview />
-</preview>
+<default-preview />

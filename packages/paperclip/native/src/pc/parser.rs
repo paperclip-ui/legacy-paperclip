@@ -149,30 +149,7 @@ pub fn parse_tag<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, Pars
   let start = tokenizer.pos;
 
   tokenizer.next_expect(Token::LessThan)?;
-  if tokenizer.peek(1)? == Token::GreaterThan {
-    parse_fragment_tag(tokenizer)
-  } else {
-    parse_element(tokenizer, start)
-  } 
-}
-
-pub fn parse_fragment_tag<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
-  tokenizer.next_expect(Token::GreaterThan)?;
-
-  let mut children = vec![];
-  
-  while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1)? != Token::TagClose {
-    children.push(parse_node(tokenizer)?);
-  }
-
-  tokenizer.eat_whitespace();
-
-  tokenizer.next_expect(Token::TagClose)?;
-  tokenizer.next_expect(Token::GreaterThan)?;
-
-  Ok(pc_ast::Node::Fragment(pc_ast::Fragment {
-    children
-  }))
+  parse_element(tokenizer, start)
 }
 
 
@@ -746,17 +723,10 @@ mod tests {
   }
 
   #[test]
-  fn can_parse_fragments() {
-    parse("<><div /></>").unwrap();
-    // assert_eq!(parse("<><div /></>"), Err(ParseError::unexpected("Void tag's shouldn't be closed.".to_string(), 0, 7)));
-  }
-
-  #[test]
   fn can_parse_slot_fragments() {
-    parse("<div a={<>
+    parse("<div a={<fragment>
       <div />
       <div />
-    </>} />").unwrap();
-    // assert_eq!(parse("<><div /></>"), Err(ParseError::unexpected("Void tag's shouldn't be closed.".to_string(), 0, 7)));
+    </fragment>} />").unwrap();
   }
 }

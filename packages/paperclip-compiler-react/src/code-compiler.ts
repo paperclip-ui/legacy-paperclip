@@ -9,8 +9,7 @@ import {
   getDefaultPart,
   getLogicElement,
   Statement,
-  PART_TAG_NAME,
-  NO_COMPILE_TAG_NAME,
+  EXPORT_TAG_NAME,
   BlockKind,
   ConditionalBlockKind,
   StatementKind,
@@ -29,6 +28,7 @@ import {
   getStyleScopes,
   resolveImportFile,
   getRelativeFilePath,
+  FRAGMENT_TAG_NAME,
   Sheet,
   getParts,
   hasAttribute,
@@ -215,7 +215,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
 
 const translateParts = (root: Node, context: TranslateContext) => {
   for (const part of getParts(root)) {
-    if (hasAttribute(NO_COMPILE_TAG_NAME, part)) {
+    if (!hasAttribute(EXPORT_TAG_NAME, part)) {
       continue;
     }
 
@@ -282,7 +282,7 @@ const translateDefaultView = (root: Node, context: TranslateContext) => {
 
 const translateJSXRoot = (node: Node, context: TranslateContext) => {
   if (node.kind !== NodeKind.Fragment) {
-    if (node.kind === NodeKind.Element && node.tagName === PART_TAG_NAME) {
+    if (node.kind === NodeKind.Element && node.tagName === FRAGMENT_TAG_NAME) {
       return translateFragment(getVisibleChildNodes(node), true, context);
     } else {
       return translateJSXNode(node, true, context);

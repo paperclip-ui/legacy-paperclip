@@ -58,26 +58,23 @@
   }
 </style>
 
-<part id="row">
-  <div class="row">
-    {children}
-  </div>
-</part>
+<div component id="row" class="row">
+  {children}
+</div>
 
-<part id="property-item">
-  <div class="row">
-    <div class="cell">
-      {name}
-    </div>
-    <div class="cell">
-      {value}
-    </div>
+<div component id="property-item" class="row">
+  <div class="cell">
+    {name}
   </div>
-</part>
+  <div class="cell">
+    {value}
+  </div>
+</div>
 
-<part id="color-pill">
-  <div class="color-pill" style={{background: value}}></div>
-</part>
+
+<div component id="color-pill" class="color-pill" style={{background: value}}>
+
+</div>
 
 <div class="app">
   <div class="right-sidebar">
@@ -87,10 +84,10 @@
       </div>
       <div class="table">
         <property-item name="font-family" value="Helvetica" />
-        <property-item name="color" value={<>
+        <property-item name="color" value={<fragment>
           <color-pill value="rgb(218, 167, 58)"/>
           <span>rgb(218, 167, 58)</span>
-          </>} 
+          </fragment>} 
         />
       </div>
     </div>

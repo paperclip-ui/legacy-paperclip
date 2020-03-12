@@ -77,13 +77,12 @@ After installing all of the required dependencies & setting up Webpack, you can 
 </style>
 
 <!-- this gets exported as the default part -->
-<part id="default">
-  <span>Hello {message}!</span>
-</part>
+<span export component id="default">
+  Hello {message}!
+</span>
 
-<preview>
-  <default message="World!">
-</preview>
+<!-- preview -->
+<default message="World!" />
 ```
 
 > For more documentation on syntax, you can [check out this document](../Syntax).

@@ -9,7 +9,7 @@ import {
   getPartIds,
   DEFAULT_PART_ID,
   getVisibleChildNodes,
-  NO_COMPILE_TAG_NAME,
+  EXPORT_TAG_NAME,
   InferenceKind,
   getParts,
   Inference,
@@ -221,10 +221,6 @@ const translateComponent = (
 //   )}Props`;
 // };
 
-const getInstancePropsTypeName = (element: Element) => {
-  return `${pascalCase(element.tagName)}Props`;
-};
-
 const translateParts = (ast: Node, context: TranslateContext) => {
   for (const part of getParts(ast)) {
     // already translated, so skip.
@@ -232,7 +228,7 @@ const translateParts = (ast: Node, context: TranslateContext) => {
       continue;
     }
 
-    if (hasAttribute(NO_COMPILE_TAG_NAME, part)) {
+    if (!hasAttribute(EXPORT_TAG_NAME, part)) {
       continue;
     }
 

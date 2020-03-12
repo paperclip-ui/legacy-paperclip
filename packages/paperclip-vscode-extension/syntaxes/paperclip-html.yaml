@@ -87,7 +87,11 @@ repository:
   attribute:
     # attribute="value"
     patterns:
-      - begin: ([^={/>]+)
+      - begin: (component|preview|export)
+        beginCaptures:
+          "1": { name: keyword.control }
+        end: (?=\s*+[^=\s])
+      - begin: ([\w\$_\-]+)
         beginCaptures:
           "1": { name: entity.other.attribute-name.html }
         end: (?=\s*+[^=\s])

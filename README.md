@@ -115,39 +115,33 @@ Styles are scoped to this file, so you don't have to worry about them leaking ou
     padding: 0;
   }
   
-  li[data-done] {
+  #TodoItem[data-done] {
     text-decoration: line-through;
   }
 </style>
 
 <!-- Parts are building blocks that are individually used in application code (more information below). -->
-<part id="TodoItem">
+<li export component id="TodoItem" data-done={done}>
+  <input type="checkbox" checked={done} onClick={onDoneClick}>
 
-  <!-- You can assign attribute bindings. -->
-  <li data-done={done}>
-    <input type="checkbox" checked={done} onClick={onDoneClick}>
+  <!-- You can also define slots where text & elements are inserted into. -->
+  {label}
+</li>
 
-    <!-- You can also define slots where text & elements are inserted into. -->
-    {label}
-  </li>
-</part>
-
-<part id="TodoList">
+<fragment export component id="TodoList">
   <h1>Todos:</h1>
   <input type="text" onKeyPress={onNewTodoKeyPress} placeholder="Add a new todo..." >
   <ul>
     {todoItems}
   </ul>
-</part>
+</fragment>
 
-<!-- Preview is a special tag for development that allows you to see how all of your parts look when put together in their varying states. -->
-<preview>
-  <TodoList todoItems={<>
-    <TodoItem label="Feed cat" done />
-    <TodoItem label="Take out trash" />
-    <TodoItem label="Walk dog" done />
-  </>} />
-</preview>
+<!-- Preview is a special attribute for development that allows you to see how all of your parts look when put together in their varying states. -->
+<TodoList preview todoItems={<fragment>
+  <TodoItem label="Feed cat" done />
+  <TodoItem label="Take out trash" />
+  <TodoItem label="Walk dog" done />
+</fragment>} />
 ```
 
 > ☝🏻This example uses just about all of the features that Paperclip has to offer. No logic, just syntax for describing how your UI looks. 

@@ -14,7 +14,7 @@ Styles are scoped to this file
 -->
 
 <style> 
-  .counter {
+  #Counter {
     font-family: Helvetica;
     cursor: pointer;
   }
@@ -25,21 +25,16 @@ Re-usable blocks of HTML that you can
 import into your app code.
 -->
 
-<component id="Counter">
-  <div class="counter" {onClick}>
-    Current count: {currentCount}
-  </div>
-</component>
+<div export component id="Counter" {onClick}>
+  Current count: {currentCount}
+</div>
 
 <!-- 
 Preview elements allow you to see what 
 all of your components look like together. 
 -->
 
-<preview>
-  <Counter currentCount={10} />
-</preview>
-
+<Counter preview currentCount={10} />
 `.trim();
 
 const JS_CODE = `
