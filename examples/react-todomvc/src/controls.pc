@@ -87,11 +87,11 @@
 }
 </style>
 
-<li component id="filter">
+<li component as="filter">
   <a {href} data-select={active}>{label}</a>
 </li>
 
-<div export component id="default">
+<div export component as="default">
   <footer class="footer">
     <span class="todo-count">
       {itemsLeftLabel}
@@ -105,7 +105,7 @@
   </footer>
 </div>
 
-<div export component id="default-preview">
+<div export component as="default-preview">
   <default
     itemsLeftLabel={<span><strong>1</strong> item left</span>}
     filters={[

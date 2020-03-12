@@ -91,7 +91,7 @@ pub fn get_instance_target_node<'a>(node_expr: &'a ast::Node, render_strategy: &
 
   let target_node_option = match render_strategy {
     RenderStrategy::Part(id) => find_child(node_expr, |child|  {
-      ast::get_attribute_value("id", child) == Some(&id) && ast::has_attribute("component", child) && (!imported || ast::has_attribute("export", child))
+      ast::get_attribute_value("as", child) == Some(&id) && ast::has_attribute("component", child) && (!imported || ast::has_attribute("export", child))
     }),
     RenderStrategy::Auto | RenderStrategy::Preview => find_child(node_expr, |child|  {
       ast::has_attribute("preview", child)
@@ -266,7 +266,7 @@ fn evaluate_element<'a>(element: &ast::Element, context: &'a mut Context) -> Res
       } else {
 
         if ast::has_attribute("component", element){
-          if let Some(id) = ast::get_attribute_value("id", element) {
+          if let Some(id) = ast::get_attribute_value("as", element) {
             if context.get_current_render_strategy() != &(context.uri.to_string(), RenderStrategy::Part(id.to_string())) {
               return Ok(None);
             }
@@ -465,11 +465,7 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
           (kv_attr.name.to_string(), Some(stringify_attribute_value(&kv_attr.name, &value)))
         };
 
-        if name == "export" || name == "component" {
-          continue;
-        }
-
-        if name == "id" && is_component {
+        if name == "export" || name == "component" || name == "as" {
           continue;
         }
 
@@ -783,7 +779,7 @@ mod tests {
   #[test]
   fn catches_infinite_part_loop() {
     let result = evaluate_source("
-      <fragment component id='test'>
+      <fragment component as='test'>
         <div>
           <test a />          
         </div>
@@ -802,12 +798,12 @@ mod tests {
   #[test]
   fn catches_recursion_in_multiple_parts() {
     let result = evaluate_source("
-      <fragment component id='test2'>
+      <fragment component as='test2'>
         <div>
           <test />
         </div>
       </fragment>
-      <fragment component id='test'>
+      <fragment component as='test'>
         <div>
           <test2 />          
         </div>

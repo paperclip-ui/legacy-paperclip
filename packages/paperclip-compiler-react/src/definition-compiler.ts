@@ -13,7 +13,8 @@ import {
   InferenceKind,
   getParts,
   Inference,
-  hasAttribute
+  hasAttribute,
+  AS_ATTR_NAME
 } from "paperclip";
 import {
   createTranslateContext,
@@ -52,7 +53,7 @@ const translateRoot = (ast: Node, context: TranslateContext) => {
   // const allImports = getImports(ast);
 
   // for (const imp of allImports) {
-  //   const id = getAttributeStringValue("id", imp);
+  //   const id = getAttributeStringValue(AS_ATTR_NAME, imp);
   //   const src = getAttributeStringValue("src", imp);
   //   if (!id || !src) {
   //     continue;
@@ -191,7 +192,7 @@ const translateComponent = (
   //       false
   //     ];
   //   } else {
-  //     const id = getAttributeStringValue("id", element);
+  //     const id = getAttributeStringValue(AS_ATTR_NAME, element);
   //     if (id) {
   //       props[`${camelCase(id)}Props`] = [
   //         `ElementProps | PropsFactory<ElementProps>`
@@ -217,14 +218,14 @@ const translateComponent = (
 
 // const getInstancePropsName = (element: Element) => {
 //   return `${camelCase(
-//     getAttributeStringValue("id", element) || element.tagName
+//     getAttributeStringValue(AS_ATTR_NAME, element) || element.tagName
 //   )}Props`;
 // };
 
 const translateParts = (ast: Node, context: TranslateContext) => {
   for (const part of getParts(ast)) {
     // already translated, so skip.
-    if (getAttributeStringValue("id", part) === DEFAULT_PART_ID) {
+    if (getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID) {
       continue;
     }
 
@@ -238,7 +239,7 @@ const translateParts = (ast: Node, context: TranslateContext) => {
 };
 
 const translatePart = (part: Element, context: TranslateContext) => {
-  const componentName = pascalCase(getAttributeStringValue("id", part));
+  const componentName = pascalCase(getAttributeStringValue(AS_ATTR_NAME, part));
   const propsName = `${componentName}Props`;
   context = translateComponent(part, propsName, context);
   context = addBuffer(
@@ -251,7 +252,7 @@ const translatePart = (part: Element, context: TranslateContext) => {
 const translateMainView = (ast: Node, context: TranslateContext) => {
   const target =
     getParts(ast).find(
-      part => getAttributeStringValue("id", part) === DEFAULT_PART_ID
+      part => getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID
     ) || ast;
 
   if (target === ast) {

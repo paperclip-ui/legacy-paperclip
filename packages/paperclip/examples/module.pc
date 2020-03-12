@@ -6,7 +6,7 @@
   }
 </style>
 
-<div export component id="default">
+<div export component as="default">
   some {children}
 </div>
 

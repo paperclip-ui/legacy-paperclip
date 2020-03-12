@@ -35,7 +35,8 @@ import {
   PassFailConditional,
   FinalConditional,
   isVisibleElement,
-  stringifyCSSSheet
+  stringifyCSSSheet,
+  AS_ATTR_NAME
 } from "paperclip";
 import {
   createTranslateContext,
@@ -182,7 +183,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
 
   const imports = getImports(ast);
   for (const imp of imports) {
-    const id = getAttributeStringValue("id", imp);
+    const id = getAttributeStringValue(AS_ATTR_NAME, imp);
     const src = getAttributeStringValue("src", imp);
 
     if (!src) {
@@ -220,7 +221,7 @@ const translateParts = (root: Node, context: TranslateContext) => {
     }
 
     // already compiled
-    if (getAttributeStringValue("id", part) === DEFAULT_PART_ID) {
+    if (getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID) {
       continue;
     }
     context = translatePart(part, context);
@@ -229,7 +230,7 @@ const translateParts = (root: Node, context: TranslateContext) => {
 };
 
 const translatePart = (part: Element, context: TranslateContext) => {
-  const componentName = pascalCase(getAttributeStringValue("id", part));
+  const componentName = pascalCase(getAttributeStringValue(AS_ATTR_NAME, part));
   context = translateComponent(componentName, part, true, context);
   return context;
 };
@@ -343,7 +344,6 @@ const translateElement = (
     context.partIds.indexOf(element.tagName) !== -1;
   const isComponentInstance =
     isImportComponentInstance || isPartComponentInstance;
-  const id = getAttributeStringValue("id", element);
   const propsName = null;
 
   // KEEP ME: for logic

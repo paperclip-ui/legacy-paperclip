@@ -9,8 +9,8 @@ describe(__filename + "#", () => {
     [`<span></span>`, `text`],
     [
       `
-        <part id="something">
-        </part>
+        <div component as="something">
+        </div>
         
         <span></span>
         <something />
@@ -20,9 +20,9 @@ describe(__filename + "#", () => {
         </span>
       `,
       `
-        <part id="something">
+        <div component as="something">
           <span />
-        </part>
+        </div>
         
         <span></span>
         <something />

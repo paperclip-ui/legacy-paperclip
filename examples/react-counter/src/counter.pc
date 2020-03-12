@@ -7,6 +7,6 @@
   }
 </style>
 
-<span export component id="Counter" class="counter" {onClick}>Count: {currentCount}</span>
+<span export component as="Counter" class="counter" {onClick}>Count: {currentCount}</span>
 
 <Counter currentCount={5} />

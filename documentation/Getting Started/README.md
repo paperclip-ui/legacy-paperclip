@@ -77,7 +77,7 @@ After installing all of the required dependencies & setting up Webpack, you can 
 </style>
 
 <!-- this gets exported as the default part -->
-<span export component id="default">
+<span export component as="default">
   Hello {message}!
 </span>
 

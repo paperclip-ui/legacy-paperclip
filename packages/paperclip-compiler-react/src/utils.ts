@@ -40,5 +40,5 @@ export const getComponentName = (root: Node, filePath: string) => {
 };
 
 export const getPartClassName = (part: Element) => {
-  return pascalCase(getAttributeStringValue("id", part));
+  return pascalCase(getAttributeStringValue(AS_ATTR_NAME, part));
 };

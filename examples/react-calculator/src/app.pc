@@ -1,4 +1,4 @@
-<import id="pad" src="./pad.pc">
+<import as="pad" src="./pad.pc">
 
 <style>
   #preview {
@@ -71,7 +71,7 @@
   }
 </style>
 
-<div component id="calculator">
+<div component as="calculator">
   <div id="root">
     <div class="app">
       <div class="display">

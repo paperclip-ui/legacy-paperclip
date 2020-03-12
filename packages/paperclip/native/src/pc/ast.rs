@@ -334,7 +334,7 @@ pub fn get_parts<'a>(root_expr: &'a Node) -> Vec<&'a Element> {
 
 pub fn get_part_by_id<'a>(id: &String, root_expr: &'a Node) -> Option<&'a Element> {
   get_parts(root_expr).iter().find(|element| {
-    get_attribute_value("id", element) == Some(id)
+    get_attribute_value("as", element) == Some(id)
   }).map(|element| {
     *element
   })
@@ -342,7 +342,7 @@ pub fn get_part_by_id<'a>(id: &String, root_expr: &'a Node) -> Option<&'a Elemen
 
 pub fn get_import_by_id<'a>(id: &String, root_expr: &'a Node) -> Option<&'a Element> {
   for import in get_imports(root_expr).iter() {
-    if get_attribute_value("id", import) == Some(id) {
+    if get_attribute_value("as", import) == Some(id) {
       return Some(import);
     }
   }
@@ -393,7 +393,7 @@ pub fn has_attribute<'a, 'b>(name: &'b str, element: &'a Element) -> bool {
 pub fn get_import_ids<'a>(root_expr: &'a Node) -> Vec<&'a String> {
   let mut ids = vec![];
   for import in get_imports(root_expr) {
-    if let Some(id) = get_attribute_value("id", &import) {
+    if let Some(id) = get_attribute_value("as", &import) {
       ids.push(id);
     }
   }
@@ -401,7 +401,7 @@ pub fn get_import_ids<'a>(root_expr: &'a Node) -> Vec<&'a String> {
 }
 
 pub fn get_import_identifier<'a>(import: &'a Element) -> Option<&'a String> {
-  if let Some(id) = get_attribute_value("id", &import) {
+  if let Some(id) = get_attribute_value("as", &import) {
     return Some(id);
   }
   if let Some(src) = get_attribute_value("src", &import) {
@@ -415,7 +415,7 @@ pub fn get_part_ids<'a>(root_expr: &'a Node) -> Vec<&'a String> {
 
   // DEPRECATED
   for part in get_parts(root_expr) {
-    if let Some(id) = get_attribute_value("id", &part) {
+    if let Some(id) = get_attribute_value("as", &part) {
       ids.push(id);
     }
   }

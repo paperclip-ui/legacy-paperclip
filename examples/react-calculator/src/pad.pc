@@ -41,7 +41,7 @@
   }
 </style>
 
-<div export component id="default" {onClick} class="component-button" data-wide={wide} data-orange={orange}>
+<div export component as="default" {onClick} class="component-button" data-wide={wide} data-orange={orange}>
   <button>{children}</button>
 </div>
 

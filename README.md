@@ -115,20 +115,20 @@ Styles are scoped to this file, so you don't have to worry about them leaking ou
     padding: 0;
   }
   
-  #TodoItem[data-done] {
+  li[data-done] {
     text-decoration: line-through;
   }
 </style>
 
 <!-- Parts are building blocks that are individually used in application code (more information below). -->
-<li export component id="TodoItem" data-done={done}>
+<li export component as="TodoItem" data-done={done}>
   <input type="checkbox" checked={done} onClick={onDoneClick}>
 
   <!-- You can also define slots where text & elements are inserted into. -->
   {label}
 </li>
 
-<fragment export component id="TodoList">
+<fragment export component as="TodoList">
   <h1>Todos:</h1>
   <input type="text" onKeyPress={onNewTodoKeyPress} placeholder="Add a new todo..." >
   <ul>

@@ -25,7 +25,7 @@ Re-usable blocks of HTML that you can
 import into your app code.
 -->
 
-<div export component id="Counter" {onClick}>
+<div export component as="Counter" {onClick}>
   Current count: {currentCount}
 </div>
 

@@ -58,11 +58,11 @@
   }
 </style>
 
-<div component id="row" class="row">
+<div component as="row" class="row">
   {children}
 </div>
 
-<div component id="property-item" class="row">
+<div component as="property-item" class="row">
   <div class="cell">
     {name}
   </div>
@@ -72,7 +72,7 @@
 </div>
 
 
-<div component id="color-pill" class="color-pill" style={{background: value}}>
+<div component as="color-pill" class="color-pill" style={{background: value}}>
 
 </div>
 

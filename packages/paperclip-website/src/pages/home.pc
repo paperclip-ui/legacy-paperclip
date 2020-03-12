@@ -1,5 +1,5 @@
 <import src="styles/global.css">
-<import id="mini-editor" src="paperclip-mini-editor/src/ui/template.pc">
+<import as="mini-editor" src="paperclip-mini-editor/src/ui/template.pc">
 
 <style>
 
@@ -136,7 +136,7 @@
     padding-right: 24px;
   }
 </style>
-<div component id="features">
+<div component as="features">
   <div class="features">
     <div class="feature info">
       <div class="title">
@@ -242,7 +242,7 @@
 
 </style>
 
-<div component id="examples">
+<div component as="examples">
   <div class="examples">
     <div class="example">
       <div class="info">
@@ -273,7 +273,7 @@
   </div>
 </div>
 
-<div component id="header">
+<div component as="header">
   <div class="header">
     <div class="navigation">
       <a class="logo" href="http://paperclip.dev">
@@ -320,7 +320,7 @@
     display: none;
   }
 </style>
-<div component id="bottom">
+<div component as="bottom">
   <div class="bottom navigation">
       <div class="links">
         <a href="#">Docs</a>
@@ -334,7 +334,7 @@
   </div>
 </div>
 
-<div component id="default">
+<div component as="default">
   <div class="website">
 
     <header />

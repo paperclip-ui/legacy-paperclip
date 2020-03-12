@@ -9,7 +9,7 @@ Here's a kitchen sink example of most syntaxes:
 ```html
 
 <!-- you can import components from other files -->
-<import id="my-button" src="./button.pc">
+<import as="my-button" src="./button.pc">
 
 <!-- all styles are scoped to this file -->
 <style>
@@ -32,7 +32,7 @@ Here's a kitchen sink example of most syntaxes:
 </div>
 
 <!-- a bunch of nodes that you can re-use -->
-<span component id="message">Hello {children}!</span>
+<span component as="message">Hello {children}!</span>
 
 <!-- renders as "Hello World!" -->
 <message>
@@ -69,7 +69,7 @@ Components are useful for re-using chunks of elements & text.
 Here's an example:
 
 ```html
-<div component id="Message">
+<div component as="Message">
   Hello {text}
 </div>
 
@@ -77,7 +77,7 @@ Here's an example:
 <Message text="World" />
 ```
 
-Components are defined by adding a `component` and `id` attribute to any element at the highest level in the template document. 
+Components are defined by adding a `component` and `as` attribute to any element at the highest level in the template document. 
 
 ## Exporting components
 
@@ -85,7 +85,7 @@ If you want to use components in JavaScript code, you'll need to define an `expo
 
 ```html
 <!-- counter.pc -->
-<div export component id="Counter" {onClick}>
+<div export component as="Counter" {onClick}>
   Hello {currentCount}
 </div>
 ```
@@ -115,7 +115,7 @@ Default exports can be defined using the `default` ID:
 
 ```html
 <!-- counter.pc -->
-<div export component id="default" {onClick}>
+<div export component as="default" {onClick}>
   Hello {currentCount}
 </div>
 ```
@@ -148,7 +148,7 @@ Bindings help you define dynamic parts of your components.
 Slots are areas of your components where you'd like to insert text or elements. For example:
 
 ```html
-<div component id="Message">
+<div component as="Message">
   Hello {text}
 </div>
 
@@ -159,7 +159,7 @@ Slots are areas of your components where you'd like to insert text or elements. 
 `{children}` behaves a bit differently:
 
 ```html
-<div component id="Message">
+<div component as="Message">
   Hello {text}
 </div>
 
@@ -183,7 +183,7 @@ Example:
   }
 </style>
 
-<div export component id="Message" class={class}>
+<div export component as="Message" class={class}>
   {children}
 </div>
 
@@ -200,7 +200,7 @@ Since the attribute key & binding share the same name, we can use the **shorthan
 
 ```html
 <!-- styles here -->
-<div export component id="Message" {class}>
+<div export component as="Message" {class}>
   {children}
 </div>
 
@@ -221,16 +221,16 @@ Since the attribute key & binding share the same name, we can use the **shorthan
 Suppose you have a `todo-item.pc` file:
 
 ```html
-<li export component id="default">{label}</li>
+<li export component as="default">{label}</li>
 ```
 
 You can import that file like so:
 
 ```html
 <!-- todo-list.pc -->
-<import id="todo-item" src="./todo-item.pc">
+<import as="todo-item" src="./todo-item.pc">
 
-<ul component id="TodoItems">
+<ul component as="TodoItems">
   {todoItems}
 </ul>
 
@@ -256,7 +256,7 @@ In some cases you may want to use different components from your imported file. 
   }
 </style>
 
-<li export component id="default" data-completed={completed}>
+<li export component as="default" data-completed={completed}>
   <input type="checkbox" onClick={onCompleteCheckboxClick}>
   {label}
 </li>
@@ -265,8 +265,8 @@ In some cases you may want to use different components from your imported file. 
   compilers not to include this part.
 -->
 
-<default export component id="CompletedPreview" {label} completed />
-<default export component id="IncompletePreview" {label} />
+<default export component as="CompletedPreview" {label} completed />
+<default export component as="IncompletePreview" {label} />
 ```
 
 ☝🏻`complete-preview`, and `incomplete-preview` give us different previews of our `todo-item` component. To use these parts in an import, we can do something like this:
@@ -274,9 +274,9 @@ In some cases you may want to use different components from your imported file. 
 ```html
 <!-- todo-list.pc -->
 
-<import id="TodoItem" src="./todo-item.pc">
+<import as="TodoItem" src="./todo-item.pc">
 
-<div export component id="TodoList">
+<div export component as="TodoList">
 
   <h1>Todos:</h1>
   <input type="text" onKeyPress={onNewTodoKeyPress}>
@@ -361,7 +361,7 @@ Assuming that you have a file `src/styles/global.css`, you can import it like th
 Fragments are useful if you're looking to render a collection of elements in a slot. For example:
 
 ```html
-<ul component id="List">
+<ul component as="List">
   {listItems}
 </ul>
 

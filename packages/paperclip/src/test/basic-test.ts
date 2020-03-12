@@ -67,11 +67,11 @@ describe(__filename + "#", () => {
               color: red;
             }
           </style>
-          <span export component id="default">{children}!</span>
+          <span export component as="default">{children}!</span>
 
         `,
         "/entry.pc": `
-          <import id="something" src="./button.pc" />
+          <import as="something" src="./button.pc" />
           <something>hello world</something>
         `
       },
@@ -149,11 +149,11 @@ describe(__filename + "#", () => {
             }
             
           </style>
-          <span export component id="default">{children}!</span>
+          <span export component as="default">{children}!</span>
 
         `,
         "/entry.pc": `
-          <import id="something" src="./button.pc" />
+          <import as="something" src="./button.pc" />
           <something>hello world</something>
         `
       },
@@ -166,7 +166,7 @@ describe(__filename + "#", () => {
       // parse different tag names
       {
         "/entry.pc": `
-          <span component id="test">
+          <span component as="test">
           {_someRef}
           {_some5ref}
           {_ref}
@@ -188,7 +188,7 @@ describe(__filename + "#", () => {
       // parse different tag names
       {
         "/entry.pc": `
-          <span component id="test">{a} b</span>
+          <span component as="test">{a} b</span>
           <test a="c" />
         `
       },

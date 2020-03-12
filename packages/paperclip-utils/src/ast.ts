@@ -7,6 +7,7 @@ import * as path from "path";
 import {
   LOGIC_TAG_NAME,
   DEFAULT_PART_ID,
+  AS_ATTR_NAME,
   PREVIEW_ATTR_NAME
 } from "./constants";
 
@@ -162,7 +163,7 @@ export const getRelativeFilePath = fs => (
 
 export const getImportIds = (ast: Node): string[] =>
   getImports(ast)
-    .map(node => getAttributeStringValue("id", node))
+    .map(node => getAttributeStringValue(AS_ATTR_NAME, node))
     .filter(Boolean) as string[];
 
 export const getChildren = (ast: Node): Node[] => {
@@ -245,18 +246,18 @@ export const getParts = (ast: Node): Element[] =>
     return (
       child.kind === NodeKind.Element &&
       hasAttribute("component", child) &&
-      hasAttribute("id", child)
+      hasAttribute(AS_ATTR_NAME, child)
     );
   }) as Element[];
 
 export const getPartIds = (ast: Node): string[] =>
   getParts(ast)
-    .map(node => getAttributeStringValue("id", node))
+    .map(node => getAttributeStringValue(AS_ATTR_NAME, node))
     .filter(Boolean) as string[];
 
 export const getDefaultPart = (ast: Node): Element =>
   getParts(ast).find(
-    part => getAttributeStringValue("id", part) === DEFAULT_PART_ID
+    part => getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID
   );
 
 export const getLogicElement = (ast: Node): Element | null => {

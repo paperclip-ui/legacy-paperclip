@@ -268,7 +268,7 @@ describe(__filename + "#", () => {
       }
     ],
     [
-      `<div component id="a">
+      `<div component as="a">
         {a}
       </div>{b}`,
       {

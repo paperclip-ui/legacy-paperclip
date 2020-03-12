@@ -9,7 +9,7 @@ Here's a kitchen sink example of most syntaxes:
 ```html
 
 <!-- you can import components from other files -->
-<import id="my-button" src="./button.pc">
+<import as="my-button" src="./button.pc">
 
 <!-- all styles are scoped to this file -->
 <style>
@@ -32,7 +32,7 @@ Here's a kitchen sink example of most syntaxes:
 </div>
 
 <!-- a bunch of nodes that you can re-use -->
-<span component id="message">Hello {children}!</span>
+<span component as="message">Hello {children}!</span>
 
 <!-- renders as "Hello World!" -->
 <message>
@@ -50,10 +50,10 @@ The syntax is basic HTML & CSS with a few additions.
 
 ## Creating components
 
-You can define a component by adding a `component` & an `id` attribute. For example:
+You can define a component by adding a `component` & an `as` attribute. For example:
 
 ```html
-<div component id="Message">
+<div component as="Message">
   Hello {message}
 </div>
 ```
@@ -66,7 +66,7 @@ You can export components by adding an `export` attribute (assuming there's also
 
 ```html
 <!-- message.pc -->
-<div export component id="Counter" {onClick}>
+<div export component as="Counter" {onClick}>
   Hello {currentCount}
 </div>
 ```
@@ -108,7 +108,7 @@ export function Hello() {
 `{children}` is a special slot that takes children. Here's how it's used:
 
 ```html
-<div export component id="message">
+<div export component as="message">
   Hello {children}
 </part>
 
@@ -193,7 +193,7 @@ export function SomeInput() {
 Slots accept JSX, objects, references, booleans, arrays, and numbers. Here's a kitchen sink example:
 
 ```html
-<div component id="some-part">
+<div component as="some-part">
   Value: {value}
 </div>
 
@@ -226,25 +226,25 @@ The `component` attribute allows you to
 
 ```html
 <!-- todo-item.pc -->
-<div export component id="LabelInput">
+<div export component as="LabelInput">
   <input type="text" onChange={onChange} />
 </div>
 
-<div export component id="TodoLabel">
+<div export component as="TodoLabel">
   <div>
     <input type="checkbox" checked={completed}>
     <label onClick={onLabelClick}>{label}</label>
   </div>
 </div>
 
-<div export component id="default">
+<div export component as="default">
   <li>
     {children}
   </li>
 </di>
 ```
 
-Each part is exported using their `id` attribute. The `default` part, however is special in that it exports the part as the _default_ component. For example, here's how you might use the template above:
+Each part is exported using their `as` attribute. The `default` part, however is special in that it exports the part as the _default_ component. For example, here's how you might use the template above:
 
 <!-- The `id` prop is what's used to export the part. The `default` id tells that the part should be exported as the _default_ component (similar to how the default import works in JavaScript). All other parts are exported using their  -->
 
@@ -277,13 +277,13 @@ export ({item, onChange}) => {
 
 The `no-compile` parameter for `part` elements tells the compiler to omit it. This is useful for cases where you want to define `preview` part. [You can check out more about this below](#rendering-imported-parts).
 
-#### `id="default"`
+#### `as="default"`
 
-Assigning `<part id="default">...</part>` makes the part the _default_ export. For example:
+Assigning `<part as="default">...</part>` makes the part the _default_ export. For example:
 
 ```html
 <!-- hello.pc -->
-<part id="default">
+<part as="default">
   Hello {message}!
 </part>
 ```
@@ -297,7 +297,7 @@ Hello {message}!
 The only difference here is how the template is used in a preview. For example:
 
 ```html
-<part id="default">
+<part as="default">
   Hello {message}!
 </part>
 
@@ -324,7 +324,7 @@ Both options are used the same when imported:
 
 ```html
 <!-- app.pc -->
-<import id="hello" src="./hello.pc">
+<import as="hello" src="./hello.pc">
 
 <!-- Render: Hello World! -->
 <hello message="World" />

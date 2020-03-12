@@ -1,4 +1,4 @@
-<import id="Something" src="./module.pc">
+<import as="Something" src="./module.pc">
 
 <style>
   #Test {
@@ -7,7 +7,7 @@
 </style>
 
 
-<div export component id="Test">
+<div export component as="Test">
   Hello {children}!
 </div>
 

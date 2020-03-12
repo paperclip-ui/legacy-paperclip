@@ -9,6 +9,7 @@ import {
   getParts,
   RuleKind,
   getImports,
+  AS_ATTR_NAME,
   Block,
   Conditional,
   BlockKind,
@@ -70,7 +71,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       uri,
       importIds: getImportIds(root),
       partIds: getParts(root)
-        .map(part => getAttributeStringValue("id", part))
+        .map(part => getAttributeStringValue(AS_ATTR_NAME, part))
         .filter(Boolean),
       info: {
         colors: [],
@@ -205,7 +206,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       );
     } else if (context.importIds.indexOf(namespace) !== -1) {
       const imp = getImports(context.root).find(imp => {
-        return getAttributeStringValue("id", imp) === namespace;
+        return getAttributeStringValue(AS_ATTR_NAME, imp) === namespace;
       });
 
       const impUri = resolveUri(
@@ -264,7 +265,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     context: HandleContext
   ) {
     const part = getParts(sourceRoot).find(part => {
-      return getAttributeStringValue("id", part) === name;
+      return getAttributeStringValue(AS_ATTR_NAME, part) === name;
     });
 
     if (part) {
