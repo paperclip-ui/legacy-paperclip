@@ -1,12 +1,10 @@
 import * as fs from "fs";
-import * as path from "path";
 import { NativeEngine } from "../native/pkg/paperclip";
 import {
-  DependencyContent,
-  PC_CONFIG_FILE_NAME,
   EngineEvent,
   EngineEventKind,
-  resolveImportUri
+  resolveImportUri,
+  DependencyContent,
 } from "paperclip-utils";
 
 export type FileContent = {
@@ -96,7 +94,7 @@ export class Engine {
   }
   updateVirtualFileContent(uri: string, content: string) {
     this._dispatch({ kind: EngineEventKind.Updating, uri });
-    return mapResult(this._native.update_virtual_file_content(uri, content));
+    return mapResult(this._native.update_virtual_file_content(uri, content));    
   }
   load(uri: string) {
     this._dispatch({ kind: EngineEventKind.Loading, uri });

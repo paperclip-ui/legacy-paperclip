@@ -34,6 +34,7 @@ connection.onInitialize(() => {
 const init = async (
   connection: Connection
 ) => {
+  
   // Paperclip engine for parsing & evaluating documents
   const engine = new Engine();
 
@@ -48,5 +49,6 @@ const init = async (
 connection.onInitialized((_params: InitializedParams) => {
   init(connection);
 });
+
 
 connection.listen();

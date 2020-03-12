@@ -73,29 +73,33 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
 
-## Motivation 
+## Why? 
 
-<!-- TODO: more pain point here -->
+My biggest problem with UI development over the years has been the _speed_ of creating them. It's a time sink, especially as applications get bigger. And because user interface development is such as iterative process, waiting around for UIs to reload can be a real problem for productivity. 
 
-The motivation behind Paperclip is to eliminate bottlenecks around HTML & CSS development, and provide tooling that helps you ship UI features quicker. More specifically:
 
-- Eliminate the lag time between writing code & seeing UI.
+I built Paperclip as a lightweight approach for ceating presentational components. It's not intended to replace code, but instead allow you to focus on the just the basic construction of your user interfaces, without the heaviness that additional logic brings. This allows Paperclip to be fast, and _remain_ fast as a project grows in size. 
+
+#### Goals
+
+
 - Shorten the gap between design -> code by bringing more design tooling into web development.
-- Provide better safety around building UIs with easier to use cross-browser testing tools. 
+- Provide safety around building user interfaces, especially for large projects. This is helped with type safety, and visual regression tooling. 
+- Have a platform & language agnostic approach for building user interfaces. 
+
+<!-- #### Non-goals
+
+- Turring-completeness. Paperclip will only provide features for expressing_ user interfaces that can be used in code. -->
 
 ## Features ✨
 
-- Works out of the box. Just download the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension) and start typing away. 
-- Previews are powered by a low-level runtime, so your changes appear instantly, and won't slow down as your project scales.
-- Templates can be compiled to strongly typed code.
-- Templates Integrate with your existing React application (more languages & frameworks soon).
-- Integrates with Webpack. 
-
-
+- Just covers presentational components.
+- Real-time previews in VS Code (more code editors to come).
+- Super fast, even for large codebases. 
+- Templates compile to plain, strongly typed code. No library necessary!
+- Works with Webpack.
 
 ## What does a template look like?
-
-Paperclip just covers basic HTML, CSS, and syntax for defining _dumb_ components. Here's an example:
 
 ```html
 <!-- todo-list.pc -->
@@ -136,7 +140,9 @@ Styles are scoped to this file, so you don't have to worry about them leaking ou
   </ul>
 </fragment>
 
-<!-- Elements at the root can be used to preview components -->
+<!-- 
+  This renders a preview of TodoLis
+ -->
 <TodoList todoItems={<fragment>
   <TodoItem label="Feed cat" done />
   <TodoItem label="Take out trash" />
@@ -146,8 +152,6 @@ Styles are scoped to this file, so you don't have to worry about them leaking ou
 
 > ☝🏻This example uses just about all of the features that Paperclip has to offer. No logic, just syntax for describing how your UI looks. 
 
-The `<part />` elements expose the component's building blocks. These blocks are used in JavaScript code. More on that below 👇🏻.
-
 Here's what you see in VS Code as you type away:
 
 ![Simple todo preview](https://user-images.githubusercontent.com/757408/75791302-ff866580-5d31-11ea-8da9-1c43631f0626.gif)
@@ -155,7 +159,7 @@ Here's what you see in VS Code as you type away:
 
 ## How do I add logic? 
 
-Templates compile directly to highly optimized code. If you remember the `<part />` elements above, those are exported as building blocks that we can use to create a functional component: 
+Templates compile directly to highly optimized code. For example:
 
 <!-- Using our list example above, here's how you might use it in a React app: -->
 
@@ -216,14 +220,12 @@ export default () => {
 
 > More compiler targets are planned for other languages and frameworks. React is just a starting point ✌🏻.
 
-As you can see, `<part />` elements are exported as _dumb_ components that React can use. From there we can combine all parts with logic to create a functional component. That's the gist of Paperclip!
-
 <!-- 
 As you might have noticed, Paperclip just exports building blocks for your component. All of the logic remains in your application code, so you don't have to worry about  -->
 
 ## Strongly typed 🦺
 
-Templates compile down to strongly typed code, so you don't have to guess about what your templates need. Here's a generated TypesScript definition of our React app above:
+Templates compile down to strongly typed code. Here's a generated TypesScript definition of our React app above:
 
 ```typescript
 import {ReactNode, ReactHTML, Factory, InputHTMLAttributes, ClassAttributes} from "react";
@@ -274,7 +276,7 @@ Points:
 
 This is just the beginning! Here are just a few planned features:
 
-- Zero-setup automated visual regression testing. Just plug in your Paperclip files.
+- Minimal setup automated visual regression testing. Just plug in your Paperclip files.
 - More compiler targets: Ruby, PHP, VueJS, AngularJS, and others.
 - More code editor integrations: Sublime, Atom.
 - More visual tooling in the preview, so you can make visual changes directly.
