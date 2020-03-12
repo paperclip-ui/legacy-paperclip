@@ -18,26 +18,20 @@ Here's a kitchen sink example of most syntaxes:
   }
 </style>
 
-<!-- attribute binding -->
-<div onMouseDown={onMouseDown}>
-</div>
-
-<!-- shorthand binding. Equivalent to onClick={onClick} -->
-<div {onClick}>
-  Here's a child
-</div>
-
-<!-- all of someProps properties are applied as attributes to this div -->
-<div {...someProps}>
-</div>
-
-<!-- a bunch of nodes that you can re-use -->
-<span component as="message">Hello {children}!</span>
+<!-- components allow you to re-use groups of elements & text -->
+<span component as="Message">Hello {children}!</span>
 
 <!-- renders as "Hello World!" -->
-<message>
+<Message>
   World
-</message>
+</Message>
+
+<!-- exports component for code usage -->
+<span export component as="AnotherThing" {onClick}>
+  <div {...someProps}>
+    More children
+  </div>
+</span>
 ```
 
 # Syntax
@@ -46,7 +40,7 @@ The syntax is basic HTML & CSS with a few additions.
 
 ## Styling
 
-You can style things using the native `<style />` element. Note that styles are scoped to the template. For example:
+You can style elements using the native `<style />` element. Note that styles are scoped to the template, meaning that they won't leak to _other_ templates. For example:
 
 ```html
 <style>
@@ -58,15 +52,11 @@ You can style things using the native `<style />` element. Note that styles are 
 <div>Something</div>
 ```
 
-The `div { }` rule here is only applied to elements within the same template file, in this case: `<div>Something</div>`. 
+The `div { }` rule here is only applied to `<div>Something</div>`. 
 
 ## Components
 
-Components are useful for re-using chunks of elements & text.
-
-#### Creating components
-
-Here's an example:
+Components are useful for re-using groups of elements & text. Here's how you create one:
 
 ```html
 <div component as="Message">
@@ -78,6 +68,8 @@ Here's an example:
 ```
 
 Components are defined by adding a `component` and `as` attribute to any element at the highest level in the template document. 
+
+> Note that you can name components however you want, just bare in mind that the names will be in `PascalCase` when they're compiled to code. Because of that, I'd recommend using `PascalCase` for component names to make things more obvious.
 
 ## Exporting components
 
@@ -107,11 +99,9 @@ export function Counter() {
 };
 ```
 
-> ☝🏻This assumes that you're using a bundler.
-
 ## Default components 
 
-Default exports can be defined using the `default` ID:
+Default exports can be defined using `default` for the `as` attribute:
 
 ```html
 <!-- counter.pc -->
@@ -209,6 +199,29 @@ Since the attribute key & binding share the same name, we can use the **shorthan
 </Message>
 ```
 
+#### spreads (...props)
+
+You can spread properties to elements too. For example:
+
+```html
+<!-- some-input.pc -->
+<input type="text" {...inputProps}>
+```
+
+This can be used in JSX code like so:
+
+```jsx
+import SomeInputView from "./some-input.pc";
+export function SomeInput() {
+  return <SomeInputView inputProps={{
+    onKeyPress: event => {
+      // do something
+    },
+    defaultValue: "somrthing"
+  }}>
+}
+```
+
 
 ## `<import />`
 
@@ -243,7 +256,7 @@ You can import that file like so:
 />
 ```
 
-> The <fragment></fragment> Syntax defines a [Fragment](#fragments-).
+> For  `<fragment></fragment>` docs, check [here](#fragments-).
 
 #### Rendering components from import
 

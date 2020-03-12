@@ -145,11 +145,10 @@
   <div class="features">
     <div class="feature info">
       <div class="title">
-        Real-time previews
+        Build faster
       </div>
       <div class="desc">
-        Download the VS Code extension to see what you're creating in real-time. 
-        <!-- Paperclip comes with a VS Code extension for building UIs in realtime. -->
+        No waiting for code to compile. The VS Code extension allows you to <i>see</i> what you're creating in real-time. 
           <!-- No more bouncing between the browser and code. Paperclip brings realtime UI development directly in VS Code.  -->
 
 
@@ -189,7 +188,8 @@
         <!-- Separate UI from code -->
       </div>
       <div class="desc">
-        Designed just for stylizing UIs that you can import into app code.
+        Covers just feat
+
         <!-- Maybe info about how app code is heavy -->
         <!-- Paperclip just covers how your application looks, not logic. -->
         <!-- Paperclip just covers HTML, CSS, and primitive behavior for creating <i>presentational</i> components.  -->
@@ -205,10 +205,10 @@
     <div class="feature info">
       <div class="title">
         <!-- Compiles to multiple languages -->
-        Compiles to React code
+        Compiles to React code 
       </div>
       <div class="desc">
-        Templates compile down to strongly typed React components. No other libraries needed.
+        Templates compile down to strongly typed React code. No other libraries needed.
       </div>
     </div>
   </div>
@@ -255,7 +255,7 @@
           A simple template
         </div>
         <div class="desc">  
-          Templates consist of just styles & presentational components. 
+          Templates consist of <code>&lt;part /&gt;</code> elements that exposes your component's building blocks.
         </div>
       </div>
       <div class="snippet">
@@ -268,9 +268,7 @@
           A working component
         </div>
         <div class="desc">
-          Use a paperclip compiler to transform your templates into code that you can import into app code.
-
-          <!-- Import your template parts into your component to create a working component. -->
+          Import your template parts into your component to create a working component.
         </div>
       </div>
       <div class="snippet">
@@ -294,16 +292,16 @@
         <a href="#">Contributing</a>
       </div>
       <div class="social links">
-        <a href="http://github.com/crcn/paperclip"><img src="../assets/github.svg"></a>
-        <a href="https://discord.gg/H6wEVtd"><img src="../assets/discord.svg"></a>
-        <!-- <a href="#"><img src="./assets/twitter.svg"></a> -->
+        <a href="http://github.com/crcn/paperclip"><img src="./assets/github.svg"></a>
+        <a href="https://discord.gg/H6wEVtd"><img src="./assets/discord.svg"></a>
+        <!-- <a href="#"><img src=./assets/twitter.svg"></a> -->
       </div>
     </div>
 
     <div class="content section">
       <div class="blurb">
         <div class="title">
-          Build web applications faster
+          Real-time previews in VS Code
         </div>
         <div class="desc">
           <!-- No more waiting for the browser. Paperclip is a template language that runs as you write in it. -->
@@ -311,13 +309,11 @@
           <!-- No more waiting around. Paperclip is a template language that runs as you write in it. -->
           <!-- Paperclip is a language designed for developer speed. -->
 
-          <!-- Paperclip is a platform-agnostic language designed for stylizing web applications. -->
-          Paperclip is a language for creating
-web applications visually. 
+          Paperclip is a platform-agnostic language designed for stylizing web applications.
         </div>
       </div>
       <div class="screenshot">
-        <img src="../assets/calculator-screenshot3.png">
+        <img src="./assets/calculator-screenshot3.png">
       </div>
     </div>
   </div>
@@ -336,9 +332,9 @@ web applications visually.
         <a href="#">Contributing</a>
       </div>
       <div class="social links">
-        <a href="http://github.com/crcn/paperclip"><img src="../assets/github.svg"></a>
-        <a href="https://discord.gg/H6wEVtd"><img src="../assets/discord.svg"></a>
-        <!-- <a href="#"><img src="./assets/twitter.svg"></a> -->
+        <a href="http://github.com/crcn/paperclip"><img src="./assets/github.svg"></a>
+        <a href="https://discord.gg/H6wEVtd"><img src="./assets/discord.svg"></a>
+        <!-- <a href="#"><img src=./assets/twitter.svg"></a> -->
       </div>
   </div>
 </div>

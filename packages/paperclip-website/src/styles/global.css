@@ -24,14 +24,6 @@
   --color: rgba(0, 0, 0, 0.6);
 }
 
-
-.website {
-  font-family: Roboto;
-  font-weight: 100;
-  color: var(--color);
-
-}
-
 a {
   text-decoration: none;
   color: var(--color);
