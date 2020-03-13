@@ -1,10 +1,9 @@
 import * as React from "react";
-// import { Link } from "gatsby";
-import Home, {styled} from "./home.pc";
-import Highlight, { defaultProps, Language } from "prism-react-renderer";
-
-const Pre = styled("pre");
-
+import Home, {scopedStyleProps} from "./home.pc";
+const SyntaxHighlighter = require("react-syntax-highlighter").default;
+const { atomOneDark: codeStyle } = require("react-syntax-highlighter/dist/esm/styles/hljs");
+// agate
+// androidstudio
 const PC_CODE = `
 
 <!-- counter.pc -->
@@ -60,23 +59,15 @@ export function List() {
 `.trim();
 
 type CodeBlockProps = {
-  language: Language,
+  language: string,
   code: string
 };
 
-const CodeBlock = ({code, language}: CodeBlockProps) => <Highlight {...defaultProps} code={code} language={language}>
-{({ className, style, tokens, getLineProps, getTokenProps }) => (
-  <Pre className={className} style={style}>
-    {tokens.map((line, i) => (
-      <div {...getLineProps({ line, key: i })}>
-        {line.map((token, key) => (
-          <span {...getTokenProps({ token, key })} />
-        ))}
-      </div>
-    ))}
-  </Pre>
-)}
-</Highlight>;
+const CodeBlock = ({code, language}: CodeBlockProps) => {
+  return <SyntaxHighlighter {...scopedStyleProps} language={language} style={codeStyle}>
+  {code}
+</SyntaxHighlighter>;
+};
 
 
 const IndexPage = () => {

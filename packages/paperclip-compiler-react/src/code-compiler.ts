@@ -117,13 +117,23 @@ const translateStyleSheet = (sheet: Sheet, context: TranslateContext) => {
 };
 
 const translateUtils = (ast: Node, context: TranslateContext) => {
+  context = translateStyleDataAttributes(context);
   context = translateStyledUtil(ast, context);
-  context = translategetDefaultUtil(ast, context);
+  context = translateGetDefaultUtil(ast, context);
 
   // KEEP ME: for logic
   // context = translateExtendsPropsUtil(ast, context);
   return context;
 };
+
+const translateStyleDataAttributes = (context: TranslateContext) => {
+  context = addBuffer(`export const scopedStyleProps = {\n`, context);
+  context = startBlock(context);
+  context = translateStyleScopeAttributes(context, "\n");
+  context = endBlock(context);
+  context = addBuffer(`};\n\n`, context);
+  return context;
+}
 
 const translateStyleScopeAttributes = (
   context: TranslateContext,
@@ -152,7 +162,7 @@ const translateExtendsPropsUtil = (ast: Node, context: TranslateContext) => {
   return context;
 };
 
-const translategetDefaultUtil = (ast: Node, context: TranslateContext) => {
+const translateGetDefaultUtil = (ast: Node, context: TranslateContext) => {
   context = addBuffer(
     `const getDefault = (module) => module.default || module;\n\n`
   , context);
@@ -168,11 +178,9 @@ const translateStyledUtil = (ast: Node, context: TranslateContext) => {
   context = addBuffer(`(props) => (\n`, context);
   context = startBlock(context);
   context = addBuffer(
-    `React.createElement(tagName, Object.assign({ `,
+    `React.createElement(tagName, Object.assign({}, scopedStyleProps, defaultProps, props))\n`,
     context
   );
-  context = translateStyleScopeAttributes(context, " ");
-  context = addBuffer(`}, defaultProps, props))\n`, context);
   context = endBlock(context);
   context = addBuffer(");\n\n", context);
   return context;

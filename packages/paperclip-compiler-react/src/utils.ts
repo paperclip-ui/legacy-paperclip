@@ -4,6 +4,7 @@ import {
   getMetaValue,
   Node,
   Element,
+  AS_ATTR_NAME,
   getAttributeStringValue
 } from "paperclip";
 

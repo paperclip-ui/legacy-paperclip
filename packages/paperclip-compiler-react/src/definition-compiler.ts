@@ -104,6 +104,10 @@ const translateRoot = (ast: Node, context: TranslateContext) => {
 
 const translateUtils = (_ast: Node, context: TranslateContext) => {
   context = addBuffer(
+    `export declare const scopedStyleProps: Object;\n\n`,
+    context
+  );
+  context = addBuffer(
     `export declare const styled: (tag: keyof ReactHTML | Factory<ElementProps>, defaultProps?: ElementProps) => Factory<ElementProps>;\n\n`,
     context
   );
