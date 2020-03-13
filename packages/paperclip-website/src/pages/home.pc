@@ -290,8 +290,8 @@
         </div>
       </a>
       <div class="links">
-        <a href="">Docs</a>
-        <a href="#">Contributing</a>
+        <a href="https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension">Download</a>
+        <a href="http://github.com/crcn/paperclip">Docs</a>
       </div>
       <div class="social links">
         <a href="http://github.com/crcn/paperclip"><img src="../assets/github.svg"></a>
