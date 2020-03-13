@@ -41,17 +41,17 @@ const JS_CODE = `
 // list.jsx
 import React, {useState} from "react";
 import { 
-  Counter as BaseConter
+  Counter as CounterView
 } from "./counter.pc";
 
-export function List() {
+export function Counter() {
   const [currentCount, setCount] = useState(0);
   
   const onClick = () => {
     setCount(currentCount + 1);
   };
 
-  return <BaseConter 
+  return <CounterView 
     currentCount={currentCount} 
     onClick={onClick} 
   />;
