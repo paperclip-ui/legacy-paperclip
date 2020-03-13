@@ -39,7 +39,7 @@ In React, you can do this:
 
 ```jsx
 import {styled} from "./template.pc";
-const Div = styled('div');
+const Div = styled("div");
 
 export default () => {
   return <Div>
