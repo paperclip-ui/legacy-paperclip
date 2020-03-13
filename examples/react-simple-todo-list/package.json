@@ -1,7 +1,7 @@
 {
   "name": "simple-todo-list",
   "private": true,
-  "version": "11.0.56",
+  "version": "11.0.57",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "html-webpack-plugin": "^3.2.0",
     "paperclip": "^11.0.56",
     "paperclip-cli": "^11.0.56",
-    "paperclip-compiler-react": "^11.0.56",
+    "paperclip-compiler-react": "^11.0.57",
     "paperclip-loader": "^11.0.56",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
