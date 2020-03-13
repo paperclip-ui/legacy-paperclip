@@ -6,7 +6,7 @@ For the Alpha version of Paperclip, you'll need this stuff:
 - React
 - Webpack
 
-So, assuming you have everything you need, here's what you can do next:
+Here's what you can do next:
 
 1. Install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension).
 1. With VS Code open, create a `hello-world.pc` & open it.
