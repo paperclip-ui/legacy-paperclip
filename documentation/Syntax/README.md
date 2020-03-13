@@ -317,7 +317,7 @@ The JSX code for that might look something like:
 import React from "react";
 import {TodoList as TodoListView} from "./todo-list.pc";
 
-// We're using the TodoItem component assuming that it's using the todo-list.pc template.
+// We're using the TodoItem component assuming that it's using the todo-item.pc template.
 import TodoItem from "./todo-item.tsx";
 
 export function TodoList() {
