@@ -1,4 +1,5 @@
 <import src="styles/global.css">
+<import as="section" src="./section.pc" />
 
 <style>
 
@@ -61,10 +62,11 @@
   }
 
   .blurb {
-    max-width: 345px;
+    /* max-width: 345px; */
     padding: 0px 0px;
-    min-width: 310px;
-    
+    text-align: center;
+    margin: 40px 0px;
+    /* min-width: 310px; */
   }
 
   .blurb .title {
@@ -293,13 +295,14 @@
         <a href="http://github.com/crcn/paperclip">Docs</a>
       </div>
       <div class="social links">
-        <a href="http://github.com/crcn/paperclip"><img src="../assets/github.svg"></a>
-        <a href="https://discord.gg/H6wEVtd"><img src="../assets/discord.svg"></a>
+        <a href="http://github.com/crcn/paperclip"><img src="./assets/github.svg"></a>
+        <a href="https://discord.gg/H6wEVtd"><img src="./assets/discord.svg"></a>
         <!-- <a href="#"><img src="./assets/twitter.svg"></a> -->
       </div>
     </div>
 
-    <div class="content section">
+    
+    <section>
       <div class="blurb">
         <div class="title">
           Build web applications faster
@@ -316,9 +319,9 @@ web applications visually.
         </div>
       </div>
       <div class="screenshot">
-        <img src="../assets/calculator-screenshot3.png">
+        <img src="./assets/calculator-screenshot3.png">
       </div>
-    </div>
+    </section>
   </div>
 </div>
 
@@ -335,8 +338,8 @@ web applications visually.
         <a href="#">Contributing</a>
       </div>
       <div class="social links">
-        <a href="http://github.com/crcn/paperclip"><img src="../assets/github.svg"></a>
-        <a href="https://discord.gg/H6wEVtd"><img src="../assets/discord.svg"></a>
+        <a href="http://github.com/crcn/paperclip"><img src="./assets/github.svg"></a>
+        <a href="https://discord.gg/H6wEVtd"><img src="./assets/discord.svg"></a>
         <!-- <a href="#"><img src="./assets/twitter.svg"></a> -->
       </div>
   </div>

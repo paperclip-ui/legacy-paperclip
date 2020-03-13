@@ -1,5 +1,5 @@
 import * as React from "react";
-import Home, {scopedStyleProps} from "./home.pc";
+import Home, {scopedStyleProps} from "./home/index.pc";
 const SyntaxHighlighter = require("react-syntax-highlighter").default;
 const { atomOneDark: codeStyle } = require("react-syntax-highlighter/dist/esm/styles/hljs");
 // agate
@@ -40,9 +40,7 @@ const JS_CODE = `
 
 // list.jsx
 import React, {useState} from "react";
-import { 
-  Counter as CounterView
-} from "./counter.pc";
+import { Counter as CounterView } from "./counter.pc";
 
 export function Counter() {
   const [currentCount, setCount] = useState(0);

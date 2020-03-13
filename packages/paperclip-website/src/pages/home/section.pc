@@ -1,0 +1,9 @@
+<style>
+  .section {
+    margin: 24px 0px;
+  }
+</style>
+
+<div export component as="default" class="section">
+  {children}
+</div>
