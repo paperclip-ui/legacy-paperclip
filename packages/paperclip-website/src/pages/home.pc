@@ -268,7 +268,7 @@
           A working component
         </div>
         <div class="desc">
-          Use a paperclip compiler to transform your templates into code that you can import into your app.
+          Using the paperclip compiler, you can import your templates directly into app code.
 
           <!-- Import your template parts into your component to create a working component. -->
         </div>
