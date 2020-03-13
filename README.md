@@ -37,7 +37,7 @@ Notes:
 
 <!-- No more juggling between the coding & debugging in the browser. Paperclip provides tooling that allows  -->
 
-Paperclip is a platform-agnostic language for stylizing components, directly within VS Code.
+Paperclip is a platform-agnostic language for creating user interfaces, directly within VS Code.
 
 <!-- Tooling is provided that brings a real-time preview of your application directly into your code editor. -->
 
