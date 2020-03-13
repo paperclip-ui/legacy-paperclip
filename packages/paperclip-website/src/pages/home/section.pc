@@ -1,6 +1,8 @@
 <style>
   .section {
     margin: 24px 0px;
+    margin-bottom: 0px;
+    display: flex;
   }
 </style>
 

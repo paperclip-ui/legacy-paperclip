@@ -64,7 +64,6 @@
   .blurb {
     /* max-width: 345px; */
     padding: 0px 0px;
-    text-align: center;
     margin: 40px 0px;
     /* min-width: 310px; */
   }
