@@ -216,9 +216,6 @@ const translateImports = (ast: Node, context: TranslateContext) => {
 
 const translateParts = (root: Node, context: TranslateContext) => {
   for (const part of getParts(root)) {
-    if (!hasAttribute(EXPORT_TAG_NAME, part)) {
-      continue;
-    }
 
     // already compiled
     if (getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID) {
@@ -231,7 +228,7 @@ const translateParts = (root: Node, context: TranslateContext) => {
 
 const translatePart = (part: Element, context: TranslateContext) => {
   const componentName = pascalCase(getAttributeStringValue(AS_ATTR_NAME, part));
-  context = translateComponent(componentName, part, true, context);
+  context = translateComponent(componentName, part, hasAttribute(EXPORT_TAG_NAME, part), context);
   return context;
 };
 

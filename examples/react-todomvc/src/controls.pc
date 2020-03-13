@@ -87,7 +87,7 @@
 }
 </style>
 
-<li component as="filter">
+<li export component as="filter">
   <a {href} data-select={active}>{label}</a>
 </li>
 

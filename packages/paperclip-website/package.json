@@ -15,7 +15,6 @@
     "gatsby-plugin-typescript": "^2.2.2",
     "gatsby-source-filesystem": "^2.1.46",
     "gatsby-transformer-sharp": "^2.3.13",
-    "paperclip-cli": "^11.0.55",
     "paperclip-compiler-react": "^11.0.55",
     "paperclip-mini-editor": "^11.0.55",
     "prism-react-renderer": "^1.0.2",
@@ -31,6 +30,7 @@
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
     "gh-pages": "^2.2.0",
+    "paperclip-cli": "^11.0.55",
     "prettier": "^1.19.1"
   },
   "keywords": [
