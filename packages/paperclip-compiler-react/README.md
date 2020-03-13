@@ -10,7 +10,7 @@ This is a compiler that translates paperclip templates into React code. Here's a
 </div>
 ```
 
-Here's the React code for adding behavior:
+Here's the React code using the template:
 
 ```jsx
 import BaseCounter from "./counter.pc";
@@ -67,14 +67,14 @@ Next, assuming that your PC config also has `filesGlob` set up, go ahead and run
 ./node_modules/.bin/paperclip --definition
 ```
 
-This will print all typed definitions in terminal. To _write_ typed definition files to disc, you can run this:
+This will print all typed definitions. To save typed definition files, you can run this:
 
 
 ```
 ./node_modules/.bin/paperclip --definition --write
 ```
 
-> ✨ I also recommend that you include `*.pc.d.ts` in your `.gitignore` file so to keep the typed definition files out of GIT. 
+> ✨ I recommend that you include `*.pc.d.ts` in your `.gitignore` file so to keep the typed definition files out of GIT. 
 
 
 To watch for changes, you can do this:

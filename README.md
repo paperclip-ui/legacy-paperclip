@@ -78,12 +78,12 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 My biggest problem with UI development over the years has been the _speed_ of creating them. It's a time sink, especially as applications get bigger. And because user interface development is such as iterative process, waiting around for UIs to reload can be a real problem for productivity. 
 
 
-I built Paperclip as a lightweight approach for ceating presentational components. It's not intended to replace code, but instead allow you to focus on the just the basic construction of your user interfaces, without the heaviness that additional logic brings. This allows Paperclip to be fast, and _remain_ fast as a project grows in size. 
+Paperclip provides a lightweight approach for creating presentational components. It's not intended to replace code, but instead allow you to focus on the just the basic construction of your user interfaces, without the heaviness that an _entire_ application brings. This allows Paperclip to be fast, and _remain_ fast as your project grows in size. 
 
 #### Goals
 
 
-- Shorten the gap between design -> code by bringing more design tooling into web development.
+- Shorten the gap between design 👉🏻 code by bringing more design tooling into web development.
 - Provide safety around building user interfaces, especially for large projects. This is helped with type safety, and visual regression tooling. 
 - Have a platform & language agnostic approach for building user interfaces. 
 
@@ -96,7 +96,7 @@ I built Paperclip as a lightweight approach for ceating presentational component
 - Just covers presentational components.
 - Real-time previews in VS Code (more code editors to come).
 - Super fast, even for large codebases. 
-- Templates compile to plain, strongly typed code. No library necessary!
+- Templates compile to plain, strongly typed code.
 - Works with Webpack.
 
 ## What does a template look like?
@@ -159,9 +159,8 @@ Here's what you see in VS Code as you type away:
 
 ## How do I add logic? 
 
-Templates compile directly to highly optimized code. For example:
-
-<!-- Using our list example above, here's how you might use it in a React app: -->
+Templates can be imported directly into your app code assuming that it's compiled, or
+you're using a bundler. For example:
 
 ```javascript
 
