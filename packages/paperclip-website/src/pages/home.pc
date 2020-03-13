@@ -267,7 +267,7 @@
           A working component
         </div>
         <div class="desc">
-          Using the paperclip compiler, you can import your templates directly into app code.
+          Import your template components directly into app code.
 
           <!-- Import your template parts into your component to create a working component. -->
         </div>
@@ -357,3 +357,5 @@ web applications visually.
     <bottom />
   </div>
 </div>
+
+<default />
