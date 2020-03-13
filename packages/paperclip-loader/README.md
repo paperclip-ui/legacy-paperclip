@@ -1,3 +1,5 @@
+Installation: `npm install paperclip-loader --save-dev`
+
 This loader allows you use Paperclip files (`*.pc`) in your application code. Here's a basic Webpack example:
 
 ```javascript
@@ -37,7 +39,7 @@ module.exports = {
 
 ```
 
-Next, you'll need to setup a `pcconfig.json`:
+Next, you'll need to set up a `pcconfig.json`:
 
 ```javascript
 {
