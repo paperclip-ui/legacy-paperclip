@@ -2,6 +2,7 @@
   "name": "paperclip-mini-editor",
   "version": "11.0.56",
   "description": "",
+  "private": true,
   "main": "index.js",
   "scripts": {},
   "author": "",
