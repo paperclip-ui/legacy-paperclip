@@ -32,5 +32,5 @@ Now you can start using Paperclip! Here's what you can do next:
 
 <!-- - Check out the tutorials -->
 - [Check out the Syntax](../Syntax)
-- [Setting up Webpack](../Integrations/Webpack)
-- [Integrating with React](../Integrations/React)
+- [Setting up Webpack](../Integrations/Webpack.md)
+- [Integrating with React](../Integrations/React.md)
