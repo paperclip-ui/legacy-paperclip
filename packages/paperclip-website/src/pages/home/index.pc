@@ -286,7 +286,7 @@
       <a class="logo" href="http://paperclip.dev">
         Paperclip
         <div class="alpha-badge">
-          alpha
+          experimental
         </div>
       </a>
       <div class="links">
