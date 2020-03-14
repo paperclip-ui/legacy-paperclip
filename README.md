@@ -271,6 +271,7 @@ Points:
 -->
 
 
+<!--
 ## Roadmap 🌄
 
 This is just the beginning! Here are just a few planned features:
@@ -280,3 +281,4 @@ This is just the beginning! Here are just a few planned features:
 - More code editor integrations: Sublime, Atom.
 - More visual tooling in the preview, so you can make visual changes directly.
 - Preview against different browsers directly within your code editor.
+-->
