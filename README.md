@@ -13,7 +13,7 @@
   </a>
 </p>
 
-> ⚠️ Note that Paperclip is currently in Alpha, so expect a few bugs!
+> Paperclip is experimental, so I wouldn't recommend using it in a production app. 
 
 # Resources
 
@@ -73,12 +73,12 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
 
-<!--## Why? 
+## Why? 
 
-My biggest problem with UI development over the years has been the _speed_ of creating them. It's a time sink, especially as applications get bigger. And because user interface development is such as iterative process, waiting around for UIs to reload can be a real problem for productivity. 
+<!-- My biggest problem with UI development over the years has been the _speed_ of creating them. It's a time sink, especially as applications get bigger. And because user interface development is such as iterative process, waiting around for UIs to reload can be a real problem for productivity. -->
 
 
-Paperclip provides a lightweight approach for creating presentational components. It's not intended to replace code, but instead allow you to focus on the just the basic construction of your user interfaces, without the heaviness that an _entire_ application brings. This allows Paperclip to be fast, and _remain_ fast as your project grows in size. -->
+Paperclip provides a lightweight approach for creating presentational components. It's not intended to replace code, but instead allow you to focus on the just the basic construction of your user interfaces, without the heaviness that an _entire_ application brings. This allows Paperclip to be fast, and _remain_ fast as your project grows in size. 
 
 #### Goals
 
