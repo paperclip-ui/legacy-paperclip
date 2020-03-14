@@ -9,11 +9,11 @@ type VirtualBaseNode<KKind extends VirtualNodeKind> = {
   kind: KKind;
 };
 
-export type VirtualElement = {
+export type VirtualStyleElement = {
   sheet: any;
 } & VirtualBaseNode<VirtualNodeKind.StyleElement>;
 
-export type VirtualStyleElement = {
+export type VirtualElement = {
   tagName: string,
   attributes: {
     [identifier: string]: string | null

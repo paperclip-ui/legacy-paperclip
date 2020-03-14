@@ -71,7 +71,7 @@
   }
 </style>
 
-<div component as="calculator">
+<div export component as="calculator">
   <div id="root">
     <div class="app">
       <div class="display">

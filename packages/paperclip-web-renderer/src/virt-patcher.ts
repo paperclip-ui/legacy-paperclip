@@ -1,4 +1,4 @@
-import { Mutation, ActionKind } from "paperclip-utils";
+import { Mutation, ActionKind, VirtualText } from "paperclip-utils";
 import { VirtualNode, VirtualElement } from "paperclip-utils";
 
 export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
@@ -10,14 +10,14 @@ export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
         const element = target as VirtualElement;
         const children = element.children.concat();
         children.splice(action.index, 1);
-        target = { ...target, children };
+        target = { ...target, children } as VirtualElement;
         break;
       }
       case ActionKind.InsertChild: {
         const element = target as VirtualElement;
         const children = element.children.concat();
         children.splice(action.index, 0, action.child);
-        target = { ...target, children };
+        target = { ...target, children } as VirtualElement;
         break;
       }
       case ActionKind.ReplaceNode: {
@@ -31,7 +31,7 @@ export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
         target = {
           ...target,
           attributes
-        };
+        } as VirtualElement;
         break;
       }
       case ActionKind.SetAttribute: {
@@ -41,11 +41,11 @@ export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
         target = {
           ...target,
           attributes
-        };
+        } as VirtualElement;
         break;
       }
       case ActionKind.SetText: {
-        target = { ...target, value: action.value };
+        target = { ...target, value: action.value } as VirtualText;
         break;
       }
       case ActionKind.SourceChanged: {

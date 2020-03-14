@@ -27,12 +27,12 @@
   
 </style>
 
-<li component as="TodoItem" data-done={done}>
+<li export component as="TodoItem" data-done={done}>
   <input type="checkbox" checked={done} onClick={onDoneClick}>
   {label}
 </li>
 
-<fragment component as="TodoList">
+<fragment export component as="TodoList">
   <h1>Todos:</h1>
   <input type="text" id="new-todo-input" onKeyPress={onNewTodoKeyPress} placeholder="Add a new todo..." >
   <ul>
