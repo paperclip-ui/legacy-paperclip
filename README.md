@@ -8,9 +8,9 @@
     <img src="https://img.shields.io/npm/l/paperclip.svg" alt="License">
   </a>
   <!-- TODO: change to chat.paperclip.dev -->
-  <a href="https://discord.gg/H6wEVtd">
+  <!--a href="https://discord.gg/H6wEVtd">
     <img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg" alt="Chat">
-  </a>
+  </a-->
 </p>
 
 > 👨‍🔬Paperclip is experimental, so I wouldn't recommend using it in a production app. 
@@ -271,6 +271,7 @@ Points:
 -->
 
 
+<!--
 ## Roadmap 🌄
 
 This is just the beginning! Here are just a few planned features:
@@ -280,3 +281,4 @@ This is just the beginning! Here are just a few planned features:
 - More code editor integrations: Sublime, Atom.
 - More visual tooling in the preview, so you can make visual changes directly.
 - Preview against different browsers directly within your code editor.
+-->
