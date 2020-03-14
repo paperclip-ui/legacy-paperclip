@@ -8,9 +8,9 @@
     <img src="https://img.shields.io/npm/l/paperclip.svg" alt="License">
   </a>
   <!-- TODO: change to chat.paperclip.dev -->
-  <a href="https://discord.gg/H6wEVtd">
+  <!--a href="https://discord.gg/H6wEVtd">
     <img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg" alt="Chat">
-  </a>
+  </a-->
 </p>
 
 > 👨‍🔬Paperclip is experimental, so I wouldn't recommend using it in a production app. 
