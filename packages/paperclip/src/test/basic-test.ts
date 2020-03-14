@@ -209,7 +209,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style></style><span class="blue red" data-pc-1acb798>message </span>`
+      `<style></style><span class="blue _80f4925f_red" data-pc-1acb798>message </span>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

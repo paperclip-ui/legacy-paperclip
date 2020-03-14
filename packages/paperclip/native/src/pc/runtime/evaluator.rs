@@ -470,6 +470,18 @@ fn create_component_instance_data<'a>(
     js_virt::JsValue::JsArray(js_children),
   );
 
+  // use scoped classnames since data-pc-* isn't passed through.
+  let class_name = "class".to_string();
+  if let Some(class) = data.values.get(&class_name) {
+    if let js_virt::JsValue::JsString(class_names) = class {
+      let class_name_parts: Vec<&str> = class_names.split(" ").collect();
+      let prefixed_class_names = class_name_parts.iter().map(|class| {
+        format!("_{}_{}", context.scope, class).to_string()
+      }).collect::<Vec<String>>().join(" ");
+      data.values.insert(class_name, js_virt::JsValue::JsString(prefixed_class_names));
+    }
+  }
+
   Ok(js_virt::JsValue::JsObject(data))
 }
 

@@ -157,7 +157,7 @@ fn evaluate_style_rule2(
   context: &Context,
 ) -> Result<virt::StyleRule, RuntimeError> {
   let style = evaluate_style_declarations(&expr.declarations, context)?;
-  let selector_text = stringify_element_selector(&expr.selector, context);
+  let selector_text = stringify_element_selector(&expr.selector, false, context);
   Ok(virt::StyleRule {
     selector_text,
     style,
@@ -166,18 +166,23 @@ fn evaluate_style_rule2(
 
 fn stringify_optional_selector(selector: &Option<Box<ast::Selector>>, context: &Context) -> String {
   if let Some(target) = &selector {
-    stringify_element_selector(target, context)
+    stringify_element_selector(target, false, context)
   } else {
     "".to_string()
   }
 }
 
-fn stringify_element_selector(selector: &ast::Selector, context: &Context) -> String {
+fn stringify_element_selector(selector: &ast::Selector, secondary_selector: bool, context: &Context) -> String {
   let scope_selector = format!("[data-pc-{}]", context.scope);
+  let scope_class_prefix = format!("_{}_", context.scope);
 
   let scoped_selector_text = match selector {
     ast::Selector::AllSelector => format!("{}", scope_selector),
-    ast::Selector::Class(selector) => format!(".{}{}", selector.class_name, scope_selector),
+    ast::Selector::Class(selector) => if secondary_selector {
+      format!(".{}{}", scope_class_prefix, scope_selector)
+    } else {
+      format!(".{}{}", selector.class_name, scope_selector)
+    },
     ast::Selector::Id(selector) => format!("#{}{}", selector.id, scope_selector),
     ast::Selector::Element(selector) => format!("{}{}", selector.tag_name, scope_selector),
     ast::Selector::PseudoElement(selector) => {
@@ -202,32 +207,32 @@ fn stringify_element_selector(selector: &ast::Selector, context: &Context) -> St
     ast::Selector::Not(selector) => format!(
       "{}:not({})",
       scope_selector,
-      stringify_element_selector(&selector.selector, context)
+      stringify_element_selector(&selector.selector, secondary_selector, context)
     ),
     ast::Selector::Descendent(selector) => format!(
       "{} {}",
-      stringify_element_selector(&selector.parent, context),
-      stringify_element_selector(&selector.descendent, context)
+      stringify_element_selector(&selector.parent, secondary_selector, context),
+      stringify_element_selector(&selector.descendent, secondary_selector, context)
     ),
     ast::Selector::Child(selector) => format!(
       "{} > {}",
-      stringify_element_selector(&selector.parent, context),
-      stringify_element_selector(&selector.child, context)
+      stringify_element_selector(&selector.parent, secondary_selector, context),
+      stringify_element_selector(&selector.child, secondary_selector, context)
     ),
     ast::Selector::Adjacent(selector) => format!(
       "{} + {}",
-      stringify_element_selector(&selector.selector, context),
-      stringify_element_selector(&selector.next_sibling_selector, context)
+      stringify_element_selector(&selector.selector, secondary_selector, context),
+      stringify_element_selector(&selector.next_sibling_selector, secondary_selector, context)
     ),
     ast::Selector::Sibling(selector) => format!(
       "{} ~ {}",
-      stringify_element_selector(&selector.selector, context),
-      stringify_element_selector(&selector.sibling_selector, context)
+      stringify_element_selector(&selector.selector, secondary_selector, context),
+      stringify_element_selector(&selector.sibling_selector, secondary_selector, context)
     ),
     ast::Selector::Group(selector) => {
       let text: Vec<String> = (&selector.selectors)
         .into_iter()
-        .map(|child| stringify_element_selector(child, context))
+        .map(|child| stringify_element_selector(child, secondary_selector, context))
         .collect();
       text.join(", ")
     }
