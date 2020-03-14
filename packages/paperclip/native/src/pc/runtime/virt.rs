@@ -2,6 +2,7 @@ use std::fmt;
 use serde::{Serialize};
 use crate::css::runtime::virt as css_virt;
 use crate::base::ast::{Location};
+use std::collections::{HashMap};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
@@ -20,7 +21,6 @@ impl fmt::Display for Fragment {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
 
-  
   #[serde(rename = "sourceUri")]
   pub source_uri: String,
 
@@ -29,7 +29,7 @@ pub struct Element {
 
   #[serde(rename = "tagName")]
   pub tag_name: String,
-  pub attributes: Vec<Attribute>,
+  pub attributes: HashMap<String, String>,
   pub children: Vec<Node>
 }
 
@@ -67,12 +67,6 @@ impl fmt::Display for Element {
 
     Ok(())
   }
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct Attribute {
-  pub name: String,
-  pub value: Option<String>
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

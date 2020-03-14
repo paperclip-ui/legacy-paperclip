@@ -2,7 +2,7 @@ use super::super::ast;
 use crate::base::runtime::{RuntimeError};
 use crate::base::ast::{Location};
 use super::virt;
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
 use std::iter::FromIterator;
 use super::graph::{DependencyGraph, DependencyContent, Dependency};
 use super::vfs::{VirtualFileSystem};
@@ -178,14 +178,13 @@ pub fn evaluate_instance_node<'a>(node_expr: &ast::Node, context: &'a mut Contex
   context.render_call_stack.push((context.uri.to_string(), render_strategy.clone()));
   let target_option = get_instance_target_node(node_expr, &render_strategy, imported);
   if let Some(target) = target_option {
-    evaluate_node(target, context)
+    evaluate_node(target, true, context)
   } else {
     Ok(None)
   }
 }
 
 fn create_context<'a>(node_expr: &'a ast::Node, uri: &'a String, graph: &'a DependencyGraph, vfs: &'a VirtualFileSystem, data: &'a js_virt::JsValue,  parent_option: Option<&'a Context>) -> Context<'a> {
-
   let render_call_stack = if let Some(parent) = parent_option {
     parent.render_call_stack.clone()
   } else {
@@ -206,10 +205,10 @@ fn create_context<'a>(node_expr: &'a ast::Node, uri: &'a String, graph: &'a Depe
   }
 }
 
-pub fn evaluate_node<'a>(node_expr: &ast::Node, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
+pub fn evaluate_node<'a>(node_expr: &ast::Node, is_root: bool, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
   match &node_expr {
     ast::Node::Element(el) => {
-      evaluate_element(&el, context)
+      evaluate_element(&el, is_root, context)
     },
     ast::Node::StyleElement(el) => {
       evaluate_style_element(&el, context)
@@ -236,7 +235,7 @@ pub fn evaluate_node<'a>(node_expr: &ast::Node, context: &'a mut Context) -> Res
   }
 }
 
-fn evaluate_element<'a>(element: &ast::Element, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
+fn evaluate_element<'a>(element: &ast::Element, is_root: bool, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
   match element.tag_name.as_str() {
     "import" => evaluate_import_element(element, context),
     "script" | "property" | "logic" => Ok(None),
@@ -258,7 +257,7 @@ fn evaluate_element<'a>(element: &ast::Element, context: &'a mut Context) -> Res
         if element.tag_name == "fragment" {
           evaluate_children_as_fragment(&element.children, context)
         } else {
-          evaluate_basic_element(element, context)
+          evaluate_native_element(element, is_root, context)
         }
       }
     }
@@ -422,13 +421,11 @@ fn evaluate_component_instance<'a>(instance_element: &ast::Element, render_strat
   }
 }
 
-fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
+fn evaluate_native_element<'a>(element: &ast::Element, is_root: bool, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
 
-  let mut attributes = vec![];
+  let mut attributes: HashMap<String, Option<String>> = HashMap::new();
 
   let tag_name = ast::get_tag_name(element);
-
-  let is_component = ast::has_attribute("component", element);
 
   for attr_expr in &element.attributes {
     let attr = &attr_expr;
@@ -460,10 +457,12 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
           }
         }
 
-        attributes.push(virt::Attribute {
-          name,
-          value: value_option,
-        });
+        attributes.insert(name.to_string(), value_option);
+
+        // attributes.push(virt::Attribute {
+        //   name,
+        //   value: value_option,
+        // });
       },
       ast::Attribute::SpreadAttribute(attr) => {
         let attr_data = evaluate_js(&attr.script, context)?;
@@ -471,10 +470,11 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
           js_virt::JsValue::JsObject(mut object) => {
             for (key, value) in object.values.drain() {
               // data.values.insert(key.to_string(), value);
-              attributes.push(virt::Attribute {
-                name: key.to_string(),
-                value: Some(value.to_string()),
-              });
+              attributes.insert(key.to_string(), Some(value.to_string()));
+              // attributes.push(virt::Attribute {
+              //   name: key.to_string(),
+              //   value: Some(value.to_string()),
+              // });
             }
           },
           _ => {
@@ -496,19 +496,24 @@ fn evaluate_basic_element<'a>(element: &ast::Element, context: &'a mut Context) 
         let js_value = evaluate_attribute_slot(&sh_attr.reference, context)?;
 
         if js_value.truthy() {
-          attributes.push(virt::Attribute {
-            name: name.to_string(),
-            value: Some(stringify_attribute_value(&name, &js_value)),
-          });
+          attributes.insert(name.to_string(), Some(stringify_attribute_value(&name, &js_value)));
         }
       }
     };
   }
 
-  attributes.push(virt::Attribute {
-    name: format!("data-pc-{}", context.scope.to_string()).to_string(),
-    value: None
-  });
+  if is_root {
+    if let js_virt::JsValue::JsObject(object) = &context.data {
+      let class_option = object.values.get(&"class".to_string());
+      if let Some(class) = class_option {
+
+      }
+    }
+  }
+
+  let name = format!("data-pc-{}", context.scope.to_string()).to_string();
+
+  attributes.insert(name.to_string(), None);
 
   let children = evaluate_children(&element.children, context)?;
 
@@ -539,9 +544,6 @@ fn evaluate_import_element<'a>(_element: &ast::Element, _context: &'a mut Contex
   Ok(None)
 }
 
-fn evaluate_attr_component_element<'a>(element: &ast::Element, context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
-  evaluate_basic_element(element, context)
-}
 
 fn evaluate_style_element<'a>(_element: &ast::StyleElement, _context: &'a mut Context) -> Result<Option<virt::Node>, RuntimeError> {
   Ok(None)
@@ -552,7 +554,7 @@ fn evaluate_children<'a>(children_expr: &Vec<ast::Node>, context: &'a mut Contex
   let mut children: Vec<virt::Node> = vec![];
 
   for child_expr in children_expr {
-    match evaluate_node(child_expr, context)? {
+    match evaluate_node(child_expr, false, context)? {
       Some(c) => {
         match c {
           virt::Node::Fragment(mut fragment) => {
@@ -601,7 +603,7 @@ fn evaluate_conditional_block<'a>(block: &ast::ConditionalBlock, context: &'a mu
     },
     ast::ConditionalBlock::FinalBlock(block) => {
       if let Some(node) = &block.body {
-        evaluate_node(node, context)
+        evaluate_node(node, false, context)
       } else {
         Ok(None)
       }
@@ -613,7 +615,7 @@ fn evaluate_pass_fail_block<'a>(block: &ast::PassFailBlock, context: &'a mut Con
   let condition = evaluate_js(&block.condition, context)?;
   if condition.truthy() {
     if let Some(node) = &block.body {
-      evaluate_node(node, context)
+      evaluate_node(node, false, context)
     } else {
       Ok(None)
     }
@@ -668,7 +670,7 @@ fn evaluate_each_block_body<'a>(body: &ast::Node, item: &js_virt::JsValue, index
   let mut child_context = context.clone();
   child_context.data = &data;
 
-  evaluate_node(body, &mut child_context)
+  evaluate_node(body, false, &mut child_context)
 }
 
 fn evaluate_attribute_value<'a>(value: &ast::AttributeValue, context: &mut Context) -> Result<js_virt::JsValue, RuntimeError> {

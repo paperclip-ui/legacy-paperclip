@@ -194,6 +194,22 @@ describe(__filename + "#", () => {
       },
       {},
       `<style></style><span data-pc-80f4925f>c b</span>`
+    ],
+    [
+      // parse different tag names
+      {
+        "/entry.pc": `
+          <import as="Message" src="./message.pc">
+          <Message class="red" />
+        `,
+        "/message.pc": `
+          <span export component as="default" class="blue">
+            message
+          </span>
+        `
+      },
+      {},
+      `<style></style><span class="blue red" data-pc-1acb798>message </span>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

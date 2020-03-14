@@ -1,20 +1,9 @@
-<import as="Something" src="./module.pc">
+<import as="Message" src="./message.pc">
 
 <style>
-  #Test {
-    color: rgb(185, 90, 90);
+  .blue {
+    color: blue;
   }
 </style>
 
-
-<div export component as="Test">
-  Hello {children}!
-</div>
-
-<Test preview>
-  World
-
-  <Something>
-    okay
-  </Something>
-</Test>
+<Message class="blue" />

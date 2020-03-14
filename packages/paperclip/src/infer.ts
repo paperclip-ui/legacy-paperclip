@@ -19,6 +19,7 @@ import {
   hasAttribute,
   PREVIEW_ATTR_NAME,
   COMPONENT_ATTR_NAME,
+  getAttribute,
 } from "paperclip-utils";
 
 // TODO - this should be built in rust

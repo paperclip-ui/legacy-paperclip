@@ -275,6 +275,9 @@ describe(__filename + "#", () => {
         kind: 0,
         fromSpread: false,
         properties: {
+          a: {
+            kind: 2
+          },
           b: {
             kind: 2
           }

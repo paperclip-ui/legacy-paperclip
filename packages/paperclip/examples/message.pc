@@ -1,0 +1,10 @@
+<style>
+  .red  {
+    color: red;
+    font-family: Helvetica;
+  }
+</style>
+
+<div export component as="default" class="red">
+  something
+</div>
