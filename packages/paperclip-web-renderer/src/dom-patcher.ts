@@ -1,4 +1,4 @@
-import { DOMNodeMap, createNativeNode } from "./native-renderer";
+import { createNativeNode } from "./native-renderer";
 import { Mutation, ActionKind } from "paperclip-utils";
 import { DOMFactory } from "./renderer";
 

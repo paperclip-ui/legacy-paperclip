@@ -1,6 +1,6 @@
+use crate::base::ast::Location;
+use serde::Serialize;
 use std::fmt;
-use serde::{Serialize};
-use crate::base::ast::{Location};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Declaration {
@@ -10,9 +10,9 @@ pub struct Declaration {
 
   #[serde(rename = "nameLocation")]
   pub name_location: Location,
-  
+
   #[serde(rename = "valueLocation")]
-  pub value_location: Location
+  pub value_location: Location,
 }
 
 impl fmt::Display for Declaration {
@@ -33,7 +33,7 @@ pub enum Rule {
   Supports(ConditionRule),
   Page(ConditionRule),
   Document(ConditionRule),
-  Keyframes(KeyframesRule)
+  Keyframes(KeyframesRule),
 }
 
 impl fmt::Display for Rule {
@@ -47,7 +47,7 @@ impl fmt::Display for Rule {
       Rule::Supports(rule) => write!(f, "{}", rule.to_string()),
       Rule::Keyframes(rule) => write!(f, "{}", rule.to_string()),
       Rule::Document(rule) => write!(f, "{}", rule.to_string()),
-      Rule::Page(rule) => write!(f, "{}", rule.to_string())
+      Rule::Page(rule) => write!(f, "{}", rule.to_string()),
     }
   }
 }
@@ -55,7 +55,7 @@ impl fmt::Display for Rule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRule {
   pub selector: Selector,
-  pub declarations: Vec<Declaration>
+  pub declarations: Vec<Declaration>,
 }
 
 impl fmt::Display for StyleRule {
@@ -70,10 +70,9 @@ impl fmt::Display for StyleRule {
   }
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FontFaceRule {
-  pub declarations: Vec<Declaration>
+  pub declarations: Vec<Declaration>,
 }
 
 impl fmt::Display for FontFaceRule {
@@ -92,7 +91,7 @@ impl fmt::Display for FontFaceRule {
 pub struct ConditionRule {
   pub name: String,
   pub condition_text: String,
-  pub rules: Vec<StyleRule>
+  pub rules: Vec<StyleRule>,
 }
 
 impl fmt::Display for ConditionRule {
@@ -110,7 +109,7 @@ impl fmt::Display for ConditionRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframesRule {
   pub name: String,
-  pub rules: Vec<KeyframeRule>
+  pub rules: Vec<KeyframeRule>,
 }
 
 impl fmt::Display for KeyframesRule {
@@ -125,12 +124,10 @@ impl fmt::Display for KeyframesRule {
   }
 }
 
-
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframeRule {
   pub key: String,
-  pub declarations: Vec<Declaration>
+  pub declarations: Vec<Declaration>,
 }
 
 impl fmt::Display for KeyframeRule {
@@ -161,7 +158,7 @@ pub enum Selector {
   Element(ElementSelector),
   Attribute(AttributeSelector),
   Class(ClassSelector),
-  AllSelector
+  AllSelector,
 }
 
 impl fmt::Display for Selector {
@@ -180,7 +177,7 @@ impl fmt::Display for Selector {
       Selector::Class(selector) => write!(f, "{}", selector.to_string()),
       Selector::Id(selector) => write!(f, "{}", selector.to_string()),
       Selector::Attribute(selector) => write!(f, "{}", selector.to_string()),
-      Selector::AllSelector => write!(f, "*")
+      Selector::AllSelector => write!(f, "*"),
     }
   }
 }
@@ -188,14 +185,15 @@ impl fmt::Display for Selector {
 // a, b, h1, h2 { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GroupSelector {
-  pub selectors: Vec<Selector>
+  pub selectors: Vec<Selector>,
 }
 
 impl fmt::Display for GroupSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    let text: Vec<String> = (&self.selectors).into_iter().map(|selector| {
-      selector.to_string()
-    }).collect();
+    let text: Vec<String> = (&self.selectors)
+      .into_iter()
+      .map(|selector| selector.to_string())
+      .collect();
 
     write!(f, "{}", text.join(", "))
   }
@@ -204,14 +202,15 @@ impl fmt::Display for GroupSelector {
 // a.b[c=d] {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ComboSelector {
-  pub selectors: Vec<Selector>
+  pub selectors: Vec<Selector>,
 }
 
 impl fmt::Display for ComboSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    let text: Vec<String> = (&self.selectors).into_iter().map(|selector| {
-      selector.to_string()
-    }).collect();
+    let text: Vec<String> = (&self.selectors)
+      .into_iter()
+      .map(|selector| selector.to_string())
+      .collect();
 
     write!(f, "{}", text.join(""))
   }
@@ -221,12 +220,17 @@ impl fmt::Display for ComboSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct DescendentSelector {
   pub parent: Box<Selector>,
-  pub descendent: Box<Selector>
+  pub descendent: Box<Selector>,
 }
 
 impl fmt::Display for DescendentSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{} {}", self.parent.to_string(), self.descendent.to_string())
+    write!(
+      f,
+      "{} {}",
+      self.parent.to_string(),
+      self.descendent.to_string()
+    )
   }
 }
 
@@ -234,12 +238,12 @@ impl fmt::Display for DescendentSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildSelector {
   pub parent: Box<Selector>,
-  pub child: Box<Selector>
+  pub child: Box<Selector>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NotSelector {
-  pub selector: Box<Selector>
+  pub selector: Box<Selector>,
 }
 
 impl fmt::Display for NotSelector {
@@ -250,7 +254,12 @@ impl fmt::Display for NotSelector {
 
 impl fmt::Display for ChildSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{} > {}", self.parent.to_string(), self.child.to_string())
+    write!(
+      f,
+      "{} > {}",
+      self.parent.to_string(),
+      self.child.to_string()
+    )
   }
 }
 
@@ -258,12 +267,17 @@ impl fmt::Display for ChildSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AdjacentSelector {
   pub selector: Box<Selector>,
-  pub next_sibling_selector: Box<Selector>
+  pub next_sibling_selector: Box<Selector>,
 }
 
 impl fmt::Display for AdjacentSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{} + {}", self.selector.to_string(), self.next_sibling_selector.to_string())
+    write!(
+      f,
+      "{} + {}",
+      self.selector.to_string(),
+      self.next_sibling_selector.to_string()
+    )
   }
 }
 
@@ -271,12 +285,17 @@ impl fmt::Display for AdjacentSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SiblingSelector {
   pub selector: Box<Selector>,
-  pub sibling_selector: Box<Selector>
+  pub sibling_selector: Box<Selector>,
 }
 
 impl fmt::Display for SiblingSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{} ~ {}", self.selector.to_string(), self.sibling_selector.to_string())
+    write!(
+      f,
+      "{} ~ {}",
+      self.selector.to_string(),
+      self.sibling_selector.to_string()
+    )
   }
 }
 
@@ -285,7 +304,7 @@ impl fmt::Display for SiblingSelector {
 pub struct PseudoElementSelector {
   pub separator: String, // : or ::
   pub target: Option<Box<Selector>>,
-  pub name: String
+  pub name: String,
 }
 
 fn stringify_optional_selector(selector: &Option<Box<Selector>>) -> String {
@@ -298,7 +317,13 @@ fn stringify_optional_selector(selector: &Option<Box<Selector>>) -> String {
 
 impl fmt::Display for PseudoElementSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{}{}{}", stringify_optional_selector(&self.target), &self.separator, &self.name)?;
+    write!(
+      f,
+      "{}{}{}",
+      stringify_optional_selector(&self.target),
+      &self.separator,
+      &self.name
+    )?;
     Ok(())
   }
 }
@@ -308,12 +333,18 @@ impl fmt::Display for PseudoElementSelector {
 pub struct PseudoParamElementSelector {
   pub target: Option<Box<Selector>>,
   pub name: String,
-  pub param: String
+  pub param: String,
 }
 
 impl fmt::Display for PseudoParamElementSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{}:{}({})", stringify_optional_selector(&self.target), &self.name, &self.param)?;
+    write!(
+      f,
+      "{}:{}({})",
+      stringify_optional_selector(&self.target),
+      &self.name,
+      &self.param
+    )?;
     Ok(())
   }
 }
@@ -321,7 +352,7 @@ impl fmt::Display for PseudoParamElementSelector {
 // div { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ElementSelector {
-  pub tag_name: String
+  pub tag_name: String,
 }
 
 impl fmt::Display for ElementSelector {
@@ -334,9 +365,8 @@ impl fmt::Display for ElementSelector {
 // .div { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ClassSelector {
-  pub class_name: String
+  pub class_name: String,
 }
-
 
 impl fmt::Display for ClassSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -348,9 +378,8 @@ impl fmt::Display for ClassSelector {
 // #div { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IdSelector {
-  pub id: String
+  pub id: String,
 }
-
 
 impl fmt::Display for IdSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -363,9 +392,8 @@ impl fmt::Display for IdSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeSelector {
   pub name: String,
-  pub value: Option<String>
+  pub value: Option<String>,
 }
-
 
 impl fmt::Display for AttributeSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -378,10 +406,9 @@ impl fmt::Display for AttributeSelector {
   }
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Sheet {
-  pub rules: Vec<Rule>
+  pub rules: Vec<Rule>,
 }
 
 impl fmt::Display for Sheet {

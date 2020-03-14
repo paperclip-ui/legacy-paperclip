@@ -1,5 +1,5 @@
+use serde::Serialize;
 use std::fmt;
-use serde::{Serialize};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct CSSSheet {
@@ -53,7 +53,7 @@ impl fmt::Display for Rule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FontFaceRule {
-  pub style: Vec<CSSStyleProperty>
+  pub style: Vec<CSSStyleProperty>,
 }
 
 impl fmt::Display for FontFaceRule {
@@ -70,7 +70,7 @@ impl fmt::Display for FontFaceRule {
 pub struct ConditionRule {
   pub name: String,
   pub condition_text: String,
-  pub rules: Vec<StyleRule>
+  pub rules: Vec<StyleRule>,
 }
 
 impl fmt::Display for ConditionRule {
@@ -85,11 +85,10 @@ impl fmt::Display for ConditionRule {
   }
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframesRule {
   pub name: String,
-  pub rules: Vec<KeyframeRule>
+  pub rules: Vec<KeyframeRule>,
 }
 
 impl fmt::Display for KeyframesRule {
@@ -107,7 +106,7 @@ impl fmt::Display for KeyframesRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframeRule {
   pub key: String,
-  pub style: Vec<CSSStyleProperty>
+  pub style: Vec<CSSStyleProperty>,
 }
 
 impl fmt::Display for KeyframeRule {
@@ -122,11 +121,10 @@ impl fmt::Display for KeyframeRule {
   }
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRule {
   pub selector_text: String,
-  pub style: Vec<CSSStyleProperty>
+  pub style: Vec<CSSStyleProperty>,
 }
 
 impl fmt::Display for StyleRule {
@@ -143,5 +141,5 @@ impl fmt::Display for StyleRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct CSSStyleProperty {
   pub name: String,
-  pub value: String
+  pub value: String,
 }

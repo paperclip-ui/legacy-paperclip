@@ -1,8 +1,7 @@
-use crc::{crc32};
+use crc::crc32;
 use regex::Regex;
 
 pub fn get_document_style_scope<'a>(uri: &String) -> String {
-
   let mut buff = uri.clone();
 
   if (!uri.starts_with("file://")) {

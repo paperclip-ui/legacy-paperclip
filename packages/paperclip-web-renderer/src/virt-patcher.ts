@@ -26,29 +26,18 @@ export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
       }
       case ActionKind.RemoveAttribute: {
         const element = target as VirtualElement;
+        const attributes = {...element.attributes};
+        attributes[action.name] = undefined;
         target = {
           ...target,
-          attributes: element.attributes.filter(
-            attr => attr.name !== action.name
-          )
+          attributes
         };
         break;
       }
       case ActionKind.SetAttribute: {
         const element = target as VirtualElement;
-        const attributes = element.attributes.concat();
-        const existing = attributes.find(attr => attr.name !== action.name);
-        if (existing) {
-          attributes.splice(attributes.indexOf(existing), 1, {
-            ...existing,
-            value: action.value
-          });
-        } else {
-          attributes.push({
-            name: action.name,
-            value: action.value
-          });
-        }
+        const attributes = {...element.attributes};
+        attributes[action.name] = action.value;
         target = {
           ...target,
           attributes

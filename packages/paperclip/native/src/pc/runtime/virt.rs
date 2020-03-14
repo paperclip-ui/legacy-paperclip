@@ -1,12 +1,12 @@
-use std::fmt;
-use serde::{Serialize};
+use crate::base::ast::Location;
 use crate::css::runtime::virt as css_virt;
-use crate::base::ast::{Location};
-use std::collections::{HashMap};
+use serde::Serialize;
+use std::collections::HashMap;
+use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
-  pub children: Vec<Node>
+  pub children: Vec<Node>,
 }
 
 impl fmt::Display for Fragment {
@@ -20,7 +20,6 @@ impl fmt::Display for Fragment {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
-
   #[serde(rename = "sourceUri")]
   pub source_uri: String,
 
@@ -29,13 +28,13 @@ pub struct Element {
 
   #[serde(rename = "tagName")]
   pub tag_name: String,
-  pub attributes: HashMap<String, String>,
-  pub children: Vec<Node>
+  pub attributes: HashMap<String, Option<String>>,
+  pub children: Vec<Node>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
-  pub sheet: css_virt::CSSSheet
+  pub sheet: css_virt::CSSSheet,
 }
 
 impl fmt::Display for StyleElement {
@@ -50,11 +49,11 @@ impl fmt::Display for StyleElement {
 impl fmt::Display for Element {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "<{}", self.tag_name)?;
-    for attribute in &self.attributes {
-      if attribute.value == None {
-        write!(f, " {}", &attribute.name)?;
+    for (name, value) in &self.attributes {
+      if value == &None {
+        write!(f, " {}", name)?;
       } else {
-        write!(f, " {}=\"{}\"", attribute.name, attribute.value.as_ref().unwrap())?;
+        write!(f, " {}=\"{}\"", name, value.as_ref().unwrap())?;
       }
     }
     write!(f, ">")?;
@@ -76,7 +75,7 @@ pub struct Text {
 
   // #[serde(rename = "sourceLocation")]
   // pub source_location: Location,
-  pub value: String
+  pub value: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -85,16 +84,16 @@ pub enum Node {
   Element(Element),
   Text(Text),
   Fragment(Fragment),
-  StyleElement(StyleElement)
+  StyleElement(StyleElement),
 }
 
 impl fmt::Display for Node {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
-      Node::Element(el) => { write!(f, "{}", el.to_string())},
-      Node::Fragment(fragment) => { write!(f, "{}", fragment.to_string())},
-      Node::StyleElement(el) => { write!(f, "{}", el.to_string())},
-      Node::Text(text) => { write!(f, "{}", text.value.to_string())}
+      Node::Element(el) => write!(f, "{}", el.to_string()),
+      Node::Fragment(fragment) => write!(f, "{}", fragment.to_string()),
+      Node::StyleElement(el) => write!(f, "{}", el.to_string()),
+      Node::Text(text) => write!(f, "{}", text.value.to_string()),
     }
   }
 }
@@ -104,14 +103,11 @@ impl Node {
     match self {
       Node::Element(ref mut element) => {
         element.children.insert(0, child);
-      },
+      }
       Node::Fragment(ref mut element) => {
         element.children.insert(0, child);
-      },
-      _ => {
-        
       }
+      _ => {}
     }
   }
 }
-

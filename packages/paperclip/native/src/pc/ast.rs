@@ -1,13 +1,11 @@
-
-use std::fmt;
-use crate::base::ast::{Location};
+use crate::base::ast::Location;
 use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
-use serde::{Serialize};
+use serde::Serialize;
+use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
-
   pub location: Location,
 
   #[serde(rename = "openTagLocation")]
@@ -19,7 +17,7 @@ pub struct Element {
   #[serde(rename = "tagName")]
   pub tag_name: String,
   pub attributes: Vec<Attribute>,
-  pub children: Vec<Node>
+  pub children: Vec<Node>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -37,16 +35,15 @@ pub enum Node {
   Fragment(Fragment),
   StyleElement(StyleElement),
   Slot(Slot),
-  Block(Block)
+  Block(Block),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Slot {
-
   // !{slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
-  pub script: js_ast::Statement
+  pub script: js_ast::Statement,
 }
 
 impl fmt::Display for Node {
@@ -67,22 +64,21 @@ impl fmt::Display for Node {
 #[serde(tag = "blockKind")]
 pub enum Block {
   Conditional(ConditionalBlock),
-  Each(EachBlock)
+  Each(EachBlock),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "conditionalBlockKind")]
 pub enum ConditionalBlock {
   PassFailBlock(PassFailBlock),
-  FinalBlock(FinalBlock)
+  FinalBlock(FinalBlock),
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PassFailBlock {
   pub condition: js_ast::Statement,
   pub body: Option<Box<Node>>,
-  pub fail: Option<Box<ConditionalBlock>>
+  pub fail: Option<Box<ConditionalBlock>>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -92,7 +88,6 @@ pub struct FinalBlock {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct EachBlock {
-  
   #[serde(rename = "source")]
   pub source: js_ast::Statement,
 
@@ -107,7 +102,7 @@ pub struct EachBlock {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeStringValue {
   pub value: String,
-  pub location: Location
+  pub location: Location,
 }
 
 impl fmt::Display for AttributeStringValue {
@@ -123,7 +118,11 @@ pub fn fmt_attributes(attributes: &Vec<Attribute>, f: &mut fmt::Formatter) -> fm
   Ok(())
 }
 
-pub fn fmt_start_tag<'a>(tag_name: &'a str, attributes: &Vec<Attribute>, f: &mut fmt::Formatter) -> fmt::Result {
+pub fn fmt_start_tag<'a>(
+  tag_name: &'a str,
+  attributes: &Vec<Attribute>,
+  f: &mut fmt::Formatter,
+) -> fmt::Result {
   write!(f, "<{}", tag_name)?;
   fmt_attributes(attributes, f)?;
   write!(f, ">")?;
@@ -151,7 +150,7 @@ impl fmt::Display for Element {
 pub enum Attribute {
   ShorthandAttribute(ShorthandAttribute),
   SpreadAttribute(SpreadAttribute),
-  KeyValueAttribute(KeyValueAttribute)
+  KeyValueAttribute(KeyValueAttribute),
 }
 
 impl fmt::Display for Attribute {
@@ -166,7 +165,6 @@ impl fmt::Display for Attribute {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SpreadAttribute {
-
   // !{...slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
@@ -178,7 +176,6 @@ impl fmt::Display for SpreadAttribute {
     write!(f, "{{...{}}}", self.script.to_string())
   }
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ShorthandAttribute {
@@ -195,9 +192,7 @@ impl ShorthandAttribute {
           Err("Unexpected Expression")
         }
       }
-      _ => {
-        Err("Unexpected Expression")
-      }
+      _ => Err("Unexpected Expression"),
     }
   }
 }
@@ -229,14 +224,14 @@ impl fmt::Display for KeyValueAttribute {
 #[serde(tag = "attrValueKind")]
 pub enum AttributeValue {
   String(AttributeStringValue),
-  Slot(js_ast::Statement)
+  Slot(js_ast::Statement),
 }
 
 impl fmt::Display for AttributeValue {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match &self {
-      AttributeValue::String(value) => { write!(f, "{}", value.to_string()) },
-      AttributeValue::Slot(script) => { write!(f, "{{{}}}", script.to_string()) },
+      AttributeValue::String(value) => write!(f, "{}", value.to_string()),
+      AttributeValue::Slot(script) => write!(f, "{{{}}}", script.to_string()),
     }
   }
 }
@@ -258,7 +253,7 @@ impl fmt::Display for StyleElement {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
-  pub children: Vec<Node>
+  pub children: Vec<Node>,
 }
 
 impl fmt::Display for Fragment {
@@ -275,7 +270,7 @@ pub fn get_children<'a>(expr: &'a Node) -> Option<&'a Vec<Node>> {
   match &expr {
     Node::Element(root) => Some(&root.children),
     Node::Fragment(root) => Some(&root.children),
-    _ => None
+    _ => None,
   }
 }
 
@@ -296,7 +291,6 @@ pub fn get_imports<'a>(root_expr: &'a Node) -> Vec<&'a Element> {
 
   imports
 }
-
 
 pub fn get_tag_name<'a>(element: &'a Element) -> String {
   if element.tag_name.contains(":") {
@@ -333,11 +327,10 @@ pub fn get_parts<'a>(root_expr: &'a Node) -> Vec<&'a Element> {
 }
 
 pub fn get_part_by_id<'a>(id: &String, root_expr: &'a Node) -> Option<&'a Element> {
-  get_parts(root_expr).iter().find(|element| {
-    get_attribute_value("as", element) == Some(id)
-  }).map(|element| {
-    *element
-  })
+  get_parts(root_expr)
+    .iter()
+    .find(|element| get_attribute_value("as", element) == Some(id))
+    .map(|element| *element)
 }
 
 pub fn get_import_by_id<'a>(id: &String, root_expr: &'a Node) -> Option<&'a Element> {
@@ -382,11 +375,11 @@ pub fn get_attribute_value<'a, 'b>(name: &'b str, element: &'a Element) -> Optio
   }
   None
 }
-  
-pub fn has_attribute<'a, 'b>(name: &'b str, element: &'a Element) -> bool { 
+
+pub fn has_attribute<'a, 'b>(name: &'b str, element: &'a Element) -> bool {
   match get_attribute(name, element) {
     Some(attr) => true,
-    None => false
+    None => false,
   }
 }
 

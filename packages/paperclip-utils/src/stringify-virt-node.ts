@@ -1,16 +1,18 @@
 import { stringifyCSSSheet } from "./stringify-sheet";
+import { VirtualNode } from "./virt";
 
-export const stringifyVirtualNode = node => {
+export const stringifyVirtualNode = (node: VirtualNode) => {
   switch (node.kind) {
     case "Fragment":
       return stringifyChildren(node);
     case "Element": {
       let buffer = `<${node.tagName}`;
-      for (const attr of node.attributes) {
-        if (attr.value) {
-          buffer += ` ${attr.name}="${attr.value}"`;
+      for (const key in node.attributes) {
+        const value = node.attributes[key];
+        if (value) {
+          buffer += ` ${key}="${value}"`;
         } else {
-          buffer += ` ${attr.name}`;
+          buffer += ` ${key}`;
         }
       }
       buffer += `>${stringifyChildren(node)}</${node.tagName}>`;

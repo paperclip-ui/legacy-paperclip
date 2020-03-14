@@ -1,5 +1,5 @@
+use serde::Serialize;
 use std::fmt;
-use serde::{Serialize};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Location {
@@ -9,10 +9,7 @@ pub struct Location {
 
 impl Location {
   pub fn new(start: usize, end: usize) -> Location {
-    Location {
-      start,
-      end
-    }
+    Location { start, end }
   }
 }
 
@@ -22,10 +19,9 @@ impl fmt::Display for Location {
   }
 }
 
-
 // TODO - change to trait
 #[derive(Debug, PartialEq, Serialize)]
 pub struct Expression<TItem> {
   // TODO - location: Location
-  pub item: TItem
+  pub item: TItem,
 }

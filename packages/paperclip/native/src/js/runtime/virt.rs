@@ -1,7 +1,7 @@
-use std::fmt;
+use crate::pc::runtime::virt::Node;
+use serde::Serialize;
 use std::collections::HashMap;
-use serde::{Serialize};
-use crate::pc::runtime::virt::{Node};
+use std::fmt;
 
 // TODO - all js values here need to extend JsClass
 
@@ -14,7 +14,7 @@ pub enum JsValue {
   JsString(String),
   JsBoolean(bool),
   JsNumber(f64),
-  JsUndefined()
+  JsUndefined(),
 }
 
 impl JsValue {
@@ -37,7 +37,7 @@ impl fmt::Display for JsValue {
       JsValue::JsNode(_value) => write!(f, "[Object object]"),
       JsValue::JsNumber(value) => write!(f, "{}", value),
       JsValue::JsArray(_value) => write!(f, "[Object object]"),
-      JsValue::JsUndefined() => write!(f, "undefined")
+      JsValue::JsUndefined() => write!(f, "undefined"),
     }
   }
 }
@@ -50,27 +50,28 @@ pub struct JsObject {
 impl JsObject {
   pub fn new() -> JsObject {
     JsObject {
-      values: HashMap::new()
+      values: HashMap::new(),
     }
   }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsArray {
-  pub values: Vec<JsValue>
+  pub values: Vec<JsValue>,
 }
 
 impl JsArray {
   pub fn new() -> JsArray {
-    JsArray {
-      values: vec![]
-    }
+    JsArray { values: vec![] }
   }
 }
 
-pub fn get_js_value_property<'a, 'b>(value: &'a JsValue, property_name: &'b str) -> Option<&'a JsValue> {
+pub fn get_js_value_property<'a, 'b>(
+  value: &'a JsValue,
+  property_name: &'b str,
+) -> Option<&'a JsValue> {
   match value {
     JsValue::JsObject(object) => object.values.get(property_name),
-    _ => None
+    _ => None,
   }
 }

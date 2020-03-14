@@ -1,12 +1,12 @@
 // https://tympanus.net/codrops/css_reference/
 
 use super::ast as pc_ast;
+use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
-use crate::base::ast::{Location};
-use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
-use crate::js::ast as js_ast;
 use crate::base::tokenizer::{Token, Tokenizer};
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
+use crate::js::ast as js_ast;
+use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
 
 /*
 
@@ -64,62 +64,68 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
   })?;
 
   match token {
-    Token::CurlyOpen => { parse_slot(tokenizer) },
-    Token::LessThan => { parse_tag(tokenizer) },
-    Token::HtmlCommentOpen => { 
+    Token::CurlyOpen => parse_slot(tokenizer),
+    Token::LessThan => parse_tag(tokenizer),
+    Token::HtmlCommentOpen => {
       tokenizer.next()?; // eat HTML comment open
       let buffer = get_buffer(tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
         Ok(tok != Token::HtmlCommentClose)
-      })?.to_string();
+      })?
+      .to_string();
       tokenizer.next()?; // eat -->
-      Ok(pc_ast::Node::Comment(pc_ast::ValueObject { value: buffer.clone(), location: Location {
-        start,
-        end: start + &buffer.len()
-      } }))
-    },
-    Token::BlockOpen => {
-      parse_block(tokenizer)
+      Ok(pc_ast::Node::Comment(pc_ast::ValueObject {
+        value: buffer.clone(),
+        location: Location {
+          start,
+          end: start + &buffer.len(),
+        },
+      }))
     }
+    Token::BlockOpen => parse_block(tokenizer),
     Token::TagClose => {
       let start = tokenizer.pos;
       tokenizer.next_expect(Token::TagClose)?;
       let tag_name = parse_tag_name(tokenizer)?;
       tokenizer.next_expect(Token::GreaterThan)?;
 
-      let message = if is_void_tag_name(tag_name.as_str()) { 
+      let message = if is_void_tag_name(tag_name.as_str()) {
         "Void tag's shouldn't be closed."
       } else {
         "Closing tag doesn't have an open tag."
       };
 
-      Err(ParseError::unexpected(message.to_string(), start, tokenizer.pos))
+      Err(ParseError::unexpected(
+        message.to_string(),
+        start,
+        tokenizer.pos,
+      ))
     }
     _ => {
-
       // reset pos to ensure text doesn't get chopped (e.g: `{children} text`)
       tokenizer.pos = start;
-      let value =  get_buffer(tokenizer, |tokenizer| {
+      let value = get_buffer(tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
         Ok(
-          tok != Token::CurlyOpen && 
-          tok != Token::LessThan && 
-          tok != Token::TagClose && 
-          tok != Token::HtmlCommentOpen && 
-          tok != Token::BlockOpen && 
-          tok != Token::BlockClose
+          tok != Token::CurlyOpen
+            && tok != Token::LessThan
+            && tok != Token::TagClose
+            && tok != Token::HtmlCommentOpen
+            && tok != Token::BlockOpen
+            && tok != Token::BlockClose,
         )
-      })?.to_string();
+      })?
+      .to_string();
 
       if value.len() == 0 {
         Err(ParseError::unexpected_token(tokenizer.pos))
       } else {
-        Ok(pc_ast::Node::Text(pc_ast::ValueObject { 
+        Ok(pc_ast::Node::Text(pc_ast::ValueObject {
           value: value.clone(),
           location: Location {
             start: start,
-            end: start + &value.len()
-          }
+            end: start + &value.len(),
+          },
         }))
       }
     }
@@ -130,19 +136,24 @@ fn parse_slot<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
   let omit_from_compilation = parse_omit_from_compilation(tokenizer)?;
   tokenizer.next_expect(Token::CurlyOpen)?;
   let script = parse_slot_script(tokenizer)?;
-  Ok(pc_ast::Node::Slot(pc_ast::Slot { omit_from_compilation, script }))
+  Ok(pc_ast::Node::Slot(pc_ast::Slot {
+    omit_from_compilation,
+    script,
+  }))
 }
 
 fn parse_slot_script<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<js_ast::Statement, ParseError> {
   let start = tokenizer.pos;
-  parse_js_with_tokenizer(tokenizer, |token| {
-    token != Token::CurlyClose
-  })
-  .and_then(|script| {
-    tokenizer.next_expect(Token::CurlyClose)?;
-    Ok(script)
-  })
-  .or(Err(ParseError::unterminated("Unterminated slot.".to_string(), start, tokenizer.pos)))
+  parse_js_with_tokenizer(tokenizer, |token| token != Token::CurlyClose)
+    .and_then(|script| {
+      tokenizer.next_expect(Token::CurlyClose)?;
+      Ok(script)
+    })
+    .or(Err(ParseError::unterminated(
+      "Unterminated slot.".to_string(),
+      start,
+      tokenizer.pos,
+    )))
 }
 
 pub fn parse_tag<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
@@ -152,8 +163,10 @@ pub fn parse_tag<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, Pars
   parse_element(tokenizer, start)
 }
 
-
-fn parse_element<'a>(tokenizer: &mut Tokenizer<'a>, start: usize) -> Result<pc_ast::Node, ParseError> {
+fn parse_element<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  start: usize,
+) -> Result<pc_ast::Node, ParseError> {
   let tag_name = parse_tag_name(tokenizer)?;
 
   let attributes = parse_attributes(tokenizer)?;
@@ -169,47 +182,29 @@ fn parse_element<'a>(tokenizer: &mut Tokenizer<'a>, start: usize) -> Result<pc_a
 
 fn is_void_tag_name<'a>(tag_name: &'a str) -> bool {
   match tag_name {
-    "area" | 
-    "base" | 
-    "basefont" | 
-    "bgsound" | 
-    "br" | 
-    "col" | 
-    "command" | 
-    "embed" | 
-    "frame" |
-    "hr" |
-    "image" |
-    "import" |
-    "img" |
-    "input" |
-    "isindex" |
-    "keygen" |
-    "link" |
-    "menuitem" |
-    "meta" |
-    "property" |
-    "logic" |
-    "nextid" |
-    "param" |
-    "source" |
-    "track" |
-    "wbr" => true,
+    "area" | "base" | "basefont" | "bgsound" | "br" | "col" | "command" | "embed" | "frame"
+    | "hr" | "image" | "import" | "img" | "input" | "isindex" | "keygen" | "link" | "menuitem"
+    | "meta" | "property" | "logic" | "nextid" | "param" | "source" | "track" | "wbr" => true,
     _ => false,
   }
 }
 
-fn parse_next_basic_element_parts<'a>(tag_name: String, attributes: Vec<pc_ast::Attribute>, tokenizer: &mut Tokenizer<'a>, start: usize) -> Result<pc_ast::Node, ParseError> {
+fn parse_next_basic_element_parts<'a>(
+  tag_name: String,
+  attributes: Vec<pc_ast::Attribute>,
+  tokenizer: &mut Tokenizer<'a>,
+  start: usize,
+) -> Result<pc_ast::Node, ParseError> {
   let mut children: Vec<pc_ast::Node> = vec![];
 
   tokenizer.eat_whitespace();
   let mut end = tokenizer.pos;
-  
+
   match tokenizer.peek(1)? {
     Token::SelfTagClose => {
       tokenizer.next()?;
       end = tokenizer.pos;
-    },
+    }
     Token::GreaterThan => {
       tokenizer.next()?;
       end = tokenizer.pos;
@@ -221,10 +216,8 @@ fn parse_next_basic_element_parts<'a>(tag_name: String, attributes: Vec<pc_ast::
 
         parse_close_tag(&tag_name.as_str(), tokenizer, start, end)?;
       }
-    },
-    _ => {
-      return Err(ParseError::unexpected_token(tokenizer.pos))
     }
+    _ => return Err(ParseError::unexpected_token(tokenizer.pos)),
   }
 
   let el = pc_ast::Element {
@@ -232,17 +225,14 @@ fn parse_next_basic_element_parts<'a>(tag_name: String, attributes: Vec<pc_ast::
       start: start + 1,
       end: start + 1 + tag_name.len(),
     },
-    open_tag_location: Location {
-      start,
-      end
-    },
+    open_tag_location: Location { start, end },
     location: Location {
       start,
-      end: tokenizer.pos
+      end: tokenizer.pos,
     },
     tag_name,
     attributes,
-    children
+    children,
   };
   Ok(pc_ast::Node::Element(el))
 }
@@ -255,9 +245,7 @@ fn parse_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseE
     match keyword {
       "if" => parse_if_block(tokenizer),
       "each" => parse_each_block(tokenizer),
-      _ => {
-        Err(ParseError::unexpected_token(pos))
-      }
+      _ => Err(ParseError::unexpected_token(pos)),
     }
   } else {
     Err(ParseError::unexpected_token(pos))
@@ -266,15 +254,15 @@ fn parse_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseE
 
 fn parse_if_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
   Ok(pc_ast::Node::Block(pc_ast::Block::Conditional(
-    parse_pass_fail_block(tokenizer)?
+    parse_pass_fail_block(tokenizer)?,
   )))
 }
 
-fn parse_pass_fail_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::ConditionalBlock, ParseError> {
+fn parse_pass_fail_block<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<pc_ast::ConditionalBlock, ParseError> {
   tokenizer.eat_whitespace();
-  let condition = parse_js_with_tokenizer(tokenizer, |token| {
-    token != Token::CurlyClose
-  })?;
+  let condition = parse_js_with_tokenizer(tokenizer, |token| token != Token::CurlyClose)?;
   tokenizer.next_expect(Token::CurlyClose)?;
   let body = parse_block_children(tokenizer)?;
   let fail = parse_else_block(tokenizer)?;
@@ -284,12 +272,13 @@ fn parse_pass_fail_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Co
       condition,
       body,
       fail,
-    }
+    },
   ))
 }
 
-fn parse_block_children<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<Option<Box<pc_ast::Node>>, ParseError> {
-
+fn parse_block_children<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<Option<Box<pc_ast::Node>>, ParseError> {
   let mut children = vec![];
 
   // TODO - we don't really want this since whitespace technically renders. Though, right
@@ -306,70 +295,58 @@ fn parse_block_children<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<Option<Box<
     Some(Box::new(children.pop().unwrap()))
   } else {
     Some(Box::new(pc_ast::Node::Fragment(pc_ast::Fragment {
-      children
+      children,
     })))
   };
 
   Ok(node)
 }
 
-fn parse_else_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<Option<Box<pc_ast::ConditionalBlock>>, ParseError> {
+fn parse_else_block<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<Option<Box<pc_ast::ConditionalBlock>>, ParseError> {
   tokenizer.eat_whitespace();
   tokenizer.next_expect(Token::BlockClose)?;
   tokenizer.eat_whitespace();
   let pos = tokenizer.pos;
   match tokenizer.next()? {
-    Token::Word(value) => {
-      match value {
-        "else" => {
-          tokenizer.eat_whitespace();
-          let pos = tokenizer.pos;
-          match tokenizer.next()? {
-            Token::Word(value2) => {
-              if value2 == "if" {
-                Ok(Some(Box::new(parse_pass_fail_block(tokenizer)?)))
-              } else {
-                Err(ParseError::unexpected_token(pos))
-              }
-            },
-            Token::CurlyClose => {
-              Ok(Some(Box::new(parse_final_condition_block(tokenizer)?)))
-            }
-            _ => {
+    Token::Word(value) => match value {
+      "else" => {
+        tokenizer.eat_whitespace();
+        let pos = tokenizer.pos;
+        match tokenizer.next()? {
+          Token::Word(value2) => {
+            if value2 == "if" {
+              Ok(Some(Box::new(parse_pass_fail_block(tokenizer)?)))
+            } else {
               Err(ParseError::unexpected_token(pos))
             }
           }
-        },
-        _ => {
-          Err(ParseError::unexpected_token(pos))
+          Token::CurlyClose => Ok(Some(Box::new(parse_final_condition_block(tokenizer)?))),
+          _ => Err(ParseError::unexpected_token(pos)),
         }
       }
+      _ => Err(ParseError::unexpected_token(pos)),
     },
-    Token::CurlyClose => {
-      Ok(None)
-    },
-    _ => {
-      Err(ParseError::unexpected_token(pos))
-    }
+    Token::CurlyClose => Ok(None),
+    _ => Err(ParseError::unexpected_token(pos)),
   }
 }
 
-fn parse_final_condition_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::ConditionalBlock, ParseError> {
+fn parse_final_condition_block<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<pc_ast::ConditionalBlock, ParseError> {
   let body = parse_block_children(tokenizer)?;
   tokenizer.next_expect(Token::BlockClose)?;
   tokenizer.next_expect(Token::CurlyClose)?;
   Ok(pc_ast::ConditionalBlock::FinalBlock(pc_ast::FinalBlock {
-    body
+    body,
   }))
 }
 
 fn parse_each_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
-
-  
   tokenizer.next_expect(Token::Whitespace)?;
-  let source = parse_js_with_tokenizer(tokenizer, |token| {
-    token != Token::Word("as")
-  })?;
+  let source = parse_js_with_tokenizer(tokenizer, |token| token != Token::Word("as"))?;
   tokenizer.next_expect(Token::Word("as"))?;
   tokenizer.eat_whitespace();
 
@@ -390,15 +367,21 @@ fn parse_each_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, P
   tokenizer.next_expect(Token::BlockClose)?;
   tokenizer.next_expect(Token::CurlyClose)?;
 
-  Ok(pc_ast::Node::Block(pc_ast::Block::Each(pc_ast::EachBlock {
-    source,
-    value_name,
-    key_name,
-    body
-  })))
+  Ok(pc_ast::Node::Block(pc_ast::Block::Each(
+    pc_ast::EachBlock {
+      source,
+      value_name,
+      key_name,
+      body,
+    },
+  )))
 }
 
-fn parse_next_style_element_parts<'a>(attributes: Vec<pc_ast::Attribute>, tokenizer: &mut Tokenizer<'a>, start: usize) -> Result<pc_ast::Node, ParseError> {
+fn parse_next_style_element_parts<'a>(
+  attributes: Vec<pc_ast::Attribute>,
+  tokenizer: &mut Tokenizer<'a>,
+  start: usize,
+) -> Result<pc_ast::Node, ParseError> {
   tokenizer.next_expect(Token::GreaterThan)?; // eat >
   let end = tokenizer.pos;
 
@@ -415,36 +398,54 @@ fn parse_next_style_element_parts<'a>(attributes: Vec<pc_ast::Attribute>, tokeni
   }))
 }
 
-fn parse_close_tag<'a, 'b>(tag_name: &'a str, tokenizer: &mut Tokenizer<'b>, start: usize, end: usize) -> Result<(), ParseError> {
-
+fn parse_close_tag<'a, 'b>(
+  tag_name: &'a str,
+  tokenizer: &mut Tokenizer<'b>,
+  start: usize,
+  end: usize,
+) -> Result<(), ParseError> {
   let end_tag_name_start = tokenizer.pos;
 
   tokenizer.eat_whitespace();
-  
-  tokenizer
-  .next_expect(Token::TagClose)
-  .or(Err(ParseError::unterminated("Unterminated element.".to_string(), start, end)))?;
 
+  tokenizer
+    .next_expect(Token::TagClose)
+    .or(Err(ParseError::unterminated(
+      "Unterminated element.".to_string(),
+      start,
+      end,
+    )))?;
 
   parse_tag_name(tokenizer)
-  // TODO - assert tag name
-  .and_then(|end_tag_name| {
-    if tag_name != end_tag_name {
-      Err(ParseError::unterminated(format!("Incorrect closing tag. This should be </{}>.", tag_name), end_tag_name_start, tokenizer.pos))
-    } else {
-      Ok(())
-    }
-
-  })?;
+    // TODO - assert tag name
+    .and_then(|end_tag_name| {
+      if tag_name != end_tag_name {
+        Err(ParseError::unterminated(
+          format!("Incorrect closing tag. This should be </{}>.", tag_name),
+          end_tag_name_start,
+          tokenizer.pos,
+        ))
+      } else {
+        Ok(())
+      }
+    })?;
 
   tokenizer
-  .next_expect(Token::GreaterThan)
-  .or(Err(ParseError::unterminated("Unterminated element.".to_string(), start, end)))?;
+    .next_expect(Token::GreaterThan)
+    .or(Err(ParseError::unterminated(
+      "Unterminated element.".to_string(),
+      start,
+      end,
+    )))?;
 
   Ok(())
 }
 
-fn parse_next_script_element_parts<'a>(attributes: Vec<pc_ast::Attribute>, tokenizer: &mut Tokenizer<'a>, start: usize) -> Result<pc_ast::Node, ParseError> {
+fn parse_next_script_element_parts<'a>(
+  attributes: Vec<pc_ast::Attribute>,
+  tokenizer: &mut Tokenizer<'a>,
+  start: usize,
+) -> Result<pc_ast::Node, ParseError> {
   tokenizer.next_expect(Token::GreaterThan)?; // eat >
   let end = tokenizer.pos;
 
@@ -452,22 +453,17 @@ fn parse_next_script_element_parts<'a>(attributes: Vec<pc_ast::Attribute>, token
     Ok(tokenizer.peek(1)? != Token::TagClose)
   })?;
 
-
-
   parse_close_tag("script", tokenizer, start, end)?;
 
   Ok(pc_ast::Node::Element(pc_ast::Element {
     tag_name_location: Location {
       start: start + 1,
-      end: start + 7
+      end: start + 7,
     },
-    open_tag_location: Location {
-      start,
-      end
-    },
+    open_tag_location: Location { start, end },
     location: Location {
       start,
-      end: tokenizer.pos
+      end: tokenizer.pos,
     },
     tag_name: "script".to_string(),
     attributes,
@@ -476,11 +472,20 @@ fn parse_next_script_element_parts<'a>(attributes: Vec<pc_ast::Attribute>, token
 }
 
 fn parse_tag_name<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<String, ParseError> {
-  Ok(get_buffer(tokenizer, |tokenizer| { Ok(!matches!(tokenizer.peek(1)?, Token::Whitespace | Token::GreaterThan | Token::Equals | Token::SelfTagClose)) })?.to_string())
+  Ok(
+    get_buffer(tokenizer, |tokenizer| {
+      Ok(!matches!(
+        tokenizer.peek(1)?,
+        Token::Whitespace | Token::GreaterThan | Token::Equals | Token::SelfTagClose
+      ))
+    })?
+    .to_string(),
+  )
 }
 
-fn parse_attributes<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<Vec<pc_ast::Attribute>, ParseError> {
-
+fn parse_attributes<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<Vec<pc_ast::Attribute>, ParseError> {
   let mut attributes: Vec<pc_ast::Attribute> = vec![];
 
   loop {
@@ -513,29 +518,32 @@ fn parse_omit_from_compilation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<bool
   })
 }
 
-fn parse_shorthand_attribute<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Attribute, ParseError> {
-
+fn parse_shorthand_attribute<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<pc_ast::Attribute, ParseError> {
   let omit_from_compilation = parse_omit_from_compilation(tokenizer)?;
 
   tokenizer.next_expect(Token::CurlyOpen)?;
   if tokenizer.peek(1)? == Token::Spread {
     tokenizer.next_expect(Token::Spread)?;
     let script = parse_slot_script(tokenizer)?;
-    Ok(pc_ast::Attribute::SpreadAttribute(pc_ast::SpreadAttribute {
-      omit_from_compilation,
-      script,
-    }))
-    
+    Ok(pc_ast::Attribute::SpreadAttribute(
+      pc_ast::SpreadAttribute {
+        omit_from_compilation,
+        script,
+      },
+    ))
   } else {
     let reference = parse_slot_script(tokenizer)?;
-    Ok(pc_ast::Attribute::ShorthandAttribute(pc_ast::ShorthandAttribute {
-      reference,
-    }))
+    Ok(pc_ast::Attribute::ShorthandAttribute(
+      pc_ast::ShorthandAttribute { reference },
+    ))
   }
 }
 
-fn parse_key_value_attribute<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Attribute, ParseError> {
-  
+fn parse_key_value_attribute<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<pc_ast::Attribute, ParseError> {
   let name = parse_tag_name(tokenizer)?;
   let mut value = None;
 
@@ -544,45 +552,52 @@ fn parse_key_value_attribute<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast
     value = Some(parse_attribute_value(tokenizer)?);
   }
 
-  Ok(pc_ast::Attribute::KeyValueAttribute(pc_ast::KeyValueAttribute {
-    name,
-    value
-  }))
+  Ok(pc_ast::Attribute::KeyValueAttribute(
+    pc_ast::KeyValueAttribute { name, value },
+  ))
 }
 
-fn parse_attribute_value<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::AttributeValue, ParseError> {
+fn parse_attribute_value<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<pc_ast::AttributeValue, ParseError> {
   let pos = tokenizer.pos;
   match tokenizer.peek(1)? {
     Token::SingleQuote | Token::DoubleQuote => parse_string(tokenizer),
     Token::CurlyOpen => parse_attribute_slot(tokenizer),
-    _ => Err(ParseError::unexpected_token(pos))
+    _ => Err(ParseError::unexpected_token(pos)),
   }
 }
 
-fn parse_attribute_slot<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::AttributeValue, ParseError> {
+fn parse_attribute_slot<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<pc_ast::AttributeValue, ParseError> {
   tokenizer.next_expect(Token::CurlyOpen)?;
   let script = parse_slot_script(tokenizer)?;
   Ok(pc_ast::AttributeValue::Slot(script))
 }
 
-
 fn parse_string<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::AttributeValue, ParseError> {
   let start = tokenizer.pos;
   let quote = tokenizer.next()?;
 
-
-  get_buffer(tokenizer, |tokenizer| { Ok(tokenizer.peek(1)? != quote) })
-  .and_then(|value| {
-    tokenizer.next_expect(quote)?;
-    Ok(value)
-  })
-  .or(Err(ParseError::unterminated("Unterminated string literal.".to_string(), start, tokenizer.pos)))
-  .and_then(|value| {
-    Ok(pc_ast::AttributeValue::String(pc_ast::AttributeStringValue { 
-      value: value.to_string(),
-      location: Location::new(start + 1, tokenizer.pos - 1)
-    }))
-  })
+  get_buffer(tokenizer, |tokenizer| Ok(tokenizer.peek(1)? != quote))
+    .and_then(|value| {
+      tokenizer.next_expect(quote)?;
+      Ok(value)
+    })
+    .or(Err(ParseError::unterminated(
+      "Unterminated string literal.".to_string(),
+      start,
+      tokenizer.pos,
+    )))
+    .and_then(|value| {
+      Ok(pc_ast::AttributeValue::String(
+        pc_ast::AttributeStringValue {
+          value: value.to_string(),
+          location: Location::new(start + 1, tokenizer.pos - 1),
+        },
+      ))
+    })
 }
 
 #[cfg(test)]
@@ -591,7 +606,6 @@ mod tests {
 
   #[test]
   fn can_smoke_parse_various_nodes() {
-
     let source = "
       text
       <!-- comment -->
@@ -629,27 +643,20 @@ mod tests {
     parse(source).unwrap();
   }
 
-
   #[test]
   fn can_parse_various_nodes() {
-
     let cases = [
-
       // text blocks
       "text",
-
       // comments
       "ab <!--cd-->",
-
       // slots
       "{ok}",
-
       // elements
       "<div></div>",
       "<div a b></div>",
       "<div a=\"b\" c></div>",
       "<div a=\"\"></div>",
-
       "<div a=\"b\" c=\"d\">
         <span>
           c {block} d {block}
@@ -658,7 +665,6 @@ mod tests {
           color {block}
         </span>
       </div>",
-
       // mixed elements
     ];
 
@@ -667,66 +673,133 @@ mod tests {
 
       // TODO - strip whitespace
       let expr = parse(case).unwrap();
-      assert_eq!(expr.to_string().replace("\n", "").replace(" ", ""), case.replace("\n", "").replace(" ", ""));
+      assert_eq!(
+        expr.to_string().replace("\n", "").replace(" ", ""),
+        case.replace("\n", "").replace(" ", "")
+      );
     }
   }
 
-  /// 
+  ///
   /// Error handling
-  /// 
+  ///
 
   #[test]
   fn displays_error_for_unterminated_element() {
-    assert_eq!(parse("<div>"), Err(ParseError::unterminated("Unterminated element.".to_string(), 0, 5)));
+    assert_eq!(
+      parse("<div>"),
+      Err(ParseError::unterminated(
+        "Unterminated element.".to_string(),
+        0,
+        5
+      ))
+    );
   }
 
   #[test]
   fn displays_error_for_unterminated_style_element() {
-    assert_eq!(parse("<style>"), Err(ParseError::unterminated("Unterminated element.".to_string(), 0, 7)));
+    assert_eq!(
+      parse("<style>"),
+      Err(ParseError::unterminated(
+        "Unterminated element.".to_string(),
+        0,
+        7
+      ))
+    );
   }
 
   #[test]
   fn displays_error_for_unterminated_script_element() {
-    assert_eq!(parse("<script>"), Err(ParseError::unterminated("Unterminated element.".to_string(), 0, 8)));
+    assert_eq!(
+      parse("<script>"),
+      Err(ParseError::unterminated(
+        "Unterminated element.".to_string(),
+        0,
+        8
+      ))
+    );
   }
-
 
   #[test]
   fn displays_error_for_incorrect_close_tag() {
-    assert_eq!(parse("<style></script>"), Err(ParseError::unterminated("Incorrect closing tag. This should be </style>.".to_string(), 7, 15)));
+    assert_eq!(
+      parse("<style></script>"),
+      Err(ParseError::unterminated(
+        "Incorrect closing tag. This should be </style>.".to_string(),
+        7,
+        15
+      ))
+    );
   }
 
   #[test]
   fn displays_error_for_unterminated_attribute_string() {
-    assert_eq!(parse("<div a=\"b>"), Err(ParseError::unterminated("Unterminated string literal.".to_string(), 7, 10)));
+    assert_eq!(
+      parse("<div a=\"b>"),
+      Err(ParseError::unterminated(
+        "Unterminated string literal.".to_string(),
+        7,
+        10
+      ))
+    );
   }
 
   #[test]
   fn displays_error_for_unterminated_slot() {
-    assert_eq!(parse("{ab"), Err(ParseError::unterminated("Unterminated slot.".to_string(), 1, 3)));
+    assert_eq!(
+      parse("{ab"),
+      Err(ParseError::unterminated(
+        "Unterminated slot.".to_string(),
+        1,
+        3
+      ))
+    );
   }
 
   #[test]
   fn displays_css_errors() {
-    assert_eq!(parse("<style>div { color: red; </style>"), Err(ParseError::unterminated("Unterminated bracket.".to_string(), 11, 27)));
+    assert_eq!(
+      parse("<style>div { color: red; </style>"),
+      Err(ParseError::unterminated(
+        "Unterminated bracket.".to_string(),
+        11,
+        27
+      ))
+    );
   }
 
   #[test]
   fn display_error_for_close_tag_without_open() {
-    assert_eq!(parse("</div>"), Err(ParseError::unexpected("Closing tag doesn't have an open tag.".to_string(), 0, 6)));
+    assert_eq!(
+      parse("</div>"),
+      Err(ParseError::unexpected(
+        "Closing tag doesn't have an open tag.".to_string(),
+        0,
+        6
+      ))
+    );
   }
-
 
   #[test]
   fn displays_error_if_void_close_tag_present() {
-    assert_eq!(parse("</meta>"), Err(ParseError::unexpected("Void tag's shouldn't be closed.".to_string(), 0, 7)));
+    assert_eq!(
+      parse("</meta>"),
+      Err(ParseError::unexpected(
+        "Void tag's shouldn't be closed.".to_string(),
+        0,
+        7
+      ))
+    );
   }
 
   #[test]
   fn can_parse_slot_fragments() {
-    parse("<div a={<fragment>
+    parse(
+      "<div a={<fragment>
       <div />
       <div />
-    </fragment>} />").unwrap();
+    </fragment>} />",
+    )
+    .unwrap();
   }
 }

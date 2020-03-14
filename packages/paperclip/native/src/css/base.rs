@@ -1,11 +1,11 @@
+use serde::Serialize;
 use std::fmt;
-use serde::{Serialize};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ConditionRule<TStyleRule: fmt::Display> {
   pub name: String,
   pub condition_text: String,
-  pub rules: Vec<TStyleRule>
+  pub rules: Vec<TStyleRule>,
 }
 
 impl<TStyleRule: fmt::Display> fmt::Display for ConditionRule<TStyleRule> {

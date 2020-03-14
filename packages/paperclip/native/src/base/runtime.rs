@@ -1,11 +1,11 @@
 use super::ast;
-use serde::{Serialize};
+use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct RuntimeError {
   pub uri: String,
   pub location: ast::Location,
-  pub message: String
+  pub message: String,
 }
 
 impl RuntimeError {
@@ -13,13 +13,14 @@ impl RuntimeError {
     RuntimeError {
       message: message,
       uri: uri.to_string(),
-      location: location.clone()
+      location: location.clone(),
     }
   }
   pub fn unknown(uri: &String) -> RuntimeError {
-    RuntimeError::new("An unknown error has occurred.".to_string(), uri, &ast::Location {
-      start: 0,
-      end: 1
-    })
+    RuntimeError::new(
+      "An unknown error has occurred.".to_string(),
+      uri,
+      &ast::Location { start: 0, end: 1 },
+    )
   }
 }

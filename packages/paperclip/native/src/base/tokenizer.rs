@@ -1,9 +1,7 @@
-use super::parser::{ParseError};
-
+use super::parser::ParseError;
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
-    
   // <
   LessThan,
 
@@ -57,7 +55,6 @@ pub enum Token<'a> {
 
   // )
   ParenClose,
-  
 
   // "
   DoubleQuote,
@@ -77,7 +74,7 @@ pub enum Token<'a> {
   // /
   Backslash,
 
-  // 
+  //
   Whitespace,
 
   // ...
@@ -93,7 +90,6 @@ pub enum Token<'a> {
   Comma,
 
   // :
-
   Colon,
 
   // :
@@ -125,11 +121,10 @@ pub enum Token<'a> {
 
 pub struct Tokenizer<'a> {
   pub source: &'a [u8],
-  pub pos: usize
+  pub pos: usize,
 }
 
 impl<'a> Tokenizer<'a> {
-
   pub fn eat_whitespace(&mut self) {
     if self.is_eof() {
       return;
@@ -140,9 +135,7 @@ impl<'a> Tokenizer<'a> {
     }
   }
 
-  pub fn utf8_pos() {
-
-  }
+  pub fn utf8_pos() {}
 
   pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.pos;
@@ -188,7 +181,6 @@ impl<'a> Tokenizer<'a> {
   }
 
   pub fn next(&mut self) -> Result<Token<'a>, ParseError> {
-
     if self.is_eof() {
       return Err(ParseError::eof());
     }
@@ -196,7 +188,7 @@ impl<'a> Tokenizer<'a> {
     let c = self.curr_char()?;
 
     match c {
-      b'/' => { 
+      b'/' => {
         if self.starts_with(b"//") {
           self.forward(2);
           Ok(Token::LineCommentOpen)
@@ -210,8 +202,11 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           Ok(Token::Backslash)
         }
-      },
-      b'>' => { self.forward(1); Ok(Token::GreaterThan) },
+      }
+      b'>' => {
+        self.forward(1);
+        Ok(Token::GreaterThan)
+      }
       b'<' => {
         if self.starts_with(b"</") {
           self.forward(2);
@@ -223,7 +218,7 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           Ok(Token::LessThan)
         }
-      },
+      }
       b'-' => {
         if self.starts_with(b"-->") {
           self.forward(3);
@@ -232,7 +227,7 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           Ok(Token::Minus)
         }
-      },
+      }
       b'*' => {
         if self.starts_with(b"*/") {
           self.forward(2);
@@ -241,31 +236,31 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           Ok(Token::Star)
         }
-      },
+      }
       b'!' => {
         self.forward(1);
         Ok(Token::Bang)
-      },
+      }
       b'+' => {
         self.forward(1);
         Ok(Token::Plus)
-      },
+      }
       b'~' => {
         self.forward(1);
         Ok(Token::Squiggle)
-      },
+      }
       b'@' => {
         self.forward(1);
         Ok(Token::At)
-      },
+      }
       b',' => {
         self.forward(1);
         Ok(Token::Comma)
-      },
+      }
       b':' => {
         self.forward(1);
         Ok(Token::Colon)
-      },
+      }
       b';' => {
         self.forward(1);
         Ok(Token::Semicolon)
@@ -276,7 +271,7 @@ impl<'a> Tokenizer<'a> {
           Ok(Token::Spread)
         } else {
           self.forward(1);
-          let is_number = |c| { matches!(c, b'0'..=b'9') };
+          let is_number = |c| matches!(c, b'0'..=b'9');
 
           if !self.is_eof() && is_number(self.curr_char().unwrap()) {
             let start = self.pos - 1;
@@ -284,9 +279,9 @@ impl<'a> Tokenizer<'a> {
             Ok(Token::Number(self.since(start)))
           } else {
             Ok(Token::Dot)
-          }          
+          }
         }
-      },
+      }
       b'{' => {
         self.forward(1);
         if self.starts_with(b"#") {
@@ -298,14 +293,14 @@ impl<'a> Tokenizer<'a> {
         } else {
           Ok(Token::CurlyOpen)
         }
-      },
+      }
       b'}' => {
         self.forward(1);
         Ok(Token::CurlyClose)
-      },
+      }
       b'0'..=b'9' => {
         let start = self.pos;
-        let is_number = |c| { matches!(c, b'0'..=b'9') };
+        let is_number = |c| matches!(c, b'0'..=b'9');
         self.scan(is_number);
         if self.starts_with(b".") {
           self.forward(1);
@@ -313,31 +308,61 @@ impl<'a> Tokenizer<'a> {
         }
 
         Ok(Token::Number(self.since(start)))
-      },
-      b'[' => { self.forward(1); Ok(Token::SquareOpen) },
-      b']' => { self.forward(1); Ok(Token::SquareClose) },
-      b'(' => { self.forward(1); Ok(Token::ParenOpen) },
-      b')' => { self.forward(1); Ok(Token::ParenClose) },
-      b'#' => { self.forward(1); Ok(Token::Hash) },
-      b'"' => { self.forward(1); Ok(Token::DoubleQuote) },
-      b'\'' => { self.forward(1); Ok(Token::SingleQuote) },
-      b'=' => { 
+      }
+      b'[' => {
+        self.forward(1);
+        Ok(Token::SquareOpen)
+      }
+      b']' => {
+        self.forward(1);
+        Ok(Token::SquareClose)
+      }
+      b'(' => {
+        self.forward(1);
+        Ok(Token::ParenOpen)
+      }
+      b')' => {
+        self.forward(1);
+        Ok(Token::ParenClose)
+      }
+      b'#' => {
+        self.forward(1);
+        Ok(Token::Hash)
+      }
+      b'"' => {
+        self.forward(1);
+        Ok(Token::DoubleQuote)
+      }
+      b'\'' => {
+        self.forward(1);
+        Ok(Token::SingleQuote)
+      }
+      b'=' => {
         if self.starts_with(b"===") {
-          self.forward(3); 
+          self.forward(3);
           Ok(Token::TrippleEquals)
         } else if self.starts_with(b"==") {
-          self.forward(2); 
+          self.forward(2);
           Ok(Token::DoubleEquals)
         } else {
-          self.forward(1); 
+          self.forward(1);
           Ok(Token::Equals)
         }
-      },
-      b'a'..=b'z' | b'A'..=b'Z' => Ok(Token::Word(self.search(|c| -> bool { matches!(c, b'a'..=b'z' | b'A'..=b'Z') }))),
-      b' ' | b'\t' | b'\r' | b'\n' => { self.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') }); Ok(Token::Whitespace) },
-      _ => { self.forward(1); Ok(Token::Byte(c)) }
+      }
+      b'a'..=b'z' | b'A'..=b'Z' => {
+        Ok(Token::Word(self.search(|c| -> bool {
+          matches!(c, b'a'..=b'z' | b'A'..=b'Z')
+        })))
+      }
+      b' ' | b'\t' | b'\r' | b'\n' => {
+        self.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
+        Ok(Token::Whitespace)
+      }
+      _ => {
+        self.forward(1);
+        Ok(Token::Byte(c))
+      }
     }
-
   }
 
   fn starts_with(&mut self, pattern: &[u8]) -> bool {
@@ -353,8 +378,10 @@ impl<'a> Tokenizer<'a> {
       Ok(self.source[self.pos])
     }
   }
-  fn search<FF>(&mut self, test: FF) -> &'a str where 
-    FF: Fn(u8) -> bool {
+  fn search<FF>(&mut self, test: FF) -> &'a str
+  where
+    FF: Fn(u8) -> bool,
+  {
     let start = self.pos;
     self.scan(test);
     self.since(start)
@@ -363,14 +390,16 @@ impl<'a> Tokenizer<'a> {
   fn since(&mut self, start: usize) -> &'a str {
     std::str::from_utf8(&self.source[start..self.pos]).unwrap()
   }
-  
-  fn scan<FF>(&mut self, test: FF) where 
-    FF: Fn(u8) -> bool {
+
+  fn scan<FF>(&mut self, test: FF)
+  where
+    FF: Fn(u8) -> bool,
+  {
     while !self.is_eof() {
       let c = self.source[self.pos];
       self.pos += 1;
       if !test(c) {
-        self.pos-=1;
+        self.pos -= 1;
         break;
       }
     }
@@ -379,7 +408,10 @@ impl<'a> Tokenizer<'a> {
     self.pos >= self.source.len()
   }
   pub fn new(source: &'a str) -> Tokenizer {
-      Tokenizer { source: source.as_bytes(), pos: 0 }
+    Tokenizer {
+      source: source.as_bytes(),
+      pos: 0,
+    }
   }
 }
 
@@ -392,33 +424,28 @@ mod tests {
   fn can_tokenize_a_less_than_tag() {
     let mut tokenizer = Tokenizer::new("<");
     assert_eq!(tokenizer.next(), Ok(Token::LessThan));
-    
   }
   #[test]
   fn can_tokenize_a_word() {
     let mut tokenizer = Tokenizer::new("div");
     assert_eq!(tokenizer.next(), Ok(Token::Word("div")));
-    
   }
   #[test]
   fn can_tokenize_a_char() {
     let mut tokenizer = Tokenizer::new("$");
     assert_eq!(tokenizer.next(), Ok(Token::Byte(b'$')));
-    
   }
 
   #[test]
   fn can_tokenize_a_self_close_tag() {
     let mut tokenizer = Tokenizer::new("</");
     assert_eq!(tokenizer.next(), Ok(Token::TagClose));
-    
   }
 
   #[test]
   fn can_tokenize_a_self_closing_tag() {
     let mut tokenizer = Tokenizer::new("/>");
     assert_eq!(tokenizer.next(), Ok(Token::SelfTagClose));
-    
   }
 
   #[test]
@@ -430,7 +457,6 @@ mod tests {
     assert_eq!(tokenizer.next(), Ok(Token::Word("div")));
     assert_eq!(tokenizer.next(), Ok(Token::Whitespace));
     assert_eq!(tokenizer.next(), Ok(Token::SelfTagClose));
-    
   }
   #[test]
   fn can_tokenize_an_element_with_a_child() {
@@ -445,22 +471,18 @@ mod tests {
     assert_eq!(tokenizer.next(), Ok(Token::TagClose));
     assert_eq!(tokenizer.next(), Ok(Token::Word("div")));
     assert_eq!(tokenizer.next(), Ok(Token::GreaterThan));
-    
   }
 
   #[test]
   fn can_tokenize_curly_open() {
     let mut tokenizer = Tokenizer::new("{");
     assert_eq!(tokenizer.next(), Ok(Token::CurlyOpen));
-    
   }
-
 
   #[test]
   fn can_tokenize_curly_close() {
     let mut tokenizer = Tokenizer::new("}");
     assert_eq!(tokenizer.next(), Ok(Token::CurlyClose));
-    
   }
 
   #[test]
@@ -470,63 +492,54 @@ mod tests {
     assert_eq!(tokenizer.next(), Ok(Token::HtmlCommentClose));
     assert_eq!(tokenizer.next(), Ok(Token::ScriptCommentOpen));
     assert_eq!(tokenizer.next(), Ok(Token::ScriptCommentClose));
-    
   }
 
   #[test]
   fn can_tokenize_spread_operator() {
     let mut tokenizer = Tokenizer::new("...");
     assert_eq!(tokenizer.next(), Ok(Token::Spread));
-    
   }
 
   #[test]
   fn can_tokenize_comma() {
     let mut tokenizer = Tokenizer::new(",");
     assert_eq!(tokenizer.next(), Ok(Token::Comma));
-    
   }
 
   #[test]
   fn can_tokenize_colon() {
     let mut tokenizer = Tokenizer::new(":");
     assert_eq!(tokenizer.next(), Ok(Token::Colon));
-    
   }
 
   #[test]
   fn can_tokenize_dot() {
     let mut tokenizer = Tokenizer::new(".");
     assert_eq!(tokenizer.next(), Ok(Token::Dot));
-    
   }
 
   #[test]
   fn can_tokenize_double_quote() {
     let mut tokenizer = Tokenizer::new("\"");
     assert_eq!(tokenizer.next(), Ok(Token::DoubleQuote));
-    
   }
 
   #[test]
   fn can_tokenize_single_quote() {
     let mut tokenizer = Tokenizer::new("'");
     assert_eq!(tokenizer.next(), Ok(Token::SingleQuote));
-    
   }
 
   #[test]
   fn can_tokenize_double_equals() {
     let mut tokenizer = Tokenizer::new("==");
     assert_eq!(tokenizer.next(), Ok(Token::DoubleEquals));
-    
   }
 
   #[test]
   fn can_tokenize_tripple_equals() {
     let mut tokenizer = Tokenizer::new("===");
     assert_eq!(tokenizer.next(), Ok(Token::TrippleEquals));
-    
   }
 
   #[test]
@@ -566,4 +579,4 @@ mod tests {
     assert_eq!(tokenizer.next(), Ok(Token::Minus));
     assert_eq!(tokenizer.next(), Ok(Token::Number("9")));
   }
-} 
+}

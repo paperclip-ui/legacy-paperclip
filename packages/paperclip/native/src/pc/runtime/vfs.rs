@@ -10,17 +10,21 @@ pub struct VirtualFileSystem {
   read_file: Box<FileReaderFn>,
   resolve_file: Box<FileResolverFn>,
   file_exists: Box<FileExistsFn>,
-  pub contents: HashMap<String, String>
+  pub contents: HashMap<String, String>,
 }
 
 #[allow(dead_code)]
 impl VirtualFileSystem {
-  pub fn new(read_file: Box<FileReaderFn>, file_exists: Box<FileExistsFn>, resolve_file: Box<FileResolverFn>) -> VirtualFileSystem {
+  pub fn new(
+    read_file: Box<FileReaderFn>,
+    file_exists: Box<FileExistsFn>,
+    resolve_file: Box<FileResolverFn>,
+  ) -> VirtualFileSystem {
     VirtualFileSystem {
       read_file,
       file_exists,
       resolve_file,
-      contents: HashMap::new()
+      contents: HashMap::new(),
     }
   }
   pub async fn load(&mut self, uri: &String) -> Result<&String, &'static str> {
@@ -44,12 +48,11 @@ impl VirtualFileSystem {
   }
 
   pub async fn reload(&mut self, uri: &String) -> Result<&String, &'static str> {
-
     if !(self.file_exists)(uri) {
       return Err("File does not exist");
     }
     let content = (self.read_file)(uri);
-    
+
     self.contents.insert(uri.to_string(), content);
     Ok(self.contents.get(uri).unwrap())
   }

@@ -1,6 +1,6 @@
 use super::tokenizer::*;
-use serde::{Serialize};
-use crate::base::ast::{Location};
+use crate::base::ast::Location;
+use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub enum ParseErrorKind {
@@ -22,11 +22,16 @@ impl ParseError {
     ParseError {
       kind,
       message,
-      location: Location { start, end }
+      location: Location { start, end },
     }
   }
   pub fn unexpected_token(start: usize) -> ParseError {
-    ParseError::new(ParseErrorKind::Unexpected, "Unexpected token".to_string(), start, start + 1)
+    ParseError::new(
+      ParseErrorKind::Unexpected,
+      "Unexpected token".to_string(),
+      start,
+      start + 1,
+    )
   }
   pub fn unexpected(message: String, start: usize, end: usize) -> ParseError {
     ParseError::new(ParseErrorKind::Unexpected, message, start, end)
@@ -38,12 +43,19 @@ impl ParseError {
     ParseError::new(ParseErrorKind::EndOfFile, "End of file".to_string(), 0, 1)
   }
   pub fn unknown() -> ParseError {
-    ParseError::new(ParseErrorKind::Unknown, "An unknown error has occurred".to_string(), 0, 1)
+    ParseError::new(
+      ParseErrorKind::Unknown,
+      "An unknown error has occurred".to_string(),
+      0,
+      1,
+    )
   }
 }
 
-pub fn get_buffer<'a, FF>(tokenizer: &mut Tokenizer<'a>, until: FF) -> Result<&'a str, ParseError> where
-FF: Fn(&mut Tokenizer) -> Result<bool, ParseError> {
+pub fn get_buffer<'a, FF>(tokenizer: &mut Tokenizer<'a>, until: FF) -> Result<&'a str, ParseError>
+where
+  FF: Fn(&mut Tokenizer) -> Result<bool, ParseError>,
+{
   let start = tokenizer.pos;
   let mut end = start;
 
@@ -65,7 +77,6 @@ FF: Fn(&mut Tokenizer) -> Result<bool, ParseError> {
 //     Ok(())
 //   }
 // }
-
 
 // pub fn expect_token2(a: Token, b: Token) -> Result<(), &'static str> {
 //   if a != b {

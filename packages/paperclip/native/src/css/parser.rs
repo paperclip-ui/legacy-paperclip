@@ -4,15 +4,15 @@
 // https://www.w3schools.com/cssref/pr_charset_rule.asp
 
 use super::ast::*;
+use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
-use crate::base::ast::{Location};
 use crate::base::tokenizer::{Token, Tokenizer};
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
 pub struct Context<'a, 'b> {
   tokenizer: &'b mut Tokenizer<'a>,
-  until: FUntil<'a>
+  until: FUntil<'a>,
 }
 
 impl<'a, 'b> Context<'a, 'b> {
@@ -23,22 +23,25 @@ impl<'a, 'b> Context<'a, 'b> {
 
 pub fn parse<'a>(source: &'a str) -> Result<Sheet, ParseError> {
   let mut tokenizer = Tokenizer::new(&source);
-  parse_with_tokenizer(&mut tokenizer, |_token| { Ok(false) })
+  parse_with_tokenizer(&mut tokenizer, |_token| Ok(false))
 }
 
-pub fn parse_with_tokenizer<'a>(tokenizer: &mut Tokenizer<'a>, until: FUntil<'a>) -> Result<Sheet, ParseError> {
-
-  let mut context = Context {
-    tokenizer,
-    until
-  };
+pub fn parse_with_tokenizer<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  until: FUntil<'a>,
+) -> Result<Sheet, ParseError> {
+  let mut context = Context { tokenizer, until };
 
   parse_sheet(&mut context)
 }
 
-fn eat_comments<'a, 'b>(context: &mut Context<'a, 'b>, start: Token, end: Token) -> Result<(), ParseError> {
+fn eat_comments<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  start: Token,
+  end: Token,
+) -> Result<(), ParseError> {
   if context.ended()? || context.tokenizer.peek(1)? != start {
-    return Ok(())
+    return Ok(());
   }
   context.tokenizer.next()?; // eat <!--
   while !context.tokenizer.is_eof() {
@@ -52,10 +55,9 @@ fn eat_comments<'a, 'b>(context: &mut Context<'a, 'b>, start: Token, end: Token)
 
 fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseError> {
   Ok(Sheet {
-    rules: parse_rules(context)?
+    rules: parse_rules(context)?,
   })
 }
-
 
 fn parse_rules<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Vec<Rule>, ParseError> {
   let mut rules = vec![];
@@ -84,12 +86,8 @@ fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseErr
 fn parse_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
   eat_superfluous(context)?;
   match context.tokenizer.peek(1)? {
-    Token::At => {
-      parse_at_rule(context)
-    }
-    _ => {
-      parse_style_rule(context)
-    }
+    Token::At => parse_at_rule(context),
+    _ => parse_style_rule(context),
   }
 }
 
@@ -106,16 +104,22 @@ fn parse_style_rule2<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<StyleRule,
   })
 }
 
-
-fn parse_declaration_body<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Vec<Declaration>, ParseError> {
+fn parse_declaration_body<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<Vec<Declaration>, ParseError> {
   eat_superfluous(context)?;
   let block_start = context.tokenizer.pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
   let declarations = parse_declarations(context)?;
   eat_superfluous(context)?;
-  context.tokenizer
-  .next_expect(Token::CurlyClose)
-  .or(Err(ParseError::unterminated("Unterminated bracket.".to_string(), block_start, context.tokenizer.pos)))?;
+  context
+    .tokenizer
+    .next_expect(Token::CurlyClose)
+    .or(Err(ParseError::unterminated(
+      "Unterminated bracket.".to_string(),
+      block_start,
+      context.tokenizer.pos,
+    )))?;
 
   eat_superfluous(context)?;
   Ok(declarations)
@@ -130,43 +134,42 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       let value = parse_string(context)?;
       context.tokenizer.next_expect(Token::Semicolon)?;
       Ok(Rule::Charset(value.to_string()))
-    },
+    }
     "namespace" => {
       let value = get_buffer(context.tokenizer, |tokenizer| {
         Ok(tokenizer.peek(1)? != Token::Semicolon)
       })?;
       context.tokenizer.next_expect(Token::Semicolon)?;
       Ok(Rule::Namespace(value.to_string()))
-    },
-    "supports" => {
-      Ok(Rule::Supports(parse_condition_rule(name.to_string(), context)?))
-    },
-    "media" => {
-      Ok(Rule::Media(parse_condition_rule(name.to_string(), context)?))
-    },
-    "keyframes" => {
-      Ok(Rule::Keyframes(parse_keyframes_rule(context)?))
-    },
-    "font-face" => {
-      Ok(Rule::FontFace(parse_font_face_rule(context)?))
-    },
-    "document" => {
-      Ok(Rule::Document(parse_condition_rule(name.to_string(), context)?))
-    },
-    "page" => {
-      Ok(Rule::Page(parse_condition_rule(name.to_string(), context)?))
-    },
-    _ => {
-      Err(ParseError::unexpected_token(context.tokenizer.pos))
     }
+    "supports" => Ok(Rule::Supports(parse_condition_rule(
+      name.to_string(),
+      context,
+    )?)),
+    "media" => Ok(Rule::Media(parse_condition_rule(
+      name.to_string(),
+      context,
+    )?)),
+    "keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context)?)),
+    "font-face" => Ok(Rule::FontFace(parse_font_face_rule(context)?)),
+    "document" => Ok(Rule::Document(parse_condition_rule(
+      name.to_string(),
+      context,
+    )?)),
+    "page" => Ok(Rule::Page(parse_condition_rule(name.to_string(), context)?)),
+    _ => Err(ParseError::unexpected_token(context.tokenizer.pos)),
   }
 }
 
-fn parse_condition_rule<'a, 'b>(name: String, context: &mut Context<'a, 'b>) -> Result<ConditionRule, ParseError> {
+fn parse_condition_rule<'a, 'b>(
+  name: String,
+  context: &mut Context<'a, 'b>,
+) -> Result<ConditionRule, ParseError> {
   let condition_text = get_buffer(context.tokenizer, |tokenizer| {
     Ok(tokenizer.peek(1)? != Token::CurlyOpen)
-  })?.to_string();
-  
+  })?
+  .to_string();
+
   context.tokenizer.next_expect(Token::CurlyOpen)?;
   eat_superfluous(context)?;
 
@@ -185,16 +188,16 @@ fn parse_condition_rule<'a, 'b>(name: String, context: &mut Context<'a, 'b>) -> 
 }
 
 fn parse_font_face_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<FontFaceRule, ParseError> {
-  
   Ok(FontFaceRule {
-    declarations: parse_declaration_body(context)?
+    declarations: parse_declaration_body(context)?,
   })
 }
 
-
-fn parse_keyframes_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<KeyframesRule, ParseError> {
+fn parse_keyframes_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<KeyframesRule, ParseError> {
   let name = parse_selector_name(context)?.to_string();
-  
+
   let mut rules = vec![];
   eat_superfluous(context)?;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
@@ -205,18 +208,15 @@ fn parse_keyframes_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Keyfram
 
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
-  Ok(KeyframesRule {
-    name,
-    rules,
-  })
+  Ok(KeyframesRule { name, rules })
 }
 
 fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<KeyframeRule, ParseError> {
   let key = parse_selector_name(context)?.to_string();
-  
+
   Ok(KeyframeRule {
     key,
-    declarations: parse_declaration_body(context)?
+    declarations: parse_declaration_body(context)?,
   })
 }
 
@@ -240,9 +240,7 @@ fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
   if selectors.len() == 1 {
     Ok(selectors.pop().unwrap())
   } else {
-    Ok(Selector::Group(GroupSelector {
-      selectors
-    }))
+    Ok(Selector::Group(GroupSelector { selectors }))
   }
 }
 
@@ -258,7 +256,7 @@ fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector
       let child = parse_pair_selector(context)?;
       Ok(Selector::Child(ChildSelector {
         parent: Box::new(selector),
-        child: Box::new(child)
+        child: Box::new(child),
       }))
     }
     Token::Plus => {
@@ -267,9 +265,8 @@ fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector
       let sibling = parse_pair_selector(context)?;
       Ok(Selector::Adjacent(AdjacentSelector {
         selector: Box::new(selector),
-        next_sibling_selector: Box::new(sibling)
+        next_sibling_selector: Box::new(sibling),
       }))
-
     }
     Token::Squiggle => {
       context.tokenizer.next()?; // eat ~
@@ -277,19 +274,17 @@ fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector
       let sibling = parse_pair_selector(context)?;
       Ok(Selector::Sibling(SiblingSelector {
         selector: Box::new(selector),
-        sibling_selector: Box::new(sibling)
+        sibling_selector: Box::new(sibling),
       }))
     }
-    Token::CurlyOpen => {
-      Ok(selector)
-    }
+    Token::CurlyOpen => Ok(selector),
     _ => {
       // try parsing child
       let descendent_result = parse_pair_selector(context);
       if let Ok(descendent) = descendent_result {
         Ok(Selector::Descendent(DescendentSelector {
           parent: Box::new(selector),
-          descendent: Box::new(descendent)
+          descendent: Box::new(descendent),
         }))
       } else {
         Ok(selector)
@@ -297,7 +292,6 @@ fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector
     }
   }
 }
-
 
 // div.combo[attr][another]
 fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
@@ -318,22 +312,21 @@ fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
   if selectors.len() == 1 {
     Ok(selectors.pop().unwrap())
   } else {
-    Ok(Selector::Combo(ComboSelector {
-      selectors
-    }))
+    Ok(Selector::Combo(ComboSelector { selectors }))
   }
 }
 
-fn parse_psuedo_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> { 
-  
+fn parse_psuedo_element_selector<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<Selector, ParseError> {
   let mut colon_count = 1;
-  
+
   let target: Option<Box<Selector>> = if context.tokenizer.peek(1)? != Token::Colon {
     Some(Box::new(parse_combo_selector(context)?))
   } else {
     None
   };
-  
+
   if context.tokenizer.peek(1)? != Token::Colon {
     if let Some(selector) = target {
       return Ok(*selector);
@@ -352,16 +345,19 @@ fn parse_psuedo_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Resul
     context.tokenizer.next()?;
     let selector = if name == "not" {
       let sel = parse_pair_selector(context)?;
-      Selector::Not(NotSelector { selector: Box::new(sel) })
+      Selector::Not(NotSelector {
+        selector: Box::new(sel),
+      })
     } else {
       let param = get_buffer(context.tokenizer, |tokenizer| {
         Ok(tokenizer.peek(1)? != Token::ParenClose)
-      })?.to_string();
+      })?
+      .to_string();
 
       Selector::PseudoParamElement(PseudoParamElementSelector {
         target,
         name,
-        param
+        param,
       })
     };
 
@@ -371,7 +367,7 @@ fn parse_psuedo_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Resul
     Selector::PseudoElement(PseudoElementSelector {
       separator: ":".to_string().repeat(colon_count),
       target,
-      name
+      name,
     })
   };
 
@@ -389,24 +385,22 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
     Token::Dot => {
       context.tokenizer.next()?;
       Selector::Class(ClassSelector {
-        class_name: parse_selector_name(context)?.to_string()
+        class_name: parse_selector_name(context)?.to_string(),
       })
     }
     Token::Hash => {
       context.tokenizer.next()?;
       Selector::Id(IdSelector {
-        id: parse_selector_name(context)?.to_string()
+        id: parse_selector_name(context)?.to_string(),
       })
     }
     Token::SquareOpen => {
       context.tokenizer.next()?;
       parse_attribute_selector(context)?
     }
-    Token::Word(_) => {
-      Selector::Element(ElementSelector {
-        tag_name: parse_selector_name(context)?.to_string()
-      })
-    }
+    Token::Word(_) => Selector::Element(ElementSelector {
+      tag_name: parse_selector_name(context)?.to_string(),
+    }),
     _ => {
       return Err(ParseError::unexpected_token(pos));
     }
@@ -424,10 +418,7 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
 
   context.tokenizer.next_expect(Token::SquareClose)?;
 
-  Ok(Selector::Attribute(AttributeSelector {
-    name, 
-    value
-  }))
+  Ok(Selector::Attribute(AttributeSelector { name, value }))
 }
 
 fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
@@ -439,7 +430,9 @@ fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseE
   buffer
 }
 
-fn parse_attribute_selector_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
+fn parse_attribute_selector_value<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<&'a str, ParseError> {
   let initial = context.tokenizer.peek(1)?;
   let value = if initial == Token::SingleQuote || initial == Token::DoubleQuote {
     parse_string(context)?
@@ -448,7 +441,7 @@ fn parse_attribute_selector_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Resu
       Ok(tokenizer.peek(1)? != Token::SquareClose)
     })?
   };
-  
+
   Ok(value)
 }
 
@@ -457,21 +450,21 @@ fn parse_selector_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str,
   get_buffer(context.tokenizer, |tokenizer| {
     let tok = tokenizer.peek(1)?;
     Ok(match tok {
-      Token::Whitespace | 
-      Token::Comma | 
-      Token::Colon | 
-      Token::ParenOpen | 
-      Token::ParenClose | 
-      Token::SingleQuote | 
-      Token::DoubleQuote | 
-      Token::Dot | 
-      Token::Hash | 
-      Token::Squiggle | 
-      Token::GreaterThan | 
-      Token::CurlyOpen | 
-      Token::SquareOpen |
-      Token::SquareClose => false,
-      _ => true
+      Token::Whitespace
+      | Token::Comma
+      | Token::Colon
+      | Token::ParenOpen
+      | Token::ParenClose
+      | Token::SingleQuote
+      | Token::DoubleQuote
+      | Token::Dot
+      | Token::Hash
+      | Token::Squiggle
+      | Token::GreaterThan
+      | Token::CurlyOpen
+      | Token::SquareOpen
+      | Token::SquareClose => false,
+      _ => true,
     })
   })
 }
@@ -480,33 +473,34 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
   get_buffer(context.tokenizer, |tokenizer| {
     let tok = tokenizer.peek(1)?;
     Ok(match tok {
-      Token::Whitespace | 
-      Token::Comma | 
-      Token::Colon | 
-      Token::ParenOpen | 
-      Token::ParenClose | 
-      Token::Equals | 
-      Token::SingleQuote | 
-      Token::DoubleQuote | 
-      Token::Dot | 
-      Token::Hash | 
-      Token::Squiggle | 
-      Token::GreaterThan | 
-      Token::CurlyOpen | 
-      Token::SquareOpen |
-      Token::SquareClose => false,
-      _ => true
+      Token::Whitespace
+      | Token::Comma
+      | Token::Colon
+      | Token::ParenOpen
+      | Token::ParenClose
+      | Token::Equals
+      | Token::SingleQuote
+      | Token::DoubleQuote
+      | Token::Dot
+      | Token::Hash
+      | Token::Squiggle
+      | Token::GreaterThan
+      | Token::CurlyOpen
+      | Token::SquareOpen
+      | Token::SquareClose => false,
+      _ => true,
     })
   })
 }
 
-
-fn parse_declarations<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Vec<Declaration>, ParseError> {
+fn parse_declarations<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<Vec<Declaration>, ParseError> {
   let mut declarations = vec![];
   eat_superfluous(context)?;
   while !context.ended()? {
     if context.tokenizer.peek(1)? == Token::CurlyClose {
-      break
+      break;
     }
     declarations.push(parse_declaration(context)?);
     eat_superfluous(context)?;
@@ -539,33 +533,30 @@ fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaratio
   eat_superfluous(context)?;
 
   Ok(Declaration {
-    name, 
+    name,
     value,
-    location: Location {
-      start,
-      end
-    },
+    location: Location { start, end },
     name_location: Location {
       start,
-      end: name_end
+      end: name_end,
     },
     value_location: Location {
       start: value_start,
-      end: value_end
-    }
+      end: value_end,
+    },
   })
 }
 
-fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> { 
+fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
   let mut buffer = String::new();
   while !context.tokenizer.is_eof() {
     match context.tokenizer.peek(1)? {
       Token::Semicolon | Token::CurlyClose => {
         break;
-      },
+      }
       Token::SingleQuote | Token::DoubleQuote => {
         buffer.push_str(parse_string(context)?);
-      },
+      }
       _ => {
         buffer.push(context.tokenizer.curr_char()? as char);
         context.tokenizer.pos += 1;
@@ -581,7 +572,6 @@ mod tests {
 
   #[test]
   fn can_smoke_parse_various_selectors() {
-
     let source = "
     .selector {}
     selector {}
@@ -634,8 +624,6 @@ mod tests {
 
   #[test]
   fn can_smoke_parse_various_at_rules() {
-
-
     let source = "
       @charset \"utf-8\";
       @namespace svg \"http://google.com\";
@@ -678,13 +666,19 @@ mod tests {
     parse(source).unwrap();
   }
 
-  /// 
+  ///
   /// Error handling
-  /// 
+  ///
 
   #[test]
   fn displays_an_error_for_unterminated_curly_bracket() {
-    assert_eq!(parse("div { "), Err(ParseError::unterminated("Unterminated bracket.".to_string(), 4, 6)));
+    assert_eq!(
+      parse("div { "),
+      Err(ParseError::unterminated(
+        "Unterminated bracket.".to_string(),
+        4,
+        6
+      ))
+    );
   }
-
 }
