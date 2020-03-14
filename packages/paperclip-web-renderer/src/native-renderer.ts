@@ -67,7 +67,9 @@ const createNativeElement = (
 ) => {
   // return factory.createTextNode(JSON.stringify(element, null, 2));
   const nativeElement = factory.createElement(element.tagName);
-  for (let { name, value } of element.attributes) {
+
+  for (let name in element.attributes) {
+    let value = element.attributes[name];
     if (name === "src" && protocol) {
       value = value.replace(/\w+:/, protocol);
     }
