@@ -478,7 +478,7 @@ fn create_component_instance_data<'a>(
       let prefixed_class_names = class_name_parts.iter().map(|class| {
         format!("_{}_{}", context.scope, class).to_string()
       }).collect::<Vec<String>>().join(" ");
-      data.values.insert(class_name, js_virt::JsValue::JsString(prefixed_class_names));
+      // data.values.insert(class_name, js_virt::JsValue::JsString(prefixed_class_names));
     }
   }
 

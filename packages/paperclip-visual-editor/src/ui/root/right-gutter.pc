@@ -1,0 +1,4 @@
+<div export component as="default">
+  Someting like this
+</div>
+aaaaa

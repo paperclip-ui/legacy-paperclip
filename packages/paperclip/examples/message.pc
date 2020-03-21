@@ -1,10 +1,12 @@
 <style>
   .red  {
-    color: red;
+    color: blue;
     font-family: Helvetica;
+    font-size: 40px;
+    padding: 30px;
   }
 </style>
 
 <div export component as="default" class="red">
-  something
+  Something
 </div>

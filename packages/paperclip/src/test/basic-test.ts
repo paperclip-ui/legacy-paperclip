@@ -202,14 +202,14 @@ describe(__filename + "#", () => {
           <import as="Message" src="./message.pc">
           <Message class="red" />
         `,
-        "/message.pc": `
-          <span export component as="default" class="blue">
+
+        // ensure that root is span
+        "/message.pc": `<span export component as="default" class="blue">
             message
-          </span>
-        `
+          </span>`
       },
       {},
-      `<style></style><span class="blue _80f4925f_red" data-pc-1acb798>message </span>`
+      `<style></style><span class="blue red" data-pc-1acb798>message </span>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

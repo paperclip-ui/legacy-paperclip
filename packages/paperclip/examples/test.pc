@@ -2,7 +2,8 @@
 
 <style>
   .blue {
-    color: blue;
+    --color: blue;
+    color: orange;
   }
 </style>
 

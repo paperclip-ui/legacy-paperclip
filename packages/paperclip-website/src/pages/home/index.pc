@@ -1,6 +1,19 @@
 <import src="styles/global.css">
 <import as="section" src="./section.pc" />
 
+<!--
+<import as="Message" src="./message.pc" />
+
+<style>
+  .style {
+
+  }
+</style>
+
+
+<Message class="style" />
+-->
+
 <style>
 
   code {

@@ -46,11 +46,7 @@ fn parse_fragment<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, Par
     children.push(parse_node(tokenizer)?);
   }
 
-  if children.len() == 1 {
-    Ok(children.pop().unwrap())
-  } else {
-    Ok(pc_ast::Node::Fragment(pc_ast::Fragment { children }))
-  }
+  Ok(pc_ast::Node::Fragment(pc_ast::Fragment { children }))
 }
 
 fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
