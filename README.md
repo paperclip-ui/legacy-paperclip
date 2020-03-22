@@ -13,7 +13,7 @@
   </a-->
 </p>
 
-> 👨‍🔬Paperclip is experimental _for now_, so I wouldn't recommend using it in a production app. 
+> 👨‍🔬Paperclip is experimental _for now_, so I wouldn't recommend using it in a production app. Feedback is always welcome!
 
 # Resources
 
