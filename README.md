@@ -80,8 +80,7 @@ Paperclip provides a lightweight approach for creating presentational components
 
 #### Goals
 
-
-- Shorten the gap between design 👉🏻 code by bringing more design tooling into web development.
+- Quicker feedback loop between writing code & seeing UI, thus helping you code faster.
 - Provide safety around building user interfaces, especially for large projects. This is helped with type safety, and visual regression tooling. 
 - Have a platform & language agnostic approach for building user interfaces. 
 
