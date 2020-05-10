@@ -71,7 +71,7 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
 
-## Why? 
+## Logic-less
 
 <!-- My biggest problem with UI development over the years has been the _speed_ of creating them. It's a time sink, especially as applications get bigger. And because user interface development is such as iterative process, waiting around for UIs to reload can be a real problem for productivity. -->
 
@@ -80,8 +80,7 @@ Paperclip provides a lightweight approach for creating presentational components
 
 #### Goals
 
-
-- Shorten the gap between design 👉🏻 code by bringing more design tooling into web development.
+- Quicker feedback loop between writing code & seeing UI, thus helping you code faster.
 - Provide safety around building user interfaces, especially for large projects. This is helped with type safety, and visual regression tooling. 
 - Have a platform & language agnostic approach for building user interfaces. 
 
