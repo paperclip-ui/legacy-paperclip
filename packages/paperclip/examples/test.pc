@@ -1,10 +1,9 @@
 <import as="Message" src="./message.pc">
 
 <style>
-  .blue {
-    --color: blue;
+  .blue > span {
     color: orange;
   }
 </style>
 
-<Message class="blue" />
+<Message class={classNames.blue} />

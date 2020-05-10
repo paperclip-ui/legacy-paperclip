@@ -4,14 +4,12 @@
 <import as="learn" src="./learn.pc">
 
 <style>
-
   .app-container {
     background: #f5f5f5;
     width: 100vw;
     height: 100vh;
     position: absolute;
     top: 0;
-    
   }
 
   .todoapp {
@@ -153,7 +151,7 @@
 
 </style>
 
-<div export component as="default" class="app-container">
+<div export component as="default" style={something} class="app-container">
   <div class="app">
 
       <!-- more non-preview code. -->
@@ -183,7 +181,6 @@
       </footer>
   </div>
 </div>
-
 
 <default 
   items={<fragment>

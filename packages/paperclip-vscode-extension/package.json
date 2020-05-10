@@ -20,18 +20,6 @@
   "categories": [
     "Programming Languages"
   ],
-  "configuration": {
-    "type": "object",
-    "title": "Example configuration",
-    "properties": {
-      "paperclipLanguageServer.maxNumberOfProblems": {
-        "scope": "resource",
-        "type": "number",
-        "default": 100,
-        "description": "Controls the maximum number of problems produced by the server."
-      }
-    }
-  },
   "contributes": {
     "commands": [
       {

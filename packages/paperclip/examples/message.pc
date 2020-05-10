@@ -1,12 +1,14 @@
 <style>
-  .red  {
-    color: blue;
+  .red {
+    color: rgb(33, 204, 99);
     font-family: Helvetica;
     font-size: 40px;
     padding: 30px;
   }
 </style>
 
-<div export component as="default" class="red">
-  Something
+<div export component as="default" class="red {class}">
+  Something like this
 </div>
+
+<default aa="something" />

@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "name": "Paperclip",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}/packages/paperclip-vscode-extension",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/packages/paperclip-vscode-extension"]
+    }
+  ]
+}
