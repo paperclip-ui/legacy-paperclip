@@ -196,7 +196,19 @@ describe(__filename + "#", () => {
       `<style></style><span data-pc-80f4925f>c b</span>`
     ],
     [
-      // parse different tag names
+      // class names prefixed with scope
+      {
+        "/entry.pc": `
+          <span component as="test" class="something something2">
+          </span>
+          <test />
+        `
+      },
+      {},
+      `<style></style><span class="_80f4925f_something _80f4925f_something2" data-pc-80f4925f></span>`,
+    ],
+    [
+      // class name isn't used if not explicitly defined in component
       {
         "/entry.pc": `
           <import as="Message" src="./message.pc">
@@ -209,7 +221,56 @@ describe(__filename + "#", () => {
           </span>`
       },
       {},
-      `<style></style><span class="blue red" data-pc-1acb798>message </span>`,
+      `<style></style><span class="_1acb798_blue" data-pc-1acb798>message </span>`,
+    ],
+    [
+      // class piercing
+      {
+        "/entry.pc": `
+          <import as="Message" src="./message.pc">
+          <Message class=">>>red" />
+        `,
+
+        // ensure that root is span
+        "/message.pc": `<span export component as="default" {class}>
+            message
+          </span>`
+      },
+      {},
+      `<style></style><span data-pc-1acb798 class="_80f4925f_red">message </span>`,
+    ],
+    [
+      // no class mod for components if shadow pierce operator is not defined
+      {
+        "/entry.pc": `
+          <import as="Message" src="./message.pc">
+          <Message class="red" />
+        `,
+
+        // ensure that root is span
+        "/message.pc": `<span export component as="default" {class}>
+            message
+          </span>`
+      },
+      {},
+      `<style></style><span data-pc-1acb798 class="red">message </span>`,
+    ],
+    [
+      // style classes prefixed with scope
+      {
+        "/entry.pc": `
+          <style>
+            .something > .something2 {
+
+            }
+          </style>
+          <span component as="test" class="something2">
+          </span>
+          <test />
+        `
+      },
+      {},
+      `<style></style><span data-pc-1acb798 class="red">message </span>`,
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

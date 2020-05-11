@@ -10,7 +10,6 @@ use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
 use crate::js::runtime::evaluator::evaluate as evaluate_js;
 use crate::js::runtime::virt as js_virt;
-use crc::crc32;
 use std::collections::{HashMap, HashSet};
 use std::iter::FromIterator;
 
@@ -421,7 +420,7 @@ fn create_component_instance_data<'a>(
             .values
             .insert(kv_attr.name.to_string(), js_virt::JsValue::JsBoolean(true));
         } else {
-          let value = evaluate_attribute_value(&kv_attr.value.as_ref().unwrap(), context)?;
+          let value = evaluate_attribute_value(&kv_attr.name, &kv_attr.value.as_ref().unwrap(), false, context)?;
           data.values.insert(kv_attr.name.to_string(), value);
         }
       }
@@ -469,18 +468,6 @@ fn create_component_instance_data<'a>(
     "children".to_string(),
     js_virt::JsValue::JsArray(js_children),
   );
-
-  // use scoped classnames since data-pc-* isn't passed through.
-  let class_name = "class".to_string();
-  if let Some(class) = data.values.get(&class_name) {
-    if let js_virt::JsValue::JsString(class_names) = class {
-      let class_name_parts: Vec<&str> = class_names.split(" ").collect();
-      let prefixed_class_names = class_name_parts.iter().map(|class| {
-        format!("_{}_{}", context.scope, class).to_string()
-      }).collect::<Vec<String>>().join(" ");
-      // data.values.insert(class_name, js_virt::JsValue::JsString(prefixed_class_names));
-    }
-  }
 
   Ok(js_virt::JsValue::JsObject(data))
 }
@@ -534,7 +521,7 @@ fn evaluate_native_element<'a>(
         let (name, mut value_option) = if kv_attr.value == None {
           (kv_attr.name.to_string(), None)
         } else {
-          let value = evaluate_attribute_value(&kv_attr.value.as_ref().unwrap(), context)?;
+          let value = evaluate_attribute_value(&kv_attr.name, &kv_attr.value.as_ref().unwrap(), true, context)?;
           if !value.truthy() {
             continue;
           }
@@ -596,21 +583,21 @@ fn evaluate_native_element<'a>(
     };
   }
 
-  if is_root {
-    if let js_virt::JsValue::JsObject(object) = &context.data {
-      let class_key = "class".to_string();
-      let class_option = object.values.get(&class_key);
-      if let Some(class) = class_option {
-        let existing_option = attributes.get(&class_key);
-        if let Some(existing) = existing_option {
-          if existing != &None {
-            let combined_class = format!("{} {}", existing.clone().unwrap(), class);
-            attributes.insert(class_key, Some(combined_class));
-          }
-        }
-      }
-    }
-  }
+  // if is_root {
+  //   if let js_virt::JsValue::JsObject(object) = &context.data {
+  //     let class_key = "class".to_string();
+  //     let class_option = object.values.get(&class_key);
+  //     if let Some(class) = class_option {
+  //       let existing_option = attributes.get(&class_key);
+  //       if let Some(existing) = existing_option {
+  //         if existing != &None {
+  //           let combined_class = format!("{} {}", existing.clone().unwrap(), class);
+  //           attributes.insert(class_key, Some(combined_class));
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   let name = format!("data-pc-{}", context.scope.to_string()).to_string();
 
@@ -800,13 +787,52 @@ fn evaluate_each_block_body<'a>(
 }
 
 fn evaluate_attribute_value<'a>(
+  name: &String,
   value: &ast::AttributeValue,
+  is_native: bool,
   context: &mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
   match value {
-    ast::AttributeValue::String(st) => Ok(js_virt::JsValue::JsString(st.value.clone())),
+    ast::AttributeValue::String(st) => evaluate_attribute_string(name, st, is_native, context),
     ast::AttributeValue::Slot(script) => evaluate_attribute_slot(script, context),
   }
+}
+
+fn evaluate_attribute_string<'a>(
+  name: &String,
+  value: &ast::AttributeStringValue,
+  is_native: bool,
+  context: &mut Context,
+) -> Result<js_virt::JsValue, RuntimeError> {
+  let mut val = value.value.clone();
+
+  if name == "class" && is_native {
+    let class_name_parts: Vec<&str> = val.split(" ").collect();
+    val = class_name_parts.iter().map(|class| {
+      format!("_{}_{}", context.scope, class).to_string()
+    }).collect::<Vec<String>>().join(" ");
+    
+  }
+
+  // class pierce
+  if val.contains(">>>") {
+    val = val.replace(">>>", format!("_{}_", context.scope).as_str());
+  }
+
+  
+  // use scoped classnames since data-pc-* isn't passed through.
+  // let class_name = "class".to_string();
+  // if let Some(class) = data.values.get(&class_name) {
+  //   if let js_virt::JsValue::JsString(class_names) = class {
+      // let class_name_parts: Vec<&str> = class_names.split(" ").collect();
+      // let prefixed_class_names = class_name_parts.iter().map(|class| {
+      //   format!("_{}_{}", context.scope, class).to_string()
+      // }).collect::<Vec<String>>().join(" ");
+      // data.values.insert(class_name, js_virt::JsValue::JsString(prefixed_class_names));
+    // }
+  // }
+
+  Ok(js_virt::JsValue::JsString(val.clone()))
 }
 
 fn evaluate_attribute_slot<'a>(
@@ -974,5 +1000,15 @@ mod tests {
 
     let data = js_virt::JsValue::JsObject(js_virt::JsObject::new());
     evaluate(&uri, &graph, &vfs, &data, None)
+  }
+
+  #[test]
+  fn can_evaluate_class_pierce() {
+    let result = evaluate_source(
+      "
+      <div something='>>>something >>>that' />
+    ",
+    )
+    .unwrap();
   }
 }

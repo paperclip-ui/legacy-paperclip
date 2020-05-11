@@ -1,9 +1,14 @@
 <import as="Message" src="./message.pc">
 
 <style>
-  .blue > span {
-    color: orange;
+  .blue > .span > a {
+    color: rgb(21, 127, 214);
+  }
+
+  .blue_a543 > .span_a543 > a[data-scope="a543"] {
+    
   }
 </style>
 
-<Message class={classNames.blue} />
+
+<Message class=">>>blue" nested-span-class=">>>span" />

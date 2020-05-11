@@ -8,7 +8,7 @@
 </style>
 
 <div export component as="default" class="red {class}">
-  Something like this
+  Something like this {class}
 </div>
 
 <default aa="something" />
