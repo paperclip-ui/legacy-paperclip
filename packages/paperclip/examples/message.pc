@@ -5,6 +5,10 @@
     font-size: 40px;
     padding: 30px;
   }
+
+  .red:hover {
+    color: purple;
+  }
 </style>
 
 <div export component as="default" class="red {class}" {style}>

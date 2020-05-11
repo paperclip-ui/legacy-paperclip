@@ -7,6 +7,9 @@
     display: inline-block;
     border-radius: 99px;
   }
+  .button2 {
+    text-decoration: line-through;
+  }
 
   .button > .button-label {
     color: rgb(187, 39, 39);
@@ -16,6 +19,6 @@
 
 <Message />
 <Message />
-<Message class=">>>button" labelClass=">>>button-label" style="color: orange;" />
+<Message class=">>>button >>>button2" labelClass=">>>button-label" style="color: orange;" />
 <Message />
 <Message />
