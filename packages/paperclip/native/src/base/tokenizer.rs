@@ -351,7 +351,7 @@ impl<'a> Tokenizer<'a> {
       }
       b'a'..=b'z' | b'A'..=b'Z' => {
         Ok(Token::Word(self.search(|c| -> bool {
-          matches!(c, b'a'..=b'z' | b'A'..=b'Z')
+          matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9')
         })))
       }
       b' ' | b'\t' | b'\r' | b'\n' => {

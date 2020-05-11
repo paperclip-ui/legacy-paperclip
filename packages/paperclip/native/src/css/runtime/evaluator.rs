@@ -174,7 +174,6 @@ fn stringify_optional_selector(selector: &Option<Box<ast::Selector>>, context: &
 
 fn stringify_element_selector(selector: &ast::Selector, context: &Context) -> String {
   let scope_selector = format!("[data-pc-{}]", context.scope);
-  let scope_class_prefix = format!("_{}_", context.scope);
 
   let scoped_selector_text = match selector {
     ast::Selector::AllSelector => format!("{}", scope_selector),
@@ -233,11 +232,26 @@ fn stringify_element_selector(selector: &ast::Selector, context: &Context) -> St
       text.join(", ")
     }
     ast::Selector::Combo(selector) => {
+      let mut contains_classname = false;
+
       let text: Vec<String> = (&selector.selectors)
         .into_iter()
-        .map(|child| child.to_string())
+        .map(|child| {
+          if let &ast::Selector::Class(_class_name) = &child {
+            contains_classname = true;
+            stringify_element_selector(child, context)
+          } else {
+            child.to_string()
+          }
+        })
         .collect();
-      format!("{}{}", text.join(""), scope_selector)
+
+      // if classname, then already scoped, to skip
+      if contains_classname {
+        text.join("")
+      } else {
+        format!("{}{}", text.join(""), scope_selector)
+      }
     }
   };
 
