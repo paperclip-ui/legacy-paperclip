@@ -23,6 +23,9 @@ pub enum Token<'a> {
   // >
   GreaterThan,
 
+  // >>>
+  Pierce,
+
   // />
   SelfTagClose,
 
@@ -204,8 +207,13 @@ impl<'a> Tokenizer<'a> {
         }
       }
       b'>' => {
-        self.forward(1);
-        Ok(Token::GreaterThan)
+        if self.starts_with(b">>>") {
+          self.forward(3);
+          Ok(Token::Pierce)
+        } else {
+          self.forward(1);
+          Ok(Token::GreaterThan)
+        }
       }
       b'<' => {
         if self.starts_with(b"</") {

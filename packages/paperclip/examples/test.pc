@@ -1,14 +1,21 @@
 <import as="Message" src="./message.pc">
 
 <style>
-  .blue > .span > a {
-    color: rgb(21, 127, 214);
+  .button {
+    color: rgb(56, 56, 56);
+    background: grey;
+    display: inline-block;
+    border-radius: 99px;
   }
 
-  .blue_a543 > .span_a543 > a[data-scope="a543"] {
-    
+  .button > .button-label {
+    color: rgb(187, 39, 39);
   }
 </style>
 
 
-<Message class=">>>blue" nested-span-class=">>>span" />
+<Message />
+<Message />
+<Message class=">>>button" labelClass=">>>button-label" style="color: orange;" />
+<Message />
+<Message />

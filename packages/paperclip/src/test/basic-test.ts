@@ -276,7 +276,37 @@ describe(__filename + "#", () => {
       },
       {},
       `<style>._80f4925f_something > ._80f4925f_something2 { }</style><span data-pc-80f4925f class="_80f4925f_something2"></span>`,
-    ]
+    ],
+    [
+      // style classes prefixed with scope
+      {
+        "/entry.pc": `
+          <span component as="test" class="a {class}">
+          </span>
+          <test class="b" />
+          <test class=">>>b" />
+        `
+      },
+      {},
+      `<style></style><span class="_80f4925f_a b" data-pc-80f4925f></span><span class="_80f4925f_a _80f4925f_b" data-pc-80f4925f></span>`,
+    ],
+    [
+      // no class mod for components if shadow pierce operator is not defined
+      {
+        "/entry.pc": `
+          <import as="Message" src="./message.pc">
+          <Message class=">>>red" />
+          <span />
+        `,
+
+        // ensure that root is span
+        "/message.pc": `<span export component as="default" class="blue {class}">
+            message
+          </span>`
+      },
+      {},
+      `<style></style><span data-pc-1acb798 class="_1acb798_blue _80f4925f_red">message </span><span data-pc-80f4925f></span>`,
+    ],
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
       const engine = createMockEngine(graph);

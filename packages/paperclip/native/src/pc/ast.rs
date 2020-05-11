@@ -105,6 +105,57 @@ pub struct AttributeStringValue {
   pub location: Location,
 }
 
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct AttributeDynamicStringValue {
+  pub values: Vec<AttributeDynamicStringPart>,
+  pub location: Location
+}
+
+
+impl fmt::Display for AttributeDynamicStringValue {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    for value in &self.values {
+      match value {
+        AttributeDynamicStringPart::Slot(stmt) => {
+          stmt.fmt(f);
+        }
+        AttributeDynamicStringPart::ClassNamePierce(stmt) => {
+          write!(f, ">>>{}", stmt.class_name);
+        }
+        AttributeDynamicStringPart::Literal(stmt) => {
+          write!(f, "{}", stmt.value);
+        }
+      }
+    }
+    Ok(())
+    // match &self {
+    //   AttributeValue::String(value) => write!(f, "{}", value.to_string()),
+    //   AttributeValue::Slot(script) => write!(f, "{{{}}}", script.to_string()),
+    //   AttributeValue::DyanmicString(script) => write!(f, "{{{}}}", script.to_string()),
+    // }
+  }
+}
+
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub enum AttributeDynamicStringPart {
+  Literal(AttributeDynamicStringLiteral),
+  ClassNamePierce(AttributeDynamicStringClassNamePierce),
+  Slot(js_ast::Statement),
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct AttributeDynamicStringLiteral {
+  pub value: String
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "className")]
+pub struct AttributeDynamicStringClassNamePierce {
+  pub class_name: String
+}
+
 impl fmt::Display for AttributeStringValue {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "\"{}\"", self.value)
@@ -223,6 +274,7 @@ impl fmt::Display for KeyValueAttribute {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "attrValueKind")]
 pub enum AttributeValue {
+  DyanmicString(AttributeDynamicStringValue),
   String(AttributeStringValue),
   Slot(js_ast::Statement),
 }
@@ -232,6 +284,7 @@ impl fmt::Display for AttributeValue {
     match &self {
       AttributeValue::String(value) => write!(f, "{}", value.to_string()),
       AttributeValue::Slot(script) => write!(f, "{{{}}}", script.to_string()),
+      AttributeValue::DyanmicString(script) => write!(f, "{{{}}}", script.to_string()),
     }
   }
 }

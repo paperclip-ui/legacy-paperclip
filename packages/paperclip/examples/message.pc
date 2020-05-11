@@ -1,14 +1,17 @@
 <style>
   .red {
-    color: rgb(33, 204, 99);
+    color: rgb(151, 238, 124);
     font-family: Helvetica;
     font-size: 40px;
     padding: 30px;
   }
 </style>
 
-<div export component as="default" class="red {class}">
-  Something like this {class}
+<div export component as="default" class="red {class}" {style}>
+  Something like thisfdsfds
+  <strong class={labelClass}>
+    nested
+  </strong>
 </div>
 
 <default aa="something" />

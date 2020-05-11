@@ -793,44 +793,51 @@ fn evaluate_attribute_value<'a>(
   context: &mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
   match value {
-    ast::AttributeValue::String(st) => evaluate_attribute_string(name, st, is_native, context),
+    ast::AttributeValue::DyanmicString(st) => evaluate_attribute_dynamic_string(name, st, is_native, context),
+    ast::AttributeValue::String(st) => evaluate_attribute_string(name, &st.value, is_native, context),
     ast::AttributeValue::Slot(script) => evaluate_attribute_slot(script, context),
   }
 }
 
-fn evaluate_attribute_string<'a>(
+fn evaluate_attribute_dynamic_string<'a>(
   name: &String,
-  value: &ast::AttributeStringValue,
+  value: &ast::AttributeDynamicStringValue,
   is_native: bool,
   context: &mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
-  let mut val = value.value.clone();
+
+  let val = value.values.iter().map(|val| {
+    match val {
+      ast::AttributeDynamicStringPart::Literal(value) => evaluate_attribute_string(name, &value.value, is_native, context).unwrap().to_string(),
+      ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => format!("_{}_{}", context.scope, pierce.class_name),
+      ast::AttributeDynamicStringPart::Slot(statement) => evaluate_attribute_slot(statement, context).unwrap().to_string(),
+    }
+  })
+  .collect::<Vec<String>>().join("");
+  
+
+  Ok(js_virt::JsValue::JsString(val))
+}
+
+fn evaluate_attribute_string<'a>(
+  name: &String,
+  value: &String,
+  is_native: bool,
+  context: &mut Context,
+) -> Result<js_virt::JsValue, RuntimeError> {
+  let mut val = value.clone();
 
   if name == "class" && is_native {
     let class_name_parts: Vec<&str> = val.split(" ").collect();
     val = class_name_parts.iter().map(|class| {
-      format!("_{}_{}", context.scope, class).to_string()
+      if class != &"" {
+        format!("_{}_{}", context.scope, class).to_string()
+      } else {
+        class.to_string()
+      }
     }).collect::<Vec<String>>().join(" ");
     
   }
-
-  // class pierce
-  if val.contains(">>>") {
-    val = val.replace(">>>", format!("_{}_", context.scope).as_str());
-  }
-
-  
-  // use scoped classnames since data-pc-* isn't passed through.
-  // let class_name = "class".to_string();
-  // if let Some(class) = data.values.get(&class_name) {
-  //   if let js_virt::JsValue::JsString(class_names) = class {
-      // let class_name_parts: Vec<&str> = class_names.split(" ").collect();
-      // let prefixed_class_names = class_name_parts.iter().map(|class| {
-      //   format!("_{}_{}", context.scope, class).to_string()
-      // }).collect::<Vec<String>>().join(" ");
-      // data.values.insert(class_name, js_virt::JsValue::JsString(prefixed_class_names));
-    // }
-  // }
 
   Ok(js_virt::JsValue::JsString(val.clone()))
 }

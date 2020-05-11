@@ -557,11 +557,73 @@ fn parse_attribute_value<'a>(
   tokenizer: &mut Tokenizer<'a>,
 ) -> Result<pc_ast::AttributeValue, ParseError> {
   let pos = tokenizer.pos;
+  let parts: Vec<pc_ast::AttributeDynamicStringPart> = vec![];
+
   match tokenizer.peek(1)? {
-    Token::SingleQuote | Token::DoubleQuote => parse_string(tokenizer),
+    Token::SingleQuote | Token::DoubleQuote => parse_attribute_string_value(tokenizer),
     Token::CurlyOpen => parse_attribute_slot(tokenizer),
     _ => Err(ParseError::unexpected_token(pos)),
   }
+}
+
+
+fn parse_attribute_string_value<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<pc_ast::AttributeValue, ParseError> {
+  let pos = tokenizer.pos;
+  let mut parts: Vec<pc_ast::AttributeDynamicStringPart> = vec![];
+
+  let quote = tokenizer.next()?;
+
+  while !tokenizer.is_eof() {
+
+    let curr = tokenizer.peek(1)?;
+
+    if curr == quote {
+      break;
+    }
+    
+    if curr == Token::Pierce {
+      tokenizer.next()?; // eat >>>
+      let class_name = get_buffer(tokenizer, |tokenizer| { 
+        let tok = tokenizer.peek(1)?;
+        Ok(!matches!(tok, Token::Whitespace | Token::Pierce | Token::CurlyOpen) && tok != quote) 
+      })?.to_string();
+
+      parts.push(pc_ast::AttributeDynamicStringPart::ClassNamePierce(pc_ast::AttributeDynamicStringClassNamePierce { class_name }));
+    } else if curr == Token::CurlyOpen {
+      tokenizer.next_expect(Token::CurlyOpen)?;
+      let script = parse_slot_script(tokenizer)?;
+      parts.push(pc_ast::AttributeDynamicStringPart::Slot(script));
+    } else {
+      let value = get_buffer(tokenizer, |tokenizer| {
+        let tok = tokenizer.peek(1)?;
+        Ok(!matches!(tok, Token::Pierce | Token::CurlyOpen) && tok != quote)
+      })?.to_string();
+      parts.push(pc_ast::AttributeDynamicStringPart::Literal({ pc_ast::AttributeDynamicStringLiteral { value }}));
+    }
+  }
+
+  tokenizer.next_expect(quote)
+  .or(Err(ParseError::unterminated(
+    "Unterminated string literal.".to_string(),
+    pos,
+    tokenizer.pos,
+  )))?;
+
+  let location = Location::new(pos + 1, tokenizer.pos - 1);
+
+  if parts.len() == 0 {
+    return Ok(pc_ast::AttributeValue::String(pc_ast::AttributeStringValue { value: "".to_string(), location }))
+  }
+
+  if parts.len() == 1 {
+    if let pc_ast::AttributeDynamicStringPart::Literal(value) = &parts[0] {
+      return Ok(pc_ast::AttributeValue::String(pc_ast::AttributeStringValue { value: value.value.clone(), location }))
+    }
+  }
+
+  return Ok(pc_ast::AttributeValue::DyanmicString(pc_ast::AttributeDynamicStringValue { values: parts, location }))
 }
 
 fn parse_attribute_slot<'a>(
@@ -572,7 +634,7 @@ fn parse_attribute_slot<'a>(
   Ok(pc_ast::AttributeValue::Slot(script))
 }
 
-fn parse_string<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::AttributeValue, ParseError> {
+fn parse_attribute_string<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::AttributeValue, ParseError> {
   let start = tokenizer.pos;
   let quote = tokenizer.next()?;
 
