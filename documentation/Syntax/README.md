@@ -47,7 +47,7 @@ You can style elements using the native `<style />` element. Note that styles ar
   div {
     color: red;
   }
-</style>
+</style> 
 
 <div>Something</div>
 ```
@@ -199,6 +199,19 @@ Since the attribute key & binding share the same name, we can use the **shorthan
 </Message>
 ```
 
+We can also include bindings in attribute strings. For example:
+
+```html
+<!-- styles here -->
+<div export component as="Message" class="some-class {class}">
+  {children}
+</div>
+
+<Message class="red">
+  Hello World
+</Message>
+```
+
 #### spreads (...props)
 
 You can spread properties to elements too. For example:
@@ -223,7 +236,7 @@ export function SomeInput() {
 ```
 
 
-## `<import />`
+### `<import />`
 
 > For a good example of this, check out the [React TodoMVC example](./../examples/react-todomvc).
 
@@ -368,6 +381,37 @@ Assuming that you have a file `src/styles/global.css`, you can import it like th
 ```html
 <import src="global.css">
 ```
+
+### Overriding component styles (>>>class-name)
+
+You'll probably want to override component styles from time-to-time. Suppose that you have a `Message.pc` component:
+
+```html
+<style>
+  .message {
+    color: red;
+  }
+</style>
+<div export component as="default" class="message {myClass}">
+</div>
+```
+
+☝🏻Here, we're defining a `Message` component with a `class` that allows us to override the `Messsage` styles. Since styles are scoped, we'll need to use the special _deep_ operator `>>>` for that. Here's how you use it:
+
+```html
+<import as="Message" src="./message.pc">
+
+<style>
+  .message2 {
+    color: blue;
+  }
+</style>
+
+<Message myClass=">>>message2" />
+```
+
+The `>>>` operator allows you to deeply set class names that are defined within this component. Note that this can't be made dynamic.
+
 
 ### Fragments (`<fragment></fragment>`)
 
