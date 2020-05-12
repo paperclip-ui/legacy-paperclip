@@ -77,7 +77,7 @@ function init(cwd, filesGlob, compile, shouldWatch) {
   }
 
   async function compileFile(relativePath) {
-    const fullPath = `file:///${path.resolve(process.cwd(), relativePath).replace(/\\/g, "/").replace(":", "%3A")}`;
+    const fullPath = `file://${path.resolve(process.cwd(), relativePath).replace(/\\/g, "/").replace(":", "%3A")}`;
     const compilerOptions = Object.assign({}, argvConfig.compilerOptions, config.compilerOptions);
     try {
       const ast = pcEngine.parseFile(fullPath);

@@ -36,18 +36,10 @@ const fixPath = path => path.replace(/\\/g, "/");
 
 const _loadedStyleFiles = {};
 
-module.exports = async function(source: string) {
-  if (this._compiler && !virtualModuleInstances.has(this._compiler)) {
-    const modules = activatePlugin(new VirtualModules(), this._compiler);
-    virtualModuleInstances.set(this._compiler, modules);
-  }
-
-  const virtualModules = virtualModuleInstances.get(this._compiler);
+function pcLoader(source: string, virtualModules: VirtualModules, resourceUrl: string) {
 
   this.cacheable();
   const callback = this.async();
-  const resourcePath = this.resourcePath;
-  const resourceUrl = "file:///" + fixPath(resourcePath);
 
   const { configFile = PC_CONFIG_FILE_NAME }: Options =
     loaderUtils.getOptions(this) || {};
@@ -84,7 +76,9 @@ module.exports = async function(source: string) {
           engine.evaluateFileStyles(cssFilePath),
           null
         );
-        virtualModules.writeModule(cssFilePath, importedSheetCode);
+
+        const transformPath = url.fileURLToPath(cssFilePath);
+        virtualModules.writeModule(transformPath, importedSheetCode);
       }
     }
   }
@@ -95,7 +89,21 @@ module.exports = async function(source: string) {
   code = `require("./${sheetFileName}");\n${code}`;
 
   callback(null, code);
-};
+}
+
+module.exports = function(source: string) {
+
+  if (this._compiler && !virtualModuleInstances.has(this._compiler)) {
+    const modules = activatePlugin(new VirtualModules(), this._compiler);
+    virtualModuleInstances.set(this._compiler, modules);
+  }
+
+  const virtualModules = virtualModuleInstances.get(this._compiler);
+
+  const resourcePath = this.resourcePath;
+  const resourceUrl = "file://" + fixPath(resourcePath);
+  return pcLoader.call(this, source, virtualModules, resourceUrl);
+}
 
 const activatePlugin = (plugin, compiler) => {
   const { inputFileSystem, name, context, hooks } = compiler;
