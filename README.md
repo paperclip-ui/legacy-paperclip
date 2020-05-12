@@ -228,7 +228,8 @@ import {ReactNode, ReactHTML, Factory, InputHTMLAttributes, ClassAttributes} fro
 
 type ElementProps = InputHTMLAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>;
 
-export declare const styled: (tag: keyof ReactHTML | Factory<ElementProps>, defaultProps?: ElementProps) => Factory<ElementProps>;
+// class names that you can use outside of the template file
+export declare const classNames: {};
 
 type TodoItemProps = {
   done: String | boolean | Number | Object | ReactNode,

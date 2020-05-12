@@ -8,6 +8,7 @@ import {
   DEFAULT_PART_ID,
   getDefaultPart,
   getLogicElement,
+  getAllVirtSheetClassNames,
   Statement,
   EXPORT_TAG_NAME,
   BlockKind,
@@ -29,11 +30,11 @@ import {
   resolveImportFile,
   getRelativeFilePath,
   FRAGMENT_TAG_NAME,
-  Sheet,
   getParts,
   findChildrenByNamespace,
   hasAttribute,
   PassFailConditional,
+  VirtSheet,
   DynamicStringAttributeValuePartKind,
   FinalConditional,
   isVisibleElement,
@@ -47,14 +48,16 @@ import {
   endBlock,
   addBuffer
 } from "./translate-utils";
-import { pascalCase, Options, getComponentName, RENAME_PROPS } from "./utils";
+import { pascalCase, Options, getComponentName, RENAME_PROPS, getClassExportNameMap } from "./utils";
 import { camelCase } from "lodash";
 import * as path from "path";
 import {Html5Entities} from "html-entities";
 
 const entities = new Html5Entities();
+type Config = { ast: Node; sheet?: any, classNames: string[] }
+
 export const compile = (
-  { ast, sheet }: { ast: Node; sheet?: any },
+  { ast, sheet, classNames }: Config,
   filePath: string,
   options: Options = {}
 ) => {
@@ -66,15 +69,18 @@ export const compile = (
     Boolean(getLogicElement(ast)),
     options
   );
-  context = translateRoot(ast, sheet, context);
+  context = translateRoot(ast, sheet, classNames, context);
   return context.buffer;
 };
 
-const translateRoot = (ast: Node, sheet: any, context: TranslateContext) => {
+const translateRoot = (ast: Node, sheet: any, classNames: string[], context: TranslateContext) => {
   context = translateImports(ast, context);
   if (sheet) {
     context = translateStyleSheet(sheet, context);
   }
+  
+  context = translateClassNames(classNames, context);
+
   const logicElement = getLogicElement(ast);
   if (logicElement) {
     const src = getAttributeStringValue("src", logicElement);
@@ -96,7 +102,7 @@ const translateRoot = (ast: Node, sheet: any, context: TranslateContext) => {
   return context;
 };
 
-const translateStyleSheet = (sheet: Sheet, context: TranslateContext) => {
+const translateStyleSheet = (sheet: VirtSheet, context: TranslateContext) => {
   if (!sheet.rules.length) {
     return context;
   }
@@ -115,12 +121,28 @@ const translateStyleSheet = (sheet: Sheet, context: TranslateContext) => {
   context = addBuffer(`document.body.appendChild(style);\n`, context);
   context = endBlock(context);
   context = addBuffer("}\n\n", context);
+
   return context;
 };
 
+const translateClassNames = (classNames: string[], context: TranslateContext) => {
+  
+  const classNameMap = getClassExportNameMap(classNames);
+
+  context = addBuffer(`export const classNames = {\n`, context);
+  context = startBlock(context);
+  for (const exportName in classNameMap) {
+    context = addBuffer(`${JSON.stringify(exportName)}: ${JSON.stringify(classNameMap[exportName])},\n`, context);
+  }
+  context = endBlock(context);
+  context = addBuffer(`};\n\n`, context);
+  return context;
+};
+
+
 const translateUtils = (ast: Node, context: TranslateContext) => {
-  context = translateStyleDataAttributes(context);
-  context = translateStyledUtil(ast, context);
+  // context = translateStyleDataAttributes(context);
+  // context = translateStyledUtil(ast, context);
   context = translateGetDefaultUtil(ast, context);
 
   // KEEP ME: for logic
@@ -172,21 +194,21 @@ const translateGetDefaultUtil = (ast: Node, context: TranslateContext) => {
 };
 
 
-const translateStyledUtil = (ast: Node, context: TranslateContext) => {
-  context = addBuffer(
-    `export const styled = (tagName, defaultProps) => `,
-    context
-  );
-  context = addBuffer(`(props) => (\n`, context);
-  context = startBlock(context);
-  context = addBuffer(
-    `React.createElement(tagName, Object.assign({}, scopedStyleProps, defaultProps, props))\n`,
-    context
-  );
-  context = endBlock(context);
-  context = addBuffer(");\n\n", context);
-  return context;
-};
+// const translateStyledUtil = (ast: Node, context: TranslateContext) => {
+//   context = addBuffer(
+//     `export const styled = (tagName, defaultProps) => `,
+//     context
+//   );
+//   context = addBuffer(`(props) => (\n`, context);
+//   context = startBlock(context);
+//   context = addBuffer(
+//     `React.createElement(tagName, Object.assign({}, scopedStyleProps, defaultProps, props))\n`,
+//     context
+//   );
+//   context = endBlock(context);
+//   context = addBuffer(");\n\n", context);
+//   return context;
+// };
 
 const translateImports = (ast: Node, context: TranslateContext) => {
   context = addBuffer(`import * as React from "react";\n`, context);

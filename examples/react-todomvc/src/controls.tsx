@@ -1,9 +1,8 @@
 import React from "react";
 import { Item } from "./data";
 import useLocation from "./hooks/useLocation";
-import View, { Filter, styled } from "./controls.pc";
+import View, { Filter } from "./controls.pc";
 
-const Strong = styled("strong");
 
 type Props = {
   items: Item[];
@@ -18,7 +17,7 @@ export default ({ items, onClearCompletedClicked }: Props) => {
       onClearCompletedClicked={onClearCompletedClicked}
       itemsLeftLabel={
         <span>
-          <Strong>{numItemsLeft}</Strong> {numItemsLeft > 1 ? "items" : "item"}{" "}
+          <strong>{numItemsLeft}</strong> {numItemsLeft > 1 ? "items" : "item"}{" "}
           left
         </span>
       }

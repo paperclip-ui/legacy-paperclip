@@ -267,6 +267,8 @@ impl fmt::Display for ChildSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AdjacentSelector {
   pub selector: Box<Selector>,
+
+  #[serde(rename = "nextSiblingSelector")]
   pub next_sibling_selector: Box<Selector>,
 }
 
@@ -285,6 +287,8 @@ impl fmt::Display for AdjacentSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SiblingSelector {
   pub selector: Box<Selector>,
+
+  #[serde(rename = "siblingSelector")]
   pub sibling_selector: Box<Selector>,
 }
 
@@ -352,6 +356,7 @@ impl fmt::Display for PseudoParamElementSelector {
 // div { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ElementSelector {
+  #[serde(rename = "tagName")]
   pub tag_name: String,
 }
 
@@ -365,6 +370,8 @@ impl fmt::Display for ElementSelector {
 // .div { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ClassSelector {
+
+  #[serde(rename = "className")]
   pub class_name: String,
 }
 

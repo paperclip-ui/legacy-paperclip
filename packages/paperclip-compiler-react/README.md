@@ -23,13 +23,13 @@ export default () => {
 };
 ```
 
-#### styled utility
+#### classNames utility
 
-The compiler exports a `styled` component that you can use to stylize elements outside of the template file. For example:
+The compiler exports `classNames` component that you can use to stylize elements outside of the template file. For example:
 
 ```html
 <style>
-  div {
+  .my-style {
     color: red
   }
 </style>
@@ -38,13 +38,12 @@ The compiler exports a `styled` component that you can use to stylize elements o
 In React, you can do this:
 
 ```jsx
-import {styled} from "./template.pc";
-const Div = styled("div");
+import {classNames} from "./template.pc";
 
 export default () => {
-  return <Div>
+  return <div className={classNames['my-style']}>
     This is red text
-  </Div>;
+  </div>;
 };
 ```
 

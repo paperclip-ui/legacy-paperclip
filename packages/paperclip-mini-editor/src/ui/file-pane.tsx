@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
-import { FilesPane as FilesPaneView, Tab, styled } from "./template.pc";
+import { FilesPane as FilesPaneView, Tab, classNames } from "./template.pc";
 import { OpenFile } from "../state";
 import {editor} from "monaco-editor";
 
-
-const Mount = styled("div", { className: "mount" });
 
 type Props = {
   files: OpenFile[],
@@ -38,7 +36,7 @@ class Editor extends React.PureComponent<EditorProps> {
     });
   }
   render() {
-    return <Mount />;
+    return <div className={classNames.mount} />;
   }
 }
 

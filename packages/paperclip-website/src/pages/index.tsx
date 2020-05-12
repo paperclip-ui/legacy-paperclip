@@ -1,5 +1,5 @@
 import * as React from "react";
-import Home, {scopedStyleProps} from "./home/index.pc";
+import Home from "./home/index.pc";
 const SyntaxHighlighter = require("react-syntax-highlighter").default;
 const { atomOneDark: codeStyle } = require("react-syntax-highlighter/dist/esm/styles/hljs");
 // agate
@@ -62,7 +62,7 @@ type CodeBlockProps = {
 };
 
 const CodeBlock = ({code, language}: CodeBlockProps) => {
-  return <SyntaxHighlighter {...scopedStyleProps} language={language} style={codeStyle}>
+  return <SyntaxHighlighter language={language} style={codeStyle}>
   {code}
 </SyntaxHighlighter>;
 };

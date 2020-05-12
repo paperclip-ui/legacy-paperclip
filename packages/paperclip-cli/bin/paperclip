@@ -3,7 +3,7 @@ const path = require("path");
 const resolve = require("resolve");
 const chokidar = require("chokidar");
 const glob = require("glob");
-const {Engine, getPrettyMessage} = require("paperclip");
+const {Engine, getPrettyMessage, getAllVirtSheetClassNames, evaluateAllFileStyles} = require("paperclip");
 const fs = require("fs");
 
 const argv = require("yargs")
@@ -85,7 +85,12 @@ function init(cwd, filesGlob, compile, shouldWatch) {
         return handleError(ast.error, fullPath);
       }
       const sheet = pcEngine.evaluateFileStyles(fullPath);
-      const result = compile({ ast, sheet }, fullPath, compilerOptions);
+
+      const styleMap = {
+        [fullPath]: sheet,
+        ...evaluateAllFileStyles(pcEngine, ast, fullPath)
+      }
+      const result = compile({ ast, sheet, classNames: getAllVirtSheetClassNames(styleMap) }, fullPath, compilerOptions);
       if (argv.write) {
         const outputFilePath = getOutputFilePath(fullPath, compilerOptions);
         console.log("Writing %s", outputFilePath);

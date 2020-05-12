@@ -5,10 +5,12 @@ import * as url from "url";
 import {
   Engine,
   getImports,
+  evaluateAllFileStyles,
   PaperclipConfig,
   stringifyCSSSheet,
   resolveImportFile,
   PC_CONFIG_FILE_NAME,
+  getAllVirtSheetClassNames,
   getAttributeStringValue
 } from "paperclip";
 import * as path from "path";
@@ -34,7 +36,7 @@ const virtualModuleInstances = new Map();
 
 const fixPath = path => path.replace(/\\/g, "/");
 
-const _loadedStyleFiles = {};
+let _loadedStyleFiles = {};
 
 function pcLoader(source: string, virtualModules: VirtualModules, resourceUrl: string) {
 
@@ -58,31 +60,34 @@ function pcLoader(source: string, virtualModules: VirtualModules, resourceUrl: s
     basedir: process.cwd()
   }));
   const ast = engine.parseContent(source);
-  let code = compiler.compile({ ast }, resourceUrl, config.compilerOptions);
+  const sheet = engine.evaluateContentStyles(source, resourceUrl)
+
+  const styleCache = {..._loadedStyleFiles};
+  const importedStyles = evaluateAllFileStyles(engine, ast, resourceUrl, styleCache);
+
+  const importedStyleSheets = evaluateAllFileStyles(engine, ast, resourceUrl, styleCache);
+
+  for (const transformPath in importedStyleSheets) {
+    if (_loadedStyleFiles[transformPath]) continue;
+    virtualModules.writeModule(transformPath, stringifyCSSSheet(importedStyleSheets[transformPath], null));
+  }
+  _loadedStyleFiles = styleCache;
+
+
+  const styleMap = {
+    resourceUrl: sheet,
+    ...importedStyles
+  };
+
+  let code = compiler.compile({ ast, sheet, classNames: getAllVirtSheetClassNames(styleMap) }, resourceUrl, config.compilerOptions);
 
   const sheetCode = stringifyCSSSheet(
-    engine.evaluateContentStyles(source, resourceUrl),
+    sheet,
     null
   );
 
-  const imports = getImports(ast);
-  for (const imp of imports) {
-    const src = getAttributeStringValue("src", imp);
-    if (/\.css$/.test(src)) {
-      const cssFilePath = resolveImportFile(fs)(resourceUrl, src);
-      if (!_loadedStyleFiles[cssFilePath]) {
-        _loadedStyleFiles[cssFilePath] = 1;
-        const importedSheetCode = stringifyCSSSheet(
-          engine.evaluateFileStyles(cssFilePath),
-          null
-        );
 
-        const transformPath = url.fileURLToPath(cssFilePath);
-        virtualModules.writeModule(transformPath, importedSheetCode);
-      }
-    }
-  }
-
+  
   const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);
   virtualModules.writeModule(sheetFilePath, sheetCode);

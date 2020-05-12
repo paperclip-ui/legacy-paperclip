@@ -23,10 +23,10 @@ import {
   endBlock,
   addBuffer
 } from "./translate-utils";
-import { Options, RENAME_PROPS, pascalCase } from "./utils";
+import { Options, RENAME_PROPS, pascalCase, getClassExportNameMap } from "./utils";
 
 export const compile = (
-  { ast }: { ast: Node },
+  { ast, classNames = [] }: { ast: Node, classNames?: string[] },
   filePath: string,
   options: Options = {}
 ) => {
@@ -38,11 +38,11 @@ export const compile = (
     Boolean(getLogicElement(ast)),
     options
   );
-  context = translateRoot(ast, context);
+  context = translateRoot(ast, classNames, context);
   return context.buffer;
 };
 
-const translateRoot = (ast: Node, context: TranslateContext) => {
+const translateRoot = (ast: Node, classNames: string[], context: TranslateContext) => {
   context = addBuffer(
     `import {ReactNode, ReactHTML, Factory, InputHTMLAttributes, ClassAttributes} from "react";\n\n`,
     context
@@ -96,21 +96,35 @@ const translateRoot = (ast: Node, context: TranslateContext) => {
   //   context
   // );
 
-  context = translateUtils(ast, context);
+  context = translateUtils(ast, classNames, context);
   context = translateParts(ast, context);
   context = translateMainView(ast, context);
   return context;
 };
 
-const translateUtils = (_ast: Node, context: TranslateContext) => {
+const translateUtils = (_ast: Node, classNames: string[], context: TranslateContext) => {
   context = addBuffer(
-    `export declare const scopedStyleProps: Object;\n\n`,
+    `export declare const classNames: {\n`,
     context
   );
+
+  const map = getClassExportNameMap(classNames);
+  context = startBlock(context);
+
+  for (const exportName in map) {
+    context = addBuffer(`${JSON.stringify(exportName)}: string,\n`, context);
+  }
+  
+
+  context = endBlock(context);
   context = addBuffer(
-    `export declare const styled: (tag: keyof ReactHTML | Factory<ElementProps>, defaultProps?: ElementProps) => Factory<ElementProps>;\n\n`,
+    `};\n\n`,
     context
   );
+  // context = addBuffer(
+  //   `export declare const styled: (tag: keyof ReactHTML | Factory<ElementProps>, defaultProps?: ElementProps) => Factory<ElementProps>;\n\n`,
+  //   context
+  // );
   return context;
 };
 

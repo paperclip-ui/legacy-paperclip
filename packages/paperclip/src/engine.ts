@@ -1,10 +1,16 @@
 import * as fs from "fs";
+import * as url from "url";
 import { NativeEngine } from "../native/pkg/paperclip";
 import {
   EngineEvent,
   EngineEventKind,
   resolveImportUri,
   DependencyContent,
+  getImports,
+  Node,
+  stringifyCSSSheet,
+  resolveImportFile,
+  getAttributeStringValue
 } from "paperclip-utils";
 
 export type FileContent = {
@@ -111,4 +117,23 @@ export class Engine {
       throw e;
     }
   };
+}
+
+export const evaluateAllFileStyles = (engine: Engine, ast: Node, resourceUrl: string, _loadedStyleFiles = {}) => {
+  const imports = getImports(ast);
+  const map = {};
+  for (const imp of imports) {
+    const src = getAttributeStringValue("src", imp);
+    if (/\.css$/.test(src)) {
+      const cssFilePath = resolveImportFile(fs)(resourceUrl, src);
+      const transformPath = url.fileURLToPath(cssFilePath);
+      let importedSheetCode = _loadedStyleFiles[cssFilePath];
+      if (!importedSheetCode) {
+        importedSheetCode = engine.evaluateFileStyles(cssFilePath);
+      }
+
+      map[transformPath] = importedSheetCode;
+    }
+  }
+  return map;
 }

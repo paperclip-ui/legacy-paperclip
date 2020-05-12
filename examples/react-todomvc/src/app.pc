@@ -12,6 +12,8 @@
     top: 0;
   }
 
+
+
   .todoapp {
     background: #fff;
     margin: 130px 0 40px 0;
@@ -147,10 +149,6 @@
     .toggle-all {
       background: none;
     }
-  }
-
-  .test {
-    color: blue;
   }
 
 </style>
