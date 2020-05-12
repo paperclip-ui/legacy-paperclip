@@ -139,6 +139,7 @@ impl fmt::Display for AttributeDynamicStringValue {
 
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "partKind")]
 pub enum AttributeDynamicStringPart {
   Literal(AttributeDynamicStringLiteral),
   ClassNamePierce(AttributeDynamicStringClassNamePierce),
@@ -153,6 +154,7 @@ pub struct AttributeDynamicStringLiteral {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "className")]
 pub struct AttributeDynamicStringClassNamePierce {
+  #[serde(rename = "className")]
   pub class_name: String
 }
 

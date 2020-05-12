@@ -71,6 +71,7 @@ export type Attribute =
   | KeyValueAttribute;
 
 export enum AttributeValueKind {
+  DyanmicString = "DyanmicString",
   String = "String",
   Slot = "Slot"
 }
@@ -84,10 +85,37 @@ export type StringAttributeValue = {
   location: SourceLocation;
 } & BaseAttributeValue<AttributeValueKind.String>;
 
+export enum DynamicStringAttributeValuePartKind {
+  Literal = "Literal",
+  ClassNamePierce = "ClassNamePierce",
+  Slot = "Slot"
+}
+
+type BaseDynamicStringAttributeValuePart<TPartKind extends DynamicStringAttributeValuePartKind> = {
+  partKind: TPartKind
+};
+
+type DynamicStringLiteralPart = { 
+  value: string
+} & BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Literal>;
+
+type DynamicStringClassNamePiercePart = { 
+  className: string
+} & BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.ClassNamePierce>;
+
+type DynamicStringSlotPart = Statement & BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Slot>;
+
+type DynamicStringAttributeValuePart = DynamicStringLiteralPart | DynamicStringClassNamePiercePart | DynamicStringSlotPart;
+
+export type DynamicStringAttributeValue = {
+  values: DynamicStringAttributeValuePart[];
+  location: SourceLocation
+} & BaseAttributeValue<AttributeValueKind.DyanmicString>;
+
 export type SlotAttributeValue = Statement &
   BaseAttributeValue<AttributeValueKind.Slot>;
 
-export type AttributeValue = StringAttributeValue | SlotAttributeValue;
+export type AttributeValue = StringAttributeValue | SlotAttributeValue | DynamicStringAttributeValue;
 
 export type Fragment = {
   value: string;

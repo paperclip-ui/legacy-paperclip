@@ -33,6 +33,7 @@ import {
   getParts,
   hasAttribute,
   PassFailConditional,
+  DynamicStringAttributeValuePartKind,
   FinalConditional,
   isVisibleElement,
   stringifyCSSSheet,
@@ -574,6 +575,24 @@ const translateAttributeValue = (
       strValue = `getDefault(require(${strValue}))`;
     }
     return addBuffer(strValue, context);
+  } else if (value.attrValueKind === AttributeValueKind.DyanmicString) {
+
+    for (let i = 0, {length} = value.values; i < length; i++) {
+      const part = value.values[i];
+      if (part.partKind === DynamicStringAttributeValuePartKind.Literal) {
+        context = addBuffer(JSON.stringify(part.value), context);
+      } else if (part.partKind === DynamicStringAttributeValuePartKind.ClassNamePierce) {
+        context = addBuffer(`"_${context.styleScopes[0]}_${part.className}"`, context);
+      } else if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
+        context = translateStatment(part, false, false, context);
+      }
+
+      if (i < length - 1) {
+        context = addBuffer(' + ', context);
+      }
+    }
+
+    return context;
   }
 
   return context;
