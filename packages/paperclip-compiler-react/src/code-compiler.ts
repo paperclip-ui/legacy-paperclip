@@ -507,7 +507,9 @@ const translateAttribute = (
   context: TranslateContext
 ) => {
   if (attr.kind === AttributeKind.KeyValueAttribute) {
-    let name = RENAME_PROPS[attr.name] || attr.name;
+
+    // maintain exact key if component instance
+    let name = isComponentInstance ? attr.name : RENAME_PROPS[attr.name] || attr.name;
     let value = attr.value;
 
     if (name === "string") {
