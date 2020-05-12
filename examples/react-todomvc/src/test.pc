@@ -1,1 +1,14 @@
-ffsdfsd
+<style>
+  .something[data-done] {
+    text-decoration: line-through;
+  }
+
+  .something2[data-done] {
+   color: grey;
+  }
+</style>
+<div export component as="Something" data-done={done} class="something {class}">
+  blah
+</div>
+
+<Something class=">>>something2" done />
