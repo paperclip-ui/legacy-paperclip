@@ -222,14 +222,25 @@ export const getChildrenByTagName = (tagName: string, parent: Node) =>
   getChildren(parent).filter(child => {
     return (
       child.kind === NodeKind.Element &&
-      child.tagName === tagName &&
-      hasAttribute("src", child)
+      child.tagName === tagName
     );
   }) as Element[];
 
+export const findChildrenByNamespace = (namespace: string, parent: Node, allChildrenByNamespace: Element[] = []) => {
+  for (const child of getChildren(parent)) {
+    if (child.kind === NodeKind.Element) {
+      if (child.tagName.split(':')[0] === namespace) {
+        allChildrenByNamespace.push(child);
+      }
+    }
+    findChildrenByNamespace(namespace, child, allChildrenByNamespace);
+  }
+  return allChildrenByNamespace;
+}
+
 export const getMetaValue = (name: string, root: Node) => {
   const metaElement = getChildrenByTagName("meta", root).find(
-    meta => getAttributeStringValue("name", meta) === name
+    meta => hasAttribute("src", meta) && getAttributeStringValue("name", meta) === name
   );
   return metaElement && getAttributeStringValue("content", metaElement);
 };

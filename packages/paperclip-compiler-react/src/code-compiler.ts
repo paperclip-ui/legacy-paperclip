@@ -31,6 +31,7 @@ import {
   FRAGMENT_TAG_NAME,
   Sheet,
   getParts,
+  findChildrenByNamespace,
   hasAttribute,
   PassFailConditional,
   DynamicStringAttributeValuePartKind,
@@ -188,7 +189,7 @@ const translateStyledUtil = (ast: Node, context: TranslateContext) => {
 };
 
 const translateImports = (ast: Node, context: TranslateContext) => {
-  context = addBuffer(`const React = require("react");\n`, context);
+  context = addBuffer(`import * as React from "react";\n`, context);
 
   const imports = getImports(ast);
   for (const imp of imports) {
@@ -211,10 +212,43 @@ const translateImports = (ast: Node, context: TranslateContext) => {
     }
 
     if (id) {
-      context = addBuffer(
-        `import ${pascalCase(id)} from "${relativePath}";\n`,
-        context
-      );
+
+      const parts = getParts(ast);
+
+      let usingDefault = false;
+      const usedExports = [];
+
+      for (const part of parts) {
+        for (const usedElement of findChildrenByNamespace(id, part)) {
+          if (usedElement.tagName === id) {
+            usingDefault = true;
+          } else {
+            usedExports.push(usedElement.tagName.split(':')[1]);
+          }
+        }
+      }
+
+      if (usingDefault || usedExports.length) {
+
+        context = addBuffer(`import `, context);
+        const baseName = pascalCase(id);
+        if (usingDefault) {
+          context = addBuffer(`${baseName}`, context)
+        } 
+
+        if (usedExports.length) {
+          if (usingDefault) {
+            context = addBuffer(`, `, context);
+          }
+          context = addBuffer(`{${usedExports.map(imp => {
+            const className = pascalCase(imp);
+            return `${className} as ${baseName}${className}`
+          }).join(", ")}} `, context)
+        }
+
+
+        context = addBuffer(` from "${relativePath}";\n`, context);
+      }
     } else {
       context = addBuffer(`import "${relativePath}";\n`, context);
     }
@@ -307,8 +341,8 @@ const translateJSXRoot = (node: Node, context: TranslateContext) => {
 };
 
 const getImportTagName = (tagName: string) => {
-  const parts = tagName.split(".").map(pascalCase);
-  return parts.length > 1 ? `${parts[0]}.default` : parts.join(".");
+  const parts = tagName.split(":").map(pascalCase);
+  return parts.length > 1 ? parts.join("") : `${parts[0]}`;
 };
 
 const translateJSXNode = (
@@ -344,10 +378,14 @@ const translateElement = (
   isRoot: boolean,
   context: TranslateContext
 ) => {
+
+  const [namespace] = element.tagName.split(":");
+
+
   const isImportComponentInstance =
-    context.importIds.indexOf(element.tagName) !== -1;
+    context.importIds.indexOf(namespace) !== -1;
   const isPartComponentInstance =
-    context.partIds.indexOf(element.tagName) !== -1;
+    context.partIds.indexOf(namespace) !== -1;
   const isComponentInstance =
     isImportComponentInstance || isPartComponentInstance;
   const propsName = null;
@@ -578,7 +616,7 @@ const translateAttributeValue = (
     }
 
     if (name === "className") {
-      strValue = JSON.stringify(value.value.split(" ").map(className => context.styleScopes.map(scope => `_${scope}_${className}`).join(" ")).join(" "));
+      strValue = JSON.stringify(prefixWthStyleScopes(value.value, context.styleScopes));
     }
     return addBuffer(strValue, context);
   } else if (value.attrValueKind === AttributeValueKind.DyanmicString) {
@@ -586,7 +624,8 @@ const translateAttributeValue = (
     for (let i = 0, {length} = value.values; i < length; i++) {
       const part = value.values[i];
       if (part.partKind === DynamicStringAttributeValuePartKind.Literal) {
-        context = addBuffer(JSON.stringify(part.value), context);
+        
+        context = addBuffer(JSON.stringify(name === "className" ? prefixWthStyleScopes(part.value, context.styleScopes) : part.value), context);
       } else if (part.partKind === DynamicStringAttributeValuePartKind.ClassNamePierce) {
         context = addBuffer(`"${context.styleScopes.map(scope => `_${scope}_${part.className}`).join(" ")}"`, context);
       } else if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
@@ -603,6 +642,15 @@ const translateAttributeValue = (
 
   return context;
 };
+
+const prefixWthStyleScopes = (value: string, styleScopes: string[]) => {
+  return value.split(" ").map(className => {
+
+    // skip just whitespace
+    if (!/\w+/.test(className)) return className;
+    return styleScopes.map(scope => `_${scope}_${className}`).join(" ")
+  }).join(" ");
+}
 
 const translateSlot = (slot: Slot, context: TranslateContext) => {
   return translateStatment(slot.script, true, false, context);

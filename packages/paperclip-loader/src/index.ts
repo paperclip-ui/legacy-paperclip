@@ -86,7 +86,7 @@ function pcLoader(source: string, virtualModules: VirtualModules, resourceUrl: s
   const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);
   virtualModules.writeModule(sheetFilePath, sheetCode);
-  code = `require("./${sheetFileName}");\n${code}`;
+  code = `import "./${sheetFileName}";\n${code}`;
 
   callback(null, code);
 }

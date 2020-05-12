@@ -144,7 +144,7 @@
 </style>
 
 <div export component as="test">
-  <span class="test {class}">something</span>
+  <span class="test {class}">blahgfdfgdffdsfsd</span>
 </div>
 
 <fragment export component as="label-input">
