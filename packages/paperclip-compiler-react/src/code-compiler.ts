@@ -576,6 +576,10 @@ const translateAttributeValue = (
     if (name === "src") {
       strValue = `getDefault(require(${strValue}))`;
     }
+
+    if (name === "className") {
+      strValue = JSON.stringify(value.value.split(" ").map(className => context.styleScopes.map(scope => `_${scope}_${className}`).join(" ")).join(" "));
+    }
     return addBuffer(strValue, context);
   } else if (value.attrValueKind === AttributeValueKind.DyanmicString) {
 
@@ -584,7 +588,7 @@ const translateAttributeValue = (
       if (part.partKind === DynamicStringAttributeValuePartKind.Literal) {
         context = addBuffer(JSON.stringify(part.value), context);
       } else if (part.partKind === DynamicStringAttributeValuePartKind.ClassNamePierce) {
-        context = addBuffer(`"_${context.styleScopes[0]}_${part.className}"`, context);
+        context = addBuffer(`"${context.styleScopes.map(scope => `_${scope}_${part.className}`).join(" ")}"`, context);
       } else if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
         context = translateStatment(part, false, false, context);
       }

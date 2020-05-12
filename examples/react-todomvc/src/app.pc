@@ -149,10 +149,15 @@
     }
   }
 
+  .test {
+    color: blue;
+  }
+
 </style>
 
-<div export component as="default" style={something} class="app-container">
+<div export component as="default" class="app-container">
   <div class="app">
+  <list-item:test class=">>>test" />
 
       <!-- more non-preview code. -->
       <learn />
@@ -181,6 +186,7 @@
       </footer>
   </div>
 </div>
+
 
 <default 
   items={<fragment>
