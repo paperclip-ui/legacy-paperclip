@@ -20,6 +20,7 @@ import {
   PREVIEW_ATTR_NAME,
   COMPONENT_ATTR_NAME,
   getAttribute,
+  DynamicStringAttributeValuePartKind,
 } from "paperclip-utils";
 
 // TODO - this should be built in rust
@@ -302,6 +303,13 @@ const inferAttribute = (attribute: Attribute, context: Context) => {
         attribute.value.attrValueKind === AttributeValueKind.Slot
       ) {
         context = inferStatement(attribute.value, context);
+      }
+      if (attribute.value && attribute.value.attrValueKind === AttributeValueKind.DyanmicString) {
+        for (const part of attribute.value.values) {
+          if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
+            context = inferStatement(part, context);
+          }
+        }
       }
       break;
     }
