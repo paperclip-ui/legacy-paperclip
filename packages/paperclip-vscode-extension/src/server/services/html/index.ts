@@ -27,11 +27,13 @@ import {
   getAttributeStringValue,
   AttributeKind,
   StatementKind,
-  resolveImportUri
+  resolveImportUri,
+  VirtStyleRule, VirtRuleKind, VirtSheet, VirtRule
 } from "paperclip";
 import * as path from "path";
 
 import CSS_COLOR_NAMES from "./css-color-names";
+import { StyleRule } from "paperclip/src";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -104,7 +106,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     }
   }
 
-  private _handleRule(rule: Rule, context: HandleContext) {
+  private _handleRule(rule: StyleRule, context: HandleContext) {
     for (const declaration of rule.declarations) {
       const colors =
         declaration.value.match(/\#[^\s,;]+|(rgba|rgb|hsl|hsla)\(.*?\)/g) ||
@@ -245,8 +247,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
             this._handleNode((attr.value as any) as Node, context);
           }
         } else if (
-          (attr.value.attrValueKind === AttributeValueKind.String,
-          attr.name === "src")
+          (attr.value.attrValueKind === AttributeValueKind.String && attr.name === "src")
         ) {
           context.info.links.push({
             uri: resolveUri(context.uri, attr.value.value),

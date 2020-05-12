@@ -131,7 +131,7 @@ type StyleDeclaration = {
 
 export type StyleRule = {
   selector: Selector;
-  style: StyleDeclaration[];
+  declarations: StyleDeclaration[];
 } & BaseRule<RuleKind.Style>;
 
 type BaseConditionRule<TRule extends RuleKind> = {

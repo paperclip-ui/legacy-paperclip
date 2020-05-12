@@ -19,7 +19,7 @@ export type MediaRule = {
   rules: VirtRule[]
 } & BaseVirtRule<VirtRuleKind.Media>;
 
-type VirtRule = VirtStyleRule | MediaRule;
+export type VirtRule = VirtStyleRule | MediaRule;
 
 export const getAllVirtSheetClassNames = (sheets: Record<string, VirtSheet>, allClassNames: string[] = []) => {
   for (const uri in sheets) {
