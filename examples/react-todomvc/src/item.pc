@@ -138,14 +138,8 @@
     }
   }
 
-  .test {
-    font-size: 40px;
-  }
 </style>
 
-<div export component as="test">
-  <span class="test {class}">blahgfdfgdffdsfsd</span>
-</div>
 
 <fragment export component as="label-input">
   <input {onKeyPress} {onBlur} default-value={label} type="text" class="edit" autofocus="autofocus">

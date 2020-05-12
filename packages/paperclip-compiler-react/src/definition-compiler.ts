@@ -119,7 +119,7 @@ const BLACK_LIST_PROPS = {
   // children: true
 };
 
-const DEFAULT_PARAM_TYPE = `String | boolean | Number | Object | ReactNode`;
+const DEFAULT_PARAM_TYPE = `ReactNode`;
 
 const translateInference = (
   inference: Inference,

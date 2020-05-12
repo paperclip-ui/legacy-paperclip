@@ -157,8 +157,6 @@
 
 <div export component as="default" class="app-container">
   <div class="app">
-  <list-item:test class=">>>test" />
-
       <!-- more non-preview code. -->
       <learn />
       <section class="todoapp">
