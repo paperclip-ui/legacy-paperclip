@@ -828,9 +828,10 @@ fn evaluate_attribute_dynamic_string<'a>(
           .unwrap()
           .to_string()
       }
-      ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
-        format!("_{}_{} {}", context.scope, pierce.class_name, pierce.class_name)
-      }
+      ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => format!(
+        "_{}_{} {}",
+        context.scope, pierce.class_name, pierce.class_name
+      ),
       ast::AttributeDynamicStringPart::Slot(statement) => {
         evaluate_attribute_slot(statement, context)
           .unwrap()
