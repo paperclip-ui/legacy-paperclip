@@ -827,7 +827,7 @@ fn evaluate_attribute_string<'a>(
 ) -> Result<js_virt::JsValue, RuntimeError> {
   let mut val = value.clone();
 
-  if name == "class" && is_native {
+  if (name == "class" || name == "className") && is_native {
     let class_name_parts: Vec<&str> = val.split(" ").collect();
     val = class_name_parts.iter().map(|class| {
       if class != &"" {

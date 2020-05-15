@@ -1,24 +1,9 @@
-<import as="Message" src="./message.pc">
-
 <style>
-  .button {
-    color: rgb(56, 56, 56);
-    background: grey;
-    display: inline-block;
-    border-radius: 99px;
-  }
-  .button2 {
-    text-decoration: line-through;
-  }
-
-  .button > .button-label {
-    color: rgb(187, 39, 39);
+  .red {
+    color: rgb(235, 162, 6);
   }
 </style>
 
-
-<Message />
-<Message />
-<Message class=">>>button >>>button2" labelClass=">>>button-label" style="color: orange;" />
-<Message />
-<Message />
+<div className="red">
+  hello world
+</div>

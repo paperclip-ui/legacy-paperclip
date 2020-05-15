@@ -1,6 +1,7 @@
 import { createNativeNode } from "./native-renderer";
 import { Mutation, ActionKind } from "paperclip-utils";
 import { DOMFactory } from "./renderer";
+import { ATTR_ALIASES } from "./utils";
 
 export const patchNativeNode = (
   mount: HTMLElement,
@@ -43,7 +44,8 @@ export const patchNativeNode = (
       }
       case ActionKind.SetAttribute: {
         const element = target as HTMLElement;
-        element.setAttribute(action.name, action.value || "");
+        const aliasName = ATTR_ALIASES[action.name] || action.name;
+        element.setAttribute(aliasName, action.value || "");
         break;
       }
       case ActionKind.SetText: {

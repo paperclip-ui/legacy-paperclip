@@ -1,6 +1,6 @@
 import { Html5Entities } from "html-entities";
 import { stringifyCSSSheet } from "paperclip-utils";
-import { preventDefault } from "./utils";
+import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
 
 const entities = new Html5Entities();
@@ -75,7 +75,9 @@ const createNativeElement = (
       value = value.replace(/\w+:/, protocol);
     }
 
-    nativeElement.setAttribute(name, value);
+    const aliasName = ATTR_ALIASES[name] || name;
+
+    nativeElement.setAttribute(aliasName, value);
   }
   for (const child of element.children) {
     nativeElement.appendChild(createNativeNode(child, factory, protocol));
