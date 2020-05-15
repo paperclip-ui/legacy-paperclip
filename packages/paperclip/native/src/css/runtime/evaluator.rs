@@ -189,7 +189,7 @@ fn stringify_element_selector(
       if include_scope {
         format!("._{}_{}", context.scope, selector.class_name)
       } else {
-        format!("._{}", selector.class_name)
+        format!(".{}", selector.class_name)
       }
     }
     ast::Selector::Id(selector) => format!("#{}{}", selector.id, scope_selector),

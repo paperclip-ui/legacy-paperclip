@@ -154,7 +154,7 @@
 </style>
 
 <div export component as="default" class="app-container">
-  <div class="app >>>aaa {something}">
+  <div class="app">
       <!-- more non-preview code. -->
       <learn />
       <section class="todoapp">

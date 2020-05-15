@@ -10,7 +10,10 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           }
         }
       }
@@ -22,11 +25,17 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 0,
-            fromSpread: false,
-            properties: {
-              b: {
-                kind: 2
+            optional: false,
+            value: {
+              kind: 0,
+              fromSpread: false,
+              properties: {
+                b: {
+                  optional: false,
+                  value: {
+                    kind: 2
+                  }
+                }
               }
             }
           }
@@ -40,22 +49,37 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           },
           b: {
-            kind: 0,
-            fromSpread: false,
-            properties: {
-              d: {
-                kind: 2
+            optional: false,
+            value: {
+              kind: 0,
+              fromSpread: false,
+              properties: {
+                d: {
+                  optional: false,
+                  value: {
+                    kind: 2
+                  }
+                }
               }
             }
           },
           d: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           },
           e: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           }
         }
       }
@@ -67,14 +91,23 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 0,
-            fromSpread: false,
-            properties: {
-              b: {
-                kind: 2
-              },
-              c: {
-                kind: 2
+            optional: false,
+            value: {
+              kind: 0,
+              fromSpread: false,
+              properties: {
+                b: {
+                  optional: false,
+                  value: {
+                    kind: 2
+                  }
+                },
+                c: {
+                  optional: false,
+                  value: {
+                    kind: 2
+                  }
+                }
               }
             }
           }
@@ -88,7 +121,10 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           }
         }
       }
@@ -100,7 +136,10 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           }
         }
       }
@@ -112,9 +151,12 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 0,
-            fromSpread: true,
-            properties: {}
+            optional: false,
+            value: {
+              kind: 0,
+              fromSpread: true,
+              properties: {}
+            }
           }
         }
       }
@@ -126,9 +168,12 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           items: {
-            kind: 1,
+            optional: false,
             value: {
-              kind: 2
+              kind: 1,
+              value: {
+                kind: 2
+              }
             }
           }
         }
@@ -141,13 +186,19 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           items: {
-            kind: 1,
+            optional: false,
             value: {
-              kind: 0,
-              fromSpread: false,
-              properties: {
-                name: {
-                  kind: 2
+              kind: 1,
+              value: {
+                kind: 0,
+                fromSpread: false,
+                properties: {
+                  name: {
+                    optional: false,
+                    value: {
+                      kind: 2
+                    }
+                  }
                 }
               }
             }
@@ -162,16 +213,25 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           items: {
-            kind: 1,
+            optional: false,
             value: {
-              kind: 0,
-              fromSpread: false,
-              properties: {
-                a: {
-                  kind: 2
-                },
-                b: {
-                  kind: 2
+              kind: 1,
+              value: {
+                kind: 0,
+                fromSpread: false,
+                properties: {
+                  a: {
+                    optional: false,
+                    value: {
+                      kind: 2
+                    }
+                  },
+                  b: {
+                    optional: false,
+                    value: {
+                      kind: 2
+                    }
+                  }
                 }
               }
             }
@@ -193,19 +253,28 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           people: {
-            kind: 1,
+            optional: false,
             value: {
-              kind: 0,
-              fromSpread: false,
-              properties: {
-                friends: {
-                  kind: 1,
-                  value: {
-                    kind: 0,
-                    fromSpread: false,
-                    properties: {
-                      name: {
-                        kind: 2
+              kind: 1,
+              value: {
+                kind: 0,
+                fromSpread: false,
+                properties: {
+                  friends: {
+                    optional: false,
+                    value: {
+                      kind: 1,
+                      value: {
+                        kind: 0,
+                        fromSpread: false,
+                        properties: {
+                          name: {
+                            optional: false,
+                            value: {
+                              kind: 2
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -223,7 +292,10 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           }
         }
       }
@@ -235,10 +307,16 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           },
           b: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           }
         }
       }
@@ -250,7 +328,10 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           cc: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           }
         }
       }
@@ -262,7 +343,10 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           }
         }
       }
@@ -276,10 +360,16 @@ describe(__filename + "#", () => {
         fromSpread: false,
         properties: {
           a: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           },
           b: {
-            kind: 2
+            optional: false,
+            value: {
+              kind: 2
+            }
           }
         }
       }

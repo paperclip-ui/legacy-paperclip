@@ -11,10 +11,10 @@
   }
 </style>
 
-<div export component as="default" class="red {class}" {style}>
+<div export component as="default" class="red {className}" {style}>
   Something like thisfdsfds
   <strong class={labelClass}>
-    nested
+    nested {className}
   </strong>
 </div>
 

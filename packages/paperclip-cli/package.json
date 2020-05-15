@@ -8,7 +8,7 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "fd8bc86afa2f97db575ce8b4dd3ad8e6206437f1",
+  "gitHead": "1d4c6bdf14b1d471126ae0c3c1049cc39616ef21",
   "dependencies": {
     "chokidar": "^3.3.1",
     "glob": "^7.1.6",

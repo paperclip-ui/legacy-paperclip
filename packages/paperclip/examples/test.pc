@@ -2,8 +2,8 @@
 
 <style>
   :global(.red) {
-    color: rgb(235, 162, 6);
+    color: rgb(214, 148, 61);
   }
 </style>
 
-<Message className=">>>red" />
+<Message className="red" />

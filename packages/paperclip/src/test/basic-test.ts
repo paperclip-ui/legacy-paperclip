@@ -210,7 +210,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style></style><span class="_80f4925f_something _80f4925f_something2" data-pc-80f4925f></span>`,
+      `<style></style><span class="_80f4925f_something something _80f4925f_something2 something2" data-pc-80f4925f></span>`
     ],
     [
       // class name isn't used if not explicitly defined in component
@@ -226,7 +226,7 @@ describe(__filename + "#", () => {
           </span>`
       },
       {},
-      `<style></style><span class="_1acb798_blue" data-pc-1acb798>message </span>`,
+      `<style></style><span class="_1acb798_blue blue" data-pc-1acb798>message </span>`
     ],
     [
       // class piercing
@@ -242,7 +242,7 @@ describe(__filename + "#", () => {
           </span>`
       },
       {},
-      `<style></style><span data-pc-1acb798 class="_80f4925f_red">message </span>`,
+      `<style></style><span data-pc-1acb798 class="_80f4925f_red red">message </span>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -258,7 +258,7 @@ describe(__filename + "#", () => {
           </span>`
       },
       {},
-      `<style></style><span data-pc-1acb798 class="red">message </span>`,
+      `<style></style><span data-pc-1acb798 class="red">message </span>`
     ],
     [
       // style classes prefixed with scope
@@ -275,7 +275,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._80f4925f_something > ._80f4925f_something2 { }</style><span data-pc-80f4925f class="_80f4925f_something2"></span>`,
+      `<style>._80f4925f_something > ._80f4925f_something2 { }</style><span data-pc-80f4925f class="_80f4925f_something2 something2"></span>`
     ],
     [
       // style classes prefixed with scope
@@ -288,7 +288,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style></style><span class="_80f4925f_a b" data-pc-80f4925f></span><span class="_80f4925f_a _80f4925f_b" data-pc-80f4925f></span>`,
+      `<style></style><span class="_80f4925f_a a b" data-pc-80f4925f></span><span class="_80f4925f_a a _80f4925f_b b" data-pc-80f4925f></span>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -305,8 +305,8 @@ describe(__filename + "#", () => {
           </span>`
       },
       {},
-      `<style></style><span data-pc-1acb798 class="_1acb798_blue _80f4925f_red">message </span><span data-pc-80f4925f></span>`,
-    ],
+      `<style></style><span data-pc-1acb798 class="_1acb798_blue blue _80f4925f_red red">message </span><span data-pc-80f4925f></span>`
+    ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
       const engine = createMockEngine(graph);

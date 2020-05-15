@@ -706,7 +706,7 @@ const prefixWthStyleScopes = (value: string, styleScopes: string[]) => {
       if (!/\w+/.test(className)) return className;
       return (
         styleScopes.map(scope => `_${scope}_${className}`).join(" ") +
-        " _" +
+        " " +
         className
       );
     })
