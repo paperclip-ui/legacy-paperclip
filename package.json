@@ -9,13 +9,13 @@
     "doc": "docs"
   },
   "devDependencies": {
-    "husky": "^4.2.0",
+    "husky": "^4.2.5",
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged"
+      "pre-commit": "pretty-quick --staged && cd packages/paperclip/native && cargo fmt"
     }
   },
   "scripts": {

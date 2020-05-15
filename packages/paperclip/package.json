@@ -22,6 +22,7 @@
     "jayson": "^3.2.0",
     "mocha": "^7.0.1",
     "paperclip-utils": "^11.0.63",
+    "pretty-quick": "^2.0.1",
     "typescript": "^3.8.2"
   },
   "gitHead": "fd8bc86afa2f97db575ce8b4dd3ad8e6206437f1",
