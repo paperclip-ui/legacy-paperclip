@@ -235,6 +235,31 @@ export function SomeInput() {
 }
 ```
 
+#### Optional bindings `{slot?}`
+
+Paperclip supports optional properties like so:
+
+```html
+<div export component as="Test">
+  {fullName?.first}
+</div>
+```
+
+Which is translated into something like:
+
+```typescript
+type TestProps = {
+  fullName?: {
+    first: any
+  }
+};
+
+export const Test = (props: TestProps) => {
+  return <div>
+    {props.fullName && props.fullName.first}
+  </div>;
+};
+```
 
 ### `<import />`
 
