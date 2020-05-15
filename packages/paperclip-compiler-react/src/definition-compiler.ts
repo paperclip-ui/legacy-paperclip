@@ -6,11 +6,13 @@ import {
   getLogicElement,
   infer,
   NodeKind,
+  ShapeProperty,
   getPartIds,
   DEFAULT_PART_ID,
   getVisibleChildNodes,
   EXPORT_TAG_NAME,
   InferenceKind,
+  ReferencePart,
   getParts,
   Inference,
   hasAttribute,
@@ -155,9 +157,7 @@ const translateInference = (
     context = addBuffer(`{\n`, context);
     context = startBlock(context);
     for (const key in inference.properties) {
-      context = addBuffer(`${key}: `, context);
-      context = translateInference(inference.properties[key], key, context);
-      context = addBuffer(`,\n`, context);
+      context = translateProperty(key, inference.properties[key], context);
     }
     context = endBlock(context);
     context = addBuffer(`}`, context);
@@ -167,6 +167,14 @@ const translateInference = (
   }
   return context;
 };
+
+const translateProperty = (key: string, {value, optional}: ShapeProperty, context: TranslateContext) => {
+
+  context = addBuffer(`${key}${optional ? `?` : ''}: `, context);
+  context = translateInference(value, key, context);
+  context = addBuffer(`,\n`, context);
+  return context;
+}
 
 const translateComponent = (
   node: Node,
@@ -188,10 +196,7 @@ const translateComponent = (
     if (BLACK_LIST_PROPS[propName]) {
       continue;
     }
-
-    context = addBuffer(`${key}: `, context);
-    context = translateInference(inference.properties[key], key, context);
-    context = addBuffer(`,\n`, context);
+    context = translateProperty(key, inference.properties[key], context);
 
     props[key] = [null];
   }

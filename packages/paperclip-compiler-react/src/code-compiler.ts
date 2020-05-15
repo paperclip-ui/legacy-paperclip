@@ -37,6 +37,7 @@ import {
   VirtSheet,
   DynamicStringAttributeValuePartKind,
   FinalConditional,
+  ReferencePart,
   isVisibleElement,
   stringifyCSSSheet,
   AS_ATTR_NAME
@@ -591,18 +592,18 @@ const translateAttribute = (
       context = addBuffer(`,\n`, context);
     }
   } else if (attr.kind === AttributeKind.ShorthandAttribute) {
-    const keyValue = (attr.reference as Reference).path[0];
+    const property = (attr.reference as Reference).path[0];
 
-    let value = `${context.scopes[keyValue] ? "" : "props."}${camelCase(
-      keyValue
+    let value = `${context.scopes[property.name] ? "" : "props."}${camelCase(
+      property.name
     )}`;
 
-    if (!isComponentInstance && !isSpecialPropName(keyValue)) {
+    if (!isComponentInstance && !isSpecialPropName(property.name)) {
       // everything must be a string
       value = `${value} ? String(${value}) : null`;
     }
 
-    context = addBuffer(`${JSON.stringify(keyValue)}: ${value}`, context);
+    context = addBuffer(`${JSON.stringify(property.name)}: ${value}`, context);
     context = addBuffer(`,\n`, context);
   } else if (attr.kind === AttributeKind.SpreadAttribute) {
     context = addBuffer(`...(`, context);
@@ -678,6 +679,21 @@ const translateSlot = (slot: Slot, context: TranslateContext) => {
   return translateStatment(slot.script, true, false, context);
 };
 
+
+const translateReferencePath = (path: ReferencePart[], context: TranslateContext, min: number = -1) => {
+  context = addBuffer(`props`, context);
+  for (let i = 0, n = path.length; i < n; i++) {
+    const part = path[i];
+    context = addBuffer(`.${part.name}`, context);
+    if (part.optional && i > min) {
+      context = addBuffer(` && `, context);
+      context = translateReferencePath(path, context, i);
+      break;
+    }
+  }
+  return context;
+}
+
 const translateStatment = (
   statement: Statement,
   isRoot: boolean,
@@ -690,12 +706,9 @@ const translateStatment = (
       context = addBuffer(" ? String(", context);
     }
 
-    context = addBuffer(
-      `${
-        context.scopes[statement.path[0]] ? "" : "props."
-      }${statement.path.join(".")}`,
-      context
-    );
+    if (!context.scopes[statement.path[0].name]) {
+      context = translateReferencePath(statement.path, context);
+    }
 
     if (shouldStringifyProp) {
       context = addBuffer(") : null", context);

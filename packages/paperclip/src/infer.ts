@@ -21,6 +21,7 @@ import {
   COMPONENT_ATTR_NAME,
   getAttribute,
   DynamicStringAttributeValuePartKind,
+  ReferencePart,
 } from "paperclip-utils";
 
 // TODO - this should be built in rust
@@ -53,9 +54,14 @@ type BaseInference<TInferenceKind extends InferenceKind> = {
 export type ShapeInference = {
   fromSpread: boolean;
   properties: {
-    [identifier: string]: Inference;
+    [identifier: string]: ShapeProperty;
   };
 } & BaseInference<InferenceKind.Shape>;
+
+export type ShapeProperty = {
+  optional?: boolean;
+  value: Inference;
+}
 
 export type ArrayInference = {
   value: Inference;
@@ -67,17 +73,23 @@ export type Inference = ShapeInference | ArrayInference | AnyInference;
 
 export type Context = {
   scope: {
-    [identifier: string]: string[];
+    [identifier: string]: ReferencePart[];
   };
   inference: Inference;
 };
 
 const createShapeInference = (
   properties: {
-    [identifier: string]: Inference;
+    [identifier: string]: ShapeProperty;
   } = {},
-  fromSpread = false
+  fromSpread: boolean = false
 ): ShapeInference => ({ kind: InferenceKind.Shape, fromSpread, properties });
+
+const createShapeProperty = (
+  value: Inference,
+  optional?: boolean
+): ShapeProperty => ({ value, optional });
+
 const createArrayInference = (value: Inference): ArrayInference => ({
   kind: InferenceKind.Array,
   value
@@ -100,14 +112,14 @@ const SHAPE_INFERENCE = createShapeInference({});
 const ARRAY_INFERENCE = createArrayInference(createAnyInference());
 
 const addShapeInferenceProperty = (
-  name: string,
+  part: ReferencePart,
   value: Inference,
   shape: ShapeInference
 ): ShapeInference => ({
   ...shape,
   properties: {
     ...shape.properties,
-    [name]: value
+    [part.name]: { value, optional: shape.properties[part.name]?.optional === false ? shape.properties[part.name]?.optional : part.optional }
   }
 });
 
@@ -132,56 +144,58 @@ const mergeShapeInference = (existing: ShapeInference, extended: Inference) => {
 };
 
 const addInferenceProperty = (
-  path: string[],
+  path: ReferencePart[],
   value: Inference,
-  inference: Inference,
+  owner: Inference,
   _index: number = 0
 ): Inference => {
   if (path.length === 0) {
-    return inference;
+    return owner;
   }
-  if (inference.kind === InferenceKind.Any) {
-    inference = createShapeInference();
+  if (owner.kind === InferenceKind.Any) {
+    owner = createShapeInference();
   }
+  const part = path[_index];
 
-  if (inference.kind === InferenceKind.Shape) {
+  if (owner.kind === InferenceKind.Shape) {
     if (_index < path.length - 1) {
-      let child = inference.properties[path[_index]] || createShapeInference();
-      child = addInferenceProperty(path, value, child, _index + 1);
-      inference = addShapeInferenceProperty(path[_index], child, inference);
+      let childValue = owner.properties[part.name]?.value || createShapeInference();
+
+      childValue = addInferenceProperty(path, value, childValue, _index + 1);
+      owner = addShapeInferenceProperty(part, childValue, owner);
     } else {
       const existingInference =
-        inference.properties[path[_index]] || ANY_INFERENCE;
+        owner.properties[part.name]?.value || ANY_INFERENCE;
 
       if (existingInference.kind === InferenceKind.Shape) {
         value = mergeShapeInference(existingInference, value);
       }
 
-      inference = addShapeInferenceProperty(path[_index], value, inference);
+      owner = addShapeInferenceProperty(part, value, owner);
     }
   }
 
-  if (inference.kind === InferenceKind.Array) {
-    inference = {
-      ...inference,
-      value: addInferenceProperty(path, value, inference.value, _index)
+  if (owner.kind === InferenceKind.Array) {
+    owner = {
+      ...owner,
+      value: addInferenceProperty(path, value, owner.value, _index)
     };
   }
 
-  return inference;
+  return owner;
 };
 
-const unfurlScopePath = (path: string[], context: Context) => {
+const unfurlScopePath = (path: ReferencePart[], context: Context): ReferencePart[] => {
   let cpath = path;
 
-  if (!context.scope[path[0]]) {
+  if (!context.scope[path[0].name]) {
     return path;
   }
 
   let entirePath = path;
 
   while (1) {
-    const property = cpath[0];
+    const property = cpath[0].name;
     const newCPath = context.scope[property];
 
     // if exists, but empty, then the scope is created within the template
@@ -202,7 +216,7 @@ const unfurlScopePath = (path: string[], context: Context) => {
 };
 
 const addContextInferenceProperty = (
-  path: string[],
+  path: ReferencePart[],
   value: Inference,
   context: Context
 ) => ({
@@ -216,7 +230,7 @@ const addContextInferenceProperty = (
 
 const setScope = (
   property: string,
-  path: string[],
+  path: ReferencePart[],
   context: Context
 ): Context => ({
   ...context,

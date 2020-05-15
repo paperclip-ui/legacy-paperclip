@@ -5,8 +5,8 @@
 </style>
 
 <div component as="something" className="red">
-  hello {name?.last}
+{name?.last}
 </div>
 
-<something name={{last: <span>blah</span>}}>
+<something name={{last: <span>something</span>}}>
 </something>

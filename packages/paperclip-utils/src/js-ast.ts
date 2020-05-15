@@ -41,8 +41,13 @@ export type JsNumber = {
 } & BaseStatement<StatementKind.Number>;
 
 export type Reference = {
-  path: string[];
+  path: ReferencePart[];
 } & BaseStatement<StatementKind.Reference>;
+
+export type ReferencePart = {
+  name: string;
+  optional: boolean
+}
 
 export type Statement =
   | Reference
