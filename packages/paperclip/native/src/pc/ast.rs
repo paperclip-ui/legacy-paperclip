@@ -240,7 +240,7 @@ impl ShorthandAttribute {
     match &self.reference {
       js_ast::Statement::Reference(reference) => {
         if reference.path.len() == 1 {
-          Ok(&reference.path[0])
+          Ok(&reference.path[0].name)
         } else {
           Err("Unexpected Expression")
         }

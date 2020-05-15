@@ -4,6 +4,9 @@
   }
 </style>
 
-<div className="red">
-  hello world
+<div component as="something" className="red">
+  hello {name?.last}
 </div>
+
+<something name={{last: <span>blah</span>}}>
+</something>

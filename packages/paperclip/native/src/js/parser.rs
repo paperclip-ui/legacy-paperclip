@@ -156,18 +156,31 @@ fn parse_reference_name<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<String, Par
 
 fn parse_reference<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
   let pos = tokenizer.pos;
-  let name = parse_reference_name(tokenizer)?;
-  let mut path = vec![name.to_string()];
+  let part = parse_reference_part(tokenizer)?;
+  let mut path = vec![part];
   while !tokenizer.is_eof() && tokenizer.peek(1)? == Token::Dot {
     tokenizer.next()?; // eat .
     let pos = tokenizer.pos;
     if token_matches_var_start(&tokenizer.peek(1)?) {
-      path.push(parse_reference_name(tokenizer)?);
+      path.push(parse_reference_part(tokenizer)?);
     } else {
       return Err(ParseError::unexpected_token(pos));
     }
   }
   Ok(ast::Statement::Reference(ast::Reference { path: path }))
+}
+
+fn parse_reference_part<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::ReferencePart, ParseError> {
+  let pos = tokenizer.pos;
+  let name = parse_reference_name(tokenizer)?;
+  let optional = if !tokenizer.is_eof() && tokenizer.peek(1)? == Token::Byte(b'?') {
+    tokenizer.next();
+    true
+  } else {
+    false
+  };
+
+  Ok(ast::ReferencePart { name, optional })
 }
 
 fn parse_word<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
@@ -199,6 +212,8 @@ mod tests {
       "_someRef",
       "$$someRef",
       "some.nested.reference",
+      "somethingOptional?",
+      "maybe?.exists?",
       // nodes
       "<element />",
       // strings

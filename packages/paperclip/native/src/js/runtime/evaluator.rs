@@ -90,9 +90,9 @@ fn evaluate_reference<'a>(
 ) -> Result<virt::JsValue, RuntimeError> {
   let mut curr = Some(context.data);
 
-  for property_name in &reference.path {
+  for part in &reference.path {
     if let Some(object) = &curr {
-      curr = virt::get_js_value_property(&object, property_name);
+      curr = virt::get_js_value_property(&object, &part.name);
     } else {
       return Err(RuntimeError {
         uri: context.uri.to_string(),

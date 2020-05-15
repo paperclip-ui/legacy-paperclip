@@ -89,11 +89,29 @@ impl fmt::Display for Property {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Reference {
-  pub path: Vec<String>,
+  pub path: Vec<ReferencePart>,
 }
 
 impl fmt::Display for Reference {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "{}", self.path.join(".Statement"))
+    write!(f, "{}", self.path.iter().map(|part| {
+      part.to_string()
+    }).collect::<Vec<String>>().join(".Statement"))
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ReferencePart {
+  pub optional: bool,
+  pub name: String
+}
+
+impl fmt::Display for ReferencePart {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "{}", self.name);
+    if self.optional {
+      write!(f, "?");
+    }
+    Ok(())
   }
 }
