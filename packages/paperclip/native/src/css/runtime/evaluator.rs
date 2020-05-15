@@ -185,7 +185,13 @@ fn stringify_element_selector(
 
   let scoped_selector_text = match selector {
     ast::Selector::AllSelector => format!("{}", scope_selector),
-    ast::Selector::Class(selector) => format!("._{}_{}", context.scope, selector.class_name),
+    ast::Selector::Class(selector) => {
+      if include_scope {
+        format!("._{}_{}", context.scope, selector.class_name)
+      } else {
+        format!("._{}", selector.class_name)
+      }
+    }
     ast::Selector::Id(selector) => format!("#{}{}", selector.id, scope_selector),
     ast::Selector::Element(selector) => format!("{}{}", selector.tag_name, scope_selector),
     ast::Selector::PseudoElement(selector) => {

@@ -1,12 +1,9 @@
+<import as="Message" src="./message.pc">
+
 <style>
-  .red {
+  :global(.red) {
     color: rgb(235, 162, 6);
   }
 </style>
 
-<div component as="something" className="red">
-{name?.last}
-</div>
-
-<something name={{last: <span>something</span>}}>
-</something>
+<Message className=">>>red" />

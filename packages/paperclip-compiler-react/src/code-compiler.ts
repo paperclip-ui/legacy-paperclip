@@ -49,13 +49,19 @@ import {
   endBlock,
   addBuffer
 } from "./translate-utils";
-import { pascalCase, Options, getComponentName, RENAME_PROPS, getClassExportNameMap } from "./utils";
+import {
+  pascalCase,
+  Options,
+  getComponentName,
+  RENAME_PROPS,
+  getClassExportNameMap
+} from "./utils";
 import { camelCase } from "lodash";
 import * as path from "path";
-import {Html5Entities} from "html-entities";
+import { Html5Entities } from "html-entities";
 
 const entities = new Html5Entities();
-type Config = { ast: Node; sheet?: any, classNames: string[] }
+type Config = { ast: Node; sheet?: any; classNames: string[] };
 
 export const compile = (
   { ast, sheet, classNames }: Config,
@@ -74,12 +80,17 @@ export const compile = (
   return context.buffer;
 };
 
-const translateRoot = (ast: Node, sheet: any, classNames: string[], context: TranslateContext) => {
+const translateRoot = (
+  ast: Node,
+  sheet: any,
+  classNames: string[],
+  context: TranslateContext
+) => {
   context = translateImports(ast, context);
   if (sheet) {
     context = translateStyleSheet(sheet, context);
   }
-  
+
   context = translateClassNames(classNames, context);
 
   const logicElement = getLogicElement(ast);
@@ -126,20 +137,26 @@ const translateStyleSheet = (sheet: VirtSheet, context: TranslateContext) => {
   return context;
 };
 
-const translateClassNames = (classNames: string[], context: TranslateContext) => {
-  
+const translateClassNames = (
+  classNames: string[],
+  context: TranslateContext
+) => {
   const classNameMap = getClassExportNameMap(classNames);
 
   context = addBuffer(`export const classNames = {\n`, context);
   context = startBlock(context);
   for (const exportName in classNameMap) {
-    context = addBuffer(`${JSON.stringify(exportName)}: ${JSON.stringify(classNameMap[exportName])},\n`, context);
+    context = addBuffer(
+      `${JSON.stringify(exportName)}: ${JSON.stringify(
+        classNameMap[exportName]
+      )},\n`,
+      context
+    );
   }
   context = endBlock(context);
   context = addBuffer(`};\n\n`, context);
   return context;
 };
-
 
 const translateUtils = (ast: Node, context: TranslateContext) => {
   // context = translateStyleDataAttributes(context);
@@ -158,7 +175,7 @@ const translateStyleDataAttributes = (context: TranslateContext) => {
   context = endBlock(context);
   context = addBuffer(`};\n\n`, context);
   return context;
-}
+};
 
 const translateStyleScopeAttributes = (
   context: TranslateContext,
@@ -189,11 +206,11 @@ const translateExtendsPropsUtil = (ast: Node, context: TranslateContext) => {
 
 const translateGetDefaultUtil = (ast: Node, context: TranslateContext) => {
   context = addBuffer(
-    `const getDefault = (module) => module.default || module;\n\n`
-  , context);
+    `const getDefault = (module) => module.default || module;\n\n`,
+    context
+  );
   return context;
 };
-
 
 // const translateStyledUtil = (ast: Node, context: TranslateContext) => {
 //   context = addBuffer(
@@ -235,7 +252,6 @@ const translateImports = (ast: Node, context: TranslateContext) => {
     }
 
     if (id) {
-
       const parts = getParts(ast);
 
       let usingDefault = false;
@@ -246,29 +262,32 @@ const translateImports = (ast: Node, context: TranslateContext) => {
           if (usedElement.tagName === id) {
             usingDefault = true;
           } else {
-            usedExports.push(usedElement.tagName.split(':')[1]);
+            usedExports.push(usedElement.tagName.split(":")[1]);
           }
         }
       }
 
       if (usingDefault || usedExports.length) {
-
         context = addBuffer(`import `, context);
         const baseName = pascalCase(id);
         if (usingDefault) {
-          context = addBuffer(`${baseName}`, context)
-        } 
+          context = addBuffer(`${baseName}`, context);
+        }
 
         if (usedExports.length) {
           if (usingDefault) {
             context = addBuffer(`, `, context);
           }
-          context = addBuffer(`{${usedExports.map(imp => {
-            const className = pascalCase(imp);
-            return `${className} as ${baseName}${className}`
-          }).join(", ")}} `, context)
+          context = addBuffer(
+            `{${usedExports
+              .map(imp => {
+                const className = pascalCase(imp);
+                return `${className} as ${baseName}${className}`;
+              })
+              .join(", ")}} `,
+            context
+          );
         }
-
 
         context = addBuffer(` from "${relativePath}";\n`, context);
       }
@@ -282,7 +301,6 @@ const translateImports = (ast: Node, context: TranslateContext) => {
 
 const translateParts = (root: Node, context: TranslateContext) => {
   for (const part of getParts(root)) {
-
     // already compiled
     if (getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID) {
       continue;
@@ -294,7 +312,12 @@ const translateParts = (root: Node, context: TranslateContext) => {
 
 const translatePart = (part: Element, context: TranslateContext) => {
   const componentName = pascalCase(getAttributeStringValue(AS_ATTR_NAME, part));
-  context = translateComponent(componentName, part, hasAttribute(EXPORT_TAG_NAME, part), context);
+  context = translateComponent(
+    componentName,
+    part,
+    hasAttribute(EXPORT_TAG_NAME, part),
+    context
+  );
   return context;
 };
 
@@ -401,14 +424,10 @@ const translateElement = (
   isRoot: boolean,
   context: TranslateContext
 ) => {
-
   const [namespace] = element.tagName.split(":");
 
-
-  const isImportComponentInstance =
-    context.importIds.indexOf(namespace) !== -1;
-  const isPartComponentInstance =
-    context.partIds.indexOf(namespace) !== -1;
+  const isImportComponentInstance = context.importIds.indexOf(namespace) !== -1;
+  const isPartComponentInstance = context.partIds.indexOf(namespace) !== -1;
   const isComponentInstance =
     isImportComponentInstance || isPartComponentInstance;
   const propsName = null;
@@ -568,9 +587,10 @@ const translateAttribute = (
   context: TranslateContext
 ) => {
   if (attr.kind === AttributeKind.KeyValueAttribute) {
-
     // maintain exact key if component instance
-    let name = isComponentInstance ? attr.name : RENAME_PROPS[attr.name] || attr.name;
+    let name = isComponentInstance
+      ? attr.name
+      : RENAME_PROPS[attr.name] || attr.name;
     let value = attr.value;
 
     if (name === "string") {
@@ -639,24 +659,36 @@ const translateAttributeValue = (
     }
 
     if (name === "className") {
-      strValue = JSON.stringify(prefixWthStyleScopes(value.value, context.styleScopes));
+      strValue = JSON.stringify(
+        prefixWthStyleScopes(value.value, context.styleScopes)
+      );
     }
     return addBuffer(strValue, context);
   } else if (value.attrValueKind === AttributeValueKind.DyanmicString) {
-
-    for (let i = 0, {length} = value.values; i < length; i++) {
+    for (let i = 0, { length } = value.values; i < length; i++) {
       const part = value.values[i];
       if (part.partKind === DynamicStringAttributeValuePartKind.Literal) {
-        
-        context = addBuffer(JSON.stringify(name === "className" ? prefixWthStyleScopes(part.value, context.styleScopes) : part.value), context);
-      } else if (part.partKind === DynamicStringAttributeValuePartKind.ClassNamePierce) {
-        context = addBuffer(`"${context.styleScopes.map(scope => `_${scope}_${part.className}`).join(" ")}"`, context);
+        context = addBuffer(
+          JSON.stringify(
+            name === "className"
+              ? prefixWthStyleScopes(part.value, context.styleScopes)
+              : part.value
+          ),
+          context
+        );
+      } else if (
+        part.partKind === DynamicStringAttributeValuePartKind.ClassNamePierce
+      ) {
+        context = addBuffer(
+          `"${prefixWthStyleScopes(part.className, context.styleScopes)}"`,
+          context
+        );
       } else if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
         context = translateStatment(part, false, false, context);
       }
 
       if (i < length - 1) {
-        context = addBuffer(' + ', context);
+        context = addBuffer(" + ", context);
       }
     }
 
@@ -667,20 +699,29 @@ const translateAttributeValue = (
 };
 
 const prefixWthStyleScopes = (value: string, styleScopes: string[]) => {
-  return value.split(" ").map(className => {
-
-    // skip just whitespace
-    if (!/\w+/.test(className)) return className;
-    return styleScopes.map(scope => `_${scope}_${className}`).join(" ")
-  }).join(" ");
-}
+  return value
+    .split(" ")
+    .map(className => {
+      // skip just whitespace
+      if (!/\w+/.test(className)) return className;
+      return (
+        styleScopes.map(scope => `_${scope}_${className}`).join(" ") +
+        " _" +
+        className
+      );
+    })
+    .join(" ");
+};
 
 const translateSlot = (slot: Slot, context: TranslateContext) => {
   return translateStatment(slot.script, true, false, context);
 };
 
-
-const translateReferencePath = (path: ReferencePart[], context: TranslateContext, min: number = -1) => {
+const translateReferencePath = (
+  path: ReferencePart[],
+  context: TranslateContext,
+  min: number = -1
+) => {
   context = addBuffer(`props`, context);
   for (let i = 0, n = path.length; i < n; i++) {
     const part = path[i];
@@ -692,7 +733,7 @@ const translateReferencePath = (path: ReferencePart[], context: TranslateContext
     }
   }
   return context;
-}
+};
 
 const translateStatment = (
   statement: Statement,

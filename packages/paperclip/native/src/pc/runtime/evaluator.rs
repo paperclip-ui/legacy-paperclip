@@ -857,7 +857,7 @@ fn evaluate_attribute_string<'a>(
       .iter()
       .map(|class| {
         if class != &"" {
-          format!("_{}_{}", context.scope, class).to_string()
+          format!("_{}_{} _{}", context.scope, class, class).to_string()
         } else {
           class.to_string()
         }
