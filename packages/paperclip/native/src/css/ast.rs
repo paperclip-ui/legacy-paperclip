@@ -151,6 +151,7 @@ pub enum Selector {
   PseudoElement(PseudoElementSelector),
   PseudoParamElement(PseudoParamElementSelector),
   Not(NotSelector),
+  Global(GlobalSelector),
   Child(ChildSelector),
   Adjacent(AdjacentSelector),
   Sibling(SiblingSelector),
@@ -169,6 +170,7 @@ impl fmt::Display for Selector {
       Selector::Element(selector) => write!(f, "{}", selector.to_string()),
       Selector::Descendent(selector) => write!(f, "{}", selector.to_string()),
       Selector::Not(selector) => write!(f, "{}", selector.to_string()),
+      Selector::Global(selector) => write!(f, "{}", selector.to_string()),
       Selector::Adjacent(selector) => write!(f, "{}", selector.to_string()),
       Selector::PseudoElement(selector) => write!(f, "{}", selector.to_string()),
       Selector::PseudoParamElement(selector) => write!(f, "{}", selector.to_string()),
@@ -234,6 +236,17 @@ impl fmt::Display for DescendentSelector {
   }
 }
 
+// :global(.selector)
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct GlobalSelector {
+  pub selector: Box<Selector>,
+}
+
+impl fmt::Display for GlobalSelector {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, ":global({})", self.selector.to_string())
+  }
+}
 // a > b {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildSelector {

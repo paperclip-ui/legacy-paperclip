@@ -348,6 +348,11 @@ fn parse_psuedo_element_selector<'a, 'b>(
       Selector::Not(NotSelector {
         selector: Box::new(sel),
       })
+    } else if name == "global" {
+      let sel = parse_pair_selector(context)?;
+      Selector::Global(GlobalSelector {
+        selector: Box::new(sel),
+      })
     } else {
       let param = get_buffer(context.tokenizer, |tokenizer| {
         Ok(tokenizer.peek(1)? != Token::ParenClose)
@@ -600,6 +605,7 @@ mod tests {
     ::after {}
     :not(:after) {}
     :not(.a.b > c ~ d + e) {}
+    :global(.test) {}
     :nth-child(1) {}
     /**/
     ::nth-last-child(1) { /**/ }
