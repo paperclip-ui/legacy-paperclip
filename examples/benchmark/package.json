@@ -1,11 +1,10 @@
 {
   "name": "benchmark",
-  "version": "11.0.61",
+  "version": "11.0.64",
   "description": "",
   "main": "index.js",
   "private": true,
   "scripts": {},
   "author": "",
-  "license": "ISC",
-  "dependencies": {}
+  "license": "ISC"
 }
