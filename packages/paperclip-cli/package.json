@@ -16,7 +16,5 @@
     "resolve": "^1.15.1",
     "yargs": "^15.1.0"
   },
-  "devDependencies": {
-    "paperclip-compiler-react": "^10.1.38"
-  }
+  "devDependencies": {}
 }
