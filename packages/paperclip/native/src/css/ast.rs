@@ -370,7 +370,6 @@ impl fmt::Display for ElementSelector {
 // .div { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ClassSelector {
-
   #[serde(rename = "className")]
   pub class_name: String,
 }

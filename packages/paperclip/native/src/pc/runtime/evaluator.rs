@@ -420,7 +420,12 @@ fn create_component_instance_data<'a>(
             .values
             .insert(kv_attr.name.to_string(), js_virt::JsValue::JsBoolean(true));
         } else {
-          let value = evaluate_attribute_value(&kv_attr.name, &kv_attr.value.as_ref().unwrap(), false, context)?;
+          let value = evaluate_attribute_value(
+            &kv_attr.name,
+            &kv_attr.value.as_ref().unwrap(),
+            false,
+            context,
+          )?;
           data.values.insert(kv_attr.name.to_string(), value);
         }
       }
@@ -521,7 +526,12 @@ fn evaluate_native_element<'a>(
         let (name, mut value_option) = if kv_attr.value == None {
           (kv_attr.name.to_string(), None)
         } else {
-          let value = evaluate_attribute_value(&kv_attr.name, &kv_attr.value.as_ref().unwrap(), true, context)?;
+          let value = evaluate_attribute_value(
+            &kv_attr.name,
+            &kv_attr.value.as_ref().unwrap(),
+            true,
+            context,
+          )?;
           if !value.truthy() {
             continue;
           }
@@ -793,8 +803,12 @@ fn evaluate_attribute_value<'a>(
   context: &mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
   match value {
-    ast::AttributeValue::DyanmicString(st) => evaluate_attribute_dynamic_string(name, st, is_native, context),
-    ast::AttributeValue::String(st) => evaluate_attribute_string(name, &st.value, is_native, context),
+    ast::AttributeValue::DyanmicString(st) => {
+      evaluate_attribute_dynamic_string(name, st, is_native, context)
+    }
+    ast::AttributeValue::String(st) => {
+      evaluate_attribute_string(name, &st.value, is_native, context)
+    }
     ast::AttributeValue::Slot(script) => evaluate_attribute_slot(script, context),
   }
 }
@@ -805,16 +819,26 @@ fn evaluate_attribute_dynamic_string<'a>(
   is_native: bool,
   context: &mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
-
-  let val = value.values.iter().map(|val| {
-    match val {
-      ast::AttributeDynamicStringPart::Literal(value) => evaluate_attribute_string(name, &value.value, is_native, context).unwrap().to_string(),
-      ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => format!("_{}_{}", context.scope, pierce.class_name),
-      ast::AttributeDynamicStringPart::Slot(statement) => evaluate_attribute_slot(statement, context).unwrap().to_string(),
-    }
-  })
-  .collect::<Vec<String>>().join("");
-  
+  let val = value
+    .values
+    .iter()
+    .map(|val| match val {
+      ast::AttributeDynamicStringPart::Literal(value) => {
+        evaluate_attribute_string(name, &value.value, is_native, context)
+          .unwrap()
+          .to_string()
+      }
+      ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
+        format!("_{}_{}", context.scope, pierce.class_name)
+      }
+      ast::AttributeDynamicStringPart::Slot(statement) => {
+        evaluate_attribute_slot(statement, context)
+          .unwrap()
+          .to_string()
+      }
+    })
+    .collect::<Vec<String>>()
+    .join("");
 
   Ok(js_virt::JsValue::JsString(val))
 }
@@ -829,14 +853,17 @@ fn evaluate_attribute_string<'a>(
 
   if (name == "class" || name == "className") && is_native {
     let class_name_parts: Vec<&str> = val.split(" ").collect();
-    val = class_name_parts.iter().map(|class| {
-      if class != &"" {
-        format!("_{}_{}", context.scope, class).to_string()
-      } else {
-        class.to_string()
-      }
-    }).collect::<Vec<String>>().join(" ");
-    
+    val = class_name_parts
+      .iter()
+      .map(|class| {
+        if class != &"" {
+          format!("_{}_{}", context.scope, class).to_string()
+        } else {
+          class.to_string()
+        }
+      })
+      .collect::<Vec<String>>()
+      .join(" ");
   }
 
   Ok(js_virt::JsValue::JsString(val.clone()))

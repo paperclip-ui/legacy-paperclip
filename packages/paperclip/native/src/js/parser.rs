@@ -170,7 +170,9 @@ fn parse_reference<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, 
   Ok(ast::Statement::Reference(ast::Reference { path: path }))
 }
 
-fn parse_reference_part<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::ReferencePart, ParseError> {
+fn parse_reference_part<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+) -> Result<ast::ReferencePart, ParseError> {
   let pos = tokenizer.pos;
   let name = parse_reference_name(tokenizer)?;
   let optional = if !tokenizer.is_eof() && tokenizer.peek(1)? == Token::Byte(b'?') {

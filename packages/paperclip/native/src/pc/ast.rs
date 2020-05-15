@@ -105,13 +105,11 @@ pub struct AttributeStringValue {
   pub location: Location,
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringValue {
   pub values: Vec<AttributeDynamicStringPart>,
-  pub location: Location
+  pub location: Location,
 }
-
 
 impl fmt::Display for AttributeDynamicStringValue {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -137,7 +135,6 @@ impl fmt::Display for AttributeDynamicStringValue {
   }
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "partKind")]
 pub enum AttributeDynamicStringPart {
@@ -148,14 +145,14 @@ pub enum AttributeDynamicStringPart {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringLiteral {
-  pub value: String
+  pub value: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "className")]
 pub struct AttributeDynamicStringClassNamePierce {
   #[serde(rename = "className")]
-  pub class_name: String
+  pub class_name: String,
 }
 
 impl fmt::Display for AttributeStringValue {

@@ -7,41 +7,186 @@
 0 silly argv }
 1 notice cli v3.20.2
 2 verbose rootPath /Users/craigcondon/Developer/public/paperclip
-3 info Executing command in 6 packages: "npm run build:watch"
-4 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-compiler-react' ]
-5 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react undefined
-6 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-loader' ]
-7 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-loader undefined
-8 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-utils' ]
-9 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-utils undefined
-10 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-vscode-extension' ]
-11 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension undefined
-12 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-web-renderer' ]
-13 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer undefined
-14 silly npmRunScript.stream [ 'build:watch', [], 'paperclip' ]
-15 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip undefined
-16 error Error: Command failed: npm run build:watch
-16 error
-16 error
-16 error > paperclip-vscode-extension@11.0.55 build:watch /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension
-16 error > npm run build -- --watch
-16 error
-16 error
-16 error > paperclip-vscode-extension@11.0.55 build /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension
-16 error > tsc "--watch"
-16 error
-16 error c9:56:09 PM - Starting compilation in watch mode...
-16 error
-16 error
-16 error 9:56:16 PM - Found 0 errors. Watching for file changes.
-16 error c10:02:46 PM - File change detected. Starting incremental compilation...
-16 error
-16 error
-16 error 10:02:46 PM - Found 0 errors. Watching for file changes.
-16 error c10:06:28 PM - File change detected. Starting incremental compilation...
-16 error
-16 error
-16 error 10:06:28 PM - Found 0 errors. Watching for file changes.
-16 error
-16 error     at makeError (/Users/craigcondon/Developer/public/paperclip/node_modules/@lerna/child-process/node_modules/execa/index.js:174:9)
-16 error     at /Users/craigcondon/Developer/public/paperclip/node_modules/@lerna/child-process/node_modules/execa/index.js:278:16
+3 info Executing command in 10 packages: "npm run build:watch"
+4 silly npmRunScript.stream [ 'build:watch', [], 'react-counter' ]
+5 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/examples/react-calculator undefined
+6 silly npmRunScript.stream [ 'build:watch', [], 'counter' ]
+7 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/examples/react-counter undefined
+8 silly npmRunScript.stream [ 'build:watch', [], 'simple-todo-list' ]
+9 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/examples/react-simple-todo-list undefined
+10 silly npmRunScript.stream [ 'build:watch', [], 'react-todomvc' ]
+11 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/examples/react-todomvc undefined
+12 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-compiler-react' ]
+13 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react undefined
+14 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-loader' ]
+15 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-loader undefined
+16 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-utils' ]
+17 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-utils undefined
+18 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-vscode-extension' ]
+19 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension undefined
+20 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-web-renderer' ]
+21 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer undefined
+22 silly npmRunScript.stream [ 'build:watch', [], 'paperclip' ]
+23 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip undefined
+24 error Error: Command failed: npm run build:watch
+24 error
+24 error
+24 error > paperclip-compiler-react@11.0.63 build:watch /Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react
+24 error > tsc --watch
+24 error
+24 error c8:15:54 AM - Starting compilation in watch mode...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 8:16:03 AM - Found 1 error. Watching for file changes.
+24 error c8:16:04 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 8:16:04 AM - Found 1 error. Watching for file changes.
+24 error c8:21:33 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 8:21:33 AM - Found 1 error. Watching for file changes.
+24 error c8:54:24 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 8:54:24 AM - Found 1 error. Watching for file changes.
+24 error c8:59:18 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 8:59:18 AM - Found 1 error. Watching for file changes.
+24 error c8:59:59 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 8:59:59 AM - Found 1 error. Watching for file changes.
+24 error c9:08:06 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:08:06 AM - Found 1 error. Watching for file changes.
+24 error c9:10:19 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:10:19 AM - Found 1 error. Watching for file changes.
+24 error c9:31:39 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error ../paperclip/src/infer.ts(171,9): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(177,7): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(177,66): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(181,7): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(182,5): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(183,10): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(184,48): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(188,10): error TS2304: Cannot find name 'inference'.
+24 error
+24 error 9:31:39 AM - Found 9 errors. Watching for file changes.
+24 error c9:32:39 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error ../paperclip/src/infer.ts(174,37): error TS2304: Cannot find name 'existingInference'.
+24 error ../paperclip/src/infer.ts(177,62): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(181,7): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(182,5): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(183,10): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(184,48): error TS2304: Cannot find name 'inference'.
+24 error ../paperclip/src/infer.ts(188,10): error TS2304: Cannot find name 'inference'.
+24 error
+24 error 9:32:40 AM - Found 8 errors. Watching for file changes.
+24 error c9:34:58 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:34:58 AM - Found 1 error. Watching for file changes.
+24 error c9:36:16 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/definition-compiler.ts(194,34): error TS2345: Argument of type 'ShapeProperty' is not assignable to parameter of type 'Inference'.
+24 error   Type 'ShapeProperty' is not assignable to type 'ArrayInference'.
+24 error     Property 'kind' is missing in type 'ShapeProperty' but required in type 'BaseInference<InferenceKind.Array>'.
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:36:16 AM - Found 2 errors. Watching for file changes.
+24 error c9:36:50 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:36:50 AM - Found 1 error. Watching for file changes.
+24 error c9:39:01 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:39:01 AM - Found 1 error. Watching for file changes.
+24 error c9:39:36 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/code-compiler.ts(695,24): error TS2538: Type 'ReferencePart' cannot be used as an index type.
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:39:36 AM - Found 2 errors. Watching for file changes.
+24 error c9:40:38 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:40:38 AM - Found 1 error. Watching for file changes.
+24 error c9:46:05 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:46:05 AM - Found 1 error. Watching for file changes.
+24 error c9:46:37 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:46:37 AM - Found 1 error. Watching for file changes.
+24 error c9:46:47 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:46:47 AM - Found 1 error. Watching for file changes.
+24 error c9:47:18 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error
+24 error 9:47:18 AM - Found 1 error. Watching for file changes.
+24 error c9:54:22 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error ../paperclip/src/index.ts(3,15): error TS2307: Cannot find module 'paperclip-utils'.
+24 error
+24 error 9:54:22 AM - Found 2 errors. Watching for file changes.
+24 error c9:54:23 AM - File change detected. Starting incremental compilation...
+24 error
+24 error src/index.ts(25,24): error TS2345: Argument of type '{ ast: Node; sheet?: any; }' is not assignable to parameter of type 'Config'.
+24 error   Property 'classNames' is missing in type '{ ast: Node; sheet?: any; }' but required in type 'Config'.
+24 error ../paperclip/src/index.ts(3,15): error TS2307: Cannot find module 'paperclip-utils'.
+24 error
+24 error 9:54:23 AM - Found 2 errors. Watching for file changes.
+24 error
+24 error     at makeError (/Users/craigcondon/Developer/public/paperclip/node_modules/@lerna/child-process/node_modules/execa/index.js:174:9)
+24 error     at /Users/craigcondon/Developer/public/paperclip/node_modules/@lerna/child-process/node_modules/execa/index.js:278:16
