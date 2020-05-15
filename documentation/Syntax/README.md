@@ -52,7 +52,20 @@ You can style elements using the native `<style />` element. Note that styles ar
 <div>Something</div>
 ```
 
-The `div { }` rule here is only applied to `<div>Something</div>`. 
+The `div { }` rule here is only applied to `<div>Something</div>`.
+
+#### Global selectors
+
+Global selectors allow you to apply styles _outside_ of the scope of this file. To do that, you can define:
+
+```css
+:global(.selector) {
+  color: red;
+}
+```
+
+This property should be reserved for very special cases whre you need it. For most other cases where you need to override styles, I'd recomend you use the style piercing selector (`>>>`) below. 
+
 
 ## Components
 
