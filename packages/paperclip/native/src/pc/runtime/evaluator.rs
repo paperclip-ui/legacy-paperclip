@@ -265,23 +265,26 @@ fn evaluate_element<'a>(
     "import" => evaluate_import_element(element, context),
     "script" | "property" | "logic" => Ok(None),
     _ => {
+      
+      if ast::has_attribute("component", element) {
+        if let Some(id) = ast::get_attribute_value("as", element) {
+          if context.get_current_render_strategy()
+            != &(
+              context.uri.to_string(),
+              RenderStrategy::Part(id.to_string()),
+            )
+          {
+            return Ok(None);
+          }
+        }
+      }
+
       if context.import_ids.contains(&ast::get_tag_name(&element)) {
         evaluate_imported_component(element, context)
       } else if context.part_ids.contains(&element.tag_name) {
         evaluate_part_instance_element(element, context)
       } else {
-        if ast::has_attribute("component", element) {
-          if let Some(id) = ast::get_attribute_value("as", element) {
-            if context.get_current_render_strategy()
-              != &(
-                context.uri.to_string(),
-                RenderStrategy::Part(id.to_string()),
-              )
-            {
-              return Ok(None);
-            }
-          }
-        }
+        
 
         if element.tag_name == "fragment" {
           evaluate_children_as_fragment(&element.children, context)

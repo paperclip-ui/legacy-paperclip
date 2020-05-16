@@ -2,7 +2,7 @@
 
 <style>
   :global(.red) {
-    &--a {
+    &--ab {
       text-decoration: underline;
     }
     color: blue;

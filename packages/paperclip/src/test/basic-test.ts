@@ -339,6 +339,25 @@ describe(__filename + "#", () => {
       },
       {},
       `<style>.a { color:blue; display:block; } .a--secondary { } .a--secondary --thirdly { color:blue; } .a.c { } .a ._80f4925f_d { } .a > .e { color:blue; } .a > .e-f { color:red; }</style><div data-pc-80f4925f>ok</div>`
+    ],
+    [
+      // no class mod for components if shadow pierce operator is not defined
+      {
+        "/entry.pc": `
+          <import as="Message" src="./message.pc">
+          <Message component as="test">
+            {children}!
+          </Message>
+          <test>child</test>
+        `,
+
+        // ensure that root is span
+        "/message.pc": `<span export component as="default">
+            {children}
+          </span>`
+      },
+      {},
+      `<style></style><span data-pc-1acb798>child! </span>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
