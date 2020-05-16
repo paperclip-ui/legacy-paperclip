@@ -306,6 +306,39 @@ describe(__filename + "#", () => {
       },
       {},
       `<style></style><span data-pc-1acb798 class="_1acb798_blue blue _80f4925f_red red">message </span><span data-pc-80f4925f></span>`
+    ],
+    [
+      // nexted style declarations
+      {
+        "/entry.pc": `
+          <style>
+            :global(.a) {
+              &--secondary {
+                &--thirdly {
+                  color: blue;
+                }
+              }
+              color: blue;
+              &:global(.c) {
+
+              }
+              display: block;
+              & .d {
+
+              }
+              & > :global(.e) {
+                &-f {
+                  color: red;
+                }
+                color: blue;
+              }
+            }
+          </style>
+          <div>ok</div>
+        `
+      },
+      {},
+      `<style>.a { color:blue; display:block; } .a--secondary { } .a--secondary --thirdly { color:blue; } .a.c { } .a ._80f4925f_d { } .a > .e { color:blue; } .a > .e-f { color:red; }</style><div data-pc-80f4925f>ok</div>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

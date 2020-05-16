@@ -2,7 +2,9 @@
 
 <style>
   :global(.red) {
-    color: rgb(214, 148, 61);
+    & > :global(.item) {
+      color: rgb(48, 95, 196);
+    }
   }
 </style>
 

@@ -97,20 +97,22 @@ fn parse_style_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, Parse
 
 fn parse_style_rule2<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<StyleRule, ParseError> {
   let selector = parse_selector(context)?;
-  let declarations = parse_declaration_body(context)?;
+  let (declarations, children) = parse_declaration_body(context)?;
   Ok(StyleRule {
     selector,
     declarations,
+    children,
   })
 }
 
 fn parse_declaration_body<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<Vec<Declaration>, ParseError> {
+) -> Result<(Vec<Declaration>, Vec<ChildStyleRule>), ParseError> {
   eat_superfluous(context)?;
   let block_start = context.tokenizer.pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
-  let declarations = parse_declarations(context)?;
+  let declarations = parse_declarations_and_children(context)?;
+
   eat_superfluous(context)?;
   context
     .tokenizer
@@ -122,7 +124,7 @@ fn parse_declaration_body<'a, 'b>(
     )))?;
 
   eat_superfluous(context)?;
-  Ok(declarations)
+  Ok((declarations))
 }
 
 fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
@@ -188,8 +190,9 @@ fn parse_condition_rule<'a, 'b>(
 }
 
 fn parse_font_face_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<FontFaceRule, ParseError> {
+  let (declarations, _children) = parse_declaration_body(context)?;
   Ok(FontFaceRule {
-    declarations: parse_declaration_body(context)?,
+    declarations
   })
 }
 
@@ -213,10 +216,11 @@ fn parse_keyframes_rule<'a, 'b>(
 
 fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<KeyframeRule, ParseError> {
   let key = parse_selector_name(context)?.to_string();
+  let (declarations, _children) = parse_declaration_body(context)?;
 
   Ok(KeyframeRule {
     key,
-    declarations: parse_declaration_body(context)?,
+    declarations,
   })
 }
 
@@ -247,6 +251,11 @@ fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
 // // parent > child
 fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
   let selector = parse_psuedo_element_selector(context)?;
+  parse_next_pair_selector(selector, context)
+}
+
+// // parent > child
+fn parse_next_pair_selector<'a, 'b>(selector: Selector, context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
   eat_superfluous(context)?;
   let delim = context.tokenizer.peek(1)?;
   match delim {
@@ -450,27 +459,31 @@ fn parse_attribute_selector_value<'a, 'b>(
   Ok(value)
 }
 
+fn part_of_selector_name(token: &Token) -> bool {
+  match token {
+    Token::Whitespace
+    | Token::Comma
+    | Token::Colon
+    | Token::ParenOpen
+    | Token::ParenClose
+    | Token::SingleQuote
+    | Token::DoubleQuote
+    | Token::Dot
+    | Token::Hash
+    | Token::Squiggle
+    | Token::GreaterThan
+    | Token::CurlyOpen
+    | Token::SquareOpen
+    | Token::SquareClose => false,
+    _ => true
+  }
+}
+
 fn parse_selector_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
   eat_superfluous(context)?;
   get_buffer(context.tokenizer, |tokenizer| {
     let tok = tokenizer.peek(1)?;
-    Ok(match tok {
-      Token::Whitespace
-      | Token::Comma
-      | Token::Colon
-      | Token::ParenOpen
-      | Token::ParenClose
-      | Token::SingleQuote
-      | Token::DoubleQuote
-      | Token::Dot
-      | Token::Hash
-      | Token::Squiggle
-      | Token::GreaterThan
-      | Token::CurlyOpen
-      | Token::SquareOpen
-      | Token::SquareClose => false,
-      _ => true,
-    })
+    Ok(part_of_selector_name(&tok))
   })
 }
 
@@ -498,24 +511,59 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
   })
 }
 
-fn parse_declarations<'a, 'b>(
+fn parse_declarations_and_children<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<Vec<Declaration>, ParseError> {
+) -> Result<(Vec<Declaration>, Vec<ChildStyleRule>), ParseError> {
   let mut declarations = vec![];
+  let mut children = vec![];
   eat_superfluous(context)?;
   while !context.ended()? {
     if context.tokenizer.peek(1)? == Token::CurlyClose {
       break;
     }
-    declarations.push(parse_declaration(context)?);
+
+    if context.tokenizer.peek(1)? == Token::Byte(b'&') {
+      children.push(parse_child_style_rule(context)?);
+    } else {
+      declarations.push(parse_declaration(context)?);
+    }
     eat_superfluous(context)?;
   }
 
-  Ok(declarations)
+  Ok((declarations, children))
 }
 
 fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
   eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
+}
+
+fn parse_child_style_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ChildStyleRule, ParseError> {
+  context.tokenizer.next_expect(Token::Byte(b'&'))?;
+  let separator = get_buffer(context.tokenizer, |tokenizer| {
+    let token = tokenizer.peek(1)?;
+    Ok(part_of_selector_name(&token) || token == Token::Whitespace)
+  })?.to_string();
+
+  eat_superfluous(context)?;
+
+  let selector: Option<Selector> = if context.tokenizer.peek(1)? == Token::CurlyOpen {
+    None
+  } else {
+    Some(parse_next_pair_selector(Selector::None, context)?)
+  };
+
+  context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
+
+  let (declarations, children) = parse_declarations_and_children(context)?;
+  context.tokenizer.next_expect(Token::CurlyClose)?; // eat }
+  eat_superfluous(context)?;
+
+  Ok(ChildStyleRule {
+    separator,
+    selector,
+    declarations,
+    children
+  })
 }
 
 fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
@@ -666,6 +714,18 @@ mod tests {
 
       .test {
         background: url(';');
+      }
+
+      .parent {
+        &-child {
+
+        }
+        &>.child {
+
+        }
+        & .child {
+          
+        }
       }
     ";
 

@@ -52,10 +52,13 @@ impl fmt::Display for Rule {
   }
 }
 
+
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRule {
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
+  pub children: Vec<ChildStyleRule>
 }
 
 impl fmt::Display for StyleRule {
@@ -68,6 +71,14 @@ impl fmt::Display for StyleRule {
 
     Ok(())
   }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ChildStyleRule {
+  pub separator: String,
+  pub selector: Option<Selector>,
+  pub declarations: Vec<Declaration>,
+  pub children: Vec<ChildStyleRule>
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -160,6 +171,7 @@ pub enum Selector {
   Attribute(AttributeSelector),
   Class(ClassSelector),
   AllSelector,
+  None,
 }
 
 impl fmt::Display for Selector {
@@ -179,6 +191,7 @@ impl fmt::Display for Selector {
       Selector::Class(selector) => write!(f, "{}", selector.to_string()),
       Selector::Id(selector) => write!(f, "{}", selector.to_string()),
       Selector::Attribute(selector) => write!(f, "{}", selector.to_string()),
+      Selector::None => write!(f, ""),
       Selector::AllSelector => write!(f, "*"),
     }
   }
