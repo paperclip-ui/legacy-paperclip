@@ -11,7 +11,7 @@
   }
 </style>
 
-<div export component as="default" class="red {className}" {style}>
+<div export component as="default" class="red red--a {className}" {style}>
   Something like thisfdsfds
   <strong class={labelClass}>
     nested {className}

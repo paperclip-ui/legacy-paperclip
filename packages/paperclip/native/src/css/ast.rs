@@ -52,13 +52,11 @@ impl fmt::Display for Rule {
   }
 }
 
-
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRule {
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
-  pub children: Vec<ChildStyleRule>
+  pub children: Vec<ChildStyleRule>,
 }
 
 impl fmt::Display for StyleRule {
@@ -78,7 +76,7 @@ pub struct ChildStyleRule {
   pub separator: String,
   pub selector: Option<Selector>,
   pub declarations: Vec<Declaration>,
-  pub children: Vec<ChildStyleRule>
+  pub children: Vec<ChildStyleRule>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

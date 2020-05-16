@@ -2,10 +2,11 @@
 
 <style>
   :global(.red) {
-    & > :global(.item) {
-      color: rgb(48, 95, 196);
+    &--a {
+      text-decoration: underline;
     }
+    color: blue;
   }
 </style>
 
-<Message className="red" />
+<Message />

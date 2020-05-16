@@ -191,9 +191,7 @@ fn parse_condition_rule<'a, 'b>(
 
 fn parse_font_face_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<FontFaceRule, ParseError> {
   let (declarations, _children) = parse_declaration_body(context)?;
-  Ok(FontFaceRule {
-    declarations
-  })
+  Ok(FontFaceRule { declarations })
 }
 
 fn parse_keyframes_rule<'a, 'b>(
@@ -218,10 +216,7 @@ fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Keyframe
   let key = parse_selector_name(context)?.to_string();
   let (declarations, _children) = parse_declaration_body(context)?;
 
-  Ok(KeyframeRule {
-    key,
-    declarations,
-  })
+  Ok(KeyframeRule { key, declarations })
 }
 
 fn parse_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
@@ -255,7 +250,10 @@ fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector
 }
 
 // // parent > child
-fn parse_next_pair_selector<'a, 'b>(selector: Selector, context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
+fn parse_next_pair_selector<'a, 'b>(
+  selector: Selector,
+  context: &mut Context<'a, 'b>,
+) -> Result<Selector, ParseError> {
   eat_superfluous(context)?;
   let delim = context.tokenizer.peek(1)?;
   match delim {
@@ -475,7 +473,7 @@ fn part_of_selector_name(token: &Token) -> bool {
     | Token::CurlyOpen
     | Token::SquareOpen
     | Token::SquareClose => false,
-    _ => true
+    _ => true,
   }
 }
 
@@ -537,12 +535,15 @@ fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), Pars
   eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
 }
 
-fn parse_child_style_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ChildStyleRule, ParseError> {
+fn parse_child_style_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<ChildStyleRule, ParseError> {
   context.tokenizer.next_expect(Token::Byte(b'&'))?;
   let separator = get_buffer(context.tokenizer, |tokenizer| {
     let token = tokenizer.peek(1)?;
     Ok(part_of_selector_name(&token) || token == Token::Whitespace)
-  })?.to_string();
+  })?
+  .to_string();
 
   eat_superfluous(context)?;
 
@@ -562,7 +563,7 @@ fn parse_child_style_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Child
     separator,
     selector,
     declarations,
-    children
+    children,
   })
 }
 

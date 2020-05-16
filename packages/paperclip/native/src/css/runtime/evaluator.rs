@@ -34,7 +34,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &Context) -> Result<Vec<virt::Rule>,
     ast::Rule::Keyframes(rule) => vec![evaluate_keyframes_rule(rule, context)?],
     ast::Rule::Supports(rule) => vec![evaluate_supports_rule(rule, context)?],
     ast::Rule::Document(rule) => vec![evaluate_document_rule(rule, context)?],
-    ast::Rule::Page(rule) => vec![evaluate_page_rule(rule, context)?]
+    ast::Rule::Page(rule) => vec![evaluate_page_rule(rule, context)?],
   };
 
   Ok(virt_rules)
@@ -78,10 +78,14 @@ pub fn evaluate_child_style_rule<'a>(
   let style = evaluate_style_declarations(&expr.declarations, context)?;
   let main_rule = virt::StyleRule {
     selector_text,
-    style
+    style,
   };
   let mut css_rules = vec![main_rule];
-  css_rules.extend(evaluate_child_style_rules(&child_prefix, &expr.children, &context)?);
+  css_rules.extend(evaluate_child_style_rules(
+    &child_prefix,
+    &expr.children,
+    &context,
+  )?);
   Ok(css_rules)
 }
 
@@ -185,9 +189,12 @@ fn evaluate_style_rule(
   expr: &ast::StyleRule,
   context: &Context,
 ) -> Result<Vec<virt::Rule>, RuntimeError> {
-  Ok(evaluate_style_rule2(expr, context)?.iter().map(|rule| {
-    virt::Rule::Style(rule.clone())
-  }).collect())
+  Ok(
+    evaluate_style_rule2(expr, context)?
+      .iter()
+      .map(|rule| virt::Rule::Style(rule.clone()))
+      .collect(),
+  )
 }
 
 fn evaluate_style_rule2(
@@ -205,7 +212,11 @@ fn evaluate_style_rule2(
 
   let mut css_rules = vec![main_style_rule];
 
-  css_rules.extend(evaluate_child_style_rules(&child_rule_prefix, &expr.children, &&context)?);
+  css_rules.extend(evaluate_child_style_rules(
+    &child_rule_prefix,
+    &expr.children,
+    &&context,
+  )?);
 
   Ok(css_rules)
 }
@@ -275,7 +286,9 @@ fn stringify_element_selector(
       "{} {}",
       stringify_element_selector(&selector.parent, include_scope, context),
       stringify_element_selector(&selector.descendent, include_scope, context)
-    ).trim().to_string(),
+    )
+    .trim()
+    .to_string(),
     ast::Selector::Child(selector) => format!(
       "{} > {}",
       stringify_element_selector(&selector.parent, include_scope, context),
