@@ -597,7 +597,7 @@ const translateAttribute = (
       console.warn("Can't handle style tag for now");
     }
 
-    if (/component|export/.test(name)) {
+    if (/component|export|as/.test(name)) {
       return context;
     }
 
