@@ -50,11 +50,13 @@ import {
   addBuffer
 } from "./translate-utils";
 import {
-  pascalCase,
   Options,
   getComponentName,
   RENAME_PROPS,
-  getClassExportNameMap
+  getClassExportNameMap,
+  getPartClassName,
+  strToClassName,
+  pascalCase
 } from "./utils";
 import { camelCase } from "lodash";
 import * as path from "path";
@@ -281,8 +283,8 @@ const translateImports = (ast: Node, context: TranslateContext) => {
           context = addBuffer(
             `{${usedExports
               .map(imp => {
-                const className = pascalCase(imp);
-                return `${className} as ${baseName}${className}`;
+                const className = strToClassName(imp);
+                return `${className} as ${baseName}${pascalCase(className)}`;
               })
               .join(", ")}} `,
             context
@@ -311,7 +313,9 @@ const translateParts = (root: Node, context: TranslateContext) => {
 };
 
 const translatePart = (part: Element, context: TranslateContext) => {
-  const componentName = pascalCase(getAttributeStringValue(AS_ATTR_NAME, part));
+  const componentName = strToClassName(
+    getAttributeStringValue(AS_ATTR_NAME, part)
+  );
   context = translateComponent(
     componentName,
     part,
@@ -415,10 +419,6 @@ const translateJSXNode = (
   return context;
 };
 
-const getPartTagName = (name: string, context: TranslateContext) => {
-  return pascalCase(name);
-};
-
 const translateElement = (
   element: Element,
   isRoot: boolean,
@@ -440,7 +440,7 @@ const translateElement = (
   //   : null;
 
   const tag = isPartComponentInstance
-    ? getPartTagName(element.tagName, context)
+    ? strToClassName(element.tagName)
     : isImportComponentInstance
     ? getImportTagName(element.tagName)
     : JSON.stringify(element.tagName);

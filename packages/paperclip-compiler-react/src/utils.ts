@@ -41,24 +41,30 @@ export const getComponentName = (root: Node, filePath: string) => {
 };
 
 export const getPartClassName = (part: Element) => {
-  return pascalCase(getAttributeStringValue(AS_ATTR_NAME, part));
+  return strToClassName(getAttributeStringValue(AS_ATTR_NAME, part));
+};
+
+export const strToClassName = (value: string) => {
+  let safeClassName = value.replace(/[^\w_$]/g, "");
+
+  if (!isNaN(Number(safeClassName.charAt(0)))) {
+    safeClassName = "_" + safeClassName;
+  }
+
+  return safeClassName;
 };
 
 export const getClassExportNameMap = (classNames: string[]) => {
   const map = {};
   for (const className of classNames) {
-
     const mapName = className.replace(/_.*?_/g, "");
-
 
     if (!map[mapName]) {
       map[mapName] = className;
     } else {
-
       // combine class names in case they're defined in other imported styles
       map[mapName] = map[mapName] + " " + className;
     }
-
   }
   return map;
 };

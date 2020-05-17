@@ -25,10 +25,15 @@ import {
   endBlock,
   addBuffer
 } from "./translate-utils";
-import { Options, RENAME_PROPS, pascalCase, getClassExportNameMap } from "./utils";
+import {
+  Options,
+  RENAME_PROPS,
+  getClassExportNameMap,
+  getPartClassName
+} from "./utils";
 
 export const compile = (
-  { ast, classNames = [] }: { ast: Node, classNames?: string[] },
+  { ast, classNames = [] }: { ast: Node; classNames?: string[] },
   filePath: string,
   options: Options = {}
 ) => {
@@ -44,7 +49,11 @@ export const compile = (
   return context.buffer;
 };
 
-const translateRoot = (ast: Node, classNames: string[], context: TranslateContext) => {
+const translateRoot = (
+  ast: Node,
+  classNames: string[],
+  context: TranslateContext
+) => {
   context = addBuffer(
     `import {ReactNode, ReactHTML, Factory, InputHTMLAttributes, ClassAttributes} from "react";\n\n`,
     context
@@ -104,11 +113,12 @@ const translateRoot = (ast: Node, classNames: string[], context: TranslateContex
   return context;
 };
 
-const translateUtils = (_ast: Node, classNames: string[], context: TranslateContext) => {
-  context = addBuffer(
-    `export declare const classNames: {\n`,
-    context
-  );
+const translateUtils = (
+  _ast: Node,
+  classNames: string[],
+  context: TranslateContext
+) => {
+  context = addBuffer(`export declare const classNames: {\n`, context);
 
   const map = getClassExportNameMap(classNames);
   context = startBlock(context);
@@ -116,13 +126,9 @@ const translateUtils = (_ast: Node, classNames: string[], context: TranslateCont
   for (const exportName in map) {
     context = addBuffer(`${JSON.stringify(exportName)}: string,\n`, context);
   }
-  
 
   context = endBlock(context);
-  context = addBuffer(
-    `};\n\n`,
-    context
-  );
+  context = addBuffer(`};\n\n`, context);
   // context = addBuffer(
   //   `export declare const styled: (tag: keyof ReactHTML | Factory<ElementProps>, defaultProps?: ElementProps) => Factory<ElementProps>;\n\n`,
   //   context
@@ -168,13 +174,16 @@ const translateInference = (
   return context;
 };
 
-const translateProperty = (key: string, {value, optional}: ShapeProperty, context: TranslateContext) => {
-
-  context = addBuffer(`${key}${optional ? `?` : ''}: `, context);
+const translateProperty = (
+  key: string,
+  { value, optional }: ShapeProperty,
+  context: TranslateContext
+) => {
+  context = addBuffer(`${key}${optional ? `?` : ""}: `, context);
   context = translateInference(value, key, context);
   context = addBuffer(`,\n`, context);
   return context;
-}
+};
 
 const translateComponent = (
   node: Node,
@@ -262,7 +271,7 @@ const translateParts = (ast: Node, context: TranslateContext) => {
 };
 
 const translatePart = (part: Element, context: TranslateContext) => {
-  const componentName = pascalCase(getAttributeStringValue(AS_ATTR_NAME, part));
+  const componentName = getPartClassName(part);
   const propsName = `${componentName}Props`;
   context = translateComponent(part, propsName, context);
   context = addBuffer(
