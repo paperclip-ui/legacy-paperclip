@@ -722,7 +722,7 @@ const translateReferencePath = (
   context: TranslateContext,
   min: number = -1
 ) => {
-  context = addBuffer(`props`, context);
+  context = addBuffer(`(props`, context);
   for (let i = 0, n = path.length; i < n; i++) {
     const part = path[i];
     context = addBuffer(`.${part.name}`, context);
@@ -732,6 +732,7 @@ const translateReferencePath = (
       break;
     }
   }
+  context = addBuffer(")", context);
   return context;
 };
 
