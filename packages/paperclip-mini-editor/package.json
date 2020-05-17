@@ -1,6 +1,6 @@
 {
   "name": "paperclip-mini-editor",
-  "version": "11.0.69",
+  "version": "11.0.70",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -12,7 +12,7 @@
     "monaco-editor": "^0.20.0",
     "paperclip": "^11.0.68",
     "paperclip-cli": "^11.0.68",
-    "paperclip-compiler-react": "^11.0.69",
+    "paperclip-compiler-react": "^11.0.70",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "typescript": "^3.8.3"
