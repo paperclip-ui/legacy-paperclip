@@ -597,6 +597,10 @@ const translateAttribute = (
       console.warn("Can't handle style tag for now");
     }
 
+    if (/component|export/.test(name)) {
+      return context;
+    }
+
     // can't handle for now
     if (name !== "style") {
       if (!/^data-/.test(name)) {
