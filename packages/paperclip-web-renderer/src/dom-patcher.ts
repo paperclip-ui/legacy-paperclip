@@ -19,7 +19,12 @@ export const patchNativeNode = (
         break;
       }
       case ActionKind.InsertChild: {
-        const newChild = createNativeNode(action.child, factory, protocol);
+        const newChild = createNativeNode(
+          action.child,
+          factory,
+          protocol,
+          target.namespaceURI
+        );
         if (action.index >= target.childNodes.length) {
           target.appendChild(newChild);
         } else {
@@ -30,7 +35,12 @@ export const patchNativeNode = (
       case ActionKind.ReplaceNode: {
         const parent = target.parentNode;
         parent.insertBefore(
-          createNativeNode(action.replacement, factory, protocol),
+          createNativeNode(
+            action.replacement,
+            factory,
+            protocol,
+            parent.namespaceURI
+          ),
           target
         );
 

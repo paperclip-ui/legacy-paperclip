@@ -2,6 +2,7 @@ import { DOMFactory } from "../renderer";
 
 export const mockDOMFactory: DOMFactory = {
   createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
+  createElementNS: tagName => (new MockElement(tagName) as any) as HTMLElement,
   createDocumentFragment: () =>
     (new MockFragment() as Object) as DocumentFragment,
   createTextNode: nodeValue => (new MockTextNode(nodeValue) as Object) as Text

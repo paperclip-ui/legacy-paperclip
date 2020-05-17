@@ -57,7 +57,7 @@ export const strToClassName = (value: string) => {
 export const getClassExportNameMap = (classNames: string[]) => {
   const map = {};
   for (const className of classNames) {
-    const mapName = className.replace(/_.*?_/g, "");
+    const mapName = className.replace(/^_.*?_/g, "");
 
     if (!map[mapName]) {
       map[mapName] = className;

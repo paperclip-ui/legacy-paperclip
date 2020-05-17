@@ -6,6 +6,7 @@ import { DOMFactory } from "./renderer";
 const entities = new Html5Entities();
 
 export type DOMNodeMap = Map<Node, string>;
+const XMLNS_NAMESPACE = "http://www.w3.org/2000/svg";
 
 export const getNativeNodePath = (root: Node, node: Node) => {
   let path: number[] = [];
@@ -24,10 +25,11 @@ export const getNativeNodePath = (root: Node, node: Node) => {
 export const createNativeNode = (
   node,
   factory: DOMFactory,
-  protocol: string | null
+  protocol: string | null,
+  namespaceURI: string
 ) => {
   // return document.createTextNode(JSON.stringify(node, null, 2));
-  
+
   if (!node) {
     return factory.createTextNode("");
   }
@@ -38,7 +40,7 @@ export const createNativeNode = (
         return text;
       }
       case "Element":
-        return createNativeElement(node, factory, protocol);
+        return createNativeElement(node, factory, protocol, namespaceURI);
       case "StyleElement":
         return createNativeStyle(node, factory, protocol);
       case "Fragment":
@@ -64,10 +66,16 @@ const createNativeStyle = (element, factory: DOMFactory, protocol: string) => {
 const createNativeElement = (
   element,
   factory: DOMFactory,
-  protocol: string
+  protocol: string,
+  namespaceUri?: string
 ) => {
   // return factory.createTextNode(JSON.stringify(element, null, 2));
-  const nativeElement = factory.createElement(element.tagName);
+  const nativeElement =
+    element.tagName === "svg"
+      ? document.createElementNS(XMLNS_NAMESPACE, "svg")
+      : namespaceUri
+      ? factory.createElementNS(namespaceUri, element.tagName)
+      : factory.createElement(element.tagName);
 
   for (let name in element.attributes) {
     let value = element.attributes[name];
@@ -80,7 +88,9 @@ const createNativeElement = (
     nativeElement.setAttribute(aliasName, value);
   }
   for (const child of element.children) {
-    nativeElement.appendChild(createNativeNode(child, factory, protocol));
+    nativeElement.appendChild(
+      createNativeNode(child, factory, protocol, nativeElement.namespaceURI)
+    );
   }
 
   // prevent redirects & vscode from asking to redirect.
@@ -99,7 +109,9 @@ const createNativeFragment = (
 ) => {
   const nativeFragment = factory.createDocumentFragment();
   for (const child of fragment.children) {
-    nativeFragment.appendChild(createNativeNode(child, factory, protocol));
+    nativeFragment.appendChild(
+      createNativeNode(child, factory, protocol, nativeFragment.namespaceURI)
+    );
   }
   return nativeFragment;
 };

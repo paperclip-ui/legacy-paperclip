@@ -15,6 +15,7 @@ import { patchNativeNode } from "./dom-patcher";
 
 export type DOMFactory = {
   createElement(tagName: string): HTMLElement;
+  createElementNS(namespace: string, tagName: string): HTMLElement;
   createDocumentFragment(): DocumentFragment;
   createTextNode(value: string): Text;
 };
@@ -71,7 +72,8 @@ export class Renderer {
         const node = createNativeNode(
           event.node,
           this._domFactory,
-          this.protocol
+          this.protocol,
+          null
         );
         this._stage.appendChild(node);
         break;
