@@ -722,6 +722,8 @@ const translateReferencePath = (
   context: TranslateContext,
   min: number = -1
 ) => {
+  // webpack trips over this statement without parens -- tries
+  // to evaluate it.
   context = addBuffer(`(props`, context);
   for (let i = 0, n = path.length; i < n; i++) {
     const part = path[i];
