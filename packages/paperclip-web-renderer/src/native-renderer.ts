@@ -10,6 +10,7 @@ const XMLNS_NAMESPACE = "http://www.w3.org/2000/svg";
 
 export const getNativeNodePath = (root: Node, node: Node) => {
   let path: number[] = [];
+
   let current = node;
 
   while (current.parentNode !== root) {
