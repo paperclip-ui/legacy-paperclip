@@ -2,7 +2,7 @@
   "name": "paperclip-website",
   "private": true,
   "description": "A simple starter to get up and developing quickly with Gatsby",
-  "version": "11.0.73",
+  "version": "11.0.74",
   "dependencies": {
     "gatsby": "^2.19.7",
     "gatsby-image": "^2.2.39",
@@ -16,7 +16,7 @@
     "gatsby-source-filesystem": "^2.1.46",
     "gatsby-transformer-sharp": "^2.3.13",
     "paperclip-compiler-react": "^11.0.73",
-    "paperclip-mini-editor": "^11.0.73",
+    "paperclip-mini-editor": "^11.0.74",
     "prism-react-renderer": "^1.0.2",
     "prismjs": "^1.19.0",
     "prop-types": "^15.7.2",
@@ -31,7 +31,7 @@
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
     "gh-pages": "^2.2.0",
-    "paperclip-cli": "^11.0.73",
+    "paperclip-cli": "^11.0.74",
     "prettier": "^1.19.1"
   },
   "keywords": [

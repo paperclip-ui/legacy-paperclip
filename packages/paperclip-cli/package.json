@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli",
-  "version": "11.0.73",
+  "version": "11.0.74",
   "description": "Examples:",
   "main": "index.js",
   "bin": {
