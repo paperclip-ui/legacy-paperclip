@@ -3,7 +3,7 @@ const path = require("path");
 const resolve = require("resolve");
 const chokidar = require("chokidar");
 const glob = require("glob");
-const {Engine, getPrettyMessage, getAllVirtSheetClassNames, evaluateAllFileStyles} = require("paperclip");
+const {Engine, getPrettyMessage, getAllVirtSheetClassNames, evaluateAllFileStyles, stringifyCSSSheet} = require("paperclip");
 const fs = require("fs");
 
 const argv = require("yargs")
@@ -43,6 +43,8 @@ try {
 const config = {
   ...localConfig,
   ...argvConfig,
+  dropPcExtension: argvConfig.dropPcExtension || localConfig.dropPcExtension,
+  filesGlob: argvConfig.filesGlob || localConfig.filesGlob,
   compilerOptions: {
     ...localConfig.compilerOptions,
     ...argvConfig.compilerOptions,
@@ -114,7 +116,7 @@ function init(cwd, filesGlob, compile, shouldWatch) {
         [fullPath]: sheet,
         ...evaluateAllFileStyles(pcEngine, ast, fullPath)
       }
-      const result = compile({ ast, sheet, classNames: getAllVirtSheetClassNames(styleMap) }, fullPath, compilerOptions);
+      const result = compile({ ast, classNames: getAllVirtSheetClassNames(styleMap) }, fullPath, compilerOptions);
       if (argv.write) {
         let outputFilePath = getOutputFilePath(fullPath, compilerOptions);
         if (config.dropPcExtension) {
@@ -122,6 +124,12 @@ function init(cwd, filesGlob, compile, shouldWatch) {
         }
         console.log("Writing %s", outputFilePath);
         fs.writeFileSync(new URL(outputFilePath), result);
+
+        if (!compilerOptions.definition) {
+          const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
+          console.log("Writing %s", cssFilePath);
+          fs.writeFileSync(new URL(cssFilePath), stringifyCSSSheet(sheet));
+        }
       } else {
         console.log("Compiling %s", relativePath);
         console.log(result);
