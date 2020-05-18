@@ -40,6 +40,7 @@ export const compile = (
   let context = createTranslateContext(
     filePath,
     getImportIds(ast),
+    classNames,
     getPartIds(ast),
     [],
     Boolean(getLogicElement(ast)),
@@ -282,10 +283,13 @@ const translatePart = (part: Element, context: TranslateContext) => {
 };
 
 const translateMainView = (ast: Node, context: TranslateContext) => {
-  const target =
-    getParts(ast).find(
-      part => getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID
-    ) || ast;
+  const target = getParts(ast).find(
+    part => getAttributeStringValue(AS_ATTR_NAME, part) === DEFAULT_PART_ID
+  );
+
+  if (!target) {
+    return context;
+  }
 
   if (target === ast) {
     const children = getVisibleChildNodes(ast);

@@ -19,5 +19,8 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "1d4c6bdf14b1d471126ae0c3c1049cc39616ef21"
+  "gitHead": "1d4c6bdf14b1d471126ae0c3c1049cc39616ef21",
+  "devDependencies": {
+    "crc32": "^0.2.2"
+  }
 }

@@ -34,6 +34,7 @@ import {
   findChildrenByNamespace,
   hasAttribute,
   PassFailConditional,
+  getAttribute,
   VirtSheet,
   DynamicStringAttributeValuePartKind,
   FinalConditional,
@@ -56,11 +57,13 @@ import {
   getClassExportNameMap,
   getPartClassName,
   strToClassName,
-  pascalCase
+  pascalCase,
+  classNameToStyleName
 } from "./utils";
 import { camelCase } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
+import * as crc32 from "crc32";
 
 const entities = new Html5Entities();
 type Config = { ast: Node; sheet?: any; classNames: string[] };
@@ -73,6 +76,7 @@ export const compile = (
   let context = createTranslateContext(
     filePath,
     getImportIds(ast),
+    classNames,
     getPartIds(ast),
     getStyleScopes(fs)(ast, filePath),
     Boolean(getLogicElement(ast)),
@@ -132,7 +136,7 @@ const translateStyleSheet = (sheet: VirtSheet, context: TranslateContext) => {
     )};\n`,
     context
   );
-  context = addBuffer(`document.body.appendChild(style);\n`, context);
+  context = addBuffer(`document.head.appendChild(style);\n`, context);
   context = endBlock(context);
   context = addBuffer("}\n\n", context);
 
@@ -344,15 +348,19 @@ const translateComponent = (
   context = translateJSXRoot(node, context);
   context = endBlock(context);
   context = addBuffer(";\n", context);
+
   context = addBuffer(`});\n\n`, context);
+
+  if (node.kind === NodeKind.Element) {
+    // context = addBuffer(`${componentName}.styledComponentId = "${getElementStyleName(node, context)}";\n\n`, context);
+  }
   return context;
 };
 
 const translateDefaultView = (root: Node, context: TranslateContext) => {
-  const target = getDefaultPart(root) || root;
+  const target = getDefaultPart(root);
 
-  const visibleChildren = getVisibleChildNodes(target);
-  if (!visibleChildren.length) {
+  if (!target) {
     return context;
   }
 
@@ -366,6 +374,7 @@ const translateDefaultView = (root: Node, context: TranslateContext) => {
   //     context
   //   );
   // }
+
   context = addBuffer(`export default ${componentName};\n`, context);
 
   return context;
@@ -461,8 +470,20 @@ const translateElement = (
     context
   );
   for (const attr of element.attributes) {
-    context = translateAttribute(attr, isComponentInstance, context);
+    context = translateAttribute(element, attr, isComponentInstance, context);
   }
+
+  if (
+    !hasAttribute("className", element) &&
+    !hasAttribute("class", element) &&
+    hasAttribute(AS_ATTR_NAME, element)
+  ) {
+    context = addBuffer(
+      `"className": "${getElementStyleName(element, context)}",\n`,
+      context
+    );
+  }
+
   context = endBlock(context);
   context = addBuffer(`}`, context);
   if (propsName) {
@@ -477,6 +498,10 @@ const translateElement = (
   }
   context = addBuffer(`)`, context);
   return context;
+};
+
+const getElementStyleName = (element: Element, context: TranslateContext) => {
+  return `__${crc32(context.filePath)}__${getPartClassName(element)}`;
 };
 
 const translateBlock = (
@@ -582,6 +607,7 @@ const isSpecialPropName = (name: string) =>
   /^on/.test(name) || name === "checked";
 
 const translateAttribute = (
+  element: Element,
   attr: Attribute,
   isComponentInstance: boolean,
   context: TranslateContext
@@ -597,7 +623,7 @@ const translateAttribute = (
       console.warn("Can't handle style tag for now");
     }
 
-    if (/component|export|as/.test(name)) {
+    if (/^(component|export|as)$/.test(name)) {
       return context;
     }
 
@@ -608,6 +634,7 @@ const translateAttribute = (
       }
       context = addBuffer(`${JSON.stringify(name)}: `, context);
       context = translateAttributeValue(
+        element,
         name,
         value,
         !isComponentInstance,
@@ -641,6 +668,7 @@ const translateAttribute = (
 };
 
 const translateAttributeValue = (
+  element: Element,
   name: string,
   value: AttributeValue,
   isPropOnNativeElement: boolean,
@@ -663,12 +691,21 @@ const translateAttributeValue = (
     }
 
     if (name === "className") {
-      strValue = JSON.stringify(
-        prefixWthStyleScopes(value.value, context.styleScopes)
-      );
+      strValue = prefixWthStyleScopes(value.value, context.styleScopes);
+      if (hasAttribute(AS_ATTR_NAME, element)) {
+        strValue += " " + getElementStyleName(element, context);
+      }
+      strValue = JSON.stringify(strValue);
     }
     return addBuffer(strValue, context);
   } else if (value.attrValueKind === AttributeValueKind.DyanmicString) {
+    if (hasAttribute(AS_ATTR_NAME, element)) {
+      context = addBuffer(
+        `"${getElementStyleName(element, context)} " + `,
+        context
+      );
+    }
+
     for (let i = 0, { length } = value.values; i < length; i++) {
       const part = value.values[i];
       if (part.partKind === DynamicStringAttributeValuePartKind.Literal) {

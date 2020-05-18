@@ -54,6 +54,10 @@ export const strToClassName = (value: string) => {
   return safeClassName;
 };
 
+export const classNameToStyleName = (value: string) => {
+  return value.charAt(0).toLowerCase() + value.substr(1);
+};
+
 export const getClassExportNameMap = (classNames: string[]) => {
   const map = {};
   for (const className of classNames) {
