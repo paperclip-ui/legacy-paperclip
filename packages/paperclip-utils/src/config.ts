@@ -4,6 +4,7 @@ export type CompilerOptions = {
 };
 
 export type PaperclipConfig = {
+  dropPcExtension?: boolean;
   filesGlob: string;
   moduleDirectories: string[];
   compilerOptions: CompilerOptions;

@@ -16,6 +16,9 @@ const argv = require("yargs")
 .option("config", {
   describe: "Config file",
 })
+.option("drop-pc-extension", {
+  describe: "Drops PC extension from compiled files",
+})
 .option("watch", {
 })
 .example("$0", "Runs paperclip using pcconfig.json in cwd")
@@ -25,7 +28,27 @@ const argv = require("yargs")
 .argv;
 
 const argvConfig = generateConfig(argv);
-const config = argv.config || argv._.length === 0 ? require(resolve2(argv.config || path.join(process.cwd(), "/pcconfig"))) : argvConfig;
+let localConfig = {
+  compilerOptions: {
+
+  }
+};
+
+try {
+  localConfig = require(resolve2(argv.config || path.join(process.cwd(), "/pcconfig")));
+} catch(e) {
+  
+}
+
+const config = {
+  ...localConfig,
+  ...argvConfig,
+  compilerOptions: {
+    ...localConfig.compilerOptions,
+    ...argvConfig.compilerOptions,
+    name: argvConfig.compilerOptions.name || localConfig.compilerOptions.name,
+  }
+};
 
 const compiler = config.compilerOptions.name;
 const filesGlob = config.filesGlob;
@@ -59,6 +82,7 @@ function resolve2(module) {
 
 function generateConfig(argv) {
   return {
+    dropPcExtension: argv.dropPcExtension,
     filesGlob: argv._[0],
     moduleDirectories: argv.moduleDirectories || [],
     compilerOptions: {
@@ -77,8 +101,8 @@ function init(cwd, filesGlob, compile, shouldWatch) {
   }
 
   async function compileFile(relativePath) {
-    const fullPath = `file://${path.resolve(process.cwd(), relativePath).replace(/\\/g, "/").replace(":", "%3A")}`;
-    const compilerOptions = Object.assign({}, argvConfig.compilerOptions, config.compilerOptions);
+    let fullPath = `file://${path.resolve(process.cwd(), relativePath).replace(/\\/g, "/").replace(":", "%3A")}`;
+    const compilerOptions = config.compilerOptions;
     try {
       const ast = pcEngine.parseFile(fullPath);
       if (ast.error) {
@@ -92,7 +116,10 @@ function init(cwd, filesGlob, compile, shouldWatch) {
       }
       const result = compile({ ast, sheet, classNames: getAllVirtSheetClassNames(styleMap) }, fullPath, compilerOptions);
       if (argv.write) {
-        const outputFilePath = getOutputFilePath(fullPath, compilerOptions);
+        let outputFilePath = getOutputFilePath(fullPath, compilerOptions);
+        if (config.dropPcExtension) {
+          outputFilePath = outputFilePath.replace(".pc", "");
+        }
         console.log("Writing %s", outputFilePath);
         fs.writeFileSync(new URL(outputFilePath), result);
       } else {
