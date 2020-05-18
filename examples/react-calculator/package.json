@@ -1,7 +1,7 @@
 {
   "name": "react-counter",
   "private": true,
-  "version": "11.0.70",
+  "version": "11.0.71",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "html-webpack-plugin": "^3.2.0",
     "paperclip": "^11.0.68",
     "paperclip-cli": "^11.0.68",
-    "paperclip-compiler-react": "^11.0.70",
+    "paperclip-compiler-react": "^11.0.71",
     "paperclip-loader": "^11.0.68",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
