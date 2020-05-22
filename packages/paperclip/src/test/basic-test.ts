@@ -364,6 +364,22 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
           <style>
+            .a, .b {
+              &--c {
+                color: blue;
+              }
+            }
+          </style>
+        `
+      },
+      {},
+      `<style>._80f4925f_a, ._80f4925f_b { } ._80f4925f_a--c { color:blue; } ._80f4925f_b--c { color:blue; }</style>`
+    ],
+    [
+      // no class mod for components if shadow pierce operator is not defined
+      {
+        "/entry.pc": `
+          <style>
             :global(.a, .b) {
               &--c {
                 color: blue;
@@ -373,7 +389,23 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style></style><span data-pc-1acb798>child! </span>`
+      `<style>.a, .b { } .a--c { color:blue; } .b--c { color:blue; }</style>`
+    ],
+    [
+      // no class mod for components if shadow pierce operator is not defined
+      {
+        "/entry.pc": `
+          <style>
+            :global(.a, .b) {
+              &--c {
+                color: blue;
+              }
+            }
+          </style>
+        `
+      },
+      {},
+      `<style>.a, .b { } .a--c { color:blue; } .b--c { color:blue; }</style>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

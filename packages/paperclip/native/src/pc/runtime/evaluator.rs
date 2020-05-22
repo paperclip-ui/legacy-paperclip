@@ -884,7 +884,7 @@ mod tests {
 
   #[test]
   fn can_evaluate_a_style() {
-    let case = "<style>div { color: red; }</style><div></div>";
+    let case = "<style>div { color: red; } a, b { & c { color: blue }}</style><div></div>";
     let ast = parse(case).unwrap();
     let graph = DependencyGraph::new();
     let vfs = VirtualFileSystem::new(
