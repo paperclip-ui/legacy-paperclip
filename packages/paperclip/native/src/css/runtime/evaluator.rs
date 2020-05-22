@@ -244,7 +244,6 @@ fn evaluate_style_rule2(expr: &ast::StyleRule, context: &mut Context) -> Result<
 
   let mut is_global_selector = false;
 
-  
   let target_selector = if let ast::Selector::Global(selector) = &expr.selector {
     is_global_selector = true;
     &selector.selector
@@ -267,8 +266,6 @@ fn evaluate_style_rule2(expr: &ast::StyleRule, context: &mut Context) -> Result<
     evaluate_child_style_rules(&child_rule_prefix, &expr.children, context)?;
   }
 
-  
-  
   Ok(())
 }
 
