@@ -1,6 +1,6 @@
 {
   "name": "paperclip",
-  "version": "11.0.76",
+  "version": "11.0.77",
   "description": "- real-time editing. Biggest priority is to have a bundler that  - Interoperability. Paperclip should work with any web framework.  - Type safety.  - Visually editable.",
   "main": "index.js",
   "scripts": {
@@ -21,10 +21,10 @@
     "get-port": "^5.1.1",
     "jayson": "^3.2.0",
     "mocha": "^7.0.1",
-    "paperclip-utils": "^11.0.73",
+    "paperclip-utils": "^11.0.77",
     "typescript": "^3.8.2"
   },
-  "gitHead": "1d4c6bdf14b1d471126ae0c3c1049cc39616ef21",
+  "gitHead": "34514bda1d57fc6cf53f5a9e0fb3327ccb2c4cef",
   "devDependencies": {
     "electron": "^6.1.7",
     "electron-build-env": "^0.2.0",
