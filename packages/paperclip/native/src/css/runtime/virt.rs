@@ -70,7 +70,7 @@ impl fmt::Display for FontFaceRule {
 pub struct ConditionRule {
   pub name: String,
   pub condition_text: String,
-  pub rules: Vec<StyleRule>,
+  pub rules: Vec<Rule>,
 }
 
 impl fmt::Display for ConditionRule {

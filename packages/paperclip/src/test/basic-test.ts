@@ -358,6 +358,22 @@ describe(__filename + "#", () => {
       },
       {},
       `<style></style><span data-pc-1acb798>child! </span>`
+    ],
+    [
+      // no class mod for components if shadow pierce operator is not defined
+      {
+        "/entry.pc": `
+          <style>
+            :global(.a, .b) {
+              &--c {
+                color: blue;
+              }
+            }
+          </style>
+        `
+      },
+      {},
+      `<style></style><span data-pc-1acb798>child! </span>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

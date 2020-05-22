@@ -8,6 +8,7 @@ pub struct Context<'a> {
   scope: &'a str,
   vfs: &'a VirtualFileSystem,
   uri: &'a String,
+  all_rules: Vec<virt::Rule>
 }
 
 pub fn evaluate<'a>(
@@ -16,57 +17,72 @@ pub fn evaluate<'a>(
   scope: &'a str,
   vfs: &'a VirtualFileSystem,
 ) -> Result<virt::CSSSheet, RuntimeError> {
-  let context = Context { scope, uri, vfs };
-  let mut rules = vec![];
+  let mut context = Context { scope, uri, vfs, all_rules: vec![] };
   for rule in &expr.rules {
-    rules.extend(evaluate_rule(&rule, &context)?);
+    evaluate_rule(&rule, &mut context)?;
   }
-  Ok(virt::CSSSheet { rules })
+  Ok(virt::CSSSheet { rules: context.all_rules })
 }
 
-fn evaluate_rule(rule: &ast::Rule, context: &Context) -> Result<Vec<virt::Rule>, RuntimeError> {
-  let virt_rules = match rule {
-    ast::Rule::Charset(charset) => vec![virt::Rule::Charset(charset.to_string())],
-    ast::Rule::Namespace(namespace) => vec![virt::Rule::Namespace(namespace.to_string())],
-    ast::Rule::FontFace(rule) => vec![evaluate_font_family_rule(rule, context)?],
-    ast::Rule::Media(rule) => vec![evaluate_media_rule(rule, context)?],
-    ast::Rule::Style(rule) => evaluate_style_rule(rule, context)?,
-    ast::Rule::Keyframes(rule) => vec![evaluate_keyframes_rule(rule, context)?],
-    ast::Rule::Supports(rule) => vec![evaluate_supports_rule(rule, context)?],
-    ast::Rule::Document(rule) => vec![evaluate_document_rule(rule, context)?],
-    ast::Rule::Page(rule) => vec![evaluate_page_rule(rule, context)?],
+fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeError> {
+  match rule {
+    ast::Rule::Charset(charset) => {
+      context.all_rules.push(virt::Rule::Charset(charset.to_string()));
+    }
+    ast::Rule::Namespace(namespace) => {
+      context.all_rules.push(virt::Rule::Namespace(namespace.to_string()));
+    }
+    ast::Rule::FontFace(rule) => {
+      context.all_rules.push(evaluate_font_family_rule(rule, context)?);
+    },
+    ast::Rule::Media(rule) => {
+      context.all_rules.push(evaluate_media_rule(rule, context)?);
+    },
+    ast::Rule::Style(rule) => {
+      evaluate_style_rule(rule, context)?;
+    },
+    ast::Rule::Keyframes(rule) => {
+      context.all_rules.push(evaluate_keyframes_rule(rule, context)?);
+    },
+    ast::Rule::Supports(rule) => {
+      context.all_rules.push(evaluate_supports_rule(rule, context)?);
+    },
+    ast::Rule::Document(rule) => {
+      context.all_rules.push(evaluate_document_rule(rule, context)?);
+    },
+    ast::Rule::Page(rule) => {
+      context.all_rules.push(evaluate_page_rule(rule, context)?);
+    },
   };
 
-  Ok(virt_rules)
+  Ok(())
 }
 
 pub fn evaluate_style_rules<'a>(
   rules: &Vec<ast::StyleRule>,
-  context: &Context,
-) -> Result<Vec<virt::StyleRule>, RuntimeError> {
-  let mut css_rules = vec![];
+  context: &mut Context,
+) -> Result<(), RuntimeError> {
   for rule in rules {
-    css_rules.extend(evaluate_style_rule2(&rule, &context)?);
+    evaluate_style_rule2(&rule, context)?;
   }
-  Ok(css_rules)
+  Ok(())
 }
 
 pub fn evaluate_child_style_rules<'a>(
   prefix: &String,
   rules: &Vec<ast::ChildStyleRule>,
-  context: &Context,
-) -> Result<Vec<virt::StyleRule>, RuntimeError> {
-  let mut css_rules = vec![];
+  context: &mut Context,
+) -> Result<(), RuntimeError> {
   for rule in rules {
-    css_rules.extend(evaluate_child_style_rule(&prefix, &rule, &context)?);
+    evaluate_child_style_rule(&prefix, &rule, context)?;
   }
-  Ok(css_rules)
+  Ok(())
 }
 pub fn evaluate_child_style_rule<'a>(
   prefix: &String,
   expr: &ast::ChildStyleRule,
-  context: &Context,
-) -> Result<Vec<virt::StyleRule>, RuntimeError> {
+  context: &mut Context,
+) -> Result<(), RuntimeError> {
   let postfix = if let Some(selector) = &expr.selector {
     stringify_element_selector(selector, true, context)
   } else {
@@ -80,13 +96,15 @@ pub fn evaluate_child_style_rule<'a>(
     selector_text,
     style,
   };
-  let mut css_rules = vec![main_rule];
-  css_rules.extend(evaluate_child_style_rules(
+  context.all_rules.push(virt::Rule::Style(main_rule));
+
+  evaluate_child_style_rules(
     &child_prefix,
     &expr.children,
-    &context,
-  )?);
-  Ok(css_rules)
+    context,
+  )?;
+
+  Ok(())
 }
 
 fn evaluate_font_family_rule(
@@ -133,10 +151,14 @@ fn evaluate_condition_rule(
   rule: &ast::ConditionRule,
   context: &Context,
 ) -> Result<virt::ConditionRule, RuntimeError> {
+  let mut child_context = Context { scope: context.scope, uri: context.uri, vfs: context.vfs, all_rules: vec![] };
+  
+  evaluate_style_rules(&rule.rules, &mut child_context)?;
+
   Ok(virt::ConditionRule {
     name: rule.name.to_string(),
     condition_text: rule.condition_text.to_string(),
-    rules: evaluate_style_rules(&rule.rules, context)?,
+    rules: child_context.all_rules,
   })
 }
 
@@ -187,22 +209,18 @@ fn evaluate_style_declarations(
 
 fn evaluate_style_rule(
   expr: &ast::StyleRule,
-  context: &Context,
-) -> Result<Vec<virt::Rule>, RuntimeError> {
-  Ok(
-    evaluate_style_rule2(expr, context)?
-      .iter()
-      .map(|rule| virt::Rule::Style(rule.clone()))
-      .collect(),
-  )
+  context: &mut Context,
+) -> Result<(), RuntimeError> {
+  evaluate_style_rule2(expr, context)?;
+  Ok(())
 }
 
 fn evaluate_style_rule2(
   expr: &ast::StyleRule,
-  context: &Context,
-) -> Result<Vec<virt::StyleRule>, RuntimeError> {
-  let style = evaluate_style_declarations(&expr.declarations, context)?;
-  let selector_text = stringify_element_selector(&expr.selector, true, context);
+  context: &mut Context,
+) -> Result<(), RuntimeError> {
+  let style = evaluate_style_declarations(&expr.declarations, &context)?;
+  let selector_text = stringify_element_selector(&expr.selector, true, &context);
 
   let main_style_rule = virt::StyleRule {
     selector_text,
@@ -212,13 +230,13 @@ fn evaluate_style_rule2(
 
   let mut css_rules = vec![main_style_rule];
 
-  css_rules.extend(evaluate_child_style_rules(
+  evaluate_child_style_rules(
     &child_rule_prefix,
     &expr.children,
-    &&context,
-  )?);
+    context,
+  )?;
 
-  Ok(css_rules)
+  Ok(())
 }
 
 fn stringify_optional_selector(selector: &Option<Box<ast::Selector>>, context: &Context) -> String {
