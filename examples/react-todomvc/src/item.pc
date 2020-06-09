@@ -131,15 +131,11 @@
   @media screen and (-webkit-min-device-pixel-ratio: 0) {
     .todo .toggle {
       background: none;
-    }
-
-    .todo .toggle {
       height: 40px;
     }
   }
 
 </style>
-
 
 <fragment export component as="label-input">
   <input {onKeyPress} {onBlur} default-value={label} type="text" class="edit" autofocus="autofocus">

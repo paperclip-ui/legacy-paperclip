@@ -12,8 +12,6 @@
     top: 0;
   }
 
-
-
   .todoapp {
     background: #fff;
     margin: 130px 0 40px 0;
@@ -21,22 +19,22 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
   }
 
-  input::-webkit-input-placeholder {
-    font-style: italic;
-    font-weight: 300;
-    color: #e6e6e6;
-  }
-
-  input::-moz-placeholder {
-    font-style: italic;
-    font-weight: 300;
-    color: #e6e6e6;
-  }
-
-  input::input-placeholder {
-    font-style: italic;
-    font-weight: 300;
-    color: #e6e6e6;
+  input {
+    &::-webkit-input-placeholder {
+      font-style: italic;
+      font-weight: 300;
+      color: #e6e6e6;
+    }
+    &::-moz-placeholder {
+      font-style: italic;
+      font-weight: 300;
+      color: #e6e6e6;
+    }
+    &::input-placeholder {
+      font-style: italic;
+      font-weight: 300;
+      color: #e6e6e6;
+    }
   }
 
   h1 {
@@ -63,14 +61,11 @@
     border: 0;
     color: inherit;
     padding: 6px;
-    border: 1px solid #999;
+    border: 1px solid rgb(161, 62, 62);
     box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  }
-      
-  .new-todo {
     padding: 16px 16px 16px 60px;
     border: none;
     background: rgba(0, 0, 0, 0.003);
@@ -82,28 +77,27 @@
     border: none; /* Mobile Safari */
     opacity: 0;
     position: absolute;
-  }
+    & + label {
+      width: 60px;
+      height: 34px;
+      font-size: 0;
+      position: absolute;
+      top: -52px;
+      left: -13px;
+      -webkit-transform: rotate(90deg);
+      transform: rotate(90deg);
 
-  .toggle-all + label {
-    width: 60px;
-    height: 34px;
-    font-size: 0;
-    position: absolute;
-    top: -52px;
-    left: -13px;
-    -webkit-transform: rotate(90deg);
-    transform: rotate(90deg);
-  }
+      &:before {
+        content: "❯";
+        font-size: 22px;
+        color: #e6e6e6;
+        padding: 10px 27px 10px 27px;
+      }
+    }
 
-  .toggle-all + label:before {
-    content: "❯";
-    font-size: 22px;
-    color: #e6e6e6;
-    padding: 10px 27px 10px 27px;
-  }
-
-  .toggle-all:checked + label:before {
-    color: #737373;
+    &:checked + label:before {
+      color: #737373;
+    }
   }
 
 
@@ -113,20 +107,19 @@
     font-size: 10px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
     text-align: center;
-  }
+    & p {
+      line-height: 1;
+    }
 
-  .info p {
-    line-height: 1;
-  }
+    & a {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 400;
 
-  .info a {
-    color: inherit;
-    text-decoration: none;
-    font-weight: 400;
-  }
-
-  .info a:hover {
-    text-decoration: underline;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   .todo-list {
