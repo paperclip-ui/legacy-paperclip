@@ -1,12 +1,30 @@
-<import as="Message" src="./message.pc">
-
-<style>
-  :global(.red) {
-    &--ab {
-      text-decoration: underline;
+<style> 
+  .button {
+    font-family: Helvetica;
+    display: inline-block;
+    border-radius: 10px;
+    padding: 10px 20px;
+    color: #FFF;
+    background: rgb(51, 51, 51);
+    &[data-secondary] {
+      color: #333;
+      border: 1px solid #333;
+      background: transparent;
     }
-    color: blue;
   }
 </style>
 
-<Message />
+<!-- components to export -->
+<div export component as="Button" data-secondary={secondary} class="button">
+  {children}
+</div>
+
+<!-- Previews -->
+
+<Button>
+  This is a primary button
+</Button>
+
+<Button secondary>
+  This is a secondary button
+</Button>

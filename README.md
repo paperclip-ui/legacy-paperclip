@@ -82,20 +82,34 @@ Paperclip comes with just primitive behavior for creating the look & feel of you
 ```html
 <style> 
   .button {
+    font-family: Helvetica;
+    display: inline-block;
     border-radius: 10px;
-    padding: 20px 10px;
+    padding: 10px 20px;
     color: #FFF;
-    background: #333;
+    background: rgb(51, 51, 51);
     &[data-secondary] {
       color: #333;
       border: 1px solid #333;
+      background: transparent;
     }
   }
 </style>
 
+<!-- components to export -->
 <div export component as="Button" data-secondary={secondary} class="button">
   {children}
 </div>
+
+<!-- Previews -->
+
+<Button>
+  This is a primary button
+</Button>
+
+<Button secondary>
+  This is a secondary button
+</Button>
 ```
 
 Here's how you'd use this component in React:
