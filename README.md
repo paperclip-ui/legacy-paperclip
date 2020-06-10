@@ -29,13 +29,13 @@
 Notes:
 
 - need to express that it's lightweight
+- no compiler
+
 -->
 
-# Build UIs in real-time ⚡️
+Paperclip is a template language for creating UIs in a flash. ⚡️
 
 <!-- No more juggling between the coding & debugging in the browser. Paperclip provides tooling that allows  -->
-
-Paperclip is a platform-agnostic language for creating user interfaces, directly within VS Code.
 
 <!-- Tooling is provided that brings a real-time preview of your application directly into your code editor. -->
 
@@ -71,18 +71,62 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
 
-## Logic-less
+> The VS Code extensions allows you to see a live preview of your components as you're building them
+
+## Just primitive behavior
 
 <!-- My biggest problem with UI development over the years has been the _speed_ of creating them. It's a time sink, especially as applications get bigger. And because user interface development is such as iterative process, waiting around for UIs to reload can be a real problem for productivity. -->
 
+Paperclip comes with just primitive behavior for creating the look & feel of your application. These templates can then be used in your language of choice (currently just React). Here's an example template:
 
-Paperclip provides a lightweight approach for creating presentational components. It's not intended to replace code, but instead allow you to focus on the just the basic construction of your user interfaces, without the heaviness that an _entire_ application brings. This allows Paperclip to be fast, and _remain_ fast as your project grows in size. 
+```html
+<style> 
+  .button {
+    border-radius: 10px;
+    padding: 20px 10px;
+    color: #FFF;
+    background: #333;
+    &[data-secondary] {
+      color: #333;
+      border: 1px solid #333;
+    }
+  }
+</style>
 
-#### Goals
+<div export component as="Button" data-secondary={secondary} class="button">
+  {children}
+</div>
+```
+
+Here's how you'd use this component in React:
+
+```typescript
+import {Button} from "./button.pc";
+
+export SomeForm = () => {
+  return <>
+    <Button>
+      This is a primary button
+    </Button>
+    <Button secondary>
+      This is a secondary button
+    </Button>
+  </>;
+};
+```
+
+## Perfect for your design system
+
+[TODO GIF]
+
+<!-- 
+Paperclip provides a lightweight approach for creating presentational components. It's not intended to replace code, but instead allow you to focus on the just the basic construction of your user interfaces, without the heaviness that an _entire_ application brings. This allows Paperclip to be fast, and _remain_ fast as your project grows in size.  -->
+
+<!-- #### Goals
 
 - Quicker feedback loop between writing code & seeing UI, thus helping you code faster.
 - Provide safety around building user interfaces, especially for large projects. This is helped with type safety, and visual regression tooling. 
-- Have a platform & language agnostic approach for building user interfaces. 
+- Have a platform & language agnostic approach for building user interfaces.  -->
 
 <!-- #### Non-goals
 
@@ -95,126 +139,6 @@ Paperclip provides a lightweight approach for creating presentational components
 - Super fast, even for large codebases. 
 - Templates compile to plain, strongly typed code.
 - Works with Webpack.
-
-## What does a template look like?
-
-```html
-<!-- todo-list.pc -->
-
-<!--
-Styles are scoped to this file, so you don't have to worry about them leaking out.
--->
-
-<style>
-  * {
-    font-family: Helvetica;
-  }
-
-  ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  li[data-done] {
-    text-decoration: line-through;
-  }
-</style>
-
-<!-- Parts are building blocks that are individually used in application code (more information below). -->
-<li export component as="TodoItem" data-done={done}>
-  <input type="checkbox" checked={done} onClick={onDoneClick}>
-
-  <!-- You can also define slots where text & elements are inserted into. -->
-  {label}
-</li>
-
-<fragment export component as="TodoList">
-  <h1>Todos:</h1>
-  <input type="text" onKeyPress={onNewTodoKeyPress} placeholder="Add a new todo..." >
-  <ul>
-    {todoItems}
-  </ul>
-</fragment>
-
-<!-- 
-  This renders a preview of TodoLis
- -->
-<TodoList todoItems={<fragment>
-  <TodoItem label="Feed cat" done />
-  <TodoItem label="Take out trash" />
-  <TodoItem label="Walk dog" done />
-</fragment>} />
-```
-
-> ☝🏻This example uses just about all of the features that Paperclip has to offer. No logic, just syntax for describing how your UI looks. 
-
-Here's what you see in VS Code as you type away:
-
-![Simple todo preview](https://user-images.githubusercontent.com/757408/75791302-ff866580-5d31-11ea-8da9-1c43631f0626.gif)
-
-
-## How do I add logic? 
-
-Templates can be imported directly into your app code assuming that it's compiled, or
-you're using a bundler. For example:
-
-```javascript
-
-// <part /> elements are exposed as React components.
-import { TodoList, TodoItem } from "./list.pc";
-import React, { useState } from "react";
-
-export default () => {
-  const [todos, setTodos] = useState([
-    { label: "Clean car" },
-    { label: "Eat food", done: true },
-    { label: "Sell car" }
-  ]);
-
-  const onNewInputKeyPress = (event) => {
-    if (event.key === "Enter" && value) {
-      setTodos([...todos, { label: event.target.value }]);
-      event.target.value = "";
-    }
-  };
-
-  const onDoneClick = (todo: Todo) => {
-    setTodos(
-      todos.map(oldTodo => {
-        return oldTodo.id === todo.id
-          ? {
-              ...oldTodo,
-              done: !oldTodo.done
-            }
-          : oldTodo;
-      })
-    );
-  };
-
-  // The attribute bindings & slots that were defined are
-  // exposed as props for each <part /> component.
-  return (
-    <TodoList
-      onNewTodoKeyPress={onNewInputKeyPress}
-      todoItems={todos.map(todo => {
-        return (
-          <TodoItem
-            done={todo.done}
-            onDoneClick={() => onDoneClick(todo)}
-            label={todo.label}
-            key={todo.id}
-          />
-        );
-      })}
-    />
-  );
-};
-```
-
-> The code for this example is also [here](./examples/react-simple-todo-list).
-
-> More compiler targets are planned for other languages and frameworks. React is just a starting point ✌🏻.
 
 <!-- 
 As you might have noticed, Paperclip just exports building blocks for your component. All of the logic remains in your application code, so you don't have to worry about  -->

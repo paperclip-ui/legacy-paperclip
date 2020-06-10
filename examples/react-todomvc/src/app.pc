@@ -5,7 +5,7 @@
 
 <style>
   .app-container {
-    background: #f5f5f5;
+    background: rgb(255, 255, 255);
     width: 100vw;
     height: 100vh;
     position: absolute;
@@ -44,7 +44,7 @@
     font-size: 100px;
     font-weight: 100;
     text-align: center;
-    color: rgba(226, 163, 235, 0.979);
+    color: rgba(175, 233, 68, 0.979);
     -webkit-text-rendering: optimizeLegibility;
     -moz-text-rendering: optimizeLegibility;
     text-rendering: optimizeLegibility;

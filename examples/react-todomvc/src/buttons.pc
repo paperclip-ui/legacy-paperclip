@@ -1,0 +1,44 @@
+<style>
+  * {
+    font-family: Helvetica;
+  }
+
+  :root {
+
+  }
+
+  .button {
+    --test: rgb(0, 255, 115);
+    display: inline-block;
+    background: rgb(175, 175, 175);
+    color: white;
+    padding: 10px 10px;
+    border-radius: 10px;
+
+    &[data-secondary] { 
+      background: transparent;
+      border: 1px solid rgb(175, 175, 175);
+      color: var(--test);
+    }
+
+    &.dark {
+      color: red;
+    }
+  }
+
+</style>
+
+<h1>This is a primary button</h1>
+
+<div export component as="Button" data-secondary={secondary?} className="button dark">
+  {children}
+</div>
+
+<Button>
+  Mr Button
+</Button>
+
+<h1>This is a secondary button</h1>
+<Button secondary>
+  Secondary Button
+</Button>

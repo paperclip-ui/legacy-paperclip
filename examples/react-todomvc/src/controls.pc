@@ -3,7 +3,7 @@
 <style>
 
 .footer {
-  color: #777;
+  color: #F60;
   padding: 10px 15px;
   height: 20px;
   text-align: center;
@@ -79,7 +79,7 @@
 }
 </style>
 
-<li export component as="filter">
+<li export component as="Filter">
   <a {href} data-select={active}>{label}</a>
 </li>
 
