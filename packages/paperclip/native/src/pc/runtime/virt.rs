@@ -1,8 +1,8 @@
 use crate::base::ast::Location;
 use crate::css::runtime::virt as css_virt;
 use serde::Serialize;
-use std::collections::HashMap;
 use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
