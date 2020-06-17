@@ -148,11 +148,12 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       name.to_string(),
       context,
     )?)),
-    "mixin" => Ok(Rule::Mixin(parse_mixin_rule(
-      context,
-    )?)),
+    "mixin" => Ok(Rule::Mixin(parse_mixin_rule(context)?)),
     "media" => Ok(Rule::Media(parse_condition_rule(
       name.to_string(),
+      context,
+    )?)),
+    "export" => Ok(Rule::Export(parse_export_rule(
       context,
     )?)),
     "keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context)?)),
@@ -165,6 +166,28 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
     _ => Err(ParseError::unexpected_token(context.tokenizer.pos)),
   }
 }
+
+fn parse_export_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<ExportRule, ParseError> {
+
+
+  context.tokenizer.next_expect(Token::CurlyOpen)?;
+  eat_superfluous(context)?;
+
+  let mut rules = vec![];
+
+  while context.tokenizer.peek(1)? != Token::CurlyClose {
+    rules.push(parse_rule(context)?);
+  }
+
+  context.tokenizer.next_expect(Token::CurlyClose)?;
+
+  Ok(ExportRule {
+    rules,
+  })
+}
+
 
 fn parse_condition_rule<'a, 'b>(
   name: String,
@@ -192,16 +215,11 @@ fn parse_condition_rule<'a, 'b>(
   })
 }
 
-fn parse_mixin_rule<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<MixinRule, ParseError> {
+fn parse_mixin_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MixinRule, ParseError> {
   let name = parse_selector_name(context)?.to_string();
   eat_superfluous(context)?;
   let (declarations, _) = parse_declaration_body(context)?;
-  Ok(MixinRule {
-    name,
-    declarations,
-  })
+  Ok(MixinRule { name, declarations })
 }
 
 fn parse_font_face_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<FontFaceRule, ParseError> {
@@ -590,7 +608,9 @@ fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaratio
     parse_key_value_declaration(context)
   }
 }
-fn parse_include_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
+fn parse_include_declaration<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<Declaration, ParseError> {
   context.tokenizer.next_expect(Token::At);
   context.tokenizer.next_expect(Token::Word("include"));
   eat_superfluous(context);
@@ -600,7 +620,7 @@ fn parse_include_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<De
     mixin_path.push(parse_selector_name(context)?.to_string());
     if context.tokenizer.peek(1)? != Token::Dot {
       break;
-    } 
+    }
     context.tokenizer.next();
   }
 
@@ -608,12 +628,12 @@ fn parse_include_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<De
     context.tokenizer.next()?; // eat ;
   }
 
-  Ok(Declaration::Include(IncludeDeclaration {
-    mixin_path
-  }))
+  Ok(Declaration::Include(IncludeDeclaration { mixin_path }))
 }
 
-fn parse_key_value_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
+fn parse_key_value_declaration<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<Declaration, ParseError> {
   let start = context.tokenizer.pos;
   let name = parse_selector_name(context)?.to_string();
   let name_end = context.tokenizer.pos;
@@ -780,6 +800,14 @@ mod tests {
 
       @mixin a {
         color: red;
+      }
+      @export {
+        @mixin a {
+          color: red;
+        }
+        .a {
+          color: c;
+        }
       }
     ";
 

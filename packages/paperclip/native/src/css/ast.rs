@@ -11,12 +11,8 @@ pub enum Declaration {
 impl fmt::Display for Declaration {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
-      Declaration::KeyValue(kv) => {
-        kv.fmt(f)
-      }
-      Declaration::Include(inc) => {
-        inc.fmt(f)
-      }
+      Declaration::KeyValue(kv) => kv.fmt(f),
+      Declaration::Include(inc) => inc.fmt(f),
     }
   }
 }
@@ -43,7 +39,7 @@ impl fmt::Display for KeyValueDeclaration {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeDeclaration {
-  pub mixin_path: Vec<String>
+  pub mixin_path: Vec<String>,
 }
 
 impl fmt::Display for IncludeDeclaration {
@@ -61,6 +57,7 @@ pub enum Rule {
   Namespace(String),
   FontFace(FontFaceRule),
   Media(ConditionRule),
+  Export(ExportRule),
   Mixin(MixinRule),
   Supports(ConditionRule),
   Page(ConditionRule),
@@ -73,6 +70,7 @@ impl fmt::Display for Rule {
     match self {
       Rule::Style(rule) => write!(f, "{}", rule.to_string()),
       Rule::Charset(value) => write!(f, "@charset {}", value),
+      Rule::Export(export) => write!(f, "{}", export),
       Rule::Namespace(value) => write!(f, "@namespace {}", value),
       Rule::FontFace(rule) => write!(f, "{}", rule.to_string()),
       Rule::Media(rule) => write!(f, "{}", rule.to_string()),
@@ -129,6 +127,24 @@ impl fmt::Display for FontFaceRule {
   }
 }
 
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ExportRule {
+  pub rules: Vec<Rule>,
+}
+
+impl fmt::Display for ExportRule {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    writeln!(f, "@export  {{")?;
+    for rule in &self.rules {
+      rule.fmt(f);
+    }
+    writeln!(f, "}}")?;
+
+    Ok(())
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ConditionRule {
   pub name: String,
@@ -153,7 +169,6 @@ pub struct MixinRule {
   pub name: String,
   pub declarations: Vec<Declaration>,
 }
-
 
 impl fmt::Display for MixinRule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

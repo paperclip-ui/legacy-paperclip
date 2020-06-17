@@ -1,9 +1,9 @@
 use super::super::ast;
 use super::virt;
 use crate::base::runtime::RuntimeError;
-use std::collections::HashMap;
 use crate::pc::runtime::vfs::VirtualFileSystem;
 use regex::Regex;
+use std::collections::HashMap;
 
 pub struct Context<'a> {
   scope: &'a str,
@@ -48,6 +48,9 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       context
         .all_rules
         .push(virt::Rule::Namespace(namespace.to_string()));
+    }
+    ast::Rule::Export(export) => {
+      evaluate_export_rule(export, context);
     }
     ast::Rule::FontFace(rule) => {
       context
@@ -178,9 +181,8 @@ fn evaluate_condition_rule(
     uri: context.uri,
     vfs: context.vfs,
     all_rules: vec![],
-    mixins: context.mixins.clone()
+    mixins: context.mixins.clone(),
   };
-
 
   evaluate_style_rules(&rule.rules, &mut child_context)?;
 
@@ -255,6 +257,12 @@ fn evaluate_style_rule(expr: &ast::StyleRule, context: &mut Context) -> Result<(
   Ok(())
 }
 
+fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result<(), RuntimeError> {
+  for rule in &expr.rules {
+    evaluate_rule(rule, context);
+  }
+  Ok(())
+}
 fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(), RuntimeError> {
   let style = evaluate_style_declarations(&expr.declarations, context)?;
   context.mixins.insert(expr.name.trim().to_string(), style);
@@ -418,7 +426,6 @@ fn evaluate_style_key_value_declaration<'a>(
   expr: &'a ast::KeyValueDeclaration,
   context: &Context,
 ) -> Result<virt::CSSStyleProperty, RuntimeError> {
-  
   let mut value = expr.value.to_string();
 
   let url_re = Regex::new(r#"url\((?:['"]?)(.*?)(?:['"]?)\)"#).unwrap();

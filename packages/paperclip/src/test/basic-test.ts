@@ -410,7 +410,6 @@ describe(__filename + "#", () => {
       `<style>.a, .b { } .a--c { color:blue; } .b--c { color:blue; }</style>`
     ],
     [
-      // no class mod for components if shadow pierce operator is not defined
       {
         "/entry.pc": `
           <style>
@@ -429,7 +428,6 @@ describe(__filename + "#", () => {
       `<style>._80f4925f_a { color:b; background:c; }</style>`
     ],
     [
-      // no class mod for components if shadow pierce operator is not defined
       {
         "/entry.pc": `
           <style>
@@ -445,6 +443,32 @@ describe(__filename + "#", () => {
               @include b;
               background: c;
             }
+          </style>
+        `
+      },
+      {},
+      `<style>._80f4925f_c { color:b; color:c; background:c; }</style>`
+    ],
+    [
+      {
+        "/entry.pc": `
+          <import as="a" src="./module.pc">
+          <style>
+            @export {
+              .c {
+                @include a.b;
+                background: c;
+              }
+            }
+          </style>
+        `,
+        "/module.pc": `
+          <style>
+            @export {
+              @mixin b {
+                color: blue;
+              }
+            }          
           </style>
         `
       },
