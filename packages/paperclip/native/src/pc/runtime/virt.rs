@@ -2,6 +2,7 @@ use crate::base::ast::Location;
 use crate::css::runtime::virt as css_virt;
 use serde::Serialize;
 use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -28,7 +29,7 @@ pub struct Element {
 
   #[serde(rename = "tagName")]
   pub tag_name: String,
-  pub attributes: HashMap<String, Option<String>>,
+  pub attributes: BTreeMap<String, Option<String>>,
   pub children: Vec<Node>,
 }
 

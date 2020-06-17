@@ -10,7 +10,7 @@ use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
 use crate::js::runtime::evaluator::evaluate as evaluate_js;
 use crate::js::runtime::virt as js_virt;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, BTreeMap, HashSet};
 use std::iter::FromIterator;
 
 #[derive(Clone)]
@@ -529,7 +529,7 @@ fn evaluate_native_element<'a>(
   is_root: bool,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-  let mut attributes: HashMap<String, Option<String>> = HashMap::new();
+  let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
 
   let tag_name = ast::get_tag_name(element);
 

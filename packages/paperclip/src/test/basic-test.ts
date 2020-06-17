@@ -227,7 +227,7 @@ describe(__filename + "#", () => {
       },
 
       {},
-      `<style></style><span data-pc-1acb798 class="_1acb798_blue blue">message </span>`
+      `<style></style><span class="_1acb798_blue blue" data-pc-1acb798>message </span>`
     ],
     [
       // class piercing
@@ -243,7 +243,7 @@ describe(__filename + "#", () => {
           </span>`
       },
       {},
-      `<style></style><span data-pc-1acb798 class="_80f4925f_red red">message </span>`
+      `<style></style><span class="_80f4925f_red red" data-pc-1acb798>message </span>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -290,7 +290,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style></style><span data-pc-80f4925f class="_80f4925f_a a b"></span><span data-pc-80f4925f class="_80f4925f_a a _80f4925f_b b"></span>`
+      `<style></style><span class="_80f4925f_a a b" data-pc-80f4925f></span><span class="_80f4925f_a a _80f4925f_b b" data-pc-80f4925f></span>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
