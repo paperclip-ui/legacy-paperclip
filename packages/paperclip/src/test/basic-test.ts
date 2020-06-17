@@ -463,17 +463,28 @@ describe(__filename + "#", () => {
           </style>
         `,
         "/module.pc": `
+          <import as="a" src="./module2.pc">
           <style>
             @export {
               @mixin b {
+                @include a.b;
                 color: blue;
+              }
+            }          
+          </style>
+        `,
+        "/module2.pc": `
+          <style>
+            @export {
+              @mixin b {
+                color: orange;
               }
             }          
           </style>
         `
       },
       {},
-      `<style>._80f4925f_c { color:b; color:c; background:c; }</style>`
+      `<style>._80f4925f_c { color:orange; color:blue; background:c; }</style>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

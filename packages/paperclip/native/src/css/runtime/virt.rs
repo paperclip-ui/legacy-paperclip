@@ -1,5 +1,6 @@
 use serde::Serialize;
 use std::fmt;
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct CSSSheet {
@@ -33,6 +34,14 @@ pub enum Rule {
   Page(ConditionRule),
   Document(ConditionRule),
   Keyframes(KeyframesRule),
+}
+
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "kind")]
+pub enum Exportable {
+  ClassName(String),
+  Mixin(Vec<CSSStyleProperty>)
 }
 
 impl fmt::Display for Rule {

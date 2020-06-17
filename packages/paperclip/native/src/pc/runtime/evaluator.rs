@@ -130,24 +130,57 @@ where
   }
 }
 
+
 pub fn evaluate_document_styles<'a>(
   node_expr: &ast::Node,
   uri: &String,
   vfs: &'a VirtualFileSystem,
-) -> Result<css_virt::CSSSheet, RuntimeError> {
+  graph: &'a DependencyGraph,
+  include_imported_styled: bool
+) -> Result<(css_virt::CSSSheet, HashMap<String, css_virt::Exportable>), RuntimeError> {
   let mut sheet = css_virt::CSSSheet { rules: vec![] };
+  let entry = graph.dependencies.get(uri).unwrap();
+
+  let mut css_imports: HashMap<String, HashMap<String, css_virt::Exportable>> = HashMap::new();
+
+  for (id, dep_uri) in &entry.dependencies {
+    let imp = graph.dependencies.get(dep_uri).unwrap();
+
+    match &imp.content {
+      DependencyContent::Node(imp_node) => {
+        let (imp_sheet, imp_exports) = evaluate_document_styles(imp_node, dep_uri, vfs, graph, include_imported_styled)?;
+        css_imports.insert(id.to_string(), imp_exports);
+        if include_imported_styled {
+          sheet.extend(imp_sheet);
+        }
+      },
+      DependencyContent::StyleSheet(imp_style) => {
+        let (imp_sheet, imp_exports) = evaluate_css(imp_style, dep_uri, &get_document_style_scope(&dep_uri), vfs, &HashMap::new())?;
+        css_imports.insert(id.to_string(), imp_exports);
+        if include_imported_styled {
+          sheet.extend(imp_sheet);
+        }
+      }
+    };
+    
+  }
+
+  let mut css_exports: HashMap<String, css_virt::Exportable> = HashMap::new();
+
   let children_option = ast::get_children(&node_expr);
   let scope = get_document_style_scope(uri);
   if let Some(children) = children_option {
     // style elements are only allowed in root, so no need to traverse
     for child in children {
       if let ast::Node::StyleElement(style_element) = &child {
-        sheet.extend(evaluate_css(&style_element.sheet, uri, &scope, vfs)?);
+        let (child_sheet, child_exports) = evaluate_css(&style_element.sheet, uri, &scope, vfs, &css_imports)?;
+        sheet.extend(child_sheet);
+        css_exports.extend(child_exports);
       }
     }
   }
 
-  Ok(sheet)
+  Ok((sheet, css_exports))
 }
 
 pub fn evaluate_jumbo_style<'a>(
@@ -157,34 +190,9 @@ pub fn evaluate_jumbo_style<'a>(
   let mut sheet = css_virt::CSSSheet { rules: vec![] };
   let uri = context.uri;
 
-  let deps = context.graph.flatten(uri);
-
-  for (dependency, dependent_option) in context.graph.flatten(uri) {
-    // skip if self -- styles get evaluated after all imports. Note
-    // that this is incorrect if style is declared before import, but whatever.
-    if &dependency.uri == uri {
-      continue;
-    }
-    let dep_sheet = match &dependency.content {
-      DependencyContent::Node(node) => {
-        evaluate_document_styles(node, &dependency.uri, context.vfs)?
-      }
-      DependencyContent::StyleSheet(sheet) => {
-        let scope = if let Some(dependent) = dependent_option {
-          get_document_style_scope(&dependent.uri)
-        } else {
-          get_document_style_scope(&dependency.uri)
-        };
-
-        evaluate_css(&sheet, &dependency.uri, &scope, context.vfs)?
-      }
-    };
-
-    sheet.extend(dep_sheet);
-  }
-
   // this element styles always get priority.
-  sheet.extend(evaluate_document_styles(&entry_expr, &uri, context.vfs)?);
+  let (child_sheet, _) = evaluate_document_styles(&entry_expr, &uri, context.vfs, context.graph, true)?;
+  sheet.extend(child_sheet);
 
   Ok(virt::Node::StyleElement(virt::StyleElement { sheet }))
 }

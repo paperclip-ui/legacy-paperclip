@@ -61,19 +61,22 @@ async fn evaluate_content_styles(
   content: &String,
   uri: &String,
   vfs: &VirtualFileSystem,
+  graph: &DependencyGraph,
 ) -> Result<css_vrt::CSSSheet, EngineError> {
   if uri.ends_with(".css") {
     parse_css(content)
       .map_err(|err| EngineError::Parser(err))
       .and_then(|css_ast| {
         let scope = get_document_style_scope(uri);
-        evaluate_css(&css_ast, uri, &scope, vfs).map_err(|err| EngineError::Runtime(err))
+        let (sheet, _) = evaluate_css(&css_ast, uri, &scope, vfs, &HashMap::new()).map_err(|err| EngineError::Runtime(err))?;
+        return Ok(sheet);
       })
   } else {
     parse_pc(content)
       .map_err(|err| EngineError::Parser(err))
       .and_then(|node_ast| {
-        evaluate_document_styles(&node_ast, uri, vfs).map_err(|err| EngineError::Runtime(err))
+        let (sheet, _) = evaluate_document_styles(&node_ast, uri, vfs, graph, false).map_err(|err| EngineError::Runtime(err))?;
+        Ok(sheet)
       })
   }
 }
@@ -165,7 +168,7 @@ impl Engine {
     uri: &String,
   ) -> Result<css_vrt::CSSSheet, EngineError> {
     let content = self.vfs.reload(uri).await.unwrap().to_string();
-    evaluate_content_styles(&content, uri, &self.vfs).await
+    evaluate_content_styles(&content, uri, &self.vfs, &self.dependency_graph).await
   }
 
   pub async fn evaluate_content_styles(
@@ -173,7 +176,7 @@ impl Engine {
     content: &String,
     uri: &String,
   ) -> Result<css_vrt::CSSSheet, EngineError> {
-    evaluate_content_styles(content, uri, &self.vfs).await
+    evaluate_content_styles(content, uri, &self.vfs, &self.dependency_graph).await
   }
 
   pub async fn update_virtual_file_content(

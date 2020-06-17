@@ -153,9 +153,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       name.to_string(),
       context,
     )?)),
-    "export" => Ok(Rule::Export(parse_export_rule(
-      context,
-    )?)),
+    "export" => Ok(Rule::Export(parse_export_rule(context)?)),
     "keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context)?)),
     "font-face" => Ok(Rule::FontFace(parse_font_face_rule(context)?)),
     "document" => Ok(Rule::Document(parse_condition_rule(
@@ -167,11 +165,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
   }
 }
 
-fn parse_export_rule<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<ExportRule, ParseError> {
-
-
+fn parse_export_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ExportRule, ParseError> {
   context.tokenizer.next_expect(Token::CurlyOpen)?;
   eat_superfluous(context)?;
 
@@ -183,11 +177,8 @@ fn parse_export_rule<'a, 'b>(
 
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
-  Ok(ExportRule {
-    rules,
-  })
+  Ok(ExportRule { rules })
 }
-
 
 fn parse_condition_rule<'a, 'b>(
   name: String,

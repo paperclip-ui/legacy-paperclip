@@ -127,7 +127,6 @@ impl fmt::Display for FontFaceRule {
   }
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ExportRule {
   pub rules: Vec<Rule>,
