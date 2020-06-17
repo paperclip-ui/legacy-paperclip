@@ -20,7 +20,7 @@ pub fn evaluate<'a>(
   uri: &'a String,
   scope: &'a str,
   vfs: &'a VirtualFileSystem,
-  imports: &'a HashMap<String, HashMap<String, virt::Exportable>>
+  imports: &'a HashMap<String, HashMap<String, virt::Exportable>>,
 ) -> Result<(virt::CSSSheet, HashMap<String, virt::Exportable>), RuntimeError> {
   let mut context = Context {
     scope,
@@ -38,7 +38,7 @@ pub fn evaluate<'a>(
     virt::CSSSheet {
       rules: context.all_rules,
     },
-    context.exports
+    context.exports,
   ))
 }
 
@@ -243,21 +243,21 @@ fn evaluate_style_declarations<'a>(
       ast::Declaration::Include(inc) => {
         let mut imp_mixins: HashMap<String, Vec<virt::CSSStyleProperty>> = HashMap::new();
 
-
-        let mixin_context_option: Option<&HashMap<String, Vec<virt::CSSStyleProperty>>> = if inc.mixin_path.len() == 2 {
-          if let Some(imp) = context.imports.get(inc.mixin_path.get(0).unwrap()) {
-            for (key, exportable) in imp {
-              if let virt::Exportable::Mixin(imp_mixin) = exportable {
-                imp_mixins.insert(key.to_string(), imp_mixin.clone());
+        let mixin_context_option: Option<&HashMap<String, Vec<virt::CSSStyleProperty>>> =
+          if inc.mixin_path.len() == 2 {
+            if let Some(imp) = context.imports.get(inc.mixin_path.get(0).unwrap()) {
+              for (key, exportable) in imp {
+                if let virt::Exportable::Mixin(imp_mixin) = exportable {
+                  imp_mixins.insert(key.to_string(), imp_mixin.clone());
+                }
               }
             }
-          }
-          Some(&imp_mixins)
-        } else if inc.mixin_path.len() == 1 {
-          Some(&context.mixins)
-        } else {
-          None
-        };
+            Some(&imp_mixins)
+          } else if inc.mixin_path.len() == 1 {
+            Some(&context.mixins)
+          } else {
+            None
+          };
 
         if let Some(mixin_context) = mixin_context_option {
           let mixin_decls_option = mixin_context.get(inc.mixin_path.last().unwrap());
@@ -277,7 +277,6 @@ fn evaluate_style_rule(expr: &ast::StyleRule, context: &mut Context) -> Result<(
 }
 
 fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result<(), RuntimeError> {
-
   let mut exports: HashMap<String, virt::Exportable> = HashMap::new();
 
   for rule in &expr.rules {
@@ -288,11 +287,12 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
         // TODO
       }
       ast::Rule::Mixin(mixin) => {
-        exports.insert(mixin.name.to_string(), virt::Exportable::Mixin(context.mixins.get(&mixin.name).unwrap().clone()));
+        exports.insert(
+          mixin.name.to_string(),
+          virt::Exportable::Mixin(context.mixins.get(&mixin.name).unwrap().clone()),
+        );
       }
-      _ => {
-
-      }
+      _ => {}
     }
   }
 

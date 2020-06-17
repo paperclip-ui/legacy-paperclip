@@ -307,7 +307,7 @@ describe(__filename + "#", () => {
           </span>`
       },
       {},
-      `<style></style><span data-pc-1acb798 class="_1acb798_blue blue _80f4925f_red red">message </span><span data-pc-80f4925f></span>`
+      `<style></style><span class="_1acb798_blue blue _80f4925f_red red" data-pc-1acb798>message </span><span data-pc-80f4925f></span>`
     ],
     [
       // nexted style declarations
@@ -485,6 +485,28 @@ describe(__filename + "#", () => {
       },
       {},
       `<style>._80f4925f_c { color:orange; color:blue; background:c; }</style>`
+    ],
+    [
+      {
+        "/entry.pc": `
+          <import as="mod" src="./module.pc">
+          <mod>
+            <mod.item>a</mod.item>
+            <mod.item>b</mod.item>
+            <mod.item>c</mod.item>
+          </mod>
+        `,
+        "/module.pc": `
+          <div export component as="default">
+            {children}
+          </div>
+          <span export component as="item">
+            {children}
+          </span>
+        `
+      },
+      {},
+      `<style></style><div data-pc-139cec8e><span data-pc-139cec8e>a</span><span data-pc-139cec8e>b</span><span data-pc-139cec8e>c</span></div>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

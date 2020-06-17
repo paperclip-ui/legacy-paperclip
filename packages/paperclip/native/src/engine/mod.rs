@@ -68,14 +68,16 @@ async fn evaluate_content_styles(
       .map_err(|err| EngineError::Parser(err))
       .and_then(|css_ast| {
         let scope = get_document_style_scope(uri);
-        let (sheet, _) = evaluate_css(&css_ast, uri, &scope, vfs, &HashMap::new()).map_err(|err| EngineError::Runtime(err))?;
+        let (sheet, _) = evaluate_css(&css_ast, uri, &scope, vfs, &HashMap::new())
+          .map_err(|err| EngineError::Runtime(err))?;
         return Ok(sheet);
       })
   } else {
     parse_pc(content)
       .map_err(|err| EngineError::Parser(err))
       .and_then(|node_ast| {
-        let (sheet, _) = evaluate_document_styles(&node_ast, uri, vfs, graph, false).map_err(|err| EngineError::Runtime(err))?;
+        let (sheet, _) = evaluate_document_styles(&node_ast, uri, vfs, graph, false)
+          .map_err(|err| EngineError::Runtime(err))?;
         Ok(sheet)
       })
   }

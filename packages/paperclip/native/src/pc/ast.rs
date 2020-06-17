@@ -345,16 +345,16 @@ pub fn get_imports<'a>(root_expr: &'a Node) -> Vec<&'a Element> {
 }
 
 pub fn get_tag_name<'a>(element: &'a Element) -> String {
-  if element.tag_name.contains(":") {
-    element.tag_name[..element.tag_name.find(":").unwrap()].to_string()
+  if element.tag_name.contains(".") {
+    element.tag_name[..element.tag_name.find(".").unwrap()].to_string()
   } else {
     element.tag_name.to_string()
   }
 }
 
 pub fn get_tag_namespace<'a>(element: &'a Element) -> Option<String> {
-  if element.tag_name.contains(":") {
-    Some(element.tag_name[(element.tag_name.find(":").unwrap() + 1)..].to_string())
+  if element.tag_name.contains(".") {
+    Some(element.tag_name[(element.tag_name.find(".").unwrap() + 1)..].to_string())
   } else {
     None
   }
