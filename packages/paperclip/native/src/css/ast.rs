@@ -3,7 +3,26 @@ use serde::Serialize;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct Declaration {
+pub enum Declaration {
+  KeyValue(KeyValueDeclaration),
+  Include(IncludeDeclaration),
+}
+
+impl fmt::Display for Declaration {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    match self {
+      Declaration::KeyValue(kv) => {
+        kv.fmt(f)
+      }
+      Declaration::Include(inc) => {
+        inc.fmt(f)
+      }
+    }
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct KeyValueDeclaration {
   pub name: String,
   pub value: String,
   pub location: Location,
@@ -15,9 +34,21 @@ pub struct Declaration {
   pub value_location: Location,
 }
 
-impl fmt::Display for Declaration {
+impl fmt::Display for KeyValueDeclaration {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     writeln!(f, "{}:{};", &self.name, &self.value)?;
+    Ok(())
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct IncludeDeclaration {
+  pub mixin_path: Vec<String>
+}
+
+impl fmt::Display for IncludeDeclaration {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    writeln!(f, "@include {}", &self.mixin_path.join("."))?;
     Ok(())
   }
 }
@@ -30,6 +61,7 @@ pub enum Rule {
   Namespace(String),
   FontFace(FontFaceRule),
   Media(ConditionRule),
+  Mixin(MixinRule),
   Supports(ConditionRule),
   Page(ConditionRule),
   Document(ConditionRule),
@@ -44,6 +76,7 @@ impl fmt::Display for Rule {
       Rule::Namespace(value) => write!(f, "@namespace {}", value),
       Rule::FontFace(rule) => write!(f, "{}", rule.to_string()),
       Rule::Media(rule) => write!(f, "{}", rule.to_string()),
+      Rule::Mixin(rule) => write!(f, "{}", rule.to_string()),
       Rule::Supports(rule) => write!(f, "{}", rule.to_string()),
       Rule::Keyframes(rule) => write!(f, "{}", rule.to_string()),
       Rule::Document(rule) => write!(f, "{}", rule.to_string()),
@@ -108,6 +141,25 @@ impl fmt::Display for ConditionRule {
     writeln!(f, "@{} {} {{", &self.name, &self.condition_text)?;
     for rule in &self.rules {
       write!(f, "{}\n", &rule.to_string())?;
+    }
+    writeln!(f, "}}")?;
+
+    Ok(())
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct MixinRule {
+  pub name: String,
+  pub declarations: Vec<Declaration>,
+}
+
+
+impl fmt::Display for MixinRule {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    writeln!(f, "@mixin {} {{", &self.name)?;
+    for decl in &self.declarations {
+      write!(f, "{}\n", &decl.to_string())?;
     }
     writeln!(f, "}}")?;
 

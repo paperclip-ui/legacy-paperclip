@@ -1,6 +1,7 @@
 use super::super::ast;
 use super::virt;
 use crate::base::runtime::RuntimeError;
+use std::collections::HashMap;
 use crate::pc::runtime::vfs::VirtualFileSystem;
 use regex::Regex;
 
@@ -8,6 +9,7 @@ pub struct Context<'a> {
   scope: &'a str,
   vfs: &'a VirtualFileSystem,
   uri: &'a String,
+  mixins: HashMap<String, Vec<virt::CSSStyleProperty>>,
   all_rules: Vec<virt::Rule>,
 }
 
@@ -21,6 +23,7 @@ pub fn evaluate<'a>(
     scope,
     uri,
     vfs,
+    mixins: HashMap::new(),
     all_rules: vec![],
   };
   for rule in &expr.rules {
@@ -37,6 +40,9 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       context
         .all_rules
         .push(virt::Rule::Charset(charset.to_string()));
+    }
+    ast::Rule::Mixin(mixin) => {
+      evaluate_mixin_rule(mixin, context);
     }
     ast::Rule::Namespace(namespace) => {
       context
@@ -172,7 +178,9 @@ fn evaluate_condition_rule(
     uri: context.uri,
     vfs: context.vfs,
     all_rules: vec![],
+    mixins: context.mixins.clone()
   };
+
 
   evaluate_style_rules(&rule.rules, &mut child_context)?;
 
@@ -201,16 +209,9 @@ fn evaluate_keyframes_rule(
 
 fn evaluate_keyframe_rule(
   rule: &ast::KeyframeRule,
-  _context: &Context,
+  context: &Context,
 ) -> Result<virt::KeyframeRule, RuntimeError> {
-  let mut style = vec![];
-  for decl in &rule.declarations {
-    style.push(virt::CSSStyleProperty {
-      name: decl.name.to_string(),
-      value: decl.value.to_string(),
-    });
-  }
-
+  let mut style = evaluate_style_declarations(&rule.declarations, context)?;
   Ok(virt::KeyframeRule {
     key: rule.key.to_string(),
     style,
@@ -223,13 +224,40 @@ fn evaluate_style_declarations(
 ) -> Result<Vec<virt::CSSStyleProperty>, RuntimeError> {
   let mut style = vec![];
   for property in declarations {
-    style.push(evaluate_style_declaration(&property, context)?);
+    match property {
+      ast::Declaration::KeyValue(kv) => {
+        style.push(evaluate_style_key_value_declaration(kv, context)?);
+      }
+      ast::Declaration::Include(inc) => {
+        let name = inc.mixin_path.get(0).unwrap();
+
+        let mixin_decls_option = context.mixins.get(name);
+
+        if let Some(mixin_decls) = mixin_decls_option {
+          style.extend(mixin_decls.clone());
+        }
+
+        // if None == nmo {
+        //   panic!("OK");
+        // }
+        // if Some(nm) = nmo {
+
+        //   panic!("{:?}", nm);
+        // }
+      }
+    }
   }
   Ok(style)
 }
 
 fn evaluate_style_rule(expr: &ast::StyleRule, context: &mut Context) -> Result<(), RuntimeError> {
   evaluate_style_rule2(expr, context)?;
+  Ok(())
+}
+
+fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(), RuntimeError> {
+  let style = evaluate_style_declarations(&expr.declarations, context)?;
+  context.mixins.insert(expr.name.trim().to_string(), style);
   Ok(())
 }
 
@@ -386,10 +414,11 @@ fn stringify_element_selector(
   scoped_selector_text.to_string()
 }
 
-fn evaluate_style_declaration<'a>(
-  expr: &'a ast::Declaration,
+fn evaluate_style_key_value_declaration<'a>(
+  expr: &'a ast::KeyValueDeclaration,
   context: &Context,
 ) -> Result<virt::CSSStyleProperty, RuntimeError> {
+  
   let mut value = expr.value.to_string();
 
   let url_re = Regex::new(r#"url\((?:['"]?)(.*?)(?:['"]?)\)"#).unwrap();

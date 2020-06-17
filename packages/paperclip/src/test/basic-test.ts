@@ -225,8 +225,9 @@ describe(__filename + "#", () => {
             message
           </span>`
       },
+
       {},
-      `<style></style><span class="_1acb798_blue blue" data-pc-1acb798>message </span>`
+      `<style></style><span data-pc-1acb798 class="_1acb798_blue blue">message </span>`
     ],
     [
       // class piercing
@@ -257,8 +258,9 @@ describe(__filename + "#", () => {
             message
           </span>`
       },
+
       {},
-      `<style></style><span data-pc-1acb798 class="red">message </span>`
+      `<style></style><span class="red" data-pc-1acb798>message </span>`
     ],
     [
       // style classes prefixed with scope
@@ -275,7 +277,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._80f4925f_something > ._80f4925f_something2 { }</style><span data-pc-80f4925f class="_80f4925f_something2 something2"></span>`
+      `<style>._80f4925f_something > ._80f4925f_something2 { }</style><span class="_80f4925f_something2 something2" data-pc-80f4925f></span>`
     ],
     [
       // style classes prefixed with scope
@@ -288,7 +290,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style></style><span class="_80f4925f_a a b" data-pc-80f4925f></span><span class="_80f4925f_a a _80f4925f_b b" data-pc-80f4925f></span>`
+      `<style></style><span data-pc-80f4925f class="_80f4925f_a a b"></span><span data-pc-80f4925f class="_80f4925f_a a _80f4925f_b b"></span>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -406,6 +408,48 @@ describe(__filename + "#", () => {
       },
       {},
       `<style>.a, .b { } .a--c { color:blue; } .b--c { color:blue; }</style>`
+    ],
+    [
+      // no class mod for components if shadow pierce operator is not defined
+      {
+        "/entry.pc": `
+          <style>
+            @mixin a {
+              color: b;
+            }
+            
+            .a {
+              @include a;
+              background: c;
+            }
+          </style>
+        `
+      },
+      {},
+      `<style>._80f4925f_a { color:b; background:c; }</style>`
+    ],
+    [
+      // no class mod for components if shadow pierce operator is not defined
+      {
+        "/entry.pc": `
+          <style>
+            @mixin a {
+              color: b;
+            }
+            @mixin b {
+              @include a;
+              color: c;
+            }
+            
+            .c {
+              @include b;
+              background: c;
+            }
+          </style>
+        `
+      },
+      {},
+      `<style>._80f4925f_c { color:b; color:c; background:c; }</style>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

@@ -148,6 +148,9 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       name.to_string(),
       context,
     )?)),
+    "mixin" => Ok(Rule::Mixin(parse_mixin_rule(
+      context,
+    )?)),
     "media" => Ok(Rule::Media(parse_condition_rule(
       name.to_string(),
       context,
@@ -186,6 +189,18 @@ fn parse_condition_rule<'a, 'b>(
     name,
     condition_text,
     rules,
+  })
+}
+
+fn parse_mixin_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<MixinRule, ParseError> {
+  let name = parse_selector_name(context)?.to_string();
+  eat_superfluous(context)?;
+  let (declarations, _) = parse_declaration_body(context)?;
+  Ok(MixinRule {
+    name,
+    declarations,
   })
 }
 
@@ -464,6 +479,7 @@ fn part_of_selector_name(token: &Token) -> bool {
     | Token::Comma
     | Token::Colon
     | Token::ParenOpen
+    | Token::Semicolon
     | Token::ParenClose
     | Token::SingleQuote
     | Token::DoubleQuote
@@ -567,8 +583,37 @@ fn parse_child_style_rule<'a, 'b>(
     children,
   })
 }
-
 fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
+  if context.tokenizer.peek(1)? == Token::At {
+    parse_include_declaration(context)
+  } else {
+    parse_key_value_declaration(context)
+  }
+}
+fn parse_include_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
+  context.tokenizer.next_expect(Token::At);
+  context.tokenizer.next_expect(Token::Word("include"));
+  eat_superfluous(context);
+  let mut mixin_path: Vec<String> = vec![];
+
+  while !context.tokenizer.is_eof() {
+    mixin_path.push(parse_selector_name(context)?.to_string());
+    if context.tokenizer.peek(1)? != Token::Dot {
+      break;
+    } 
+    context.tokenizer.next();
+  }
+
+  if context.tokenizer.peek(1)? == Token::Semicolon {
+    context.tokenizer.next()?; // eat ;
+  }
+
+  Ok(Declaration::Include(IncludeDeclaration {
+    mixin_path
+  }))
+}
+
+fn parse_key_value_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
   let start = context.tokenizer.pos;
   let name = parse_selector_name(context)?.to_string();
   let name_end = context.tokenizer.pos;
@@ -587,7 +632,7 @@ fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaratio
 
   eat_superfluous(context)?;
 
-  Ok(Declaration {
+  Ok(Declaration::KeyValue(KeyValueDeclaration {
     name,
     value,
     location: Location { start, end },
@@ -599,7 +644,7 @@ fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaratio
       start: value_start,
       end: value_end,
     },
-  })
+  }))
 }
 
 fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
@@ -731,6 +776,10 @@ mod tests {
         & .child {
           
         }
+      }
+
+      @mixin a {
+        color: red;
       }
     ";
 
