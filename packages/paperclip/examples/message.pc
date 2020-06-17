@@ -1,21 +1,9 @@
-<style>
-  .red {
-    color: rgb(151, 238, 124);
-    font-family: Helvetica;
-    font-size: 40px;
-    padding: 30px;
-  }
+<import as="typography" src="./typography.pc">
 
-  .red:hover {
-    color: purple;
+<style>
+  span {
+    @include typography.font-normal;
   }
 </style>
 
-<div export component as="default" class="red red--ab {className}" {style}>
-  Something like thisfdsfds
-  <strong class={labelClass}>
-    nested {className}
-  </strong>
-</div>
-
-<default aa="something" />
+<span class="test">Something</span>

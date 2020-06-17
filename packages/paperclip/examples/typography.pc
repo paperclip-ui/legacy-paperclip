@@ -1,0 +1,14 @@
+<style>
+  @export {
+    @mixin font-normal {
+      font-family: Helvetica;
+      font-size: 20px;
+    }
+
+    .test {
+      color: blue;
+    }
+  }
+</style>
+
+<span>abcd</span>
