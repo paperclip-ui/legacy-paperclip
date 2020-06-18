@@ -1,10 +1,10 @@
 {
   "name": "percy-paperclip",
-  "version": "11.0.82",
+  "version": "11.0.83",
   "description": "",
   "main": "index.js",
   "scripts": {},
   "author": "",
   "license": "ISC",
-  "gitHead": "dfe7590a021238ca74337c3ed176c9d55a2d2455"
+  "gitHead": "3bcba669916a7fc3db8cf7fcd317d432c96d2854"
 }
