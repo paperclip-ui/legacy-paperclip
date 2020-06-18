@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-react",
-  "version": "11.0.80",
+  "version": "11.0.81",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -9,7 +9,7 @@
   "dependencies": {
     "html-entities": "^1.2.1",
     "lodash": "^4.17.15",
-    "paperclip": "^11.0.80",
+    "paperclip": "^11.0.81",
     "paperclip-styles-compiler": "^11.0.18",
     "typescript": "^3.7.5"
   },
@@ -19,7 +19,7 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "730c416cb4fe1ba1017562506a8672c4c3413417",
+  "gitHead": "9a6a801cbd98e9940a0235fd2ef18fe2b3b8c02b",
   "devDependencies": {
     "crc32": "^0.2.2"
   }
