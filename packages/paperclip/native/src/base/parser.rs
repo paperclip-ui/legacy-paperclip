@@ -52,7 +52,10 @@ impl ParseError {
   }
 }
 
-pub fn get_buffer<'a, TTokenizer, FF>(tokenizer: &mut TTokenizer, until: FF) -> Result<&'a str, ParseError>
+pub fn get_buffer<'a, TTokenizer, FF>(
+  tokenizer: &mut TTokenizer,
+  until: FF,
+) -> Result<&'a str, ParseError>
 where
   TTokenizer: BaseTokenizer<'a>,
   FF: Fn(&mut TTokenizer) -> Result<bool, ParseError>,
@@ -61,7 +64,6 @@ where
   let mut end = start;
 
   while !tokenizer.is_eof() {
-    
     if !until(tokenizer)? {
       break;
     }

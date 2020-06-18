@@ -1,8 +1,6 @@
 use super::parser::ParseError;
 
-pub trait BaseToken {
-
-}
+pub trait BaseToken {}
 
 pub trait BaseTokenizer<'a> {
   // Static method signature; `Self` refers to the implementor type.
@@ -11,7 +9,6 @@ pub trait BaseTokenizer<'a> {
   fn get_pos(&self) -> usize;
   fn get_source(&self) -> &'a [u8];
 }
-
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {

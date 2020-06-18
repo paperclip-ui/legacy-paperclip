@@ -1,6 +1,7 @@
 use super::ast;
 use crate::base::parser::{get_buffer, ParseError};
-use crate::base::tokenizer::{Token, Tokenizer};
+use super::tokenizer::{Token, Tokenizer};
+use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
 use crate::pc::parser::parse_tag;
 use std::collections::HashMap;
 
@@ -36,7 +37,10 @@ fn parse_statement<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, 
 }
 
 fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
-  Ok(ast::Statement::Node(Box::new(parse_tag(tokenizer)?)))
+  let mut pc_tokenizer = PCTokenizer::new_from_bytes(&tokenizer.source, tokenizer.pos);
+  let node = ast::Statement::Node(Box::new(parse_tag(&mut pc_tokenizer)?));
+  tokenizer.pos = pc_tokenizer.pos;
+  Ok(node)
 }
 
 fn parse_number<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {

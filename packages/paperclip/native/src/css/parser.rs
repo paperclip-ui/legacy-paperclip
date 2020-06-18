@@ -4,9 +4,9 @@
 // https://www.w3schools.com/cssref/pr_charset_rule.asp
 
 use super::ast::*;
+use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
-use super::tokenizer::{Token, Tokenizer};
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
@@ -504,7 +504,6 @@ fn part_of_selector_name(token: &Token) -> bool {
 }
 
 fn parse_selector_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
-
   eat_superfluous(context)?;
   get_buffer(context.tokenizer, |tokenizer| {
     let tok = tokenizer.peek(1)?;
@@ -558,7 +557,7 @@ fn parse_declarations_and_children<'a, 'b>(
 
   Ok((declarations, children))
 }
- 
+
 fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
   eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
 }
@@ -566,7 +565,6 @@ fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), Pars
 fn parse_child_style_rule2<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<ChildStyleRule, ParseError> {
-
   let separator = if context.tokenizer.peek(1)? == Token::Byte(b'&') {
     context.tokenizer.next()?;
     get_buffer(context.tokenizer, |tokenizer| {
@@ -599,7 +597,6 @@ fn parse_child_style_rule2<'a, 'b>(
     children,
   })
 }
-
 
 fn parse_child_style_rule<'a, 'b>(
   context: &mut Context<'a, 'b>,
