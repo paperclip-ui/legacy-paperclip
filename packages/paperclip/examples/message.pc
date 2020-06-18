@@ -1,9 +1,15 @@
 <import as="typography" src="./typography.pc">
 
 <style>
-  span {
+  div {
     @include typography.font-normal;
+
+    &[data-hover], &:hover {
+      color: blue;
+    }
   }
 </style>
 
-<span class="test">Something</span>
+<div data-hover>
+  test
+</div>

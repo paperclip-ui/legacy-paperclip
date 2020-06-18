@@ -52,22 +52,24 @@ impl ParseError {
   }
 }
 
-pub fn get_buffer<'a, FF>(tokenizer: &mut Tokenizer<'a>, until: FF) -> Result<&'a str, ParseError>
+pub fn get_buffer<'a, TTokenizer, FF>(tokenizer: &mut TTokenizer, until: FF) -> Result<&'a str, ParseError>
 where
-  FF: Fn(&mut Tokenizer) -> Result<bool, ParseError>,
+  TTokenizer: BaseTokenizer<'a>,
+  FF: Fn(&mut TTokenizer) -> Result<bool, ParseError>,
 {
-  let start = tokenizer.pos;
+  let start = tokenizer.get_pos();
   let mut end = start;
 
   while !tokenizer.is_eof() {
+    
     if !until(tokenizer)? {
       break;
     }
-    tokenizer.next()?;
-    end = tokenizer.pos;
+    tokenizer.skip()?;
+    end = tokenizer.get_pos();
   }
 
-  Ok(std::str::from_utf8(&tokenizer.source[start..end]).unwrap())
+  Ok(std::str::from_utf8(&tokenizer.get_source()[start..end]).unwrap())
 }
 
 // pub fn expect_token(a: Token, b: Token) -> Result<(), ParseError<'a>> {

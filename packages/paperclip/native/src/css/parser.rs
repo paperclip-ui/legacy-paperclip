@@ -6,7 +6,7 @@
 use super::ast::*;
 use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
-use crate::base::tokenizer::{Token, Tokenizer};
+use super::tokenizer::{Token, Tokenizer};
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
@@ -504,6 +504,7 @@ fn part_of_selector_name(token: &Token) -> bool {
 }
 
 fn parse_selector_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
+
   eat_superfluous(context)?;
   get_buffer(context.tokenizer, |tokenizer| {
     let tok = tokenizer.peek(1)?;
@@ -551,15 +552,54 @@ fn parse_declarations_and_children<'a, 'b>(
     } else {
       declarations.push(parse_declaration(context)?);
     }
+
     eat_superfluous(context)?;
   }
 
   Ok((declarations, children))
 }
-
+ 
 fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
   eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
 }
+
+fn parse_child_style_rule2<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<ChildStyleRule, ParseError> {
+
+  let separator = if context.tokenizer.peek(1)? == Token::Byte(b'&') {
+    context.tokenizer.next()?;
+    get_buffer(context.tokenizer, |tokenizer| {
+      let token = tokenizer.peek(1)?;
+      Ok(part_of_selector_name(&token) || token == Token::Whitespace)
+    })?
+    .to_string()
+  } else {
+    " ".to_string()
+  };
+
+  eat_superfluous(context)?;
+
+  let selector: Option<Selector> = if context.tokenizer.peek(1)? == Token::CurlyOpen {
+    None
+  } else {
+    Some(parse_next_pair_selector(Selector::None, context)?)
+  };
+
+  context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
+
+  let (declarations, children) = parse_declarations_and_children(context)?;
+  context.tokenizer.next_expect(Token::CurlyClose)?; // eat }
+  eat_superfluous(context)?;
+
+  Ok(ChildStyleRule {
+    separator,
+    selector,
+    declarations,
+    children,
+  })
+}
+
 
 fn parse_child_style_rule<'a, 'b>(
   context: &mut Context<'a, 'b>,
@@ -592,6 +632,7 @@ fn parse_child_style_rule<'a, 'b>(
     children,
   })
 }
+
 fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
   if context.tokenizer.peek(1)? == Token::At {
     parse_include_declaration(context)
@@ -740,6 +781,9 @@ mod tests {
   #[test]
   fn can_smoke_parse_various_at_rules() {
     let source = "
+      div {
+        color: blue;
+      }
       @charset \"utf-8\";
       @namespace svg \"http://google.com\";
       @font-face {

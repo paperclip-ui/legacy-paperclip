@@ -1,17 +1,5 @@
-use super::parser::ParseError;
-
-pub trait BaseToken {
-
-}
-
-pub trait BaseTokenizer<'a> {
-  // Static method signature; `Self` refers to the implementor type.
-  fn is_eof(&self) -> bool;
-  fn skip(&mut self) -> Result<(), ParseError>;
-  fn get_pos(&self) -> usize;
-  fn get_source(&self) -> &'a [u8];
-}
-
+use crate::base::parser::ParseError;
+use crate::base::tokenizer::{BaseTokenizer};
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
@@ -432,6 +420,12 @@ impl<'a> Tokenizer<'a> {
     Tokenizer {
       source: source.as_bytes(),
       pos: 0,
+    }
+  }
+  pub fn new_from_bytes(source: &'a [u8], pos: usize) -> Tokenizer {
+    Tokenizer {
+      source: source,
+      pos,
     }
   }
 }

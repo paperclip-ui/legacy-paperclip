@@ -5,6 +5,7 @@ use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
 use crate::base::tokenizer::{Token, Tokenizer};
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
+use crate::css::tokenizer::{Tokenizer as CSSTokenizer, Token as CSSToken};
 use crate::js::ast as js_ast;
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
 
@@ -380,10 +381,12 @@ fn parse_next_style_element_parts<'a>(
 ) -> Result<pc_ast::Node, ParseError> {
   tokenizer.next_expect(Token::GreaterThan)?; // eat >
   let end = tokenizer.pos;
+  let mut css_tokenizer = CSSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.pos);
 
-  let sheet = parse_css_with_tokenizer(tokenizer, |tokenizer| -> Result<bool, ParseError> {
-    Ok(tokenizer.peek(1)? == Token::TagClose)
+  let sheet = parse_css_with_tokenizer(&mut css_tokenizer, |tokenizer| -> Result<bool, ParseError> {
+    Ok(tokenizer.peek(1)? == CSSToken::TagClose)
   })?;
+  tokenizer.pos = css_tokenizer.pos;
 
   // TODO - assert tokens equal these
   parse_close_tag("style", tokenizer, start, end)?;
