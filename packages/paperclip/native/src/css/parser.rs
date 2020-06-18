@@ -545,15 +545,25 @@ fn parse_declarations_and_children<'a, 'b>(
     if context.tokenizer.peek(1)? == Token::CurlyClose {
       break;
     }
+    
+    // ick ick. 
+    if let Token::Keyword(_) = context.tokenizer.peek(1)? {
+      
+      if context.tokenizer.peek(2)? == Token::Colon {
 
-    if context.tokenizer.peek(1)? == Token::Byte(b'&') {
-      children.push(parse_child_style_rule(context)?);
+        declarations.push(parse_key_value_declaration(context)?);
+      } else {
+        children.push(parse_child_style_rule(context)?);
+      }
+    } else if context.tokenizer.peek(1)? == Token::At {
+      declarations.push(parse_include_declaration(context)?);
     } else {
-      declarations.push(parse_declaration(context)?);
+      children.push(parse_child_style_rule(context)?);
     }
 
     eat_superfluous(context)?;
   }
+
 
   Ok((declarations, children))
 }
@@ -640,9 +650,9 @@ fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaratio
 fn parse_include_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<Declaration, ParseError> {
-  context.tokenizer.next_expect(Token::At);
-  context.tokenizer.next_expect(Token::Keyword("include"));
-  eat_superfluous(context);
+  context.tokenizer.next_expect(Token::At)?;
+  context.tokenizer.next_expect(Token::Keyword("include"))?;
+  eat_superfluous(context)?;
   let mut mixin_path: Vec<String> = vec![];
 
   while !context.tokenizer.is_eof() {
@@ -850,6 +860,9 @@ mod tests {
         .a {
           color: c;
         }
+      }
+      .a {
+        @include a.b;
       }
     ";
 

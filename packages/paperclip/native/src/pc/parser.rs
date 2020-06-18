@@ -394,7 +394,9 @@ fn parse_next_style_element_parts<'a>(
 
   let sheet = parse_css_with_tokenizer(
     &mut css_tokenizer,
-    |tokenizer| -> Result<bool, ParseError> { Ok(tokenizer.peek(1)? == CSSToken::Byte(b'<') && tokenizer.peek(2)? == CSSToken::Byte(b'/')) },
+    |tokenizer| -> Result<bool, ParseError> {
+      Ok(tokenizer.peek(1)? == CSSToken::Byte(b'<') && tokenizer.peek(2)? == CSSToken::Byte(b'/'))
+    },
   )?;
   tokenizer.pos = css_tokenizer.pos;
 

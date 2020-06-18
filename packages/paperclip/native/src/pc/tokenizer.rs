@@ -193,7 +193,7 @@ impl<'a> Tokenizer<'a> {
         } else if self.starts_with(b"/>") {
           self.forward(2);
           Ok(Token::SelfTagClose)
-        }else {
+        } else {
           self.forward(1);
           Ok(Token::Backslash)
         }
