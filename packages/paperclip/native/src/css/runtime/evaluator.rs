@@ -119,7 +119,6 @@ pub fn evaluate_child_style_rule<'a>(
   expr: &ast::ChildStyleRule,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
-
   for selector in &expr.selectors {
     let postfix = if let Some(postfix_selector) = &selector.selector {
       stringify_element_selector(postfix_selector, true, context)
@@ -138,8 +137,6 @@ pub fn evaluate_child_style_rule<'a>(
 
     evaluate_child_style_rules(&child_prefix, &expr.children, context)?;
   }
-
-
 
   Ok(())
 }

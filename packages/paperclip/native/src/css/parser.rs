@@ -572,11 +572,9 @@ fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), Pars
 fn parse_child_style_rule2<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<ChildStyleRule, ParseError> {
-
   let mut selectors: Vec<ChildRuleSelector> = vec![];
 
   while !context.tokenizer.is_eof() {
-
     // look for things like &--primary
     let connector = if context.tokenizer.peek(1)? == Token::Byte(b'&') {
       context.tokenizer.next()?;
@@ -599,7 +597,7 @@ fn parse_child_style_rule2<'a, 'b>(
 
     selectors.push(ChildRuleSelector {
       connector,
-      selector
+      selector,
     });
 
     eat_superfluous(context)?;

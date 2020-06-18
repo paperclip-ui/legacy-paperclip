@@ -105,7 +105,7 @@ impl fmt::Display for StyleRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildRuleSelector {
   pub connector: String,
-  pub selector: Option<Selector>
+  pub selector: Option<Selector>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
