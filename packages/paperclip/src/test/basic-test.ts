@@ -507,6 +507,24 @@ describe(__filename + "#", () => {
       },
       {},
       `<style></style><div data-pc-139cec8e><span data-pc-139cec8e>a</span><span data-pc-139cec8e>b</span><span data-pc-139cec8e>c</span></div>`
+    ],
+    [
+      {
+        "/entry.pc": `
+          <style>
+            div {
+              &[data-hover], &:hover {
+                color: orange;
+              }
+              [data-hover], :hover {
+                color: blue;
+              }
+            }
+          </style>
+        `
+      },
+      {},
+      `<style>div[data-pc-80f4925f] { } div[data-pc-80f4925f][data-hover][data-pc-80f4925f] { color:orange; } div[data-pc-80f4925f]:hover { color:orange; } div[data-pc-80f4925f] [data-hover][data-pc-80f4925f] { color:blue; } div[data-pc-80f4925f] :hover { color:blue; }</style>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

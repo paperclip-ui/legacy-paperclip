@@ -119,23 +119,27 @@ pub fn evaluate_child_style_rule<'a>(
   expr: &ast::ChildStyleRule,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
-  let postfix = if let Some(selector) = &expr.selector {
-    stringify_element_selector(selector, true, context)
-  } else {
-    "".to_string()
-  };
 
-  let selector_text = format!("{}{}{}", prefix, expr.separator, postfix).to_string();
-  let child_prefix = selector_text.clone();
-  let style = evaluate_style_declarations(&expr.declarations, context)?;
-  let main_rule = virt::StyleRule {
-    selector_text,
-    style,
-  };
+  for selector in &expr.selectors {
+    let postfix = if let Some(postfix_selector) = &selector.selector {
+      stringify_element_selector(postfix_selector, true, context)
+    } else {
+      "".to_string()
+    };
+    let selector_text = format!("{}{}{}", prefix, selector.connector, postfix).to_string();
+    let child_prefix = selector_text.clone();
+    let style = evaluate_style_declarations(&expr.declarations, context)?;
+    let main_rule = virt::StyleRule {
+      selector_text,
+      style,
+    };
 
-  context.all_rules.push(virt::Rule::Style(main_rule));
+    context.all_rules.push(virt::Rule::Style(main_rule));
 
-  evaluate_child_style_rules(&child_prefix, &expr.children, context)?;
+    evaluate_child_style_rules(&child_prefix, &expr.children, context)?;
+  }
+
+
 
   Ok(())
 }

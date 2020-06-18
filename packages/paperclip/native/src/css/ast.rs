@@ -103,9 +103,14 @@ impl fmt::Display for StyleRule {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ChildRuleSelector {
+  pub connector: String,
+  pub selector: Option<Selector>
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildStyleRule {
-  pub separator: String,
-  pub selector: Option<Selector>,
+  pub selectors: Vec<ChildRuleSelector>,
   pub declarations: Vec<Declaration>,
   pub children: Vec<ChildStyleRule>,
 }

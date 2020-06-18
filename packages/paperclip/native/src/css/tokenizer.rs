@@ -312,9 +312,7 @@ impl<'a> Tokenizer<'a> {
           Ok(Token::Equals)
         }
       }
-      b'a'..=b'z' | b'A'..=b'Z' => {
-        Ok(Token::Keyword(self.search_keyword()))
-      }
+      b'a'..=b'z' | b'A'..=b'Z' => Ok(Token::Keyword(self.search_keyword())),
       b' ' | b'\t' | b'\r' | b'\n' => {
         self.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
         Ok(Token::Whitespace)
@@ -327,9 +325,7 @@ impl<'a> Tokenizer<'a> {
   }
 
   fn search_keyword(&mut self) -> &'a str {
-    self.search(|c| -> bool {
-      matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-')
-    })
+    self.search(|c| -> bool { matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-') })
   }
 
   fn starts_with(&mut self, pattern: &[u8]) -> bool {
