@@ -1,14 +1,14 @@
 // https://tympanus.net/codrops/css_reference/
 
 use super::ast as pc_ast;
+use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
-use super::tokenizer::{Token, Tokenizer};
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
-use crate::js::tokenizer::{Token as JSToken, Tokenizer as JSTokenizer};
 use crate::js::ast as js_ast;
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
+use crate::js::tokenizer::{Token as JSToken, Tokenizer as JSTokenizer};
 
 /*
 
@@ -154,7 +154,6 @@ fn parse_slot_script<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<js_ast::Statem
       start,
       tokenizer.pos,
     )));
-
 
   stmt
 }
@@ -395,7 +394,7 @@ fn parse_next_style_element_parts<'a>(
 
   let sheet = parse_css_with_tokenizer(
     &mut css_tokenizer,
-    |tokenizer| -> Result<bool, ParseError> { Ok(tokenizer.peek(1)? == CSSToken::TagClose) },
+    |tokenizer| -> Result<bool, ParseError> { Ok(tokenizer.peek(1)? == CSSToken::Byte(b'<') && tokenizer.peek(2)? == CSSToken::Byte(b'/')) },
   )?;
   tokenizer.pos = css_tokenizer.pos;
 
@@ -857,7 +856,7 @@ mod tests {
       Err(ParseError::unterminated(
         "Unterminated bracket.".to_string(),
         11,
-        27
+        26
       ))
     );
   }

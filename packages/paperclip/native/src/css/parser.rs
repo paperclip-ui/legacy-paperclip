@@ -281,7 +281,7 @@ fn parse_next_pair_selector<'a, 'b>(
   eat_superfluous(context)?;
   let delim = context.tokenizer.peek(1)?;
   match delim {
-    Token::GreaterThan => {
+    Token::Byte(b'>') => {
       context.tokenizer.next()?; // eat >
       eat_superfluous(context)?;
       let child = parse_pair_selector(context)?;
@@ -435,7 +435,7 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
       context.tokenizer.next()?;
       parse_attribute_selector(context)?
     }
-    Token::Word(_) => Selector::Element(ElementSelector {
+    Token::Keyword(_) => Selector::Element(ElementSelector {
       tag_name: parse_selector_name(context)?.to_string(),
     }),
     _ => {
@@ -495,7 +495,7 @@ fn part_of_selector_name(token: &Token) -> bool {
     | Token::Dot
     | Token::Hash
     | Token::Squiggle
-    | Token::GreaterThan
+    | Token::Byte(b'>')
     | Token::CurlyOpen
     | Token::SquareOpen
     | Token::SquareClose => false,
@@ -526,7 +526,7 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
       | Token::Dot
       | Token::Hash
       | Token::Squiggle
-      | Token::GreaterThan
+      | Token::Byte(b'>')
       | Token::CurlyOpen
       | Token::SquareOpen
       | Token::SquareClose => false,
@@ -641,16 +641,21 @@ fn parse_include_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<Declaration, ParseError> {
   context.tokenizer.next_expect(Token::At);
-  context.tokenizer.next_expect(Token::Word("include"));
+  context.tokenizer.next_expect(Token::Keyword("include"));
   eat_superfluous(context);
   let mut mixin_path: Vec<String> = vec![];
 
   while !context.tokenizer.is_eof() {
-    mixin_path.push(parse_selector_name(context)?.to_string());
-    if context.tokenizer.peek(1)? != Token::Dot {
-      break;
+    let start = context.tokenizer.pos;
+    if let Token::Keyword(keyword) = context.tokenizer.next()? {
+      mixin_path.push(keyword.to_string());
+      if context.tokenizer.peek(1)? != Token::Dot {
+        break;
+      }
+      context.tokenizer.next();
+    } else {
+      return Err(ParseError::unexpected_token(start));
     }
-    context.tokenizer.next();
   }
 
   if context.tokenizer.peek(1)? == Token::Semicolon {
@@ -664,36 +669,40 @@ fn parse_key_value_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<Declaration, ParseError> {
   let start = context.tokenizer.pos;
-  let name = parse_selector_name(context)?.to_string();
-  let name_end = context.tokenizer.pos;
-  context.tokenizer.next_expect(Token::Colon)?; // eat :
-  eat_superfluous(context)?;
+  if let Token::Keyword(keyword) = context.tokenizer.next()? {
+    let name = keyword.to_string();
+    let name_end = context.tokenizer.pos;
+    context.tokenizer.next_expect(Token::Colon)?; // eat :
+    eat_superfluous(context)?;
 
-  let value_start = context.tokenizer.pos;
-  let value = parse_declaration_value(context)?;
-  let value_end = context.tokenizer.pos;
+    let value_start = context.tokenizer.pos;
+    let value = parse_declaration_value(context)?;
+    let value_end = context.tokenizer.pos;
 
-  if context.tokenizer.peek(1)? == Token::Semicolon {
-    context.tokenizer.next()?; // eat ;
+    if context.tokenizer.peek(1)? == Token::Semicolon {
+      context.tokenizer.next()?; // eat ;
+    }
+
+    let end = context.tokenizer.pos;
+
+    eat_superfluous(context)?;
+
+    Ok(Declaration::KeyValue(KeyValueDeclaration {
+      name,
+      value,
+      location: Location { start, end },
+      name_location: Location {
+        start,
+        end: name_end,
+      },
+      value_location: Location {
+        start: value_start,
+        end: value_end,
+      },
+    }))
+  } else {
+    return Err(ParseError::unexpected_token(start));
   }
-
-  let end = context.tokenizer.pos;
-
-  eat_superfluous(context)?;
-
-  Ok(Declaration::KeyValue(KeyValueDeclaration {
-    name,
-    value,
-    location: Location { start, end },
-    name_location: Location {
-      start,
-      end: name_end,
-    },
-    value_location: Location {
-      start: value_start,
-      end: value_end,
-    },
-  }))
 }
 
 fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
@@ -770,6 +779,7 @@ mod tests {
     img[src='s.gif'][width='40'] { width: 12px; }
     ._aff=aadd { width: 12px; }
     /*comment*/
+    -a_b {}
     ";
 
     parse(source).unwrap();

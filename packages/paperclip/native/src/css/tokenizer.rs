@@ -21,18 +21,6 @@ pub enum Token<'a> {
   // @
   At,
 
-  // >
-  GreaterThan,
-
-  // >>>
-  Pierce,
-
-  // />
-  SelfTagClose,
-
-  // </
-  TagClose,
-
   // !
   Bang,
 
@@ -75,9 +63,6 @@ pub enum Token<'a> {
   // ===
   TrippleEquals,
 
-  // /
-  Backslash,
-
   //
   Whitespace,
 
@@ -111,11 +96,8 @@ pub enum Token<'a> {
   // //
   LineCommentOpen,
 
-  // -->
-  HtmlCommentClose,
-
   // div, blay
-  Word(&'a str),
+  Keyword(&'a str),
 
   // 5, .5, 0.5
   Number(&'a str),
@@ -175,14 +157,14 @@ impl<'a> Tokenizer<'a> {
     }
   }
 
-  pub fn next_word_value(&mut self) -> Result<String, ParseError> {
-    let pos = self.pos;
-    if let Token::Word(value) = self.next()? {
-      Ok(value.to_string())
-    } else {
-      Err(ParseError::unexpected_token(pos))
-    }
-  }
+  // pub fn next_word_value(&mut self) -> Result<String, ParseError> {
+  //   let pos = self.pos;
+  //   if let Token::Word(value) = self.next()? {
+  //     Ok(value.to_string())
+  //   } else {
+  //     Err(ParseError::unexpected_token(pos))
+  //   }
+  // }
 
   pub fn next(&mut self) -> Result<Token<'a>, ParseError> {
     if self.is_eof() {
@@ -193,48 +175,20 @@ impl<'a> Tokenizer<'a> {
 
     match c {
       b'/' => {
-        if self.starts_with(b"//") {
-          self.forward(2);
-          Ok(Token::LineCommentOpen)
-        } else if self.starts_with(b"/>") {
-          self.forward(2);
-          Ok(Token::SelfTagClose)
-        } else if self.starts_with(b"/*") {
+        if self.starts_with(b"/*") {
           self.forward(2);
           Ok(Token::ScriptCommentOpen)
         } else {
           self.forward(1);
-          Ok(Token::Backslash)
-        }
-      }
-      b'>' => {
-        if self.starts_with(b">>>") {
-          self.forward(3);
-          Ok(Token::Pierce)
-        } else {
-          self.forward(1);
-          Ok(Token::GreaterThan)
-        }
-      }
-      b'<' => {
-        if self.starts_with(b"</") {
-          self.forward(2);
-          Ok(Token::TagClose)
-        } else if self.starts_with(b"<!--") {
-          self.forward(4);
-          Ok(Token::HtmlCommentOpen)
-        } else {
-          self.forward(1);
-          Ok(Token::LessThan)
+          Ok(Token::Byte(b'/'))
         }
       }
       b'-' => {
-        if self.starts_with(b"-->") {
-          self.forward(3);
-          Ok(Token::HtmlCommentClose)
-        } else {
+        if self.starts_with(b"- ") {
           self.forward(1);
           Ok(Token::Minus)
+        } else {
+          Ok(Token::Keyword(self.search_keyword()))
         }
       }
       b'*' => {
@@ -359,9 +313,7 @@ impl<'a> Tokenizer<'a> {
         }
       }
       b'a'..=b'z' | b'A'..=b'Z' => {
-        Ok(Token::Word(self.search(|c| -> bool {
-          matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9')
-        })))
+        Ok(Token::Keyword(self.search_keyword()))
       }
       b' ' | b'\t' | b'\r' | b'\n' => {
         self.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
@@ -372,6 +324,12 @@ impl<'a> Tokenizer<'a> {
         Ok(Token::Byte(c))
       }
     }
+  }
+
+  fn search_keyword(&mut self) -> &'a str {
+    self.search(|c| -> bool {
+      matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-')
+    })
   }
 
   fn starts_with(&mut self, pattern: &[u8]) -> bool {
@@ -443,171 +401,5 @@ impl<'a> BaseTokenizer<'a> for Tokenizer<'a> {
   }
   fn get_pos(&self) -> usize {
     self.pos
-  }
-}
-
-#[cfg(test)]
-mod tests {
-
-  use super::*;
-
-  #[test]
-  fn can_tokenize_a_less_than_tag() {
-    let mut tokenizer = Tokenizer::new("<");
-    assert_eq!(tokenizer.next(), Ok(Token::LessThan));
-  }
-  #[test]
-  fn can_tokenize_a_word() {
-    let mut tokenizer = Tokenizer::new("div");
-    assert_eq!(tokenizer.next(), Ok(Token::Word("div")));
-  }
-  #[test]
-  fn can_tokenize_a_char() {
-    let mut tokenizer = Tokenizer::new("$");
-    assert_eq!(tokenizer.next(), Ok(Token::Byte(b'$')));
-  }
-
-  #[test]
-  fn can_tokenize_a_self_close_tag() {
-    let mut tokenizer = Tokenizer::new("</");
-    assert_eq!(tokenizer.next(), Ok(Token::TagClose));
-  }
-
-  #[test]
-  fn can_tokenize_a_self_closing_tag() {
-    let mut tokenizer = Tokenizer::new("/>");
-    assert_eq!(tokenizer.next(), Ok(Token::SelfTagClose));
-  }
-
-  #[test]
-  fn can_tokenize_a_simple_self_closing_element() {
-    let mut tokenizer = Tokenizer::new("<Ok-div />");
-    assert_eq!(tokenizer.next(), Ok(Token::LessThan));
-    assert_eq!(tokenizer.next(), Ok(Token::Word("Ok")));
-    assert_eq!(tokenizer.next(), Ok(Token::Minus));
-    assert_eq!(tokenizer.next(), Ok(Token::Word("div")));
-    assert_eq!(tokenizer.next(), Ok(Token::Whitespace));
-    assert_eq!(tokenizer.next(), Ok(Token::SelfTagClose));
-  }
-  #[test]
-  fn can_tokenize_an_element_with_a_child() {
-    let mut tokenizer = Tokenizer::new("<div><span /></div>");
-    assert_eq!(tokenizer.next(), Ok(Token::LessThan));
-    assert_eq!(tokenizer.next(), Ok(Token::Word("div")));
-    assert_eq!(tokenizer.next(), Ok(Token::GreaterThan));
-    assert_eq!(tokenizer.next(), Ok(Token::LessThan));
-    assert_eq!(tokenizer.next(), Ok(Token::Word("span")));
-    assert_eq!(tokenizer.next(), Ok(Token::Whitespace));
-    assert_eq!(tokenizer.next(), Ok(Token::SelfTagClose));
-    assert_eq!(tokenizer.next(), Ok(Token::TagClose));
-    assert_eq!(tokenizer.next(), Ok(Token::Word("div")));
-    assert_eq!(tokenizer.next(), Ok(Token::GreaterThan));
-  }
-
-  #[test]
-  fn can_tokenize_curly_open() {
-    let mut tokenizer = Tokenizer::new("{");
-    assert_eq!(tokenizer.next(), Ok(Token::CurlyOpen));
-  }
-
-  #[test]
-  fn can_tokenize_curly_close() {
-    let mut tokenizer = Tokenizer::new("}");
-    assert_eq!(tokenizer.next(), Ok(Token::CurlyClose));
-  }
-
-  #[test]
-  fn can_tokenize_comment_parts() {
-    let mut tokenizer = Tokenizer::new("<!---->/**/");
-    assert_eq!(tokenizer.next(), Ok(Token::HtmlCommentOpen));
-    assert_eq!(tokenizer.next(), Ok(Token::HtmlCommentClose));
-    assert_eq!(tokenizer.next(), Ok(Token::ScriptCommentOpen));
-    assert_eq!(tokenizer.next(), Ok(Token::ScriptCommentClose));
-  }
-
-  #[test]
-  fn can_tokenize_spread_operator() {
-    let mut tokenizer = Tokenizer::new("...");
-    assert_eq!(tokenizer.next(), Ok(Token::Spread));
-  }
-
-  #[test]
-  fn can_tokenize_comma() {
-    let mut tokenizer = Tokenizer::new(",");
-    assert_eq!(tokenizer.next(), Ok(Token::Comma));
-  }
-
-  #[test]
-  fn can_tokenize_colon() {
-    let mut tokenizer = Tokenizer::new(":");
-    assert_eq!(tokenizer.next(), Ok(Token::Colon));
-  }
-
-  #[test]
-  fn can_tokenize_dot() {
-    let mut tokenizer = Tokenizer::new(".");
-    assert_eq!(tokenizer.next(), Ok(Token::Dot));
-  }
-
-  #[test]
-  fn can_tokenize_double_quote() {
-    let mut tokenizer = Tokenizer::new("\"");
-    assert_eq!(tokenizer.next(), Ok(Token::DoubleQuote));
-  }
-
-  #[test]
-  fn can_tokenize_single_quote() {
-    let mut tokenizer = Tokenizer::new("'");
-    assert_eq!(tokenizer.next(), Ok(Token::SingleQuote));
-  }
-
-  #[test]
-  fn can_tokenize_double_equals() {
-    let mut tokenizer = Tokenizer::new("==");
-    assert_eq!(tokenizer.next(), Ok(Token::DoubleEquals));
-  }
-
-  #[test]
-  fn can_tokenize_tripple_equals() {
-    let mut tokenizer = Tokenizer::new("===");
-    assert_eq!(tokenizer.next(), Ok(Token::TrippleEquals));
-  }
-
-  #[test]
-  fn can_tokenize_equals() {
-    let mut tokenizer = Tokenizer::new("=");
-    assert_eq!(tokenizer.next(), Ok(Token::Equals));
-  }
-
-  #[test]
-  fn can_tokenize_open_block() {
-    let mut tokenizer = Tokenizer::new("{#");
-    assert_eq!(tokenizer.next(), Ok(Token::BlockOpen));
-  }
-
-  #[test]
-  fn can_tokenize_close_block() {
-    let mut tokenizer = Tokenizer::new("{/");
-    assert_eq!(tokenizer.next(), Ok(Token::BlockClose));
-  }
-
-  #[test]
-  fn can_tokenize_a_number() {
-    let mut tokenizer = Tokenizer::new("56 3.2 .5 4.4.10 -32 533-9");
-    assert_eq!(tokenizer.next(), Ok(Token::Number("56")));
-    assert_eq!(tokenizer.next(), Ok(Token::Whitespace));
-    assert_eq!(tokenizer.next(), Ok(Token::Number("3.2")));
-    assert_eq!(tokenizer.next(), Ok(Token::Whitespace));
-    assert_eq!(tokenizer.next(), Ok(Token::Number(".5")));
-    assert_eq!(tokenizer.next(), Ok(Token::Whitespace));
-    assert_eq!(tokenizer.next(), Ok(Token::Number("4.4")));
-    assert_eq!(tokenizer.next(), Ok(Token::Number(".10")));
-    assert_eq!(tokenizer.next(), Ok(Token::Whitespace));
-    assert_eq!(tokenizer.next(), Ok(Token::Minus));
-    assert_eq!(tokenizer.next(), Ok(Token::Number("32")));
-    assert_eq!(tokenizer.next(), Ok(Token::Whitespace));
-    assert_eq!(tokenizer.next(), Ok(Token::Number("533")));
-    assert_eq!(tokenizer.next(), Ok(Token::Minus));
-    assert_eq!(tokenizer.next(), Ok(Token::Number("9")));
   }
 }

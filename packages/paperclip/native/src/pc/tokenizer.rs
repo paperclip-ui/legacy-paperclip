@@ -99,12 +99,6 @@ pub enum Token<'a> {
   // :
   Semicolon,
 
-  // /*
-  ScriptCommentOpen,
-
-  // */
-  ScriptCommentClose,
-
   // -->
   HtmlCommentOpen,
 
@@ -199,10 +193,7 @@ impl<'a> Tokenizer<'a> {
         } else if self.starts_with(b"/>") {
           self.forward(2);
           Ok(Token::SelfTagClose)
-        } else if self.starts_with(b"/*") {
-          self.forward(2);
-          Ok(Token::ScriptCommentOpen)
-        } else {
+        }else {
           self.forward(1);
           Ok(Token::Backslash)
         }
@@ -238,13 +229,8 @@ impl<'a> Tokenizer<'a> {
         }
       }
       b'*' => {
-        if self.starts_with(b"*/") {
-          self.forward(2);
-          Ok(Token::ScriptCommentClose)
-        } else {
-          self.forward(1);
-          Ok(Token::Star)
-        }
+        self.forward(1);
+        Ok(Token::Star)
       }
       b'!' => {
         self.forward(1);
@@ -518,11 +504,9 @@ mod tests {
 
   #[test]
   fn can_tokenize_comment_parts() {
-    let mut tokenizer = Tokenizer::new("<!---->/**/");
+    let mut tokenizer = Tokenizer::new("<!---->");
     assert_eq!(tokenizer.next(), Ok(Token::HtmlCommentOpen));
     assert_eq!(tokenizer.next(), Ok(Token::HtmlCommentClose));
-    assert_eq!(tokenizer.next(), Ok(Token::ScriptCommentOpen));
-    assert_eq!(tokenizer.next(), Ok(Token::ScriptCommentClose));
   }
 
   #[test]

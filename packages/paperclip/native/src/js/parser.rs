@@ -1,8 +1,8 @@
 use super::ast;
-use crate::base::parser::{get_buffer, ParseError};
 use super::tokenizer::{Token, Tokenizer};
-use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
+use crate::base::parser::{get_buffer, ParseError};
 use crate::pc::parser::parse_tag;
+use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
 use std::collections::HashMap;
 
 pub fn _parse<'a>(source: &'a str) -> Result<ast::Statement, ParseError> {
