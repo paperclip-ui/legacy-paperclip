@@ -83,9 +83,11 @@
   "dependencies": {
     "@types/react": "^16.9.20",
     "color": "^3.1.2",
+    "g": "^2.0.1",
     "lodash": "^4.17.15",
     "paperclip": "^11.0.84",
     "paperclip-web-renderer": "^11.0.84",
+    "vsce": "^1.77.0",
     "vscode-languageclient": "^6.0.1",
     "vscode-languageserver": "^6.0.1",
     "vscode-languageserver-textdocument": "^1.0.0"
