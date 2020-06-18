@@ -1,6 +1,6 @@
 {
   "name": "paperclip-web-renderer",
-  "version": "11.0.78",
+  "version": "11.0.79",
   "description": "My webpack project",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "chai": "^4.2.0",
     "html-webpack-plugin": "^3.2.0",
     "mocha": "^7.0.1",
-    "paperclip": "^11.0.78",
+    "paperclip": "^11.0.79",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",
