@@ -10,7 +10,7 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "3bcba669916a7fc3db8cf7fcd317d432c96d2854",
+  "gitHead": "ff12ac1dfbd3c8325a6a3ba50e15cc8b3c5603af",
   "dependencies": {
     "@types/node": "^13.7.7",
     "constants": "0.0.2",

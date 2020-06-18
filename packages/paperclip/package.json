@@ -24,7 +24,7 @@
     "paperclip-utils": "^11.0.83",
     "typescript": "^3.8.2"
   },
-  "gitHead": "3bcba669916a7fc3db8cf7fcd317d432c96d2854",
+  "gitHead": "ff12ac1dfbd3c8325a6a3ba50e15cc8b3c5603af",
   "devDependencies": {
     "electron": "^6.1.7",
     "electron-build-env": "^0.2.0",
