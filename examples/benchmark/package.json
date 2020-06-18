@@ -1,6 +1,6 @@
 {
   "name": "benchmark",
-  "version": "11.0.83",
+  "version": "11.0.84",
   "description": "",
   "main": "index.js",
   "private": true,
