@@ -564,7 +564,8 @@ fn parse_attribute_selector_value<'a, 'b>(
   } else {
     get_buffer(context.tokenizer, |tokenizer| {
       Ok(tokenizer.peek(1)? != Token::SquareClose)
-    })?.to_string()
+    })?
+    .to_string()
   };
 
   Ok(value)

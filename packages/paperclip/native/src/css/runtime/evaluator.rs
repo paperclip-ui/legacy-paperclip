@@ -217,7 +217,7 @@ fn evaluate_keyframes_rule(
   }
 
   Ok(virt::Rule::Keyframes(virt::KeyframesRule {
-    name: rule.name.to_string(),
+    name: format!("_{}_{}", context.scope, rule.name.to_string()),
     rules,
   }))
 }
@@ -604,6 +604,31 @@ fn stringify_element_selector(
   scoped_selector_text.to_string()
 }
 
+fn is_reserved_keyframe_word<'a>(word: &'a str) -> bool {
+
+  let reserved_timing_re = Regex::new(r"\b(-|\d+s?)\b").unwrap();
+  let reserved_timing_fn_re = Regex::new(r"\b(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end|steps|cubic-bezier|initial|inherit)\b").unwrap();
+
+  // https://www.w3schools.com/cssref/css3_pr_animation-direction.asp
+  let reserved_direction_re = Regex::new(r"\b(normal|reverse|alternate|alternate-reverse|initial|inherit)\b").unwrap();
+
+  let iter_count_re = Regex::new(r"\b(infinite)\b").unwrap();
+
+  // https://www.w3schools.com/cssref/css3_pr_animation-fill-mode.asp
+  let reserved_fill_mode_re = Regex::new(r"\b(none|forwards|backwards|both|initial|inherit)\b").unwrap();
+
+  // https://www.w3schools.com/cssref/css3_pr_animation-play-state.asp
+  let reserved_play_state_re = Regex::new(r"\b(paused|running|initial|inherit)\b").unwrap();
+
+
+  reserved_timing_re.is_match(word) ||
+  reserved_timing_fn_re.is_match(word) ||
+  reserved_direction_re.is_match(word) ||
+  reserved_fill_mode_re.is_match(word) ||
+  reserved_play_state_re.is_match(word) ||
+  iter_count_re.is_match(word)
+}
+
 fn evaluate_style_key_value_declaration<'a>(
   expr: &'a ast::KeyValueDeclaration,
   context: &Context,
@@ -611,6 +636,20 @@ fn evaluate_style_key_value_declaration<'a>(
   let mut value = expr.value.to_string();
 
   let url_re = Regex::new(r#"url\((?:['"]?)(.*?)(?:['"]?)\)"#).unwrap();
+
+  if expr.name == "animation-name" {
+    value = format!("_{}_{}", context.scope, value);
+
+  // https://www.w3schools.com/cssref/css3_pr_animation.asp
+  } else if expr.name == "animation" {
+    value = value.split(" ").collect::<Vec<&str>>().iter().map(|part| -> String {
+      if is_reserved_keyframe_word(part)  {
+        part.to_string()
+      } else {
+        format!("_{}_{}", context.scope, part)
+      }
+    }).collect::<Vec<String>>().join(" ");
+  }
 
   // a bit crude, but works for now. Need to eventually consider HTTP paths
   if url_re.is_match(value.clone().as_str()) {

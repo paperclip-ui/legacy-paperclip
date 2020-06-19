@@ -9,6 +9,10 @@
       color: blue;
     }
   }
+
+  :global(body) {
+    font-family: helvetica;
+  }
 </style>
 
 <span>abcd</span>

@@ -163,7 +163,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._1d7dbc06_class { } ._1d7dbc06_a1._1d7dbc06_b1 { } ._1d7dbc06_a._1d7dbc06_b._1d7dbc06_c { } ._1d7dbc06_a._1d7dbc06_b { } ._1d7dbc06_class[a] { } ._1d7dbc06_class1._1d7dbc06_class2 { } ._1d7dbc06_class1 ._1d7dbc06_class2 { } #id[data-pc-1d7dbc06] { } [data-pc-1d7dbc06] { } element[data-pc-1d7dbc06] { } element._1d7dbc06_class { } [attribute][data-pc-1d7dbc06] { } [attribute="value"][data-pc-1d7dbc06] { } [attribute=""value""][data-pc-1d7dbc06] { } [attribute="'value'"][data-pc-1d7dbc06] { } div[attr1][attr1][data-pc-1d7dbc06] { } [data-pc-1d7dbc06]:active { } [data-pc-1d7dbc06]::active { } element[data-pc-1d7dbc06]::active { } [data-pc-1d7dbc06]::after { } [data-pc-1d7dbc06]:lang(it) { } p[data-pc-1d7dbc06]:lang(it) { } [data-pc-1d7dbc06]:not(p[data-pc-1d7dbc06]) { } [data-pc-1d7dbc06]:nth-child(5) { } [data-pc-1d7dbc06]:placeholder { } element1[data-pc-1d7dbc06], element2[data-pc-1d7dbc06] { } element[data-pc-1d7dbc06], ._1d7dbc06_class, #id._1d7dbc06_class { } element1[data-pc-1d7dbc06] element2[data-pc-1d7dbc06] { } element1._1d7dbc06_class element2[attr][attr2][data-pc-1d7dbc06] { } element1._1d7dbc06_class element2[attr][data-pc-1d7dbc06], #id._1d7dbc06_group { } element1[data-pc-1d7dbc06] > element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] > ._1d7dbc06_child ._1d7dbc06_descendent { } element1[data-pc-1d7dbc06] > ._1d7dbc06_child ._1d7dbc06_descendent, [group-attr=""something""][data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] + element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] ~ element2[data-pc-1d7dbc06] { } @media only screen and (max-width: 600px) { div[data-pc-1d7dbc06] { color:red; } } </style><span data-pc-1d7dbc06>hello world!</span>`
+      `<style>._1d7dbc06_class { } ._1d7dbc06_a1._1d7dbc06_b1 { } ._1d7dbc06_a._1d7dbc06_b._1d7dbc06_c { } ._1d7dbc06_a._1d7dbc06_b { } ._1d7dbc06_class[a] { } ._1d7dbc06_class1._1d7dbc06_class2 { } ._1d7dbc06_class1 ._1d7dbc06_class2 { } #id[data-pc-1d7dbc06] { } [data-pc-1d7dbc06] { } element[data-pc-1d7dbc06] { } element._1d7dbc06_class { } [attribute][data-pc-1d7dbc06] { } [attribute="value"][data-pc-1d7dbc06] { } [attribute=""value""][data-pc-1d7dbc06] { } [attribute="'value'"][data-pc-1d7dbc06] { } div[attr1][attr1][data-pc-1d7dbc06] { } [data-pc-1d7dbc06]:active { } [data-pc-1d7dbc06]::active { } element[data-pc-1d7dbc06]::active { } [data-pc-1d7dbc06]::after { } [data-pc-1d7dbc06]:lang(it) { } p[data-pc-1d7dbc06]:lang(it) { } [data-pc-1d7dbc06]:not(p[data-pc-1d7dbc06]) { } [data-pc-1d7dbc06]:nth-child(5) { } [data-pc-1d7dbc06]:placeholder { } element1[data-pc-1d7dbc06], element2[data-pc-1d7dbc06] { } element[data-pc-1d7dbc06], ._1d7dbc06_class, #id._1d7dbc06_class { } element1[data-pc-1d7dbc06] element2[data-pc-1d7dbc06] { } element1._1d7dbc06_class element2[attr][attr2][data-pc-1d7dbc06] { } element1._1d7dbc06_class element2[attr][data-pc-1d7dbc06], #id._1d7dbc06_group { } element1[data-pc-1d7dbc06] > element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] > ._1d7dbc06_child ._1d7dbc06_descendent { } element1[data-pc-1d7dbc06] > ._1d7dbc06_child ._1d7dbc06_descendent, [group-attr=""something""][data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] + element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] ~ element2[data-pc-1d7dbc06] { } @media only screen and (max-width: 600px) { div[data-pc-1d7dbc06] { color:red; } } @keyframes _1d7dbc06_mymove { from { top:0px; } to { top:200px; } }</style><span data-pc-1d7dbc06>hello world!</span>`
 
       // TODO - import css
     ],
@@ -619,6 +619,26 @@ describe(__filename + "#", () => {
       },
       {},
       `<style>a[data-pc-80f4925f]::before { content:"blue"; }</style>`
+    ],
+    ,
+    [
+      {
+        "/entry.pc": `
+          <style>
+            @keyframes example {
+              0% {background-color: red;}
+              100% {background-color: yellow;}
+            }
+
+            div {
+              animation-name: example;
+              animation: example 5s infinite;
+            }
+          </style>
+        `
+      },
+      {},
+      `<style>@keyframes _80f4925f_example { 0% { background-color:red; } 100% { background-color:yellow; } } div[data-pc-80f4925f] { animation-name:_80f4925f_example; animation:_80f4925f_example 5s infinite; }</style>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

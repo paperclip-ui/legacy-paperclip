@@ -12,6 +12,8 @@ const stringifyCSSRule = (rule, protocol) => {
       return stringifyConditionRule(rule, protocol);
     case "FontFace":
       return stringifyFontFaceRule(rule, protocol);
+    case "Keyframes":
+      return stringifyKeyframesRule(rule, protocol);
   }
 };
 
@@ -21,6 +23,18 @@ const stringifyConditionRule = (
 ) => {
   return `@${name} ${condition_text} {
     ${rules.map(style => stringifyStyleRule(style, protocol)).join("\n")}
+  }`;
+};
+
+const stringifyKeyframesRule = ({ name, rules }, protocol?: string) => {
+  return `@keyframes ${name} {
+    ${rules.map(style => stringifyKeyframeRule(style, protocol)).join("\n")}
+  }`;
+};
+
+const stringifyKeyframeRule = ({ key, style }, protocol?: string) => {
+  return `${key} {
+    ${style.map(style => stringifyStyle(style, protocol)).join("\n")}
   }`;
 };
 

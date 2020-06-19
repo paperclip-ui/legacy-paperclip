@@ -1,14 +1,16 @@
 <import as="typography" src="./typography.pc">
 
 <style>
-  div::after {
-      content: "afdsfsfs";
+  @keyframes test {
+    0% {background-color: red;}
+    100% {background-color: yellow;}
   }
   div {
-    color: blue;
-    position: relative;
-    top: 100px;
-    left: 100px;
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    animation: test 1s infinite;
+    animation-duration: 4s;
   }
 </style>
 
