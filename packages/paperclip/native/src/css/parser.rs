@@ -346,7 +346,9 @@ fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
     Ok(Selector::Combo(ComboSelector { selectors }))
   }
 }
-fn parse_combo_selector_selectors<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Vec<Selector>, ParseError> {
+fn parse_combo_selector_selectors<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<Vec<Selector>, ParseError> {
   let pos = context.tokenizer.pos;
   let mut selectors = vec![];
   loop {
@@ -372,11 +374,11 @@ fn parse_combo_selector_selectors<'a, 'b>(context: &mut Context<'a, 'b>) -> Resu
 //     } else {
 //       "".to_string()
 //     }
-    
+
 //     eat_superfluous(context)?;
 
 //     let postfix_selector = if context.tokenizer.peek(1)? == Token::CurlyOpen || context.tokenizer.peek(1)? == Token::Comma {
-//       None 
+//       None
 //     } else {
 //       Some(Box::new(parse_next_pair_selector(Selector::None, context)?))
 //     };
@@ -471,14 +473,14 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
         get_buffer(context.tokenizer, |tokenizer| {
           Ok(match tokenizer.peek(1)? {
             Token::Keyword(_) => true,
-            _ => false
+            _ => false,
           })
-        })?.to_string()
+        })?
+        .to_string()
       };
 
       eat_superfluous(context)?;
-      
-      
+
       let postfix_selector = if context.tokenizer.peek(1)? == Token::Colon {
         Some(Box::new(parse_psuedo_element_selector(context)?))
       } else {
@@ -488,13 +490,15 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
         } else if postfix_selectors.len() == 1 {
           Some(Box::new(postfix_selectors.pop().unwrap()))
         } else {
-          Some(Box::new(Selector::Combo(ComboSelector { selectors: postfix_selectors })))
+          Some(Box::new(Selector::Combo(ComboSelector {
+            selectors: postfix_selectors,
+          })))
         }
       };
-      
+
       Selector::Prefixed(PrefixedSelector {
         connector,
-        postfix_selector
+        postfix_selector,
       })
     }
     Token::Dot => {
@@ -528,7 +532,7 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
   let mut value = None;
   if context.tokenizer.peek(1)? == Token::Equals {
     context.tokenizer.next()?; // eat =
-    value = Some(parse_attribute_selector_value(context)?.to_string());
+    value = Some(parse_attribute_selector_value(context)?);
   }
 
   context.tokenizer.next_expect(Token::SquareClose)?;
@@ -536,25 +540,31 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
   Ok(Selector::Attribute(AttributeSelector { name, value }))
 }
 
-fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
+fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
   let initial = context.tokenizer.next()?; // eat quote
+  let qoute = if initial == Token::SingleQuote {
+    "'"
+  } else {
+    "\""
+  };
+
   let buffer = get_buffer(context.tokenizer, |tokenizer| {
     Ok(tokenizer.peek(1)? != initial)
-  });
+  })?;
   context.tokenizer.next_expect(initial)?; // eat quote
-  buffer
+  Ok(format!("{}{}{}", qoute, buffer, qoute))
 }
 
 fn parse_attribute_selector_value<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<&'a str, ParseError> {
+) -> Result<String, ParseError> {
   let initial = context.tokenizer.peek(1)?;
   let value = if initial == Token::SingleQuote || initial == Token::DoubleQuote {
     parse_string(context)?
   } else {
     get_buffer(context.tokenizer, |tokenizer| {
       Ok(tokenizer.peek(1)? != Token::SquareClose)
-    })?
+    })?.to_string()
   };
 
   Ok(value)
@@ -703,7 +713,6 @@ fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), Pars
 //   })
 // }
 
-
 fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
   if context.tokenizer.peek(1)? == Token::At {
     parse_include_declaration(context)
@@ -787,7 +796,7 @@ fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Stri
         break;
       }
       Token::SingleQuote | Token::DoubleQuote => {
-        buffer.push_str(parse_string(context)?);
+        buffer.push_str(parse_string(context)?.as_str());
       }
       _ => {
         buffer.push(context.tokenizer.curr_char()? as char);

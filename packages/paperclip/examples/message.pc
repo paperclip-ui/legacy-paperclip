@@ -1,15 +1,17 @@
 <import as="typography" src="./typography.pc">
 
 <style>
+  div::after {
+      content: "afdsfsfs";
+  }
   div {
-    @include typography.font-normal;
-
-    &[data-hover], &:hover {
-      color: blue;
-    }
+    color: blue;
+    position: relative;
+    top: 100px;
+    left: 100px;
   }
 </style>
 
-<div data-hover>
+<div>
   test
 </div>

@@ -282,10 +282,9 @@ impl fmt::Display for PrefixedSelector {
     } else {
       write!(f, "&{}", self.connector)
     }
-      // write!(f, "&{}", self.connector)
+    // write!(f, "&{}", self.connector)
   }
 }
-
 
 // a, b, h1, h2 { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
