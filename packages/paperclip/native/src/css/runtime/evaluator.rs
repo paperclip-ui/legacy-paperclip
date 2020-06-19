@@ -246,26 +246,28 @@ fn evaluate_style_declarations<'a>(
       ast::Declaration::Include(inc) => {
         let mut imp_mixins: HashMap<String, Vec<virt::CSSStyleProperty>> = HashMap::new();
 
-        let mixin_context_option: Option<&HashMap<String, Vec<virt::CSSStyleProperty>>> =
-          if inc.mixin_path.len() == 2 {
-            if let Some(imp) = context.imports.get(inc.mixin_path.get(0).unwrap()) {
-              for (key, exportable) in imp {
-                if let virt::Exportable::Mixin(imp_mixin) = exportable {
-                  imp_mixins.insert(key.to_string(), imp_mixin.clone());
+        for mixin_path in &inc.mixins {
+          let mixin_context_option: Option<&HashMap<String, Vec<virt::CSSStyleProperty>>> =
+            if mixin_path.len() == 2 {
+              if let Some(imp) = context.imports.get(mixin_path.get(0).unwrap()) {
+                for (key, exportable) in imp {
+                  if let virt::Exportable::Mixin(imp_mixin) = exportable {
+                    imp_mixins.insert(key.to_string(), imp_mixin.clone());
+                  }
                 }
               }
-            }
-            Some(&imp_mixins)
-          } else if inc.mixin_path.len() == 1 {
-            Some(&context.mixins)
-          } else {
-            None
-          };
+              Some(&imp_mixins)
+            } else if mixin_path.len() == 1 {
+              Some(&context.mixins)
+            } else {
+              None
+            };
 
-        if let Some(mixin_context) = mixin_context_option {
-          let mixin_decls_option = mixin_context.get(inc.mixin_path.last().unwrap());
-          if let Some(mixin_decls) = mixin_decls_option {
-            style.extend(mixin_decls.clone());
+          if let Some(mixin_context) = mixin_context_option {
+            let mixin_decls_option = mixin_context.get(mixin_path.last().unwrap());
+            if let Some(mixin_decls) = mixin_decls_option {
+              style.extend(mixin_decls.clone());
+            }
           }
         }
       }
@@ -605,28 +607,28 @@ fn stringify_element_selector(
 }
 
 fn is_reserved_keyframe_word<'a>(word: &'a str) -> bool {
-
   let reserved_timing_re = Regex::new(r"\b(-|\d+s?)\b").unwrap();
   let reserved_timing_fn_re = Regex::new(r"\b(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end|steps|cubic-bezier|initial|inherit)\b").unwrap();
 
   // https://www.w3schools.com/cssref/css3_pr_animation-direction.asp
-  let reserved_direction_re = Regex::new(r"\b(normal|reverse|alternate|alternate-reverse|initial|inherit)\b").unwrap();
+  let reserved_direction_re =
+    Regex::new(r"\b(normal|reverse|alternate|alternate-reverse|initial|inherit)\b").unwrap();
 
   let iter_count_re = Regex::new(r"\b(infinite)\b").unwrap();
 
   // https://www.w3schools.com/cssref/css3_pr_animation-fill-mode.asp
-  let reserved_fill_mode_re = Regex::new(r"\b(none|forwards|backwards|both|initial|inherit)\b").unwrap();
+  let reserved_fill_mode_re =
+    Regex::new(r"\b(none|forwards|backwards|both|initial|inherit)\b").unwrap();
 
   // https://www.w3schools.com/cssref/css3_pr_animation-play-state.asp
   let reserved_play_state_re = Regex::new(r"\b(paused|running|initial|inherit)\b").unwrap();
 
-
-  reserved_timing_re.is_match(word) ||
-  reserved_timing_fn_re.is_match(word) ||
-  reserved_direction_re.is_match(word) ||
-  reserved_fill_mode_re.is_match(word) ||
-  reserved_play_state_re.is_match(word) ||
-  iter_count_re.is_match(word)
+  reserved_timing_re.is_match(word)
+    || reserved_timing_fn_re.is_match(word)
+    || reserved_direction_re.is_match(word)
+    || reserved_fill_mode_re.is_match(word)
+    || reserved_play_state_re.is_match(word)
+    || iter_count_re.is_match(word)
 }
 
 fn evaluate_style_key_value_declaration<'a>(
@@ -642,13 +644,19 @@ fn evaluate_style_key_value_declaration<'a>(
 
   // https://www.w3schools.com/cssref/css3_pr_animation.asp
   } else if expr.name == "animation" {
-    value = value.split(" ").collect::<Vec<&str>>().iter().map(|part| -> String {
-      if is_reserved_keyframe_word(part)  {
-        part.to_string()
-      } else {
-        format!("_{}_{}", context.scope, part)
-      }
-    }).collect::<Vec<String>>().join(" ");
+    value = value
+      .split(" ")
+      .collect::<Vec<&str>>()
+      .iter()
+      .map(|part| -> String {
+        if is_reserved_keyframe_word(part) {
+          part.to_string()
+        } else {
+          format!("_{}_{}", context.scope, part)
+        }
+      })
+      .collect::<Vec<String>>()
+      .join(" ");
   }
 
   // a bit crude, but works for now. Need to eventually consider HTTP paths

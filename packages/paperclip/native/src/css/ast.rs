@@ -39,12 +39,14 @@ impl fmt::Display for KeyValueDeclaration {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeDeclaration {
-  pub mixin_path: Vec<String>,
+  pub mixins: Vec<Vec<String>>,
 }
 
 impl fmt::Display for IncludeDeclaration {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    writeln!(f, "@include {}", &self.mixin_path.join("."))?;
+    writeln!(f, "@include {}", &self.mixins.iter().map(|path| {
+      path.join(".")
+    }).collect::<Vec<String>>().join(" "))?;
     Ok(())
   }
 }

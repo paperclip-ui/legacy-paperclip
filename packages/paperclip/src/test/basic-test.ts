@@ -620,7 +620,6 @@ describe(__filename + "#", () => {
       {},
       `<style>a[data-pc-80f4925f]::before { content:"blue"; }</style>`
     ],
-    ,
     [
       {
         "/entry.pc": `
@@ -639,6 +638,26 @@ describe(__filename + "#", () => {
       },
       {},
       `<style>@keyframes _80f4925f_example { 0% { background-color:red; } 100% { background-color:yellow; } } div[data-pc-80f4925f] { animation-name:_80f4925f_example; animation:_80f4925f_example 5s infinite; }</style>`
+    ],
+    [
+      {
+        "/entry.pc": `
+          <style>
+            @mixin a {
+              color: red;
+            }
+            @mixin b {
+              color: blue;
+            }
+
+            div {
+              @include a b;
+            }
+          </style>
+        `
+      },
+      {},
+      `<style>div[data-pc-80f4925f] { color:red; color:blue; }</style>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

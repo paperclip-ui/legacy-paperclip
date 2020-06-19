@@ -727,26 +727,37 @@ fn parse_include_declaration<'a, 'b>(
   context.tokenizer.next_expect(Token::At)?;
   context.tokenizer.next_expect(Token::Keyword("include"))?;
   eat_superfluous(context)?;
-  let mut mixin_path: Vec<String> = vec![];
+  let mut mixins: Vec<Vec<String>> = vec![];
 
   while !context.tokenizer.is_eof() {
-    let start = context.tokenizer.pos;
-    if let Token::Keyword(keyword) = context.tokenizer.next()? {
-      mixin_path.push(keyword.to_string());
-      if context.tokenizer.peek(1)? != Token::Dot {
-        break;
+    let mut mixin_path: Vec<String> = vec![];
+
+    while !context.tokenizer.is_eof() {
+      let start = context.tokenizer.pos;
+      if let Token::Keyword(keyword) = context.tokenizer.next()? {
+        mixin_path.push(keyword.to_string());
+        if context.tokenizer.peek(1)? != Token::Dot {
+          break;
+        }
+        context.tokenizer.next();
+      } else {
+        return Err(ParseError::unexpected_token(start));
       }
-      context.tokenizer.next();
-    } else {
-      return Err(ParseError::unexpected_token(start));
     }
+    mixins.push(mixin_path);
+
+    if context.tokenizer.peek(1)? != Token::Whitespace {
+      break;
+    }
+
+    context.tokenizer.next()?;
   }
 
   if context.tokenizer.peek(1)? == Token::Semicolon {
     context.tokenizer.next()?; // eat ;
   }
 
-  Ok(Declaration::Include(IncludeDeclaration { mixin_path }))
+  Ok(Declaration::Include(IncludeDeclaration { mixins }))
 }
 
 fn parse_key_value_declaration<'a, 'b>(
