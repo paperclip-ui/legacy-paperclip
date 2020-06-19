@@ -87,7 +87,7 @@ impl fmt::Display for Rule {
 pub struct StyleRule {
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
-  pub children: Vec<ChildStyleRule>,
+  pub children: Vec<StyleRule>,
 }
 
 impl fmt::Display for StyleRule {
@@ -226,6 +226,7 @@ impl fmt::Display for KeyframeRule {
 #[serde(tag = "kind")]
 pub enum Selector {
   Group(GroupSelector),
+  Prefixed(PrefixedSelector),
   Combo(ComboSelector),
   Descendent(DescendentSelector),
   PseudoElement(PseudoElementSelector),
@@ -248,6 +249,7 @@ impl fmt::Display for Selector {
     match self {
       Selector::Group(selector) => write!(f, "{}", selector.to_string()),
       Selector::Combo(selector) => write!(f, "{}", selector.to_string()),
+      Selector::Prefixed(selector) => write!(f, "{}", selector.to_string()),
       Selector::Element(selector) => write!(f, "{}", selector.to_string()),
       Selector::Descendent(selector) => write!(f, "{}", selector.to_string()),
       Selector::Not(selector) => write!(f, "{}", selector.to_string()),
@@ -265,6 +267,25 @@ impl fmt::Display for Selector {
     }
   }
 }
+
+// &--test, & + &, &:hover { }
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct PrefixedSelector {
+  pub connector: String,
+  pub postfix_selector: Option<Box<Selector>>,
+}
+
+impl fmt::Display for PrefixedSelector {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    if let Some(postfix_selector) = &self.postfix_selector {
+      write!(f, "&{}{}", self.connector, postfix_selector.to_string())
+    } else {
+      write!(f, "&{}", self.connector)
+    }
+      // write!(f, "&{}", self.connector)
+  }
+}
+
 
 // a, b, h1, h2 { }
 #[derive(Debug, PartialEq, Serialize, Clone)]

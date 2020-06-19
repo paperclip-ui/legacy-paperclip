@@ -69,7 +69,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       context.all_rules.push(evaluate_media_rule(rule, context)?);
     }
     ast::Rule::Style(rule) => {
-      evaluate_style_rule(rule, context)?;
+      evaluate_style_rule(rule, &"".to_string(), context)?;
     }
     ast::Rule::Keyframes(rule) => {
       context
@@ -96,50 +96,52 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
 
 pub fn evaluate_style_rules<'a>(
   rules: &Vec<ast::StyleRule>,
+  parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   for rule in rules {
-    evaluate_style_rule2(&rule, context)?;
+    evaluate_style_rule2(&rule, parent_selector_text, context)?;
   }
   Ok(())
 }
 
-pub fn evaluate_child_style_rules<'a>(
-  prefix: &String,
-  rules: &Vec<ast::ChildStyleRule>,
-  context: &mut Context,
-) -> Result<(), RuntimeError> {
-  for rule in rules {
-    evaluate_child_style_rule(&prefix, &rule, context)?;
-  }
-  Ok(())
-}
-pub fn evaluate_child_style_rule<'a>(
-  prefix: &String,
-  expr: &ast::ChildStyleRule,
-  context: &mut Context,
-) -> Result<(), RuntimeError> {
-  for selector in &expr.selectors {
-    let postfix = if let Some(postfix_selector) = &selector.selector {
-      stringify_element_selector(postfix_selector, true, context)
-    } else {
-      "".to_string()
-    };
-    let selector_text = format!("{}{}{}", prefix, selector.connector, postfix).to_string();
-    let child_prefix = selector_text.clone();
-    let style = evaluate_style_declarations(&expr.declarations, context)?;
-    let main_rule = virt::StyleRule {
-      selector_text,
-      style,
-    };
+// pub fn evaluate_child_style_rules<'a>(
+//   prefix: &String,
+//   rules: &Vec<ast::StyleRule>,
+//   context: &mut Context,
+// ) -> Result<(), RuntimeError> {
+//   for rule in rules {
+//     evaluate_child_style_rule(&prefix, &rule, context)?;
+//   }
+//   Ok(())
+// }
+// pub fn evaluate_child_style_rule<'a>(
+//   parent_selector_text: &String,
+//   expr: &ast::StyleRule,
+//   context: &mut Context,
+// ) -> Result<(), RuntimeError> {
 
-    context.all_rules.push(virt::Rule::Style(main_rule));
+//   for selector in &expr.selectors {
+//     let postfix = if let Some(postfix_selector) = &selector.selector {
+//       stringify_element_selector(postfix_selector, true, parent_selector_text, context)
+//     } else {
+//       "".to_string()
+//     };
+//     let selector_text = format!("{}{}{}", parent_selector_text, selector.connector, postfix).to_string();
+//     let child_prefix = selector_text.clone();
+//     let style = evaluate_style_declarations(&expr.declarations, context)?;
+//     let main_rule = virt::StyleRule {
+//       selector_text,
+//       style,
+//     };
 
-    evaluate_child_style_rules(&child_prefix, &expr.children, context)?;
-  }
+//     context.all_rules.push(virt::Rule::Style(main_rule));
 
-  Ok(())
-}
+//     evaluate_child_style_rules(&child_prefix, &expr.children, context)?;
+//   }
+
+//   Ok(())
+// }
 
 fn evaluate_font_family_rule(
   font_family: &ast::FontFaceRule,
@@ -195,7 +197,7 @@ fn evaluate_condition_rule(
     mixins: context.mixins.clone(),
   };
 
-  evaluate_style_rules(&rule.rules, &mut child_context)?;
+  evaluate_style_rules(&rule.rules, &"".to_string(), &mut child_context)?;
 
   Ok(virt::ConditionRule {
     name: rule.name.to_string(),
@@ -272,8 +274,8 @@ fn evaluate_style_declarations<'a>(
   Ok(style)
 }
 
-fn evaluate_style_rule(expr: &ast::StyleRule, context: &mut Context) -> Result<(), RuntimeError> {
-  evaluate_style_rule2(expr, context)?;
+fn evaluate_style_rule(expr: &ast::StyleRule, parent_selector_text: &String, context: &mut Context) -> Result<(), RuntimeError> {
+  evaluate_style_rule2(expr, parent_selector_text, context)?;
   Ok(())
 }
 
@@ -307,9 +309,9 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
   Ok(())
 }
 
-fn evaluate_style_rule2(expr: &ast::StyleRule, context: &mut Context) -> Result<(), RuntimeError> {
+fn evaluate_style_rule2(expr: &ast::StyleRule, parent_selector_text: &String, context: &mut Context) -> Result<(), RuntimeError> {
   let style = evaluate_style_declarations(&expr.declarations, &context)?;
-  let selector_text = stringify_element_selector(&expr.selector, true, &context);
+  let selector_text = stringify_element_selector(&expr.selector, true, parent_selector_text, true, &context);
 
   let main_style_rule = virt::StyleRule {
     selector_text: selector_text,
@@ -328,36 +330,58 @@ fn evaluate_style_rule2(expr: &ast::StyleRule, context: &mut Context) -> Result<
   if let ast::Selector::Group(group) = &target_selector {
     context.all_rules.push(virt::Rule::Style(main_style_rule));
     for selector in &group.selectors {
-      let selector_text2 = stringify_element_selector(&selector, !is_global_selector, &context);
+      let selector_text2 = stringify_element_selector(&selector, !is_global_selector, parent_selector_text, true, &context);
 
-      evaluate_child_style_rules(&selector_text2, &expr.children, context)?;
-
-      println!("{}", selector_text2);
+      evaluate_style_rules(&expr.children, &selector_text2, context)?;
+      // evaluate_child_style_rules(&selector_text2, &expr.children, context)?;
     }
   } else {
     let child_rule_prefix = main_style_rule.selector_text.clone();
     context.all_rules.push(virt::Rule::Style(main_style_rule));
-    evaluate_child_style_rules(&child_rule_prefix, &expr.children, context)?;
+    // evaluate_child_style_rules(&child_rule_prefix, &expr.children, context)?;
+
+    evaluate_style_rules(&expr.children, &child_rule_prefix, context)?;
   }
 
   Ok(())
 }
 
-fn stringify_optional_selector(selector: &Option<Box<ast::Selector>>, context: &Context) -> String {
+fn stringify_optional_selector(selector: &Option<Box<ast::Selector>>, include_prefix: bool, parent_selector_text: &String, alt: &String, context: &Context) -> String {
   if let Some(target) = &selector {
-    stringify_element_selector(target, true, context)
+    stringify_element_selector(target, true, parent_selector_text, true, context)
   } else {
-    "".to_string()
+    alt.to_string()
   }
+}
+
+fn stringify_nestable_selector(
+  selector: &ast::Selector,
+  include_scope: bool,
+  parent_selector_text: &String,
+  context: &Context,
+) -> String {
+  stringify_element_selector(selector, include_scope, parent_selector_text, true, context)
+  // if parent_selector_text.len() > 0 {
+  //   format!("{} {}", parent_selector_text, stringify_element_selector(selector, include_scope, parent_selector_text, context))
+  // } else {
+  // }
 }
 
 fn stringify_element_selector(
   selector: &ast::Selector,
   include_scope: bool,
+  parent_selector_text: &String,
+  include_prefix: bool,
   context: &Context,
 ) -> String {
   let scope_selector = if include_scope {
     format!("[data-pc-{}]", context.scope)
+  } else {
+    "".to_string()
+  };
+
+  let prefix = if include_prefix && parent_selector_text.len() > 0 {
+    format!("{} ", parent_selector_text)
   } else {
     "".to_string()
   };
@@ -367,20 +391,21 @@ fn stringify_element_selector(
     ast::Selector::None => "".to_string(),
     ast::Selector::Class(selector) => {
       if include_scope {
-        format!("._{}_{}", context.scope, selector.class_name)
+        format!("{}._{}_{}", prefix, context.scope, selector.class_name)
       } else {
-        format!(".{}", selector.class_name)
+        format!("{}.{}", prefix, selector.class_name)
       }
-    }
-    ast::Selector::Id(selector) => format!("#{}{}", selector.id, scope_selector),
-    ast::Selector::Element(selector) => format!("{}{}", selector.tag_name, scope_selector),
+    },
+    ast::Selector::Id(selector) => format!("{}#{}{}", prefix, selector.id, scope_selector),
+    ast::Selector::Element(selector) => format!("{}{}{}", prefix, selector.tag_name, scope_selector),
     ast::Selector::PseudoElement(selector) => {
       if selector.name == "root" {
         format!("{}{}", selector.separator, selector.name)
       } else {
         format!(
-          "{}{}{}",
-          stringify_optional_selector(&selector.target, context),
+          "{}{}{}{}",
+          prefix,
+          stringify_optional_selector(&selector.target, false, parent_selector_text, &scope_selector, context),
           selector.separator,
           selector.name
         )
@@ -388,48 +413,49 @@ fn stringify_element_selector(
     }
     ast::Selector::PseudoParamElement(selector) => format!(
       "{}:{}({})",
-      stringify_optional_selector(&selector.target, context),
+      stringify_optional_selector(&selector.target, include_prefix, parent_selector_text, &scope_selector, context),
       selector.name,
       selector.param
     ),
-    ast::Selector::Attribute(selector) => format!("{}{}", selector.to_string(), scope_selector),
+    ast::Selector::Attribute(selector) => format!("{}{}{}", prefix, selector.to_string(), scope_selector),
     ast::Selector::Not(selector) => format!(
-      "{}:not({})",
+      "{}{}:not({})",
+      prefix,
       scope_selector,
-      stringify_element_selector(&selector.selector, include_scope, context)
+      stringify_element_selector(&selector.selector, include_scope, parent_selector_text, false, context)
     ),
     ast::Selector::Global(selector) => format!(
       "{}",
-      stringify_element_selector(&selector.selector, false, context)
+      stringify_element_selector(&selector.selector, false, parent_selector_text, include_prefix, context)
     ),
 
     // need to trim in case parent is None
     ast::Selector::Descendent(selector) => format!(
       "{} {}",
-      stringify_element_selector(&selector.parent, include_scope, context),
-      stringify_element_selector(&selector.descendent, include_scope, context)
+      stringify_element_selector(&selector.parent, include_scope, parent_selector_text, include_prefix, context),
+      stringify_element_selector(&selector.descendent, include_scope, parent_selector_text, false, context)
     )
     .trim()
     .to_string(),
     ast::Selector::Child(selector) => format!(
       "{} > {}",
-      stringify_element_selector(&selector.parent, include_scope, context),
-      stringify_element_selector(&selector.child, include_scope, context)
+      stringify_element_selector(&selector.parent, include_scope, parent_selector_text, include_prefix, context),
+      stringify_element_selector(&selector.child, include_scope, parent_selector_text, false, context)
     ),
     ast::Selector::Adjacent(selector) => format!(
       "{} + {}",
-      stringify_element_selector(&selector.selector, include_scope, context),
-      stringify_element_selector(&selector.next_sibling_selector, include_scope, context)
+      stringify_element_selector(&selector.selector, include_scope, parent_selector_text, include_prefix, context),
+      stringify_element_selector(&selector.next_sibling_selector, include_scope, parent_selector_text, false, context)
     ),
     ast::Selector::Sibling(selector) => format!(
       "{} ~ {}",
-      stringify_element_selector(&selector.selector, include_scope, context),
-      stringify_element_selector(&selector.sibling_selector, include_scope, context)
+      stringify_element_selector(&selector.selector, include_scope, parent_selector_text, include_prefix, context),
+      stringify_element_selector(&selector.sibling_selector, include_scope, parent_selector_text, false, context)
     ),
     ast::Selector::Group(selector) => {
       let text: Vec<String> = (&selector.selectors)
         .into_iter()
-        .map(|child| stringify_element_selector(child, include_scope, context))
+        .map(|child| stringify_nestable_selector(child, include_scope, parent_selector_text, context))
         .collect();
       text.join(", ")
     }
@@ -441,9 +467,9 @@ fn stringify_element_selector(
         .map(|child| {
           if let &ast::Selector::Class(_class_name) = &child {
             contains_classname = true;
-            stringify_element_selector(child, include_scope, context)
+            stringify_element_selector(child, include_scope, parent_selector_text, false, context)
           } else {
-            child.to_string()
+            stringify_element_selector(child, false, parent_selector_text, false, context)
           }
         })
         .collect();
@@ -453,6 +479,14 @@ fn stringify_element_selector(
         text.join("")
       } else {
         format!("{}{}", text.join(""), scope_selector)
+      }
+    },
+    
+    ast::Selector::Prefixed(selector) => {
+      if let Some(postfix_selector) = &selector.postfix_selector {
+        format!("{}{}{}", parent_selector_text, selector.connector, stringify_element_selector(postfix_selector, selector.connector == " ", parent_selector_text, false, context))
+      } else {
+        format!("{}{}", parent_selector_text, selector.connector)
       }
     }
   };

@@ -107,7 +107,7 @@ fn parse_style_rule2<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<StyleRule,
 
 fn parse_declaration_body<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<ChildStyleRule>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
   eat_superfluous(context)?;
   let block_start = context.tokenizer.pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
@@ -346,6 +346,49 @@ fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
     Ok(Selector::Combo(ComboSelector { selectors }))
   }
 }
+fn parse_combo_selector_selectors<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Vec<Selector>, ParseError> {
+  let pos = context.tokenizer.pos;
+  let mut selectors = vec![];
+  loop {
+    let result = parse_element_selector(context);
+    if let Ok(child_selector) = result {
+      selectors.push(child_selector);
+    } else {
+      break;
+    }
+  }
+  Ok(selectors)
+}
+
+// fn parse_prefixed_selector<'a, 'b>(
+//   context: &mut Context<'a, 'b>,
+// ) -> Result<Selector, ParseError> {
+//   eat_superfluous(context)?;
+//   if context.tokenizer.peek(1)? == Token::Byte(b'&') {
+//     context.tokenizer.next_expect(Token::Byte(b'&'))?; // eat &
+//     let mut connector = context.tokenizer.peek(1)? == Token::Whitespace {
+//       context.tokenizer.next()?;
+//       " ".to_string()
+//     } else {
+//       "".to_string()
+//     }
+    
+//     eat_superfluous(context)?;
+
+//     let postfix_selector = if context.tokenizer.peek(1)? == Token::CurlyOpen || context.tokenizer.peek(1)? == Token::Comma {
+//       None 
+//     } else {
+//       Some(Box::new(parse_next_pair_selector(Selector::None, context)?))
+//     };
+
+//     Ok(Selector::Prefixed(PrefixedSelector {
+//       connector,
+//       postfix_selector
+//     }))
+//   } else {
+//     parse_psuedo_element_selector(context)
+//   }
+// }
 
 fn parse_psuedo_element_selector<'a, 'b>(
   context: &mut Context<'a, 'b>,
@@ -418,6 +461,41 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
     Token::Star => {
       context.tokenizer.next()?; // eat *
       Selector::AllSelector
+    }
+    Token::Byte(b'&') => {
+      context.tokenizer.next()?; // eat &
+
+      let mut connector: String = if context.tokenizer.peek(1)? == Token::Whitespace {
+        " ".to_string()
+      } else {
+        get_buffer(context.tokenizer, |tokenizer| {
+          Ok(match tokenizer.peek(1)? {
+            Token::Keyword(_) => true,
+            _ => false
+          })
+        })?.to_string()
+      };
+
+      eat_superfluous(context)?;
+      
+      
+      let postfix_selector = if context.tokenizer.peek(1)? == Token::Colon {
+        Some(Box::new(parse_psuedo_element_selector(context)?))
+      } else {
+        let mut postfix_selectors = parse_combo_selector_selectors(context)?;
+        if postfix_selectors.len() == 0 {
+          None
+        } else if postfix_selectors.len() == 1 {
+          Some(Box::new(postfix_selectors.pop().unwrap()))
+        } else {
+          Some(Box::new(Selector::Combo(ComboSelector { selectors: postfix_selectors })))
+        }
+      };
+      
+      Selector::Prefixed(PrefixedSelector {
+        connector,
+        postfix_selector
+      })
     }
     Token::Dot => {
       context.tokenizer.next()?;
@@ -496,6 +574,7 @@ fn part_of_selector_name(token: &Token) -> bool {
     | Token::Hash
     | Token::Squiggle
     | Token::Byte(b'>')
+    | Token::Byte(b'&')
     | Token::CurlyOpen
     | Token::SquareOpen
     | Token::SquareClose => false,
@@ -527,6 +606,7 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
       | Token::Hash
       | Token::Squiggle
       | Token::Byte(b'>')
+      | Token::Byte(b'&')
       | Token::CurlyOpen
       | Token::SquareOpen
       | Token::SquareClose => false,
@@ -537,7 +617,7 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
 
 fn parse_declarations_and_children<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<ChildStyleRule>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
   let mut declarations = vec![];
   let mut children = vec![];
   eat_superfluous(context)?;
@@ -551,12 +631,12 @@ fn parse_declarations_and_children<'a, 'b>(
       if context.tokenizer.peek(2)? == Token::Colon {
         declarations.push(parse_key_value_declaration(context)?);
       } else {
-        children.push(parse_child_style_rule2(context)?);
+        children.push(parse_style_rule2(context)?);
       }
     } else if context.tokenizer.peek(1)? == Token::At {
       declarations.push(parse_include_declaration(context)?);
     } else {
-      children.push(parse_child_style_rule2(context)?);
+      children.push(parse_style_rule2(context)?);
     }
 
     eat_superfluous(context)?;
@@ -569,77 +649,46 @@ fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), Pars
   eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
 }
 
-fn parse_child_style_rule2<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<ChildStyleRule, ParseError> {
-  let mut selectors: Vec<ChildRuleSelector> = vec![];
-
-  while !context.tokenizer.is_eof() {
-    // look for things like &--primary
-    let connector = if context.tokenizer.peek(1)? == Token::Byte(b'&') {
-      context.tokenizer.next()?;
-      get_buffer(context.tokenizer, |tokenizer| {
-        let token = tokenizer.peek(1)?;
-        Ok(part_of_selector_name(&token) || token == Token::Whitespace)
-      })?
-      .to_string()
-    } else {
-      " ".to_string()
-    };
-
-    eat_superfluous(context)?;
-
-    let selector: Option<Selector> = if context.tokenizer.peek(1)? == Token::CurlyOpen {
-      None
-    } else {
-      Some(parse_next_pair_selector(Selector::None, context)?)
-    };
-
-    selectors.push(ChildRuleSelector {
-      connector,
-      selector,
-    });
-
-    eat_superfluous(context)?;
-
-    if context.tokenizer.peek(1)? != Token::Comma {
-      break;
-    }
-    context.tokenizer.next()?;
-
-    eat_superfluous(context)?;
-  }
-
-  context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
-
-  let (declarations, children) = parse_declarations_and_children(context)?;
-  context.tokenizer.next_expect(Token::CurlyClose)?; // eat }
-  eat_superfluous(context)?;
-
-  Ok(ChildStyleRule {
-    selectors,
-    declarations,
-    children,
-  })
-}
-
-// fn parse_child_style_rule<'a, 'b>(
+// fn parse_child_style_rule2<'a, 'b>(
 //   context: &mut Context<'a, 'b>,
 // ) -> Result<ChildStyleRule, ParseError> {
-//   context.tokenizer.next_expect(Token::Byte(b'&'))?;
-//   let connector = get_buffer(context.tokenizer, |tokenizer| {
-//     let token = tokenizer.peek(1)?;
-//     Ok(part_of_selector_name(&token) || token == Token::Whitespace)
-//   })?
-//   .to_string();
+//   let selector = parse_group_selector(context)?;
 
-//   eat_superfluous(context)?;
+//   while !context.tokenizer.is_eof() {
+//     // look for things like &--primary
+//     let connector = if context.tokenizer.peek(1)? == Token::Byte(b'&') {
+//       context.tokenizer.next()?;
+//       get_buffer(context.tokenizer, |tokenizer| {
+//         let token = tokenizer.peek(1)?;
+//         Ok(part_of_selector_name(&token) || token == Token::Whitespace)
+//       })?
+//       .to_string()
+//     } else {
+//       " ".to_string()
+//     };
 
-//   let selector: Option<Selector> = if context.tokenizer.peek(1)? == Token::CurlyOpen {
-//     None
-//   } else {
-//     Some(parse_next_pair_selector(Selector::None, context)?)
-//   };
+//     eat_superfluous(context)?;
+
+//     let selector: Option<Selector> = if context.tokenizer.peek(1)? == Token::CurlyOpen {
+//       None
+//     } else {
+//       Some(parse_next_pair_selector(Selector::None, context)?)
+//     };
+
+//     selectors.push(ChildRuleSelector {
+//       connector,
+//       selector,
+//     });
+
+//     eat_superfluous(context)?;
+
+//     if context.tokenizer.peek(1)? != Token::Comma {
+//       break;
+//     }
+//     context.tokenizer.next()?;
+
+//     eat_superfluous(context)?;
+//   }
 
 //   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
 
@@ -648,12 +697,12 @@ fn parse_child_style_rule2<'a, 'b>(
 //   eat_superfluous(context)?;
 
 //   Ok(ChildStyleRule {
-//     connector,
-//     selector,
+//     selectors,
 //     declarations,
 //     children,
 //   })
 // }
+
 
 fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
   if context.tokenizer.peek(1)? == Token::At {
@@ -784,27 +833,6 @@ mod tests {
     :not(:after) {}
     :not(.a.b > c ~ d + e) {}
     :global(.test) {}
-    :global(.a, .b) {}
-    :global( .ws, .b ) {}
-    :global ( .ws, .b ) {}
-    :nth-child(1) {}
-    /**/
-    ::nth-last-child(1) { /**/ }
-    :nth-last-of-type(1) {}
-    :nth-last-of-type(div) {}
-    :nth-of-type(div) {}
-    :dir(div) {}
-    div:before {}
-    /*comment*/.c5a, .ca a:link, .ca a:visited { /**/color:#5a5a5a; } /**/
-
-    .c5a, .ca a:link, .ca a:visited { a: b; }
-    ._3LS4zudUBagjFS7HjWJYxo{margin:0 4px}
-    ._abcd{white-space:pre;word-break:normal;/**/padding:0 4px}
-    .md-spoiler-text:not([data-revealed])>*{opacity:0}
-    img[src='s.gif'][width='40'] { width: 12px; }
-    ._aff=aadd { width: 12px; }
-    /*comment*/
-    -a_b {}
     ";
 
     parse(source).unwrap();
@@ -852,19 +880,6 @@ mod tests {
       .test {
         background: url(';');
       }
-
-      .parent {
-        &-child {
-
-        }
-        &>.child {
-
-        }
-        & .child {
-          
-        }
-      }
-
       @mixin a {
         color: red;
       }
@@ -878,6 +893,19 @@ mod tests {
       }
       .a {
         @include a.b;
+      }
+
+
+      .parent {
+        &-child {
+
+        }
+        &>.child {
+
+        }
+        & .child {
+          
+        }
       }
 
       a {
