@@ -658,6 +658,25 @@ describe(__filename + "#", () => {
       },
       {},
       `<style>div[data-pc-80f4925f] { color:red; color:blue; }</style>`
+    ],
+    [
+      {
+        "/entry.pc": `
+          <import as="test" src="./module.pc">
+          <div className=">>>test.button"></div>
+        `,
+        "/module.pc": `
+          <style>
+            @export {
+              .button {
+                color: red;
+              }
+            }
+          </style>
+        `
+      },
+      {},
+      `<style>._139cec8e_button { color:red; }</style><div className="_139cec8e_button" data-pc-80f4925f></div>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

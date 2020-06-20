@@ -1,22 +1,12 @@
-<import as="typography" src="./typography.pc">
-<import src="./style1.css">
+<import src="./style1.css" as="styles">
 
-<div className=">>>typography.big-font">
-  test &times;
-</div>
-
-<!-- <style>
-  @keyframes test {
-    0% {background-color: red;}
-    100% {background-color: yellow;}
-  }
+<style>
   div {
-    width: 100px;
-    height: 100px;
-    background-color: red;
-    animation: test 1s infinite;
-    animation-duration: 4s;
+    @include styles.font;
   }
-</style> -->
+</style>
 
 
+<div class=">>>styles.test">
+  test
+</div>

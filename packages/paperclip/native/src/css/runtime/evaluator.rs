@@ -42,7 +42,7 @@ pub fn evaluate<'a>(
   ))
 }
 
-fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeError> {
+fn evaluate_rule(rule: &ast::Rule,  context: &mut Context) -> Result<(), RuntimeError> {
   match rule {
     ast::Rule::Charset(charset) => {
       context
@@ -66,10 +66,10 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
         .push(evaluate_font_family_rule(rule, context)?);
     }
     ast::Rule::Media(rule) => {
-      context.all_rules.push(evaluate_media_rule(rule, context)?);
+      context.all_rules.push(evaluate_media_rule(rule ,context)?);
     }
     ast::Rule::Style(rule) => {
-      evaluate_style_rule(rule, &"".to_string(), context)?;
+      evaluate_style_rule(rule,  &"".to_string(), context)?;
     }
     ast::Rule::Keyframes(rule) => {
       context
@@ -79,15 +79,15 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
     ast::Rule::Supports(rule) => {
       context
         .all_rules
-        .push(evaluate_supports_rule(rule, context)?);
+        .push(evaluate_supports_rule(rule ,context)?);
     }
     ast::Rule::Document(rule) => {
       context
         .all_rules
-        .push(evaluate_document_rule(rule, context)?);
+        .push(evaluate_document_rule(rule,  context)?);
     }
     ast::Rule::Page(rule) => {
-      context.all_rules.push(evaluate_page_rule(rule, context)?);
+      context.all_rules.push(evaluate_page_rule(rule,  context)?);
     }
   };
 
@@ -96,11 +96,12 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
 
 pub fn evaluate_style_rules<'a>(
   rules: &Vec<ast::StyleRule>,
+  
   parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   for rule in rules {
-    evaluate_style_rule2(&rule, parent_selector_text, context)?;
+    evaluate_style_rule2(&rule,  parent_selector_text, context)?;
   }
   Ok(())
 }
@@ -154,37 +155,42 @@ fn evaluate_font_family_rule(
 
 fn evaluate_media_rule(
   rule: &ast::ConditionRule,
+  
   context: &Context,
 ) -> Result<virt::Rule, RuntimeError> {
-  Ok(virt::Rule::Media(evaluate_condition_rule(rule, context)?))
+  Ok(virt::Rule::Media(evaluate_condition_rule(rule,  context)?))
 }
 
 fn evaluate_supports_rule(
   rule: &ast::ConditionRule,
+  
   context: &Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Supports(evaluate_condition_rule(
-    rule, context,
+    rule ,context,
   )?))
 }
 fn evaluate_page_rule(
   rule: &ast::ConditionRule,
+  
   context: &Context,
 ) -> Result<virt::Rule, RuntimeError> {
-  Ok(virt::Rule::Page(evaluate_condition_rule(rule, context)?))
+  Ok(virt::Rule::Page(evaluate_condition_rule(rule,  context)?))
 }
 
 fn evaluate_document_rule(
   rule: &ast::ConditionRule,
+  
   context: &Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Document(evaluate_condition_rule(
-    rule, context,
+    rule,  context,
   )?))
 }
 
 fn evaluate_condition_rule(
   rule: &ast::ConditionRule,
+  
   context: &Context,
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = Context {
@@ -197,7 +203,7 @@ fn evaluate_condition_rule(
     mixins: context.mixins.clone(),
   };
 
-  evaluate_style_rules(&rule.rules, &"".to_string(), &mut child_context)?;
+  evaluate_style_rules(&rule.rules,  &"".to_string(), &mut child_context)?;
 
   Ok(virt::ConditionRule {
     name: rule.name.to_string(),
@@ -278,10 +284,11 @@ fn evaluate_style_declarations<'a>(
 
 fn evaluate_style_rule(
   expr: &ast::StyleRule,
+  
   parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
-  evaluate_style_rule2(expr, parent_selector_text, context)?;
+  evaluate_style_rule2(expr,  parent_selector_text, context)?;
   Ok(())
 }
 
@@ -292,9 +299,6 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
     evaluate_rule(rule, context);
 
     match rule {
-      ast::Rule::Style(style_rule) => {
-        // TODO
-      }
       ast::Rule::Mixin(mixin) => {
         exports.insert(
           mixin.name.to_string(),
@@ -317,12 +321,13 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
 
 fn evaluate_style_rule2(
   expr: &ast::StyleRule,
+  
   parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   let style = evaluate_style_declarations(&expr.declarations, &context)?;
   let selector_text =
-    stringify_element_selector(&expr.selector, true, parent_selector_text, true, &context);
+    stringify_element_selector(&expr.selector,  true, parent_selector_text, true, &context);
 
   let main_style_rule = virt::StyleRule {
     selector_text: selector_text,
@@ -343,13 +348,14 @@ fn evaluate_style_rule2(
     for selector in &group.selectors {
       let selector_text2 = stringify_element_selector(
         &selector,
+        
         !is_global_selector,
         parent_selector_text,
         true,
         &context,
       );
 
-      evaluate_style_rules(&expr.children, &selector_text2, context)?;
+      evaluate_style_rules(&expr.children,  &selector_text2, context)?;
       // evaluate_child_style_rules(&selector_text2, &expr.children, context)?;
     }
   } else {
@@ -357,7 +363,7 @@ fn evaluate_style_rule2(
     context.all_rules.push(virt::Rule::Style(main_style_rule));
     // evaluate_child_style_rules(&child_rule_prefix, &expr.children, context)?;
 
-    evaluate_style_rules(&expr.children, &child_rule_prefix, context)?;
+    evaluate_style_rules(&expr.children,  &child_rule_prefix, context)?;
   }
 
   Ok(())
@@ -365,13 +371,14 @@ fn evaluate_style_rule2(
 
 fn stringify_optional_selector(
   selector: &Option<Box<ast::Selector>>,
+  
   include_prefix: bool,
   parent_selector_text: &String,
   alt: &String,
   context: &Context,
 ) -> String {
   if let Some(target) = &selector {
-    stringify_element_selector(target, true, parent_selector_text, true, context)
+    stringify_element_selector(target,  true, parent_selector_text, true, context)
   } else {
     alt.to_string()
   }
@@ -379,11 +386,12 @@ fn stringify_optional_selector(
 
 fn stringify_nestable_selector(
   selector: &ast::Selector,
+  
   include_scope: bool,
   parent_selector_text: &String,
   context: &Context,
 ) -> String {
-  stringify_element_selector(selector, include_scope, parent_selector_text, true, context)
+  stringify_element_selector(selector,  include_scope, parent_selector_text, true, context)
   // if parent_selector_text.len() > 0 {
   //   format!("{} {}", parent_selector_text, stringify_element_selector(selector, include_scope, parent_selector_text, context))
   // } else {
@@ -392,6 +400,7 @@ fn stringify_nestable_selector(
 
 fn stringify_element_selector(
   selector: &ast::Selector,
+  
   include_scope: bool,
   parent_selector_text: &String,
   include_prefix: bool,
@@ -432,6 +441,7 @@ fn stringify_element_selector(
           prefix,
           stringify_optional_selector(
             &selector.target,
+            
             false,
             parent_selector_text,
             &scope_selector,
@@ -446,6 +456,7 @@ fn stringify_element_selector(
       "{}:{}({})",
       stringify_optional_selector(
         &selector.target,
+        
         include_prefix,
         parent_selector_text,
         &scope_selector,
@@ -463,6 +474,7 @@ fn stringify_element_selector(
       scope_selector,
       stringify_element_selector(
         &selector.selector,
+        
         include_scope,
         parent_selector_text,
         false,
@@ -473,6 +485,7 @@ fn stringify_element_selector(
       "{}",
       stringify_element_selector(
         &selector.selector,
+        
         false,
         parent_selector_text,
         include_prefix,
@@ -485,6 +498,7 @@ fn stringify_element_selector(
       "{} {}",
       stringify_element_selector(
         &selector.parent,
+        
         include_scope,
         parent_selector_text,
         include_prefix,
@@ -492,6 +506,7 @@ fn stringify_element_selector(
       ),
       stringify_element_selector(
         &selector.descendent,
+        
         include_scope,
         parent_selector_text,
         false,
@@ -504,6 +519,7 @@ fn stringify_element_selector(
       "{} > {}",
       stringify_element_selector(
         &selector.parent,
+        
         include_scope,
         parent_selector_text,
         include_prefix,
@@ -511,6 +527,7 @@ fn stringify_element_selector(
       ),
       stringify_element_selector(
         &selector.child,
+        
         include_scope,
         parent_selector_text,
         false,
@@ -521,6 +538,7 @@ fn stringify_element_selector(
       "{} + {}",
       stringify_element_selector(
         &selector.selector,
+        
         include_scope,
         parent_selector_text,
         include_prefix,
@@ -528,6 +546,7 @@ fn stringify_element_selector(
       ),
       stringify_element_selector(
         &selector.next_sibling_selector,
+        
         include_scope,
         parent_selector_text,
         false,
@@ -538,6 +557,7 @@ fn stringify_element_selector(
       "{} ~ {}",
       stringify_element_selector(
         &selector.selector,
+        
         include_scope,
         parent_selector_text,
         include_prefix,
@@ -545,6 +565,7 @@ fn stringify_element_selector(
       ),
       stringify_element_selector(
         &selector.sibling_selector,
+        
         include_scope,
         parent_selector_text,
         false,
@@ -555,7 +576,7 @@ fn stringify_element_selector(
       let text: Vec<String> = (&selector.selectors)
         .into_iter()
         .map(|child| {
-          stringify_nestable_selector(child, include_scope, parent_selector_text, context)
+          stringify_nestable_selector(child,  include_scope, parent_selector_text, context)
         })
         .collect();
       text.join(", ")
@@ -568,9 +589,9 @@ fn stringify_element_selector(
         .map(|child| {
           if let &ast::Selector::Class(_class_name) = &child {
             contains_classname = true;
-            stringify_element_selector(child, include_scope, parent_selector_text, false, context)
+            stringify_element_selector(child,  include_scope, parent_selector_text, false, context)
           } else {
-            stringify_element_selector(child, false, parent_selector_text, false, context)
+            stringify_element_selector(child,  false, parent_selector_text, false, context)
           }
         })
         .collect();
@@ -591,6 +612,7 @@ fn stringify_element_selector(
           selector.connector,
           stringify_element_selector(
             postfix_selector,
+             
             selector.connector == " ",
             parent_selector_text,
             false,
