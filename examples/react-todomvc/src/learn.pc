@@ -137,7 +137,7 @@
 
 </style>
 
-<div class="learn-bar">
+<div export component as="default" class="learn-bar">
   <aside class="learn">
     <header>
       <h3>Paperclip</h3> 

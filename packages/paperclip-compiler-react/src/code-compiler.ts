@@ -287,7 +287,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
           context = addBuffer(
             `{${usedExports
               .map(imp => {
-                const className = strToClassName(imp);
+                const className = strToClassName(imp, context.filePath);
                 return `${className} as ${baseName}${pascalCase(className)}`;
               })
               .join(", ")}} `,
@@ -318,7 +318,8 @@ const translateParts = (root: Node, context: TranslateContext) => {
 
 const translatePart = (part: Element, context: TranslateContext) => {
   const componentName = strToClassName(
-    getAttributeStringValue(AS_ATTR_NAME, part)
+    getAttributeStringValue(AS_ATTR_NAME, part),
+    context.filePath
   );
   context = translateComponent(
     componentName,
@@ -364,7 +365,7 @@ const translateDefaultView = (root: Node, context: TranslateContext) => {
     return context;
   }
 
-  const componentName = getComponentName(root, context.filePath);
+  const componentName = getComponentName(context.filePath);
   context = translateComponent(componentName, target, false, context);
 
   // KEEP ME: needed for logic
@@ -449,7 +450,7 @@ const translateElement = (
   //   : null;
 
   const tag = isPartComponentInstance
-    ? strToClassName(element.tagName)
+    ? strToClassName(element.tagName, context.filePath)
     : isImportComponentInstance
     ? getImportTagName(element.tagName)
     : JSON.stringify(element.tagName);
@@ -501,7 +502,10 @@ const translateElement = (
 };
 
 const getElementStyleName = (element: Element, context: TranslateContext) => {
-  return `__${crc32(context.filePath)}__${getPartClassName(element)}`;
+  return `__${crc32(context.filePath)}__${getPartClassName(
+    element,
+    context.filePath
+  )}`;
 };
 
 const translateBlock = (

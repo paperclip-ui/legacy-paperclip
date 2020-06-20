@@ -44,9 +44,16 @@ pub struct IncludeDeclaration {
 
 impl fmt::Display for IncludeDeclaration {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    writeln!(f, "@include {}", &self.mixins.iter().map(|path| {
-      path.join(".")
-    }).collect::<Vec<String>>().join(" "))?;
+    writeln!(
+      f,
+      "@include {}",
+      &self
+        .mixins
+        .iter()
+        .map(|path| { path.join(".") })
+        .collect::<Vec<String>>()
+        .join(" ")
+    )?;
     Ok(())
   }
 }

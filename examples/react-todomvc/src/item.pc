@@ -1,6 +1,22 @@
 <import src="styles/global.css">
 
 <style>
+
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 100%;
+  vertical-align: baseline;
+  font-family: inherit;
+  font-weight: inherit;
+  color: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
   .edit {
     position: relative;
     margin: 0;
@@ -137,15 +153,15 @@
 
 </style>
 
-<fragment export component as="label-input">
+<fragment export component as="LabelInput">
   <input {onKeyPress} {onBlur} default-value={label} type="text" class="edit" autofocus="autofocus">
 </fragment>
 
-<fragment export component as="todo-label">
+<fragment export component as="TodoLabel">
   <div class="view">
     <input type="checkbox" class="toggle" onChange={onCheckChange} checked={completed}>
     <label onClick={onLabelClick}>{label}</label> 
-    <button class="destroy"></button>
+    <button class="destroy">&times;</button>
   </div> 
 </fragment>
 
@@ -156,24 +172,24 @@
 </fragment>
 
 <!-- variant previews -->
-<fragment export component as="default-preview">
+<fragment export component as="DefaultPreview">
   <default {completed}>
-    <todo-label {label} {completed} />
+    <TodoLabel {label} {completed} />
   </default>
 </fragment>
 
-<fragment export component as="editing-preview">
+<fragment export component as="EditingPreview">
   <default {completed}>
-    <label-input />
+    <LabelInput />
   </default>
 </fragment>
 
 <!-- main preview -->
 <div class="app">
   <ul>
-    <default-preview label="something" completed />
-    <default-preview label="something else" />
-    <default-preview label="to be continued" />
+    <DefaultPreview label="something" completed />
+    <DefaultPreview label="something else" />
+    <DefaultPreview label="to be continued" />
     <edting-preview />
   </ul>
 </div>

@@ -2,6 +2,22 @@
 
 <style>
 
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 100%;
+  vertical-align: baseline;
+  font-family: inherit;
+  font-weight: inherit;
+  color: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .footer {
   color: #F60;
   padding: 10px 15px;
@@ -97,7 +113,7 @@
   </footer>
 </div>
 
-<div export component as="default-preview">
+<div export component as="DefaultPreview">
   <default
     itemsLeftLabel={<span><strong>1</strong> item left</span>}
     filters={[
@@ -108,4 +124,4 @@
   />
 </div>
 
-<default-preview />
+<DefaultPreview />

@@ -169,6 +169,9 @@ impl Engine {
     &mut self,
     uri: &String,
   ) -> Result<css_vrt::CSSSheet, EngineError> {
+
+    // need to load in case of imports
+    self.reload(uri, false).await;
     let content = self.vfs.reload(uri).await.unwrap().to_string();
     evaluate_content_styles(&content, uri, &self.vfs, &self.dependency_graph).await
   }
@@ -178,6 +181,7 @@ impl Engine {
     content: &String,
     uri: &String,
   ) -> Result<css_vrt::CSSSheet, EngineError> {
+    self.reload(uri, false).await;
     evaluate_content_styles(content, uri, &self.vfs, &self.dependency_graph).await
   }
 

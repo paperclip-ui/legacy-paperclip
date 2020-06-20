@@ -24,28 +24,29 @@ export const pascalCase = (value: string) => {
   return newValue.charAt(0).toUpperCase() + newValue.substr(1);
 };
 
-export const getBaseComponentName = (root: Node, filePath: string) => {
-  return `Base${getComponentName(root, filePath)}`;
+export const getBaseComponentName = (filePath: string) => {
+  return `Base${getComponentName(filePath)}`;
 };
 
-export const getComponentName = (root: Node, filePath: string) => {
-  return (
-    getMetaValue("react-class", root) ||
-    pascalCase(
-      `${path
-        .basename(filePath)
-        .split(".")
-        .shift()}View`
-    )
+export const getComponentName = (filePath: string) => {
+  return pascalCase(
+    `${path
+      .basename(filePath)
+      .split(".")
+      .shift()}View`
   );
 };
 
-export const getPartClassName = (part: Element) => {
-  return strToClassName(getAttributeStringValue(AS_ATTR_NAME, part));
+export const getPartClassName = (part: Element, filePath: string) => {
+  return strToClassName(getAttributeStringValue(AS_ATTR_NAME, part), filePath);
 };
 
-export const strToClassName = (value: string) => {
+export const strToClassName = (value: string, filePath: string) => {
   let safeClassName = value.replace(/[^\w_$]/g, "");
+
+  if (safeClassName === "default") {
+    safeClassName = getComponentName(filePath);
+  }
 
   if (!isNaN(Number(safeClassName.charAt(0)))) {
     safeClassName = "_" + safeClassName;

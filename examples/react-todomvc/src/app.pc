@@ -1,9 +1,20 @@
 <import src="./styles/global.css">
-<import as="list-item" src="./item.pc">
-<import as="controls" src="./controls.pc">
-<import as="learn" src="./learn.pc">
+<import as="ListItem" src="./item.pc">
+<import as="Controls" src="./Controls.pc">
+<import as="Learn" src="./Learn.pc">
 
 <style>
+  .app {
+    font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.4em;
+    min-width: 230px;
+    max-width: 550px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 300;
+    color: #4d4d4d;
+  }
   .app-container {
     background: rgb(255, 255, 255);
     width: 100vw;
@@ -149,7 +160,7 @@
 <div export component as="default" class="app-container">
   <div class="app">
       <!-- more non-preview code. -->
-      <learn />
+      <Learn />
       <section class="todoapp">
           <header class="header">
               <h1>Todos</h1>
@@ -166,7 +177,7 @@
           </section>
 
           <!-- taking in the non-preview code -->
-          {controls}
+          {Controls}
       </section>
       <footer class="info">
           <p>Double-click to edit a todo</p>
@@ -179,9 +190,9 @@
 
 <default 
   items={<fragment>
-    <list-item.default-preview label="walk dog" completed />
-    <list-item.default-preview label="clean car" />
-    <list-item.editing-preview />
+    <ListItem.DefaultPreview label="walk dog" completed />
+    <ListItem.DefaultPreview label="clean car" />
+    <ListItem.EditingPreview />
   </fragment>} 
-  controls={<controls.default-preview />} 
+  Controls={<Controls.DefaultPreview />} 
 />
