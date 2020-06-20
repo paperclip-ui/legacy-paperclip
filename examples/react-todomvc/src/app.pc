@@ -177,7 +177,7 @@
           </section>
 
           <!-- taking in the non-preview code -->
-          {Controls}
+          {controls}
       </section>
       <footer class="info">
           <p>Double-click to edit a todo</p>
@@ -194,5 +194,5 @@
     <ListItem.DefaultPreview label="clean car" />
     <ListItem.EditingPreview />
   </fragment>} 
-  Controls={<Controls.DefaultPreview />} 
+  controls={<Controls.DefaultPreview />} 
 />

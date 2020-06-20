@@ -14,13 +14,13 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: ENOENT: no such file or directory, scandir '/Users/craigcondon/Developer/public/paperclip/examples/react-todomvc/node_modules/paperclip-loader/node_modules/@types/node'
+  Error: ENOENT: no such file or directory, copyfile '/Users/craigcondon/Library/Caches/Yarn/v6/npm-cliui-6.0.0-511d702c0c4e41ca156d7d0e96021f23e13225b1-integrity/node_modules/cliui/CHANGELOG.md' -> '/Users/craigcondon/Developer/public/paperclip/examples/react-todomvc/node_modules/paperclip-cli/node_modules/cliui/CHANGELOG.md'
 
 npm manifest: 
   {
     "name": "react-todomvc",
     "private": true,
-    "version": "11.0.78",
+    "version": "11.0.84",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -37,10 +37,10 @@ npm manifest:
       "css-loader": "^3.4.2",
       "file-loader": "^5.1.0",
       "html-webpack-plugin": "^3.2.0",
-      "paperclip": "^11.0.78",
-      "paperclip-cli": "^11.0.78",
-      "paperclip-compiler-react": "^11.0.78",
-      "paperclip-loader": "^11.0.78",
+      "paperclip": "^11.0.84",
+      "paperclip-cli": "^11.0.84",
+      "paperclip-compiler-react": "^11.0.84",
+      "paperclip-loader": "^11.0.84",
       "react": "^16.12.0",
       "react-dom": "^16.12.0",
       "style-loader": "^1.1.3",
