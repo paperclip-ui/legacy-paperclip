@@ -91,31 +91,44 @@ export enum DynamicStringAttributeValuePartKind {
   Slot = "Slot"
 }
 
-type BaseDynamicStringAttributeValuePart<TPartKind extends DynamicStringAttributeValuePartKind> = {
-  partKind: TPartKind
+type BaseDynamicStringAttributeValuePart<
+  TPartKind extends DynamicStringAttributeValuePartKind
+> = {
+  partKind: TPartKind;
 };
 
-type DynamicStringLiteralPart = { 
-  value: string
-} & BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Literal>;
+type DynamicStringLiteralPart = {
+  value: string;
+} & BaseDynamicStringAttributeValuePart<
+  DynamicStringAttributeValuePartKind.Literal
+>;
 
-type DynamicStringClassNamePiercePart = { 
-  className: string
-} & BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.ClassNamePierce>;
+type DynamicStringClassNamePiercePart = {
+  className: string;
+} & BaseDynamicStringAttributeValuePart<
+  DynamicStringAttributeValuePartKind.ClassNamePierce
+>;
 
-type DynamicStringSlotPart = Statement & BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Slot>;
+type DynamicStringSlotPart = Statement &
+  BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Slot>;
 
-type DynamicStringAttributeValuePart = DynamicStringLiteralPart | DynamicStringClassNamePiercePart | DynamicStringSlotPart;
+type DynamicStringAttributeValuePart =
+  | DynamicStringLiteralPart
+  | DynamicStringClassNamePiercePart
+  | DynamicStringSlotPart;
 
 export type DynamicStringAttributeValue = {
   values: DynamicStringAttributeValuePart[];
-  location: SourceLocation
+  location: SourceLocation;
 } & BaseAttributeValue<AttributeValueKind.DyanmicString>;
 
 export type SlotAttributeValue = Statement &
   BaseAttributeValue<AttributeValueKind.Slot>;
 
-export type AttributeValue = StringAttributeValue | SlotAttributeValue | DynamicStringAttributeValue;
+export type AttributeValue =
+  | StringAttributeValue
+  | SlotAttributeValue
+  | DynamicStringAttributeValue;
 
 export type Fragment = {
   value: string;
@@ -207,40 +220,44 @@ export const getStyleScopes = fs => (ast: Node, uri: string): string[] => {
     scopes.push(crc32(uri));
   }
 
-  for (const imp of getImports(ast)) {
-    const src = getAttributeStringValue("src", imp);
-    if (/\.css$/.test(src)) {
-      const cssFileUri = resolveImportFile(fs)(uri, src);
-      scopes.push(crc32(cssFileUri));
-    }
-  }
+  // don't do this -- want usage to be explicit.
+  // for (const imp of getImports(ast)) {
+  //   const src = getAttributeStringValue("src", imp);
+  //   if (/\.css$/.test(src)) {
+  //     const cssFileUri = resolveImportFile(fs)(uri, src);
+  //     scopes.push(crc32(cssFileUri));
+  //   }
+  // }
 
   return scopes;
 };
 
 export const getChildrenByTagName = (tagName: string, parent: Node) =>
   getChildren(parent).filter(child => {
-    return (
-      child.kind === NodeKind.Element &&
-      child.tagName === tagName
-    );
+    return child.kind === NodeKind.Element && child.tagName === tagName;
   }) as Element[];
 
-export const findChildrenByNamespace = (namespace: string, parent: Node, allChildrenByNamespace: Element[] = []) => {
+export const findChildrenByNamespace = (
+  namespace: string,
+  parent: Node,
+  allChildrenByNamespace: Element[] = []
+) => {
   for (const child of getChildren(parent)) {
     if (child.kind === NodeKind.Element) {
-      if (child.tagName.split(':')[0] === namespace) {
+      if (child.tagName.split(":")[0] === namespace) {
         allChildrenByNamespace.push(child);
       }
     }
     findChildrenByNamespace(namespace, child, allChildrenByNamespace);
   }
   return allChildrenByNamespace;
-}
+};
 
 export const getMetaValue = (name: string, root: Node) => {
   const metaElement = getChildrenByTagName("meta", root).find(
-    meta => hasAttribute("src", meta) && getAttributeStringValue("name", meta) === name
+    meta =>
+      hasAttribute("src", meta) &&
+      getAttributeStringValue("name", meta) === name
   );
   return metaElement && getAttributeStringValue("content", metaElement);
 };

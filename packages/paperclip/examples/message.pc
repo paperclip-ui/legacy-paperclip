@@ -1,4 +1,5 @@
 <import as="typography" src="./typography.pc">
+<import src="./style1.css">
 
 <div className=">>>typography.big-font">
   test &times;
