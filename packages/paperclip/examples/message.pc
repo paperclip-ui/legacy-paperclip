@@ -1,7 +1,7 @@
 <import as="typography" src="./typography.pc">
 
 <div className=">>>typography.big-font">
-  test
+  test &times;
 </div>
 
 <!-- <style>

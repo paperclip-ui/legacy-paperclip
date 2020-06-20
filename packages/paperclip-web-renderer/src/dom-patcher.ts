@@ -1,7 +1,10 @@
+import { Html5Entities } from "html-entities";
 import { createNativeNode } from "./native-renderer";
 import { Mutation, ActionKind } from "paperclip-utils";
 import { DOMFactory } from "./renderer";
 import { ATTR_ALIASES } from "./utils";
+
+const entities = new Html5Entities();
 
 export const patchNativeNode = (
   mount: HTMLElement,
@@ -60,7 +63,7 @@ export const patchNativeNode = (
       }
       case ActionKind.SetText: {
         const text = target as Text;
-        text.nodeValue = action.value;
+        text.nodeValue = entities.decode(action.value);
         break;
       }
     }
