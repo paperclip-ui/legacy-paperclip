@@ -20,7 +20,7 @@
     }
   }
 
-  .inc {
+  &.inc {
     @include test another-test;
   }
 </style>
@@ -31,3 +31,4 @@
     child
   </div>
 </div>
+

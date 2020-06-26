@@ -29,7 +29,7 @@ const getEngine = (): Engine => {
   if (_engine) {
     return _engine;
   }
-  return (_engine = new Engine());
+  return (_engine = new Engine({}, () => {}));
 };
 
 const virtualModuleInstances = new Map();
@@ -38,8 +38,11 @@ const fixPath = path => path.replace(/\\/g, "/");
 
 let _loadedStyleFiles = {};
 
-function pcLoader(source: string, virtualModules: VirtualModules, resourceUrl: string) {
-
+function pcLoader(
+  source: string,
+  virtualModules: VirtualModules,
+  resourceUrl: string
+) {
   this.cacheable();
   const callback = this.async();
 
@@ -60,34 +63,45 @@ function pcLoader(source: string, virtualModules: VirtualModules, resourceUrl: s
     basedir: process.cwd()
   }));
   const ast = engine.parseContent(source);
-  const sheet = engine.evaluateContentStyles(source, resourceUrl)
+  const sheet = engine.evaluateContentStyles(source, resourceUrl);
 
-  const styleCache = {..._loadedStyleFiles};
-  const importedStyles = evaluateAllFileStyles(engine, ast, resourceUrl, styleCache);
+  const styleCache = { ..._loadedStyleFiles };
+  const importedStyles = evaluateAllFileStyles(
+    engine,
+    ast,
+    resourceUrl,
+    styleCache
+  );
 
-  const importedStyleSheets = evaluateAllFileStyles(engine, ast, resourceUrl, styleCache);
+  const importedStyleSheets = evaluateAllFileStyles(
+    engine,
+    ast,
+    resourceUrl,
+    styleCache
+  );
 
   for (const transformPath in importedStyleSheets) {
     if (_loadedStyleFiles[transformPath]) continue;
-    virtualModules.writeModule(transformPath, stringifyCSSSheet(importedStyleSheets[transformPath], null));
+    virtualModules.writeModule(
+      transformPath,
+      stringifyCSSSheet(importedStyleSheets[transformPath], null)
+    );
   }
   _loadedStyleFiles = styleCache;
-
 
   const styleMap = {
     resourceUrl: sheet,
     ...importedStyles
   };
 
-  let code = compiler.compile({ ast, sheet, classNames: getAllVirtSheetClassNames(styleMap) }, resourceUrl, config.compilerOptions);
-
-  const sheetCode = stringifyCSSSheet(
-    sheet,
-    null
+  let code = compiler.compile(
+    { ast, sheet, classNames: getAllVirtSheetClassNames(styleMap) },
+    resourceUrl,
+    config.compilerOptions
   );
 
+  const sheetCode = stringifyCSSSheet(sheet, null);
 
-  
   const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);
   virtualModules.writeModule(sheetFilePath, sheetCode);
@@ -97,7 +111,6 @@ function pcLoader(source: string, virtualModules: VirtualModules, resourceUrl: s
 }
 
 module.exports = function(source: string) {
-
   if (this._compiler && !virtualModuleInstances.has(this._compiler)) {
     const modules = activatePlugin(new VirtualModules(), this._compiler);
     virtualModuleInstances.set(this._compiler, modules);
@@ -108,7 +121,7 @@ module.exports = function(source: string) {
   const resourcePath = this.resourcePath;
   const resourceUrl = "file://" + fixPath(resourcePath);
   return pcLoader.call(this, source, virtualModules, resourceUrl);
-}
+};
 
 const activatePlugin = (plugin, compiler) => {
   const { inputFileSystem, name, context, hooks } = compiler;

@@ -48,7 +48,7 @@ export class Engine {
 
   constructor(
     private _options: EngineOptions = {},
-    private _onCrash: () => void
+    private _onCrash: () => void = () => {}
   ) {
     const io: EngineIO = Object.assign(
       {

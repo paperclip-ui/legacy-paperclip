@@ -55,7 +55,6 @@ describe(__filename + "#", () => {
     it(`can render ${initial} -> ${changes.join("->")}`, () => {
       const engine = createMockEngine(initial);
 
-
       const renderer = new Renderer("file://", mockDOMFactory);
       engine.onEvent(renderer.handleEngineEvent);
       engine.load(DUMMY_FILE_URI);
@@ -79,7 +78,7 @@ const cleanWS = (html: string) => html.replace(/[\r\n\t\s]+/g, " ").trim();
 const createMockEngine = (source: string) =>
   new Engine({
     io: {
-      readFile: uri => {
+      readFile: _uri => {
         return source;
       },
       resolveFile: uri => uri,
