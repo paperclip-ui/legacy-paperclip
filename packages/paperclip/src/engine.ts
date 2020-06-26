@@ -45,9 +45,11 @@ export type EngineEventListener = (event: EngineEvent) => void;
 export class Engine {
   private _native: NativeEngine;
   private _listeners: EngineEventListener[] = [];
-  private _onCrash: () => void;
 
-  constructor(private _options: EngineOptions = {}, _onCrash: () => void) {
+  constructor(
+    private _options: EngineOptions = {},
+    private _onCrash: () => void
+  ) {
     const io: EngineIO = Object.assign(
       {
         readFile: uri => {
@@ -68,7 +70,6 @@ export class Engine {
     );
 
     const initNative = () => {
-      console.log("INIT");
       this._native = NativeEngine.new(
         io.readFile,
         io.fileExists,
@@ -80,8 +81,6 @@ export class Engine {
     };
 
     initNative();
-
-    this._onCrash = initNative;
   }
   onEvent(listener: EngineEventListener) {
     if (listener == null) {
@@ -130,7 +129,6 @@ export class Engine {
     try {
       return fn();
     } catch (e) {
-      console.log("ERR", e);
       this._onCrash();
       return null;
     }

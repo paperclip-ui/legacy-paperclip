@@ -9,6 +9,7 @@ abstract class BaseNotification<TType extends string, TParams> {
 
 export enum NotificationType {
   UPDATE_VIRTUAL_FILE_CONTENTS = "UPDATE_VIRTUAL_FILE_CONTENTS",
+  CRASH = "CRASH",
   LOAD = "LOAD",
   UNLOAD = "UNLOAD",
   ENGINE_EVENT = "ENGINE_EVENT"
@@ -44,6 +45,12 @@ export class Unload extends BaseNotification<
 > {
   constructor(params: LoadParams) {
     super(NotificationType.UNLOAD, params);
+  }
+}
+
+export class Crash extends BaseNotification<NotificationType.CRASH, {}> {
+  constructor(params: {}) {
+    super(NotificationType.CRASH, params);
   }
 }
 

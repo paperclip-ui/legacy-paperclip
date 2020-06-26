@@ -1,6 +1,6 @@
 // https://code.visualstudio.com/api/language-extensions/language-server-extension-guide
 
-import { workspace, ExtensionContext } from "vscode";
+import { workspace, ExtensionContext, window } from "vscode";
 import * as path from "path";
 import {
   LanguageClient,
@@ -9,6 +9,7 @@ import {
   LanguageClientOptions
 } from "vscode-languageclient";
 import { activate as activatePreview } from "./preview";
+import { NotificationType } from "../common/notifications";
 
 let client: LanguageClient;
 
@@ -17,6 +18,11 @@ export const activate = (context: ExtensionContext) => {
 
   const init = async () => {
     await client.onReady();
+    client.onNotification(NotificationType.CRASH, () => {
+      window.showWarningMessage(
+        "Paperclip crashed - you'll need to reload this window."
+      );
+    });
     activatePreview(client, context);
   };
 

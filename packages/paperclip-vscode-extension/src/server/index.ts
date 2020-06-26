@@ -11,6 +11,7 @@ import {
 import { Engine } from "paperclip";
 import { createServices } from "./services";
 import { VSCServiceBridge } from "./bridge";
+import { Crash } from "../common/notifications";
 
 const connection = createConnection(ProposedFeatures.all);
 
@@ -34,7 +35,7 @@ connection.onInitialize(() => {
 const init = async (connection: Connection) => {
   // Paperclip engine for parsing & evaluating documents
   const engine = new Engine({}, () => {
-    process.exit();
+    connection.sendNotification(...new Crash({}).getArgs());
   });
 
   // Language service for handling information about the document such as colors, references,
