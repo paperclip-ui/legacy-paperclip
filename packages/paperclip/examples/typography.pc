@@ -1,18 +1,8 @@
 <style>
-  @export {
-    @mixin font-normal {
-      font-family: Helvetica;
-      font-size: 20px;
-    }
+  /* comment */
 
-    .test {
-      color: blue;
-    }
-  }
-
-  :global(body) {
-    font-family: helvetica;
-  }
+  
+  
 </style>
 
 <span>abcd</span>

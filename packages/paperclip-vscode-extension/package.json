@@ -53,6 +53,17 @@
           ".pc"
         ],
         "configuration": "./languages/paperclip-html-language-configuration.json"
+      },
+      {
+        "id": "pcss",
+        "aliases": [
+          "paperclip-css",
+          "paperclip-css"
+        ],
+        "extensions": [
+          ".pcss"
+        ],
+        "configuration": "./languages/paperclip-css-language-configuration.json"
       }
     ],
     "grammars": [
@@ -61,9 +72,14 @@
         "scopeName": "text.html.paperclip-html",
         "path": "./syntaxes/paperclip-html.tmLanguage.json",
         "embeddedLanguages": {
-          "source.css": "css",
+          "source.pcss": "pcss",
           "source.js": "javascript"
         }
+      },
+      {
+        "language": "pcss",
+        "scopeName": "source.pcss",
+        "path": "./syntaxes/paperclip-css.json"
       }
     ]
   },

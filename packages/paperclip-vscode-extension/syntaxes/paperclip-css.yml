@@ -1,0 +1,49 @@
+# [PackageDev] target_format: json, ext: tmLanguage.json
+# https://github.com/microsoft/vscode/blob/master/extensions/html/syntaxes/html.tmLanguage.json
+# https://raw.githubusercontent.com/microsoft/vscode/master/extensions/css/syntaxes/css.tmLanguage.json
+
+name: Paperclip CSS
+scopeName: source.pcss
+fileTypes: []
+patterns:
+  - include: "#comment-block"
+  - include: "#rule"
+repository:
+  rule:
+    patterns:
+      - include: "#style-rule"
+      - match: "div"
+        name: meta.selector.css
+  comment-block:
+    begin: "/\\*"
+    name: "comment.block.css"
+    beginCaptures:
+      "0": { name: punctuation.definition.comment.begin.css }
+    end: "\\*/"
+    endCaptures:
+      "0": { name: punctuation.definition.comment.end.css }
+  style-rule:
+    patterns:
+      - include: "#selector"
+
+  property-list:
+    patterns:
+      begin: "{"
+      name: "meta.property-list.css"
+      beginCaptures:
+        "0": { name: punctuation.section.property-list.begin.bracket.curly.css }
+      end: "}"
+      endCaptures:
+        "0": { name: punctuation.section.property-list.end.bracket.curly.css }
+      patterns:
+        - include: "#property-list-innards"
+
+  property-list-innards:
+    patterns:
+      - include: "#comment-block"
+  selector:
+    patterns:
+      - match: "div"
+        captures:
+          "0": { name: meta.selector.css }
+        name: "meta.selector.css"

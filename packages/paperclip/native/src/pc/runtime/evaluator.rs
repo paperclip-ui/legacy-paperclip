@@ -258,8 +258,6 @@ pub fn evaluate_node<'a>(
     ast::Node::Element(el) => evaluate_element(&el, is_root, context),
     ast::Node::StyleElement(el) => evaluate_style_element(&el, context),
     ast::Node::Text(text) => {
-
-
       Ok(Some(virt::Node::Text(virt::Text {
         // source_uri: context.uri.to_string(),
         // source_location: text.location.clone(),

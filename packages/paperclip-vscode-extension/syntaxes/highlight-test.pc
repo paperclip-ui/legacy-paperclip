@@ -1,0 +1,36 @@
+<style>
+  /* comment */
+
+  .rule {
+    background: red;
+  }
+  
+  @media only screen and (max-width: 300px) {
+    .rule {
+      color: blue;
+    }
+  }
+
+  .parent {
+    color: blue;
+    #child {
+      color: blue;
+    }
+    #child {
+      color: blue;
+    }
+    .child2 {
+      color: red;
+    }
+  }
+
+  @mixin test {
+    .rule {
+      
+    }
+  }
+
+  .inc {
+    @include test another-test;
+  }
+</style>
