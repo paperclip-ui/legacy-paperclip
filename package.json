@@ -15,7 +15,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn build && yarn test && pretty-quick --staged && cd packages/paperclip/native && cargo fmt"
+      "pre-commit": "pretty-quick --staged && cd packages/paperclip/native && cargo fmt",
+      "pre-push": "yarn build && yarn test"
     }
   },
   "scripts": {
