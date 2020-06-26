@@ -10,6 +10,7 @@ export enum RuleKind {
   Namespace = "Namespace",
   FontFace = "FontFace",
   Media = "Media",
+  Mixin = "Mixin",
   Supports = "Supports",
   Page = "Page",
   Document = "Document",
@@ -42,47 +43,47 @@ export type BaseSelector<TKind extends SelectorKind> = {
 };
 
 type GroupSelector = {
-  selectors: Selector[]
+  selectors: Selector[];
 } & BaseSelector<SelectorKind.Group>;
 
 type ComboSelector = {
-  selectors: Selector[]
+  selectors: Selector[];
 } & BaseSelector<SelectorKind.Combo>;
 
 type DescendentSelector = {
-  parent: Selector,
-  descendent: Selector
+  parent: Selector;
+  descendent: Selector;
 } & BaseSelector<SelectorKind.Descendent>;
 
 type PseudoElementSelector = {
-  selector: string,
-  target: Selector,
-  name: string
+  selector: string;
+  target: Selector;
+  name: string;
 } & BaseSelector<SelectorKind.PseudoElement>;
 
 type PseudoParamElementSelector = {
-  target: Selector,
-  name: string,
-  param: string
+  target: Selector;
+  name: string;
+  param: string;
 } & BaseSelector<SelectorKind.PseudoParamElement>;
 
 type NotSelector = {
-  selector: Selector
+  selector: Selector;
 } & BaseSelector<SelectorKind.Not>;
 
 type ChildSelector = {
-  parent: Selector,
-  child: Selector
+  parent: Selector;
+  child: Selector;
 } & BaseSelector<SelectorKind.Child>;
 
 type AdjacentSelector = {
-  selector: Selector,
-  nextSiblingSelector: Selector
+  selector: Selector;
+  nextSiblingSelector: Selector;
 } & BaseSelector<SelectorKind.Adjacent>;
 
 type SiblingSelector = {
-  selector: Selector,
-  siblingSelector: Selector
+  selector: Selector;
+  siblingSelector: Selector;
 } & BaseSelector<SelectorKind.Sibling>;
 
 type IdSelector = {
@@ -90,71 +91,92 @@ type IdSelector = {
 } & BaseSelector<SelectorKind.Id>;
 
 type ElementSelector = {
-  tagName: string
+  tagName: string;
 } & BaseSelector<SelectorKind.Element>;
 
 type AttributeSelector = {
-  name: string,
-  value?: string
+  name: string;
+  value?: string;
 } & BaseSelector<SelectorKind.Attribute>;
 
 type ClassSelector = {
-  className: string
+  className: string;
 } & BaseSelector<SelectorKind.Class>;
 
 type AllSelector = BaseSelector<SelectorKind.AllSelector>;
 
+export type Selector =
+  | GroupSelector
+  | ComboSelector
+  | DescendentSelector
+  | PseudoElementSelector
+  | PseudoParamElementSelector
+  | NotSelector
+  | ChildSelector
+  | AdjacentSelector
+  | SiblingSelector
+  | IdSelector
+  | ElementSelector
+  | AttributeSelector
+  | ClassSelector
+  | AllSelector;
 
-export type Selector = 
-GroupSelector
-| ComboSelector
-| DescendentSelector
-| PseudoElementSelector
-| PseudoParamElementSelector
-| NotSelector
-| ChildSelector
-| AdjacentSelector
-| SiblingSelector
-| IdSelector
-| ElementSelector
-| AttributeSelector
-| ClassSelector
-| AllSelector
+export enum StyleDeclarationKind {
+  KeyValue = "KeyValue",
+  Include = "Include"
+}
 
-type StyleDeclaration = {
+type BaseStyleDeclaration<TKind extends StyleDeclarationKind> = {
+  declarationKind: TKind;
+};
+
+export type KeyValueDeclaration = {
   name: string;
   value: string;
   location: SourceLocation;
   nameLocation: SourceLocation;
   valueLocation: SourceLocation;
-};
+} & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
+
+export type IncludeDeclaration = {
+  mixins: string[];
+} & BaseStyleDeclaration<StyleDeclarationKind.Include>;
+
+export type StyleDeclaration = KeyValueDeclaration | IncludeDeclaration;
 
 export type StyleRule = {
   selector: Selector;
   declarations: StyleDeclaration[];
+  children: StyleRule[];
 } & BaseRule<RuleKind.Style>;
 
 type BaseConditionRule<TRule extends RuleKind> = {
-  name: string,
-  condition_text: string,
-  rules: StyleRule[]
+  name: string;
+  condition_text: string;
+  rules: StyleRule[];
 } & BaseRule<TRule>;
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
+export type MixinRule = {
+  declarations: StyleDeclaration[];
+} & BaseRule<RuleKind.Mixin>;
 
 export type ConditionRule = MediaRule;
-export type Rule = StyleRule | ConditionRule;
+export type Rule = StyleRule | ConditionRule | MixinRule;
 
-export const getSheetClassNames = (sheet: Sheet, allClassNames: string[] = []) => {
+export const getSheetClassNames = (
+  sheet: Sheet,
+  allClassNames: string[] = []
+) => {
   return getRulesClassNames(sheet.rules, allClassNames);
-}
+};
 
 const getRulesClassNames = (rules: Rule[], allClassNames: string[] = []) => {
   for (const rule of rules) {
     getRuleClassNames(rule, allClassNames);
   }
   return allClassNames;
-}
+};
 
 export const getRuleClassNames = (rule: Rule, allClassNames: string[] = []) => {
   switch (rule.kind) {
@@ -169,11 +191,14 @@ export const getRuleClassNames = (rule: Rule, allClassNames: string[] = []) => {
   }
 
   return allClassNames;
-}
+};
 
-export const getSelectorClassNames = (selector: Selector, allClassNames: string[] = []) => {
-  switch(selector.kind) {
-    case SelectorKind.Combo: 
+export const getSelectorClassNames = (
+  selector: Selector,
+  allClassNames: string[] = []
+) => {
+  switch (selector.kind) {
+    case SelectorKind.Combo:
     case SelectorKind.Group: {
       for (const child of selector.selectors) {
         getSelectorClassNames(child, allClassNames);
@@ -219,4 +244,4 @@ export const getSelectorClassNames = (selector: Selector, allClassNames: string[
   }
 
   return allClassNames;
-}
+};

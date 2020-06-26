@@ -6,13 +6,19 @@ import {
   Sheet,
   Element,
   NodeKind,
+  StyleDeclarationKind,
+  StyleDeclaration,
   getParts,
   RuleKind,
   getImports,
   AS_ATTR_NAME,
   Block,
   Conditional,
+  ConditionRule,
   BlockKind,
+  MixinRule,
+  KeyValueDeclaration,
+  IncludeDeclaration,
   ConditionalBlockKind,
   EngineEvent,
   getImportIds,
@@ -20,6 +26,8 @@ import {
   EngineEventKind,
   NodeParsedEvent,
   getStyleElements,
+  StyleRule,
+  MediaRule,
   getAttributeValue,
   DependencyNodeContent,
   getChildren,
@@ -28,12 +36,15 @@ import {
   AttributeKind,
   StatementKind,
   resolveImportUri,
-  VirtStyleRule, VirtRuleKind, VirtSheet, VirtRule
+  VirtStyleRule,
+  VirtRuleKind,
+  VirtSheet,
+  VirtRule
 } from "paperclip";
 import * as path from "path";
 
 import CSS_COLOR_NAMES from "./css-color-names";
-import { StyleRule } from "paperclip/src";
+import { connect } from "http2";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -100,32 +111,85 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
 
   private _handleRules(rules: Rule[], context: HandleContext) {
     for (const rule of rules) {
-      if (rule.kind === RuleKind.Style) {
-        this._handleRule(rule, context);
+      switch (rule.kind) {
+        case RuleKind.Style: {
+          this._handleStyleRule(rule, context);
+          break;
+        }
+        case RuleKind.Media: {
+          this._handleMediaRule(rule, context);
+          break;
+        }
+        case RuleKind.Mixin: {
+          this._handleMixinRule(rule, context);
+          break;
+        }
       }
     }
   }
 
-  private _handleRule(rule: StyleRule, context: HandleContext) {
-    for (const declaration of rule.declarations) {
-      const colors =
-        declaration.value.match(/\#[^\s,;]+|(rgba|rgb|hsl|hsla)\(.*?\)/g) ||
-        declaration.value.match(CSS_COLOR_NAME_REGEXP) ||
-        [];
+  private _handleMediaRule(rule: ConditionRule, context: HandleContext) {
+    for (const child of rule.rules) {
+      this._handleStyleRule(child, context);
+    }
+  }
 
-      for (const color of colors) {
-        const colorIndex = declaration.value.indexOf(color);
+  private _handleMixinRule(rule: MixinRule, context: HandleContext) {
+    this._handleDeclarations(rule.declarations, context);
+  }
 
-        // Color(color)
-        // const {color: [r, g, b], valpha: a } = Color(color);
-        const colorStart = declaration.valueLocation.start + colorIndex;
-
-        context.info.colors.push({
-          color,
-          location: { start: colorStart, end: colorStart + color.length }
-        });
+  private _handleDeclarations(
+    declarations: StyleDeclaration[],
+    context: HandleContext
+  ) {
+    for (const declaration of declarations) {
+      switch (declaration.declarationKind) {
+        case StyleDeclarationKind.KeyValue: {
+          this._handleKeyValueDeclaration(declaration, context);
+          break;
+        }
+        case StyleDeclarationKind.Include: {
+          this._handleIncludeDeclaration(declaration, context);
+          break;
+        }
       }
     }
+  }
+
+  private _handleStyleRule(rule: StyleRule, context: HandleContext) {
+    this._handleDeclarations(rule.declarations, context);
+    for (const child of rule.children) {
+      this._handleStyleRule(child, context);
+    }
+  }
+  private _handleKeyValueDeclaration(
+    declaration: KeyValueDeclaration,
+    context: HandleContext
+  ) {
+    const colors =
+      declaration.value.match(/\#[^\s,;]+|(rgba|rgb|hsl|hsla)\(.*?\)/g) ||
+      declaration.value.match(CSS_COLOR_NAME_REGEXP) ||
+      [];
+
+    for (const color of colors) {
+      const colorIndex = declaration.value.indexOf(color);
+
+      // Color(color)
+      // const {color: [r, g, b], valpha: a } = Color(color);
+      const colorStart = declaration.valueLocation.start + colorIndex;
+
+      context.info.colors.push({
+        color,
+        location: { start: colorStart, end: colorStart + color.length }
+      });
+    }
+  }
+
+  private _handleIncludeDeclaration(
+    declaration: IncludeDeclaration,
+    context: HandleContext
+  ) {
+    // TODO
   }
 
   private _handleDocument(context: HandleContext) {
@@ -247,7 +311,8 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
             this._handleNode((attr.value as any) as Node, context);
           }
         } else if (
-          (attr.value.attrValueKind === AttributeValueKind.String && attr.name === "src")
+          attr.value.attrValueKind === AttributeValueKind.String &&
+          attr.name === "src"
         ) {
           context.info.links.push({
             uri: resolveUri(context.uri, attr.value.value),

@@ -3,6 +3,7 @@ use serde::Serialize;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "declarationKind")]
 pub enum Declaration {
   KeyValue(KeyValueDeclaration),
   Include(IncludeDeclaration),

@@ -1,32 +1,22 @@
 <style>
   /* comment */
 
-  .rule {
-    background: red;
+  @mixin default-font {
+    font-family: Helvetica;
+    color: rgb(45, 197, 52);
+    font-size: 24px;
   }
   
   @media only screen and (max-width: 300px) {
     .rule {
-      color: blue;
+      color: black;
     }
   }
 
-  .parent {
-    color: blue;
-    #child {
-      color: blue;
-    }
-    #child {
-      color: blue;
-    }
-    .child2 {
-      color: red;
-    }
-  }
-
-  @mixin test {
-    .rule {
-      
+  .container {
+    @include default-font;
+    .child {
+      color: rgb(162, 202, 183);
     }
   }
 
@@ -34,3 +24,10 @@
     @include test another-test;
   }
 </style>
+
+<div class="container">
+  something
+  <div class="child">
+    child
+  </div>
+</div>
