@@ -43,10 +43,11 @@ const mapResult = result => {
 export type EngineEventListener = (event: EngineEvent) => void;
 
 export class Engine {
-  private _native: any;
+  private _native: NativeEngine;
   private _listeners: EngineEventListener[] = [];
+  private _onCrash: () => void;
 
-  constructor(private _options: EngineOptions = {}) {
+  constructor(private _options: EngineOptions = {}, _onCrash: () => void) {
     const io: EngineIO = Object.assign(
       {
         readFile: uri => {
@@ -56,7 +57,7 @@ export class Engine {
           try {
             const url = new URL(uri) as any;
             return fs.existsSync(url) && fs.lstatSync(url).isFile();
-          } catch(e) {
+          } catch (e) {
             console.error(e);
             return false;
           }
@@ -66,10 +67,21 @@ export class Engine {
       _options.io
     );
 
-    this._native = NativeEngine.new(io.readFile, io.fileExists, io.resolveFile);
+    const initNative = () => {
+      console.log("INIT");
+      this._native = NativeEngine.new(
+        io.readFile,
+        io.fileExists,
+        io.resolveFile
+      );
 
-    // only one native listener to for buffer performance
-    this._native.add_listener(this._dispatch);
+      // only one native listener to for buffer performance
+      this._native.add_listener(this._dispatch);
+    };
+
+    initNative();
+
+    this._onCrash = initNative;
   }
   onEvent(listener: EngineEventListener) {
     if (listener == null) {
@@ -87,25 +99,42 @@ export class Engine {
     return mapResult(this._native.parse_file(uri));
   }
   getLoadedAst(uri: string): DependencyContent {
-    return this._native.get_loaded_ast(uri);
+    return this._tryCatch(() => this._native.get_loaded_ast(uri));
   }
   evaluateFileStyles(uri: string) {
-    return mapResult(this._native.evaluate_file_styles(uri));
+    return this._tryCatch(() =>
+      mapResult(this._native.evaluate_file_styles(uri))
+    );
   }
   evaluateContentStyles(content: string, uri: string) {
-    return mapResult(this._native.evaluate_content_styles(content, uri));
+    return this._tryCatch(() =>
+      mapResult(this._native.evaluate_content_styles(content, uri))
+    );
   }
   parseContent(content: string) {
-    return mapResult(this._native.parse_content(content));
+    return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }
   updateVirtualFileContent(uri: string, content: string) {
     this._dispatch({ kind: EngineEventKind.Updating, uri });
-    return mapResult(this._native.update_virtual_file_content(uri, content));    
+    return this._tryCatch(() =>
+      mapResult(this._native.update_virtual_file_content(uri, content))
+    );
   }
   load(uri: string) {
     this._dispatch({ kind: EngineEventKind.Loading, uri });
-    return mapResult(this._native.load(uri, this._options.renderPart));
+    return this._tryCatch(() =>
+      mapResult(this._native.load(uri, this._options.renderPart))
+    );
   }
+  private _tryCatch = <TRet>(fn: () => TRet) => {
+    try {
+      return fn();
+    } catch (e) {
+      console.log("ERR", e);
+      this._onCrash();
+      return null;
+    }
+  };
   private _dispatch = (event: EngineEvent) => {
     // try-catch since engine will throw opaque error.
     try {
@@ -119,7 +148,12 @@ export class Engine {
   };
 }
 
-export const evaluateAllFileStyles = (engine: Engine, ast: Node, resourceUrl: string, _loadedStyleFiles = {}) => {
+export const evaluateAllFileStyles = (
+  engine: Engine,
+  ast: Node,
+  resourceUrl: string,
+  _loadedStyleFiles = {}
+) => {
   const imports = getImports(ast);
   const map = {};
   for (const imp of imports) {
@@ -136,4 +170,4 @@ export const evaluateAllFileStyles = (engine: Engine, ast: Node, resourceUrl: st
     }
   }
   return map;
-}
+};

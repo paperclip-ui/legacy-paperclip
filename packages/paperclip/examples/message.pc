@@ -1,12 +1,1 @@
-<import src="./style1.css" as="styles">
-
-<style>
-  div {
-    @include styles.font;
-  }
-</style>
-
-
-<div class=">>>styles.test">
-  test
-</div>
+fdf kaddddddddssss

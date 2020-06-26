@@ -31,12 +31,11 @@ connection.onInitialize(() => {
   };
 });
 
-const init = async (
-  connection: Connection
-) => {
-  
+const init = async (connection: Connection) => {
   // Paperclip engine for parsing & evaluating documents
-  const engine = new Engine();
+  const engine = new Engine({}, () => {
+    process.exit();
+  });
 
   // Language service for handling information about the document such as colors, references,
   // etc
@@ -49,6 +48,5 @@ const init = async (
 connection.onInitialized((_params: InitializedParams) => {
   init(connection);
 });
-
 
 connection.listen();

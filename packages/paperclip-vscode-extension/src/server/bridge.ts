@@ -107,6 +107,7 @@ export class VSCServiceBridge {
     });
 
     connection.onDidChangeTextDocument(params => {
+      console.log("onDidChangeTextDocument");
       this._updateTextContent(params.textDocument.uri, params.contentChanges);
     });
   }

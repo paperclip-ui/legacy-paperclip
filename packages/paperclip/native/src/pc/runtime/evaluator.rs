@@ -844,11 +844,16 @@ fn evaluate_attribute_dynamic_string<'a>(
           .to_string()
       }
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
-        
         if pierce.class_name.contains(".") {
           let parts = pierce.class_name.split(".").collect::<Vec<&str>>();
           let imp = parts.first().unwrap().to_string();
-          let dep_option = context.graph.dependencies.get(context.uri).unwrap().dependencies.get(&imp);
+          let dep_option = context
+            .graph
+            .dependencies
+            .get(context.uri)
+            .unwrap()
+            .dependencies
+            .get(&imp);
           if let Some(dep_uri) = dep_option {
             let class_name = parts.last().unwrap();
             format!("_{}_{}", get_document_style_scope(dep_uri), class_name)
@@ -861,7 +866,7 @@ fn evaluate_attribute_dynamic_string<'a>(
             context.scope, pierce.class_name, pierce.class_name
           )
         }
-      },
+      }
       ast::AttributeDynamicStringPart::Slot(statement) => {
         evaluate_attribute_slot(statement, context)
           .unwrap()
