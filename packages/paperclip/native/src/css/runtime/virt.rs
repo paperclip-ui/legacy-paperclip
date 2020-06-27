@@ -36,12 +36,6 @@ pub enum Rule {
   Keyframes(KeyframesRule),
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "kind")]
-pub enum Exportable {
-  ClassName(String),
-  Mixin(Vec<CSSStyleProperty>),
-}
 
 impl fmt::Display for Rule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

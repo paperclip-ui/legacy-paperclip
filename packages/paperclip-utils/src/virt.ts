@@ -14,10 +14,10 @@ export type VirtualStyleElement = {
 } & VirtualBaseNode<VirtualNodeKind.StyleElement>;
 
 export type VirtualElement = {
-  tagName: string,
+  tagName: string;
   attributes: {
-    [identifier: string]: string | null
-  }
+    [identifier: string]: string | null;
+  };
   children: VirtualNode[];
 } & VirtualBaseNode<VirtualNodeKind.Element>;
 
@@ -26,7 +26,11 @@ export type VirtualText = {
 } & VirtualBaseNode<VirtualNodeKind.Text>;
 
 export type VirtualFragment = {
-  children: VirtualNode
+  children: VirtualNode[];
 } & VirtualBaseNode<VirtualNodeKind.Fragment>;
 
-export type VirtualNode = VirtualElement | VirtualText | VirtualFragment | VirtualStyleElement;
+export type VirtualNode =
+  | VirtualElement
+  | VirtualText
+  | VirtualFragment
+  | VirtualStyleElement;

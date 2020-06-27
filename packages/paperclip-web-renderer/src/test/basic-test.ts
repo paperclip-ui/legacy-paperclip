@@ -55,14 +55,18 @@ describe(__filename + "#", () => {
     it(`can render ${initial} -> ${changes.join("->")}`, () => {
       const engine = createMockEngine(initial);
 
-      const renderer = new Renderer("file://", mockDOMFactory);
+      const renderer = new Renderer("file://", DUMMY_FILE_URI, mockDOMFactory);
       engine.onEvent(renderer.handleEngineEvent);
       engine.load(DUMMY_FILE_URI);
 
       for (const change of changes) {
         engine.updateVirtualFileContent(DUMMY_FILE_URI, change);
 
-        const renderer2 = new Renderer("file://", mockDOMFactory);
+        const renderer2 = new Renderer(
+          "file://",
+          DUMMY_FILE_URI,
+          mockDOMFactory
+        );
         const engine2 = createMockEngine(change);
         engine2.onEvent(renderer2.handleEngineEvent);
         engine2.load(DUMMY_FILE_URI);

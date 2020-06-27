@@ -1,6 +1,7 @@
 import { Renderer } from "./renderer";
 
 declare var vscode;
+declare var TARGET_URI;
 
 const thisScript = Array.from(document.querySelectorAll("script")).pop();
 
@@ -9,7 +10,8 @@ const parent = typeof vscode != "undefined" ? vscode : window;
 const renderer = new Renderer(
   String(thisScript.src)
     .split(":")
-    .shift() + ":"
+    .shift() + ":",
+  TARGET_URI
 );
 
 renderer.onMetaClick(element => {

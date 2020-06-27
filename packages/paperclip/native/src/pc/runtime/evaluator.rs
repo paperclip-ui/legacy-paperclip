@@ -1,15 +1,19 @@
 use super::super::ast;
-use super::graph::{Dependency, DependencyContent, DependencyGraph};
-use super::vfs::VirtualFileSystem;
+use serde::Serialize;
+use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
+use crate::core::vfs::VirtualFileSystem;
 use super::virt;
+use super::cache::{Cache};
 use crate::base::ast::Location;
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
-use crate::css::runtime::evaluator::evaluate as evaluate_css;
+use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::virt as css_virt;
+use crate::css::runtime::export as css_export;
 use crate::js::ast as js_ast;
 use crate::js::runtime::evaluator::evaluate as evaluate_js;
 use crate::js::runtime::virt as js_virt;
+use super::export::Exports;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::iter::FromIterator;
 
@@ -23,6 +27,7 @@ pub struct Context<'a> {
   pub scope: String,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
+  pub imports: &'a HashMap<String, Exports>
 }
 
 impl<'a> Context<'a> {
@@ -41,31 +46,47 @@ pub enum RenderStrategy {
   Auto,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct EvalInfo {
+  pub sheet: css_virt::CSSSheet,
+  pub preview: virt::Node,
+  pub exports: Exports
+}
+
 pub fn evaluate<'a>(
   uri: &String,
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
-  data: &js_virt::JsValue,
-  part_option: Option<String>,
-) -> Result<Option<virt::Node>, RuntimeError> {
+  imports: &'a HashMap<String, Exports>
+) -> Result<Option<EvalInfo>, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   if let DependencyContent::Node(node_expr) = &dep.content {
-    let mut context = create_context(node_expr, uri, graph, vfs, data, None);
-    let mut root = wrap_as_fragment(evaluate_instance_node(
+
+    let data = js_virt::JsValue::JsObject(js_virt::JsObject::new());
+    let mut context = create_context(node_expr, uri, graph, vfs, &data, None, imports);
+    
+    let mut preview = wrap_as_fragment(evaluate_instance_node(
       node_expr,
       &mut context,
-      if let Some(part) = part_option {
-        RenderStrategy::Part(part)
-      } else {
-        RenderStrategy::Auto
-      },
-      false,
+      RenderStrategy::Auto,
+      false
     )?);
 
-    let style = evaluate_jumbo_style(node_expr, &mut context)?;
-    root.prepend_child(style);
+    // don't want to do this, actually. 
+    // let style = evaluate_jumbo_style(node_expr, &mut context)?;
+    
+    let (sheet, css_exports) = evaluate_document_sheet(uri, node_expr, &mut context)?;
 
-    Ok(Some(root))
+    Ok(Some(EvalInfo { 
+      sheet,
+      preview,
+      exports: Exports {
+        style: css_exports,
+        components: HashSet::from_iter(context.part_ids.iter().map(|id| {
+          id.to_string()
+        }))
+      }
+    }))
   } else {
     Err(RuntimeError::new(
       "Incorrect file type".to_string(),
@@ -136,11 +157,11 @@ pub fn evaluate_document_styles<'a>(
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
   include_imported_styled: bool,
-) -> Result<(css_virt::CSSSheet, HashMap<String, css_virt::Exportable>), RuntimeError> {
+) -> Result<(css_virt::CSSSheet, css_export::Exports), RuntimeError> {
   let mut sheet = css_virt::CSSSheet { rules: vec![] };
   let entry = graph.dependencies.get(uri).unwrap();
 
-  let mut css_imports: HashMap<String, HashMap<String, css_virt::Exportable>> = HashMap::new();
+  let mut css_imports: HashMap<String, css_export::Exports> = HashMap::new();
 
   for (id, dep_uri) in &entry.dependencies {
     let imp = graph.dependencies.get(dep_uri).unwrap();
@@ -149,28 +170,35 @@ pub fn evaluate_document_styles<'a>(
       DependencyContent::Node(imp_node) => {
         let (imp_sheet, imp_exports) =
           evaluate_document_styles(imp_node, dep_uri, vfs, graph, include_imported_styled)?;
+
+        
         css_imports.insert(id.to_string(), imp_exports);
         if include_imported_styled {
           sheet.extend(imp_sheet);
         }
       }
       DependencyContent::StyleSheet(imp_style) => {
-        let (imp_sheet, imp_exports) = evaluate_css(
+        let info = evaluate_css(
           imp_style,
           dep_uri,
           &get_document_style_scope(&dep_uri),
           vfs,
           &HashMap::new(),
         )?;
-        css_imports.insert(id.to_string(), imp_exports);
-        if include_imported_styled {
-          sheet.extend(imp_sheet);
+
+        match info {
+          CSSEvalInfo { sheet: imp_sheet, exports: imp_exports } => {
+            css_imports.insert(id.to_string(), imp_exports);
+            if include_imported_styled {
+              sheet.extend(imp_sheet);
+            }
+          }
         }
       }
     };
   }
 
-  let mut css_exports: HashMap<String, css_virt::Exportable> = HashMap::new();
+  let mut css_exports: css_export::Exports = css_export::Exports::new();
 
   let children_option = ast::get_children(&node_expr);
   let scope = get_document_style_scope(uri);
@@ -178,14 +206,59 @@ pub fn evaluate_document_styles<'a>(
     // style elements are only allowed in root, so no need to traverse
     for child in children {
       if let ast::Node::StyleElement(style_element) = &child {
-        let (child_sheet, child_exports) =
+        let info =
           evaluate_css(&style_element.sheet, uri, &scope, vfs, &css_imports)?;
-        sheet.extend(child_sheet);
-        css_exports.extend(child_exports);
+
+        match info {
+          CSSEvalInfo { sheet: child_sheet, exports: child_exports } => {
+            sheet.extend(child_sheet);
+            css_exports.extend(&child_exports);
+          }
+        }
       }
     }
   }
 
+  Ok((sheet, css_exports))
+}
+
+fn evaluate_document_sheet<'a>(
+  uri: &String,
+  entry_expr: &ast::Node,
+  context: &'a mut Context,
+) -> Result<(css_virt::CSSSheet, css_export::Exports), RuntimeError> {
+  let mut sheet = css_virt::CSSSheet { rules: vec![] };
+  let entry = context.graph.dependencies.get(uri).unwrap();
+
+  let mut css_exports: css_export::Exports = css_export::Exports::new();
+  let mut css_imports: HashMap<String, css_export::Exports> = HashMap::new();
+
+  for (id, dep_uri) in &entry.dependencies {
+    let imp_option = context.imports.get(dep_uri);
+    if let Some(imp) = imp_option {
+      css_imports.insert(id.to_string(), imp.style.clone());
+    }
+  }
+
+  let children_option = ast::get_children(&entry_expr);
+  let scope = get_document_style_scope(uri);
+  if let Some(children) = children_option {
+    // style elements are only allowed in root, so no need to traverse
+    for child in children {
+      if let ast::Node::StyleElement(style_element) = &child {
+        let info =
+          evaluate_css(&style_element.sheet, uri, &scope, context.vfs, &css_imports)?;
+        match info {
+          CSSEvalInfo { sheet: child_sheet, exports: child_exports } => {
+            sheet.extend(child_sheet);
+            css_exports.extend(&child_exports);
+          }
+        }
+      }
+    }
+  }
+
+  
   Ok((sheet, css_exports))
 }
 
@@ -228,6 +301,7 @@ fn create_context<'a>(
   vfs: &'a VirtualFileSystem,
   data: &'a js_virt::JsValue,
   parent_option: Option<&'a Context>,
+  imports: &'a HashMap<String, Exports>
 ) -> Context<'a> {
   let render_call_stack = if let Some(parent) = parent_option {
     parent.render_call_stack.clone()
@@ -242,6 +316,7 @@ fn create_context<'a>(
     uri,
     vfs,
     render_call_stack,
+    imports,
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
     scope,
@@ -514,6 +589,7 @@ fn evaluate_component_instance<'a>(
       context.vfs,
       &data,
       Some(&context),
+      context.imports
     );
     check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
 
@@ -1055,7 +1131,7 @@ mod tests {
     .unwrap();
   }
 
-  fn evaluate_source<'a>(code: &'a str) -> Result<Option<virt::Node>, RuntimeError> {
+  fn evaluate_source<'a>(code: &'a str) -> Result<Option<EvalInfo>, RuntimeError> {
     let mut graph = DependencyGraph::new();
     let uri = "some-file.pc".to_string();
     let vfs = VirtualFileSystem::new(
@@ -1068,8 +1144,7 @@ mod tests {
       Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
     );
 
-    let data = js_virt::JsValue::JsObject(js_virt::JsObject::new());
-    evaluate(&uri, &graph, &vfs, &data, None)
+    evaluate(&uri, &graph, &vfs, &HashMap::new())
   }
 
   #[test]

@@ -52,6 +52,18 @@ export const createNativeNode = (
   }
 };
 
+export const createNativeStyleFromSheet = (
+  sheet,
+  factory: DOMFactory,
+  protocol: string
+) => {
+  // return factory.createTextNode(JSON.stringify(element.sheet, null, 2));
+  // return factory.createTextNode(stringifyCSSSheet(element.sheet, protocol));
+  const nativeElement = factory.createElement("style");
+  nativeElement.textContent = stringifyCSSSheet(sheet, protocol);
+  return nativeElement;
+};
+
 const createNativeTextNode = (node, factory: DOMFactory) => {
   return factory.createTextNode(entities.decode(node.value));
 };

@@ -9,6 +9,7 @@ mod css;
 mod engine;
 mod js;
 mod pc;
+mod core;
 
 use serde::{Deserialize, Serialize};
 // use jsonrpc_core::*;

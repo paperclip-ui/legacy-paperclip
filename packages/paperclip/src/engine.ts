@@ -8,10 +8,12 @@ import {
   DependencyContent,
   getImports,
   Node,
-  stringifyCSSSheet,
+  EvaluatedEvent,
   resolveImportFile,
+  patchVirtNode,
   getAttributeStringValue
 } from "paperclip-utils";
+import { PCEvalInfo } from "paperclip-utils/src/pc-evaluate";
 
 export type FileContent = {
   [identifier: string]: string;
@@ -45,6 +47,8 @@ export type EngineEventListener = (event: EngineEvent) => void;
 export class Engine {
   private _native: NativeEngine;
   private _listeners: EngineEventListener[] = [];
+  private _rendered: Record<string, EvaluatedEvent> = {};
+  private _loading: Record<string, boolean> = {};
 
   constructor(
     private _options: EngineOptions = {},
@@ -81,7 +85,10 @@ export class Engine {
     };
 
     initNative();
+
+    // this.onEvent(this._onEngineEvent);
   }
+
   onEvent(listener: EngineEventListener) {
     if (listener == null) {
       throw new Error(`listener cannot be undefined`);
@@ -94,6 +101,23 @@ export class Engine {
       }
     };
   }
+  // private _onEngineEvent(event: EngineEvent) {
+  //   if (event.kind === EngineEventKind.Evaluated) {
+  //     this._rendered[event.uri] = event;
+  //   } else if (event.kind === EngineEventKind.Diffed) {
+
+  //     const existingEvent = this._rendered[event.uri];
+
+  //     this._rendered[event.uri] = {
+  //       ...existingEvent,
+  //       dependents: event.dependents,
+  //       info: {
+  //         ...existingEvent.info,
+  //         preview: patchVirtNode(existingEvent.info.preview, event.mutations)
+  //       }
+  //     }
+  //   }
+  // }
   parseFile(uri: string) {
     return mapResult(this._native.parse_file(uri));
   }
@@ -119,7 +143,25 @@ export class Engine {
       mapResult(this._native.update_virtual_file_content(uri, content))
     );
   }
+  render(uri: string): Promise<EvaluatedEvent> {
+    if (!this._loading[uri]) {
+      this.load(uri);
+    }
+
+    if (this._rendered[uri]) {
+      return Promise.resolve(this._rendered[uri]);
+    }
+    return new Promise(resolve => {
+      const dispose = this.onEvent(event => {
+        if (event.uri === uri && event.kind === EngineEventKind.Evaluated) {
+          dispose();
+          resolve(event);
+        }
+      });
+    });
+  }
   load(uri: string) {
+    this._loading[uri] = true;
     this._dispatch({ kind: EngineEventKind.Loading, uri });
     return this._tryCatch(() =>
       mapResult(this._native.load(uri, this._options.renderPart))

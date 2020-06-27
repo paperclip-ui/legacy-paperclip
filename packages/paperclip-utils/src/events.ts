@@ -1,7 +1,7 @@
-import { VirtualNode } from "./virt";
 import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
 import { Mutation } from "./virt-mtuation";
+import { PCEvalInfo } from "./pc-evaluate";
 
 export enum EngineEventKind {
   Loading = "Loading",
@@ -27,11 +27,13 @@ type BaseEngineEvent<KKind extends EngineEventKind> = {
 
 export type EvaluatedEvent = {
   uri: string;
-  node?: VirtualNode;
+  dependents: string[];
+  info?: PCEvalInfo;
 } & BaseEngineEvent<EngineEventKind.Evaluated>;
 
 export type DiffedEvent = {
   uri: string;
+  dependents: string[];
   mutations: Mutation[];
 } & BaseEngineEvent<EngineEventKind.Diffed>;
 

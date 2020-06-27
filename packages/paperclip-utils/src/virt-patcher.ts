@@ -1,7 +1,13 @@
-import { Mutation, ActionKind, VirtualText } from "paperclip-utils";
-import { VirtualNode, VirtualElement } from "paperclip-utils";
+import { Mutation, ActionKind } from "./virt-mtuation";
+import {
+  VirtualNode,
+  VirtualElement,
+  VirtualText,
+  VirtualNodeKind
+} from "./virt";
+import { getChildren } from "./ast";
 
-export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
+export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
   for (const mutation of mutations) {
     let target = getVirtTarget(root, mutation.nodePath);
     const action = mutation.action;
@@ -26,7 +32,7 @@ export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
       }
       case ActionKind.RemoveAttribute: {
         const element = target as VirtualElement;
-        const attributes = {...element.attributes};
+        const attributes = { ...element.attributes };
         attributes[action.name] = undefined;
         target = {
           ...target,
@@ -36,7 +42,7 @@ export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
       }
       case ActionKind.SetAttribute: {
         const element = target as VirtualElement;
-        const attributes = {...element.attributes};
+        const attributes = { ...element.attributes };
         attributes[action.name] = action.value;
         target = {
           ...target,
@@ -60,17 +66,24 @@ export const patchVirtNode = (root: VirtualElement, mutations: Mutation[]) => {
 };
 
 export const getVirtTarget = (
-  mount: VirtualElement,
+  mount: VirtualNode,
   nodePath: number[]
 ): VirtualNode =>
   nodePath.reduce((current: VirtualElement, i) => current.children[i], mount);
+
 const updateNode = (
-  ancestor: VirtualElement,
+  ancestor: VirtualNode,
   nodePath: number[],
   newNode: VirtualNode,
   depth: number = 0
 ) => {
   if (depth === nodePath.length) {
+    return newNode;
+  }
+  if (
+    ancestor.kind === VirtualNodeKind.Text ||
+    ancestor.kind === VirtualNodeKind.StyleElement
+  ) {
     return newNode;
   }
   return {

@@ -1,3 +1,5 @@
+<import as="something" src="./import-test.pc">
+
 <style>
   /* comment */
 
@@ -26,9 +28,10 @@
 </style>
 
 <div class="container">
-  something
+  this is another test
   <div class="child">
     child
   </div>
 </div>
 
+<something.Something />

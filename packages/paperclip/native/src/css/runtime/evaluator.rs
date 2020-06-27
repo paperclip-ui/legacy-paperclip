@@ -1,18 +1,24 @@
 use super::super::ast;
 use super::virt;
 use crate::base::runtime::RuntimeError;
-use crate::pc::runtime::vfs::VirtualFileSystem;
+use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use std::collections::HashMap;
+use super::export::Exports;
 
 pub struct Context<'a> {
   scope: &'a str,
   vfs: &'a VirtualFileSystem,
   uri: &'a String,
-  imports: &'a HashMap<String, HashMap<String, virt::Exportable>>,
+  imports: &'a HashMap<String, Exports>,
   mixins: HashMap<String, Vec<virt::CSSStyleProperty>>,
-  exports: HashMap<String, virt::Exportable>,
+  exports: Exports,
   all_rules: Vec<virt::Rule>,
+}
+
+pub struct EvalInfo {
+  pub sheet: virt::CSSSheet,
+  pub exports: Exports
 }
 
 pub fn evaluate<'a>(
@@ -20,26 +26,26 @@ pub fn evaluate<'a>(
   uri: &'a String,
   scope: &'a str,
   vfs: &'a VirtualFileSystem,
-  imports: &'a HashMap<String, HashMap<String, virt::Exportable>>,
-) -> Result<(virt::CSSSheet, HashMap<String, virt::Exportable>), RuntimeError> {
+  imports: &'a HashMap<String, Exports>,
+) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     scope,
     uri,
     vfs,
     imports,
     mixins: HashMap::new(),
-    exports: HashMap::new(),
+    exports: Exports::new(),
     all_rules: vec![],
   };
   for rule in &expr.rules {
     evaluate_rule(&rule, &mut context)?;
   }
-  Ok((
-    virt::CSSSheet {
+  Ok(EvalInfo {
+    sheet: virt::CSSSheet {
       rules: context.all_rules,
     },
-    context.exports,
-  ))
+    exports: context.exports,
+  })
 }
 
 fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeError> {
@@ -256,8 +262,8 @@ fn evaluate_style_declarations<'a>(
           let mixin_context_option: Option<&HashMap<String, Vec<virt::CSSStyleProperty>>> =
             if mixin_path.len() == 2 {
               if let Some(imp) = context.imports.get(mixin_path.get(0).unwrap()) {
-                for (key, exportable) in imp {
-                  if let virt::Exportable::Mixin(imp_mixin) = exportable {
+                for (key, imp_mixin) in &imp.mixins {
+                  if key == mixin_path.last().unwrap() {
                     imp_mixins.insert(key.to_string(), imp_mixin.clone());
                   }
                 }
@@ -293,23 +299,23 @@ fn evaluate_style_rule(
 }
 
 fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result<(), RuntimeError> {
-  let mut exports: HashMap<String, virt::Exportable> = HashMap::new();
+  let mut exports = Exports::new();
 
   for rule in &expr.rules {
     evaluate_rule(rule, context);
 
     match rule {
       ast::Rule::Mixin(mixin) => {
-        exports.insert(
+        exports.mixins.insert(
           mixin.name.to_string(),
-          virt::Exportable::Mixin(context.mixins.get(&mixin.name).unwrap().clone()),
+          context.mixins.get(&mixin.name).unwrap().clone(),
         );
       }
       _ => {}
     }
   }
 
-  context.exports.extend(exports);
+  context.exports.extend(&exports);
 
   Ok(())
 }

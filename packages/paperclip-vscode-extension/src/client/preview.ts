@@ -1,4 +1,4 @@
-import { EngineEvent } from "paperclip";
+import { EngineEvent, EvaluatedEvent, EngineEventKind } from "paperclip-utils";
 import {
   Uri,
   window,
@@ -215,7 +215,18 @@ class LivePreview {
   };
   public $$handleEngineEvent(event: EngineEvent) {
     if (event.uri !== this.targetUri) {
-      return;
+      switch (event.kind) {
+        case EngineEventKind.Diffed:
+        case EngineEventKind.Evaluated: {
+          if (!event.dependents.includes(event.uri)) {
+            return;
+          }
+          break;
+        }
+        default: {
+          return;
+        }
+      }
     }
 
     this.panel.webview.postMessage(JSON.stringify(event));
@@ -252,6 +263,7 @@ class LivePreview {
     </head>
     <body>
       <script>
+        const TARGET_URI = "${this.targetUri}";
         const vscode = acquireVsCodeApi();
         vscode.setState(${JSON.stringify(this.getState())});
       </script>

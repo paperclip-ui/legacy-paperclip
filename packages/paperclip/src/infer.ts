@@ -1,7 +1,6 @@
 import {
   Node,
   NodeKind,
-  Text,
   Element,
   AttributeKind,
   AttributeValueKind,
@@ -15,13 +14,8 @@ import {
   Block,
   Statement,
   StatementKind,
-  FRAGMENT_TAG_NAME,
-  hasAttribute,
-  PREVIEW_ATTR_NAME,
-  COMPONENT_ATTR_NAME,
-  getAttribute,
   DynamicStringAttributeValuePartKind,
-  ReferencePart,
+  ReferencePart
 } from "paperclip-utils";
 
 // TODO - this should be built in rust
@@ -61,7 +55,7 @@ export type ShapeInference = {
 export type ShapeProperty = {
   optional?: boolean;
   value: Inference;
-}
+};
 
 export type ArrayInference = {
   value: Inference;
@@ -119,7 +113,13 @@ const addShapeInferenceProperty = (
   ...shape,
   properties: {
     ...shape.properties,
-    [part.name]: { value, optional: shape.properties[part.name]?.optional === false ? shape.properties[part.name]?.optional : part.optional }
+    [part.name]: {
+      value,
+      optional:
+        shape.properties[part.name]?.optional === false
+          ? shape.properties[part.name]?.optional
+          : part.optional
+    }
   }
 });
 
@@ -159,7 +159,8 @@ const addInferenceProperty = (
 
   if (owner.kind === InferenceKind.Shape) {
     if (_index < path.length - 1) {
-      let childValue = owner.properties[part.name]?.value || createShapeInference();
+      let childValue =
+        owner.properties[part.name]?.value || createShapeInference();
 
       childValue = addInferenceProperty(path, value, childValue, _index + 1);
       owner = addShapeInferenceProperty(part, childValue, owner);
@@ -185,7 +186,10 @@ const addInferenceProperty = (
   return owner;
 };
 
-const unfurlScopePath = (path: ReferencePart[], context: Context): ReferencePart[] => {
+const unfurlScopePath = (
+  path: ReferencePart[],
+  context: Context
+): ReferencePart[] => {
   let cpath = path;
 
   if (!context.scope[path[0].name]) {
@@ -301,7 +305,6 @@ const inferConditionBlock = (block: Conditional, context: Context): Context => {
 };
 
 const inferElement = (element: Element, isRoot: boolean, context: Context) => {
-
   for (const atttribute of element.attributes) {
     context = inferAttribute(atttribute, context);
   }
@@ -318,7 +321,10 @@ const inferAttribute = (attribute: Attribute, context: Context) => {
       ) {
         context = inferStatement(attribute.value, context);
       }
-      if (attribute.value && attribute.value.attrValueKind === AttributeValueKind.DyanmicString) {
+      if (
+        attribute.value &&
+        attribute.value.attrValueKind === AttributeValueKind.DyanmicString
+      ) {
         for (const part of attribute.value.values) {
           if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
             context = inferStatement(part, context);

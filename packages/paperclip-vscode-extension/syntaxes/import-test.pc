@@ -1,0 +1,13 @@
+<style>
+  div {
+    font-family: Helvetica;
+    color: orange;
+    font-size: 24px;
+  }
+</style>
+
+<div export component as="Something">
+  Something
+</div>
+
+<Something />

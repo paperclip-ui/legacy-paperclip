@@ -11,6 +11,7 @@ mod css;
 mod engine;
 mod js;
 mod pc;
+mod core;
 
 use ::futures::executor::block_on;
 use engine::Engine;

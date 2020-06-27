@@ -685,7 +685,7 @@ describe(__filename + "#", () => {
       const p = waitForEvaluated(engine);
       engine.load("/entry.pc");
       const event = await p;
-      const nodeStr = stringifyVirtualNode(event.node);
+      const nodeStr = stringifyVirtualNode(event.info.preview);
       expect(nodeStr.replace(/[\r\n\t\s]+/g, " ").trim()).to.eql(
         String(expectedHTML)
           .replace(/[\r\n\t\s]+/g, " ")
