@@ -11,6 +11,7 @@ export enum RuleKind {
   FontFace = "FontFace",
   Media = "Media",
   Mixin = "Mixin",
+  Export = "Export",
   Supports = "Supports",
   Page = "Page",
   Document = "Document",
@@ -161,8 +162,12 @@ export type MixinRule = {
   declarations: StyleDeclaration[];
 } & BaseRule<RuleKind.Mixin>;
 
+export type ExportRule = {
+  rules: Rule[];
+} & BaseRule<RuleKind.Export>;
+
 export type ConditionRule = MediaRule;
-export type Rule = StyleRule | ConditionRule | MixinRule;
+export type Rule = StyleRule | ConditionRule | MixinRule | ExportRule;
 
 export const getSheetClassNames = (
   sheet: Sheet,

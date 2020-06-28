@@ -1,4 +1,9 @@
 <style> 
+  @export {
+    div {
+      color: rgb(126, 211, 56);
+    }
+  }
   .button {
     font-family: Helvetica;
     display: inline-block;

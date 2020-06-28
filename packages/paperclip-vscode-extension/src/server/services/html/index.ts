@@ -45,6 +45,7 @@ import * as path from "path";
 
 import CSS_COLOR_NAMES from "./css-color-names";
 import { connect } from "http2";
+import { ExportRule } from "paperclip/src";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -124,6 +125,10 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
           this._handleMixinRule(rule, context);
           break;
         }
+        case RuleKind.Export: {
+          this._handleExportRule(rule, context);
+          break;
+        }
       }
     }
   }
@@ -132,6 +137,10 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     for (const child of rule.rules) {
       this._handleStyleRule(child, context);
     }
+  }
+
+  private _handleExportRule(rule: ExportRule, context: HandleContext) {
+    this._handleRules(rule.rules, context);
   }
 
   private _handleMixinRule(rule: MixinRule, context: HandleContext) {

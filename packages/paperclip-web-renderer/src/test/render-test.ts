@@ -1,7 +1,5 @@
 import { expect } from "chai";
-import { Engine } from "paperclip";
-import { Renderer } from "../renderer";
-import { mockDOMFactory, createMockEngine, createMockRenderer } from "./utils";
+import { createMockEngine, createMockRenderer } from "./utils";
 
 describe(__filename + "#", () => {
   it("Can render basic text", async () => {

@@ -86,9 +86,11 @@ impl DependencyGraph {
     let entry_option = self.dependencies.get(entry_uri);
 
     if let Some(dep) = entry_option {
-      let deps = dep.dependencies.iter().map(|(id, uri)| {
-        self.dependencies.get(uri).unwrap()
-      }).collect::<Vec<&Dependency>>();
+      let deps = dep
+        .dependencies
+        .iter()
+        .map(|(id, uri)| self.dependencies.get(uri).unwrap())
+        .collect::<Vec<&Dependency>>();
 
       for dep in deps {
         all_deps.push(dep);
