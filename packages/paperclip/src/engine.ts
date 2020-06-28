@@ -10,10 +10,8 @@ import {
   Node,
   EvaluatedEvent,
   resolveImportFile,
-  patchVirtNode,
   getAttributeStringValue
 } from "paperclip-utils";
-import { PCEvalInfo } from "paperclip-utils/src/pc-evaluate";
 
 export type FileContent = {
   [identifier: string]: string;

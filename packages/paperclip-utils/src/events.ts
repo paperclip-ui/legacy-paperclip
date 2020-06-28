@@ -34,6 +34,10 @@ export type EvaluatedEvent = {
 export type DiffedEvent = {
   uri: string;
   dependents: string[];
+
+  // TODO - needs to be sheetMutations
+  sheet: any;
+
   mutations: Mutation[];
 } & BaseEngineEvent<EngineEventKind.Diffed>;
 

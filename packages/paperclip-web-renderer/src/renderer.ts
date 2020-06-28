@@ -104,6 +104,16 @@ export class Renderer {
             this._virtualRootNode,
             event.mutations
           );
+
+          if (event.sheet) {
+            removeAllChildren(this._mainStyleContainer);
+            const sheet = createNativeStyleFromSheet(
+              event.sheet,
+              this._domFactory,
+              this.protocol
+            );
+            this._mainStyleContainer.appendChild(sheet);
+          }
         }
 
         break;

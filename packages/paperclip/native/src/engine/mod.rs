@@ -6,7 +6,7 @@ use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSy
 use crate::css::parser::parse as parse_css;
 use crate::css::runtime::evaluator::evaluate as evaluate_css;
 use crate::css::runtime::evaluator::EvalInfo as CSSEvalInfo;
-use crate::css::runtime::virt as css_vrt;
+use crate::css::runtime::virt as css_virt;
 use crate::js::runtime::virt as js_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
@@ -31,7 +31,12 @@ pub struct EvaluatedEvent<'a> {
 #[derive(Debug, PartialEq, Serialize)]
 pub struct DiffedEvent {
   pub uri: String,
+
+  // TODO - needs to be sheetMutations
+  pub sheet: Option<css_virt::CSSSheet>,
   pub dependents: Vec<String>,
+
+  // TODO - needs to be domMutations
   pub mutations: Vec<pc_mutation::Mutation>,
 }
 
@@ -67,7 +72,7 @@ async fn evaluate_content_styles(
   uri: &String,
   vfs: &VirtualFileSystem,
   graph: &DependencyGraph,
-) -> Result<css_vrt::CSSSheet, EngineError> {
+) -> Result<css_virt::CSSSheet, EngineError> {
   if uri.ends_with(".css") {
     parse_css(content)
       .map_err(|err| EngineError::Parser(err))
@@ -173,7 +178,7 @@ impl Engine {
   pub async fn evaluate_file_styles(
     &mut self,
     uri: &String,
-  ) -> Result<css_vrt::CSSSheet, EngineError> {
+  ) -> Result<css_virt::CSSSheet, EngineError> {
     // need to load in case of imports
     self.reload(uri, false).await;
     let content = self.vfs.reload(uri).await.unwrap().to_string();
@@ -184,7 +189,7 @@ impl Engine {
     &mut self,
     content: &String,
     uri: &String,
-  ) -> Result<css_vrt::CSSSheet, EngineError> {
+  ) -> Result<css_virt::CSSSheet, EngineError> {
     self.reload(uri, false).await;
     evaluate_content_styles(content, uri, &self.vfs, &self.dependency_graph).await
   }
@@ -222,11 +227,12 @@ impl Engine {
 
     let event_option = match &dependency.content {
       DependencyContent::Node(node) => {
-
         let mut imports = HashMap::new();
-        let dep_uris2 = &dependency.dependencies.iter().map(|(id, uri)| {
-          (id.to_string(), uri.to_string())
-        }).collect::<Vec<(String, String)>>();
+        let dep_uris2 = &dependency
+          .dependencies
+          .iter()
+          .map(|(id, uri)| (id.to_string(), uri.to_string()))
+          .collect::<Vec<(String, String)>>();
 
         for (id, dep_uri) in dep_uris2 {
           let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
@@ -235,10 +241,9 @@ impl Engine {
             self.evaluate(dep_uri, true);
             self.virt_nodes.get(dep_uri).unwrap()
           };
-          
+
           imports.insert(id.to_string(), info.exports.clone());
         }
-
 
         let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &imports);
 
@@ -252,8 +257,17 @@ impl Engine {
               let existing_info_option = self.virt_nodes.get(uri);
 
               if let Some(existing_info) = existing_info_option {
+
+                // temporary - eventually want to diff this.
+                let sheet: Option<css_virt::CSSSheet> = if existing_info.sheet == info.sheet {
+                  None 
+                } else {
+                  Some(info.sheet.clone())
+                };
+                
                 let ret = Some(EngineEvent::Diffed(DiffedEvent {
                   uri: uri.clone(),
+                  sheet,
                   dependents: dep_uris,
                   mutations: diff_pc(&existing_info.preview, &info.preview),
                 }));
