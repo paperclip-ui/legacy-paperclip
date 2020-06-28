@@ -534,30 +534,39 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
   let start = context.tokenizer.pos;
   let mut operator: Option<String> = None;
 
-
-
   match context.tokenizer.peek(1)? {
-    Token::Equals | Token::SquiggleEqual | Token::PipeEqual | Token::CaretEqual | Token::DollarEqual | Token::StarEqual => {
-
+    Token::Equals
+    | Token::SquiggleEqual
+    | Token::PipeEqual
+    | Token::CaretEqual
+    | Token::DollarEqual
+    | Token::StarEqual => {
       context.tokenizer.next();
 
       // ick, but okay.
-      operator = Some(std::str::from_utf8(&context.tokenizer.get_source()[start..context.tokenizer.pos]).unwrap().to_string());
+      operator = Some(
+        std::str::from_utf8(&context.tokenizer.get_source()[start..context.tokenizer.pos])
+          .unwrap()
+          .to_string(),
+      );
 
       value = Some(parse_attribute_selector_value(context)?);
-    },
+    }
     Token::SquareClose => {
       // do nothing
-    },
+    }
     _ => {
       return Err(ParseError::unexpected_token(start));
     }
   };
-  
 
   context.tokenizer.next_expect(Token::SquareClose)?;
 
-  Ok(Selector::Attribute(AttributeSelector { name, operator, value }))
+  Ok(Selector::Attribute(AttributeSelector {
+    name,
+    operator,
+    value,
+  }))
 }
 
 fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
@@ -626,7 +635,7 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
     let tok = tokenizer.peek(1)?;
     Ok(match tok {
       Token::Keyword(_) => true,
-      _ => false
+      _ => false,
     })
   })
 }
