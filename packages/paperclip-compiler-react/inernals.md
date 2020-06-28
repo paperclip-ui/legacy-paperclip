@@ -2,7 +2,7 @@
 
 ```javascript
 const React = require("react");
-import "./styles/global.css";
+import "./styles/global.pc";
 import ListItem from "./item.pc";
 import Controls from "./controls.pc";
 import Learn from "./learn.pc";

@@ -1,4 +1,4 @@
-<import src="./styles/global.css">
+<import src="./styles/global.pc">
 <import as="ListItem" src="./item.pc">
 <import as="Controls" src="./Controls.pc">
 <import as="Learn" src="./Learn.pc">

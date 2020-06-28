@@ -200,11 +200,12 @@ impl<'a> Dependency {
     uri: &String,
     vfs: &VirtualFileSystem,
   ) -> Result<Dependency, ParseError> {
-    if uri.ends_with(".css") {
-      Dependency::from_css_source(source, uri)
-    } else {
-      Dependency::from_pc_source(source, uri, vfs)
-    }
+    Dependency::from_pc_source(source, uri, vfs)
+    // if uri.ends_with(".css") {
+    //   Dependency::from_css_source(source, uri)
+    // } else {
+    //   Dependency::from_pc_source(source, uri, vfs)
+    // }
   }
 
   fn from_css_source(source: String, uri: &String) -> Result<Dependency, ParseError> {

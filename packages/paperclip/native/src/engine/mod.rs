@@ -77,24 +77,25 @@ async fn evaluate_content_styles(
   vfs: &VirtualFileSystem,
   graph: &DependencyGraph,
 ) -> Result<css_virt::CSSSheet, EngineError> {
-  if uri.ends_with(".css") {
-    parse_css(content)
-      .map_err(|err| EngineError::Parser(err))
-      .and_then(|css_ast| {
-        let scope = get_document_style_scope(uri);
-        let info = evaluate_css(&css_ast, uri, &scope, vfs, &HashMap::new())
-          .map_err(|err| EngineError::Runtime(err))?;
-        return Ok(info.sheet);
-      })
-  } else {
-    parse_pc(content)
+  parse_pc(content)
       .map_err(|err| EngineError::Parser(err))
       .and_then(|node_ast| {
         let (sheet, _) = evaluate_document_styles(&node_ast, uri, vfs, graph, false)
           .map_err(|err| EngineError::Runtime(err))?;
         Ok(sheet)
       })
-  }
+  // if uri.ends_with(".css") {
+  //   parse_css(content)
+  //     .map_err(|err| EngineError::Parser(err))
+  //     .and_then(|css_ast| {
+  //       let scope = get_document_style_scope(uri);
+  //       let info = evaluate_css(&css_ast, uri, &scope, vfs, &HashMap::new())
+  //         .map_err(|err| EngineError::Runtime(err))?;
+  //       return Ok(info.sheet);
+  //     })
+  // } else {
+    
+  // }
 }
 
 type EngineEventListener = dyn Fn(&EngineEvent);

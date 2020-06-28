@@ -1,0 +1,9 @@
+<style>
+  :focus {
+    outline: 0;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>

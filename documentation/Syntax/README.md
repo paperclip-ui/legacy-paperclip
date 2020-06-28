@@ -383,24 +383,6 @@ export function TodoList() {
 }
 ```
 
-#### Importing CSS
-
-CSS can also be imported. For example, here's a CSS file:
-
-```css
-/* global.css */
-* {
-  font-family: Helvetica;
-}
-```
-
-You can import this file like so:
-
-```html
-<import src="./path/to/global.css">
-
-<span>The font family of this text is Helvetica.</span>
-```
 
 #### Importing files from module directories
 
@@ -414,10 +396,10 @@ There may be cases where you want to import files from a common directory, like 
 }
 ```
 
-Assuming that you have a file `src/styles/global.css`, you can import it like this:
+Assuming that you have a file `src/styles/global.pc`, you can import it like this:
 
 ```html
-<import src="global.css">
+<import src="global.pc">
 ```
 
 ### Overriding component styles (>>>class-name)

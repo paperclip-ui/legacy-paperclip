@@ -259,16 +259,18 @@ export const evaluateAllFileStyles = (
   const map = {};
   for (const imp of imports) {
     const src = getAttributeStringValue("src", imp);
-    if (/\.css$/.test(src)) {
-      const cssFilePath = resolveImportFile(fs)(resourceUrl, src);
-      const transformPath = url.fileURLToPath(cssFilePath);
-      let importedSheetCode = _loadedStyleFiles[cssFilePath];
-      if (!importedSheetCode) {
-        importedSheetCode = engine.evaluateFileStyles(cssFilePath);
-      }
 
-      map[transformPath] = importedSheetCode;
-    }
+    // CSS deprecated, so don't do this.
+    // if (/\.css$/.test(src)) {
+    //   const cssFilePath = resolveImportFile(fs)(resourceUrl, src);
+    //   const transformPath = url.fileURLToPath(cssFilePath);
+    //   let importedSheetCode = _loadedStyleFiles[cssFilePath];
+    //   if (!importedSheetCode) {
+    //     importedSheetCode = engine.evaluateFileStyles(cssFilePath);
+    //   }
+
+    //   map[transformPath] = importedSheetCode;
+    // }
   }
   return map;
 };
