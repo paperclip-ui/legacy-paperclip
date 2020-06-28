@@ -12,11 +12,26 @@ pub enum Token<'a> {
   // *
   Star,
 
+  // *=
+  StarEqual,
+
   // +
   Plus,
 
   // ~
   Squiggle,
+
+  // ~=
+  SquiggleEqual,
+
+  // |=
+  PipeEqual,
+
+  // |=
+  DollarEqual,
+
+  // ^=
+  CaretEqual,
 
   // @
   At,
@@ -195,6 +210,9 @@ impl<'a> Tokenizer<'a> {
         if self.starts_with(b"*/") {
           self.forward(2);
           Ok(Token::ScriptCommentClose)
+        } else if self.starts_with(b"*=") {
+          self.forward(2);
+          Ok(Token::StarEqual)
         } else {
           self.forward(1);
           Ok(Token::Star)
@@ -209,8 +227,13 @@ impl<'a> Tokenizer<'a> {
         Ok(Token::Plus)
       }
       b'~' => {
-        self.forward(1);
-        Ok(Token::Squiggle)
+        if self.starts_with(b"~=") {
+          self.forward(2);
+          Ok(Token::SquiggleEqual)
+        } else {
+          self.forward(1);
+          Ok(Token::Squiggle)
+        }
       }
       b'@' => {
         self.forward(1);
@@ -271,6 +294,33 @@ impl<'a> Tokenizer<'a> {
         }
 
         Ok(Token::Number(self.since(start)))
+      }
+      b'|' => {
+        if self.starts_with(b"|=") {
+          self.forward(2);
+          Ok(Token::PipeEqual)
+        } else {
+          self.forward(1);
+          Ok(Token::Byte(b'|'))
+        }
+      }
+      b'$' => {
+        if self.starts_with(b"$=") {
+          self.forward(2);
+          Ok(Token::DollarEqual)
+        } else {
+          self.forward(1);
+          Ok(Token::Byte(b'$'))
+        }
+      }
+      b'^' => {
+        if self.starts_with(b"^=") {
+          self.forward(2);
+          Ok(Token::CaretEqual)
+        } else {
+          self.forward(1);
+          Ok(Token::Byte(b'^'))
+        }
       }
       b'[' => {
         self.forward(1);
@@ -375,6 +425,9 @@ impl<'a> Tokenizer<'a> {
       source: source.as_bytes(),
       pos: 0,
     }
+  }
+  pub fn get_source(&self) -> &'a [u8] {
+    self.source
   }
   pub fn new_from_bytes(source: &'a [u8], pos: usize) -> Tokenizer {
     Tokenizer {

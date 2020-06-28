@@ -530,14 +530,34 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
 fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
   let name = parse_attribute_name(context)?.to_string();
   let mut value = None;
-  if context.tokenizer.peek(1)? == Token::Equals {
-    context.tokenizer.next()?; // eat =
-    value = Some(parse_attribute_selector_value(context)?);
-  }
+
+  let start = context.tokenizer.pos;
+  let mut operator: Option<String> = None;
+
+
+
+  match context.tokenizer.peek(1)? {
+    Token::Equals | Token::SquiggleEqual | Token::PipeEqual | Token::CaretEqual | Token::DollarEqual | Token::StarEqual => {
+
+      context.tokenizer.next();
+
+      // ick, but okay.
+      operator = Some(std::str::from_utf8(&context.tokenizer.get_source()[start..context.tokenizer.pos]).unwrap().to_string());
+
+      value = Some(parse_attribute_selector_value(context)?);
+    },
+    Token::SquareClose => {
+      // do nothing
+    },
+    _ => {
+      return Err(ParseError::unexpected_token(start));
+    }
+  };
+  
 
   context.tokenizer.next_expect(Token::SquareClose)?;
 
-  Ok(Selector::Attribute(AttributeSelector { name, value }))
+  Ok(Selector::Attribute(AttributeSelector { name, operator, value }))
 }
 
 fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
@@ -605,23 +625,8 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
   get_buffer(context.tokenizer, |tokenizer| {
     let tok = tokenizer.peek(1)?;
     Ok(match tok {
-      Token::Whitespace
-      | Token::Comma
-      | Token::Colon
-      | Token::ParenOpen
-      | Token::ParenClose
-      | Token::Equals
-      | Token::SingleQuote
-      | Token::DoubleQuote
-      | Token::Dot
-      | Token::Hash
-      | Token::Squiggle
-      | Token::Byte(b'>')
-      | Token::Byte(b'&')
-      | Token::CurlyOpen
-      | Token::SquareOpen
-      | Token::SquareClose => false,
-      _ => true,
+      Token::Keyword(_) => true,
+      _ => false
     })
   })
 }
@@ -831,6 +836,11 @@ mod tests {
     #id {}
     [attr] {}
     [attr=value] {}
+    [attr~=value] {}
+    [attr|=value] {}
+    [attr^=value] {}
+    [attr$=value] {}
+    [attr*=value] {}
     [attr='value'] {}
     [attr=\"value\"] {}
 

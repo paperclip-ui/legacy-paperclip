@@ -78,12 +78,12 @@ async fn evaluate_content_styles(
   graph: &DependencyGraph,
 ) -> Result<css_virt::CSSSheet, EngineError> {
   parse_pc(content)
-      .map_err(|err| EngineError::Parser(err))
-      .and_then(|node_ast| {
-        let (sheet, _) = evaluate_document_styles(&node_ast, uri, vfs, graph, false)
-          .map_err(|err| EngineError::Runtime(err))?;
-        Ok(sheet)
-      })
+    .map_err(|err| EngineError::Parser(err))
+    .and_then(|node_ast| {
+      let (sheet, _) = evaluate_document_styles(&node_ast, uri, vfs, graph, false)
+        .map_err(|err| EngineError::Runtime(err))?;
+      Ok(sheet)
+    })
   // if uri.ends_with(".css") {
   //   parse_css(content)
   //     .map_err(|err| EngineError::Parser(err))
@@ -94,7 +94,7 @@ async fn evaluate_content_styles(
   //       return Ok(info.sheet);
   //     })
   // } else {
-    
+
   // }
 }
 

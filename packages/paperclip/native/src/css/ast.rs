@@ -523,6 +523,7 @@ impl fmt::Display for IdSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeSelector {
   pub name: String,
+  pub operator: Option<String>,
   pub value: Option<String>,
 }
 
@@ -530,7 +531,9 @@ impl fmt::Display for AttributeSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "[{}", &self.name)?;
     if let Some(value) = &self.value {
-      write!(f, "=\"{}\"", value)?;
+      if let Some(operator) = &self.operator {
+        write!(f, "{}{}", operator, value)?;
+      }
     }
     write!(f, "]")?;
     Ok(())
