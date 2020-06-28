@@ -257,14 +257,13 @@ impl Engine {
               let existing_info_option = self.virt_nodes.get(uri);
 
               if let Some(existing_info) = existing_info_option {
-
                 // temporary - eventually want to diff this.
                 let sheet: Option<css_virt::CSSSheet> = if existing_info.sheet == info.sheet {
-                  None 
+                  None
                 } else {
                   Some(info.sheet.clone())
                 };
-                
+
                 let ret = Some(EngineEvent::Diffed(DiffedEvent {
                   uri: uri.clone(),
                   sheet,

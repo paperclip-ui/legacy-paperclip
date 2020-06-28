@@ -58,7 +58,7 @@ export const createNativeStyleFromSheet = (
   protocol: string
 ) => {
   // return factory.createTextNode(JSON.stringify(element.sheet, null, 2));
-  // return factory.createTextNode(stringifyCSSSheet(element.sheet, protocol));
+  // return factory.createTextNode(stringifyCSSSheet(sheet, protocol)) as any;
   const nativeElement = factory.createElement("style");
   nativeElement.textContent = stringifyCSSSheet(sheet, protocol);
   return nativeElement;

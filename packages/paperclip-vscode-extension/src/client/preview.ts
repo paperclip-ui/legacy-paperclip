@@ -218,7 +218,7 @@ class LivePreview {
       switch (event.kind) {
         case EngineEventKind.Diffed:
         case EngineEventKind.Evaluated: {
-          if (!event.dependents.includes(event.uri)) {
+          if (!event.dependents.includes(this.targetUri)) {
             return;
           }
           break;
@@ -228,6 +228,8 @@ class LivePreview {
         }
       }
     }
+
+    console.log("POT", event);
 
     this.panel.webview.postMessage(JSON.stringify(event));
   }

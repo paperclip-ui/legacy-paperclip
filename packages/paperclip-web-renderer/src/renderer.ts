@@ -29,7 +29,9 @@ export class Renderer {
   private _hoverOverlay: HTMLElement;
   private _sheets: HTMLStyleElement[];
   private _stage: HTMLElement;
+  private _importedStyles: Record<string, HTMLElement>;
   private _mainStyleContainer: HTMLElement;
+  private _importedStylesContainer: HTMLElement;
   private _virtualRootNode: any;
   readonly mount: HTMLElement;
   constructor(
@@ -38,6 +40,7 @@ export class Renderer {
     private _domFactory: DOMFactory = document
   ) {
     this._sheets = [];
+    this._importedStyles = {};
     this._em = new EventEmitter();
     this._hoverOverlay = _domFactory.createElement("div");
     Object.assign(this._hoverOverlay.style, {
@@ -55,6 +58,8 @@ export class Renderer {
     this._stage = this._domFactory.createElement("div");
     this.mount = this._domFactory.createElement("div");
     this._mainStyleContainer = this._domFactory.createElement("div");
+    this._importedStylesContainer = this._domFactory.createElement("div");
+    this.mount.appendChild(this._importedStylesContainer);
     this.mount.appendChild(this._mainStyleContainer);
     this.mount.appendChild(this._stage);
     this.mount.appendChild(this._hoverOverlay);
@@ -82,13 +87,27 @@ export class Renderer {
             null
           );
           [];
-          const sheet = createNativeStyleFromSheet(
+          const style = createNativeStyleFromSheet(
             event.info.sheet,
             this._domFactory,
             this.protocol
           );
-          this._mainStyleContainer.appendChild(sheet);
+          this._mainStyleContainer.appendChild(style);
           this._stage.appendChild(node);
+        } else if (event.dependents.includes(this._targetUri)) {
+          const impStyle = this._importedStyles[event.uri];
+          if (impStyle) {
+            impStyle.remove();
+          }
+          const style = (this._importedStyles[
+            event.uri
+          ] = createNativeStyleFromSheet(
+            event.info.sheet,
+            this._domFactory,
+            this.protocol
+          ));
+
+          this._importedStylesContainer.appendChild(style);
         }
         break;
       }
@@ -114,6 +133,22 @@ export class Renderer {
             );
             this._mainStyleContainer.appendChild(sheet);
           }
+        } else if (event.dependents.includes(this._targetUri) && event.sheet) {
+          // this._importedStylesContainer.appendChild(createNativeStyleFromSheet(event.sheet, this._domFactory, this.protocol));
+          const impStyle = this._importedStyles[event.uri];
+          if (impStyle) {
+            impStyle.remove();
+          }
+
+          const element = (this._importedStyles[
+            event.uri
+          ] = createNativeStyleFromSheet(
+            event.sheet,
+            this._domFactory,
+            this.protocol
+          ));
+
+          this._importedStylesContainer.appendChild(element);
         }
 
         break;
