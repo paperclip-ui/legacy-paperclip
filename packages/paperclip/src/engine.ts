@@ -115,13 +115,35 @@ export class Engine {
 
       this._rendered[event.uri] = {
         ...existingEvent,
-        dependencies: event.dependencies,
+        allDependencies: event.allDependencies,
         info: {
           ...existingEvent.info,
           sheet: event.sheet || existingEvent.info.sheet,
           preview: patchVirtNode(existingEvent.info.preview, event.mutations)
         }
       };
+
+      const addedSheets = {};
+      for (const depUri of event.allDependencies) {
+        // Note that we only do this if the sheet is already rendered -- engine
+        // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
+        // has been added, including the actual sheet object.
+        if (
+          !existingEvent.allDependencies.includes(depUri) &&
+          this._rendered[depUri]
+        ) {
+          addedSheets[depUri] = this._rendered[depUri].info.sheet;
+        }
+      }
+
+      if (Object.keys(addedSheets).length) {
+        this._dispatch({
+          uri: event.uri,
+          kind: EngineEventKind.AddedSheets,
+          sheets: addedSheets,
+          allDependencies: event.allDependencies
+        });
+      }
     }
   };
   parseFile(uri: string) {
@@ -174,7 +196,7 @@ export class Engine {
 
     for (const depUri in this._rendered) {
       const event = this._rendered[depUri];
-      if (entry.dependencies.includes(depUri)) {
+      if (entry.allDependencies.includes(depUri)) {
         deps[depUri] = event.info.sheet;
       }
     }

@@ -11,7 +11,8 @@ export enum EngineEventKind {
   Evaluated = "Evaluated",
   Error = "Error",
   NodeParsed = "NodeParsed",
-  Diffed = "Diffed"
+  Diffed = "Diffed",
+  AddedSheets = "AddedSheets"
 }
 
 export enum EngineErrorKind {
@@ -29,13 +30,15 @@ type BaseEngineEvent<KKind extends EngineEventKind> = {
 
 export type EvaluatedEvent = {
   uri: string;
-  dependencies: string[];
+  allDependencies: string[];
+  // dependents: string[];
   info: PCEvalInfo;
 } & BaseEngineEvent<EngineEventKind.Evaluated>;
 
 export type DiffedEvent = {
   uri: string;
-  dependencies: string[];
+  allDependencies: string[];
+  // dependents: string[];
 
   // TODO - needs to be sheetMutations
   sheet: any;
@@ -47,6 +50,12 @@ export type NodeParsedEvent = {
   uri: string;
   node?: Node;
 } & BaseEngineEvent<EngineEventKind.NodeParsed>;
+
+export type AddedSheetsEvent = {
+  uri: string;
+  sheets: Record<string, any>;
+  allDependencies: string[];
+} & BaseEngineEvent<EngineEventKind.AddedSheets>;
 
 export type BaseEngineErrorEvent<TErrorType extends EngineErrorKind> = {
   uri: string;
@@ -105,6 +114,7 @@ export type EngineErrorEvent = GraphErrorEvent | RuntimeErrorEvent;
 export type EngineEvent =
   | EvaluatedEvent
   | EngineErrorEvent
+  | AddedSheetsEvent
   | NodeParsedEvent
   | LoadingEvent
   | LoadedEvent

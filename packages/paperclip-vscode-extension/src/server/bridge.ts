@@ -48,6 +48,7 @@ import {
   TextDocumentContentChangeEvent
 } from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
+import { AddedSheetsEvent } from "paperclip/src";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
@@ -283,6 +284,7 @@ export class VSCServiceBridge {
       }
       case EngineEventKind.Loaded:
       case EngineEventKind.Diffed:
+      case EngineEventKind.AddedSheets:
       case EngineEventKind.Evaluated: {
         return this._onEngineEvaluatedEvent(event);
       }
@@ -290,7 +292,7 @@ export class VSCServiceBridge {
   };
 
   private _onEngineEvaluatedEvent(
-    event: DiffedEvent | EvaluatedEvent | LoadedEvent
+    event: DiffedEvent | EvaluatedEvent | LoadedEvent | AddedSheetsEvent
   ) {
     // reset error diagnostics
     this.connection.sendDiagnostics({

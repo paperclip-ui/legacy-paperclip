@@ -121,4 +121,75 @@ describe(__filename + "#", () => {
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div>`
     );
   });
+
+  it("Adds styles if import is added", async () => {
+    const graph = {
+      "/entry.pc": `<style> a { color: blue; } </style><span></span>`,
+      "/module.pc": `<style> a { color: black; } </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const renderer = createMockRenderer("/entry.pc");
+    engine.onEvent(renderer.handleEngineEvent);
+    await engine.load("/entry.pc");
+    expect(renderer.mount.innerHTML).to.eql(
+      `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div>`
+    );
+    await engine.updateVirtualFileContent(
+      "/entry.pc",
+      `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`
+    );
+    expect(renderer.mount.innerHTML).to.eql(
+      `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div>`
+    );
+  });
+  it("Adds styles if import is added of module that is already loaded", async () => {
+    const graph = {
+      "/entry.pc": `<style> a { color: blue; } </style><span></span>`,
+      "/module.pc": `<style> a { color: black; } </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const renderer = createMockRenderer("/entry.pc");
+    engine.onEvent(renderer.handleEngineEvent);
+    await engine.load("/entry.pc");
+    await engine.load("/module.pc");
+    expect(renderer.mount.innerHTML).to.eql(
+      `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div>`
+    );
+    await engine.updateVirtualFileContent(
+      "/entry.pc",
+      `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`
+    );
+    expect(renderer.mount.innerHTML).to.eql(
+      `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div>`
+    );
+  });
+  it("Adds styles from dependency dependency", async () => {
+    const graph = {
+      "/entry.pc": `<style> a { color: blue; } </style>`,
+      "/module.pc": `<style> a { color: black; } </style>`,
+      "/module2.pc": `<style> a { color: orange; } </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const renderer = createMockRenderer("/entry.pc");
+    engine.onEvent(renderer.handleEngineEvent);
+    await engine.load("/entry.pc");
+    await engine.load("/module.pc");
+    expect(renderer.mount.innerHTML).to.eql(
+      `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div></div><div></div>`
+    );
+    await engine.updateVirtualFileContent(
+      "/entry.pc",
+      `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`
+    );
+    await engine.updateVirtualFileContent(
+      "/module.pc",
+      `<import src="./module2.pc"><style> a { color: black; } </style>`
+    );
+    expect(renderer.mount.innerHTML).to.eql(
+      `<div><style>a[data-pc-139cec8e] { color:black; }</style><style>a[data-pc-11a847ab] { color:orange; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div>`
+    );
+  });
 });

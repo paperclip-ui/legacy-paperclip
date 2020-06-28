@@ -20,6 +20,7 @@ import {
   Unload,
   PreviewInitParams
 } from "../common/notifications";
+import { Engine } from "paperclip/src";
 
 const VIEW_TYPE = "paperclip-preview";
 
@@ -219,15 +220,6 @@ class LivePreview {
   private _onMessage = () => {
     // TODO when live preview tools are available
   };
-  public $$handleInitEvent(params: PreviewInitParams) {
-    if (params.uri === this.targetUri) {
-      this._dependencies = Object.keys(params.importedSheets);
-      this.panel.webview.postMessage({
-        type: "INIT",
-        payload: JSON.stringify(params)
-      });
-    }
-  }
   public $$handleEngineEvent(event: EngineEvent) {
     if (
       event.uri !== this.targetUri &&
@@ -239,9 +231,10 @@ class LivePreview {
     if (
       event.uri == this.targetUri &&
       (event.kind === EngineEventKind.Evaluated ||
-        event.kind === EngineEventKind.Diffed)
+        event.kind === EngineEventKind.Diffed ||
+        event.kind === EngineEventKind.AddedSheets)
     ) {
-      this._dependencies = event.dependencies;
+      this._dependencies = event.allDependencies;
     }
 
     this.panel.webview.postMessage({

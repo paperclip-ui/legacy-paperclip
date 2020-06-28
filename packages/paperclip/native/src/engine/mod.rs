@@ -24,7 +24,8 @@ use std::collections::HashMap;
 #[derive(Debug, PartialEq, Serialize)]
 pub struct EvaluatedEvent<'a> {
   pub uri: String,
-  pub dependencies: Vec<String>,
+  #[serde(rename = "allDependencies")]
+  pub all_dependencies: Vec<String>,
   pub dependents: Vec<String>,
   pub info: Option<&'a runtime::evaluator::EvalInfo>,
 }
@@ -35,7 +36,8 @@ pub struct DiffedEvent {
 
   // TODO - needs to be sheetMutations
   pub sheet: Option<css_virt::CSSSheet>,
-  pub dependencies: Vec<String>,
+  #[serde(rename = "allDependencies")]
+  pub all_dependencies: Vec<String>,
   pub dependents: Vec<String>,
 
   // TODO - needs to be domMutations
@@ -222,29 +224,36 @@ impl Engine {
       .collect()
   }
 
+  fn get_all_dependency_uris(&self, uri: &String) -> Vec<String> {
+    self
+      .dependency_graph
+      .flatten_dependencies(uri)
+      .into_iter()
+      .map(|dep| -> String { dep.uri.to_string() })
+      .collect()
+  }
+
   fn evaluate(&mut self, uri: &String, hard: bool) {
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
     let dept_uris: Vec<String> = self.get_dependent_uris(uri);
 
     let mut imports = HashMap::new();
-    let dep_uris2 = &dependency
+    let relative_deps = &dependency
       .dependencies
       .iter()
       .map(|(id, uri)| (id.to_string(), uri.to_string()))
       .collect::<Vec<(String, String)>>();
 
-    let mut dep_uris: Vec<String> = vec![];
+    let all_dependencies = self.get_all_dependency_uris(uri);
 
-    for (id, dep_uri) in dep_uris2 {
+    for (id, dep_uri) in relative_deps {
       let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
         dep_result
       } else {
         self.evaluate(dep_uri, true);
         self.virt_nodes.get(dep_uri).unwrap()
       };
-
-      dep_uris.push(dep_uri.to_string());
 
       imports.insert(id.to_string(), info.exports.clone());
     }
@@ -271,7 +280,7 @@ impl Engine {
             let ret = Some(EngineEvent::Diffed(DiffedEvent {
               uri: uri.clone(),
               sheet,
-              dependencies: dep_uris,
+              all_dependencies,
               dependents: dept_uris,
               mutations: diff_pc(&existing_info.preview, &info.preview),
             }));
@@ -281,7 +290,7 @@ impl Engine {
             self.virt_nodes.insert(uri.clone(), info);
             Some(EngineEvent::Evaluated(EvaluatedEvent {
               uri: uri.clone(),
-              dependencies: dep_uris,
+              all_dependencies,
               dependents: dept_uris,
               info: self.virt_nodes.get(uri),
             }))
@@ -289,7 +298,7 @@ impl Engine {
         } else {
           Some(EngineEvent::Evaluated(EvaluatedEvent {
             uri: uri.clone(),
-            dependencies: dep_uris,
+            all_dependencies,
             dependents: vec![],
             info: None,
           }))

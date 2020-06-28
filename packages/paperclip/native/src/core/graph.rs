@@ -81,6 +81,24 @@ impl DependencyGraph {
     return deps;
   }
 
+  pub fn flatten_dependencies<'a>(&'a self, entry_uri: &String) -> Vec<&Dependency> {
+    let mut all_deps = vec![];
+    let entry_option = self.dependencies.get(entry_uri);
+
+    if let Some(dep) = entry_option {
+      let deps = dep.dependencies.iter().map(|(id, uri)| {
+        self.dependencies.get(uri).unwrap()
+      }).collect::<Vec<&Dependency>>();
+
+      for dep in deps {
+        all_deps.push(dep);
+        all_deps.extend(self.flatten_dependencies(&dep.uri));
+      }
+    }
+
+    return all_deps;
+  }
+
   pub async fn load_dependency<'a>(
     &mut self,
     uri: &String,

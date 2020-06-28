@@ -28,6 +28,7 @@ export class Renderer {
   private _em: EventEmitter;
   private _hoverOverlay: HTMLElement;
   private _sheets: HTMLStyleElement[];
+  private _dependencies: string[] = [];
   private _stage: HTMLElement;
   private _importedStyles: Record<string, HTMLElement>;
   private _mainStyleContainer: HTMLElement;
@@ -84,6 +85,19 @@ export class Renderer {
       this.protocol,
       null
     );
+
+    this._dependencies = Object.keys(importedSheets);
+    this._addSheets(importedSheets);
+    const style = createNativeStyleFromSheet(
+      sheet,
+      this._domFactory,
+      this.protocol
+    );
+    this._mainStyleContainer.appendChild(style);
+    this._stage.appendChild(node);
+  }
+
+  private _addSheets(importedSheets: Record<string, any>) {
     for (const impUri in importedSheets) {
       const impSheet = importedSheets[impUri];
       const sheet = createNativeStyleFromSheet(
@@ -94,17 +108,17 @@ export class Renderer {
       this._importedStyles[impUri] = sheet;
       this._importedStylesContainer.appendChild(sheet);
     }
-    const style = createNativeStyleFromSheet(
-      sheet,
-      this._domFactory,
-      this.protocol
-    );
-    this._mainStyleContainer.appendChild(style);
-    this._stage.appendChild(node);
   }
 
   handleEngineEvent = (event: EngineEvent) => {
     switch (event.kind) {
+      case EngineEventKind.AddedSheets: {
+        if (event.uri === this.targetUri) {
+          this._dependencies = event.allDependencies;
+          this._addSheets(event.sheets);
+        }
+        break;
+      }
       case EngineEventKind.Loaded: {
         if (event.uri === this.targetUri) {
           this.initialize(event);
@@ -113,7 +127,8 @@ export class Renderer {
       }
       case EngineEventKind.Evaluated: {
         if (event.uri === this.targetUri) {
-        } else {
+          this._dependencies = event.allDependencies;
+        } else if (this._dependencies.includes(event.uri)) {
           const impStyle = this._importedStyles[event.uri];
           if (impStyle) {
             impStyle.remove();
@@ -154,7 +169,7 @@ export class Renderer {
           }
 
           for (const importedSheetUri in this._importedStyles) {
-            if (!event.dependencies.includes(importedSheetUri)) {
+            if (!event.allDependencies.includes(importedSheetUri)) {
               const sheet = this._importedStyles[importedSheetUri];
               sheet.remove();
               delete this._importedStyles[importedSheetUri];
