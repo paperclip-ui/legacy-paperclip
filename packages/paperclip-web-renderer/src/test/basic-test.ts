@@ -51,7 +51,6 @@ describe(__filename + "#", () => {
       `
     ]
   ].forEach(([initial, ...changes]) => {
-    console.log(changes);
     it(`can render ${initial} -> ${changes.join("->")}`, () => {
       const engine = createMockEngine(initial);
 

@@ -1,7 +1,7 @@
 <style>
   div {
     font-family: Helvetica;
-    color: rgb(16, 199, 16);
+    color: rgb(104, 40, 24);
     font-size: 24px;
   }
   @export {
@@ -14,7 +14,7 @@
 </style>
 
 <div export component as="Something">
-  Something like this is cool!
+  Something like this is cool!!!!
 </div>
 
 <Something />

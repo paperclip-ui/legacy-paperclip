@@ -73,28 +73,41 @@ export class Renderer {
     this._em.addListener(RenderEventTypes.META_CLICK, listener);
   };
 
+  initialize({ sheet, preview, importedSheets }) {
+    removeAllChildren(this._stage);
+    removeAllChildren(this._mainStyleContainer);
+    removeAllChildren(this._importedStylesContainer);
+    this._virtualRootNode = preview;
+    const node = createNativeNode(
+      preview,
+      this._domFactory,
+      this.protocol,
+      null
+    );
+    for (const impUri in importedSheets) {
+      const impSheet = importedSheets[impUri];
+      const sheet = createNativeStyleFromSheet(
+        impSheet,
+        this._domFactory,
+        this.protocol
+      );
+      this._importedStyles[impUri] = sheet;
+      this._importedStylesContainer.appendChild(sheet);
+    }
+    const style = createNativeStyleFromSheet(
+      sheet,
+      this._domFactory,
+      this.protocol
+    );
+    this._mainStyleContainer.appendChild(style);
+    this._stage.appendChild(node);
+  }
+
   handleEngineEvent = (event: EngineEvent) => {
     switch (event.kind) {
       case EngineEventKind.Evaluated: {
         if (event.uri === this._targetUri) {
-          removeAllChildren(this._stage);
-          removeAllChildren(this._mainStyleContainer);
-          this._virtualRootNode = event.info.preview;
-          const node = createNativeNode(
-            event.info.preview,
-            this._domFactory,
-            this.protocol,
-            null
-          );
-          [];
-          const style = createNativeStyleFromSheet(
-            event.info.sheet,
-            this._domFactory,
-            this.protocol
-          );
-          this._mainStyleContainer.appendChild(style);
-          this._stage.appendChild(node);
-        } else if (event.dependents.includes(this._targetUri)) {
+        } else {
           const impStyle = this._importedStyles[event.uri];
           if (impStyle) {
             impStyle.remove();
@@ -133,7 +146,7 @@ export class Renderer {
             );
             this._mainStyleContainer.appendChild(sheet);
           }
-        } else if (event.dependents.includes(this._targetUri) && event.sheet) {
+        } else if (event.sheet) {
           // this._importedStylesContainer.appendChild(createNativeStyleFromSheet(event.sheet, this._domFactory, this.protocol));
           const impStyle = this._importedStyles[event.uri];
           if (impStyle) {

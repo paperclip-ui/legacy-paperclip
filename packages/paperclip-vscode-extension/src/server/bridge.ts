@@ -40,7 +40,8 @@ import {
 import {
   EngineEventNotification,
   NotificationType,
-  LoadParams
+  LoadParams,
+  PreviewInit
 } from "../common/notifications";
 import {
   TextDocument,
@@ -78,9 +79,30 @@ export class VSCServiceBridge {
     connection.onRequest(DefinitionRequest.type, this._onDefinitionRequest);
     connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
 
-    connection.onNotification(NotificationType.LOAD, ({ uri }: LoadParams) => {
-      _engine.load(uri);
-    });
+    connection.onNotification(
+      NotificationType.LOAD,
+      async ({ uri }: LoadParams) => {
+        console.log("LOAD", uri);
+        _engine.load(uri);
+
+        // probably error going on here.
+        try {
+          const info = (await _engine.getRenderEvent(uri)).info;
+          const importedSheets = await _engine.getImportedSheets(uri);
+
+          connection.sendNotification(
+            ...new PreviewInit({
+              uri,
+              sheet: info.sheet,
+              preview: info.preview,
+              importedSheets
+            }).getArgs()
+          );
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    );
 
     connection.onNotification(
       NotificationType.UNLOAD,

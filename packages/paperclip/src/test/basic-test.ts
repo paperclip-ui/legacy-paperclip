@@ -4,7 +4,8 @@ import { expect } from "chai";
 import {
   EngineEventKind,
   stringifyVirtualNode,
-  EvaluatedEvent
+  EvaluatedEvent,
+  stringifyCSSSheet
 } from "paperclip-utils";
 import { createMockEngine, Graph } from "./utils";
 
@@ -682,11 +683,23 @@ describe(__filename + "#", () => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
       const engine = createMockEngine(graph);
 
-      const p = waitForEvaluated(engine);
       engine.load("/entry.pc");
-      const event = await p;
-      const nodeStr = stringifyVirtualNode(event.info.preview);
-      expect(nodeStr.replace(/[\r\n\t\s]+/g, " ").trim()).to.eql(
+      const {
+        info: { sheet, preview }
+      } = await engine.getRenderEvent("/entry.pc");
+      const sheets = Object.values(await engine.getImportedSheets("/entry.pc"));
+
+      const sheetText = [...sheets, sheet]
+        .map(sheet => {
+          return stringifyCSSSheet(sheet, "");
+        })
+        .join("\n")
+        .trim();
+
+      const buffer = `<style>${sheetText}</style>${stringifyVirtualNode(
+        preview
+      )}`;
+      expect(buffer.replace(/[\r\n\t\s]+/g, " ").trim()).to.eql(
         String(expectedHTML)
           .replace(/[\r\n\t\s]+/g, " ")
           .trim()

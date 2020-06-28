@@ -1,4 +1,5 @@
-import { EngineEvent as PCEngineEvent } from "paperclip";
+import { EngineEvent as PCEngineEvent, PCEvalInfo } from "paperclip";
+import { VirtualNode } from "paperclip-utils";
 
 abstract class BaseNotification<TType extends string, TParams> {
   constructor(readonly type: TType, readonly params: TParams) {}
@@ -11,6 +12,7 @@ export enum NotificationType {
   UPDATE_VIRTUAL_FILE_CONTENTS = "UPDATE_VIRTUAL_FILE_CONTENTS",
   CRASH = "CRASH",
   LOAD = "LOAD",
+  PREVIEW_INIT = "PREVIEW_INIT",
   UNLOAD = "UNLOAD",
   ENGINE_EVENT = "ENGINE_EVENT"
 }
@@ -36,6 +38,22 @@ export type LoadParams = {
 export class Load extends BaseNotification<NotificationType.LOAD, LoadParams> {
   constructor(params: LoadParams) {
     super(NotificationType.LOAD, params);
+  }
+}
+
+export type PreviewInitParams = {
+  uri: string;
+  sheet: any;
+  preview: VirtualNode;
+  importedSheets: any[];
+};
+
+export class PreviewInit extends BaseNotification<
+  NotificationType.PREVIEW_INIT,
+  PreviewInitParams
+> {
+  constructor(params: PreviewInitParams) {
+    super(NotificationType.PREVIEW_INIT, params);
   }
 }
 

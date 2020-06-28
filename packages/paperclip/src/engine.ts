@@ -3,6 +3,7 @@ import * as url from "url";
 import { NativeEngine } from "../native/pkg/paperclip";
 import {
   EngineEvent,
+  patchVirtNode,
   EngineEventKind,
   resolveImportUri,
   DependencyContent,
@@ -84,7 +85,7 @@ export class Engine {
 
     initNative();
 
-    // this.onEvent(this._onEngineEvent);
+    this.onEvent(this._onEngineEvent);
   }
 
   onEvent(listener: EngineEventListener) {
@@ -99,23 +100,23 @@ export class Engine {
       }
     };
   }
-  // private _onEngineEvent(event: EngineEvent) {
-  //   if (event.kind === EngineEventKind.Evaluated) {
-  //     this._rendered[event.uri] = event;
-  //   } else if (event.kind === EngineEventKind.Diffed) {
+  private _onEngineEvent = (event: EngineEvent) => {
+    if (event.kind === EngineEventKind.Evaluated) {
+      this._rendered[event.uri] = event;
+    } else if (event.kind === EngineEventKind.Diffed) {
+      const existingEvent = this._rendered[event.uri];
 
-  //     const existingEvent = this._rendered[event.uri];
-
-  //     this._rendered[event.uri] = {
-  //       ...existingEvent,
-  //       dependents: event.dependents,
-  //       info: {
-  //         ...existingEvent.info,
-  //         preview: patchVirtNode(existingEvent.info.preview, event.mutations)
-  //       }
-  //     }
-  //   }
-  // }
+      this._rendered[event.uri] = {
+        ...existingEvent,
+        dependencies: event.dependencies,
+        info: {
+          ...existingEvent.info,
+          sheet: event.sheet || existingEvent.info.sheet,
+          preview: patchVirtNode(existingEvent.info.preview, event.mutations)
+        }
+      };
+    }
+  };
   parseFile(uri: string) {
     return mapResult(this._native.parse_file(uri));
   }
@@ -146,6 +147,13 @@ export class Engine {
       this.load(uri);
     }
 
+    return this.getRenderEvent(uri);
+  }
+  getRenderEvent(uri: string): Promise<EvaluatedEvent> {
+    if (!this._loading[uri]) {
+      this.load(uri);
+    }
+
     if (this._rendered[uri]) {
       return Promise.resolve(this._rendered[uri]);
     }
@@ -158,6 +166,21 @@ export class Engine {
       });
     });
   }
+  async getImportedSheets(uri: string): Promise<any> {
+    // ick, wworks for now.
+    const entry = await this.getRenderEvent(uri);
+
+    const deps = {};
+
+    for (const depUri in this._rendered) {
+      const event = this._rendered[depUri];
+      if (entry.dependencies.includes(depUri)) {
+        deps[depUri] = event.info.sheet;
+      }
+    }
+    return deps;
+  }
+
   load(uri: string) {
     this._loading[uri] = true;
     this._dispatch({ kind: EngineEventKind.Loading, uri });

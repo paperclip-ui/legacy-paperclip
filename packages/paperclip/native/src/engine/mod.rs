@@ -24,6 +24,7 @@ use std::collections::HashMap;
 #[derive(Debug, PartialEq, Serialize)]
 pub struct EvaluatedEvent<'a> {
   pub uri: String,
+  pub dependencies: Vec<String>,
   pub dependents: Vec<String>,
   pub info: Option<&'a runtime::evaluator::EvalInfo>,
 }
@@ -34,6 +35,7 @@ pub struct DiffedEvent {
 
   // TODO - needs to be sheetMutations
   pub sheet: Option<css_virt::CSSSheet>,
+  pub dependencies: Vec<String>,
   pub dependents: Vec<String>,
 
   // TODO - needs to be domMutations
@@ -223,76 +225,79 @@ impl Engine {
   fn evaluate(&mut self, uri: &String, hard: bool) {
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
-    let dep_uris: Vec<String> = self.get_dependent_uris(uri);
+    let dept_uris: Vec<String> = self.get_dependent_uris(uri);
 
-    let event_option = match &dependency.content {
-      DependencyContent::Node(node) => {
-        let mut imports = HashMap::new();
-        let dep_uris2 = &dependency
-          .dependencies
-          .iter()
-          .map(|(id, uri)| (id.to_string(), uri.to_string()))
-          .collect::<Vec<(String, String)>>();
+    let mut imports = HashMap::new();
+    let dep_uris2 = &dependency
+      .dependencies
+      .iter()
+      .map(|(id, uri)| (id.to_string(), uri.to_string()))
+      .collect::<Vec<(String, String)>>();
 
-        for (id, dep_uri) in dep_uris2 {
-          let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
-            dep_result
-          } else {
-            self.evaluate(dep_uri, true);
-            self.virt_nodes.get(dep_uri).unwrap()
-          };
+    let mut dep_uris: Vec<String> = vec![];
 
-          imports.insert(id.to_string(), info.exports.clone());
-        }
+    for (id, dep_uri) in dep_uris2 {
+      let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
+        dep_result
+      } else {
+        self.evaluate(dep_uri, true);
+        self.virt_nodes.get(dep_uri).unwrap()
+      };
 
-        let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &imports);
+      dep_uris.push(dep_uri.to_string());
 
-        match node_result {
-          Ok(node_option) => {
-            if let Some(info) = node_option {
-              if hard {
-                self.virt_nodes.remove(uri);
-              }
+      imports.insert(id.to_string(), info.exports.clone());
+    }
 
-              let existing_info_option = self.virt_nodes.get(uri);
+    let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &imports);
 
-              if let Some(existing_info) = existing_info_option {
-                // temporary - eventually want to diff this.
-                let sheet: Option<css_virt::CSSSheet> = if existing_info.sheet == info.sheet {
-                  None
-                } else {
-                  Some(info.sheet.clone())
-                };
-
-                let ret = Some(EngineEvent::Diffed(DiffedEvent {
-                  uri: uri.clone(),
-                  sheet,
-                  dependents: dep_uris,
-                  mutations: diff_pc(&existing_info.preview, &info.preview),
-                }));
-                self.virt_nodes.insert(uri.clone(), info);
-                ret
-              } else {
-                self.virt_nodes.insert(uri.clone(), info);
-                Some(EngineEvent::Evaluated(EvaluatedEvent {
-                  uri: uri.clone(),
-                  dependents: dep_uris,
-                  info: self.virt_nodes.get(uri),
-                }))
-              }
-            } else {
-              Some(EngineEvent::Evaluated(EvaluatedEvent {
-                uri: uri.clone(),
-                dependents: dep_uris,
-                info: None,
-              }))
-            }
+    let event_option = match node_result {
+      Ok(node_option) => {
+        if let Some(info) = node_option {
+          if hard {
+            self.virt_nodes.remove(uri);
           }
-          Err(err) => Some(EngineEvent::Error(EngineError::Runtime(err))),
+
+          let existing_info_option = self.virt_nodes.get(uri);
+
+          if let Some(existing_info) = existing_info_option {
+            // temporary - eventually want to diff this.
+            let sheet: Option<css_virt::CSSSheet> = if existing_info.sheet == info.sheet {
+              None
+            } else {
+              Some(info.sheet.clone())
+            };
+
+            let ret = Some(EngineEvent::Diffed(DiffedEvent {
+              uri: uri.clone(),
+              sheet,
+              dependencies: dep_uris,
+              dependents: dept_uris,
+              mutations: diff_pc(&existing_info.preview, &info.preview),
+            }));
+            self.virt_nodes.insert(uri.clone(), info);
+            ret
+          } else {
+            self.virt_nodes.insert(uri.clone(), info);
+            Some(EngineEvent::Evaluated(EvaluatedEvent {
+              uri: uri.clone(),
+              dependencies: dep_uris,
+              dependents: dept_uris,
+              info: self.virt_nodes.get(uri),
+            }))
+          }
+        } else {
+          Some(EngineEvent::Evaluated(EvaluatedEvent {
+            uri: uri.clone(),
+            dependencies: dep_uris,
+            dependents: vec![],
+            info: None,
+          }))
         }
       }
-      _ => None,
+      Err(err) => Some(EngineEvent::Error(EngineError::Runtime(err))),
     };
+    
 
     if let Some(event) = event_option {
       self.dispatch(event);

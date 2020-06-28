@@ -14,7 +14,13 @@ import { isPaperclipFile } from "./utils";
 import * as path from "path";
 import { EventEmitter } from "events";
 import { LanguageClient } from "vscode-languageclient";
-import { NotificationType, Load, Unload } from "../common/notifications";
+import {
+  NotificationType,
+  Load,
+  Unload,
+  PreviewInit,
+  PreviewInitParams
+} from "../common/notifications";
 
 const VIEW_TYPE = "paperclip-preview";
 
@@ -135,10 +141,18 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
       preview.$$handleEngineEvent(event);
     });
   });
+
+  // There can only be one listener, so do that & handle across all previews
+  client.onNotification(NotificationType.PREVIEW_INIT, event => {
+    Object.values(_previews).forEach(preview => {
+      preview.$$handleInitEvent(event);
+    });
+  });
 };
 
 class LivePreview {
   private _em: EventEmitter;
+  private _dependencies: string[] = [];
   private _disposeEngineListener: () => void;
   public readonly targetUri: string;
 
@@ -213,25 +227,35 @@ class LivePreview {
   private _onMessage = () => {
     // TODO when live preview tools are available
   };
+  public $$handleInitEvent(params: PreviewInitParams) {
+    if (params.uri === this.targetUri) {
+      this._dependencies = Object.keys(params.importedSheets);
+      this.panel.webview.postMessage({
+        type: "INIT",
+        payload: JSON.stringify(params)
+      });
+    }
+  }
   public $$handleEngineEvent(event: EngineEvent) {
-    if (event.uri !== this.targetUri) {
-      switch (event.kind) {
-        case EngineEventKind.Diffed:
-        case EngineEventKind.Evaluated: {
-          if (!event.dependents.includes(this.targetUri)) {
-            return;
-          }
-          break;
-        }
-        default: {
-          return;
-        }
-      }
+    if (
+      event.uri !== this.targetUri &&
+      !this._dependencies.includes(event.uri)
+    ) {
+      return;
     }
 
-    console.log("POT", event);
+    if (
+      event.uri == this.targetUri &&
+      (event.kind === EngineEventKind.Evaluated ||
+        event.kind === EngineEventKind.Diffed)
+    ) {
+      this._dependencies = event.dependencies;
+    }
 
-    this.panel.webview.postMessage(JSON.stringify(event));
+    this.panel.webview.postMessage({
+      type: "ENGINE_EVENT",
+      payload: JSON.stringify(event)
+    });
   }
   private _getHTML() {
     const scriptPathOnDisk = Uri.file(

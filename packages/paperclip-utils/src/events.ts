@@ -27,13 +27,13 @@ type BaseEngineEvent<KKind extends EngineEventKind> = {
 
 export type EvaluatedEvent = {
   uri: string;
-  dependents: string[];
-  info?: PCEvalInfo;
+  dependencies: string[];
+  info: PCEvalInfo;
 } & BaseEngineEvent<EngineEventKind.Evaluated>;
 
 export type DiffedEvent = {
   uri: string;
-  dependents: string[];
+  dependencies: string[];
 
   // TODO - needs to be sheetMutations
   sheet: any;
