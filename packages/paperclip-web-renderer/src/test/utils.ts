@@ -1,4 +1,6 @@
-import { DOMFactory } from "../renderer";
+import { DOMFactory, Renderer } from "../renderer";
+import { Engine } from "paperclip";
+import * as path from "path";
 
 export const mockDOMFactory: DOMFactory = {
   createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
@@ -64,6 +66,7 @@ abstract class ParentNode extends BaseNode {
 class MockElement extends ParentNode {
   attributes = {};
   style = {};
+  textContent = "";
   constructor(readonly tagName: string) {
     super();
   }
@@ -83,7 +86,8 @@ class MockElement extends ParentNode {
       buffer += ` ${name}=${JSON.stringify(this.attributes[name])}`;
     }
     buffer += `>`;
-    buffer += this.getInnerHTML();
+    buffer +=
+      this.getInnerHTML() || this.textContent.replace(/[\s\r\n\t]+/g, " ");
     buffer += `</${this.tagName}>`;
     return buffer;
   }
@@ -106,3 +110,24 @@ class MockTextNode extends BaseNode {
     return this.nodeValue;
   }
 }
+
+export type Graph = {
+  [identifier: string]: string;
+};
+
+export const createMockEngine = (graph: Graph) =>
+  new Engine(
+    {
+      io: {
+        readFile: uri => graph[uri],
+        fileExists: uri => Boolean(graph[uri]),
+        resolveFile: (from, to) => {
+          return path.join(path.dirname(from), to);
+        }
+      }
+    },
+    () => {}
+  );
+
+export const createMockRenderer = (uri: string) =>
+  new Renderer("", uri, mockDOMFactory);

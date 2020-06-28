@@ -36,7 +36,7 @@ export class Renderer {
   readonly mount: HTMLElement;
   constructor(
     readonly protocol: string,
-    private _targetUri: string,
+    readonly targetUri: string,
     private _domFactory: DOMFactory = document
   ) {
     this._sheets = [];
@@ -105,8 +105,14 @@ export class Renderer {
 
   handleEngineEvent = (event: EngineEvent) => {
     switch (event.kind) {
+      case EngineEventKind.Loaded: {
+        if (event.uri === this.targetUri) {
+          this.initialize(event);
+        }
+        break;
+      }
       case EngineEventKind.Evaluated: {
-        if (event.uri === this._targetUri) {
+        if (event.uri === this.targetUri) {
         } else {
           const impStyle = this._importedStyles[event.uri];
           if (impStyle) {
@@ -125,7 +131,7 @@ export class Renderer {
         break;
       }
       case EngineEventKind.Diffed: {
-        if (event.uri === this._targetUri) {
+        if (event.uri === this.targetUri) {
           patchNativeNode(
             this._stage,
             event.mutations,
@@ -145,6 +151,14 @@ export class Renderer {
               this.protocol
             );
             this._mainStyleContainer.appendChild(sheet);
+          }
+
+          for (const importedSheetUri in this._importedStyles) {
+            if (!event.dependencies.includes(importedSheetUri)) {
+              const sheet = this._importedStyles[importedSheetUri];
+              sheet.remove();
+              delete this._importedStyles[importedSheetUri];
+            }
           }
         } else if (event.sheet) {
           // this._importedStylesContainer.appendChild(createNativeStyleFromSheet(event.sheet, this._domFactory, this.protocol));

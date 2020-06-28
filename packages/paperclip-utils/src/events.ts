@@ -2,9 +2,11 @@ import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
 import { Mutation } from "./virt-mtuation";
 import { PCEvalInfo } from "./pc-evaluate";
+import { VirtualNode } from "./virt";
 
 export enum EngineEventKind {
   Loading = "Loading",
+  Loaded = "Loaded",
   Updating = "Updating",
   Evaluated = "Evaluated",
   Error = "Error",
@@ -88,6 +90,13 @@ export type RuntimeErrorEvent = {
 export type LoadingEvent = {
   uri: string;
 } & BaseEngineEvent<EngineEventKind.Loading>;
+
+export type LoadedEvent = {
+  uri: string;
+  sheet: any;
+  preview: VirtualNode;
+  importedSheets: Record<string, any>;
+} & BaseEngineEvent<EngineEventKind.Loaded>;
 export type UpdatingEvent = {
   uri: string;
 } & BaseEngineEvent<EngineEventKind.Updating>;
@@ -98,5 +107,6 @@ export type EngineEvent =
   | EngineErrorEvent
   | NodeParsedEvent
   | LoadingEvent
+  | LoadedEvent
   | UpdatingEvent
   | DiffedEvent;

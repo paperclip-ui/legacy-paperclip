@@ -297,7 +297,6 @@ impl Engine {
       }
       Err(err) => Some(EngineEvent::Error(EngineError::Runtime(err))),
     };
-    
 
     if let Some(event) = event_option {
       self.dispatch(event);

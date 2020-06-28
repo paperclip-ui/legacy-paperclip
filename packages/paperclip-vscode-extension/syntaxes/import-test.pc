@@ -14,7 +14,7 @@
 </style>
 
 <div export component as="Something">
-  Something like this is cool!!!!
+  Some test
 </div>
 
 <Something />

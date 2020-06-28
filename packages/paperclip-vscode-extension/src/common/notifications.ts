@@ -12,7 +12,6 @@ export enum NotificationType {
   UPDATE_VIRTUAL_FILE_CONTENTS = "UPDATE_VIRTUAL_FILE_CONTENTS",
   CRASH = "CRASH",
   LOAD = "LOAD",
-  PREVIEW_INIT = "PREVIEW_INIT",
   UNLOAD = "UNLOAD",
   ENGINE_EVENT = "ENGINE_EVENT"
 }
@@ -47,15 +46,6 @@ export type PreviewInitParams = {
   preview: VirtualNode;
   importedSheets: any[];
 };
-
-export class PreviewInit extends BaseNotification<
-  NotificationType.PREVIEW_INIT,
-  PreviewInitParams
-> {
-  constructor(params: PreviewInitParams) {
-    super(NotificationType.PREVIEW_INIT, params);
-  }
-}
 
 export class Unload extends BaseNotification<
   NotificationType.UNLOAD,

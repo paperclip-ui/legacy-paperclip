@@ -18,7 +18,6 @@ import {
   NotificationType,
   Load,
   Unload,
-  PreviewInit,
   PreviewInitParams
 } from "../common/notifications";
 
@@ -139,13 +138,6 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
   client.onNotification(NotificationType.ENGINE_EVENT, event => {
     Object.values(_previews).forEach(preview => {
       preview.$$handleEngineEvent(event);
-    });
-  });
-
-  // There can only be one listener, so do that & handle across all previews
-  client.onNotification(NotificationType.PREVIEW_INIT, event => {
-    Object.values(_previews).forEach(preview => {
-      preview.$$handleInitEvent(event);
     });
   });
 };

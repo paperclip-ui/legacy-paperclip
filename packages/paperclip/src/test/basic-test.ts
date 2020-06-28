@@ -683,13 +683,11 @@ describe(__filename + "#", () => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
       const engine = createMockEngine(graph);
 
-      engine.load("/entry.pc");
-      const {
-        info: { sheet, preview }
-      } = await engine.getRenderEvent("/entry.pc");
-      const sheets = Object.values(await engine.getImportedSheets("/entry.pc"));
+      const { sheet, preview, importedSheets: sheets } = await engine.load(
+        "/entry.pc"
+      );
 
-      const sheetText = [...sheets, sheet]
+      const sheetText = [...Object.values(sheets), sheet]
         .map(sheet => {
           return stringifyCSSSheet(sheet, "");
         })

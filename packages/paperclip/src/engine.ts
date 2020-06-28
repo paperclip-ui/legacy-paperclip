@@ -11,7 +11,8 @@ import {
   Node,
   EvaluatedEvent,
   resolveImportFile,
-  getAttributeStringValue
+  getAttributeStringValue,
+  VirtualNode
 } from "paperclip-utils";
 
 export type FileContent = {
@@ -42,6 +43,12 @@ const mapResult = result => {
 };
 
 export type EngineEventListener = (event: EngineEvent) => void;
+
+export type LoadResult = {
+  importedSheets: any[];
+  sheet: any;
+  preview: VirtualNode;
+};
 
 export class Engine {
   private _native: NativeEngine;
@@ -142,14 +149,7 @@ export class Engine {
       mapResult(this._native.update_virtual_file_content(uri, content))
     );
   }
-  render(uri: string): Promise<EvaluatedEvent> {
-    if (!this._loading[uri]) {
-      this.load(uri);
-    }
-
-    return this.getRenderEvent(uri);
-  }
-  getRenderEvent(uri: string): Promise<EvaluatedEvent> {
+  private _getRenderEvent(uri: string): Promise<EvaluatedEvent> {
     if (!this._loading[uri]) {
       this.load(uri);
     }
@@ -168,7 +168,7 @@ export class Engine {
   }
   async getImportedSheets(uri: string): Promise<any> {
     // ick, wworks for now.
-    const entry = await this.getRenderEvent(uri);
+    const entry = await this._getRenderEvent(uri);
 
     const deps = {};
 
@@ -181,12 +181,30 @@ export class Engine {
     return deps;
   }
 
-  load(uri: string) {
+  async load(uri: string): Promise<LoadResult> {
     this._loading[uri] = true;
     this._dispatch({ kind: EngineEventKind.Loading, uri });
-    return this._tryCatch(() =>
+
+    this._tryCatch(() =>
       mapResult(this._native.load(uri, this._options.renderPart))
     );
+
+    const info = (await this._getRenderEvent(uri)).info;
+    const importedSheets = await this.getImportedSheets(uri);
+
+    this._dispatch({
+      kind: EngineEventKind.Loaded,
+      uri,
+      sheet: info.sheet,
+      preview: info.preview,
+      importedSheets
+    });
+
+    return {
+      sheet: info.sheet,
+      preview: info.preview,
+      importedSheets
+    };
   }
   private _tryCatch = <TRet>(fn: () => TRet) => {
     try {

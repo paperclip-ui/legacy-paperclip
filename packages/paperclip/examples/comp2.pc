@@ -1,1 +1,9 @@
+<style>
+  :global(div) {
+    color: red;
+  }
+</style>
+
 <div export component as="default">something</div>
+
+<default />

@@ -21,7 +21,8 @@ import {
   DiffedEvent,
   SourceLocation,
   RuntimeErrorEvent,
-  EvaluatedEvent
+  EvaluatedEvent,
+  LoadedEvent
 } from "paperclip";
 
 import { throttle } from "lodash";
@@ -40,8 +41,7 @@ import {
 import {
   EngineEventNotification,
   NotificationType,
-  LoadParams,
-  PreviewInit
+  LoadParams
 } from "../common/notifications";
 import {
   TextDocument,
@@ -82,25 +82,7 @@ export class VSCServiceBridge {
     connection.onNotification(
       NotificationType.LOAD,
       async ({ uri }: LoadParams) => {
-        console.log("LOAD", uri);
-        _engine.load(uri);
-
-        // probably error going on here.
-        try {
-          const info = (await _engine.getRenderEvent(uri)).info;
-          const importedSheets = await _engine.getImportedSheets(uri);
-
-          connection.sendNotification(
-            ...new PreviewInit({
-              uri,
-              sheet: info.sheet,
-              preview: info.preview,
-              importedSheets
-            }).getArgs()
-          );
-        } catch (e) {
-          console.warn(e);
-        }
+        await _engine.load(uri);
       }
     );
 
@@ -299,6 +281,7 @@ export class VSCServiceBridge {
       case EngineEventKind.Error: {
         return this._onEngineErrorEvent(event);
       }
+      case EngineEventKind.Loaded:
       case EngineEventKind.Diffed:
       case EngineEventKind.Evaluated: {
         return this._onEngineEvaluatedEvent(event);
@@ -306,7 +289,9 @@ export class VSCServiceBridge {
     }
   };
 
-  private _onEngineEvaluatedEvent(event: DiffedEvent | EvaluatedEvent) {
+  private _onEngineEvaluatedEvent(
+    event: DiffedEvent | EvaluatedEvent | LoadedEvent
+  ) {
     // reset error diagnostics
     this.connection.sendDiagnostics({
       uri: event.uri,
