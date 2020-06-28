@@ -2,12 +2,6 @@
 
 <style>
   /* comment */
-
-  @mixin default-font {
-    font-family: Helvetica;
-    color: rgb(45, 197, 52);
-    font-size: 24px;
-  }
   
   @media only screen and (max-width: 300px) {
     .rule {
@@ -16,7 +10,7 @@
   }
 
   .container {
-    @include default-font;
+    @include something.default-font;
     .child {
       color: rgb(162, 202, 183);
     }

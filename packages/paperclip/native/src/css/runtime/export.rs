@@ -3,7 +3,6 @@ use serde::Serialize;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub struct Exports {
@@ -16,7 +15,7 @@ impl Exports {
   pub fn new() -> Exports {
     Exports {
       class_names: HashSet::new(),
-      mixins: HashMap::new()
+      mixins: HashMap::new(),
     }
   }
   pub fn extend(&mut self, exports: &Exports) {

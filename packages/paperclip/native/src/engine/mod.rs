@@ -1,22 +1,22 @@
 use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::get_document_style_scope;
+use crate::core::graph::{DependencyContent, DependencyGraph, GraphError};
+use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
 use crate::css::parser::parse as parse_css;
 use crate::css::runtime::evaluator::evaluate as evaluate_css;
+use crate::css::runtime::evaluator::EvalInfo as CSSEvalInfo;
 use crate::css::runtime::virt as css_vrt;
 use crate::js::runtime::virt as js_virt;
 use crate::pc::ast as pc_ast;
-use crate::pc::runtime::cache as pc_cache;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime;
+use crate::pc::runtime::cache as pc_cache;
 use crate::pc::runtime::diff::diff as diff_pc;
-use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, evaluate_document_styles};
-use crate::core::graph::{DependencyContent, DependencyGraph, GraphError};
-use crate::pc::runtime::mutation as pc_mutation;
-use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
-use crate::pc::runtime::virt as pc_virt;
-use crate::css::runtime::evaluator::EvalInfo as CSSEvalInfo;
 use crate::pc::runtime::evaluator::EvalInfo as PCEvalInfo;
+use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, evaluate_document_styles};
+use crate::pc::runtime::mutation as pc_mutation;
+use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -109,7 +109,7 @@ impl Engine {
       virt_nodes: HashMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
       dependency_graph: DependencyGraph::new(),
-      load_options: HashMap::new()
+      load_options: HashMap::new(),
     }
   }
 
@@ -206,10 +206,7 @@ impl Engine {
     Ok(())
   }
 
-  fn get_dependent_uris(
-    &self,
-    uri: &String
-  ) -> Vec<String> {
+  fn get_dependent_uris(&self, uri: &String) -> Vec<String> {
     self
       .dependency_graph
       .flatten_dependents(uri)
@@ -220,17 +217,30 @@ impl Engine {
 
   fn evaluate(&mut self, uri: &String, hard: bool) {
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
-    
+
     let dep_uris: Vec<String> = self.get_dependent_uris(uri);
 
     let event_option = match &dependency.content {
       DependencyContent::Node(node) => {
-        let node_result = evaluate_pc(
-          uri,
-          &self.dependency_graph,
-          &self.vfs,
-          &HashMap::new()
-        );
+
+        let mut imports = HashMap::new();
+        let dep_uris2 = &dependency.dependencies.iter().map(|(id, uri)| {
+          (id.to_string(), uri.to_string())
+        }).collect::<Vec<(String, String)>>();
+
+        for (id, dep_uri) in dep_uris2 {
+          let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
+            dep_result
+          } else {
+            self.evaluate(dep_uri, true);
+            self.virt_nodes.get(dep_uri).unwrap()
+          };
+          
+          imports.insert(id.to_string(), info.exports.clone());
+        }
+
+
+        let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &imports);
 
         match node_result {
           Ok(node_option) => {

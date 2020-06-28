@@ -4,10 +4,17 @@
     color: orange;
     font-size: 24px;
   }
+  @export {
+    @mixin default-font {
+      font-family: Helvetica;
+      color: rgb(45, 197, 52);
+      font-size: 24px;
+    }
+  }
 </style>
 
 <div export component as="Something">
-  Something
+  Something like that
 </div>
 
 <Something />

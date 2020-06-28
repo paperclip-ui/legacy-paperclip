@@ -7,11 +7,11 @@ extern crate matches;
 extern crate console_error_panic_hook;
 
 mod base;
+mod core;
 mod css;
 mod engine;
 mod js;
 mod pc;
-mod core;
 
 use ::futures::executor::block_on;
 use engine::Engine;

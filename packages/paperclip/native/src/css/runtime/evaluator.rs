@@ -1,10 +1,10 @@
 use super::super::ast;
+use super::export::Exports;
 use super::virt;
 use crate::base::runtime::RuntimeError;
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use std::collections::HashMap;
-use super::export::Exports;
 
 pub struct Context<'a> {
   scope: &'a str,
@@ -18,7 +18,7 @@ pub struct Context<'a> {
 
 pub struct EvalInfo {
   pub sheet: virt::CSSSheet,
-  pub exports: Exports
+  pub exports: Exports,
 }
 
 pub fn evaluate<'a>(
