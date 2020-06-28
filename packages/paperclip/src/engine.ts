@@ -58,7 +58,7 @@ export class Engine {
 
   constructor(
     private _options: EngineOptions = {},
-    private _onCrash: () => void = () => {}
+    private _onCrash: (err) => void = () => {}
   ) {
     const io: EngineIO = Object.assign(
       {
@@ -232,7 +232,7 @@ export class Engine {
     try {
       return fn();
     } catch (e) {
-      this._onCrash();
+      this._onCrash(e);
       return null;
     }
   };

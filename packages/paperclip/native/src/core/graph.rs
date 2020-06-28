@@ -4,7 +4,7 @@ use crate::base::parser::ParseError;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use serde::Serialize;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
@@ -63,42 +63,59 @@ impl DependencyGraph {
     return deps;
   }
 
-  pub fn flatten_dependents<'a>(&'a self, entry_uri: &String) -> Vec<&Dependency> {
-    let mut deps = vec![];
+  pub fn flatten_dependents<'a>(&'a self, entry_uri: &String) -> Vec<String> {
+    let mut all_deps: HashSet<String> = HashSet::new();
+    self.flatten_dependents2(entry_uri, &mut all_deps);
+    return all_deps.into_iter().map(|v| {
+      v.to_string()
+    }).collect::<Vec<String>>();
+  }
+
+  fn flatten_dependents2<'a>(&'a self, entry_uri: &String, all_deps: &mut HashSet<String>) {
     let entry_option = self.dependencies.get(entry_uri);
 
     if let None = entry_option {
-      return deps;
+      return;
     }
 
     for (dep_uri, dep) in &self.dependencies {
-      if dep.dependencies.values().any(|uri| &uri == &entry_uri) {
-        deps.push(dep);
-        deps.extend(self.flatten_dependents(dep_uri));
+      if dep.dependencies.values().any(|uri| &uri == &entry_uri) && !all_deps.contains(dep_uri) {
+        all_deps.insert(dep_uri.to_string());
+        self.flatten_dependents2(dep_uri, all_deps);
+      } else if all_deps.contains(dep_uri) {
+
       }
     }
 
-    return deps;
+    return;
+  }
+  pub fn flatten_dependencies<'a>(&'a self, entry_uri: &String) -> Vec<String> {
+    let mut all_deps: HashSet<String> = HashSet::new();
+    self.flatten_dependencies2(entry_uri, &mut all_deps);
+    return all_deps.into_iter().map(|v| {
+      v.to_string()
+    }).collect::<Vec<String>>();
   }
 
-  pub fn flatten_dependencies<'a>(&'a self, entry_uri: &String) -> Vec<&Dependency> {
-    let mut all_deps = vec![];
+  fn flatten_dependencies2<'a>(&'a self, entry_uri: &String, all_deps: &mut HashSet<String>) {
     let entry_option = self.dependencies.get(entry_uri);
 
     if let Some(dep) = entry_option {
+
       let deps = dep
         .dependencies
         .iter()
-        .map(|(id, uri)| self.dependencies.get(uri).unwrap())
-        .collect::<Vec<&Dependency>>();
+        .map(|(id, uri)| { uri })
+        .collect::<Vec<&String>>();
 
-      for dep in deps {
-        all_deps.push(dep);
-        all_deps.extend(self.flatten_dependencies(&dep.uri));
+      for dep_uri in deps {
+        if !all_deps.contains(dep_uri) {
+          all_deps.insert(dep_uri.to_string());
+          self.flatten_dependencies2(dep_uri, all_deps);
+        } else {
+        }
       }
     }
-
-    return all_deps;
   }
 
   pub async fn load_dependency<'a>(
@@ -110,6 +127,7 @@ impl DependencyGraph {
     loaded_deps.push(uri.to_string());
 
     let mut to_load: Vec<(String, Option<(String, String)>)> = vec![(uri.to_string(), None)];
+
 
     while to_load.len() > 0 {
       let (curr_uri, import) = to_load.pop().unwrap();
@@ -163,7 +181,13 @@ impl DependencyGraph {
 
       loaded_deps.push(curr_uri.to_string());
 
-      for (relative_uri, dep_uri) in &dependency.dependency_uri_maps {
+      self.dependencies.insert(curr_uri.to_string(), dependency);
+
+      // need to insert now for 
+      let dep = &self.dependencies.get(&curr_uri).unwrap();
+
+
+      for (relative_uri, dep_uri) in &dep.dependency_uri_maps {
         if !self.dependencies.contains_key(&dep_uri.to_string()) {
           to_load.push((
             dep_uri.to_string(),
@@ -172,7 +196,6 @@ impl DependencyGraph {
         }
       }
 
-      self.dependencies.insert(curr_uri.to_string(), dependency);
     }
 
     Ok(loaded_deps)

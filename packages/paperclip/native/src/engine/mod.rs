@@ -1,7 +1,8 @@
 use crate::base::parser::ParseError;
+use crate::base::ast;
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::get_document_style_scope;
-use crate::core::graph::{DependencyContent, DependencyGraph, GraphError};
+use crate::core::graph::{DependencyContent, DependencyGraph, Dependency, GraphError};
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
 use crate::css::parser::parse as parse_css;
 use crate::css::runtime::evaluator::evaluate as evaluate_css;
@@ -19,7 +20,7 @@ use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use serde::Serialize;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct EvaluatedEvent<'a> {
@@ -150,6 +151,7 @@ impl Engine {
   }
 
   pub async fn reload(&mut self, uri: &String, hard: bool) -> Result<(), GraphError> {
+
     let load_result = self
       .dependency_graph
       .load_dependency(uri, &mut self.vfs)
@@ -157,11 +159,8 @@ impl Engine {
 
     match load_result {
       Ok(loaded_uris) => {
-        for uri in loaded_uris.iter() {
-          let dep = self.dependency_graph.dependencies.get(uri).unwrap();
-        }
-
-        self.evaluate(uri, hard);
+        let mut stack = HashSet::new();
+        self.evaluate(uri, hard, &mut stack);
         Ok(())
       }
       Err(error) => {
@@ -207,37 +206,33 @@ impl Engine {
     self.vfs.update(uri, content).await;
     self.reload(uri, false).await?;
 
-    let mut dep_uris: Vec<String> = self.get_dependent_uris(uri);
+    let mut dep_uris: Vec<String> = self.dependency_graph
+    .flatten_dependents(uri);
 
     for dep_uri in dep_uris.drain(0..).into_iter() {
-      self.evaluate(&dep_uri, false);
+      let mut stack = HashSet::new();
+      self.evaluate(&dep_uri, false, &mut stack);
     }
 
     Ok(())
   }
 
-  fn get_dependent_uris(&self, uri: &String) -> Vec<String> {
-    self
-      .dependency_graph
-      .flatten_dependents(uri)
-      .into_iter()
-      .map(|dep| -> String { dep.uri.to_string() })
-      .collect()
-  }
+  fn evaluate(&mut self, uri: &String, hard: bool, stack: &mut HashSet<String>) -> Result<(), RuntimeError> {
 
-  fn get_all_dependency_uris(&self, uri: &String) -> Vec<String> {
-    self
-      .dependency_graph
-      .flatten_dependencies(uri)
-      .into_iter()
-      .map(|dep| -> String { dep.uri.to_string() })
-      .collect()
-  }
+    // prevent infinite loop
+    if stack.contains(uri) {
+      let err = RuntimeError::new("Circular dependencies are not supported yet.".to_string(), uri, &ast::Location { start: 0, end: 1 });
+      self.dispatch(EngineEvent::Error(EngineError::Runtime(err.clone())));
+      return Err(err);
+    }
 
-  fn evaluate(&mut self, uri: &String, hard: bool) {
+
+    stack.insert(uri.to_string());
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
-    let dept_uris: Vec<String> = self.get_dependent_uris(uri);
+    let dept_uris: Vec<String> = self
+      .dependency_graph
+      .flatten_dependents(uri);
 
     let mut imports = HashMap::new();
     let relative_deps = &dependency
@@ -246,13 +241,15 @@ impl Engine {
       .map(|(id, uri)| (id.to_string(), uri.to_string()))
       .collect::<Vec<(String, String)>>();
 
-    let all_dependencies = self.get_all_dependency_uris(uri);
+    let all_dependencies = self
+    .dependency_graph
+    .flatten_dependencies(uri);
 
     for (id, dep_uri) in relative_deps {
       let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
         dep_result
       } else {
-        self.evaluate(dep_uri, true);
+        self.evaluate(dep_uri, true, stack)?;
         self.virt_nodes.get(dep_uri).unwrap()
       };
 
@@ -311,6 +308,8 @@ impl Engine {
     if let Some(event) = event_option {
       self.dispatch(event);
     }
+
+    Ok(())
   }
 }
 

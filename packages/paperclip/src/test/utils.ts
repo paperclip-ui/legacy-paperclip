@@ -16,5 +16,7 @@ export const createMockEngine = (graph: Graph) =>
         }
       }
     },
-    () => {}
+    e => {
+      console.error(e);
+    }
   );

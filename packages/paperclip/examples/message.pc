@@ -1,2 +1,2 @@
 <import src="./comp2.pc">
-<div>something like thiss</div>
+<div>something that</div>
