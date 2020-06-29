@@ -20,9 +20,9 @@
 - [Syntax](./documentation/Syntax)
 - [Contributing](./documentation/Contributing)
 - [Examples](./examples)
-  - [React counter](./examples/react-counter)
   - [React TodoMVC](./examples/react-todomvc)
-  - [React Calculator](./examples/react-calculator)
+
+----
 
 <!--
 
@@ -72,6 +72,7 @@ _See_ UIs that you're creating in real-time, directly within your code editor. P
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
 
 > The VS Code extensions allows you to see a live preview of your components as you're building them
+
 
 ## Just primitive behavior
 
@@ -129,9 +130,9 @@ export SomeForm = () => {
 };
 ```
 
-## Perfect for your design system
+<!-- ## Perfect for your design system
 
-[TODO GIF]
+[TODO GIF] -->
 
 <!-- 
 Paperclip provides a lightweight approach for creating presentational components. It's not intended to replace code, but instead allow you to focus on the just the basic construction of your user interfaces, without the heaviness that an _entire_ application brings. This allows Paperclip to be fast, and _remain_ fast as your project grows in size.  -->
