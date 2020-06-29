@@ -3,8 +3,24 @@
   "version": "11.2.1",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "bin": {
+    "percy-paperclip": "./bin/percy-paperclip"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
   "author": "",
   "license": "ISC",
-  "gitHead": "ff12ac1dfbd3c8325a6a3ba50e15cc8b3c5603af"
+  "gitHead": "ff12ac1dfbd3c8325a6a3ba50e15cc8b3c5603af",
+  "devDependencies": {
+    "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "@percy/agent": "^0.26.9",
+    "glob": "^7.1.6",
+    "paperclip": "^11.2.1",
+    "xmlhttprequest": "^1.8.0",
+    "yargs": "^15.3.1"
+  }
 }
