@@ -562,9 +562,13 @@ fn parse_key_value_attribute<'a>(
     let binding_name = parse_tag_name(tokenizer)?;
     tokenizer.next_expect(Token::Equals)?; // eat =
     let value = parse_attribute_value(tokenizer)?;
-  
+
     Ok(pc_ast::Attribute::PropertyBoundAttribute(
-      pc_ast::PropertyBoundAttribute { name, binding_name, value },
+      pc_ast::PropertyBoundAttribute {
+        name,
+        binding_name,
+        value,
+      },
     ))
   } else {
     let mut value = None;

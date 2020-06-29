@@ -555,7 +555,7 @@ fn create_component_instance_data<'a>(
           name.to_string(),
           evaluate_attribute_slot(&sh_attr.reference, context)?,
         );
-      },
+      }
       ast::Attribute::PropertyBoundAttribute(kv_attr) => {
         property_bound_attrs.push(kv_attr);
       }
@@ -571,28 +571,23 @@ fn create_component_instance_data<'a>(
           let value_option = object.values.get(&kv_attr.binding_name);
           if let Some(prop_value) = value_option {
             if prop_value.truthy() {
-              let value = evaluate_attribute_value(
-                &kv_attr.name,
-                &kv_attr.value,
-                false,
-                context,
-              )?;
+              let value = evaluate_attribute_value(&kv_attr.name, &kv_attr.value, false, context)?;
 
               let combined_value = if let Some(existing_value) = data.values.get(&kv_attr.name) {
-                js_virt::JsValue::JsString(format!("{} {}", stringify_attribute_value(&kv_attr.name, existing_value), value.to_string()))
+                js_virt::JsValue::JsString(format!(
+                  "{} {}",
+                  stringify_attribute_value(&kv_attr.name, existing_value),
+                  value.to_string()
+                ))
               } else {
                 value
               };
 
-
               data.values.insert(kv_attr.name.to_string(), combined_value);
             }
           }
-
-        },
-        _ => {
-
         }
+        _ => {}
       }
     }
   }
@@ -613,7 +608,11 @@ fn create_component_instance_data<'a>(
   Ok(js_virt::JsValue::JsObject(data))
 }
 
-fn combine_attr_value(value: String, other_value: Option<&Option<String>>, separator: String) -> String {
+fn combine_attr_value(
+  value: String,
+  other_value: Option<&Option<String>>,
+  separator: String,
+) -> String {
   if let Some(v) = other_value {
     if let Some(v2) = v {
       return format!("{}{}{}", value, separator, v2);
@@ -664,7 +663,7 @@ fn evaluate_native_element<'a>(
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
 
   let tag_name = ast::get_tag_name(element);
-  
+
   let mut property_bound_attrs: Vec<&ast::PropertyBoundAttribute> = vec![];
 
   for attr_expr in &element.attributes {
@@ -752,23 +751,19 @@ fn evaluate_native_element<'a>(
           let value_option = object.values.get(&kv_attr.binding_name);
           if let Some(prop_value) = value_option {
             if prop_value.truthy() {
-              let value = evaluate_attribute_value(
-                &kv_attr.name,
-                &kv_attr.value,
-                true,
-                context,
-              )?;
+              let value = evaluate_attribute_value(&kv_attr.name, &kv_attr.value, true, context)?;
 
-              let combined_value = combine_attr_value(stringify_attribute_value(&kv_attr.name, &value), attributes.get(&kv_attr.name), " ".to_string());
+              let combined_value = combine_attr_value(
+                stringify_attribute_value(&kv_attr.name, &value),
+                attributes.get(&kv_attr.name),
+                " ".to_string(),
+              );
 
               attributes.insert(kv_attr.name.to_string(), Some(combined_value));
             }
           }
-
-        },
-        _ => {
-
         }
+        _ => {}
       }
     }
   }

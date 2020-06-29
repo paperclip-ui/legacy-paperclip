@@ -15,6 +15,13 @@ export const RENAME_PROPS = {
   for: "htmlFor"
 };
 
+export const REV_PROP = {
+  className: "class",
+  autoFocus: "autofocus",
+  autoComplete: "autocomplete",
+  htmlFor: "for"
+};
+
 export type Options = {
   definition?: boolean;
 };

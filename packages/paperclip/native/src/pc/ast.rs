@@ -257,7 +257,6 @@ impl fmt::Display for ShorthandAttribute {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PropertyBoundAttribute {
-
   #[serde(rename = "bindingName")]
   pub binding_name: String,
   pub name: String,

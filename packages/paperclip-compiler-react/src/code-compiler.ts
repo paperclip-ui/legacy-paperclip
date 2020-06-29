@@ -55,6 +55,7 @@ import {
   Options,
   getComponentName,
   RENAME_PROPS,
+  REV_PROP,
   getClassExportNameMap,
   getPartClassName,
   strToClassName,
@@ -659,7 +660,9 @@ const translateAttribute = (
       }
       context = addBuffer(`${JSON.stringify(name)}: `, context);
 
-      const boundAttributes = propertyBoundAttributes[name];
+      const boundAttributes =
+        propertyBoundAttributes[name] ||
+        propertyBoundAttributes[REV_PROP[name]];
 
       if (boundAttributes) {
         // prefix with string just for casting.
@@ -678,7 +681,7 @@ const translateAttribute = (
         for (const pba of boundAttributes) {
           context = addBuffer(" + (", context);
           context = addBuffer(
-            `props.${camelCase(pba.bindingName)} ? `,
+            `props.${camelCase(pba.bindingName)} ? " " + `,
             context
           );
           context = translateAttributeValue(
