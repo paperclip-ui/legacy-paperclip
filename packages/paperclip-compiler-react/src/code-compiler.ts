@@ -8,6 +8,7 @@ import {
   DEFAULT_PART_ID,
   getDefaultPart,
   getLogicElement,
+  PropertyBoundAttribute,
   getAllVirtSheetClassNames,
   Statement,
   EXPORT_TAG_NAME,
@@ -470,8 +471,16 @@ const translateElement = (
     },\n`,
     context
   );
+  const propertyBoundAttributes = collectPropertyBoundAttributes(element);
+
   for (const attr of element.attributes) {
-    context = translateAttribute(element, attr, isComponentInstance, context);
+    context = translateAttribute(
+      element,
+      attr,
+      isComponentInstance,
+      propertyBoundAttributes,
+      context
+    );
   }
 
   if (
@@ -610,10 +619,22 @@ const translateChildren = (
 const isSpecialPropName = (name: string) =>
   /^on/.test(name) || name === "checked";
 
+const collectPropertyBoundAttributes = (element: Element) =>
+  element.attributes.reduce((record, attr) => {
+    if (attr.kind === AttributeKind.PropertyBoundAttribute) {
+      if (!record[attr.name]) {
+        record[attr.name] = [];
+      }
+      record[attr.name].push(attr);
+    }
+    return record;
+  }, {}) as Record<string, PropertyBoundAttribute[]>;
+
 const translateAttribute = (
   element: Element,
   attr: Attribute,
   isComponentInstance: boolean,
+  propertyBoundAttributes: Record<string, PropertyBoundAttribute[]>,
   context: TranslateContext
 ) => {
   if (attr.kind === AttributeKind.KeyValueAttribute) {
@@ -637,6 +658,14 @@ const translateAttribute = (
         name = camelCase(name);
       }
       context = addBuffer(`${JSON.stringify(name)}: `, context);
+
+      const boundAttributes = propertyBoundAttributes[name];
+
+      if (boundAttributes) {
+        // prefix with string just for casting.
+        context = addBuffer('"" + ', context);
+      }
+
       context = translateAttributeValue(
         element,
         name,
@@ -644,6 +673,26 @@ const translateAttribute = (
         !isComponentInstance,
         context
       );
+
+      if (boundAttributes) {
+        for (const pba of boundAttributes) {
+          context = addBuffer(" + (", context);
+          context = addBuffer(
+            `props.${camelCase(pba.bindingName)} ? `,
+            context
+          );
+          context = translateAttributeValue(
+            element,
+            name,
+            pba.value,
+            !isComponentInstance,
+            context
+          );
+          context = addBuffer(` : ""`, context);
+          context = addBuffer(")", context);
+        }
+      }
+
       context = addBuffer(`,\n`, context);
     }
   } else if (attr.kind === AttributeKind.ShorthandAttribute) {

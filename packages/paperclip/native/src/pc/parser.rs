@@ -487,7 +487,7 @@ fn parse_tag_name<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<String, ParseErro
     get_buffer(tokenizer, |tokenizer| {
       Ok(!matches!(
         tokenizer.peek(1)?,
-        Token::Whitespace | Token::GreaterThan | Token::Equals | Token::SelfTagClose
+        Token::Whitespace | Token::GreaterThan | Token::Equals | Token::SelfTagClose | Token::Colon
       ))
     })?
     .to_string(),
@@ -556,16 +556,28 @@ fn parse_key_value_attribute<'a>(
   tokenizer: &mut Tokenizer<'a>,
 ) -> Result<pc_ast::Attribute, ParseError> {
   let name = parse_tag_name(tokenizer)?;
-  let mut value = None;
 
-  if tokenizer.peek(1)? == Token::Equals {
-    tokenizer.next()?; // eat =
-    value = Some(parse_attribute_value(tokenizer)?);
+  if tokenizer.peek(1)? == Token::Colon {
+    tokenizer.next()?; // eat :
+    let binding_name = parse_tag_name(tokenizer)?;
+    tokenizer.next_expect(Token::Equals)?; // eat =
+    let value = parse_attribute_value(tokenizer)?;
+  
+    Ok(pc_ast::Attribute::PropertyBoundAttribute(
+      pc_ast::PropertyBoundAttribute { name, binding_name, value },
+    ))
+  } else {
+    let mut value = None;
+
+    if tokenizer.peek(1)? == Token::Equals {
+      tokenizer.next()?; // eat =
+      value = Some(parse_attribute_value(tokenizer)?);
+    }
+
+    Ok(pc_ast::Attribute::KeyValueAttribute(
+      pc_ast::KeyValueAttribute { name, value },
+    ))
   }
-
-  Ok(pc_ast::Attribute::KeyValueAttribute(
-    pc_ast::KeyValueAttribute { name, value },
-  ))
 }
 
 fn parse_attribute_value<'a>(
@@ -733,6 +745,8 @@ mod tests {
       <form action=\"/search/\" autoComplete=\"off\" method=\"get\" role=\"search\">
         <!--input type=\"search\" id=\"header-search-bar\" name=\"q\" class=\"_2xQx4j6lBnDGQ8QsRnJEJa\" placeholder=\"Search\" value=\"\" /-->
       </form>\n 
+      <div class:test=\"a\">
+      </div>
     ";
 
     parse(source).unwrap();

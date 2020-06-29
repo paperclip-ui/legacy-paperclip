@@ -12,7 +12,7 @@
     padding: 10px 20px;
     color: #FFF;
     background: rgb(51, 51, 51);
-    &[data-secondary], &[data-hover], &:hover {
+    &.secondary, &.hover, &:hover {
       color: #333;
       border: 1px solid #333;
       background: transparent;
@@ -24,20 +24,20 @@
 </style>
 
 <!-- components to export -->
-<div export component as="Button" data-secondary={secondary} data-hover={hover} class="button">
-  {children}
+<div export component as="Button" class:secondary="secondary" class:hover="hover" class="button">
+  {children} {test}
 </div>
 
 <!-- Previews -->
 
-<Button>
+<Button secondary>
   This is a primary button
 </Button>
 
-<Button secondary>
+<Button>
   This is a secondary button
 </Button>
 
-<Button hover>
+<!-- <Button hover>
   This is a hover
-</Button>
+</Button> -->

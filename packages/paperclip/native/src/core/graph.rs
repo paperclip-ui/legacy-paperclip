@@ -66,9 +66,10 @@ impl DependencyGraph {
   pub fn flatten_dependents<'a>(&'a self, entry_uri: &String) -> Vec<String> {
     let mut all_deps: HashSet<String> = HashSet::new();
     self.flatten_dependents2(entry_uri, &mut all_deps);
-    return all_deps.into_iter().map(|v| {
-      v.to_string()
-    }).collect::<Vec<String>>();
+    return all_deps
+      .into_iter()
+      .map(|v| v.to_string())
+      .collect::<Vec<String>>();
   }
 
   fn flatten_dependents2<'a>(&'a self, entry_uri: &String, all_deps: &mut HashSet<String>) {
@@ -83,7 +84,6 @@ impl DependencyGraph {
         all_deps.insert(dep_uri.to_string());
         self.flatten_dependents2(dep_uri, all_deps);
       } else if all_deps.contains(dep_uri) {
-
       }
     }
 
@@ -92,20 +92,20 @@ impl DependencyGraph {
   pub fn flatten_dependencies<'a>(&'a self, entry_uri: &String) -> Vec<String> {
     let mut all_deps: HashSet<String> = HashSet::new();
     self.flatten_dependencies2(entry_uri, &mut all_deps);
-    return all_deps.into_iter().map(|v| {
-      v.to_string()
-    }).collect::<Vec<String>>();
+    return all_deps
+      .into_iter()
+      .map(|v| v.to_string())
+      .collect::<Vec<String>>();
   }
 
   fn flatten_dependencies2<'a>(&'a self, entry_uri: &String, all_deps: &mut HashSet<String>) {
     let entry_option = self.dependencies.get(entry_uri);
 
     if let Some(dep) = entry_option {
-
       let deps = dep
         .dependencies
         .iter()
-        .map(|(id, uri)| { uri })
+        .map(|(id, uri)| uri)
         .collect::<Vec<&String>>();
 
       for dep_uri in deps {
@@ -127,7 +127,6 @@ impl DependencyGraph {
     loaded_deps.push(uri.to_string());
 
     let mut to_load: Vec<(String, Option<(String, String)>)> = vec![(uri.to_string(), None)];
-
 
     while to_load.len() > 0 {
       let (curr_uri, import) = to_load.pop().unwrap();
@@ -183,9 +182,8 @@ impl DependencyGraph {
 
       self.dependencies.insert(curr_uri.to_string(), dependency);
 
-      // need to insert now for 
+      // need to insert now for
       let dep = &self.dependencies.get(&curr_uri).unwrap();
-
 
       for (relative_uri, dep_uri) in &dep.dependency_uri_maps {
         if !self.dependencies.contains_key(&dep_uri.to_string()) {
@@ -195,7 +193,6 @@ impl DependencyGraph {
           ));
         }
       }
-
     }
 
     Ok(loaded_deps)

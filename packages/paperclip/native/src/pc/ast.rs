@@ -201,6 +201,7 @@ pub enum Attribute {
   ShorthandAttribute(ShorthandAttribute),
   SpreadAttribute(SpreadAttribute),
   KeyValueAttribute(KeyValueAttribute),
+  PropertyBoundAttribute(PropertyBoundAttribute),
 }
 
 impl fmt::Display for Attribute {
@@ -209,6 +210,7 @@ impl fmt::Display for Attribute {
       Attribute::ShorthandAttribute(attr) => attr.fmt(f),
       Attribute::KeyValueAttribute(attr) => attr.fmt(f),
       Attribute::SpreadAttribute(attr) => attr.fmt(f),
+      Attribute::PropertyBoundAttribute(attr) => attr.fmt(f),
     }
   }
 }
@@ -250,6 +252,22 @@ impl ShorthandAttribute {
 impl fmt::Display for ShorthandAttribute {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "{{{}}}", self.reference.to_string())
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct PropertyBoundAttribute {
+
+  #[serde(rename = "bindingName")]
+  pub binding_name: String,
+  pub name: String,
+  pub value: AttributeValue,
+}
+
+impl fmt::Display for PropertyBoundAttribute {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "{}:{}", self.name, self.binding_name)?;
+    write!(f, "={}", self.value.to_string())
   }
 }
 

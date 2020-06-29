@@ -45,7 +45,8 @@ export type StyleElement = {
 export enum AttributeKind {
   ShorthandAttribute = "ShorthandAttribute",
   KeyValueAttribute = "KeyValueAttribute",
-  SpreadAttribute = "SpreadAttribute"
+  SpreadAttribute = "SpreadAttribute",
+  PropertyBoundAttribute = "PropertyBoundAttribute"
 }
 
 type BaseAttribute<TKind extends AttributeKind> = {
@@ -65,10 +66,17 @@ type KeyValueAttribute = {
   value?: AttributeValue;
 } & BaseAttribute<AttributeKind.KeyValueAttribute>;
 
+export type PropertyBoundAttribute = {
+  name: string;
+  bindingName: string;
+  value: AttributeValue;
+} & BaseAttribute<AttributeKind.PropertyBoundAttribute>;
+
 export type Attribute =
   | ShorthandAttribute
   | SpreadAttribute
-  | KeyValueAttribute;
+  | KeyValueAttribute
+  | PropertyBoundAttribute;
 
 export enum AttributeValueKind {
   DyanmicString = "DyanmicString",

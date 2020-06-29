@@ -1,2 +1,10 @@
-
-<import src="./message.pc">
+<style>
+  @export {
+    .div {
+      color: blue;
+      font-weight: 100;
+      font-size: 32px;
+      font-family: Helvetica;
+    }
+  }
+</style>
