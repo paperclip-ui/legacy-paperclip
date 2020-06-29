@@ -24,7 +24,7 @@
 </style>
 
 <!-- components to export -->
-<div export component as="Button" class:secondary="secondary" class:hover="hover" class="button">
+<div export component as="Button" class:secondary class:hover class="button">
   {children} {test}
 </div>
 

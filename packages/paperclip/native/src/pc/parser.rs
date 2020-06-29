@@ -560,8 +560,13 @@ fn parse_key_value_attribute<'a>(
   if tokenizer.peek(1)? == Token::Colon {
     tokenizer.next()?; // eat :
     let binding_name = parse_tag_name(tokenizer)?;
-    tokenizer.next_expect(Token::Equals)?; // eat =
-    let value = parse_attribute_value(tokenizer)?;
+
+    let mut value = None;
+
+    if tokenizer.peek(1)? == Token::Equals {
+      tokenizer.next()?; // eat =
+      value = Some(parse_attribute_value(tokenizer)?);
+    }
 
     Ok(pc_ast::Attribute::PropertyBoundAttribute(
       pc_ast::PropertyBoundAttribute {

@@ -684,13 +684,17 @@ const translateAttribute = (
             `props.${camelCase(pba.bindingName)} ? " " + `,
             context
           );
-          context = translateAttributeValue(
-            element,
-            name,
-            pba.value,
-            !isComponentInstance,
-            context
-          );
+          if (pba.value) {
+            context = translateAttributeValue(
+              element,
+              name,
+              pba.value,
+              !isComponentInstance,
+              context
+            );
+          } else {
+            context = addBuffer(JSON.stringify(pba.bindingName), context);
+          }
           context = addBuffer(` : ""`, context);
           context = addBuffer(")", context);
         }

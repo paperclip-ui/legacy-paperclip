@@ -260,13 +260,17 @@ pub struct PropertyBoundAttribute {
   #[serde(rename = "bindingName")]
   pub binding_name: String,
   pub name: String,
-  pub value: AttributeValue,
+  pub value: Option<AttributeValue>,
 }
 
 impl fmt::Display for PropertyBoundAttribute {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "{}:{}", self.name, self.binding_name)?;
-    write!(f, "={}", self.value.to_string())
+    if self.value == None {
+      Ok(())
+    } else {
+      write!(f, "={}", self.value.as_ref().unwrap().to_string())
+    }
   }
 }
 

@@ -24,12 +24,13 @@ describe(__filename + "#", () => {
   it("dynamic attributes work", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Component" class="primary" class:alt="alt">
+        <div component as="Component" class="primary" class:alt="alt" class:alt2>
           {children}
         </div>
 
         <Component />
         <Component alt />
+        <Component alt2 />
       `
     };
     const engine = createMockEngine(graph);
@@ -37,7 +38,7 @@ describe(__filename + "#", () => {
     const buffer = `${stringifyVirtualNode(preview)}`;
 
     expect(buffer.replace(/[\r\n\t\s]+/g, " ").trim()).to.eql(
-      `<div class="_80f4925f_primary primary" data-pc-80f4925f></div><div class="_80f4925f_alt alt _80f4925f_primary primary" data-pc-80f4925f></div>`
+      `<div class="_80f4925f_primary primary" data-pc-80f4925f></div><div class="_80f4925f_alt alt _80f4925f_primary primary" data-pc-80f4925f></div><div class="_80f4925f_alt2 alt2 _80f4925f_primary primary" data-pc-80f4925f></div>`
     );
   });
 });

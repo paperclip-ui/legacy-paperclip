@@ -571,7 +571,11 @@ fn create_component_instance_data<'a>(
           let value_option = object.values.get(&kv_attr.binding_name);
           if let Some(prop_value) = value_option {
             if prop_value.truthy() {
-              let value = evaluate_attribute_value(&kv_attr.name, &kv_attr.value, false, context)?;
+              let value = if let Some(attr_value) = &kv_attr.value {
+                evaluate_attribute_value(&kv_attr.name, attr_value, false, context)?
+              } else {
+                evaluate_attribute_string(&kv_attr.name, &kv_attr.binding_name, false, context)?
+              };
 
               let combined_value = if let Some(existing_value) = data.values.get(&kv_attr.name) {
                 js_virt::JsValue::JsString(format!(
@@ -751,7 +755,11 @@ fn evaluate_native_element<'a>(
           let value_option = object.values.get(&kv_attr.binding_name);
           if let Some(prop_value) = value_option {
             if prop_value.truthy() {
-              let value = evaluate_attribute_value(&kv_attr.name, &kv_attr.value, true, context)?;
+              let value = if let Some(kv_value) = &kv_attr.value {
+                evaluate_attribute_value(&kv_attr.name, &kv_value, true, context)?
+              } else {
+                evaluate_attribute_string(&kv_attr.name, &kv_attr.binding_name, true, context)?
+              };
 
               let combined_value = combine_attr_value(
                 stringify_attribute_value(&kv_attr.name, &value),

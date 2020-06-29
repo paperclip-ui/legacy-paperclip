@@ -88,7 +88,7 @@ Paperclip comes with just primitive behavior for creating the look & feel of you
     padding: 10px 20px;
     color: #FFF;
     background: rgb(51, 51, 51);
-    &[data-secondary] {
+    &.secondary {
       color: #333;
       border: 1px solid #333;
       background: transparent;
@@ -97,7 +97,7 @@ Paperclip comes with just primitive behavior for creating the look & feel of you
 </style>
 
 <!-- components to export -->
-<div export component as="Button" data-secondary={secondary} class="button">
+<div export component as="Button" class:secondary="secondary" class="button">
   {children}
 </div>
 
