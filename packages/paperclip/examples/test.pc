@@ -26,10 +26,15 @@
 <img component as="Icon2" {src}>
 
 
-<Icon2 src="./square.svg" />
+<div export component as="Something">
+  <Icon2 src="./square.svg" />
+</div>
 
 <!-- Previews -->
 
 <Button secondary>
   This is a primary button
 </Button>
+
+<preview>
+</preview>

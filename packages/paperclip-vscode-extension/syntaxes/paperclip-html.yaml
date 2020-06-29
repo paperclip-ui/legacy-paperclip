@@ -47,24 +47,6 @@ repository:
         patterns:
           - include: "source.pcss"
 
-      # special tag names
-      - begin: (<)(part|placeholder|preview|variant)
-        beginCaptures:
-          "1": { name: punctuation.definition.tag.begin.html }
-          "2": { name: keyword.control }
-        end: (/?>)
-        endCaptures:
-          "1": { name: punctuation.definition.tag.end.html }
-        patterns:
-          - include: "#attribute"
-
-      # end tag name
-      - match: (</)(part|placeholder|preview|variant)(>)
-        captures:
-          "1": { name: punctuation.definition.tag.end.html }
-          "2": { name: keyword.control }
-          "3": { name: punctuation.definition.tag.end.html }
-
       # open tag name
       - begin: (<)([\w\-:]+)
         beginCaptures:

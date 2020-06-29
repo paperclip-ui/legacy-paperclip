@@ -1077,7 +1077,7 @@ fn evaluate_attribute_string<'a>(
       })
       .collect::<Vec<String>>()
       .join(" ");
-  }else if (name == "src") {
+  } else if (name == "src") {
     if is_relative_path(&value) {
       val = context.vfs.resolve(context.uri, &value);
     }
