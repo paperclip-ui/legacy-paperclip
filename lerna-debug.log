@@ -25,112 +25,37 @@
 18 error Error: Command failed: npm run build:watch
 18 error
 18 error
-18 error > paperclip-vscode-extension@11.0.84 build:watch /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension
+18 error > paperclip-vscode-extension@11.1.0 build:watch /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension
 18 error > npm run build -- --watch
 18 error
 18 error
-18 error > paperclip-vscode-extension@11.0.84 build /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension
+18 error > paperclip-vscode-extension@11.1.0 build /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension
 18 error > tsc "--watch"
 18 error
-18 error c9:58:06 AM - Starting compilation in watch mode...
+18 error c8:30:37 PM - Starting compilation in watch mode...
 18 error
 18 error
-18 error 9:58:13 AM - Found 0 errors. Watching for file changes.
-18 error c9:58:17 AM - File change detected. Starting incremental compilation...
+18 error 8:30:46 PM - Found 0 errors. Watching for file changes.
+18 error c8:35:57 PM - File change detected. Starting incremental compilation...
 18 error
 18 error
-18 error 9:58:17 AM - Found 0 errors. Watching for file changes.
-18 error c9:59:50 AM - File change detected. Starting incremental compilation...
+18 error 8:35:57 PM - Found 0 errors. Watching for file changes.
+18 error c9:30:08 PM - File change detected. Starting incremental compilation...
 18 error
 18 error
-18 error 9:59:50 AM - Found 0 errors. Watching for file changes.
-18 error c10:00:02 AM - File change detected. Starting incremental compilation...
+18 error 9:30:08 PM - Found 0 errors. Watching for file changes.
+18 error c9:30:32 PM - File change detected. Starting incremental compilation...
 18 error
 18 error
-18 error 10:00:02 AM - Found 0 errors. Watching for file changes.
-18 error c10:00:21 AM - File change detected. Starting incremental compilation...
+18 error 9:30:35 PM - Found 0 errors. Watching for file changes.
+18 error c9:31:50 PM - File change detected. Starting incremental compilation...
 18 error
 18 error
-18 error 10:00:21 AM - Found 0 errors. Watching for file changes.
-18 error c10:03:52 AM - File change detected. Starting incremental compilation...
-18 error
-18 error src/server/index.ts(34,13): error TS1109: Expression expected.
-18 error src/server/index.ts(35,10): error TS1005: ',' expected.
-18 error src/server/index.ts(35,17): error TS1005: ',' expected.
-18 error
-18 error 10:03:53 AM - Found 3 errors. Watching for file changes.
-18 error c10:04:15 AM - File change detected. Starting incremental compilation...
+18 error 9:31:51 PM - Found 0 errors. Watching for file changes.
+18 error c9:31:52 PM - File change detected. Starting incremental compilation...
 18 error
 18 error
-18 error 10:04:15 AM - Found 0 errors. Watching for file changes.
-18 error c10:04:39 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:04:39 AM - Found 0 errors. Watching for file changes.
-18 error c10:05:20 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:05:20 AM - Found 0 errors. Watching for file changes.
-18 error c10:08:47 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:08:47 AM - Found 0 errors. Watching for file changes.
-18 error c10:08:47 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:08:47 AM - Found 0 errors. Watching for file changes.
-18 error c10:09:24 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:09:24 AM - Found 0 errors. Watching for file changes.
-18 error c10:09:39 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:09:39 AM - Found 0 errors. Watching for file changes.
-18 error c10:09:45 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:09:45 AM - Found 0 errors. Watching for file changes.
-18 error c10:12:56 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:12:56 AM - Found 0 errors. Watching for file changes.
-18 error c10:13:56 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:13:56 AM - Found 0 errors. Watching for file changes.
-18 error c10:17:12 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:17:12 AM - Found 0 errors. Watching for file changes.
-18 error c10:17:29 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:17:29 AM - Found 0 errors. Watching for file changes.
-18 error c10:18:03 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:18:03 AM - Found 0 errors. Watching for file changes.
-18 error c10:18:28 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:18:28 AM - Found 0 errors. Watching for file changes.
-18 error c10:21:11 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:21:12 AM - Found 0 errors. Watching for file changes.
-18 error c10:21:34 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:21:35 AM - Found 0 errors. Watching for file changes.
-18 error c10:22:24 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:22:24 AM - Found 0 errors. Watching for file changes.
-18 error c10:23:17 AM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 10:23:18 AM - Found 0 errors. Watching for file changes.
+18 error 9:31:52 PM - Found 0 errors. Watching for file changes.
 18 error
 18 error     at makeError (/Users/craigcondon/Developer/public/paperclip/node_modules/execa/index.js:174:9)
 18 error     at /Users/craigcondon/Developer/public/paperclip/node_modules/execa/index.js:278:16
