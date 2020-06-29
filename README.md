@@ -97,7 +97,7 @@ Paperclip comes with just primitive behavior for creating the look & feel of you
 </style>
 
 <!-- components to export -->
-<div export component as="Button" class:secondary="secondary" class="button">
+<div export component as="Button" class:secondary class="button">
   {children}
 </div>
 

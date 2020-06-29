@@ -10,16 +10,32 @@ Here's a kitchen sink example of most syntaxes:
 
 <!-- you can import components from other files -->
 <import as="my-button" src="./button.pc">
+<import as="typography" src="design-system/typography.pc">
 
 <!-- all styles are scoped to this file -->
 <style>
+
+  .button {
+    text-decoration: underline;
+  }
+
   div {
     color: red;
+  }
+
+  .message {
+
+    /* We can define & include mixins from other files  */
+    @include typography.default-text;
+    color: red;
+    &.alt {
+      color: blue;
+    }
   }
 </style>
 
 <!-- components allow you to re-use groups of elements & text -->
-<span component as="Message">Hello {children}!</span>
+<span component as="Message" class="message         " class:alt>Hello {children}!</span>
 
 <!-- renders as "Hello World!" -->
 <Message>
@@ -30,17 +46,20 @@ Here's a kitchen sink example of most syntaxes:
 <span export component as="AnotherThing" {onClick}>
   <div {...someProps}>
     More children
+
+    <!-- >>> allows us to pierce & reference styles -->
+    <my-button className=">>>button">
+      Some button
+    </my-button>
   </div>
 </span>
 ```
 
 # Syntax
 
-The syntax is basic HTML & CSS with a few additions. 
-
 ## Styling
 
-You can style elements using the native `<style />` element. Note that styles are scoped to the template, meaning that they won't leak to _other_ templates. For example:
+You can style elements using the native `<style />` element. **Note that styles are scoped to the template, meaning that they won't leak to _other_ templates.** For example:
 
 ```html
 <style>
@@ -64,12 +83,147 @@ Global selectors allow you to apply styles _outside_ of the scope of this file. 
 }
 ```
 
-This property should be reserved for very special cases whre you need it. For most other cases where you need to override styles, I'd recomend you use the style piercing selector (`>>>`) below. 
+**This property should be reserved for very special cases whre you need it.** For most other cases where you need to override styles, I'd recomend you use the style piercing operator (`>>>`).
+
+#### Class reference (>>>)
+
+Class references allow you to explicitly reference class names, and it's a way to define or reference styles in other files. Suppose for example I have a module `message.pc`:
+
+```html
+<style>
+  .message {
+    font-size: 24px;
+    font-family: Helvetica;
+  }
+</style>
+<div export component as="default" className="message {className?}">
+  {message}
+</div>
+```
+
+☝🏻This component allows for class names to be assigned to it. Here's how we do that:
+
+```html
+<import as="Message" src="./message.pc">
+<style>
+  .my-style-overide {
+    text-decoration: underline;
+  }
+</style>
+<Message className=">>>my-style-override">
+  Hello World
+</Messsage>
+```
+
+The `>>>my-style-override` is like an explicit reference to `.my-style-override` -- it tells Paperclip to attach special scope properties to `my-style-override` so that the message component receives the style.
+
+We can also reference styles from imported documents. For that, check out the `@exports` section.
+
+#### Variant class bindings
+
+the `class:prop` functionality allows you to easily create variants of a component. For example:
+
+```html
+<style>
+  .button {
+    color: black;
+    &.alt {
+      color: red;
+    }
+    &.secondary {
+      color: gold;
+    }
+  }
+</style>
+<div component as="Button" class="button" class:alt class:secondary>
+  {children}
+</div>
+
+<Button>
+  I'm the default button
+</Button>
+<Button alt>
+  I'm an alt button
+</Button>
+<Button secondary>
+  I'm the secondary button
+</Button>
+```
+
+#### Mixins
+
+Mixins allow us to define a group of CSS properties to use in style rules. For example:
+
+```html
+<style>
+  @mixin default-font {
+    font-family: Helvetica;
+    color: #333;
+  }
+
+  @mixin big-text {
+    font-size: 24px;
+  }
+
+  .header {
+    @include big-text default-font;
+  }
+</style>
+```
+
+☝🏻 `.header` in this case is transformed into:
+
+```css
+.header {
+  font-family: Helvetica;
+  color: #333;
+  font-size: 24px;
+}
+```
+
+#### @export
+
+The `@export` util allows us to export mixins & classes. For example, suppose I have a `typography.pc` file:
+
+```html
+<style>
+  @export {
+    @mixin default-font {
+      font-family: Helvetica;
+      color: #333;
+    }
+
+    @mixin big-text {
+      font-size: 24px;
+    }
+
+    .header {
+      @include big-text default-font;
+    }
+  }
+</style>
+```
+
+I can use those exports like so:
+
+```html
+<import as="typography" src="design-system/typography.pc">
+
+<style>
+  .some-style {
+    @include typography.big-text;
+  }
+</style>
+
+<div className=">>>typography.header">
+  Something
+</div>
+```
 
 
 ## Components
 
-Components are useful for re-using groups of elements & text. Here's how you create one:
+Components are useful for reusing groups of elements & text. Here's how you create one:
 
 ```html
 <div component as="Message">
@@ -127,7 +281,7 @@ Here's how you import this component is JSX code:
 
 
 ```javascript
-import Counter as CounterView from "./counter.pc";
+import CounterView from "./counter.pc";
 import React, {useState} from "react";
 
 export function Counter() {
@@ -144,11 +298,7 @@ export function Counter() {
 
 ## {Bindings}
 
-Bindings help you define dynamic parts of your components. 
-
-#### slots
-
-Slots are areas of your components where you'd like to insert text or elements. For example:
+Bindings help you define dynamic parts of your components. For example:
 
 ```html
 <div component as="Message">
@@ -278,11 +428,7 @@ export const Test = (props: TestProps) => {
 
 > For a good example of this, check out the [React TodoMVC example](./../examples/react-todomvc).
 
-`<import />` allows you to import other templates & CSS into your component files. 
-
-#### Importing components
-
-Suppose you have a `todo-item.pc` file:
+`<import />` allows you to import other templates into your component files.  Suppose you have a `todo-item.pc` file:
 
 ```html
 <li export component as="default">{label}</li>
@@ -292,7 +438,7 @@ You can import that file like so:
 
 ```html
 <!-- todo-list.pc -->
-<import as="todo-item" src="./todo-item.pc">
+<import as="TodoItem" src="./todo-item.pc">
 
 <ul component as="TodoItems">
   {todoItems}
@@ -301,8 +447,8 @@ You can import that file like so:
 <!-- preview -->
 <TodoItems
   todoItems={<fragment>
-    <todo-item label="wash car" />
-    <todo-item label="feed dog" />
+    <TodoItem label="wash car" />
+    <TodoItem label="feed dog" />
   </fragment>}
 />
 ```
@@ -315,12 +461,12 @@ In some cases you may want to use different components from your imported file. 
 
 ```html
 <style>
-  li[data-completed] {
+  li.completed {
     text-decoration: line-through;
   }
 </style>
 
-<li export component as="default" data-completed={completed}>
+<li export component as="default" class:completed>
   <input type="checkbox" onClick={onCompleteCheckboxClick}>
   {label}
 </li>
@@ -333,7 +479,7 @@ In some cases you may want to use different components from your imported file. 
 <default export component as="IncompletePreview" {label} />
 ```
 
-☝🏻`complete-preview`, and `incomplete-preview` give us different previews of our `todo-item` component. To use these parts in an import, we can do something like this:
+☝🏻`CompletedPreview`, and `IncompletePreview` give us different previews of our `TodoItem` component. To use these parts in an import, we can do something like this:
 
 ```html
 <!-- todo-list.pc -->
@@ -360,7 +506,7 @@ Here's what the preview looks like:
 
 <img width="508" alt="Screen Shot 2020-03-03 at 8 12 14 PM" src="https://user-images.githubusercontent.com/757408/75837752-6d12b000-5d8b-11ea-9948-949442731cf5.png">
 
-The JSX code for that might look something like:
+The JSX usage code for that might look something like:
 
 ```javascript
 // todo-list.jsx 
@@ -391,17 +537,17 @@ There may be cases where you want to import files from a common directory, like 
 ```javascript
 {
   // ... more config
-  "moduleDirectories": ["./src/styles"],
+  "moduleDirectories": ["./packages"],
   // ... more config
 }
 ```
 
-Assuming that you have a file `src/styles/global.pc`, you can import it like this:
+Assuming that you have a file `./packages/design-system/src/typography.pc`, you can import it like this:
 
 ```html
-<import src="global.pc">
+<import src="design-system/src/global.pc">
 ```
-
+<!-- 
 ### Overriding component styles (>>>class-name)
 
 You'll probably want to override component styles from time-to-time. Suppose that you have a `Message.pc` component:
@@ -430,12 +576,12 @@ You'll probably want to override component styles from time-to-time. Suppose tha
 <Message myClass=">>>message2" />
 ```
 
-The `>>>` operator allows you to deeply set class names that are defined within this component. Note that this can't be made dynamic.
+The `>>>` operator allows you to deeply set class names that are defined within this component. Note that this can't be made dynamic. -->
 
 
 ### Fragments (`<fragment></fragment>`)
 
-Fragments are useful if you're looking to render a collection of elements in a slot. For example:
+Fragments are useful if you want to render a collection of elements. For example:
 
 ```html
 <ul component as="List">
