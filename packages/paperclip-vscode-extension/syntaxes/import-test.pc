@@ -3,6 +3,9 @@
     font-family: Helvetica;
     color: rgb(104, 40, 24);
     font-size: 24px;
+    &.test {
+      color: blue;
+    }
   }
   @export {
     @mixin default-font {
@@ -13,8 +16,8 @@
   }
 </style>
 
-<div export component as="Something">
-  Some test
+<div export component as="Something" class:test="test">
+  Some test!!!!!
 </div>
 
-<Something />
+<Something test />
