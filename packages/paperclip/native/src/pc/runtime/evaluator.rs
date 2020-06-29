@@ -524,6 +524,7 @@ fn create_component_instance_data<'a>(
             false,
             context,
           )?;
+
           data.values.insert(kv_attr.name.to_string(), value);
         }
       }
@@ -697,16 +698,7 @@ fn evaluate_native_element<'a>(
           continue;
         }
 
-        if name == "src" {
-          if let Some(value) = value_option {
-            if is_relative_path(&value) {
-              let full_path = context.vfs.resolve(context.uri, &value);
-              value_option = Some(full_path);
-            } else {
-              value_option = None;
-            }
-          }
-        }
+        // value_option = evaluate_attribute_string_value(&name, value_option, context);
 
         attributes.insert(name.to_string(), value_option);
       }
@@ -820,6 +812,23 @@ fn stringify_attribute_value(key: &String, value: &js_virt::JsValue) -> String {
 
   return value.to_string();
 }
+
+// fn evaluate_attribute_string_value<'a>(name: &String, value_option: Option<String>, context: &'a Context) -> Option<String> {
+//   let mut value_option2 = value_option;
+
+//   if name == "src" {
+//     if let Some(value) = value_option2 {
+//       if is_relative_path(&value) {
+//         let full_path = context.vfs.resolve(context.uri, &value);
+//         value_option2 = Some(full_path);
+//       } else {
+//         value_option2 = None;
+//       }
+//     }
+//   }
+
+//   value_option2
+// }
 
 fn evaluate_import_element<'a>(
   _element: &ast::Element,
@@ -1068,6 +1077,10 @@ fn evaluate_attribute_string<'a>(
       })
       .collect::<Vec<String>>()
       .join(" ");
+  }else if (name == "src") {
+    if is_relative_path(&value) {
+      val = context.vfs.resolve(context.uri, &value);
+    }
   }
 
   Ok(js_virt::JsValue::JsString(val.clone()))

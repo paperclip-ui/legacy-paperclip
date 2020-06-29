@@ -1,0 +1,11 @@
+<style>
+  @export {
+    .bg-orange {
+      background: blue;
+    }
+  }
+</style>
+
+<div class="bg-green">
+  ddddd
+</div>
