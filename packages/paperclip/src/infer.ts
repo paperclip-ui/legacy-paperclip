@@ -333,6 +333,14 @@ const inferAttribute = (attribute: Attribute, context: Context) => {
       }
       break;
     }
+    case AttributeKind.PropertyBoundAttribute: {
+      context = addContextInferenceProperty(
+        [{ name: attribute.bindingName, optional: true }],
+        ANY_INFERENCE,
+        context
+      );
+      break;
+    }
     case AttributeKind.ShorthandAttribute: {
       context = inferStatement(attribute.reference, context);
       break;

@@ -373,6 +373,39 @@ describe(__filename + "#", () => {
           }
         }
       }
+    ],
+    [
+      `<div component as="a" class:test>
+      </div>`,
+      {
+        kind: 0,
+        fromSpread: false,
+        properties: {
+          test: {
+            optional: true,
+            value: {
+              kind: 2
+            }
+          }
+        }
+      }
+    ],
+    [
+      `<div component as="a" class:test>
+        {test}
+      </div>`,
+      {
+        kind: 0,
+        fromSpread: false,
+        properties: {
+          test: {
+            optional: false,
+            value: {
+              kind: 2
+            }
+          }
+        }
+      }
     ]
   ];
 
