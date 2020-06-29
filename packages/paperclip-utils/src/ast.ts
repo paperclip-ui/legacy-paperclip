@@ -245,18 +245,18 @@ export const getChildrenByTagName = (tagName: string, parent: Node) =>
     return child.kind === NodeKind.Element && child.tagName === tagName;
   }) as Element[];
 
-export const findChildrenByNamespace = (
+export const findByNamespace = (
   namespace: string,
-  parent: Node,
+  current: Node,
   allChildrenByNamespace: Element[] = []
 ) => {
-  for (const child of getChildren(parent)) {
-    if (child.kind === NodeKind.Element) {
-      if (child.tagName.split(".")[0] === namespace) {
-        allChildrenByNamespace.push(child);
-      }
+  if (current.kind === NodeKind.Element) {
+    if (current.tagName.split(".")[0] === namespace) {
+      allChildrenByNamespace.push(current);
     }
-    findChildrenByNamespace(namespace, child, allChildrenByNamespace);
+  }
+  for (const child of getChildren(current)) {
+    findByNamespace(namespace, child, allChildrenByNamespace);
   }
   return allChildrenByNamespace;
 };

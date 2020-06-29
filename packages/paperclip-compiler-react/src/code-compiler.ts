@@ -32,7 +32,7 @@ import {
   getRelativeFilePath,
   FRAGMENT_TAG_NAME,
   getParts,
-  findChildrenByNamespace,
+  findByNamespace,
   hasAttribute,
   PassFailConditional,
   getAttribute,
@@ -266,7 +266,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
       const usedExports = [];
 
       for (const part of parts) {
-        for (const usedElement of findChildrenByNamespace(id, part)) {
+        for (const usedElement of findByNamespace(id, part)) {
           if (usedElement.tagName === id) {
             usingDefault = true;
           } else {

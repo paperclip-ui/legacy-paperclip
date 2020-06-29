@@ -1,3 +1,4 @@
+<import as="Button" src="./button.pc">
 
 <style> 
   .button {
@@ -18,8 +19,11 @@
   }
 </style>
 
+<Button export component as="Button2">
+</Button>
+
 <!-- components to export -->
-<div export component as="Button" class:secondary class:hover class="button">
+<div export component as="Button2" class:secondary class:hover class="button">
   {children} {test}
 </div>
 
