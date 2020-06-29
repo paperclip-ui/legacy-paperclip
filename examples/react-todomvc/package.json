@@ -1,7 +1,7 @@
 {
   "name": "react-todomvc",
   "private": true,
-  "version": "11.2.5",
+  "version": "11.2.6",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "html-webpack-plugin": "^3.2.0",
     "paperclip": "^11.2.5",
     "paperclip-cli": "^11.2.5",
-    "paperclip-compiler-react": "^11.2.5",
+    "paperclip-compiler-react": "^11.2.6",
     "paperclip-loader": "^11.2.5",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
