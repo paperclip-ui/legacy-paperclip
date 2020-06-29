@@ -270,7 +270,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
           if (usedElement.tagName === id) {
             usingDefault = true;
           } else {
-            usedExports.push(usedElement.tagName.split(":")[1]);
+            usedExports.push(usedElement.tagName.split(".")[1]);
           }
         }
       }
@@ -298,6 +298,8 @@ const translateImports = (ast: Node, context: TranslateContext) => {
         }
 
         context = addBuffer(` from "${relativePath}";\n`, context);
+      } else {
+        context = addBuffer(`import "${relativePath}";\n`, context);
       }
     } else {
       context = addBuffer(`import "${relativePath}";\n`, context);
@@ -403,7 +405,7 @@ const translateJSXRoot = (node: Node, context: TranslateContext) => {
 };
 
 const getImportTagName = (tagName: string) => {
-  const parts = tagName.split(":").map(pascalCase);
+  const parts = tagName.split(".").map(pascalCase);
   return parts.length > 1 ? parts.join("") : `${parts[0]}`;
 };
 
@@ -436,7 +438,7 @@ const translateElement = (
   isRoot: boolean,
   context: TranslateContext
 ) => {
-  const [namespace] = element.tagName.split(":");
+  const [namespace] = element.tagName.split(".");
 
   const isImportComponentInstance = context.importIds.indexOf(namespace) !== -1;
   const isPartComponentInstance = context.partIds.indexOf(namespace) !== -1;

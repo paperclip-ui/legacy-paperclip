@@ -267,7 +267,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   }
 
   private _handleElement(element: Element, context: HandleContext) {
-    const tagParts = element.tagName.split(":");
+    const tagParts = element.tagName.split(".");
     const namespace = tagParts[0];
     const name = tagParts[tagParts.length - 1];
     this._handleAttributes(element, context);

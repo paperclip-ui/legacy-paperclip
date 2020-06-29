@@ -252,7 +252,7 @@ export const findChildrenByNamespace = (
 ) => {
   for (const child of getChildren(parent)) {
     if (child.kind === NodeKind.Element) {
-      if (child.tagName.split(":")[0] === namespace) {
+      if (child.tagName.split(".")[0] === namespace) {
         allChildrenByNamespace.push(child);
       }
     }
