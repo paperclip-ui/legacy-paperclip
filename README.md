@@ -160,7 +160,7 @@ As you might have noticed, Paperclip just exports building blocks for your compo
 
 ## Strongly typed 🦺
 
-Templates compile down to strongly typed code. Here's a generated TypesScript definition of our React app above:
+Templates compile down to strongly typed code. Here's an example:
 
 ```typescript
 import {ReactNode, ReactHTML, Factory, InputHTMLAttributes, ClassAttributes} from "react";
