@@ -55,7 +55,7 @@ const translateRoot = (
   classNames: string[],
   context: TranslateContext
 ) => {
-  context = addBuffer(`/* eslint-disable */\n// prettier-ignore\n`, context);
+  context = addBuffer(`/* eslint-disable */\n`, context);
   context = addBuffer(
     `import {ReactNode, ReactHTML, Factory, InputHTMLAttributes, ClassAttributes} from "react";\n\n`,
     context
