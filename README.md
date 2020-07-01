@@ -147,6 +147,17 @@ Paperclip provides a lightweight approach for creating presentational components
 
 - Turring-completeness. Paperclip will only provide features for expressing_ user interfaces that can be used in code. -->
 
+## Zero-config visual regression testing
+
+Just run `percy-paperclip` on any Paperclip UI to test for visual regressions. 
+
+<!-- Since previews are _part_ of building UIs in Paperclip, all you need to do to set up visual regression testing is run `percy-paperclip` against any Paperclip file. -->
+
+
+![Percy snapshots](./assets/snapshot.gif)
+
+<!-- TODO - And voila! Your UIs will appear in Percy. No additional setup necessary.  ->
+
 ## Features ✨
 
 - Just covers presentational components.
