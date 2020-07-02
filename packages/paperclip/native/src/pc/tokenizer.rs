@@ -131,7 +131,7 @@ pub struct Tokenizer<'a> {
   pub pos: usize,
   pub utf16_pos: usize,
   pub line: usize,
-  pub column: usize
+  pub column: usize,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -205,8 +205,6 @@ impl<'a> Tokenizer<'a> {
     }
 
     let mut c = self.curr_byte()?;
-
-
 
     match c {
       b'/' => {
@@ -454,7 +452,6 @@ impl<'a> Tokenizer<'a> {
   where
     FF: Fn(u8) -> bool,
   {
-
     // TODO - use other tokenizer here for scanning instead
     while !self.is_eof() {
       let c = self.source[self.pos];
@@ -478,7 +475,7 @@ impl<'a> Tokenizer<'a> {
       pos: 0,
       utf16_pos: 0,
       line: 0,
-      column: 0
+      column: 0,
     }
   }
   pub fn new_from_bytes(source: &'a [u8], pos: usize, utf16_pos: usize) -> Tokenizer {
@@ -487,7 +484,7 @@ impl<'a> Tokenizer<'a> {
       pos,
       utf16_pos,
       line: 0,
-      column: 0
+      column: 0,
     }
   }
 }
@@ -508,7 +505,6 @@ impl<'a> BaseTokenizer<'a> for Tokenizer<'a> {
   }
 }
 
-
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -528,7 +524,8 @@ mod tests {
 
   #[test]
   fn properly_records_line_numbers() {
-    let mut tokenizer = Tokenizer::new(&"
+    let mut tokenizer = Tokenizer::new(
+      &"
     a
     b
     🤦‍♂️
@@ -536,8 +533,9 @@ mod tests {
     \r
     \n
     blarg
-    ");
-    
+    ",
+    );
+
     scan_till_end(&mut tokenizer);
     assert_eq!(tokenizer.line, 10);
   }
@@ -545,7 +543,7 @@ mod tests {
   #[test]
   fn properly_records_current_line() {
     let mut tokenizer = Tokenizer::new(&"\n hello\nb\n🤦‍♂️\n");
-    
+
     assert_eq!(tokenizer.line, 0);
     tokenizer.next();
     assert_eq!(tokenizer.line, 1);
