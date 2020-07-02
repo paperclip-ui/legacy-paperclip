@@ -10,6 +10,11 @@ pub trait BaseTokenizer<'a> {
   fn get_source(&self) -> &'a [u8];
 }
 
+pub struct Position {
+  pub u8_pos: usize,
+  pub u16_pos: usize
+}
+
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
   Whitespace,

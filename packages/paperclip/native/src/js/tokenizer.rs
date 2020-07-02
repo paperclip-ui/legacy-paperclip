@@ -1,5 +1,5 @@
 use crate::base::parser::ParseError;
-use crate::base::tokenizer::BaseTokenizer;
+use crate::base::tokenizer::{BaseTokenizer, Position};
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
@@ -121,11 +121,14 @@ pub enum Token<'a> {
   Number(&'a str),
 
   Byte(u8),
+  Cluster(&'a [u8]),
+
 }
 
 pub struct Tokenizer<'a> {
   pub source: &'a [u8],
   pub pos: usize,
+  pub utf16_pos: usize,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -136,24 +139,34 @@ impl<'a> Tokenizer<'a> {
     let is_whitepace = |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') };
     while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
       self.pos += 1;
+      self.utf16_pos += 1;
     }
   }
 
-  pub fn utf8_pos() {}
+  pub fn get_pos(&self) -> Position {
+    Position {
+      u8_pos: self.pos,
+      u16_pos: self.pos
+    }
+  }
+  pub fn set_pos(&mut self, pos: &Position) {
+    self.pos = pos.u8_pos;
+    self.utf16_pos = pos.u16_pos;
+  }
 
   pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
-    let pos = self.pos;
+    let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
       result = self.next();
       i += 1;
     }
-    self.pos = pos;
+    self.set_pos(&pos);
     result
   }
   pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
-    let pos = self.pos;
+    let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
@@ -161,17 +174,17 @@ impl<'a> Tokenizer<'a> {
       result = self.next();
       i += 1;
     }
-    self.pos = pos;
+    self.set_pos(&pos);
     result
   }
 
   pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'a>, ParseError> {
-    let pos = self.pos;
+    let utf16_pos = self.utf16_pos;
     let token = self.next()?;
     if token == expected_token {
       return Ok(token);
     } else {
-      return Err(ParseError::unexpected_token(pos));
+      return Err(ParseError::unexpected_token(utf16_pos));
     }
   }
 
@@ -368,8 +381,33 @@ impl<'a> Tokenizer<'a> {
         Ok(Token::Whitespace)
       }
       _ => {
-        self.forward(1);
-        Ok(Token::Byte(c))
+        let mut len = 1;
+        let mut utf8_step = 1;
+
+        if c < 0x80 {
+          len = 1;
+        } else if c < 0xC0 {
+          len = 1;
+        } else if c < 0xE0 {
+          len = 2;
+        } else if c < 0xF0 {
+          len = 3;
+        } else if c < 0xF8 {
+          len = 4;
+          utf8_step = 2;
+        }
+
+        if len == 1 {
+          self.forward(1);
+          Ok(Token::Byte(c))
+        } else {
+          let start = self.pos;
+          let utf8_pos = self.utf16_pos;
+          let buffer = &self.source[self.pos..(self.pos + len)];
+          self.forward(len);
+          self.utf16_pos = utf8_pos + utf8_step;
+          Ok(Token::Cluster(buffer))
+        }
       }
     }
   }
@@ -420,12 +458,14 @@ impl<'a> Tokenizer<'a> {
     Tokenizer {
       source: source.as_bytes(),
       pos: 0,
+      utf16_pos: 0
     }
   }
-  pub fn new_from_bytes(source: &'a [u8], pos: usize) -> Tokenizer {
+  pub fn new_from_bytes(source: &'a [u8], pos: Position) -> Tokenizer {
     Tokenizer {
       source: source,
-      pos,
+      pos: pos.u8_pos,
+      utf16_pos: pos.u16_pos
     }
   }
 }

@@ -1,5 +1,6 @@
 use crate::base::parser::ParseError;
 use crate::base::tokenizer::BaseTokenizer;
+use crate::base::tokenizer::Position;
 
 // TODO - continuation byte
 // inspiration: https://gist.github.com/tommai78101/3631ed1f136b78238e85582f08bdc618
@@ -129,9 +130,7 @@ pub enum Token<'a> {
 pub struct Tokenizer<'a> {
   pub source: &'a [u8],
   pub pos: usize,
-  pub utf16_pos: usize,
-  pub line: usize,
-  pub column: usize,
+  pub utf16_pos: usize
 }
 
 impl<'a> Tokenizer<'a> {
@@ -148,26 +147,26 @@ impl<'a> Tokenizer<'a> {
 
   pub fn utf16_pos() {}
 
+  pub fn get_pos(&self) -> Position {
+    Position {
+      u8_pos: self.pos,
+      u16_pos: self.utf16_pos
+    }
+  }
+
   pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
-    let pos = self.pos;
-    let utf16_pos = self.utf16_pos;
-    let line = self.line;
-    let column = self.column;
+    let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
       result = self.next();
       i += 1;
     }
-    self.pos = pos;
-    self.utf16_pos = utf16_pos;
-    self.line = line;
-    self.column = column;
+    self.set_pos(&pos);
     result
   }
   pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
-    let pos = self.pos;
-    let utf16_pos = self.utf16_pos;
+    let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
@@ -175,8 +174,7 @@ impl<'a> Tokenizer<'a> {
       result = self.next();
       i += 1;
     }
-    self.pos = pos;
-    self.utf16_pos = utf16_pos;
+    self.set_pos(&pos);
     result
   }
 
@@ -373,8 +371,6 @@ impl<'a> Tokenizer<'a> {
       b'\r' | b'\n' => {
         let pos = self.pos;
         self.scan(|c| -> bool { matches!(c, b'\r' | b'\n') });
-        self.line += self.pos - pos;
-        self.column = 0;
         Ok(Token::Whitespace)
       }
       b' ' | b'\t' => {
@@ -404,11 +400,9 @@ impl<'a> Tokenizer<'a> {
         } else {
           let start = self.pos;
           let utf8_pos = self.utf16_pos;
-          let column = self.column;
           let buffer = &self.source[self.pos..(self.pos + len)];
           self.forward(len);
           self.utf16_pos = utf8_pos + utf8_step;
-          self.column = column + utf8_step;
           Ok(Token::Cluster(buffer))
         }
       }
@@ -421,12 +415,10 @@ impl<'a> Tokenizer<'a> {
   fn forward(&mut self, pos: usize) {
     self.pos += pos;
     self.utf16_pos += pos;
-    self.column += pos;
   }
-  pub fn set_pos(&mut self, pos: usize) {
-    self.pos = pos;
-    self.utf16_pos = pos;
-    self.column = pos;
+  pub fn set_pos(&mut self, pos: &Position) {
+    self.pos = pos.u8_pos;
+    self.utf16_pos = pos.u16_pos;
   }
   pub fn curr_byte(&mut self) -> Result<u8, ParseError> {
     if self.is_eof() {
@@ -456,11 +448,9 @@ impl<'a> Tokenizer<'a> {
     while !self.is_eof() {
       let c = self.source[self.pos];
       self.pos += 1;
-      self.column += 1;
       self.utf16_pos += 1;
       if !test(c) {
         self.pos -= 1;
-        self.column -= 1;
         self.utf16_pos -= 1;
         break;
       }
@@ -473,18 +463,14 @@ impl<'a> Tokenizer<'a> {
     Tokenizer {
       source: source.as_bytes(),
       pos: 0,
-      utf16_pos: 0,
-      line: 0,
-      column: 0,
+      utf16_pos: 0
     }
   }
-  pub fn new_from_bytes(source: &'a [u8], pos: usize, utf16_pos: usize) -> Tokenizer {
+  pub fn new_from_bytes(source: &'a [u8], pos: Position) -> Tokenizer {
     Tokenizer {
       source: source,
-      pos,
-      utf16_pos,
-      line: 0,
-      column: 0,
+      pos: pos.u8_pos,
+      utf16_pos: pos.u16_pos
     }
   }
 }
@@ -522,50 +508,6 @@ mod tests {
     // panic!("D");
   }
 
-  #[test]
-  fn properly_records_line_numbers() {
-    let mut tokenizer = Tokenizer::new(
-      &"
-    a
-    b
-    🤦‍♂️
-    c
-    \r
-    \n
-    blarg
-    ",
-    );
-
-    scan_till_end(&mut tokenizer);
-    assert_eq!(tokenizer.line, 10);
-  }
-
-  #[test]
-  fn properly_records_current_line() {
-    let mut tokenizer = Tokenizer::new(&"\n hello\nb\n🤦‍♂️\n");
-
-    assert_eq!(tokenizer.line, 0);
-    tokenizer.next();
-    assert_eq!(tokenizer.line, 1);
-    assert_eq!(tokenizer.column, 0);
-    tokenizer.next(); // " "
-    tokenizer.next(); // "hello"
-    assert_eq!(tokenizer.column, 6);
-    tokenizer.next(); // "\n"
-    assert_eq!(tokenizer.line, 2);
-    assert_eq!(tokenizer.column, 0);
-    tokenizer.next(); // "b"
-    assert_eq!(tokenizer.column, 1);
-    tokenizer.next(); // "\n"
-    tokenizer.next(); // cluster
-    tokenizer.next(); // cluster
-    tokenizer.next(); // cluster
-    tokenizer.next(); // cluster
-    assert_eq!(tokenizer.column, 5);
-    tokenizer.next(); // \n
-    assert_eq!(tokenizer.column, 0);
-    assert_eq!(tokenizer.line, 4);
-  }
 
   fn scan_till_end(tokenizer: &mut Tokenizer) {
     while !tokenizer.is_eof() {

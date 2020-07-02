@@ -52,13 +52,12 @@ fn parse_fragment<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, Par
 }
 
 fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
-  let start_utf8 = tokenizer.utf16_pos;
-  let start = tokenizer.pos;
+  let start = tokenizer.get_pos();
   tokenizer.eat_whitespace();
 
   // Kinda ick, but cover case where last node is whitespace.
   let token = tokenizer.peek_eat_whitespace(1).or_else(|_| {
-    tokenizer.set_pos(start);
+    tokenizer.set_pos(&start);
     tokenizer.peek(1)
   })?;
 
@@ -72,13 +71,13 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
         Ok(tok != Token::HtmlCommentClose)
       })?
       .to_string();
-      let end = tokenizer.utf16_pos;
+      let end = tokenizer.get_pos();
       tokenizer.next()?; // eat -->
       Ok(pc_ast::Node::Comment(pc_ast::ValueObject {
         value: buffer.clone(),
         location: Location {
-          start: start_utf8,
-          end,
+          start: start.u16_pos,
+          end: end.u16_pos,
         },
       }))
     }
@@ -103,7 +102,7 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
     }
     _ => {
       // reset pos to ensure text doesn't get chopped (e.g: `{children} text`)
-      tokenizer.set_pos(start);
+      tokenizer.set_pos(&start);
       let value = get_buffer(tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
         Ok(
@@ -123,7 +122,7 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
         Ok(pc_ast::Node::Text(pc_ast::ValueObject {
           value: value.clone(),
           location: Location {
-            start: start,
+            start: start.u8_pos,
             end: tokenizer.utf16_pos,
           },
         }))
@@ -144,10 +143,10 @@ fn parse_slot<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
 
 fn parse_slot_script<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<js_ast::Statement, ParseError> {
   let start = tokenizer.utf16_pos;
-  let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.pos);
+  let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
   let stmt = parse_js_with_tokenizer(&mut js_tokenizer, |token| token != JSToken::CurlyClose)
     .and_then(|script| {
-      tokenizer.set_pos(js_tokenizer.pos);
+      tokenizer.set_pos(&js_tokenizer.get_pos());
       tokenizer.next_expect(Token::CurlyClose)?;
       Ok(script)
     })
@@ -268,9 +267,9 @@ fn parse_pass_fail_block<'a>(
   tokenizer: &mut Tokenizer<'a>,
 ) -> Result<pc_ast::ConditionalBlock, ParseError> {
   tokenizer.eat_whitespace();
-  let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.pos);
+  let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
   let condition = parse_js_with_tokenizer(&mut js_tokenizer, |token| token != JSToken::CurlyClose)?;
-  tokenizer.set_pos(js_tokenizer.pos);
+  tokenizer.set_pos(&js_tokenizer.get_pos());
   tokenizer.next_expect(Token::CurlyClose)?;
   let body = parse_block_children(tokenizer)?;
   let fail = parse_else_block(tokenizer)?;
@@ -354,9 +353,9 @@ fn parse_final_condition_block<'a>(
 
 fn parse_each_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
   tokenizer.next_expect(Token::Whitespace)?;
-  let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.pos);
+  let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
   let source = parse_js_with_tokenizer(&mut js_tokenizer, |token| token != JSToken::Word("as"))?;
-  tokenizer.set_pos(js_tokenizer.pos);
+  tokenizer.set_pos(&js_tokenizer.get_pos());
   tokenizer.next_expect(Token::Word("as"))?;
   tokenizer.eat_whitespace();
 
@@ -394,7 +393,7 @@ fn parse_next_style_element_parts<'a>(
 ) -> Result<pc_ast::Node, ParseError> {
   tokenizer.next_expect(Token::GreaterThan)?; // eat >
   let end = tokenizer.utf16_pos;
-  let mut css_tokenizer = CSSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.utf16_pos);
+  let mut css_tokenizer = CSSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
 
   let sheet = parse_css_with_tokenizer(
     &mut css_tokenizer,
@@ -402,7 +401,7 @@ fn parse_next_style_element_parts<'a>(
       Ok(tokenizer.peek(1)? == CSSToken::Byte(b'<') && tokenizer.peek(2)? == CSSToken::Byte(b'/'))
     },
   )?;
-  tokenizer.set_pos(css_tokenizer.pos);
+  tokenizer.set_pos(&css_tokenizer.get_pos());
 
   // TODO - assert tokens equal these
   parse_close_tag("style", tokenizer, start, end)?;
