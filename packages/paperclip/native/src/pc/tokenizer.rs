@@ -1,6 +1,11 @@
 use crate::base::parser::ParseError;
 use crate::base::tokenizer::BaseTokenizer;
 
+// TODO - continuation byte
+// inspiration: https://gist.github.com/tommai78101/3631ed1f136b78238e85582f08bdc618
+// https://stackoverflow.com/questions/7153935/how-to-convert-utf-8-stdstring-to-utf-16-stdwstring
+// https://github.com/servo/rust-cssparser/blob/5188d5e0b242431530fc37c764edf471a2c8242b/src/tokenizer.rs
+
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
   // <
@@ -66,6 +71,8 @@ pub enum Token<'a> {
   // '
   SingleQuote,
 
+  Continuation(&'a str),
+
   // =
   Equals,
 
@@ -115,11 +122,16 @@ pub enum Token<'a> {
   Number(&'a str),
 
   Byte(u8),
+
+  Cluster(&'a [u8]),
 }
 
 pub struct Tokenizer<'a> {
   pub source: &'a [u8],
   pub pos: usize,
+  pub utf16_pos: usize,
+  pub line: usize,
+  pub column: usize
 }
 
 impl<'a> Tokenizer<'a> {
@@ -128,15 +140,19 @@ impl<'a> Tokenizer<'a> {
       return;
     }
     let is_whitepace = |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') };
-    while !self.is_eof() && is_whitepace(self.curr_char().unwrap()) {
+    while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
       self.pos += 1;
+      self.utf16_pos += 1;
     }
   }
 
-  pub fn utf8_pos() {}
+  pub fn utf16_pos() {}
 
   pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.pos;
+    let utf16_pos = self.utf16_pos;
+    let line = self.line;
+    let column = self.column;
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
@@ -144,10 +160,14 @@ impl<'a> Tokenizer<'a> {
       i += 1;
     }
     self.pos = pos;
+    self.utf16_pos = utf16_pos;
+    self.line = line;
+    self.column = column;
     result
   }
   pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.pos;
+    let utf16_pos = self.utf16_pos;
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
@@ -156,16 +176,17 @@ impl<'a> Tokenizer<'a> {
       i += 1;
     }
     self.pos = pos;
+    self.utf16_pos = utf16_pos;
     result
   }
 
   pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'a>, ParseError> {
-    let pos = self.pos;
+    let utf16_pos = self.utf16_pos;
     let token = self.next()?;
     if token == expected_token {
       return Ok(token);
     } else {
-      return Err(ParseError::unexpected_token(pos));
+      return Err(ParseError::unexpected_token(utf16_pos));
     }
   }
 
@@ -183,7 +204,9 @@ impl<'a> Tokenizer<'a> {
       return Err(ParseError::eof());
     }
 
-    let c = self.curr_char()?;
+    let mut c = self.curr_byte()?;
+
+
 
     match c {
       b'/' => {
@@ -268,7 +291,7 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           let is_number = |c| matches!(c, b'0'..=b'9');
 
-          if !self.is_eof() && is_number(self.curr_char().unwrap()) {
+          if !self.is_eof() && is_number(self.curr_byte().unwrap()) {
             let start = self.pos - 1;
             self.scan(is_number);
             Ok(Token::Number(self.since(start)))
@@ -349,13 +372,47 @@ impl<'a> Tokenizer<'a> {
           matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9')
         })))
       }
-      b' ' | b'\t' | b'\r' | b'\n' => {
-        self.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
+      b'\r' | b'\n' => {
+        let pos = self.pos;
+        self.scan(|c| -> bool { matches!(c, b'\r' | b'\n') });
+        self.line += self.pos - pos;
+        self.column = 0;
+        Ok(Token::Whitespace)
+      }
+      b' ' | b'\t' => {
+        self.scan(|c| -> bool { matches!(c, b' ' | b'\t') });
         Ok(Token::Whitespace)
       }
       _ => {
-        self.forward(1);
-        Ok(Token::Byte(c))
+        let mut len = 1;
+        let mut utf8_step = 1;
+
+        if c < 0x80 {
+          len = 1;
+        } else if c < 0xC0 {
+          len = 1;
+        } else if c < 0xE0 {
+          len = 2;
+        } else if c < 0xF0 {
+          len = 3;
+        } else if c < 0xF8 {
+          len = 4;
+          utf8_step = 2;
+        }
+
+        if len == 1 {
+          self.forward(1);
+          Ok(Token::Byte(c))
+        } else {
+          let start = self.pos;
+          let utf8_pos = self.utf16_pos;
+          let column = self.column;
+          let buffer = &self.source[self.pos..(self.pos + len)];
+          self.forward(len);
+          self.utf16_pos = utf8_pos + utf8_step;
+          self.column = column + utf8_step;
+          Ok(Token::Cluster(buffer))
+        }
       }
     }
   }
@@ -365,8 +422,10 @@ impl<'a> Tokenizer<'a> {
   }
   fn forward(&mut self, pos: usize) {
     self.pos += pos;
+    self.utf16_pos += pos;
+    self.column += pos;
   }
-  pub fn curr_char(&mut self) -> Result<u8, ParseError> {
+  pub fn curr_byte(&mut self) -> Result<u8, ParseError> {
     if self.is_eof() {
       Err(ParseError::eof())
     } else {
@@ -390,11 +449,19 @@ impl<'a> Tokenizer<'a> {
   where
     FF: Fn(u8) -> bool,
   {
+
+    // TODO - use other tokenizer here for scanning instead
     while !self.is_eof() {
       let c = self.source[self.pos];
       self.pos += 1;
+      println!("ADD");
+
+      self.column += 1;
+      self.utf16_pos += 1;
       if !test(c) {
         self.pos -= 1;
+        self.column -= 1;
+        self.utf16_pos -= 1;
         break;
       }
     }
@@ -406,12 +473,18 @@ impl<'a> Tokenizer<'a> {
     Tokenizer {
       source: source.as_bytes(),
       pos: 0,
+      utf16_pos: 0,
+      line: 0,
+      column: 0
     }
   }
-  pub fn new_from_bytes(source: &'a [u8], pos: usize) -> Tokenizer {
+  pub fn new_from_bytes(source: &'a [u8], pos: usize, utf16_pos: usize) -> Tokenizer {
     Tokenizer {
       source: source,
       pos,
+      utf16_pos,
+      line: 0,
+      column: 0
     }
   }
 }
@@ -429,5 +502,73 @@ impl<'a> BaseTokenizer<'a> for Tokenizer<'a> {
   }
   fn get_pos(&self) -> usize {
     self.pos
+  }
+}
+
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn can_parse_utf8_strings() {
+    // let mut tokenizer = Tokenizer::new(&"🤦🏼‍♂️");
+    // // println!("{}", "👩‍👩‍👦‍👦".len());
+    // assert_eq!(tokenizer.utf16_pos, 0);
+    // println!("{:?}", "👩‍👩‍👦‍👦".len());
+    // println!("{:?}", "👩‍👩‍👦‍👦".encode_utf16().collect::<Vec<u16>>().len());
+    // println!("{:?}", "🤦🏼‍♂️".encode_utf16().collect::<Vec<u16>>().len());
+    // println!("{:?}", "イーブイ".encode_utf16().collect::<Vec<u16>>().len());
+    // assert_eq!(tokenizer.utf16_pos, 1);
+    // panic!("D");
+  }
+
+  #[test]
+  fn properly_records_line_numbers() {
+    let mut tokenizer = Tokenizer::new(&"
+    a
+    b
+    🤦‍♂️
+    c
+    \r
+    \n
+    blarg
+    ");
+    
+    scan_till_end(&mut tokenizer);
+    assert_eq!(tokenizer.line, 10);
+  }
+
+  #[test]
+  fn properly_records_current_line() {
+    let mut tokenizer = Tokenizer::new(&"\n hello\nb\n🤦‍♂️\n");
+    
+    assert_eq!(tokenizer.line, 0);
+    tokenizer.next();
+    assert_eq!(tokenizer.line, 1);
+    assert_eq!(tokenizer.column, 0);
+    tokenizer.next(); // " "
+    tokenizer.next(); // "hello"
+    assert_eq!(tokenizer.column, 6);
+    tokenizer.next(); // "\n"
+    assert_eq!(tokenizer.line, 2);
+    assert_eq!(tokenizer.column, 0);
+    tokenizer.next(); // "b"
+    assert_eq!(tokenizer.column, 1);
+    tokenizer.next(); // "\n"
+    tokenizer.next(); // cluster
+    tokenizer.next(); // cluster
+    tokenizer.next(); // cluster
+    tokenizer.next(); // cluster
+    assert_eq!(tokenizer.column, 5);
+    tokenizer.next(); // \n
+    assert_eq!(tokenizer.column, 0);
+    assert_eq!(tokenizer.line, 4);
+  }
+
+  fn scan_till_end(tokenizer: &mut Tokenizer) {
+    while !tokenizer.is_eof() {
+      tokenizer.next();
+    }
   }
 }

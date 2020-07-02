@@ -134,7 +134,7 @@ impl<'a> Tokenizer<'a> {
       return;
     }
     let is_whitepace = |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') };
-    while !self.is_eof() && is_whitepace(self.curr_char().unwrap()) {
+    while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
       self.pos += 1;
     }
   }
@@ -189,7 +189,7 @@ impl<'a> Tokenizer<'a> {
       return Err(ParseError::eof());
     }
 
-    let c = self.curr_char()?;
+    let c = self.curr_byte()?;
 
     match c {
       b'/' => {
@@ -282,7 +282,7 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           let is_number = |c| matches!(c, b'0'..=b'9');
 
-          if !self.is_eof() && is_number(self.curr_char().unwrap()) {
+          if !self.is_eof() && is_number(self.curr_byte().unwrap()) {
             let start = self.pos - 1;
             self.scan(is_number);
             Ok(Token::Number(self.since(start)))
@@ -380,7 +380,7 @@ impl<'a> Tokenizer<'a> {
   fn forward(&mut self, pos: usize) {
     self.pos += pos;
   }
-  pub fn curr_char(&mut self) -> Result<u8, ParseError> {
+  pub fn curr_byte(&mut self) -> Result<u8, ParseError> {
     if self.is_eof() {
       Err(ParseError::eof())
     } else {

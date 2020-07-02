@@ -1,40 +1,7 @@
-<import as="colors" src="./colors.pc">
-
-<style> 
-  .button {
-    font-family: Helvetica;
-    display: inline-block;
-    border-radius: 10px;
-    padding: 10px 20px;
-    color: #FFF;
-    &.secondary, &.hover, &:hover {
-      color: #333;
-      border: 1px solid #333;
-    }
-    & + & {
-      margin-left: 8px;
-    }
-  }
-</style>
 
 
-<!-- components to export -->
-<div export component as="Button" class:secondary class:hover class="button >>>colors.bg-orange">
+<div component as="Something">
   {children}
 </div>
 
-<img component as="Icon2" {src}>
-
-
-<div export component as="Something">
-  <Icon2 src="./square.svg" />
-</div>
-
-<!-- Previews -->
-
-<Button secondary>
-  This is a primary button
-</Button>
-
-<preview>
-</preview>
+<Something />

@@ -20,7 +20,6 @@ import {
   Unload,
   PreviewInitParams
 } from "../common/notifications";
-import { Engine } from "paperclip/src";
 
 const VIEW_TYPE = "paperclip-preview";
 
