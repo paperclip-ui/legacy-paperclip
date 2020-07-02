@@ -52,12 +52,13 @@ fn parse_fragment<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, Par
 }
 
 fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
+  let start_utf8 = tokenizer.utf16_pos;
   let start = tokenizer.pos;
   tokenizer.eat_whitespace();
 
   // Kinda ick, but cover case where last node is whitespace.
   let token = tokenizer.peek_eat_whitespace(1).or_else(|_| {
-    tokenizer.pos = start;
+    tokenizer.set_pos(start);
     tokenizer.peek(1)
   })?;
 
@@ -71,18 +72,19 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
         Ok(tok != Token::HtmlCommentClose)
       })?
       .to_string();
+      let end = tokenizer.utf16_pos;
       tokenizer.next()?; // eat -->
       Ok(pc_ast::Node::Comment(pc_ast::ValueObject {
         value: buffer.clone(),
         location: Location {
-          start,
-          end: start + &buffer.len(),
+          start: start_utf8,
+          end,
         },
       }))
     }
     Token::BlockOpen => parse_block(tokenizer),
     Token::TagClose => {
-      let start = tokenizer.pos;
+      let start = tokenizer.utf16_pos;
       tokenizer.next_expect(Token::TagClose)?;
       let tag_name = parse_tag_name(tokenizer)?;
       tokenizer.next_expect(Token::GreaterThan)?;
@@ -96,12 +98,12 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
       Err(ParseError::unexpected(
         message.to_string(),
         start,
-        tokenizer.pos,
+        tokenizer.utf16_pos,
       ))
     }
     _ => {
       // reset pos to ensure text doesn't get chopped (e.g: `{children} text`)
-      tokenizer.pos = start;
+      tokenizer.set_pos(start);
       let value = get_buffer(tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
         Ok(
@@ -116,13 +118,13 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
       .to_string();
 
       if value.len() == 0 {
-        Err(ParseError::unexpected_token(tokenizer.pos))
+        Err(ParseError::unexpected_token(tokenizer.utf16_pos))
       } else {
         Ok(pc_ast::Node::Text(pc_ast::ValueObject {
           value: value.clone(),
           location: Location {
             start: start,
-            end: start + &value.len(),
+            end: tokenizer.utf16_pos,
           },
         }))
       }
@@ -141,25 +143,25 @@ fn parse_slot<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
 }
 
 fn parse_slot_script<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<js_ast::Statement, ParseError> {
-  let start = tokenizer.pos;
+  let start = tokenizer.utf16_pos;
   let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.pos);
   let stmt = parse_js_with_tokenizer(&mut js_tokenizer, |token| token != JSToken::CurlyClose)
     .and_then(|script| {
-      tokenizer.pos = js_tokenizer.pos;
+      tokenizer.set_pos(js_tokenizer.pos);
       tokenizer.next_expect(Token::CurlyClose)?;
       Ok(script)
     })
     .or(Err(ParseError::unterminated(
       "Unterminated slot.".to_string(),
       start,
-      tokenizer.pos,
+      tokenizer.utf16_pos,
     )));
 
   stmt
 }
 
 pub fn parse_tag<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
-  let start = tokenizer.pos;
+  let start = tokenizer.utf16_pos;
 
   tokenizer.next_expect(Token::LessThan)?;
   parse_element(tokenizer, start)
@@ -170,6 +172,7 @@ fn parse_element<'a>(
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   let tag_name = parse_tag_name(tokenizer)?;
+  let tag_name_end = tokenizer.utf16_pos;
 
   let attributes = parse_attributes(tokenizer)?;
 
@@ -178,7 +181,7 @@ fn parse_element<'a>(
   } else if tag_name == "script" {
     parse_next_script_element_parts(attributes, tokenizer, start)
   } else {
-    parse_next_basic_element_parts(tag_name, attributes, tokenizer, start)
+    parse_next_basic_element_parts(tag_name, tag_name_end, attributes, tokenizer, start)
   }
 }
 
@@ -193,6 +196,7 @@ fn is_void_tag_name<'a>(tag_name: &'a str) -> bool {
 
 fn parse_next_basic_element_parts<'a>(
   tag_name: String,
+  tag_name_end: usize,
   attributes: Vec<pc_ast::Attribute>,
   tokenizer: &mut Tokenizer<'a>,
   start: usize,
@@ -200,16 +204,16 @@ fn parse_next_basic_element_parts<'a>(
   let mut children: Vec<pc_ast::Node> = vec![];
 
   tokenizer.eat_whitespace();
-  let mut end = tokenizer.pos;
+  let mut end = tokenizer.utf16_pos;
 
   match tokenizer.peek(1)? {
     Token::SelfTagClose => {
       tokenizer.next()?;
-      end = tokenizer.pos;
+      end = tokenizer.utf16_pos;
     }
     Token::GreaterThan => {
       tokenizer.next()?;
-      end = tokenizer.pos;
+      end = tokenizer.utf16_pos;
       if !is_void_tag_name(tag_name.as_str()) {
         tokenizer.eat_whitespace();
         while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1)? != Token::TagClose {
@@ -219,18 +223,18 @@ fn parse_next_basic_element_parts<'a>(
         parse_close_tag(&tag_name.as_str(), tokenizer, start, end)?;
       }
     }
-    _ => return Err(ParseError::unexpected_token(tokenizer.pos)),
+    _ => return Err(ParseError::unexpected_token(tokenizer.utf16_pos)),
   }
 
   let el = pc_ast::Element {
     tag_name_location: Location {
       start: start + 1,
-      end: start + 1 + tag_name.len(),
+      end: tag_name_end,
     },
     open_tag_location: Location { start, end },
     location: Location {
       start,
-      end: tokenizer.pos,
+      end: tokenizer.utf16_pos,
     },
     tag_name,
     attributes,
@@ -241,7 +245,7 @@ fn parse_next_basic_element_parts<'a>(
 
 fn parse_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
   tokenizer.next_expect(Token::BlockOpen)?;
-  let pos = tokenizer.pos;
+  let pos = tokenizer.utf16_pos;
   let token = tokenizer.next()?; // eat {# or {/
   if let Token::Word(keyword) = token {
     match keyword {
@@ -266,7 +270,7 @@ fn parse_pass_fail_block<'a>(
   tokenizer.eat_whitespace();
   let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.pos);
   let condition = parse_js_with_tokenizer(&mut js_tokenizer, |token| token != JSToken::CurlyClose)?;
-  tokenizer.pos = js_tokenizer.pos;
+  tokenizer.set_pos(js_tokenizer.pos);
   tokenizer.next_expect(Token::CurlyClose)?;
   let body = parse_block_children(tokenizer)?;
   let fail = parse_else_block(tokenizer)?;
@@ -312,12 +316,12 @@ fn parse_else_block<'a>(
   tokenizer.eat_whitespace();
   tokenizer.next_expect(Token::BlockClose)?;
   tokenizer.eat_whitespace();
-  let pos = tokenizer.pos;
+  let pos = tokenizer.utf16_pos;
   match tokenizer.next()? {
     Token::Word(value) => match value {
       "else" => {
         tokenizer.eat_whitespace();
-        let pos = tokenizer.pos;
+        let pos = tokenizer.utf16_pos;
         match tokenizer.next()? {
           Token::Word(value2) => {
             if value2 == "if" {
@@ -352,7 +356,7 @@ fn parse_each_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, P
   tokenizer.next_expect(Token::Whitespace)?;
   let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.pos);
   let source = parse_js_with_tokenizer(&mut js_tokenizer, |token| token != JSToken::Word("as"))?;
-  tokenizer.pos = js_tokenizer.pos;
+  tokenizer.set_pos(js_tokenizer.pos);
   tokenizer.next_expect(Token::Word("as"))?;
   tokenizer.eat_whitespace();
 
@@ -389,8 +393,8 @@ fn parse_next_style_element_parts<'a>(
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   tokenizer.next_expect(Token::GreaterThan)?; // eat >
-  let end = tokenizer.pos;
-  let mut css_tokenizer = CSSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.pos);
+  let end = tokenizer.utf16_pos;
+  let mut css_tokenizer = CSSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.utf16_pos);
 
   let sheet = parse_css_with_tokenizer(
     &mut css_tokenizer,
@@ -398,7 +402,7 @@ fn parse_next_style_element_parts<'a>(
       Ok(tokenizer.peek(1)? == CSSToken::Byte(b'<') && tokenizer.peek(2)? == CSSToken::Byte(b'/'))
     },
   )?;
-  tokenizer.pos = css_tokenizer.pos;
+  tokenizer.set_pos(css_tokenizer.pos);
 
   // TODO - assert tokens equal these
   parse_close_tag("style", tokenizer, start, end)?;
@@ -415,7 +419,7 @@ fn parse_close_tag<'a, 'b>(
   start: usize,
   end: usize,
 ) -> Result<(), ParseError> {
-  let end_tag_name_start = tokenizer.pos;
+  let end_tag_name_start = tokenizer.utf16_pos;
 
   tokenizer.eat_whitespace();
 
@@ -434,7 +438,7 @@ fn parse_close_tag<'a, 'b>(
         Err(ParseError::unterminated(
           format!("Incorrect closing tag. This should be </{}>.", tag_name),
           end_tag_name_start,
-          tokenizer.pos,
+          tokenizer.utf16_pos,
         ))
       } else {
         Ok(())
@@ -458,7 +462,7 @@ fn parse_next_script_element_parts<'a>(
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   tokenizer.next_expect(Token::GreaterThan)?; // eat >
-  let end = tokenizer.pos;
+  let end = tokenizer.utf16_pos;
 
   get_buffer(tokenizer, |tokenizer| {
     Ok(tokenizer.peek(1)? != Token::TagClose)
@@ -474,7 +478,7 @@ fn parse_next_script_element_parts<'a>(
     open_tag_location: Location { start, end },
     location: Location {
       start,
-      end: tokenizer.pos,
+      end: tokenizer.utf16_pos,
     },
     tag_name: "script".to_string(),
     attributes,
@@ -592,7 +596,7 @@ fn parse_key_value_attribute<'a>(
 fn parse_attribute_value<'a>(
   tokenizer: &mut Tokenizer<'a>,
 ) -> Result<pc_ast::AttributeValue, ParseError> {
-  let pos = tokenizer.pos;
+  let pos = tokenizer.utf16_pos;
   let parts: Vec<pc_ast::AttributeDynamicStringPart> = vec![];
 
   match tokenizer.peek(1)? {
@@ -605,7 +609,7 @@ fn parse_attribute_value<'a>(
 fn parse_attribute_string_value<'a>(
   tokenizer: &mut Tokenizer<'a>,
 ) -> Result<pc_ast::AttributeValue, ParseError> {
-  let pos = tokenizer.pos;
+  let pos = tokenizer.utf16_pos;
   let mut parts: Vec<pc_ast::AttributeDynamicStringPart> = vec![];
 
   let quote = tokenizer.next()?;
@@ -649,10 +653,10 @@ fn parse_attribute_string_value<'a>(
     .or(Err(ParseError::unterminated(
       "Unterminated string literal.".to_string(),
       pos,
-      tokenizer.pos,
+      tokenizer.utf16_pos,
     )))?;
 
-  let location = Location::new(pos + 1, tokenizer.pos - 1);
+  let location = Location::new(pos + 1, tokenizer.utf16_pos - 1);
 
   if parts.len() == 0 {
     return Ok(pc_ast::AttributeValue::String(
@@ -693,7 +697,7 @@ fn parse_attribute_slot<'a>(
 fn parse_attribute_string<'a>(
   tokenizer: &mut Tokenizer<'a>,
 ) -> Result<pc_ast::AttributeValue, ParseError> {
-  let start = tokenizer.pos;
+  let start = tokenizer.utf16_pos;
   let quote = tokenizer.next()?;
 
   get_buffer(tokenizer, |tokenizer| Ok(tokenizer.peek(1)? != quote))
@@ -704,13 +708,13 @@ fn parse_attribute_string<'a>(
     .or(Err(ParseError::unterminated(
       "Unterminated string literal.".to_string(),
       start,
-      tokenizer.pos,
+      tokenizer.utf16_pos,
     )))
     .and_then(|value| {
       Ok(pc_ast::AttributeValue::String(
         pc_ast::AttributeStringValue {
           value: value.to_string(),
-          location: Location::new(start + 1, tokenizer.pos - 1),
+          location: Location::new(start + 1, tokenizer.utf16_pos - 1),
         },
       ))
     })

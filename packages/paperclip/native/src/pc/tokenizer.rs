@@ -425,6 +425,11 @@ impl<'a> Tokenizer<'a> {
     self.utf16_pos += pos;
     self.column += pos;
   }
+  pub fn set_pos(&mut self, pos: usize) {
+    self.pos = pos;
+    self.utf16_pos = pos;
+    self.column = pos;
+  }
   pub fn curr_byte(&mut self) -> Result<u8, ParseError> {
     if self.is_eof() {
       Err(ParseError::eof())
@@ -454,8 +459,6 @@ impl<'a> Tokenizer<'a> {
     while !self.is_eof() {
       let c = self.source[self.pos];
       self.pos += 1;
-      println!("ADD");
-
       self.column += 1;
       self.utf16_pos += 1;
       if !test(c) {

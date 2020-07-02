@@ -13,7 +13,7 @@ pub trait BaseTokenizer<'a> {
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
   Whitespace,
-  Cluster(&'a [u8])
+  Cluster(&'a [u8]),
 }
 
 pub struct Tokenizer<'a> {
@@ -21,9 +21,9 @@ pub struct Tokenizer<'a> {
   pub pos: usize,
   pub utf16_pos: usize,
 
-  // utf-8 
+  // utf-8
   pub column: usize,
-  pub line: usize
+  pub line: usize,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -34,7 +34,7 @@ impl<'a> Tokenizer<'a> {
       b' ' | b'\t' | b'\r' | b'\n' => {
         self.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
         Some(Token::Whitespace)
-      },
+      }
       _ => {
         let mut len = 1;
         let mut utf8_step = 1;
@@ -100,7 +100,7 @@ impl<'a> Tokenizer<'a> {
       pos: 0,
       utf16_pos: 0,
       line: 0,
-      column: 0
+      column: 0,
     }
   }
 }
