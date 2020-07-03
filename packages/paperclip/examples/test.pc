@@ -1,9 +1,12 @@
-<import src="./colors.pc">
+<import as="ab" src="./colors.pc">
 <style>
   .error {
     background: rgb(255, 152, 152);
     color: rgb(138, 31, 31);
   }
 </style>
+fsfs
 
-fdfsdd
+<ab>
+  fdsfsdfdsfs
+</ab>

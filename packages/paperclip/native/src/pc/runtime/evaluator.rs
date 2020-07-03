@@ -387,7 +387,13 @@ fn evaluate_element<'a>(
       let source = instance_or_element_source(element, context.uri, instance_source);
 
       if context.import_ids.contains(&ast::get_tag_name(&element)) {
-        evaluate_imported_component(element, source, context)
+        let result = evaluate_imported_component(element, source, context);
+
+        if Ok(None) == result {
+          return Err(RuntimeError::new("Unable to find component, or it's not exported.".to_string(), &context.uri, &element.open_tag_location))
+        }
+
+        result
       } else if context.part_ids.contains(&element.tag_name) {
         evaluate_part_instance_element(element, source, context)
       } else {

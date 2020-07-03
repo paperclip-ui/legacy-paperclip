@@ -68,5 +68,26 @@ describe(__filename + "#", () => {
     });
   });
 
-  xit("displays an error if a default component is used but not exported", async () => {});
+  it("displays an error if a default component is used but not exported", async () => {
+    const graph = {
+      "/entry.pc": `
+        <import as="module" src="/module.pc">
+
+        <module>
+        </module>
+      `,
+      "/module.pc": `nothing to export!`
+    };
+    const engine = createMockEngine(graph);
+    const e = waitForError(engine);
+    engine.load("/entry.pc");
+    const err = await e;
+    expect(err).to.eql({
+      kind: "Error",
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 56, end: 64 },
+      message: "Unable to find component, or it's not exported."
+    });
+  });
 });
