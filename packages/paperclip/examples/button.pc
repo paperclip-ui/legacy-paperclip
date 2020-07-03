@@ -2,6 +2,12 @@
   .button {
     color: blue
   }
+  @export {
+    @mixin test {
+      color: orange;
+      font-size: 24px;
+    }
+  }
 </style>
 
 <div export component as="default" class="button {className?}">

@@ -57,7 +57,7 @@ const translateRoot = (
 ) => {
   context = addBuffer(`/* eslint-disable */\n`, context);
   context = addBuffer(
-    `import {ReactNode, ReactHTML, Factory, InputHTMLAttributes, ClassAttributes} from "react";\n\n`,
+    `import {ReactNode, InputHTMLAttributes, ClassAttributes, ReactElement} from "react";\n\n`,
     context
   );
 
@@ -100,6 +100,11 @@ const translateRoot = (
 
   context = addBuffer(
     `type ElementProps = InputHTMLAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>;\n\n`,
+    context
+  );
+
+  context = addBuffer(
+    `type Factory<TProps> = (props: TProps) => ReactElement;\n\n`,
     context
   );
 

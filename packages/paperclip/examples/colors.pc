@@ -2,6 +2,7 @@
   @export {
     .bg-orange {
       background: blue;
+      font-size: 24px !important;
     }
   }
 </style>
