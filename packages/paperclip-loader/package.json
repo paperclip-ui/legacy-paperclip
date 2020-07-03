@@ -1,6 +1,6 @@
 {
   "name": "paperclip-loader",
-  "version": "12.0.2",
+  "version": "12.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "constants": "0.0.2",
     "crc32": "^0.2.2",
     "loader-utils": "^1.2.3",
-    "paperclip": "^12.0.2",
+    "paperclip": "^12.0.3",
     "react": "^16.12.0",
     "resolve": "^1.15.1",
     "typescript": "^3.8.3",
