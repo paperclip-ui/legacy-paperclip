@@ -68,43 +68,5 @@ describe(__filename + "#", () => {
     });
   });
 
-  it("Doesn't crash if importing module with evaluation error", async () => {
-    const graph = {
-      "/entry.pc": `
-        <import as="test" src="/module.pc">
-
-        <div>
-        </div>
-      `,
-      "/module.pc": `
-        <style>
-          .style {
-            @include b;
-          }
-        </style>
-      `
-    };
-
-    let _e;
-
-    const engine = createMockEngine(graph, e => (_e = e));
-    const e = waitForError(engine, e => {
-      return (
-        e.message === "Cannot import this module since it contains an error."
-      );
-    });
-    engine.load("/entry.pc");
-    const err = await e;
-
-    expect(_e).to.eql(undefined);
-    expect(err).to.eql({
-      kind: "Error",
-      errorKind: "Runtime",
-      uri: "/entry.pc",
-      location: { start: 9, end: 44 },
-      message: "Cannot import this module since it contains an error."
-    });
-  });
-
   xit("displays an error if a default component is used but not exported", async () => {});
 });

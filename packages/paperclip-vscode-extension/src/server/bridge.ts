@@ -312,6 +312,10 @@ export class VSCServiceBridge {
 
   private _onEngineErrorEvent(event: EngineErrorEvent) {
     try {
+      this.connection.sendNotification(
+        ...new EngineEventNotification(event).getArgs()
+      );
+
       switch (event.errorKind) {
         case EngineErrorKind.Graph: {
           return this._handleGraphError(event);
@@ -336,9 +340,15 @@ export class VSCServiceBridge {
   }
 
   private _sendError(uri: string, message: string, location: SourceLocation) {
-    const textDocument = this._documents[uri];
+    let textDocument = this._documents[uri];
+
     if (!textDocument) {
-      return;
+      textDocument = TextDocument.create(
+        uri,
+        "paperclip",
+        0,
+        fs.readFileSync(uri.replace("file://", ""), "utf8")
+      );
     }
 
     const diagnostics: Diagnostic[] = [
@@ -346,7 +356,7 @@ export class VSCServiceBridge {
     ];
 
     this.connection.sendDiagnostics({
-      uri: textDocument.uri,
+      uri,
       diagnostics
     });
   }

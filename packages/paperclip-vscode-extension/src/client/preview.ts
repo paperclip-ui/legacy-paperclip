@@ -220,20 +220,23 @@ class LivePreview {
     // TODO when live preview tools are available
   };
   public $$handleEngineEvent(event: EngineEvent) {
-    if (
-      event.uri !== this.targetUri &&
-      !this._dependencies.includes(event.uri)
-    ) {
-      return;
-    }
+    // all error events get passed to preview.
+    if (event.kind !== EngineEventKind.Error) {
+      if (
+        event.uri !== this.targetUri &&
+        !this._dependencies.includes(event.uri)
+      ) {
+        return;
+      }
 
-    if (
-      event.uri == this.targetUri &&
-      (event.kind === EngineEventKind.Evaluated ||
-        event.kind === EngineEventKind.Diffed ||
-        event.kind === EngineEventKind.AddedSheets)
-    ) {
-      this._dependencies = event.allDependencies;
+      if (
+        event.uri == this.targetUri &&
+        (event.kind === EngineEventKind.Evaluated ||
+          event.kind === EngineEventKind.Diffed ||
+          event.kind === EngineEventKind.AddedSheets)
+      ) {
+        this._dependencies = event.allDependencies;
+      }
     }
 
     this.panel.webview.postMessage({

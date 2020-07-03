@@ -85,18 +85,6 @@ async fn evaluate_content_styles(
         .map_err(|err| EngineError::Runtime(err))?;
       Ok(sheet)
     })
-  // if uri.ends_with(".css") {
-  //   parse_css(content)
-  //     .map_err(|err| EngineError::Parser(err))
-  //     .and_then(|css_ast| {
-  //       let scope = get_document_style_scope(uri);
-  //       let info = evaluate_css(&css_ast, uri, &scope, vfs, &HashMap::new())
-  //         .map_err(|err| EngineError::Runtime(err))?;
-  //       return Ok(info.sheet);
-  //     })
-  // } else {
-
-  // }
 }
 
 type EngineEventListener = dyn Fn(&EngineEvent);
@@ -250,31 +238,13 @@ impl Engine {
       let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
         dep_result
       } else {
-        self.evaluate(dep_uri, true, stack).or_else(|_| {
-          let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
-
-          let e = match &dependency.content {
-            DependencyContent::Node(root) => {
-              let imp = pc_ast::get_import_by_identifier(id, root).unwrap();
-              RuntimeError::new("Cannot import this module since it contains an error.".to_string(), &uri, &imp.location)
-            },
-            _ => {
-              RuntimeError::new("Cannot import this module since it contains an error.".to_string(), &uri, &ast::Location::new(0, 0))
-            }
-          };
-
-          self.dispatch(EngineEvent::Error(EngineError::Runtime(e.clone())));
-
-          Err(e)
-        })?;
+        self.evaluate(dep_uri, true, stack)?;
 
         self.virt_nodes.get(dep_uri).unwrap()
       };
 
       imports.insert(id.to_string(), info.exports.clone());
     }
-
-    
 
     let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &imports);
 
