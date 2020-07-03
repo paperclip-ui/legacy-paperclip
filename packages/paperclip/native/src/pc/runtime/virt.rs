@@ -20,12 +20,15 @@ impl fmt::Display for Fragment {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct Element {
-  #[serde(rename = "sourceUri")]
-  pub source_uri: String,
+pub struct NodeSource {
+  pub uri: String,
+  pub location: Location,
+}
 
-  #[serde(rename = "sourceLocation")]
-  pub source_location: Location,
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Element {
+  #[serde(rename = "source")]
+  pub source: NodeSource,
 
   #[serde(rename = "tagName")]
   pub tag_name: String,

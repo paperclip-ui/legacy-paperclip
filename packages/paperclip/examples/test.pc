@@ -1,32 +1,7 @@
-<import src="./button.pc" as="Button">
-✌🏻
-
-<style>
-  .color {
-    &:before {
-      content: "🤦‍♂️";
-    }
-  }
-</style>
-
-<style>
-  @mixin ag {
-    color: rgb(123, 148, 77);
-  }
-  
-  div {
-    @include Button.test;
-  }
-</style>
-
-<div component as="Something" class="color">
-  {children}!!!!!
+<div component as="Test">
+  {children}
 </div>
 
-<div>
-  afsdfs
-</div>
-
-<Button className=">>>color">
-  button
-</Button>
+<Test>
+  Hello world
+</Test>

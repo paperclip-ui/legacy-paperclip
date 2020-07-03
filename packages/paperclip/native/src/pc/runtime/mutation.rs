@@ -1,4 +1,4 @@
-use super::virt::Node;
+use super::virt::{Node, NodeSource};
 use crate::base::ast::Location;
 use serde::Serialize;
 
@@ -18,14 +18,8 @@ pub struct SourceChanged {
   #[serde(rename = "propertyName")]
   pub property_name: String,
 
-  #[serde(rename = "newLocation")]
-  pub new_location: Location,
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct SourceUriChanged {
-  #[serde(rename = "newUri")]
-  pub new_uri: String,
+  #[serde(rename = "newSource")]
+  pub new_source: NodeSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -57,7 +51,6 @@ pub enum Action {
   DeleteChild(DeleteChild),
   SetAttribute(SetAttribute),
   SourceChanged(SourceChanged),
-  SourceUriChanged(SourceUriChanged),
   SetText(SetText),
   RemoveAttribute(RemoveAttribute),
 }

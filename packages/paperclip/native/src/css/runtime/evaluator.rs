@@ -203,7 +203,7 @@ fn evaluate_condition_rule(
     vfs: context.vfs,
     all_rules: vec![],
     imports: context.imports,
-    exports: context.exports.clone()
+    exports: context.exports.clone(),
   };
 
   evaluate_style_rules(&rule.rules, &"".to_string(), &mut child_context)?;
@@ -256,27 +256,31 @@ fn evaluate_style_declarations<'a>(
         let mut imp_mixins: HashMap<String, MixinExport> = HashMap::new();
 
         for mixin_path in &inc.mixins {
-          let mixin_context_option: Option<&HashMap<String, MixinExport>> =
-            if mixin_path.len() == 2 {
-              if let Some(imp) = context.imports.get(&mixin_path.first().unwrap().name) {
-                for (key, imp_mixin) in &imp.mixins {
-                  if key == &mixin_path.last().unwrap().name {
-                    if imp_mixin.public {
-                      imp_mixins.insert(key.to_string(), imp_mixin.clone());
-                    } else {
-                      return Err(RuntimeError::new("This mixin is private.".to_string(), context.uri, &mixin_path.last().unwrap().location));
-                    }
+          let mixin_context_option: Option<&HashMap<String, MixinExport>> = if mixin_path.len() == 2
+          {
+            if let Some(imp) = context.imports.get(&mixin_path.first().unwrap().name) {
+              for (key, imp_mixin) in &imp.mixins {
+                if key == &mixin_path.last().unwrap().name {
+                  if imp_mixin.public {
+                    imp_mixins.insert(key.to_string(), imp_mixin.clone());
+                  } else {
+                    return Err(RuntimeError::new(
+                      "This mixin is private.".to_string(),
+                      context.uri,
+                      &mixin_path.last().unwrap().location,
+                    ));
                   }
                 }
-                Some(&imp_mixins)
-              } else {
-                None
               }
-            } else if mixin_path.len() == 1 {
-              Some(&context.exports.mixins)
+              Some(&imp_mixins)
             } else {
               None
-            };
+            }
+          } else if mixin_path.len() == 1 {
+            Some(&context.exports.mixins)
+          } else {
+            None
+          };
 
           if let Some(mixin_context) = mixin_context_option {
             let mixin_decls_option = mixin_context.get(&mixin_path.last().unwrap().name);
@@ -323,7 +327,10 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
       ast::Rule::Mixin(mixin) => {
         let mut export = context.exports.mixins.remove(&mixin.name.value).unwrap();
         export.public = true;
-        context.exports.mixins.insert(mixin.name.value.to_string(), export);
+        context
+          .exports
+          .mixins
+          .insert(mixin.name.value.to_string(), export);
       }
       _ => {}
     }
@@ -337,14 +344,21 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
   let declarations = evaluate_style_declarations(&expr.declarations, context)?;
 
   if None == context.exports.mixins.get(&expr.name.value) {
-    context.exports.mixins.insert(expr.name.value.to_string(), MixinExport {
-      declarations,
-      public: false
-    });
+    context.exports.mixins.insert(
+      expr.name.value.to_string(),
+      MixinExport {
+        declarations,
+        public: false,
+      },
+    );
   } else {
-    return Err(RuntimeError::new("This mixin is already declared in the upper scope.".to_string(), context.uri, &expr.name.location))
+    return Err(RuntimeError::new(
+      "This mixin is already declared in the upper scope.".to_string(),
+      context.uri,
+      &expr.name.location,
+    ));
   }
-  
+
   Ok(())
 }
 

@@ -24,13 +24,18 @@ export type BaseNode<TKind extends NodeKind> = {
   kind: TKind;
 };
 
+// TODO - include location here.
 export type Text = {
   value: string;
 } & BaseNode<NodeKind.Text>;
 
 export type Element = {
   location: SourceLocation;
+
+  // TODO - change this to OpenTag. Don't keep location here
   openTagLocation: SourceLocation;
+
+  // TODO - change this to ElementTagName. name should go in value
   tagNameLocation: SourceLocation;
   tagName: string;
   attributes: Attribute[];

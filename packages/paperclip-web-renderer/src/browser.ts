@@ -18,8 +18,7 @@ renderer.onMetaClick(element => {
   parent.postMessage(
     {
       type: "metaElementClicked",
-      sourceUri: element.sourceUri,
-      sourceLocation: element.sourceLocation
+      source: element.source
     },
     location.origin
   );

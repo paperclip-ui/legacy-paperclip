@@ -200,19 +200,19 @@ class LivePreview {
       this._handleElementMetaClicked(event);
     }
   };
-  private async _handleElementMetaClicked({ sourceLocation, sourceUri }) {
+  private async _handleElementMetaClicked({ source }) {
     // TODO - no globals here
     const textDocument =
-      workspace.textDocuments.find(doc => String(doc.uri) === sourceUri) ||
-      (await workspace.openTextDocument(sourceUri.replace("file://", "")));
+      workspace.textDocuments.find(doc => String(doc.uri) === source.uri) ||
+      (await workspace.openTextDocument(source.uri.replace("file://", "")));
 
     const editor =
       window.visibleTextEditors.find(
-        editor => editor.document && String(editor.document.uri) === sourceUri
+        editor => editor.document && String(editor.document.uri) === source.uri
       ) || (await window.showTextDocument(textDocument, ViewColumn.One));
     editor.selection = new Selection(
-      textDocument.positionAt(sourceLocation.start),
-      textDocument.positionAt(sourceLocation.end)
+      textDocument.positionAt(source.location.start),
+      textDocument.positionAt(source.location.end)
     );
     editor.revealRange(editor.selection);
   }

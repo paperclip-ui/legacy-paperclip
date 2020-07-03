@@ -1,6 +1,6 @@
 use super::mutation::{
   Action, DeleteChild, InsertChild, Mutation, RemoveAttribute, ReplaceNode, SetAttribute, SetText,
-  SourceChanged, SourceUriChanged,
+  SourceChanged,
 };
 use super::virt::{Element, Fragment, Node, StyleElement, Text};
 use std::cmp::{max, min};
@@ -68,24 +68,16 @@ fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
     return;
   }
 
-  if a.source_location != b.source_location {
+  if a.source != b.source {
     context.mutations.push(Mutation::new(
       context.node_path.clone(),
       Action::SourceChanged(SourceChanged {
-        property_name: "source_location".to_string(),
-        new_location: b.source_location.clone(),
+        property_name: "source".to_string(),
+        new_source: b.source.clone(),
       }),
     ));
   }
 
-  if a.source_uri != b.source_uri {
-    context.mutations.push(Mutation::new(
-      context.node_path.clone(),
-      Action::SourceUriChanged(SourceUriChanged {
-        new_uri: b.source_uri.clone(),
-      }),
-    ));
-  }
 
   for (name, value) in a.attributes.iter() {
     let value2_option = b.attributes.get(name);

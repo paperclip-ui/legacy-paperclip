@@ -13,15 +13,14 @@ pub struct Exports {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ClassNameExport {
   pub name: String,
-  pub public: bool
+  pub public: bool,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinExport {
   pub declarations: Vec<virt::CSSStyleProperty>,
-  pub public: bool
+  pub public: bool,
 }
-
 
 impl Exports {
   pub fn new() -> Exports {
