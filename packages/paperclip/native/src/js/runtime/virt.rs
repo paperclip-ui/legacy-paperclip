@@ -1,4 +1,4 @@
-use crate::base::ast::{ExprSource};
+use crate::base::ast::ExprSource;
 use crate::pc::runtime::virt::Node;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -36,7 +36,7 @@ impl JsValue {
       JsValue::JsNumber(value) => &value.source,
       JsValue::JsString(value) => &value.source,
       JsValue::JsObject(value) => &value.source,
-      JsValue::JsArray(value) => &value.source
+      JsValue::JsArray(value) => &value.source,
     }
   }
 }
@@ -58,25 +58,24 @@ impl fmt::Display for JsValue {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsString {
   pub source: ExprSource,
-  pub value: String
+  pub value: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsBoolean {
   pub source: ExprSource,
-  pub value: bool
+  pub value: bool,
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsNumber {
   pub source: ExprSource,
-  pub value: f64
+  pub value: f64,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsUndefined {
-  pub source: ExprSource
+  pub source: ExprSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -102,7 +101,10 @@ pub struct JsArray {
 
 impl JsArray {
   pub fn new(source: ExprSource) -> JsArray {
-    JsArray { values: vec![], source }
+    JsArray {
+      values: vec![],
+      source,
+    }
   }
 }
 

@@ -27,10 +27,7 @@ pub struct ExprSource {
 
 impl ExprSource {
   pub fn new(uri: String, location: Location) -> ExprSource {
-    ExprSource {
-      uri,
-      location
-    }
+    ExprSource { uri, location }
   }
   pub fn virt(uri: String) -> ExprSource {
     ExprSource::new(uri, Location::new(0, 0))

@@ -41,12 +41,6 @@ pub enum Token<'a> {
   // !
   Bang,
 
-  // {#
-  BlockOpen,
-
-  // {/
-  BlockClose,
-
   // {
   CurlyOpen,
 
@@ -297,15 +291,7 @@ impl<'a> Tokenizer<'a> {
       }
       b'{' => {
         self.forward(1);
-        if self.starts_with(b"#") {
-          self.forward(1);
-          Ok(Token::BlockOpen)
-        } else if self.starts_with(b"/") {
-          self.forward(1);
-          Ok(Token::BlockClose)
-        } else {
-          Ok(Token::CurlyOpen)
-        }
+        Ok(Token::CurlyOpen)
       }
       b'}' => {
         self.forward(1);

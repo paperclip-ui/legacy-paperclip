@@ -35,33 +35,17 @@ pub enum Node {
   Fragment(Fragment),
   StyleElement(StyleElement),
   Slot(Slot),
-  Block(Block),
 }
 
 impl Node {
   pub fn get_location(&self) -> &Location {
     match self {
-      Node::Text(value) => {
-        &value.location
-      }
-      Node::Comment(value) => {
-        &value.location
-      }
-      Node::Element(value) => {
-        &value.location
-      }
-      Node::Fragment(value) => {
-        &value.location
-      }
-      Node::StyleElement(value) => {
-        &value.location
-      }
-      Node::Slot(value) => {
-        &value.location
-      }
-      Node::Block(value) => {
-        value.get_location()
-      }
+      Node::Text(value) => &value.location,
+      Node::Comment(value) => &value.location,
+      Node::Element(value) => &value.location,
+      Node::Fragment(value) => &value.location,
+      Node::StyleElement(value) => &value.location,
+      Node::Slot(value) => &value.location
     }
   }
 }
@@ -72,7 +56,7 @@ pub struct Slot {
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
   pub script: js_ast::Statement,
-  pub location: Location
+  pub location: Location,
 }
 
 impl fmt::Display for Node {
@@ -83,87 +67,9 @@ impl fmt::Display for Node {
       Node::Comment(comment) => write!(f, "<!--{}-->", &comment.value),
       Node::Fragment(node) => write!(f, "{}", node.to_string()),
       Node::Element(element) => write!(f, "{}", element.to_string()),
-      Node::Block(_block) => write!(f, "[block]"),
       Node::StyleElement(element) => write!(f, "{}", element.to_string()),
     }
   }
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "blockKind")]
-pub enum Block {
-  Conditional(ConditionalBlock),
-  Each(EachBlock),
-}
-
-impl Block {
-  pub fn get_location(&self) -> &Location {
-    match self {
-      Block::Conditional(block) => {
-        &block.get_location()
-      }
-      Block::Each(block) => {
-        &block.location
-      }
-    }
-  }
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "conditionalBlockKind")]
-pub enum ConditionalBlock {
-  PassFailBlock(PassFailBlock),
-  FinalBlock(FinalBlock),
-}
-
-impl ConditionalBlock {
-  pub fn get_location(&self) -> &Location {
-    match self {
-      ConditionalBlock::PassFailBlock(block) => {
-        &block.location
-      }
-      ConditionalBlock::FinalBlock(block) => {
-        &block.location
-      }
-    }
-  }
-}
-
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct PassFailBlock {
-  pub location: Location,
-  pub condition: js_ast::Statement,
-  pub body: Option<Box<Node>>,
-  pub fail: Option<Box<ConditionalBlock>>,
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct FinalBlock {
-  pub location: Location,
-  pub body: Option<Box<Node>>,
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct EachBlock {
-
-  pub location: Location,
-  
-  #[serde(rename = "source")]
-  pub source: js_ast::Statement,
-
-  #[serde(rename = "valueName")]
-  pub value_name: String,
-
-  #[serde(rename = "keyName")]
-  pub key: Option<EachBlockKey>,
-  pub body: Option<Box<Node>>,
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct EachBlockKey {
-  pub value: String,
-  pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -213,7 +119,7 @@ pub enum AttributeDynamicStringPart {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringLiteral {
   pub value: String,
-  pub location: Location
+  pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -383,7 +289,7 @@ impl fmt::Display for AttributeValue {
 pub struct StyleElement {
   pub attributes: Vec<Attribute>,
   pub sheet: css_ast::Sheet,
-  pub location: Location
+  pub location: Location,
 }
 
 impl fmt::Display for StyleElement {

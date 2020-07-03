@@ -2,7 +2,7 @@ use super::super::ast;
 use super::cache::Cache;
 use super::export::Exports;
 use super::virt;
-use crate::base::ast::{Location, ExprSource};
+use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
@@ -61,16 +61,16 @@ pub fn evaluate<'a>(
 ) -> Result<Option<EvalInfo>, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   if let DependencyContent::Node(node_expr) = &dep.content {
-    let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(ExprSource::new(uri.clone(), node_expr.get_location().clone())));
+    let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(ExprSource::new(
+      uri.clone(),
+      node_expr.get_location().clone(),
+    )));
     let mut context = create_context(node_expr, uri, graph, vfs, &data, None, imports);
 
-    let mut preview = wrap_as_fragment(evaluate_instance_node(
-      node_expr,
-      &mut context,
-      RenderStrategy::Auto,
-      false,
-      None,
-    )?, &context);
+    let mut preview = wrap_as_fragment(
+      evaluate_instance_node(node_expr, &mut context, RenderStrategy::Auto, false, None)?,
+      &context,
+    );
 
     // don't want to do this, actually.
     // let style = evaluate_jumbo_style(node_expr, &mut context)?;
@@ -104,9 +104,9 @@ fn wrap_as_fragment(node_option: Option<virt::Node>, context: &Context) -> virt:
       }),
     }
   } else {
-    virt::Node::Fragment(virt::Fragment { 
+    virt::Node::Fragment(virt::Fragment {
       children: vec![],
-      source: ExprSource::virt(context.uri.clone())
+      source: ExprSource::virt(context.uri.clone()),
     })
   }
 }
@@ -285,9 +285,9 @@ pub fn evaluate_jumbo_style<'a>(
     evaluate_document_styles(&entry_expr, &uri, context.vfs, context.graph, true)?;
   sheet.extend(child_sheet);
 
-  Ok(virt::Node::StyleElement(virt::StyleElement { 
+  Ok(virt::Node::StyleElement(virt::StyleElement {
     sheet,
-    source: ExprSource::virt(context.uri.clone())
+    source: ExprSource::virt(context.uri.clone()),
   }))
 }
 
@@ -348,18 +348,15 @@ pub fn evaluate_node<'a>(
   match &node_expr {
     ast::Node::Element(el) => evaluate_element(&el, is_root, instance_source, context),
     ast::Node::StyleElement(el) => evaluate_style_element(&el, context),
-    ast::Node::Text(text) => {
-      Ok(Some(virt::Node::Text(virt::Text {
-        source: ExprSource {
-          uri: context.uri.to_string(),
-          location: text.location.clone(),
-        },
-        value: text.value.to_string(),
-      })))
-    }
+    ast::Node::Text(text) => Ok(Some(virt::Node::Text(virt::Text {
+      source: ExprSource {
+        uri: context.uri.to_string(),
+        location: text.location.clone(),
+      },
+      value: text.value.to_string(),
+    }))),
     ast::Node::Slot(slot) => evaluate_slot(&slot, context),
     ast::Node::Fragment(el) => evaluate_fragment(&el, context),
-    ast::Node::Block(block) => evaluate_block(&block, context),
     ast::Node::Comment(_el) => Ok(None),
   }
 }
@@ -440,9 +437,9 @@ fn evaluate_slot<'a>(
       }
     }
 
-    return Ok(Some(virt::Node::Fragment(virt::Fragment { 
+    return Ok(Some(virt::Node::Fragment(virt::Fragment {
       children,
-      source: ary.source.clone()
+      source: ary.source.clone(),
     })));
   } else if let js_virt::JsValue::JsNode(node) = js_value {
     return Ok(Some(node));
@@ -543,7 +540,7 @@ fn create_component_instance_data<'a>(
 ) -> Result<js_virt::JsValue, RuntimeError> {
   let mut data = js_virt::JsObject::new(ExprSource {
     uri: context.uri.clone(),
-    location: instance_element.location.clone()
+    location: instance_element.location.clone(),
   });
 
   let mut property_bound_attrs: Vec<&ast::PropertyBoundAttribute> = vec![];
@@ -553,12 +550,13 @@ fn create_component_instance_data<'a>(
     match attr {
       ast::Attribute::KeyValueAttribute(kv_attr) => {
         if kv_attr.value == None {
-          data
-            .values
-            .insert(kv_attr.name.to_string(), js_virt::JsValue::JsBoolean(js_virt::JsBoolean {
+          data.values.insert(
+            kv_attr.name.to_string(),
+            js_virt::JsValue::JsBoolean(js_virt::JsBoolean {
               value: true,
-              source: ExprSource::new(context.uri.clone(), kv_attr.location.clone())
-            }));
+              source: ExprSource::new(context.uri.clone(), kv_attr.location.clone()),
+            }),
+          );
         } else {
           let value = evaluate_attribute_value(
             &kv_attr.name,
@@ -617,7 +615,13 @@ fn create_component_instance_data<'a>(
               let value = if let Some(attr_value) = &kv_attr.value {
                 evaluate_attribute_value(&kv_attr.name, attr_value, false, context)?
               } else {
-                evaluate_attribute_string(&kv_attr.name, &kv_attr.binding_name, &kv_attr.location, false, context)?
+                evaluate_attribute_string(
+                  &kv_attr.name,
+                  &kv_attr.binding_name,
+                  &kv_attr.location,
+                  false,
+                  context,
+                )?
               };
 
               let combined_value = if let Some(existing_value) = data.values.get(&kv_attr.name) {
@@ -627,7 +631,7 @@ fn create_component_instance_data<'a>(
                     stringify_attribute_value(&kv_attr.name, existing_value),
                     value.to_string()
                   ),
-                  source: ExprSource::new(context.uri.clone(), kv_attr.location.clone())
+                  source: ExprSource::new(context.uri.clone(), kv_attr.location.clone()),
                 })
               } else {
                 value
@@ -642,7 +646,10 @@ fn create_component_instance_data<'a>(
     }
   }
 
-  let mut js_children = js_virt::JsArray::new(ExprSource::new(context.uri.clone(), instance_element.location.clone()));
+  let mut js_children = js_virt::JsArray::new(ExprSource::new(
+    context.uri.clone(),
+    instance_element.location.clone(),
+  ));
   let children: Vec<js_virt::JsValue> = evaluate_children(&instance_element.children, context)?
     .into_iter()
     .map(|child| js_virt::JsValue::JsNode(child))
@@ -812,7 +819,13 @@ fn evaluate_native_element<'a>(
               let value = if let Some(kv_value) = &kv_attr.value {
                 evaluate_attribute_value(&kv_attr.name, &kv_value, true, context)?
               } else {
-                evaluate_attribute_string(&kv_attr.name, &kv_attr.binding_name, &kv_attr.location, true, context)?
+                evaluate_attribute_string(
+                  &kv_attr.name,
+                  &kv_attr.binding_name,
+                  &kv_attr.location,
+                  true,
+                  context,
+                )?
               };
 
               let combined_value = combine_attr_value(
@@ -950,130 +963,16 @@ fn evaluate_children_as_fragment<'a>(
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let mut children = evaluate_children(&children, context)?;
-  Ok(Some(virt::Node::Fragment(virt::Fragment { 
-    children,
-    source: ExprSource {
-      uri: context.uri.clone(),
-      location: location.clone()
-    }
-  })))
-}
-
-fn evaluate_block<'a>(
-  block: &ast::Block,
-  context: &'a mut Context,
-) -> Result<Option<virt::Node>, RuntimeError> {
-  match block {
-    ast::Block::Conditional(conditional_block) => {
-      evaluate_conditional_block(conditional_block, context)
-    }
-    ast::Block::Each(each_block) => evaluate_each_block(each_block, context),
-  }
-}
-
-fn evaluate_conditional_block<'a>(
-  block: &ast::ConditionalBlock,
-  context: &'a mut Context,
-) -> Result<Option<virt::Node>, RuntimeError> {
-  match block {
-    ast::ConditionalBlock::PassFailBlock(pass_fail) => evaluate_pass_fail_block(pass_fail, context),
-    ast::ConditionalBlock::FinalBlock(block) => {
-      if let Some(node) = &block.body {
-        evaluate_node(node, false, None, context)
-      } else {
-        Ok(None)
-      }
-    }
-  }
-}
-
-fn evaluate_pass_fail_block<'a>(
-  block: &ast::PassFailBlock,
-  context: &'a mut Context,
-) -> Result<Option<virt::Node>, RuntimeError> {
-  let condition = evaluate_js(&block.condition, context)?;
-  if condition.truthy() {
-    if let Some(node) = &block.body {
-      evaluate_node(node, false, None, context)
-    } else {
-      Ok(None)
-    }
-  } else if let Some(fail) = &block.fail {
-    evaluate_conditional_block(fail, context)
-  } else {
-    Ok(None)
-  }
-}
-
-fn evaluate_each_block<'a>(
-  block: &ast::EachBlock,
-  context: &'a mut Context,
-) -> Result<Option<virt::Node>, RuntimeError> {
-  if block.body == None {
-    return Ok(None);
-  }
-
-  let body = block.body.as_ref().unwrap();
-
-  let mut children: Vec<virt::Node> = vec![];
-  let source = evaluate_js(&block.source, context)?;
-
-  if let js_virt::JsValue::JsArray(items) = source {
-    for (index, item) in items.values.iter().enumerate() {
-      let child_option = evaluate_each_block_body(
-        &body,
-        item,
-        index,
-        &block.value_name,
-        &block.key,
-        context,
-      )?;
-      if let Some(child) = child_option {
-        children.push(child);
-      }
-    }
-  } else {
-  }
-
   Ok(Some(virt::Node::Fragment(virt::Fragment {
     children,
     source: ExprSource {
       uri: context.uri.clone(),
-      location: block.location.clone()
-    }
+      location: location.clone(),
+    },
   })))
 }
 
-fn evaluate_each_block_body<'a>(
-  body: &ast::Node,
-  item: &js_virt::JsValue,
-  index: usize,
-  item_name: &String,
-  key_name: &Option<ast::EachBlockKey>,
-  context: &'a mut Context,
-) -> Result<Option<virt::Node>, RuntimeError> {
-  let mut data = context.data.clone();
-  match data {
-    js_virt::JsValue::JsObject(ref mut data) => {
-      data.values.insert(item_name.to_string(), item.clone());
-      if let Some(key) = key_name {
-        let key_value = js_virt::JsValue::JsNumber(js_virt::JsNumber {
-          value: index as f64,
-          source: ExprSource {
-            uri: context.uri.clone(),
-            location: key.location.clone()
-          }
-        });
-        data.values.insert(key.value.to_string(), key_value);
-      }
-    }
-    _ => {}
-  }
-  let mut child_context = context.clone();
-  child_context.data = &data;
 
-  evaluate_node(body, false, None, &mut child_context)
-}
 
 fn evaluate_attribute_value<'a>(
   name: &String,
@@ -1145,8 +1044,8 @@ fn evaluate_attribute_dynamic_string<'a>(
     value: val.to_string(),
     source: ExprSource {
       uri: context.uri.clone(),
-      location: location.clone()
-    }
+      location: location.clone(),
+    },
   }))
 }
 
@@ -1182,8 +1081,8 @@ fn evaluate_attribute_string<'a>(
     value: val.clone(),
     source: ExprSource {
       uri: context.uri.to_string(),
-      location: location.clone()
-    }
+      location: location.clone(),
+    },
   }))
 }
 

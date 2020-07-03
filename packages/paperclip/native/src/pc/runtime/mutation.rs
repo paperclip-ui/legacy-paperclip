@@ -1,5 +1,5 @@
-use super::virt::{Node};
-use crate::base::ast::{ExprSource};
+use super::virt::Node;
+use crate::base::ast::ExprSource;
 use crate::base::ast::Location;
 use serde::Serialize;
 

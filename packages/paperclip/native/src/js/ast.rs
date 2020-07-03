@@ -1,5 +1,5 @@
+use crate::base::ast::Location;
 use crate::pc::ast as pc_ast;
-use crate::base::ast::{Location};
 use serde::Serialize;
 use std::fmt;
 

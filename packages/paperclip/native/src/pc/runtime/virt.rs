@@ -1,4 +1,4 @@
-use crate::base::ast::{ExprSource};
+use crate::base::ast::ExprSource;
 use crate::css::runtime::virt as css_virt;
 use serde::Serialize;
 use std::collections::BTreeMap;
@@ -110,7 +110,7 @@ impl Node {
       Node::Element(value) => &value.source,
       Node::Text(value) => &value.source,
       Node::Fragment(value) => &value.source,
-      Node::StyleElement(value) => &value.source
+      Node::StyleElement(value) => &value.source,
     }
   }
 }

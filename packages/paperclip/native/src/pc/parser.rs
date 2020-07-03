@@ -51,7 +51,7 @@ fn parse_fragment<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, Par
 
   Ok(pc_ast::Node::Fragment(pc_ast::Fragment {
     children,
-    location: Location::new(start, tokenizer.utf16_pos)
+    location: Location::new(start, tokenizer.utf16_pos),
   }))
 }
 
@@ -85,7 +85,6 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
         },
       }))
     }
-    Token::BlockOpen => parse_block(tokenizer),
     Token::TagClose => {
       let start = tokenizer.utf16_pos;
       tokenizer.next_expect(Token::TagClose)?;
@@ -114,8 +113,6 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
             && tok != Token::LessThan
             && tok != Token::TagClose
             && tok != Token::HtmlCommentOpen
-            && tok != Token::BlockOpen
-            && tok != Token::BlockClose,
         )
       })?
       .to_string();
@@ -143,7 +140,7 @@ fn parse_slot<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
   Ok(pc_ast::Node::Slot(pc_ast::Slot {
     omit_from_compilation,
     script,
-    location: Location::new(start, tokenizer.utf16_pos)
+    location: Location::new(start, tokenizer.utf16_pos),
   }))
 }
 
@@ -248,162 +245,7 @@ fn parse_next_basic_element_parts<'a>(
   Ok(pc_ast::Node::Element(el))
 }
 
-fn parse_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
-  tokenizer.next_expect(Token::BlockOpen)?;
-  let pos = tokenizer.utf16_pos;
-  let token = tokenizer.next()?; // eat {# or {/
-  if let Token::Word(keyword) = token {
-    match keyword {
-      "if" => parse_if_block(tokenizer),
-      "each" => parse_each_block(tokenizer),
-      _ => Err(ParseError::unexpected_token(pos)),
-    }
-  } else {
-    Err(ParseError::unexpected_token(pos))
-  }
-}
 
-fn parse_if_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
-  Ok(pc_ast::Node::Block(pc_ast::Block::Conditional(
-    parse_pass_fail_block(tokenizer)?,
-  )))
-}
-
-fn parse_pass_fail_block<'a>(
-  tokenizer: &mut Tokenizer<'a>,
-) -> Result<pc_ast::ConditionalBlock, ParseError> {
-  let start = tokenizer.utf16_pos;
-  tokenizer.eat_whitespace();
-  let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
-  let condition = parse_js_with_tokenizer(&mut js_tokenizer, |token| token != JSToken::CurlyClose)?;
-  tokenizer.set_pos(&js_tokenizer.get_pos());
-  tokenizer.next_expect(Token::CurlyClose)?;
-  let body = parse_block_children(tokenizer)?;
-  let fail = parse_else_block(tokenizer)?;
-
-  Ok(pc_ast::ConditionalBlock::PassFailBlock(
-    pc_ast::PassFailBlock {
-      location: Location::new(start, tokenizer.utf16_pos),
-      condition,
-      body,
-      fail,
-    },
-  ))
-}
-
-fn parse_block_children<'a>(
-  tokenizer: &mut Tokenizer<'a>,
-) -> Result<Option<Box<pc_ast::Node>>, ParseError> {
-  let mut children = vec![];
-
-  // TODO - we don't really want this since whitespace technically renders. Though, right
-  // now it's not handled.
-  tokenizer.eat_whitespace();
-
-  let start = tokenizer.utf16_pos;
-
-  while !tokenizer.is_eof() && tokenizer.peek(1)? != Token::BlockClose {
-    children.push(parse_node(tokenizer)?);
-  }
-
-  let node = if children.len() == 0 {
-    None
-  } else if children.len() == 1 {
-    Some(Box::new(children.pop().unwrap()))
-  } else {
-    Some(Box::new(pc_ast::Node::Fragment(pc_ast::Fragment {
-      children,
-      location: Location::new(start, tokenizer.utf16_pos)
-    })))
-  };
-
-  Ok(node)
-}
-
-fn parse_else_block<'a>(
-  tokenizer: &mut Tokenizer<'a>,
-) -> Result<Option<Box<pc_ast::ConditionalBlock>>, ParseError> {
-  tokenizer.eat_whitespace();
-  tokenizer.next_expect(Token::BlockClose)?;
-  tokenizer.eat_whitespace();
-  let pos = tokenizer.utf16_pos;
-  match tokenizer.next()? {
-    Token::Word(value) => match value {
-      "else" => {
-        tokenizer.eat_whitespace();
-        let pos = tokenizer.utf16_pos;
-        match tokenizer.next()? {
-          Token::Word(value2) => {
-            if value2 == "if" {
-              Ok(Some(Box::new(parse_pass_fail_block(tokenizer)?)))
-            } else {
-              Err(ParseError::unexpected_token(pos))
-            }
-          }
-          Token::CurlyClose => Ok(Some(Box::new(parse_final_condition_block(tokenizer)?))),
-          _ => Err(ParseError::unexpected_token(pos)),
-        }
-      }
-      _ => Err(ParseError::unexpected_token(pos)),
-    },
-    Token::CurlyClose => Ok(None),
-    _ => Err(ParseError::unexpected_token(pos)),
-  }
-}
-
-fn parse_final_condition_block<'a>(
-  tokenizer: &mut Tokenizer<'a>,
-) -> Result<pc_ast::ConditionalBlock, ParseError> {
-  let start = tokenizer.utf16_pos;
-  let body = parse_block_children(tokenizer)?;
-  tokenizer.next_expect(Token::BlockClose)?;
-  tokenizer.next_expect(Token::CurlyClose)?;
-  Ok(pc_ast::ConditionalBlock::FinalBlock(pc_ast::FinalBlock {
-    body,
-    location: Location::new(start, tokenizer.utf16_pos)
-  }))
-}
-
-fn parse_each_block<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
-  let start = tokenizer.pos;
-  tokenizer.next_expect(Token::Whitespace)?;
-  let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
-  let source = parse_js_with_tokenizer(&mut js_tokenizer, |token| token != JSToken::Word("as"))?;
-  tokenizer.set_pos(&js_tokenizer.get_pos());
-  tokenizer.next_expect(Token::Word("as"))?;
-  tokenizer.eat_whitespace();
-
-  let value_name = tokenizer.next_word_value()?;
-
-  tokenizer.eat_whitespace();
-
-  let key = if let Token::Comma = tokenizer.peek(1)? {
-    let key_start = tokenizer.utf16_pos;
-    tokenizer.next()?;
-    tokenizer.eat_whitespace();
-    Some(pc_ast::EachBlockKey {
-      value: tokenizer.next_word_value()?,
-      location: Location::new(key_start, tokenizer.utf16_pos)
-    })
-  } else {
-    None
-  };
-  tokenizer.eat_whitespace();
-  tokenizer.next_expect(Token::CurlyClose)?;
-  let body = parse_block_children(tokenizer)?;
-  tokenizer.next_expect(Token::BlockClose)?;
-  tokenizer.next_expect(Token::CurlyClose)?;
-
-  Ok(pc_ast::Node::Block(pc_ast::Block::Each(
-    pc_ast::EachBlock {
-      source,
-      value_name,
-      key,
-      body,
-      location: Location::new(start, tokenizer.utf16_pos)
-    },
-  )))
-}
 
 fn parse_next_style_element_parts<'a>(
   attributes: Vec<pc_ast::Attribute>,
@@ -428,7 +270,7 @@ fn parse_next_style_element_parts<'a>(
   Ok(pc_ast::Node::StyleElement(pc_ast::StyleElement {
     attributes,
     sheet,
-    location: Location::new(start, tokenizer.utf16_pos)
+    location: Location::new(start, tokenizer.utf16_pos),
   }))
 }
 
@@ -597,7 +439,7 @@ fn parse_key_value_attribute<'a>(
         name,
         binding_name,
         value,
-        location: Location::new(start, tokenizer.utf16_pos)
+        location: Location::new(start, tokenizer.utf16_pos),
       },
     ))
   } else {
@@ -609,7 +451,11 @@ fn parse_key_value_attribute<'a>(
     }
 
     Ok(pc_ast::Attribute::KeyValueAttribute(
-      pc_ast::KeyValueAttribute { name, value, location: Location::new(start, tokenizer.utf16_pos) },
+      pc_ast::KeyValueAttribute {
+        name,
+        value,
+        location: Location::new(start, tokenizer.utf16_pos),
+      },
     ))
   }
 }
@@ -667,8 +513,8 @@ fn parse_attribute_string_value<'a>(
       parts.push(pc_ast::AttributeDynamicStringPart::Literal({
         pc_ast::AttributeDynamicStringLiteral {
           value,
-          location: Location::new(start, tokenizer.utf16_pos)
-         }
+          location: Location::new(start, tokenizer.utf16_pos),
+        }
       }));
     }
   }
@@ -767,16 +613,6 @@ mod tests {
       <logic>
 
       {block}
-
-      <!-- condition blocks -->
-      {#if a}do{/}
-      {#if a}{/else if b}b{/}
-      {#if b}{/else}{/}
-
-      <!-- repeat blocks -->
-      {#each items as item}{/}
-      {#each items as item, i}{/}
-      
 
       <!-- historically broken stuff -->
       <meta charSet=\"utf-8\" />\n   
