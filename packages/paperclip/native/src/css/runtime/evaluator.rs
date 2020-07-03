@@ -261,9 +261,9 @@ fn evaluate_style_declarations<'a>(
         for mixin_path in &inc.mixins {
           let mixin_context_option: Option<&HashMap<String, Vec<virt::CSSStyleProperty>>> =
             if mixin_path.len() == 2 {
-              if let Some(imp) = context.imports.get(mixin_path.get(0).unwrap()) {
+              if let Some(imp) = context.imports.get(&mixin_path.first().unwrap().name) {
                 for (key, imp_mixin) in &imp.mixins {
-                  if key == mixin_path.last().unwrap() {
+                  if key == &mixin_path.last().unwrap().name {
                     imp_mixins.insert(key.to_string(), imp_mixin.clone());
                   }
                 }
@@ -275,12 +275,16 @@ fn evaluate_style_declarations<'a>(
               None
             };
 
+
           if let Some(mixin_context) = mixin_context_option {
-            let mixin_decls_option = mixin_context.get(mixin_path.last().unwrap());
+            let mixin_decls_option = mixin_context.get(&mixin_path.last().unwrap().name);
             if let Some(mixin_decls) = mixin_decls_option {
               style.extend(mixin_decls.clone());
             }
+          } else {
+            return Err(RuntimeError::new("Reference not found.".to_string(), context.uri, &mixin_path.first().unwrap().location))
           }
+
         }
       }
     }

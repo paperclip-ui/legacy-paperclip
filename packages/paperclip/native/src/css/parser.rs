@@ -741,21 +741,25 @@ fn parse_include_declaration<'a, 'b>(
   context.tokenizer.next_expect(Token::At)?;
   context.tokenizer.next_expect(Token::Keyword("include"))?;
   eat_superfluous(context)?;
-  let mut mixins: Vec<Vec<String>> = vec![];
+  let mut mixins: Vec<Vec<IncludeDeclarationPart>> = vec![];
 
   while !context.tokenizer.is_eof() {
-    let mut mixin_path: Vec<String> = vec![];
+    let mut mixin_path: Vec<IncludeDeclarationPart> = vec![];
 
     while !context.tokenizer.is_eof() {
-      let start = context.tokenizer.pos;
+      let start = context.tokenizer.get_pos();
       if let Token::Keyword(keyword) = context.tokenizer.next()? {
-        mixin_path.push(keyword.to_string());
+        
+        mixin_path.push(IncludeDeclarationPart {
+          name: keyword.to_string(),
+          location: Location::new(start.u16_pos, context.tokenizer.utf16_pos)
+        });
         if context.tokenizer.peek(1)? != Token::Dot {
           break;
         }
         context.tokenizer.next();
       } else {
-        return Err(ParseError::unexpected_token(start));
+        return Err(ParseError::unexpected_token(start.u16_pos));
       }
     }
     mixins.push(mixin_path);
