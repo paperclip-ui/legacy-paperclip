@@ -194,6 +194,11 @@ export class VSCServiceBridge {
       (service
         .getColors(document.uri)
         .map(({ color, location }) => {
+          // Skip for now.
+          if (/var\(.*?\)/.test(color)) {
+            return;
+          }
+
           try {
             const {
               color: [red, green, blue],

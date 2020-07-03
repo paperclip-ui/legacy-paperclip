@@ -22,30 +22,24 @@ import {
   ConditionalBlockKind,
   EngineEvent,
   getImportIds,
-  EvaluatedEvent,
   EngineEventKind,
-  NodeParsedEvent,
   getStyleElements,
   StyleRule,
-  MediaRule,
   getAttributeValue,
   DependencyNodeContent,
   getChildren,
   AttributeValueKind,
   getAttributeStringValue,
   AttributeKind,
+  resolveImportFile,
   StatementKind,
   resolveImportUri,
-  VirtStyleRule,
-  VirtRuleKind,
-  VirtSheet,
-  VirtRule
+  ExportRule,
+  DEFAULT_PART_ID
 } from "paperclip";
 import * as path from "path";
 
 import CSS_COLOR_NAMES from "./css-color-names";
-import { connect } from "http2";
-import { ExportRule } from "paperclip/src";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -284,7 +278,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
         return getAttributeStringValue(AS_ATTR_NAME, imp) === namespace;
       });
 
-      const impUri = resolveUri(
+      const impUri = resolveImportFile(fs)(
         context.uri,
         getAttributeStringValue("src", imp)
       );
@@ -295,18 +289,13 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
         if (tagParts.length === 2) {
           this._handlePartInstance(element, name, impAst, impUri, context);
         } else {
-          const firstVisibleNode = getChildren(impAst)[0];
-
-          context.info.definitions.push({
-            sourceUri: impUri,
-            sourceLocation: (firstVisibleNode &&
-              firstVisibleNode.kind === NodeKind.Element &&
-              firstVisibleNode.openTagLocation) || { start: 0, end: 0 },
-            sourceDefinitionLocation: (firstVisibleNode &&
-              firstVisibleNode.kind === NodeKind.Element &&
-              firstVisibleNode.location) || { start: 0, end: 0 },
-            instanceLocation: element.tagNameLocation
-          });
+          this._handlePartInstance(
+            element,
+            DEFAULT_PART_ID,
+            impAst,
+            impUri,
+            context
+          );
         }
       }
     }
@@ -354,11 +343,4 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   }
 }
 
-const resolveUri = (fromUri: string, relativePath: string) => {
-  return (
-    "file://" +
-    path.normalize(
-      path.join(path.dirname(fromUri.replace("file://", "")), relativePath)
-    )
-  );
-};
+const resolveUri = resolveImportFile(fs);
