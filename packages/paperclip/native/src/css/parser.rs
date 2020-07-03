@@ -826,7 +826,7 @@ fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Stri
       }
       _ => {
         buffer.push(context.tokenizer.curr_byte()? as char);
-        context.tokenizer.pos += 1;
+        context.tokenizer.forward(1);
       }
     };
   }

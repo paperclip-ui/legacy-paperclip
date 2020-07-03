@@ -420,7 +420,7 @@ impl<'a> Tokenizer<'a> {
   fn starts_with(&mut self, pattern: &[u8]) -> bool {
     self.source[self.pos..].starts_with(pattern)
   }
-  fn forward(&mut self, pos: usize) {
+  pub fn forward(&mut self, pos: usize) {
     self.pos += pos;
     self.utf16_pos += pos;
   }
