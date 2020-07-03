@@ -1,4 +1,5 @@
 use crate::pc::ast as pc_ast;
+use crate::base::ast::{Location};
 use serde::Serialize;
 use std::fmt;
 
@@ -17,16 +18,19 @@ pub enum Statement {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Str {
   pub value: String,
+  pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Number {
   pub value: String,
+  pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Boolean {
   pub value: bool,
+  pub location: Location,
 }
 
 impl fmt::Display for Statement {
@@ -46,6 +50,7 @@ impl fmt::Display for Statement {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Array {
   pub values: Vec<Statement>,
+  pub location: Location,
 }
 
 impl fmt::Display for Array {
@@ -58,6 +63,7 @@ impl fmt::Display for Array {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Object {
   pub properties: Vec<Property>,
+  pub location: Location,
 }
 
 impl fmt::Display for Object {
@@ -89,6 +95,7 @@ impl fmt::Display for Property {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Reference {
+  pub location: Location,
   pub path: Vec<ReferencePart>,
 }
 

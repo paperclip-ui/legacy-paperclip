@@ -1,12 +1,12 @@
-use crate::base::ast::Location;
+use crate::base::ast::{ExprSource};
 use crate::css::runtime::virt as css_virt;
 use serde::Serialize;
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
+  pub source: ExprSource,
   pub children: Vec<Node>,
 }
 
@@ -20,15 +20,9 @@ impl fmt::Display for Fragment {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct NodeSource {
-  pub uri: String,
-  pub location: Location,
-}
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
   #[serde(rename = "source")]
-  pub source: NodeSource,
+  pub source: ExprSource,
 
   #[serde(rename = "tagName")]
   pub tag_name: String,
@@ -38,6 +32,7 @@ pub struct Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
+  pub source: ExprSource,
   pub sheet: css_virt::CSSSheet,
 }
 
@@ -74,11 +69,7 @@ impl fmt::Display for Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
-  // #[serde(rename = "sourceUri")]
-  // pub source_uri: String,
-
-  // #[serde(rename = "sourceLocation")]
-  // pub source_location: Location,
+  pub source: ExprSource,
   pub value: String,
 }
 
@@ -112,6 +103,14 @@ impl Node {
         element.children.insert(0, child);
       }
       _ => {}
+    }
+  }
+  pub fn get_source(&self) -> &ExprSource {
+    match self {
+      Node::Element(value) => &value.source,
+      Node::Text(value) => &value.source,
+      Node::Fragment(value) => &value.source,
+      Node::StyleElement(value) => &value.source
     }
   }
 }

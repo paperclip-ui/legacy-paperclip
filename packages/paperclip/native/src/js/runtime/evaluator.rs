@@ -1,6 +1,6 @@
 use super::super::ast;
 use super::virt;
-use crate::base::ast::Location;
+use crate::base::ast::{Location, ExprSource};
 use crate::base::runtime::RuntimeError;
 use crate::pc::ast as pc_ast;
 use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext};
@@ -18,9 +18,9 @@ fn evaluate_statement<'a>(
   match statement {
     ast::Statement::Reference(reference) => evaluate_reference(reference, context),
     ast::Statement::Node(node) => evaluate_node(node, context),
-    ast::Statement::String(value) => evaluate_string(&value.value, context),
-    ast::Statement::Boolean(value) => evaluate_boolean(&value.value, context),
-    ast::Statement::Number(value) => evaluate_number(&value.value, context),
+    ast::Statement::String(value) => evaluate_string(&value, context),
+    ast::Statement::Boolean(value) => evaluate_boolean(&value, context),
+    ast::Statement::Number(value) => evaluate_number(&value, context),
     ast::Statement::Array(value) => evaluate_array(value, context),
     ast::Statement::Object(value) => evaluate_object(value, context),
   }
@@ -34,36 +34,48 @@ fn evaluate_node<'a>(
   if let Some(node) = node_option {
     Ok(virt::JsValue::JsNode(node))
   } else {
-    Ok(virt::JsValue::JsUndefined())
+    Ok(virt::JsValue::JsUndefined(virt::JsUndefined {
+      source: ExprSource::new(context.uri.clone(), node.get_location().clone())
+    }))
   }
 }
 
 fn evaluate_string<'a>(
-  value: &String,
+  value: &ast::Str,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  Ok(virt::JsValue::JsString(value.to_string()))
+  Ok(virt::JsValue::JsString(virt::JsString {
+    value: value.value.to_string(),
+    source: ExprSource::new(context.uri.clone(), value.location.clone())
+  }))
 }
 
 fn evaluate_boolean<'a>(
-  value: &bool,
+  value: &ast::Boolean,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  Ok(virt::JsValue::JsBoolean(*value))
+  Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
+    value: value.value,
+    source: ExprSource::new(context.uri.clone(), value.location.clone())
+  }))
 }
 
 fn evaluate_number<'a>(
-  value: &String,
+  value: &ast::Number,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  Ok(virt::JsValue::JsNumber(value.parse::<f64>().unwrap()))
+  
+  Ok(virt::JsValue::JsNumber(virt::JsNumber {
+    value: value.value.parse::<f64>().unwrap(),
+    source: ExprSource::new(context.uri.clone(), value.location.clone())
+  }))
 }
 
 fn evaluate_array<'a>(
   ary: &ast::Array,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  let mut js_array = virt::JsArray::new();
+  let mut js_array = virt::JsArray::new(ExprSource::new(context.uri.clone(), ary.location.clone()));
   for value in &ary.values {
     js_array.values.push(evaluate_statement(&value, context)?);
   }
@@ -74,7 +86,7 @@ fn evaluate_object<'a>(
   obj: &ast::Object,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  let mut js_object = virt::JsObject::new();
+  let mut js_object = virt::JsObject::new(ExprSource::new(context.uri.clone(), obj.location.clone()));
   for property in &obj.properties {
     js_object.values.insert(
       property.key.to_string(),
@@ -105,6 +117,8 @@ fn evaluate_reference<'a>(
   if let Some(js_value) = curr {
     Ok(js_value.clone())
   } else {
-    Ok(virt::JsValue::JsUndefined())
+    Ok(virt::JsValue::JsUndefined(virt::JsUndefined {
+      source: ExprSource::new(context.uri.clone(), reference.location.clone())
+    }))
   }
 }

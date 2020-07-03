@@ -78,7 +78,6 @@ fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
     ));
   }
 
-
   for (name, value) in a.attributes.iter() {
     let value2_option = b.attributes.get(name);
 

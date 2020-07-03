@@ -1,4 +1,5 @@
-use super::virt::{Node, NodeSource};
+use super::virt::{Node};
+use crate::base::ast::{ExprSource};
 use crate::base::ast::Location;
 use serde::Serialize;
 
@@ -18,8 +19,8 @@ pub struct SourceChanged {
   #[serde(rename = "propertyName")]
   pub property_name: String,
 
-  #[serde(rename = "newSource")]
-  pub new_source: NodeSource,
+  #[serde(rename = "newLocation")]
+  pub new_source: ExprSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

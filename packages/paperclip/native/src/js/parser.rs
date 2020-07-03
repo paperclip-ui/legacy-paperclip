@@ -1,6 +1,7 @@
 use super::ast;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::base::ast::{Location};
 use crate::pc::parser::parse_tag;
 use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
 use std::collections::HashMap;
@@ -45,6 +46,7 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, Parse
 
 fn parse_number<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
   let mut buffer = String::new();
+  let start = tokenizer.utf16_pos;
 
   while !tokenizer.is_eof() {
     match tokenizer.peek(1)? {
@@ -58,17 +60,25 @@ fn parse_number<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, Par
     }
   }
 
-  Ok(ast::Statement::Number(ast::Number { value: buffer }))
+  Ok(ast::Statement::Number(ast::Number { 
+    value: buffer,
+    location: Location::new(start, tokenizer.utf16_pos)
+  }))
 }
 
 fn parse_string<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
+  let start_pos = tokenizer.utf16_pos;
   let start = tokenizer.next()?;
   let value = get_buffer(tokenizer, |tokenizer| Ok(tokenizer.peek(1)? != start))?.to_string();
   tokenizer.next_expect(start)?;
-  Ok(ast::Statement::String(ast::Str { value }))
+  Ok(ast::Statement::String(ast::Str {
+    value,
+    location: Location::new(start_pos, tokenizer.utf16_pos)
+  }))
 }
 
 fn parse_array<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
+  let start = tokenizer.utf16_pos;
   tokenizer.next_expect(Token::SquareOpen)?;
   let mut values = vec![];
 
@@ -83,10 +93,15 @@ fn parse_array<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, Pars
   tokenizer.eat_whitespace();
   tokenizer.next_expect(Token::SquareClose)?;
 
-  Ok(ast::Statement::Array(ast::Array { values }))
+  Ok(ast::Statement::Array(ast::Array { 
+    values,
+    location: Location::new(start, tokenizer.utf16_pos)
+  }))
 }
 
 fn parse_object<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
+  let start = tokenizer.utf16_pos;
+
   tokenizer.next_expect(Token::CurlyOpen)?;
   let mut properties = vec![];
 
@@ -117,7 +132,10 @@ fn parse_object<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, Par
   tokenizer.eat_whitespace();
   tokenizer.next_expect(Token::CurlyClose)?;
 
-  Ok(ast::Statement::Object(ast::Object { properties }))
+  Ok(ast::Statement::Object(ast::Object { 
+    properties,
+    location: Location::new(start, tokenizer.utf16_pos)
+  }))
 }
 
 fn parse_boolean<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
@@ -126,6 +144,7 @@ fn parse_boolean<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, Pa
     if name == "true" || name == "false" {
       return Ok(ast::Statement::Boolean(ast::Boolean {
         value: name == "true",
+        location: Location::new(pos, tokenizer.utf16_pos)
       }));
     }
   }
@@ -171,7 +190,10 @@ fn parse_reference<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, 
       return Err(ParseError::unexpected_token(pos));
     }
   }
-  Ok(ast::Statement::Reference(ast::Reference { path: path }))
+  Ok(ast::Statement::Reference(ast::Reference { 
+    path,
+    location: Location::new(pos, tokenizer.utf16_pos)
+  }))
 }
 
 fn parse_reference_part<'a>(

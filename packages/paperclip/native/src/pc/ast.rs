@@ -38,12 +38,41 @@ pub enum Node {
   Block(Block),
 }
 
+impl Node {
+  pub fn get_location(&self) -> &Location {
+    match self {
+      Node::Text(value) => {
+        &value.location
+      }
+      Node::Comment(value) => {
+        &value.location
+      }
+      Node::Element(value) => {
+        &value.location
+      }
+      Node::Fragment(value) => {
+        &value.location
+      }
+      Node::StyleElement(value) => {
+        &value.location
+      }
+      Node::Slot(value) => {
+        &value.location
+      }
+      Node::Block(value) => {
+        value.get_location()
+      }
+    }
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Slot {
   // !{slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
   pub script: js_ast::Statement,
+  pub location: Location
 }
 
 impl fmt::Display for Node {
@@ -67,6 +96,19 @@ pub enum Block {
   Each(EachBlock),
 }
 
+impl Block {
+  pub fn get_location(&self) -> &Location {
+    match self {
+      Block::Conditional(block) => {
+        &block.get_location()
+      }
+      Block::Each(block) => {
+        &block.location
+      }
+    }
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "conditionalBlockKind")]
 pub enum ConditionalBlock {
@@ -74,8 +116,23 @@ pub enum ConditionalBlock {
   FinalBlock(FinalBlock),
 }
 
+impl ConditionalBlock {
+  pub fn get_location(&self) -> &Location {
+    match self {
+      ConditionalBlock::PassFailBlock(block) => {
+        &block.location
+      }
+      ConditionalBlock::FinalBlock(block) => {
+        &block.location
+      }
+    }
+  }
+}
+
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PassFailBlock {
+  pub location: Location,
   pub condition: js_ast::Statement,
   pub body: Option<Box<Node>>,
   pub fail: Option<Box<ConditionalBlock>>,
@@ -83,11 +140,15 @@ pub struct PassFailBlock {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FinalBlock {
+  pub location: Location,
   pub body: Option<Box<Node>>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct EachBlock {
+
+  pub location: Location,
+  
   #[serde(rename = "source")]
   pub source: js_ast::Statement,
 
@@ -95,8 +156,14 @@ pub struct EachBlock {
   pub value_name: String,
 
   #[serde(rename = "keyName")]
-  pub key_name: Option<String>,
+  pub key: Option<EachBlockKey>,
   pub body: Option<Box<Node>>,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct EachBlockKey {
+  pub value: String,
+  pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -146,6 +213,7 @@ pub enum AttributeDynamicStringPart {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringLiteral {
   pub value: String,
+  pub location: Location
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -260,6 +328,7 @@ pub struct PropertyBoundAttribute {
   #[serde(rename = "bindingName")]
   pub binding_name: String,
   pub name: String,
+  pub location: Location,
   pub value: Option<AttributeValue>,
 }
 
@@ -277,6 +346,7 @@ impl fmt::Display for PropertyBoundAttribute {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyValueAttribute {
   pub name: String,
+  pub location: Location,
   pub value: Option<AttributeValue>,
 }
 
@@ -313,6 +383,7 @@ impl fmt::Display for AttributeValue {
 pub struct StyleElement {
   pub attributes: Vec<Attribute>,
   pub sheet: css_ast::Sheet,
+  pub location: Location
 }
 
 impl fmt::Display for StyleElement {
@@ -326,6 +397,7 @@ impl fmt::Display for StyleElement {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
+  pub location: Location,
   pub children: Vec<Node>,
 }
 
