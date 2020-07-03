@@ -112,7 +112,7 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
           tok != Token::CurlyOpen
             && tok != Token::LessThan
             && tok != Token::TagClose
-            && tok != Token::HtmlCommentOpen
+            && tok != Token::HtmlCommentOpen,
         )
       })?
       .to_string();
@@ -244,8 +244,6 @@ fn parse_next_basic_element_parts<'a>(
   };
   Ok(pc_ast::Node::Element(el))
 }
-
-
 
 fn parse_next_style_element_parts<'a>(
   attributes: Vec<pc_ast::Attribute>,

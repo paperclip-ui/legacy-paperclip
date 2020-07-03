@@ -972,8 +972,6 @@ fn evaluate_children_as_fragment<'a>(
   })))
 }
 
-
-
 fn evaluate_attribute_value<'a>(
   name: &String,
   value: &ast::AttributeValue,

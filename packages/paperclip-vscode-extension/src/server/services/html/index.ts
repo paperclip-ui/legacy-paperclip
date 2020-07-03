@@ -12,14 +12,10 @@ import {
   RuleKind,
   getImports,
   AS_ATTR_NAME,
-  Block,
-  Conditional,
   ConditionRule,
-  BlockKind,
   MixinRule,
   KeyValueDeclaration,
   IncludeDeclaration,
-  ConditionalBlockKind,
   EngineEvent,
   getImportIds,
   EngineEventKind,
@@ -231,32 +227,8 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     if (node.kind === NodeKind.Element) {
       this._handleElement(node, context);
     }
-    if (node.kind === NodeKind.Block) {
-      this._handleBlock(node, context);
-    }
     for (const child of getChildren(node)) {
       this._handleNode(child, context);
-    }
-  }
-
-  private _handleBlock(block: Block, context: HandleContext) {
-    if (block.blockKind === BlockKind.Each) {
-      if (block.body) {
-        this._handleNode(block.body, context);
-      }
-    } else if (block.blockKind === BlockKind.Conditional) {
-      this._handleConditional(block, context);
-    }
-  }
-
-  private _handleConditional(block: Conditional, context: HandleContext) {
-    if (block.body) {
-      this._handleNode(block.body, context);
-    }
-    if (block.conditionalBlockKind === ConditionalBlockKind.PassFailBlock) {
-      if (block.fail) {
-        this._handleConditional(block.fail, context);
-      }
     }
   }
 

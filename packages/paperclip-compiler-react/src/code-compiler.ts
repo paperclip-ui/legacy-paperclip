@@ -12,14 +12,10 @@ import {
   getAllVirtSheetClassNames,
   Statement,
   EXPORT_TAG_NAME,
-  BlockKind,
-  ConditionalBlockKind,
   StatementKind,
   getAttributeStringValue,
   getVisibleChildNodes,
   Slot,
-  Block,
-  EachBlock,
   AttributeValue,
   AttributeKind,
   AttributeValueKind,
@@ -34,11 +30,9 @@ import {
   getParts,
   findByNamespace,
   hasAttribute,
-  PassFailConditional,
   getAttribute,
   VirtSheet,
   DynamicStringAttributeValuePartKind,
-  FinalConditional,
   ReferencePart,
   isVisibleElement,
   stringifyCSSSheet,
@@ -418,8 +412,6 @@ const translateJSXNode = (
     context = translateFragment(node.children, isRoot, context);
   } else if (node.kind === NodeKind.Element && isVisibleElement(node)) {
     context = translateElement(node, isRoot, context);
-  } else if (node.kind === NodeKind.Block) {
-    context = translateBlock(node, isRoot, context);
   } else if (node.kind === NodeKind.Text) {
     let buffer = `${JSON.stringify(entities.decode(node.value))}`;
     if (isRoot) {
@@ -518,66 +510,6 @@ const getElementStyleName = (element: Element, context: TranslateContext) => {
     element,
     context.filePath
   )}`;
-};
-
-const translateBlock = (
-  node: Block,
-  isRoot: boolean,
-  context: TranslateContext
-) => {
-  switch (node.blockKind) {
-    case BlockKind.Each:
-      return translateEachBlock(node, context);
-    case BlockKind.Conditional:
-      return translateConditionalBlock(node, context);
-  }
-};
-
-const translateEachBlock = (
-  { source, body, keyName, valueName }: EachBlock,
-  context: TranslateContext
-) => {
-  context = addBuffer(`(`, context);
-  context = translateStatment(source, false, false, context);
-  const key = String(keyName || `$$index${context.keyCount++}`);
-  context = addBuffer(`).map(function(${valueName}, ${key}) {\n`, context);
-  context = startBlock(context);
-  context = addBuffer(`return `, context);
-  context = translateJSXNode(body, false, {
-    ...context,
-    currentIndexKey: key,
-    scopes: {
-      ...context.scopes,
-      [valueName]: true
-    }
-  });
-  context = { ...context, currentIndexKey: null };
-  context = addBuffer(`;\n`, context);
-  context = endBlock(context);
-  context = addBuffer(`})`, context);
-  return context;
-};
-
-const translateConditionalBlock = (
-  node: PassFailConditional | FinalConditional,
-  context: TranslateContext
-) => {
-  if (node.conditionalBlockKind === ConditionalBlockKind.PassFailBlock) {
-    context = addBuffer(`(`, context);
-    context = translateStatment(node.condition, false, false, context);
-    context = addBuffer(` ? `, context);
-    context = translateJSXNode(node.body, false, context);
-    context = addBuffer(` : `, context);
-    if (node.fail) {
-      context = translateConditionalBlock(node.fail, context);
-    } else {
-      context = addBuffer("null", context);
-    }
-    context = addBuffer(`)`, context);
-    return context;
-  } else {
-    return translateJSXNode(node.body, false, context);
-  }
 };
 
 const translateFragment = (

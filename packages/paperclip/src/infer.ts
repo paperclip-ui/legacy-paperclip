@@ -4,14 +4,9 @@ import {
   Element,
   AttributeKind,
   AttributeValueKind,
-  BlockKind,
-  ConditionalBlockKind,
-  EachBlock,
-  Conditional,
   Slot,
   Attribute,
   Fragment,
-  Block,
   Statement,
   StatementKind,
   DynamicStringAttributeValuePartKind,
@@ -259,47 +254,6 @@ const inferNode = (ast: Node, isRoot: boolean, context: Context): Context => {
       return inferSlot(ast, context);
     case NodeKind.Fragment:
       return inferFragment(ast, context);
-    case NodeKind.Block:
-      return inferBlock(ast, context);
-  }
-  return context;
-};
-
-const inferBlock = (block: Block, context: Context): Context => {
-  switch (block.blockKind) {
-    case BlockKind.Each:
-      return inferEachBlock(block, context);
-    case BlockKind.Conditional:
-      return inferConditionBlock(block, context);
-  }
-  return context;
-};
-
-const inferEachBlock = (block: EachBlock, context: Context): Context => {
-  context = inferStatement(block.source, context, ARRAY_INFERENCE);
-  if (block.body) {
-    const scopePath =
-      block.source.jsKind === StatementKind.Reference ? block.source.path : [];
-
-    context = setScope(block.valueName, scopePath, context);
-    context = setScope(block.keyName, [], context);
-    context = inferNode(block.body, false, context);
-    context = setScope(block.valueName, null, context);
-    context = setScope(block.keyName, null, context);
-  }
-
-  return context;
-};
-
-const inferConditionBlock = (block: Conditional, context: Context): Context => {
-  if (block.conditionalBlockKind === ConditionalBlockKind.PassFailBlock) {
-    context = inferStatement(block.condition, context);
-    if (block.fail) {
-      context = inferConditionBlock(block.fail, context);
-    }
-  }
-  if (block.body) {
-    context = inferNode(block.body, false, context);
   }
   return context;
 };

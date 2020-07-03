@@ -45,7 +45,7 @@ impl Node {
       Node::Element(value) => &value.location,
       Node::Fragment(value) => &value.location,
       Node::StyleElement(value) => &value.location,
-      Node::Slot(value) => &value.location
+      Node::Slot(value) => &value.location,
     }
   }
 }

@@ -152,51 +152,7 @@ export type Slot = {
   script: Statement;
 } & BaseNode<NodeKind.Slot>;
 
-export enum BlockKind {
-  Each = "Each",
-  Conditional = "Conditional"
-}
-
-export type BaseBlock<TBlockKind extends BlockKind> = {
-  blockKind: TBlockKind;
-  body?: Node;
-} & BaseNode<NodeKind.Block>;
-
-export type EachBlock = {
-  source: Statement;
-  valueName: string;
-  keyName: string;
-} & BaseBlock<BlockKind.Each>;
-
-export enum ConditionalBlockKind {
-  PassFailBlock = "PassFailBlock",
-  FinalBlock = "FinalBlock"
-}
-
-export type BaseConditional<
-  TconditionalBlockKind extends ConditionalBlockKind
-> = {
-  conditionalBlockKind: TconditionalBlockKind;
-  body: Node;
-};
-
-export type PassFailConditional = {
-  condition: Statement;
-  fail?: Conditional;
-} & BaseConditional<ConditionalBlockKind.PassFailBlock>;
-
-export type FinalConditional = {} & BaseConditional<
-  ConditionalBlockKind.FinalBlock
->;
-
-export type Conditional = PassFailConditional | FinalConditional;
-
-export type ConditionalBlock = PassFailConditional &
-  BaseBlock<BlockKind.Conditional>;
-
-export type Block = EachBlock | ConditionalBlock;
-
-export type Node = Text | Element | StyleElement | Fragment | Slot | Block;
+export type Node = Text | Element | StyleElement | Fragment | Slot;
 
 export const getImports = (ast: Node): Element[] =>
   getChildrenByTagName("import", ast).filter(child => {
@@ -304,7 +260,6 @@ export const isVisibleNode = (node: Node): boolean =>
   node.kind === NodeKind.Text ||
   node.kind === NodeKind.Fragment ||
   node.kind === NodeKind.Slot ||
-  node.kind === NodeKind.Block ||
   (node.kind === NodeKind.Element && isVisibleElement(node));
 
 export const getVisibleChildNodes = (ast: Node): Node[] =>
@@ -351,35 +306,11 @@ export const flattenNodes = (node: Node, _allNodes: Node[] = []): Node[] => {
       }
     }
   }
-  if (node.kind === NodeKind.Block) {
-    if (node.blockKind === BlockKind.Each) {
-      if (node.body) {
-        flattenNodes(node.body, _allNodes);
-      }
-    } else if (node.blockKind === BlockKind.Conditional) {
-      flattenConditional(node, _allNodes);
-    }
-  }
 
   for (const child of getChildren(node)) {
     flattenNodes(child, _allNodes);
   }
 
-  return _allNodes;
-};
-
-const flattenConditional = (
-  conditional: Conditional,
-  _allNodes: Node[]
-): Node[] => {
-  if (conditional.body) {
-    flattenNodes(conditional.body, _allNodes);
-  }
-  if (conditional.conditionalBlockKind === ConditionalBlockKind.PassFailBlock) {
-    if (conditional.fail) {
-      flattenConditional(conditional.fail, _allNodes);
-    }
-  }
   return _allNodes;
 };
 
@@ -408,30 +339,6 @@ export const getNestedReferences = (
 ): [Reference, string][] => {
   if (node.kind === NodeKind.Slot) {
     maybeAddReference(node.script, _statements);
-  } else if (node.kind === NodeKind.Block) {
-    if (node.blockKind === BlockKind.Each) {
-      // if (node.body) {
-      //   getNestedReferences(node.body, _statements);
-      // }
-      maybeAddReference(node.source, _statements);
-    } else if (node.blockKind === BlockKind.Conditional) {
-      let current: Conditional = node;
-
-      while (current) {
-        if (current.body) {
-          getNestedReferences(current.body, _statements);
-        }
-        if (
-          current.conditionalBlockKind === ConditionalBlockKind.PassFailBlock
-        ) {
-          maybeAddReference(current.condition, _statements);
-          current = current.fail;
-        } else {
-          // final block
-          break;
-        }
-      }
-    }
   } else {
     if (node.kind === NodeKind.Element) {
       for (const attr of node.attributes) {
