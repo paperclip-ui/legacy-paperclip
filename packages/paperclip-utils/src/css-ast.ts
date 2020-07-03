@@ -140,8 +140,13 @@ export type KeyValueDeclaration = {
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
 export type IncludeDeclaration = {
-  mixins: string[];
+  mixins: Array<Array<IncludeDeclarationPart>>;
 } & BaseStyleDeclaration<StyleDeclarationKind.Include>;
+
+export type IncludeDeclarationPart = {
+  name: string;
+  location: SourceLocation;
+};
 
 export type StyleDeclaration = KeyValueDeclaration | IncludeDeclaration;
 
@@ -161,6 +166,7 @@ type MediaRule = BaseConditionRule<RuleKind.Media>;
 export type MixinRule = {
   name: MixinName;
   declarations: StyleDeclaration[];
+  location: SourceLocation;
 } & BaseRule<RuleKind.Mixin>;
 
 export type MixinName = {
@@ -202,6 +208,27 @@ export const getRuleClassNames = (rule: Rule, allClassNames: string[] = []) => {
   }
 
   return allClassNames;
+};
+
+export const traverseSheet = (sheet: Sheet, each: (rule: Rule) => void) => {
+  sheet.rules.forEach(rule => {
+    traverseRule(rule, each);
+  });
+};
+
+export const traverseRule = (rule: Rule, each: (rule: Rule) => void) => {
+  each(rule);
+  switch (rule.kind) {
+    case RuleKind.Media:
+    case RuleKind.Export: {
+      rule.rules.forEach(rule => traverseRule(rule, each));
+      break;
+    }
+    case RuleKind.Style: {
+      rule.children.forEach(rule => traverseRule(rule, each));
+      break;
+    }
+  }
 };
 
 export const getSelectorClassNames = (

@@ -1,9 +1,20 @@
 <import as="ab" src="./colors.pc">
 <style>
+  @mixin afdsfsd {
+    
+  }
   .error {
+    @include ab.default-font afdsfsd;
     background: rgb(255, 152, 152);
     color: rgb(138, 31, 31);
+    font-size: 24px;
+    font-weight: 400;
+    padding: 10px;
+    
     /* background: url(/cant/be/found.png); */
   }
 </style>
 
+<div class="error">
+  this is a test
+</div>

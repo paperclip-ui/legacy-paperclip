@@ -4,17 +4,17 @@
       background: blue;
       font-size: 24px !important;
     }
+    @mixin default-font {
+      font-family: Helvetica;
+      letter-spacing: 0.07em;
+    }
   }
 
-  @mixin as {
-    color: blue;
-  }
 
   :global(body) {
     /* background: url(/cant/be/found.png); */
 
-    @include as;
-    color: red;
+    color: rgb(223, 60, 60);
   }
 </style>
 

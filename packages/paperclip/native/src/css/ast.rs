@@ -200,6 +200,7 @@ impl fmt::Display for ConditionRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinRule {
   pub name: MixinName,
+  pub location: Location,
   pub declarations: Vec<Declaration>,
 }
 

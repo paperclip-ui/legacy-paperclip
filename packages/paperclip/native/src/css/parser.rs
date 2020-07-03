@@ -128,6 +128,7 @@ fn parse_declaration_body<'a, 'b>(
 }
 
 fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
+  let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::At)?;
   let name = parse_selector_name(context)?;
   eat_superfluous(context)?;
@@ -148,7 +149,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       name.to_string(),
       context,
     )?)),
-    "mixin" => Ok(Rule::Mixin(parse_mixin_rule(context)?)),
+    "mixin" => Ok(Rule::Mixin(parse_mixin_rule(start, context)?)),
     "media" => Ok(Rule::Media(parse_condition_rule(
       name.to_string(),
       context,
@@ -206,7 +207,8 @@ fn parse_condition_rule<'a, 'b>(
   })
 }
 
-fn parse_mixin_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MixinRule, ParseError> {
+fn parse_mixin_rule<'a, 'b>(start: usize, context: &mut Context<'a, 'b>) -> Result<MixinRule, ParseError> {
+  eat_superfluous(context)?;
   let name_start = context.tokenizer.utf16_pos;
   let name = parse_selector_name(context)?.to_string();
   let name_location = Location {
@@ -217,6 +219,7 @@ fn parse_mixin_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MixinRule, 
   eat_superfluous(context)?;
   let (declarations, _) = parse_declaration_body(context)?;
   Ok(MixinRule {
+    location: Location::new(start, context.tokenizer.utf16_pos),
     name: MixinName {
       value: name,
       location: name_location,

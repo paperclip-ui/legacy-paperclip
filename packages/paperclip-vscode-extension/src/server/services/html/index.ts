@@ -30,10 +30,10 @@ import {
   resolveImportFile,
   StatementKind,
   resolveImportUri,
+  getMixins,
   ExportRule,
   DEFAULT_PART_ID
 } from "paperclip";
-import * as path from "path";
 
 import CSS_COLOR_NAMES from "./css-color-names";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
@@ -188,7 +188,28 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     declaration: IncludeDeclaration,
     context: HandleContext
   ) {
-    // TODO
+    const mixins = getMixins(context.root);
+    for (const mixinRef of declaration.mixins) {
+      // @include local-ref;
+      if (mixinRef.length === 1) {
+        const ref = mixinRef[0];
+        const mixin = mixins[ref.name];
+
+        if (mixin) {
+          console.log(mixin, ref);
+          context.info.definitions.push({
+            sourceUri: context.uri,
+            sourceLocation: mixin.name.location,
+            sourceDefinitionLocation: mixin.name.location,
+            instanceLocation: ref.location
+          });
+        }
+      }
+    }
+
+    /*
+
+    */
   }
 
   private _handleDocument(context: HandleContext) {

@@ -1,5 +1,11 @@
 import { Statement, StatementKind, Reference } from "./js-ast";
-import { Sheet } from "./css-ast";
+import {
+  Sheet,
+  getSheetClassNames,
+  traverseSheet,
+  MixinRule,
+  RuleKind
+} from "./css-ast";
 import { SourceLocation } from "./base-ast";
 import * as crc32 from "crc32";
 import { resolveImportFile } from "./resolve";
@@ -331,6 +337,20 @@ const maybeAddReference = (
   if (stmt.jsKind === StatementKind.Reference) {
     _statements.push([stmt, null]);
   }
+};
+
+export const getMixins = (ast: Node): Record<string, MixinRule> => {
+  const styles = getStyleElements(ast);
+  let mixins: Record<string, MixinRule> = {};
+  for (const style of styles) {
+    traverseSheet(style.sheet, rule => {
+      if (rule.kind === RuleKind.Mixin) {
+        mixins[rule.name.value] = rule;
+      }
+    });
+  }
+
+  return mixins;
 };
 
 export const getNestedReferences = (
