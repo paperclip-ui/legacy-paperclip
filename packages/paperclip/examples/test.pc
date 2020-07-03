@@ -1,13 +1,22 @@
-
-
-<div component as="Something">
-  {children}
-</div>
-
+<import src="./button.pc" as="Button">
 ✌🏻
 
-<div>
-  👩‍👩‍👧‍👦
-  <Something>
-  </Something>
+<style>
+  .color {
+    &:before {
+      content: "🤦‍♂️";
+    }
+  }
+</style>
+
+<div component as="Something" class="color">
+  {children}!!!!!
 </div>
+
+<div>
+  afsdfs
+</div>
+
+<Button className=">>>color">
+  button
+</Button>

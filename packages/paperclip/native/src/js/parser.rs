@@ -37,8 +37,7 @@ fn parse_statement<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, 
 }
 
 fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
-  let mut pc_tokenizer =
-    PCTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
+  let mut pc_tokenizer = PCTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
   let node = ast::Statement::Node(Box::new(parse_tag(&mut pc_tokenizer)?));
   tokenizer.pos = pc_tokenizer.pos;
   Ok(node)

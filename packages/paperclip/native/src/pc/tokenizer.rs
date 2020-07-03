@@ -1,6 +1,5 @@
 use crate::base::parser::ParseError;
-use crate::base::tokenizer::BaseTokenizer;
-use crate::base::tokenizer::Position;
+use crate::base::tokenizer::{BaseTokenizer,Position};
 
 // TODO - continuation byte
 // inspiration: https://gist.github.com/tommai78101/3631ed1f136b78238e85582f08bdc618
@@ -130,7 +129,7 @@ pub enum Token<'a> {
 pub struct Tokenizer<'a> {
   pub source: &'a [u8],
   pub pos: usize,
-  pub utf16_pos: usize
+  pub utf16_pos: usize,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -150,7 +149,7 @@ impl<'a> Tokenizer<'a> {
   pub fn get_pos(&self) -> Position {
     Position {
       u8_pos: self.pos,
-      u16_pos: self.utf16_pos
+      u16_pos: self.utf16_pos,
     }
   }
 
@@ -463,14 +462,14 @@ impl<'a> Tokenizer<'a> {
     Tokenizer {
       source: source.as_bytes(),
       pos: 0,
-      utf16_pos: 0
+      utf16_pos: 0,
     }
   }
   pub fn new_from_bytes(source: &'a [u8], pos: Position) -> Tokenizer {
     Tokenizer {
       source: source,
       pos: pos.u8_pos,
-      utf16_pos: pos.u16_pos
+      utf16_pos: pos.u16_pos,
     }
   }
 }
@@ -507,7 +506,6 @@ mod tests {
     // assert_eq!(tokenizer.utf16_pos, 1);
     // panic!("D");
   }
-
 
   fn scan_till_end(tokenizer: &mut Tokenizer) {
     while !tokenizer.is_eof() {

@@ -135,6 +135,7 @@ impl<'a> Tokenizer<'a> {
     let is_whitepace = |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') };
     while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
       self.pos += 1;
+      self.utf16_pos += 1;
     }
   }
 
@@ -177,7 +178,7 @@ impl<'a> Tokenizer<'a> {
   pub fn get_pos(&self) -> Position {
     Position {
       u8_pos: self.pos,
-      u16_pos: self.pos
+      u16_pos: self.utf16_pos,
     }
   }
   pub fn set_pos(&mut self, pos: Position) {
@@ -421,6 +422,7 @@ impl<'a> Tokenizer<'a> {
   }
   fn forward(&mut self, pos: usize) {
     self.pos += pos;
+    self.utf16_pos += pos;
   }
   pub fn curr_byte(&mut self) -> Result<u8, ParseError> {
     if self.is_eof() {
@@ -449,8 +451,10 @@ impl<'a> Tokenizer<'a> {
     while !self.is_eof() {
       let c = self.source[self.pos];
       self.pos += 1;
+      self.utf16_pos += 1;
       if !test(c) {
         self.pos -= 1;
+        self.utf16_pos -= 1;
         break;
       }
     }
@@ -462,7 +466,7 @@ impl<'a> Tokenizer<'a> {
     Tokenizer {
       source: source.as_bytes(),
       pos: 0,
-      utf16_pos: 0
+      utf16_pos: 0,
     }
   }
   pub fn get_source(&self) -> &'a [u8] {
@@ -472,7 +476,7 @@ impl<'a> Tokenizer<'a> {
     Tokenizer {
       source: source,
       pos: pos.u8_pos,
-      utf16_pos: pos.u16_pos
+      utf16_pos: pos.u16_pos,
     }
   }
 }

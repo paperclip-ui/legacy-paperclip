@@ -1,3 +1,9 @@
-<div export component as="default">
-  Button
+<style> 
+  .button {
+    color: blue
+  }
+</style>
+
+<div export component as="default" class="button {className?}">
+  {children}
 </div>
