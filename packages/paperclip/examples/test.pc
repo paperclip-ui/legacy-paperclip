@@ -1,13 +1,15 @@
+<import src="./colors.pc">
+
 <fragment component as="Test">
   <span>{children}</span>
 </fragment>
 
 <Test>
-  <span>Hello world!!!!!!!!!</span>
+  <span>Hello world!!!!</span>
 </Test>
 <Test>
   Hello world
 </Test>
 <Test>
-  Hello world
+  Hello worldaafsdfs
 </Test>

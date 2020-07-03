@@ -1,6 +1,8 @@
 import * as path from "path";
 import { Engine, LoadResult } from "../engine";
 import {
+  EngineErrorEvent,
+  EngineEvent,
   EngineEventKind,
   stringifyVirtualNode,
   stringifyCSSSheet
@@ -10,7 +12,7 @@ export type Graph = {
   [identifier: string]: string;
 };
 
-export const createMockEngine = (graph: Graph) =>
+export const createMockEngine = (graph: Graph, onErr = e => console.error(e)) =>
   new Engine(
     {
       io: {
@@ -21,15 +23,16 @@ export const createMockEngine = (graph: Graph) =>
         }
       }
     },
-    e => {
-      console.error(e);
-    }
+    onErr
   );
 
-export const waitForError = (engine: Engine) => {
+export const waitForError = (
+  engine: Engine,
+  test = (event: EngineErrorEvent) => true
+) => {
   return new Promise<any>(resolve => {
     engine.onEvent(event => {
-      if (event.kind === EngineEventKind.Error) {
+      if (event.kind === EngineEventKind.Error && test(event)) {
         resolve(event);
       }
     });

@@ -454,6 +454,15 @@ pub fn get_import_identifier<'a>(import: &'a Element) -> Option<&'a String> {
   return None;
 }
 
+pub fn get_import_by_identifier<'a>(id: &String, root_expr: &'a Node) -> Option<&'a Element> {
+  for import in get_imports(root_expr) {
+    if get_attribute_value("as", &import) == Some(id) || get_attribute_value("src", &import) == Some(id) {
+      return Some(import);
+    }
+  }
+  return None;
+}
+
 pub fn get_part_ids<'a>(root_expr: &'a Node) -> Vec<&'a String> {
   let mut ids = vec![];
 

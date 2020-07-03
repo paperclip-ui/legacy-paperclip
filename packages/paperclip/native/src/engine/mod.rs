@@ -51,7 +51,7 @@ pub struct NodeParsedEvent {
   pub node: pc_ast::Node,
 }
 
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "errorKind")]
 pub enum EngineError {
   Graph(GraphError),
@@ -241,7 +241,7 @@ impl Engine {
     let relative_deps = &dependency
       .dependencies
       .iter()
-      .map(|(id, uri)| (id.to_string(), uri.to_string()))
+      .map(|(relative_path, uri)| (relative_path.to_string(), uri.to_string()))
       .collect::<Vec<(String, String)>>();
 
     let all_dependencies = self.dependency_graph.flatten_dependencies(uri);
@@ -250,14 +250,35 @@ impl Engine {
       let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
         dep_result
       } else {
-        self.evaluate(dep_uri, true, stack)?;
+        self.evaluate(dep_uri, true, stack).or_else(|_| {
+          let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
+
+          let e = match &dependency.content {
+            DependencyContent::Node(root) => {
+              let imp = pc_ast::get_import_by_identifier(id, root).unwrap();
+              RuntimeError::new("Cannot import this module since it contains an error.".to_string(), &uri, &imp.location)
+            },
+            _ => {
+              RuntimeError::new("Cannot import this module since it contains an error.".to_string(), &uri, &ast::Location::new(0, 0))
+            }
+          };
+
+          self.dispatch(EngineEvent::Error(EngineError::Runtime(e.clone())));
+
+          Err(e)
+        })?;
+
         self.virt_nodes.get(dep_uri).unwrap()
       };
 
       imports.insert(id.to_string(), info.exports.clone());
     }
 
+    
+
     let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &imports);
+
+    let mut ret: Result<(), RuntimeError> = Ok(());
 
     let event_option = match node_result {
       Ok(node_option) => {
@@ -303,14 +324,18 @@ impl Engine {
           }))
         }
       }
-      Err(err) => Some(EngineEvent::Error(EngineError::Runtime(err))),
+      Err(err) => {
+        ret = Err(err.clone());
+        let e = EngineError::Runtime(err);
+        Some(EngineEvent::Error(e))
+      }
     };
 
     if let Some(event) = event_option {
       self.dispatch(event);
     }
 
-    Ok(())
+    ret
   }
 }
 

@@ -5,6 +5,10 @@
       font-size: 24px !important;
     }
   }
+
+  :global(body) {
+    color: red;
+  }
 </style>
 
 <div class="bg-green">
