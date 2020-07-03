@@ -4,9 +4,11 @@ import {
   Rule,
   Node,
   Sheet,
+  getImportById,
   Element,
   NodeKind,
   StyleDeclarationKind,
+  IncludeDeclarationPart,
   StyleDeclaration,
   getParts,
   RuleKind,
@@ -36,6 +38,7 @@ import {
 } from "paperclip";
 
 import CSS_COLOR_NAMES from "./css-color-names";
+import { MixinName, Context, Engine } from "paperclip/src";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -194,22 +197,49 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       if (mixinRef.length === 1) {
         const ref = mixinRef[0];
         const mixin = mixins[ref.name];
-
         if (mixin) {
-          console.log(mixin, ref);
-          context.info.definitions.push({
-            sourceUri: context.uri,
-            sourceLocation: mixin.name.location,
-            sourceDefinitionLocation: mixin.name.location,
-            instanceLocation: ref.location
-          });
+          this._handleMixinRef(ref, mixin, context.uri, context);
+        }
+      } else if (mixinRef.length === 2) {
+        const impRef = mixinRef[0];
+        const ref = mixinRef[1];
+
+        if (context.importIds.includes(impRef.name)) {
+          const [imp, impAst, impUri] = getImportSourceAst(
+            impRef.name,
+            context,
+            this._engine
+          );
+
+          if (impAst) {
+            context.info.definitions.push({
+              sourceUri: context.uri,
+              sourceLocation: imp.openTagLocation,
+              sourceDefinitionLocation: imp.openTagLocation,
+              instanceLocation: impRef.location
+            });
+          }
+          const mixin = getMixins(impAst)[ref.name];
+          if (mixin) {
+            this._handleMixinRef(ref, mixin, impUri, context);
+          }
         }
       }
     }
+  }
 
-    /*
-
-    */
+  private _handleMixinRef(
+    name: IncludeDeclarationPart,
+    mixin: MixinRule,
+    sourceUri: string,
+    context: HandleContext
+  ) {
+    context.info.definitions.push({
+      sourceUri,
+      sourceLocation: mixin.name.location,
+      sourceDefinitionLocation: mixin.name.location,
+      instanceLocation: name.location
+    });
   }
 
   private _handleDocument(context: HandleContext) {
@@ -267,16 +297,11 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
         context
       );
     } else if (context.importIds.indexOf(namespace) !== -1) {
-      const imp = getImports(context.root).find(imp => {
-        return getAttributeStringValue(AS_ATTR_NAME, imp) === namespace;
-      });
-
-      const impUri = resolveImportFile(fs)(
-        context.uri,
-        getAttributeStringValue("src", imp)
+      const [imp, impAst, impUri] = getImportSourceAst(
+        namespace,
+        context,
+        this._engine
       );
-
-      const impAst = this._getAST(impUri);
 
       if (impAst) {
         if (tagParts.length === 2) {
@@ -337,3 +362,22 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
 }
 
 const resolveUri = resolveImportFile(fs);
+
+const getImportSourceAst = (
+  id: string,
+  context: HandleContext,
+  engine: Engine
+): [Element, DependencyNodeContent, string] => {
+  const imp = getImportById(id, context.root);
+
+  if (!imp) {
+    return [null, null, null];
+  }
+
+  const impUri = resolveImportFile(fs)(
+    context.uri,
+    getAttributeStringValue("src", imp)
+  );
+
+  return [imp, engine.getLoadedAst(impUri) as DependencyNodeContent, impUri];
+};

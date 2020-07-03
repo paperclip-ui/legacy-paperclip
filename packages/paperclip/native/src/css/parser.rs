@@ -207,7 +207,10 @@ fn parse_condition_rule<'a, 'b>(
   })
 }
 
-fn parse_mixin_rule<'a, 'b>(start: usize, context: &mut Context<'a, 'b>) -> Result<MixinRule, ParseError> {
+fn parse_mixin_rule<'a, 'b>(
+  start: usize,
+  context: &mut Context<'a, 'b>,
+) -> Result<MixinRule, ParseError> {
   eat_superfluous(context)?;
   let name_start = context.tokenizer.utf16_pos;
   let name = parse_selector_name(context)?.to_string();

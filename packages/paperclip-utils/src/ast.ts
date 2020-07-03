@@ -182,6 +182,11 @@ export const getImportIds = (ast: Node): string[] =>
     .map(node => getAttributeStringValue(AS_ATTR_NAME, node))
     .filter(Boolean) as string[];
 
+export const getImportById = (id: string, ast: Node): Element | null =>
+  getImports(ast).find(imp => {
+    return getAttributeStringValue(AS_ATTR_NAME, imp) === id;
+  });
+
 export const getChildren = (ast: Node): Node[] => {
   if (ast.kind === NodeKind.Element || ast.kind === NodeKind.Fragment) {
     return ast.children;
