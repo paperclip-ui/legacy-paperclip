@@ -1,7 +1,13 @@
-<div component as="Test">
-  {children}
-</div>
+<fragment component as="Test">
+  <span>{children}</span>
+</fragment>
 
+<Test>
+  <span>Hello world!!!!!!!!!</span>
+</Test>
+<Test>
+  Hello world
+</Test>
 <Test>
   Hello world
 </Test>
