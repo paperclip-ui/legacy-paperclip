@@ -1,4 +1,9 @@
-import { EngineEvent, EvaluatedEvent, EngineEventKind } from "paperclip-utils";
+import {
+  EngineEvent,
+  EvaluatedEvent,
+  EngineEventKind,
+  EngineErrorEvent
+} from "paperclip-utils";
 import {
   Uri,
   window,
@@ -198,13 +203,21 @@ class LivePreview {
   private _onPreviewMessage = event => {
     if (event.type === "metaElementClicked") {
       this._handleElementMetaClicked(event);
+    } else if (event.type === "errorBannerClicked") {
+      this._handleErrorBannerClicked(event);
     }
   };
+  private async _handleErrorBannerClicked({
+    error
+  }: {
+    error: EngineErrorEvent;
+  }) {
+    const doc = await this._openDoc(error.uri);
+    await window.showTextDocument(doc, ViewColumn.One);
+  }
   private async _handleElementMetaClicked({ source }) {
     // TODO - no globals here
-    const textDocument =
-      workspace.textDocuments.find(doc => String(doc.uri) === source.uri) ||
-      (await workspace.openTextDocument(source.uri.replace("file://", "")));
+    const textDocument = await this._openDoc(source.uri);
 
     const editor =
       window.visibleTextEditors.find(
@@ -215,6 +228,12 @@ class LivePreview {
       textDocument.positionAt(source.location.end)
     );
     editor.revealRange(editor.selection);
+  }
+  private async _openDoc(uri: string) {
+    return (
+      workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
+      (await workspace.openTextDocument(uri.replace("file://", "")))
+    );
   }
   private _onMessage = () => {
     // TODO when live preview tools are available

@@ -24,7 +24,8 @@ export type DOMFactory = {
 };
 
 enum RenderEventTypes {
-  META_CLICK = "META_CLICK"
+  META_CLICK = "META_CLICK",
+  ERROR_BANNER_CLICK = "ERROR_BANNER_CLICK"
 }
 
 export class Renderer {
@@ -38,6 +39,7 @@ export class Renderer {
   private _importedStylesContainer: HTMLElement;
   private _virtualRootNode: any;
   private _errorOverlay: HTMLElement;
+
   readonly mount: HTMLElement;
   constructor(
     readonly protocol: string,
@@ -63,6 +65,7 @@ export class Renderer {
       background: "rgba(124, 154, 236, 0.5)",
       width: `100px`,
       height: `100px`,
+      cursor: "pointer",
       pointerEvents: "none",
       top: `0px`,
       left: `0px`
@@ -85,6 +88,10 @@ export class Renderer {
 
   onMetaClick = (listener: (element: any) => void) => {
     this._em.addListener(RenderEventTypes.META_CLICK, listener);
+  };
+
+  onErrorBannerClick = (listener: (error: EngineErrorEvent) => void) => {
+    this._em.addListener(RenderEventTypes.ERROR_BANNER_CLICK, listener);
   };
 
   initialize({ sheet, preview, importedSheets }) {
@@ -153,7 +160,7 @@ export class Renderer {
 
     // To style this, copy & paste in paperclip.
     errorElement.innerHTML = `
-    <div style="position: fixed; bottom: 0; width: 100%; word-break: break-word; box-sizing: border-box; font-family: Helvetica; padding: 10px; background: rgb(255, 152, 152); color: rgb(138, 31, 31); line-height: 1.4em">
+    <div style="position: fixed; cursor: pointer; bottom: 0; width: 100%; word-break: break-word; box-sizing: border-box; font-family: Helvetica; padding: 10px; background: rgb(255, 152, 152); color: rgb(138, 31, 31); line-height: 1.4em">
       <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">
         Error&nbsp;in&nbsp;${uri.replace("file://", "")}:
       </div>
@@ -162,8 +169,14 @@ export class Renderer {
       </div>
     </div>
     `;
+
+    errorElement.onclick = this._onErrorBannerClick.bind(this, error);
+
     this._errorOverlay.appendChild(errorElement);
   }
+  _onErrorBannerClick = (error: EngineErrorEvent) => {
+    this._em.emit(RenderEventTypes.ERROR_BANNER_CLICK, error);
+  };
 
   handleEngineEvent = (event: EngineEvent) => {
     this._clearErrors();
@@ -273,6 +286,7 @@ export class Renderer {
     const element = event.target as Element;
     const elementWindow = element.ownerDocument.defaultView;
     if (element.nodeType !== 1 || !event.metaKey) return;
+    this.mount.style.cursor = "pointer";
     const rect = element.getBoundingClientRect();
     Object.assign(this._hoverOverlay.style, {
       display: "block",
@@ -286,6 +300,7 @@ export class Renderer {
   private _onStageMouseOut = (event: MouseEvent) => {
     const element = event.target as Node;
     if (element.nodeType !== 1) return;
+    this.mount.style.cursor = "default";
     Object.assign(this._hoverOverlay.style, {
       display: "none"
     });

@@ -24,6 +24,16 @@ renderer.onMetaClick(element => {
   );
 });
 
+renderer.onErrorBannerClick(error => {
+  parent.postMessage(
+    {
+      type: "errorBannerClicked",
+      error
+    },
+    location.origin
+  );
+});
+
 // need in iframe to ensure that styles are isolated
 const iframe = document.createElement("iframe");
 Object.assign(iframe.style, {
