@@ -1,5 +1,5 @@
 use crate::base::parser::ParseError;
-use crate::base::tokenizer::{BaseTokenizer,Position};
+use crate::base::tokenizer::{BaseTokenizer, Position};
 
 // TODO - continuation byte
 // inspiration: https://gist.github.com/tommai78101/3631ed1f136b78238e85582f08bdc618

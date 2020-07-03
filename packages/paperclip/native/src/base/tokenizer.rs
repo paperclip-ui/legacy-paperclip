@@ -10,7 +10,6 @@ pub trait BaseTokenizer<'a> {
   fn get_source(&self) -> &'a [u8];
 }
 
-
 #[derive(Debug)]
 pub struct Position {
   pub u8_pos: usize,
