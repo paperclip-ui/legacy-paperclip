@@ -49,5 +49,9 @@ export const stringifyLoadResult = ({
     .trim();
 
   const buffer = `<style>${sheetText}</style>${stringifyVirtualNode(preview)}`;
-  return buffer.replace(/[\r\n\t\s]+/g, " ").trim();
+  return cleanHTML(buffer);
+};
+
+export const cleanHTML = (value: string) => {
+  return value.replace(/[\r\n\t\s]+/g, " ").trim();
 };

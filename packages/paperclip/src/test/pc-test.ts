@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { createMockEngine } from "./utils";
+import { createMockEngine, cleanHTML } from "./utils";
 import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
 
 describe(__filename + "#", () => {
@@ -37,7 +37,7 @@ describe(__filename + "#", () => {
     const { preview } = await engine.load("/entry.pc");
     const buffer = `${stringifyVirtualNode(preview)}`;
 
-    expect(buffer.replace(/[\r\n\t\s]+/g, " ").trim()).to.eql(
+    expect(cleanHTML(buffer)).to.eql(
       `<div class="_80f4925f_primary primary" data-pc-80f4925f></div><div class="_80f4925f_alt alt _80f4925f_primary primary" data-pc-80f4925f></div><div class="_80f4925f_alt2 alt2 _80f4925f_primary primary" data-pc-80f4925f></div>`
     );
   });
