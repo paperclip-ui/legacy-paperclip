@@ -51,10 +51,7 @@ impl NativeEngine {
           let this = JsValue::NULL;
           let arg = JsValue::from(from_path);
           let arg2 = JsValue::from(relative_path);
-          resolve_file
-            .call2(&this, &arg, &arg2)
-            .unwrap()
-            .as_string()
+          resolve_file.call2(&this, &arg, &arg2).unwrap().as_string()
         }),
       ),
     }

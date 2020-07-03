@@ -729,7 +729,11 @@ fn evaluate_style_key_value_declaration<'a>(
           .replace(url_fn, format!("url({})", full_path).as_str())
           .to_string();
       } else {
-        return Err(RuntimeError::new("Unable to resolve file.".to_string(), context.uri, &expr.value_location));
+        return Err(RuntimeError::new(
+          "Unable to resolve file.".to_string(),
+          context.uri,
+          &expr.value_location,
+        ));
       }
     }
   }

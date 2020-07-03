@@ -321,7 +321,7 @@ mod tests {
     let mut engine = Engine::new(
       Box::new(|_| "".to_string()),
       Box::new(|_| true),
-      Box::new(|_, _| Some("".to_string()))
+      Box::new(|_, _| Some("".to_string())),
     );
 
     let result = block_on(engine.parse_content(&"{'a'}".to_string())).unwrap();

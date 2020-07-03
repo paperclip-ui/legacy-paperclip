@@ -1085,7 +1085,11 @@ fn evaluate_attribute_string<'a>(
       if let Some(value) = &value_option {
         val = value.to_string();
       } else {
-        return Err(RuntimeError::new("Unable to resolve file.".to_string(), context.uri, location));
+        return Err(RuntimeError::new(
+          "Unable to resolve file.".to_string(),
+          context.uri,
+          location,
+        ));
       }
     }
   }
