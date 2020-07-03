@@ -109,7 +109,7 @@ fn parse_declaration_body<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
   eat_superfluous(context)?;
-  let block_start = context.tokenizer.pos;
+  let block_start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
   let declarations = parse_declarations_and_children(context)?;
 
@@ -120,7 +120,7 @@ fn parse_declaration_body<'a, 'b>(
     .or(Err(ParseError::unterminated(
       "Unterminated bracket.".to_string(),
       block_start,
-      context.tokenizer.pos,
+      context.tokenizer.utf16_pos,
     )))?;
 
   eat_superfluous(context)?;
@@ -161,7 +161,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       context,
     )?)),
     "page" => Ok(Rule::Page(parse_condition_rule(name.to_string(), context)?)),
-    _ => Err(ParseError::unexpected_token(context.tokenizer.pos)),
+    _ => Err(ParseError::unexpected_token(context.tokenizer.utf16_pos)),
   }
 }
 
@@ -326,7 +326,7 @@ fn parse_next_pair_selector<'a, 'b>(
 
 // div.combo[attr][another]
 fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
-  let pos = context.tokenizer.pos;
+  let pos = context.tokenizer.utf16_pos;
   let mut selectors = vec![];
   loop {
     let result = parse_element_selector(context);
@@ -349,7 +349,7 @@ fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
 fn parse_combo_selector_selectors<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<Vec<Selector>, ParseError> {
-  let pos = context.tokenizer.pos;
+  let pos = context.tokenizer.utf16_pos;
   let mut selectors = vec![];
   loop {
     let result = parse_element_selector(context);
@@ -407,7 +407,7 @@ fn parse_psuedo_element_selector<'a, 'b>(
     if let Some(selector) = target {
       return Ok(*selector);
     } else {
-      return Err(ParseError::unexpected_token(context.tokenizer.pos));
+      return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos));
     }
   }
 
@@ -457,7 +457,7 @@ fn parse_psuedo_element_selector<'a, 'b>(
 }
 
 fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
-  let pos = context.tokenizer.pos;
+  let pos = context.tokenizer.utf16_pos;
   let token = context.tokenizer.peek(1)?;
   let selector: Selector = match token {
     Token::Star => {
@@ -531,7 +531,7 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
   let name = parse_attribute_name(context)?.to_string();
   let mut value = None;
 
-  let start = context.tokenizer.pos;
+  let start = context.tokenizer.utf16_pos;
   let mut operator: Option<String> = None;
 
   match context.tokenizer.peek(1)? {
@@ -545,7 +545,7 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
 
       // ick, but okay.
       operator = Some(
-        std::str::from_utf8(&context.tokenizer.get_source()[start..context.tokenizer.pos])
+        std::str::from_utf8(&context.tokenizer.get_source()[start..context.tokenizer.utf16_pos])
           .unwrap()
           .to_string(),
       );
@@ -749,10 +749,9 @@ fn parse_include_declaration<'a, 'b>(
     while !context.tokenizer.is_eof() {
       let start = context.tokenizer.get_pos();
       if let Token::Keyword(keyword) = context.tokenizer.next()? {
-        
         mixin_path.push(IncludeDeclarationPart {
           name: keyword.to_string(),
-          location: Location::new(start.u16_pos, context.tokenizer.utf16_pos)
+          location: Location::new(start.u16_pos, context.tokenizer.utf16_pos),
         });
         if context.tokenizer.peek(1)? != Token::Dot {
           break;
@@ -781,22 +780,22 @@ fn parse_include_declaration<'a, 'b>(
 fn parse_key_value_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<Declaration, ParseError> {
-  let start = context.tokenizer.pos;
+  let start = context.tokenizer.utf16_pos;
   if let Token::Keyword(keyword) = context.tokenizer.next()? {
     let name = keyword.to_string();
-    let name_end = context.tokenizer.pos;
+    let name_end = context.tokenizer.utf16_pos;
     context.tokenizer.next_expect(Token::Colon)?; // eat :
     eat_superfluous(context)?;
 
-    let value_start = context.tokenizer.pos;
+    let value_start = context.tokenizer.utf16_pos;
     let value = parse_declaration_value(context)?;
-    let value_end = context.tokenizer.pos;
+    let value_end = context.tokenizer.utf16_pos;
 
     if context.tokenizer.peek(1)? == Token::Semicolon {
       context.tokenizer.next()?; // eat ;
     }
 
-    let end = context.tokenizer.pos;
+    let end = context.tokenizer.utf16_pos;
 
     eat_superfluous(context)?;
 

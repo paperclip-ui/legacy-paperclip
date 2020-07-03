@@ -9,6 +9,16 @@
   }
 </style>
 
+<style>
+  @mixin ag {
+    color: rgb(123, 148, 77);
+  }
+  
+  div {
+    @include aaad.aa;
+  }
+</style>
+
 <div component as="Something" class="color">
   {children}!!!!!
 </div>

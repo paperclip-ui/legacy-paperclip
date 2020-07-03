@@ -39,7 +39,7 @@ fn parse_statement<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, 
 fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
   let mut pc_tokenizer = PCTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
   let node = ast::Statement::Node(Box::new(parse_tag(&mut pc_tokenizer)?));
-  tokenizer.pos = pc_tokenizer.pos;
+  tokenizer.set_pos(&pc_tokenizer.get_pos());
   Ok(node)
 }
 
@@ -121,7 +121,7 @@ fn parse_object<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, Par
 }
 
 fn parse_boolean<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
-  let pos = tokenizer.pos;
+  let pos = tokenizer.utf16_pos;
   if let Token::Word(name) = tokenizer.next()? {
     if name == "true" || name == "false" {
       return Ok(ast::Statement::Boolean(ast::Boolean {
@@ -159,12 +159,12 @@ fn parse_reference_name<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<String, Par
 }
 
 fn parse_reference<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
-  let pos = tokenizer.pos;
+  let pos = tokenizer.utf16_pos;
   let part = parse_reference_part(tokenizer)?;
   let mut path = vec![part];
   while !tokenizer.is_eof() && tokenizer.peek(1)? == Token::Dot {
     tokenizer.next()?; // eat .
-    let pos = tokenizer.pos;
+    let pos = tokenizer.utf16_pos;
     if token_matches_var_start(&tokenizer.peek(1)?) {
       path.push(parse_reference_part(tokenizer)?);
     } else {
@@ -177,7 +177,7 @@ fn parse_reference<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, 
 fn parse_reference_part<'a>(
   tokenizer: &mut Tokenizer<'a>,
 ) -> Result<ast::ReferencePart, ParseError> {
-  let pos = tokenizer.pos;
+  let pos = tokenizer.utf16_pos;
   let name = parse_reference_name(tokenizer)?;
   let optional = if !tokenizer.is_eof() && tokenizer.peek(1)? == Token::Byte(b'?') {
     tokenizer.next();
@@ -190,7 +190,7 @@ fn parse_reference_part<'a>(
 }
 
 fn parse_word<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<ast::Statement, ParseError> {
-  let pos = tokenizer.pos;
+  let pos = tokenizer.utf16_pos;
   let token = tokenizer.peek(1)?;
   if let Token::Word(name) = token {
     if name == "true" || name == "false" {

@@ -267,24 +267,34 @@ fn evaluate_style_declarations<'a>(
                     imp_mixins.insert(key.to_string(), imp_mixin.clone());
                   }
                 }
+                Some(&imp_mixins)
+              } else {
+                None
               }
-              Some(&imp_mixins)
             } else if mixin_path.len() == 1 {
               Some(&context.mixins)
             } else {
               None
             };
 
-
           if let Some(mixin_context) = mixin_context_option {
             let mixin_decls_option = mixin_context.get(&mixin_path.last().unwrap().name);
             if let Some(mixin_decls) = mixin_decls_option {
               style.extend(mixin_decls.clone());
+            } else {
+              return Err(RuntimeError::new(
+                "Reference not found.".to_string(),
+                context.uri,
+                &mixin_path.last().unwrap().location,
+              ));
             }
           } else {
-            return Err(RuntimeError::new("Reference not found.".to_string(), context.uri, &mixin_path.first().unwrap().location))
+            return Err(RuntimeError::new(
+              "Reference not found.".to_string(),
+              context.uri,
+              &mixin_path.first().unwrap().location,
+            ));
           }
-
         }
       }
     }
