@@ -46,6 +46,13 @@ pub enum RenderStrategy {
   Auto,
 }
 
+
+#[derive(Clone)]
+pub struct NodeSource {
+  pub uri: String,
+  pub location: Location
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct EvalInfo {
   pub sheet: css_virt::CSSSheet,
@@ -69,6 +76,7 @@ pub fn evaluate<'a>(
       &mut context,
       RenderStrategy::Auto,
       false,
+      None
     )?);
 
     // don't want to do this, actually.
@@ -288,13 +296,14 @@ pub fn evaluate_instance_node<'a>(
   context: &'a mut Context,
   render_strategy: RenderStrategy,
   imported: bool,
+  instance_source: Option<NodeSource>
 ) -> Result<Option<virt::Node>, RuntimeError> {
   context
     .render_call_stack
     .push((context.uri.to_string(), render_strategy.clone()));
   let target_option = get_instance_target_node(node_expr, &render_strategy, imported);
   if let Some(target) = target_option {
-    evaluate_node(target, true, context)
+    evaluate_node(target, true, instance_source, context)
   } else {
     Ok(None)
   }
@@ -333,10 +342,11 @@ fn create_context<'a>(
 pub fn evaluate_node<'a>(
   node_expr: &ast::Node,
   is_root: bool,
+  instance_source: Option<NodeSource>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   match &node_expr {
-    ast::Node::Element(el) => evaluate_element(&el, is_root, context),
+    ast::Node::Element(el) => evaluate_element(&el, is_root, instance_source, context),
     ast::Node::StyleElement(el) => evaluate_style_element(&el, context),
     ast::Node::Text(text) => {
       Ok(Some(virt::Node::Text(virt::Text {
@@ -355,6 +365,7 @@ pub fn evaluate_node<'a>(
 fn evaluate_element<'a>(
   element: &ast::Element,
   is_root: bool,
+  instance_source: Option<NodeSource>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   match element.tag_name.as_str() {
@@ -374,18 +385,31 @@ fn evaluate_element<'a>(
         }
       }
 
+      let source = instance_or_element_source(element, context.uri, instance_source);
+
       if context.import_ids.contains(&ast::get_tag_name(&element)) {
-        evaluate_imported_component(element, context)
+        evaluate_imported_component(element, source, context)
       } else if context.part_ids.contains(&element.tag_name) {
-        evaluate_part_instance_element(element, context)
+        evaluate_part_instance_element(element, source, context)
       } else {
         if element.tag_name == "fragment" {
           evaluate_children_as_fragment(&element.children, context)
         } else {
-          evaluate_native_element(element, is_root, context)
+          evaluate_native_element(element, is_root, source, context)
         }
       }
     }
+  }
+}
+
+fn instance_or_element_source<'a>(element: &ast::Element, dep_uri: &String, source_option: Option<NodeSource>) -> Option<NodeSource> {
+  if let Some(source) = source_option {
+    Some(source)
+  } else {
+    Some(NodeSource {
+      uri: dep_uri.clone(),
+      location: element.location.clone()
+    })
   }
 }
 
@@ -424,6 +448,7 @@ fn evaluate_slot<'a>(
 
 pub fn evaluate_imported_component<'a>(
   element: &ast::Element,
+  instance_source: Option<NodeSource>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
@@ -440,6 +465,7 @@ pub fn evaluate_imported_component<'a>(
       RenderStrategy::Part("default".to_string())
     },
     true,
+    instance_source,
     dep_uri,
     context,
   )
@@ -483,6 +509,7 @@ fn check_instance_loop<'a>(
 
 fn evaluate_part_instance_element<'a>(
   element: &ast::Element,
+  instance_source: Option<NodeSource>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
@@ -492,6 +519,7 @@ fn evaluate_part_instance_element<'a>(
       element,
       RenderStrategy::Part(element.tag_name.to_string()),
       false,
+      instance_source,
       context.uri,
       context,
     )
@@ -631,6 +659,7 @@ fn evaluate_component_instance<'a>(
   instance_element: &ast::Element,
   render_strategy: RenderStrategy,
   imported: bool,
+  instance_source: Option<NodeSource>,
   dep_uri: &String,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -652,9 +681,18 @@ fn evaluate_component_instance<'a>(
       context.imports,
     );
     check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
-
     // TODO: if fragment, then wrap in span. If not, then copy these attributes to root element
-    evaluate_instance_node(&node, &mut instance_context, render_strategy, imported)
+
+    let source = if let Some(source) = instance_source {
+      source.clone()
+    } else {
+      NodeSource { 
+        uri: dep_uri.to_string(),
+        location: instance_element.location.clone()
+      }
+    };
+
+    evaluate_instance_node(&node, &mut instance_context, render_strategy, imported, Some(source))
   } else {
     Err(RuntimeError::unknown(context.uri))
   }
@@ -663,6 +701,7 @@ fn evaluate_component_instance<'a>(
 fn evaluate_native_element<'a>(
   element: &ast::Element,
   is_root: bool,
+  instance_source: Option<NodeSource>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
@@ -791,8 +830,17 @@ fn evaluate_native_element<'a>(
   let children = evaluate_children(&element.children, context)?;
 
   Ok(Some(virt::Node::Element(virt::Element {
-    source_uri: context.uri.to_string(),
-    source_location: element.location.clone(),
+    // source_uri: context.uri.to_string(),
+    source_uri: if let Some(source) = &instance_source {
+      source.uri.clone()
+    } else {
+      context.uri.to_string()
+    },
+    source_location: if let Some(source) = &instance_source {
+      source.location.clone()
+    } else {
+      element.location.clone()
+    },
     tag_name: tag_name,
     attributes,
     children,
@@ -851,7 +899,7 @@ fn evaluate_children<'a>(
   let mut children: Vec<virt::Node> = vec![];
 
   for child_expr in children_expr {
-    match evaluate_node(child_expr, false, context)? {
+    match evaluate_node(child_expr, false, None, context)? {
       Some(c) => match c {
         virt::Node::Fragment(mut fragment) => {
           for child in fragment.children.drain(0..) {
@@ -904,7 +952,7 @@ fn evaluate_conditional_block<'a>(
     ast::ConditionalBlock::PassFailBlock(pass_fail) => evaluate_pass_fail_block(pass_fail, context),
     ast::ConditionalBlock::FinalBlock(block) => {
       if let Some(node) = &block.body {
-        evaluate_node(node, false, context)
+        evaluate_node(node, false, None, context)
       } else {
         Ok(None)
       }
@@ -919,7 +967,7 @@ fn evaluate_pass_fail_block<'a>(
   let condition = evaluate_js(&block.condition, context)?;
   if condition.truthy() {
     if let Some(node) = &block.body {
-      evaluate_node(node, false, context)
+      evaluate_node(node, false, None, context)
     } else {
       Ok(None)
     }
@@ -985,7 +1033,7 @@ fn evaluate_each_block_body<'a>(
   let mut child_context = context.clone();
   child_context.data = &data;
 
-  evaluate_node(body, false, &mut child_context)
+  evaluate_node(body, false, None, &mut child_context)
 }
 
 fn evaluate_attribute_value<'a>(

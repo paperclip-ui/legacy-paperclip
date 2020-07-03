@@ -30,7 +30,7 @@ fn evaluate_node<'a>(
   node: &Box<pc_ast::Node>,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  let node_option = evaluate_pc_node(node, false, context)?;
+  let node_option = evaluate_pc_node(node, false, None, context)?;
   if let Some(node) = node_option {
     Ok(virt::JsValue::JsNode(node))
   } else {
