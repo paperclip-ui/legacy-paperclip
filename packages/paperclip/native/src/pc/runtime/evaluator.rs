@@ -390,7 +390,11 @@ fn evaluate_element<'a>(
         let result = evaluate_imported_component(element, source, context);
 
         if Ok(None) == result {
-          return Err(RuntimeError::new("Unable to find component, or it's not exported.".to_string(), &context.uri, &element.open_tag_location))
+          return Err(RuntimeError::new(
+            "Unable to find component, or it's not exported.".to_string(),
+            &context.uri,
+            &element.open_tag_location,
+          ));
         }
 
         result
@@ -1075,9 +1079,14 @@ fn evaluate_attribute_string<'a>(
       })
       .collect::<Vec<String>>()
       .join(" ");
-  } else if (name == "src") {
+  } else if name == "src" {
     if is_relative_path(&value) {
-      val = context.vfs.resolve(context.uri, &value);
+      let value_option = context.vfs.resolve(context.uri, &value);
+      if let Some(value) = &value_option {
+        val = value.to_string();
+      } else {
+        return Err(RuntimeError::new("Unable to resolve file.".to_string(), context.uri, location));
+      }
     }
   }
 
@@ -1110,7 +1119,7 @@ mod tests {
     let vfs = VirtualFileSystem::new(
       Box::new(|_| "".to_string()),
       Box::new(|_| true),
-      Box::new(|_, _| "".to_string()),
+      Box::new(|_, _| Some("".to_string())),
     );
     let _node = evaluate_source(case);
   }
@@ -1189,7 +1198,7 @@ mod tests {
     let vfs = VirtualFileSystem::new(
       Box::new(|_| "".to_string()),
       Box::new(|_| true),
-      Box::new(|_, uri| uri.to_string()),
+      Box::new(|_, uri| Some(uri.to_string())),
     );
     graph.dependencies.insert(
       uri.clone(),

@@ -90,4 +90,28 @@ describe(__filename + "#", () => {
       message: "Unable to find component, or it's not exported."
     });
   });
+
+  it("displays error if img src not found", async () => {
+    const graph = {
+      "/entry.pc": `
+        <img src="/not/found.png">
+      `
+    };
+    const engine = createMockEngine(graph, () => {}, {
+      resolveFile(uri) {
+        return null;
+      }
+    });
+
+    const e = waitForError(engine);
+    engine.load("/entry.pc");
+    const err = await e;
+    expect(err).to.eql({
+      kind: "Error",
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 19, end: 33 },
+      message: "Unable to resolve file."
+    });
+  });
 });

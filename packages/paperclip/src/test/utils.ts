@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Engine, LoadResult } from "../engine";
+import { Engine, LoadResult, EngineOptions, EngineIO } from "../engine";
 import {
   EngineErrorEvent,
   EngineEvent,
@@ -12,7 +12,11 @@ export type Graph = {
   [identifier: string]: string;
 };
 
-export const createMockEngine = (graph: Graph, onErr = e => console.error(e)) =>
+export const createMockEngine = (
+  graph: Graph,
+  onErr = e => console.error(e),
+  io: Partial<EngineIO> = {}
+) =>
   new Engine(
     {
       io: {
@@ -20,7 +24,8 @@ export const createMockEngine = (graph: Graph, onErr = e => console.error(e)) =>
         fileExists: uri => Boolean(graph[uri]),
         resolveFile: (from, to) => {
           return path.join(path.dirname(from), to);
-        }
+        },
+        ...io
       }
     },
     onErr

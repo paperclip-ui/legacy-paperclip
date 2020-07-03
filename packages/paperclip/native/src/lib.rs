@@ -55,7 +55,6 @@ impl NativeEngine {
             .call2(&this, &arg, &arg2)
             .unwrap()
             .as_string()
-            .unwrap()
         }),
       ),
     }

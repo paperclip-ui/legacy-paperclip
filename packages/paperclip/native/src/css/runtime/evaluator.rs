@@ -718,15 +718,19 @@ fn evaluate_style_key_value_declaration<'a>(
 
       let relative_path = caps.get(1).unwrap().as_str();
 
-      // skil values with protocol
+      // skip values with protocol
       if protocol_re.is_match(relative_path) {
         continue;
       }
-      let full_path = context.vfs.resolve(context.uri, &relative_path.to_string());
+      let full_path_option = context.vfs.resolve(context.uri, &relative_path.to_string());
 
-      value = url_re
-        .replace(url_fn, format!("url({})", full_path).as_str())
-        .to_string();
+      if let Some(full_path) = full_path_option {
+        value = url_re
+          .replace(url_fn, format!("url({})", full_path).as_str())
+          .to_string();
+      } else {
+        return Err(RuntimeError::new("Unable to resolve file.".to_string(), context.uri, &expr.value_location));
+      }
     }
   }
 

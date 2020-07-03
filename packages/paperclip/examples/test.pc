@@ -3,10 +3,7 @@
   .error {
     background: rgb(255, 152, 152);
     color: rgb(138, 31, 31);
+    /* background: url(/cant/be/found.png); */
   }
 </style>
-fsfs
 
-<ab>
-  fdsfsdfdsfs
-</ab>

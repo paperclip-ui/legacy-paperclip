@@ -262,15 +262,22 @@ impl<'a> Dependency {
     let mut dependency_uri_maps = HashMap::new();
     for import in &imports {
       let src = pc_ast::get_attribute_value("src", import).unwrap();
-      dependencies.insert(
-        pc_ast::get_import_identifier(import)
-          .unwrap()
-          .as_str()
-          .to_string(),
-        vfs.resolve(uri, &src),
-      );
 
-      dependency_uri_maps.insert(src.to_string(), vfs.resolve(uri, &src));
+      let resolved_src_option = vfs.resolve(uri, &src);
+
+      if let Some(resolved_src) = resolved_src_option {
+        dependencies.insert(
+          pc_ast::get_import_identifier(import)
+            .unwrap()
+            .as_str()
+            .to_string(),
+            resolved_src.to_string(),
+        );
+
+        dependency_uri_maps.insert(src.to_string(), resolved_src.to_string());
+      } else {
+        return Err(ParseError::unexpected("unable to resolve path".to_string(), 0, 0))
+      }
     }
 
     Ok(Dependency {

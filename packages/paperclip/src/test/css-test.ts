@@ -16,6 +16,34 @@ describe(__filename + "#", () => {
     expect(text).to.eql("<style>._80f4925f_a { color:b; }</style>");
   });
 
+  it("displays an error if style url not found", async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          .rule {
+            background: url('/not/found.png')
+          }
+        </style>
+      `
+    };
+    const engine = createMockEngine(graph, () => {}, {
+      resolveFile(uri) {
+        return null;
+      }
+    });
+
+    const e = waitForError(engine);
+    engine.load("/entry.pc");
+    const err = await e;
+    expect(err).to.eql({
+      kind: "Error",
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 59, end: 91 },
+      message: "Unable to resolve file."
+    });
+  });
+
   describe("Mixins", () => {
     it("can be created & used", async () => {
       const graph = {

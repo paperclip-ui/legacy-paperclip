@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub type FileReaderFn = dyn Fn(&String) -> String;
 pub type FileExistsFn = dyn Fn(&String) -> bool;
-pub type FileResolverFn = dyn Fn(&String, &String) -> String;
+pub type FileResolverFn = dyn Fn(&String, &String) -> Option<String>;
 
 #[allow(dead_code)]
 pub struct VirtualFileSystem {
@@ -35,7 +35,7 @@ impl VirtualFileSystem {
     }
   }
 
-  pub fn resolve(&self, from_path: &String, relative_path: &String) -> String {
+  pub fn resolve(&self, from_path: &String, relative_path: &String) -> Option<String> {
     (self.resolve_file)(from_path, relative_path)
   }
 

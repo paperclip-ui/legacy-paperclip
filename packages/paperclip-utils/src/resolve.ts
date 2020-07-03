@@ -10,7 +10,6 @@ export const resolveImportUri = fs => (fromPath: string, toPath: string) => {
 
 export const resolveImportFile = fs => (fromPath: string, toPath: string) => {
   try {
-
     if (/\w+:\/\//.test(toPath)) {
       return toPath;
     }
@@ -24,11 +23,8 @@ export const resolveImportFile = fs => (fromPath: string, toPath: string) => {
     }
 
     return url.resolve(fromPath, toPath);
-  } catch(e) {
-    console.error(e);
-
-    // TODO - this needs to be null, but engine doesn't support the value yet.
-    return toPath;
+  } catch (e) {
+    return null;
   }
 };
 
@@ -43,7 +39,7 @@ const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
   if (!config.moduleDirectories) return null;
   const configPathDir = path.dirname(stripFileProtocol(configUrl));
   for (const moduleDirectory of config.moduleDirectories) {
-    fs.realpat
+    fs.realpat;
     const moduleFileUrl =
       "file://" +
       fixPath(
@@ -52,7 +48,6 @@ const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
         )
       );
     if (fs.existsSync(new URL(moduleFileUrl))) {
-
       // Need to follow symlinks
       return "file://" + fixPath(fs.realpathSync(new URL(moduleFileUrl)));
     }
