@@ -46,11 +46,10 @@ pub enum RenderStrategy {
   Auto,
 }
 
-
 #[derive(Clone)]
 pub struct NodeSource {
   pub uri: String,
-  pub location: Location
+  pub location: Location,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -76,7 +75,7 @@ pub fn evaluate<'a>(
       &mut context,
       RenderStrategy::Auto,
       false,
-      None
+      None,
     )?);
 
     // don't want to do this, actually.
@@ -296,7 +295,7 @@ pub fn evaluate_instance_node<'a>(
   context: &'a mut Context,
   render_strategy: RenderStrategy,
   imported: bool,
-  instance_source: Option<NodeSource>
+  instance_source: Option<NodeSource>,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   context
     .render_call_stack
@@ -402,13 +401,17 @@ fn evaluate_element<'a>(
   }
 }
 
-fn instance_or_element_source<'a>(element: &ast::Element, dep_uri: &String, source_option: Option<NodeSource>) -> Option<NodeSource> {
+fn instance_or_element_source<'a>(
+  element: &ast::Element,
+  dep_uri: &String,
+  source_option: Option<NodeSource>,
+) -> Option<NodeSource> {
   if let Some(source) = source_option {
     Some(source)
   } else {
     Some(NodeSource {
       uri: dep_uri.clone(),
-      location: element.location.clone()
+      location: element.location.clone(),
     })
   }
 }
@@ -686,13 +689,19 @@ fn evaluate_component_instance<'a>(
     let source = if let Some(source) = instance_source {
       source.clone()
     } else {
-      NodeSource { 
+      NodeSource {
         uri: dep_uri.to_string(),
-        location: instance_element.location.clone()
+        location: instance_element.location.clone(),
       }
     };
 
-    evaluate_instance_node(&node, &mut instance_context, render_strategy, imported, Some(source))
+    evaluate_instance_node(
+      &node,
+      &mut instance_context,
+      render_strategy,
+      imported,
+      Some(source),
+    )
   } else {
     Err(RuntimeError::unknown(context.uri))
   }
