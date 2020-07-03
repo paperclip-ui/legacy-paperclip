@@ -147,9 +147,9 @@ impl Engine {
     match load_result {
       Ok(loaded_uris) => {
         let mut stack = HashSet::new();
-        self.evaluate(uri, hard, &mut stack).or_else(|e| {
-          Err(EngineError::Runtime(e))
-        })
+        self
+          .evaluate(uri, hard, &mut stack)
+          .or_else(|e| Err(EngineError::Runtime(e)))
       }
       Err(error) => {
         self.dispatch(EngineEvent::Error(EngineError::Graph(error.clone())));
