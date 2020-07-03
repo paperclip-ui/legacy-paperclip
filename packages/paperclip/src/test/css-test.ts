@@ -141,5 +141,56 @@ describe(__filename + "#", () => {
       //   message: 'Reference not found.'
       // });
     });
+
+    it("Displays an error if a mixin is used but not exported", async () => {
+      const graph = {
+        "/entry.pc": `<import as="mod" src="./module.pc"><style>
+          div {
+            @include mod.abcde;
+          }
+        </style>`,
+        "/module.pc": `<style>
+          @mixin abcde {
+            color: orange;
+          }
+        </style>`
+      };
+      const engine = createMockEngine(graph);
+      const p = waitForError(engine);
+      engine.load("/entry.pc");
+      const e = await p;
+      expect(e).to.eql({
+        kind: "Error",
+        errorKind: "Runtime",
+        uri: "/entry.pc",
+        location: { start: 84, end: 89 },
+        message: "This mixin is private."
+      });
+    });
+
+    it("Display an error if a mixins is already defined in the upper scope", async () => {
+      const graph = {
+        "/entry.pc": `<style>
+          @mixin abcde {
+            color: blue;
+          }
+          
+          @mixin abcde {
+            color: orange;
+          }
+        </style>`
+      };
+      const engine = createMockEngine(graph);
+      const p = waitForError(engine);
+      engine.load("/entry.pc");
+      const e = await p;
+      expect(e).to.eql({
+        kind: "Error",
+        errorKind: "Runtime",
+        uri: "/entry.pc",
+        location: { start: 98, end: 103 },
+        message: "This mixin is already declared in the upper scope."
+      });
+    });
   });
 });

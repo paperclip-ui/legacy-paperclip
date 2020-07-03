@@ -159,8 +159,14 @@ type BaseConditionRule<TRule extends RuleKind> = {
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
 export type MixinRule = {
+  name: MixinName;
   declarations: StyleDeclaration[];
 } & BaseRule<RuleKind.Mixin>;
+
+export type MixinName = {
+  value: string;
+  location: SourceLocation;
+};
 
 export type ExportRule = {
   rules: Rule[];

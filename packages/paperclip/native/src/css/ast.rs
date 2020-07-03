@@ -199,13 +199,13 @@ impl fmt::Display for ConditionRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinRule {
-  pub name: String,
+  pub name: MixinName,
   pub declarations: Vec<Declaration>,
 }
 
 impl fmt::Display for MixinRule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    writeln!(f, "@mixin {} {{", &self.name)?;
+    writeln!(f, "@mixin {} {{", &self.name.value)?;
     for decl in &self.declarations {
       write!(f, "{}\n", &decl.to_string())?;
     }
@@ -213,6 +213,12 @@ impl fmt::Display for MixinRule {
 
     Ok(())
   }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct MixinName {
+  pub value: String,
+  pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

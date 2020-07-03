@@ -41,4 +41,6 @@ describe(__filename + "#", () => {
       `<div class="_80f4925f_primary primary" data-pc-80f4925f></div><div class="_80f4925f_alt alt _80f4925f_primary primary" data-pc-80f4925f></div><div class="_80f4925f_alt2 alt2 _80f4925f_primary primary" data-pc-80f4925f></div>`
     );
   });
+
+  it("displays an error if a default component is used but not exported", async () => {});
 });

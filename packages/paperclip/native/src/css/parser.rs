@@ -207,10 +207,13 @@ fn parse_condition_rule<'a, 'b>(
 }
 
 fn parse_mixin_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MixinRule, ParseError> {
+  let name_start = context.tokenizer.utf16_pos;  
   let name = parse_selector_name(context)?.to_string();
+  let name_location = Location { start: name_start, end: context.tokenizer.utf16_pos };
+
   eat_superfluous(context)?;
   let (declarations, _) = parse_declaration_body(context)?;
-  Ok(MixinRule { name, declarations })
+  Ok(MixinRule { name: MixinName { value: name, location: name_location}, declarations })
 }
 
 fn parse_font_face_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<FontFaceRule, ParseError> {

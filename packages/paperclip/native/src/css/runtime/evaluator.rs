@@ -1,5 +1,5 @@
 use super::super::ast;
-use super::export::Exports;
+use super::export::{Exports, MixinExport};
 use super::virt;
 use crate::base::runtime::RuntimeError;
 use crate::core::vfs::VirtualFileSystem;
@@ -11,7 +11,6 @@ pub struct Context<'a> {
   vfs: &'a VirtualFileSystem,
   uri: &'a String,
   imports: &'a HashMap<String, Exports>,
-  mixins: HashMap<String, Vec<virt::CSSStyleProperty>>,
   exports: Exports,
   all_rules: Vec<virt::Rule>,
 }
@@ -33,7 +32,6 @@ pub fn evaluate<'a>(
     uri,
     vfs,
     imports,
-    mixins: HashMap::new(),
     exports: Exports::new(),
     all_rules: vec![],
   };
@@ -56,7 +54,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
         .push(virt::Rule::Charset(charset.to_string()));
     }
     ast::Rule::Mixin(mixin) => {
-      evaluate_mixin_rule(mixin, context);
+      evaluate_mixin_rule(mixin, context)?;
     }
     ast::Rule::Namespace(namespace) => {
       context
@@ -64,7 +62,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
         .push(virt::Rule::Namespace(namespace.to_string()));
     }
     ast::Rule::Export(export) => {
-      evaluate_export_rule(export, context);
+      evaluate_export_rule(export, context)?;
     }
     ast::Rule::FontFace(rule) => {
       context
@@ -205,8 +203,7 @@ fn evaluate_condition_rule(
     vfs: context.vfs,
     all_rules: vec![],
     imports: context.imports,
-    exports: context.exports.clone(),
-    mixins: context.mixins.clone(),
+    exports: context.exports.clone()
   };
 
   evaluate_style_rules(&rule.rules, &"".to_string(), &mut child_context)?;
@@ -256,15 +253,19 @@ fn evaluate_style_declarations<'a>(
         style.push(evaluate_style_key_value_declaration(kv, context)?);
       }
       ast::Declaration::Include(inc) => {
-        let mut imp_mixins: HashMap<String, Vec<virt::CSSStyleProperty>> = HashMap::new();
+        let mut imp_mixins: HashMap<String, MixinExport> = HashMap::new();
 
         for mixin_path in &inc.mixins {
-          let mixin_context_option: Option<&HashMap<String, Vec<virt::CSSStyleProperty>>> =
+          let mixin_context_option: Option<&HashMap<String, MixinExport>> =
             if mixin_path.len() == 2 {
               if let Some(imp) = context.imports.get(&mixin_path.first().unwrap().name) {
                 for (key, imp_mixin) in &imp.mixins {
                   if key == &mixin_path.last().unwrap().name {
-                    imp_mixins.insert(key.to_string(), imp_mixin.clone());
+                    if imp_mixin.public {
+                      imp_mixins.insert(key.to_string(), imp_mixin.clone());
+                    } else {
+                      return Err(RuntimeError::new("This mixin is private.".to_string(), context.uri, &mixin_path.last().unwrap().location));
+                    }
                   }
                 }
                 Some(&imp_mixins)
@@ -272,7 +273,7 @@ fn evaluate_style_declarations<'a>(
                 None
               }
             } else if mixin_path.len() == 1 {
-              Some(&context.mixins)
+              Some(&context.exports.mixins)
             } else {
               None
             };
@@ -280,7 +281,7 @@ fn evaluate_style_declarations<'a>(
           if let Some(mixin_context) = mixin_context_option {
             let mixin_decls_option = mixin_context.get(&mixin_path.last().unwrap().name);
             if let Some(mixin_decls) = mixin_decls_option {
-              style.extend(mixin_decls.clone());
+              style.extend(mixin_decls.declarations.clone());
             } else {
               return Err(RuntimeError::new(
                 "Reference not found.".to_string(),
@@ -320,10 +321,9 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
 
     match rule {
       ast::Rule::Mixin(mixin) => {
-        exports.mixins.insert(
-          mixin.name.to_string(),
-          context.mixins.get(&mixin.name).unwrap().clone(),
-        );
+        let mut export = context.exports.mixins.remove(&mixin.name.value).unwrap();
+        export.public = true;
+        context.exports.mixins.insert(mixin.name.value.to_string(), export);
       }
       _ => {}
     }
@@ -334,8 +334,17 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
   Ok(())
 }
 fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(), RuntimeError> {
-  let style = evaluate_style_declarations(&expr.declarations, context)?;
-  context.mixins.insert(expr.name.trim().to_string(), style);
+  let declarations = evaluate_style_declarations(&expr.declarations, context)?;
+
+  if None == context.exports.mixins.get(&expr.name.value) {
+    context.exports.mixins.insert(expr.name.value.to_string(), MixinExport {
+      declarations,
+      public: false
+    });
+  } else {
+    return Err(RuntimeError::new("This mixin is already declared in the upper scope.".to_string(), context.uri, &expr.name.location))
+  }
+  
   Ok(())
 }
 
