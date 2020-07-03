@@ -1,15 +1,9 @@
 <import src="./colors.pc">
+<style>
+  .error {
+    background: rgb(255, 152, 152);
+    color: rgb(138, 31, 31);
+  }
+</style>
 
-<fragment component as="Test">
-  <span>{children}</span>
-</fragment>
-
-<Test>
-  <span>Hello world!!!!</span>
-</Test>
-<Test>
-  Hello world
-</Test>
-<Test>
-  Hello worldaafsdfs
-</Test>
+fdfsdd

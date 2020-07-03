@@ -112,7 +112,7 @@ impl Engine {
     }
   }
 
-  pub async fn load(&mut self, uri: &String, part: Option<String>) -> Result<(), GraphError> {
+  pub async fn load(&mut self, uri: &String, part: Option<String>) -> Result<(), EngineError> {
     self
       .load_options
       .insert(uri.to_string(), EvalOptions { part });
@@ -138,7 +138,7 @@ impl Engine {
     }
   }
 
-  pub async fn reload(&mut self, uri: &String, hard: bool) -> Result<(), GraphError> {
+  pub async fn reload(&mut self, uri: &String, hard: bool) -> Result<(), EngineError> {
     let load_result = self
       .dependency_graph
       .load_dependency(uri, &mut self.vfs)
@@ -147,12 +147,13 @@ impl Engine {
     match load_result {
       Ok(loaded_uris) => {
         let mut stack = HashSet::new();
-        self.evaluate(uri, hard, &mut stack);
-        Ok(())
+        self.evaluate(uri, hard, &mut stack).or_else(|e| {
+          Err(EngineError::Runtime(e))
+        })
       }
       Err(error) => {
         self.dispatch(EngineEvent::Error(EngineError::Graph(error.clone())));
-        Err(error)
+        Err(EngineError::Graph(error))
       }
     }
   }
@@ -189,7 +190,7 @@ impl Engine {
     &mut self,
     uri: &String,
     content: &String,
-  ) -> Result<(), GraphError> {
+  ) -> Result<(), EngineError> {
     self.vfs.update(uri, content).await;
     self.reload(uri, false).await?;
 

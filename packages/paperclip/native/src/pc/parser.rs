@@ -295,7 +295,7 @@ fn parse_close_tag<'a, 'b>(
     .and_then(|end_tag_name| {
       if tag_name != end_tag_name {
         Err(ParseError::unterminated(
-          format!("Incorrect closing tag. This should be </{}>.", tag_name),
+          "Incorrect closing tag.".to_string(),
           end_tag_name_start,
           tokenizer.utf16_pos,
         ))
@@ -706,7 +706,7 @@ mod tests {
     assert_eq!(
       parse("<style></script>"),
       Err(ParseError::unterminated(
-        "Incorrect closing tag. This should be </style>.".to_string(),
+        "Incorrect closing tag.".to_string(),
         7,
         15
       ))

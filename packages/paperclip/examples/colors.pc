@@ -6,8 +6,13 @@
     }
   }
 
+  @mixin as {
+    color: blue;
+  }
+
   :global(body) {
-    @include bb;
+
+    @include as;
     color: red;
   }
 </style>

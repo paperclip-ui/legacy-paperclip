@@ -7,11 +7,14 @@ import {
   EngineEvent,
   EngineEventKind,
   getVirtTarget,
-  patchVirtNode
+  patchVirtNode,
+  EngineErrorEvent,
+  EngineErrorKind
 } from "paperclip-utils";
 import { EventEmitter } from "events";
 import { preventDefault } from "./utils";
 import { patchNativeNode } from "./dom-patcher";
+import { Engine } from "paperclip/src";
 
 export type DOMFactory = {
   createElement(tagName: string): HTMLElement;
@@ -34,6 +37,7 @@ export class Renderer {
   private _mainStyleContainer: HTMLElement;
   private _importedStylesContainer: HTMLElement;
   private _virtualRootNode: any;
+  private _errorOverlay: HTMLElement;
   readonly mount: HTMLElement;
   constructor(
     readonly protocol: string,
@@ -43,6 +47,14 @@ export class Renderer {
     this._sheets = [];
     this._importedStyles = {};
     this._em = new EventEmitter();
+    this._errorOverlay = _domFactory.createElement("div");
+    Object.assign(this._errorOverlay.style, {
+      zIndex: 1024,
+      position: "fixed",
+      top: 0,
+      left: 0
+    });
+
     this._hoverOverlay = _domFactory.createElement("div");
     Object.assign(this._hoverOverlay.style, {
       position: "absolute",
@@ -64,6 +76,7 @@ export class Renderer {
     this.mount.appendChild(this._mainStyleContainer);
     this.mount.appendChild(this._stage);
     this.mount.appendChild(this._hoverOverlay);
+    this.mount.appendChild(this._errorOverlay);
     this._stage.addEventListener("mousedown", this._onStageMouseDown, true);
     this._stage.addEventListener("mouseup", preventDefault, true);
     this._stage.addEventListener("mouseover", this._onStageMouseOver);
@@ -110,8 +123,55 @@ export class Renderer {
     }
   }
 
+  private _clearErrors() {
+    removeAllChildren(this._errorOverlay);
+  }
+
+  private _handleError(error: EngineErrorEvent) {
+    let message;
+    let uri = error.uri;
+
+    // Only want to show errors that are outside of this doc since they
+    // may be preventing this doc from rendering. Also, errors will be displayed
+    // in the code editor, so this is redundant. Also! Displaying errors on the canvas
+    // while it's being edited is visually jaaring. So it shouldn't be done!
+    if (uri === this.targetUri) {
+      return;
+    }
+
+    switch (error.errorKind) {
+      case EngineErrorKind.Graph: {
+        message = error.info.message;
+        break;
+      }
+      default: {
+        message = error.message;
+      }
+    }
+
+    const errorElement = this._domFactory.createElement("div");
+
+    // To style this, copy & paste in paperclip.
+    errorElement.innerHTML = `
+    <div style="position: fixed; bottom: 0; width: 100%; word-break: break-word; box-sizing: border-box; font-family: Helvetica; padding: 10px; background: rgb(255, 152, 152); color: rgb(138, 31, 31); line-height: 1.4em">
+      <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">
+        Error&nbsp;in&nbsp;${uri.replace("file://", "")}:
+      </div>
+      <div>
+      ${message}
+      </div>
+    </div>
+    `;
+    this._errorOverlay.appendChild(errorElement);
+  }
+
   handleEngineEvent = (event: EngineEvent) => {
+    this._clearErrors();
     switch (event.kind) {
+      case EngineEventKind.Error: {
+        this._handleError(event);
+        break;
+      }
       case EngineEventKind.AddedSheets: {
         if (event.uri === this.targetUri) {
           this._dependencies = event.allDependencies;
