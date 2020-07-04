@@ -300,10 +300,10 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
               sourceDefinitionLocation: imp.openTagLocation,
               instanceLocation: impRef.location
             });
-          }
-          const mixin = getMixins(impAst)[ref.name];
-          if (mixin) {
-            this._handleMixinRef(ref, mixin, impUri, context);
+            const mixin = getMixins(impAst)[ref.name];
+            if (mixin) {
+              this._handleMixinRef(ref, mixin, impUri, context);
+            }
           }
         }
       }

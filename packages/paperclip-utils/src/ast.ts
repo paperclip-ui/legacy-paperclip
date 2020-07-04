@@ -363,7 +363,7 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
   let mixins: Record<string, MixinRule> = {};
   for (const style of styles) {
     traverseSheet(style.sheet, rule => {
-      if (isRule(rule) && rule.kind === RuleKind.Mixin) {
+      if (rule && isRule(rule) && rule.kind === RuleKind.Mixin) {
         mixins[rule.name.value] = rule;
       }
     });

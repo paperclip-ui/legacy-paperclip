@@ -3,6 +3,7 @@
     
   .error {
     @include ab.default-font;
+    
     background: rgb(255, 152, 152);
     color: rgb(138, 31, 31);
     font-size: 24px;

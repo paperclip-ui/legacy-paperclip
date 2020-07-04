@@ -10,7 +10,7 @@
       font-family: Helvetica;
       letter-spacing: 0.07em;
     }
-    @keyframe dd {
+    @keyframes dd {
       0% {
          color: blue;
       }
