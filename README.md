@@ -13,23 +13,7 @@
   </a-->
 </p>
 
-**Paperclip is a language for building UI primitives.**
-
-#### Resources
-
-
-- [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
-- [Getting started](./documentation/Getting%20Started)
-- [Syntax](./documentation/Syntax)
-- Integrations
-  - [React](./packages/paperclip-compiler-react)
-  - [Webpack](./packages/paperclip-loader)
-- Examples
-  - [React TodoMVC](./examples/react-todomvc)
-
-----
-
-#### Example
+Paperclip is a language for building UI primitives. Here's an Example
 
 ```html
 
@@ -140,3 +124,16 @@ type Props = {
 declare const View: Factory<Props>;
 export default View;
 ```
+
+
+## Resources
+
+
+- [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
+- [Getting started](./documentation/Getting%20Started)
+- [Syntax](./documentation/Syntax)
+- Integrations
+  - [React](./packages/paperclip-compiler-react)
+  - [Webpack](./packages/paperclip-loader)
+- Examples
+  - [React TodoMVC](./examples/react-todomvc)
