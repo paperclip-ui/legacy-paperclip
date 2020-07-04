@@ -20,9 +20,9 @@ connection.onInitialize(() => {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Incremental,
       // Tell the client that the server supports code completion
-      completionProvider: {
-        resolveProvider: true
-      },
+      // completionProvider: {
+      //   resolveProvider: true
+      // },
       documentLinkProvider: {
         resolveProvider: true
       },

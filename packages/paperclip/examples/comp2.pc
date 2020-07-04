@@ -6,5 +6,8 @@
       font-size: 32px;
       font-family: Helvetica;
     }
+    @mixin test {
+      
+    }
   }
 </style>

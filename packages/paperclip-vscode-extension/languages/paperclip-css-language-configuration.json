@@ -3,6 +3,9 @@
     "blockComment": ["/*", "*/"]
   },
   "brackets": [["{", "}"]],
-  "autoClosingPairs": [["{", "}"]],
+  "autoClosingPairs": [
+    ["{", "}"],
+    ["@include", ";"]
+  ],
   "surroundingPairs": [[":", ";"]]
 }

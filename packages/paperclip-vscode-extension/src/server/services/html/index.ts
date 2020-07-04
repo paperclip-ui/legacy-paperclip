@@ -13,6 +13,7 @@ import {
   StyleDeclaration,
   getParts,
   RuleKind,
+  isIncludeDeclarationPart,
   getImports,
   AS_ATTR_NAME,
   ConditionRule,
@@ -34,6 +35,7 @@ import {
   StatementKind,
   resolveImportUri,
   getMixins,
+  isStyleDeclaration,
   ExportRule,
   DEFAULT_PART_ID
 } from "paperclip";
@@ -107,13 +109,49 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       }
     });
 
-    console.log(parent, previousSibling);
-
-    if (!parent || previousSibling) {
+    if (!parent || !previousSibling) {
       return [];
     }
 
-    console.log(parent, previousSibling);
+    if (isStyleDeclaration(parent)) {
+      if (isIncludeDeclarationPart(previousSibling)) {
+        if (parent.declarationKind === StyleDeclarationKind.Include) {
+          const ref = parent.mixins.find(mixin => {
+            return mixin.parts.some(
+              part =>
+                part.name === (previousSibling as IncludeDeclarationPart).name
+            );
+          });
+
+          if (ref) {
+            const importIds = getImportIds(ast);
+
+            // looking for import -- TODO - check for "."
+            if (ref.parts.length === 2) {
+              const [imp, impAst] = getImportSourceAst(
+                ref.parts[0].name,
+                ast,
+                uri,
+                this._engine
+              );
+              if (impAst) {
+                return Object.keys(getMixins(impAst)).map(id => ({
+                  label: id
+                }));
+              }
+            } else if (ref.parts.length === 1) {
+              return importIds.map(id => ({
+                label: id
+              }));
+
+              // looking to import mixin
+            }
+          }
+        }
+      }
+    }
+
+    return [];
   }
   protected _createASTInfo(root: Node, uri: string) {
     const context: HandleContext = {
@@ -237,20 +275,21 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     const mixins = getMixins(context.root);
     for (const mixinRef of declaration.mixins) {
       // @include local-ref;
-      if (mixinRef.length === 1) {
-        const ref = mixinRef[0];
+      if (mixinRef.parts.length === 1) {
+        const ref = mixinRef.parts[0];
         const mixin = mixins[ref.name];
         if (mixin) {
           this._handleMixinRef(ref, mixin, context.uri, context);
         }
-      } else if (mixinRef.length === 2) {
-        const impRef = mixinRef[0];
-        const ref = mixinRef[1];
+      } else if (mixinRef.parts.length === 2) {
+        const impRef = mixinRef.parts[0];
+        const ref = mixinRef.parts[1];
 
         if (context.importIds.includes(impRef.name)) {
           const [imp, impAst, impUri] = getImportSourceAst(
             impRef.name,
-            context,
+            context.root,
+            context.uri,
             this._engine
           );
 
@@ -342,7 +381,8 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     } else if (context.importIds.indexOf(namespace) !== -1) {
       const [imp, impAst, impUri] = getImportSourceAst(
         namespace,
-        context,
+        context.root,
+        context.uri,
         this._engine
       );
 
@@ -408,17 +448,18 @@ const resolveUri = resolveImportFile(fs);
 
 const getImportSourceAst = (
   id: string,
-  context: HandleContext,
+  root: Node,
+  uri: string,
   engine: Engine
 ): [Element, DependencyNodeContent, string] => {
-  const imp = getImportById(id, context.root);
+  const imp = getImportById(id, root);
 
   if (!imp) {
     return [null, null, null];
   }
 
   const impUri = resolveImportFile(fs)(
-    context.uri,
+    uri,
     getAttributeStringValue("src", imp)
   );
 

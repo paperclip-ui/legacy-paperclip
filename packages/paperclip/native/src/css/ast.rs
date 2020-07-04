@@ -40,7 +40,7 @@ impl fmt::Display for KeyValueDeclaration {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeDeclaration {
-  pub mixins: Vec<Vec<IncludeDeclarationPart>>,
+  pub mixins: Vec<IncludeDeclarationReference>,
   pub location: Location,
 }
 
@@ -53,11 +53,7 @@ impl fmt::Display for IncludeDeclaration {
         .mixins
         .iter()
         .map(|path| {
-          path
-            .iter()
-            .map(|part| part.name.to_string())
-            .collect::<Vec<String>>()
-            .join(".")
+          path.to_string()
         })
         .collect::<Vec<String>>()
         .join(" ")
@@ -65,6 +61,25 @@ impl fmt::Display for IncludeDeclaration {
     Ok(())
   }
 }
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct IncludeDeclarationReference {
+  pub parts: Vec<IncludeDeclarationPart>,
+  pub location: Location,
+}
+
+impl fmt::Display for IncludeDeclarationReference {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    writeln!(f, "{}", self
+    .parts
+    .iter()
+    .map(|part| part.name.to_string())
+    .collect::<Vec<String>>()
+    .join("."));
+    Ok(())
+  }
+}
+
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeDeclarationPart {

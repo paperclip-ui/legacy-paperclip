@@ -198,13 +198,13 @@ export class VSCServiceBridge {
 
   private _onCompletionRequest = (params: CompletionParams) => {
     const document = this._documents[params.textDocument.uri];
-    const a = this._service
+    const ret = this._service
       .getService(document.uri)
       .getCompletionItems(document.uri, document.offsetAt(params.position));
 
-    // const offset = sourceDocument.offsetAt(params.position);
-    // console.log(offset);
-    return [{ label: "ALADENE!!!" }];
+    console.log(ret);
+
+    return ret;
   };
 
   private _onCompletionResolveRequest = item => {

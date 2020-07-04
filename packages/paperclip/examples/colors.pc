@@ -1,3 +1,5 @@
+<import as="comb" src="./comp2.pc">
+
 <style>
   @export {
     .bg-orange {
@@ -10,10 +12,9 @@
     }
   }
 
-
-
   :global(body) {
-    @include ak.a;
+    @include comb.test;
+    
     /* background: url(/cant/be/found.png); */
 
     color: rgb(223, 60, 60);

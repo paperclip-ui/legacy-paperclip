@@ -810,9 +810,10 @@ fn parse_include_declaration<'a, 'b>(
   context.tokenizer.next_expect(Token::At)?;
   context.tokenizer.next_expect(Token::Keyword("include"))?;
   eat_superfluous(context)?;
-  let mut mixins: Vec<Vec<IncludeDeclarationPart>> = vec![];
+  let mut mixins: Vec<IncludeDeclarationReference> = vec![];
 
   while !context.tokenizer.is_eof() {
+    let ref_start = context.tokenizer.utf16_pos;
     let mut mixin_path: Vec<IncludeDeclarationPart> = vec![];
 
     while !context.tokenizer.is_eof() {
@@ -830,7 +831,10 @@ fn parse_include_declaration<'a, 'b>(
         return Err(ParseError::unexpected_token(start.u16_pos));
       }
     }
-    mixins.push(mixin_path);
+    mixins.push(IncludeDeclarationReference {
+      parts: mixin_path,
+      location: Location::new(ref_start, context.tokenizer.utf16_pos)
+    });
 
     if context.tokenizer.peek(1)? != Token::Whitespace {
       break;

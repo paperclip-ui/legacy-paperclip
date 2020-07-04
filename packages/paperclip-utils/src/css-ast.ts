@@ -1,4 +1,5 @@
 import { SourceLocation } from "./base-ast";
+import { Expression } from "./ast";
 
 export type Sheet = {
   rules: Rule[];
@@ -140,9 +141,14 @@ export type KeyValueDeclaration = {
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
 export type IncludeDeclaration = {
-  mixins: Array<Array<IncludeDeclarationPart>>;
+  mixins: IncludeDeclarationReference[];
   location: SourceLocation;
 } & BaseStyleDeclaration<StyleDeclarationKind.Include>;
+
+export type IncludeDeclarationReference = {
+  parts: IncludeDeclarationPart[];
+  location: SourceLocation;
+};
 
 export type IncludeDeclarationPart = {
   name: string;
@@ -188,7 +194,8 @@ export type StyleExpression =
   | Rule
   | IncludeDeclaration
   | MixinName
-  | IncludeDeclarationPart;
+  | IncludeDeclarationPart
+  | IncludeDeclarationReference;
 
 export const getSheetClassNames = (
   sheet: Sheet,
@@ -242,13 +249,20 @@ export const isRule = (expression: StyleExpression): expression is Rule => {
   return RuleKind[(expression as Rule).kind] != null;
 };
 export const isStyleDeclaration = (
-  expression: StyleExpression
+  expression: Expression
 ): expression is StyleDeclaration => {
   return (
     StyleDeclarationKind[(expression as StyleDeclaration).declarationKind] !=
     null
   );
 };
+
+export const isIncludeDeclarationPart = (
+  expression: Expression
+): expression is IncludeDeclarationPart => {
+  return (expression as any).name != null;
+};
+
 export const traverseStyleExpression = (
   rule: StyleExpression,
   each: (rule: StyleExpression) => void | boolean
@@ -278,7 +292,7 @@ export const traverseStyleExpression = (
     switch (rule.declarationKind) {
       case StyleDeclarationKind.Include: {
         for (const mixin of rule.mixins) {
-          for (const part of mixin) {
+          for (const part of mixin.parts) {
             if (!traverseStyleExpression(part, each)) {
               return false;
             }
