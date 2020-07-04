@@ -55,6 +55,9 @@ export SomeForm = () => {
 
 ## Why use Paperclip?
 
+### Scoped styling
+
+Styles in Paperclip are scoped to the documents they're defined in, so you don't have to worry about style collisions. 
 
 ### Faster development
 
@@ -67,7 +70,7 @@ Paperclip comes with a [realtime preview for VS Code](https://marketplace.visual
 
 ### Visual regression testing
 
-Paperclip encourages you to define previews of _every_ visual state of your UI. Because of that, you automatically get visual regression testing - no setup required. Just run `percy-paperclip` in your Paperclip project.
+Paperclip encourages you to define previews of _every_ visual state of your UI. Because of that, you automatically get visual regression testing - no setup required. Just run `percy-paperclip` in your project directory.
 
 
 ![Percy snapshots](./assets/snapshot.gif)
@@ -111,9 +114,21 @@ declare const View: Factory<Props>;
 export default View;
 ```
 
+### Roadmap
+
+Here's a peak at what's planned for Paperclip:
+
+- Multiple compiler targets so that you can re-use your Paperclip UIs in different languages & frameworks
+- Extension for Atom, Sublime, and other editors
+- Remote UI preview that you can use across devises & browsers (such as BrowserStack).
+- Storybook integration
+- Zeplin design token sync, so that you can keep your designs in sync with Figma & Sketch
+- UI editor controls:
+  - CSS animation editor
+  - various editors for colors, box shadows, filters, etc
+- A11Y
 
 ## Resources
-
 
 - [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
 - [Getting started](./documentation/Getting%20Started)
