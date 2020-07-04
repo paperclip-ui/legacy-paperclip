@@ -1,5 +1,10 @@
 import { expect } from "chai";
-import { createMockEngine, cleanHTML, waitForError } from "./utils";
+import {
+  createMockEngine,
+  cleanHTML,
+  waitForError,
+  stringifyLoadResult
+} from "./utils";
 import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
 
 describe(__filename + "#", () => {
@@ -39,6 +44,33 @@ describe(__filename + "#", () => {
 
     expect(cleanHTML(buffer)).to.eql(
       `<div class="_80f4925f_primary primary" data-pc-80f4925f></div><div class="_80f4925f_alt alt _80f4925f_primary primary" data-pc-80f4925f></div><div class="_80f4925f_alt2 alt2 _80f4925f_primary primary" data-pc-80f4925f></div>`
+    );
+  });
+
+  it("Can import keyframes", async () => {
+    const graph = {
+      "/entry.pc": `
+        <import as="ab" src="./module.pc">
+        <style>
+          .rule {
+            animation: ab.a 5s;
+          }
+        </style>
+      `,
+      "/module.pc": `
+        <style>
+          @keyframes a {
+          }
+        </style>
+      `
+    };
+    const engine = createMockEngine(graph);
+    const result = await engine.load("/entry.pc");
+
+    const buffer = `${stringifyLoadResult(result)}`;
+
+    expect(cleanHTML(buffer)).to.eql(
+      `<style>@keyframes _139cec8e_a { } ._80f4925f_rule { animation:_139cec8e_a 5s; }</style>`
     );
   });
 

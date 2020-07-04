@@ -260,7 +260,11 @@ fn parse_keyframes_rule<'a, 'b>(
   eat_superfluous(context)?;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
 
-  while context.tokenizer.peek(1)? != Token::CurlyClose {
+  while !context.tokenizer.is_eof() {
+    eat_superfluous(context)?;
+    if context.tokenizer.peek(1)? == Token::CurlyClose {
+      break;
+    }
     rules.push(parse_keyframe_rule(context)?);
   }
 
@@ -968,6 +972,8 @@ mod tests {
       @namespace svg \"http://google.com\";
       @font-face {
         font-family: 'abcd';
+      }
+      @keyframes abc {
       }
       @keyframes abc {
         0% {

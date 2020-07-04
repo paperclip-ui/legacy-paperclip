@@ -11,6 +11,7 @@ pub struct Context<'a> {
   vfs: &'a VirtualFileSystem,
   uri: &'a String,
   imports: &'a HashMap<String, Exports>,
+  import_scopes: &'a HashMap<String, String>,
   exports: Exports,
   all_rules: Vec<virt::Rule>,
 }
@@ -24,6 +25,7 @@ pub fn evaluate<'a>(
   expr: &ast::Sheet,
   uri: &'a String,
   scope: &'a str,
+  import_scopes: &'a HashMap<String, String>,
   vfs: &'a VirtualFileSystem,
   imports: &'a HashMap<String, Exports>,
 ) -> Result<EvalInfo, RuntimeError> {
@@ -32,6 +34,7 @@ pub fn evaluate<'a>(
     uri,
     vfs,
     imports,
+    import_scopes,
     exports: Exports::new(),
     all_rules: vec![],
   };
@@ -202,6 +205,7 @@ fn evaluate_condition_rule(
     uri: context.uri,
     vfs: context.vfs,
     all_rules: vec![],
+    import_scopes: context.import_scopes,
     imports: context.imports,
     exports: context.exports.clone(),
   };
@@ -682,6 +686,20 @@ fn is_reserved_keyframe_word<'a>(word: &'a str) -> bool {
     || iter_count_re.is_match(word)
 }
 
+fn format_scoped_reference(value: &str, context: &Context) -> String {
+  if !value.contains(".") {
+    format!("_{}_{}", context.scope, value)
+  } else {
+    let parts: Vec<&str> = value.split(".").collect();
+    let scope_option = context.import_scopes.get(&parts.get(0).unwrap().to_string());
+    if let Some(scope) = scope_option {
+      format!("_{}_{}", scope, parts.get(1).unwrap())
+    } else {
+      value.to_string()
+    }
+  }
+}
+
 fn evaluate_style_key_value_declaration<'a>(
   expr: &'a ast::KeyValueDeclaration,
   context: &Context,
@@ -691,7 +709,7 @@ fn evaluate_style_key_value_declaration<'a>(
   let url_re = Regex::new(r#"url\((?:['"]?)(.*?)(?:['"]?)\)"#).unwrap();
 
   if expr.name == "animation-name" {
-    value = format!("_{}_{}", context.scope, value);
+    value = format_scoped_reference(value.as_str(), context);
 
   // https://www.w3schools.com/cssref/css3_pr_animation.asp
   } else if expr.name == "animation" {
@@ -703,7 +721,7 @@ fn evaluate_style_key_value_declaration<'a>(
         if is_reserved_keyframe_word(part) {
           part.to_string()
         } else {
-          format!("_{}_{}", context.scope, part)
+          format_scoped_reference(part, context)
         }
       })
       .collect::<Vec<String>>()

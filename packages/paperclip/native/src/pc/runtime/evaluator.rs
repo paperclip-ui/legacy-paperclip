@@ -25,6 +25,7 @@ pub struct Context<'a> {
   pub import_ids: HashSet<&'a String>,
   pub part_ids: HashSet<&'a String>,
   pub scope: String,
+  pub import_scopes: HashMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
   pub imports: &'a HashMap<String, Exports>,
@@ -179,10 +180,12 @@ pub fn evaluate_document_styles<'a>(
         }
       }
       DependencyContent::StyleSheet(imp_style) => {
+        
         let info = evaluate_css(
           imp_style,
           dep_uri,
           &get_document_style_scope(&dep_uri),
+          &HashMap::new(),
           vfs,
           &HashMap::new(),
         )?;
@@ -205,12 +208,13 @@ pub fn evaluate_document_styles<'a>(
   let mut css_exports: css_export::Exports = css_export::Exports::new();
 
   let children_option = ast::get_children(&node_expr);
+  let scopes = get_import_scopes(&entry);
   let scope = get_document_style_scope(uri);
   if let Some(children) = children_option {
     // style elements are only allowed in root, so no need to traverse
     for child in children {
       if let ast::Node::StyleElement(style_element) = &child {
-        let info = evaluate_css(&style_element.sheet, uri, &scope, vfs, &css_imports)?;
+        let info = evaluate_css(&style_element.sheet, uri, &scope, &scopes, vfs, &css_imports)?;
 
         match info {
           CSSEvalInfo {
@@ -256,7 +260,7 @@ fn evaluate_document_sheet<'a>(
     // style elements are only allowed in root, so no need to traverse
     for child in children {
       if let ast::Node::StyleElement(style_element) = &child {
-        let info = evaluate_css(&style_element.sheet, uri, &scope, context.vfs, &css_imports)?;
+        let info = evaluate_css(&style_element.sheet, uri, &scope, &context.import_scopes, context.vfs, &css_imports)?;
         match info {
           CSSEvalInfo {
             sheet: child_sheet,
@@ -333,10 +337,21 @@ fn create_context<'a>(
     render_call_stack,
     imports,
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
+    import_scopes: get_import_scopes(graph.dependencies.get(uri).unwrap()),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
     scope,
     data,
   }
+}
+
+
+fn get_import_scopes<'a>(entry: &Dependency) -> HashMap<String, String> {
+  let mut scopes = HashMap::new();
+  for (id, uri) in &entry.dependencies {
+    scopes.insert(id.to_string(), get_document_style_scope(uri));
+    
+  }
+  scopes
 }
 
 pub fn evaluate_node<'a>(

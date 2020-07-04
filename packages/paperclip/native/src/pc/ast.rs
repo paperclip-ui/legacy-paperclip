@@ -3,6 +3,9 @@ use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
 use serde::Serialize;
 use std::fmt;
+use std::collections::HashMap;
+
+use crate::base::utils::{get_document_style_scope};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
