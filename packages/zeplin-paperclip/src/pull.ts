@@ -1,23 +1,40 @@
 import { ZeplinClient } from "./api";
+import * as path from "path";
 import * as inquirer from "inquirer";
+import { mkdirpSync, writeFileSync } from "fs-extra";
 import Layer from "zeplin-extension-style-kit/elements/layer";
 import FontFace from "zeplin-extension-style-kit/elements/fontFace";
 import TextStyle from "zeplin-extension-style-kit/elements/textStyle";
 import Color from "zeplin-extension-style-kit/values/color";
 import RuleSet from "zeplin-extension-style-kit/ruleSet";
-import { Layer as LayerModel } from "@zeplin/extension-model";
+import * as zmodel from "@zeplin/extension-model";
+import { castLayer, castColor, castTextStyle } from "./cast";
+import { VariableMap, ColorFormat, TypographyMap } from "./state";
+import { stringifyColor, generateIdentifier } from "./utils";
+import { DEFAULT_COLOR_FORMAT } from "./contants";
+import {
+  compileGlobalColorVariables,
+  compileLayers,
+  compileTypography,
+  compileGlobalSpacingVariables
+} from "./pc-compiler";
 
 export type PullOptions = {
   targetDirectory: string;
   personalAccessToken: string;
   projectId?: string;
+  colorFormat?: ColorFormat;
 };
 
 export const pull = async ({
   personalAccessToken,
   targetDirectory,
-  projectId
+  projectId,
+  colorFormat = DEFAULT_COLOR_FORMAT
 }: PullOptions) => {
+  const cwd = process.cwd();
+  const targetDirectoryPath = path.join(cwd, targetDirectory);
+
   let prompted = false;
   const client = new ZeplinClient({
     personalAccessToken
@@ -28,21 +45,36 @@ export const pull = async ({
     prompted = true;
   }
 
-  const colors = await client.getProjectColors(projectId);
-  const textStyles = await client.getProjectTextStyles(projectId);
-  const spacing = await client.getProjectSpacing(projectId);
+  const colorVars = await getColorVarMap(projectId, colorFormat, client);
+
+  const typographyMixins = await await getTypographyMap(
+    projectId,
+    colorFormat,
+    client
+  );
+  const spacingVars = await getSpacingVarMap(projectId, colorFormat, client);
   const components = await client.getProjectComponents(projectId);
 
-  console.log(colors);
-  // TODO
+  const molecules: Record<string, string> = {};
+
+  const atoms = {
+    colors: compileGlobalColorVariables(colorVars),
+    spacing: compileGlobalSpacingVariables(spacingVars),
+    typography: compileTypography(typographyMixins, colorFormat, colorVars)
+  };
+
   for (const component of components) {
     const info = await client.getProjectComponent(projectId, component.id);
-    console.log(new LayerModel(info.layers[0]));
-    const layer = new Layer(new LayerModel(info.layers[0]));
-    console.log(JSON.stringify(info.layers[0], null, 2));
-    console.log(layer.fillColor.toStyleValue({ colorFormat: "hsl" }, colors));
-    // const componentStyleInfo =
+    molecules[generateIdentifier(component.name).toLowerCase()] = compileLayers(
+      info.layers,
+      colorFormat,
+      colorVars
+    );
   }
+
+  const fileContents = { atoms, molecules };
+
+  writeFiles(fileContents, targetDirectoryPath);
 
   // console.log(l.style);
 
@@ -55,34 +87,59 @@ export const pull = async ({
   }
 };
 
-const castLayer = ({
-  id,
-  source_id,
-  type,
-  name,
-  rect,
-  fills,
-  borders,
-  shadows,
-  blur,
-  opacity,
-  blend_mode,
-  border_radius
-}) => {
-  return {
-    id,
-    source_id,
-    type,
-    name,
-    rect,
-    fills,
-    borders,
-    shadows,
-    blur,
-    opacity,
-    blend_mode,
-    border_radius
-  };
+const writeFiles = (map: any, directory: string) => {
+  for (const key in map) {
+    const value = map[key];
+    if (value.code === "string") {
+      mkdirpSync(directory);
+      const filePath = path.join(directory, `${key}.pc`);
+      console.log(`Writing ${filePath}`);
+      // writeFileSync(filePath, value);
+    } else {
+      writeFiles(value, path.join(directory, key));
+    }
+  }
+};
+
+export const getColorVarMap = async (
+  projectId: string,
+  colorFormat: ColorFormat,
+  client: ZeplinClient
+): Promise<VariableMap> => {
+  return (await client.getProjectColors(projectId))
+    .map(castColor)
+    .reduce((map, color) => {
+      const kitColor = new Color(color);
+      const value = `var(--${generateIdentifier(color.name)})`;
+      map[kitColor.valueOf().toString()] = value;
+      map[value] = kitColor.toStyleValue({ colorFormat }, null);
+      return map;
+    }, {});
+};
+
+export const getSpacingVarMap = async (
+  projectId: string,
+  colorFormat: ColorFormat,
+  client: ZeplinClient
+): Promise<VariableMap> => {
+  return (await client.getProjectSpacing(projectId)).reduce((map, spacing) => {
+    const value = `var(--${generateIdentifier(spacing.name)})`;
+    map[value] = `${spacing.value}px`;
+    return map;
+  }, {});
+};
+
+export const getTypographyMap = async (
+  projectId: string,
+  colorFormat: ColorFormat,
+  client: ZeplinClient
+): Promise<TypographyMap> => {
+  return (await client.getProjectTextStyles(projectId))
+    .map(castTextStyle)
+    .reduce((map, textStyle) => {
+      map[generateIdentifier(textStyle.name).toLowerCase()] = textStyle;
+      return map;
+    }, {});
 };
 
 const pickProjectId = async (client: ZeplinClient) => {
