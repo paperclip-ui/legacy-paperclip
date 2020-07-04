@@ -86,9 +86,11 @@ export SomeForm = () => {
 
 ### Faster development
 
-Paperclip comes with a [visual programming extension for VS Code](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension) that allows you to build UIs in realtime. 
+Paperclip comes with a [realtime preview for VS Code](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension) that allows you to build UIs in a flash.  ⚡️
 
-![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
+<!-- ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif) -->
+
+![VSCode Demo](./assets/button-demo.gif)
 
 
 ### Visual regression testing
@@ -99,7 +101,14 @@ Paperclip encourages you to define previews of _every_ visual state of your UI. 
 ![Percy snapshots](./assets/snapshot.gif)
 
 
-## Strongly typed
+### Perfect for design systems
+
+Paperclip makes it easy to set up & document design systems that are discoverable, and re-usable. 
+
+![Percy snapshots](./assets/design-system.gif)
+
+
+### Strongly typed
 
 Paperclip generates TypeScript definition files so that you can safely include templates in your project. Here's an example:
 
