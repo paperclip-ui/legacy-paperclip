@@ -1,6 +1,6 @@
 export type CompilerOptions = {
   name: string;
-  [identifier: string]: String;
+  [identifier: string]: any;
 };
 
 export type PaperclipConfig = {

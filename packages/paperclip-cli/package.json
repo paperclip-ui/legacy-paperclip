@@ -14,8 +14,10 @@
   "license": "MIT",
   "gitHead": "f5216d704052a4b3c50cb6cc06b51c6d9d713e7d",
   "dependencies": {
+    "@types/inquirer": "^6.5.0",
     "chokidar": "^3.3.1",
     "glob": "^7.1.6",
+    "inquirer": "^7.3.0",
     "paperclip": "^12.0.8",
     "paperclip-utils": "^12.0.8",
     "resolve": "^1.15.1",

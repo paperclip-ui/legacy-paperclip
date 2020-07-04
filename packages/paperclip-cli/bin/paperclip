@@ -3,36 +3,63 @@ const path = require("path");
 const resolve = require("resolve");
 const chokidar = require("chokidar");
 const glob = require("glob");
-const {build} = require("../lib/cli");
+const {build, init} = require("../lib/cli");
 const fs = require("fs");
 
+// const argv = require("yargs")
+// .option("compiler", {
+//   describe: "Language compiler target",
+// })
+// .option("write", {
+//   describe: "Write compiled file",
+// })
+// .option("config", {
+//   describe: "Config file",
+// })
+// .option("drop-pc-extension", {
+//   describe: "Drops PC extension from compiled files",
+// })
+// .option("watch", {
+// })
+// .example("$0", "Runs paperclip using pcconfig.json in cwd")
+// .example("$0 **/*.pc --compiler=paperclip-compiler-react", "Compiles PC files to React")
+// .example("$0 path/to/file.pc --compiler=paperclip-compiler-react --definition", "Generates a Typed Definition file")
+// .example("$0 --definition --write --watch", "Writes typed definition files & re-generates them when they change")
+// .argv;
+
 const argv = require("yargs")
-.option("compiler", {
-  describe: "Language compiler target",
+.command("build [file-pattern]", "Compiles paperclip files to target language", yargs => {
+  yargs
+  .option("watch", desc("watch for changes"))
+  .option("drop-pc-extension", desc("Drops PC extension from compiled files"))
+  .option("write", desc("Write compiled file"))
+  .option("compiler", desc("Language compiler target (default is from pcconfig if found)"))
+  .option("definition", desc("Write typed definition type"))
+  // .example("$0", "Runs paperclip using the pcconfig.json in the cwd")
+  // .example("$0 **/*.pc --compiler=paperclip-compiler-react", "Compiles PC files to React")
+  // .example("$0 path/to/file.pc --compiler=paperclip-compiler-react --definition", "Generates a Typed Definition file")
+  // .example("$0 --definition --write --watch", "Writes typed definition files & re-generates them when they change")
+}, argv => {
+  build({
+    config: argv.config,
+    write: argv.write,
+    watch: argv.watch,
+    definition: argv.definition,
+    dropPcExtension: argv.dropPcExtension,
+    compilerName: argv.compiler,
+    filePatterns: argv.filePattern
+  })
 })
-.option("write", {
-  describe: "Write compiled file",
+.command("init", "Initialize new paperclip project", yargs => {
+}, argv => {
+  init();
 })
-.option("config", {
-  describe: "Config file",
-})
-.option("drop-pc-extension", {
-  describe: "Drops PC extension from compiled files",
-})
-.option("watch", {
-})
-.example("$0", "Runs paperclip using pcconfig.json in cwd")
-.example("$0 **/*.pc --compiler=paperclip-compiler-react", "Compiles PC files to React")
-.example("$0 path/to/file.pc --compiler=paperclip-compiler-react --definition", "Generates a Typed Definition file")
-.example("$0 --definition --write --watch", "Writes typed definition files & re-generates them when they change")
 .argv;
 
-build({
-  config: argv.config,
-  write: argv.write,
-  watch: argv.watch,
-  definition: argv.definition,
-  dropPcExtension: argv.dropPcExtension,
-  compilerName: argv.compilerName,
-  filePatterns: argv._[0]
-})
+
+
+function desc(description) {
+  return {
+    description
+  }
+}
