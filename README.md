@@ -90,6 +90,12 @@ Paperclip makes it easy to set up & document design systems that are discoverabl
 
 ![Design system](./assets/design-system.gif)
 
+### Synchronizes with Zeplin
+
+Use the zeplin-paperclip tool to automatically download design tokens and component styles to your project. 
+
+![Zeplin sync](./assets/design-system-pull.gif)
+
 ### Strongly typed
 
 Paperclip's CLI tool generates TypeScript definition files so that you can safely include Paperclip UIs in your project. Here's an example:

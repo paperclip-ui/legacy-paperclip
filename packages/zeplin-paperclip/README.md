@@ -5,7 +5,7 @@ Installation: `npm install zeplin-paperclip --save-dev`
 This util allows you to download Zeplin design tokens to Paperclip UIs. Here's how you use it:
 
 ```
-npx zeplin-paperclip pull ./src/design/atoms
+npx zeplin-paperclip pull ./src/design/atoms --personal-access-token=[PERSONAL ACCESS TOKEN]
 ```
 
 

@@ -103,7 +103,7 @@ const writeFiles = (map: any, directory: string) => {
     if (value.code) {
       mkdirpSync(directory);
       const filePath = path.join(directory, `${key}.pc`);
-      console.log(`Writing ${filePath}`);
+      console.log(`Writing ${path.relative(process.cwd(), filePath)}`);
       writeFileSync(filePath, value.code);
     } else {
       writeFiles(value, path.join(directory, key));

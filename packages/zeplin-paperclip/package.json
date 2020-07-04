@@ -26,5 +26,6 @@
     "lodash": "^4.17.15",
     "p-limit": "^3.0.1",
     "zeplin-extension-style-kit": "^2.0.0"
-  }
+  },
+  "gitHead": "a58718db0204b7572f34032400fd6197466c0e42"
 }

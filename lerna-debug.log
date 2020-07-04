@@ -1,61 +1,328 @@
 0 silly argv {
-0 silly argv   _: [ 'run' ],
-0 silly argv   parallel: true,
+0 silly argv   _: [ 'publish' ],
+0 silly argv   composed: 'publish',
 0 silly argv   lernaVersion: '3.21.0',
-0 silly argv   '$0': '/Users/craigcondon/Developer/public/paperclip/node_modules/.bin/lerna',
-0 silly argv   script: 'build:watch'
+0 silly argv   '$0': '/usr/local/bin/lerna'
 0 silly argv }
 1 notice cli v3.21.0
 2 verbose rootPath /Users/craigcondon/Developer/public/paperclip
-3 info Executing command in 7 packages: "npm run build:watch"
-4 silly npmRunScript.stream [ 'build:watch', [], 'react-todomvc' ]
-5 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/examples/react-todomvc undefined
-6 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-compiler-react' ]
-7 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react undefined
-8 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-loader' ]
-9 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-loader undefined
-10 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-utils' ]
-11 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-utils undefined
-12 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-vscode-extension' ]
-13 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension undefined
-14 silly npmRunScript.stream [ 'build:watch', [], 'paperclip-web-renderer' ]
-15 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer undefined
-16 silly npmRunScript.stream [ 'build:watch', [], 'paperclip' ]
-17 silly getExecOpts /Users/craigcondon/Developer/public/paperclip/packages/paperclip undefined
-18 error Error: Command failed: npm run build:watch
-18 error
-18 error
-18 error > paperclip-vscode-extension@11.1.0 build:watch /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension
-18 error > npm run build -- --watch
-18 error
-18 error
-18 error > paperclip-vscode-extension@11.1.0 build /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension
-18 error > tsc "--watch"
-18 error
-18 error c8:30:37 PM - Starting compilation in watch mode...
-18 error
-18 error
-18 error 8:30:46 PM - Found 0 errors. Watching for file changes.
-18 error c8:35:57 PM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 8:35:57 PM - Found 0 errors. Watching for file changes.
-18 error c9:30:08 PM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 9:30:08 PM - Found 0 errors. Watching for file changes.
-18 error c9:30:32 PM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 9:30:35 PM - Found 0 errors. Watching for file changes.
-18 error c9:31:50 PM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 9:31:51 PM - Found 0 errors. Watching for file changes.
-18 error c9:31:52 PM - File change detected. Starting incremental compilation...
-18 error
-18 error
-18 error 9:31:52 PM - Found 0 errors. Watching for file changes.
-18 error
-18 error     at makeError (/Users/craigcondon/Developer/public/paperclip/node_modules/execa/index.js:174:9)
-18 error     at /Users/craigcondon/Developer/public/paperclip/node_modules/execa/index.js:278:16
+3 verbose session 54fbda23198082cb
+4 verbose user-agent lerna/3.21.0/node@v14.3.0+x64 (darwin)
+5 info publish rooted leaf detected, skipping synthetic root lifecycles
+6 silly argv { _: [ 'publish' ], composed: 'publish', lernaVersion: '3.21.0' }
+7 verbose rootPath /Users/craigcondon/Developer/public/paperclip
+8 info current version 12.0.12
+9 silly isAnythingCommitted
+10 verbose isAnythingCommitted 1
+11 silly currentBranch
+12 verbose currentBranch master
+13 silly remoteBranchExists
+14 silly isBehindUpstream
+15 silly isBehindUpstream master is behind origin/master by 0 commit(s) and ahead by 0
+16 silly hasTags
+17 verbose hasTags true
+18 silly git-describe.sync "v12.0.12-26-gb851e7c" => {"lastTagName":"v12.0.12","lastVersion":"v12.0.12","refCount":"26","sha":"b851e7c","isDirty":false}
+19 info Looking for changed packages since v12.0.12
+20 silly checking diff examples/react-todomvc
+21 silly found diff in examples/react-todomvc/src/test2.pc
+22 verbose filtered diff [ 'examples/react-todomvc/src/test2.pc' ]
+23 silly checking diff packages/figma-paperclip
+24 silly found diff in packages/figma-paperclip/README.md
+24 silly found diff in packages/figma-paperclip/bin/figma-paperclip
+24 silly found diff in packages/figma-paperclip/examples/test/package-lock.json
+24 silly found diff in packages/figma-paperclip/examples/test/package.json
+24 silly found diff in packages/figma-paperclip/package-lock.json
+24 silly found diff in packages/figma-paperclip/package.json
+24 silly found diff in packages/figma-paperclip/src/api.ts
+24 silly found diff in packages/figma-paperclip/src/cli.ts
+24 silly found diff in packages/figma-paperclip/src/pc-compiler.ts
+24 silly found diff in packages/figma-paperclip/src/pull.ts
+24 silly found diff in packages/figma-paperclip/tsconfig.json
+25 verbose filtered diff [
+25 verbose filtered diff   'packages/figma-paperclip/README.md',
+25 verbose filtered diff   'packages/figma-paperclip/bin/figma-paperclip',
+25 verbose filtered diff   'packages/figma-paperclip/examples/test/package-lock.json',
+25 verbose filtered diff   'packages/figma-paperclip/examples/test/package.json',
+25 verbose filtered diff   'packages/figma-paperclip/package-lock.json',
+25 verbose filtered diff   'packages/figma-paperclip/package.json',
+25 verbose filtered diff   'packages/figma-paperclip/src/api.ts',
+25 verbose filtered diff   'packages/figma-paperclip/src/cli.ts',
+25 verbose filtered diff   'packages/figma-paperclip/src/pc-compiler.ts',
+25 verbose filtered diff   'packages/figma-paperclip/src/pull.ts',
+25 verbose filtered diff   'packages/figma-paperclip/tsconfig.json'
+25 verbose filtered diff ]
+26 silly checking diff packages/gatsby-plugin-paperclip
+27 silly no diff found in gatsby-plugin-paperclip
+28 silly checking diff packages/paperclip-cli
+29 silly found diff in packages/paperclip-cli/README.md
+30 verbose filtered diff [ 'packages/paperclip-cli/README.md' ]
+31 silly checking diff packages/paperclip-compiler-react
+32 silly found diff in packages/paperclip-compiler-react/README.md
+33 verbose filtered diff [ 'packages/paperclip-compiler-react/README.md' ]
+34 silly checking diff packages/paperclip-loader
+35 silly found diff in packages/paperclip-loader/README.md
+36 verbose filtered diff [ 'packages/paperclip-loader/README.md' ]
+37 silly checking diff packages/paperclip-mini-editor
+38 silly no diff found in paperclip-mini-editor
+39 silly checking diff packages/paperclip-utils
+40 silly no diff found in paperclip-utils
+41 silly checking diff packages/paperclip-visual-editor
+42 silly no diff found in paperclip-visual-editor
+43 silly checking diff packages/paperclip-vscode-extension
+44 silly found diff in packages/paperclip-vscode-extension/package-lock.json
+45 verbose filtered diff [ 'packages/paperclip-vscode-extension/package-lock.json' ]
+46 silly checking diff packages/paperclip-web-renderer
+47 silly no diff found in paperclip-web-renderer
+48 silly checking diff packages/paperclip-website
+49 silly found diff in packages/paperclip-website/package.json
+50 verbose filtered diff [ 'packages/paperclip-website/package.json' ]
+51 silly checking diff packages/paperclip
+52 silly no diff found in paperclip
+53 silly checking diff packages/percy-paperclip
+54 silly no diff found in percy-paperclip
+55 silly checking diff packages/zeplin-paperclip
+56 silly found diff in packages/zeplin-paperclip/README.md
+56 silly found diff in packages/zeplin-paperclip/bin/zeplin-paperclip
+56 silly found diff in packages/zeplin-paperclip/examples/test/package-lock.json
+56 silly found diff in packages/zeplin-paperclip/examples/test/package.json
+56 silly found diff in packages/zeplin-paperclip/examples/test/src/design/atoms/atoms/colors.pc
+56 silly found diff in packages/zeplin-paperclip/examples/test/src/design/atoms/atoms/spacing.pc
+56 silly found diff in packages/zeplin-paperclip/examples/test/src/design/atoms/atoms/typography.pc
+56 silly found diff in packages/zeplin-paperclip/examples/test/src/design/atoms/molecules/button.pc
+56 silly found diff in packages/zeplin-paperclip/examples/test/src/design/atoms/molecules/rectangle-1.pc
+56 silly found diff in packages/zeplin-paperclip/package-lock.json
+56 silly found diff in packages/zeplin-paperclip/package.json
+56 silly found diff in packages/zeplin-paperclip/src/api.ts
+56 silly found diff in packages/zeplin-paperclip/src/cast.ts
+56 silly found diff in packages/zeplin-paperclip/src/cli.ts
+56 silly found diff in packages/zeplin-paperclip/src/contants.ts
+56 silly found diff in packages/zeplin-paperclip/src/pc-compiler.ts
+56 silly found diff in packages/zeplin-paperclip/src/pull.ts
+56 silly found diff in packages/zeplin-paperclip/src/state.ts
+56 silly found diff in packages/zeplin-paperclip/src/utils.ts
+56 silly found diff in packages/zeplin-paperclip/tsconfig.json
+56 silly found diff in packages/zeplin-paperclip/yarn.lock
+57 verbose filtered diff [
+57 verbose filtered diff   'packages/zeplin-paperclip/README.md',
+57 verbose filtered diff   'packages/zeplin-paperclip/bin/zeplin-paperclip',
+57 verbose filtered diff   'packages/zeplin-paperclip/examples/test/package-lock.json',
+57 verbose filtered diff   'packages/zeplin-paperclip/examples/test/package.json',
+57 verbose filtered diff   'packages/zeplin-paperclip/examples/test/src/design/atoms/atoms/colors.pc',
+57 verbose filtered diff   'packages/zeplin-paperclip/examples/test/src/design/atoms/atoms/spacing.pc',
+57 verbose filtered diff   'packages/zeplin-paperclip/examples/test/src/design/atoms/atoms/typography.pc',
+57 verbose filtered diff   'packages/zeplin-paperclip/examples/test/src/design/atoms/molecules/button.pc',
+57 verbose filtered diff   'packages/zeplin-paperclip/examples/test/src/design/atoms/molecules/rectangle-1.pc',
+57 verbose filtered diff   'packages/zeplin-paperclip/package-lock.json',
+57 verbose filtered diff   'packages/zeplin-paperclip/package.json',
+57 verbose filtered diff   'packages/zeplin-paperclip/src/api.ts',
+57 verbose filtered diff   'packages/zeplin-paperclip/src/cast.ts',
+57 verbose filtered diff   'packages/zeplin-paperclip/src/cli.ts',
+57 verbose filtered diff   'packages/zeplin-paperclip/src/contants.ts',
+57 verbose filtered diff   'packages/zeplin-paperclip/src/pc-compiler.ts',
+57 verbose filtered diff   'packages/zeplin-paperclip/src/pull.ts',
+57 verbose filtered diff   'packages/zeplin-paperclip/src/state.ts',
+57 verbose filtered diff   'packages/zeplin-paperclip/src/utils.ts',
+57 verbose filtered diff   'packages/zeplin-paperclip/tsconfig.json',
+57 verbose filtered diff   'packages/zeplin-paperclip/yarn.lock'
+57 verbose filtered diff ]
+58 verbose updated react-todomvc
+59 verbose updated figma-paperclip
+60 verbose updated gatsby-plugin-paperclip
+61 verbose updated paperclip-cli
+62 verbose updated paperclip-compiler-react
+63 verbose updated paperclip-loader
+64 verbose updated paperclip-mini-editor
+65 verbose updated paperclip-vscode-extension
+66 verbose updated paperclip-website
+67 verbose updated zeplin-paperclip
+68 verbose git-describe undefined => "v12.0.12-26-gb851e7c"
+69 silly git-describe parsed => {"lastTagName":"v12.0.12","lastVersion":"v12.0.12","refCount":"26","sha":"b851e7c","isDirty":false}
+70 info execute Skipping releases
+71 silly lifecycle No script for "preversion" in "figma-paperclip", continuing
+72 silly lifecycle No script for "preversion" in "paperclip-utils", continuing
+73 silly lifecycle No script for "preversion" in "paperclip-visual-editor", continuing
+74 silly lifecycle No script for "preversion" in "zeplin-paperclip", continuing
+75 silly lifecycle No script for "version" in "paperclip-visual-editor", continuing
+76 silly lifecycle No script for "version" in "figma-paperclip", continuing
+77 silly lifecycle No script for "version" in "zeplin-paperclip", continuing
+78 silly lifecycle No script for "version" in "paperclip-utils", continuing
+79 silly lifecycle No script for "preversion" in "paperclip", continuing
+80 silly lifecycle No script for "version" in "paperclip", continuing
+81 silly lifecycle No script for "preversion" in "paperclip-cli", continuing
+82 silly lifecycle No script for "preversion" in "paperclip-compiler-react", continuing
+83 silly lifecycle No script for "preversion" in "paperclip-loader", continuing
+84 silly lifecycle No script for "preversion" in "paperclip-web-renderer", continuing
+85 silly lifecycle No script for "preversion" in "percy-paperclip", continuing
+86 silly lifecycle No script for "version" in "paperclip-compiler-react", continuing
+87 silly lifecycle No script for "version" in "paperclip-cli", continuing
+88 silly lifecycle No script for "version" in "paperclip-loader", continuing
+89 silly lifecycle No script for "preversion" in "react-todomvc", continuing
+90 silly lifecycle No script for "preversion" in "gatsby-plugin-paperclip", continuing
+91 silly lifecycle No script for "preversion" in "paperclip-mini-editor", continuing
+92 silly lifecycle No script for "version" in "percy-paperclip", continuing
+93 silly lifecycle No script for "version" in "paperclip-web-renderer", continuing
+94 silly lifecycle No script for "preversion" in "paperclip-vscode-extension", continuing
+95 silly lifecycle No script for "version" in "gatsby-plugin-paperclip", continuing
+96 silly lifecycle No script for "version" in "react-todomvc", continuing
+97 silly lifecycle No script for "version" in "paperclip-mini-editor", continuing
+98 silly lifecycle No script for "preversion" in "paperclip-website", continuing
+99 silly lifecycle No script for "version" in "paperclip-vscode-extension", continuing
+100 silly lifecycle No script for "version" in "paperclip-website", continuing
+101 silly gitAdd [
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-visual-editor/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/figma-paperclip/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/figma-paperclip/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/zeplin-paperclip/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/zeplin-paperclip/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-utils/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-utils/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-cli/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-cli/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-loader/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-loader/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/percy-paperclip/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/percy-paperclip/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/gatsby-plugin-paperclip/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/examples/react-todomvc/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/examples/react-todomvc/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-mini-editor/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-mini-editor/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-website/package.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/packages/paperclip-website/package-lock.json',
+101 silly gitAdd   '/Users/craigcondon/Developer/public/paperclip/lerna.json'
+101 silly gitAdd ]
+102 silly gitCommit v12.0.13
+103 verbose git [ 'commit', '-m', 'v12.0.13' ]
+104 silly gitTag v12.0.13
+105 verbose git [ 'tag', 'v12.0.13', '-m', 'v12.0.13' ]
+106 silly lifecycle No script for "postversion" in "react-todomvc", continuing
+107 silly lifecycle No script for "postversion" in "figma-paperclip", continuing
+108 silly lifecycle No script for "postversion" in "gatsby-plugin-paperclip", continuing
+109 silly lifecycle No script for "postversion" in "paperclip-cli", continuing
+110 silly lifecycle No script for "postversion" in "paperclip-compiler-react", continuing
+111 silly lifecycle No script for "postversion" in "paperclip-loader", continuing
+112 silly lifecycle No script for "postversion" in "paperclip-mini-editor", continuing
+113 silly lifecycle No script for "postversion" in "paperclip-utils", continuing
+114 silly lifecycle No script for "postversion" in "paperclip-visual-editor", continuing
+115 silly lifecycle No script for "postversion" in "paperclip-vscode-extension", continuing
+116 silly lifecycle No script for "postversion" in "paperclip-web-renderer", continuing
+117 silly lifecycle No script for "postversion" in "paperclip-website", continuing
+118 silly lifecycle No script for "postversion" in "paperclip", continuing
+119 silly lifecycle No script for "postversion" in "percy-paperclip", continuing
+120 silly lifecycle No script for "postversion" in "zeplin-paperclip", continuing
+121 info git Pushing tags...
+122 silly gitPush origin master
+123 info publish Publishing packages to npm...
+124 info Verifying npm credentials
+125 verbose Retrieving npm user profile
+126 http fetch GET 200 https://registry.npmjs.org/-/npm/v1/user 671ms
+127 silly npm profile get received {"tfa":false,"name":"crcn","email":"craig.j.condon@gmail.com","email_verified":true,"created":"2016-02-01T20:29:08.156Z","updated":"2017-11-27T04:57:34.810Z","cidr_whitelist":null,"fullname":"Craig Condon","homepage":"http://crcn.io","twitter":"","github":"crcn/="}
+128 silly get npm username received {"username":"crcn","tfa":false,"name":"crcn","email":"craig.j.condon@gmail.com","email_verified":true,"created":"2016-02-01T20:29:08.156Z","updated":"2017-11-27T04:57:34.810Z","cidr_whitelist":null,"fullname":"Craig Condon","homepage":"http://crcn.io","twitter":"","github":"crcn/="}
+129 silly verifyNpmPackageAccess
+130 http fetch GET 200 https://registry.npmjs.org/-/org/crcn/package?format=cli 336ms
+131 info Checking two-factor auth mode
+132 verbose Retrieving npm user profile
+133 http fetch GET 200 https://registry.npmjs.org/-/npm/v1/user 238ms
+134 silly npm profile get received {"tfa":false,"name":"crcn","email":"craig.j.condon@gmail.com","email_verified":true,"created":"2016-02-01T20:29:08.156Z","updated":"2017-11-27T04:57:34.810Z","cidr_whitelist":null,"fullname":"Craig Condon","homepage":"http://crcn.io","twitter":"","github":"crcn/="}
+135 silly 2FA false
+136 warn ENOLICENSE Packages figma-paperclip, paperclip-cli, paperclip-compiler-react, paperclip-loader, paperclip-utils, paperclip-visual-editor, paperclip-vscode-extension, paperclip-web-renderer, paperclip, percy-paperclip, and zeplin-paperclip are missing a license.
+136 warn ENOLICENSE One way to fix this is to add a LICENSE.md file to the root of this repository.
+136 warn ENOLICENSE See https://choosealicense.com for additional guidance.
+137 silly getCurrentSHA
+138 verbose getCurrentSHA a58718db0204b7572f34032400fd6197466c0e42
+139 verbose pack-directory ../../../figma-paperclip
+140 verbose pack-directory ../../../paperclip-utils
+141 verbose pack-directory ../../../paperclip-visual-editor
+142 verbose pack-directory ../..
+143 silly lifecycle No script for "prepublish" in "figma-paperclip", continuing
+144 silly lifecycle No script for "prepublish" in "paperclip-utils", continuing
+145 silly lifecycle No script for "prepublish" in "paperclip-visual-editor", continuing
+146 silly lifecycle No script for "prepublish" in "zeplin-paperclip", continuing
+147 silly lifecycle No script for "prepare" in "figma-paperclip", continuing
+148 silly lifecycle No script for "prepare" in "paperclip-utils", continuing
+149 silly lifecycle No script for "prepare" in "paperclip-visual-editor", continuing
+150 silly lifecycle No script for "prepare" in "zeplin-paperclip", continuing
+151 silly lifecycle No script for "prepublishOnly" in "figma-paperclip", continuing
+152 silly lifecycle No script for "prepublishOnly" in "paperclip-utils", continuing
+153 silly lifecycle No script for "prepublishOnly" in "zeplin-paperclip", continuing
+154 silly lifecycle No script for "prepublishOnly" in "paperclip-visual-editor", continuing
+155 silly lifecycle No script for "prepack" in "figma-paperclip", continuing
+156 silly lifecycle No script for "prepack" in "paperclip-utils", continuing
+157 silly lifecycle No script for "prepack" in "zeplin-paperclip", continuing
+158 silly lifecycle No script for "prepack" in "paperclip-visual-editor", continuing
+159 silly lifecycle No script for "postpack" in "paperclip-visual-editor", continuing
+160 verbose packed packages/paperclip-visual-editor
+161 silly lifecycle No script for "postpack" in "paperclip-utils", continuing
+162 verbose packed packages/paperclip-utils
+163 verbose pack-directory ../../../paperclip-web-renderer
+164 verbose pack-directory ../../../paperclip
+165 silly lifecycle No script for "prepublish" in "paperclip-web-renderer", continuing
+166 silly lifecycle No script for "prepublish" in "paperclip", continuing
+167 silly lifecycle No script for "prepare" in "paperclip-web-renderer", continuing
+168 silly lifecycle No script for "prepare" in "paperclip", continuing
+169 silly lifecycle "prepublishOnly" starting in "paperclip-web-renderer"
+170 info lifecycle paperclip-web-renderer@12.0.13~prepublishOnly: paperclip-web-renderer@12.0.13
+171 silly lifecycle No script for "prepublishOnly" in "paperclip", continuing
+172 verbose lifecycle paperclip-web-renderer@12.0.13~prepublishOnly: unsafe-perm in lifecycle true
+173 verbose lifecycle paperclip-web-renderer@12.0.13~prepublishOnly: PATH: /Users/craigcondon/Developer/public/paperclip/node_modules/npm-lifecycle/node-gyp-bin:/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/node_modules/.bin:/Users/craigcondon/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
+174 verbose lifecycle paperclip-web-renderer@12.0.13~prepublishOnly: CWD: /Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer
+175 silly lifecycle paperclip-web-renderer@12.0.13~prepublishOnly: Args: [ '-c', 'npm run build' ]
+176 silly lifecycle No script for "prepack" in "paperclip", continuing
+177 silly lifecycle paperclip-web-renderer@12.0.13~prepublishOnly: Returned: code: 0  signal: null
+178 silly lifecycle "prepublishOnly" finished in "paperclip-web-renderer"
+179 silly lifecycle No script for "prepack" in "paperclip-web-renderer", continuing
+180 silly lifecycle No script for "postpack" in "paperclip-web-renderer", continuing
+181 verbose packed packages/paperclip-web-renderer
+182 silly lifecycle No script for "postpack" in "paperclip", continuing
+183 verbose packed packages/paperclip
+184 verbose pack-directory ../../../paperclip-cli
+185 verbose pack-directory ../../../paperclip-compiler-react
+186 verbose pack-directory ../../../paperclip-loader
+187 verbose pack-directory ../../../paperclip-vscode-extension
+188 verbose pack-directory ../../../percy-paperclip
+189 silly lifecycle No script for "prepublish" in "paperclip-cli", continuing
+190 silly lifecycle No script for "prepublish" in "paperclip-compiler-react", continuing
+191 silly lifecycle No script for "prepublish" in "paperclip-loader", continuing
+192 silly lifecycle No script for "prepublish" in "paperclip-vscode-extension", continuing
+193 silly lifecycle No script for "prepublish" in "percy-paperclip", continuing
+194 silly lifecycle No script for "prepare" in "paperclip-cli", continuing
+195 silly lifecycle No script for "prepare" in "paperclip-compiler-react", continuing
+196 silly lifecycle No script for "prepare" in "paperclip-loader", continuing
+197 silly lifecycle No script for "prepare" in "paperclip-vscode-extension", continuing
+198 silly lifecycle No script for "prepare" in "percy-paperclip", continuing
+199 silly lifecycle No script for "prepublishOnly" in "paperclip-cli", continuing
+200 silly lifecycle No script for "prepublishOnly" in "paperclip-compiler-react", continuing
+201 silly lifecycle No script for "prepublishOnly" in "paperclip-loader", continuing
+202 silly lifecycle "prepublishOnly" starting in "paperclip-vscode-extension"
+203 info lifecycle paperclip-vscode-extension@12.0.13~prepublishOnly: paperclip-vscode-extension@12.0.13
+204 silly lifecycle No script for "prepublishOnly" in "percy-paperclip", continuing
+205 verbose lifecycle paperclip-vscode-extension@12.0.13~prepublishOnly: unsafe-perm in lifecycle true
+206 verbose lifecycle paperclip-vscode-extension@12.0.13~prepublishOnly: PATH: /Users/craigcondon/Developer/public/paperclip/node_modules/npm-lifecycle/node-gyp-bin:/Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension/node_modules/.bin:/Users/craigcondon/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
+207 verbose lifecycle paperclip-vscode-extension@12.0.13~prepublishOnly: CWD: /Users/craigcondon/Developer/public/paperclip/packages/paperclip-vscode-extension
+208 silly lifecycle paperclip-vscode-extension@12.0.13~prepublishOnly: Args: [ '-c', 'npm run build' ]
+209 silly lifecycle No script for "prepack" in "paperclip-cli", continuing
+210 silly lifecycle No script for "prepack" in "paperclip-compiler-react", continuing
+211 silly lifecycle No script for "prepack" in "paperclip-loader", continuing
+212 silly lifecycle No script for "prepack" in "percy-paperclip", continuing
+213 silly lifecycle paperclip-vscode-extension@12.0.13~prepublishOnly: Returned: code: 0  signal: null
+214 silly lifecycle "prepublishOnly" finished in "paperclip-vscode-extension"
+215 silly lifecycle No script for "prepack" in "paperclip-vscode-extension", continuing
+216 silly lifecycle No script for "postpack" in "percy-paperclip", continuing
+217 verbose packed packages/percy-paperclip
+218 silly lifecycle No script for "postpack" in "paperclip-loader", continuing
+219 verbose packed packages/paperclip-loader
+220 silly lifecycle No script for "postpack" in "paperclip-cli", continuing
+221 verbose packed packages/paperclip-cli
+222 silly lifecycle No script for "postpack" in "paperclip-compiler-react", continuing
+223 verbose packed packages/paperclip-compiler-react
+224 silly lifecycle No script for "postpack" in "paperclip-vscode-extension", continuing
+225 verbose packed packages/paperclip-vscode-extension
+226 error
