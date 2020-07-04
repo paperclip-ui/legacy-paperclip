@@ -39,7 +39,27 @@ export const compileGlobalColorVariables = (map: VariableMap) => {
 
   const buffer = [code];
 
-  // TODO - preview here
+  buffer.push(`<style>\n`);
+  buffer.push(`  .preview {\n`);
+  buffer.push(`    display: inline-block;\n`);
+  buffer.push(`    background: #333;\n`);
+  buffer.push(`    font-family: Helvetica;\n`);
+  buffer.push(`    font-size: 24px;\n`);
+  buffer.push(`    padding: 10px 20px;\n`);
+  buffer.push(`    margin: 6px;\n`);
+  buffer.push(`    border-radius: 6px;\n`);
+  buffer.push(`  }\n`);
+  buffer.push(`</style>\n`);
+
+  buffer.push(`\n<!-- preview -->\n`);
+  for (const name in map) {
+    if (!/var\(.*?\)/.test(name)) {
+      continue;
+    }
+    buffer.push(
+      `<div className="preview" style="color: ${name};">${name}</div>\n`
+    );
+  }
 
   return {
     code: buffer.join("")
@@ -50,9 +70,7 @@ export const compileGlobalSpacingVariables = (map: VariableMap) => {
   const { code, varMap } = compileGlobalVariables(map);
 
   const buffer = [code];
-
-  // TODO - preview here
-
+  // TODO - preview
   return {
     code: buffer.join("")
   };
