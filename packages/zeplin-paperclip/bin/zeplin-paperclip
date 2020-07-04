@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+const {pull} = require("../lib/cli");
+
+require("yargs")
+.command("pull <target-directory>", "Download Zeplin design tokens into target directory", yargs => {
+}, argv => {
+  console.log("OKOK", argv);
+  pull({
+    targetDirectory: argv.targetDirectory
+  })
+}).argv;

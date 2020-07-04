@@ -1,0 +1,21 @@
+{
+  "name": "figma-paperclip",
+  "version": "1.0.0",
+  "description": "Download Zeplin colors, typography, and spacing to Paperclip",
+  "main": "index.js",
+  "bin": {
+    "figma-paperclip": "./bin/figma-paperclip"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "yargs": "^15.4.0"
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.1"
+  }
+}
