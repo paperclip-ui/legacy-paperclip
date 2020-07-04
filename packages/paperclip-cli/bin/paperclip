@@ -3,7 +3,7 @@ const path = require("path");
 const resolve = require("resolve");
 const chokidar = require("chokidar");
 const glob = require("glob");
-const {Engine, getPrettyMessage, getAllVirtSheetClassNames, evaluateAllFileStyles, stringifyCSSSheet} = require("paperclip");
+const {build} = require("../lib/cli");
 const fs = require("fs");
 
 const argv = require("yargs")
@@ -27,134 +27,12 @@ const argv = require("yargs")
 .example("$0 --definition --write --watch", "Writes typed definition files & re-generates them when they change")
 .argv;
 
-const argvConfig = generateConfig(argv);
-let localConfig = {
-  compilerOptions: {
-
-  }
-};
-
-try {
-  localConfig = require(resolve2(argv.config || path.join(process.cwd(), "/pcconfig")));
-} catch(e) {
-  
-}
-
-const config = {
-  ...localConfig,
-  ...argvConfig,
-  dropPcExtension: argvConfig.dropPcExtension || localConfig.dropPcExtension,
-  filesGlob: argvConfig.filesGlob || localConfig.filesGlob,
-  compilerOptions: {
-    ...localConfig.compilerOptions,
-    ...argvConfig.compilerOptions,
-    name: argvConfig.compilerOptions.name || localConfig.compilerOptions.name,
-  }
-};
-
-const compiler = config.compilerOptions.name;
-const filesGlob = config.filesGlob;
-
-const compilerModulePath = resolve2(compiler);
-if (!compilerModulePath) {
-  console.error("Compiler \"%s\" couldn't be found", compiler);
-  process.exit();
-}
-const compileModule = require(compilerModulePath);
-
-if (!compileModule || !compileModule.compile) {
-  console.error("Compiler \"%s\" does not export compile function", compiler);
-  process.exit();
-}
-
-const {compile, getOutputFilePath} = compileModule;
-init(process.cwd(), filesGlob, compile, argv.watch);
-
-function resolve2(module) {
-  try {
-    return resolve.sync(module, { basedir: process.cwd() });
-  } catch(e) {
-    try {
-      return require.resolve(module);
-    } catch(e) {
-      return null;
-    }
-  }
-}
-
-function generateConfig(argv) {
-  return {
-    dropPcExtension: argv.dropPcExtension,
-    filesGlob: argv._[0],
-    moduleDirectories: argv.moduleDirectories || [],
-    compilerOptions: {
-      name: argv.compiler,
-      ...argv
-    }
-  };
-}
-
-function init(cwd, filesGlob, compile, shouldWatch) {
-  
-  const pcEngine = new Engine();
-
-  function handleError(error, filePath) {
-    console.error(getPrettyMessage(error, fs.readFileSync(filePath, "utf8"), filePath));
-  }
-
-  async function compileFile(relativePath) {
-    let fullPath = `file://${path.resolve(process.cwd(), relativePath).replace(/\\/g, "/").replace(":", "%3A")}`;
-    const compilerOptions = config.compilerOptions;
-    try {
-      const ast = pcEngine.parseFile(fullPath);
-      if (ast.error) {
-        return handleError(ast.error, fullPath);
-      }
-      const sheet = pcEngine.evaluateFileStyles(fullPath);
-
-      const styleMap = {
-        [fullPath]: sheet,
-        ...evaluateAllFileStyles(pcEngine, ast, fullPath)
-      }
-      const result = compile({ ast, classNames: getAllVirtSheetClassNames(styleMap) }, fullPath, compilerOptions);
-      if (argv.write) {
-        let outputFilePath = getOutputFilePath(fullPath, compilerOptions);
-        if (config.dropPcExtension) {
-          outputFilePath = outputFilePath.replace(".pc", "");
-        }
-        console.log("Writing %s", outputFilePath);
-        fs.writeFileSync(new URL(outputFilePath), result);
-
-        if (!compilerOptions.definition) {
-          const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
-          console.log("Writing %s", cssFilePath);
-          fs.writeFileSync(new URL(cssFilePath), stringifyCSSSheet(sheet));
-        }
-      } else {
-        console.log("Compiling %s", relativePath);
-        console.log(result);
-      }
-    } catch(e) {
-      console.log("Err %s", relativePath);
-      console.error(e);
-    }
-  }
-  glob(filesGlob, {
-    cwd: cwd
-  }, async function(err, filePaths) {
-    filePaths.map(compileFile);
-  });
-
-  if (shouldWatch) {
-    watch(cwd, filesGlob, compileFile);
-  }
-}
-
-function watch(cwd, filesGlob, compileFile) {
-  const watcher = chokidar.watch(filesGlob, {
-    cwd: cwd
-  });
-
-  watcher  
-    .on('change', compileFile);
-}
+build({
+  config: argv.config,
+  write: argv.write,
+  watch: argv.watch,
+  definition: argv.definition,
+  dropPcExtension: argv.dropPcExtension,
+  compilerName: argv.compilerName,
+  filePatterns: argv._[0]
+})
