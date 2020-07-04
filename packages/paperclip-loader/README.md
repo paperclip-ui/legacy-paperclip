@@ -16,7 +16,12 @@ module.exports = {
     rules: [
       {
         test: /\.pc$/,
-        loader: "paperclip-loader"
+        loader: "paperclip-loader",
+        options: {
+          
+          // pcconfig.json can be generated via the paperclip-cli tool
+          config: require("./pcconfig.json")
+        }
       },
 
       // Required since paperclip-loader emits
@@ -39,28 +44,6 @@ module.exports = {
 
 ```
 
-Next, you'll need to set up a `pcconfig.json`:
-
-```javascript
-{
-
-  // Options for the specific compiler
-  "compilerOptions": {
-
-    // module name of the compiler to use
-    "name": "paperclip-compiler-react"
-  },
-
-  // Module directories where import statements resolve from.
-  "moduleDirectories": ["./src"],
-
-  // File pattern for all of your Paperclip files.
-  "filesGlob": "./src/**/*.pc"
-}
-```
-
- > Docs for this can be found [here](../../documentation/Paperclip%20Config).
- 
  Examples:
  
  - [TodoMVC](../../examples/react-todomvc)
