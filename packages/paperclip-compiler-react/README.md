@@ -5,7 +5,7 @@ Installation: `npm install paperclip-compiler-react --save-dev`
 This is a compiler that translates paperclip templates into React code. Here's an example template:
 
 ```html
-<div export component as="Counter">
+<div export component as="default">
   Current count: {currentCount}
 </div>
 ```
