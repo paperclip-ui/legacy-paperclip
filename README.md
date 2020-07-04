@@ -82,7 +82,7 @@ Paperclip makes it easy to set up & document design systems that are discoverabl
 
 ### Strongly typed
 
-Paperclip generates TypeScript definition files so that you can safely include templates in your project. Here's an example:
+Paperclip's CLI tool generates TypeScript definition files so that you can safely include Paperclip UIs in your project. Here's an example:
 
 ```typescript
 /* eslint-disable */
