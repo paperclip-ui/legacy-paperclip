@@ -9,28 +9,24 @@ For the Alpha version of Paperclip, you'll need this stuff:
 Here's what you can do next:
 
 1. Install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension).
-1. With VS Code open, create a `hello-world.pc` & open it.
+1. With VS Code open, create a `src/hello-world.pc` & open it.
 1. You'll see a pop up to open a live preview, click OK.
 1. Start typing away! You should see a live preview of your text at this point.
 
 
-You're _almost_ done. Next you'll need to add a `pcconfig.json` file. Here's an example you can use:
+You're _almost_ done. Next you'll need to set up the build tools. For that, run `npm install paperclip-cli --save-dev`. Then run:
 
-```json
-{
-  "compilerOptions": {
-    "name": "paperclip-compiler-react"
-  },
-  "moduleDirectories": ["./src/ui"],
-  "filesGlob": "./src/**/*.pc"
-}
+```
+npx paperclip init
 ```
 
-> Check out the [PC config documentation](../Paperclip%20Config) for more info.
+☝🏻 This will ask you a few questions. Then after that, you'll have a `pcconfig.json` that the CLI tool will for compiling JavaScript code. 
+
+> [The CLI main README has more documentation](../../packages/paperclip-cli)
 
 Now you can start using Paperclip! Here's what you can do next:
 
 <!-- - Check out the tutorials -->
+- [Integrating with React](../../packages/paperclip-compiler-react)
+- [Setting up Webpack](../../packages/paperclip-loader)
 - [Check out the Syntax](../Syntax)
-- [Setting up Webpack](../Integrations/Webpack.md)
-- [Integrating with React](../Integrations/React.md)

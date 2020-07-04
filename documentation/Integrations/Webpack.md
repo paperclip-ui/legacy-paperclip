@@ -1,1 +1,0 @@
-Check out the [paperclip-loader](../../packages/paperclip-loader) for setting up Webpack.

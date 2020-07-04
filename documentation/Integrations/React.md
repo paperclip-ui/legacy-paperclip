@@ -1,1 +1,0 @@
-Check out the [paperclip-compiler-react](../../packages/paperclip-compiler-react) package for working with React code.

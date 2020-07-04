@@ -8,7 +8,7 @@
     "build": "npm run build:definitions && webpack",
     "build:dist": "webpack",
     "build:watch": "npm run build:definitions -- --watch & webpack --watch",
-    "build:definitions": "paperclip --compiler=paperclip-compiler-react --definition --write"
+    "build:definitions": "paperclip build --compiler=paperclip-compiler-react --definition --write"
   },
   "author": "",
   "license": "MIT",
