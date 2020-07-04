@@ -127,6 +127,7 @@ Here's a peak at what's planned for Paperclip:
   - CSS animation editor
   - various editors for colors, box shadows, filters, etc
 - A11Y
+- code splitting so that you don't need to include all of your CSS into one bundle
 
 ## Resources
 
