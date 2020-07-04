@@ -833,7 +833,7 @@ fn parse_include_declaration<'a, 'b>(
     }
     mixins.push(IncludeDeclarationReference {
       parts: mixin_path,
-      location: Location::new(ref_start, context.tokenizer.utf16_pos)
+      location: Location::new(ref_start, context.tokenizer.utf16_pos),
     });
 
     if context.tokenizer.peek(1)? != Token::Whitespace {

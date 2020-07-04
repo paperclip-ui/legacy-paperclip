@@ -52,9 +52,7 @@ impl fmt::Display for IncludeDeclaration {
       &self
         .mixins
         .iter()
-        .map(|path| {
-          path.to_string()
-        })
+        .map(|path| { path.to_string() })
         .collect::<Vec<String>>()
         .join(" ")
     )?;
@@ -70,16 +68,19 @@ pub struct IncludeDeclarationReference {
 
 impl fmt::Display for IncludeDeclarationReference {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    writeln!(f, "{}", self
-    .parts
-    .iter()
-    .map(|part| part.name.to_string())
-    .collect::<Vec<String>>()
-    .join("."));
+    writeln!(
+      f,
+      "{}",
+      self
+        .parts
+        .iter()
+        .map(|part| part.name.to_string())
+        .collect::<Vec<String>>()
+        .join(".")
+    );
     Ok(())
   }
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeDeclarationPart {

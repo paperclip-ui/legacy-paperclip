@@ -256,31 +256,31 @@ fn evaluate_style_declarations<'a>(
         let mut imp_mixins: HashMap<String, MixinExport> = HashMap::new();
 
         for mixin_path in &inc.mixins {
-          let mixin_context_option: Option<&HashMap<String, MixinExport>> = if mixin_path.parts.len() == 2
-          {
-            if let Some(imp) = context.imports.get(&mixin_path.parts.first().unwrap().name) {
-              for (key, imp_mixin) in &imp.mixins {
-                if key == &mixin_path.parts.last().unwrap().name {
-                  if imp_mixin.public {
-                    imp_mixins.insert(key.to_string(), imp_mixin.clone());
-                  } else {
-                    return Err(RuntimeError::new(
-                      "This mixin is private.".to_string(),
-                      context.uri,
-                      &mixin_path.parts.last().unwrap().location,
-                    ));
+          let mixin_context_option: Option<&HashMap<String, MixinExport>> =
+            if mixin_path.parts.len() == 2 {
+              if let Some(imp) = context.imports.get(&mixin_path.parts.first().unwrap().name) {
+                for (key, imp_mixin) in &imp.mixins {
+                  if key == &mixin_path.parts.last().unwrap().name {
+                    if imp_mixin.public {
+                      imp_mixins.insert(key.to_string(), imp_mixin.clone());
+                    } else {
+                      return Err(RuntimeError::new(
+                        "This mixin is private.".to_string(),
+                        context.uri,
+                        &mixin_path.parts.last().unwrap().location,
+                      ));
+                    }
                   }
                 }
+                Some(&imp_mixins)
+              } else {
+                None
               }
-              Some(&imp_mixins)
+            } else if mixin_path.parts.len() == 1 {
+              Some(&context.exports.mixins)
             } else {
               None
-            }
-          } else if mixin_path.parts.len() == 1 {
-            Some(&context.exports.mixins)
-          } else {
-            None
-          };
+            };
 
           if let Some(mixin_context) = mixin_context_option {
             let mixin_decls_option = mixin_context.get(&mixin_path.parts.last().unwrap().name);
