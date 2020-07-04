@@ -5,21 +5,45 @@ Installation: `npm install paperclip-compiler-react --save-dev`
 This is a compiler that translates paperclip templates into React code. Here's an example template:
 
 ```html
+<style>
+   .counter {
+     font-family: Helvetica;
+     cursor: pointer;
+   }
+   .current-count {
+     font-weight: 400;
+   }
+</style>
+
+<!-- Components -->
 <div export component as="default">
-  Current count: {currentCount}
+  Current count: {children}
 </div>
+<div export component as="CurrentCount">
+  {children}
+</div>
+
+<!-- Previews -->
+
+<default>
+  <CurrentCount>
+    50
+  </CurrentCount>
+</default>
 ```
 
 Here's the React code using the template:
 
 ```jsx
-import BaseCounter from "./counter.pc";
+import Counter, {CurrentCount} from "./counter.pc";
 import React, { useState } from "react";
 
 export default () => {
   const [currentCount, setCount] = useState(0);
   const onClick = () => setCount(currentCount + 1);
-  return <BaseCounter onClick={onClick} currentCount={currentCount} />;
+  return <Counter onClick={onClick}>
+    <CurrentCount>{currentCount}</CurrentCount>
+  </Counter>;
 };
 ```
 
