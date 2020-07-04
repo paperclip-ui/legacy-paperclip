@@ -5,12 +5,12 @@ const {pull} = require("../lib/cli");
 require("yargs")
 .command("pull <target-directory>", "Download Zeplin design tokens into target directory", yargs => {
   yargs
-  .option("personal-access-token", { description: "Zeplin personal access token", required: true })
-  .option("project-id", { description: "ID of project that you'd like to sync" })
+  .option("personal-access-token", { description: "Figma personal access token", required: true })
+  .option("team-id", { description: "Figma team ID", required: true })
 }, argv => {
   pull({
     targetDirectory: argv.targetDirectory,
-    personalAccessToken: argv.personalAccessToken,
-    projectId: argv.projectId
+    teamId: argv.teamId,
+    personalAccessToken: argv.personalAccessToken
   })
 }).argv;

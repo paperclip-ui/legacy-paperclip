@@ -16,6 +16,8 @@
     "yargs": "^15.4.0"
   },
   "dependencies": {
-    "fs-extra": "^9.0.1"
+    "axios": "^0.19.2",
+    "fs-extra": "^9.0.1",
+    "p-limit": "^3.0.1"
   }
 }
