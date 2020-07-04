@@ -49,29 +49,14 @@ export default () => {
 
 #### generating typed definition files
 
-You'll need to install the CLI package: `npm install paperclip-cli --save-dev`. Next in your `pcconfig.json` file, change it to reflect this:
-
-```javascript
-{
-  "compilerOptions": {
-    "name": "paperclip-compiler-react"
-  }
-  // more config ...
-}
-```
-
-Next, assuming that your PC config also has `filesGlob` set up, go ahead and run this in terminal:
+You'll need to install the CLI package: `npm install paperclip-cli --save-dev`. Assuming that you have a `pcconfig.json` file (see [paperclip-cli](../packages/paperclip-cli) docs for info), go ahead around run:
 
 ```
-./node_modules/.bin/paperclip --definition
+npx paperclip --definition --write
 ```
 
-This will print all typed definitions. To save typed definition files, you can run this:
+☝🏻 this will generate typed definition files that you can use in your react components.
 
-
-```
-./node_modules/.bin/paperclip --definition --write
-```
 
 > ✨ I recommend that you include `*.pc.d.ts` in your `.gitignore` file so to keep the typed definition files out of GIT. 
 
@@ -80,7 +65,7 @@ To watch for changes, you can do this:
 
 
 ```
-./node_modules/.bin/paperclip --definition --write --watch
+npx paperclip --definition --write --watch
 ```
 
 > Check out the [CLI docs](../paperclip-cli) for more info
