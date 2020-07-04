@@ -93,7 +93,7 @@ Paperclip comes with a [visual programming extension for VS Code](https://market
 
 ### Visual regression testing
 
-Paperclip encourages you to define previews of _every_ visual state of your UI. Because of that, you automatically get visual regression testing - no set up required. Just run `percy-paperclip` in your Paperclip project.
+Paperclip encourages you to define previews of _every_ visual state of your UI. Because of that, you automatically get visual regression testing - no setup required. Just run `percy-paperclip` in your Paperclip project.
 
 
 ![Percy snapshots](./assets/snapshot.gif)
