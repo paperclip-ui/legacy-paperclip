@@ -13,7 +13,7 @@
   </a-->
 </p>
 
-# Resources
+## Resources
 
 
 - [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
