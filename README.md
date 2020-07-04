@@ -27,9 +27,11 @@
 
 ----
 
-Paperclip is a language for building UI primitives. Here's a basic example:
+Paperclip is a language for building UI primitives. Here's an example:
 
 ```html
+
+<!-- Styles are scoped to this document  -->
 <style> 
   .button {
     font-family: Helvetica;
@@ -46,12 +48,10 @@ Paperclip is a language for building UI primitives. Here's a basic example:
   }
 </style>
 
-<!-- components to export -->
+<!-- This component is compiled to code -->
 <div export component as="Button" class:secondary class="button">
   {children}
 </div>
-
-<!-- Previews -->
 
 <Button>
   This is a primary button
@@ -62,7 +62,7 @@ Paperclip is a language for building UI primitives. Here's a basic example:
 </Button>
 ```
 
-There's not much else to this. Here's how you'd use this component in React:
+☝🏻not much else to this. Here's how you use it in React:
 
 ```typescript
 import {Button} from "./button.pc";
@@ -79,55 +79,29 @@ export SomeForm = () => {
 };
 ```
 
-☝🏻 Currently React is the only compiler target, but more are planned. 
+> ☝🏻 Currently React is the only compiler target, but more are planned. 
 
-## Why?
+## Why use Paperclip?
 
-Why use Paperclip? 
 
-<!--
+### Faster development
 
-Notes:
-
-- need to express that it's lightweight
-- no compiler
-
--->
-
-#### Realtime visual development
-
-Paperclip comes with a visual programming extension for VS Code that allows you to build UIs in realtime. 
+Paperclip comes with a [visual programming extension for VS Code](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension) that allows you to build UIs in realtime. 
 
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
 
 
-## Zero-config visual regression testing
+### Visual regression testing
 
-Paperclip encourages you to define previews of _every_ visual state of your UI components. And because of that, you get visual regression testing for free -- just run `percy-paperclip`
-
-Just run `percy-paperclip` on any Paperclip UI to test for visual regressions. 
-
-<!-- Since previews are _part_ of building UIs in Paperclip, all you need to do to set up visual regression testing is run `percy-paperclip` against any Paperclip file. -->
+Paperclip encourages you to define previews of _every_ visual state of your UI. Because of that, you automatically get visual regression testing - no set up required. Just run `percy-paperclip` in your Paperclip project.
 
 
 ![Percy snapshots](./assets/snapshot.gif)
 
-<!-- TODO - And voila! Your UIs will appear in Percy. No additional setup necessary.  ->
-
-## Features ✨
-
-- Just covers presentational components.
-- Real-time previews in VS Code (more code editors to come).
-- Super fast, even for large codebases. 
-- Templates compile to plain, strongly typed code.
-- Works with Webpack.
-
-<!-- 
-As you might have noticed, Paperclip just exports building blocks for your component. All of the logic remains in your application code, so you don't have to worry about  -->
 
 ## Strongly typed 🦺
 
-Templates compile down to strongly typed code. Here's an example:
+Paperclip templates compile to TypeScript definition files for safety. Here's an example:
 
 ```typescript
 import {ReactNode, ReactHTML, Factory, InputHTMLAttributes, ClassAttributes} from "react";
@@ -152,37 +126,3 @@ type TodoListProps = {
 
 export const TodoList: Factory<TodoListProps>;
 ```
-
-<!-- ### What makes Paperclip special?
-
-Paperclip's syntax allows you to express _most_ of you user interface in a "dumb" way. -->
-
-
-<!-- The current process around developing UIs is incredibly slow, especially as codebases scale. Paperclip was created -->
-
-
-<!--UI development is a bit slow & inneficient, especially as projects scale, and code complexity kicks in. So I developed Paperclip to be a lightweight, and fast alternative for creating UIs that helps get the job done faster. 
-
-The template language is limited -->
-
-<!--
-
-Points:
-
-- lightwight
-- bones of the UI
-
--->
-
-
-<!--
-## Roadmap 🌄
-
-This is just the beginning! Here are just a few planned features:
-
-- Minimal setup automated visual regression testing. Just plug in your Paperclip files.
-- More compiler targets: Ruby, PHP, VueJS, AngularJS, and others.
-- More code editor integrations: Sublime, Atom.
-- More visual tooling in the preview, so you can make visual changes directly.
-- Preview against different browsers directly within your code editor.
--->
