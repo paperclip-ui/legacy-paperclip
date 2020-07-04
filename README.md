@@ -62,7 +62,7 @@ Paperclip is a language for building UI primitives. Here's an example:
 </Button>
 ```
 
-☝🏻 Not much else to this. Here's how you use it in React:
+☝🏻 Not much else to this. Here's how you use it in React (using Webpack or CLI tool):
 
 ```typescript
 import {Button} from "./button.pc";
