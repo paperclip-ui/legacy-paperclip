@@ -76,7 +76,7 @@ export default () => {
 You'll need to install the CLI package: `npm install paperclip-cli --save-dev`. Assuming that you have a `pcconfig.json` file (see [paperclip-cli](../packages/paperclip-cli) docs for info), go ahead around run:
 
 ```
-npx paperclip --definition --write
+npx paperclip build --definition --write
 ```
 
 ☝🏻 this will generate typed definition files that you can use in your react components.
@@ -89,7 +89,7 @@ To watch for changes, you can do this:
 
 
 ```
-npx paperclip --definition --write --watch
+npx paperclip build --definition --write --watch
 ```
 
 > Check out the [CLI docs](../paperclip-cli) for more info

@@ -37,14 +37,14 @@ Next, add a `.pc` file with the following content:
 then run:
 
 ```bash
-npx paperclip --write
+npx paperclip build --write
 ```
 
 ☝🏻This will compile your paperclip file to JavaScript code. Alternatively, you can generate TypeScript definition files with
 the following command:
 
 ```bash
-npx paperclip --write --definition
+npx paperclip build --write --definition
 ```
 
 ☝🏻This is useful if you're using Paperclip within a TypeScript project. If you're doing that, I recommend you add this
@@ -54,8 +54,8 @@ command a s a script in your package.json file. For example:
 {
   "name": "my-module-name",
   "scripts": {
-    "build:paperclip-definitions": "paperclip --definition --write",
-    "build:watch:paperclip-definitions": "paperclip --definition --write --watch",
+    "build:paperclip-definitions": "paperclip build --definition --write",
+    "build:watch:paperclip-definitions": "paperclip build --definition --write --watch",
   }
 }
 ```
