@@ -509,7 +509,6 @@ pub struct PseudoParamElementSelector {
   pub name: String,
   pub param: String,
   pub location: Location,
-
 }
 
 impl fmt::Display for PseudoParamElementSelector {

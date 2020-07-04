@@ -57,7 +57,7 @@ fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseErro
   let start = context.tokenizer.utf16_pos;
   Ok(Sheet {
     rules: parse_rules(context)?,
-    location: Location::new(start, context.tokenizer.utf16_pos)
+    location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
 
@@ -105,7 +105,7 @@ fn parse_style_rule2<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<StyleRule,
     selector,
     declarations,
     children,
-    location: Location::new(start, context.tokenizer.utf16_pos)
+    location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
 
@@ -183,10 +183,10 @@ fn parse_export_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ExportRule
 
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
-  Ok(ExportRule { 
+  Ok(ExportRule {
     rules,
-    location: Location::new(start, context.tokenizer.utf16_pos)
-   })
+    location: Location::new(start, context.tokenizer.utf16_pos),
+  })
 }
 
 fn parse_condition_rule<'a, 'b>(
@@ -213,7 +213,7 @@ fn parse_condition_rule<'a, 'b>(
     name,
     condition_text,
     rules,
-    location: Location::new(start, context.tokenizer.utf16_pos)
+    location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
 
@@ -244,9 +244,9 @@ fn parse_mixin_rule<'a, 'b>(
 fn parse_font_face_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<FontFaceRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
   let (declarations, _children) = parse_declaration_body(context)?;
-  Ok(FontFaceRule { 
+  Ok(FontFaceRule {
     declarations,
-    location: Location::new(start, context.tokenizer.utf16_pos)
+    location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
 
@@ -266,24 +266,24 @@ fn parse_keyframes_rule<'a, 'b>(
 
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
-  Ok(KeyframesRule { 
-    name, 
+  Ok(KeyframesRule {
+    name,
     rules,
 
-    location: Location::new(start, context.tokenizer.utf16_pos)
-   })
+    location: Location::new(start, context.tokenizer.utf16_pos),
+  })
 }
 
 fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<KeyframeRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
-  
+
   let key = parse_selector_name(context)?.to_string();
   let (declarations, _children) = parse_declaration_body(context)?;
 
-  Ok(KeyframeRule { 
-    key, 
+  Ok(KeyframeRule {
+    key,
     declarations,
-    location: Location::new(start, context.tokenizer.utf16_pos)
+    location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
 
@@ -294,7 +294,7 @@ fn parse_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, Par
 // select, select, select
 fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
   let start = context.tokenizer.utf16_pos;
-  
+
   let mut selectors: Vec<Selector> = vec![];
   loop {
     eat_superfluous(context)?;
@@ -309,9 +309,9 @@ fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
   if selectors.len() == 1 {
     Ok(selectors.pop().unwrap())
   } else {
-    Ok(Selector::Group(GroupSelector { 
+    Ok(Selector::Group(GroupSelector {
       selectors,
-      location: Location::new(start, context.tokenizer.utf16_pos)
+      location: Location::new(start, context.tokenizer.utf16_pos),
     }))
   }
 }
@@ -338,7 +338,7 @@ fn parse_next_pair_selector<'a, 'b>(
       Ok(Selector::Child(ChildSelector {
         parent: Box::new(selector),
         child: Box::new(child),
-        location: Location::new(start, context.tokenizer.utf16_pos)
+        location: Location::new(start, context.tokenizer.utf16_pos),
       }))
     }
     Token::Plus => {
@@ -348,7 +348,7 @@ fn parse_next_pair_selector<'a, 'b>(
       Ok(Selector::Adjacent(AdjacentSelector {
         selector: Box::new(selector),
         next_sibling_selector: Box::new(sibling),
-        location: Location::new(start, context.tokenizer.utf16_pos)
+        location: Location::new(start, context.tokenizer.utf16_pos),
       }))
     }
     Token::Squiggle => {
@@ -358,7 +358,7 @@ fn parse_next_pair_selector<'a, 'b>(
       Ok(Selector::Sibling(SiblingSelector {
         selector: Box::new(selector),
         sibling_selector: Box::new(sibling),
-        location: Location::new(start, context.tokenizer.utf16_pos)
+        location: Location::new(start, context.tokenizer.utf16_pos),
       }))
     }
     Token::CurlyOpen => Ok(selector),
@@ -369,7 +369,7 @@ fn parse_next_pair_selector<'a, 'b>(
         Ok(Selector::Descendent(DescendentSelector {
           parent: Box::new(selector),
           descendent: Box::new(descendent),
-          location: Location::new(start, context.tokenizer.utf16_pos)
+          location: Location::new(start, context.tokenizer.utf16_pos),
         }))
       } else {
         Ok(selector)
@@ -399,7 +399,7 @@ fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
   } else {
     Ok(Selector::Combo(ComboSelector {
       selectors,
-      location: Location::new(pos, context.tokenizer.utf16_pos)
+      location: Location::new(pos, context.tokenizer.utf16_pos),
     }))
   }
 }
@@ -482,13 +482,13 @@ fn parse_psuedo_element_selector<'a, 'b>(
       let sel = parse_pair_selector(context)?;
       Selector::Not(NotSelector {
         selector: Box::new(sel),
-        location: Location::new(start, context.tokenizer.utf16_pos)
+        location: Location::new(start, context.tokenizer.utf16_pos),
       })
     } else if name == "global" {
       let sel = parse_group_selector(context)?;
       Selector::Global(GlobalSelector {
         selector: Box::new(sel),
-        location: Location::new(start, context.tokenizer.utf16_pos)
+        location: Location::new(start, context.tokenizer.utf16_pos),
       })
     } else {
       let param = get_buffer(context.tokenizer, |tokenizer| {
@@ -500,7 +500,7 @@ fn parse_psuedo_element_selector<'a, 'b>(
         target,
         name,
         param,
-        location: Location::new(start, context.tokenizer.utf16_pos)
+        location: Location::new(start, context.tokenizer.utf16_pos),
       })
     };
 
@@ -511,7 +511,7 @@ fn parse_psuedo_element_selector<'a, 'b>(
       separator: ":".to_string().repeat(colon_count),
       target,
       name,
-      location: Location::new(start, context.tokenizer.utf16_pos)
+      location: Location::new(start, context.tokenizer.utf16_pos),
     })
   };
 
@@ -554,7 +554,7 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
         } else {
           Some(Box::new(Selector::Combo(ComboSelector {
             selectors: postfix_selectors,
-            location: Location::new(pos, context.tokenizer.utf16_pos)
+            location: Location::new(pos, context.tokenizer.utf16_pos),
           })))
         }
       };
@@ -562,21 +562,21 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
       Selector::Prefixed(PrefixedSelector {
         connector,
         postfix_selector,
-        location: Location::new(pos, context.tokenizer.utf16_pos)
+        location: Location::new(pos, context.tokenizer.utf16_pos),
       })
     }
     Token::Dot => {
       context.tokenizer.next()?;
       Selector::Class(ClassSelector {
         class_name: parse_selector_name(context)?.to_string(),
-        location: Location::new(pos, context.tokenizer.utf16_pos)
+        location: Location::new(pos, context.tokenizer.utf16_pos),
       })
     }
     Token::Hash => {
       context.tokenizer.next()?;
       Selector::Id(IdSelector {
         id: parse_selector_name(context)?.to_string(),
-        location: Location::new(pos, context.tokenizer.utf16_pos)
+        location: Location::new(pos, context.tokenizer.utf16_pos),
       })
     }
     Token::SquareOpen => {
@@ -585,7 +585,7 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
     }
     Token::Keyword(_) => Selector::Element(ElementSelector {
       tag_name: parse_selector_name(context)?.to_string(),
-      location: Location::new(pos, context.tokenizer.utf16_pos)
+      location: Location::new(pos, context.tokenizer.utf16_pos),
     }),
     _ => {
       return Err(ParseError::unexpected_token(pos));
@@ -633,7 +633,7 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
     name,
     operator,
     value,
-    location: Location::new(start, context.tokenizer.utf16_pos)
+    location: Location::new(start, context.tokenizer.utf16_pos),
   }))
 }
 
@@ -845,7 +845,7 @@ fn parse_include_declaration<'a, 'b>(
 
   Ok(Declaration::Include(IncludeDeclaration {
     mixins,
-    location: Location::new(start, context.tokenizer.utf16_pos)
+    location: Location::new(start, context.tokenizer.utf16_pos),
   }))
 }
 
