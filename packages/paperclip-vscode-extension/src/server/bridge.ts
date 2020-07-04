@@ -9,7 +9,10 @@ import {
   DocumentLinkParams,
   DefinitionRequest,
   DefinitionLink,
-  DefinitionParams
+  DefinitionParams,
+  CompletionRequest,
+  CompletionParams,
+  CompletionResolveRequest
 } from "vscode-languageserver";
 import {
   Engine,
@@ -17,7 +20,9 @@ import {
   EngineEventKind,
   EngineErrorEvent,
   EngineErrorKind,
+  AddedSheetsEvent,
   GraphErrorEvent,
+  getCompletionItems,
   DiffedEvent,
   SourceLocation,
   RuntimeErrorEvent,
@@ -48,7 +53,7 @@ import {
   TextDocumentContentChangeEvent
 } from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
-import { AddedSheetsEvent } from "paperclip/src";
+import { CompletionItem } from "vscode";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
@@ -76,6 +81,11 @@ export class VSCServiceBridge {
     connection.onRequest(
       DocumentColorRequest.type,
       this._onDocumentColorRequest
+    );
+    connection.onRequest(CompletionRequest.type, this._onCompletionRequest);
+    connection.onRequest(
+      CompletionResolveRequest.type,
+      this._onCompletionResolveRequest
     );
     connection.onRequest(DefinitionRequest.type, this._onDefinitionRequest);
     connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
@@ -184,6 +194,21 @@ export class VSCServiceBridge {
           }
         ) as DefinitionLink[]);
     return info;
+  };
+
+  private _onCompletionRequest = (params: CompletionParams) => {
+    const document = this._documents[params.textDocument.uri];
+    const a = this._service
+      .getService(document.uri)
+      .getCompletionItems(document.uri, document.offsetAt(params.position));
+
+    // const offset = sourceDocument.offsetAt(params.position);
+    // console.log(offset);
+    return [{ label: "ALADENE!!!" }];
+  };
+
+  private _onCompletionResolveRequest = item => {
+    return item;
   };
 
   private _onDocumentColorRequest = (params: DocumentColorParams) => {

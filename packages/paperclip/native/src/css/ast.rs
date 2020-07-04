@@ -41,6 +41,7 @@ impl fmt::Display for KeyValueDeclaration {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeDeclaration {
   pub mixins: Vec<Vec<IncludeDeclarationPart>>,
+  pub location: Location,
 }
 
 impl fmt::Display for IncludeDeclaration {
@@ -117,6 +118,7 @@ pub struct StyleRule {
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
   pub children: Vec<StyleRule>,
+  pub location: Location,
 }
 
 impl fmt::Display for StyleRule {
@@ -135,6 +137,7 @@ impl fmt::Display for StyleRule {
 pub struct ChildRuleSelector {
   pub connector: String,
   pub selector: Option<Selector>,
+  pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -142,11 +145,13 @@ pub struct ChildStyleRule {
   pub selectors: Vec<ChildRuleSelector>,
   pub declarations: Vec<Declaration>,
   pub children: Vec<ChildStyleRule>,
+  pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FontFaceRule {
   pub declarations: Vec<Declaration>,
+  pub location: Location,
 }
 
 impl fmt::Display for FontFaceRule {
@@ -164,6 +169,7 @@ impl fmt::Display for FontFaceRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ExportRule {
   pub rules: Vec<Rule>,
+  pub location: Location,
 }
 
 impl fmt::Display for ExportRule {
@@ -183,6 +189,7 @@ pub struct ConditionRule {
   pub name: String,
   pub condition_text: String,
   pub rules: Vec<StyleRule>,
+  pub location: Location,
 }
 
 impl fmt::Display for ConditionRule {
@@ -226,6 +233,7 @@ pub struct MixinName {
 pub struct KeyframesRule {
   pub name: String,
   pub rules: Vec<KeyframeRule>,
+  pub location: Location,
 }
 
 impl fmt::Display for KeyframesRule {
@@ -244,6 +252,7 @@ impl fmt::Display for KeyframesRule {
 pub struct KeyframeRule {
   pub key: String,
   pub declarations: Vec<Declaration>,
+  pub location: Location,
 }
 
 impl fmt::Display for KeyframeRule {
@@ -309,6 +318,7 @@ impl fmt::Display for Selector {
 pub struct PrefixedSelector {
   pub connector: String,
   pub postfix_selector: Option<Box<Selector>>,
+  pub location: Location,
 }
 
 impl fmt::Display for PrefixedSelector {
@@ -326,6 +336,7 @@ impl fmt::Display for PrefixedSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GroupSelector {
   pub selectors: Vec<Selector>,
+  pub location: Location,
 }
 
 impl fmt::Display for GroupSelector {
@@ -343,6 +354,7 @@ impl fmt::Display for GroupSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ComboSelector {
   pub selectors: Vec<Selector>,
+  pub location: Location,
 }
 
 impl fmt::Display for ComboSelector {
@@ -361,6 +373,7 @@ impl fmt::Display for ComboSelector {
 pub struct DescendentSelector {
   pub parent: Box<Selector>,
   pub descendent: Box<Selector>,
+  pub location: Location,
 }
 
 impl fmt::Display for DescendentSelector {
@@ -378,6 +391,7 @@ impl fmt::Display for DescendentSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GlobalSelector {
   pub selector: Box<Selector>,
+  pub location: Location,
 }
 
 impl fmt::Display for GlobalSelector {
@@ -390,11 +404,13 @@ impl fmt::Display for GlobalSelector {
 pub struct ChildSelector {
   pub parent: Box<Selector>,
   pub child: Box<Selector>,
+  pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NotSelector {
   pub selector: Box<Selector>,
+  pub location: Location,
 }
 
 impl fmt::Display for NotSelector {
@@ -421,6 +437,7 @@ pub struct AdjacentSelector {
 
   #[serde(rename = "nextSiblingSelector")]
   pub next_sibling_selector: Box<Selector>,
+  pub location: Location,
 }
 
 impl fmt::Display for AdjacentSelector {
@@ -441,6 +458,7 @@ pub struct SiblingSelector {
 
   #[serde(rename = "siblingSelector")]
   pub sibling_selector: Box<Selector>,
+  pub location: Location,
 }
 
 impl fmt::Display for SiblingSelector {
@@ -460,6 +478,7 @@ pub struct PseudoElementSelector {
   pub separator: String, // : or ::
   pub target: Option<Box<Selector>>,
   pub name: String,
+  pub location: Location,
 }
 
 fn stringify_optional_selector(selector: &Option<Box<Selector>>) -> String {
@@ -489,6 +508,8 @@ pub struct PseudoParamElementSelector {
   pub target: Option<Box<Selector>>,
   pub name: String,
   pub param: String,
+  pub location: Location,
+
 }
 
 impl fmt::Display for PseudoParamElementSelector {
@@ -509,6 +530,7 @@ impl fmt::Display for PseudoParamElementSelector {
 pub struct ElementSelector {
   #[serde(rename = "tagName")]
   pub tag_name: String,
+  pub location: Location,
 }
 
 impl fmt::Display for ElementSelector {
@@ -523,6 +545,7 @@ impl fmt::Display for ElementSelector {
 pub struct ClassSelector {
   #[serde(rename = "className")]
   pub class_name: String,
+  pub location: Location,
 }
 
 impl fmt::Display for ClassSelector {
@@ -536,6 +559,7 @@ impl fmt::Display for ClassSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IdSelector {
   pub id: String,
+  pub location: Location,
 }
 
 impl fmt::Display for IdSelector {
@@ -551,6 +575,7 @@ pub struct AttributeSelector {
   pub name: String,
   pub operator: Option<String>,
   pub value: Option<String>,
+  pub location: Location,
 }
 
 impl fmt::Display for AttributeSelector {
@@ -569,6 +594,7 @@ impl fmt::Display for AttributeSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Sheet {
   pub rules: Vec<Rule>,
+  pub location: Location,
 }
 
 impl fmt::Display for Sheet {

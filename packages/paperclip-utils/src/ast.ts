@@ -4,7 +4,10 @@ import {
   getSheetClassNames,
   traverseSheet,
   MixinRule,
-  RuleKind
+  RuleKind,
+  Rule,
+  isRule,
+  StyleExpression
 } from "./css-ast";
 import { SourceLocation } from "./base-ast";
 import * as crc32 from "crc32";
@@ -22,8 +25,7 @@ export enum NodeKind {
   Text = "Text",
   Element = "Element",
   StyleElement = "StyleElement",
-  Slot = "Slot",
-  Block = "Block"
+  Slot = "Slot"
 }
 
 export type BaseNode<TKind extends NodeKind> = {
@@ -33,6 +35,7 @@ export type BaseNode<TKind extends NodeKind> = {
 // TODO - include location here.
 export type Text = {
   value: string;
+  location: SourceLocation;
 } & BaseNode<NodeKind.Text>;
 
 export type Element = {
@@ -51,6 +54,7 @@ export type Element = {
 
 export type StyleElement = {
   sheet: Sheet;
+  location: SourceLocation;
 } & BaseNode<NodeKind.StyleElement>;
 
 export enum AttributeKind {
@@ -66,21 +70,25 @@ type BaseAttribute<TKind extends AttributeKind> = {
 
 type ShorthandAttribute = {
   reference: Statement;
+  location: SourceLocation;
 } & BaseAttribute<AttributeKind.ShorthandAttribute>;
 
 type SpreadAttribute = {
   script: Statement;
+  location: SourceLocation;
 } & BaseAttribute<AttributeKind.SpreadAttribute>;
 
 type KeyValueAttribute = {
   name: string;
   value?: AttributeValue;
+  location: SourceLocation;
 } & BaseAttribute<AttributeKind.KeyValueAttribute>;
 
 export type PropertyBoundAttribute = {
   name: string;
   bindingName: string;
   value: AttributeValue;
+  location: SourceLocation;
 } & BaseAttribute<AttributeKind.PropertyBoundAttribute>;
 
 export type Attribute =
@@ -152,14 +160,18 @@ export type AttributeValue =
 export type Fragment = {
   value: string;
   children: Node[];
+  location: SourceLocation;
 } & BaseNode<NodeKind.Fragment>;
 
 export type Slot = {
   script: Statement;
+  location: SourceLocation;
 } & BaseNode<NodeKind.Slot>;
 
 export type Node = Text | Element | StyleElement | Fragment | Slot;
+export type Expression = Node | Attribute | AttributeValue | StyleExpression;
 
+const a: AttributeValue = null;
 export const getImports = (ast: Node): Element[] =>
   getChildrenByTagName("import", ast).filter(child => {
     return hasAttribute("src", child);
@@ -349,7 +361,7 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
   let mixins: Record<string, MixinRule> = {};
   for (const style of styles) {
     traverseSheet(style.sheet, rule => {
-      if (rule.kind === RuleKind.Mixin) {
+      if (isRule(rule) && rule.kind === RuleKind.Mixin) {
         mixins[rule.name.value] = rule;
       }
     });
@@ -358,6 +370,60 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
   return mixins;
 };
 
+export const isNode = (ast: Expression): ast is Node =>
+  NodeKind[(ast as Node).kind] != null;
+export const isAttribute = (ast: Expression): ast is Attribute =>
+  AttributeKind[(ast as Attribute).kind] != null;
+export const isAttributeValue = (ast: Expression): ast is AttributeValue =>
+  AttributeValueKind[(ast as AttributeValue).attrValueKind] != null;
+
+export const traverseExpression = (
+  ast: Expression,
+  each: (node: Expression) => void | boolean
+) => {
+  if (each(ast) === false) {
+    return false;
+  }
+  if (isNode(ast)) {
+    switch (ast.kind) {
+      case NodeKind.Element: {
+        return (
+          traverseExpressions(ast.attributes, each) &&
+          traverseExpressions(ast.children, each)
+        );
+      }
+      case NodeKind.Fragment: {
+        return traverseExpressions(ast.children, each);
+      }
+      case NodeKind.StyleElement: {
+        return traverseSheet(ast.sheet, each);
+      }
+    }
+  }
+  return true;
+};
+
+export const getCompletionItems = (root: Expression, position: number) => {
+  let parent: Expression;
+  let previousSibling: Expression;
+  traverseExpression(root, expr => {
+    if (!expr.location) {
+      console.error("ERRRR", expr);
+    }
+  });
+};
+
+const traverseExpressions = (
+  expressions: Expression[],
+  each: (node: Expression) => void | boolean
+) => {
+  for (const child of expressions) {
+    if (!traverseExpression(child, each)) {
+      return false;
+    }
+  }
+  return true;
+};
 export const getNestedReferences = (
   node: Node,
   _statements: [Reference, string][] = []

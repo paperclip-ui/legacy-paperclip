@@ -7,6 +7,7 @@ import {
   getImportById,
   Element,
   NodeKind,
+  Expression,
   StyleDeclarationKind,
   IncludeDeclarationPart,
   StyleDeclaration,
@@ -38,7 +39,8 @@ import {
 } from "paperclip";
 
 import CSS_COLOR_NAMES from "./css-color-names";
-import { MixinName, Context, Engine } from "paperclip/src";
+import { MixinName, Context, Engine, traverseExpression } from "paperclip";
+import { Style } from "util";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -71,6 +73,47 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   }
   protected _getAST(uri): Node {
     return this._engine.getLoadedAst(uri) as DependencyNodeContent;
+  }
+  public getCompletionItems(uri: string, position: number): any {
+    const ast = this._getAST(uri);
+
+    let parent: Expression;
+    let previousSibling: Expression;
+
+    traverseExpression(ast, expr => {
+      // shouldn't happen, but might
+      if (!expr.location) {
+        console.error("missing location");
+        return;
+      }
+
+      if (expr.location.start < position && expr.location.end > position) {
+        if (
+          !parent ||
+          (expr.location.start > parent.location.start &&
+            expr.location.end < parent.location.end)
+        ) {
+          parent = expr;
+        }
+      }
+
+      if (expr.location.start < position) {
+        if (
+          !previousSibling ||
+          expr.location.start > previousSibling.location.start
+        ) {
+          previousSibling = expr;
+        }
+      }
+    });
+
+    console.log(parent, previousSibling);
+
+    if (!parent || previousSibling) {
+      return [];
+    }
+
+    console.log(parent, previousSibling);
   }
   protected _createASTInfo(root: Node, uri: string) {
     const context: HandleContext = {

@@ -14,7 +14,7 @@ import {
 import { EventEmitter } from "events";
 import { preventDefault } from "./utils";
 import { patchNativeNode } from "./dom-patcher";
-import { Engine } from "paperclip/src";
+import { Engine } from "paperclip";
 
 export type DOMFactory = {
   createElement(tagName: string): HTMLElement;

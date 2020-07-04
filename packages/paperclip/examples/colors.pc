@@ -13,6 +13,7 @@
 
 
   :global(body) {
+    @include ak.a;
     /* background: url(/cant/be/found.png); */
 
     color: rgb(223, 60, 60);

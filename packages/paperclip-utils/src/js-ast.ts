@@ -1,4 +1,5 @@
 import { Node } from "./ast";
+import { SourceLocation } from "./base-ast";
 
 export enum StatementKind {
   Node = "Node",
@@ -22,32 +23,38 @@ export type JsObjectProperty = {
 };
 export type JsObject = {
   properties: JsObjectProperty[];
+  location: SourceLocation;
 } & BaseStatement<StatementKind.Object>;
 
 export type JsArray = {
   values: Statement[];
+  location: SourceLocation;
 } & BaseStatement<StatementKind.Array>;
 
 export type JsString = {
   value: string;
+  location: SourceLocation;
 } & BaseStatement<StatementKind.String>;
 
 export type JsBoolean = {
   value: boolean;
+  location: SourceLocation;
 } & BaseStatement<StatementKind.Boolean>;
 
 export type JsNumber = {
   value: number;
+  location: SourceLocation;
 } & BaseStatement<StatementKind.Number>;
 
 export type Reference = {
   path: ReferencePart[];
+  location: SourceLocation;
 } & BaseStatement<StatementKind.Reference>;
 
 export type ReferencePart = {
   name: string;
-  optional: boolean
-}
+  optional: boolean;
+};
 
 export type Statement =
   | Reference

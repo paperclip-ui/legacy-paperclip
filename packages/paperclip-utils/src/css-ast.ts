@@ -141,6 +141,7 @@ export type KeyValueDeclaration = {
 
 export type IncludeDeclaration = {
   mixins: Array<Array<IncludeDeclarationPart>>;
+  location: SourceLocation;
 } & BaseStyleDeclaration<StyleDeclarationKind.Include>;
 
 export type IncludeDeclarationPart = {
@@ -151,6 +152,7 @@ export type IncludeDeclarationPart = {
 export type StyleDeclaration = KeyValueDeclaration | IncludeDeclaration;
 
 export type StyleRule = {
+  location: SourceLocation;
   selector: Selector;
   declarations: StyleDeclaration[];
   children: StyleRule[];
@@ -160,6 +162,7 @@ type BaseConditionRule<TRule extends RuleKind> = {
   name: string;
   condition_text: string;
   rules: StyleRule[];
+  location: SourceLocation;
 } & BaseRule<TRule>;
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
@@ -176,10 +179,16 @@ export type MixinName = {
 
 export type ExportRule = {
   rules: Rule[];
+  location: SourceLocation;
 } & BaseRule<RuleKind.Export>;
 
 export type ConditionRule = MediaRule;
 export type Rule = StyleRule | ConditionRule | MixinRule | ExportRule;
+export type StyleExpression =
+  | Rule
+  | IncludeDeclaration
+  | MixinName
+  | IncludeDeclarationPart;
 
 export const getSheetClassNames = (
   sheet: Sheet,
@@ -210,25 +219,77 @@ export const getRuleClassNames = (rule: Rule, allClassNames: string[] = []) => {
   return allClassNames;
 };
 
-export const traverseSheet = (sheet: Sheet, each: (rule: Rule) => void) => {
-  sheet.rules.forEach(rule => {
-    traverseRule(rule, each);
-  });
+export const traverseSheet = (
+  sheet: Sheet,
+  each: (rule: StyleExpression) => void
+) => {
+  return traverseStyleExpressions(sheet.rules, each);
 };
 
-export const traverseRule = (rule: Rule, each: (rule: Rule) => void) => {
-  each(rule);
-  switch (rule.kind) {
-    case RuleKind.Media:
-    case RuleKind.Export: {
-      rule.rules.forEach(rule => traverseRule(rule, each));
-      break;
-    }
-    case RuleKind.Style: {
-      rule.children.forEach(rule => traverseRule(rule, each));
-      break;
+const traverseStyleExpressions = (
+  rules: StyleExpression[],
+  each: (rule: StyleExpression) => void | boolean
+) => {
+  for (const rule of rules) {
+    if (!traverseStyleExpression(rule, each)) {
+      return false;
     }
   }
+  return true;
+};
+
+export const isRule = (expression: StyleExpression): expression is Rule => {
+  return RuleKind[(expression as Rule).kind] != null;
+};
+export const isStyleDeclaration = (
+  expression: StyleExpression
+): expression is StyleDeclaration => {
+  return (
+    StyleDeclarationKind[(expression as StyleDeclaration).declarationKind] !=
+    null
+  );
+};
+export const traverseStyleExpression = (
+  rule: StyleExpression,
+  each: (rule: StyleExpression) => void | boolean
+) => {
+  if (each(rule) === false) {
+    return false;
+  }
+  if (isRule(rule)) {
+    switch (rule.kind) {
+      case RuleKind.Media: {
+        return traverseStyleExpressions(rule.rules, each);
+      }
+      case RuleKind.Export: {
+        return traverseStyleExpressions(rule.rules, each);
+      }
+      case RuleKind.Style: {
+        return (
+          traverseStyleExpressions(rule.declarations, each) &&
+          traverseStyleExpressions(rule.children, each)
+        );
+      }
+      case RuleKind.Mixin: {
+        return traverseStyleExpressions(rule.declarations, each);
+      }
+    }
+  } else if (isStyleDeclaration(rule)) {
+    switch (rule.declarationKind) {
+      case StyleDeclarationKind.Include: {
+        for (const mixin of rule.mixins) {
+          for (const part of mixin) {
+            if (!traverseStyleExpression(part, each)) {
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+    }
+  }
+
+  return true;
 };
 
 export const getSelectorClassNames = (
