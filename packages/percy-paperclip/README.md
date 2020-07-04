@@ -1,7 +1,5 @@
-[Percy](https://percy.io) integration
-
-Running:
+[Percy](https://percy.io) integration. To run, just `cd` to your project directory where you also have a `pcconfig.json` file, then run:
 
 ```
-PERCY_TOKEN=[TOKEN] percy exec -- percy-paperclip "**/*.pc" 
+PERCY_TOKEN=[TOKEN] percy exec -- percy-paperclip
 ```

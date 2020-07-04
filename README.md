@@ -27,61 +27,7 @@
 
 ----
 
-<!--
-
-Notes:
-
-- need to express that it's lightweight
-- no compiler
-
--->
-
-Paperclip is a template language for creating UIs in a flash. ⚡️
-
-<!-- No more juggling between the coding & debugging in the browser. Paperclip provides tooling that allows  -->
-
-<!-- Tooling is provided that brings a real-time preview of your application directly into your code editor. -->
-
-<!-- Paperclip is a template language that runs while you're writing in it, so you can see a preview of exactly what you're creating in real-time. -->
-
-<!-- No more wasted time juggling between the browser & code! -->
-
-
-<!-- Paperclip code runs while you're writing it, so you never have to leave the IDE. UI files also compile down directly to React code. -->
-
-<!-- Write your UIs and see a live preview of them directly within your IDE. Paperclip templates also compile to React code, so you can use them in your React app.  -->
-
-<!-- Paperclip runs while you're writing it, so you never have to leave the IDE. UI files also compile down directly to React code.  -->
-
-<!-- Paperclip code runs while you're writing it, so you can build features more quickly. UIs also compile down to application code, so you can use Paperclip in your existing codebase (currently React). -->
-
-
-<!-- _See_ UIs that you're creating in real-time, directly within your code editor. Designed to integrate with your existing codebase (currently just React for now). -->
-
-<!--
-Templates are also designed to compile down to your application framework of choice (currently only React).
--->
-
-<!-- 
-_See_ UIs that you're creating in real-time, directly within your code editor. Paperclip comes with primitive UI behavior that allows you to setup the _bones_ UI 
-
--->
-
-<!-- Paperclip comes with a runtime for VSCode that shows you a preview of UIs as  -->
-
-
-<!--  that runs _while_ you write in it, and compiles down to application code in the framework of your choice. -->
-
-![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
-
-> The VS Code extensions allows you to see a live preview of your components as you're building them
-
-
-## Just primitive behavior
-
-<!-- My biggest problem with UI development over the years has been the _speed_ of creating them. It's a time sink, especially as applications get bigger. And because user interface development is such as iterative process, waiting around for UIs to reload can be a real problem for productivity. -->
-
-Paperclip comes with just primitive behavior for creating the look & feel of your application. These templates can then be used in your language of choice (currently just React). Here's an example template:
+Paperclip is a language for building UI primitives. Here's a basic example:
 
 ```html
 <style> 
@@ -116,7 +62,7 @@ Paperclip comes with just primitive behavior for creating the look & feel of you
 </Button>
 ```
 
-Here's how you'd use this component in React:
+There's not much else to this. Here's how you'd use this component in React:
 
 ```typescript
 import {Button} from "./button.pc";
@@ -133,24 +79,31 @@ export SomeForm = () => {
 };
 ```
 
-<!-- ## Perfect for your design system
+☝🏻 Currently React is the only compiler target, but more are planned. 
 
-[TODO GIF] -->
+## Why?
 
-<!-- 
-Paperclip provides a lightweight approach for creating presentational components. It's not intended to replace code, but instead allow you to focus on the just the basic construction of your user interfaces, without the heaviness that an _entire_ application brings. This allows Paperclip to be fast, and _remain_ fast as your project grows in size.  -->
+Why use Paperclip? 
 
-<!-- #### Goals
+<!--
 
-- Quicker feedback loop between writing code & seeing UI, thus helping you code faster.
-- Provide safety around building user interfaces, especially for large projects. This is helped with type safety, and visual regression tooling. 
-- Have a platform & language agnostic approach for building user interfaces.  -->
+Notes:
 
-<!-- #### Non-goals
+- need to express that it's lightweight
+- no compiler
 
-- Turring-completeness. Paperclip will only provide features for expressing_ user interfaces that can be used in code. -->
+-->
+
+#### Realtime visual development
+
+Paperclip comes with a visual programming extension for VS Code that allows you to build UIs in realtime. 
+
+![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
+
 
 ## Zero-config visual regression testing
+
+Paperclip encourages you to define previews of _every_ visual state of your UI components. And because of that, you get visual regression testing for free -- just run `percy-paperclip`
 
 Just run `percy-paperclip` on any Paperclip UI to test for visual regressions. 
 
