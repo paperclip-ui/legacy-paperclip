@@ -1,19 +1,5 @@
-<!-- most important stuff up top -->
 
-<p align="center">
-  <!--a href="https://circleci.com/gh/paperclip/vue/tree/dev">
-    <img src="https://img.shields.io/circleci/project/github/paperclip/paperclip/dev.svg" alt="Build Status">
-  </a-->
-  <a href="https://www.npmjs.com/package/paperclip">
-    <img src="https://img.shields.io/npm/l/paperclip.svg" alt="License">
-  </a>
-  <!-- TODO: change to chat.paperclip.dev -->
-  <!--a href="https://discord.gg/H6wEVtd">
-    <img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg" alt="Chat">
-  </a-->
-</p>
-
-Paperclip is a language for building UI primitives. Here's an Example
+Paperclip is a language for building UI primitives. Here's an Example:
 
 ```html
 
