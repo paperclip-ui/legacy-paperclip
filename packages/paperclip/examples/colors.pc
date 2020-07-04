@@ -10,14 +10,19 @@
       font-family: Helvetica;
       letter-spacing: 0.07em;
     }
+    @keyframes a {
+      0% {
+         color: blue;
+      }
+      100% {
+        color: red;
+      }
+    }
   }
 
-  :global(body) {
-    @include comb.test;
-    
-    /* background: url(/cant/be/found.png); */
-
-    color: rgb(223, 60, 60);
+  .bg-green {
+    color: red;
+    animation: a 4s;
   }
 </style>
 

@@ -600,14 +600,17 @@ fn create_component_instance_data<'a>(
         };
       }
       ast::Attribute::ShorthandAttribute(sh_attr) => {
-
         let name = sh_attr.get_name().map_err(|message| RuntimeError {
           uri: context.uri.to_string(),
           message: message.to_string(),
           location: Location { start: 0, end: 0 },
         })?;
-        assert_attr_slot_restrictions(&instance_element.tag_name, &name.to_string(), &sh_attr.location, context)?;
-
+        assert_attr_slot_restrictions(
+          &instance_element.tag_name,
+          &name.to_string(),
+          &sh_attr.location,
+          context,
+        )?;
 
         data.values.insert(
           name.to_string(),
@@ -615,7 +618,12 @@ fn create_component_instance_data<'a>(
         );
       }
       ast::Attribute::PropertyBoundAttribute(kv_attr) => {
-        assert_attr_slot_restrictions(&instance_element.tag_name, &kv_attr.name, &kv_attr.location, context)?;
+        assert_attr_slot_restrictions(
+          &instance_element.tag_name,
+          &kv_attr.name,
+          &kv_attr.location,
+          context,
+        )?;
         property_bound_attrs.push(kv_attr);
       }
     };
@@ -631,7 +639,13 @@ fn create_component_instance_data<'a>(
           if let Some(prop_value) = value_option {
             if prop_value.truthy() {
               let value = if let Some(attr_value) = &kv_attr.value {
-                evaluate_attribute_value(&instance_element.tag_name, &kv_attr.name, attr_value, false, context)?
+                evaluate_attribute_value(
+                  &instance_element.tag_name,
+                  &kv_attr.name,
+                  attr_value,
+                  false,
+                  context,
+                )?
               } else {
                 evaluate_attribute_string(
                   &kv_attr.name,
@@ -791,7 +805,12 @@ fn evaluate_native_element<'a>(
         attributes.insert(name.to_string(), value_option);
       }
       ast::Attribute::PropertyBoundAttribute(kv_attr) => {
-        assert_attr_slot_restrictions(&element.tag_name, &kv_attr.name, &kv_attr.location, context)?;
+        assert_attr_slot_restrictions(
+          &element.tag_name,
+          &kv_attr.name,
+          &kv_attr.location,
+          context,
+        )?;
         property_bound_attrs.push(kv_attr);
       }
       ast::Attribute::SpreadAttribute(attr) => {
@@ -818,7 +837,12 @@ fn evaluate_native_element<'a>(
           message: message.to_string(),
           location: Location { start: 0, end: 0 },
         })?;
-        assert_attr_slot_restrictions(&element.tag_name, &name.to_string(), &sh_attr.location, context)?;
+        assert_attr_slot_restrictions(
+          &element.tag_name,
+          &name.to_string(),
+          &sh_attr.location,
+          context,
+        )?;
         let js_value = evaluate_attribute_slot(&sh_attr.reference, context)?;
 
         if js_value.truthy() {
@@ -839,7 +863,13 @@ fn evaluate_native_element<'a>(
           if let Some(prop_value) = value_option {
             if prop_value.truthy() {
               let value = if let Some(kv_value) = &kv_attr.value {
-                evaluate_attribute_value(&element.tag_name, &kv_attr.name, &kv_value, true, context)?
+                evaluate_attribute_value(
+                  &element.tag_name,
+                  &kv_attr.name,
+                  &kv_value,
+                  true,
+                  context,
+                )?
               } else {
                 evaluate_attribute_string(
                   &kv_attr.name,
@@ -1126,8 +1156,12 @@ fn evaluate_attribute_slot<'a>(
   evaluate_js(script, context)
 }
 
-fn assert_attr_slot_restrictions(tag_name: &String, attr_name: &String, location: &Location, context: &Context) -> Result<(), RuntimeError> {
-
+fn assert_attr_slot_restrictions(
+  tag_name: &String,
+  attr_name: &String,
+  location: &Location,
+  context: &Context,
+) -> Result<(), RuntimeError> {
   // if tag_name == "component" {
   //   match attr_name.as_str() {
   //     "component" | "export" | "as" => {
@@ -1140,7 +1174,7 @@ fn assert_attr_slot_restrictions(tag_name: &String, attr_name: &String, location
   // }
   assert_slot_restrictions(location, context)?;
 
-  return Ok(())
+  return Ok(());
 }
 
 fn assert_slot_restrictions(location: &Location, context: &Context) -> Result<(), RuntimeError> {
@@ -1149,10 +1183,10 @@ fn assert_slot_restrictions(location: &Location, context: &Context) -> Result<()
       "Bindings can only be defined within components.".to_string(),
       context.uri,
       location,
-    ))
-  } 
+    ));
+  }
 
-  return Ok(())
+  return Ok(());
 }
 
 fn in_instance(context: &Context) -> bool {

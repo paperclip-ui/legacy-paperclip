@@ -265,6 +265,7 @@ fn parse_keyframes_rule<'a, 'b>(
   }
 
   context.tokenizer.next_expect(Token::CurlyClose)?;
+  eat_superfluous(context)?;
 
   Ok(KeyframesRule {
     name,
