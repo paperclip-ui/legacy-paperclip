@@ -1204,13 +1204,13 @@ fn assert_attr_slot_restrictions(
 }
 
 fn assert_slot_restrictions(location: &Location, context: &Context) -> Result<(), RuntimeError> {
-  if !in_instance(context) {
-    return Err(RuntimeError::new(
-      "Bindings can only be defined within components.".to_string(),
-      context.uri,
-      location,
-    ));
-  }
+  // if !in_instance(context) {
+  //   return Err(RuntimeError::new(
+  //     "Bindings can only be defined within components.".to_string(),
+  //     context.uri,
+  //     location,
+  //   ));
+  // }
 
   return Ok(());
 }

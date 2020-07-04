@@ -148,7 +148,21 @@ describe(__filename + "#", () => {
   });
 
   describe("Slots", async () => {
-    it("Can render text bindings", async () => {
+    it("Can render attributes with element bindings", async () => {
+      const graph = {
+        "/entry.pc": `
+          <div a={<div />}></div>
+        `
+      };
+      const engine = createMockEngine(graph);
+      const { preview } = await engine.load("/entry.pc");
+      const buffer = `${stringifyVirtualNode(preview)}`;
+
+      expect(cleanHTML(buffer)).to.eql(
+        `<div a="[Object object]" data-pc-80f4925f></div>`
+      );
+    });
+    xit("Can render text bindings", async () => {
       const graph = {
         "/entry.pc": `
           <div component as="Component" {class}>
@@ -167,7 +181,7 @@ describe(__filename + "#", () => {
       );
     });
   });
-  it("Displays an error if text binding is defined outside of component", async () => {
+  xit("Displays an error if text binding is defined outside of component", async () => {
     const graph = {
       "/entry.pc": `
         <a {class}></a>
@@ -185,7 +199,7 @@ describe(__filename + "#", () => {
       message: "Bindings can only be defined within components."
     });
   });
-  it("Displays error for key-value binding outside of component", async () => {
+  xit("Displays error for key-value binding outside of component", async () => {
     const graph = {
       "/entry.pc": `
         <a a={class}></a>
@@ -204,7 +218,7 @@ describe(__filename + "#", () => {
     });
   });
 
-  it("Displays error for spread binding outside of component", async () => {
+  xit("Displays error for spread binding outside of component", async () => {
     const graph = {
       "/entry.pc": `
         <a {...class}></a>
@@ -223,7 +237,7 @@ describe(__filename + "#", () => {
     });
   });
 
-  it("Displays error for text binding outside of component", async () => {
+  xit("Displays error for text binding outside of component", async () => {
     const graph = {
       "/entry.pc": `
         {a}
@@ -243,7 +257,7 @@ describe(__filename + "#", () => {
     });
   });
 
-  it("Displays error for class binding outside of component", async () => {
+  xit("Displays error for class binding outside of component", async () => {
     const graph = {
       "/entry.pc": `
         <div class:a>
