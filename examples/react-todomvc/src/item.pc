@@ -161,7 +161,7 @@ button {
   <div class="view">
     <input type="checkbox" class="toggle" onChange={onCheckChange} checked={completed}>
     <label onClick={onLabelClick}>{label}</label> 
-    <button class="destroy">&times;</button>
+    <button class="destroy"></button>
   </div> 
 </fragment>
 
@@ -190,6 +190,6 @@ button {
     <DefaultPreview label="something" completed />
     <DefaultPreview label="something else" />
     <DefaultPreview label="to be continued" />
-    <edting-preview />
+    <EditingPreview />
   </ul>
 </div>

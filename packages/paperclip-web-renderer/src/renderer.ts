@@ -160,11 +160,11 @@ export class Renderer {
 
     // To style this, copy & paste in paperclip.
     errorElement.innerHTML = `
-    <div style="position: fixed; cursor: pointer; bottom: 0; width: 100%; word-break: break-word; box-sizing: border-box; font-family: Helvetica; padding: 10px; background: rgb(255, 152, 152); color: rgb(138, 31, 31); line-height: 1.4em">
-      <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">
+    <div style="position: fixed; cursor: pointer; bottom: 0; width: 100%; word-break: break-word; box-sizing: border-box; font-family: Helvetica; padding: 10px; background: rgb(255, 152, 152); color: rgb(138, 31, 31); line-height: 1.1em">
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">
         Error&nbsp;in&nbsp;${uri.replace("file://", "")}:
       </div>
-      <div>
+      <div style="font-size: 14px;">
       ${message}
       </div>
     </div>
