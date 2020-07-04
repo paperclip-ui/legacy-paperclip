@@ -84,13 +84,9 @@ export const pull = async ({
     )
   );
 
-  console.log(molecules);
-
   const fileContents = { atoms, molecules };
 
   writeFiles(fileContents, targetDirectoryPath);
-
-  // console.log(l.style);
 
   if (prompted) {
     console.log("");
@@ -158,7 +154,6 @@ export const getTypographyMap = async (
 
 const pickProjectId = async (client: ZeplinClient) => {
   const projects = await client.getProjects();
-  console.log(projects);
   const resp = await inquirer.prompt([
     {
       type: "list",

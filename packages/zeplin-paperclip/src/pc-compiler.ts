@@ -86,12 +86,19 @@ export const compileTypography = (
     buffer.push(`      @include ${name};\n`);
     buffer.push(`    }\n`);
   }
+  buffer.push(`  }\n\n`);
+
+  buffer.push(`  .preview {\n`);
+  buffer.push(`    display: inline-block;\n`);
+  buffer.push(`    padding: 6px 10px;\n`);
   buffer.push(`  }\n`);
   buffer.push(`</style>\n`);
 
   buffer.push(`\n<!-- previews -->\n`);
   for (const name in map) {
-    buffer.push(`<span className="${name}">.${name}<br /><br /></span>\n`);
+    buffer.push(
+      `<span className="preview ${name}">.${name}<br /><br /></span>\n`
+    );
   }
 
   // TODO - preview here
@@ -109,10 +116,11 @@ export const compileLayers = (
 ) => {
   const buffer = [];
   buffer.push(`<import src="../atoms/colors.pc">\n`);
-  buffer.push(`<import src="../atoms/typography.pc">\n`);
-  buffer.push(`<import as="typography" src="../atoms/spacing.pc">\n\n`);
+  buffer.push(`<import as="typography" src="../atoms/typography.pc">\n`);
+  buffer.push(`<import src="../atoms/spacing.pc">\n\n`);
   buffer.push(`<style>\n`);
 
+  const textMixinMap = {};
   // compile the styles first
   for (const rawLayer of layers) {
     const className = generateIdentifier(rawLayer.name);
@@ -132,40 +140,40 @@ export const compileLayers = (
       );
     }
 
-    const mixinMap = {};
-    let foundMixin;
-    let style = {};
+    let mixedTextStyle = {};
 
     for (const textStyle of castedLayer.textStyles) {
-      const decls = layer.getLayerTextStyleDeclarations(textStyle);
-
-      for (const decl of decls) {
-        style[decl.name] = decl.getValue(
-          { colorFormat, densityDivisor: 1, unitlessLineHeight: false },
-          variables
-        );
-      }
+      Object.assign(mixedTextStyle, textStyle);
     }
 
     for (const mixinName in textStyles) {
       const mixin = textStyles[mixinName];
       const isMatch = Object.keys(mixin).every(key => {
         const value = mixin[key];
-        return style[key] == value;
+        return key == "name" || mixedTextStyle[key] == value;
       });
 
       if (isMatch) {
-        if (!mixinMap[className]) {
-          mixinMap[className] = [];
+        if (!textMixinMap[className]) {
+          textMixinMap[className] = [];
         }
-        mixinMap[className].push(mixinName);
-
-        style = omit(style, Object.keys(mixin));
+        textMixinMap[className].push(mixinName);
+        mixedTextStyle = omit(mixedTextStyle, Object.keys(mixin));
       }
     }
+    const decls = layer.getLayerTextStyleDeclarations(mixedTextStyle);
 
-    for (const key in style) {
-      buffer.push(`    ${key}: ${style[key]};\n`);
+    for (const decl of decls) {
+      // Zeplin keeps d
+      if (!mixedTextStyle[camelCase(decl.name)]) {
+        continue;
+      }
+      buffer.push(
+        `    ${decl.name}: ${decl.getValue(
+          { colorFormat, densityDivisor: 1, unitlessLineHeight: false },
+          variables
+        )};\n`
+      );
     }
 
     buffer.push(`    &.absolute {\n`);
@@ -191,7 +199,13 @@ export const compileLayers = (
     const tagName = castedLayer.textStyles.length ? `span` : `div`;
 
     buffer.push(
-      `<${tagName} export component as="${componentName}" className="${className}" className:absolute>\n`
+      `<${tagName} export component as="${componentName}" className="${className}${
+        textMixinMap[className]
+          ? textMixinMap[className]
+              .map(mixinName => ` >>>typography.${mixinName}`)
+              .join("")
+          : ""
+      } {className?}" className:absolute>\n`
     );
     buffer.push(`  {children}\n`);
     buffer.push(`</${tagName}>\n\n`);

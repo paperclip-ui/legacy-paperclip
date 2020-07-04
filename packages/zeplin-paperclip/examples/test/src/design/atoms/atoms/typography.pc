@@ -14,7 +14,12 @@
       @include default-text;
     }
   }
+
+  .preview {
+    display: inline-block;
+    padding: 6px 10px;
+  }
 </style>
 
 <!-- previews -->
-<span className="default-text">.default-text<br /><br /></span>
+<span className="preview default-text">.default-text<br /><br /></span>

@@ -40,7 +40,6 @@ export class ZeplinClient {
     if (queryParams) {
       url += "?" + querystring.stringify(queryParams);
     }
-    console.log(url);
 
     const headers = {
       Authorization: `Bearer ${this.options.personalAccessToken}`

@@ -1,6 +1,6 @@
 <import src="../atoms/colors.pc">
-<import src="../atoms/typography.pc">
-<import as="typography" src="../atoms/spacing.pc">
+<import as="typography" src="../atoms/typography.pc">
+<import src="../atoms/spacing.pc">
 
 <style>
   .Rectangle-1 {
@@ -21,7 +21,7 @@
 
 
 <!-- Components -->
-<div export component as="Rectangle1" className="Rectangle-1" className:absolute>
+<div export component as="Rectangle1" className="Rectangle-1 {className?}" className:absolute>
   {children}
 </div>
 
