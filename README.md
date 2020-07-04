@@ -13,7 +13,9 @@
   </a-->
 </p>
 
-## Resources
+**Paperclip is a language for building UI primitives.**
+
+#### Resources
 
 
 - [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
@@ -27,7 +29,7 @@
 
 ----
 
-Paperclip is a language for building UI primitives. Here's an example:
+#### Example
 
 ```html
 
