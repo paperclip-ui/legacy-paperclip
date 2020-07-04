@@ -16,11 +16,13 @@
 # Resources
 
 
+- [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
 - [Getting started](./documentation/Getting%20Started)
-- [Download the VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
 - [Syntax](./documentation/Syntax)
-- [Contributing](./documentation/Contributing)
-- [Examples](./examples)
+- Integrations
+  - [React](./packages/paperclip-compiler-react)
+  - [Webpack](./packages/paperclip-loader)
+- Examples
   - [React TodoMVC](./examples/react-todomvc)
 
 ----
