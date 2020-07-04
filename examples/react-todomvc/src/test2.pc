@@ -1,0 +1,30 @@
+
+<!-- Styles are scoped to this document, so you don't have to worry about them leaking out  -->
+<style> 
+  .button {
+    font-family: Helvetica;
+    display: inline-block;
+    border-radius: 10px;
+    padding: 10px 20px;
+    color: #FFF;
+    background: rgb(51, 51, 51);
+    &.secondary {
+      color: #333;
+      border: 1px solid #333;
+      background: transparent;
+    }
+  }
+</style>
+
+<!-- This component is compiled to code -->
+<div export component as="Button" class:secondary class="button">
+  {children}
+</div>
+
+<Button>
+  This is a primary button
+</Button>
+
+<Button secondary>
+  This is a secondary button
+</Button>

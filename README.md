@@ -55,6 +55,11 @@ export SomeForm = () => {
 
 ## Why use Paperclip?
 
+
+### Covers most of your UI
+
+Paperclip covers most UI cases, and provides a format for declaring them in a clear & consise way (and quickly via the realtime preview). For cases where you need more complex styling behavior, Paperclip provides APIs that help you achieve that. 
+
 ### Compiles to plain code
 
 No interpreters or runtimes. Paperclip UIs compile directly to your target framework (currently only React for Alpha, more targets planned later). 
@@ -65,7 +70,7 @@ Styles in Paperclip are scoped to the documents they're defined in, so you don't
 
 ### Faster development
 
-Paperclip comes with a [realtime preview for VS Code](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension) that allows you to build UIs in a flash.  ⚡️
+No more switching back and forth between the browser & code. Paperclip comes with a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)  that allows you to preview UIs in realtime. 
 
 <!-- ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif) -->
 
@@ -74,8 +79,7 @@ Paperclip comes with a [realtime preview for VS Code](https://marketplace.visual
 
 ### Visual regression testing
 
-Paperclip encourages you to define previews of _every_ visual state of your UI. Because of that, you automatically get visual regression testing - no setup required. Just run `percy-paperclip` in your project directory.
-
+Just run `percy-paperclip` to do visual regression testing across all of your application's visual states that are defined in Paperclip UI. Worry less about CSS bugs reaching production.
 
 ![Percy snapshots](./assets/snapshot.gif)
 
@@ -84,8 +88,7 @@ Paperclip encourages you to define previews of _every_ visual state of your UI. 
 
 Paperclip makes it easy to set up & document design systems that are discoverable, and re-usable. 
 
-![Percy snapshots](./assets/design-system.gif)
-
+![Design system](./assets/design-system.gif)
 
 ### Strongly typed
 
@@ -132,6 +135,7 @@ Here's a peak at what's planned for Paperclip:
   - various editors for colors, box shadows, filters, etc
 - A11Y
 - Code splitting so that you don't need to include all of your CSS into one bundle
+- IDE intellisense
 
 ## Resources
 
