@@ -3,7 +3,7 @@ Paperclip is a language for building UI primitives. Here's an Example:
 
 ```html
 
-<!-- Styles are scoped to this document  -->
+<!-- Styles are scoped to this document, so you don't have to worry about them leaking out  -->
 <style> 
   .button {
     font-family: Helvetica;
