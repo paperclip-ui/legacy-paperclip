@@ -201,7 +201,7 @@ pub struct SpreadAttribute {
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
   pub script: js_ast::Statement,
-  pub location: Location
+  pub location: Location,
 }
 
 impl fmt::Display for SpreadAttribute {
@@ -213,7 +213,7 @@ impl fmt::Display for SpreadAttribute {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ShorthandAttribute {
   pub reference: js_ast::Statement,
-  pub location: Location
+  pub location: Location,
 }
 
 impl ShorthandAttribute {

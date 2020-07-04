@@ -405,13 +405,16 @@ fn parse_shorthand_attribute<'a>(
       pc_ast::SpreadAttribute {
         omit_from_compilation,
         script,
-        location: Location::new(start, tokenizer.utf16_pos)
+        location: Location::new(start, tokenizer.utf16_pos),
       },
     ))
   } else {
     let reference = parse_slot_script(tokenizer)?;
     Ok(pc_ast::Attribute::ShorthandAttribute(
-      pc_ast::ShorthandAttribute { reference, location: Location::new(start, tokenizer.utf16_pos) },
+      pc_ast::ShorthandAttribute {
+        reference,
+        location: Location::new(start, tokenizer.utf16_pos),
+      },
     ))
   }
 }
@@ -564,7 +567,7 @@ fn parse_attribute_slot<'a>(
   let script = parse_slot_script(tokenizer)?;
   Ok(pc_ast::AttributeValue::Slot(pc_ast::AttributeSlotValue {
     script,
-    location: Location::new(start, tokenizer.utf16_pos)
+    location: Location::new(start, tokenizer.utf16_pos),
   }))
 }
 
