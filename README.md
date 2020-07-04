@@ -57,7 +57,7 @@ export SomeForm = () => {
 
 ### Compiles to plain code
 
-No interpreters or runtimes. Paperclip UIs compile directly to your target framework (currently only React for Alpha, more planned later). 
+No interpreters or runtimes. Paperclip UIs compile directly to your target framework (currently only React for Alpha, more targets planned later). 
 
 ### Scoped styling
 
