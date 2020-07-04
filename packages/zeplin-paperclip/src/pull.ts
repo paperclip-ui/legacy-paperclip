@@ -1,6 +1,7 @@
 import { ZeplinClient } from "./api";
 import * as path from "path";
 import * as inquirer from "inquirer";
+import * as plimit from "p-limit";
 import { mkdirpSync, writeFileSync } from "fs-extra";
 import Layer from "zeplin-extension-style-kit/elements/layer";
 import FontFace from "zeplin-extension-style-kit/elements/fontFace";
@@ -45,17 +46,21 @@ export const pull = async ({
     prompted = true;
   }
 
-  const colorVars = await getColorVarMap(projectId, colorFormat, client);
+  const limit = plimit(6);
 
-  const typographyMixins = await await getTypographyMap(
-    projectId,
-    colorFormat,
-    client
-  );
-  const spacingVars = await getSpacingVarMap(projectId, colorFormat, client);
-  const components = await client.getProjectComponents(projectId);
+  const [
+    colorVars,
+    typographyMixins,
+    spacingVars,
+    components
+  ] = await Promise.all([
+    limit(() => getColorVarMap(projectId, colorFormat, client)),
+    limit(() => getTypographyMap(projectId, colorFormat, client)),
+    limit(() => getSpacingVarMap(projectId, colorFormat, client)),
+    limit(() => client.getProjectComponents(projectId))
+  ]);
 
-  const molecules: Record<string, string> = {};
+  const molecules: Record<string, any> = {};
 
   const atoms = {
     colors: compileGlobalColorVariables(colorVars),
@@ -63,14 +68,23 @@ export const pull = async ({
     typography: compileTypography(typographyMixins, colorFormat, colorVars)
   };
 
-  for (const component of components) {
-    const info = await client.getProjectComponent(projectId, component.id);
-    molecules[generateIdentifier(component.name).toLowerCase()] = compileLayers(
-      info.layers,
-      colorFormat,
-      colorVars
-    );
-  }
+  await Promise.all(
+    components.map(component =>
+      limit(async () => {
+        const info = await client.getProjectComponent(projectId, component.id);
+        molecules[generateIdentifier(component.name).toLowerCase()] = {
+          code: compileLayers(
+            info.layers,
+            colorFormat,
+            colorVars,
+            typographyMixins
+          )
+        };
+      })
+    )
+  );
+
+  console.log(molecules);
 
   const fileContents = { atoms, molecules };
 
@@ -90,11 +104,11 @@ export const pull = async ({
 const writeFiles = (map: any, directory: string) => {
   for (const key in map) {
     const value = map[key];
-    if (value.code === "string") {
+    if (value.code) {
       mkdirpSync(directory);
       const filePath = path.join(directory, `${key}.pc`);
       console.log(`Writing ${filePath}`);
-      // writeFileSync(filePath, value);
+      writeFileSync(filePath, value.code);
     } else {
       writeFiles(value, path.join(directory, key));
     }

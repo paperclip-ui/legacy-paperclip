@@ -1,0 +1,72 @@
+<import src="../atoms/colors.pc">
+<import src="../atoms/typography.pc">
+<import as="typography" src="../atoms/spacing.pc">
+
+<style>
+  .background-2 {
+    background-color: var(--barney);
+    &.absolute {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 149px;
+      height: 175px;
+    }
+  }
+
+  .text {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: 1%;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: var(--ghost);
+    &.absolute {
+      position: absolute;
+      left: 57px;
+      top: 74px;
+      width: 21px;
+      height: 14px;
+    }
+  }
+
+  .background {
+    background-color: var(--ninja-turtles);
+    &.absolute {
+      position: absolute;
+      left: 28px;
+      top: 25px;
+      width: 78px;
+      height: 37px;
+    }
+  }
+
+</style>
+
+
+<!-- Components -->
+<div export component as="Background2" className="background-2" className:absolute>
+  {children}
+</div>
+
+<span export component as="Text" className="text" className:absolute>
+  {children}
+</span>
+
+<div export component as="Background" className="background" className:absolute>
+  {children}
+</div>
+
+
+<!-- Preview -->
+<div className="preview">
+  <Background2 absolute>
+  </Background2>
+  <Text absolute>
+    text
+  </Text>
+  <Background absolute>
+  </Background>
+</div>

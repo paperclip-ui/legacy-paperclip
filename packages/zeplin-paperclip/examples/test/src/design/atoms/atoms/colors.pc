@@ -1,0 +1,8 @@
+<style>
+  :root {
+    --grey-fox: hsl(0, 0%, 93%);
+    --ninja-turtles: hsl(112, 91%, 26%);
+    --ghost: hsl(0, 0%, 100%);
+    --barney: hsl(292, 76%, 28%);
+  }
+</style>
