@@ -2,7 +2,7 @@
 
 Installation: `npm install paperclip-compiler-react --save-dev`
 
-This is a compiler that translates paperclip templates into React code. Here's an example template:
+This is a compiler that translates paperclip templates into React code. Here's an example PC file:
 
 ```html
 <style>
@@ -32,7 +32,7 @@ This is a compiler that translates paperclip templates into React code. Here's a
 </default>
 ```
 
-Here's the React code using the template:
+Here's how you use the above file in React:
 
 ```jsx
 import Counter, {CurrentCount} from "./counter.pc";
