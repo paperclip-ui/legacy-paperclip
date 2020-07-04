@@ -1,8 +1,6 @@
 > ⚠️ Note that Paperclip is currently in Alpha, so expect a few bugs!
 
-#### Build UIs in real-time with [Paperclip](http://github.com/crcn/paperclip) ⚡️
-
-Paperclip is a template language that's designed for visual development. See what you're creating in real-time, directly within VS Code.
+This extension allows you to create Paperclip UIs in realtime. 
 
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
 
@@ -19,4 +17,5 @@ Paperclip is a template language that's designed for visual development. See wha
 
 - `Paperclip: Open Live Preview` command for opening Paperclip previews.
 - CSS color picker in Paperclip files.
-- `⌘ click` preview elements to reveal their source code.
+- `command + click` preview elements to reveal their source.
+- `command + click` reference in documents to reveal source.
