@@ -99,30 +99,33 @@ Paperclip encourages you to define previews of _every_ visual state of your UI. 
 ![Percy snapshots](./assets/snapshot.gif)
 
 
-## Strongly typed 🦺
+## Strongly typed
 
-Paperclip templates compile to TypeScript definition files for safety. Here's an example:
+Paperclip generates TypeScript definition files so that you can safely include templates in your project. Here's an example:
 
 ```typescript
-import {ReactNode, ReactHTML, Factory, InputHTMLAttributes, ClassAttributes} from "react";
+/* eslint-disable */
+import {ReactNode, ReactElement} from "react";
 
-type ElementProps = InputHTMLAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>;
+type Factory<TProps> = (props: TProps) => ReactElement;
 
-// class names that you can use outside of the template file
-export declare const classNames: {};
-
-type TodoItemProps = {
-  done: String | boolean | Number | Object | ReactNode,
-  onDoneClick: Function,
-  label: String | boolean | Number | Object | ReactNode,
+export declare const classNames: {
+  "app": string,
+  "app-container": string,
+  "todoapp": string,
+  "new-todo": string,
+  "toggle-all": string,
+  "info": string,
+  "todo-list": string,
+  "main": string,
 };
 
-export const TodoItem: Factory<TodoItemProps>;
-
-type TodoListProps = {
+type Props = {
   onNewTodoKeyPress: Function,
-  todoItems: String | boolean | Number | Object | ReactNode,
+  items: ReactNode,
+  controls: ReactNode,
 };
 
-export const TodoList: Factory<TodoListProps>;
+declare const View: Factory<Props>;
+export default View;
 ```
