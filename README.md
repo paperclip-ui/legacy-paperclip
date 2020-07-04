@@ -55,6 +55,10 @@ export SomeForm = () => {
 
 ## Why use Paperclip?
 
+### Compiles to plain code
+
+No interpreters or runtimes. Paperclip UIs compile directly to your target framework (currently only React for Alpha, more planned later). 
+
 ### Scoped styling
 
 Styles in Paperclip are scoped to the documents they're defined in, so you don't have to worry about style collisions. 
