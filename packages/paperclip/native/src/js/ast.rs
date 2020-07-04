@@ -47,6 +47,20 @@ impl fmt::Display for Statement {
   }
 }
 
+impl Statement {
+  pub fn get_location(&self) -> &Location {
+    match self {
+      Statement::Reference(value) => &value.location,
+      Statement::Node(value) => value.get_location(),
+      Statement::String(value) => &value.location,
+      Statement::Boolean(value) => &value.location,
+      Statement::Number(value) => &value.location,
+      Statement::Array(value) => &value.location,
+      Statement::Object(value) => &value.location,
+    }
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Array {
   pub values: Vec<Statement>,

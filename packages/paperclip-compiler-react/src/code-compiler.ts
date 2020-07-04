@@ -673,7 +673,7 @@ const translateAttributeValue = (
   }
   if (value.attrValueKind === AttributeValueKind.Slot) {
     return translateStatment(
-      (value as any) as Statement,
+      value.script,
       false,
       isPropOnNativeElement && !isSpecialPropName(name),
       context

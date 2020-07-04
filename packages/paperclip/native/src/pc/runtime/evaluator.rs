@@ -430,6 +430,9 @@ fn evaluate_slot<'a>(
   slot: &ast::Slot,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+
+  assert_slot_in_instance(&slot.location, context)?;
+
   let script = &slot.script;
   let mut js_value = evaluate_js(script, context)?;
 
@@ -579,6 +582,7 @@ fn create_component_instance_data<'a>(
         }
       }
       ast::Attribute::SpreadAttribute(attr) => {
+        assert_slot_in_instance(&attr.location, context)?;
         let attr_data = evaluate_js(&attr.script, context)?;
         match attr_data {
           js_virt::JsValue::JsObject(mut object) => {
@@ -596,6 +600,10 @@ fn create_component_instance_data<'a>(
         };
       }
       ast::Attribute::ShorthandAttribute(sh_attr) => {
+
+
+        assert_slot_in_instance(&sh_attr.location, context)?;
+
         let name = sh_attr.get_name().map_err(|message| RuntimeError {
           uri: context.uri.to_string(),
           message: message.to_string(),
@@ -608,6 +616,7 @@ fn create_component_instance_data<'a>(
         );
       }
       ast::Attribute::PropertyBoundAttribute(kv_attr) => {
+        assert_slot_in_instance(&kv_attr.location, context)?;
         property_bound_attrs.push(kv_attr);
       }
     };
@@ -782,9 +791,11 @@ fn evaluate_native_element<'a>(
         attributes.insert(name.to_string(), value_option);
       }
       ast::Attribute::PropertyBoundAttribute(kv_attr) => {
+        assert_slot_in_instance(&kv_attr.location, context)?;
         property_bound_attrs.push(kv_attr);
       }
       ast::Attribute::SpreadAttribute(attr) => {
+        assert_slot_in_instance(&attr.location, context)?;
         let attr_data = evaluate_js(&attr.script, context)?;
         match attr_data {
           js_virt::JsValue::JsObject(mut object) => {
@@ -802,6 +813,7 @@ fn evaluate_native_element<'a>(
         };
       }
       ast::Attribute::ShorthandAttribute(sh_attr) => {
+        assert_slot_in_instance(&sh_attr.location, context)?;
         let name = sh_attr.get_name().map_err(|message| RuntimeError {
           uri: context.uri.to_string(),
           message: message.to_string(),
@@ -995,7 +1007,10 @@ fn evaluate_attribute_value<'a>(
     ast::AttributeValue::String(st) => {
       evaluate_attribute_string(name, &st.value, &st.location, is_native, context)
     }
-    ast::AttributeValue::Slot(script) => evaluate_attribute_slot(script, context),
+    ast::AttributeValue::Slot(value) => {
+      assert_slot_in_instance(&value.location, context)?;
+      evaluate_attribute_slot(&value.script, context)
+    },
   }
 }
 
@@ -1108,6 +1123,23 @@ fn evaluate_attribute_slot<'a>(
   context: &'a mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
   evaluate_js(script, context)
+}
+
+fn assert_slot_in_instance(location: &Location, context: &Context) -> Result<(), RuntimeError> {
+  if in_instance(context) {
+    Ok(())
+  } else {
+    Err(RuntimeError::new("Bindings can only be defined within components.".to_string(), context.uri, location))
+  }
+}
+
+fn in_instance(context: &Context) -> bool {
+  for (src, strategy) in &context.render_call_stack {
+    if let RenderStrategy::Part(_) = strategy {
+      return true;
+    }
+  }
+  return false;
 }
 
 #[cfg(test)]

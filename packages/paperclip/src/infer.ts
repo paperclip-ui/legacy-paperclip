@@ -273,7 +273,7 @@ const inferAttribute = (attribute: Attribute, context: Context) => {
         attribute.value &&
         attribute.value.attrValueKind === AttributeValueKind.Slot
       ) {
-        context = inferStatement(attribute.value, context);
+        context = inferStatement(attribute.value.script, context);
       }
       if (
         attribute.value &&

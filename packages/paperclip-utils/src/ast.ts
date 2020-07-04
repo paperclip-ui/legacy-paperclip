@@ -149,8 +149,10 @@ export type DynamicStringAttributeValue = {
   location: SourceLocation;
 } & BaseAttributeValue<AttributeValueKind.DyanmicString>;
 
-export type SlotAttributeValue = Statement &
-  BaseAttributeValue<AttributeValueKind.Slot>;
+export type SlotAttributeValue = {
+  script: Statement;
+  location: SourceLocation;
+} & BaseAttributeValue<AttributeValueKind.Slot>;
 
 export type AttributeValue =
   | StringAttributeValue
@@ -322,8 +324,8 @@ export const flattenNodes = (node: Node, _allNodes: Node[] = []): Node[] => {
     for (const attr of node.attributes) {
       if (attr.kind === AttributeKind.KeyValueAttribute && attr.value) {
         if (attr.value.attrValueKind === AttributeValueKind.Slot) {
-          if (attr.value.jsKind === StatementKind.Node) {
-            flattenNodes(attr.value, _allNodes);
+          if (attr.value.script.jsKind === StatementKind.Node) {
+            flattenNodes(attr.value.script, _allNodes);
           }
         }
       }
@@ -438,10 +440,10 @@ export const getNestedReferences = (
           attr.value &&
           attr.value.attrValueKind === AttributeValueKind.Slot
         ) {
-          if (attr.value.jsKind === StatementKind.Node) {
-            getNestedReferences(attr.value, _statements);
-          } else if (attr.value.jsKind === StatementKind.Reference) {
-            _statements.push([attr.value, attr.name]);
+          if (attr.value.script.jsKind === StatementKind.Node) {
+            getNestedReferences(attr.value.script, _statements);
+          } else if (attr.value.script.jsKind === StatementKind.Reference) {
+            _statements.push([attr.value.script, attr.name]);
           }
         } else if (
           attr.kind === AttributeKind.ShorthandAttribute &&

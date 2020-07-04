@@ -16,5 +16,11 @@
 </style>
 
 <div class="error">
-  this is a test
+  this is a testddfsd
 </div>
+
+<div component as="Test">
+  {a}
+</div>
+
+

@@ -79,6 +79,12 @@ pub struct AttributeStringValue {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct AttributeSlotValue {
+  pub script: js_ast::Statement,
+  pub location: Location,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringValue {
   pub values: Vec<AttributeDynamicStringPart>,
   pub location: Location,
@@ -195,6 +201,7 @@ pub struct SpreadAttribute {
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
   pub script: js_ast::Statement,
+  pub location: Location
 }
 
 impl fmt::Display for SpreadAttribute {
@@ -206,6 +213,7 @@ impl fmt::Display for SpreadAttribute {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ShorthandAttribute {
   pub reference: js_ast::Statement,
+  pub location: Location
 }
 
 impl ShorthandAttribute {
@@ -272,14 +280,14 @@ impl fmt::Display for KeyValueAttribute {
 pub enum AttributeValue {
   DyanmicString(AttributeDynamicStringValue),
   String(AttributeStringValue),
-  Slot(js_ast::Statement),
+  Slot(AttributeSlotValue),
 }
 
 impl fmt::Display for AttributeValue {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match &self {
       AttributeValue::String(value) => write!(f, "{}", value.to_string()),
-      AttributeValue::Slot(script) => write!(f, "{{{}}}", script.to_string()),
+      AttributeValue::Slot(value) => write!(f, "{{{}}}", value.script.to_string()),
       AttributeValue::DyanmicString(script) => write!(f, "{{{}}}", script.to_string()),
     }
   }

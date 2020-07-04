@@ -396,7 +396,7 @@ fn parse_shorthand_attribute<'a>(
   tokenizer: &mut Tokenizer<'a>,
 ) -> Result<pc_ast::Attribute, ParseError> {
   let omit_from_compilation = parse_omit_from_compilation(tokenizer)?;
-
+  let start = tokenizer.utf16_pos;
   tokenizer.next_expect(Token::CurlyOpen)?;
   if tokenizer.peek(1)? == Token::Spread {
     tokenizer.next_expect(Token::Spread)?;
@@ -405,12 +405,13 @@ fn parse_shorthand_attribute<'a>(
       pc_ast::SpreadAttribute {
         omit_from_compilation,
         script,
+        location: Location::new(start, tokenizer.utf16_pos)
       },
     ))
   } else {
     let reference = parse_slot_script(tokenizer)?;
     Ok(pc_ast::Attribute::ShorthandAttribute(
-      pc_ast::ShorthandAttribute { reference },
+      pc_ast::ShorthandAttribute { reference, location: Location::new(start, tokenizer.utf16_pos) },
     ))
   }
 }
@@ -558,9 +559,13 @@ fn parse_attribute_string_value<'a>(
 fn parse_attribute_slot<'a>(
   tokenizer: &mut Tokenizer<'a>,
 ) -> Result<pc_ast::AttributeValue, ParseError> {
+  let start = tokenizer.utf16_pos;
   tokenizer.next_expect(Token::CurlyOpen)?;
   let script = parse_slot_script(tokenizer)?;
-  Ok(pc_ast::AttributeValue::Slot(script))
+  Ok(pc_ast::AttributeValue::Slot(pc_ast::AttributeSlotValue {
+    script,
+    location: Location::new(start, tokenizer.utf16_pos)
+  }))
 }
 
 fn parse_attribute_string<'a>(
