@@ -180,7 +180,6 @@ pub fn evaluate_document_styles<'a>(
         }
       }
       DependencyContent::StyleSheet(imp_style) => {
-        
         let info = evaluate_css(
           imp_style,
           dep_uri,
@@ -214,7 +213,14 @@ pub fn evaluate_document_styles<'a>(
     // style elements are only allowed in root, so no need to traverse
     for child in children {
       if let ast::Node::StyleElement(style_element) = &child {
-        let info = evaluate_css(&style_element.sheet, uri, &scope, &scopes, vfs, &css_imports)?;
+        let info = evaluate_css(
+          &style_element.sheet,
+          uri,
+          &scope,
+          &scopes,
+          vfs,
+          &css_imports,
+        )?;
 
         match info {
           CSSEvalInfo {
@@ -260,7 +266,14 @@ fn evaluate_document_sheet<'a>(
     // style elements are only allowed in root, so no need to traverse
     for child in children {
       if let ast::Node::StyleElement(style_element) = &child {
-        let info = evaluate_css(&style_element.sheet, uri, &scope, &context.import_scopes, context.vfs, &css_imports)?;
+        let info = evaluate_css(
+          &style_element.sheet,
+          uri,
+          &scope,
+          &context.import_scopes,
+          context.vfs,
+          &css_imports,
+        )?;
         match info {
           CSSEvalInfo {
             sheet: child_sheet,
@@ -344,12 +357,10 @@ fn create_context<'a>(
   }
 }
 
-
 fn get_import_scopes<'a>(entry: &Dependency) -> HashMap<String, String> {
   let mut scopes = HashMap::new();
   for (id, uri) in &entry.dependencies {
     scopes.insert(id.to_string(), get_document_style_scope(uri));
-    
   }
   scopes
 }

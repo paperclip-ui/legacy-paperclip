@@ -691,7 +691,9 @@ fn format_scoped_reference(value: &str, context: &Context) -> String {
     format!("_{}_{}", context.scope, value)
   } else {
     let parts: Vec<&str> = value.split(".").collect();
-    let scope_option = context.import_scopes.get(&parts.get(0).unwrap().to_string());
+    let scope_option = context
+      .import_scopes
+      .get(&parts.get(0).unwrap().to_string());
     if let Some(scope) = scope_option {
       format!("_{}_{}", scope, parts.get(1).unwrap())
     } else {
