@@ -12,7 +12,7 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "a58718db0204b7572f34032400fd6197466c0e42",
+  "gitHead": "52ebbc012b0c2b5e3ac8525cd681929d3c80b1b8",
   "dependencies": {
     "@types/inquirer": "^6.5.0",
     "chokidar": "^3.3.1",
