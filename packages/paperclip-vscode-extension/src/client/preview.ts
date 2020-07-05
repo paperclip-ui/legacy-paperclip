@@ -13,7 +13,8 @@ import {
   ExtensionContext,
   ViewColumn,
   workspace,
-  Selection
+  Selection,
+  env
 } from "vscode";
 import { isPaperclipFile } from "./utils";
 import * as path from "path";
@@ -137,6 +138,10 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
         );
       }
     }
+  });
+
+  commands.registerCommand("paperclip.giveFeedback", () => {
+    env.openExternal(Uri.parse("https://github.com/crcn/paperclip/issues"));
   });
 
   // There can only be one listener, so do that & handle across all previews

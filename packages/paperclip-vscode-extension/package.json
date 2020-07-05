@@ -25,6 +25,10 @@
       {
         "command": "paperclip.openPreview",
         "title": "Paperclip: Open Live Preview"
+      },
+      {
+        "command": "paperclip.giveFeedback",
+        "title": "Paperclip: Give Feedback"
       }
     ],
     "menus": {
