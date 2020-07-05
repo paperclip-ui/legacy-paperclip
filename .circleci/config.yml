@@ -31,7 +31,7 @@ jobs:
           command: "source $HOME/.cargo/env && npm run build"
       - run:
           name: Test
-          command: nsource $HOME/.cargo/env && pm test
+          command: source $HOME/.cargo/env && pm test
       - store_artifacts:
           path: test-results.xml
           prefix: tests
