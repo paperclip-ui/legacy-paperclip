@@ -8,3 +8,4 @@ tmp/
 *.pc.d.ts
 *.vsix
 *.DS_Store
+lerna-debug.log
