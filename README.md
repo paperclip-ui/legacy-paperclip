@@ -60,7 +60,7 @@ export SomeForm = () => {
 
 Paperclip covers most UI cases, and provides a format for declaring them in a clear & consise way (and quickly via the realtime preview). For cases where you need more complex styling behavior, Paperclip provides APIs that help you achieve that. 
 
-### Compiles to plain code
+### Compiles to plain performant code
 
 No interpreters or runtimes. Paperclip UIs compile directly to your target framework (currently only React for Alpha, more targets planned later). 
 
