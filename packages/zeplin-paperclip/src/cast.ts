@@ -56,11 +56,20 @@ export const castTextStyle = (style: any) => {
   );
 };
 
-const castShadow = ({ type, offset_x, offset_y, spread, color }: any) => {
+const castShadow = ({
+  type,
+  offset_x,
+  offset_y,
+  spread,
+  color,
+  blur_radius,
+  ...rest
+}: any) => {
   return {
     type,
     offsetX: offset_x,
     offsetY: offset_y,
+    blurRadius: blur_radius,
     spread: spread,
     color: new zmodel.Color(color)
   };
