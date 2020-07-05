@@ -1,7 +1,7 @@
 <import src="./styles/global.pc">
 <import as="ListItem" src="./item.pc">
 <import as="Controls" src="./controls.pc">
-<import as="Learn" src="./Learn.pc">
+<import as="Learn" src="./learn.pc">
 
 
 <style>
