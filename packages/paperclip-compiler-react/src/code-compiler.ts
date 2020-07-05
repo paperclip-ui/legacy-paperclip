@@ -60,6 +60,7 @@ import { camelCase } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import * as crc32 from "crc32";
+import { Context } from "paperclip/src";
 
 const entities = new Html5Entities();
 type Config = { ast: Node; sheet?: any; classNames: string[] };
@@ -467,27 +468,44 @@ const translateElement = (
     context
   );
   const propertyBoundAttributes = collectPropertyBoundAttributes(element);
-
+  const addedAttrs = {};
   for (const attr of element.attributes) {
     context = translateAttribute(
       element,
       attr,
       isComponentInstance,
       propertyBoundAttributes,
-      context
+      context,
+      addedAttrs
     );
   }
 
-  if (
-    !hasAttribute("className", element) &&
-    !hasAttribute("class", element) &&
-    hasAttribute(AS_ATTR_NAME, element)
-  ) {
-    context = addBuffer(
-      `"className": "${getElementStyleName(element, context)}",\n`,
-      context
-    );
+  for (const attrName in propertyBoundAttributes) {
+    if (!addedAttrs[attrName] && !addedAttrs[RENAME_PROPS[attrName]]) {
+      const name = RENAME_PROPS[attrName] || attrName;
+      context = addBuffer(`"${name}": ""`, context);
+
+      context = addPropertyBoundAttribute(
+        element,
+        name,
+        isComponentInstance,
+        propertyBoundAttributes,
+        context
+      );
+      context = addBuffer(`,\n`, context);
+    }
   }
+
+  // if (
+  //   !hasAttribute("className", element) &&
+  //   !hasAttribute("class", element) &&
+  //   hasAttribute(AS_ATTR_NAME, element)
+  // ) {
+  //   context = addBuffer(
+  //     `"className": "${getElementStyleName(element, context)}",\n`,
+  //     context
+  //   );
+  // }
 
   context = endBlock(context);
   context = addBuffer(`}`, context);
@@ -565,12 +583,65 @@ const collectPropertyBoundAttributes = (element: Element) =>
     return record;
   }, {}) as Record<string, PropertyBoundAttribute[]>;
 
+const prepPropertyBoundAttribute = (
+  name: string,
+  propertyBoundAttributes: Record<string, PropertyBoundAttribute[]>,
+  context: TranslateContext
+) => {
+  const boundAttributes =
+    propertyBoundAttributes[name] || propertyBoundAttributes[REV_PROP[name]];
+
+  if (boundAttributes) {
+    // prefix with string just for casting.
+    context = addBuffer('"" + ', context);
+  }
+
+  return context;
+};
+
+const addPropertyBoundAttribute = (
+  element: Element,
+  name: string,
+  isComponentInstance: boolean,
+  propertyBoundAttributes: Record<string, PropertyBoundAttribute[]>,
+  context: TranslateContext
+) => {
+  const boundAttributes =
+    propertyBoundAttributes[name] || propertyBoundAttributes[REV_PROP[name]];
+
+  if (boundAttributes) {
+    for (const pba of boundAttributes) {
+      context = addBuffer(" + (", context);
+      context = addBuffer(
+        `props.${camelCase(pba.bindingName)} ? " " + `,
+        context
+      );
+      if (pba.value) {
+        context = translateAttributeValue(
+          element,
+          name,
+          pba.value,
+          !isComponentInstance,
+          context
+        );
+      } else {
+        context = addBuffer(JSON.stringify(pba.bindingName), context);
+      }
+      context = addBuffer(` : ""`, context);
+      context = addBuffer(")", context);
+    }
+  }
+
+  return context;
+};
+
 const translateAttribute = (
   element: Element,
   attr: Attribute,
   isComponentInstance: boolean,
   propertyBoundAttributes: Record<string, PropertyBoundAttribute[]>,
-  context: TranslateContext
+  context: TranslateContext,
+  added: Record<string, boolean>
 ) => {
   if (attr.kind === AttributeKind.KeyValueAttribute) {
     // maintain exact key if component instance
@@ -594,14 +665,13 @@ const translateAttribute = (
       }
       context = addBuffer(`${JSON.stringify(name)}: `, context);
 
-      const boundAttributes =
-        propertyBoundAttributes[name] ||
-        propertyBoundAttributes[REV_PROP[name]];
+      added[name] = true;
 
-      if (boundAttributes) {
-        // prefix with string just for casting.
-        context = addBuffer('"" + ', context);
-      }
+      context = prepPropertyBoundAttribute(
+        name,
+        propertyBoundAttributes,
+        context
+      );
 
       context = translateAttributeValue(
         element,
@@ -611,33 +681,19 @@ const translateAttribute = (
         context
       );
 
-      if (boundAttributes) {
-        for (const pba of boundAttributes) {
-          context = addBuffer(" + (", context);
-          context = addBuffer(
-            `props.${camelCase(pba.bindingName)} ? " " + `,
-            context
-          );
-          if (pba.value) {
-            context = translateAttributeValue(
-              element,
-              name,
-              pba.value,
-              !isComponentInstance,
-              context
-            );
-          } else {
-            context = addBuffer(JSON.stringify(pba.bindingName), context);
-          }
-          context = addBuffer(` : ""`, context);
-          context = addBuffer(")", context);
-        }
-      }
+      context = addPropertyBoundAttribute(
+        element,
+        name,
+        isComponentInstance,
+        propertyBoundAttributes,
+        context
+      );
 
       context = addBuffer(`,\n`, context);
     }
   } else if (attr.kind === AttributeKind.ShorthandAttribute) {
     const property = (attr.reference as Reference).path[0];
+    added[property.name] = true;
 
     let value = `${context.scopes[property.name] ? "" : "props."}${camelCase(
       property.name
@@ -645,10 +701,24 @@ const translateAttribute = (
 
     if (!isComponentInstance && !isSpecialPropName(property.name)) {
       // everything must be a string
-      value = `${value} ? String(${value}) : null`;
+      value = `(${value} ? String(${value}) : null)`;
     }
+    context = addBuffer(`${JSON.stringify(property.name)}:`, context);
+    context = prepPropertyBoundAttribute(
+      property.name,
+      propertyBoundAttributes,
+      context
+    );
 
-    context = addBuffer(`${JSON.stringify(property.name)}: ${value}`, context);
+    context = addBuffer(`${value}`, context);
+    context = addPropertyBoundAttribute(
+      element,
+      property.name,
+      isComponentInstance,
+      propertyBoundAttributes,
+      context
+    );
+
     context = addBuffer(`,\n`, context);
   } else if (attr.kind === AttributeKind.SpreadAttribute) {
     context = addBuffer(`...(`, context);

@@ -3,7 +3,6 @@ import { Item } from "./data";
 import useLocation from "./hooks/useLocation";
 import View, { Filter } from "./controls.pc";
 
-
 type Props = {
   items: Item[];
   onClearCompletedClicked: () => void;
@@ -25,7 +24,7 @@ export default ({ items, onClearCompletedClicked }: Props) => {
         <>
           <Filter
             href="#active"
-            label="Active"
+            label="All"
             active={currentLocation === "active"}
           />
           <Filter

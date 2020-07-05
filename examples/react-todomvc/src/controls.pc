@@ -19,7 +19,6 @@ button {
 }
 
 .footer {
-  color: #F60;
   padding: 10px 15px;
   height: 20px;
   text-align: center;
@@ -65,14 +64,14 @@ button {
       &:hover {
         border-color: rgba(155, 15, 15, 0.1);
       }
-      &[data-select] {
+      &.active {
         border-color: rgba(175, 47, 47, 0.2);
       }
     }
   }
 }
 
-.clear-completed, .clear-completed:active {
+.clear-completed {
   float: right;
   position: relative;
   line-height: 20px;
@@ -96,7 +95,7 @@ button {
 </style>
 
 <li export component as="Filter">
-  <a {href} data-select={active}>{label}</a>
+  <a {href} class:active class:test>{label}</a>
 </li>
 
 <div export component as="default">
@@ -116,11 +115,11 @@ button {
 <div export component as="DefaultPreview">
   <default
     itemsLeftLabel={<span><strong>1</strong> item left</span>}
-    filters={[
-      <filter label="Active" active />,
-      <filter label="Completed" />,
-      <filter label="Incomplete" />
-    ]}
+    filters={<fragment>
+      <Filter label="Active" active />
+      <Filter label="Completed" />
+      <Filter label="Incomplete" />
+    </fragment>}
   />
 </div>
 
