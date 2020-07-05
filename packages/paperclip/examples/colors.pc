@@ -27,7 +27,7 @@
 </style>
 
 <div class="bg-green">
-  ddddd
+  something
 </div>
 
 <div export component as="defaul2t">

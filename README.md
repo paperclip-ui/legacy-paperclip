@@ -68,6 +68,11 @@ No interpreters or runtimes. Paperclip UIs compile directly to your target frame
 
 Styles in Paperclip are scoped to the documents they're defined in, so you don't have to worry about style collisions. 
 
+### Sass-like syntax
+
+Mixins, nested rules, and other sass-like features work out of the box. 
+
+
 ### Faster development
 
 No more switching back and forth between the browser & code. Paperclip comes with a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)  that allows you to preview UIs in realtime. 
