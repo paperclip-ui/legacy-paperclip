@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "design:pull": "zeplin-paperclip pull src/design/atoms --personal-access-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoicGVyc29uYWxfYWNjZXNzX3Rva2VuIiwiY2xpZW50X2lkIjoiNWYwMGRiNWFhNjRkNmUxMWRjYTA3MDdjIiwic2NvcGUiOiIiLCJpYXQiOjE1OTM4OTE2NzQsImV4cCI6MTkwOTQ2MDkzNCwiaXNzIjoiemVwbGluOmFwaS56ZXBsaW4uaW8iLCJzdWIiOiI1ZjAwY2IwZWI5OTI4YzQxNzQ1NGQwYzciLCJqdGkiOiJkM2VjNTY1Yi1lZjY3LTRlZGQtYWM4Ny03MzhmOTExZGFhM2EifQ.n20bC4TsOTcnfWrjEfKBID5Y4U9zdTfHIuHRgyTF7w4 --project-id=5f00da9e254e79bb43d828d6"
+    "design:pull": "zeplin-paperclip pull src/design-generated/atoms --personal-access-token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoicGVyc29uYWxfYWNjZXNzX3Rva2VuIiwiY2xpZW50X2lkIjoiNWYwMGRiNWFhNjRkNmUxMWRjYTA3MDdjIiwic2NvcGUiOiIiLCJpYXQiOjE1OTM4OTE2NzQsImV4cCI6MTkwOTQ2MDkzNCwiaXNzIjoiemVwbGluOmFwaS56ZXBsaW4uaW8iLCJzdWIiOiI1ZjAwY2IwZWI5OTI4YzQxNzQ1NGQwYzciLCJqdGkiOiJkM2VjNTY1Yi1lZjY3LTRlZGQtYWM4Ny03MzhmOTExZGFhM2EifQ.n20bC4TsOTcnfWrjEfKBID5Y4U9zdTfHIuHRgyTF7w4 --project-id=5f00da9e254e79bb43d828d6"
   },
   "author": "",
   "license": "ISC",
