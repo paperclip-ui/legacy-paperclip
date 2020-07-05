@@ -6,7 +6,6 @@
   "dependencies": {
     "gatsby": "^2.19.7",
     "gatsby-image": "^2.2.39",
-    "gatsby-paperclip-plugin": "^1.0.2",
     "gatsby-plugin-manifest": "^2.2.39",
     "gatsby-plugin-offline": "^3.0.32",
     "gatsby-plugin-paperclip": "^12.0.23",
@@ -38,7 +37,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build--circle-broken": "npm run build:definitions && gatsby build",
+    "build--broken--circleci": "npm run build:definitions && gatsby build",
     "deploy": "gatsby build --prefix-paths && gh-pages -d public",
     "build:definitions": "paperclip build --definition --write",
     "develop": "gatsby develop",
