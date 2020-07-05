@@ -1,6 +1,6 @@
 {
   "name": "zeplin-paperclip",
-  "version": "12.0.15",
+  "version": "12.0.16",
   "description": "Download Zeplin colors, typography, and spacing to Paperclip",
   "main": "index.js",
   "bin": {
@@ -27,5 +27,5 @@
     "p-limit": "^3.0.1",
     "zeplin-extension-style-kit": "^2.0.0"
   },
-  "gitHead": "52ebbc012b0c2b5e3ac8525cd681929d3c80b1b8"
+  "gitHead": "3e7a14db6b329dfcbb542f959ba49ed87c901685"
 }

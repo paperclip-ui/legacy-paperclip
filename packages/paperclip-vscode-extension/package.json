@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode-extension",
   "displayName": "Paperclip",
-  "version": "12.0.15",
+  "version": "12.0.16",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "description": "",
@@ -101,13 +101,13 @@
     "color": "^3.1.2",
     "g": "^2.0.1",
     "lodash": "^4.17.15",
-    "paperclip": "^12.0.15",
-    "paperclip-utils": "^12.0.15",
-    "paperclip-web-renderer": "^12.0.15",
+    "paperclip": "^12.0.16",
+    "paperclip-utils": "^12.0.16",
+    "paperclip-web-renderer": "^12.0.16",
     "vsce": "^1.77.0",
     "vscode-languageclient": "^6.0.1",
     "vscode-languageserver": "^6.0.1",
     "vscode-languageserver-textdocument": "^1.0.0"
   },
-  "gitHead": "52ebbc012b0c2b5e3ac8525cd681929d3c80b1b8"
+  "gitHead": "3e7a14db6b329dfcbb542f959ba49ed87c901685"
 }

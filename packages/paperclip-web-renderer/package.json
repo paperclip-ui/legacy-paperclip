@@ -1,6 +1,6 @@
 {
   "name": "paperclip-web-renderer",
-  "version": "12.0.15",
+  "version": "12.0.16",
   "description": "My webpack project",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "html-entities": "^1.2.1",
-    "paperclip-utils": "^12.0.15"
+    "paperclip-utils": "^12.0.16"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",
@@ -22,12 +22,12 @@
     "chai": "^4.2.0",
     "html-webpack-plugin": "^3.2.0",
     "mocha": "^7.0.1",
-    "paperclip": "^12.0.15",
+    "paperclip": "^12.0.16",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1"
   },
-  "gitHead": "52ebbc012b0c2b5e3ac8525cd681929d3c80b1b8"
+  "gitHead": "3e7a14db6b329dfcbb542f959ba49ed87c901685"
 }
