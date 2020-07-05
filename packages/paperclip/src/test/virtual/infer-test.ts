@@ -1,4 +1,10 @@
-import { Engine, infer, Inference, InferenceKind, ShapeInference } from "../..";
+import {
+  Engine,
+  infer,
+  Inference,
+  InferenceKind,
+  ShapeInference
+} from "../../..";
 import { expect } from "chai";
 
 describe(__filename + "#", () => {

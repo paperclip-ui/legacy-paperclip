@@ -1,0 +1,3 @@
+<div export component as="SecretMessage">
+  I'm a secret!
+</div>

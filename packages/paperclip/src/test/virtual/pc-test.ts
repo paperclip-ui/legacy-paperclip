@@ -4,7 +4,7 @@ import {
   cleanHTML,
   waitForError,
   stringifyLoadResult
-} from "./utils";
+} from "../utils";
 import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
 
 describe(__filename + "#", () => {

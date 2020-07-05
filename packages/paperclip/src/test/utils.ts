@@ -11,6 +11,10 @@ import {
 export type Graph = {
   [identifier: string]: string;
 };
+export const TEST_FIXTURE_DIRECTORY = path.join(
+  __dirname,
+  "../../test-fixtures"
+);
 
 export const createMockEngine = (
   graph: Graph,

@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Engine } from "../engine";
+import { Engine } from "../../engine";
 import { expect } from "chai";
 import {
   EngineEventKind,
@@ -7,7 +7,7 @@ import {
   EvaluatedEvent,
   stringifyCSSSheet
 } from "paperclip-utils";
-import { createMockEngine, Graph } from "./utils";
+import { createMockEngine, Graph } from "../utils";
 
 describe(__filename + "#", () => {
   const waitForEvaluated = async (engine: Engine): Promise<EvaluatedEvent> => {
