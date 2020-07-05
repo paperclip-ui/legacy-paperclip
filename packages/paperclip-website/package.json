@@ -38,7 +38,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "npm run build:definitions && gatsby build",
+    "build--circle-broken": "npm run build:definitions && gatsby build",
     "deploy": "gatsby build --prefix-paths && gh-pages -d public",
     "build:definitions": "paperclip build --definition --write",
     "develop": "gatsby develop",
