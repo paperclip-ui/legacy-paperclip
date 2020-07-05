@@ -135,7 +135,6 @@ Here's a peak at what's planned for Paperclip:
 - Extension for Atom, Sublime, and other editors
 - Remote UI preview that you can use across devises & browsers (such as BrowserStack).
 - Storybook integration
-- Zeplin design token sync, so that you can keep your designs in sync with Figma & Sketch
 - UI editor controls:
   - CSS animation editor
   - various editors for colors, box shadows, filters, etc
