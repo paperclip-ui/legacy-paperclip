@@ -3,6 +3,8 @@
   <a href="https://github.com/crcn/paperclip/blob/master/MIT-LICENSE.txt"><img src="https://img.shields.io/github/license/crcn/paperclip" alt="License"></a>
 </div>
 
+<br />
+
 
 Paperclip is a language for building UI primitives. Here's an Example:
 
