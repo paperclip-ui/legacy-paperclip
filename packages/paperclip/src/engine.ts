@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import * as url from "url";
+import * as path from "path";
 import { NativeEngine } from "../native/pkg/paperclip";
 import {
   EngineEvent,
@@ -10,7 +10,6 @@ import {
   getImports,
   Node,
   EvaluatedEvent,
-  resolveImportFile,
   getAttributeStringValue,
   VirtualNode
 } from "paperclip-utils";
@@ -68,7 +67,10 @@ export class Engine {
         fileExists: uri => {
           try {
             const url = new URL(uri) as any;
-            return fs.existsSync(url) && fs.lstatSync(url).isFile();
+
+            // need to make sure that case matches _exactly_ since some
+            // systems are sensitive to that.
+            return existsSyncCaseSensitive(url) && fs.lstatSync(url).isFile();
           } catch (e) {
             console.error(e);
             return false;
@@ -273,4 +275,11 @@ export const evaluateAllFileStyles = (
     // }
   }
   return map;
+};
+
+const existsSyncCaseSensitive = (uri: URL) => {
+  const pathname = uri.pathname;
+  const dir = path.dirname(pathname);
+  const basename = path.basename(pathname);
+  return fs.readdirSync(dir).includes(basename);
 };
