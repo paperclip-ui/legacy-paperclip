@@ -87,7 +87,11 @@ function initBuild(
 
   function handleError(error, filePath) {
     console.error(
-      getPrettyMessage(error, fs.readFileSync(filePath, "utf8"), filePath)
+      getPrettyMessage(
+        error,
+        fs.readFileSync(filePath.replace("file://", ""), "utf8"),
+        filePath
+      )
     );
   }
 
@@ -103,6 +107,10 @@ function initBuild(
         return handleError(ast.error, fullPath);
       }
       const sheet = pcEngine.evaluateFileStyles(fullPath);
+
+      if (sheet.error) {
+        return handleError(sheet.error, fullPath);
+      }
 
       const styleMap = {
         [fullPath]: sheet,

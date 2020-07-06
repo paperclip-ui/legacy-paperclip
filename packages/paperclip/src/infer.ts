@@ -227,18 +227,6 @@ const addContextInferenceProperty = (
   )
 });
 
-const setScope = (
-  property: string,
-  path: ReferencePart[],
-  context: Context
-): Context => ({
-  ...context,
-  scope: {
-    ...context.scope,
-    [property]: path
-  }
-});
-
 export const infer = (ast: Node): ShapeInference => {
   return inferNode(ast, true, {
     scope: {},
