@@ -313,7 +313,7 @@ Bindings help you define dynamic parts of your components. For example:
 
 ```html
 <div component as="Message">
-  Hello {text}
+  Hello {children}
 </div>
 
 <Message>
@@ -366,7 +366,7 @@ We can also include bindings in attribute strings. For example:
 
 ```html
 <!-- styles here -->
-<div export component as="Message" class="some-class {class}">
+<div export component as="Message" className="some-class {className}">
   {children}
 </div>
 
@@ -374,6 +374,9 @@ We can also include bindings in attribute strings. For example:
   Hello World
 </Message>
 ```
+
+> ☝🏻 The `class` attribute can also be defined as `className`. Though, I'd recommend using `className` instead if you're
+using these components in JSX for consistency. 
 
 #### spreads (...props)
 
@@ -398,7 +401,7 @@ export function SomeInput() {
 }
 ```
 
-#### Optional bindings `{slot?}`
+#### Optional bindings `{binding?}`
 
 Paperclip supports optional properties like so:
 
