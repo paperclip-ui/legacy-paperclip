@@ -35,7 +35,7 @@ Here's a kitchen sink example of most syntaxes:
 </style>
 
 <!-- components allow you to re-use groups of elements & text -->
-<span component as="Message" class="message         " class:alt>Hello {children}!</span>
+<span component as="Message" class="message {className?}" class:alt>Hello {children}!</span>
 
 <!-- renders as "Hello World!" -->
 <Message>
@@ -91,9 +91,11 @@ Class references allow you to explicitly reference class names, and it's a way t
 
 ```html
 <style>
-  .message {
-    font-size: 24px;
-    font-family: Helvetica;
+  @export {
+    .message {
+      font-size: 24px;
+      font-family: Helvetica;
+    }
   }
 </style>
 <div export component as="default" className="message {className?}">
