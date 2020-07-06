@@ -91,11 +91,9 @@ Class references allow you to explicitly reference class names, and it's a way t
 
 ```html
 <style>
-  @export {
-    .message {
-      font-size: 24px;
-      font-family: Helvetica;
-    }
+  .message {
+    font-size: 24px;
+    font-family: Helvetica;
   }
 </style>
 <div export component as="default" className="message {className?}">
