@@ -35,7 +35,7 @@ Here's a kitchen sink example of most syntaxes:
 </style>
 
 <!-- components allow you to re-use groups of elements & text -->
-<span component as="Message" class="message {className?}" class:alt>Hello {children}!</span>
+<span component as="Message" className="message {className?}" className:alt>Hello {children}!</span>
 
 <!-- renders as "Hello World!" -->
 <Message>
