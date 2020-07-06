@@ -1,6 +1,6 @@
 {
   "name": "percy-paperclip",
-  "version": "12.0.23",
+  "version": "12.0.24",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -19,7 +19,7 @@
   "dependencies": {
     "@percy/agent": "^0.26.9",
     "glob": "^7.1.6",
-    "paperclip": "^12.0.22",
+    "paperclip": "^12.0.24",
     "w3c-xmlhttprequest": "^2.1.3",
     "yargs": "^15.3.1"
   }
