@@ -183,7 +183,7 @@ Mixins allow us to define a group of CSS properties to use in style rules. For e
 
 #### @export
 
-The `@export` util allows us to export mixins & classes. For example, suppose I have a `typography.pc` file:
+The `@export` util allows us to export mixins, classes, and keyframes. For example, suppose I have a `typography.pc` file:
 
 ```html
 <style>
