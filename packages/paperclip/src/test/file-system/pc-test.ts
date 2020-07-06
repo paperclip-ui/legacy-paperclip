@@ -15,8 +15,8 @@ describe(__filename + "#", () => {
         "file://" + path.join(TEST_FIXTURE_DIRECTORY, "good-import.pc")
       )
     );
-    expect(result).to.eql(
-      `<style></style><div data-pc-6b0e50bc>I'm a secret! </div>`
+    expect(result.replace(/ data\-pc\-[^>\s]+/, "")).to.eql(
+      `<style></style><div>I'm a secret! </div>`
     );
   });
 
