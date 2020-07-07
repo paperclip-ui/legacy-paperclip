@@ -1,9 +1,0 @@
-@export {
-  @mixin font {
-    font-family: Helvetica;
-    color: blue;
-  }
-  .test {
-    font-size: 32px;
-  }
-}

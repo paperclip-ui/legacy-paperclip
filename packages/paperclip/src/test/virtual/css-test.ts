@@ -33,7 +33,7 @@ describe(__filename + "#", () => {
     });
 
     const e = waitForError(engine);
-    engine.load("/entry.pc");
+    engine.load("/entry.pc").catch(() => {});
     const err = await e;
     expect(err).to.eql({
       kind: "Error",
@@ -73,7 +73,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc");
+      engine.load("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -117,7 +117,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc");
+      engine.load("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -137,7 +137,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc");
+      engine.load("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -159,7 +159,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc");
+      engine.load("/entry.pc").catch(() => {});
       const e = await p;
       // expect(e).to.eql({
       //   kind: 'Error',
@@ -185,7 +185,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc");
+      engine.load("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -210,7 +210,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc");
+      engine.load("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",

@@ -93,7 +93,11 @@ export class VSCServiceBridge {
     connection.onNotification(
       NotificationType.LOAD,
       async ({ uri }: LoadParams) => {
-        await _engine.load(uri);
+        try {
+          await _engine.load(uri);
+        } catch (e) {
+          console.warn(e);
+        }
       }
     );
 
@@ -201,8 +205,6 @@ export class VSCServiceBridge {
     const ret = this._service
       .getService(document.uri)
       .getCompletionItems(document.uri, document.offsetAt(params.position));
-
-    console.log(ret);
 
     return ret;
   };

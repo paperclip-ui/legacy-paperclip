@@ -1,0 +1,7 @@
+<style>
+  @export {
+    @mixin abc {
+      color: blue;
+    }
+  }
+</style>

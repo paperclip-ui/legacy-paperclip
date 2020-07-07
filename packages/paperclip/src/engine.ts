@@ -54,6 +54,7 @@ export class Engine {
   private _listeners: EngineEventListener[] = [];
   private _rendered: Record<string, EvaluatedEvent> = {};
   private _loading: Record<string, boolean> = {};
+  private _liveErrors: Record<string, any> = {};
 
   constructor(
     private _options: EngineOptions = {},
@@ -110,6 +111,13 @@ export class Engine {
     };
   }
   private _onEngineEvent = (event: EngineEvent) => {
+    if (event.kind === EngineEventKind.Error) {
+      this._liveErrors[event.uri] = event;
+      return;
+    }
+
+    this._liveErrors[event.uri] = undefined;
+
     if (event.kind === EngineEventKind.Evaluated) {
       this._rendered[event.uri] = event;
     } else if (event.kind === EngineEventKind.Diffed) {
@@ -174,6 +182,10 @@ export class Engine {
     );
   }
   private _getRenderEvent(uri: string): Promise<EvaluatedEvent> {
+    if (this._liveErrors[uri]) {
+      return Promise.reject(this._liveErrors[uri]);
+    }
+
     if (!this._loading[uri]) {
       this.load(uri);
     }

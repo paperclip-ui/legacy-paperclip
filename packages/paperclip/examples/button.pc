@@ -1,4 +1,4 @@
-
+<import as="styles" src="./style1.pc">
 
 <style>
   :root {
@@ -14,6 +14,7 @@
     border-radius: 4px;
     display: inline-block;
     &.negative {
+      @include styles.abc;
       background: var(--color-red);
     }
     &.secondary {
@@ -44,7 +45,7 @@
     Button
   </Button>
   <Button secondary> 
-    Seconary Button
+    Seconary Button1
   </Button>
 
   <Button negative> 

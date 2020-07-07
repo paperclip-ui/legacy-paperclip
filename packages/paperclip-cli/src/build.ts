@@ -139,6 +139,8 @@ function initBuild(
         }
       } else {
         console.log("Compiling %s", relativePath);
+
+        // Keep me for stdout
         console.log(result);
       }
     } catch (e) {
