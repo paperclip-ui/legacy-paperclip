@@ -16,6 +16,8 @@ let client: LanguageClient;
 export const activate = (context: ExtensionContext) => {
   client = createClient(context);
 
+  console.log("zoom", workspace.getConfiguration("").get("window.zoomLevel"));
+
   const init = async () => {
     await client.onReady();
     client.onNotification(NotificationType.CRASH, () => {

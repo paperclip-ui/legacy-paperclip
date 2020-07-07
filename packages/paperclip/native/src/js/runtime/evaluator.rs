@@ -64,7 +64,6 @@ fn evaluate_number<'a>(
   value: &ast::Number,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-
   let value_result = value.value.parse::<f64>();
 
   if let Ok(number) = value_result {
@@ -73,7 +72,11 @@ fn evaluate_number<'a>(
       source: ExprSource::new(context.uri.clone(), value.location.clone()),
     }))
   } else {
-    Err(RuntimeError::new("Invalid number.".to_string(), context.uri, &value.location))
+    Err(RuntimeError::new(
+      "Invalid number.".to_string(),
+      context.uri,
+      &value.location,
+    ))
   }
 }
 
