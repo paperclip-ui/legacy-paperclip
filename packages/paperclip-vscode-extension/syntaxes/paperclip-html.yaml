@@ -48,7 +48,7 @@ repository:
           - include: "source.pcss"
 
       # open tag name
-      - begin: (<)([\w\-:]+)
+      - begin: (<)([\w\-\.]+)
         beginCaptures:
           "1": { name: punctuation.definition.tag.begin.html }
           "2": { name: entity.name.tag.html }
@@ -59,7 +59,7 @@ repository:
           - include: "#attribute"
 
       # end tag name
-      - match: (</)([\w\-:]+)(>)
+      - match: (</)([\w\-\.]+)(>)
         captures:
           "1": { name: punctuation.definition.tag.end.html }
           "2": { name: entity.name.tag.html }
