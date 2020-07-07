@@ -24,8 +24,11 @@ import {
   NotificationType,
   Load,
   Unload,
-  PreviewInitParams
+  PreviewInitParams,
+  ErrorLoading,
+  LoadParams
 } from "../common/notifications";
+import { Engine } from "paperclip/src";
 
 const VIEW_TYPE = "paperclip-preview";
 
@@ -161,11 +164,21 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
       preview.$$handleEngineEvent(event);
     });
   });
+
+  // There can only be one listener, so do that & handle across all previews
+  client.onNotification(NotificationType.ERROR_LOADING, event => {
+    console.log("ERROR LOADING");
+
+    Object.values(_previews).forEach(preview => {
+      preview.$$handleErrorLoading(event);
+    });
+  });
 };
 
 class LivePreview {
   private _em: EventEmitter;
   private _dependencies: string[] = [];
+  private _needsReloading: boolean;
   private _disposeEngineListener: () => void;
   public readonly targetUri: string;
 
@@ -204,7 +217,6 @@ class LivePreview {
       targetUri: this.targetUri
     };
   }
-  blink() {}
   private _render() {
     // Calling startEngine multiple times by the way just restarts it
     this._client.sendNotification(
@@ -259,7 +271,21 @@ class LivePreview {
   private _onMessage = () => {
     // TODO when live preview tools are available
   };
+  public $$handleErrorLoading({ uri }: LoadParams) {
+    if (uri === this.targetUri) {
+      this._needsReloading = true;
+    }
+  }
   public $$handleEngineEvent(event: EngineEvent) {
+    if (
+      this._needsReloading &&
+      (event.kind === EngineEventKind.Evaluated ||
+        event.kind === EngineEventKind.Diffed)
+    ) {
+      this._needsReloading = false;
+      this._render();
+    }
+
     // all error events get passed to preview.
     if (event.kind !== EngineEventKind.Error) {
       if (
@@ -272,6 +298,7 @@ class LivePreview {
       if (
         event.uri == this.targetUri &&
         (event.kind === EngineEventKind.Evaluated ||
+          event.kind === EngineEventKind.Loaded ||
           event.kind === EngineEventKind.Diffed ||
           event.kind === EngineEventKind.AddedSheets)
       ) {

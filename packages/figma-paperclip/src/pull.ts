@@ -27,11 +27,8 @@ export const pull = async ({ personalAccessToken, teamId }: PullOptions) => {
         const resp = await client.getFile(style.file_key, {
           ids: style.node_id
         });
-        console.log(JSON.stringify(resp, null, 2));
         return resp.styles[style.node_id];
       });
     })
   );
-
-  console.log(styles);
 };

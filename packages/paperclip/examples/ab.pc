@@ -1,4 +1,4 @@
 <import as="test" src="./module.pc">
 <div className=">>>test.style">
-  Somethi
+  Something like thissss
 </div>

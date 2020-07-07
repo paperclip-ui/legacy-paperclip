@@ -194,6 +194,7 @@ export class Renderer {
       }
       case EngineEventKind.Loaded: {
         if (event.uri === this.targetUri) {
+          this._dependencies = event.allDependencies;
           this.initialize(event);
         }
         break;

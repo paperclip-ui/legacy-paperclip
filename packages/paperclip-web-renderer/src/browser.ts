@@ -59,8 +59,6 @@ document.body.appendChild(iframe);
 const onMessage = ({ data: { type, payload } }: MessageEvent) => {
   if (type === "ENGINE_EVENT") {
     renderer.handleEngineEvent(JSON.parse(payload));
-  } else if (type === "INIT") {
-    renderer.initialize(JSON.parse(payload));
   }
 };
 

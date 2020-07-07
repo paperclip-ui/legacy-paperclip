@@ -12,6 +12,7 @@ export enum NotificationType {
   UPDATE_VIRTUAL_FILE_CONTENTS = "UPDATE_VIRTUAL_FILE_CONTENTS",
   CRASH = "CRASH",
   LOAD = "LOAD",
+  ERROR_LOADING = "ERROR_LOADING",
   UNLOAD = "UNLOAD",
   ENGINE_EVENT = "ENGINE_EVENT"
 }
@@ -37,6 +38,15 @@ export type LoadParams = {
 export class Load extends BaseNotification<NotificationType.LOAD, LoadParams> {
   constructor(params: LoadParams) {
     super(NotificationType.LOAD, params);
+  }
+}
+
+export class ErrorLoading extends BaseNotification<
+  NotificationType.ERROR_LOADING,
+  LoadParams
+> {
+  constructor(params: LoadParams) {
+    super(NotificationType.ERROR_LOADING, params);
   }
 }
 

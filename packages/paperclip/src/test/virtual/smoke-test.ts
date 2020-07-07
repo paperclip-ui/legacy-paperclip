@@ -10,20 +10,6 @@ import {
 import { createMockEngine, Graph } from "../utils";
 
 describe(__filename + "#", () => {
-  const waitForEvaluated = async (engine: Engine): Promise<EvaluatedEvent> => {
-    return new Promise((resolve, reject) => {
-      engine.onEvent(event => {
-        if (event.kind === EngineEventKind.Error) {
-          return reject(event);
-        }
-
-        if (event.kind === EngineEventKind.Evaluated) {
-          resolve(event);
-        }
-      });
-    });
-  };
-
   [
     // basic parsing
     [

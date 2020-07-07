@@ -46,7 +46,8 @@ import {
 import {
   EngineEventNotification,
   NotificationType,
-  LoadParams
+  LoadParams,
+  ErrorLoading
 } from "../common/notifications";
 import {
   TextDocument,
@@ -54,6 +55,7 @@ import {
 } from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
 import { CompletionItem } from "vscode";
+import { connect } from "http2";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
@@ -97,6 +99,7 @@ export class VSCServiceBridge {
           await _engine.load(uri);
         } catch (e) {
           console.warn(e);
+          connection.sendNotification(...new ErrorLoading({ uri }).getArgs());
         }
       }
     );

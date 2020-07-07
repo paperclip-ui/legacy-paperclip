@@ -1,7 +1,7 @@
 <style> 
   @export {
     .style {
-      color: blue
+      color: blue;
     }
   } 
 </style>

@@ -1,3 +1,5 @@
+// 🙈
+
 import * as fs from "fs";
 import * as path from "path";
 import { NativeEngine } from "../native/pkg/paperclip";
@@ -11,7 +13,8 @@ import {
   Node,
   EvaluatedEvent,
   getAttributeStringValue,
-  VirtualNode
+  VirtualNode,
+  LoadedEvent
 } from "paperclip-utils";
 
 export type FileContent = {
@@ -44,7 +47,7 @@ const mapResult = result => {
 export type EngineEventListener = (event: EngineEvent) => void;
 
 export type LoadResult = {
-  importedSheets: any[];
+  importedSheets: Record<string, any>;
   sheet: any;
   preview: VirtualNode;
 };
@@ -52,7 +55,7 @@ export type LoadResult = {
 export class Engine {
   private _native: NativeEngine;
   private _listeners: EngineEventListener[] = [];
-  private _rendered: Record<string, EvaluatedEvent> = {};
+  private _rendered: Record<string, LoadedEvent> = {};
   private _loading: Record<string, boolean> = {};
   private _liveErrors: Record<string, any> = {};
 
@@ -119,18 +122,24 @@ export class Engine {
     this._liveErrors[event.uri] = undefined;
 
     if (event.kind === EngineEventKind.Evaluated) {
-      this._rendered[event.uri] = event;
+      this._dispatch(
+        (this._rendered[event.uri] = {
+          kind: EngineEventKind.Loaded,
+          uri: event.uri,
+          sheet: event.info.sheet,
+          preview: event.info.preview,
+          allDependencies: event.allDependencies,
+          importedSheets: this.getImportedSheets(event)
+        })
+      );
     } else if (event.kind === EngineEventKind.Diffed) {
       const existingEvent = this._rendered[event.uri];
 
       this._rendered[event.uri] = {
         ...existingEvent,
         allDependencies: event.allDependencies,
-        info: {
-          ...existingEvent.info,
-          sheet: event.sheet || existingEvent.info.sheet,
-          preview: patchVirtNode(existingEvent.info.preview, event.mutations)
-        }
+        sheet: event.sheet || existingEvent.sheet,
+        preview: patchVirtNode(existingEvent.preview, event.mutations)
       };
 
       const addedSheets = {};
@@ -142,7 +151,7 @@ export class Engine {
           !existingEvent.allDependencies.includes(depUri) &&
           this._rendered[depUri]
         ) {
-          addedSheets[depUri] = this._rendered[depUri].info.sheet;
+          addedSheets[depUri] = this._rendered[depUri].sheet;
         }
       }
 
@@ -181,37 +190,40 @@ export class Engine {
       mapResult(this._native.update_virtual_file_content(uri, content))
     );
   }
-  private _getRenderEvent(uri: string): Promise<EvaluatedEvent> {
+  private _getLoadEvent(uri: string): Promise<LoadedEvent> {
     if (this._liveErrors[uri]) {
       return Promise.reject(this._liveErrors[uri]);
     }
-
     if (!this._loading[uri]) {
-      this.load(uri);
-    }
+      const promise = this._waitForLoadEvent(uri);
 
-    if (this._rendered[uri]) {
+      return promise;
+    } else if (this._rendered[uri]) {
       return Promise.resolve(this._rendered[uri]);
     }
-    return new Promise(resolve => {
+
+    return this._waitForLoadEvent(uri);
+  }
+
+  private _waitForLoadEvent(uri: string): Promise<LoadedEvent> {
+    return new Promise<LoadedEvent>(resolve => {
       const dispose = this.onEvent(event => {
-        if (event.uri === uri && event.kind === EngineEventKind.Evaluated) {
+        if (event.uri === uri && event.kind === EngineEventKind.Loaded) {
           dispose();
           resolve(event);
         }
       });
     });
   }
-  async getImportedSheets(uri: string): Promise<any> {
+  getImportedSheets({ allDependencies }: EvaluatedEvent) {
     // ick, wworks for now.
-    const entry = await this._getRenderEvent(uri);
 
     const deps = {};
 
     for (const depUri in this._rendered) {
       const event = this._rendered[depUri];
-      if (entry.allDependencies.includes(depUri)) {
-        deps[depUri] = event.info.sheet;
+      if (allDependencies.includes(depUri)) {
+        deps[depUri] = event.sheet;
       }
     }
     return deps;
@@ -233,21 +245,12 @@ export class Engine {
       mapResult(this._native.load(uri, this._options.renderPart))
     );
 
-    const info = (await this._getRenderEvent(uri)).info;
-    const importedSheets = await this.getImportedSheets(uri);
-
-    this._dispatch({
-      kind: EngineEventKind.Loaded,
-      uri,
-      sheet: info.sheet,
-      preview: info.preview,
-      importedSheets
-    });
+    const info = await this._getLoadEvent(uri);
 
     return {
       sheet: info.sheet,
       preview: info.preview,
-      importedSheets
+      importedSheets: info.importedSheets
     };
   }
   private _tryCatch = <TRet>(fn: () => TRet) => {
@@ -265,7 +268,6 @@ export class Engine {
         listener(event);
       }
     } catch (e) {
-      console.error(e);
       throw e;
     }
   };
