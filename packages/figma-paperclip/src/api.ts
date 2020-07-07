@@ -44,7 +44,7 @@ export class FigmaClient {
 
     if (queryParams) {
       url += "?" + querystring.stringify(queryParams);
-    
+    }
 
     const headers = {
       "X-Figma-Token": this.options.personalAccessToken
