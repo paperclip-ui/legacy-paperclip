@@ -1,14 +1,22 @@
 #!/usr/bin/env node
 
-const argv = require("yargs").argv;
 const path = require("path");
 const fs = require("fs");
 const {PC_CONFIG_FILE_NAME} = require("paperclip");
 const filePath = path.join(process.cwd(), PC_CONFIG_FILE_NAME);
 
+
+const argv = require("yargs")
+.option('keep-empty', { description: 'Snapshot empty documents'})
+.argv;
+
+
 if (!fs.existsSync(filePath)) {
   console.error(`Missing ${PC_CONFIG_FILE_NAME} in this directory`);
+  process.exit(1);
 } else {
   const config = JSON.parse(fs.readFileSync(filePath, "utf8"));
-  require("../lib/cli").run(config.filesGlob);
+  require("../lib/cli").run(config.filesGlob, {
+    keepEmpty: argv.keepEmpty
+  });
 }

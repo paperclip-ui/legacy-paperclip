@@ -1,25 +1,27 @@
 import PercyAgent from "@percy/agent";
 import * as glob from "glob";
 import * as path from "path";
+import * as chalk from "chalk";
 import { XMLHttpRequest } from "w3c-xmlhttprequest";
 import domTransformation from "./dom-transformation";
 import {
   Engine,
   VirtualFragment,
   VirtualNodeKind,
-  stringifyCSSSheet,
-  VirtualStyleElement,
-  stringifyVirtualNode
+  VirtualStyleElement
 } from "paperclip";
 import { PCDocument } from "./pc-document";
 
 export type RunOptions = {
   cwd: string;
+  keepEmpty?: boolean;
 };
+
+const EMPTY_CONTENT_STATE = `<html><head></head><body><style>body { margin: 0px; padding: 0px }</style><style></style></body></html>`;
 
 export const run = async (
   filePattern: string,
-  { cwd = process.cwd() }: Partial<RunOptions> = {}
+  { cwd = process.cwd(), keepEmpty }: Partial<RunOptions> = {}
 ) => {
   const paperclipFilePaths = glob.sync(filePattern, { cwd, absolute: true });
 
@@ -51,6 +53,10 @@ export const run = async (
 
     const document = new PCDocument("http://" + relativePath, root) as any;
 
+    if (!keepEmpty && document.outerHTML === EMPTY_CONTENT_STATE) {
+      console.info(`[paperclip] Skip empty ${relativePath}`);
+      continue;
+    }
     agent.snapshot(relativePath, {
       document
     });
