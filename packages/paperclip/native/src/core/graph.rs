@@ -183,10 +183,10 @@ impl DependencyGraph {
           loaded_deps.push(curr_uri.to_string());
 
           self.dependencies.insert(curr_uri.to_string(), dependency);
-    
+
           // need to insert now for
           let dep = &self.dependencies.get(&curr_uri).unwrap();
-    
+
           for (relative_uri, dep_uri) in &dep.dependency_uri_maps {
             if !self.dependencies.contains_key(&dep_uri.to_string()) {
               to_load.push((
@@ -195,13 +195,12 @@ impl DependencyGraph {
               ));
             }
           }
-        },
+        }
         Err(err) => {
           self.dependencies.remove(&curr_uri);
           return Err(err);
         }
-      } 
-
+      }
     }
 
     Ok(loaded_deps)

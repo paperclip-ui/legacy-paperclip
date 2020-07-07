@@ -236,7 +236,6 @@ impl Engine {
 
     let all_dependencies = self.dependency_graph.flatten_dependencies(uri);
 
-
     for (id, dep_uri) in relative_deps {
       let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
         dep_result
@@ -277,7 +276,7 @@ impl Engine {
               dependents: dept_uris,
               mutations: diff_pc(&existing_info.preview, &info.preview),
             }));
-            
+
             self.virt_nodes.insert(uri.clone(), info);
             ret
           } else {
