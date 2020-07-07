@@ -25,13 +25,15 @@ export type PullOptions = {
   personalAccessToken: string;
   projectId?: string;
   colorFormat?: ColorFormat;
+  includeComponents?: boolean;
 };
 
 export const pull = async ({
   personalAccessToken,
   targetDirectory,
   projectId,
-  colorFormat = DEFAULT_COLOR_FORMAT
+  colorFormat = DEFAULT_COLOR_FORMAT,
+  includeComponents
 }: PullOptions) => {
   const cwd = process.cwd();
   const targetDirectoryPath = path.join(cwd, targetDirectory);
@@ -57,10 +59,10 @@ export const pull = async ({
     limit(() => getColorVarMap(projectId, colorFormat, client)),
     limit(() => getTypographyMap(projectId, colorFormat, client)),
     limit(() => getSpacingVarMap(projectId, colorFormat, client)),
-    limit(() => client.getProjectComponents(projectId))
+    limit(() => includeComponents && client.getProjectComponents(projectId))
   ]);
 
-  const molecules: Record<string, any> = {};
+  const organisms: Record<string, any> = {};
 
   const atoms = {
     colors: compileGlobalColorVariables(colorVars),
@@ -68,23 +70,30 @@ export const pull = async ({
     typography: compileTypography(typographyMixins, colorFormat, colorVars)
   };
 
-  await Promise.all(
-    components.map(component =>
-      limit(async () => {
-        const info = await client.getProjectComponent(projectId, component.id);
-        molecules[generateIdentifier(component.name).toLowerCase()] = {
-          code: compileLayers(
-            info.layers,
-            colorFormat,
-            colorVars,
-            typographyMixins
-          )
-        };
-      })
-    )
-  );
+  if (components) {
+    await Promise.all(
+      components.map(component =>
+        limit(async () => {
+          const info = await client.getProjectComponent(
+            projectId,
+            component.id
+          );
+          organisms[generateIdentifier(component.name).toLowerCase()] = {
+            code: compileLayers(
+              info.layers,
+              colorFormat,
+              colorVars,
+              typographyMixins
+            )
+          };
+        })
+      )
+    );
+  }
 
-  const fileContents = { atoms, molecules };
+  const fileContents = includeComponents
+    ? { tokens: atoms, components: organisms }
+    : atoms;
 
   writeFiles(fileContents, targetDirectoryPath);
 
