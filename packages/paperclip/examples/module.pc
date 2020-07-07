@@ -3,5 +3,5 @@
     .style {
       color: blue;
     }
-  } 
+  }
 </style>

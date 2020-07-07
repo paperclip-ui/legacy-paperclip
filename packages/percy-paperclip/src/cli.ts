@@ -17,7 +17,7 @@ export type RunOptions = {
   keepEmpty?: boolean;
 };
 
-const EMPTY_CONTENT_STATE = `<html><head></head><body><style>body { margin: 0px; padding: 0px }</style><style></style></body></html>`;
+const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
 
 export const run = async (
   filePattern: string,
@@ -53,14 +53,23 @@ export const run = async (
 
     const document = new PCDocument("http://" + relativePath, root) as any;
 
-    if (!keepEmpty && document.outerHTML === EMPTY_CONTENT_STATE) {
+    if (!keepEmpty && isEmpty(document.outerHTML)) {
       console.info(`[${chalk.yellow("ppclp")}] skip empty: '${relativePath}'`);
       continue;
     }
+
     agent.snapshot(relativePath, {
       document
     });
   }
+};
+
+const isEmpty = (source: string) => {
+  return (
+    source
+      .replace(/[\r\n\s\t]+/g, "")
+      .replace(/\<style\>.*?\<\/style\>/g, "") === EMPTY_CONTENT_STATE
+  );
 };
 
 const createStyle = (sheet: any): VirtualStyleElement => {
