@@ -73,6 +73,20 @@
         },
         {
           "end": "(?=\\s*+[^=\\s])",
+          "begin": "(as)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.control"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#attributes-interior"
+            }
+          ]
+        },
+        {
+          "end": "(?=\\s*+[^=\\s])",
           "begin": "([\\w\\$_\\-]+)",
           "beginCaptures": {
             "1": {

@@ -73,6 +73,12 @@ repository:
         beginCaptures:
           "1": { name: keyword.control }
         end: (?=\s*+[^=\s])
+      - begin: (as)
+        beginCaptures:
+          "1": { name: keyword.control }
+        end: (?=\s*+[^=\s])
+        patterns:
+          - include: "#attributes-interior"
       - begin: ([\w\$_\-]+)
         beginCaptures:
           "1": { name: entity.other.attribute-name.html }
