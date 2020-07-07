@@ -54,7 +54,7 @@ export const run = async (
     const document = new PCDocument("http://" + relativePath, root) as any;
 
     if (!keepEmpty && document.outerHTML === EMPTY_CONTENT_STATE) {
-      console.info(`[paperclip] Skip empty ${relativePath}`);
+      console.info(`[${chalk.yellow("ppclp")}] skip empty: '${relativePath}'`);
       continue;
     }
     agent.snapshot(relativePath, {
