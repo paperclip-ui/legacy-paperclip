@@ -46,6 +46,7 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
   } = {};
 
   let _showedOpenLivePreviewPrompt = false;
+  let _liveErrors = {};
 
   const openLivePreview = async (editor: TextEditor) => {
     const paperclipUri = String(editor.document.uri);
@@ -74,6 +75,10 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
 
   const registerLivePreview = (preview: LivePreview) => {
     _previews[preview.targetUri] = preview;
+    if (Object.keys(_liveErrors).length) {
+      // just handle one since only one can be displayed to user at a time
+      preview.$$handleEngineEvent(_liveErrors[Object.keys(_liveErrors)[0]]);
+    }
     let disposeListener = preview.onDidDispose(() => {
       delete _previews[preview.targetUri];
       disposeListener();
@@ -146,6 +151,12 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
 
   // There can only be one listener, so do that & handle across all previews
   client.onNotification(NotificationType.ENGINE_EVENT, event => {
+    if (event.kind === EngineEventKind.Error) {
+      _liveErrors[event.uri] = event;
+    } else {
+      delete _liveErrors[event.uri];
+    }
+
     Object.values(_previews).forEach(preview => {
       preview.$$handleEngineEvent(event);
     });
@@ -169,7 +180,12 @@ class LivePreview {
     this.panel.webview.onDidReceiveMessage(this._onMessage);
     this._render();
     panel.onDidDispose(this._onPanelDispose);
+    let prevVisible = panel.visible;
     panel.onDidChangeViewState(() => {
+      if (prevVisible === panel.visible) {
+        return;
+      }
+      prevVisible = panel.visible;
       // Need to re-render when the panel becomes visible
       if (panel.visible) {
         this._render();

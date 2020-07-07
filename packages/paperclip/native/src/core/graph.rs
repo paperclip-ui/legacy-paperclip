@@ -171,28 +171,37 @@ impl DependencyGraph {
         .to_string();
 
       // TODO - check if content matches old content.
-      let dependency = Dependency::from_source(source, &curr_uri, vfs).or_else(|error| {
+      let dependency_option = Dependency::from_source(source, &curr_uri, vfs).or_else(|error| {
         Err(GraphError {
           uri: curr_uri.to_string(),
           info: GraphErrorInfo::Syntax(error),
         })
-      })?;
+      });
 
-      loaded_deps.push(curr_uri.to_string());
+      match dependency_option {
+        Ok(dependency) => {
+          loaded_deps.push(curr_uri.to_string());
 
-      self.dependencies.insert(curr_uri.to_string(), dependency);
-
-      // need to insert now for
-      let dep = &self.dependencies.get(&curr_uri).unwrap();
-
-      for (relative_uri, dep_uri) in &dep.dependency_uri_maps {
-        if !self.dependencies.contains_key(&dep_uri.to_string()) {
-          to_load.push((
-            dep_uri.to_string(),
-            Some((curr_uri.to_string(), relative_uri.to_string())),
-          ));
+          self.dependencies.insert(curr_uri.to_string(), dependency);
+    
+          // need to insert now for
+          let dep = &self.dependencies.get(&curr_uri).unwrap();
+    
+          for (relative_uri, dep_uri) in &dep.dependency_uri_maps {
+            if !self.dependencies.contains_key(&dep_uri.to_string()) {
+              to_load.push((
+                dep_uri.to_string(),
+                Some((curr_uri.to_string(), relative_uri.to_string())),
+              ));
+            }
+          }
+        },
+        Err(err) => {
+          self.dependencies.remove(&curr_uri);
+          return Err(err);
         }
-      }
+      } 
+
     }
 
     Ok(loaded_deps)

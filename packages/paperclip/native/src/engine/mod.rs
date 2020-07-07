@@ -227,6 +227,7 @@ impl Engine {
     let dept_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);
 
     let mut imports = HashMap::new();
+
     let relative_deps = &dependency
       .dependencies
       .iter()
@@ -234,6 +235,7 @@ impl Engine {
       .collect::<Vec<(String, String)>>();
 
     let all_dependencies = self.dependency_graph.flatten_dependencies(uri);
+
 
     for (id, dep_uri) in relative_deps {
       let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
@@ -275,6 +277,7 @@ impl Engine {
               dependents: dept_uris,
               mutations: diff_pc(&existing_info.preview, &info.preview),
             }));
+            
             self.virt_nodes.insert(uri.clone(), info);
             ret
           } else {
@@ -296,6 +299,7 @@ impl Engine {
         }
       }
       Err(err) => {
+        self.virt_nodes.remove(uri);
         ret = Err(err.clone());
         let e = EngineError::Runtime(err);
         Some(EngineEvent::Error(e))

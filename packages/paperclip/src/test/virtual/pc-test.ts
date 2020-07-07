@@ -6,6 +6,7 @@ import {
   stringifyLoadResult
 } from "../utils";
 import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
+import { Engine } from "../../engine";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
@@ -323,5 +324,71 @@ describe(__filename + "#", () => {
 
     const result2 = stringifyLoadResult(await engine.load("/entry.pc"));
     expect(result2).to.eql(`<style></style><a data-pc-80f4925f></a>`);
+  });
+
+  it("Engine can't reload content if module errors", async () => {
+    const graph = {
+      "/entry.pc": `
+        <import as="Component" src="./module.pc">
+        <Component>abc</Component>
+      `,
+      "/module.pc": `
+        <div export component as="default">
+          {children} cde
+        </div>
+      `
+    };
+
+    const engine = createMockEngine(graph);
+    const result = stringifyLoadResult(await engine.load("/entry.pc"));
+    expect(result).to.eql(
+      `<style></style><div data-pc-139cec8e>abc cde </div>`
+    );
+
+    // make the parse error
+    await engine.updateVirtualFileContent(
+      "/module.pc",
+      `<div export component as="default">
+    {chi`
+    );
+
+    await engine.updateVirtualFileContent(
+      "/entry.pc",
+      `<import as="Component" src="./module.pc">
+    <Component>defg</Component>`
+    );
+
+    let err;
+
+    // shouldn't be able to load /entry.pc now
+    try {
+      await engine.load("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      kind: "Error",
+      errorKind: "Graph",
+      uri: "/module.pc",
+      info: {
+        kind: "Unterminated",
+        message: "Unterminated slot.",
+        location: { start: 41, end: 44 }
+      }
+    });
+
+    // introduce fix
+    await engine.updateVirtualFileContent(
+      "/module.pc",
+      `<div export component as="default">
+      cde {children}
+    </div>`
+    );
+
+    const result3 = stringifyLoadResult(await engine.load("/entry.pc"));
+    expect(result3).to.eql(
+      `<style></style><div data-pc-139cec8e>cde defg</div>`
+    );
   });
 });

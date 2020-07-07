@@ -1,0 +1,7 @@
+<style> 
+  @export {
+    .style {
+      color: blue
+    }
+  } 
+</style>

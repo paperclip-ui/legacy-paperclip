@@ -1,7 +1,0 @@
-<style>
-  :global(div) {
-    text-decoration: underline;
-  }
-</style>
-
-<div>fsd</div>

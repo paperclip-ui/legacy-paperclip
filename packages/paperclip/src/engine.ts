@@ -218,6 +218,14 @@ export class Engine {
   }
 
   async load(uri: string): Promise<LoadResult> {
+    if (this._rendered[uri]) {
+      for (const depUri of this._rendered[uri].allDependencies) {
+        if (this._liveErrors[depUri]) {
+          return Promise.reject(this._liveErrors[depUri]);
+        }
+      }
+    }
+
     this._loading[uri] = true;
     this._dispatch({ kind: EngineEventKind.Loading, uri });
 

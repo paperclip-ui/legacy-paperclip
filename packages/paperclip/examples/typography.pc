@@ -1,8 +1,0 @@
-<style>
-  /* comment */
-
-  
-  
-</style>
-
-<span>abcd</span>

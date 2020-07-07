@@ -23,7 +23,9 @@ describe(__filename + "#", () => {
   it("Won't load module src where the casing is incorrect", async () => {
     const e = new Engine();
     const ep = waitForError(e);
-    e.load("file://" + path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc"));
+    e.load(
+      "file://" + path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc")
+    ).catch(() => {});
     const error = await ep;
     expect(error.errorKind).to.eql("Graph");
     expect(error.info.message).to.eql("import not found");
