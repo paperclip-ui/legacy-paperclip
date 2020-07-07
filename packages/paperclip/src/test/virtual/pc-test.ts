@@ -391,4 +391,24 @@ describe(__filename + "#", () => {
       `<style></style><div data-pc-139cec8e>cde defg</div>`
     );
   });
+
+  it("Errors for incorrectly formatted slot number", async () => {
+    const graph = {
+      "/entry.pc": `
+        {10.10.10}
+      `
+    };
+
+    const engine = createMockEngine(graph);
+    const p = waitForError(engine);
+    engine.load("/entry.pc").catch(() => {});
+    console.log(await p);
+    expect(await p).to.eql({
+      kind: "Error",
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 10, end: 18 },
+      message: "Invalid number."
+    });
+  });
 });

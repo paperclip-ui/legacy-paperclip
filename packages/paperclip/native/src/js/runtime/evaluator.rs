@@ -64,10 +64,17 @@ fn evaluate_number<'a>(
   value: &ast::Number,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  Ok(virt::JsValue::JsNumber(virt::JsNumber {
-    value: value.value.parse::<f64>().unwrap(),
-    source: ExprSource::new(context.uri.clone(), value.location.clone()),
-  }))
+
+  let value_result = value.value.parse::<f64>();
+
+  if let Ok(number) = value_result {
+    Ok(virt::JsValue::JsNumber(virt::JsNumber {
+      value: number,
+      source: ExprSource::new(context.uri.clone(), value.location.clone()),
+    }))
+  } else {
+    Err(RuntimeError::new("Invalid number.".to_string(), context.uri, &value.location))
+  }
 }
 
 fn evaluate_array<'a>(

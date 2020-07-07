@@ -613,6 +613,8 @@ mod tests {
       <part onClick={on7Click}>
       </part>
       
+      {10.10.10}
+      
       <!-- void tags -->
       <br>
       <import>
