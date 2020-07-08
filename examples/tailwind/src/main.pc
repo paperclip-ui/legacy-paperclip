@@ -1,0 +1,5 @@
+<import as="tailwind" src="./test.pc">
+
+<div className=">>>tailwind.bg-red-800 >>>tailwind.">
+  Something like ddfs
+</div>
