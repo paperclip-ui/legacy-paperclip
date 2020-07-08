@@ -38,9 +38,15 @@ export const run = async (
 
   for (const filePath of paperclipFilePaths) {
     const relativePath = path.relative(cwd, filePath);
-    const { sheet, importedSheets, preview } = await engine.load(
-      "file://" + filePath
-    );
+    let result;
+
+    try {
+      result = await engine.load("file://" + filePath);
+    } catch (e) {
+      console.error(e);
+      process.exit(1);
+    }
+    const { sheet, importedSheets, preview } = result;
 
     const root: VirtualFragment = {
       children: [
