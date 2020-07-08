@@ -4,10 +4,10 @@
 <style>
   .message {
     font-family: Helvetica;
-    color: white;
+    color: rgb(248, 186, 186);
   }
 </style>
 
-<div className="message >>>tw.bg-red-700 >>>tw.p-3">
-  Something like ddfsfffrffffffsdfsd
+<div className="message >>>tw.sm:bg-gray-800 >>>tw.p-5">
+  Hello Tailwind!
 </div>
