@@ -220,5 +220,33 @@ describe(__filename + "#", () => {
         message: "This mixin is already declared in the upper scope."
       });
     });
+
+    it("properly concats using multiple &", async () => {
+      const graph = {
+        "/entry.pc": `<style>
+          .company_list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        
+            & li {
+        
+              display: block;
+              padding: var(--spacing-600) 0;
+        
+              & + & {
+                border-top: 1px solid var(--color-black-100);
+              }
+            }
+          }
+        </style>`
+      };
+
+      const engine = createMockEngine(graph);
+      const result = await engine.load("/entry.pc");
+      expect(stringifyLoadResult(result)).to.eql(
+        `<style>._80f4925f_company_list { list-style:none; margin:0; padding:0; } ._80f4925f_company_list li[data-pc-80f4925f] { display:block; padding:var(--spacing-600) 0; } ._80f4925f_company_list li[data-pc-80f4925f] + ._80f4925f_company_list li[data-pc-80f4925f] { border-top:1px solid var(--color-black-100); }</style>`
+      );
+    });
   });
 });
