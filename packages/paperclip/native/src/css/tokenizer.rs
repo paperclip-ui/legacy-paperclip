@@ -402,7 +402,6 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           Ok(Token::Byte(c))
         } else {
-          let start = self.pos;
           let utf8_pos = self.utf16_pos;
           let buffer = &self.source[self.pos..(self.pos + len)];
           self.forward(len);
