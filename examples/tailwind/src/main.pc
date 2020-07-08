@@ -1,6 +1,5 @@
 <import as="tw" src="tailwind.pc">
 
-
 <style>
   .message {
     font-family: Helvetica;
@@ -8,6 +7,6 @@
   }
 </style>
 
-<div className="message >>>tw.sm:bg-gray-800 >>>tw.p-5">
+<div className="message >>>tw.sm:bg-gray-700 >>>tw.p-5">
   Hello Tailwind!
 </div>

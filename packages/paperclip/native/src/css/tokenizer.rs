@@ -376,7 +376,7 @@ impl<'a> Tokenizer<'a> {
           Ok(Token::Equals)
         }
       }
-      b'a'..=b'z' | b'A'..=b'Z' => Ok(Token::Keyword(self.search_keyword())),
+      b'a'..=b'z' | b'_' | b'A'..=b'Z' => Ok(Token::Keyword(self.search_keyword())),
       b' ' | b'\t' | b'\r' | b'\n' => {
         self.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
         Ok(Token::Whitespace)

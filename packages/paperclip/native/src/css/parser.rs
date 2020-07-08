@@ -957,6 +957,9 @@ mod tests {
     :not(:after) {}
     :not(.a.b > c ~ d + e) {}
     :global(.test) {}
+    .selector {
+      &__test {}
+    }
     ";
 
     parse(source).unwrap();
