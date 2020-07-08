@@ -163,3 +163,4 @@ Here's a peak at what's planned for Paperclip:
   - [Webpack](./packages/paperclip-loader)
 - Examples
   - [React TodoMVC](./examples/react-todomvc)
+  - [Tailwind](./examples/tailwind)
