@@ -126,8 +126,9 @@ function initBuild(
         if (config.dropPcExtension) {
           outputFilePath = outputFilePath.replace(".pc", "");
         }
-        console.log("Writing %s", outputFilePath);
-        fs.writeFileSync(new URL(outputFilePath), result);
+        const url = new URL(outputFilePath);
+        console.log("Writing %s", path.relative(process.cwd(), url.pathname));
+        fs.writeFileSync(url, result);
 
         if (!compilerOptions.definition) {
           const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
