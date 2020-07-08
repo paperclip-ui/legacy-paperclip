@@ -1,5 +1,8 @@
 import { stringifyCSSSheet } from "./stringify-sheet";
 import { VirtualNode } from "./virt";
+import { Html5Entities } from "html-entities";
+
+const entities = new Html5Entities();
 
 export const stringifyVirtualNode = (node: VirtualNode) => {
   switch (node.kind) {
@@ -22,7 +25,7 @@ export const stringifyVirtualNode = (node: VirtualNode) => {
       return `<style>${stringifyCSSSheet(node.sheet, null)}</style>`;
     }
     case "Text": {
-      return node.value;
+      return entities.decode(node.value);
     }
     default: {
       throw new Error(`can't handle ${node.kind}`);

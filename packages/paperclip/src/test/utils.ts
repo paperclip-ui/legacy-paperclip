@@ -1,8 +1,7 @@
 import * as path from "path";
-import { Engine, LoadResult, EngineOptions, EngineIO } from "../engine";
+import { Engine, LoadResult, EngineIO } from "../engine";
 import {
   EngineErrorEvent,
-  EngineEvent,
   EngineEventKind,
   stringifyVirtualNode,
   stringifyCSSSheet

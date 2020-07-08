@@ -411,4 +411,19 @@ describe(__filename + "#", () => {
       message: "Invalid number."
     });
   });
+
+  it("Entities are encoded", async () => {
+    const graph = {
+      "/entry.pc": `
+        &times;
+      `
+    };
+
+    const engine = createMockEngine(graph);
+    const p = waitForError(engine);
+
+    expect(stringifyLoadResult(await engine.load("/entry.pc"))).to.eql(
+      "<style></style> ×"
+    );
+  });
 });
