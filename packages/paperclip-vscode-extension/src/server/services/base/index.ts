@@ -1,4 +1,5 @@
 import { Engine, EngineEvent, SourceLocation } from "paperclip";
+import { CompletionItem } from "vscode-languageclient";
 
 export type ColorInfo = {
   color: string;
@@ -22,6 +23,7 @@ export interface BaseLanguageService {
   getColors(uri: string): ColorInfo[];
   getCompletionItems(uri: string, text: string): any;
   getDefinitions(uri: string): DefinitionInfo[];
+  resolveCompletionItem(item: CompletionItem): CompletionItem;
   getLinks(uri: string): DocumentLinkInfo[];
 }
 
@@ -42,6 +44,7 @@ export abstract class BaseEngineLanguageService<TAst>
     _engine.onEvent(this._onEngineEvent);
   }
   abstract supports(uri: string): boolean;
+  abstract resolveCompletionItem(item: CompletionItem): CompletionItem;
   private _onEngineEvent = (event: EngineEvent) => {
     this._handleEngineEvent(event);
   };

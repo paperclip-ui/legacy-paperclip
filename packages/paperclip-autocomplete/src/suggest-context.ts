@@ -270,7 +270,7 @@ const suggestCSSDeclarations = (scanner: TokenScanner): SuggestContext => {
 
 const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
   const name = scanner.current.value;
-  console.log(name);
+
   scanner.next(); // eat name
   scanner.skipWhitespace();
 

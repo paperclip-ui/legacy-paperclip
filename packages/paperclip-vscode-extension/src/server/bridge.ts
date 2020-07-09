@@ -89,6 +89,7 @@ export class VSCServiceBridge {
       CompletionResolveRequest.type,
       this._onCompletionResolveRequest
     );
+
     connection.onRequest(DefinitionRequest.type, this._onDefinitionRequest);
     connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
 
@@ -218,7 +219,9 @@ export class VSCServiceBridge {
   };
 
   private _onCompletionResolveRequest = item => {
-    return item;
+    return this._service
+      .getService(item.data.uri)
+      .resolveCompletionItem(item);
   };
 
   private _onDocumentColorRequest = (params: DocumentColorParams) => {

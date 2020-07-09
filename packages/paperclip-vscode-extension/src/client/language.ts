@@ -1,6 +1,6 @@
 // https://code.visualstudio.com/api/language-extensions/language-server-extension-guide
 
-import { workspace, ExtensionContext, window } from "vscode";
+import { workspace, ExtensionContext, window, languages } from "vscode";
 import * as path from "path";
 import {
   LanguageClient,
@@ -44,7 +44,7 @@ const createClient = (context: ExtensionContext) => {
       module: serverPath,
       transport: TransportKind.ipc,
       options: debugOptions
-    }
+    },
   };
 
   // Options to control the language client
@@ -54,7 +54,7 @@ const createClient = (context: ExtensionContext) => {
     synchronize: {
       // Notify the server about file changes to '.clientrc files contained in the workspace
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc")
-    }
+    },
   };
 
   return new LanguageClient(

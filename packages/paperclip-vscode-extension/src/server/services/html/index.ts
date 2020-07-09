@@ -44,6 +44,7 @@ import {
   SuggestContextKind
 } from "paperclip-autocomplete";
 import { PCAutocomplete } from "./autocomplete";
+import { CompletionItem } from "vscode-languageclient";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -80,6 +81,9 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   }
   public getCompletionItems(uri: string, text: string): any {
     return this._autocomplete.getSuggestions(uri, text);
+  }
+  public resolveCompletionItem(item: CompletionItem): CompletionItem {
+    return this._autocomplete.resolveCompletionItem(item);
   }
   protected _createASTInfo(root: Node, uri: string) {
     const context: HandleContext = {

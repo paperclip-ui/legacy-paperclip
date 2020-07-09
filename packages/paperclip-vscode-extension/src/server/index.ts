@@ -5,7 +5,8 @@ import {
   createConnection,
   ProposedFeatures,
   InitializedParams,
-  TextDocumentSyncKind
+  TextDocumentSyncKind,
+  CompletionRegistrationOptions
 } from "vscode-languageserver";
 
 import { Engine } from "paperclip";
