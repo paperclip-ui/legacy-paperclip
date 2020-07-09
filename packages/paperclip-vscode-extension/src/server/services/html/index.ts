@@ -7,13 +7,11 @@ import {
   getImportById,
   Element,
   NodeKind,
-  Expression,
   StyleDeclarationKind,
   IncludeDeclarationPart,
   StyleDeclaration,
   getParts,
   RuleKind,
-  isIncludeDeclarationPart,
   getImports,
   AS_ATTR_NAME,
   ConditionRule,
@@ -35,14 +33,13 @@ import {
   StatementKind,
   resolveImportUri,
   getMixins,
-  isStyleDeclaration,
   ExportRule,
   DEFAULT_PART_ID
 } from "paperclip";
 
 import CSS_COLOR_NAMES from "./css-color-names";
-import { MixinName, Context, Engine, traverseExpression } from "paperclip";
-import { Style } from "util";
+import { Engine } from "paperclip";
+import { getSuggestionContext } from "paperclip-autocomplete";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -76,80 +73,10 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   protected _getAST(uri): Node {
     return this._engine.getLoadedAst(uri) as DependencyNodeContent;
   }
-  public getCompletionItems(uri: string, position: number): any {
-    const ast = this._getAST(uri);
+  public getCompletionItems(uri: string, text: string): any {
+    const suggestionContext = getSuggestionContext(text);
 
-    let parent: Expression;
-    let previousSibling: Expression;
-
-    traverseExpression(ast, expr => {
-      // shouldn't happen, but might
-      if (!expr.location) {
-        console.error("missing location");
-        return;
-      }
-
-      if (expr.location.start < position && expr.location.end > position) {
-        if (
-          !parent ||
-          (expr.location.start > parent.location.start &&
-            expr.location.end < parent.location.end)
-        ) {
-          parent = expr;
-        }
-      }
-
-      if (expr.location.start < position) {
-        if (
-          !previousSibling ||
-          expr.location.start > previousSibling.location.start
-        ) {
-          previousSibling = expr;
-        }
-      }
-    });
-
-    if (!parent || !previousSibling) {
-      return [];
-    }
-
-    if (isStyleDeclaration(parent)) {
-      if (isIncludeDeclarationPart(previousSibling)) {
-        if (parent.declarationKind === StyleDeclarationKind.Include) {
-          const ref = parent.mixins.find(mixin => {
-            return mixin.parts.some(
-              part =>
-                part.name === (previousSibling as IncludeDeclarationPart).name
-            );
-          });
-
-          if (ref) {
-            const importIds = getImportIds(ast);
-
-            // looking for import -- TODO - check for "."
-            if (ref.parts.length === 2) {
-              const [imp, impAst] = getImportSourceAst(
-                ref.parts[0].name,
-                ast,
-                uri,
-                this._engine
-              );
-              if (impAst) {
-                return Object.keys(getMixins(impAst)).map(id => ({
-                  label: id
-                }));
-              }
-            } else if (ref.parts.length === 1) {
-              return importIds.map(id => ({
-                label: id
-              }));
-
-              // looking to import mixin
-            }
-          }
-        }
-      }
-    }
+    console.log(suggestionContext);
 
     return [];
   }

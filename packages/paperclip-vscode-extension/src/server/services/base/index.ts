@@ -20,7 +20,7 @@ export type DefinitionInfo = {
 export interface BaseLanguageService {
   supports(uri: string): boolean;
   getColors(uri: string): ColorInfo[];
-  getCompletionItems(uri: string, position: number): any;
+  getCompletionItems(uri: string, text: string): any;
   getDefinitions(uri: string): DefinitionInfo[];
   getLinks(uri: string): DocumentLinkInfo[];
 }
@@ -59,7 +59,7 @@ export abstract class BaseEngineLanguageService<TAst>
   getDefinitions(uri: string) {
     return this._getASTInfo(uri).definitions;
   }
-  abstract getCompletionItems(uri: string, position: number): any;
+  abstract getCompletionItems(uri: string, text: string): any;
 
   protected clear(uri: string) {
     this._astInfo[uri] = undefined;

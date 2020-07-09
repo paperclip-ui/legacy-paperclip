@@ -20,31 +20,31 @@ type BaseSuggestContext<TKind extends SuggestContextKind> = {
   kind: TKind;
 };
 
-type HTMLAttributeStringValue = {
+export type HTMLAttributeStringValue = {
   tagPath: string[];
   attributeName: string;
   attributeValuePrefix: string;
 } & BaseSuggestContext<SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE>;
 
-type HTMLAttributeNameSuggestionContext = {
+export type HTMLAttributeNameSuggestionContext = {
   tagPath: string[];
   prefix: string;
 } & BaseSuggestContext<SuggestContextKind.HTML_ATTRIBUTE_NAME>;
 
-type HTMLTagNameSuggestionContext = {
+export type HTMLTagNameSuggestionContext = {
   path: string[];
 } & BaseSuggestContext<SuggestContextKind.HTML_TAG_NAME>;
 
-type CSSDeclarationSuggestionContext = {
+export type CSSDeclarationSuggestionContext = {
   prefix: string;
 } & BaseSuggestContext<SuggestContextKind.CSS_DECLARATION_NAME>;
 
-type CSSDeclarationValueSuggestionContext = {
+export type CSSDeclarationValueSuggestionContext = {
   declarationName: string;
   declarationValuePrefix: string;
 } & BaseSuggestContext<SuggestContextKind.CSS_DECLARATION_VALUE>;
 
-type SuggestContext =
+export type SuggestContext =
   | HTMLAttributeStringValue
   | HTMLTagNameSuggestionContext
   | HTMLAttributeNameSuggestionContext
