@@ -13,7 +13,7 @@ import {
 
 import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./constants";
 import { memoize } from "lodash";
-import { resolveAllPaperclipFiles } from "paperclip-utils";
+import { resolveAllPaperclipFiles } from "paperclip";
 
 const EMPTY_ARRAY = [];
 

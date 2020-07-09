@@ -12,7 +12,7 @@
   },
   "author": "",
   "license": "ISC",
-  "gitHead": "2ea51225cf122f65f101634b60276a70e667c8d4",
+  "gitHead": "9509f9cb6f95beec25f295d0fe053479045882f8",
   "devDependencies": {
     "typescript": "^3.9.5"
   },
