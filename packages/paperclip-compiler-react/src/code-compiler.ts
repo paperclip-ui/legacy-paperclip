@@ -56,7 +56,7 @@ import {
   pascalCase,
   classNameToStyleName
 } from "./utils";
-import { camelCase } from "lodash";
+import { camelCase, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import * as crc32 from "crc32";
@@ -257,7 +257,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
       const parts = getParts(ast);
 
       let usingDefault = false;
-      const usedExports = [];
+      let usedExports = [];
 
       for (const part of parts) {
         for (const usedElement of findByNamespace(id, part)) {
@@ -268,6 +268,8 @@ const translateImports = (ast: Node, context: TranslateContext) => {
           }
         }
       }
+
+      usedExports = uniq(usedExports);
 
       if (usingDefault || usedExports.length) {
         context = addBuffer(`import `, context);
