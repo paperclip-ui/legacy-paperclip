@@ -21,7 +21,8 @@ connection.onInitialize(() => {
       textDocumentSync: TextDocumentSyncKind.Incremental,
       // Tell the client that the server supports code completion
       completionProvider: {
-        resolveProvider: true
+        resolveProvider: true,
+        triggerCharacters: [".", "<", '"', "'", "{", ":"]
       },
       documentLinkProvider: {
         resolveProvider: true

@@ -206,26 +206,18 @@ export class VSCServiceBridge {
   private _onCompletionRequest = (params: CompletionParams) => {
     const document = this._documents[params.textDocument.uri];
     const now = Date.now();
-    console.log("COMPLETION REQUEST", params);
 
     const doc = document.getText();
-
-    console.log("SUBSTR");
-
     const text = doc.substr(0, document.offsetAt(params.position));
-
-    console.log("GETTING");
 
     const ret = this._service
       .getService(document.uri)
       .getCompletionItems(document.uri, text);
 
-    console.log("DONE", Date.now() - now);
     return ret;
   };
 
   private _onCompletionResolveRequest = item => {
-    console.log("RESOLVE REQ");
     return item;
   };
 

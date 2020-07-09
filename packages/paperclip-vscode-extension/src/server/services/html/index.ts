@@ -39,7 +39,11 @@ import {
 
 import CSS_COLOR_NAMES from "./css-color-names";
 import { Engine } from "paperclip";
-import { getSuggestionContext } from "paperclip-autocomplete";
+import {
+  getSuggestionContext,
+  SuggestContextKind
+} from "paperclip-autocomplete";
+import { PCAutocomplete } from "./autocomplete";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -59,6 +63,7 @@ type HandleContext = {
 };
 
 export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
+  private _autocomplete = new PCAutocomplete();
   supports(uri: string) {
     return /\.pc$/.test(uri);
   }
@@ -73,12 +78,8 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   protected _getAST(uri): Node {
     return this._engine.getLoadedAst(uri) as DependencyNodeContent;
   }
-  public getCompletionItems(uri: string, text: string): any {
-    const suggestionContext = getSuggestionContext(text);
-
-    console.log(suggestionContext);
-
-    return [];
+  public getCompletionItems(_uri: string, text: string): any {
+    return this._autocomplete.getSuggestions(text);
   }
   protected _createASTInfo(root: Node, uri: string) {
     const context: HandleContext = {

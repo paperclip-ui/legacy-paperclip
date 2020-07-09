@@ -20,7 +20,7 @@ type BaseSuggestContext<TKind extends SuggestContextKind> = {
   kind: TKind;
 };
 
-export type HTMLAttributeStringValue = {
+export type HTMLAttributeStringValueContext = {
   tagPath: string[];
   attributeName: string;
   attributeValuePrefix: string;
@@ -45,7 +45,7 @@ export type CSSDeclarationValueSuggestionContext = {
 } & BaseSuggestContext<SuggestContextKind.CSS_DECLARATION_VALUE>;
 
 export type SuggestContext =
-  | HTMLAttributeStringValue
+  | HTMLAttributeStringValueContext
   | HTMLTagNameSuggestionContext
   | HTMLAttributeNameSuggestionContext
   | CSSDeclarationSuggestionContext
