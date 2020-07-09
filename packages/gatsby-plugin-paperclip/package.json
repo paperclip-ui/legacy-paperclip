@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-paperclip",
-  "version": "12.0.32",
+  "version": "12.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {},
@@ -9,7 +9,7 @@
   "dependencies": {
     "inquirer": "^7.3.0",
     "paperclip": "^12.0.31",
-    "paperclip-loader": "^12.0.32"
+    "paperclip-loader": "^12.1.0"
   },
   "gitHead": "dfe7590a021238ca74337c3ed176c9d55a2d2455"
 }
