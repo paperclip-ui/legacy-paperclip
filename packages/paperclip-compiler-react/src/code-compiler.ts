@@ -338,7 +338,7 @@ const translateComponent = (
     addBuffer(
       `${
         shouldExport ? "export " : ""
-      }const ${componentName} = React.memo(React.forwardRef(function ${componentName}(props) {\n`,
+      }const ${componentName} = React.memo(React.forwardRef(function ${componentName}(props, ref) {\n`,
       context
     )
   );
@@ -464,7 +464,7 @@ const translateElement = (
   context = startBlock(context);
   context = translateStyleScopeAttributes(context, "\n");
   if (isRoot) {
-    context = addBuffer(`"ref": props.ref,\n`, context);
+    context = addBuffer(`"ref": ref,\n`, context);
   }
   context = addBuffer(
     `"key": ${JSON.stringify(String(context.keyCount++))}${
@@ -546,7 +546,7 @@ const translateFragment = (
   context = addBuffer(`React.createElement(React.Fragment, {\n`, context);
   context = startBlock(context);
   if (isRoot) {
-    context = addBuffer(`"ref": props.ref,\n`, context);
+    context = addBuffer(`"ref": ref,\n`, context);
   }
   context = addBuffer(`children: [\n`, context);
   context = translateChildren(children, false, context);
