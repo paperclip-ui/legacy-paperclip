@@ -78,8 +78,8 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   protected _getAST(uri): Node {
     return this._engine.getLoadedAst(uri) as DependencyNodeContent;
   }
-  public getCompletionItems(_uri: string, text: string): any {
-    return this._autocomplete.getSuggestions(text);
+  public getCompletionItems(uri: string, text: string): any {
+    return this._autocomplete.getSuggestions(uri, text);
   }
   protected _createASTInfo(root: Node, uri: string) {
     const context: HandleContext = {

@@ -1,4 +1,8 @@
-import { CompletionItem } from "vscode";
+type CompletionItem = any;
+
+import * as fs from "fs";
+import * as path from "path";
+
 import {
   getSuggestionContext,
   SuggestContextKind,
@@ -9,12 +13,12 @@ import {
 
 import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./constants";
 import { memoize } from "lodash";
-import { InsertTextFormat } from "vscode-languageclient";
+import { resolveAllPaperclipFiles } from "paperclip-utils";
 
 const EMPTY_ARRAY = [];
 
 export class PCAutocomplete {
-  getSuggestions(text: string): CompletionItem[] {
+  getSuggestions(uri: string, text: string): CompletionItem[] {
     const context = getSuggestionContext(text);
     if (!context) {
       return [];
@@ -26,7 +30,7 @@ export class PCAutocomplete {
       case SuggestContextKind.HTML_ATTRIBUTE_NAME:
         return this._getAttributeNameSuggestions(context);
       case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
-        return this._getHTMLAttributeStringSuggestions(context);
+        return this._getHTMLAttributeStringValueSuggestions(uri, context);
     }
   }
   private _getHTMLTagNameSuggestions(context: HTMLTagNameSuggestionContext) {
@@ -39,13 +43,13 @@ export class PCAutocomplete {
     context: HTMLAttributeNameSuggestionContext
   ) {
     if (context.tagPath.length === 1) {
-      return [
-        {
-          label: "src",
-          insertTextFormat: InsertTextFormat.Snippet,
-          insertText: 'src="${1:source}"'
-        }
-      ];
+      // return [
+      //   {
+      //     label: "src",
+      //     insertTextFormat: InsertTextFormat.Snippet,
+      //     insertText: 'src="${1:}"'
+      //   }
+      // ];
 
       return stringArrayToAutoCompleteItems(
         ELEMENT_ATTRIBUTES[context.tagPath[0]] || EMPTY_ARRAY
@@ -53,11 +57,14 @@ export class PCAutocomplete {
     }
     return [];
   }
-  private _getHTMLAttributeStringSuggestions(
+  private _getHTMLAttributeStringValueSuggestions(
+    uri: string,
     context: HTMLAttributeStringValueContext
   ) {
     if (context.tagPath.length === 1 && context.tagPath[0] === "import") {
-      return stringArrayToAutoCompleteItems(ELEMENT_ATTRIBUTES.import);
+      if (context.attributeName == "src") {
+        return stringArrayToAutoCompleteItems(resolveAllPaperclipFiles(fs)(uri, true));
+      }
     }
     return [];
   }

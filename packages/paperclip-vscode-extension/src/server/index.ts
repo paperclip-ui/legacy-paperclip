@@ -22,7 +22,8 @@ connection.onInitialize(() => {
       // Tell the client that the server supports code completion
       completionProvider: {
         resolveProvider: true,
-        triggerCharacters: [".", "<", '"', "'", "{", ":"]
+        triggerCharacters: [".", "<", '"', "'", "{", ":"],
+        
       },
       documentLinkProvider: {
         resolveProvider: true

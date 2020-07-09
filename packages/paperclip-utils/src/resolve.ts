@@ -1,7 +1,10 @@
 import * as path from "path";
 import * as url from "url";
+import * as glob from "glob";
 import { stripFileProtocol } from "./utils";
 import { PC_CONFIG_FILE_NAME } from "./constants";
+import { config } from "process";
+import { PaperclipConfig } from "./config";
 
 export const resolveImportUri = fs => (fromPath: string, toPath: string) => {
   const filePath = resolveImportFile(fs)(fromPath, toPath);
@@ -69,6 +72,61 @@ const findPCConfigUrl = fs => (fromPath: string): string | null => {
     cdir = path.dirname(cdir);
   } while (cdir !== "/" && cdir !== ".");
   return null;
+};
+
+export const resolveAllPaperclipFiles = (fs) => (fromUri: string, relative?: boolean) => {
+  const fromPath = new URL(fromUri).pathname;
+  const fromPathDirname = path.dirname(fromPath);
+  const configUrl = findPCConfigUrl(fs)(fromUri);
+  if (!configUrl) {
+    return [];
+  }
+
+  const configPath = new URL(configUrl).pathname;
+  const config: PaperclipConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
+
+  return glob.sync(config.filesGlob, { cwd: path.dirname(configPath), realpath: true }).filter(pathname => pathname !== fromPath).map(pathname => {
+    if (relative) {
+      const modulePath = getModulePath(configUrl, config, pathname, fromPathDirname);
+      if (modulePath.charAt(0) !== "/") {
+        return modulePath;
+      }
+
+      let relativePath = path.relative(fromPathDirname, modulePath);
+
+      if (relativePath.charAt(0) !== ".") {
+        relativePath = "./" + relativePath;
+      }
+
+      return relativePath;
+    }
+
+    return "file://" + pathname;
+  });
+};
+
+
+const getModulePath = (configUri: string, config: PaperclipConfig, modulePath: string, fromDir?: string) => {
+  const configDir = path.dirname(new URL(configUri).pathname);
+
+  for (const moduleRelativeDirectory of config.moduleDirectories || []) {
+
+    //
+    const moduleDirectory = path.join(configDir, moduleRelativeDirectory) + "/";
+    
+    if (modulePath.indexOf(moduleDirectory) === 0) {
+
+      const relativePath = modulePath.replace(moduleDirectory, "");;
+
+      const nextDirectory = path.join(moduleDirectory, relativePath.split("/")[0]) + "/";
+
+      if (!fromDir || fromDir.indexOf(nextDirectory) === -1) {
+        return relativePath;
+      }
+    }
+  }
+
+  return modulePath;
 };
 
 const fixPath = (path: string) => path.replace(/\\/g, "/");

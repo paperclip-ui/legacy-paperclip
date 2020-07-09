@@ -15,6 +15,7 @@ import {
   stringifyCSSSheet
 } from "paperclip";
 import * as glob from "glob";
+import { resolveAllPaperclipFiles } from "paperclip/src";
 
 export type BuildOptions = {
   config: string;
@@ -149,6 +150,7 @@ function initBuild(
       console.error(e);
     }
   }
+
   glob(
     filesGlob,
     {

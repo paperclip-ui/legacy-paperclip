@@ -11,10 +11,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
+    "@types/node": "^14.0.20",
     "chai": "^4.2.0",
     "mocha": "^8.0.1",
     "typescript": "^3.9.6"
-  }
+  },
+  "gitHead": "718460018155709c936391503ccd93366fa1bffe"
 }
