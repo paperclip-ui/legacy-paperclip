@@ -15,17 +15,33 @@ import {
 
 import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./html-constants";
 import { resolveAllPaperclipFiles } from "paperclip";
-import { CSS_DECLARATION_NAMES, CSS_DECLARATION_VALUE_ITEMS } from "./css-constants";
-import { CompletionItem, InsertTextFormat, Command, CompletionItemKind} from "vscode-languageserver";
-import { stringArrayToAutoCompleteItems, stringArraytoSnippetStringOptions, addCompletionItemData, PCCompletionItem, RETRIGGER_COMMAND } from "./utils";
-import { CSS_DECLARATION_NAME_COMPLETION_ITEMS, ATTRIBUTE_NAME_COMPLETION_ITEMS, TAG_NAME_COMPLETION_ITEMS } from "./completion-items";
+import {
+  CSS_DECLARATION_NAMES,
+  CSS_DECLARATION_VALUE_ITEMS
+} from "./css-constants";
+import {
+  CompletionItem,
+  InsertTextFormat,
+  Command,
+  CompletionItemKind
+} from "vscode-languageserver";
+import {
+  stringArrayToAutoCompleteItems,
+  stringArraytoSnippetStringOptions,
+  addCompletionItemData,
+  PCCompletionItem,
+  RETRIGGER_COMMAND
+} from "./utils";
+import {
+  CSS_DECLARATION_NAME_COMPLETION_ITEMS,
+  ATTRIBUTE_NAME_COMPLETION_ITEMS,
+  TAG_NAME_COMPLETION_ITEMS
+} from "./completion-items";
 
 const EMPTY_ARRAY = [];
 
-
 export class PCAutocomplete {
   resolveCompletionItem(item: PCCompletionItem): CompletionItem {
-
     return item;
 
     // unnecessary since commands are re-triggers
@@ -50,10 +66,11 @@ export class PCAutocomplete {
     //     }
     //   }
     // }
-
   }
   getSuggestions(uri: string, text: string): PCCompletionItem[] {
-    return this.getSuggestions2(uri, text).map(item => addCompletionItemData(item, uri));
+    return this.getSuggestions2(uri, text).map(item =>
+      addCompletionItemData(item, uri)
+    );
   }
 
   getSuggestions2(uri: string, text: string): CompletionItem[] {
@@ -95,23 +112,31 @@ export class PCAutocomplete {
   ) {
     if (context.tagPath.length === 1 && context.tagPath[0] === "import") {
       if (context.attributeName == "src") {
-        return stringArrayToAutoCompleteItems(resolveAllPaperclipFiles(fs)(uri, true));
+        return stringArrayToAutoCompleteItems(
+          resolveAllPaperclipFiles(fs)(uri, true)
+        );
       }
     }
     return [];
   }
 
-  private _getCSSDeclarationValueSugestion(uri: string, info: CSSDeclarationValueSuggestionContext) {
-    return stringArrayToAutoCompleteItems(CSS_DECLARATION_VALUE_ITEMS[info.declarationName] || EMPTY_ARRAY);
+  private _getCSSDeclarationValueSugestion(
+    uri: string,
+    info: CSSDeclarationValueSuggestionContext
+  ) {
+    return stringArrayToAutoCompleteItems(
+      CSS_DECLARATION_VALUE_ITEMS[info.declarationName] || EMPTY_ARRAY
+    );
   }
 
-
   // TODO - possibly take evaluated CSS rule into consideration, and filter options based on sibling
-  // declarations. Should be possible since virtual styles contain positions, so we just need to find on that 
-  // corresponds to the caret position. 
+  // declarations. Should be possible since virtual styles contain positions, so we just need to find on that
+  // corresponds to the caret position.
 
-  private _getCSSDeclarationNameSuggestion(uri: string, info: CSSDeclarationSuggestionContext) {
+  private _getCSSDeclarationNameSuggestion(
+    uri: string,
+    info: CSSDeclarationSuggestionContext
+  ) {
     return CSS_DECLARATION_NAME_COMPLETION_ITEMS;
-  };
+  }
 }
-
