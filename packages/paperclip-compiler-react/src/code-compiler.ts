@@ -60,7 +60,6 @@ import { camelCase } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import * as crc32 from "crc32";
-import { Context } from "paperclip/src";
 
 const entities = new Html5Entities();
 type Config = { ast: Node; sheet?: any; classNames: string[] };
@@ -339,7 +338,7 @@ const translateComponent = (
     addBuffer(
       `${
         shouldExport ? "export " : ""
-      }const ${componentName} = React.memo(function ${componentName}(props) {\n`,
+      }const ${componentName} = React.memo(React.forwardRef(function ${componentName}(props) {\n`,
       context
     )
   );
@@ -349,7 +348,7 @@ const translateComponent = (
   context = endBlock(context);
   context = addBuffer(";\n", context);
 
-  context = addBuffer(`});\n\n`, context);
+  context = addBuffer(`}));\n\n`, context);
 
   if (node.kind === NodeKind.Element) {
     // context = addBuffer(`${componentName}.styledComponentId = "${getElementStyleName(node, context)}";\n\n`, context);
@@ -409,7 +408,10 @@ const translateJSXNode = (
   isRoot: boolean,
   context: TranslateContext
 ) => {
-  if (node.kind === NodeKind.Fragment) {
+  if (
+    node.kind === NodeKind.Fragment ||
+    (node.kind === NodeKind.Element && node.tagName === FRAGMENT_TAG_NAME)
+  ) {
     context = translateFragment(node.children, isRoot, context);
   } else if (node.kind === NodeKind.Element && isVisibleElement(node)) {
     context = translateElement(node, isRoot, context);
@@ -461,6 +463,9 @@ const translateElement = (
   context = startBlock(context);
   context = startBlock(context);
   context = translateStyleScopeAttributes(context, "\n");
+  if (isRoot) {
+    context = addBuffer(`"ref": props.ref,\n`, context);
+  }
   context = addBuffer(
     `"key": ${JSON.stringify(String(context.keyCount++))}${
       context.currentIndexKey ? ` + ${context.currentIndexKey}` : ""
@@ -538,10 +543,16 @@ const translateFragment = (
   if (children.length === 1) {
     return translateJSXNode(children[0], isRoot, context);
   }
-  context = addBuffer(`[\n`, context);
-
+  context = addBuffer(`React.createElement(React.Fragment, {\n`, context);
+  context = startBlock(context);
+  if (isRoot) {
+    context = addBuffer(`"ref": props.ref,\n`, context);
+  }
+  context = addBuffer(`children: [\n`, context);
   context = translateChildren(children, false, context);
-  context = addBuffer(`]`, context);
+  context = addBuffer(`]\n`, context);
+  context = endBlock(context);
+  context = addBuffer(`})`, context);
   return context;
 };
 

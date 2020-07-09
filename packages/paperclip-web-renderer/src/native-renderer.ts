@@ -1,5 +1,5 @@
 import { Html5Entities } from "html-entities";
-import { stringifyCSSSheet } from "paperclip-utils";
+import { stringifyCSSSheet, stringifyVirtualNode } from "paperclip-utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
 
@@ -83,12 +83,16 @@ const createNativeElement = (
   namespaceUri?: string
 ) => {
   // return factory.createTextNode(JSON.stringify(element, null, 2));
+
   const nativeElement =
     element.tagName === "svg"
       ? document.createElementNS(XMLNS_NAMESPACE, "svg")
       : namespaceUri
       ? factory.createElementNS(namespaceUri, element.tagName)
       : factory.createElement(element.tagName);
+
+  const childNamespaceUri =
+    element.tagName === "svg" ? XMLNS_NAMESPACE : namespaceUri;
 
   for (let name in element.attributes) {
     let value = element.attributes[name];
@@ -102,7 +106,7 @@ const createNativeElement = (
   }
   for (const child of element.children) {
     nativeElement.appendChild(
-      createNativeNode(child, factory, protocol, nativeElement.namespaceURI)
+      createNativeNode(child, factory, protocol, childNamespaceUri)
     );
   }
 
