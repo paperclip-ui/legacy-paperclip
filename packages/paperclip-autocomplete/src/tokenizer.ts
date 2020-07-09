@@ -1,4 +1,4 @@
-import { Scanner } from "./scanner";
+import { StringScanner } from "./string-scanner";
 
 export enum TokenKind {
   Word,
@@ -10,6 +10,7 @@ export enum TokenKind {
 export type Token = {
   value: string;
   kind: TokenKind;
+  pos: number;
 };
 
 const RULES = [
@@ -23,8 +24,7 @@ const RULES = [
   },
   {
     regexp: /^[\s\r\n\t]+/,
-    kind: TokenKind.Whitespace,
-    skip: true
+    kind: TokenKind.Whitespace
   },
   {
     regexp: /^./,
@@ -32,22 +32,44 @@ const RULES = [
   }
 ];
 
-export const tokenize = (source: string): Token[] => {
-  const scanner = new Scanner(source);
+export class TokenScanner {
+  public pos: number = 0;
+  public current: Token;
+  constructor(readonly source: Token[]) {
+    this.current = this.next();
+  }
+  skipWhitespace() {
+    if (this.current?.kind === TokenKind.Whitespace) {
+      this.next();
+    }
+  }
+  next() {
+    if (this.pos >= this.source.length) {
+      this.current = null;
+      return null;
+    }
+    return (this.current = this.source[this.pos++]);
+  }
+  peek(count: number = 0) {
+    return this.source[this.pos + count];
+  }
+}
+
+export const tokenize = (source: string) => {
+  const scanner = new StringScanner(source);
   const tokens: Token[] = [];
 
   while (!scanner.isEOF()) {
-    for (const { regexp, skip, kind } of RULES) {
+    for (const { regexp, kind } of RULES) {
+      let pos = scanner.pos;
       const value = scanner.scan(regexp);
 
       if (value) {
-        if (!skip) {
-          tokens.push({ value, kind });
-        }
+        tokens.push({ value, kind, pos });
         break;
       }
     }
   }
 
-  return tokens;
+  return new TokenScanner(tokens);
 };

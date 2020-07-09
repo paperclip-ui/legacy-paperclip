@@ -1,4 +1,4 @@
-export class Scanner {
+export class StringScanner {
   public pos: number = 0;
   constructor(readonly source: string) {}
   isEOF() {
