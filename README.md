@@ -5,7 +5,7 @@
 
 <br />
 
-⚠️ Paperclip is Alpha, so expect some bugs! ⚠️
+⚠️ This is Alpha, so expect some bugs! ⚠️
 
 
 Paperclip is a language for building UI primitives. Here's an Example:
