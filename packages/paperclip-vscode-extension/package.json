@@ -97,8 +97,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/lodash": "^4.14.157",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^13.1.8",
     "@types/vscode": "^1.41.0",
+    "chai": "^4.2.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.0.1",
     "typescript": "^3.7.5"
   },
   "dependencies": {

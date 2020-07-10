@@ -2,11 +2,26 @@
   "version": "0.1.0",
   "configurations": [
     {
-      "name": "Paperclip",
+      "name": "Paperclip Extension",
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}/packages/paperclip-vscode-extension",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}/packages/paperclip-vscode-extension"]
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/paperclip-vscode-extension"
+      ]
+    },
+    {
+      "name": "Paperclip Extension Tests",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}/packages/paperclip-vscode-extension",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/paperclip-vscode-extension",
+        "--extensionTestsPath=${workspaceFolder}/packages/paperclip-vscode-extension/lib/test/run"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/packages/paperclip-vscode-extension/lib/test/**/*.js"
+      ]
     }
   ]
 }
