@@ -31,4 +31,4 @@ npm run build && npm run build:watch
 - [paperclip-loader](../packages/paperclip-loader) - Webpack loader
 - [paperclip-compiler-react](../packages/paperclip-compiler-react) - React compiler target
 - [paperclip-web-renderer](../packages/paperclip-web-renderer) - browser renderer for previews.
-- [tandem](../packages/paperclip-vscode) - VS Code extension. -->
+- [paperclip](../packages/paperclip-vscode) - VS Code extension. -->

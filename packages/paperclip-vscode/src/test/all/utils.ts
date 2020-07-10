@@ -1,7 +1,7 @@
 // https://github.com/vuejs/vetur/blob/master/test/lsp/helper.ts
 import * as vscode from "vscode";
 
-const EXT_IDENTIFIER = `crcn.tandem`;
+const EXT_IDENTIFIER = `crcn.paperclip`;
 
 export const ext = vscode.extensions.getExtension(EXT_IDENTIFIER);
 

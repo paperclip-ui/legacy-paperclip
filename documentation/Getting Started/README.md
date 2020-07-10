@@ -8,7 +8,7 @@ For the Alpha version of Paperclip, you'll need this stuff:
 
 Here's what you can do next:
 
-1. Install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.tandem).
+1. Install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip).
 1. With VS Code open, create a `src/hello-world.pc` & open it.
 1. You'll see a pop up to open a live preview, click OK.
 1. Start typing away! You should see a live preview of your text at this point.
