@@ -37,6 +37,7 @@ import {
   ATTRIBUTE_NAME_COMPLETION_ITEMS,
   TAG_NAME_COMPLETION_ITEMS
 } from "./completion-items";
+import { LoadedEvent, DEFAULT_PART_ID } from "paperclip";
 
 const EMPTY_ARRAY = [];
 
@@ -67,13 +68,21 @@ export class PCAutocomplete {
     //   }
     // }
   }
-  getSuggestions(uri: string, text: string): PCCompletionItem[] {
-    return this.getSuggestions2(uri, text).map(item =>
+  getSuggestions(
+    uri: string,
+    text: string,
+    loadEvent?: LoadedEvent
+  ): PCCompletionItem[] {
+    return this.getSuggestions2(uri, text, loadEvent).map(item =>
       addCompletionItemData(item, uri)
     );
   }
 
-  getSuggestions2(uri: string, text: string): CompletionItem[] {
+  getSuggestions2(
+    uri: string,
+    text: string,
+    loadedEvent?: LoadedEvent
+  ): CompletionItem[] {
     const context = getSuggestionContext(text);
     if (!context) {
       return [];
@@ -81,7 +90,7 @@ export class PCAutocomplete {
 
     switch (context.kind) {
       case SuggestContextKind.HTML_TAG_NAME:
-        return this._getHTMLTagNameSuggestions(context);
+        return this._getHTMLTagNameSuggestions(context, loadedEvent);
       case SuggestContextKind.HTML_ATTRIBUTE_NAME:
         return this._getAttributeNameSuggestions(context);
       case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
@@ -92,9 +101,44 @@ export class PCAutocomplete {
         return this._getCSSDeclarationValueSugestion(uri, context);
     }
   }
-  private _getHTMLTagNameSuggestions(context: HTMLTagNameSuggestionContext) {
+  private _getHTMLTagNameSuggestions(
+    context: HTMLTagNameSuggestionContext,
+    loadedEvent?: LoadedEvent
+  ) {
     if (context.path.length === 1) {
-      return TAG_NAME_COMPLETION_ITEMS;
+      const options = [];
+
+      if (loadedEvent) {
+        for (const id in loadedEvent.imports) {
+          if (/\.pc$/.test(id)) {
+            continue;
+          }
+          const imp = loadedEvent.imports[id];
+          if (imp.components.length) {
+            for (const componentId of imp.components) {
+              let tagName;
+
+              if (componentId === DEFAULT_PART_ID) {
+                tagName = id;
+              } else {
+                tagName = `${id}.${componentId}`;
+              }
+
+              options.push({
+                label: tagName,
+                insertText: `${tagName} `
+
+                // TODO - want to get around to this when we actually have options.
+                // command: RETRIGGER_COMMAND
+              });
+            }
+          }
+        }
+      }
+
+      options.push(...TAG_NAME_COMPLETION_ITEMS);
+
+      return options;
     }
     return [];
   }

@@ -126,8 +126,9 @@ export class Engine {
         (this._rendered[event.uri] = {
           kind: EngineEventKind.Loaded,
           uri: event.uri,
-          sheet: event.info.sheet,
-          preview: event.info.preview,
+          sheet: event.sheet,
+          imports: event.imports,
+          preview: event.preview,
           allDependencies: event.allDependencies,
           importedSheets: this.getImportedSheets(event)
         })
@@ -190,22 +191,27 @@ export class Engine {
       mapResult(this._native.update_virtual_file_content(uri, content))
     );
   }
-  private _getLoadEvent(uri: string): Promise<LoadedEvent> {
+
+  public getLoadedData(uri: string): LoadedEvent | null {
+    return this._rendered[uri];
+  }
+
+  private _waitForLoadEvent(uri: string): Promise<LoadedEvent> {
     if (this._liveErrors[uri]) {
       return Promise.reject(this._liveErrors[uri]);
     }
     if (!this._loading[uri]) {
-      const promise = this._waitForLoadEvent(uri);
+      const promise = this._waitForLoadEvent2(uri);
 
       return promise;
     } else if (this._rendered[uri]) {
       return Promise.resolve(this._rendered[uri]);
     }
 
-    return this._waitForLoadEvent(uri);
+    return this._waitForLoadEvent2(uri);
   }
 
-  private _waitForLoadEvent(uri: string): Promise<LoadedEvent> {
+  private _waitForLoadEvent2(uri: string): Promise<LoadedEvent> {
     return new Promise<LoadedEvent>(resolve => {
       const dispose = this.onEvent(event => {
         if (event.uri === uri && event.kind === EngineEventKind.Loaded) {
@@ -245,7 +251,7 @@ export class Engine {
       mapResult(this._native.load(uri, this._options.renderPart))
     );
 
-    const info = await this._getLoadEvent(uri);
+    const info = await this._waitForLoadEvent(uri);
 
     return {
       sheet: info.sheet,

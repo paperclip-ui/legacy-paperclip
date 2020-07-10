@@ -402,7 +402,6 @@ describe(__filename + "#", () => {
     const engine = createMockEngine(graph);
     const p = waitForError(engine);
     engine.load("/entry.pc").catch(() => {});
-    console.log(await p);
     expect(await p).to.eql({
       kind: "Error",
       errorKind: "Runtime",

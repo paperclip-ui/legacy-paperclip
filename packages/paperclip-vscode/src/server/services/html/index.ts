@@ -81,7 +81,11 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     return this._engine.getLoadedAst(uri) as DependencyNodeContent;
   }
   public getCompletionItems(uri: string, text: string): any {
-    return this._autocomplete.getSuggestions(uri, text);
+    return this._autocomplete.getSuggestions(
+      uri,
+      text,
+      this._engine.getLoadedData(uri)
+    );
   }
   public resolveCompletionItem(item: PCCompletionItem): CompletionItem {
     return this._autocomplete.resolveCompletionItem(item);

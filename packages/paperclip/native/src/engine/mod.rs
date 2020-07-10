@@ -18,6 +18,7 @@ use crate::pc::runtime::evaluator::EvalInfo as PCEvalInfo;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, evaluate_document_styles};
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
+use crate::pc::runtime::export as pc_export;
 use ::futures::executor::block_on;
 use serde::Serialize;
 use std::collections::{HashMap, HashSet};
@@ -28,7 +29,10 @@ pub struct EvaluatedEvent<'a> {
   #[serde(rename = "allDependencies")]
   pub all_dependencies: Vec<String>,
   pub dependents: Vec<String>,
-  pub info: Option<&'a runtime::evaluator::EvalInfo>,
+  pub sheet: &'a css_virt::CSSSheet,
+  pub preview: &'a pc_virt::Node,
+  pub exports: &'a pc_export::Exports,
+  pub imports: &'a HashMap<String, pc_export::Exports>,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -281,20 +285,19 @@ impl Engine {
             ret
           } else {
             self.virt_nodes.insert(uri.clone(), info);
+            let info = self.virt_nodes.get(uri).unwrap();
             Some(EngineEvent::Evaluated(EvaluatedEvent {
               uri: uri.clone(),
               all_dependencies,
               dependents: dept_uris,
-              info: self.virt_nodes.get(uri),
+              sheet: &info.sheet,
+              preview: &info.preview,
+              imports: &imports,
+              exports: &info.exports,
             }))
           }
         } else {
-          Some(EngineEvent::Evaluated(EvaluatedEvent {
-            uri: uri.clone(),
-            all_dependencies,
-            dependents: vec![],
-            info: None,
-          }))
+          None
         }
       }
       Err(err) => {

@@ -167,8 +167,6 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
 
   // There can only be one listener, so do that & handle across all previews
   client.onNotification(NotificationType.ERROR_LOADING, event => {
-    console.log("ERROR LOADING");
-
     Object.values(_previews).forEach(preview => {
       preview.$$handleErrorLoading(event);
     });

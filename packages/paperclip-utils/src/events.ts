@@ -1,8 +1,11 @@
+// TODO  - move all non-specific event stuff to payload, or data prop so that
+// event can remain ephemeral.
+
 import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
 import { Mutation } from "./virt-mtuation";
-import { PCEvalInfo } from "./pc-evaluate";
 import { VirtualNode } from "./virt";
+import { PCExports } from "./exports";
 
 export enum EngineEventKind {
   Loading = "Loading",
@@ -31,7 +34,10 @@ type BaseEngineEvent<KKind extends EngineEventKind> = {
 export type EvaluatedEvent = {
   uri: string;
   allDependencies: string[];
-  info: PCEvalInfo;
+  sheet: any;
+  preview: VirtualNode;
+  exports: PCExports;
+  imports: Record<string, PCExports>;
 } & BaseEngineEvent<EngineEventKind.Evaluated>;
 
 export type DiffedEvent = {
@@ -104,6 +110,7 @@ export type LoadedEvent = {
   sheet: any;
   preview: VirtualNode;
   allDependencies: string[];
+  imports: Record<string, PCExports>;
   importedSheets: Record<string, any>;
 } & BaseEngineEvent<EngineEventKind.Loaded>;
 
