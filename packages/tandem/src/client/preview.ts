@@ -42,6 +42,7 @@ type LivePreviewState = {
 };
 
 export const activate = (client: LanguageClient, context: ExtensionContext) => {
+  console.log("ACTIVATE");
   const { extensionPath } = context;
 
   let _previews: {

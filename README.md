@@ -81,7 +81,7 @@ Mixins, nested rules, and other sass-like features work out of the box.
 
 ### Faster development
 
-No more switching back and forth between the browser & code. Paperclip comes with a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)  that allows you to preview UIs in realtime. 
+No more switching back and forth between the browser & code. Paperclip comes with a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.tandemcode)  that allows you to preview UIs in realtime. 
 
 <!-- ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif) -->
 
@@ -155,7 +155,7 @@ Here's a peak at what's planned for Paperclip:
 
 ## Resources
 
-- [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode-extension)
+- [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.tandemcode)
 - [Getting started](./documentation/Getting%20Started)
 - [Syntax](./documentation/Syntax)
 - Integrations

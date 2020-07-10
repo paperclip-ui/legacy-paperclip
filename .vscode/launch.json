@@ -5,22 +5,22 @@
       "name": "Paperclip Extension",
       "type": "extensionHost",
       "request": "launch",
-      "runtimeExecutable": "${execPath}/packages/paperclip-vscode-extension",
+      "runtimeExecutable": "${execPath}/packages/tandemcode",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}/packages/paperclip-vscode-extension"
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/tandemcode"
       ]
     },
     {
       "name": "Paperclip Extension Tests",
       "type": "extensionHost",
       "request": "launch",
-      "runtimeExecutable": "${execPath}/packages/paperclip-vscode-extension",
+      "runtimeExecutable": "${execPath}/packages/tandemcode",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}/packages/paperclip-vscode-extension",
-        "--extensionTestsPath=${workspaceFolder}/packages/paperclip-vscode-extension/lib/test/run"
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/tandemcode",
+        "--extensionTestsPath=${workspaceFolder}/packages/tandemcode/lib/test"
       ],
       "outFiles": [
-        "${workspaceFolder}/packages/paperclip-vscode-extension/lib/test/**/*.js"
+        "${workspaceFolder}/packages/tandemcode/lib/test/**/*-test.js"
       ]
     }
   ]

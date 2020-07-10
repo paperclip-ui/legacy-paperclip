@@ -219,9 +219,7 @@ export class VSCServiceBridge {
   };
 
   private _onCompletionResolveRequest = item => {
-    return this._service
-      .getService(item.data.uri)
-      .resolveCompletionItem(item);
+    return this._service.getService(item.data.uri).resolveCompletionItem(item);
   };
 
   private _onDocumentColorRequest = (params: DocumentColorParams) => {

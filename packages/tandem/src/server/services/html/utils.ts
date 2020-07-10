@@ -3,16 +3,15 @@ import { CompletionItem } from "vscode-languageserver";
 
 export type PCCompletionItem = Omit<CompletionItem, "data"> & {
   data: {
-    uri: string,
-    [identifier: string]: any
-  }
+    uri: string;
+    [identifier: string]: any;
+  };
 };
 
 export const RETRIGGER_COMMAND = {
   command: `editor.action.triggerSuggest`,
   title: "Autocomplete"
 };
-
 
 export const stringArrayToAutoCompleteItems = memoize(
   (values: string[]): CompletionItem[] =>
@@ -25,7 +24,11 @@ export const stringArraytoSnippetStringOptions = memoize(
   (values: string[]) => `|${values.join(",")}|`
 );
 
-export const addCompletionItemData = (item: CompletionItem, uri: string, data: any = {}) => ({
+export const addCompletionItemData = (
+  item: CompletionItem,
+  uri: string,
+  data: any = {}
+) => ({
   ...item,
   data: {
     ...data,

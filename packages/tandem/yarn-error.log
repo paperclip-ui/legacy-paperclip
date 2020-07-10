@@ -28,7 +28,7 @@ Trace:
 
 npm manifest: 
   {
-    "name": "paperclip-vscode-extension",
+    "name": "tandemcode",
     "displayName": "Paperclip",
     "version": "12.0.32",
     "electronVersion": "7.1.10",

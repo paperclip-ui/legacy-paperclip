@@ -16,8 +16,6 @@ let client: LanguageClient;
 export const activate = (context: ExtensionContext) => {
   client = createClient(context);
 
-  console.log("zoom", workspace.getConfiguration("").get("window.zoomLevel"));
-
   const init = async () => {
     await client.onReady();
     client.onNotification(NotificationType.CRASH, () => {
@@ -44,7 +42,7 @@ const createClient = (context: ExtensionContext) => {
       module: serverPath,
       transport: TransportKind.ipc,
       options: debugOptions
-    },
+    }
   };
 
   // Options to control the language client
@@ -54,7 +52,7 @@ const createClient = (context: ExtensionContext) => {
     synchronize: {
       // Notify the server about file changes to '.clientrc files contained in the workspace
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc")
-    },
+    }
   };
 
   return new LanguageClient(

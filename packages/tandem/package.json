@@ -1,6 +1,7 @@
 {
-  "name": "paperclip-vscode-extension",
+  "name": "tandem",
   "displayName": "Paperclip",
+  "private": true,
   "version": "12.1.4",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
@@ -103,7 +104,8 @@
     "chai": "^4.2.0",
     "glob": "^7.1.6",
     "mocha": "^8.0.1",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "vscode-test": "^1.4.0"
   },
   "dependencies": {
     "@types/react": "^16.9.20",

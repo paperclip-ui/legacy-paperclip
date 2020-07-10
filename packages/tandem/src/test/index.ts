@@ -1,5 +1,6 @@
 // Inspiration: https://github.com/vuejs/vetur/blob/master/test/codeTestRunner.ts
 // https://github.com/microsoft/vscode-extension-samples/blob/master/helloworld-test-sample/src/test/suite/index.ts
+// https://code.visualstudio.com/api/working-with-extensions/testing-extension
 
 import * as glob from "glob";
 import * as Mocha from "mocha";
@@ -10,7 +11,7 @@ export const run = async () => {
     realpath: true
   });
 
-  const mocha = new Mocha({ ui: "bdd" });
+  const mocha = new Mocha({ ui: "bdd", timeout: 1000 * 10 });
 
   for (const filePath of testFiles) {
     mocha.addFile(filePath);
