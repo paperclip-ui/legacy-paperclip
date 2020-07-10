@@ -4,7 +4,10 @@ import {
   CompletionItem,
   InsertTextFormat
 } from "vscode-languageserver";
-import { CSS_DECLARATION_NAMES } from "./css-constants";
+import {
+  CSS_DECLARATION_NAMES,
+  CSS_DECLARATION_VALUE_ITEMS
+} from "./css-constants";
 import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./html-constants";
 
 const CSS_DECLARATION_NAME_COMPLETION_ITEMS = stringArrayToAutoCompleteItems(
@@ -15,7 +18,7 @@ const CSS_DECLARATION_NAME_COMPLETION_ITEMS = stringArrayToAutoCompleteItems(
     kind: CompletionItemKind.Property,
     insertText: label + ": ${1:};",
     insertTextFormat: InsertTextFormat.Snippet,
-    command: RETRIGGER_COMMAND,
+    command: CSS_DECLARATION_VALUE_ITEMS[label] ? RETRIGGER_COMMAND : null,
     data: {
       cssDeclarationName: label
     }
