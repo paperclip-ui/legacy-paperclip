@@ -146,7 +146,7 @@
     <ul>
         <li> <a href="http://paperclip.dev/guide/">Documentation</a> </li>
         <li> <a href="http://paperclip.dev/api/">API Reference</a> </li>
-        <li> <a href="http://tandemcode.com/examples/">Examples</a> </li>
+        <li> <a href="http://tandem.com/examples/">Examples</a> </li>
         <li> <a href="https://github.com/crcn/paperclip">Paperclip.js on GitHub</a> </li>
       </ul>
       <h4>Community</h4>
