@@ -209,7 +209,7 @@ export class Renderer {
           const style = (this._importedStyles[
             event.uri
           ] = createNativeStyleFromSheet(
-            event.info.sheet,
+            event.sheet,
             this._domFactory,
             this.protocol
           ));

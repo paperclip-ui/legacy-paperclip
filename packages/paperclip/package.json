@@ -22,7 +22,7 @@
     "paperclip-utils": "^12.1.6",
     "typescript": "^3.8.2"
   },
-  "gitHead": "9509f9cb6f95beec25f295d0fe053479045882f8",
+  "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
   "devDependencies": {
     "@types/node": "^14.0.20"
   }

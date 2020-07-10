@@ -19,7 +19,7 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "9345014f8f582c890387948c5b437d608e995a64",
+  "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
   "devDependencies": {
     "@types/node": "^14.0.20"
   }

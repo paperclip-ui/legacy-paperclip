@@ -14,4 +14,3 @@ export * from "./resolve";
 export * from "./stringify-virt-node";
 export * from "./css-virt";
 export * from "./virt-patcher";
-export * from "./pc-evaluate";
