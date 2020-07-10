@@ -1,0 +1,5 @@
+<import src="./module.pc" as="module">
+
+<module.Message>
+  {children}
+</module.Message>

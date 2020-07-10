@@ -1,5 +1,5 @@
 {
-  "name": "paperclip",
+  "name": "paperclip-vscode",
   "displayName": "Paperclip",
   "private": true,
   "version": "12.1.5",
@@ -90,6 +90,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "test:e2e": "node lib/test/run",
     "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",
     "publish:marketplace": "vsce package && vsce publish"
