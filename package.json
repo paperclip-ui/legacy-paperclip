@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "husky": "^4.2.5",
+    "lerna": "^3.22.1",
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1"
   },
@@ -37,7 +38,5 @@
     "url": "https://github.com/crcn/paperclip/issues"
   },
   "homepage": "https://github.com/crcn/paperclip#readme",
-  "dependencies": {
-    "lerna": "^3.22.1"
-  }
+  "dependencies": {}
 }
