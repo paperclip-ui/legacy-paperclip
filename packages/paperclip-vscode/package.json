@@ -90,6 +90,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "npm run test:e2e",
     "test:e2e": "node lib/test/run",
     "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",
