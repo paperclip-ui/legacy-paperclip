@@ -191,10 +191,12 @@ ELEMENT_ATTRIBUTES = merge({}, ELEMENT_ATTRIBUTES, {
 });
 
 for (const tagName of NATIVE_TAG_NAMES) {
-  ELEMENT_ATTRIBUTES[tagName] = [
-    ...ELEMENT_ATTRIBUTES[tagName],
-    ...VISIBLE_ELEMENT_ATTRIBUTE_NAMES
-  ];
+  if (NATIVE_VISIBLE_TAGS.includes(tagName)) {
+    ELEMENT_ATTRIBUTES[tagName] = [
+      ...ELEMENT_ATTRIBUTES[tagName],
+      ...VISIBLE_ELEMENT_ATTRIBUTE_NAMES
+    ];
+  }
 }
 
 export { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES };

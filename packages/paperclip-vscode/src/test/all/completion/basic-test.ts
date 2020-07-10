@@ -44,7 +44,7 @@ describe(__filename + "#", () => {
       const doc = await openDocument(FIXTURE_PCCONFIG_FILE_PATHS.empty);
       await clearAllText(doc);
       await typeText(`<import src="`, doc);
-      await testCompletion(doc, ["./module.pc", "./dependent2.pc"]);
+      await testCompletion(doc, ["./module.pc", "./dependent.pc"]);
     });
   });
 

@@ -51,7 +51,9 @@ for (const tagName of ALL_TAG_NAMES) {
   const item: CompletionItem = {
     label: tagName,
     insertText: `${tagName} `,
-    command: RETRIGGER_COMMAND
+    command: ATTRIBUTE_NAME_COMPLETION_ITEMS[tagName].length
+      ? RETRIGGER_COMMAND
+      : null
   };
 
   TAG_NAME_COMPLETION_ITEMS.push(item);
