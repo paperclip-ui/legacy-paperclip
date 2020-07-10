@@ -1,4 +1,4 @@
-import { EngineEvent as PCEngineEvent, PCEvalInfo } from "paperclip";
+import { EngineEvent as PCEngineEvent } from "paperclip";
 import { VirtualNode } from "paperclip-utils";
 
 abstract class BaseNotification<TType extends string, TParams> {
