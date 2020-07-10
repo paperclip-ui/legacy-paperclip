@@ -128,7 +128,7 @@ describe(__filename, () => {
       { kind: SuggestContextKind.HTML_TAG_NAME, path: ["a"] }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
-    it(`Can product suggestion context for ${source}`, () => {
+    it(`Can produce suggestion context for ${source}`, () => {
       const context = getSuggestionContext(source);
       expect(context).to.eql(expectedContext);
     });
