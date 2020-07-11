@@ -12,7 +12,8 @@ import {
   CSSDeclarationValueSuggestionContext,
   CSSDeclarationSuggestionContext,
   CSSDeclarationAtRuleSuggestionContext,
-  CSSDeclarationAtRuleParamsSuggestionContext
+  CSSDeclarationAtRuleParamsSuggestionContext,
+  CSSAtRuleSuggestionContext
 } from "paperclip-autocomplete";
 
 import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./html-constants";
@@ -37,7 +38,8 @@ import {
 import {
   CSS_DECLARATION_NAME_COMPLETION_ITEMS,
   ATTRIBUTE_NAME_COMPLETION_ITEMS,
-  TAG_NAME_COMPLETION_ITEMS
+  TAG_NAME_COMPLETION_ITEMS,
+  AT_RULE_COMPLETION_ITEMS
 } from "./completion-items";
 import { LoadedEvent, DEFAULT_PART_ID } from "paperclip";
 import { LoadedData } from "paperclip";
@@ -107,7 +109,7 @@ export class PCAutocomplete {
       case SuggestContextKind.CSS_AT_RULE_PARAMS:
         return this._getCSSDeclarationAtRuleParamsSuggestion(context, data);
       case SuggestContextKind.CSS_AT_RULE_NAME:
-        return this._getCSSAtRuleSuggestion(context, data);
+        return this._getCSSAtRuleSuggestion(context);
       case SuggestContextKind.CSS_DECLARATION_VALUE:
         return this._getCSSDeclarationValueSugestion(uri, context);
     }
@@ -171,22 +173,8 @@ export class PCAutocomplete {
     ];
   }
 
-  private _getCSSAtRuleSuggestion(
-    context: CSSDeclarationAtRuleSuggestionContext,
-    data: LoadedData
-  ) {
-    return [
-      {
-        label: "media",
-        insertText: "media ",
-        insertTextFormat: InsertTextFormat.Snippet
-      },
-      {
-        label: "mixin",
-        insertText: "mixin ",
-        insertTextFormat: InsertTextFormat.Snippet
-      }
-    ];
+  private _getCSSAtRuleSuggestion(_context: CSSAtRuleSuggestionContext) {
+    return AT_RULE_COMPLETION_ITEMS;
   }
 
   private _getCSSDeclarationAtRuleParamsSuggestion(

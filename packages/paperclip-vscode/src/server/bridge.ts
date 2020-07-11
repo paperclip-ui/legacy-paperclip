@@ -47,7 +47,8 @@ import {
   EngineEventNotification,
   NotificationType,
   LoadParams,
-  ErrorLoading
+  ErrorLoading,
+  Loaded
 } from "../common/notifications";
 import {
   TextDocument,
@@ -97,7 +98,8 @@ export class VSCServiceBridge {
       NotificationType.LOAD,
       async ({ uri }: LoadParams) => {
         try {
-          await _engine.run(uri);
+          const data = await _engine.run(uri);
+          connection.sendNotification(...new Loaded({ uri, data }).getArgs());
         } catch (e) {
           console.warn(e);
           connection.sendNotification(...new ErrorLoading({ uri }).getArgs());

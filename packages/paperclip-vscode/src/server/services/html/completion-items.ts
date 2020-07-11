@@ -6,7 +6,8 @@ import {
 } from "vscode-languageserver";
 import {
   CSS_DECLARATION_NAMES,
-  CSS_DECLARATION_VALUE_ITEMS
+  CSS_DECLARATION_VALUE_ITEMS,
+  CSS_AT_RULE_NAMES
 } from "./css-constants";
 import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./html-constants";
 
@@ -62,7 +63,18 @@ for (const tagName of ALL_TAG_NAMES) {
   TAG_NAME_COMPLETION_ITEMS.push(item);
 }
 
+const AT_RULE_COMPLETION_ITEMS = [];
+
+for (const name of CSS_AT_RULE_NAMES) {
+  AT_RULE_COMPLETION_ITEMS.push({
+    label: name,
+    insertText: `${name} `,
+    insertTextFormat: InsertTextFormat.Snippet
+  });
+}
+
 export {
+  AT_RULE_COMPLETION_ITEMS,
   CSS_DECLARATION_NAME_COMPLETION_ITEMS,
   ATTRIBUTE_NAME_COMPLETION_ITEMS,
   TAG_NAME_COMPLETION_ITEMS

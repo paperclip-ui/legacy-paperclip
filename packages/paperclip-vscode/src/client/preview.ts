@@ -26,7 +26,8 @@ import {
   Unload,
   PreviewInitParams,
   ErrorLoading,
-  LoadParams
+  LoadParams,
+  LoadedParams
 } from "../common/notifications";
 import { Engine } from "paperclip";
 
@@ -44,12 +45,9 @@ type LivePreviewState = {
 export const activate = (client: LanguageClient, context: ExtensionContext) => {
   const { extensionPath } = context;
 
-  let _previews: {
-    [identifier: string]: LivePreview;
-  } = {};
+  let _previews: LivePreview[] = [];
 
   let _showedOpenLivePreviewPrompt = false;
-  let _liveErrors = {};
 
   const openLivePreview = async (editor: TextEditor) => {
     const paperclipUri = String(editor.document.uri);
@@ -77,14 +75,13 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
   };
 
   const registerLivePreview = (preview: LivePreview) => {
-    _previews[preview.targetUri] = preview;
-    if (Object.keys(_liveErrors).length) {
-      // just handle one since only one can be displayed to user at a time
-      preview.$$handleEngineEvent(_liveErrors[Object.keys(_liveErrors)[0]]);
-    }
+    _previews.push(preview);
     let disposeListener = preview.onDidDispose(() => {
-      delete _previews[preview.targetUri];
-      disposeListener();
+      const index = _previews.indexOf(preview);
+      if (index !== -1) {
+        _previews.splice(index, 1);
+        disposeListener();
+      }
     });
   };
 
@@ -94,7 +91,7 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
    */
 
   const askToDisplayLivePreview = async (editor: TextEditor) => {
-    if (_showedOpenLivePreviewPrompt || Object.keys(_previews).length) {
+    if (_showedOpenLivePreviewPrompt || _previews.length) {
       return;
     }
 
@@ -154,21 +151,22 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
 
   // There can only be one listener, so do that & handle across all previews
   client.onNotification(NotificationType.ENGINE_EVENT, event => {
-    if (event.kind === EngineEventKind.Error) {
-      _liveErrors[event.uri] = event;
-    } else {
-      delete _liveErrors[event.uri];
-    }
-
-    Object.values(_previews).forEach(preview => {
+    _previews.forEach(preview => {
       preview.$$handleEngineEvent(event);
     });
   });
 
   // There can only be one listener, so do that & handle across all previews
   client.onNotification(NotificationType.ERROR_LOADING, event => {
-    Object.values(_previews).forEach(preview => {
+    _previews.forEach(preview => {
       preview.$$handleErrorLoading(event);
+    });
+  });
+
+  // There can only be one listener, so do that & handle across all previews
+  client.onNotification(NotificationType.LOADED, event => {
+    _previews.forEach(preview => {
+      preview.$$handleLoaded(event);
     });
   });
 };
@@ -178,6 +176,8 @@ class LivePreview {
   private _dependencies: string[] = [];
   private _needsReloading: boolean;
   private _disposeEngineListener: () => void;
+  private _previewReady: () => void;
+  private _readyPromise: Promise<any>;
   public readonly targetUri: string;
 
   constructor(
@@ -215,12 +215,22 @@ class LivePreview {
       targetUri: this.targetUri
     };
   }
+  private _createReadyPromise() {
+    this._readyPromise = new Promise(resolve => {
+      this._previewReady = resolve;
+    });
+  }
   private _render() {
-    // Calling startEngine multiple times by the way just restarts it
+    this._needsReloading = false;
+
+    // force reload
+    this.panel.webview.html = "";
+    this.panel.webview.html = this._getHTML();
+    this._createReadyPromise();
+
     this._client.sendNotification(
       ...new Load({ uri: this.targetUri }).getArgs()
     );
-    this.panel.webview.html = this._getHTML();
   }
   private _onPanelDispose = () => {
     this.dispose();
@@ -236,6 +246,8 @@ class LivePreview {
       this._handleElementMetaClicked(event);
     } else if (event.type === "errorBannerClicked") {
       this._handleErrorBannerClicked(event);
+    } else if (event.type === "ready") {
+      this._previewReady();
     }
   };
   private async _handleErrorBannerClicked({
@@ -274,13 +286,23 @@ class LivePreview {
       this._needsReloading = true;
     }
   }
+  public async $$handleLoaded({ uri, data }: LoadedParams) {
+    if (uri === this.targetUri) {
+      console.log("handleLoaded wait");
+      await this._readyPromise;
+      console.log("handleLoaded done");
+      this.panel.webview.postMessage({
+        type: "INIT",
+        payload: JSON.stringify(data)
+      });
+    }
+  }
   public $$handleEngineEvent(event: EngineEvent) {
     if (
       this._needsReloading &&
       (event.kind === EngineEventKind.Evaluated ||
         event.kind === EngineEventKind.Diffed)
     ) {
-      this._needsReloading = false;
       this._render();
     }
 

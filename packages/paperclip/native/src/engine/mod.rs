@@ -154,11 +154,9 @@ impl Engine {
       Ok(loaded_uris) => {
         let mut stack = HashSet::new();
 
-        if self.running.contains(uri) {
-          self
-            .evaluate(uri, &mut stack)
-            .or_else(|e| Err(EngineError::Runtime(e)))?;
-        }
+        self
+        .evaluate(uri, &mut stack)
+        .or_else(|e| Err(EngineError::Runtime(e)))?;
 
         Ok(&self.dependency_graph.dependencies.get(uri).unwrap().content)
       }
@@ -203,7 +201,7 @@ impl Engine {
     content: &String,
   ) -> Result<(), EngineError> {
     self.vfs.update(uri, content).await;
-    self.load(uri).await?;
+    self.run(uri).await?;
 
     let mut dep_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);
 

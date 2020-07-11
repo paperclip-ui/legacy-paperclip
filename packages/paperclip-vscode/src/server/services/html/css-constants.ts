@@ -11,6 +11,18 @@ Copy printed object
 
 */
 
+// https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
+const CSS_AT_RULE_NAMES = [
+  "media",
+  "font-face",
+  "keyframes",
+  "namespace",
+  "charset",
+
+  // custom
+  "mixin"
+].sort();
+
 const CSS_DECLARATION_NAMES = [
   "align-content",
   "align-items",
@@ -251,4 +263,8 @@ const CSS_DECLARATION_VALUE_ITEMS = {
   ].sort()
 };
 
-export { CSS_DECLARATION_NAMES, CSS_DECLARATION_VALUE_ITEMS };
+export {
+  CSS_AT_RULE_NAMES,
+  CSS_DECLARATION_NAMES,
+  CSS_DECLARATION_VALUE_ITEMS
+};
