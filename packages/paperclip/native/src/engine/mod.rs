@@ -30,13 +30,11 @@ pub struct EvaluateData {
 #[derive(Debug, PartialEq, Serialize)]
 pub struct EvaluatedEvent<'a> {
   pub uri: String,
-  data: &'a EvaluateData
+  data: &'a EvaluateData,
 }
-
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct DiffedData<'a> {
-
   // TODO - needs to be sheetMutations
   pub sheet: Option<css_virt::CSSSheet>,
   #[serde(rename = "allDependencies")]
@@ -50,7 +48,7 @@ pub struct DiffedData<'a> {
 #[derive(Debug, PartialEq, Serialize)]
 pub struct DiffedEvent<'a> {
   pub uri: String,
-  pub data: DiffedData<'a>
+  pub data: DiffedData<'a>,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -215,9 +213,11 @@ impl Engine {
     Ok(())
   }
 
-  fn evaluate<'a>(&mut self, uri: &String, stack: &mut HashSet<String>) -> Result<(), RuntimeError> {
-
-
+  fn evaluate<'a>(
+    &mut self,
+    uri: &String,
+    stack: &mut HashSet<String>,
+  ) -> Result<(), RuntimeError> {
     // prevent infinite loop
     if stack.contains(uri) {
       let err = RuntimeError::new(
@@ -269,12 +269,11 @@ impl Engine {
             imports: imports,
             exports: info.exports,
             sheet: info.sheet,
-            preview: info.preview
+            preview: info.preview,
           };
 
           self.evaluated_data.insert(uri.clone(), data);
           let data = self.evaluated_data.get(uri).unwrap();
-
 
           if let Some(existing_info) = existing_info_option {
             // temporary - eventually want to diff this.
@@ -283,7 +282,7 @@ impl Engine {
             } else {
               Some(data.sheet.clone())
             };
-            
+
             // let info = self.virt_nodes.get(uri).unwrap();
 
             self.dispatch(EngineEvent::Diffed(DiffedEvent {
@@ -293,13 +292,13 @@ impl Engine {
                 all_dependencies: &data.all_dependencies,
                 dependents: &data.dependents,
                 mutations: diff_pc(&existing_info.preview, &data.preview),
-              }
+              },
             }));
           } else {
             // let info = self.virt_nodes.get(uri).unwrap();
             self.dispatch(EngineEvent::Evaluated(EvaluatedEvent {
               uri: uri.clone(),
-              data: &data
+              data: &data,
             }));
           }
 

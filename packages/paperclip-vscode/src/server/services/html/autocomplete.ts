@@ -38,7 +38,7 @@ import {
   TAG_NAME_COMPLETION_ITEMS
 } from "./completion-items";
 import { LoadedEvent, DEFAULT_PART_ID } from "paperclip";
-import { LoadedData } from "paperclip/src";
+import { LoadedData } from "paperclip";
 
 const EMPTY_ARRAY = [];
 

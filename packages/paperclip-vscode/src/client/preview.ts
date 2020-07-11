@@ -28,7 +28,7 @@ import {
   ErrorLoading,
   LoadParams
 } from "../common/notifications";
-import { Engine } from "paperclip/src";
+import { Engine } from "paperclip";
 
 const VIEW_TYPE = "paperclip-preview";
 
