@@ -155,8 +155,8 @@ impl Engine {
         let mut stack = HashSet::new();
 
         self
-        .evaluate(uri, &mut stack)
-        .or_else(|e| Err(EngineError::Runtime(e)))?;
+          .evaluate(uri, &mut stack)
+          .or_else(|e| Err(EngineError::Runtime(e)))?;
 
         Ok(&self.dependency_graph.dependencies.get(uri).unwrap().content)
       }

@@ -1,5 +1,5 @@
 import { Html5Entities } from "html-entities";
-import { stringifyCSSSheet, stringifyVirtualNode } from "paperclip-utils";
+import { stringifyCSSSheet } from "paperclip-utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
 
@@ -97,7 +97,7 @@ const createNativeElement = (
   for (let name in element.attributes) {
     let value = element.attributes[name];
     if (name === "src" && protocol) {
-      value = value.replace(/\w+:/, protocol);
+      value = value.replace("file:", protocol);
     }
 
     const aliasName = ATTR_ALIASES[name] || name;
@@ -116,6 +116,8 @@ const createNativeElement = (
     nativeElement.onmouseup = preventDefault;
     nativeElement.onmousedown = preventDefault;
   }
+  // return document.createTextNode(nativeElement.outerHTML);
+
   return nativeElement;
 };
 

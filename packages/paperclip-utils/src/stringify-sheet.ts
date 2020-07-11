@@ -1,5 +1,7 @@
-export const stringifyCSSSheet = (sheet, protocol: string | null) => {
-  return sheet.rules.map(rule => stringifyCSSRule(rule, protocol)).join("\n");
+export const stringifyCSSSheet = (sheet, resourcePrefix: string | null) => {
+  return sheet.rules
+    .map(rule => stringifyCSSRule(rule, resourcePrefix))
+    .join("\n");
 };
 
 const stringifyCSSRule = (rule, protocol) => {

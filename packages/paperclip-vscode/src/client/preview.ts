@@ -56,6 +56,8 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
     // there's really no way to tell whether an existing tab is open which will
     // happen when the app loads with existing live preview tabs.
 
+    console.log("PAN", Uri.file(workspace.rootPath), Uri.file(extensionPath));
+
     const panel = window.createWebviewPanel(
       VIEW_TYPE,
       `⚡️ ${path.basename(paperclipUri)}`,
@@ -288,9 +290,7 @@ class LivePreview {
   }
   public async $$handleLoaded({ uri, data }: LoadedParams) {
     if (uri === this.targetUri) {
-      console.log("handleLoaded wait");
       await this._readyPromise;
-      console.log("handleLoaded done");
       this.panel.webview.postMessage({
         type: "INIT",
         payload: JSON.stringify(data)
@@ -343,6 +343,7 @@ class LivePreview {
     );
 
     const scriptUri = this.panel.webview.asWebviewUri(scriptPathOnDisk);
+
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -363,6 +364,7 @@ class LivePreview {
     </head>
     <body>
       <script>
+        const PROTOCOL = "${scriptUri.scheme}://${scriptUri.authority}/file";
         const TARGET_URI = "${this.targetUri}";
         const vscode = acquireVsCodeApi();
         vscode.setState(${JSON.stringify(this.getState())});

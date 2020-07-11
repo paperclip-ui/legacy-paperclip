@@ -2,17 +2,13 @@ import { Renderer } from "./renderer";
 
 declare var vscode;
 declare var TARGET_URI;
+declare var PROTOCOL;
 
 const thisScript = Array.from(document.querySelectorAll("script")).pop();
 
 const parent = typeof vscode != "undefined" ? vscode : window;
 
-const renderer = new Renderer(
-  String(thisScript.src)
-    .split(":")
-    .shift() + ":",
-  TARGET_URI
-);
+const renderer = new Renderer(PROTOCOL, TARGET_URI);
 
 renderer.onMetaClick(element => {
   parent.postMessage(
