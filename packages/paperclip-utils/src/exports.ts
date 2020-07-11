@@ -14,5 +14,6 @@ export type MixinExport = {
 
 export type VariableExport = {
   name: string;
-  root: boolean;
+  value: string;
+  source: any;
 };

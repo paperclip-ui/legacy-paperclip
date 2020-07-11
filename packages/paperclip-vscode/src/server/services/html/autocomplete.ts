@@ -257,8 +257,8 @@ const declaredVarsToCompletionItems = memoize(
       used[name] = true;
       list.push({
         label: name,
-        data: "#F60",
-        kind: CompletionItemKind.Color
+        insertText: includeVar ? `var(${name})` : name,
+        detail: data.exports.style.variables[name].value
       });
     }
     for (const imp in data.imports) {
@@ -270,8 +270,7 @@ const declaredVarsToCompletionItems = memoize(
         list.push({
           label: name,
           insertText: includeVar ? `var(${name})` : name,
-          data: "#F60",
-          kind: CompletionItemKind.Color
+          detail: data.imports[imp].style.variables[name].value
         });
       }
     }
