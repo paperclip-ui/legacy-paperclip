@@ -306,66 +306,65 @@ pub enum Selector {
 }
 
 impl Selector {
-
   pub fn last(&self) -> &Selector {
     let mut curr: &Selector = self;
     loop {
       match curr {
         Selector::Group(selector) => {
           curr = selector.selectors.last().unwrap();
-        },
+        }
         Selector::Combo(selector) => {
           curr = selector.selectors.last().unwrap();
-        },
+        }
         Selector::Prefixed(selector) => {
           if let Some(postfix) = &selector.postfix_selector {
             curr = postfix.as_ref();
           } else {
             return curr;
           }
-        },
+        }
         Selector::Element(selector) => {
           return curr;
-        },
+        }
         Selector::Descendent(selector) => {
           curr = selector.descendent.as_ref();
-        },
+        }
         Selector::Not(selector) => {
           return curr;
-        },
+        }
         Selector::Global(selector) => {
           return curr;
-        },
+        }
         Selector::Adjacent(selector) => {
           curr = selector.next_sibling_selector.as_ref();
-        },
+        }
         Selector::PseudoElement(selector) => {
           return curr;
-        },
+        }
         Selector::PseudoParamElement(selector) => {
           return curr;
-        },
+        }
         Selector::Sibling(selector) => {
           curr = selector.sibling_selector.as_ref();
-        },
+        }
         Selector::Child(selector) => {
           curr = selector.child.as_ref();
-        },
+        }
         Selector::Class(selector) => {
           return curr;
-        },
+        }
         Selector::Id(selector) => {
           return curr;
-        },
+        }
         Selector::Attribute(selector) => {
           return curr;
-        },
+        }
         Selector::None => {
           return curr;
-        },
+        }
         Selector::AllSelector => {
           return curr;
-        },
+        }
       }
     }
     return curr;

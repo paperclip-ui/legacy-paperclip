@@ -1,4 +1,8 @@
-import { stringArrayToAutoCompleteItems, RETRIGGER_COMMAND } from "./utils";
+import {
+  stringArrayToAutoCompleteItems,
+  RETRIGGER_COMMAND,
+  tagCompletionItem
+} from "./utils";
 import {
   CompletionItemKind,
   CompletionItem,
@@ -54,14 +58,10 @@ for (const tagName in ELEMENT_ATTRIBUTES) {
 const TAG_NAME_COMPLETION_ITEMS = [];
 
 for (const tagName of ALL_TAG_NAMES) {
-  const item: CompletionItem = {
-    label: tagName,
-    insertText: `${tagName} `,
-    command: ATTRIBUTE_NAME_COMPLETION_ITEMS[tagName].length
-      ? RETRIGGER_COMMAND
-      : null
-  };
-
+  const item = tagCompletionItem(
+    tagName,
+    ATTRIBUTE_NAME_COMPLETION_ITEMS[tagName].length > 0
+  );
   TAG_NAME_COMPLETION_ITEMS.push(item);
 }
 

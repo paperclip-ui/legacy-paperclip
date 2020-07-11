@@ -1,5 +1,5 @@
 import { memoize } from "lodash";
-import { CompletionItem } from "vscode-languageserver";
+import { CompletionItem, InsertTextFormat } from "vscode-languageserver";
 
 export type PCCompletionItem = Omit<CompletionItem, "data"> & {
   data: {
@@ -23,6 +23,16 @@ export const stringArrayToAutoCompleteItems = memoize(
 export const stringArraytoSnippetStringOptions = memoize(
   (values: string[]) => `|${values.join(",")}|`
 );
+
+export const tagCompletionItem = (
+  tagName: string,
+  hasAttributes: boolean
+): CompletionItem => ({
+  label: tagName,
+  insertText: `${tagName} \${1:}>\n</${tagName}>`,
+  insertTextFormat: InsertTextFormat.Snippet,
+  command: hasAttributes ? RETRIGGER_COMMAND : null
+});
 
 export const addCompletionItemData = (
   item: CompletionItem,

@@ -14476,8 +14476,11 @@
   -moz-osx-font-smoothing: auto
 }
 
-.tracking-tighter {
-  letter-spacing: -0.05em
+@export {
+
+  .tracking-tighter {
+    letter-spacing: -0.05em
+  }
 }
 
 .tracking-tight {

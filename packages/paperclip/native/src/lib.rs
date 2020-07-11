@@ -6,7 +6,7 @@ use wasm_bindgen::prelude::*;
 extern crate matches;
 extern crate console_error_panic_hook;
 
-#[macro_use] 
+#[macro_use]
 extern crate lazy_static;
 
 mod base;

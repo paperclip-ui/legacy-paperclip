@@ -1,12 +1,11 @@
 use super::super::ast;
-use super::export::{Exports, MixinExport, VarExport, ClassNameExport};
+use super::export::{ClassNameExport, Exports, MixinExport, VarExport};
 use super::virt;
 use crate::base::ast::ExprSource;
 use crate::base::runtime::RuntimeError;
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use std::collections::HashMap;
-
 
 pub struct Context<'a> {
   scope: &'a str,
@@ -353,19 +352,21 @@ fn evaluate_style_rule2(
   }
 
   if class_name_re.is_match(selector_text.to_string().as_ref()) {
-
     // url check
     for caps in class_name_re.captures_iter(selector_text.to_string().as_str()) {
       let class_name = caps.get(1).unwrap().as_str();
       let class_name = scope_re.replace(class_name, "").to_string();
-      
+
       let existing_option = context.exports.class_names.get(&class_name);
 
       if existing_option == None {
-        context.exports.class_names.insert(class_name.to_string(), ClassNameExport {
-          name: class_name.to_string(),
-          public: context.in_public_scope
-        });
+        context.exports.class_names.insert(
+          class_name.to_string(),
+          ClassNameExport {
+            name: class_name.to_string(),
+            public: context.in_public_scope,
+          },
+        );
       }
     }
   }
@@ -650,7 +651,6 @@ fn stringify_element_selector(
 }
 
 fn is_reserved_keyframe_word<'a>(word: &'a str) -> bool {
-
   lazy_static! {
     static ref reserved_timing_re: Regex = Regex::new(r"\b(-|\d+s?)\b").unwrap();
     static ref reserved_timing_fn_re: Regex = Regex::new(r"\b(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end|steps|cubic-bezier|initial|inherit)\b").unwrap();
@@ -701,7 +701,6 @@ fn evaluate_style_key_value_declaration<'a>(
     static ref protocol_re: Regex = Regex::new(r"^\w+:").unwrap();
   }
 
-
   if expr.name == "animation-name" {
     value = format_scoped_reference(value.as_str(), context);
 
@@ -724,7 +723,6 @@ fn evaluate_style_key_value_declaration<'a>(
 
   // a bit crude, but works for now. Need to eventually consider HTTP paths
   if url_re.is_match(value.clone().as_str()) {
-
     // url check
     for caps in url_re.captures_iter(value.to_string().as_str()) {
       let url_fn = caps.get(0).unwrap().as_str();

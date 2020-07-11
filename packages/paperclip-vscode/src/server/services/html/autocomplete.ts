@@ -17,8 +17,8 @@ import {
   CSSVariableSuggestionContext
 } from "paperclip-autocomplete";
 
-import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./html-constants";
 import { resolveAllPaperclipFiles } from "paperclip";
+import { ComponentExport } from "paperclip-utils";
 import {
   CSS_DECLARATION_NAMES,
   CSS_DECLARATION_VALUE_ITEMS
@@ -34,7 +34,8 @@ import {
   stringArraytoSnippetStringOptions,
   addCompletionItemData,
   PCCompletionItem,
-  RETRIGGER_COMMAND
+  RETRIGGER_COMMAND,
+  tagCompletionItem
 } from "./utils";
 import {
   CSS_DECLARATION_NAME_COMPLETION_ITEMS,
@@ -99,9 +100,9 @@ export class PCAutocomplete {
 
     switch (context.kind) {
       case SuggestContextKind.HTML_TAG_NAME:
-        return this._getHTMLTagNameSuggestions(context, data);
+        return this._getHTMLTagNameSuggestions(data);
       case SuggestContextKind.HTML_ATTRIBUTE_NAME:
-        return this._getAttributeNameSuggestions(context);
+        return this._getAttributeNameSuggestions(context, data);
       case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
         return this._getHTMLAttributeStringValueSuggestions(uri, context, data);
       case SuggestContextKind.CSS_DECLARATION_NAME:
@@ -120,46 +121,51 @@ export class PCAutocomplete {
         return this._getCSSClassReferenceSuggestion(data);
     }
   }
-  private _getHTMLTagNameSuggestions(
-    context: HTMLTagNameSuggestionContext,
-    data?: LoadedData
-  ) {
-    if (context.path.length === 1) {
-      const options = [];
+  private _getHTMLTagNameSuggestions(data?: LoadedData) {
+    const options = [];
 
-      if (data) {
-        for (const id in data.imports) {
-          if (/\.pc$/.test(id)) {
-            continue;
-          }
-          const imp = data.imports[id];
-          if (imp.components.length) {
-            for (const componentId of imp.components) {
-              let tagName;
-
-              if (componentId === DEFAULT_PART_ID) {
-                tagName = id;
-              } else {
-                tagName = `${id}.${componentId}`;
-              }
-
-              options.push({
-                label: tagName,
-                insertText: `${tagName} `
-
-                // TODO - want to get around to this when we actually have options.
-                // command: RETRIGGER_COMMAND
-              });
-            }
-          }
-        }
+    if (data) {
+      for (const tagName in data.exports.components) {
+        const componentInfo = data.exports.components[tagName];
+        options.push(
+          tagCompletionItem(
+            tagName,
+            Object.keys(componentInfo.properties).length > 0
+          )
+        );
       }
 
-      options.push(...TAG_NAME_COMPLETION_ITEMS);
+      for (const id in data.imports) {
+        if (/\//.test(id)) {
+          continue;
+        }
+        const imp = data.imports[id];
+        for (const componentId in imp.components) {
+          const componentInfo = imp.components[componentId];
+          if (!componentInfo || !componentInfo.public) {
+            continue;
+          }
+          let tagName;
 
-      return options;
+          if (componentId === DEFAULT_PART_ID) {
+            tagName = id;
+          } else {
+            tagName = `${id}.${componentId}`;
+          }
+
+          options.push(
+            tagCompletionItem(
+              tagName,
+              Object.keys(componentInfo.properties).length > 0
+            )
+          );
+        }
+      }
     }
-    return [];
+
+    options.push(...TAG_NAME_COMPLETION_ITEMS);
+
+    return options;
   }
 
   private _getCSSDeclarationAtRuleSuggestion(
@@ -194,12 +200,45 @@ export class PCAutocomplete {
     }
   }
 
+  private _getComponentPropCompletionItems(componentInfo: ComponentExport) {
+    return Object.keys(componentInfo.properties).map(
+      propertyName =>
+        ({
+          label: propertyName,
+
+          // slightly opinionated, but okay, I think.
+          insertText: /^on[A-Z]/.test(propertyName)
+            ? `${propertyName}={\${1:}}`
+            : propertyName,
+          insertTextFormat: InsertTextFormat.Snippet
+        } as CompletionItem)
+    );
+  }
+
   private _getAttributeNameSuggestions(
-    context: HTMLAttributeNameSuggestionContext
+    context: HTMLAttributeNameSuggestionContext,
+    data?: LoadedData
   ) {
+    const basename = context.tagPath[0];
+
+    if (data) {
+      if (data.exports.components[basename]) {
+        const componentInfo = data.exports.components[basename];
+        return this._getComponentPropCompletionItems(componentInfo);
+      }
+
+      if (data.imports[basename]) {
+        const componentAs = context.tagPath[1] || DEFAULT_PART_ID;
+
+        const compInfo = data.imports[basename].components[componentAs];
+        return this._getComponentPropCompletionItems(compInfo);
+      }
+    }
+
     if (context.tagPath.length === 1) {
       return ATTRIBUTE_NAME_COMPLETION_ITEMS[context.tagPath[0]] || [];
     }
+
     return [];
   }
   private _getHTMLAttributeStringValueSuggestions(
@@ -228,9 +267,11 @@ export class PCAutocomplete {
     info: CSSDeclarationValueSuggestionContext,
     data: LoadedData
   ) {
-    let list = stringArrayToAutoCompleteItems(
-      CSS_DECLARATION_VALUE_ITEMS[info.declarationName] || EMPTY_ARRAY
-    );
+    let list = [
+      ...stringArrayToAutoCompleteItems(
+        CSS_DECLARATION_VALUE_ITEMS[info.declarationName] || EMPTY_ARRAY
+      )
+    ];
 
     list.push(...declaredVarsToCompletionItems(data, true));
 

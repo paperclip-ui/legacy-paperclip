@@ -223,7 +223,6 @@ export class Engine {
   }
 
   async run(uri: string): Promise<LoadedData> {
-    console.log("run", uri);
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
       return Promise.reject(result.error);

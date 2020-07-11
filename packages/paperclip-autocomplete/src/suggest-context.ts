@@ -258,8 +258,16 @@ const suggestAttributeValue = (
     scanner.next(); // eat "
   } else if (scanner.current.value === `{`) {
     // TODO - move to slot
-    const boundary = scanner.current.value;
-    skipUntil(scanner, scanner => scanner.current.value === `}`);
+
+    while (scanner.current && String(scanner.current.value) !== `}`) {
+      if (String(scanner.current.value) === "<") {
+        const sugg = suggestElement(scanner);
+        if (sugg) {
+          return sugg;
+        }
+      }
+      scanner.next();
+    }
   }
 
   return null;

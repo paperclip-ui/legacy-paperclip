@@ -237,6 +237,28 @@ describe(__filename, () => {
         kind: SuggestContextKind.CSS_CLASS_REFERENCE,
         prefix: "ab"
       }
+    ],
+    [
+      `<div controls={<`,
+      {
+        kind: SuggestContextKind.HTML_TAG_NAME,
+        path: []
+      }
+    ],
+    [
+      `<div controls={<div`,
+      {
+        kind: SuggestContextKind.HTML_TAG_NAME,
+        path: ["div"]
+      }
+    ],
+    [
+      `<div controls={<div a`,
+      {
+        kind: SuggestContextKind.HTML_ATTRIBUTE_NAME,
+        tagPath: ["div"],
+        prefix: "a"
+      }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {

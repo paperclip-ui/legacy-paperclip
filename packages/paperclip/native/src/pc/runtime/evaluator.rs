@@ -1,6 +1,6 @@
 use super::super::ast;
 use super::cache::Cache;
-use super::export::Exports;
+use super::export::{Exports, ComponentExport, Property};
 use super::virt;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
@@ -83,7 +83,7 @@ pub fn evaluate<'a>(
       preview,
       exports: Exports {
         style: css_exports,
-        components: HashSet::from_iter(context.part_ids.iter().map(|id| id.to_string())),
+        components: collect_component_exports(&node_expr, &context)
       },
     }))
   } else {
@@ -93,6 +93,113 @@ pub fn evaluate<'a>(
       &Location { start: 0, end: 0 },
     ))
   }
+}
+
+fn collect_component_exports<'a>(root: &ast::Node, context: &Context) -> HashMap<String, ComponentExport> {
+  let mut exports: HashMap<String, ComponentExport> = HashMap::new();
+
+  let children = ast::get_children(root);
+
+  if let Some(children) = children {
+    for child in children.iter()  {
+      if let ast::Node::Element(element) = child {
+        if ast::has_attribute("component", element) && ast::get_attribute_value("as", element) != None {
+          
+          let id = ast::get_attribute_value("as", element).unwrap();
+
+          let properties = collect_node_properties(child);
+
+          exports.insert(id.to_string(), ComponentExport {
+            name: id.to_string(),
+            properties,
+            public: ast::get_attribute("export", element) != None
+          });
+        }
+      }
+    }
+  }
+
+  exports
+}
+
+fn collect_node_properties<'a>(node: &ast::Node) -> HashMap<String, Property> {
+  let mut properties: HashMap<String, Property> = HashMap::new();
+
+  node.walk(&mut |node| -> bool {
+    match node {
+      ast::Node::Element(element) => {
+        for attr in &element.attributes {
+          match attr {
+            ast::Attribute::KeyValueAttribute(kv_attr) => {
+              if let Some(value) = &kv_attr.value {
+                match value {
+                  ast::AttributeValue::Slot(slot) => {
+                    add_script_property(&slot.script, &mut properties);
+                  },
+                  ast::AttributeValue::DyanmicString(d_string) => {
+                    for val in &d_string.values {
+                      match val {
+                        ast::AttributeDynamicStringPart::Slot(slot) => {
+                          add_script_property(&slot, &mut properties);
+                        },
+                        ast::AttributeDynamicStringPart::ClassNamePierce(_) | ast::AttributeDynamicStringPart::Literal(_) => {
+
+                        }
+                      }
+                    }
+                  }
+                  ast::AttributeValue::String(_) => {
+
+                  }
+                }
+              }
+            },
+            ast::Attribute::SpreadAttribute(spread) => {
+              add_script_property(&spread.script, &mut properties);
+            },
+            ast::Attribute::PropertyBoundAttribute(p_attr) => {
+              add_property(&p_attr.binding_name, true, &mut properties);
+
+            },
+            ast::Attribute::ShorthandAttribute(s_attr) => {
+              add_script_property(&s_attr.reference, &mut properties);
+            }
+          }
+        }
+      },
+      ast::Node::Slot(slot) => {
+        add_script_property(&slot.script, &mut properties);
+      },
+      _ => {
+
+      }
+    }
+    true
+  });
+
+
+  properties
+}
+
+fn add_script_property(script: &js_ast::Statement, properties: &mut HashMap<String, Property>) {
+  if let js_ast::Statement::Reference(reference) = script {
+    let part = reference.path.get(0).unwrap();
+    add_property(&part.name, part.optional, properties);
+  }
+}
+
+fn add_property(name: &String, optional: bool, properties: &mut HashMap<String, Property>) {
+  
+  let optional = if let Some(prop) = properties.get(name) {
+    prop.optional
+  } else {
+    optional
+  };
+
+  properties.insert(name.to_string(), Property {
+    name: name.to_string(),
+    optional
+  });
 }
 
 fn wrap_as_fragment(node_option: Option<virt::Node>, context: &Context) -> virt::Node {

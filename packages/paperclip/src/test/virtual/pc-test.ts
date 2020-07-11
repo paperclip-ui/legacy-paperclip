@@ -423,4 +423,61 @@ describe(__filename + "#", () => {
       "<style></style> ×"
     );
   });
+
+  it("Returns component properties", async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" class:a {f} {b} className="{c}">
+          {d}
+          {e?}
+          {f?}
+        </div>
+        <div export component as="Test2">
+        </div>
+      `
+    };
+
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+
+    console.log(JSON.stringify(result.exports.components, null, 2));
+
+    expect(result.exports.components).to.eql({
+      Test: {
+        name: "Test",
+        properties: {
+          c: {
+            name: "c",
+            optional: false
+          },
+          e: {
+            name: "e",
+            optional: true
+          },
+          a: {
+            name: "a",
+            optional: true
+          },
+          b: {
+            name: "b",
+            optional: false
+          },
+          f: {
+            name: "f",
+            optional: false
+          },
+          d: {
+            name: "d",
+            optional: false
+          }
+        },
+        public: false
+      },
+      Test2: {
+        name: "Test2",
+        properties: {},
+        public: true
+      }
+    });
+  });
 });

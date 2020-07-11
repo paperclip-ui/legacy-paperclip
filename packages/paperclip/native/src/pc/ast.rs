@@ -51,6 +51,19 @@ impl Node {
       Node::Slot(value) => &value.location,
     }
   }
+  pub fn walk <F: FnMut(&Node) -> bool>(&self, each: &mut F) -> bool {
+    if !(each)(self) {
+      return false;
+    }
+    if let Some(children) = get_children(self) {
+      for child in children {
+        if !child.walk(each) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
