@@ -56,8 +56,6 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
     // there's really no way to tell whether an existing tab is open which will
     // happen when the app loads with existing live preview tabs.
 
-    console.log("PAN", Uri.file(workspace.rootPath), Uri.file(extensionPath));
-
     const panel = window.createWebviewPanel(
       VIEW_TYPE,
       `⚡️ ${path.basename(paperclipUri)}`,

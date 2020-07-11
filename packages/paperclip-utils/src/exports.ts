@@ -1,10 +1,15 @@
 export type PCExports = {
   components: string[];
   style: {
-    mixins: MixinExport[];
-    classNames: string[];
-    variables: VariableExport[];
+    mixins: Record<string, MixinExport>;
+    classNames: Record<string, ClassNameExport>;
+    variables: Record<string, VariableExport>;
   };
+};
+
+export type ClassNameExport = {
+  name: string;
+  public: boolean;
 };
 
 export type MixinExport = {

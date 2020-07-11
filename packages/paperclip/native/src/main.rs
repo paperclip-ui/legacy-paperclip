@@ -4,6 +4,9 @@
 #[macro_use]
 extern crate matches;
 
+#[macro_use]
+extern crate lazy_static;
+
 mod base;
 mod core;
 mod css;

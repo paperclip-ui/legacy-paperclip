@@ -101,10 +101,6 @@ export type LoadedEvent = {
   data: LoadedData;
 } & BaseEngineEvent<EngineEventKind.Loaded>;
 
-export type UpdatingEvent = {
-  uri: string;
-} & BaseEngineEvent<EngineEventKind.Updating>;
-
 export type EngineErrorEvent = GraphErrorEvent | RuntimeErrorEvent;
 export type EngineEvent =
   | EvaluatedEvent
@@ -112,5 +108,4 @@ export type EngineEvent =
   | AddedSheetsEvent
   | NodeParsedEvent
   | LoadedEvent
-  | UpdatingEvent
   | DiffedEvent;

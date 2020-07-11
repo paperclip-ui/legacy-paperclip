@@ -30,6 +30,7 @@ to_absolute = "0.1.0"
 js-sys = "0.3.35"
 serde_derive = "1.0.104"
 wasm-bindgen-futures = "0.4.14"
+lazy_static = "1.4.0"
 
 [dependencies.wasm-bindgen]
 version = "^0.2"

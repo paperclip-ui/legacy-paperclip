@@ -7,6 +7,6 @@
   }
 </style>
 
-<div className="message >>>tw.sm:bg-gray-700 >>>tw.p-5">
-  Hello Tailwind!
+<div className="message >>>tw.sm:bg-gray-700">
+  Hello Tailwind
 </div>

@@ -221,6 +221,22 @@ describe(__filename, () => {
     [
       `<style> a { } </style><a`,
       { kind: SuggestContextKind.HTML_TAG_NAME, path: ["a"] }
+    ],
+
+    // smoke test getting passed var
+    [
+      `<div className=">>>`,
+      {
+        kind: SuggestContextKind.CSS_CLASS_REFERENCE,
+        prefix: ""
+      }
+    ],
+    [
+      `<div className=">>>ab`,
+      {
+        kind: SuggestContextKind.CSS_CLASS_REFERENCE,
+        prefix: "ab"
+      }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {

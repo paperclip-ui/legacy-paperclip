@@ -178,10 +178,12 @@ export class Engine {
     return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }
   updateVirtualFileContent(uri: string, content: string) {
-    this._dispatch({ kind: EngineEventKind.Updating, uri });
-    return this._tryCatch(() =>
-      mapResult(this._native.update_virtual_file_content(uri, content))
-    );
+    return this._tryCatch(() => {
+      const ret = mapResult(
+        this._native.update_virtual_file_content(uri, content)
+      );
+      return ret;
+    });
   }
 
   public getLoadedData(uri: string): LoadedData | null {
@@ -221,6 +223,7 @@ export class Engine {
   }
 
   async run(uri: string): Promise<LoadedData> {
+    console.log("run", uri);
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
       return Promise.reject(result.error);

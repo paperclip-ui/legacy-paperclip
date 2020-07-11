@@ -13,6 +13,7 @@ export enum SuggestContextKind {
   CSS_SELECTOR_NAME = "CSS_SELECTOR_NAME",
   CSS_DECLARATION_NAME = "CSS_DECLARATION_NAME",
   CSS_DECLARATION_VALUE = "CSS_DECLARATION_VALUE",
+  CSS_CLASS_REFERENCE = "CSS_CLASS_REFERENCE",
   CSS_DECLARATION_AT_RULE = "CSS_DECLARATION_AT_RULE",
   CSS_AT_RULE_PARAMS = "CSS_AT_RULE_PARAMS",
   CSS_AT_RULE_NAME = "CSS_AT_RULE_NAME"
@@ -63,6 +64,10 @@ export type CSSVariableSuggestionContext = {
   prefix: string;
 } & BaseSuggestContext<SuggestContextKind.CSS_VARIABLE>;
 
+export type CSSClassReferenceSuggestionContext = {
+  prefix: string;
+} & BaseSuggestContext<SuggestContextKind.CSS_CLASS_REFERENCE>;
+
 export type SuggestContext =
   | HTMLAttributeStringValueContext
   | HTMLTagNameSuggestionContext
@@ -71,6 +76,7 @@ export type SuggestContext =
   | CSSDeclarationValueSuggestionContext
   | CSSDeclarationAtRuleSuggestionContext
   | CSSDeclarationAtRuleParamsSuggestionContext
+  | CSSClassReferenceSuggestionContext
   | CSSVariableSuggestionContext
   | CSSAtRuleSuggestionContext;
 
@@ -218,6 +224,30 @@ const suggestAttributeValue = (
         };
       } else if (scanner.current.value === boundary) {
         break;
+      } else if (
+        String(scanner.current?.value) === ">" &&
+        scanner.peek()?.value === ">" &&
+        scanner.peek(1)?.value === ">"
+      ) {
+        scanner.next(); // eat >
+        scanner.next(); // eat >
+        scanner.next(); // eat >
+        if (!scanner.current) {
+          return {
+            kind: SuggestContextKind.CSS_CLASS_REFERENCE,
+            prefix: ""
+          };
+        }
+
+        const prefix = scanner.current.value;
+
+        scanner.next();
+        if (!scanner.current) {
+          return {
+            kind: SuggestContextKind.CSS_CLASS_REFERENCE,
+            prefix
+          };
+        }
       }
 
       prefix += scanner.current.value;

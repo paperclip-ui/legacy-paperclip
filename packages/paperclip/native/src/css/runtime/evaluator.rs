@@ -1,11 +1,12 @@
 use super::super::ast;
-use super::export::{Exports, MixinExport, VarExport};
+use super::export::{Exports, MixinExport, VarExport, ClassNameExport};
 use super::virt;
 use crate::base::ast::ExprSource;
 use crate::base::runtime::RuntimeError;
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use std::collections::HashMap;
+
 
 pub struct Context<'a> {
   scope: &'a str,
@@ -14,6 +15,7 @@ pub struct Context<'a> {
   imports: &'a HashMap<String, Exports>,
   import_scopes: &'a HashMap<String, String>,
   exports: Exports,
+  in_public_scope: bool,
   all_rules: Vec<virt::Rule>,
 }
 
@@ -36,6 +38,7 @@ pub fn evaluate<'a>(
     vfs,
     imports,
     import_scopes,
+    in_public_scope: false,
     exports: Exports::new(),
     all_rules: vec![],
   };
@@ -168,6 +171,7 @@ fn evaluate_condition_rule(
     all_rules: vec![],
     import_scopes: context.import_scopes,
     imports: context.imports,
+    in_public_scope: context.in_public_scope,
     exports: context.exports.clone(),
   };
 
@@ -286,6 +290,8 @@ fn evaluate_style_rule(
 
 fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result<(), RuntimeError> {
   let mut exports = Exports::new();
+  let in_public_scope = context.in_public_scope;
+  context.in_public_scope = true;
 
   for rule in &expr.rules {
     evaluate_rule(rule, context);
@@ -302,6 +308,8 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
       _ => {}
     }
   }
+
+  context.in_public_scope = in_public_scope;
 
   context.exports.extend(&exports);
 
@@ -336,11 +344,34 @@ fn evaluate_style_rule2(
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   let style = evaluate_style_declarations(&expr.declarations, context)?;
-  let selector_text =
+  let mut selector_text =
     stringify_element_selector(&expr.selector, true, parent_selector_text, true, context);
 
+  lazy_static! {
+    static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
+    static ref scope_re: Regex = Regex::new(r"_\w+_").unwrap();
+  }
+
+  if class_name_re.is_match(selector_text.to_string().as_ref()) {
+
+    // url check
+    for caps in class_name_re.captures_iter(selector_text.to_string().as_str()) {
+      let class_name = caps.get(1).unwrap().as_str();
+      let class_name = scope_re.replace(class_name, "").to_string();
+      
+      let existing_option = context.exports.class_names.get(&class_name);
+
+      if existing_option == None {
+        context.exports.class_names.insert(class_name.to_string(), ClassNameExport {
+          name: class_name.to_string(),
+          public: context.in_public_scope
+        });
+      }
+    }
+  }
+
   let main_style_rule = virt::StyleRule {
-    selector_text: selector_text,
+    selector_text,
     style,
   };
 
@@ -365,12 +396,10 @@ fn evaluate_style_rule2(
       );
 
       evaluate_style_rules(&expr.children, &selector_text2, context)?;
-      // evaluate_child_style_rules(&selector_text2, &expr.children, context)?;
     }
   } else {
     let child_rule_prefix = main_style_rule.selector_text.clone();
     context.all_rules.push(virt::Rule::Style(main_style_rule));
-    // evaluate_child_style_rules(&child_rule_prefix, &expr.children, context)?;
 
     evaluate_style_rules(&expr.children, &child_rule_prefix, context)?;
   }
@@ -401,10 +430,6 @@ fn stringify_nestable_selector(
   context: &mut Context,
 ) -> String {
   stringify_element_selector(selector, include_scope, parent_selector_text, true, context)
-  // if parent_selector_text.len() > 0 {
-  //   format!("{} {}", parent_selector_text, stringify_element_selector(selector, include_scope, parent_selector_text, context))
-  // } else {
-  // }
 }
 
 fn stringify_element_selector(
@@ -625,21 +650,21 @@ fn stringify_element_selector(
 }
 
 fn is_reserved_keyframe_word<'a>(word: &'a str) -> bool {
-  let reserved_timing_re = Regex::new(r"\b(-|\d+s?)\b").unwrap();
-  let reserved_timing_fn_re = Regex::new(r"\b(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end|steps|cubic-bezier|initial|inherit)\b").unwrap();
 
-  // https://www.w3schools.com/cssref/css3_pr_animation-direction.asp
-  let reserved_direction_re =
-    Regex::new(r"\b(normal|reverse|alternate|alternate-reverse|initial|inherit)\b").unwrap();
+  lazy_static! {
+    static ref reserved_timing_re: Regex = Regex::new(r"\b(-|\d+s?)\b").unwrap();
+    static ref reserved_timing_fn_re: Regex = Regex::new(r"\b(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end|steps|cubic-bezier|initial|inherit)\b").unwrap();
 
-  let iter_count_re = Regex::new(r"\b(infinite)\b").unwrap();
+    // https://www.w3schools.com/cssref/css3_pr_animation-direction.asp
+    static ref reserved_direction_re: Regex = Regex::new(r"\b(normal|reverse|alternate|alternate-reverse|initial|inherit)\b").unwrap();
+    static ref iter_count_re: Regex = Regex::new(r"\b(infinite)\b").unwrap();
 
-  // https://www.w3schools.com/cssref/css3_pr_animation-fill-mode.asp
-  let reserved_fill_mode_re =
-    Regex::new(r"\b(none|forwards|backwards|both|initial|inherit)\b").unwrap();
+    // https://www.w3schools.com/cssref/css3_pr_animation-fill-mode.asp
+    static ref reserved_fill_mode_re: Regex = Regex::new(r"\b(none|forwards|backwards|both|initial|inherit)\b").unwrap();
 
-  // https://www.w3schools.com/cssref/css3_pr_animation-play-state.asp
-  let reserved_play_state_re = Regex::new(r"\b(paused|running|initial|inherit)\b").unwrap();
+    // https://www.w3schools.com/cssref/css3_pr_animation-play-state.asp
+    static ref reserved_play_state_re: Regex = Regex::new(r"\b(paused|running|initial|inherit)\b").unwrap();
+  }
 
   reserved_timing_re.is_match(word)
     || reserved_timing_fn_re.is_match(word)
@@ -671,7 +696,11 @@ fn evaluate_style_key_value_declaration<'a>(
 ) -> Result<virt::CSSStyleProperty, RuntimeError> {
   let mut value = expr.value.to_string();
 
-  let url_re = Regex::new(r#"url\((?:['"]?)(.*?)(?:['"]?)\)"#).unwrap();
+  lazy_static! {
+    static ref url_re: Regex = Regex::new(r#"url\((?:['"]?)(.*?)(?:['"]?)\)"#).unwrap();
+    static ref protocol_re: Regex = Regex::new(r"^\w+:").unwrap();
+  }
+
 
   if expr.name == "animation-name" {
     value = format_scoped_reference(value.as_str(), context);
@@ -695,7 +724,6 @@ fn evaluate_style_key_value_declaration<'a>(
 
   // a bit crude, but works for now. Need to eventually consider HTTP paths
   if url_re.is_match(value.clone().as_str()) {
-    let protocol_re = Regex::new(r"^\w+:").unwrap();
 
     // url check
     for caps in url_re.captures_iter(value.to_string().as_str()) {

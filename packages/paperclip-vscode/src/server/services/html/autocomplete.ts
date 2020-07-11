@@ -103,7 +103,7 @@ export class PCAutocomplete {
       case SuggestContextKind.HTML_ATTRIBUTE_NAME:
         return this._getAttributeNameSuggestions(context);
       case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
-        return this._getHTMLAttributeStringValueSuggestions(uri, context);
+        return this._getHTMLAttributeStringValueSuggestions(uri, context, data);
       case SuggestContextKind.CSS_DECLARATION_NAME:
         return this._getCSSDeclarationNameSuggestion(context, data);
       case SuggestContextKind.CSS_DECLARATION_AT_RULE:
@@ -116,6 +116,8 @@ export class PCAutocomplete {
         return this._getCSSDeclarationValueSugestion(context, data);
       case SuggestContextKind.CSS_VARIABLE:
         return this._getCSSVariableSuggestion(data);
+      case SuggestContextKind.CSS_CLASS_REFERENCE:
+        return this._getCSSClassReferenceSuggestion(data);
     }
   }
   private _getHTMLTagNameSuggestions(
@@ -202,7 +204,8 @@ export class PCAutocomplete {
   }
   private _getHTMLAttributeStringValueSuggestions(
     uri: string,
-    context: HTMLAttributeStringValueContext
+    context: HTMLAttributeStringValueContext,
+    data: LoadedData
   ) {
     if (context.tagPath.length === 1 && context.tagPath[0] === "import") {
       if (context.attributeName == "src") {
@@ -210,6 +213,13 @@ export class PCAutocomplete {
           resolveAllPaperclipFiles(fs)(uri, true)
         );
       }
+    }
+
+    if (
+      context.attributeName === "className" ||
+      context.attributeName === "class"
+    ) {
+      return this._getCSSClassReferenceSuggestion(data, false);
     }
     return [];
   }
@@ -229,6 +239,38 @@ export class PCAutocomplete {
 
   private _getCSSVariableSuggestion(data: LoadedData) {
     return declaredVarsToCompletionItems(data);
+  }
+
+  private _getCSSClassReferenceSuggestion(
+    data: LoadedData,
+    includeImports: boolean = true
+  ) {
+    let list: CompletionItem[] = [];
+    for (const className in data.exports.style.classNames) {
+      list.push({
+        label: className
+      });
+    }
+    if (includeImports) {
+      for (const id in data.imports) {
+        if (/\//.test(id)) {
+          continue;
+        }
+
+        const cx = data.imports[id].style.classNames;
+
+        for (const className in cx) {
+          const part = cx[className];
+          if (!part.public) {
+            continue;
+          }
+          list.push({
+            label: `${id}.${className}`
+          });
+        }
+      }
+    }
+    return list;
   }
 
   // TODO - possibly take evaluated CSS rule into consideration, and filter options based on sibling

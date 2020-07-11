@@ -7,7 +7,7 @@ use std::collections::HashMap;
 #[serde(tag = "kind")]
 pub struct Exports {
   #[serde(rename = "classNames")]
-  pub class_names: Vec<ClassNameExport>,
+  pub class_names: HashMap<String, ClassNameExport>,
   pub mixins: HashMap<String, MixinExport>,
   pub variables: HashMap<String, VarExport>,
 }
@@ -34,7 +34,7 @@ pub struct MixinExport {
 impl Exports {
   pub fn new() -> Exports {
     Exports {
-      class_names: vec![],
+      class_names: HashMap::new(),
       mixins: HashMap::new(),
       variables: HashMap::new(),
     }

@@ -273,4 +273,39 @@ describe(__filename + "#", () => {
       }
     });
   });
+
+  it("CSS class names are pulled out", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+        [a] {
+          .color {
+
+          }
+        }
+        @export {
+          .div {
+
+          }
+        }
+        .element {
+          &.child {
+
+          }
+          &--child {
+
+          }
+        }
+      </style>ab`
+    };
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+
+    expect(result.exports.style.classNames).to.eql({
+      color: { name: "color", public: false },
+      div: { name: "div", public: true },
+      child: { name: "child", public: false },
+      "element--child": { name: "element--child", public: false },
+      element: { name: "element", public: false }
+    });
+  });
 });
