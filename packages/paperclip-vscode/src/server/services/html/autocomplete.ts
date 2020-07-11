@@ -295,8 +295,10 @@ const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
   const list: CompletionItem[] = [];
 
   for (const mixinName in data.exports.style.mixins) {
+    const mixin = data.exports.style.mixins[mixinName];
     list.push({
-      label: mixinName
+      label: mixinName,
+      detail: stringifyDeclarations(mixin.declarations)
     });
   }
 
@@ -312,10 +314,19 @@ const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
         continue;
       }
       list.push({
-        label: `${importId}.${mixinName}`
+        label: `${importId}.${mixinName}`,
+        detail: stringifyDeclarations(mixin.declarations)
       });
     }
   }
 
   return list;
 });
+
+const stringifyDeclarations = decl => {
+  return decl
+    .map(({ name, value }) => {
+      return `${name}: ${value}`;
+    })
+    .join(";");
+};
