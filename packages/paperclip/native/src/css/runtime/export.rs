@@ -1,8 +1,7 @@
 use super::virt;
+use crate::base::ast::ExprSource;
 use serde::Serialize;
 use std::collections::HashMap;
-use crate::base::ast::ExprSource;
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
@@ -16,14 +15,14 @@ pub struct Exports {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ClassNameExport {
   pub name: String,
-  pub public: bool
+  pub public: bool,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct VarExport {
   pub name: String,
   pub value: String,
-  pub source: ExprSource
+  pub source: ExprSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -37,7 +36,7 @@ impl Exports {
     Exports {
       class_names: vec![],
       mixins: HashMap::new(),
-      variables: HashMap::new()
+      variables: HashMap::new(),
     }
   }
   pub fn extend(&mut self, exports: &Exports) {

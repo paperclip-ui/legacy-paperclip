@@ -12,6 +12,8 @@ export type EvaluateData = {
   allDependencies: string[];
   sheet: any;
   preview: VirtualNode;
+
+  // TODO - change to declarations, or something to imply declarations in the file. Definitions maybe?
   exports: PCExports;
   imports: Record<string, PCExports>;
 };

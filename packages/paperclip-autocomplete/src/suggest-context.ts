@@ -59,6 +59,10 @@ export type CSSDeclarationAtRuleParamsSuggestionContext = {
   params: string;
 } & BaseSuggestContext<SuggestContextKind.CSS_AT_RULE_PARAMS>;
 
+export type CSSVariableSuggestionContext = {
+  prefix: string;
+} & BaseSuggestContext<SuggestContextKind.CSS_VARIABLE>;
+
 export type SuggestContext =
   | HTMLAttributeStringValueContext
   | HTMLTagNameSuggestionContext
@@ -67,6 +71,7 @@ export type SuggestContext =
   | CSSDeclarationValueSuggestionContext
   | CSSDeclarationAtRuleSuggestionContext
   | CSSDeclarationAtRuleParamsSuggestionContext
+  | CSSVariableSuggestionContext
   | CSSAtRuleSuggestionContext;
 
 export const getSuggestionContext = (source: string) => {
@@ -391,6 +396,29 @@ const suggestCSSDeclarationValue = (
     }
 
     currentChunk = scanner.current.value;
+
+    if (currentChunk === "var" && scanner.peek()?.value === "(") {
+      scanner.next(); // eat var
+      scanner.next(); // eat (
+      if (!scanner.current) {
+        return {
+          kind: SuggestContextKind.CSS_VARIABLE,
+          prefix: ""
+        };
+      }
+      let buffer = getBuffer(
+        scanner,
+        scanner =>
+          scanner.current.value === "-" ||
+          scanner.current.kind === TokenKind.Word
+      );
+      if (!scanner.current) {
+        return {
+          kind: SuggestContextKind.CSS_VARIABLE,
+          prefix: buffer
+        };
+      }
+    }
 
     scanner.next();
   }

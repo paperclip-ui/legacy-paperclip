@@ -177,7 +177,6 @@ describe(__filename, () => {
         prefix: "med"
       }
     ],
-    ,
     [
       `<style> @media `,
       {
@@ -186,8 +185,39 @@ describe(__filename, () => {
         params: ""
       }
     ],
+    [
+      `<style> div { color: var(`,
+      {
+        kind: SuggestContextKind.CSS_VARIABLE,
+        prefix: ""
+      }
+    ],
+    [
+      `<style> div { color: var(--`,
+      {
+        kind: SuggestContextKind.CSS_VARIABLE,
+        prefix: "--"
+      }
+    ],
+    [
+      `<style> div { color: var(--col`,
+      {
+        kind: SuggestContextKind.CSS_VARIABLE,
+        prefix: "--col"
+      }
+    ],
 
-    // test popping out of styles
+    // smoke test getting passed var
+    [
+      `<style> div { color: var(--color); display:`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_VALUE,
+        declarationValuePrefix: "",
+        declarationName: "display"
+      }
+    ],
+
+    // smoke test popping out of styles
     [
       `<style> a { } </style><a`,
       { kind: SuggestContextKind.HTML_TAG_NAME, path: ["a"] }

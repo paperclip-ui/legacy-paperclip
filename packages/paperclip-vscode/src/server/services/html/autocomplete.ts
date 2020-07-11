@@ -13,7 +13,8 @@ import {
   CSSDeclarationSuggestionContext,
   CSSDeclarationAtRuleSuggestionContext,
   CSSDeclarationAtRuleParamsSuggestionContext,
-  CSSAtRuleSuggestionContext
+  CSSAtRuleSuggestionContext,
+  CSSVariableSuggestionContext
 } from "paperclip-autocomplete";
 
 import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./html-constants";
@@ -45,6 +46,7 @@ import { LoadedEvent, DEFAULT_PART_ID } from "paperclip";
 import { LoadedData } from "paperclip";
 import { memoize } from "lodash";
 import { isPaperclipFile } from "../../../client/utils";
+import { Loaded } from "../../../common/notifications";
 
 const EMPTY_ARRAY = [];
 
@@ -111,7 +113,9 @@ export class PCAutocomplete {
       case SuggestContextKind.CSS_AT_RULE_NAME:
         return this._getCSSAtRuleSuggestion(context);
       case SuggestContextKind.CSS_DECLARATION_VALUE:
-        return this._getCSSDeclarationValueSugestion(uri, context);
+        return this._getCSSDeclarationValueSugestion(context);
+      case SuggestContextKind.CSS_VARIABLE:
+        return this._getCSSVariableSuggestion(data);
     }
   }
   private _getHTMLTagNameSuggestions(
@@ -211,12 +215,15 @@ export class PCAutocomplete {
   }
 
   private _getCSSDeclarationValueSugestion(
-    uri: string,
     info: CSSDeclarationValueSuggestionContext
   ) {
     return stringArrayToAutoCompleteItems(
       CSS_DECLARATION_VALUE_ITEMS[info.declarationName] || EMPTY_ARRAY
     );
+  }
+
+  private _getCSSVariableSuggestion(data: LoadedData) {
+    return declaredVarsToCompletionItems(data);
   }
 
   // TODO - possibly take evaluated CSS rule into consideration, and filter options based on sibling
@@ -230,6 +237,32 @@ export class PCAutocomplete {
     return CSS_DECLARATION_NAME_COMPLETION_ITEMS;
   }
 }
+
+const declaredVarsToCompletionItems = memoize((data: LoadedData) => {
+  const list = [];
+  const used = {};
+  for (const name in data.exports.style.variables) {
+    used[name] = true;
+    list.push({
+      label: name,
+      insertText: name
+    });
+  }
+  for (const imp in data.imports) {
+    for (const name in data.imports[imp].style.variables) {
+      if (used[name]) {
+        continue;
+      }
+      used[name] = true;
+      list.push({
+        label: name,
+        insertText: name
+      });
+    }
+  }
+
+  return list;
+});
 
 const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
   const list: CompletionItem[] = [];

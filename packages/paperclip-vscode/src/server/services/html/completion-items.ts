@@ -19,7 +19,9 @@ const CSS_DECLARATION_NAME_COMPLETION_ITEMS = stringArrayToAutoCompleteItems(
     kind: CompletionItemKind.Property,
     insertText: label + ": ${1:};",
     insertTextFormat: InsertTextFormat.Snippet,
-    command: CSS_DECLARATION_VALUE_ITEMS[label] ? RETRIGGER_COMMAND : null,
+    command: CSS_DECLARATION_VALUE_ITEMS[label]?.length
+      ? RETRIGGER_COMMAND
+      : null,
     data: {
       cssDeclarationName: label
     }

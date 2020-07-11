@@ -1,11 +1,11 @@
 use super::super::ast;
 use super::export::{Exports, MixinExport, VarExport};
 use super::virt;
+use crate::base::ast::ExprSource;
 use crate::base::runtime::RuntimeError;
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use std::collections::HashMap;
-use crate::base::ast::ExprSource;
 
 pub struct Context<'a> {
   scope: &'a str,
@@ -70,9 +70,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
     }
     ast::Rule::FontFace(rule) => {
       let rule = evaluate_font_family_rule(rule, context)?;
-      context
-        .all_rules
-        .push(rule);
+      context.all_rules.push(rule);
     }
     ast::Rule::Media(rule) => {
       let rule = evaluate_media_rule(rule, context)?;
@@ -83,21 +81,15 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
     }
     ast::Rule::Keyframes(rule) => {
       let rule = evaluate_keyframes_rule(rule, context)?;
-      context
-        .all_rules
-        .push(rule);
+      context.all_rules.push(rule);
     }
     ast::Rule::Supports(rule) => {
       let rule = evaluate_supports_rule(rule, context)?;
-      context
-        .all_rules
-        .push(rule);
+      context.all_rules.push(rule);
     }
     ast::Rule::Document(rule) => {
       let rule = evaluate_document_rule(rule, context)?;
-      context
-        .all_rules
-        .push(rule);
+      context.all_rules.push(rule);
     }
     ast::Rule::Page(rule) => {
       let rule = evaluate_page_rule(rule, context)?;
@@ -730,11 +722,17 @@ fn evaluate_style_key_value_declaration<'a>(
       }
     }
   }
-  context.exports.variables.insert(expr.name.to_string(), VarExport {
-    name: expr.name.to_string(),
-    value: value.to_string(),
-    source: ExprSource::new(context.uri.to_string(), expr.location.clone())
-  });
+
+  if expr.name.starts_with("--") {
+    context.exports.variables.insert(
+      expr.name.to_string(),
+      VarExport {
+        name: expr.name.to_string(),
+        value: value.to_string(),
+        source: ExprSource::new(context.uri.to_string(), expr.location.clone()),
+      },
+    );
+  }
 
   Ok(virt::CSSStyleProperty {
     name: expr.name.to_string(),
