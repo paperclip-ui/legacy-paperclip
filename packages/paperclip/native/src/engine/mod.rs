@@ -40,6 +40,8 @@ pub struct DiffedData<'a> {
   #[serde(rename = "allDependencies")]
   pub all_dependencies: &'a Vec<String>,
   pub dependents: &'a Vec<String>,
+  pub imports: &'a HashMap<String, pc_export::Exports>,
+  pub exports: &'a pc_export::Exports,
 
   // TODO - needs to be domMutations
   pub mutations: Vec<pc_mutation::Mutation>,
@@ -289,6 +291,8 @@ impl Engine {
               uri: uri.clone(),
               data: DiffedData {
                 sheet,
+                imports: &data.imports,
+                exports: &data.exports,
                 all_dependencies: &data.all_dependencies,
                 dependents: &data.dependents,
                 mutations: diff_pc(&existing_info.preview, &data.preview),

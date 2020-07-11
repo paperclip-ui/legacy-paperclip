@@ -13,6 +13,8 @@ export enum SuggestContextKind {
   CSS_SELECTOR_NAME = "CSS_SELECTOR_NAME",
   CSS_DECLARATION_NAME = "CSS_DECLARATION_NAME",
   CSS_DECLARATION_VALUE = "CSS_DECLARATION_VALUE",
+  CSS_DECLARATION_AT_RULE = "CSS_DECLARATION_AT_RULE",
+  CSS_AT_RULE_PARAMS = "CSS_AT_RULE_PARAMS",
   CSS_AT_RULE_NAME = "CSS_AT_RULE_NAME"
 }
 
@@ -44,12 +46,28 @@ export type CSSDeclarationValueSuggestionContext = {
   declarationValuePrefix: string;
 } & BaseSuggestContext<SuggestContextKind.CSS_DECLARATION_VALUE>;
 
+export type CSSDeclarationAtRuleSuggestionContext = {
+  prefix: string;
+} & BaseSuggestContext<SuggestContextKind.CSS_DECLARATION_AT_RULE>;
+
+export type CSSAtRuleSuggestionContext = {
+  prefix: string;
+} & BaseSuggestContext<SuggestContextKind.CSS_AT_RULE_NAME>;
+
+export type CSSDeclarationAtRuleParamsSuggestionContext = {
+  atRuleName: string;
+  params: string;
+} & BaseSuggestContext<SuggestContextKind.CSS_AT_RULE_PARAMS>;
+
 export type SuggestContext =
   | HTMLAttributeStringValueContext
   | HTMLTagNameSuggestionContext
   | HTMLAttributeNameSuggestionContext
   | CSSDeclarationSuggestionContext
-  | CSSDeclarationValueSuggestionContext;
+  | CSSDeclarationValueSuggestionContext
+  | CSSDeclarationAtRuleSuggestionContext
+  | CSSDeclarationAtRuleParamsSuggestionContext
+  | CSSAtRuleSuggestionContext;
 
 export const getSuggestionContext = (source: string) => {
   let context: SuggestContext = null;
@@ -217,6 +235,14 @@ const suggestCSS = (scanner: TokenScanner): SuggestContext => {
     // close tag </
     if (startOfCloseTag(scanner)) {
       break;
+    } else if (scanner.current.value === "@") {
+      const declSuggestion = suggestCSSAtRule(
+        scanner,
+        SuggestContextKind.CSS_AT_RULE_NAME
+      );
+      if (declSuggestion) {
+        return declSuggestion;
+      }
     }
 
     if (scanner.current.value === "{") {
@@ -243,10 +269,15 @@ const suggestCSSDeclarations = (scanner: TokenScanner): SuggestContext => {
   scanner.next(); // eat {
 
   while (1) {
+    const ws = scanner.current?.value;
     scanner.skipWhitespace();
 
     if (!scanner.current) {
-      return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" };
+      // only suggest declaration if on new line -- UX is wierd otherwise
+      if (ws && /[\n\r]/.test(ws)) {
+        return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" };
+      }
+      return null;
     }
 
     if (scanner.current.value === "}") {
@@ -255,6 +286,14 @@ const suggestCSSDeclarations = (scanner: TokenScanner): SuggestContext => {
 
     if (scanner.current.kind === TokenKind.Word) {
       const declSuggestion = suggestCSSDeclaration(scanner);
+      if (declSuggestion) {
+        return declSuggestion;
+      }
+    } else if (scanner.current.value === "@") {
+      const declSuggestion = suggestCSSAtRule(
+        scanner,
+        SuggestContextKind.CSS_DECLARATION_AT_RULE
+      );
       if (declSuggestion) {
         return declSuggestion;
       }
@@ -283,6 +322,47 @@ const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
     const valueSuggestion = suggestCSSDeclarationValue(name, scanner);
     if (valueSuggestion) {
       return valueSuggestion;
+    }
+  }
+
+  return null;
+};
+const suggestCSSAtRule = (
+  scanner: TokenScanner,
+  atRuleKind:
+    | SuggestContextKind.CSS_AT_RULE_NAME
+    | SuggestContextKind.CSS_DECLARATION_AT_RULE
+): SuggestContext => {
+  scanner.next(); // eat @
+
+  if (!scanner.current) {
+    return { kind: atRuleKind, prefix: "" };
+  }
+
+  const prefix = scanner.current.value;
+
+  scanner.next();
+
+  if (!scanner.current) {
+    return { kind: atRuleKind, prefix };
+  }
+
+  let params = "";
+
+  while (
+    scanner.current &&
+    scanner.current.value !== ";" &&
+    scanner.current.value !== "{"
+  ) {
+    params += scanner.current.value;
+    scanner.next();
+
+    if (!scanner.current) {
+      return {
+        kind: SuggestContextKind.CSS_AT_RULE_PARAMS,
+        atRuleName: prefix,
+        params: params.trim()
+      };
     }
   }
 

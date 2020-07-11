@@ -128,6 +128,8 @@ export class Engine {
 
       this._rendered[event.uri] = {
         ...existingEvent,
+        imports: event.data.imports,
+        exports: event.data.exports,
         allDependencies: event.data.allDependencies,
         sheet: event.data.sheet || existingEvent.sheet,
         preview: patchVirtNode(existingEvent.preview, event.data.mutations)
@@ -258,18 +260,6 @@ export const evaluateAllFileStyles = (
   const map = {};
   for (const imp of imports) {
     const src = getAttributeStringValue("src", imp);
-
-    // CSS deprecated, so don't do this.
-    // if (/\.css$/.test(src)) {
-    //   const cssFilePath = resolveImportFile(fs)(resourceUrl, src);
-    //   const transformPath = url.fileURLToPath(cssFilePath);
-    //   let importedSheetCode = _loadedStyleFiles[cssFilePath];
-    //   if (!importedSheetCode) {
-    //     importedSheetCode = engine.evaluateFileStyles(cssFilePath);
-    //   }
-
-    //   map[transformPath] = importedSheetCode;
-    // }
   }
   return map;
 };

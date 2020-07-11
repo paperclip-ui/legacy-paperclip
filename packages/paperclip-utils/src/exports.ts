@@ -1,7 +1,7 @@
 export type PCExports = {
   components: string[];
   style: {
-    mixins: any;
+    mixins: { declarations: any; public: boolean }[];
     classNames: string[];
   };
 };

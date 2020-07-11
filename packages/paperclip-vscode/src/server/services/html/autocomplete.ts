@@ -10,7 +10,9 @@ import {
   HTMLAttributeStringValueContext,
   HTMLAttributeNameSuggestionContext,
   CSSDeclarationValueSuggestionContext,
-  CSSDeclarationSuggestionContext
+  CSSDeclarationSuggestionContext,
+  CSSDeclarationAtRuleSuggestionContext,
+  CSSDeclarationAtRuleParamsSuggestionContext
 } from "paperclip-autocomplete";
 
 import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./html-constants";
@@ -39,6 +41,8 @@ import {
 } from "./completion-items";
 import { LoadedEvent, DEFAULT_PART_ID } from "paperclip";
 import { LoadedData } from "paperclip";
+import { memoize } from "lodash";
+import { isPaperclipFile } from "../../../client/utils";
 
 const EMPTY_ARRAY = [];
 
@@ -98,6 +102,12 @@ export class PCAutocomplete {
         return this._getHTMLAttributeStringValueSuggestions(uri, context);
       case SuggestContextKind.CSS_DECLARATION_NAME:
         return this._getCSSDeclarationNameSuggestion(uri, context);
+      case SuggestContextKind.CSS_DECLARATION_AT_RULE:
+        return this._getCSSDeclarationAtRuleSuggestion(context, data);
+      case SuggestContextKind.CSS_AT_RULE_PARAMS:
+        return this._getCSSDeclarationAtRuleParamsSuggestion(context, data);
+      case SuggestContextKind.CSS_AT_RULE_NAME:
+        return this._getCSSAtRuleSuggestion(context, data);
       case SuggestContextKind.CSS_DECLARATION_VALUE:
         return this._getCSSDeclarationValueSugestion(uri, context);
     }
@@ -143,6 +153,53 @@ export class PCAutocomplete {
     }
     return [];
   }
+
+  private _getCSSDeclarationAtRuleSuggestion(
+    context: CSSDeclarationAtRuleSuggestionContext,
+    data: LoadedData
+  ) {
+    return [
+      {
+        label: "include",
+        insertText: "include ${1:};",
+        insertTextFormat: InsertTextFormat.Snippet,
+        command:
+          data && loadedMixinsAsCompletionList(data).length
+            ? RETRIGGER_COMMAND
+            : null
+      }
+    ];
+  }
+
+  private _getCSSAtRuleSuggestion(
+    context: CSSDeclarationAtRuleSuggestionContext,
+    data: LoadedData
+  ) {
+    return [
+      {
+        label: "media",
+        insertText: "media ",
+        insertTextFormat: InsertTextFormat.Snippet
+      },
+      {
+        label: "mixin",
+        insertText: "mixin ",
+        insertTextFormat: InsertTextFormat.Snippet
+      }
+    ];
+  }
+
+  private _getCSSDeclarationAtRuleParamsSuggestion(
+    context: CSSDeclarationAtRuleParamsSuggestionContext,
+    data: LoadedData
+  ) {
+    if (context.atRuleName === "include") {
+      return loadedMixinsAsCompletionList(data);
+    } else {
+      return [];
+    }
+  }
+
   private _getAttributeNameSuggestions(
     context: HTMLAttributeNameSuggestionContext
   ) {
@@ -185,3 +242,32 @@ export class PCAutocomplete {
     return CSS_DECLARATION_NAME_COMPLETION_ITEMS;
   }
 }
+
+const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
+  const list: CompletionItem[] = [];
+
+  for (const mixinName in data.exports.style.mixins) {
+    list.push({
+      label: mixinName
+    });
+  }
+
+  for (const importId in data.imports) {
+    // is file
+    if (/\//.test(importId)) {
+      continue;
+    }
+    const imp = data.imports[importId];
+    for (const mixinName in imp.style.mixins) {
+      const mixin = imp.style.mixins[mixinName];
+      if (!mixin.public) {
+        continue;
+      }
+      list.push({
+        label: `${importId}.${mixinName}`
+      });
+    }
+  }
+
+  return list;
+});

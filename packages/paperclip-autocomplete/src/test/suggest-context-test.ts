@@ -104,13 +104,15 @@ describe(__filename, () => {
       `<style> d { col`,
       { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "col" }
     ],
+    [`<style> d { `, null],
     [
-      `<style> d { `,
+      `<style> d {\n`,
       { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" }
     ],
     [`<style> a { } a`, null],
+    [`<style> a { } b { `, null],
     [
-      `<style> a { } b { `,
+      `<style> a { } b {\n `,
       { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" }
     ],
     [
@@ -119,6 +121,69 @@ describe(__filename, () => {
         kind: SuggestContextKind.CSS_DECLARATION_VALUE,
         declarationName: "color",
         declarationValuePrefix: "bl"
+      }
+    ],
+    [
+      `<style> a { } b { @in`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_AT_RULE,
+        prefix: "in"
+      }
+    ],
+    [
+      `<style> a { } b { @`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_AT_RULE,
+        prefix: ""
+      }
+    ],
+    [
+      `<style> a { } b { @include `,
+      {
+        kind: SuggestContextKind.CSS_AT_RULE_PARAMS,
+        atRuleName: "include",
+        params: ""
+      }
+    ],
+    [
+      `<style> a { } b { @include ab c`,
+      {
+        kind: SuggestContextKind.CSS_AT_RULE_PARAMS,
+        atRuleName: "include",
+        params: "ab c"
+      }
+    ],
+    [`<style> a { } b { @include ab c;`, null],
+    [
+      `<style> a { } b { @include ab c;\n`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_NAME,
+        prefix: ""
+      }
+    ],
+
+    // at-rules
+    [
+      `<style> @`,
+      {
+        kind: SuggestContextKind.CSS_AT_RULE_NAME,
+        prefix: ""
+      }
+    ],
+    [
+      `<style> @med`,
+      {
+        kind: SuggestContextKind.CSS_AT_RULE_NAME,
+        prefix: "med"
+      }
+    ],
+    ,
+    [
+      `<style> @media `,
+      {
+        kind: SuggestContextKind.CSS_AT_RULE_PARAMS,
+        atRuleName: "media",
+        params: ""
       }
     ],
 

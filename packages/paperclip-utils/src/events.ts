@@ -4,7 +4,7 @@
 import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
 import { Mutation } from "./virt-mtuation";
-import { VirtualNode } from "./virt";
+import { VirtualNode, EvaluateData, DiffedData, LoadedData } from "./virt";
 import { PCExports } from "./exports";
 
 export enum EngineEventKind {
@@ -31,25 +31,10 @@ type BaseEngineEvent<KKind extends EngineEventKind> = {
   kind: KKind;
 };
 
-export type EvaluateData = {
-  allDependencies: string[];
-  sheet: any;
-  preview: VirtualNode;
-  exports: PCExports;
-  imports: Record<string, PCExports>;
-};
-
 export type EvaluatedEvent = {
   uri: string;
   data: EvaluateData;
 } & BaseEngineEvent<EngineEventKind.Evaluated>;
-
-export type DiffedData = {
-  allDependencies: string[];
-  // TODO - needs to be sheetMutations
-  sheet: any;
-  mutations: Mutation[];
-};
 
 export type DiffedEvent = {
   uri: string;
@@ -110,10 +95,6 @@ export type RuntimeErrorEvent = {
   message: string;
   location: SourceLocation;
 } & BaseEngineErrorEvent<EngineErrorKind.Runtime>;
-
-export type LoadedData = EvaluateData & {
-  importedSheets: Record<string, any>;
-};
 
 export type LoadedEvent = {
   uri: string;
