@@ -105,7 +105,7 @@ export class PCAutocomplete {
       case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
         return this._getHTMLAttributeStringValueSuggestions(uri, context);
       case SuggestContextKind.CSS_DECLARATION_NAME:
-        return this._getCSSDeclarationNameSuggestion(uri, context);
+        return this._getCSSDeclarationNameSuggestion(context, data);
       case SuggestContextKind.CSS_DECLARATION_AT_RULE:
         return this._getCSSDeclarationAtRuleSuggestion(context, data);
       case SuggestContextKind.CSS_AT_RULE_PARAMS:
@@ -113,7 +113,7 @@ export class PCAutocomplete {
       case SuggestContextKind.CSS_AT_RULE_NAME:
         return this._getCSSAtRuleSuggestion(context);
       case SuggestContextKind.CSS_DECLARATION_VALUE:
-        return this._getCSSDeclarationValueSugestion(context);
+        return this._getCSSDeclarationValueSugestion(context, data);
       case SuggestContextKind.CSS_VARIABLE:
         return this._getCSSVariableSuggestion(data);
     }
@@ -215,11 +215,16 @@ export class PCAutocomplete {
   }
 
   private _getCSSDeclarationValueSugestion(
-    info: CSSDeclarationValueSuggestionContext
+    info: CSSDeclarationValueSuggestionContext,
+    data: LoadedData
   ) {
-    return stringArrayToAutoCompleteItems(
+    let list = stringArrayToAutoCompleteItems(
       CSS_DECLARATION_VALUE_ITEMS[info.declarationName] || EMPTY_ARRAY
     );
+
+    list.push(...declaredVarsToCompletionItems(data, true));
+
+    return list;
   }
 
   private _getCSSVariableSuggestion(data: LoadedData) {
@@ -231,38 +236,61 @@ export class PCAutocomplete {
   // corresponds to the caret position.
 
   private _getCSSDeclarationNameSuggestion(
-    uri: string,
-    info: CSSDeclarationSuggestionContext
+    info: CSSDeclarationSuggestionContext,
+    data: LoadedData
   ) {
-    return CSS_DECLARATION_NAME_COMPLETION_ITEMS;
+    let list = CSS_DECLARATION_NAME_COMPLETION_ITEMS;
+
+    if (containsVars(data)) {
+      list = list.map(item => ({ ...item, command: RETRIGGER_COMMAND }));
+    }
+
+    return list;
   }
 }
 
-const declaredVarsToCompletionItems = memoize((data: LoadedData) => {
-  const list = [];
-  const used = {};
-  for (const name in data.exports.style.variables) {
-    used[name] = true;
-    list.push({
-      label: name,
-      insertText: name
-    });
-  }
-  for (const imp in data.imports) {
-    for (const name in data.imports[imp].style.variables) {
-      if (used[name]) {
-        continue;
-      }
+const declaredVarsToCompletionItems = memoize(
+  (data: LoadedData, includeVar?: boolean) => {
+    const list: CompletionItem[] = [];
+    const used = {};
+    for (const name in data.exports.style.variables) {
       used[name] = true;
       list.push({
         label: name,
-        insertText: name
+        data: "#F60",
+        kind: CompletionItemKind.Color
       });
     }
-  }
+    for (const imp in data.imports) {
+      for (const name in data.imports[imp].style.variables) {
+        if (used[name]) {
+          continue;
+        }
+        used[name] = true;
+        list.push({
+          label: name,
+          insertText: includeVar ? `var(${name})` : name,
+          data: "#F60",
+          kind: CompletionItemKind.Color
+        });
+      }
+    }
 
-  return list;
-});
+    return list;
+  }
+);
+
+const containsVars = (data: LoadedData) => {
+  for (const name in data.exports.style.variables) {
+    return true;
+  }
+  for (const imp in data.imports) {
+    for (const name in data.imports[imp].style.variables) {
+      return true;
+    }
+  }
+  return false;
+};
 
 const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
   const list: CompletionItem[] = [];
