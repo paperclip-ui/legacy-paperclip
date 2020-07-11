@@ -38,6 +38,7 @@ import {
   TAG_NAME_COMPLETION_ITEMS
 } from "./completion-items";
 import { LoadedEvent, DEFAULT_PART_ID } from "paperclip";
+import { LoadedData } from "paperclip/src";
 
 const EMPTY_ARRAY = [];
 
@@ -71,9 +72,9 @@ export class PCAutocomplete {
   getSuggestions(
     uri: string,
     text: string,
-    loadEvent?: LoadedEvent
+    data?: LoadedData
   ): PCCompletionItem[] {
-    return this.getSuggestions2(uri, text, loadEvent).map(item =>
+    return this.getSuggestions2(uri, text, data).map(item =>
       addCompletionItemData(item, uri)
     );
   }
@@ -81,7 +82,7 @@ export class PCAutocomplete {
   getSuggestions2(
     uri: string,
     text: string,
-    loadedEvent?: LoadedEvent
+    data?: LoadedData
   ): CompletionItem[] {
     const context = getSuggestionContext(text);
     if (!context) {
@@ -90,7 +91,7 @@ export class PCAutocomplete {
 
     switch (context.kind) {
       case SuggestContextKind.HTML_TAG_NAME:
-        return this._getHTMLTagNameSuggestions(context, loadedEvent);
+        return this._getHTMLTagNameSuggestions(context, data);
       case SuggestContextKind.HTML_ATTRIBUTE_NAME:
         return this._getAttributeNameSuggestions(context);
       case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
@@ -103,17 +104,17 @@ export class PCAutocomplete {
   }
   private _getHTMLTagNameSuggestions(
     context: HTMLTagNameSuggestionContext,
-    loadedEvent?: LoadedEvent
+    data?: LoadedData
   ) {
     if (context.path.length === 1) {
       const options = [];
 
-      if (loadedEvent) {
-        for (const id in loadedEvent.imports) {
+      if (data) {
+        for (const id in data.imports) {
           if (/\.pc$/.test(id)) {
             continue;
           }
-          const imp = loadedEvent.imports[id];
+          const imp = data.imports[id];
           if (imp.components.length) {
             for (const componentId of imp.components) {
               let tagName;

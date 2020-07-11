@@ -14,7 +14,7 @@ mod js;
 mod pc;
 
 use ::futures::executor::block_on;
-use engine::Engine;
+use engine::{Engine, EngineError};
 
 extern crate web_sys;
 
@@ -56,11 +56,13 @@ impl NativeEngine {
       ),
     }
   }
-  pub fn load(&mut self, uri: String) {
-    block_on(self.target.load(&uri));
+  pub fn load(&mut self, uri: String) -> JsValue {
+    let result = block_on(self.target.load(&uri));
+    JsValue::from_serde(&result).unwrap()
   }
-  pub fn run(&mut self, uri: String) {
-    block_on(self.target.run(&uri));
+  pub fn run(&mut self, uri: String) -> JsValue {
+    let result = block_on(self.target.run(&uri));
+    JsValue::from_serde(&result).unwrap()
   }
   pub fn add_listener(&mut self, listener: js_sys::Function) {
     self.target.add_listener(Box::new(move |event| {

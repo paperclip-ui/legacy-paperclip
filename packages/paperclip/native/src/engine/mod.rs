@@ -16,41 +16,41 @@ use ::futures::executor::block_on;
 use serde::Serialize;
 use std::collections::{HashMap, HashSet};
 
-#[derive(Debug, PartialEq, Serialize)]
-pub struct EvaluateData<'a> {
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct EvaluateData {
   #[serde(rename = "allDependencies")]
   pub all_dependencies: Vec<String>,
   pub dependents: Vec<String>,
-  pub sheet: &'a css_virt::CSSSheet,
-  pub preview: &'a pc_virt::Node,
-  pub exports: &'a pc_export::Exports,
-  pub imports: &'a HashMap<String, pc_export::Exports>,
+  pub imports: HashMap<String, pc_export::Exports>,
+  pub sheet: css_virt::CSSSheet,
+  pub preview: pc_virt::Node,
+  pub exports: pc_export::Exports,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct EvaluatedEvent<'a> {
   pub uri: String,
-  #[serde(rename = "allDependencies")]
-  pub all_dependencies: Vec<String>,
-  pub dependents: Vec<String>,
-  pub sheet: &'a css_virt::CSSSheet,
-  pub preview: &'a pc_virt::Node,
-  pub exports: &'a pc_export::Exports,
-  pub imports: &'a HashMap<String, pc_export::Exports>,
+  data: &'a EvaluateData
 }
 
+
 #[derive(Debug, PartialEq, Serialize)]
-pub struct DiffedEvent {
-  pub uri: String,
+pub struct DiffedData<'a> {
 
   // TODO - needs to be sheetMutations
   pub sheet: Option<css_virt::CSSSheet>,
   #[serde(rename = "allDependencies")]
-  pub all_dependencies: Vec<String>,
-  pub dependents: Vec<String>,
+  pub all_dependencies: &'a Vec<String>,
+  pub dependents: &'a Vec<String>,
 
   // TODO - needs to be domMutations
   pub mutations: Vec<pc_mutation::Mutation>,
+}
+
+#[derive(Debug, PartialEq, Serialize)]
+pub struct DiffedEvent<'a> {
+  pub uri: String,
+  pub data: DiffedData<'a>
 }
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -71,7 +71,7 @@ pub enum EngineError {
 #[serde(tag = "kind")]
 pub enum EngineEvent<'a> {
   Evaluated(EvaluatedEvent<'a>),
-  Diffed(DiffedEvent),
+  Diffed(DiffedEvent<'a>),
   NodeParsed(NodeParsedEvent),
   Error(EngineError),
 }
@@ -101,8 +101,8 @@ pub struct Engine {
   listeners: Vec<Box<EngineEventListener>>,
   pub vfs: VirtualFileSystem,
   pub running: HashSet<String>,
-  pub virt_nodes: HashMap<String, PCEvalInfo>,
-  pub dependency_graph: DependencyGraph
+  pub evaluated_data: HashMap<String, EvaluateData>,
+  pub dependency_graph: DependencyGraph,
 }
 
 impl Engine {
@@ -114,9 +114,9 @@ impl Engine {
     Engine {
       listeners: vec![],
       running: HashSet::new(),
-      virt_nodes: HashMap::new(),
+      evaluated_data: HashMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
-      dependency_graph: DependencyGraph::new()
+      dependency_graph: DependencyGraph::new(),
     }
   }
 
@@ -158,8 +158,7 @@ impl Engine {
           self
             .evaluate(uri, &mut stack)
             .or_else(|e| Err(EngineError::Runtime(e)))?;
-
-        } 
+        }
 
         Ok(&self.dependency_graph.dependencies.get(uri).unwrap().content)
       }
@@ -216,11 +215,9 @@ impl Engine {
     Ok(())
   }
 
-  fn evaluate(
-    &mut self,
-    uri: &String,
-    stack: &mut HashSet<String>,
-  ) -> Result<(), RuntimeError> {
+  fn evaluate<'a>(&mut self, uri: &String, stack: &mut HashSet<String>) -> Result<(), RuntimeError> {
+
+
     // prevent infinite loop
     if stack.contains(uri) {
       let err = RuntimeError::new(
@@ -248,75 +245,76 @@ impl Engine {
     let all_dependencies = self.dependency_graph.flatten_dependencies(uri);
 
     for (id, dep_uri) in relative_deps {
-      let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
+      let data = if let Some(dep_result) = self.evaluated_data.get(dep_uri) {
         dep_result
       } else {
         self.evaluate(dep_uri, stack)?;
 
-        self.virt_nodes.get(dep_uri).unwrap()
+        self.evaluated_data.get(dep_uri).unwrap()
       };
 
-      imports.insert(id.to_string(), info.exports.clone());
+      imports.insert(id.to_string(), data.exports.clone());
     }
 
     let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &imports);
 
-    let mut ret: Result<(), RuntimeError> = Ok(());
-
-    let event_option = match node_result {
+    match node_result {
       Ok(node_option) => {
         if let Some(info) = node_option {
+          let existing_info_option = self.evaluated_data.remove(uri);
 
-          let existing_info_option = self.virt_nodes.get(uri);
+          let data = EvaluateData {
+            all_dependencies,
+            dependents: dept_uris,
+            imports: imports,
+            exports: info.exports,
+            sheet: info.sheet,
+            preview: info.preview
+          };
+
+          self.evaluated_data.insert(uri.clone(), data);
+          let data = self.evaluated_data.get(uri).unwrap();
+
 
           if let Some(existing_info) = existing_info_option {
             // temporary - eventually want to diff this.
-            let sheet: Option<css_virt::CSSSheet> = if existing_info.sheet == info.sheet {
+            let sheet: Option<css_virt::CSSSheet> = if existing_info.sheet == data.sheet {
               None
             } else {
-              Some(info.sheet.clone())
+              Some(data.sheet.clone())
             };
+            
+            // let info = self.virt_nodes.get(uri).unwrap();
 
-            let ret = Some(EngineEvent::Diffed(DiffedEvent {
+            self.dispatch(EngineEvent::Diffed(DiffedEvent {
               uri: uri.clone(),
-              sheet,
-              all_dependencies,
-              dependents: dept_uris,
-              mutations: diff_pc(&existing_info.preview, &info.preview),
+              data: DiffedData {
+                sheet,
+                all_dependencies: &data.all_dependencies,
+                dependents: &data.dependents,
+                mutations: diff_pc(&existing_info.preview, &data.preview),
+              }
             }));
-
-            self.virt_nodes.insert(uri.clone(), info);
-            ret
           } else {
-            self.virt_nodes.insert(uri.clone(), info);
-            let info = self.virt_nodes.get(uri).unwrap();
-            Some(EngineEvent::Evaluated(EvaluatedEvent {
+            // let info = self.virt_nodes.get(uri).unwrap();
+            self.dispatch(EngineEvent::Evaluated(EvaluatedEvent {
               uri: uri.clone(),
-              all_dependencies,
-              dependents: dept_uris,
-              sheet: &info.sheet,
-              preview: &info.preview,
-              imports: &imports,
-              exports: &info.exports,
-            }))
+              data: &data
+            }));
           }
+
+          Ok(())
         } else {
-          None
+          Ok(())
         }
       }
       Err(err) => {
-        self.virt_nodes.remove(uri);
-        ret = Err(err.clone());
-        let e = EngineError::Runtime(err);
-        Some(EngineEvent::Error(e))
+        self.evaluated_data.remove(uri);
+        let e = EngineError::Runtime(err.clone());
+        self.dispatch(EngineEvent::Error(e));
+        Err(err)
       }
-    };
-
-    if let Some(event) = event_option {
-      self.dispatch(event);
     }
-
-    ret
   }
 }
 

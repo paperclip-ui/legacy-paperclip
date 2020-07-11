@@ -186,21 +186,21 @@ export class Renderer {
       }
       case EngineEventKind.AddedSheets: {
         if (event.uri === this.targetUri) {
-          this._dependencies = event.allDependencies;
-          this._addSheets(event.sheets);
+          this._dependencies = event.data.allDependencies;
+          this._addSheets(event.data.sheets);
         }
         break;
       }
       case EngineEventKind.Loaded: {
         if (event.uri === this.targetUri) {
-          this._dependencies = event.allDependencies;
-          this.initialize(event);
+          this._dependencies = event.data.allDependencies;
+          this.initialize(event.data);
         }
         break;
       }
       case EngineEventKind.Evaluated: {
         if (event.uri === this.targetUri) {
-          this._dependencies = event.allDependencies;
+          this._dependencies = event.data.allDependencies;
         } else if (this._dependencies.includes(event.uri)) {
           const impStyle = this._importedStyles[event.uri];
           if (impStyle) {
@@ -209,7 +209,7 @@ export class Renderer {
           const style = (this._importedStyles[
             event.uri
           ] = createNativeStyleFromSheet(
-            event.sheet,
+            event.data.sheet,
             this._domFactory,
             this.protocol
           ));
@@ -222,19 +222,19 @@ export class Renderer {
         if (event.uri === this.targetUri) {
           patchNativeNode(
             this._stage,
-            event.mutations,
+            event.data.mutations,
             this._domFactory,
             this.protocol
           );
           this._virtualRootNode = patchVirtNode(
             this._virtualRootNode,
-            event.mutations
+            event.data.mutations
           );
 
-          if (event.sheet) {
+          if (event.data.sheet) {
             removeAllChildren(this._mainStyleContainer);
             const sheet = createNativeStyleFromSheet(
-              event.sheet,
+              event.data.sheet,
               this._domFactory,
               this.protocol
             );
@@ -242,13 +242,13 @@ export class Renderer {
           }
 
           for (const importedSheetUri in this._importedStyles) {
-            if (!event.allDependencies.includes(importedSheetUri)) {
+            if (!event.data.allDependencies.includes(importedSheetUri)) {
               const sheet = this._importedStyles[importedSheetUri];
               sheet.remove();
               delete this._importedStyles[importedSheetUri];
             }
           }
-        } else if (event.sheet) {
+        } else if (event.data.sheet) {
           // this._importedStylesContainer.appendChild(createNativeStyleFromSheet(event.sheet, this._domFactory, this.protocol));
           const impStyle = this._importedStyles[event.uri];
           if (impStyle) {
@@ -258,7 +258,7 @@ export class Renderer {
           const element = (this._importedStyles[
             event.uri
           ] = createNativeStyleFromSheet(
-            event.sheet,
+            event.data.sheet,
             this._domFactory,
             this.protocol
           ));

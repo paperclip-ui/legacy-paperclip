@@ -310,7 +310,6 @@ describe(__filename + "#", () => {
     }
 
     expect(err2).to.eql({
-      kind: "Error",
       errorKind: "Graph",
       uri: "/entry.pc",
       info: {
@@ -368,7 +367,6 @@ describe(__filename + "#", () => {
     }
 
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Graph",
       uri: "/module.pc",
       info: {

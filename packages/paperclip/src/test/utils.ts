@@ -4,7 +4,8 @@ import {
   EngineErrorEvent,
   EngineEventKind,
   stringifyVirtualNode,
-  stringifyCSSSheet
+  stringifyCSSSheet,
+  LoadedEvent
 } from "paperclip-utils";
 
 export type Graph = {
@@ -41,6 +42,19 @@ export const waitForError = (
   return new Promise<any>(resolve => {
     engine.onEvent(event => {
       if (event.kind === EngineEventKind.Error && test(event)) {
+        resolve(event);
+      }
+    });
+  });
+};
+
+export const waitForRender = (
+  engine: Engine,
+  test = (event: LoadedEvent) => true
+) => {
+  return new Promise<any>(resolve => {
+    engine.onEvent(event => {
+      if (event.kind === EngineEventKind.Loaded && test(event)) {
         resolve(event);
       }
     });

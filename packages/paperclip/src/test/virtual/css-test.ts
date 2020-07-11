@@ -33,7 +33,7 @@ describe(__filename + "#", () => {
     });
 
     const e = waitForError(engine);
-    engine.run("/entry.pc").catch(() => {});
+    engine.run("/entry.pc");
     const err = await e;
     expect(err).to.eql({
       kind: "Error",

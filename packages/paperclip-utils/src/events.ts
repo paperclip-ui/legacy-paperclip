@@ -31,23 +31,29 @@ type BaseEngineEvent<KKind extends EngineEventKind> = {
   kind: KKind;
 };
 
-export type EvaluatedEvent = {
-  uri: string;
+export type EvaluateData = {
   allDependencies: string[];
   sheet: any;
   preview: VirtualNode;
   exports: PCExports;
   imports: Record<string, PCExports>;
+};
+
+export type EvaluatedEvent = {
+  uri: string;
+  data: EvaluateData;
 } & BaseEngineEvent<EngineEventKind.Evaluated>;
+
+export type DiffedData = {
+  allDependencies: string[];
+  // TODO - needs to be sheetMutations
+  sheet: any;
+  mutations: Mutation[];
+};
 
 export type DiffedEvent = {
   uri: string;
-  allDependencies: string[];
-
-  // TODO - needs to be sheetMutations
-  sheet: any;
-
-  mutations: Mutation[];
+  data: DiffedData;
 } & BaseEngineEvent<EngineEventKind.Diffed>;
 
 export type NodeParsedEvent = {
@@ -55,10 +61,14 @@ export type NodeParsedEvent = {
   node?: Node;
 } & BaseEngineEvent<EngineEventKind.NodeParsed>;
 
-export type AddedSheetsEvent = {
-  uri: string;
+export type NewStylesSheetsData = {
   sheets: Record<string, any>;
   allDependencies: string[];
+};
+
+export type AddedSheetsEvent = {
+  uri: string;
+  data: NewStylesSheetsData;
 } & BaseEngineEvent<EngineEventKind.AddedSheets>;
 
 export type BaseEngineErrorEvent<TErrorType extends EngineErrorKind> = {
@@ -101,17 +111,13 @@ export type RuntimeErrorEvent = {
   location: SourceLocation;
 } & BaseEngineErrorEvent<EngineErrorKind.Runtime>;
 
-export type LoadingEvent = {
-  uri: string;
-} & BaseEngineEvent<EngineEventKind.Loading>;
+export type LoadedData = EvaluateData & {
+  importedSheets: Record<string, any>;
+};
 
 export type LoadedEvent = {
   uri: string;
-  sheet: any;
-  preview: VirtualNode;
-  allDependencies: string[];
-  imports: Record<string, PCExports>;
-  importedSheets: Record<string, any>;
+  data: LoadedData;
 } & BaseEngineEvent<EngineEventKind.Loaded>;
 
 export type UpdatingEvent = {
@@ -124,7 +130,6 @@ export type EngineEvent =
   | EngineErrorEvent
   | AddedSheetsEvent
   | NodeParsedEvent
-  | LoadingEvent
   | LoadedEvent
   | UpdatingEvent
   | DiffedEvent;

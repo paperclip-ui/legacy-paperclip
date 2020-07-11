@@ -300,7 +300,7 @@ class LivePreview {
           event.kind === EngineEventKind.Diffed ||
           event.kind === EngineEventKind.AddedSheets)
       ) {
-        this._dependencies = event.allDependencies;
+        this._dependencies = event.data.allDependencies;
       }
     }
 
