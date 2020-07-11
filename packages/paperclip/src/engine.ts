@@ -29,7 +29,6 @@ export type EngineIO = {
 
 export type EngineOptions = {
   httpuri?: string;
-  renderPart?: string;
   io?: EngineIO;
 };
 
@@ -235,7 +234,7 @@ export class Engine {
     return deps;
   }
 
-  async load(uri: string): Promise<LoadResult> {
+  async run(uri: string) {
     if (this._rendered[uri]) {
       for (const depUri of this._rendered[uri].allDependencies) {
         if (this._liveErrors[depUri]) {
@@ -247,9 +246,7 @@ export class Engine {
     this._loading[uri] = true;
     this._dispatch({ kind: EngineEventKind.Loading, uri });
 
-    this._tryCatch(() =>
-      mapResult(this._native.load(uri, this._options.renderPart))
-    );
+    this._tryCatch(() => mapResult(this._native.run(uri)));
 
     const info = await this._waitForLoadEvent(uri);
 

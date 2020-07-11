@@ -11,7 +11,7 @@ describe(__filename + "#", () => {
   it("Can load an entry that has an import", async () => {
     const e = new Engine();
     const result = stringifyLoadResult(
-      await e.load(
+      await e.run(
         "file://" + path.join(TEST_FIXTURE_DIRECTORY, "good-import.pc")
       )
     );
@@ -23,7 +23,7 @@ describe(__filename + "#", () => {
   it("Won't load module src where the casing is incorrect", async () => {
     const e = new Engine();
     const ep = waitForError(e);
-    e.load(
+    e.run(
       "file://" + path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc")
     ).catch(() => {});
     const error = await ep;

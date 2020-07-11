@@ -41,7 +41,7 @@ export const run = async (
     let result;
 
     try {
-      result = await engine.load("file://" + filePath);
+      result = await engine.run("file://" + filePath);
     } catch (e) {
       console.error(e);
       process.exit(1);

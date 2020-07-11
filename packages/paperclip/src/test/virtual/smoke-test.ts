@@ -692,7 +692,7 @@ describe(__filename + "#", () => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
       const engine = createMockEngine(graph);
 
-      const { sheet, preview, importedSheets: sheets } = await engine.load(
+      const { sheet, preview, importedSheets: sheets } = await engine.run(
         "/entry.pc"
       );
 

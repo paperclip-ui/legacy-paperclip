@@ -97,7 +97,7 @@ export class VSCServiceBridge {
       NotificationType.LOAD,
       async ({ uri }: LoadParams) => {
         try {
-          await _engine.load(uri);
+          await _engine.run(uri);
         } catch (e) {
           console.warn(e);
           connection.sendNotification(...new ErrorLoading({ uri }).getArgs());

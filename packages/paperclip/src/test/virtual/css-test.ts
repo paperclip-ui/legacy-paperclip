@@ -12,7 +12,7 @@ describe(__filename + "#", () => {
       </style>`
     };
     const engine = createMockEngine(graph);
-    const text = stringifyLoadResult(await engine.load("/entry.pc"));
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql("<style>._80f4925f_a { color:b; }</style>");
   });
 
@@ -33,7 +33,7 @@ describe(__filename + "#", () => {
     });
 
     const e = waitForError(engine);
-    engine.load("/entry.pc").catch(() => {});
+    engine.run("/entry.pc").catch(() => {});
     const err = await e;
     expect(err).to.eql({
       kind: "Error",
@@ -57,7 +57,7 @@ describe(__filename + "#", () => {
         </style>`
       };
       const engine = createMockEngine(graph);
-      const text = stringifyLoadResult(await engine.load("/entry.pc"));
+      const text = stringifyLoadResult(await engine.run("/entry.pc"));
       expect(text).to.eql(
         "<style>div[data-pc-80f4925f] { color:blue; }</style>"
       );
@@ -73,7 +73,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -100,7 +100,7 @@ describe(__filename + "#", () => {
         </style>`
       };
       const engine = createMockEngine(graph);
-      const text = stringifyLoadResult(await engine.load("/entry.pc"));
+      const text = stringifyLoadResult(await engine.run("/entry.pc"));
       expect(text).to.eql(
         "<style>div[data-pc-80f4925f] { color:orange; }</style>"
       );
@@ -117,7 +117,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -137,7 +137,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -159,7 +159,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const e = await p;
       // expect(e).to.eql({
       //   kind: 'Error',
@@ -185,7 +185,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -210,7 +210,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -243,7 +243,7 @@ describe(__filename + "#", () => {
       };
 
       const engine = createMockEngine(graph);
-      const result = await engine.load("/entry.pc");
+      const result = await engine.run("/entry.pc");
       expect(stringifyLoadResult(result)).to.eql(
         `<style>._80f4925f_company_list { list-style:none; margin:0; padding:0; } ._80f4925f_company_list li[data-pc-80f4925f] { display:block; padding:var(--spacing-600) 0; } ._80f4925f_company_list li[data-pc-80f4925f] + ._80f4925f_company_list li[data-pc-80f4925f] { border-top:1px solid var(--color-black-100); }</style>`
       );

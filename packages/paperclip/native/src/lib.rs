@@ -56,8 +56,11 @@ impl NativeEngine {
       ),
     }
   }
-  pub fn load(&mut self, uri: String, part: Option<String>) {
-    block_on(self.target.load(&uri, part));
+  pub fn load(&mut self, uri: String) {
+    block_on(self.target.load(&uri));
+  }
+  pub fn run(&mut self, uri: String) {
+    block_on(self.target.run(&uri));
   }
   pub fn add_listener(&mut self, listener: js_sys::Function) {
     self.target.add_listener(Box::new(move |event| {

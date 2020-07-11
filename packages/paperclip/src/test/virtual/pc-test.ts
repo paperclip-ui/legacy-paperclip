@@ -22,7 +22,7 @@ describe(__filename + "#", () => {
         }
       });
     });
-    engine.load("/module.pc").catch(() => {});
+    engine.run("/module.pc").catch(() => {});
     const err = await p;
     expect(err.message).to.eql("Circular dependencies are not supported yet.");
   });
@@ -40,7 +40,7 @@ describe(__filename + "#", () => {
       `
     };
     const engine = createMockEngine(graph);
-    const { preview } = await engine.load("/entry.pc");
+    const { preview } = await engine.run("/entry.pc");
     const buffer = `${stringifyVirtualNode(preview)}`;
 
     expect(cleanHTML(buffer)).to.eql(
@@ -66,7 +66,7 @@ describe(__filename + "#", () => {
       `
     };
     const engine = createMockEngine(graph);
-    const result = await engine.load("/entry.pc");
+    const result = await engine.run("/entry.pc");
 
     const buffer = `${stringifyLoadResult(result)}`;
 
@@ -87,7 +87,7 @@ describe(__filename + "#", () => {
     };
     const engine = createMockEngine(graph);
     const e = waitForError(engine);
-    engine.load("/entry.pc").catch(() => {});
+    engine.run("/entry.pc").catch(() => {});
     const err = await e;
     expect(err).to.eql({
       kind: "Error",
@@ -113,7 +113,7 @@ describe(__filename + "#", () => {
     };
     const engine = createMockEngine(graph);
     const e = waitForError(engine);
-    engine.load("/entry.pc").catch(() => {});
+    engine.run("/entry.pc").catch(() => {});
     const err = await e;
     expect(err).to.eql({
       kind: "Error",
@@ -137,7 +137,7 @@ describe(__filename + "#", () => {
     });
 
     const e = waitForError(engine);
-    engine.load("/entry.pc").catch(() => {});
+    engine.run("/entry.pc").catch(() => {});
     const err = await e;
     expect(err).to.eql({
       kind: "Error",
@@ -156,7 +156,7 @@ describe(__filename + "#", () => {
         `
       };
       const engine = createMockEngine(graph);
-      const { preview } = await engine.load("/entry.pc");
+      const { preview } = await engine.run("/entry.pc");
       const buffer = `${stringifyVirtualNode(preview)}`;
 
       expect(cleanHTML(buffer)).to.eql(
@@ -174,7 +174,7 @@ describe(__filename + "#", () => {
         `
       };
       const engine = createMockEngine(graph);
-      const { preview } = await engine.load("/entry.pc");
+      const { preview } = await engine.run("/entry.pc");
       const buffer = `${stringifyVirtualNode(preview)}`;
 
       expect(cleanHTML(buffer)).to.eql(
@@ -189,7 +189,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const e = waitForError(engine);
-      engine.load("/entry.pc");
+      engine.run("/entry.pc");
       const err = await e;
       expect(err).to.eql({
         kind: "Error",
@@ -207,7 +207,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const e = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const err = await e;
       expect(err).to.eql({
         kind: "Error",
@@ -226,7 +226,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const e = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const err = await e;
       expect(err).to.eql({
         kind: "Error",
@@ -245,7 +245,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const e = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const err = await e;
       expect(err).to.eql({
         kind: "Error",
@@ -265,7 +265,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const e = waitForError(engine);
-      engine.load("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(() => {});
       const err = await e;
       expect(err).to.eql({
         kind: "Error",
@@ -285,7 +285,7 @@ describe(__filename + "#", () => {
     };
 
     const engine = createMockEngine(graph);
-    const result = stringifyLoadResult(await engine.load("/entry.pc"));
+    const result = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(result).to.eql(`<style></style> abc`);
 
     const e = waitForError(engine);
@@ -304,7 +304,7 @@ describe(__filename + "#", () => {
 
     let err2;
     try {
-      err2 = await engine.load("/entry.pc");
+      err2 = await engine.run("/entry.pc");
     } catch (e) {
       err2 = e;
     }
@@ -322,7 +322,7 @@ describe(__filename + "#", () => {
 
     engine.updateVirtualFileContent(`/entry.pc`, `<a></a>`);
 
-    const result2 = stringifyLoadResult(await engine.load("/entry.pc"));
+    const result2 = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(result2).to.eql(`<style></style><a data-pc-80f4925f></a>`);
   });
 
@@ -340,7 +340,7 @@ describe(__filename + "#", () => {
     };
 
     const engine = createMockEngine(graph);
-    const result = stringifyLoadResult(await engine.load("/entry.pc"));
+    const result = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(result).to.eql(
       `<style></style><div data-pc-139cec8e>abc cde </div>`
     );
@@ -362,7 +362,7 @@ describe(__filename + "#", () => {
 
     // shouldn't be able to load /entry.pc now
     try {
-      await engine.load("/entry.pc");
+      await engine.run("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -386,7 +386,7 @@ describe(__filename + "#", () => {
     </div>`
     );
 
-    const result3 = stringifyLoadResult(await engine.load("/entry.pc"));
+    const result3 = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(result3).to.eql(
       `<style></style><div data-pc-139cec8e>cde defg</div>`
     );
@@ -401,7 +401,7 @@ describe(__filename + "#", () => {
 
     const engine = createMockEngine(graph);
     const p = waitForError(engine);
-    engine.load("/entry.pc").catch(() => {});
+    engine.run("/entry.pc").catch(() => {});
     expect(await p).to.eql({
       kind: "Error",
       errorKind: "Runtime",
@@ -421,7 +421,7 @@ describe(__filename + "#", () => {
     const engine = createMockEngine(graph);
     const p = waitForError(engine);
 
-    expect(stringifyLoadResult(await engine.load("/entry.pc"))).to.eql(
+    expect(stringifyLoadResult(await engine.run("/entry.pc"))).to.eql(
       "<style></style> ×"
     );
   });

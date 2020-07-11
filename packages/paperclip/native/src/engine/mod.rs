@@ -1,18 +1,11 @@
 use crate::base::ast;
 use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
-use crate::base::utils::get_document_style_scope;
-use crate::core::graph::{Dependency, DependencyContent, DependencyGraph, GraphError};
+use crate::core::graph::{DependencyContent, DependencyGraph, GraphError};
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
-use crate::css::parser::parse as parse_css;
-use crate::css::runtime::evaluator::evaluate as evaluate_css;
-use crate::css::runtime::evaluator::EvalInfo as CSSEvalInfo;
 use crate::css::runtime::virt as css_virt;
-use crate::js::runtime::virt as js_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
-use crate::pc::runtime;
-use crate::pc::runtime::cache as pc_cache;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::EvalInfo as PCEvalInfo;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, evaluate_document_styles};
@@ -22,6 +15,17 @@ use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use serde::Serialize;
 use std::collections::{HashMap, HashSet};
+
+#[derive(Debug, PartialEq, Serialize)]
+pub struct EvaluateData<'a> {
+  #[serde(rename = "allDependencies")]
+  pub all_dependencies: Vec<String>,
+  pub dependents: Vec<String>,
+  pub sheet: &'a css_virt::CSSSheet,
+  pub preview: &'a pc_virt::Node,
+  pub exports: &'a pc_export::Exports,
+  pub imports: &'a HashMap<String, pc_export::Exports>,
+}
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct EvaluatedEvent<'a> {
@@ -96,9 +100,9 @@ type EngineEventListener = dyn Fn(&EngineEvent);
 pub struct Engine {
   listeners: Vec<Box<EngineEventListener>>,
   pub vfs: VirtualFileSystem,
+  pub running: HashSet<String>,
   pub virt_nodes: HashMap<String, PCEvalInfo>,
-  pub dependency_graph: DependencyGraph,
-  pub load_options: HashMap<String, EvalOptions>,
+  pub dependency_graph: DependencyGraph
 }
 
 impl Engine {
@@ -109,19 +113,17 @@ impl Engine {
   ) -> Engine {
     Engine {
       listeners: vec![],
+      running: HashSet::new(),
       virt_nodes: HashMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
-      dependency_graph: DependencyGraph::new(),
-      load_options: HashMap::new(),
+      dependency_graph: DependencyGraph::new()
     }
   }
 
-  pub async fn load(&mut self, uri: &String, part: Option<String>) -> Result<(), EngineError> {
-    self
-      .load_options
-      .insert(uri.to_string(), EvalOptions { part });
-
-    self.reload(uri, true).await
+  pub async fn run(&mut self, uri: &String) -> Result<(), EngineError> {
+    self.running.insert(uri.to_string());
+    self.load(uri).await?;
+    Ok(())
   }
 
   pub fn add_listener(&mut self, listener: Box<EngineEventListener>) {
@@ -142,7 +144,7 @@ impl Engine {
     }
   }
 
-  pub async fn reload(&mut self, uri: &String, hard: bool) -> Result<(), EngineError> {
+  pub async fn load(&mut self, uri: &String) -> Result<&DependencyContent, EngineError> {
     let load_result = self
       .dependency_graph
       .load_dependency(uri, &mut self.vfs)
@@ -151,9 +153,15 @@ impl Engine {
     match load_result {
       Ok(loaded_uris) => {
         let mut stack = HashSet::new();
-        self
-          .evaluate(uri, hard, &mut stack)
-          .or_else(|e| Err(EngineError::Runtime(e)))
+
+        if self.running.contains(uri) {
+          self
+            .evaluate(uri, &mut stack)
+            .or_else(|e| Err(EngineError::Runtime(e)))?;
+
+        } 
+
+        Ok(&self.dependency_graph.dependencies.get(uri).unwrap().content)
       }
       Err(error) => {
         self.dispatch(EngineEvent::Error(EngineError::Graph(error.clone())));
@@ -176,7 +184,7 @@ impl Engine {
     uri: &String,
   ) -> Result<css_virt::CSSSheet, EngineError> {
     // need to load in case of imports
-    self.reload(uri, false).await;
+    self.load(uri).await;
     let content = self.vfs.reload(uri).await.unwrap().to_string();
     evaluate_content_styles(&content, uri, &self.vfs, &self.dependency_graph).await
   }
@@ -186,7 +194,7 @@ impl Engine {
     content: &String,
     uri: &String,
   ) -> Result<css_virt::CSSSheet, EngineError> {
-    self.reload(uri, false).await;
+    self.load(uri).await;
     evaluate_content_styles(content, uri, &self.vfs, &self.dependency_graph).await
   }
 
@@ -196,13 +204,13 @@ impl Engine {
     content: &String,
   ) -> Result<(), EngineError> {
     self.vfs.update(uri, content).await;
-    self.reload(uri, false).await?;
+    self.load(uri).await?;
 
     let mut dep_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);
 
     for dep_uri in dep_uris.drain(0..).into_iter() {
       let mut stack = HashSet::new();
-      self.evaluate(&dep_uri, false, &mut stack);
+      self.evaluate(&dep_uri, &mut stack);
     }
 
     Ok(())
@@ -211,7 +219,6 @@ impl Engine {
   fn evaluate(
     &mut self,
     uri: &String,
-    hard: bool,
     stack: &mut HashSet<String>,
   ) -> Result<(), RuntimeError> {
     // prevent infinite loop
@@ -244,7 +251,7 @@ impl Engine {
       let info = if let Some(dep_result) = self.virt_nodes.get(dep_uri) {
         dep_result
       } else {
-        self.evaluate(dep_uri, true, stack)?;
+        self.evaluate(dep_uri, stack)?;
 
         self.virt_nodes.get(dep_uri).unwrap()
       };
@@ -259,9 +266,6 @@ impl Engine {
     let event_option = match node_result {
       Ok(node_option) => {
         if let Some(info) = node_option {
-          if hard {
-            self.virt_nodes.remove(uri);
-          }
 
           let existing_info_option = self.virt_nodes.get(uri);
 
