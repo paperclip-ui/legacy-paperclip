@@ -249,4 +249,28 @@ describe(__filename + "#", () => {
       );
     });
   });
+
+  it("CSS vars are collected in the evaluated output", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+        .element {
+          --color: test;
+        }
+      </style>ab`
+    };
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+
+    expect(result.exports.style.variables["--color"]).to.eql({
+      name: "--color",
+      value: "test",
+      source: {
+        uri: "/entry.pc",
+        location: {
+          start: 37,
+          end: 51
+        }
+      }
+    });
+  });
 });

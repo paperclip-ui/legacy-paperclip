@@ -1,10 +1,11 @@
 use super::super::ast;
-use super::export::{Exports, MixinExport};
+use super::export::{Exports, MixinExport, VarExport};
 use super::virt;
 use crate::base::runtime::RuntimeError;
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use std::collections::HashMap;
+use crate::base::ast::ExprSource;
 
 pub struct Context<'a> {
   scope: &'a str,
@@ -68,33 +69,39 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       evaluate_export_rule(export, context)?;
     }
     ast::Rule::FontFace(rule) => {
+      let rule = evaluate_font_family_rule(rule, context)?;
       context
         .all_rules
-        .push(evaluate_font_family_rule(rule, context)?);
+        .push(rule);
     }
     ast::Rule::Media(rule) => {
-      context.all_rules.push(evaluate_media_rule(rule, context)?);
+      let rule = evaluate_media_rule(rule, context)?;
+      context.all_rules.push(rule);
     }
     ast::Rule::Style(rule) => {
       evaluate_style_rule(rule, &"".to_string(), context)?;
     }
     ast::Rule::Keyframes(rule) => {
+      let rule = evaluate_keyframes_rule(rule, context)?;
       context
         .all_rules
-        .push(evaluate_keyframes_rule(rule, context)?);
+        .push(rule);
     }
     ast::Rule::Supports(rule) => {
+      let rule = evaluate_supports_rule(rule, context)?;
       context
         .all_rules
-        .push(evaluate_supports_rule(rule, context)?);
+        .push(rule);
     }
     ast::Rule::Document(rule) => {
+      let rule = evaluate_document_rule(rule, context)?;
       context
         .all_rules
-        .push(evaluate_document_rule(rule, context)?);
+        .push(rule);
     }
     ast::Rule::Page(rule) => {
-      context.all_rules.push(evaluate_page_rule(rule, context)?);
+      let rule = evaluate_page_rule(rule, context)?;
+      context.all_rules.push(rule);
     }
   };
 
@@ -113,47 +120,9 @@ pub fn evaluate_style_rules<'a>(
   Ok(())
 }
 
-// pub fn evaluate_child_style_rules<'a>(
-//   prefix: &String,
-//   rules: &Vec<ast::StyleRule>,
-//   context: &mut Context,
-// ) -> Result<(), RuntimeError> {
-//   for rule in rules {
-//     evaluate_child_style_rule(&prefix, &rule, context)?;
-//   }
-//   Ok(())
-// }
-// pub fn evaluate_child_style_rule<'a>(
-//   parent_selector_text: &String,
-//   expr: &ast::StyleRule,
-//   context: &mut Context,
-// ) -> Result<(), RuntimeError> {
-
-//   for selector in &expr.selectors {
-//     let postfix = if let Some(postfix_selector) = &selector.selector {
-//       stringify_element_selector(postfix_selector, true, parent_selector_text, context)
-//     } else {
-//       "".to_string()
-//     };
-//     let selector_text = format!("{}{}{}", parent_selector_text, selector.connector, postfix).to_string();
-//     let child_prefix = selector_text.clone();
-//     let style = evaluate_style_declarations(&expr.declarations, context)?;
-//     let main_rule = virt::StyleRule {
-//       selector_text,
-//       style,
-//     };
-
-//     context.all_rules.push(virt::Rule::Style(main_rule));
-
-//     evaluate_child_style_rules(&child_prefix, &expr.children, context)?;
-//   }
-
-//   Ok(())
-// }
-
 fn evaluate_font_family_rule(
   font_family: &ast::FontFaceRule,
-  context: &Context,
+  context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::FontFace(virt::FontFaceRule {
     style: evaluate_style_declarations(&font_family.declarations, context)?,
@@ -163,7 +132,7 @@ fn evaluate_font_family_rule(
 fn evaluate_media_rule(
   rule: &ast::ConditionRule,
 
-  context: &Context,
+  context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Media(evaluate_condition_rule(rule, context)?))
 }
@@ -171,7 +140,7 @@ fn evaluate_media_rule(
 fn evaluate_supports_rule(
   rule: &ast::ConditionRule,
 
-  context: &Context,
+  context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Supports(evaluate_condition_rule(
     rule, context,
@@ -180,7 +149,7 @@ fn evaluate_supports_rule(
 fn evaluate_page_rule(
   rule: &ast::ConditionRule,
 
-  context: &Context,
+  context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Page(evaluate_condition_rule(rule, context)?))
 }
@@ -188,7 +157,7 @@ fn evaluate_page_rule(
 fn evaluate_document_rule(
   rule: &ast::ConditionRule,
 
-  context: &Context,
+  context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Document(evaluate_condition_rule(
     rule, context,
@@ -198,7 +167,7 @@ fn evaluate_document_rule(
 fn evaluate_condition_rule(
   rule: &ast::ConditionRule,
 
-  context: &Context,
+  context: &mut Context,
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = Context {
     scope: context.scope,
@@ -212,6 +181,8 @@ fn evaluate_condition_rule(
 
   evaluate_style_rules(&rule.rules, &"".to_string(), &mut child_context)?;
 
+  context.exports.extend(&child_context.exports);
+
   Ok(virt::ConditionRule {
     name: rule.name.to_string(),
     condition_text: rule.condition_text.to_string(),
@@ -221,7 +192,7 @@ fn evaluate_condition_rule(
 
 fn evaluate_keyframes_rule(
   rule: &ast::KeyframesRule,
-  context: &Context,
+  context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   let mut rules = vec![];
 
@@ -237,7 +208,7 @@ fn evaluate_keyframes_rule(
 
 fn evaluate_keyframe_rule(
   rule: &ast::KeyframeRule,
-  context: &Context,
+  context: &mut Context,
 ) -> Result<virt::KeyframeRule, RuntimeError> {
   let mut style = evaluate_style_declarations(&rule.declarations, context)?;
   Ok(virt::KeyframeRule {
@@ -248,7 +219,7 @@ fn evaluate_keyframe_rule(
 
 fn evaluate_style_declarations<'a>(
   declarations: &Vec<ast::Declaration>,
-  context: &Context,
+  context: &mut Context,
 ) -> Result<Vec<virt::CSSStyleProperty>, RuntimeError> {
   let mut style = vec![];
   for property in declarations {
@@ -372,9 +343,9 @@ fn evaluate_style_rule2(
   parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
-  let style = evaluate_style_declarations(&expr.declarations, &context)?;
+  let style = evaluate_style_declarations(&expr.declarations, context)?;
   let selector_text =
-    stringify_element_selector(&expr.selector, true, parent_selector_text, true, &context);
+    stringify_element_selector(&expr.selector, true, parent_selector_text, true, context);
 
   let main_style_rule = virt::StyleRule {
     selector_text: selector_text,
@@ -398,7 +369,7 @@ fn evaluate_style_rule2(
         !is_global_selector,
         parent_selector_text,
         true,
-        &context,
+        context,
       );
 
       evaluate_style_rules(&expr.children, &selector_text2, context)?;
@@ -421,7 +392,7 @@ fn stringify_optional_selector(
   include_prefix: bool,
   parent_selector_text: &String,
   alt: &String,
-  context: &Context,
+  context: &mut Context,
 ) -> String {
   if let Some(target) = &selector {
     stringify_element_selector(target, true, parent_selector_text, true, context)
@@ -435,7 +406,7 @@ fn stringify_nestable_selector(
 
   include_scope: bool,
   parent_selector_text: &String,
-  context: &Context,
+  context: &mut Context,
 ) -> String {
   stringify_element_selector(selector, include_scope, parent_selector_text, true, context)
   // if parent_selector_text.len() > 0 {
@@ -450,7 +421,7 @@ fn stringify_element_selector(
   include_scope: bool,
   parent_selector_text: &String,
   include_prefix: bool,
-  context: &Context,
+  context: &mut Context,
 ) -> String {
   let scope_selector = if include_scope {
     format!("[data-pc-{}]", context.scope)
@@ -704,7 +675,7 @@ fn format_scoped_reference(value: &str, context: &Context) -> String {
 
 fn evaluate_style_key_value_declaration<'a>(
   expr: &'a ast::KeyValueDeclaration,
-  context: &Context,
+  context: &mut Context,
 ) -> Result<virt::CSSStyleProperty, RuntimeError> {
   let mut value = expr.value.to_string();
 
@@ -733,6 +704,8 @@ fn evaluate_style_key_value_declaration<'a>(
   // a bit crude, but works for now. Need to eventually consider HTTP paths
   if url_re.is_match(value.clone().as_str()) {
     let protocol_re = Regex::new(r"^\w+:").unwrap();
+
+    // url check
     for caps in url_re.captures_iter(value.to_string().as_str()) {
       let url_fn = caps.get(0).unwrap().as_str();
 
@@ -757,6 +730,11 @@ fn evaluate_style_key_value_declaration<'a>(
       }
     }
   }
+  context.exports.variables.insert(expr.name.to_string(), VarExport {
+    name: expr.name.to_string(),
+    value: value.to_string(),
+    source: ExprSource::new(context.uri.to_string(), expr.location.clone())
+  });
 
   Ok(virt::CSSStyleProperty {
     name: expr.name.to_string(),
