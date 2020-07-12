@@ -16,6 +16,7 @@
     font-weight: 300;
     color: #4d4d4d;
   }
+  
   .app-container {
     background: rgb(255, 255, 255);
     width: 100vw;

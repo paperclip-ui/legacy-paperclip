@@ -208,7 +208,10 @@ impl<'a> Tokenizer<'a> {
           self.forward(2);
 
           while !self.is_eof() {
-            if self.pos < self.source.len() - 2 && self.source[self.pos] == b'*' && self.source[self.pos + 1] == b'/' {
+            if self.pos < self.source.len() - 2
+              && self.source[self.pos] == b'*'
+              && self.source[self.pos + 1] == b'/'
+            {
               break;
             }
             self.forward(1);

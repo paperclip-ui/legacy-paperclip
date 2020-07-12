@@ -387,7 +387,7 @@ describe(__filename + "#", () => {
         "/entry.pc": `
           <style>
             :global(.a, .b) {
-              :global(&--c) {
+              &--c {
                 color: blue;
               }
             }
@@ -435,7 +435,7 @@ describe(__filename + "#", () => {
         "/entry.pc": `
           <style>
             :global(.a, .b) {
-              :global(&--c) {
+              &--c {
                 color: blue;
               }
             }
@@ -567,7 +567,7 @@ describe(__filename + "#", () => {
               &[data-hover], &:hover {
                 color: orange;
               }
-              [data-hover], :hover {
+              & [data-hover], :hover {
                 color: blue;
               }
             }

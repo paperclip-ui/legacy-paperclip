@@ -4,7 +4,12 @@
   :root {
     --color: red;
   }
+   .logo {
+    display: flex;
+  }
+  
   .todo {
+    
     color:var(--color);
     .destroy {
       display: none;

@@ -320,7 +320,7 @@ describe(__filename + "#", () => {
 
         // comment test
         [a] {
-          .color {
+          & .color {
 
           }
         }
@@ -358,7 +358,7 @@ describe(__filename + "#", () => {
         &:hover .destroy {
             display: inline-block;
         }
-        .todo {
+        & .todo {
           &--item .destroy {
             display: inline-block;
           }
@@ -371,6 +371,24 @@ describe(__filename + "#", () => {
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>._80f4925f_todo { } ._80f4925f_todo:hover ._80f4925f_destroy { display:inline-block; } ._80f4925f_todo ._80f4925f_todo { } ._80f4925f_todo ._80f4925f_todo--item ._80f4925f_destroy { display:inline-block; }</style>`
+    );
+  });
+
+  it("can parse nested tag selectors", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      a {
+        & svg:a {
+          margin-right: 4px;
+        }
+      }
+    </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] svg[data-pc-80f4925f]:a { margin-right:4px; }</style>`
     );
   });
 });

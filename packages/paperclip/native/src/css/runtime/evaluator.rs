@@ -537,7 +537,7 @@ fn stringify_element_selector(
       stringify_element_selector(
         &selector.descendent,
         include_scope,
-        parent_selector_text,
+        &"".to_string(),
         false,
         context
       )

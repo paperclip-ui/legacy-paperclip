@@ -695,18 +695,15 @@ fn parse_declarations_and_children<'a, 'b>(
       break;
     }
 
-    // ick ick.
-    if let Token::Keyword(_) = context.tokenizer.peek(1)? {
-      if context.tokenizer.peek(2)? == Token::Colon {
-        declarations.push(parse_key_value_declaration(context)?);
-      } else {
-        children.push(parse_style_rule2(context)?);
-      }
+    // Child rule
+    if let Token::Byte(b'&') = context.tokenizer.peek(1)? {
+      children.push(parse_style_rule2(context)?);
     } else if context.tokenizer.peek(1)? == Token::At {
       declarations.push(parse_include_declaration(context)?);
     } else {
-      children.push(parse_style_rule2(context)?);
+      declarations.push(parse_key_value_declaration(context)?);
     }
+
 
     eat_superfluous(context)?;
   }
@@ -968,10 +965,10 @@ mod tests {
       }
       @media (max-width:640px){._3nRJIwLuth2pKYrXnr2jPN{width:360px } }
       @media print {
-        div {
+        & div {
           color: red;
         }
-        .span {
+        & .span {
           color: blue;
         }
       }
@@ -979,7 +976,7 @@ mod tests {
   
       }
       @supports (display: flex) {
-        .el {
+        & .el {
           display: flex;
         }
       }
@@ -1018,7 +1015,7 @@ mod tests {
       }
 
       a {
-        b, c {
+        & b, c {
           color: red;
         }
         &--d, &--e {
