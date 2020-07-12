@@ -265,6 +265,32 @@ describe(__filename + "#", () => {
     );
   });
 
+  it("errors if comment is unterminated", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+        /* foreverrrrrr
+      </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    let err;
+    try {
+      const result = await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+    console.log(err);
+    expect(err).to.eql({
+      errorKind: "Graph",
+      uri: "/entry.pc",
+      info: {
+        kind: "Unterminated",
+        message: "Unterminated element.",
+        location: { start: 0, end: 7 }
+      }
+    });
+  });
+
   it("CSS vars are collected in the evaluated output", async () => {
     const graph = {
       "/entry.pc": `<style>

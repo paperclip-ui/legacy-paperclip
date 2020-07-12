@@ -206,6 +206,13 @@ impl<'a> Tokenizer<'a> {
           self.next()
         } else if self.starts_with(b"/*") {
           self.forward(2);
+
+          while !self.is_eof() {
+            if self.pos < self.source.len() - 2 && self.source[self.pos] == b'*' && self.source[self.pos + 1] == b'/' {
+              break;
+            }
+            self.forward(1);
+          }
           Ok(Token::ScriptCommentOpen)
         } else {
           self.forward(1);

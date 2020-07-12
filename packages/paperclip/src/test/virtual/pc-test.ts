@@ -440,8 +440,6 @@ describe(__filename + "#", () => {
     const engine = createMockEngine(graph);
     const result = await engine.run("/entry.pc");
 
-    console.log(JSON.stringify(result.exports.components, null, 2));
-
     expect(result.exports.components).to.eql({
       Test: {
         name: "Test",

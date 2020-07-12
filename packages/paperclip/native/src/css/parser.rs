@@ -947,6 +947,8 @@ mod tests {
 
     // comment
 
+    /* don't not work */
+
     /* TODO */
     /*[attr~=\"value\"] {}*/
     a, b {}
