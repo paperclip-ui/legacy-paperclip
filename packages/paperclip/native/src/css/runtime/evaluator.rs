@@ -652,7 +652,7 @@ fn stringify_element_selector(
 
 fn is_reserved_keyframe_word<'a>(word: &'a str) -> bool {
   lazy_static! {
-    static ref reserved_timing_re: Regex = Regex::new(r"\b(-|\d+s?)\b").unwrap();
+    static ref reserved_timing_re: Regex = Regex::new(r"\b(\d+s?)\b").unwrap();
     static ref reserved_timing_fn_re: Regex = Regex::new(r"\b(linear|ease|ease-in|ease-out|ease-in-out|step-start|step-end|steps|cubic-bezier|initial|inherit)\b").unwrap();
 
     // https://www.w3schools.com/cssref/css3_pr_animation-direction.asp

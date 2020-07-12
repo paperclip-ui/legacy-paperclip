@@ -391,4 +391,25 @@ describe(__filename + "#", () => {
       `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] svg[data-pc-80f4925f]:a { margin-right:4px; }</style>`
     );
   });
+
+  it("can render keyframes with a dash in the name", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @keyframes lds-something3 {
+
+      }
+
+      div {
+        animation: lds-something3 1s;
+      }
+    </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    const ast = await engine.getLoadedAst("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>@keyframes _80f4925f_lds-something3 { } div[data-pc-80f4925f] { animation:_80f4925f_lds-something3 1s; }</style>`
+    );
+  });
 });
