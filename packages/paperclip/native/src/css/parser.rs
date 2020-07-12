@@ -138,9 +138,13 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
   eat_superfluous(context)?;
   match name {
     "charset" => {
-      let value = parse_string(context)?;
-      context.tokenizer.next_expect(Token::Semicolon)?;
-      Ok(Rule::Charset(value.to_string()))
+      let start = context.tokenizer.utf16_pos;
+      if let Token::Str((value, boundary)) = context.tokenizer.next()? {
+        context.tokenizer.next_expect(Token::Semicolon)?;
+        Ok(Rule::Charset(value.to_string()))
+      } else {
+        Err(ParseError::unexpected_token(start))
+      }
     }
     "namespace" => {
       let value = get_buffer(context.tokenizer, |tokenizer| {
@@ -642,27 +646,28 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
   }))
 }
 
-fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
-  let initial = context.tokenizer.next()?; // eat quote
-  let qoute = if initial == Token::SingleQuote {
-    "'"
-  } else {
-    "\""
-  };
+// fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
+//   let initial = context.tokenizer.next()?; // eat quote
+//   let qoute = if initial == Token::SingleQuote {
+//     "'"
+//   } else {
+//     "\""
+//   };
 
-  let buffer = get_buffer(context.tokenizer, |tokenizer| {
-    Ok(tokenizer.peek(1)? != initial)
-  })?;
-  context.tokenizer.next_expect(initial)?; // eat quote
-  Ok(format!("{}{}{}", qoute, buffer, qoute))
-}
+//   let buffer = get_buffer(context.tokenizer, |tokenizer| {
+//     Ok(tokenizer.peek(1)? != initial)
+//   })?;
+//   context.tokenizer.next_expect(initial)?; // eat quote
+//   Ok(format!("{}{}{}", qoute, buffer, qoute))
+// }
 
 fn parse_attribute_selector_value<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<String, ParseError> {
   let initial = context.tokenizer.peek(1)?;
-  let value = if initial == Token::SingleQuote || initial == Token::DoubleQuote {
-    parse_string(context)?
+  let value = if let Token::Str((value, boundary)) = initial {
+    context.tokenizer.next()?;
+    format!("{}{}{}", boundary, value, boundary)
   } else {
     get_buffer(context.tokenizer, |tokenizer| {
       Ok(tokenizer.peek(1)? != Token::SquareClose)
@@ -681,8 +686,7 @@ fn part_of_selector_name(token: &Token) -> bool {
     | Token::ParenOpen
     | Token::Semicolon
     | Token::ParenClose
-    | Token::SingleQuote
-    | Token::DoubleQuote
+    | Token::Str(_)
     | Token::Dot
     | Token::Hash
     | Token::Squiggle
@@ -744,6 +748,9 @@ fn parse_declarations_and_children<'a, 'b>(
 }
 
 fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
+  if context.tokenizer.peek(1)? == Token::LineCommentOpen {
+    context.tokenizer.next()?;
+  }
   eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
 }
 
@@ -905,8 +912,9 @@ fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Stri
       Token::Semicolon | Token::CurlyClose => {
         break;
       }
-      Token::SingleQuote | Token::DoubleQuote => {
-        buffer.push_str(parse_string(context)?.as_str());
+      Token::Str((value, boundary)) => {
+        context.tokenizer.next();
+        buffer.push_str(format!("{}{}{}", boundary, value, boundary).as_str());
       }
       _ => {
         buffer.push(context.tokenizer.curr_byte()? as char);
@@ -937,6 +945,8 @@ mod tests {
     [attr='value'] {}
     [attr=\"value\"] {}
 
+    // comment
+
     /* TODO */
     /*[attr~=\"value\"] {}*/
     a, b {}
@@ -960,6 +970,7 @@ mod tests {
     .selector {
       &__test {}
     }
+    // comment
     ";
 
     parse(source).unwrap();

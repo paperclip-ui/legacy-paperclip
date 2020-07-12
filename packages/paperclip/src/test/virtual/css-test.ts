@@ -277,6 +277,8 @@ describe(__filename + "#", () => {
   it("CSS class names are pulled out", async () => {
     const graph = {
       "/entry.pc": `<style>
+
+        // comment test
         [a] {
           .color {
 

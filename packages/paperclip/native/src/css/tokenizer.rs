@@ -64,10 +64,7 @@ pub enum Token<'a> {
   ParenClose,
 
   // "
-  DoubleQuote,
-
-  // '
-  SingleQuote,
+  Str((&'a str, &'a str)),
 
   // =
   Equals,
@@ -104,9 +101,6 @@ pub enum Token<'a> {
 
   // */
   ScriptCommentClose,
-
-  // -->
-  HtmlCommentOpen,
 
   // //
   LineCommentOpen,
@@ -204,7 +198,12 @@ impl<'a> Tokenizer<'a> {
 
     match c {
       b'/' => {
-        if self.starts_with(b"/*") {
+        if self.starts_with(b"//") {
+          self.forward(2);
+          self.scan(|c| -> bool { !matches!(c, b'\n' | b'\r') });
+          self.forward(1);
+          self.next()
+        } else if self.starts_with(b"/*") {
           self.forward(2);
           Ok(Token::ScriptCommentOpen)
         } else {
@@ -358,11 +357,15 @@ impl<'a> Tokenizer<'a> {
       }
       b'"' => {
         self.forward(1);
-        Ok(Token::DoubleQuote)
+        let buffer = self.search(|c| -> bool { c != b'"' });
+        self.forward(1); // eat "
+        Ok(Token::Str((buffer, "\"")))
       }
       b'\'' => {
         self.forward(1);
-        Ok(Token::SingleQuote)
+        let buffer = self.search(|c| -> bool { c != b'\'' });
+        self.forward(1); // eat "
+        Ok(Token::Str((buffer, "'")))
       }
       b'=' => {
         if self.starts_with(b"===") {
