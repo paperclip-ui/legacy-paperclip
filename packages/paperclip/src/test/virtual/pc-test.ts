@@ -6,7 +6,6 @@ import {
   stringifyLoadResult
 } from "../utils";
 import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
-import { Engine } from "../../engine";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
@@ -531,11 +530,15 @@ describe(__filename + "#", () => {
     } catch (e) {
       err = e;
     }
+
     expect(err).to.eql({
-      errorKind: "Runtime",
+      errorKind: "Graph",
       uri: "/entry.pc",
-      location: { start: 58, end: 105 },
-      message: "Component name is already declared."
+      info: {
+        kind: "Unterminated",
+        message: "Unterminated element.",
+        location: { start: 9, end: 34 }
+      }
     });
   });
 });
