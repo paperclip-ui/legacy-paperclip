@@ -144,7 +144,7 @@ impl Engine {
     }
   }
 
-  pub async fn load(&mut self, uri: &String) -> Result<&DependencyContent, EngineError> {
+  pub async fn load(&mut self, uri: &String) -> Result<(), EngineError> {
     let load_result = self
       .dependency_graph
       .load_dependency(uri, &mut self.vfs)
@@ -158,7 +158,7 @@ impl Engine {
           .evaluate(uri, &mut stack)
           .or_else(|e| Err(EngineError::Runtime(e)))?;
 
-        Ok(&self.dependency_graph.dependencies.get(uri).unwrap().content)
+        Ok(())
       }
       Err(error) => {
         self.dispatch(EngineEvent::Error(EngineError::Graph(error.clone())));
@@ -230,7 +230,13 @@ impl Engine {
     }
 
     stack.insert(uri.to_string());
-    let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
+    let dependency_option = self.dependency_graph.dependencies.get(uri);
+
+    let dependency = if let Some(dep)  = dependency_option  {
+      dep
+    } else {
+      return Err(RuntimeError::new("dependency not loaded.".to_string(), uri, &ast::Location::new(0, 0)));
+    };
 
     let dept_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);
 

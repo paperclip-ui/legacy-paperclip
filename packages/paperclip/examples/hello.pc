@@ -11,7 +11,7 @@
   .todo {
     
     color:var(--color);
-    .destroy {
+    & .destroy {
       display: none;
       &:hover {
         color: #af5b5e;
