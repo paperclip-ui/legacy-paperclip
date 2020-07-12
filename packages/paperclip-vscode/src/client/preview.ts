@@ -27,7 +27,8 @@ import {
   PreviewInitParams,
   ErrorLoading,
   LoadParams,
-  LoadedParams
+  LoadedParams,
+  ErrorLoadingParams
 } from "../common/notifications";
 import { Engine } from "paperclip";
 
@@ -281,9 +282,14 @@ class LivePreview {
   private _onMessage = () => {
     // TODO when live preview tools are available
   };
-  public $$handleErrorLoading({ uri }: LoadParams) {
+  public async $$handleErrorLoading({ uri, error }: ErrorLoadingParams) {
     if (uri === this.targetUri) {
+      await this._readyPromise;
       this._needsReloading = true;
+      this.panel.webview.postMessage({
+        type: "ERROR",
+        payload: JSON.stringify(error)
+      });
     }
   }
   public async $$handleLoaded({ uri, data }: LoadedParams) {
@@ -372,8 +378,10 @@ class LivePreview {
     </html>`;
   }
   dispose() {
-    this._disposeEngineListener();
-    this.panel.dispose();
     this._em.emit("didDispose");
+    this._disposeEngineListener();
+    try {
+      this.panel.dispose();
+    } catch (e) {}
   }
 }

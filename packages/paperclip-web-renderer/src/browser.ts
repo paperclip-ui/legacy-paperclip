@@ -57,6 +57,8 @@ const onMessage = ({ data: { type, payload } }: MessageEvent) => {
     renderer.handleEngineEvent(JSON.parse(payload));
   } else if (type === "INIT") {
     renderer.initialize(JSON.parse(payload));
+  } else if (type === "ERROR") {
+    renderer.handleError(JSON.parse(payload));
   }
 };
 

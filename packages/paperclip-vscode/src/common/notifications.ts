@@ -1,5 +1,10 @@
 import { EngineEvent as PCEngineEvent } from "paperclip";
-import { VirtualNode, LoadedData } from "paperclip-utils";
+import {
+  VirtualNode,
+  LoadedData,
+  GraphErrorEvent,
+  EngineErrorEvent
+} from "paperclip-utils";
 
 abstract class BaseNotification<TType extends string, TParams> {
   constructor(readonly type: TType, readonly params: TParams) {}
@@ -42,11 +47,16 @@ export class Load extends BaseNotification<NotificationType.LOAD, LoadParams> {
   }
 }
 
+export type ErrorLoadingParams = {
+  uri: string;
+  error: EngineErrorEvent;
+};
+
 export class ErrorLoading extends BaseNotification<
   NotificationType.ERROR_LOADING,
-  LoadParams
+  ErrorLoadingParams
 > {
-  constructor(params: LoadParams) {
+  constructor(params: ErrorLoadingParams) {
     super(NotificationType.ERROR_LOADING, params);
   }
 }

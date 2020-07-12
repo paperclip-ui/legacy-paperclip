@@ -102,7 +102,9 @@ export class VSCServiceBridge {
           connection.sendNotification(...new Loaded({ uri, data }).getArgs());
         } catch (e) {
           console.warn(e);
-          connection.sendNotification(...new ErrorLoading({ uri }).getArgs());
+          connection.sendNotification(
+            ...new ErrorLoading({ uri, error: e }).getArgs()
+          );
         }
       }
     );

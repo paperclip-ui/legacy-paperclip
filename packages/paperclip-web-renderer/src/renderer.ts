@@ -133,7 +133,7 @@ export class Renderer {
     removeAllChildren(this._errorOverlay);
   }
 
-  private _handleError(error: EngineErrorEvent) {
+  public handleError(error: EngineErrorEvent) {
     let message;
     let uri = error.uri;
 
@@ -181,7 +181,7 @@ export class Renderer {
     this._clearErrors();
     switch (event.kind) {
       case EngineEventKind.Error: {
-        this._handleError(event);
+        this.handleError(event);
         break;
       }
       case EngineEventKind.AddedSheets: {
