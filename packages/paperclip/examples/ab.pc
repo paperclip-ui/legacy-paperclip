@@ -1,4 +1,14 @@
 <import as="test" src="./module.pc">
+<style>
+  :root {
+    --color: rgb(230, 75, 75);
+  }
+  div {
+    color: var(--color);
+    font-size: 24px;
+    font-family: Helvetica;
+  }
+</style>
 <div className=">>>test.style">
-  Something fdfsdsffsdsfsd
+  Something 
 </div>
