@@ -51,7 +51,7 @@ impl Node {
       Node::Slot(value) => &value.location,
     }
   }
-  pub fn walk <F: FnMut(&Node) -> bool>(&self, each: &mut F) -> bool {
+  pub fn walk<F: FnMut(&Node) -> bool>(&self, each: &mut F) -> bool {
     if !(each)(self) {
       return false;
     }

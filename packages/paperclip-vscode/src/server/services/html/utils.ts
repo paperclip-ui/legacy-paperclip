@@ -27,12 +27,21 @@ export const stringArraytoSnippetStringOptions = memoize(
 export const tagCompletionItem = (
   tagName: string,
   hasAttributes: boolean
-): CompletionItem => ({
-  label: tagName,
-  insertText: `${tagName} \${1:}>\n</${tagName}>`,
-  insertTextFormat: InsertTextFormat.Snippet,
-  command: hasAttributes ? RETRIGGER_COMMAND : null
-});
+): CompletionItem => {
+  let insertText = `${tagName} \${1:}>\n</${tagName}>`;
+
+  if (tagName === "style") {
+    insertText = `${tagName}>\n\t\$0\n</${tagName}>`;
+    hasAttributes = false;
+  }
+
+  return {
+    label: tagName,
+    insertText,
+    insertTextFormat: InsertTextFormat.Snippet,
+    command: hasAttributes ? RETRIGGER_COMMAND : null
+  };
+};
 
 export const addCompletionItemData = (
   item: CompletionItem,

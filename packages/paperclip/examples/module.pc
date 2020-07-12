@@ -1,4 +1,7 @@
 <style> 
+  :root {
+    
+  }
   @export {
     .style {
       color: blue;

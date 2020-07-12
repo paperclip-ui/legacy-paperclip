@@ -358,7 +358,7 @@ const declaredVarsToCompletionItems = memoize(
       }
     }
 
-    return list;
+    return list.sort((a, b) => (a.label > b.label ? -1 : 1));
   }
 );
 

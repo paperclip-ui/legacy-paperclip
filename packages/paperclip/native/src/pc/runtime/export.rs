@@ -5,18 +5,18 @@ use std::collections::{HashMap, HashSet};
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct Exports {
   pub style: css_export::Exports,
-  pub components: HashMap<String, ComponentExport>
+  pub components: HashMap<String, ComponentExport>,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct ComponentExport {
   pub name: String,
   pub properties: HashMap<String, Property>,
-  pub public: bool
+  pub public: bool,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct Property {
   pub name: String,
-  pub optional: bool
+  pub optional: bool,
 }
