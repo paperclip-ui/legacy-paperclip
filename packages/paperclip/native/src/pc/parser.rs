@@ -426,7 +426,7 @@ fn parse_key_value_attribute<'a>(
   let name = parse_tag_name(tokenizer)?;
 
   if name.len() == 0 {
-    return Err(ParseError::unexpected_token(start))
+    return Err(ParseError::unexpected_token(start));
   }
 
   if tokenizer.peek(1)? == Token::Colon {

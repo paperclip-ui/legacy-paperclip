@@ -1,0 +1,14 @@
+<style>
+  img {
+    max-width: 200px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 4px;
+  }
+</style>
+
+<!-- Demo for percy -->
+
+<img src="./assets/happy-cat.jpg">
