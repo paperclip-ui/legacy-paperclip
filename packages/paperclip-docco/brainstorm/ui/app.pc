@@ -317,7 +317,7 @@ https://www.ibm.com/design/language/color
       <Title><Icon isComponent />RadioGroup</Title>
     </Subgroup>
     <Subgroup depth="2">
-      <Title><Icon isComponent />RadioGroup</Title>
+      <Title><Icon isComponent />Tooltip</Title>
     </Subgroup>
   </Group>
 </div>
