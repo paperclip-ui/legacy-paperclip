@@ -57,7 +57,10 @@ describe(__filename, () => {
         tagPath: ["a"]
       }
     ],
-    [`<a b c="" d>`, null],
+    [
+      `<a b c="" d>`,
+      { kind: SuggestContextKind.HTML_CLOSE_TAG_NAME, openTagPath: ["a"] }
+    ],
     [`<a b c="" d><`, { kind: SuggestContextKind.HTML_TAG_NAME, path: [] }],
     [
       `<import src="`,
@@ -104,13 +107,13 @@ describe(__filename, () => {
       `<style> d { col`,
       { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "col" }
     ],
-    [`<style> d { `, null],
+    // [`<style> d { `, null],
     [
       `<style> d {\n`,
       { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" }
     ],
-    [`<style> a { } a`, null],
-    [`<style> a { } b { `, null],
+    // [`<style> a { } a`, null],
+    // [`<style> a { } b { `, null],
     [
       `<style> a { } b {\n `,
       { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" }
@@ -153,7 +156,7 @@ describe(__filename, () => {
         params: "ab c"
       }
     ],
-    [`<style> a { } b { @include ab c;`, null],
+    // [`<style> a { } b { @include ab c;`, null],
     [
       `<style> a { } b { @include ab c;\n`,
       {
@@ -219,6 +222,10 @@ describe(__filename, () => {
 
     // smoke test popping out of styles
     [
+      `<style></style><a`,
+      { kind: SuggestContextKind.HTML_TAG_NAME, path: ["a"] }
+    ],
+    [
       `<style> a { } </style><a`,
       { kind: SuggestContextKind.HTML_TAG_NAME, path: ["a"] }
     ],
@@ -258,6 +265,48 @@ describe(__filename, () => {
         kind: SuggestContextKind.HTML_ATTRIBUTE_NAME,
         tagPath: ["div"],
         prefix: "a"
+      }
+    ],
+    [
+      `<div>`,
+      {
+        kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
+        openTagPath: ["div"]
+      }
+    ],
+    [
+      `<div><span>`,
+      {
+        kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
+        openTagPath: ["span"]
+      }
+    ],
+    [
+      `<div><span></span>`,
+      {
+        kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
+        openTagPath: ["div"]
+      }
+    ],
+    [
+      `<div><span></span><b>`,
+      {
+        kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
+        openTagPath: ["b"]
+      }
+    ],
+    [
+      `<div>ffdfd dsd<span>{cffd }</span><b>`,
+      {
+        kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
+        openTagPath: ["b"]
+      }
+    ],
+    [
+      `<div><import>`,
+      {
+        kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
+        openTagPath: ["div"]
       }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {

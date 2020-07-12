@@ -3,6 +3,7 @@ import { Token, tokenize, TokenScanner, TokenKind } from "./tokenizer";
 export enum SuggestContextKind {
   // HTML
   HTML_TAG_NAME = "HTML_TAG_NAME",
+  HTML_CLOSE_TAG_NAME = "HTML_CLOSE_TAG_NAME",
   HTML_ATTRIBUTE_NAME = "HTML_ATTRIBUTE_NAME",
   HTML_STRING_ATTRIBUTE_VALUE = "HTML_STRING_ATTRIBUTE_VALUE",
   HTML_CSS_REFERENCE = "HTML_CSS_REFERENCE", // >>>reference
@@ -37,6 +38,10 @@ export type HTMLAttributeNameSuggestionContext = {
 export type HTMLTagNameSuggestionContext = {
   path: string[];
 } & BaseSuggestContext<SuggestContextKind.HTML_TAG_NAME>;
+
+export type HTMLCloseTagNameSuggestionContext = {
+  openTagPath: string[];
+} & BaseSuggestContext<SuggestContextKind.HTML_CLOSE_TAG_NAME>;
 
 export type CSSDeclarationSuggestionContext = {
   prefix: string;
@@ -76,6 +81,7 @@ export type SuggestContext =
   | CSSDeclarationValueSuggestionContext
   | CSSDeclarationAtRuleSuggestionContext
   | CSSDeclarationAtRuleParamsSuggestionContext
+  | HTMLCloseTagNameSuggestionContext
   | CSSClassReferenceSuggestionContext
   | CSSVariableSuggestionContext
   | CSSAtRuleSuggestionContext;
@@ -88,10 +94,11 @@ export const getSuggestionContext = (source: string) => {
   // scan until there's something useful
   while (scanner.current) {
     if (scanner.current.value === "<") {
+      scanner.next(); // eat <
       context = suggestElement(scanner);
+    } else {
+      scanner.next();
     }
-
-    scanner.next();
   }
 
   return context;
@@ -110,10 +117,54 @@ const suggestElement = (scanner: TokenScanner): SuggestContext | null => {
     return attrSuggestion;
   }
 
-  if (tagPath.length === 1 && tagPath[0] === "style") {
-    const cssSuggestion = suggestCSS(scanner);
-    if (cssSuggestion) {
-      return cssSuggestion;
+  if (scanner.current?.value === ">" && !/^(import|img)$/.test(tagPath[0])) {
+    scanner.next(); // eat
+
+    if (!scanner.current) {
+      return {
+        kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
+        openTagPath: tagPath
+      };
+    }
+
+    if (tagPath.length === 1 && tagPath[0] === "style") {
+      const cssSuggestion = suggestCSS(scanner);
+      if (cssSuggestion) {
+        return cssSuggestion;
+      }
+    }
+
+    let closed = false;
+    while (scanner.current) {
+      if (String(scanner.current.value) === "<") {
+        scanner.next(); // eat <
+        if (String(scanner.current?.value) === "/") {
+          scanner.next(); // eat /
+          if (scanner.current?.kind === TokenKind.Word) {
+            scanner.next(); // eat tag
+
+            if (scanner.current?.value === ">") {
+              scanner.next(); // >
+              closed = true;
+              break;
+            }
+          }
+        } else if (tagPath[0] !== "style") {
+          const child = suggestElement(scanner);
+          if (child) {
+            return child;
+          }
+        }
+      } else {
+        scanner.next();
+      }
+    }
+
+    if (!closed && tagPath[0] !== "style") {
+      return {
+        kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
+        openTagPath: tagPath
+      };
     }
   }
 
@@ -121,8 +172,6 @@ const suggestElement = (scanner: TokenScanner): SuggestContext | null => {
 };
 
 const suggestTagName = (scanner: TokenScanner): [SuggestContext, string[]] => {
-  scanner.next(); // eat <
-
   // Source possibility: `<div></div><`
   if (!scanner.current) {
     return [{ kind: SuggestContextKind.HTML_TAG_NAME, path: [] }, null];
@@ -261,6 +310,7 @@ const suggestAttributeValue = (
 
     while (scanner.current && String(scanner.current.value) !== `}`) {
       if (String(scanner.current.value) === "<") {
+        scanner.next();
         const sugg = suggestElement(scanner);
         if (sugg) {
           return sugg;

@@ -14,7 +14,8 @@ import {
   CSSDeclarationAtRuleSuggestionContext,
   CSSDeclarationAtRuleParamsSuggestionContext,
   CSSAtRuleSuggestionContext,
-  CSSVariableSuggestionContext
+  CSSVariableSuggestionContext,
+  HTMLCloseTagNameSuggestionContext
 } from "paperclip-autocomplete";
 
 import { resolveAllPaperclipFiles } from "paperclip";
@@ -119,7 +120,23 @@ export class PCAutocomplete {
         return this._getCSSVariableSuggestion(data);
       case SuggestContextKind.CSS_CLASS_REFERENCE:
         return this._getCSSClassReferenceSuggestion(data);
+      case SuggestContextKind.HTML_CLOSE_TAG_NAME:
+        return this._getCloseTagSuggestion(context);
     }
+  }
+
+  private _getCloseTagSuggestion(
+    context: HTMLCloseTagNameSuggestionContext
+  ): CompletionItem[] {
+    return [
+      {
+        label: `</${context.openTagPath.join(".")}>`,
+        preselect: true,
+        insertText: `\n\t$0\n</${context.openTagPath.join(".")}>`,
+        insertTextFormat: InsertTextFormat.Snippet,
+        commitCharacters: [">"]
+      }
+    ];
   }
   private _getHTMLTagNameSuggestions(data?: LoadedData) {
     const options = [];
@@ -219,38 +236,49 @@ export class PCAutocomplete {
     context: HTMLAttributeNameSuggestionContext,
     data?: LoadedData
   ) {
+    const items: CompletionItem[] = [];
+
     const basename = context.tagPath[0];
+    let isComponent;
 
     if (data) {
       if (data.exports.components[basename]) {
         const componentInfo = data.exports.components[basename];
-        return this._getComponentPropCompletionItems(componentInfo);
-      }
-
-      if (data.imports[basename]) {
+        items.push(...this._getComponentPropCompletionItems(componentInfo));
+        isComponent = true;
+      } else if (data.imports[basename]) {
         const componentAs = context.tagPath[1] || DEFAULT_PART_ID;
 
         const compInfo = data.imports[basename].components[componentAs];
-        return this._getComponentPropCompletionItems(compInfo);
+        items.push(...this._getComponentPropCompletionItems(compInfo));
+        isComponent = true;
       }
     }
 
-    if (context.tagPath.length === 1) {
-      return (ATTRIBUTE_NAME_COMPLETION_ITEMS[context.tagPath[0]] || []).map(
-        item => {
-          if (item.label === "className" && containsClasses(data)) {
-            return {
-              ...item,
-              command: RETRIGGER_COMMAND
-            };
-          }
+    if (!isComponent && context.tagPath.length === 1) {
+      items.push(
+        ...(ATTRIBUTE_NAME_COMPLETION_ITEMS[context.tagPath[0]] || []).map(
+          item => {
+            if (item.label === "className" && containsClasses(data)) {
+              return {
+                ...item,
+                command: RETRIGGER_COMMAND
+              };
+            }
 
-          return item;
-        }
+            return item;
+          }
+        )
       );
     }
+    // items.push({
+    //   label: `></${context.tagPath.join(".")}>`,
+    //   insertText: `>$0</${context.tagPath.join(".")}>`,
+    //   insertTextFormat: InsertTextFormat.Snippet,
+    //   commitCharacters: [">"]
+    // });
 
-    return [];
+    return items;
   }
   private _getHTMLAttributeStringValueSuggestions(
     uri: string,

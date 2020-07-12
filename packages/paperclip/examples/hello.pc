@@ -1,6 +1,12 @@
 <import src="module.pc" as="Module">
 
 <style>
+  div {
+    color: var(--color);
+  }
+</style>
+
+<style>
   :root {
     --color: red;
   }
@@ -11,6 +17,8 @@
   .todo {
     
     color:var(--color);
+    font-size: 20px;
+    font-family: Helvetica;
     & .destroy {
       display: none;
       &:hover {
@@ -28,7 +36,7 @@
 </style>
 
 <div className="todo">
-  fsdfdsfsd
+  fsdfdsfsdfdsfsd
   <div className="destroy">
   </div>
 </div>
