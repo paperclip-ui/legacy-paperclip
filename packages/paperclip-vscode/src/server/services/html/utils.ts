@@ -28,11 +28,16 @@ export const tagCompletionItem = (
   tagName: string,
   hasAttributes: boolean
 ): CompletionItem => {
-  let insertText = `${tagName} \${1:}>\n</${tagName}>`;
+  let insertText = `${tagName} $0>\n</${tagName}>`;
 
   if (tagName === "style") {
     insertText = `${tagName}>\n\t\$0\n</${tagName}>`;
     hasAttributes = false;
+  }
+
+  if (tagName === "import") {
+    insertText = `${tagName} $0>`;
+    hasAttributes = true;
   }
 
   return {

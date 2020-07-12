@@ -1,10 +1,16 @@
 <style> 
-  :root {
-    
-  }
-  @export {
-    .style {
-      color: blue;
-    }
+  .module {
+    display: block;
+    color: red;
+    font-family: Helvetica;
+    font-size: 24px;
   }
 </style>
+
+<div export component as="Module" className="module {className?}">
+  {children}
+</div>
+
+<Module>
+  Hello
+</Module>

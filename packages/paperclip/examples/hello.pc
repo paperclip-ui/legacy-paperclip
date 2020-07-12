@@ -1,4 +1,12 @@
-<import as="test" src="./module.pc">
-<div className=">>>test.style">
-  Something like that
-</div>
+<import src="module.pc" as="Module">
+
+<style>
+  .override\:me {
+    color: rgb(192, 33, 179);
+  }
+</style>
+
+<Module.Module className=">>>override:me">
+  Hello World
+</Module.Module>
+

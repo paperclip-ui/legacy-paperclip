@@ -250,6 +250,21 @@ describe(__filename + "#", () => {
     });
   });
 
+  it("can use escape key in classname", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+        .a\\:b {
+        }
+      </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>._80f4925f_a\\:b { }</style>`
+    );
+  });
+
   it("CSS vars are collected in the evaluated output", async () => {
     const graph = {
       "/entry.pc": `<style>

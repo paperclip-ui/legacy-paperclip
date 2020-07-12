@@ -65,6 +65,7 @@ pub enum Token<'a> {
 
   // "
   Str((&'a str, &'a str)),
+  Escape(u8),
 
   // =
   Equals,
@@ -366,6 +367,11 @@ impl<'a> Tokenizer<'a> {
         let buffer = self.search(|c| -> bool { c != b'\'' });
         self.forward(1); // eat "
         Ok(Token::Str((buffer, "'")))
+      }
+      b'\\' => {
+        self.forward(1);
+        let c = self.curr_byte()?;
+        Ok(Token::Escape(c))
       }
       b'=' => {
         if self.starts_with(b"===") {
