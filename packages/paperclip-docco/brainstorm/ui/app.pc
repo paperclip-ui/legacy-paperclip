@@ -1,0 +1,12 @@
+<import src="./colors.pc" as="colors">
+<import src="./typography.pc" as="typography">
+
+<style>
+  .LeftSidebar {
+
+  }
+</style>
+
+<div className="LeftSidebar">
+  Left Sidebard
+</div>

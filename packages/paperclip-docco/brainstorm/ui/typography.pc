@@ -1,0 +1,8 @@
+<import src="./colors.pc">
+<style>
+
+  :global(body) {
+    font-family: Helvetica;
+    color: var(--color-black-100);
+  }
+</style>

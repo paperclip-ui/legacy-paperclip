@@ -28,7 +28,7 @@ export const tagCompletionItem = (
   tagName: string,
   hasAttributes: boolean
 ): CompletionItem => {
-  // let insertText = `${tagName}$0>\n</${tagName}>`;
+  let insertText = tagName;
 
   // if (tagName === "style") {
   //   insertText = `${tagName}>\n\t\$0\n</${tagName}>`;
@@ -43,13 +43,14 @@ export const tagCompletionItem = (
   //   insertText = `${tagName}>$0</${tagName}>`;
   // }
 
-  // if (tagName === "import") {
-  //   insertText = `${tagName} $0>`;
-  //   hasAttributes = true;
-  // }
+  if (tagName === "import") {
+    insertText = `${tagName} src="$1" as="$2">`;
+    hasAttributes = true;
+  }
 
   return {
     label: tagName,
+    insertText,
     insertTextFormat: InsertTextFormat.Snippet,
     command: hasAttributes ? RETRIGGER_COMMAND : null
   };
