@@ -322,6 +322,51 @@ describe(__filename, () => {
         kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
         openTagPath: ["div"]
       }
+    ],
+    [
+      `<style>
+      @media {
+      }
+    </style><`,
+      {
+        kind: SuggestContextKind.HTML_TAG_NAME,
+        path: []
+      }
+    ],
+    [
+      `
+      <style>
+        @media {
+          .Color {
+          }
+        }
+      </style>
+      <div style="background: var({b})"></div><`,
+      {
+        kind: SuggestContextKind.HTML_TAG_NAME,
+        path: []
+      }
+    ],
+    [
+      `
+      <style>
+
+      @mixin col {
+        a: b;
+      }
+        .Color {
+          a: b;  
+        }
+      
+      </style>
+      
+      <div style="background: var({varName})">
+
+      </div><`,
+      {
+        kind: SuggestContextKind.HTML_TAG_NAME,
+        path: []
+      }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {

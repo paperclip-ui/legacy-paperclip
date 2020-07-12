@@ -3,6 +3,9 @@ Paperclip documentation generator - very much a WIP. Features:
 - Generate static HTML documentation
 - Open documentation tool in live-view
 - live editing? (PC would need to support markdown)
+- Should have light / dark mode
+- Should show where colors are used
+- Should show how many components have magic values (colors, spacing)
 
 
 Example of documentated Paperclip code:

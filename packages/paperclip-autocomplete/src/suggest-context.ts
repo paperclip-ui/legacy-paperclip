@@ -355,12 +355,12 @@ const suggestRule = (scanner: TokenScanner): SuggestContext => {
     if (declSuggestion) {
       return declSuggestion;
     }
-  }
-
-  // Assume selector
-  const suggestion = suggestStyleRule(scanner);
-  if (suggestion) {
-    return suggestion;
+  } else {
+    // Assume selector
+    const suggestion = suggestStyleRule(scanner);
+    if (suggestion) {
+      return suggestion;
+    }
   }
 };
 
@@ -389,6 +389,7 @@ const suggestStyleRule = (scanner: TokenScanner): SuggestContext => {
     }
 
     if (scanner.current?.value === "}") {
+      scanner.next(); // eat }
       break;
     }
   }
@@ -479,9 +480,61 @@ const suggestCSSAtRule = (
   }
 
   if (scanner.current?.value === "{") {
+    if (prefix === "media" || prefix == "keyframes") {
+      return suggestContainerAtRule(scanner);
+    } else {
+      return suggestStyleAtRule(scanner);
+    }
+  } else {
+    scanner.next(); // eat ;
+  }
+
+  // if (scanner.current?.value === "{") {
+  //   scanner.next(); // eat {
+  //   while (scanner.current) {
+  //     scanner.skipWhitespace();
+  //     if (String(scanner.current.value) === "}") {
+  //       scanner.next();
+  //       break;
+  //     }
+  //     const suggestion = suggestRule(scanner);
+  //     if (suggestion) {
+  //       return suggestion;
+  //     }
+  //   }
+  // } else {
+  //   scanner.next(); // eat ;
+  // }
+
+  return null;
+};
+
+const suggestStyleAtRule = (scanner: TokenScanner): SuggestContext => {
+  if (scanner.current?.value === "{") {
+    scanner.next();
+    while (scanner.current) {
+      scanner.skipWhitespace();
+      if (String(scanner.current?.value) === "}") {
+        break;
+      }
+
+      const suggestion = suggestCSSDeclaration(scanner);
+      if (suggestion) {
+        return suggestion;
+      }
+    }
+  }
+
+  return null;
+};
+
+const suggestContainerAtRule = (scanner: TokenScanner): SuggestContext => {
+  if (scanner.current?.value === "{") {
     scanner.next(); // eat {
     while (scanner.current) {
-      if (String(scanner.current.value) === "}") {
+      scanner.skipWhitespace();
+      if (String(scanner.current?.value) === "}") {
+        scanner.next();
         break;
       }
       const suggestion = suggestRule(scanner);

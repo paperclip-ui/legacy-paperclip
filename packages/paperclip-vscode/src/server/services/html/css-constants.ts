@@ -11,6 +11,12 @@ Copy printed object
 
 */
 
+enum CSSPropertyValueKind {
+  Color,
+  Unit,
+  String
+}
+
 // https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
 const CSS_AT_RULE_NAMES = [
   "media",
@@ -255,6 +261,33 @@ const FLEX_DIRECTION_VALUES = [
   "inherit"
 ];
 
+// https://www.w3schools.com/cssref/css3_pr_text-overflow.asp
+const TEXT_OVERFLOW_VALUES = [
+  "clip",
+  "ellipsis",
+  "string",
+  "initial",
+  "inherit"
+];
+
+// https://www.w3schools.com/cssref/pr_pos_vertical-align.asp
+const VERTICAL_ALIGN_VALUES = [
+  "baseline",
+  "length",
+  "sub",
+  "super",
+  "top",
+  "text-bottom",
+  "middle",
+  "bottom",
+  "text-bottom",
+  "initial",
+  "inherit"
+];
+
+// https://www.w3schools.com/css/css_overflow.asp
+const OVERFLOW_VALUES = ["visible", "hidden", "scroll", "auto"];
+
 // https://www.w3schools.com/cssref/css3_pr_animation-name.asp
 const ANIMATION_NAME_VALUES = ["none", "initial", "inhert"];
 
@@ -267,6 +300,16 @@ const ANIMATION_TIMING_FUNCTION = [
   "ease-in-out",
   "step-start",
   "step-end"
+];
+
+// https://www.w3schools.com/cssref/pr_background-repeat.asp
+const BACKGROUND_REPEAT_VALUES = [
+  "repeat",
+  "repeat-x",
+  "repeat-y",
+  "no-repeat",
+  "initial",
+  "inherit"
 ];
 
 // https://www.w3schools.com/cssref/css3_pr_animation-iteration-count.asp
@@ -321,8 +364,39 @@ const CSS_DECLARATION_VALUE_ITEMS = {
   ],
   "animation-name": [...ANIMATION_NAME_VALUES],
   "white-space": [...WHITE_SPACE_VALUES],
-  "flex-direction": [...FLEX_DIRECTION_VALUES]
+  "flex-direction": [...FLEX_DIRECTION_VALUES],
+  "vertical-align": [...VERTICAL_ALIGN_VALUES],
+  "text-overflow": [...TEXT_OVERFLOW_VALUES],
+  overflow: [...OVERFLOW_VALUES],
+  "background-repeat": [...BACKGROUND_REPEAT_VALUES]
 };
+
+const CSS_VALUE_KINDS: Record<
+  string,
+  Record<CSSPropertyValueKind, boolean>
+> = {};
+
+for (const name of CSS_DECLARATION_NAMES) {
+  const kind: Record<CSSPropertyValueKind, boolean> = (CSS_VALUE_KINDS[name] = {
+    [CSSPropertyValueKind.Unit]: false,
+    [CSSPropertyValueKind.Color]: false,
+    [CSSPropertyValueKind.String]: false
+  });
+
+  if (
+    /^(.*?width|.*?height|left|top|right|bottom|z-index|opacity|border|.*?-radius|margin.*|padding.*|font-size|letter-spacing|line-height)$/
+  ) {
+    kind[CSSPropertyValueKind.Unit] = true;
+  }
+
+  if (/^(border)$/) {
+    kind[CSSPropertyValueKind.Color] = true;
+  }
+
+  if (/^(font-family|animation.*|)$/) {
+    kind[CSSPropertyValueKind.String] = true;
+  }
+}
 
 export {
   CSS_AT_RULE_NAMES,
