@@ -245,6 +245,16 @@ const WHITE_SPACE_VALUES = [
   "inherit"
 ];
 
+// https://www.w3schools.com/cssref/css3_pr_flex-direction.asp
+const FLEX_DIRECTION_VALUES = [
+  "row",
+  "row-reverse",
+  "column",
+  "column-reverse",
+  "initial",
+  "inherit"
+];
+
 // https://www.w3schools.com/cssref/css3_pr_animation-name.asp
 const ANIMATION_NAME_VALUES = ["none", "initial", "inhert"];
 
@@ -310,7 +320,8 @@ const CSS_DECLARATION_VALUE_ITEMS = {
     ...ANIMATION_DIRECTION
   ],
   "animation-name": [...ANIMATION_NAME_VALUES],
-  "white-space": [...WHITE_SPACE_VALUES]
+  "white-space": [...WHITE_SPACE_VALUES],
+  "flex-direction": [...FLEX_DIRECTION_VALUES]
 };
 
 export {

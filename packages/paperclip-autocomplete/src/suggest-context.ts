@@ -325,32 +325,17 @@ const suggestAttributeValue = (
 
 const suggestCSS = (scanner: TokenScanner): SuggestContext => {
   while (scanner.current) {
+    scanner.skipWhitespace();
+
     // close tag </
     if (startOfCloseTag(scanner)) {
       break;
-    } else if (scanner.current.value === "@") {
-      const declSuggestion = suggestCSSAtRule(
-        scanner,
-        SuggestContextKind.CSS_AT_RULE_NAME
-      );
-      if (declSuggestion) {
-        return declSuggestion;
-      }
     }
-
-    if (scanner.current.value === "{") {
-      const declSuggestion = suggestCSSDeclarations(scanner);
-      if (declSuggestion) {
-        return declSuggestion;
-      }
+    // Assume selector
+    const suggestion = suggestRule(scanner);
+    if (suggestion) {
+      return suggestion;
     }
-
-    // if (scanner.current.kind === TokenKind.Word) {
-    //   const selector = getBuffer(scanner, scanner => scanner.current.value !== "{");
-    //   if (!scanner.current) {
-    //     return { kind: SuggestContextKind.CSS_SELECTOR_NAME}
-    //   }
-    // }
 
     scanner.next();
   }
@@ -358,49 +343,81 @@ const suggestCSS = (scanner: TokenScanner): SuggestContext => {
   return null;
 };
 
-const suggestCSSDeclarations = (scanner: TokenScanner): SuggestContext => {
-  scanner.next(); // eat {
+const suggestRule = (scanner: TokenScanner): SuggestContext => {
+  scanner.skipWhitespace();
 
-  while (1) {
-    const ws = scanner.current?.value;
-    scanner.skipWhitespace();
+  if (scanner.current?.value === "@") {
+    const declSuggestion = suggestCSSAtRule(
+      scanner,
+      SuggestContextKind.CSS_AT_RULE_NAME
+    );
 
-    if (!scanner.current) {
-      // only suggest declaration if on new line -- UX is wierd otherwise
-      if (ws && /[\n\r]/.test(ws)) {
-        return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" };
-      }
-      return null;
+    if (declSuggestion) {
+      return declSuggestion;
     }
+  }
 
-    if (scanner.current.value === "}") {
+  // Assume selector
+  const suggestion = suggestStyleRule(scanner);
+  if (suggestion) {
+    return suggestion;
+  }
+};
+
+const suggestStyleRule = (scanner: TokenScanner): SuggestContext => {
+  let selectorText = "";
+
+  while (scanner.current) {
+    if (scanner.current.value === "{") {
       break;
     }
 
-    if (scanner.current.kind === TokenKind.Word) {
-      const declSuggestion = suggestCSSDeclaration(scanner);
-      if (declSuggestion) {
-        return declSuggestion;
-      }
-    } else if (scanner.current.value === "@") {
-      const declSuggestion = suggestCSSAtRule(
-        scanner,
-        SuggestContextKind.CSS_DECLARATION_AT_RULE
-      );
-      if (declSuggestion) {
-        return declSuggestion;
-      }
-    }
-
+    selectorText += scanner.current.value;
     scanner.next();
   }
 
-  scanner.next(); // eat }
+  if (!scanner.current) {
+    return null;
+  }
 
-  return null;
+  scanner.next(); // eat {
+
+  while (scanner.current) {
+    const declSuggestion = suggestCSSDeclaration(scanner);
+    if (declSuggestion) {
+      return declSuggestion;
+    }
+
+    if (scanner.current?.value === "}") {
+      break;
+    }
+  }
 };
 
 const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
+  // only suggest declaration if on new line -- UX is wierd otherwise
+  const ws = scanner.current?.value;
+  scanner.skipWhitespace();
+  if (!scanner.current) {
+    if (ws && /[\n\r]/.test(ws)) {
+      return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" };
+    }
+  }
+
+  if (scanner.current.value === "&") {
+    scanner.next(); // eat &
+    return suggestStyleRule(scanner);
+  } else if (scanner.current.value === "@") {
+    return suggestCSSAtRule(
+      scanner,
+      SuggestContextKind.CSS_DECLARATION_AT_RULE
+    );
+  } else if (scanner.current?.value !== "}") {
+    return suggestCSSProperty(scanner);
+  }
+};
+
+const suggestCSSProperty = (scanner: TokenScanner): SuggestContext => {
   let name = "";
 
   while (scanner.current.value !== ":") {
@@ -411,6 +428,7 @@ const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
       return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: name };
     }
   }
+
   if (scanner.current.value === ":") {
     scanner.next(); // eat :
     const valueSuggestion = suggestCSSDeclarationValue(name, scanner);
@@ -460,6 +478,21 @@ const suggestCSSAtRule = (
     }
   }
 
+  if (scanner.current?.value === "{") {
+    scanner.next(); // eat {
+    while (scanner.current) {
+      if (String(scanner.current.value) === "}") {
+        break;
+      }
+      const suggestion = suggestRule(scanner);
+      if (suggestion) {
+        return suggestion;
+      }
+    }
+  } else {
+    scanner.next(); // eat ;
+  }
+
   return null;
 };
 
@@ -481,6 +514,7 @@ const suggestCSSDeclarationValue = (
     }
 
     if (scanner.current.value === ";") {
+      scanner.next(); // eat ;
       break;
     }
 

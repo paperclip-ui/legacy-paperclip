@@ -27,6 +27,11 @@ https://www.ibm.com/design/language/color
     font-weight: 100;
   }
 
+  .col-2 {
+    width: 55%;
+    display: inline-block;
+  }
+
   .LeftSidebar {
     border-right: 1px solid rgb(230, 230, 230);
     height: 100%;
@@ -50,6 +55,7 @@ https://www.ibm.com/design/language/color
 
     & > .name {
       width: 100%;
+      white-space: nowrap;
     }
 
     & .value {
@@ -70,6 +76,16 @@ https://www.ibm.com/design/language/color
     width: 100%;
     border-top: 1px solid rgb(255, 255, 255);
   }
+  
+
+  @media screen and (max-width: 1000px) {
+    .Color {
+      flex-direction: column;
+      & .value {
+        display: block;
+      }
+    }
+  }
 </style>
 
 <div component as="Color" className="Color" className:dark className:light style="background: var({varName})">
@@ -84,8 +100,10 @@ https://www.ibm.com/design/language/color
   <div className="Content">
     <h1>Colors</h1>
     <hr>
-    <Color varName="--color-orange-100" value="#F60" dark />
-    <Color varName="--color-orange-300" value="rgb(248, 201, 169)" dark />
-    <Color varName="--color-orange-200" value="rgb(170, 87, 19)" light />
+    <div className="col-2">
+      <Color varName="--color-orange-100" value="#F60" dark />
+      <Color varName="--color-orange-300" value="rgb(248, 201, 169)" dark />
+      <Color varName="--color-orange-200" value="rgb(170, 87, 19)" light />
+    </div>
   </div>
 </div>

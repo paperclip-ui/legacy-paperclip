@@ -142,12 +142,18 @@ describe(__filename, () => {
       }
     ],
     [
-      `<style> a { } b { @`,
+      `<style> a { } b { @in`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_AT_RULE,
-        prefix: ""
+        prefix: "in"
       }
     ],
+    [
+      `<style>  @media screen and (max-width: 500px) {
+        .Color {`,
+      null
+    ],
+    [`<style> .Color { & .value `, null],
     [
       `<style> a { } b { @include `,
       {
