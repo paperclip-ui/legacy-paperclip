@@ -327,7 +327,7 @@ fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
 
 // // parent > child
 fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
-  let selector = parse_psuedo_element_selector(context)?;
+  let selector = parse_pseudo_element_selector(context)?;
   parse_next_pair_selector(selector, context)
 }
 
@@ -428,37 +428,7 @@ fn parse_combo_selector_selectors<'a, 'b>(
   Ok(selectors)
 }
 
-// fn parse_prefixed_selector<'a, 'b>(
-//   context: &mut Context<'a, 'b>,
-// ) -> Result<Selector, ParseError> {
-//   eat_superfluous(context)?;
-//   if context.tokenizer.peek(1)? == Token::Byte(b'&') {
-//     context.tokenizer.next_expect(Token::Byte(b'&'))?; // eat &
-//     let mut connector = context.tokenizer.peek(1)? == Token::Whitespace {
-//       context.tokenizer.next()?;
-//       " ".to_string()
-//     } else {
-//       "".to_string()
-//     }
-
-//     eat_superfluous(context)?;
-
-//     let postfix_selector = if context.tokenizer.peek(1)? == Token::CurlyOpen || context.tokenizer.peek(1)? == Token::Comma {
-//       None
-//     } else {
-//       Some(Box::new(parse_next_pair_selector(Selector::None, context)?))
-//     };
-
-//     Ok(Selector::Prefixed(PrefixedSelector {
-//       connector,
-//       postfix_selector
-//     }))
-//   } else {
-//     parse_psuedo_element_selector(context)
-//   }
-// }
-
-fn parse_psuedo_element_selector<'a, 'b>(
+fn parse_pseudo_element_selector<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<Selector, ParseError> {
   let mut colon_count = 1;
@@ -484,7 +454,6 @@ fn parse_psuedo_element_selector<'a, 'b>(
     context.tokenizer.next()?;
   }
   let name = parse_selector_name(context)?.to_string();
-  eat_superfluous(context)?;
   let selector: Selector = if context.tokenizer.peek(1)? == Token::ParenOpen {
     context.tokenizer.next()?;
     let selector = if name == "not" {
@@ -538,22 +507,20 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
     Token::Byte(b'&') => {
       context.tokenizer.next()?; // eat &
 
-      let mut connector: String = if context.tokenizer.peek(1)? == Token::Whitespace {
+      let connector: String = if context.tokenizer.peek(1)? == Token::Whitespace {
         " ".to_string()
       } else {
         get_buffer(context.tokenizer, |tokenizer| {
           Ok(match tokenizer.peek(1)? {
-            Token::Keyword(_) => true,
+            Token::Keyword(_) | Token::Minus => true,
             _ => false,
           })
         })?
         .to_string()
       };
 
-      eat_superfluous(context)?;
-
       let postfix_selector = if context.tokenizer.peek(1)? == Token::Colon {
-        Some(Box::new(parse_psuedo_element_selector(context)?))
+        Some(Box::new(parse_pseudo_element_selector(context)?))
       } else {
         let mut postfix_selectors = parse_combo_selector_selectors(context)?;
         if postfix_selectors.len() == 0 {

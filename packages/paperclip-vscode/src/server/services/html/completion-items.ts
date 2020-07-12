@@ -49,10 +49,10 @@ for (const tagName in ELEMENT_ATTRIBUTES) {
         insertTextFormat: InsertTextFormat.Snippet,
         command: RETRIGGER_COMMAND
       };
-    } else if (attrName === "as") {
+    } else if (attrName === "as" || attrName === "className") {
       item = {
         ...item,
-        insertText: `as="$0"`,
+        insertText: `${attrName}="$0"`,
         insertTextFormat: InsertTextFormat.Snippet
       };
     }

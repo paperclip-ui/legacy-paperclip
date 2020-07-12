@@ -279,7 +279,6 @@ describe(__filename + "#", () => {
     } catch (e) {
       err = e;
     }
-    console.log(err);
     expect(err).to.eql({
       errorKind: "Graph",
       uri: "/entry.pc",
@@ -350,5 +349,28 @@ describe(__filename + "#", () => {
       "element--child": { name: "element--child", public: false },
       element: { name: "element", public: false }
     });
+  });
+
+  it("maintains space with & selector", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      .todo {
+        &:hover .destroy {
+            display: inline-block;
+        }
+        .todo {
+          &--item .destroy {
+            display: inline-block;
+          }
+        }
+      }
+    </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>._80f4925f_todo { } ._80f4925f_todo:hover ._80f4925f_destroy { display:inline-block; } ._80f4925f_todo ._80f4925f_todo { } ._80f4925f_todo ._80f4925f_todo--item ._80f4925f_destroy { display:inline-block; }</style>`
+    );
   });
 });

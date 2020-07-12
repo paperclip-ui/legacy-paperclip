@@ -236,7 +236,18 @@ export class PCAutocomplete {
     }
 
     if (context.tagPath.length === 1) {
-      return ATTRIBUTE_NAME_COMPLETION_ITEMS[context.tagPath[0]] || [];
+      return (ATTRIBUTE_NAME_COMPLETION_ITEMS[context.tagPath[0]] || []).map(
+        item => {
+          if (item.label === "className" && containsClasses(data)) {
+            return {
+              ...item,
+              command: RETRIGGER_COMMAND
+            };
+          }
+
+          return item;
+        }
+      );
     }
 
     return [];
@@ -368,6 +379,18 @@ const containsVars = (data: LoadedData) => {
   }
   for (const imp in data.imports) {
     for (const name in data.imports[imp].style.variables) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const containsClasses = (data: LoadedData) => {
+  for (const name in data.exports.style.classNames) {
+    return true;
+  }
+  for (const imp in data.imports) {
+    for (const name in data.imports[imp].style.classNames) {
       return true;
     }
   }

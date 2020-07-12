@@ -1,11 +1,36 @@
 <import src="module.pc" as="Module">
 
 <style>
-  .override\:me {
-    color: rgb(192, 33, 179);
+  :root {
+    --color: red;
+  }
+  .todo {
+    color:var(--color);
+    .destroy {
+      display: none;
+      &:hover {
+        color: #af5b5e;
+      }
+      &:after {
+        content: "×";
+      }
+    }
+
+    &:hover .destroy {
+        display: inline-block;
+    }
   }
 </style>
 
-<Module.Module component as="Test" className=">>>override:me">
-  Hello World
-</Module.Module>
+<div className="todo">
+  fsdfdsfsd
+  <div className="destroy">
+  </div>
+</div>
+
+<div component as="Test">
+  {children}
+</div>
+
+<Test children>
+</Test>

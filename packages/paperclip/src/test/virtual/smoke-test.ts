@@ -296,6 +296,23 @@ describe(__filename + "#", () => {
       {},
       `<style></style><span class="_1acb798_blue blue _80f4925f_red red" data-pc-1acb798>message </span><span data-pc-80f4925f></span>`
     ],
+    // [
+    //   // nexted style declarations
+    //   {
+    //     "/entry.pc": `
+    //       <style>
+    //         :global(.a) {
+    //           .b {
+
+    //           }
+    //         }
+    //       </style>
+    //       <div>ok</div>
+    //     `
+    //   },
+    //   {},
+    //   `<style>.a { color:blue; display:block; } .a--secondary { } .a--secondary--thirdly { color:blue; } .a.c { } .a ._80f4925f_d { } .a > .e { color:blue; } .a > .e-f { color:red; }</style><div data-pc-80f4925f>ok</div>`
+    // ],
     [
       // nexted style declarations
       {
