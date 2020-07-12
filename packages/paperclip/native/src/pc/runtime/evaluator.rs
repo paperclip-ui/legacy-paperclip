@@ -284,36 +284,40 @@ pub fn evaluate_document_styles<'a>(
   let mut css_imports: HashMap<String, css_export::Exports> = HashMap::new();
 
   for (id, dep_uri) in &entry.dependencies {
-    let imp = graph.dependencies.get(dep_uri).unwrap();
+    let imp_option = graph.dependencies.get(dep_uri);
 
-    match &imp.content {
-      DependencyContent::Node(imp_node) => {
-        let (imp_sheet, imp_exports) =
-          evaluate_document_styles(imp_node, dep_uri, vfs, graph, include_imported_styled)?;
 
-        css_imports.insert(id.to_string(), imp_exports);
-        if include_imported_styled {
-          sheet.extend(imp_sheet);
+    if let Some(imp) = imp_option {
+
+      match &imp.content {
+        DependencyContent::Node(imp_node) => {
+          let (imp_sheet, imp_exports) =
+            evaluate_document_styles(imp_node, dep_uri, vfs, graph, include_imported_styled)?;
+
+          css_imports.insert(id.to_string(), imp_exports);
+          if include_imported_styled {
+            sheet.extend(imp_sheet);
+          }
         }
-      }
-      DependencyContent::StyleSheet(imp_style) => {
-        let info = evaluate_css(
-          imp_style,
-          dep_uri,
-          &get_document_style_scope(&dep_uri),
-          &HashMap::new(),
-          vfs,
-          &HashMap::new(),
-        )?;
+        DependencyContent::StyleSheet(imp_style) => {
+          let info = evaluate_css(
+            imp_style,
+            dep_uri,
+            &get_document_style_scope(&dep_uri),
+            &HashMap::new(),
+            vfs,
+            &HashMap::new(),
+          )?;
 
-        match info {
-          CSSEvalInfo {
-            sheet: imp_sheet,
-            exports: imp_exports,
-          } => {
-            css_imports.insert(id.to_string(), imp_exports);
-            if include_imported_styled {
-              sheet.extend(imp_sheet);
+          match info {
+            CSSEvalInfo {
+              sheet: imp_sheet,
+              exports: imp_exports,
+            } => {
+              css_imports.insert(id.to_string(), imp_exports);
+              if include_imported_styled {
+                sheet.extend(imp_sheet);
+              }
             }
           }
         }

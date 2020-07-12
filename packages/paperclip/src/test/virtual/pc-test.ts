@@ -505,4 +505,37 @@ describe(__filename + "#", () => {
       message: "Component name is already declared."
     });
   });
+
+  it("Throws an error if an imported module has a CSS error", async () => {
+    const graph = {
+      "/entry.pc": `
+        <module src="/module.pc">
+      `,
+      "/module.pc": `
+        <style>
+          .a {
+            b {
+              color: blue;
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 58, end: 105 },
+      message: "Component name is already declared."
+    });
+  });
 });

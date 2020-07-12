@@ -14,7 +14,7 @@
     transition-property: left;
     transition-duration: 500ms;
 
-    a {
+    & a {
       font-weight: normal;
       text-decoration: none;
       color: #b83f45;
@@ -24,31 +24,31 @@
       }
     }
 
-    h3, h4, h5 {
+    & h3, h4, h5 {
 
       margin: 10px 0;
       font-weight: 500;
       line-height: 1.2;
       color: #000;
     }
-    h3 {
+    & h3 {
       font-size: 24px;
     }
-    h4 {
+    & h4 {
       font-size: 18px;
     }
-    h5 {
+    & h5 {
       margin-bottom: 0;
       font-size: 14px;
     }
-    ul {
+    & ul {
       padding: 0;
       margin: 0 0 30px 25px;
     }
-    li {
+    & li {
       line-height: 20px;
     }
-    p {
+    & p {
       font-size: 15px;
       font-weight: 300;
       line-height: 1.3;
@@ -72,7 +72,7 @@
   .quote {
     border: none;
     margin: 20px 0 60px 0;
-    p {
+    & p {
       font-style: italic;
       &:before {
         content: "“";
@@ -91,14 +91,14 @@
         right: 3px;
       }
     }
-    footer {
+    & footer {
       position: absolute;
       bottom: -40px;
       right: 0;
-      img {
+      & img {
         border-radius: 3px;
       }
-      a {
+      & a {
         margin-left: 5px;
         vertical-align: middle;
       }

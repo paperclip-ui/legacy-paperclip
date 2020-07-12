@@ -121,6 +121,7 @@ function initBuild(
         fullPath,
         compilerOptions
       );
+
       if (options.write) {
         let outputFilePath = getOutputFilePath(fullPath, compilerOptions);
         if (config.dropPcExtension) {
