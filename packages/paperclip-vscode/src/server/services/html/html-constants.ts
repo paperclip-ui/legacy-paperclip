@@ -175,12 +175,16 @@ const VISIBLE_ELEMENT_ATTRIBUTE_NAMES = [
   "onMouseOut",
   "onKeyPress",
   "onKeyDown",
-  "onKeyUp"
+  "onKeyUp",
+
+  // custom
+  "component",
+  "as"
 ];
 
 let ELEMENT_ATTRIBUTES: Record<string, string[]> = ALL_TAG_NAMES.reduce(
   (obj, tagName) => {
-    obj[tagName] = [];
+    obj[tagName] = ["component"];
     return obj;
   },
   {}

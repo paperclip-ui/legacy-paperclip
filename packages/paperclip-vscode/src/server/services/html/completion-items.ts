@@ -45,9 +45,15 @@ for (const tagName in ELEMENT_ATTRIBUTES) {
     if (tagName === "import" && attrName === "src") {
       item = {
         ...item,
-        insertText: `src="\${1:}"`,
+        insertText: `src="\$0"`,
         insertTextFormat: InsertTextFormat.Snippet,
         command: RETRIGGER_COMMAND
+      };
+    } else if (attrName === "as") {
+      item = {
+        ...item,
+        insertText: `as="$0"`,
+        insertTextFormat: InsertTextFormat.Snippet
       };
     }
 

@@ -6,7 +6,6 @@
   }
 </style>
 
-<Module.Module className=">>>override:me">
+<Module.Module component as="Test" className=">>>override:me">
   Hello World
 </Module.Module>
-

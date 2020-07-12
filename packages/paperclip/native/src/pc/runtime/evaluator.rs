@@ -114,7 +114,11 @@ fn collect_component_exports<'a>(
           let properties = collect_node_properties(child);
 
           if exports.contains_key(id) {
-            return Err(RuntimeError::new("Component name is already declared.".to_string(), context.uri, &element.location));
+            return Err(RuntimeError::new(
+              "Component name is already declared.".to_string(),
+              context.uri,
+              &element.location,
+            ));
           }
 
           exports.insert(
