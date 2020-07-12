@@ -480,4 +480,31 @@ describe(__filename + "#", () => {
       }
     });
   });
+
+  it("Cannot declare a component twice", async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test">
+        </div>
+        <div export component as="Test">
+        </div>
+      `
+    };
+
+    const engine = createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 58, end: 105 },
+      message: "Component name is already declared."
+    });
+  });
 });

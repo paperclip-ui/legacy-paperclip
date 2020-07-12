@@ -83,7 +83,7 @@ pub fn evaluate<'a>(
       preview,
       exports: Exports {
         style: css_exports,
-        components: collect_component_exports(&node_expr, &context),
+        components: collect_component_exports(&node_expr, &context)?,
       },
     }))
   } else {
@@ -98,7 +98,7 @@ pub fn evaluate<'a>(
 fn collect_component_exports<'a>(
   root: &ast::Node,
   context: &Context,
-) -> HashMap<String, ComponentExport> {
+) -> Result<HashMap<String, ComponentExport>, RuntimeError> {
   let mut exports: HashMap<String, ComponentExport> = HashMap::new();
 
   let children = ast::get_children(root);
@@ -113,6 +113,10 @@ fn collect_component_exports<'a>(
 
           let properties = collect_node_properties(child);
 
+          if exports.contains_key(id) {
+            return Err(RuntimeError::new("Component name is already declared.".to_string(), context.uri, &element.location));
+          }
+
           exports.insert(
             id.to_string(),
             ComponentExport {
@@ -126,7 +130,7 @@ fn collect_component_exports<'a>(
     }
   }
 
-  exports
+  Ok(exports)
 }
 
 fn collect_node_properties<'a>(node: &ast::Node) -> HashMap<String, Property> {
