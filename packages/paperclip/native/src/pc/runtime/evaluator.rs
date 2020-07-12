@@ -286,9 +286,7 @@ pub fn evaluate_document_styles<'a>(
   for (id, dep_uri) in &entry.dependencies {
     let imp_option = graph.dependencies.get(dep_uri);
 
-
     if let Some(imp) = imp_option {
-
       match &imp.content {
         DependencyContent::Node(imp_node) => {
           let (imp_sheet, imp_exports) =
