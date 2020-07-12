@@ -613,21 +613,6 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
   }))
 }
 
-// fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
-//   let initial = context.tokenizer.next()?; // eat quote
-//   let qoute = if initial == Token::SingleQuote {
-//     "'"
-//   } else {
-//     "\""
-//   };
-
-//   let buffer = get_buffer(context.tokenizer, |tokenizer| {
-//     Ok(tokenizer.peek(1)? != initial)
-//   })?;
-//   context.tokenizer.next_expect(initial)?; // eat quote
-//   Ok(format!("{}{}{}", qoute, buffer, qoute))
-// }
-
 fn parse_attribute_selector_value<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<String, ParseError> {
@@ -694,8 +679,9 @@ fn parse_declarations_and_children<'a, 'b>(
     if context.tokenizer.peek(1)? == Token::CurlyClose {
       break;
     }
-
-    // Child rule
+ 
+    // Child rule - Note that & is required so that we don't have to do
+    // a forward look-ahead which is an avoidable performance issue
     if let Token::Byte(b'&') = context.tokenizer.peek(1)? {
       children.push(parse_style_rule2(context)?);
     } else if context.tokenizer.peek(1)? == Token::At {
@@ -703,7 +689,6 @@ fn parse_declarations_and_children<'a, 'b>(
     } else {
       declarations.push(parse_key_value_declaration(context)?);
     }
-
 
     eat_superfluous(context)?;
   }
