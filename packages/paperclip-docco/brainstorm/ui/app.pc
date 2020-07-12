@@ -1,12 +1,91 @@
-<import src="./colors.pc" as="colors">
-<import src="./typography.pc" as="typography">
+<!-- 
 
+Inspiration:
+
+https://www.ibm.com/design/language/color
+
+-->
 <style>
-  .LeftSidebar {
 
+  :root {
+    --color-orange-100: #F60;
+    --color-orange-200: rgb(248, 201, 169);
+    --color-orange-300: rgb(240, 166, 6);
+    --color-orange-400: rgb(170, 87, 19);
+  }
+
+  /* Typography */
+
+  :global(body) {
+    font-family: Helvetica;
+  }
+
+  /* Component stuff */
+
+
+  h1, h2, h3, h4 {
+    font-weight: 100;
+  }
+
+  .LeftSidebar {
+    border-right: 1px solid rgb(230, 230, 230);
+    height: 100%;
+    width: 200px;
+    flex-shrink: 0;
+  }
+  .Container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+  }
+
+  .Content {
+    padding: 40px;
+    width: 100%;
+  }
+
+  .Color {
+    padding: 20px;
+    display: flex;
+
+    & > .name {
+      width: 100%;
+    }
+
+    & .value {
+      word-break: nobreak;
+      white-space: nowrap;
+    }
+
+    &.dark {
+      color: white;
+    }
+
+    &.light {
+      color: #333;
+    }
+  }
+
+  hr {
+    width: 100%;
+    border-top: 1px solid rgb(255, 255, 255);
   }
 </style>
 
-<div className="LeftSidebar">
-  Left Sidebard
+<div component as="Color" className="Color" className:dark className:light style="background: var({varName})">
+  <div className="name">var({varName})</div>
+  <div className="value">{value}</div>
+</div>
+
+<div className="Container">
+  <div className="LeftSidebar">
+    
+  </div>
+  <div className="Content">
+    <h1>Colors</h1>
+    <hr>
+    <Color varName="--color-orange-100" value="#F60" dark />
+    <Color varName="--color-orange-300" value="rgb(248, 201, 169)" dark />
+    <Color varName="--color-orange-200" value="rgb(170, 87, 19)" light />
+  </div>
 </div>

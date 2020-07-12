@@ -97,9 +97,11 @@ export class PCAutocomplete {
         return this._getCSSVariableSuggestion(data);
       case SuggestContextKind.CSS_CLASS_REFERENCE:
         return this._getCSSClassReferenceSuggestion(data);
-      case SuggestContextKind.HTML_CLOSE_TAG_NAME:
-        return this._getCloseTagSuggestion(context);
+      // case SuggestContextKind.HTML_CLOSE_TAG_NAME:
+      //   return this._getCloseTagSuggestion(context);
     }
+
+    return [];
   }
 
   private _getCloseTagSuggestion(

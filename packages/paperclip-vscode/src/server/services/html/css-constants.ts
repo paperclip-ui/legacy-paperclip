@@ -234,6 +234,17 @@ const CSS_DECLARATION_NAMES = [
   "z-index"
 ];
 
+// https://www.w3schools.com/cssref/pr_text_white-space.asp
+const WHITE_SPACE_VALUES = [
+  "normal",
+  "nowrap",
+  "pre",
+  "pre-line",
+  "pre-wrap",
+  "initial",
+  "inherit"
+];
+
 // https://www.w3schools.com/cssref/css3_pr_animation-name.asp
 const ANIMATION_NAME_VALUES = ["none", "initial", "inhert"];
 
@@ -298,7 +309,8 @@ const CSS_DECLARATION_VALUE_ITEMS = {
     ...ANIMATION_ITERATION_COUNT,
     ...ANIMATION_DIRECTION
   ],
-  "animation-name": [...ANIMATION_NAME_VALUES]
+  "animation-name": [...ANIMATION_NAME_VALUES],
+  "white-space": [...WHITE_SPACE_VALUES]
 };
 
 export {

@@ -401,15 +401,16 @@ const suggestCSSDeclarations = (scanner: TokenScanner): SuggestContext => {
 };
 
 const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
-  const name = scanner.current.value;
+  let name = "";
 
-  scanner.next(); // eat name
-  scanner.skipWhitespace();
-
-  if (!scanner.current) {
-    return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: name };
+  while (scanner.current.value !== ":") {
+    name += scanner.current.value;
+    scanner.next();
+    scanner.skipWhitespace();
+    if (!scanner.current) {
+      return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: name };
+    }
   }
-
   if (scanner.current.value === ":") {
     scanner.next(); // eat :
     const valueSuggestion = suggestCSSDeclarationValue(name, scanner);

@@ -127,6 +127,14 @@ describe(__filename, () => {
       }
     ],
     [
+      `<style> a { } b { white-space: `,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_VALUE,
+        declarationName: "white-space",
+        declarationValuePrefix: ""
+      }
+    ],
+    [
       `<style> a { } b { @in`,
       {
         kind: SuggestContextKind.CSS_DECLARATION_AT_RULE,
