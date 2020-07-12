@@ -679,7 +679,7 @@ fn parse_declarations_and_children<'a, 'b>(
     if context.tokenizer.peek(1)? == Token::CurlyClose {
       break;
     }
- 
+
     // Child rule - Note that & is required so that we don't have to do
     // a forward look-ahead which is an avoidable performance issue
     if let Token::Byte(b'&') = context.tokenizer.peek(1)? {

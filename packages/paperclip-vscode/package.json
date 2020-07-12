@@ -6,6 +6,7 @@
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "description": "",
+  "preview": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/crcn/paperclip.git"
