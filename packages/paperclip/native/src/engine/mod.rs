@@ -232,10 +232,14 @@ impl Engine {
     stack.insert(uri.to_string());
     let dependency_option = self.dependency_graph.dependencies.get(uri);
 
-    let dependency = if let Some(dep)  = dependency_option  {
+    let dependency = if let Some(dep) = dependency_option {
       dep
     } else {
-      return Err(RuntimeError::new("dependency not loaded.".to_string(), uri, &ast::Location::new(0, 0)));
+      return Err(RuntimeError::new(
+        "dependency not loaded.".to_string(),
+        uri,
+        &ast::Location::new(0, 0),
+      ));
     };
 
     let dept_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);

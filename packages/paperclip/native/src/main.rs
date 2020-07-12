@@ -61,5 +61,4 @@ struct UpdateVirtualFileContentParams {
   content: String,
 }
 
-fn main() {
-}
+fn main() {}
