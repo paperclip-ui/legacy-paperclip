@@ -58,7 +58,7 @@ export const openPreview = async (filePath: string) => {
 
   // wait for activated.
   // FIXME: this is bad. Need better way to do this.
-  await timeout(500);
+  await timeout(1000);
 
   await vscode.commands.executeCommand("paperclip.openPreview", doc.uri);
 
@@ -79,6 +79,8 @@ export const testCompletion = async (
     doc.uri,
     doc.positionAt(doc.getText().length)
   )) as vscode.CompletionList;
+
+  console.log(result);
 
   for (const expectedItem of items) {
     // some syntactic sugar -- ! tells us to omit from tests
