@@ -348,9 +348,9 @@ fn parse_next_script_element_parts<'a>(
 fn parse_tag_name<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<String, ParseError> {
   Ok(
     get_buffer(tokenizer, |tokenizer| {
-      Ok(!matches!(
+      Ok(matches!(
         tokenizer.peek(1)?,
-        Token::Whitespace | Token::GreaterThan | Token::Equals | Token::SelfTagClose | Token::Colon
+        Token::Word(_) | Token::Minus | Token::Dot | Token::Byte(b'$') | Token::Byte(b'_')
       ))
     })?
     .to_string(),
@@ -425,6 +425,10 @@ fn parse_key_value_attribute<'a>(
   let start = tokenizer.utf16_pos;
   let name = parse_tag_name(tokenizer)?;
 
+  if name.len() == 0 {
+    return Err(ParseError::unexpected_token(start))
+  }
+
   if tokenizer.peek(1)? == Token::Colon {
     tokenizer.next()?; // eat :
     let binding_name = parse_tag_name(tokenizer)?;
@@ -444,13 +448,9 @@ fn parse_key_value_attribute<'a>(
         location: Location::new(start, tokenizer.utf16_pos),
       },
     ))
-  } else {
-    let mut value = None;
-
-    if tokenizer.peek(1)? == Token::Equals {
-      tokenizer.next()?; // eat =
-      value = Some(parse_attribute_value(tokenizer)?);
-    }
+  } else if tokenizer.peek(1)? == Token::Equals {
+    tokenizer.next()?; // eat =
+    let value = Some(parse_attribute_value(tokenizer)?);
 
     Ok(pc_ast::Attribute::KeyValueAttribute(
       pc_ast::KeyValueAttribute {
@@ -459,6 +459,25 @@ fn parse_key_value_attribute<'a>(
         location: Location::new(start, tokenizer.utf16_pos),
       },
     ))
+  } else if tokenizer.peek(1)? == Token::Whitespace {
+    tokenizer.next()?; // eat WS
+    Ok(pc_ast::Attribute::KeyValueAttribute(
+      pc_ast::KeyValueAttribute {
+        name,
+        value: None,
+        location: Location::new(start, tokenizer.utf16_pos),
+      },
+    ))
+  } else if matches!(tokenizer.peek(1)?, Token::Backslash | Token::GreaterThan) {
+    Ok(pc_ast::Attribute::KeyValueAttribute(
+      pc_ast::KeyValueAttribute {
+        name,
+        value: None,
+        location: Location::new(start, tokenizer.utf16_pos),
+      },
+    ))
+  } else {
+    Err(ParseError::unexpected_token(tokenizer.utf16_pos))
   }
 }
 

@@ -82,7 +82,7 @@ describe(__filename + "#", () => {
         <div>
         </div>
       `,
-      "/module.pc": `<bad!`
+      "/module.pc": `<bad`
     };
     const engine = createMockEngine(graph);
     const e = waitForError(engine);
@@ -96,6 +96,33 @@ describe(__filename + "#", () => {
         kind: "EndOfFile",
         message: "End of file",
         location: { start: 0, end: 1 }
+      }
+    });
+  });
+
+  it("Doesn't crash if incorrect token is found in tag", async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="/module.pc">
+
+        <div>
+        </div>
+      `,
+      "/module.pc": `<bad!`
+    };
+    const engine = createMockEngine(graph);
+    const e = waitForError(engine);
+    engine.run("/entry.pc").catch(() => {});
+    const err = await e;
+    console.log(err);
+    expect(err).to.eql({
+      kind: "Error",
+      errorKind: "Graph",
+      uri: "/module.pc",
+      info: {
+        kind: "Unexpected",
+        message: "Unexpected token",
+        location: { start: 4, end: 5 }
       }
     });
   });
@@ -538,6 +565,35 @@ describe(__filename + "#", () => {
         kind: "Unterminated",
         message: "Unterminated element.",
         location: { start: 9, end: 34 }
+      }
+    });
+  });
+
+  it("Displays an error if open tag is unclosed", async () => {
+    const graph = {
+      "/entry.pc": `
+        <div <div />
+      `
+    };
+
+    const engine = createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+      const ast = engine.getLoadedAst("/entry.pc");
+      console.log(JSON.stringify(ast, null, 2));
+    } catch (e) {
+      err = e;
+    }
+    expect(err).to.eql({
+      errorKind: "Graph",
+      uri: "/entry.pc",
+      info: {
+        kind: "Unexpected",
+        message: "Unexpected token",
+        location: { start: 14, end: 15 }
       }
     });
   });

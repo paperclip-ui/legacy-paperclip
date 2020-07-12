@@ -30,7 +30,7 @@ pub struct VarExport {
 pub struct KeyframesExport {
   pub name: String,
   pub public: bool,
-  pub source: ExprSource
+  pub source: ExprSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -45,7 +45,7 @@ impl Exports {
       class_names: HashMap::new(),
       mixins: HashMap::new(),
       variables: HashMap::new(),
-      keyframes: HashMap::new()
+      keyframes: HashMap::new(),
     }
   }
   pub fn extend(&mut self, exports: &Exports) {

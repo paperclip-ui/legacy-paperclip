@@ -1,5 +1,5 @@
 use super::super::ast;
-use super::export::{ClassNameExport, Exports, MixinExport, VarExport, KeyframesExport};
+use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
 use crate::base::ast::ExprSource;
 use crate::base::runtime::RuntimeError;
@@ -196,16 +196,19 @@ fn evaluate_keyframes_rule(
   }
 
   let public = if let Some(var) = context.exports.keyframes.get(&rule.name) {
-    var.public ||  context.in_public_scope
+    var.public || context.in_public_scope
   } else {
     context.in_public_scope
   };
 
-  context.exports.keyframes.insert(rule.name.to_string(), KeyframesExport {
-    name: rule.name.to_string(),
-    public,
-    source: ExprSource::new(context.uri.to_string(), rule.location.clone())
-  });
+  context.exports.keyframes.insert(
+    rule.name.to_string(),
+    KeyframesExport {
+      name: rule.name.to_string(),
+      public,
+      source: ExprSource::new(context.uri.to_string(), rule.location.clone()),
+    },
+  );
 
   Ok(virt::Rule::Keyframes(virt::KeyframesRule {
     name: format!("_{}_{}", context.scope, rule.name.to_string()),
