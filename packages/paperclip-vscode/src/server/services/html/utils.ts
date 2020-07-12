@@ -28,21 +28,28 @@ export const tagCompletionItem = (
   tagName: string,
   hasAttributes: boolean
 ): CompletionItem => {
-  let insertText = `${tagName} $0>\n</${tagName}>`;
+  // let insertText = `${tagName}$0>\n</${tagName}>`;
 
-  if (tagName === "style") {
-    insertText = `${tagName}>\n\t\$0\n</${tagName}>`;
-    hasAttributes = false;
-  }
+  // if (tagName === "style") {
+  //   insertText = `${tagName}>\n\t\$0\n</${tagName}>`;
+  //   hasAttributes = false;
+  // }
 
-  if (tagName === "import") {
-    insertText = `${tagName} $0>`;
-    hasAttributes = true;
-  }
+  // if (/^(span)$/.test(tagName)) {
+  //   insertText = `${tagName}$1></${tagName}>`;
+  // }
+
+  // if (/^(i|b|strong)$/.test(tagName)) {
+  //   insertText = `${tagName}>$0</${tagName}>`;
+  // }
+
+  // if (tagName === "import") {
+  //   insertText = `${tagName} $0>`;
+  //   hasAttributes = true;
+  // }
 
   return {
     label: tagName,
-    insertText,
     insertTextFormat: InsertTextFormat.Snippet,
     command: hasAttributes ? RETRIGGER_COMMAND : null
   };
