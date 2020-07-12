@@ -4,6 +4,7 @@ export type PCExports = {
     mixins: Record<string, MixinExport>;
     classNames: Record<string, ClassNameExport>;
     variables: Record<string, VariableExport>;
+    keyframes: Record<string, KeyframesExport>;
   };
 };
 
@@ -31,5 +32,11 @@ export type MixinExport = {
 export type VariableExport = {
   name: string;
   value: string;
+  source: any;
+};
+
+export type KeyframesExport = {
+  name: string;
+  public: boolean;
   source: any;
 };

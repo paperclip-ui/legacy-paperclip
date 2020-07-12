@@ -3,11 +3,14 @@
 <style>
   .message {
     font-family: Helvetica;
-    color: rgb(53, 156, 125);
-
+    color: rgb(255, 255, 255);
+    font-weight: 100;
+    letter-spacing: 0.05em;
+    padding: 40px;
+    font-size: 24px;
   }
 </style>
 
-<div className="message >>>tw.sm:bg-gray-700 >>>tw.space-y-0 >>>tw.tracking-tighter">
-  Hello Tailwind
+<div className="message >>>tw.sm:bg-gray-700 >>>tw.space-y-0">
+  Hello Something
 </div>

@@ -234,6 +234,37 @@ const CSS_DECLARATION_NAMES = [
   "z-index"
 ];
 
+// https://www.w3schools.com/cssref/css3_pr_animation-name.asp
+const ANIMATION_NAME_VALUES = ["none", "initial", "inhert"];
+
+// https://www.w3schools.com/cssref/css3_pr_animation-timing-function.asp
+const ANIMATION_TIMING_FUNCTION = [
+  "linear",
+  "ease",
+  "ease-in",
+  "ease-out",
+  "ease-in-out",
+  "step-start",
+  "step-end"
+];
+
+// https://www.w3schools.com/cssref/css3_pr_animation-iteration-count.asp
+const ANIMATION_ITERATION_COUNT = ["infinite"];
+
+// https://www.w3schools.com/cssref/css3_pr_animation-direction.asp
+const ANIMATION_DIRECTION = [
+  "normal",
+  "reserve",
+  "alternate",
+  "alternate-reverse"
+];
+
+// https://www.w3schools.com/cssref/css3_pr_animation-fill-mode.asp
+const ANIMATION_FILL_MODE = ["backwards", "both"];
+
+// https://www.w3schools.com/cssref/css3_pr_animation-play-state.asp
+const ANIMATION_PLAY_STATE = ["paused", "running"];
+
 const CSS_DECLARATION_VALUE_ITEMS = {
   // https://www.w3schools.com/cssref/pr_class_display.asp
   display: [
@@ -260,7 +291,14 @@ const CSS_DECLARATION_VALUE_ITEMS = {
     "none",
     "initial",
     "inherit"
-  ].sort()
+  ].sort(),
+  animation: [
+    ...ANIMATION_NAME_VALUES,
+    ...ANIMATION_TIMING_FUNCTION,
+    ...ANIMATION_ITERATION_COUNT,
+    ...ANIMATION_DIRECTION
+  ],
+  "animation-name": [...ANIMATION_NAME_VALUES]
 };
 
 export {

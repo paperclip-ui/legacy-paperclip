@@ -174,6 +174,7 @@ export class Renderer {
     this._errorOverlay.appendChild(errorElement);
   }
   _onErrorBannerClick = (error: EngineErrorEvent) => {
+    this._clearErrors();
     this._em.emit(RenderEventTypes.ERROR_BANNER_CLICK, error);
   };
 

@@ -55,29 +55,6 @@ const EMPTY_ARRAY = [];
 export class PCAutocomplete {
   resolveCompletionItem(item: PCCompletionItem): CompletionItem {
     return item;
-
-    // unnecessary since commands are re-triggers
-    // if (item.data.cssDeclarationName) {
-    //   const name = item.data.cssDeclarationName;
-
-    //   return {
-    //     ...item,
-    //     insertText: name + ": ${1"+ (CSS_DECLARATION_VALUE_ITEMS[name] ? stringArraytoSnippetStringOptions(CSS_DECLARATION_VALUE_ITEMS[name]) : ":") +"};",
-    //     insertTextFormat: InsertTextFormat.Snippet
-    //   }
-    // }
-
-    // if (item.data.htmlAttributeName) {
-    //   const name = item.data.htmlAttributeName;
-
-    //   if (name === "src" && item.data.tagPath?.length === 1 && item.data.tagPath[0] === "import") {
-    //     return {
-    //       ...item,
-    //       insertText: `${name}="\${1${stringArraytoSnippetStringOptions(resolveAllPaperclipFiles(fs)(item.data.uri, true))}}"`,
-    //       insertTextFormat: InsertTextFormat.Snippet
-    //     }
-    //   }
-    // }
   }
   getSuggestions(
     uri: string,
@@ -312,6 +289,33 @@ export class PCAutocomplete {
       )
     ];
 
+    if (
+      info.declarationName === "animation" ||
+      info.declarationName === "animation-name"
+    ) {
+      for (const name in data.exports.style.keyframes) {
+        const info = data.exports.style.keyframes[name];
+        list.push({
+          label: info.name
+        });
+      }
+      for (const id in data.imports) {
+        if (/\//.test(id)) {
+          continue;
+        }
+        const imp = data.imports[id];
+        for (const name in imp.style.keyframes) {
+          const info = imp.style.keyframes[name];
+          if (!info.public) {
+            continue;
+          }
+          list.push({
+            label: `${id}.${name}`
+          });
+        }
+      }
+    }
+
     list.push(...declaredVarsToCompletionItems(data, true));
 
     return list;
@@ -402,23 +406,26 @@ const declaredVarsToCompletionItems = memoize(
 );
 
 const containsVars = (data: LoadedData) => {
-  for (const name in data.exports.style.variables) {
-    return true;
-  }
-  for (const imp in data.imports) {
-    for (const name in data.imports[imp].style.variables) {
-      return true;
-    }
-  }
-  return false;
+  return containsExports(data, "variables");
 };
 
 const containsClasses = (data: LoadedData) => {
-  for (const name in data.exports.style.classNames) {
+  return containsExports(data, "classNames");
+};
+
+const containsKeyframes = (data: LoadedData) => {
+  return containsExports(data, "keyframes");
+};
+
+const containsExports = (
+  data: LoadedData,
+  kind: "classNames" | "keyframes" | "variables"
+) => {
+  for (const name in data.exports.style[kind]) {
     return true;
   }
   for (const imp in data.imports) {
-    for (const name in data.imports[imp].style.classNames) {
+    for (const name in data.imports[imp].style[kind]) {
       return true;
     }
   }

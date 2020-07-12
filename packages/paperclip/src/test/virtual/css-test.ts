@@ -412,4 +412,47 @@ describe(__filename + "#", () => {
       `<style>@keyframes _80f4925f_lds-something3 { } div[data-pc-80f4925f] { animation:_80f4925f_lds-something3 1s; }</style>`
     );
   });
+
+  it("includes keyframes in export", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @keyframes a {
+
+      }
+      @export {
+        @keyframes b {
+
+        }
+      }
+
+    </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(result.exports.style.keyframes).to.eql({
+      b: {
+        name: "b",
+        public: true,
+        source: {
+          uri: "/entry.pc",
+          location: {
+            start: 73,
+            end: 94
+          }
+        }
+      },
+      a: {
+        name: "a",
+        public: false,
+        source: {
+          uri: "/entry.pc",
+          location: {
+            start: 25,
+            end: 44
+          }
+        }
+      }
+    });
+  });
 });
