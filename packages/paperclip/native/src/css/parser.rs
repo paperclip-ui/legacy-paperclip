@@ -96,12 +96,12 @@ fn parse_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError>
 }
 
 fn parse_style_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
-  Ok(Rule::Style(parse_style_rule2(context)?))
+  Ok(Rule::Style(parse_style_rule2(context, false)?))
 }
 
-fn parse_style_rule2<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<StyleRule, ParseError> {
+fn parse_style_rule2<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_amp_prefix: bool) -> Result<StyleRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
-  let selector = parse_selector(context)?;
+  let selector = parse_selector(context, is_child_without_amp_prefix)?;
   let (declarations, children) = parse_declaration_body(context)?;
   Ok(StyleRule {
     selector,
@@ -211,7 +211,7 @@ fn parse_condition_rule<'a, 'b>(
   let mut rules = vec![];
 
   while context.tokenizer.peek(1)? != Token::CurlyClose {
-    rules.push(parse_style_rule2(context)?);
+    rules.push(parse_style_rule2(context, false)?);
   }
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
@@ -298,18 +298,30 @@ fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Keyframe
   })
 }
 
-fn parse_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
-  parse_group_selector(context)
+fn parse_selector<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_amp_prefix: bool) -> Result<Selector, ParseError> {
+  parse_group_selector(context, is_child_without_amp_prefix)
 }
 
 // select, select, select
-fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
+fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_amp_prefix: bool) -> Result<Selector, ParseError> {
   let start = context.tokenizer.utf16_pos;
 
   let mut selectors: Vec<Selector> = vec![];
+
+  // don't handle for now
+  // if is_child_without_amp_prefix && context.tokenizer.peek(1)? == Token::Comma {
+  //   selectors.push(Selector::Prefixed(PrefixedSelector {
+  //     connector: " ".to_string(),
+  //     postfix_selector: None,
+  //     location: Location::new(context.tokenizer.utf16_pos, context.tokenizer.utf16_pos)
+  //   }));
+  //   context.tokenizer.next()?;
+  // }
+
+
   loop {
     eat_superfluous(context)?;
-    selectors.push(parse_pair_selector(context)?);
+    selectors.push(parse_pair_selector(context, is_child_without_amp_prefix)?);
     eat_superfluous(context)?;
     if context.tokenizer.peek(1)? == Token::Comma {
       context.tokenizer.next()?; // eat ,
@@ -328,8 +340,19 @@ fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
 }
 
 // // parent > child
-fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
-  let selector = parse_combo_selector(context)?;
+fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_amp_prefix: bool) -> Result<Selector, ParseError> {
+  let selector = if is_child_without_amp_prefix && matches!(context.tokenizer.peek(1)?, Token::Byte(b'>') | Token::Plus| Token::Squiggle) {
+
+    // TODO - change to BlankSelector
+    Selector::Prefixed(PrefixedSelector {
+      connector: " ".to_string(),
+      postfix_selector: None,
+      location: Location::new(context.tokenizer.utf16_pos, context.tokenizer.utf16_pos)
+    })
+  } else {
+    parse_combo_selector(context)?
+  };
+
   parse_next_pair_selector(selector, context)
 }
 
@@ -345,7 +368,7 @@ fn parse_next_pair_selector<'a, 'b>(
     Token::Byte(b'>') => {
       context.tokenizer.next()?; // eat >
       eat_superfluous(context)?;
-      let child = parse_pair_selector(context)?;
+      let child = parse_pair_selector(context, false)?;
       Ok(Selector::Child(ChildSelector {
         parent: Box::new(selector),
         child: Box::new(child),
@@ -355,7 +378,7 @@ fn parse_next_pair_selector<'a, 'b>(
     Token::Plus => {
       context.tokenizer.next()?; // eat +
       eat_superfluous(context)?;
-      let sibling = parse_pair_selector(context)?;
+      let sibling = parse_pair_selector(context, false)?;
       Ok(Selector::Adjacent(AdjacentSelector {
         selector: Box::new(selector),
         next_sibling_selector: Box::new(sibling),
@@ -365,7 +388,7 @@ fn parse_next_pair_selector<'a, 'b>(
     Token::Squiggle => {
       context.tokenizer.next()?; // eat ~
       eat_superfluous(context)?;
-      let sibling = parse_pair_selector(context)?;
+      let sibling = parse_pair_selector(context, false)?;
       Ok(Selector::Sibling(SiblingSelector {
         selector: Box::new(selector),
         sibling_selector: Box::new(sibling),
@@ -375,7 +398,7 @@ fn parse_next_pair_selector<'a, 'b>(
     Token::CurlyOpen => Ok(selector),
     _ => {
       // try parsing child
-      let descendent_result = parse_pair_selector(context);
+      let descendent_result = parse_pair_selector(context, false);
       if let Ok(descendent) = descendent_result {
         Ok(Selector::Descendent(DescendentSelector {
           parent: Box::new(selector),
@@ -445,13 +468,13 @@ fn parse_pseudo_element_selector<'a, 'b>(
   let selector: Selector = if context.tokenizer.peek(1)? == Token::ParenOpen {
     context.tokenizer.next()?;
     let selector = if name == "not" {
-      let sel = parse_pair_selector(context)?;
+      let sel = parse_pair_selector(context, false)?;
       Selector::Not(NotSelector {
         selector: Box::new(sel),
         location: Location::new(start, context.tokenizer.utf16_pos),
       })
     } else if name == "global" {
-      let sel = parse_group_selector(context)?;
+      let sel = parse_group_selector(context, false)?;
       Selector::Global(GlobalSelector {
         selector: Box::new(sel),
         location: Location::new(start, context.tokenizer.utf16_pos),
@@ -664,35 +687,41 @@ fn parse_declarations_and_children<'a, 'b>(
     }
 
     if let Token::Byte(b'&') = context.tokenizer.peek(1)? {
-      children.push(parse_style_rule2(context)?);
+      children.push(parse_style_rule2(context, false)?);
     } else if context.tokenizer.peek(1)? == Token::At {
       declarations.push(parse_include_declaration(context)?);
     } else {
-      declarations.push(parse_key_value_declaration(context)?);
+      // declarations.push(parse_key_value_declaration(context)?);
 
       // NOTE - some scenarios require & to be used (like "& > .child"), so
       // this is turned off until that's resolved (if it ever is).
 
-      // let pos = context.tokenizer.get_pos();
-      // let mut is_declaration = true;
+      let pos = context.tokenizer.get_pos();
+      let mut is_declaration = true;
 
-      // while !context.ended()? {
-      //   let tok = context.tokenizer.next()?;
-      //   if tok== Token::Colon {
-      //     break;
-      //   } else if tok == Token::CurlyOpen {
-      //     is_declaration = false;
-      //     break;
-      //   }
-      // }
+      while !context.ended()? {
+        let tok = context.tokenizer.next()?;
 
-      // context.tokenizer.set_pos(pos);
+        if tok == Token::Colon {
 
-      // if is_declaration {
-      //   declarations.push(parse_key_value_declaration(context)?);
-      // } else {
-      //   children.push(parse_style_rule2(context)?);
-      // }
+          // declaration name length is 0, so we have a pseudo-selector
+          if context.tokenizer.pos == pos.u8_pos + 1 {
+            is_declaration = false;
+          }
+          break;
+        } else if tok == Token::CurlyOpen {
+          is_declaration = false;
+          break;
+        }
+      }
+
+      context.tokenizer.set_pos(pos);
+
+      if is_declaration {
+        declarations.push(parse_key_value_declaration(context)?);
+      } else {
+        children.push(parse_style_rule2(context, true)?);
+      }
     }
 
     eat_superfluous(context)?;
@@ -993,7 +1022,7 @@ mod tests {
         &-child {
 
         }
-        &>.child {
+        >.child {
 
         }
         &.child {
@@ -1002,7 +1031,7 @@ mod tests {
       }
 
       a {
-        & b, c {
+        b, c {
           color: red;
         }
         &--d, &--e {

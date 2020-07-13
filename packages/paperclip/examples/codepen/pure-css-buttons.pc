@@ -52,7 +52,7 @@
 			}
 		}
 		
-		& + .tgl-btn {
+		+ .tgl-btn {
 			outline: 0;
 			display: block;
 			width: 4em;
@@ -85,7 +85,7 @@
 
 	// themes
 	.tgl-light {
-		& + .tgl-btn {
+		+ .tgl-btn {
 			background: #f0f0f0;
 			border-radius: 2em;
 			padding: 2px;
@@ -103,7 +103,7 @@
 	}
 
 	.tgl-ios {
-		& + .tgl-btn {
+		+ .tgl-btn {
 			background: #fbfbfb;
 			border-radius: 2em;
 			padding: 2px;
@@ -146,7 +146,7 @@
 	}
 
 	.tgl-skewed {
-		& + .tgl-btn {
+		+ .tgl-btn {
 			overflow: hidden;
 			transform: skew(-10deg);
 			backface-visibility: hidden;
@@ -202,7 +202,7 @@
 	}
 
 	.tgl-flat {
-		& + .tgl-btn {
+		+ .tgl-btn {
 			padding: 2px;
 			transition: all .2s ease;
 			background: #fff;
@@ -226,7 +226,7 @@
 	}
 
 	.tgl-flip {
-		& + .tgl-btn {
+		+ .tgl-btn {
 			padding: 2px;
 			transition: all .2s ease;
 			font-family: sans-serif;

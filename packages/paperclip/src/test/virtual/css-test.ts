@@ -446,6 +446,37 @@ describe(__filename + "#", () => {
     );
   });
 
+  it("can evaluated multiple nested selectors without &", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      a {
+        > b {
+          
+        }
+        + c {
+          
+        }
+        ~ d {
+          
+        }
+        :not(.div) {
+
+        }
+        ::active {
+
+        }
+      }
+    </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    const ast = await engine.getLoadedAst("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] > b[data-pc-80f4925f] { } a[data-pc-80f4925f] + c[data-pc-80f4925f] { } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { } a[data-pc-80f4925f] [data-pc-80f4925f]:not([class]._80f4925f_div) { } a[data-pc-80f4925f] [data-pc-80f4925f]::active { }</style>`
+    );
+  });
+
   it("includes keyframes in export", async () => {
     const graph = {
       "/entry.pc": `<style>
