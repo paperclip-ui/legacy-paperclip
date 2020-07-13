@@ -99,7 +99,10 @@ fn parse_style_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, Parse
   Ok(Rule::Style(parse_style_rule2(context, false)?))
 }
 
-fn parse_style_rule2<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_amp_prefix: bool) -> Result<StyleRule, ParseError> {
+fn parse_style_rule2<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  is_child_without_amp_prefix: bool,
+) -> Result<StyleRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
   let selector = parse_selector(context, is_child_without_amp_prefix)?;
   let (declarations, children) = parse_declaration_body(context)?;
@@ -298,12 +301,18 @@ fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Keyframe
   })
 }
 
-fn parse_selector<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_amp_prefix: bool) -> Result<Selector, ParseError> {
+fn parse_selector<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  is_child_without_amp_prefix: bool,
+) -> Result<Selector, ParseError> {
   parse_group_selector(context, is_child_without_amp_prefix)
 }
 
 // select, select, select
-fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_amp_prefix: bool) -> Result<Selector, ParseError> {
+fn parse_group_selector<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  is_child_without_amp_prefix: bool,
+) -> Result<Selector, ParseError> {
   let start = context.tokenizer.utf16_pos;
 
   let mut selectors: Vec<Selector> = vec![];
@@ -317,7 +326,6 @@ fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_
   //   }));
   //   context.tokenizer.next()?;
   // }
-
 
   loop {
     eat_superfluous(context)?;
@@ -340,14 +348,20 @@ fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_
 }
 
 // // parent > child
-fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>, is_child_without_amp_prefix: bool) -> Result<Selector, ParseError> {
-  let selector = if is_child_without_amp_prefix && matches!(context.tokenizer.peek(1)?, Token::Byte(b'>') | Token::Plus| Token::Squiggle) {
-
+fn parse_pair_selector<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  is_child_without_amp_prefix: bool,
+) -> Result<Selector, ParseError> {
+  let selector = if is_child_without_amp_prefix
+    && matches!(
+      context.tokenizer.peek(1)?,
+      Token::Byte(b'>') | Token::Plus | Token::Squiggle
+    ) {
     // TODO - change to BlankSelector
     Selector::Prefixed(PrefixedSelector {
       connector: " ".to_string(),
       postfix_selector: None,
-      location: Location::new(context.tokenizer.utf16_pos, context.tokenizer.utf16_pos)
+      location: Location::new(context.tokenizer.utf16_pos, context.tokenizer.utf16_pos),
     })
   } else {
     parse_combo_selector(context)?
@@ -703,7 +717,6 @@ fn parse_declarations_and_children<'a, 'b>(
         let tok = context.tokenizer.next()?;
 
         if tok == Token::Colon {
-
           // declaration name length is 0, so we have a pseudo-selector
           if context.tokenizer.pos == pos.u8_pos + 1 {
             is_declaration = false;
