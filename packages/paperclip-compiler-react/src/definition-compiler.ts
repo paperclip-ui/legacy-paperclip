@@ -40,7 +40,7 @@ export const compile = (
   let context = createTranslateContext(
     filePath,
     getImportIds(ast),
-    classNames,
+    {},
     getPartIds(ast),
     [],
     Boolean(getLogicElement(ast)),
@@ -280,7 +280,7 @@ const translateParts = (ast: Node, context: TranslateContext) => {
 };
 
 const translatePart = (part: Element, context: TranslateContext) => {
-  const componentName = getPartClassName(part, context.filePath);
+  const componentName = getPartClassName(part, context.fileUri);
   const propsName = `${componentName}Props`;
   context = translateComponent(part, propsName, context);
   context = addBuffer(
