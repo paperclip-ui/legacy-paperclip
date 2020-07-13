@@ -214,7 +214,7 @@ const suggestAttribute = (
 ): SuggestContext => {
   // scan for attributes
   while (scanner.current) {
-    scanner.skipWhitespace();
+    scanner.skipSuperfluous();
 
     // possibility: `<a b `, `<a `
     if (!scanner.current) {
@@ -325,7 +325,7 @@ const suggestAttributeValue = (
 
 const suggestCSS = (scanner: TokenScanner): SuggestContext => {
   while (scanner.current) {
-    scanner.skipWhitespace();
+    scanner.skipSuperfluous();
 
     // close tag </
     if (startOfCloseTag(scanner)) {
@@ -344,7 +344,7 @@ const suggestCSS = (scanner: TokenScanner): SuggestContext => {
 };
 
 const suggestRule = (scanner: TokenScanner): SuggestContext => {
-  scanner.skipWhitespace();
+  scanner.skipSuperfluous();
 
   if (scanner.current?.value === "@") {
     const declSuggestion = suggestCSSAtRule(
@@ -398,7 +398,7 @@ const suggestStyleRule = (scanner: TokenScanner): SuggestContext => {
 const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
   // only suggest declaration if on new line -- UX is wierd otherwise
   const ws = scanner.current?.value;
-  scanner.skipWhitespace();
+  scanner.skipSuperfluous();
   if (!scanner.current) {
     if (ws && /[\n\r]/.test(ws)) {
       return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" };
@@ -424,7 +424,7 @@ const suggestCSSProperty = (scanner: TokenScanner): SuggestContext => {
   while (scanner.current.value !== ":") {
     name += scanner.current.value;
     scanner.next();
-    scanner.skipWhitespace();
+    scanner.skipSuperfluous();
     if (!scanner.current) {
       return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: name };
     }
@@ -492,7 +492,7 @@ const suggestCSSAtRule = (
   // if (scanner.current?.value === "{") {
   //   scanner.next(); // eat {
   //   while (scanner.current) {
-  //     scanner.skipWhitespace();
+  //     scanner.skipSuperfluous();
   //     if (String(scanner.current.value) === "}") {
   //       scanner.next();
   //       break;
@@ -513,7 +513,7 @@ const suggestStyleAtRule = (scanner: TokenScanner): SuggestContext => {
   if (scanner.current?.value === "{") {
     scanner.next();
     while (scanner.current) {
-      scanner.skipWhitespace();
+      scanner.skipSuperfluous();
       if (String(scanner.current?.value) === "}") {
         break;
       }
@@ -532,7 +532,7 @@ const suggestContainerAtRule = (scanner: TokenScanner): SuggestContext => {
   if (scanner.current?.value === "{") {
     scanner.next(); // eat {
     while (scanner.current) {
-      scanner.skipWhitespace();
+      scanner.skipSuperfluous();
       if (String(scanner.current?.value) === "}") {
         scanner.next();
         break;
@@ -556,7 +556,7 @@ const suggestCSSDeclarationValue = (
   let currentChunk = "";
 
   while (1) {
-    scanner.skipWhitespace();
+    scanner.skipSuperfluous();
 
     if (!scanner.current) {
       return {

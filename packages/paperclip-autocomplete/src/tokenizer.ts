@@ -43,6 +43,37 @@ export class TokenScanner {
       this.next();
     }
   }
+  skipSuperfluous() {
+    this.skipWhitespace();
+
+    // comment
+    if (this.current?.value === "/") {
+      if (this.peek()?.value === "/") {
+        this.next();
+        while (this.current) {
+          if (/[\n\r]/.test(this.current.value)) {
+            break;
+          }
+          this.next();
+        }
+      }
+      if (this.peek()?.value === "*") {
+        this.next();
+        while (this.current) {
+          if (
+            String(this.current.value) === "*" &&
+            this.peek()?.value === "/"
+          ) {
+            this.next(); // eat *
+            this.next(); // eat /
+            this.skipSuperfluous();
+            break;
+          }
+          this.next();
+        }
+      }
+    }
+  }
   next() {
     if (this.pos >= this.source.length) {
       this.current = null;

@@ -367,6 +367,20 @@ describe(__filename, () => {
         kind: SuggestContextKind.HTML_TAG_NAME,
         path: []
       }
+    ],
+    [
+      `
+      <style>
+      .button {
+        /* comment */
+        &-negative {
+        }
+      }
+      </style><`,
+      {
+        kind: SuggestContextKind.HTML_TAG_NAME,
+        path: []
+      }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {
