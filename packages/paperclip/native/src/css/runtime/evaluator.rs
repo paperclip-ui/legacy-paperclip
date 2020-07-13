@@ -471,10 +471,14 @@ fn stringify_element_selector(
     ast::Selector::AllSelector => format!("{}", scope_selector),
     ast::Selector::None => "".to_string(),
     ast::Selector::Class(selector) => {
+
+      // Don't hate me for adding [class] -- it's the browsers fault, I promise. Each
+      // selector other than class has a [data-pc-*] attribute, and that gives priority over
+      // any class. So to counter-balance that, we need to add [class] so that classes take priority, again. 
       if include_scope {
-        format!("{}._{}_{}", prefix, context.scope, selector.class_name)
+        format!("{}[class]._{}_{}", prefix, context.scope, selector.class_name)
       } else {
-        format!("{}.{}", prefix, selector.class_name)
+        format!("{}[class].{}", prefix, selector.class_name)
       }
     }
     ast::Selector::Id(selector) => format!("{}#{}{}", prefix, selector.id, scope_selector),
@@ -488,40 +492,23 @@ fn stringify_element_selector(
         if include_scope {
           format!(
             "{}{}{}{}",
-            prefix,
-            scope_selector,
-            selector.separator,
-            selector.name
+            prefix, scope_selector, selector.separator, selector.name
           )
         } else {
-          format!(
-            "{}{}{}",
-            prefix,
-            selector.separator,
-            selector.name
-          )
+          format!("{}{}{}", prefix, selector.separator, selector.name)
         }
       }
     }
     ast::Selector::PseudoParamElement(selector) => {
-
       if include_scope {
         format!(
           "{}{}:{}({})",
-          prefix,
-          scope_selector,
-          selector.name,
-          selector.param
+          prefix, scope_selector, selector.name, selector.param
         )
       } else {
-        format!(
-          "{}:{}({})",
-          prefix,
-          selector.name,
-          selector.param
-        )
+        format!("{}:{}({})", prefix, selector.name, selector.param)
       }
-    },
+    }
     ast::Selector::Attribute(selector) => {
       format!("{}{}{}", prefix, selector.to_string(), scope_selector)
     }

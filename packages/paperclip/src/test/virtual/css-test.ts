@@ -1,6 +1,10 @@
 import { expect } from "chai";
 import { createMockEngine, stringifyLoadResult, waitForError } from "../utils";
-import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
+import {
+  EngineEventKind,
+  stringifyVirtualNode,
+  stringifyCSSSheet
+} from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("can render a simple style", async () => {
@@ -13,7 +17,7 @@ describe(__filename + "#", () => {
     };
     const engine = createMockEngine(graph);
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
-    expect(text).to.eql("<style>._80f4925f_a { color:b; }</style>");
+    expect(text).to.eql("<style>[class]._80f4925f_a { color:b; }</style>");
   });
 
   it("displays an error if style url not found", async () => {
@@ -245,7 +249,7 @@ describe(__filename + "#", () => {
       const engine = createMockEngine(graph);
       const result = await engine.run("/entry.pc");
       expect(stringifyLoadResult(result)).to.eql(
-        `<style>._80f4925f_company_list { list-style:none; margin:0; padding:0; } ._80f4925f_company_list li[data-pc-80f4925f] { display:block; padding:var(--spacing-600) 0; } ._80f4925f_company_list li[data-pc-80f4925f] + ._80f4925f_company_list li[data-pc-80f4925f] { border-top:1px solid var(--color-black-100); }</style>`
+        `<style>[class]._80f4925f_company_list { list-style:none; margin:0; padding:0; } [class]._80f4925f_company_list li[data-pc-80f4925f] { display:block; padding:var(--spacing-600) 0; } [class]._80f4925f_company_list li[data-pc-80f4925f] + [class]._80f4925f_company_list li[data-pc-80f4925f] { border-top:1px solid var(--color-black-100); }</style>`
       );
     });
   });
@@ -261,7 +265,36 @@ describe(__filename + "#", () => {
     const engine = createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._80f4925f_a\\:b { }</style>`
+      `<style>[class]._80f4925f_a\\:b { }</style>`
+    );
+  });
+
+  it("can use single line comment", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+
+
+      // :checked
+      input:checked {
+        & + .tab-label {
+          background: var(--midnight-darker);
+          &::after {
+            transform: rotate(90deg);
+          }
+        }
+        & ~ .tab-content {
+          max-height: 100vh;
+          padding: 1em;
+        }
+      }
+      
+      </style>`
+    };
+
+    const engine = createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>input:checked[data-pc-80f4925f] { } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label { background:var(--midnight-darker); } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label::after { transform:rotate(90deg); } input:checked[data-pc-80f4925f] ~ [class]._80f4925f_tab-content { max-height:100vh; padding:1em; }</style>`
     );
   });
 
@@ -370,7 +403,7 @@ describe(__filename + "#", () => {
     const engine = createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._80f4925f_todo { } ._80f4925f_todo:hover ._80f4925f_destroy { display:inline-block; } ._80f4925f_todo ._80f4925f_todo { } ._80f4925f_todo ._80f4925f_todo--item ._80f4925f_destroy { display:inline-block; }</style>`
+      `<style>[class]._80f4925f_todo { } [class]._80f4925f_todo:hover [class]._80f4925f_destroy { display:inline-block; } [class]._80f4925f_todo [class]._80f4925f_todo { } [class]._80f4925f_todo [class]._80f4925f_todo--item [class]._80f4925f_destroy { display:inline-block; }</style>`
     );
   });
 

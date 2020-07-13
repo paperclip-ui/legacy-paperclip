@@ -78,6 +78,8 @@ fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseErr
       context.tokenizer.next()?;
     } else if tok == Token::ScriptCommentOpen {
       eat_script_comments(context)?;
+    } else if tok == Token::LineCommentOpen {
+      context.tokenizer.next()?;
     } else {
       break;
     }
@@ -488,9 +490,7 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
       context.tokenizer.next()?; // eat *
       Selector::AllSelector
     }
-    Token::Colon => {
-      parse_pseudo_element_selector(context)?
-    }
+    Token::Colon => parse_pseudo_element_selector(context)?,
     Token::Byte(b'&') => {
       context.tokenizer.next()?; // eat &
 
@@ -680,9 +680,6 @@ fn parse_declarations_and_children<'a, 'b>(
 }
 
 fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
-  if context.tokenizer.peek(1)? == Token::LineCommentOpen {
-    context.tokenizer.next()?;
-  }
   eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
 }
 

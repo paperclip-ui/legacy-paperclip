@@ -203,7 +203,7 @@ impl<'a> Tokenizer<'a> {
           self.forward(2);
           self.scan(|c| -> bool { !matches!(c, b'\n' | b'\r') });
           self.forward(1);
-          self.next()
+          Ok(Token::LineCommentOpen)
         } else if self.starts_with(b"/*") {
           self.forward(2);
 

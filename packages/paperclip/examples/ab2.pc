@@ -1,3 +1,10 @@
 <style>
-  
+  input:checked + .div {
+    color: red;
+  }  
 </style>
+
+<input type="checkbox">
+<div class="div">
+  someting
+</div>

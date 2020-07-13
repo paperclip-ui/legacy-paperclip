@@ -150,7 +150,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._1d7dbc06_class { } ._1d7dbc06_a1._1d7dbc06_b1 { } ._1d7dbc06_a._1d7dbc06_b._1d7dbc06_c { } ._1d7dbc06_a._1d7dbc06_b { } ._1d7dbc06_class[a] { } ._1d7dbc06_class1._1d7dbc06_class2 { } ._1d7dbc06_class1 ._1d7dbc06_class2 { } #id[data-pc-1d7dbc06] { } [data-pc-1d7dbc06] { } element[data-pc-1d7dbc06] { } element._1d7dbc06_class { } [attribute][data-pc-1d7dbc06] { } [attribute=value][data-pc-1d7dbc06] { } [attribute="value"][data-pc-1d7dbc06] { } [attribute='value'][data-pc-1d7dbc06] { } div[attr1][attr1][data-pc-1d7dbc06] { } [data-pc-1d7dbc06]:active { } [data-pc-1d7dbc06]::active { } element::active[data-pc-1d7dbc06] { } [data-pc-1d7dbc06]::after { } [data-pc-1d7dbc06]:lang(it) { } p:lang(it)[data-pc-1d7dbc06] { } [data-pc-1d7dbc06]:not(p[data-pc-1d7dbc06]) { } [data-pc-1d7dbc06]:nth-child(5) { } [data-pc-1d7dbc06]:placeholder { } element1[data-pc-1d7dbc06], element2[data-pc-1d7dbc06] { } element[data-pc-1d7dbc06], ._1d7dbc06_class, #id._1d7dbc06_class { } element1[data-pc-1d7dbc06] element2[data-pc-1d7dbc06] { } element1._1d7dbc06_class element2[attr][attr2][data-pc-1d7dbc06] { } element1._1d7dbc06_class element2[attr][data-pc-1d7dbc06], #id._1d7dbc06_group { } element1[data-pc-1d7dbc06] > element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] > ._1d7dbc06_child ._1d7dbc06_descendent { } element1[data-pc-1d7dbc06] > ._1d7dbc06_child ._1d7dbc06_descendent, [group-attr="something"][data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] + element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] ~ element2[data-pc-1d7dbc06] { } @media only screen and (max-width: 600px) { div[data-pc-1d7dbc06] { color:red; } } @keyframes _1d7dbc06_mymove { from { top:0px; } to { top:200px; } }</style><span data-pc-1d7dbc06>hello world!</span>`
+      `<style>[class]._1d7dbc06_class { } [class]._1d7dbc06_a1[class]._1d7dbc06_b1 { } [class]._1d7dbc06_a[class]._1d7dbc06_b[class]._1d7dbc06_c { } [class]._1d7dbc06_a[class]._1d7dbc06_b { } [class]._1d7dbc06_class[a] { } [class]._1d7dbc06_class1[class]._1d7dbc06_class2 { } [class]._1d7dbc06_class1 [class]._1d7dbc06_class2 { } #id[data-pc-1d7dbc06] { } [data-pc-1d7dbc06] { } element[data-pc-1d7dbc06] { } element[class]._1d7dbc06_class { } [attribute][data-pc-1d7dbc06] { } [attribute=value][data-pc-1d7dbc06] { } [attribute="value"][data-pc-1d7dbc06] { } [attribute='value'][data-pc-1d7dbc06] { } div[attr1][attr1][data-pc-1d7dbc06] { } [data-pc-1d7dbc06]:active { } [data-pc-1d7dbc06]::active { } element::active[data-pc-1d7dbc06] { } [data-pc-1d7dbc06]::after { } [data-pc-1d7dbc06]:lang(it) { } p:lang(it)[data-pc-1d7dbc06] { } [data-pc-1d7dbc06]:not(p[data-pc-1d7dbc06]) { } [data-pc-1d7dbc06]:nth-child(5) { } [data-pc-1d7dbc06]:placeholder { } element1[data-pc-1d7dbc06], element2[data-pc-1d7dbc06] { } element[data-pc-1d7dbc06], [class]._1d7dbc06_class, #id[class]._1d7dbc06_class { } element1[data-pc-1d7dbc06] element2[data-pc-1d7dbc06] { } element1[class]._1d7dbc06_class element2[attr][attr2][data-pc-1d7dbc06] { } element1[class]._1d7dbc06_class element2[attr][data-pc-1d7dbc06], #id[class]._1d7dbc06_group { } element1[data-pc-1d7dbc06] > element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] > [class]._1d7dbc06_child [class]._1d7dbc06_descendent { } element1[data-pc-1d7dbc06] > [class]._1d7dbc06_child [class]._1d7dbc06_descendent, [group-attr="something"][data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] + element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] ~ element2[data-pc-1d7dbc06] { } @media only screen and (max-width: 600px) { div[data-pc-1d7dbc06] { color:red; } } @keyframes _1d7dbc06_mymove { from { top:0px; } to { top:200px; } }</style><span data-pc-1d7dbc06>hello world!</span>`
 
       // TODO - import css
     ],
@@ -264,7 +264,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._80f4925f_something > ._80f4925f_something2 { }</style><span class="_80f4925f_something2 something2" data-pc-80f4925f></span>`
+      `<style>[class]._80f4925f_something > [class]._80f4925f_something2 { }</style><span class="_80f4925f_something2 something2" data-pc-80f4925f></span>`
     ],
     [
       // style classes prefixed with scope
@@ -344,7 +344,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>.a { color:blue; display:block; } .a--secondary { } .a--secondary--thirdly { color:blue; } .a.c { } .a ._80f4925f_d { } .a > .e { color:blue; } .a > .e-f { color:red; }</style><div data-pc-80f4925f>ok</div>`
+      `<style>[class].a { color:blue; display:block; } [class].a--secondary { } [class].a--secondary--thirdly { color:blue; } [class].a[class].c { } [class].a [class]._80f4925f_d { } [class].a > [class].e { color:blue; } [class].a > [class].e-f { color:red; }</style><div data-pc-80f4925f>ok</div>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -379,7 +379,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._80f4925f_a, ._80f4925f_b { } ._80f4925f_a--c { color:blue; } ._80f4925f_b--c { color:blue; }</style>`
+      `<style>[class]._80f4925f_a, [class]._80f4925f_b { } [class]._80f4925f_a--c { color:blue; } [class]._80f4925f_b--c { color:blue; }</style>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -395,7 +395,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>.a, .b { } .a--c { color:blue; } .b--c { color:blue; }</style>`
+      `<style>[class].a, [class].b { } [class].a--c { color:blue; } [class].b--c { color:blue; }</style>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -411,7 +411,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>.a, .b { } .a--c { color:blue; } .b--c { color:blue; }</style>`
+      `<style>[class].a, [class].b { } [class].a--c { color:blue; } [class].b--c { color:blue; }</style>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -427,7 +427,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._80f4925f_a { } ._80f4925f_a--c { color:blue; }</style>`
+      `<style>[class]._80f4925f_a { } [class]._80f4925f_a--c { color:blue; }</style>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -443,7 +443,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>.a, .b { } .a--c { color:blue; } .b--c { color:blue; }</style>`
+      `<style>[class].a, [class].b { } [class].a--c { color:blue; } [class].b--c { color:blue; }</style>`
     ],
     [
       {
@@ -461,7 +461,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._80f4925f_a { color:b; background:c; }</style>`
+      `<style>[class]._80f4925f_a { color:b; background:c; }</style>`
     ],
     [
       {
@@ -483,7 +483,8 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._80f4925f_c { color:b; color:c; background:c; }</style>`
+
+      `<style>[class]._80f4925f_c { color:b; color:c; background:c; }</style>`
     ],
     [
       {
@@ -520,7 +521,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._80f4925f_c { color:orange; color:blue; background:c; }</style>`
+      `<style>[class]._80f4925f_c { color:orange; color:blue; background:c; }</style>`
     ],
     [
       {
@@ -680,7 +681,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._139cec8e_button { color:red; }</style><div className="_139cec8e_button" data-pc-80f4925f></div>`
+      `<style>[class]._139cec8e_button { color:red; }</style><div className="_139cec8e_button" data-pc-80f4925f></div>`
     ],
     [
       {
@@ -720,7 +721,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>._80f4925f_a { } ._80f4925f_a + b[data-pc-80f4925f] { } ._80f4925f_a + b[data-pc-80f4925f]:hover:active:test { }</style>`
+      `<style>[class]._80f4925f_a { } [class]._80f4925f_a + b[data-pc-80f4925f] { } [class]._80f4925f_a + b[data-pc-80f4925f]:hover:active:test { }</style>`
     ]
   ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

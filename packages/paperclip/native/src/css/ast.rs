@@ -572,12 +572,7 @@ fn stringify_optional_selector(selector: &Option<Box<Selector>>) -> String {
 
 impl fmt::Display for PseudoElementSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(
-      f,
-      "{}{}",
-      &self.separator,
-      &self.name
-    )?;
+    write!(f, "{}{}", &self.separator, &self.name)?;
     Ok(())
   }
 }
@@ -592,12 +587,7 @@ pub struct PseudoParamElementSelector {
 
 impl fmt::Display for PseudoParamElementSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(
-      f,
-      ":{}({})",
-      &self.name,
-      &self.param
-    )?;
+    write!(f, ":{}({})", &self.name, &self.param)?;
     Ok(())
   }
 }
