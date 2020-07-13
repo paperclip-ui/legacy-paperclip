@@ -471,12 +471,14 @@ fn stringify_element_selector(
     ast::Selector::AllSelector => format!("{}", scope_selector),
     ast::Selector::None => "".to_string(),
     ast::Selector::Class(selector) => {
-
       // Don't hate me for adding [class] -- it's the browsers fault, I promise. Each
       // selector other than class has a [data-pc-*] attribute, and that gives priority over
-      // any class. So to counter-balance that, we need to add [class] so that classes take priority, again. 
+      // any class. So to counter-balance that, we need to add [class] so that classes take priority, again.
       if include_scope {
-        format!("{}[class]._{}_{}", prefix, context.scope, selector.class_name)
+        format!(
+          "{}[class]._{}_{}",
+          prefix, context.scope, selector.class_name
+        )
       } else {
         format!("{}[class].{}", prefix, selector.class_name)
       }
