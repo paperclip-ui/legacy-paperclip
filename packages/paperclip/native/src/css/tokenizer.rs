@@ -381,6 +381,7 @@ impl<'a> Tokenizer<'a> {
       b'\\' => {
         self.forward(1);
         let c = self.curr_byte()?;
+        self.forward(1);
         Ok(Token::Escape(c))
       }
       b'=' => {

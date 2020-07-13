@@ -558,7 +558,6 @@ impl fmt::Display for SiblingSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PseudoElementSelector {
   pub separator: String, // : or ::
-  pub target: Option<Box<Selector>>,
   pub name: String,
   pub location: Location,
 }
@@ -575,8 +574,7 @@ impl fmt::Display for PseudoElementSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(
       f,
-      "{}{}{}",
-      stringify_optional_selector(&self.target),
+      "{}{}",
       &self.separator,
       &self.name
     )?;
@@ -587,7 +585,6 @@ impl fmt::Display for PseudoElementSelector {
 // :nth-of-type(div) { }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PseudoParamElementSelector {
-  pub target: Option<Box<Selector>>,
   pub name: String,
   pub param: String,
   pub location: Location,
@@ -597,8 +594,7 @@ impl fmt::Display for PseudoParamElementSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(
       f,
-      "{}:{}({})",
-      stringify_optional_selector(&self.target),
+      ":{}({})",
       &self.name,
       &self.param
     )?;

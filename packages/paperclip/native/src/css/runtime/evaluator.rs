@@ -450,7 +450,6 @@ fn stringify_nestable_selector(
 
 fn stringify_element_selector(
   selector: &ast::Selector,
-
   include_scope: bool,
   parent_selector_text: &String,
   include_prefix: bool,
@@ -486,33 +485,43 @@ fn stringify_element_selector(
       if selector.name == "root" {
         format!("{}{}", selector.separator, selector.name)
       } else {
-        format!(
-          "{}{}{}{}",
-          prefix,
-          stringify_optional_selector(
-            &selector.target,
-            false,
-            parent_selector_text,
-            &scope_selector,
-            context
-          ),
-          selector.separator,
-          selector.name
-        )
+        if include_scope {
+          format!(
+            "{}{}{}{}",
+            prefix,
+            scope_selector,
+            selector.separator,
+            selector.name
+          )
+        } else {
+          format!(
+            "{}{}{}",
+            prefix,
+            selector.separator,
+            selector.name
+          )
+        }
       }
     }
-    ast::Selector::PseudoParamElement(selector) => format!(
-      "{}:{}({})",
-      stringify_optional_selector(
-        &selector.target,
-        include_prefix,
-        parent_selector_text,
-        &scope_selector,
-        context
-      ),
-      selector.name,
-      selector.param
-    ),
+    ast::Selector::PseudoParamElement(selector) => {
+
+      if include_scope {
+        format!(
+          "{}{}:{}({})",
+          prefix,
+          scope_selector,
+          selector.name,
+          selector.param
+        )
+      } else {
+        format!(
+          "{}:{}({})",
+          prefix,
+          selector.name,
+          selector.param
+        )
+      }
+    },
     ast::Selector::Attribute(selector) => {
       format!("{}{}{}", prefix, selector.to_string(), scope_selector)
     }
@@ -650,7 +659,7 @@ fn stringify_element_selector(
           selector.connector,
           stringify_element_selector(
             postfix_selector,
-            selector.connector == " ",
+            false,
             parent_selector_text,
             false,
             context

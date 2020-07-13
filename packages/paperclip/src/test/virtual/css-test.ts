@@ -388,7 +388,7 @@ describe(__filename + "#", () => {
     const engine = createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] svg[data-pc-80f4925f]:a { margin-right:4px; }</style>`
+      `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] svg:a[data-pc-80f4925f] { margin-right:4px; }</style>`
     );
   });
 

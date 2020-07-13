@@ -327,7 +327,7 @@ fn parse_group_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
 
 // // parent > child
 fn parse_pair_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
-  let selector = parse_pseudo_element_selector(context)?;
+  let selector = parse_combo_selector(context)?;
   parse_next_pair_selector(selector, context)
 }
 
@@ -432,23 +432,9 @@ fn parse_pseudo_element_selector<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<Selector, ParseError> {
   let mut colon_count = 1;
-
-  let target: Option<Box<Selector>> = if context.tokenizer.peek(1)? != Token::Colon {
-    Some(Box::new(parse_combo_selector(context)?))
-  } else {
-    None
-  };
   let start = context.tokenizer.utf16_pos;
+  context.tokenizer.next_expect(Token::Colon)?;
 
-  if context.tokenizer.peek(1)? != Token::Colon {
-    if let Some(selector) = target {
-      return Ok(*selector);
-    } else {
-      return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos));
-    }
-  }
-
-  context.tokenizer.next()?;
   if context.tokenizer.peek(1)? == Token::Colon {
     colon_count += 1;
     context.tokenizer.next()?;
@@ -475,7 +461,6 @@ fn parse_pseudo_element_selector<'a, 'b>(
       .to_string();
 
       Selector::PseudoParamElement(PseudoParamElementSelector {
-        target,
         name,
         param,
         location: Location::new(start, context.tokenizer.utf16_pos),
@@ -487,7 +472,6 @@ fn parse_pseudo_element_selector<'a, 'b>(
   } else {
     Selector::PseudoElement(PseudoElementSelector {
       separator: ":".to_string().repeat(colon_count),
-      target,
       name,
       location: Location::new(start, context.tokenizer.utf16_pos),
     })
@@ -504,6 +488,9 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
       context.tokenizer.next()?; // eat *
       Selector::AllSelector
     }
+    Token::Colon => {
+      parse_pseudo_element_selector(context)?
+    }
     Token::Byte(b'&') => {
       context.tokenizer.next()?; // eat &
 
@@ -519,20 +506,16 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
         .to_string()
       };
 
-      let postfix_selector = if context.tokenizer.peek(1)? == Token::Colon {
-        Some(Box::new(parse_pseudo_element_selector(context)?))
+      let mut postfix_selectors = parse_combo_selector_selectors(context)?;
+      let postfix_selector = if postfix_selectors.len() == 0 {
+        None
+      } else if postfix_selectors.len() == 1 {
+        Some(Box::new(postfix_selectors.pop().unwrap()))
       } else {
-        let mut postfix_selectors = parse_combo_selector_selectors(context)?;
-        if postfix_selectors.len() == 0 {
-          None
-        } else if postfix_selectors.len() == 1 {
-          Some(Box::new(postfix_selectors.pop().unwrap()))
-        } else {
-          Some(Box::new(Selector::Combo(ComboSelector {
-            selectors: postfix_selectors,
-            location: Location::new(pos, context.tokenizer.utf16_pos),
-          })))
-        }
+        Some(Box::new(Selector::Combo(ComboSelector {
+          selectors: postfix_selectors,
+          location: Location::new(pos, context.tokenizer.utf16_pos),
+        })))
       };
 
       Selector::Prefixed(PrefixedSelector {
