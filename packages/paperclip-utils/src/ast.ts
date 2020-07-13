@@ -208,23 +208,7 @@ export const getChildren = (ast: Node): Node[] => {
   return [];
 };
 
-export const getStyleScopes = fs => (ast: Node, uri: string): string[] => {
-  const scopes: string[] = [];
-  if (getStyleElements(ast).length > 0) {
-    scopes.push(crc32(uri));
-  }
-
-  // don't do this -- want usage to be explicit.
-  // for (const imp of getImports(ast)) {
-  //   const src = getAttributeStringValue("src", imp);
-  //   if (/\.css$/.test(src)) {
-  //     const cssFileUri = resolveImportFile(fs)(uri, src);
-  //     scopes.push(crc32(cssFileUri));
-  //   }
-  // }
-
-  return scopes;
-};
+export const getStyleScopeId = (filePath: string) => crc32(filePath);
 
 export const getChildrenByTagName = (tagName: string, parent: Node) =>
   getChildren(parent).filter(child => {

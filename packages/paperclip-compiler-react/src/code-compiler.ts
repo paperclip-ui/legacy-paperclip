@@ -23,7 +23,7 @@ import {
   getImportIds,
   getPartIds,
   Element,
-  getStyleScopes,
+  getStyleScopeId,
   resolveImportFile,
   getRelativeFilePath,
   FRAGMENT_TAG_NAME,
@@ -60,21 +60,30 @@ import { camelCase, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import * as crc32 from "crc32";
+import { getAttributeValue } from "paperclip/src";
 
 const entities = new Html5Entities();
 type Config = { ast: Node; sheet?: any; classNames: string[] };
 
 export const compile = (
   { ast, sheet, classNames }: Config,
-  filePath: string,
+  fileUri: string,
   options: Options = {}
 ) => {
+  const imports = getImports(ast).reduce((record, element) => {
+    const _as = getAttributeStringValue(AS_ATTR_NAME, element);
+    const _src = getAttributeStringValue("src", element);
+    if (_as) {
+      record[_as] = resolveImportFile(fs)(fileUri, _src);
+    }
+    return record;
+  }, {});
   let context = createTranslateContext(
-    filePath,
+    fileUri,
     getImportIds(ast),
+    imports,
     classNames,
     getPartIds(ast),
-    getStyleScopes(fs)(ast, filePath),
     Boolean(getLogicElement(ast)),
     options
   );
@@ -99,7 +108,7 @@ const translateRoot = (
   if (logicElement) {
     const src = getAttributeStringValue("src", logicElement);
     if (src) {
-      const logicRelativePath = getRelativeFilePath(fs)(context.filePath, src);
+      const logicRelativePath = getRelativeFilePath(fs)(context.fileUri, src);
       context = addBuffer(
         `const logic = require("${logicRelativePath}");\n`,
         context
@@ -170,23 +179,14 @@ const translateUtils = (ast: Node, context: TranslateContext) => {
   return context;
 };
 
-const translateStyleDataAttributes = (context: TranslateContext) => {
-  context = addBuffer(`export const scopedStyleProps = {\n`, context);
-  context = startBlock(context);
-  context = translateStyleScopeAttributes(context, "\n");
-  context = endBlock(context);
-  context = addBuffer(`};\n\n`, context);
-  return context;
-};
-
 const translateStyleScopeAttributes = (
   context: TranslateContext,
   newLine: string = ""
 ) => {
-  for (let i = 0, { length } = context.styleScopes; i < length; i++) {
-    const scope = context.styleScopes[i];
-    context = addBuffer(`"data-pc-${scope}": true,${newLine}`, context);
-  }
+  context = addBuffer(
+    `"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`,
+    context
+  );
   return context;
 };
 const translateExtendsPropsUtil = (ast: Node, context: TranslateContext) => {
@@ -244,8 +244,8 @@ const translateImports = (ast: Node, context: TranslateContext) => {
 
     let relativePath = path
       .relative(
-        path.dirname(context.filePath),
-        resolveImportFile(fs)(context.filePath, src)
+        path.dirname(context.fileUri),
+        resolveImportFile(fs)(context.fileUri, src)
       )
       .replace(/\\/g, "/");
 
@@ -285,7 +285,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
           context = addBuffer(
             `{${usedExports
               .map(imp => {
-                const className = strToClassName(imp, context.filePath);
+                const className = strToClassName(imp, context.fileUri);
                 return `${className} as ${baseName}${pascalCase(className)}`;
               })
               .join(", ")}} `,
@@ -319,7 +319,7 @@ const translateParts = (root: Node, context: TranslateContext) => {
 const translatePart = (part: Element, context: TranslateContext) => {
   const componentName = strToClassName(
     getAttributeStringValue(AS_ATTR_NAME, part),
-    context.filePath
+    context.fileUri
   );
   context = translateComponent(
     componentName,
@@ -352,9 +352,6 @@ const translateComponent = (
 
   context = addBuffer(`}));\n\n`, context);
 
-  if (node.kind === NodeKind.Element) {
-    // context = addBuffer(`${componentName}.styledComponentId = "${getElementStyleName(node, context)}";\n\n`, context);
-  }
   return context;
 };
 
@@ -365,7 +362,7 @@ const translateDefaultView = (root: Node, context: TranslateContext) => {
     return context;
   }
 
-  const componentName = getComponentName(context.filePath);
+  const componentName = getComponentName(context.fileUri);
   context = translateComponent(componentName, target, false, context);
 
   // KEEP ME: needed for logic
@@ -451,7 +448,7 @@ const translateElement = (
   //   : null;
 
   const tag = isPartComponentInstance
-    ? strToClassName(element.tagName, context.filePath)
+    ? strToClassName(element.tagName, context.fileUri)
     : isImportComponentInstance
     ? getImportTagName(element.tagName)
     : JSON.stringify(element.tagName);
@@ -503,17 +500,6 @@ const translateElement = (
     }
   }
 
-  // if (
-  //   !hasAttribute("className", element) &&
-  //   !hasAttribute("class", element) &&
-  //   hasAttribute(AS_ATTR_NAME, element)
-  // ) {
-  //   context = addBuffer(
-  //     `"className": "${getElementStyleName(element, context)}",\n`,
-  //     context
-  //   );
-  // }
-
   context = endBlock(context);
   context = addBuffer(`}`, context);
   if (propsName) {
@@ -528,13 +514,6 @@ const translateElement = (
   }
   context = addBuffer(`)`, context);
   return context;
-};
-
-const getElementStyleName = (element: Element, context: TranslateContext) => {
-  return `__${crc32(context.filePath)}__${getPartClassName(
-    element,
-    context.filePath
-  )}`;
 };
 
 const translateFragment = (
@@ -768,28 +747,18 @@ const translateAttributeValue = (
     }
 
     if (name === "className") {
-      strValue = prefixWthStyleScopes(value.value, context.styleScopes);
-      if (hasAttribute(AS_ATTR_NAME, element)) {
-        strValue += " " + getElementStyleName(element, context);
-      }
+      strValue = prefixWthStyleScopes(value.value, context);
       strValue = JSON.stringify(strValue);
     }
     return addBuffer(strValue, context);
   } else if (value.attrValueKind === AttributeValueKind.DyanmicString) {
-    if (hasAttribute(AS_ATTR_NAME, element)) {
-      context = addBuffer(
-        `"${getElementStyleName(element, context)} " + `,
-        context
-      );
-    }
-
     for (let i = 0, { length } = value.values; i < length; i++) {
       const part = value.values[i];
       if (part.partKind === DynamicStringAttributeValuePartKind.Literal) {
         context = addBuffer(
           JSON.stringify(
             name === "className"
-              ? prefixWthStyleScopes(part.value, context.styleScopes)
+              ? prefixWthStyleScopes(part.value, context)
               : part.value
           ),
           context
@@ -798,7 +767,7 @@ const translateAttributeValue = (
         part.partKind === DynamicStringAttributeValuePartKind.ClassNamePierce
       ) {
         context = addBuffer(
-          `"${prefixWthStyleScopes(part.className, context.styleScopes)}"`,
+          `"${prefixWthStyleScopes(part.className, context, true)}"`,
           context
         );
       } else if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
@@ -816,17 +785,37 @@ const translateAttributeValue = (
   return context;
 };
 
-const prefixWthStyleScopes = (value: string, styleScopes: string[]) => {
+const prefixWthStyleScopes = (
+  value: string,
+  context: TranslateContext,
+  pierced?: boolean
+) => {
   return value
     .split(" ")
     .map(className => {
       // skip just whitespace
       if (!/\w+/.test(className)) return className;
-      return (
-        styleScopes.map(scope => `_${scope}_${className}`).join(" ") +
-        " " +
-        className
-      );
+
+      let scopeFilePath: string;
+      let actualClassName = className;
+
+      if (pierced && className.indexOf(".") > -1) {
+        const [importId, importClassName] = className.split(".");
+        actualClassName = importClassName;
+        scopeFilePath = context.imports[importId];
+
+        if (!scopeFilePath) {
+          // Just some information to communicate that the class doesn't do anything.
+          scopeFilePath = "noop";
+          console.error(`import "${importId}" is not defined`);
+        }
+      } else {
+        scopeFilePath = context.fileUri;
+      }
+
+      return `_${getStyleScopeId(
+        scopeFilePath
+      )}_${actualClassName} ${actualClassName}`;
     })
     .join(" ");
 };

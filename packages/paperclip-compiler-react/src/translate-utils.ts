@@ -1,8 +1,7 @@
-import * as crc32 from "crc32";
 import { Options } from "./utils";
 
 export type TranslateContext = {
-  filePath: string;
+  fileUri: string;
   buffer: string;
   lineNumber: number;
   currentIndexKey?: string;
@@ -11,9 +10,11 @@ export type TranslateContext = {
   };
   isNewLine: boolean;
   hasLogicFile: boolean;
-  styleScopes: string[];
   classNames: string[];
   indent: string;
+
+  // @deprecated
+  imports: Record<string, string>;
   importIds: string[];
   partIds: string[];
   args: Options;
@@ -21,23 +22,23 @@ export type TranslateContext = {
 };
 
 export const createTranslateContext = (
-  filePath: string,
+  fileUri: string,
   importIds: string[],
+  imports: Record<string, string>,
   classNames: string[],
   partIds: string[],
-  styleScopes: string[],
   hasLogicFile: boolean,
   args: Options,
   indent: string = "  "
 ): TranslateContext => ({
   buffer: "",
   classNames,
-  filePath,
+  fileUri,
   importIds,
   partIds,
   scopes: {},
+  imports,
   hasLogicFile,
-  styleScopes,
   isNewLine: true,
   lineNumber: 0,
   indent,
