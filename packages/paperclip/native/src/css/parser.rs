@@ -663,14 +663,36 @@ fn parse_declarations_and_children<'a, 'b>(
       break;
     }
 
-    // Child rule - Note that & is required so that we don't have to do
-    // a forward look-ahead which is an avoidable performance issue
     if let Token::Byte(b'&') = context.tokenizer.peek(1)? {
       children.push(parse_style_rule2(context)?);
     } else if context.tokenizer.peek(1)? == Token::At {
       declarations.push(parse_include_declaration(context)?);
     } else {
       declarations.push(parse_key_value_declaration(context)?);
+
+      // NOTE - some scenarios require & to be used (like "& > .child"), so
+      // this is turned off until that's resolved (if it ever is).
+
+      // let pos = context.tokenizer.get_pos();
+      // let mut is_declaration = true;
+
+      // while !context.ended()? {
+      //   let tok = context.tokenizer.next()?;
+      //   if tok== Token::Colon {
+      //     break;
+      //   } else if tok == Token::CurlyOpen {
+      //     is_declaration = false;
+      //     break;
+      //   }
+      // }
+
+      // context.tokenizer.set_pos(pos);
+
+      // if is_declaration {
+      //   declarations.push(parse_key_value_declaration(context)?);
+      // } else {
+      //   children.push(parse_style_rule2(context)?);
+      // }
     }
 
     eat_superfluous(context)?;
@@ -941,7 +963,7 @@ mod tests {
   
       }
       @supports (display: flex) {
-        & .el {
+        .el {
           display: flex;
         }
       }
@@ -974,7 +996,7 @@ mod tests {
         &>.child {
 
         }
-        & .child {
+        &.child {
           
         }
       }
