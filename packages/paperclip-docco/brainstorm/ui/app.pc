@@ -102,6 +102,13 @@ https://www.ibm.com/design/language/color
     }
   }
 
+  .row {
+    display: flex;
+    width: 100%;
+    margin-bottom: var(--gap-3);
+    flex-wrap: wrap;
+  }
+
   .Container {
     width: 100vw;
     height: 100vh;
@@ -114,14 +121,15 @@ https://www.ibm.com/design/language/color
   }
 
   .Color {
-    display: flex;
+    display: inline-flex;
+    width: 33%;
     flex-direction: column;
 
     & .info {
       padding: var(--gap-3);
       display: flex;
       & > .name {
-        /* font-weight: 600; */
+        font-weight: 600;
         width: 100%;
         white-space: nowrap;
       }
@@ -157,10 +165,14 @@ https://www.ibm.com/design/language/color
   }
   
   @media screen and (max-width: 1000px) {
+    .row {
+      flex-direction: column;
+    }
     .Color {
       flex-direction: column;
+      width: 100%;
       & .info {
-        margin-top: 10px;
+        margin-top: var(--gap-2);
         flex-direction: column;
         & .value {
           margin-top: var(--gap-2);
@@ -291,6 +303,9 @@ https://www.ibm.com/design/language/color
         <Title><ColorBox value="var(--color-orange-100)" /><span>--color-orange-100</span></Title>
         <Title><ColorBox value="var(--color-orange-300)" /><span>--color-orange-300</span></Title>
         <Title><ColorBox value="var(--color-orange-200)" /><span>--color-orange-200</span></Title>
+        <Title><ColorBox value="var(--color-purple-100)" /><span>--color-purple-100</span></Title>
+        <Title><ColorBox value="var(--color-purple-200)" /><span>--color-purple-200</span></Title>
+        <Title><ColorBox value="var(--color-purple-300)" /><span>--color-purple-300</span></Title>
       </Subgroup>
     </Subgroup>
     <Subgroup depth="2">
@@ -324,7 +339,7 @@ https://www.ibm.com/design/language/color
 
 <div component as="Color" className="Color" className:dark className:light style="background: var({varName})">
   <div className="info">
-    <div className="name">var({varName})</div>
+    <div className="name">{varName}</div>
     <div className="value">{value}</div>
   </div>
   <div className="usage">
@@ -338,15 +353,33 @@ https://www.ibm.com/design/language/color
   <div className="Content">
     <h1>Atoms / Colors</h1>
     <hr>
-    <div className="col-2">
+
+    <!-- each :root would get its own block -->
+    <div className="row">
       <Color varName="--color-orange-100" value="#F60" dark placesUsed="3" />
       <Color varName="--color-orange-300" value="rgb(248, 201, 169)" dark placesUsed="2" />
       <Color varName="--color-orange-200" value="rgb(170, 87, 19)" light placesUsed="0" />
     </div>
-    <div className="col-2">
+    
+    <div className="row">
       <Color varName="--color-purple-100" value="#F60" dark placesUsed="2" />
       <Color varName="--color-purple-200" value="rgb(248, 201, 169)" dark placesUsed="1" />
       <Color varName="--color-purple-300" value="rgb(170, 87, 19)" light placesUsed="10" />
+    </div>
+
+    <div className="row">
+      <Color varName="--color-offblack-100" value="rgba(0, 0, 0, 1)" dark placesUsed="2" />
+      <Color varName="--color-offblack-200" value="rgba(0, 0, 0, 0.9)" dark placesUsed="2" />
+      <Color varName="--color-offblack-300" value="rgba(0, 0, 0, 0.8)" dark placesUsed="2" />
+      <Color varName="--color-offblack-400" value="rgba(0, 0, 0, 0.7)" dark placesUsed="2" />
+      <Color varName="--color-offblack-500" value="rgba(0, 0, 0, 0.6)" dark placesUsed="2" />
+      <Color varName="--color-offblack-600" value="rgba(0, 0, 0, 0.5)" dark placesUsed="2" />
+      <Color varName="--color-offblack-700" value="rgba(0, 0, 0, 0.4)" light placesUsed="2" />
+      <Color varName="--color-offblack-800" value="rgba(0, 0, 0, 0.3)" light placesUsed="2" />
+      <Color varName="--color-offblack-900" value="rgba(0, 0, 0, 0.2)" light placesUsed="2" />
+      <Color varName="--color-offblack-1000" value="rgba(0, 0, 0, 0.1)" light placesUsed="2" />
+      <Color varName="--color-offblack-1100" value="rgba(0, 0, 0, 0.05)" light placesUsed="2" />
+      <Color varName="--color-offblack-1200" value="rgba(0, 0, 0, 0.025)" light placesUsed="1" />
     </div>
   </div>
 </div>
