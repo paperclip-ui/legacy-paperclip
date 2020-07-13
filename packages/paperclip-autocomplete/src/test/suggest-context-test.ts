@@ -375,6 +375,12 @@ describe(__filename, () => {
         /* comment */
         &-negative {
         }
+        
+        // comment
+        /* comment */
+
+        &-negative {
+        }
       }
       </style><`,
       {

@@ -52,6 +52,7 @@ export class TokenScanner {
         this.next();
         while (this.current) {
           if (/[\n\r]/.test(this.current.value)) {
+            this.skipSuperfluous();
             break;
           }
           this.next();
