@@ -20,14 +20,15 @@ repository:
   elements:
     patterns:
       # Void tag elements
-      - match: (<)(meta|import|input)\s([^>]*)(>)
-        captures:
+      - begin: (<)(meta|import|input)
+        beginCaptures:
           "1": { name: punctuation.definition.tag.begin.html }
           "2": { name: entity.name.tag.html }
-          "3":
-            patterns:
-              - include: "#attribute"
-          "4": { name: punctuation.definition.tag.end.html }
+        patterns:
+          - include: "#attribute"
+        end: (/?>)
+        endCaptures:
+          "1": { name: punctuation.definition.tag.end.html }
 
       # <style /> elements
       - begin: (<)(style)([^>]*)(>)

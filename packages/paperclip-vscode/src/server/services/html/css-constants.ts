@@ -11,12 +11,6 @@ Copy printed object
 
 */
 
-enum CSSPropertyValueKind {
-  Color,
-  Unit,
-  String
-}
-
 // https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
 const CSS_AT_RULE_NAMES = [
   "media",
@@ -370,33 +364,6 @@ const CSS_DECLARATION_VALUE_ITEMS = {
   overflow: [...OVERFLOW_VALUES],
   "background-repeat": [...BACKGROUND_REPEAT_VALUES]
 };
-
-const CSS_VALUE_KINDS: Record<
-  string,
-  Record<CSSPropertyValueKind, boolean>
-> = {};
-
-for (const name of CSS_DECLARATION_NAMES) {
-  const kind: Record<CSSPropertyValueKind, boolean> = (CSS_VALUE_KINDS[name] = {
-    [CSSPropertyValueKind.Unit]: false,
-    [CSSPropertyValueKind.Color]: false,
-    [CSSPropertyValueKind.String]: false
-  });
-
-  if (
-    /^(.*?width|.*?height|left|top|right|bottom|z-index|opacity|border|.*?-radius|margin.*|padding.*|font-size|letter-spacing|line-height)$/
-  ) {
-    kind[CSSPropertyValueKind.Unit] = true;
-  }
-
-  if (/^(border)$/) {
-    kind[CSSPropertyValueKind.Color] = true;
-  }
-
-  if (/^(font-family|animation.*|)$/) {
-    kind[CSSPropertyValueKind.String] = true;
-  }
-}
 
 export {
   CSS_AT_RULE_NAMES,
