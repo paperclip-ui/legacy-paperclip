@@ -386,6 +386,7 @@ const declaredVarsToCompletionItems = memoize(
       list.push({
         label: name,
         insertText: includeVar ? `var(${name})` : name,
+        sortText: "zz" + name,
         detail: data.exports.style.variables[name].value
       });
     }
@@ -398,6 +399,7 @@ const declaredVarsToCompletionItems = memoize(
         list.push({
           label: name,
           insertText: includeVar ? `var(${name})` : name,
+          sortText: "zz" + name,
           detail: data.imports[imp].style.variables[name].value
         });
       }
