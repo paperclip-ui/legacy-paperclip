@@ -2,7 +2,7 @@ There are a few gotchas that are useful to be aware of when you're writing Paper
 
 # Can't override variant styles
 
-Suppose that you have an input:
+You may be dealing with CSS specificity issues. Suppose that you have an input:
 
 ```html
 <style>
