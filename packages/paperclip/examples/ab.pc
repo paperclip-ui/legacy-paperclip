@@ -1,70 +1,11 @@
-
 <style>
-  .StyledContainer {
-    min-width: 250px;
-    display: block;
-    border-right: 1px solid var(--color-black-300);
-    height: 100%;
-  }
-
-  .StyledOptionContainer {
-    margin-left: 8px;
-    display: flex;
-    box-sizing: content-box;
-    width: 100%;
+  :root {
+    --color: red;
   }
   
-  .StyledOptionLabel {
-    display: inline-block;
-    flex-grow: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .div {
+    color: var(--red);
+    color: red;
   }
-
-  .StyledCheckbox {
-    margin-right: 8px;
-  }
-
-  .StyledTextInput {
-    min-width: 40px;
-    flex: 0;
-    & input {
-      padding: 4px 8px;
-    }
-  }
-
-  .Padded {
-    padding: var(--spacing-400);
-  }
-
-
-  .StyledGroupContainer {
-    border-top: 1px solid var(--color-black-300);
-    padding: --var(--spacing-400);
-
-    &:first-child {
-      border-top: none;
-    }
-  }
-
-  .Heading {
-
-  }
-
-  .StyledHeaderContainer {
-    padding: var(--spacing-400);
-    .Heading {
-      font-weight: 600;
-      margin-bottom: var(--spacing-200);
-    }
-  }
-
 </style>
-
-<div export component as="StyledContainer" className="Heading">
-  {children}
-</div>
-
-<preview>
-  <Checkbox.Preview checked />
-</preview>
+fsd

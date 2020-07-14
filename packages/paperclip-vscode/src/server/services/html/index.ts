@@ -46,6 +46,8 @@ import {
 import { PCAutocomplete } from "./autocomplete";
 import { CompletionItem } from "vscode-languageclient";
 import { PCCompletionItem } from "./utils";
+import { PCExports, LoadedData } from "paperclip";
+import { connect } from "http2";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -60,6 +62,7 @@ type HandleContext = {
   root: Node;
   uri: string;
   importIds: string[];
+  data?: LoadedData;
   partIds: string[];
   info: ASTInfo;
 };
@@ -90,11 +93,12 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   public resolveCompletionItem(item: PCCompletionItem): CompletionItem {
     return this._autocomplete.resolveCompletionItem(item);
   }
-  protected _createASTInfo(root: Node, uri: string) {
+  protected _createASTInfo(root: Node, uri: string, data: LoadedData) {
     const context: HandleContext = {
       root,
       uri,
       importIds: getImportIds(root),
+      data,
       partIds: getParts(root)
         .map(part => getAttributeStringValue(AS_ATTR_NAME, part))
         .filter(Boolean),
@@ -187,11 +191,29 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     context: HandleContext
   ) {
     const colors =
-      declaration.value.match(/\#[^\s,;]+|(rgba|rgb|hsl|hsla)\(.*?\)/g) ||
-      declaration.value.match(CSS_COLOR_NAME_REGEXP) ||
+      matchColor(declaration.value) ||
+      declaration.value.match(/\#[^\s,;]+|(var)\(.*?\)/g) ||
       [];
 
     for (const color of colors) {
+      let colorValue;
+      if (/var\(.*?\)/.test(color)) {
+        const name = color.match(/var\((.*?)\)/)[1];
+        const value = getVariableValue(name, context.data);
+        if (value) {
+          const match = matchColor(value);
+          if (match) {
+            colorValue = match[0];
+          }
+        }
+      } else {
+        colorValue = color;
+      }
+
+      if (!colorValue) {
+        continue;
+      }
+
       const colorIndex = declaration.value.indexOf(color);
 
       // Color(color)
@@ -199,7 +221,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       const colorStart = declaration.valueLocation.start + colorIndex;
 
       context.info.colors.push({
-        color,
+        color: colorValue,
         location: { start: colorStart, end: colorStart + color.length }
       });
     }
@@ -401,4 +423,26 @@ const getImportSourceAst = (
   );
 
   return [imp, engine.getLoadedAst(impUri) as DependencyNodeContent, impUri];
+};
+
+const getVariableValue = (name: string, data: LoadedData) => {
+  if (!data) {
+    return null;
+  }
+  const v = data.exports.style.variables[name];
+  if (v) return v.value;
+
+  for (const id in data.imports) {
+    const v = data.imports[id].style.variables[name];
+    if (v) {
+      return v.value;
+    }
+  }
+};
+
+const matchColor = (value: string) => {
+  return (
+    value.match(/\#[^\s,;]+|(rgba|rgb|hsl|hsla|var)\(.*?\)/g) ||
+    value.match(CSS_COLOR_NAME_REGEXP)
+  );
 };
