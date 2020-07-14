@@ -387,6 +387,17 @@ describe(__filename, () => {
         kind: SuggestContextKind.HTML_TAG_NAME,
         path: []
       }
+    ],
+    [
+      `
+      <style>
+        .a {
+          .b {
+            `,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_NAME,
+        prefix: ""
+      }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {

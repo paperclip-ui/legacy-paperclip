@@ -405,6 +405,10 @@ const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
     }
   }
 
+  if (scanner.current?.value === "}") {
+    return null;
+  }
+
   if (scanner.current.value === "&") {
     scanner.next(); // eat &
     return suggestStyleRule(scanner);
@@ -413,8 +417,26 @@ const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
       scanner,
       SuggestContextKind.CSS_DECLARATION_AT_RULE
     );
-  } else if (scanner.current?.value !== "}") {
-    return suggestCSSProperty(scanner);
+  } else {
+    const pos = scanner.pos;
+    const current = scanner.current;
+    let isDeclaration = true;
+    while (scanner.current) {
+      if (scanner.current.value === "{") {
+        isDeclaration = false;
+        break;
+      } else if (scanner.current.value === ":") {
+        break;
+      }
+      scanner.next();
+    }
+    scanner.pos = pos;
+    scanner.current = current;
+    if (isDeclaration) {
+      return suggestCSSProperty(scanner);
+    } else {
+      return suggestStyleRule(scanner);
+    }
   }
 };
 
@@ -488,23 +510,6 @@ const suggestCSSAtRule = (
   } else {
     scanner.next(); // eat ;
   }
-
-  // if (scanner.current?.value === "{") {
-  //   scanner.next(); // eat {
-  //   while (scanner.current) {
-  //     scanner.skipSuperfluous();
-  //     if (String(scanner.current.value) === "}") {
-  //       scanner.next();
-  //       break;
-  //     }
-  //     const suggestion = suggestRule(scanner);
-  //     if (suggestion) {
-  //       return suggestion;
-  //     }
-  //   }
-  // } else {
-  //   scanner.next(); // eat ;
-  // }
 
   return null;
 };
