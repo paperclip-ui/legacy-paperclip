@@ -243,7 +243,10 @@ class LivePreview {
     };
   }
   private _onPreviewMessage = event => {
-    if (event.type === "metaElementClicked") {
+    // debug what's going on
+    if (event.type === "HTML") {
+      console.log(event.content);
+    } else if (event.type === "metaElementClicked") {
       this._handleElementMetaClicked(event);
     } else if (event.type === "errorBannerClicked") {
       this._handleErrorBannerClicked(event);

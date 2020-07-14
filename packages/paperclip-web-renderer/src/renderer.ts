@@ -26,11 +26,13 @@ enum RenderEventTypes {
   META_CLICK = "META_CLICK",
   ERROR_BANNER_CLICK = "ERROR_BANNER_CLICK"
 }
+declare var vscode;
+
+const parent = typeof vscode != "undefined" ? vscode : window;
 
 export class Renderer {
   private _em: EventEmitter;
   private _hoverOverlay: HTMLElement;
-  private _sheets: HTMLStyleElement[];
   private _dependencies: string[] = [];
   private _stage: HTMLElement;
   private _importedStyles: Record<string, HTMLElement>;
@@ -45,7 +47,6 @@ export class Renderer {
     readonly targetUri: string,
     private _domFactory: DOMFactory = document
   ) {
-    this._sheets = [];
     this._importedStyles = {};
     this._em = new EventEmitter();
     this._errorOverlay = _domFactory.createElement("div");
@@ -180,6 +181,12 @@ export class Renderer {
 
   handleEngineEvent = (event: EngineEvent) => {
     this._clearErrors();
+    // setTimeout(() => {
+    //  parent.postMessage({
+    //    type: "HTML",
+    //    content: this.mount.outerHTML
+    //  })
+    // }, 500);
     switch (event.kind) {
       case EngineEventKind.Error: {
         this.handleError(event);

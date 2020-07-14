@@ -43,7 +43,7 @@ export const createNativeNode = (
       case "Element":
         return createNativeElement(node, factory, protocol, namespaceURI);
       case "StyleElement":
-        return createNativeStyle(node, factory, protocol);
+        return createNativeStyleFromSheet(node.sheet, factory, protocol);
       case "Fragment":
         return createNativeFragment(node, factory, protocol);
     }
@@ -66,14 +66,6 @@ export const createNativeStyleFromSheet = (
 
 const createNativeTextNode = (node, factory: DOMFactory) => {
   return factory.createTextNode(entities.decode(node.value));
-};
-
-const createNativeStyle = (element, factory: DOMFactory, protocol: string) => {
-  // return factory.createTextNode(JSON.stringify(element.sheet, null, 2));
-  // return factory.createTextNode(stringifyCSSSheet(element.sheet, protocol));
-  const nativeElement = factory.createElement("style");
-  nativeElement.textContent = stringifyCSSSheet(element.sheet, protocol);
-  return nativeElement;
 };
 
 const createNativeElement = (
