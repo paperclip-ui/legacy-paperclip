@@ -72,7 +72,7 @@ export class PCAutocomplete {
     data?: LoadedData
   ): CompletionItem[] {
     const context = getSuggestionContext(text);
-    if (!context) {
+    if (!context || !data) {
       return [];
     }
 
@@ -117,45 +117,43 @@ export class PCAutocomplete {
       }
     ];
   }
-  private _getHTMLTagNameSuggestions(data?: LoadedData) {
+  private _getHTMLTagNameSuggestions(data: LoadedData) {
     const options = [];
 
-    if (data) {
-      for (const tagName in data.exports.components) {
-        const componentInfo = data.exports.components[tagName];
+    for (const tagName in data.exports.components) {
+      const componentInfo = data.exports.components[tagName];
+      options.push(
+        tagCompletionItem(
+          tagName,
+          Object.keys(componentInfo.properties).length > 0
+        )
+      );
+    }
+
+    for (const id in data.imports) {
+      if (/\//.test(id)) {
+        continue;
+      }
+      const imp = data.imports[id];
+      for (const componentId in imp.components) {
+        const componentInfo = imp.components[componentId];
+        if (!componentInfo || !componentInfo.public) {
+          continue;
+        }
+        let tagName;
+
+        if (componentId === DEFAULT_PART_ID) {
+          tagName = id;
+        } else {
+          tagName = `${id}.${componentId}`;
+        }
+
         options.push(
           tagCompletionItem(
             tagName,
             Object.keys(componentInfo.properties).length > 0
           )
         );
-      }
-
-      for (const id in data.imports) {
-        if (/\//.test(id)) {
-          continue;
-        }
-        const imp = data.imports[id];
-        for (const componentId in imp.components) {
-          const componentInfo = imp.components[componentId];
-          if (!componentInfo || !componentInfo.public) {
-            continue;
-          }
-          let tagName;
-
-          if (componentId === DEFAULT_PART_ID) {
-            tagName = id;
-          } else {
-            tagName = `${id}.${componentId}`;
-          }
-
-          options.push(
-            tagCompletionItem(
-              tagName,
-              Object.keys(componentInfo.properties).length > 0
-            )
-          );
-        }
       }
     }
 
@@ -173,10 +171,9 @@ export class PCAutocomplete {
         label: "include",
         insertText: "include ${1:};",
         insertTextFormat: InsertTextFormat.Snippet,
-        command:
-          data && loadedMixinsAsCompletionList(data).length
-            ? RETRIGGER_COMMAND
-            : null
+        command: loadedMixinsAsCompletionList(data).length
+          ? RETRIGGER_COMMAND
+          : null
       }
     ];
   }
@@ -332,6 +329,7 @@ export class PCAutocomplete {
     includeImports: boolean = true
   ) {
     let list: CompletionItem[] = [];
+
     for (const className in data.exports.style.classNames) {
       list.push({
         label: className
