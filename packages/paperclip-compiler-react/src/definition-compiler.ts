@@ -103,8 +103,14 @@ const translateRoot = (
   //   context
   // );
 
+  context = addBuffer(`type DefaultProps = {\n`, context);
+  context = startBlock(context);
+  context = addBuffer(`ref?: any,\n`, context);
+  context = endBlock(context);
+  context = addBuffer(`};\n\n`, context);
+
   context = addBuffer(
-    `type Factory<TProps> = (props: TProps) => ReactElement;\n\n`,
+    `type Factory<TProps> = (props: TProps & DefaultProps) => ReactElement;\n\n`,
     context
   );
 
