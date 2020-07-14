@@ -77,6 +77,22 @@ describe(__filename + "#", () => {
       {
         Entry: `<div data-pc-3402f12b="true"><div data-pc-3402f12b="true">b</div></div>`
       }
+    ],
+    [
+      "Can render styles with the shorthand prop",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" {style?}></div>
+        `
+      },
+      {
+        Entry: {
+          style: { color: "red" }
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" style="color:red"></div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {

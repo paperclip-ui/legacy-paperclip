@@ -562,7 +562,7 @@ const translateChildren = (
 };
 
 const isSpecialPropName = (name: string) =>
-  /^on/.test(name) || name === "checked";
+  /^on/.test(name) || name === "checked" || name === "style";
 
 const collectPropertyBoundAttributes = (element: Element) =>
   element.attributes.reduce((record, attr) => {
