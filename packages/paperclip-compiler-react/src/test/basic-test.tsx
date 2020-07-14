@@ -93,6 +93,38 @@ describe(__filename + "#", () => {
       {
         Entry: `<div data-pc-3402f12b="true" style="color:red"></div>`
       }
+    ],
+    [
+      "Can render styles with the long form prop",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" style={style?}></div>
+        `
+      },
+      {
+        Entry: {
+          style: { color: "red" }
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" style="color:red"></div>`
+      }
+    ],
+    [
+      "can render style string",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" style={style?}></div>
+        `
+      },
+      {
+        Entry: {
+          style: "color: red"
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" style="color:red"></div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {

@@ -61,6 +61,7 @@ import * as path from "path";
 import { Html5Entities } from "html-entities";
 import * as crc32 from "crc32";
 import { getAttributeValue } from "paperclip/src";
+import { start } from "repl";
 
 const entities = new Html5Entities();
 type Config = { ast: Node; sheet?: any; classNames: string[] };
@@ -172,7 +173,8 @@ const translateClassNames = (
 const translateUtils = (ast: Node, context: TranslateContext) => {
   // context = translateStyleDataAttributes(context);
   // context = translateStyledUtil(ast, context);
-  context = translateGetDefaultUtil(ast, context);
+  context = translateGetDefaultUtil(context);
+  context = translateCastStyleUtil(context);
 
   // KEEP ME: for logic
   // context = translateExtendsPropsUtil(ast, context);
@@ -206,11 +208,34 @@ const translateExtendsPropsUtil = (ast: Node, context: TranslateContext) => {
   return context;
 };
 
-const translateGetDefaultUtil = (ast: Node, context: TranslateContext) => {
+const translateGetDefaultUtil = (context: TranslateContext) => {
   context = addBuffer(
     `const getDefault = (module) => module.default || module;\n\n`,
     context
   );
+  return context;
+};
+
+const translateCastStyleUtil = (context: TranslateContext) => {
+  context = addBuffer(`const castStyle = (value) => {\n`, context);
+  context = startBlock(context);
+  context = addBuffer(`const tov = typeof value;\n`, context);
+  context = addBuffer(
+    `if (tov === "object" || tov !== "string") return value;\n`,
+    context
+  );
+  context = addBuffer(
+    `return value.trim().split(";").reduce((obj, keyValue) => {\n`,
+    context
+  );
+  context = startBlock(context);
+  context = addBuffer(`const [key, value] = keyValue.split(":");\n`, context);
+  context = addBuffer(`obj[key.trim()] = value.trim();\n`, context);
+  context = addBuffer(`return obj;\n`, context);
+  context = endBlock(context);
+  context = addBuffer(`}, {});\n`, context);
+  context = endBlock(context);
+  context = addBuffer(`};\n\n`, context);
   return context;
 };
 
@@ -651,38 +676,44 @@ const translateAttribute = (
     }
 
     // can't handle for now
-    if (name !== "style") {
-      if (!/^data-/.test(name)) {
-        name = camelCase(name);
-      }
-      context = addBuffer(`${JSON.stringify(name)}: `, context);
-
-      added[name] = true;
-
-      context = prepPropertyBoundAttribute(
-        name,
-        propertyBoundAttributes,
-        context
-      );
-
-      context = translateAttributeValue(
-        element,
-        name,
-        value,
-        !isComponentInstance,
-        context
-      );
-
-      context = addPropertyBoundAttribute(
-        element,
-        name,
-        isComponentInstance,
-        propertyBoundAttributes,
-        context
-      );
-
-      context = addBuffer(`,\n`, context);
+    if (!/^data-/.test(name)) {
+      name = camelCase(name);
     }
+    context = addBuffer(`${JSON.stringify(name)}: `, context);
+
+    if (name === "style") {
+      context = addBuffer("castStyle(", context);
+    }
+
+    added[name] = true;
+
+    context = prepPropertyBoundAttribute(
+      name,
+      propertyBoundAttributes,
+      context
+    );
+
+    context = translateAttributeValue(
+      element,
+      name,
+      value,
+      !isComponentInstance,
+      context
+    );
+
+    context = addPropertyBoundAttribute(
+      element,
+      name,
+      isComponentInstance,
+      propertyBoundAttributes,
+      context
+    );
+
+    if (name === "style") {
+      context = addBuffer(")", context);
+    }
+
+    context = addBuffer(`,\n`, context);
   } else if (attr.kind === AttributeKind.ShorthandAttribute) {
     const property = (attr.reference as Reference).path[0];
     added[property.name] = true;
