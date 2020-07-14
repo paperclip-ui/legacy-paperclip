@@ -15,8 +15,11 @@ export const RETRIGGER_COMMAND = {
 
 export const stringArrayToAutoCompleteItems = memoize(
   (values: string[]): CompletionItem[] =>
-    values.map(value => ({
-      label: value
+    values.sort().map((value, i) => ({
+      label: value,
+
+      // ensures that completion list is always scrolled at the top
+      preselect: i === 0
     }))
 );
 
@@ -29,19 +32,6 @@ export const tagCompletionItem = (
   hasAttributes: boolean
 ): CompletionItem => {
   let insertText = tagName;
-
-  // if (tagName === "style") {
-  //   insertText = `${tagName}>\n\t\$0\n</${tagName}>`;
-  //   hasAttributes = false;
-  // }
-
-  // if (/^(span)$/.test(tagName)) {
-  //   insertText = `${tagName}$1></${tagName}>`;
-  // }
-
-  // if (/^(i|b|strong)$/.test(tagName)) {
-  //   insertText = `${tagName}>$0</${tagName}>`;
-  // }
 
   if (tagName === "import") {
     insertText = `${tagName} src="$1" as="$2">`;

@@ -104,9 +104,12 @@
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.1.8",
     "@types/vscode": "^1.41.0",
+    "axios": "^0.19.2",
     "chai": "^4.2.0",
+    "cheerio": "^1.0.0-rc.3",
     "glob": "^7.1.6",
     "mocha": "^8.0.1",
+    "p-limit": "^3.0.2",
     "typescript": "^3.7.5",
     "vscode-test": "^1.4.0"
   },

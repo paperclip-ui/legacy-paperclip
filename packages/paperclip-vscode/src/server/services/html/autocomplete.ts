@@ -22,7 +22,7 @@ import { resolveAllPaperclipFiles } from "paperclip";
 import { ComponentExport } from "paperclip-utils";
 import {
   CSS_DECLARATION_NAMES,
-  CSS_DECLARATION_VALUE_ITEMS
+  CSS_DECLARATION_VALUE_MAP
 } from "./css-constants";
 import {
   CompletionItem,
@@ -284,7 +284,7 @@ export class PCAutocomplete {
   ) {
     let list = [
       ...stringArrayToAutoCompleteItems(
-        CSS_DECLARATION_VALUE_ITEMS[info.declarationName] || EMPTY_ARRAY
+        CSS_DECLARATION_VALUE_MAP[info.declarationName] || EMPTY_ARRAY
       )
     ];
 

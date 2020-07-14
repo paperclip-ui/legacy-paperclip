@@ -10,7 +10,7 @@ import {
 } from "vscode-languageserver";
 import {
   CSS_DECLARATION_NAMES,
-  CSS_DECLARATION_VALUE_ITEMS,
+  CSS_DECLARATION_VALUE_MAP,
   CSS_AT_RULE_NAMES
 } from "./css-constants";
 import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./html-constants";
@@ -23,7 +23,7 @@ const CSS_DECLARATION_NAME_COMPLETION_ITEMS = stringArrayToAutoCompleteItems(
     kind: CompletionItemKind.Property,
     insertText: label + ": ${1:};",
     insertTextFormat: InsertTextFormat.Snippet,
-    command: CSS_DECLARATION_VALUE_ITEMS[label]?.length
+    command: CSS_DECLARATION_VALUE_MAP[label]?.length
       ? RETRIGGER_COMMAND
       : null,
     data: {
