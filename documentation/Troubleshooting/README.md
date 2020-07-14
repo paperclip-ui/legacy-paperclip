@@ -18,7 +18,7 @@ You may be dealing with CSS specificity issues. Suppose that you have an input:
 
 And then you have another component that's using TextInput:
 
-``html
+```html
 <import as="TextInput" src="./text-input.pc">
 
 <style>
@@ -68,7 +68,7 @@ Just flatten your variants. For example:
 And _then_ you can apply style overrides:
 
 
-``html
+```html
 <import as="TextInput" src="./text-input.pc">
 
 <style>
