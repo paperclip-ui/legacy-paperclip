@@ -68,7 +68,7 @@ Just flatten your variants. For example:
 And _then_ you can apply style overrides:
 
 
-``html
+```html
 <import as="TextInput" src="./text-input.pc">
 
 <style>
