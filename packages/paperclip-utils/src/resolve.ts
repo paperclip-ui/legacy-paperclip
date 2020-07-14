@@ -27,7 +27,7 @@ export const resolveImportFile = fs => (fromPath: string, toPath: string) => {
 
     return url.resolve(fromPath, toPath);
   } catch (e) {
-    return null;
+    return toPath;
   }
 };
 
@@ -73,6 +73,5 @@ export const findPCConfigUrl = fs => (fromPath: string): string | null => {
   } while (cdir !== "/" && cdir !== ".");
   return null;
 };
-
 
 const fixPath = (path: string) => path.replace(/\\/g, "/");
