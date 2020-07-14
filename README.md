@@ -160,6 +160,7 @@ Here's a peak at what's planned for Paperclip:
 - [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode)
 - [Getting started](./documentation/Getting%20Started)
 - [Syntax](./documentation/Syntax)
+- [Troubleshooting](./documentation/Troubleshooting)
 - Integrations
   - [React](./packages/paperclip-compiler-react)
   - [Webpack](./packages/paperclip-loader)
