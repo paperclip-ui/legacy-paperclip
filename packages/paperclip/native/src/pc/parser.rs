@@ -468,7 +468,7 @@ fn parse_key_value_attribute<'a>(
         location: Location::new(start, tokenizer.utf16_pos),
       },
     ))
-  } else if matches!(tokenizer.peek(1)?, Token::Backslash | Token::GreaterThan) {
+  } else if matches!(tokenizer.peek(1)?, Token::SelfTagClose | Token::GreaterThan) {
     Ok(pc_ast::Attribute::KeyValueAttribute(
       pc_ast::KeyValueAttribute {
         name,
@@ -628,6 +628,10 @@ mod tests {
       <element></element>
       <self-closing-element />
       <element with-attribute />
+      <element/>
+      <element a/>
+      <element {a}/>
+      <element a b/>
       <element data-and-an-attribute=\"value\" />
       <part onClick={on7Click}>
       </part>
