@@ -73,18 +73,11 @@ function pcLoader(
     styleCache
   );
 
-  const importedStyleSheets = evaluateAllFileStyles(
-    engine,
-    ast,
-    resourceUrl,
-    styleCache
-  );
-
-  for (const transformPath in importedStyleSheets) {
+  for (const transformPath in importedStyles) {
     if (_loadedStyleFiles[transformPath]) continue;
     virtualModules.writeModule(
       transformPath,
-      stringifyCSSSheet(importedStyleSheets[transformPath], null)
+      stringifyCSSSheet(importedStyles[transformPath], null)
     );
   }
   _loadedStyleFiles = styleCache;
@@ -95,12 +88,12 @@ function pcLoader(
   };
 
   let code = compiler.compile(
-    { ast, sheet, classNames: getAllVirtSheetClassNames(styleMap) },
+    { ast, classNames: getAllVirtSheetClassNames(styleMap) },
     resourceUrl,
     config.compilerOptions
   );
 
-  const sheetCode = stringifyCSSSheet(sheet, null);
+  const sheetCode = stringifyCSSSheet(sheet, null, resourceUrl);
 
   const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);
