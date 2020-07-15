@@ -66,7 +66,7 @@ export const stringifyLoadResult = ({
   preview,
   importedSheets: sheets
 }: LoadResult) => {
-  const sheetText = [...Object.values(sheets), sheet]
+  const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
     .map(sheet => {
       return stringifyCSSSheet(sheet, "");
     })

@@ -14,14 +14,14 @@ use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use serde::Serialize;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, BTreeMap, HashSet};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct EvaluateData {
   #[serde(rename = "allDependencies")]
   pub all_dependencies: Vec<String>,
   pub dependents: Vec<String>,
-  pub imports: HashMap<String, pc_export::Exports>,
+  pub imports: BTreeMap<String, pc_export::Exports>,
   pub sheet: css_virt::CSSSheet,
   pub preview: pc_virt::Node,
   pub exports: pc_export::Exports,
@@ -40,7 +40,7 @@ pub struct DiffedData<'a> {
   #[serde(rename = "allDependencies")]
   pub all_dependencies: &'a Vec<String>,
   pub dependents: &'a Vec<String>,
-  pub imports: &'a HashMap<String, pc_export::Exports>,
+  pub imports: &'a BTreeMap<String, pc_export::Exports>,
   pub exports: &'a pc_export::Exports,
 
   // TODO - needs to be domMutations
@@ -244,7 +244,7 @@ impl Engine {
 
     let dept_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);
 
-    let mut imports = HashMap::new();
+    let mut imports = BTreeMap::new();
 
     let relative_deps = &dependency
       .dependencies

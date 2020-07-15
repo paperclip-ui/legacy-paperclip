@@ -5,14 +5,14 @@ use crate::base::ast::ExprSource;
 use crate::base::runtime::RuntimeError;
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
-use std::collections::HashMap;
+use std::collections::{HashMap, BTreeMap};
 
 pub struct Context<'a> {
   scope: &'a str,
   vfs: &'a VirtualFileSystem,
   uri: &'a String,
-  imports: &'a HashMap<String, Exports>,
-  import_scopes: &'a HashMap<String, String>,
+  imports: &'a BTreeMap<String, Exports>,
+  import_scopes: &'a BTreeMap<String, String>,
   exports: Exports,
   in_public_scope: bool,
   all_rules: Vec<virt::Rule>,
@@ -23,13 +23,14 @@ pub struct EvalInfo {
   pub exports: Exports,
 }
 
+
 pub fn evaluate<'a>(
   expr: &ast::Sheet,
   uri: &'a String,
   scope: &'a str,
-  import_scopes: &'a HashMap<String, String>,
+  import_scopes: &'a BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
-  imports: &'a HashMap<String, Exports>,
+  imports: &'a BTreeMap<String, Exports>,
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     scope,
@@ -238,10 +239,10 @@ fn evaluate_style_declarations<'a>(
         style.push(evaluate_style_key_value_declaration(kv, context)?);
       }
       ast::Declaration::Include(inc) => {
-        let mut imp_mixins: HashMap<String, MixinExport> = HashMap::new();
+        let mut imp_mixins: BTreeMap<String, MixinExport> = BTreeMap::new();
 
         for mixin_path in &inc.mixins {
-          let mixin_context_option: Option<&HashMap<String, MixinExport>> =
+          let mixin_context_option: Option<&BTreeMap<String, MixinExport>> =
             if mixin_path.parts.len() == 2 {
               if let Some(imp) = context.imports.get(&mixin_path.parts.first().unwrap().name) {
                 for (key, imp_mixin) in &imp.mixins {

@@ -4,7 +4,7 @@ use crate::base::parser::ParseError;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use serde::Serialize;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashSet, BTreeMap};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
@@ -31,14 +31,14 @@ pub struct GraphError {
 }
 
 pub struct DependencyGraph {
-  pub dependencies: HashMap<String, Dependency>,
+  pub dependencies: BTreeMap<String, Dependency>,
 }
 
 #[allow(dead_code)]
 impl DependencyGraph {
   pub fn new() -> DependencyGraph {
     DependencyGraph {
-      dependencies: HashMap::new(),
+      dependencies: BTreeMap::new(),
     }
   }
   pub fn flatten<'a>(&'a self, entry_uri: &String) -> Vec<(&Dependency, Option<&Dependency>)> {
@@ -90,15 +90,12 @@ impl DependencyGraph {
     return;
   }
   pub fn flatten_dependencies<'a>(&'a self, entry_uri: &String) -> Vec<String> {
-    let mut all_deps: HashSet<String> = HashSet::new();
+    let mut all_deps: Vec<String> = vec![];
     self.flatten_dependencies2(entry_uri, &mut all_deps);
-    return all_deps
-      .into_iter()
-      .map(|v| v.to_string())
-      .collect::<Vec<String>>();
+    return all_deps;
   }
 
-  fn flatten_dependencies2<'a>(&'a self, entry_uri: &String, all_deps: &mut HashSet<String>) {
+  fn flatten_dependencies2<'a>(&'a self, entry_uri: &String, all_deps: &mut Vec<String>) {
     let entry_option = self.dependencies.get(entry_uri);
 
     if let Some(dep) = entry_option {
@@ -110,7 +107,7 @@ impl DependencyGraph {
 
       for dep_uri in deps {
         if !all_deps.contains(dep_uri) {
-          all_deps.insert(dep_uri.to_string());
+          all_deps.push(dep_uri.to_string());
           self.flatten_dependencies2(dep_uri, all_deps);
         } else {
         }
@@ -217,8 +214,8 @@ pub enum DependencyContent {
 #[derive(Debug)]
 pub struct Dependency {
   pub uri: String,
-  pub dependencies: HashMap<String, String>,
-  pub dependency_uri_maps: HashMap<String, String>,
+  pub dependencies: BTreeMap<String, String>,
+  pub dependency_uri_maps: BTreeMap<String, String>,
   pub content: DependencyContent,
 }
 
@@ -246,8 +243,8 @@ impl<'a> Dependency {
     Ok(Dependency {
       uri: uri.to_string(),
       content: DependencyContent::StyleSheet(expression),
-      dependencies: HashMap::new(),
-      dependency_uri_maps: HashMap::new(),
+      dependencies: BTreeMap::new(),
+      dependency_uri_maps: BTreeMap::new(),
     })
   }
 
@@ -266,8 +263,8 @@ impl<'a> Dependency {
 
     let imports = pc_ast::get_imports(&expression);
 
-    let mut dependencies = HashMap::new();
-    let mut dependency_uri_maps = HashMap::new();
+    let mut dependencies = BTreeMap::new();
+    let mut dependency_uri_maps = BTreeMap::new();
     for import in &imports {
       let src = pc_ast::get_attribute_value("src", import).unwrap();
 

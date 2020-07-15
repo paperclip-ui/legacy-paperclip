@@ -10,11 +10,13 @@ import {
   resolveImportUri,
   DependencyContent,
   getImports,
+  SheetInfo,
   Node,
   EvaluatedEvent,
   getAttributeStringValue,
   VirtualNode,
-  LoadedData
+  LoadedData,
+  DiffedEvent
 } from "paperclip-utils";
 
 export type FileContent = {
@@ -45,7 +47,7 @@ const mapResult = result => {
 export type EngineEventListener = (event: EngineEvent) => void;
 
 export type LoadResult = {
-  importedSheets: Record<string, any>;
+  importedSheets: SheetInfo[];
   sheet: any;
   preview: VirtualNode;
 };
@@ -109,6 +111,7 @@ export class Engine {
       }
     };
   }
+
   private _onEngineEvent = (event: EngineEvent) => {
     if (event.kind === EngineEventKind.Evaluated) {
       const data: LoadedData = (this._rendered[event.uri] = {
@@ -122,36 +125,49 @@ export class Engine {
         data
       });
     } else if (event.kind === EngineEventKind.Diffed) {
-      const existingEvent = this._rendered[event.uri];
+      const existingData = this._rendered[event.uri];
 
-      this._rendered[event.uri] = {
-        ...existingEvent,
+      const newData = (this._rendered[event.uri] = {
+        ...existingData,
         imports: event.data.imports,
         exports: event.data.exports,
+        importedSheets: this.getImportedSheets(event),
         allDependencies: event.data.allDependencies,
-        sheet: event.data.sheet || existingEvent.sheet,
-        preview: patchVirtNode(existingEvent.preview, event.data.mutations)
-      };
+        sheet: event.data.sheet || existingData.sheet,
+        preview: patchVirtNode(existingData.preview, event.data.mutations)
+      });
 
-      const addedSheets = {};
+      const removedSheetUris = [];
+
+      for (const { uri } of existingData.importedSheets) {
+        if (!newData.allDependencies.includes(uri)) {
+          removedSheetUris.push(uri);
+        }
+      }
+
+      const addedSheets: SheetInfo[] = [];
       for (const depUri of event.data.allDependencies) {
         // Note that we only do this if the sheet is already rendered -- engine
         // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
         // has been added, including the actual sheet object.
         if (
-          !existingEvent.allDependencies.includes(depUri) &&
+          !existingData.allDependencies.includes(depUri) &&
           this._rendered[depUri]
         ) {
-          addedSheets[depUri] = this._rendered[depUri].sheet;
+          addedSheets.push({
+            uri: depUri,
+            sheet: this._rendered[depUri].sheet
+          });
         }
       }
 
-      if (Object.keys(addedSheets).length) {
+      if (addedSheets.length || removedSheetUris.length) {
         this._dispatch({
           uri: event.uri,
-          kind: EngineEventKind.AddedSheets,
+          kind: EngineEventKind.ChangedSheets,
           data: {
-            sheets: addedSheets,
+            newSheets: addedSheets,
+            removedSheetUris: removedSheetUris,
             allDependencies: event.data.allDependencies
           }
         });
@@ -208,17 +224,22 @@ export class Engine {
       });
     });
   }
-  getImportedSheets({ data: { allDependencies } }: EvaluatedEvent) {
+  getImportedSheets({
+    data: { allDependencies }
+  }: EvaluatedEvent | DiffedEvent) {
     // ick, wworks for now.
 
-    const deps = {};
+    const deps: SheetInfo[] = [];
 
-    for (const depUri in this._rendered) {
-      const event = this._rendered[depUri];
-      if (allDependencies.includes(depUri)) {
-        deps[depUri] = event.sheet;
+    for (const depUri of allDependencies) {
+      const data = this._rendered[depUri];
+      if (!data) {
+        console.error(`data not loaded, this shouldn't happen 😬.`);
+      } else {
+        deps.push({ uri: depUri, sheet: data.sheet });
       }
     }
+
     return deps;
   }
 

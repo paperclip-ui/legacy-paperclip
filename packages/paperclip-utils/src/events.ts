@@ -4,7 +4,13 @@
 import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
 import { Mutation } from "./virt-mtuation";
-import { VirtualNode, EvaluateData, DiffedData, LoadedData } from "./virt";
+import {
+  VirtualNode,
+  EvaluateData,
+  DiffedData,
+  LoadedData,
+  SheetInfo
+} from "./virt";
 import { PCExports } from "./exports";
 
 export enum EngineEventKind {
@@ -15,7 +21,7 @@ export enum EngineEventKind {
   Error = "Error",
   NodeParsed = "NodeParsed",
   Diffed = "Diffed",
-  AddedSheets = "AddedSheets"
+  ChangedSheets = "ChangedSheets"
 }
 
 export enum EngineErrorKind {
@@ -46,15 +52,16 @@ export type NodeParsedEvent = {
   node?: Node;
 } & BaseEngineEvent<EngineEventKind.NodeParsed>;
 
-export type NewStylesSheetsData = {
-  sheets: Record<string, any>;
+export type ChangedSheetsData = {
+  newSheets: SheetInfo[];
+  removedSheetUris: string[];
   allDependencies: string[];
 };
 
-export type AddedSheetsEvent = {
+export type ChangedSheetsEvent = {
   uri: string;
-  data: NewStylesSheetsData;
-} & BaseEngineEvent<EngineEventKind.AddedSheets>;
+  data: ChangedSheetsData;
+} & BaseEngineEvent<EngineEventKind.ChangedSheets>;
 
 export type BaseEngineErrorEvent<TErrorType extends EngineErrorKind> = {
   uri: string;
@@ -105,7 +112,7 @@ export type EngineErrorEvent = GraphErrorEvent | RuntimeErrorEvent;
 export type EngineEvent =
   | EvaluatedEvent
   | EngineErrorEvent
-  | AddedSheetsEvent
+  | ChangedSheetsEvent
   | NodeParsedEvent
   | LoadedEvent
   | DiffedEvent;

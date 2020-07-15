@@ -731,7 +731,7 @@ describe(__filename + "#", () => {
         "/entry.pc"
       );
 
-      const sheetText = [...Object.values(sheets), sheet]
+      const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
         .map(sheet => {
           return stringifyCSSSheet(sheet, "");
         })

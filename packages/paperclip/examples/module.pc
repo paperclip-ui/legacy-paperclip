@@ -1,9 +1,8 @@
 <style> 
-  .module {
-    display: block;
-    color: red;
-    font-family: Helvetica;
-    font-size: 24px;
+  :global(body) {
+    color: orange;
+    font-family: sans-serif;
+    font-size: xx-large;
   }
 </style>
 

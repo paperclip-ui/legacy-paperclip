@@ -1,16 +1,16 @@
 use super::virt;
 use crate::base::ast::ExprSource;
 use serde::Serialize;
-use std::collections::HashMap;
+use std::collections::{BTreeMap};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub struct Exports {
   #[serde(rename = "classNames")]
-  pub class_names: HashMap<String, ClassNameExport>,
-  pub mixins: HashMap<String, MixinExport>,
-  pub variables: HashMap<String, VarExport>,
-  pub keyframes: HashMap<String, KeyframesExport>,
+  pub class_names: BTreeMap<String, ClassNameExport>,
+  pub mixins: BTreeMap<String, MixinExport>,
+  pub variables: BTreeMap<String, VarExport>,
+  pub keyframes: BTreeMap<String, KeyframesExport>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -42,10 +42,10 @@ pub struct MixinExport {
 impl Exports {
   pub fn new() -> Exports {
     Exports {
-      class_names: HashMap::new(),
-      mixins: HashMap::new(),
-      variables: HashMap::new(),
-      keyframes: HashMap::new(),
+      class_names: BTreeMap::new(),
+      mixins: BTreeMap::new(),
+      variables: BTreeMap::new(),
+      keyframes: BTreeMap::new(),
     }
   }
   pub fn extend(&mut self, exports: &Exports) {

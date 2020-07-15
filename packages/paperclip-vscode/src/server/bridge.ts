@@ -20,7 +20,7 @@ import {
   EngineEventKind,
   EngineErrorEvent,
   EngineErrorKind,
-  AddedSheetsEvent,
+  ChangedSheetsEvent,
   GraphErrorEvent,
   getCompletionItems,
   DiffedEvent,
@@ -329,7 +329,7 @@ export class VSCServiceBridge {
       }
       case EngineEventKind.Loaded:
       case EngineEventKind.Diffed:
-      case EngineEventKind.AddedSheets:
+      case EngineEventKind.ChangedSheets:
       case EngineEventKind.Evaluated: {
         return this._onEngineEvaluatedEvent(event);
       }
@@ -337,7 +337,7 @@ export class VSCServiceBridge {
   };
 
   private _onEngineEvaluatedEvent(
-    event: DiffedEvent | EvaluatedEvent | LoadedEvent | AddedSheetsEvent
+    event: DiffedEvent | EvaluatedEvent | LoadedEvent | ChangedSheetsEvent
   ) {
     // reset error diagnostics
     this.connection.sendDiagnostics({

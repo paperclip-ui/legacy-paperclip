@@ -1,11 +1,5 @@
-<style>
-  :root {
-    --color: red;
-  }
-  
-  .div {
-    color: var(--red);
-    color: red;
-  }
-</style>
-fsd
+<import src="module.pc" as="module">
+
+<div className="div">
+  fdsfsdfds
+</div>

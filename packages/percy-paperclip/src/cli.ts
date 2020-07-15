@@ -50,7 +50,7 @@ export const run = async (
 
     const root: VirtualFragment = {
       children: [
-        ...Object.values(importedSheets).map(createStyle),
+        ...importedSheets.map(({ sheet }) => createStyle(sheet)),
         createStyle(sheet),
         preview
       ],

@@ -25,10 +25,10 @@ pub struct Context<'a> {
   pub import_ids: HashSet<&'a String>,
   pub part_ids: HashSet<&'a String>,
   pub scope: String,
-  pub import_scopes: HashMap<String, String>,
+  pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
-  pub imports: &'a HashMap<String, Exports>,
+  pub imports: &'a BTreeMap<String, Exports>,
 }
 
 impl<'a> Context<'a> {
@@ -58,7 +58,7 @@ pub fn evaluate<'a>(
   uri: &String,
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
-  imports: &'a HashMap<String, Exports>,
+  imports: &'a BTreeMap<String, Exports>,
 ) -> Result<Option<EvalInfo>, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   if let DependencyContent::Node(node_expr) = &dep.content {
@@ -98,8 +98,8 @@ pub fn evaluate<'a>(
 fn collect_component_exports<'a>(
   root: &ast::Node,
   context: &Context,
-) -> Result<HashMap<String, ComponentExport>, RuntimeError> {
-  let mut exports: HashMap<String, ComponentExport> = HashMap::new();
+) -> Result<BTreeMap<String, ComponentExport>, RuntimeError> {
+  let mut exports: BTreeMap<String, ComponentExport> = BTreeMap::new();
 
   let children = ast::get_children(root);
 
@@ -137,8 +137,8 @@ fn collect_component_exports<'a>(
   Ok(exports)
 }
 
-fn collect_node_properties<'a>(node: &ast::Node) -> HashMap<String, Property> {
-  let mut properties: HashMap<String, Property> = HashMap::new();
+fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
+  let mut properties: BTreeMap<String, Property> = BTreeMap::new();
 
   node.walk(&mut |node| -> bool {
     match node {
@@ -189,14 +189,14 @@ fn collect_node_properties<'a>(node: &ast::Node) -> HashMap<String, Property> {
   properties
 }
 
-fn add_script_property(script: &js_ast::Statement, properties: &mut HashMap<String, Property>) {
+fn add_script_property(script: &js_ast::Statement, properties: &mut BTreeMap<String, Property>) {
   if let js_ast::Statement::Reference(reference) = script {
     let part = reference.path.get(0).unwrap();
     add_property(&part.name, part.optional, properties);
   }
 }
 
-fn add_property(name: &String, optional: bool, properties: &mut HashMap<String, Property>) {
+fn add_property(name: &String, optional: bool, properties: &mut BTreeMap<String, Property>) {
   let optional = if let Some(prop) = properties.get(name) {
     prop.optional
   } else {
@@ -281,7 +281,7 @@ pub fn evaluate_document_styles<'a>(
   let mut sheet = css_virt::CSSSheet { rules: vec![] };
   let entry = graph.dependencies.get(uri).unwrap();
 
-  let mut css_imports: HashMap<String, css_export::Exports> = HashMap::new();
+  let mut css_imports: BTreeMap<String, css_export::Exports> = BTreeMap::new();
 
   for (id, dep_uri) in &entry.dependencies {
     let imp_option = graph.dependencies.get(dep_uri);
@@ -302,9 +302,9 @@ pub fn evaluate_document_styles<'a>(
             imp_style,
             dep_uri,
             &get_document_style_scope(&dep_uri),
-            &HashMap::new(),
+            &BTreeMap::new(),
             vfs,
-            &HashMap::new(),
+            &BTreeMap::new(),
           )?;
 
           match info {
@@ -366,7 +366,7 @@ fn evaluate_document_sheet<'a>(
   let entry = context.graph.dependencies.get(uri).unwrap();
 
   let mut css_exports: css_export::Exports = css_export::Exports::new();
-  let mut css_imports: HashMap<String, css_export::Exports> = HashMap::new();
+  let mut css_imports: BTreeMap<String, css_export::Exports> = BTreeMap::new();
 
   for (id, imp) in context.imports {
     css_imports.insert(id.to_string(), imp.style.clone());
@@ -452,7 +452,7 @@ fn create_context<'a>(
   vfs: &'a VirtualFileSystem,
   data: &'a js_virt::JsValue,
   parent_option: Option<&'a Context>,
-  imports: &'a HashMap<String, Exports>,
+  imports: &'a BTreeMap<String, Exports>,
 ) -> Context<'a> {
   let render_call_stack = if let Some(parent) = parent_option {
     parent.render_call_stack.clone()
@@ -476,8 +476,8 @@ fn create_context<'a>(
   }
 }
 
-fn get_import_scopes<'a>(entry: &Dependency) -> HashMap<String, String> {
-  let mut scopes = HashMap::new();
+fn get_import_scopes<'a>(entry: &Dependency) -> BTreeMap<String, String> {
+  let mut scopes = BTreeMap::new();
   for (id, uri) in &entry.dependencies {
     scopes.insert(id.to_string(), get_document_style_scope(uri));
   }
@@ -1442,7 +1442,7 @@ mod tests {
       Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
     );
 
-    evaluate(&uri, &graph, &vfs, &HashMap::new())
+    evaluate(&uri, &graph, &vfs, &BTreeMap::new())
   }
 
   #[test]

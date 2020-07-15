@@ -9,7 +9,9 @@ import {
   getVirtTarget,
   patchVirtNode,
   EngineErrorEvent,
-  EngineErrorKind
+  SheetInfo,
+  EngineErrorKind,
+  LoadedData
 } from "paperclip-utils";
 import { EventEmitter } from "events";
 import { preventDefault } from "./utils";
@@ -92,7 +94,7 @@ export class Renderer {
     this._em.addListener(RenderEventTypes.ERROR_BANNER_CLICK, listener);
   };
 
-  initialize({ sheet, preview, importedSheets }) {
+  initialize({ sheet, preview, importedSheets }: LoadedData) {
     removeAllChildren(this._stage);
     removeAllChildren(this._mainStyleContainer);
     removeAllChildren(this._importedStylesContainer);
@@ -104,7 +106,7 @@ export class Renderer {
       null
     );
 
-    this._dependencies = Object.keys(importedSheets);
+    this._dependencies = importedSheets.map(info => info.uri);
     this._addSheets(importedSheets);
     const style = createNativeStyleFromSheet(
       sheet,
@@ -115,16 +117,23 @@ export class Renderer {
     this._stage.appendChild(node);
   }
 
-  private _addSheets(importedSheets: Record<string, any>) {
-    for (const impUri in importedSheets) {
-      const impSheet = importedSheets[impUri];
-      const sheet = createNativeStyleFromSheet(
-        impSheet,
+  private _addSheets(importedSheets: SheetInfo[]) {
+    for (const { uri, sheet } of importedSheets) {
+      const nativeSheet = createNativeStyleFromSheet(
+        sheet,
         this._domFactory,
         this.protocol
       );
-      this._importedStyles[impUri] = sheet;
-      this._importedStylesContainer.appendChild(sheet);
+      this._importedStyles[uri] = nativeSheet;
+      this._importedStylesContainer.appendChild(nativeSheet);
+    }
+  }
+
+  private _removeSheets(uris: string[]) {
+    for (const uri of uris) {
+      // Note that this should always exist. If null, then we want an error to be thrown.
+      this._importedStyles[uri].remove();
+      delete this._importedStyles[uri];
     }
   }
 
@@ -184,10 +193,11 @@ export class Renderer {
         this.handleError(event);
         break;
       }
-      case EngineEventKind.AddedSheets: {
+      case EngineEventKind.ChangedSheets: {
         if (event.uri === this.targetUri) {
           this._dependencies = event.data.allDependencies;
-          this._addSheets(event.data.sheets);
+          this._addSheets(event.data.newSheets);
+          this._removeSheets(event.data.removedSheetUris);
         }
         break;
       }

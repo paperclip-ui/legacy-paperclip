@@ -933,12 +933,7 @@ const FONT_SIZE_VALUES = uniq([
 
 const FONT_FEATURE_SETTINGS_VALUES = uniq(["normal", "feature-value"]);
 
-const FONT_FAMILY_VALUES = uniq([
-  "family-name",
-  "generic-family",
-  "initial",
-  "inherit"
-]);
+const FONT_FAMILY_VALUES = uniq(["initial", "inherit"]);
 
 const FLEX_WRAP_VALUES = uniq([
   "nowrap",

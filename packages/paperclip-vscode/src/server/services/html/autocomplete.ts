@@ -44,11 +44,9 @@ import {
   TAG_NAME_COMPLETION_ITEMS,
   AT_RULE_COMPLETION_ITEMS
 } from "./completion-items";
-import { LoadedEvent, DEFAULT_PART_ID } from "paperclip";
+import { DEFAULT_PART_ID } from "paperclip";
 import { LoadedData } from "paperclip";
 import { memoize } from "lodash";
-import { isPaperclipFile } from "../../../client/utils";
-import { Loaded } from "../../../common/notifications";
 
 const EMPTY_ARRAY = [];
 
@@ -104,6 +102,7 @@ export class PCAutocomplete {
     return [];
   }
 
+  // slightly buggy, so don't do for now
   private _getCloseTagSuggestion(
     context: HTMLCloseTagNameSuggestionContext
   ): CompletionItem[] {

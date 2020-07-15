@@ -1,17 +1,17 @@
 use crate::css::runtime::export as css_export;
 use serde::Serialize;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, BTreeMap};
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct Exports {
   pub style: css_export::Exports,
-  pub components: HashMap<String, ComponentExport>,
+  pub components: BTreeMap<String, ComponentExport>,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct ComponentExport {
   pub name: String,
-  pub properties: HashMap<String, Property>,
+  pub properties: BTreeMap<String, Property>,
   pub public: bool,
 }
 

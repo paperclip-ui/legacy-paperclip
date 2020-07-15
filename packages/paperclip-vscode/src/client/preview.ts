@@ -327,7 +327,7 @@ class LivePreview {
         (event.kind === EngineEventKind.Evaluated ||
           event.kind === EngineEventKind.Loaded ||
           event.kind === EngineEventKind.Diffed ||
-          event.kind === EngineEventKind.AddedSheets)
+          event.kind === EngineEventKind.ChangedSheets)
       ) {
         this._dependencies = event.data.allDependencies;
       }

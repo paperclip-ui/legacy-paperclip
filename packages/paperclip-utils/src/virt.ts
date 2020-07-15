@@ -27,8 +27,13 @@ export type DiffedData = {
   imports: Record<string, PCExports>;
 };
 
+export type SheetInfo = {
+  sheet: any;
+  uri: string;
+};
+
 export type LoadedData = EvaluateData & {
-  importedSheets: Record<string, any>;
+  importedSheets: SheetInfo[];
 };
 
 type VirtualBaseNode<KKind extends VirtualNodeKind> = {
