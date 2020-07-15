@@ -1,6 +1,6 @@
 use crate::css::runtime::export as css_export;
 use serde::Serialize;
-use std::collections::{HashMap, BTreeMap};
+use std::collections::{BTreeMap, HashMap};
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct Exports {

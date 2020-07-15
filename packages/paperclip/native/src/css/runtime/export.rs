@@ -1,7 +1,7 @@
 use super::virt;
 use crate::base::ast::ExprSource;
 use serde::Serialize;
-use std::collections::{BTreeMap};
+use std::collections::BTreeMap;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]

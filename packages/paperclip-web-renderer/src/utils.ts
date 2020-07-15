@@ -4,7 +4,6 @@ export const preventDefault = (event: any) => {
   return false;
 };
 
-
 export const ATTR_ALIASES = {
-  "className": "class"
+  className: "class"
 };

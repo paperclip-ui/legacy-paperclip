@@ -275,4 +275,68 @@ describe(__filename + "#", () => {
       `<div><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-5678f76a] { color:d; }</style></div><div><style></style></div><div>     </div><div></div><div></div>`
     );
   });
+
+  it(`Properly replaces elements`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div export component as="StyledHeader" 
+        className="StyledHeader"
+        {onClick?}
+        > 
+      </div>
+      
+      <div export component as="Preview">
+        <StyledHeader {depth?} {open?}>
+        </StyledHeader>
+      </div>
+      
+      <preview noPadding>
+        <Preview>
+        </Preview>
+      
+        <StyledHeader open>
+          Content
+        </StyledHeader>
+      </preview>`
+    };
+
+    const engine = createMockEngine(graph);
+    const renderer = createMockRenderer("/entry.pc");
+    renderer.initialize(await engine.run("/entry.pc"));
+    engine.onEvent(renderer.handleEngineEvent);
+
+    await engine.updateVirtualFileContent(
+      "/entry.pc",
+      `
+
+  <div export component as="StyledHeader" 
+    className="StyledHeader"
+    {onClick?}
+    > 
+  </div>
+
+  <div export component as="Preview">
+    <StyledHeader {depth?} {open?}>
+    </StyledHeader>
+  </div>
+
+  <preview noPadding>
+    <Preview header="Header">
+    </Preview>
+
+    <Preview header="Header">
+      Content
+    </Preview>
+  </preview>
+    `
+    );
+
+    const renderer2 = createMockRenderer("/entry.pc");
+    renderer2.initialize(await engine.run("/entry.pc"));
+    engine.onEvent(renderer.handleEngineEvent);
+
+    expect(renderer.mount.innerHTML).not.to.eql(undefined);
+
+    expect(renderer.mount.innerHTML).to.eql(renderer2.mount.innerHTML);
+  });
 });

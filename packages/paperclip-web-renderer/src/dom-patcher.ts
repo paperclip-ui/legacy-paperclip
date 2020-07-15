@@ -52,7 +52,7 @@ export const patchNativeNode = (
       }
       case ActionKind.RemoveAttribute: {
         const element = target as HTMLElement;
-        element.removeAttribute(action.name);
+        element.removeAttribute(ATTR_ALIASES[action.name] || action.name);
         break;
       }
       case ActionKind.SetAttribute: {

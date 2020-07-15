@@ -5,7 +5,7 @@ use crate::base::ast::ExprSource;
 use crate::base::runtime::RuntimeError;
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
-use std::collections::{HashMap, BTreeMap};
+use std::collections::{BTreeMap, HashMap};
 
 pub struct Context<'a> {
   scope: &'a str,
@@ -22,7 +22,6 @@ pub struct EvalInfo {
   pub sheet: virt::CSSSheet,
   pub exports: Exports,
 }
-
 
 pub fn evaluate<'a>(
   expr: &ast::Sheet,

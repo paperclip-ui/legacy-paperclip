@@ -14,7 +14,7 @@ use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use serde::Serialize;
-use std::collections::{HashMap, BTreeMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct EvaluateData {

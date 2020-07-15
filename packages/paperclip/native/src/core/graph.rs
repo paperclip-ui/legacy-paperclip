@@ -4,7 +4,7 @@ use crate::base::parser::ParseError;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use serde::Serialize;
-use std::collections::{HashSet, BTreeMap};
+use std::collections::{BTreeMap, HashSet};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
