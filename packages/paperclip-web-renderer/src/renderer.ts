@@ -28,8 +28,6 @@ enum RenderEventTypes {
 }
 declare var vscode;
 
-const parent = typeof vscode != "undefined" ? vscode : window;
-
 export class Renderer {
   private _em: EventEmitter;
   private _hoverOverlay: HTMLElement;
@@ -181,12 +179,6 @@ export class Renderer {
 
   handleEngineEvent = (event: EngineEvent) => {
     this._clearErrors();
-    // setTimeout(() => {
-    //  parent.postMessage({
-    //    type: "HTML",
-    //    content: this.mount.outerHTML
-    //  })
-    // }, 500);
     switch (event.kind) {
       case EngineEventKind.Error: {
         this.handleError(event);
