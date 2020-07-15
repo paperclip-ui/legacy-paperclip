@@ -79,11 +79,14 @@ class MockElement extends ParentNode {
   }
   toString() {
     let buffer = `<${this.tagName}`;
-    for (const name in this.attributes) {
-      if (!this.attributes[name]) {
+    const sortedAttributes = Object.keys(this.attributes)
+      .sort()
+      .map(name => ({ name, value: this.attributes[name] }));
+    for (const { name, value } of sortedAttributes) {
+      if (!value) {
         continue;
       }
-      buffer += ` ${name}=${JSON.stringify(this.attributes[name])}`;
+      buffer += ` ${name}=${JSON.stringify(value)}`;
     }
     buffer += `>`;
     buffer +=
