@@ -55,7 +55,7 @@ export const resolveAllPaperclipFiles = findResourcesFromConfig(
   }
 );
 export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
-  const ext = `+(jpg|jpeg|png|gif)`;
+  const ext = `+(jpg|jpeg|png|gif|svg)`;
 
   return config.moduleDirectories.reduce((files, dir) => {
     if (dir === ".") {
