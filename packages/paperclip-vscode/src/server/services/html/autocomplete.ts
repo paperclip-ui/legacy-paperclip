@@ -14,11 +14,11 @@ import {
   CSSDeclarationAtRuleSuggestionContext,
   CSSDeclarationAtRuleParamsSuggestionContext,
   CSSAtRuleSuggestionContext,
-  CSSVariableSuggestionContext,
+  CSSFunctionSuggestionContext,
   HTMLCloseTagNameSuggestionContext
 } from "paperclip-autocomplete";
 
-import { resolveAllPaperclipFiles } from "paperclip";
+import { resolveAllPaperclipFiles, resolveAllAssetFiles } from "paperclip";
 import { ComponentExport } from "paperclip-utils";
 import {
   CSS_DECLARATION_NAMES,
@@ -73,7 +73,6 @@ export class PCAutocomplete {
     if (!context || !data) {
       return [];
     }
-    console.log("SUG", text, context);
 
     switch (context.kind) {
       case SuggestContextKind.HTML_TAG_NAME:
@@ -92,8 +91,8 @@ export class PCAutocomplete {
         return this._getCSSAtRuleSuggestion(context);
       case SuggestContextKind.CSS_DECLARATION_VALUE:
         return this._getCSSDeclarationValueSugestion(context, data);
-      case SuggestContextKind.CSS_VARIABLE:
-        return this._getCSSVariableSuggestion(data);
+      case SuggestContextKind.CSS_FUNCTION:
+        return this._getCSSFunctionSuggestion(context, uri, data);
       case SuggestContextKind.CSS_CLASS_REFERENCE:
         return this._getCSSClassReferenceSuggestion(data);
       // case SuggestContextKind.HTML_CLOSE_TAG_NAME:
@@ -269,6 +268,12 @@ export class PCAutocomplete {
       }
     }
 
+    if (context.attributeName === "src") {
+      return stringArrayToAutoCompleteItems(
+        resolveAllAssetFiles(fs)(uri, true)
+      );
+    }
+
     if (
       context.attributeName === "className" ||
       context.attributeName === "class"
@@ -331,8 +336,22 @@ export class PCAutocomplete {
     return list;
   }
 
-  private _getCSSVariableSuggestion(data: LoadedData) {
-    return declaredVarsToCompletionItems(data);
+  private _getCSSFunctionSuggestion(
+    context: CSSFunctionSuggestionContext,
+    uri: string,
+    data: LoadedData
+  ) {
+    if (context.name === "var") {
+      return declaredVarsToCompletionItems(data);
+    }
+
+    if (context.name === "url") {
+      return stringArrayToAutoCompleteItems(
+        resolveAllAssetFiles(fs)(uri, true)
+      );
+    }
+
+    return [];
   }
 
   private _getCSSClassReferenceSuggestion(

@@ -10,7 +10,7 @@ export enum SuggestContextKind {
 
   // CSS
   CSS_INCLUDE = "CSS_INCLUDE",
-  CSS_VARIABLE = "CSS_VARIABLE",
+  CSS_FUNCTION = "CSS_FUNCTION",
   CSS_SELECTOR_NAME = "CSS_SELECTOR_NAME",
   CSS_DECLARATION_NAME = "CSS_DECLARATION_NAME",
   CSS_DECLARATION_VALUE = "CSS_DECLARATION_VALUE",
@@ -65,9 +65,10 @@ export type CSSDeclarationAtRuleParamsSuggestionContext = {
   params: string;
 } & BaseSuggestContext<SuggestContextKind.CSS_AT_RULE_PARAMS>;
 
-export type CSSVariableSuggestionContext = {
-  prefix: string;
-} & BaseSuggestContext<SuggestContextKind.CSS_VARIABLE>;
+export type CSSFunctionSuggestionContext = {
+  name: string;
+  paramsPrefix: string;
+} & BaseSuggestContext<SuggestContextKind.CSS_FUNCTION>;
 
 export type CSSClassReferenceSuggestionContext = {
   prefix: string;
@@ -83,7 +84,7 @@ export type SuggestContext =
   | CSSDeclarationAtRuleParamsSuggestionContext
   | HTMLCloseTagNameSuggestionContext
   | CSSClassReferenceSuggestionContext
-  | CSSVariableSuggestionContext
+  | CSSFunctionSuggestionContext
   | CSSAtRuleSuggestionContext;
 
 export const getSuggestionContext = (source: string) => {
@@ -578,31 +579,33 @@ const suggestCSSDeclarationValue = (
 
     currentChunk += scanner.current.value;
 
-    if (currentChunk === "var" && scanner.peek()?.value === "(") {
-      scanner.next(); // eat var
+    if (scanner.peek()?.value === "(") {
+      // take other declaration parts into consideration
+      const name = currentChunk.split(" ").pop();
+      scanner.next(); // eat name
       scanner.next(); // eat (
       if (!scanner.current) {
         return {
-          kind: SuggestContextKind.CSS_VARIABLE,
-          prefix: ""
+          kind: SuggestContextKind.CSS_FUNCTION,
+          name,
+          paramsPrefix: ""
         };
       }
-      let buffer = getBuffer(
-        scanner,
-        scanner =>
-          scanner.current.value === "-" ||
-          scanner.current.kind === TokenKind.Word
-      );
+
+      let buffer = getBuffer(scanner, scanner => scanner.current.value !== ")");
+
+      scanner.next(); // eat )
 
       if (!scanner.current) {
         return {
-          kind: SuggestContextKind.CSS_VARIABLE,
-          prefix: buffer
+          kind: SuggestContextKind.CSS_FUNCTION,
+          name,
+          paramsPrefix: buffer
         };
       }
+    } else {
+      scanner.next();
     }
-
-    scanner.next();
   }
 
   return null;

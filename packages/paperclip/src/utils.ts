@@ -3,10 +3,9 @@ import * as glob from "glob";
 import { findPCConfigUrl, PaperclipConfig } from "paperclip-utils";
 
 // TODO - move to paperclip-utils as soon as we have a glob library that can handle virtual file systems
-export const resolveAllPaperclipFiles = fs => (
-  fromUri: string,
-  relative?: boolean
-) => {
+const findResourcesFromConfig = (
+  get: (config: PaperclipConfig, options: any) => string[]
+) => fs => (fromUri: string, relative?: boolean) => {
   const fromPath = new URL(fromUri).pathname;
   const fromPathDirname = path.dirname(fromPath);
   const configUrl = findPCConfigUrl(fs)(fromUri);
@@ -23,8 +22,7 @@ export const resolveAllPaperclipFiles = fs => (
     fs.readFileSync(configPath, "utf8")
   );
 
-  return glob
-    .sync(config.filesGlob, { cwd: path.dirname(configPath), realpath: true })
+  return get(config, path.dirname(configPath))
     .filter(pathname => pathname !== fromPath)
     .map(pathname => {
       if (relative) {
@@ -50,6 +48,26 @@ export const resolveAllPaperclipFiles = fs => (
       return "file://" + pathname;
     });
 };
+
+export const resolveAllPaperclipFiles = findResourcesFromConfig(
+  (config, cwd) => {
+    return glob.sync(config.filesGlob, { cwd, realpath: true });
+  }
+);
+export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
+  const ext = `+(jpg|jpeg|png|gif)`;
+
+  return config.moduleDirectories.reduce((files, dir) => {
+    if (dir === ".") {
+      return [...files, ...glob.sync(`**/*.${ext}`, { cwd, realpath: true })];
+    }
+
+    return [
+      ...files,
+      ...glob.sync(`${dir}/**/*.${ext}`, { cwd, realpath: true })
+    ];
+  }, []);
+});
 
 const getModulePath = (
   configUri: string,

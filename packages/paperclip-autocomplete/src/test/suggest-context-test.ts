@@ -205,22 +205,25 @@ describe(__filename, () => {
     [
       `<style> div { color: var(`,
       {
-        kind: SuggestContextKind.CSS_VARIABLE,
-        prefix: ""
+        kind: SuggestContextKind.CSS_FUNCTION,
+        name: "var",
+        paramsPrefix: ""
       }
     ],
     [
       `<style> div { color: var(--`,
       {
-        kind: SuggestContextKind.CSS_VARIABLE,
-        prefix: "--"
+        kind: SuggestContextKind.CSS_FUNCTION,
+        name: "var",
+        paramsPrefix: "--"
       }
     ],
     [
       `<style> div { color: var(--col`,
       {
-        kind: SuggestContextKind.CSS_VARIABLE,
-        prefix: "--col"
+        kind: SuggestContextKind.CSS_FUNCTION,
+        name: "var",
+        paramsPrefix: "--col"
       }
     ],
 
