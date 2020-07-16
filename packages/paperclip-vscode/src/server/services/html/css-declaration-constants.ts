@@ -539,7 +539,11 @@ const TEXT_DECORATION_LINE_VALUES = uniq([
   "inherit"
 ]);
 
-const TEXT_DECORATION_COLOR_VALUES = uniq(["initial", "inherit"]);
+const TEXT_DECORATION_COLOR_VALUES = uniq([
+  "currentColor",
+  "initial",
+  "inherit"
+]);
 
 const TEXT_ALIGN_LAST_VALUES = uniq([
   "auto",
@@ -695,7 +699,12 @@ const OUTLINE_OFFSET_VALUES = uniq(["initial", "inherit"]);
 
 const ORDER_VALUES = uniq(["initial", "inherit"]);
 
-const OUTLINE_COLOR_VALUES = uniq(["invert", "initial", "inherit"]);
+const OUTLINE_COLOR_VALUES = uniq([
+  "currentColor",
+  "invert",
+  "initial",
+  "inherit"
+]);
 
 const OBJECT_POSITION_VALUES = uniq(["position", "initial", "inherit"]);
 
@@ -1093,7 +1102,7 @@ const BREAK_INSIDE_VALUES = uniq([
   "inherit"
 ]);
 
-const COLUMN_RULE_COLOR_VALUES = uniq(["initial", "inherit"]);
+const COLUMN_RULE_COLOR_VALUES = uniq(["currentColor", "initial", "inherit"]);
 
 const BOX_DECORATION_BREAK_VALUES = uniq([
   "slice",
@@ -1102,7 +1111,7 @@ const BOX_DECORATION_BREAK_VALUES = uniq([
   "inherit"
 ]);
 
-const COLOR_VALUES = uniq(["initial", "inherit"]);
+const COLOR_VALUES = uniq(["currentColor", "initial", "inherit"]);
 
 const COLUMN_FILL_VALUES = uniq(["balance", "auto", "initial", "inherit"]);
 
@@ -1159,7 +1168,7 @@ const BORDER_WIDTH_VALUES = uniq([
 
 const CAPTION_SIDE_VALUES = uniq(["top", "bottom", "initial", "inherit"]);
 
-const CARET_COLOR_VALUES = uniq(["auto"]);
+const CARET_COLOR_VALUES = uniq(["currentColor", "auto"]);
 
 const BOX_SIZING_VALUES = uniq([
   "content-box",
@@ -1197,7 +1206,12 @@ const BORDER_TOP_WIDTH_VALUES = uniq([
   "inherit"
 ]);
 
-const BORDER_TOP_COLOR_VALUES = uniq(["transparent", "initial", "inherit"]);
+const BORDER_TOP_COLOR_VALUES = uniq([
+  "currentColor",
+  "transparent",
+  "initial",
+  "inherit"
+]);
 
 const BORDER_TOP_STYLE_VALUES = uniq([
   "none",
@@ -1268,7 +1282,12 @@ const BORDER_RIGHT_WIDTH_VALUES = uniq([
   "inherit"
 ]);
 
-const BORDER_COLOR_VALUES = uniq(["transparent", "initial", "inherit"]);
+const BORDER_COLOR_VALUES = uniq([
+  "currentColor",
+  "transparent",
+  "initial",
+  "inherit"
+]);
 
 const BACKGROUND_ATTACHMENT_VALUES = uniq([
   "scroll",
@@ -1295,11 +1314,21 @@ const BORDER_BOTTOM_WIDTH_VALUES = uniq([
 
 const BORDER_RADIUS_VALUES = uniq(["initial", "inherit"]);
 
-const BORDER_RIGHT_COLOR_VALUES = uniq(["transparent", "initial", "inherit"]);
+const BORDER_RIGHT_COLOR_VALUES = uniq([
+  "currentColor",
+  "transparent",
+  "initial",
+  "inherit"
+]);
 
 const BACKGROUND_IMAGE_VALUES = uniq(["none", "initial", "inherit"]);
 
-const BORDER_BOTTOM_COLOR_VALUES = uniq(["transparent", "initial", "inherit"]);
+const BORDER_BOTTOM_COLOR_VALUES = uniq([
+  "currentColor",
+  "transparent",
+  "initial",
+  "inherit"
+]);
 
 const BORDER_LEFT_STYLE_VALUES = uniq([
   "none",
@@ -1316,7 +1345,12 @@ const BORDER_LEFT_STYLE_VALUES = uniq([
   "inherit"
 ]);
 
-const BORDER_LEFT_COLOR_VALUES = uniq(["transparent", "initial", "inherit"]);
+const BORDER_LEFT_COLOR_VALUES = uniq([
+  "currentColor",
+  "transparent",
+  "initial",
+  "inherit"
+]);
 
 const BORDER_IMAGE_WIDTH_VALUES = uniq(["auto", "initial", "inherit"]);
 
@@ -1373,7 +1407,12 @@ const BACKGROUND_SIZE_VALUES = uniq([
   "inherit"
 ]);
 
-const BACKGROUND_COLOR_VALUES = uniq(["transparent", "initial", "inherit"]);
+const BACKGROUND_COLOR_VALUES = uniq([
+  "currentColor",
+  "transparent",
+  "initial",
+  "inherit"
+]);
 
 const BORDER_BOTTOM_LEFT_RADIUS_VALUES = uniq(["initial", "inherit"]);
 
