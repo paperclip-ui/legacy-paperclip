@@ -122,15 +122,19 @@ export const createMockEngine = (graph: Graph) =>
   new Engine(
     {
       io: {
-        readFile: uri => graph[uri],
-        fileExists: uri => Boolean(graph[uri]),
+        readFile: uri => graph[uri.replace("file://", "")] || graph[uri],
+        fileExists: uri =>
+          Boolean(graph[uri.replace("file://", "")] || graph[uri]),
         resolveFile: (from, to) => {
-          return path.join(path.dirname(from), to);
+          const prefix = from.indexOf("file:") === 0 ? "file://" : "";
+          return (
+            prefix + path.join(path.dirname(from.replace("file://", "")), to)
+          );
         }
       }
     },
     () => {}
   );
 
-export const createMockRenderer = (uri: string) =>
-  new Renderer("", uri, mockDOMFactory);
+export const createMockRenderer = (uri: string, protocol: string = "") =>
+  new Renderer(protocol, uri, mockDOMFactory);

@@ -1,16 +1,4 @@
 <style> 
-  :global(body) {
-    color: orange;
-    font-family: sans-serif;
-    font-size: xx-large;
-    background-image: url("broken.png");
-  }
 </style>
 
-<div export component as="Module" className="module {className?}">
-  {children}
-</div>
-
-<Module>
-  Hello
-</Module>
+<img src="ytmnd.jpg">

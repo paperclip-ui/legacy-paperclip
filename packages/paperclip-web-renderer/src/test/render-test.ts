@@ -122,19 +122,19 @@ describe(__filename + "#", () => {
 
   it("Adds styles if import is added", async () => {
     const graph = {
-      "/entry.pc": `<style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "file:///entry.pc": `<style> a { color: blue; } </style><span></span>`,
+      "file:///module.pc": `<style> a { color: black; } </style>`
     };
 
     const engine = createMockEngine(graph);
-    const renderer = createMockRenderer("/entry.pc");
+    const renderer = createMockRenderer("file:///entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
-    await engine.run("/entry.pc");
+    await engine.run("file:///entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
     );
     await engine.updateVirtualFileContent(
-      "/entry.pc",
+      "file:///entry.pc",
       `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`
     );
     expect(renderer.mount.innerHTML).to.eql(
@@ -306,7 +306,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineEvent);
 
     await engine.updateVirtualFileContent(
-      "/entry.pc",
+      "file:///entry.pc",
       `
 
   <div export component as="StyledHeader" 
@@ -338,5 +338,35 @@ describe(__filename + "#", () => {
     expect(renderer.mount.innerHTML).not.to.eql(undefined);
 
     expect(renderer.mount.innerHTML).to.eql(renderer2.mount.innerHTML);
+  });
+
+  it(`Properly renders with a protocol`, async () => {
+    const graph = {
+      "file:///entry.pc": `
+        <img src="/file.jpg">
+      `,
+      "file:///file.jpg": ``,
+      "file:///something-else.jpg": ``
+    };
+
+    const engine = createMockEngine(graph);
+    const renderer = createMockRenderer("file:///entry.pc", "blah:");
+    renderer.initialize(await engine.run("file:///entry.pc"));
+    engine.onEvent(renderer.handleEngineEvent);
+
+    expect(renderer.mount.innerHTML.replace("\n", "")).to.eql(
+      `<div></div><div><style></style></div><div><img src="blah:///file.jpg"></img>      </div><div></div><div></div>`
+    );
+
+    engine.updateVirtualFileContent(
+      "file:///entry.pc",
+      `
+      <img src="./something-else.jpg">
+    `
+    );
+
+    expect(renderer.mount.innerHTML.replace("\n", "")).to.eql(
+      `<div></div><div><style></style></div><div><img src="blah:///something-else.jpg"></img>    </div><div></div><div></div>`
+    );
   });
 });

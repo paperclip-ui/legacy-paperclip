@@ -145,6 +145,11 @@ export class Renderer {
     let message;
     let uri = error.uri;
 
+    // running in node
+    if (typeof window == "undefined") {
+      return;
+    }
+
     // Only want to show errors that are outside of this doc since they
     // may be preventing this doc from rendering. Also, errors will be displayed
     // in the code editor, so this is redundant. Also! Displaying errors on the canvas

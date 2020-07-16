@@ -58,7 +58,11 @@ export const patchNativeNode = (
       case ActionKind.SetAttribute: {
         const element = target as HTMLElement;
         const aliasName = ATTR_ALIASES[action.name] || action.name;
-        element.setAttribute(aliasName, action.value || "");
+        let value = action.value || "";
+        if (value.indexOf("file:") === 0) {
+          value = value.replace("file:", protocol);
+        }
+        element.setAttribute(aliasName, value);
         break;
       }
       case ActionKind.SetText: {
