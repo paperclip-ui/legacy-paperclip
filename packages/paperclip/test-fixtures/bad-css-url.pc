@@ -1,0 +1,5 @@
+<style>
+  .url {
+    background: url("/not/found.png");
+  }
+</style>

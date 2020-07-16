@@ -3,6 +3,7 @@
     color: orange;
     font-family: sans-serif;
     font-size: xx-large;
+    background-image: url("broken.png");
   }
 </style>
 

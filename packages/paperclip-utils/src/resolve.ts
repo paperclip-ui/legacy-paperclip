@@ -27,7 +27,7 @@ export const resolveImportFile = fs => (fromPath: string, toPath: string) => {
 
     return url.resolve(fromPath, toPath);
   } catch (e) {
-    return toPath;
+    return null;
   }
 };
 

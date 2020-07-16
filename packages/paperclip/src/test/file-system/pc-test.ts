@@ -30,4 +30,20 @@ describe(__filename + "#", () => {
     expect(error.errorKind).to.eql("Graph");
     expect(error.info.message).to.eql("import not found");
   });
+
+  it("Displays an error for 404 CSS url", async () => {
+    const e = new Engine();
+    let err;
+
+    try {
+      await e.run(
+        "file://" + path.join(TEST_FIXTURE_DIRECTORY, "bad-css-url.pc")
+      );
+    } catch (e) {
+      err = e;
+    }
+    expect(err).not.to.eq(null);
+    expect(err.errorKind).to.eql("Runtime");
+    expect(err.message).to.eql("Unable to resolve file.");
+  });
 });
