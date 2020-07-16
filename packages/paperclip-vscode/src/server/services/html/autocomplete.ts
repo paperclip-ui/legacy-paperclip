@@ -274,10 +274,9 @@ export class PCAutocomplete {
       );
     }
 
-    if (
-      context.attributeName === "className" ||
-      context.attributeName === "class"
-    ) {
+    const attrName = context.attributeName.split(":").shift();
+
+    if (attrName === "className" || attrName === "class") {
       return this._getCSSClassReferenceSuggestion(data, false);
     }
     return [];

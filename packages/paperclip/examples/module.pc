@@ -4,9 +4,12 @@
     color: #F60;
     font-family: sans-serif;
     font-size: 24px;
+    &--test {
+
+    }
   }
 </style>
 
-<div className="rule">
+<div className="rule" className:a="rule--test">
   color me this
 </div>
