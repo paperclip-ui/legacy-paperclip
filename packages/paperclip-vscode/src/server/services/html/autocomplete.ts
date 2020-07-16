@@ -1,12 +1,10 @@
 // super helpful: https://github.com/microsoft/vscode-extension-samples/blob/master/completions-sample/src/extension.ts
 
 import * as fs from "fs";
-import * as path from "path";
 
 import {
   getSuggestionContext,
   SuggestContextKind,
-  HTMLTagNameSuggestionContext,
   HTMLAttributeStringValueContext,
   HTMLAttributeNameSuggestionContext,
   CSSDeclarationValueSuggestionContext,
@@ -20,16 +18,9 @@ import {
 
 import { resolveAllPaperclipFiles, resolveAllAssetFiles } from "paperclip";
 import { ComponentExport } from "paperclip-utils";
-import { CSS_DECLARATION_NAMES } from "./css-constants";
-import {
-  CompletionItem,
-  InsertTextFormat,
-  Command,
-  CompletionItemKind
-} from "vscode-languageserver";
+import { CompletionItem, InsertTextFormat } from "vscode-languageserver";
 import {
   stringArrayToAutoCompleteItems,
-  stringArraytoSnippetStringOptions,
   addCompletionItemData,
   PCCompletionItem,
   RETRIGGER_COMMAND,

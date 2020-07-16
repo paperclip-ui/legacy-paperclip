@@ -16,3 +16,16 @@
 <div className="rule" className:a="rule--test">
   color me this
 </div>
+
+<div component as="test2">
+  <div>blarg</div>
+</div>
+
+
+<div component as="test">
+  <test2>{children}</test2>
+</div>
+
+<test>
+  <span>ffs</span>
+</test>
