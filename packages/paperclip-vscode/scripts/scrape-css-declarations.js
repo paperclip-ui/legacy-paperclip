@@ -1,3 +1,6 @@
+// TODO - update this to include existing declaration
+// values so that we don't have to redo it again.
+
 const { scrape } = require("./utils");
 const { uniq, flatten } = require("lodash");
 const plimit = require("p-limit");

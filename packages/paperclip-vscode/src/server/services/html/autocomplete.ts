@@ -20,10 +20,7 @@ import {
 
 import { resolveAllPaperclipFiles, resolveAllAssetFiles } from "paperclip";
 import { ComponentExport } from "paperclip-utils";
-import {
-  CSS_DECLARATION_NAMES,
-  CSS_DECLARATION_VALUE_MAP
-} from "./css-constants";
+import { CSS_DECLARATION_NAMES } from "./css-constants";
 import {
   CompletionItem,
   InsertTextFormat,
@@ -39,6 +36,7 @@ import {
   tagCompletionItem
 } from "./utils";
 import {
+  CSS_DECLARATION_VALUE_COMPLETION_ITEMS,
   CSS_DECLARATION_NAME_COMPLETION_ITEMS,
   ATTRIBUTE_NAME_COMPLETION_ITEMS,
   TAG_NAME_COMPLETION_ITEMS,
@@ -298,9 +296,8 @@ export class PCAutocomplete {
     }
 
     let list = [
-      ...stringArrayToAutoCompleteItems(
-        CSS_DECLARATION_VALUE_MAP[info.declarationName] || EMPTY_ARRAY
-      )
+      ...(CSS_DECLARATION_VALUE_COMPLETION_ITEMS[info.declarationName] ||
+        EMPTY_ARRAY)
     ];
 
     if (

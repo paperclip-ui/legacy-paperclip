@@ -1,11 +1,14 @@
+
 <style>
   .rule {
     --space: 40px;
     color: #F60;
     font-family: sans-serif;
     font-size: 24px;
-    &--test {
+    filter: drop-shadow(10 10 10 10) ;
 
+    
+    &--test {
     }
   }
 </style>

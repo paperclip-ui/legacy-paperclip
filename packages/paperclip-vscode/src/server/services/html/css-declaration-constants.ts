@@ -566,6 +566,18 @@ const TEXT_ALIGN_VALUES = uniq([
   "inherit"
 ]);
 
+const GEOMETRY_BOX_VALUES = [
+  "margin-box",
+  "border-box",
+  "padding-box",
+  "content-box",
+  "fill-box",
+  "stroke-box",
+  "view-box"
+];
+
+const GLOBAL_VALUES = ["inherit", "initial", "unset"];
+
 const TABLE_LAYOUT_VALUES = uniq(["auto", "fixed", "initial", "inherit"]);
 
 const TAB_SIZE_VALUES = uniq(["initial", "inherit"]);
@@ -1157,6 +1169,13 @@ const CLEAR_VALUES = uniq([
 ]);
 
 const CLIP_VALUES = uniq(["auto", "shape", "initial", "inherit"]);
+const CLIP_PATH_VALUES = uniq([
+  "none",
+  ...GEOMETRY_BOX_VALUES,
+  "initial",
+  "inherit",
+  "unset"
+]);
 
 const BORDER_WIDTH_VALUES = uniq([
   "medium",
@@ -1494,6 +1513,8 @@ const ANIMATION_TIMING_FUNCTION_VALUES = uniq([
   "inherit"
 ]);
 
+const MASK_TYPE_VAUES = uniq(["luminance", "alpha", "initial", "inherit"]);
+
 const BACKGROUND_POSITION_VALUES = uniq([
   "left",
   "top",
@@ -1543,6 +1564,23 @@ const ALIGN_SELF_VALUES = uniq([
   "inherit"
 ]);
 
+const MASK_IMAGE_VALUES = [...BACKGROUND_IMAGE_VALUES];
+
+const MASK_MODE_VALUES = ["alpha", "luminance", "match-source"];
+
+const MASK_REPEAT_VALUES = [...BACKGROUND_REPEAT_VALUES];
+const MASK_POSITION_VALUES = [...BACKGROUND_POSITION_VALUES];
+const MASK_CLIP_VALUES = [...GEOMETRY_BOX_VALUES];
+const MASK_ORIGIN_VALUES = [...GEOMETRY_BOX_VALUES];
+const MASK_SIZE_VALUES = [...BACKGROUND_SIZE_VALUES];
+const MASK_COMPOSITE_VALUES = [
+  "add",
+  "subtract",
+  "interset",
+  "exclude",
+  ...GLOBAL_VALUES
+];
+
 const ANIMATION_DELAY_VALUES = uniq(["initial", "inherit"]);
 
 const ANIMATION_VALUES = uniq([
@@ -1556,6 +1594,17 @@ const ANIMATION_VALUES = uniq([
   ...ANIMATION_PLAY_STATE_VALUES,
   "initial",
   "inherit"
+]);
+
+const MASK_VALUES = uniq([
+  ...MASK_IMAGE_VALUES,
+  ...MASK_MODE_VALUES,
+  ...MASK_REPEAT_VALUES,
+  ...MASK_POSITION_VALUES,
+  ...MASK_CLIP_VALUES,
+  ...MASK_ORIGIN_VALUES,
+  ...MASK_SIZE_VALUES,
+  ...MASK_COMPOSITE_VALUES
 ]);
 
 const BACKGROUND_VALUES = uniq([
@@ -1851,6 +1900,7 @@ export const CSS_DECLARATION_VALUE_MAP = {
   "column-gap": COLUMN_GAP_VALUES,
   clear: CLEAR_VALUES,
   clip: CLIP_VALUES,
+  "clip-path": CLIP_PATH_VALUES,
   "border-width": BORDER_WIDTH_VALUES,
   "caption-side": CAPTION_SIDE_VALUES,
   "caret-color": CARET_COLOR_VALUES,
@@ -1874,6 +1924,16 @@ export const CSS_DECLARATION_VALUE_MAP = {
   "border-bottom-width": BORDER_BOTTOM_WIDTH_VALUES,
   "border-radius": BORDER_RADIUS_VALUES,
   "border-right-color": BORDER_RIGHT_COLOR_VALUES,
+  "mask-type": MASK_TYPE_VAUES,
+  "mask-image": MASK_IMAGE_VALUES,
+  "mask-mode": MASK_MODE_VALUES,
+  "mask-repeat": MASK_REPEAT_VALUES,
+  "mask-position": MASK_POSITION_VALUES,
+  "mask-clip": MASK_CLIP_VALUES,
+  "mask-origin": MASK_ORIGIN_VALUES,
+  "mask-size": MASK_SIZE_VALUES,
+  "mask-composition": MASK_COMPOSITE_VALUES,
+  mask: MASK_VALUES,
   "background-image": BACKGROUND_IMAGE_VALUES,
   "border-bottom-color": BORDER_BOTTOM_COLOR_VALUES,
   "border-left-style": BORDER_LEFT_STYLE_VALUES,

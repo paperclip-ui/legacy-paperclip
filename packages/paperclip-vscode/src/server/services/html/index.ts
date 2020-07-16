@@ -442,7 +442,7 @@ const getVariableValue = (name: string, data: LoadedData) => {
 
 const matchColor = (value: string) => {
   return (
-    value.match(/\#[^\s,;]+|(rgba|rgb|hsl|hsla|var)\(.*?\)/g) ||
+    value.match(/\#[a-zA-Z0-9]+|(rgba|rgb|hsl|hsla|var)\(.*?\)/g) ||
     value.match(CSS_COLOR_NAME_REGEXP)
   );
 };
