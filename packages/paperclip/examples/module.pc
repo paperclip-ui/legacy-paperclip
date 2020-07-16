@@ -5,7 +5,7 @@
     color: #F60;
     font-family: sans-serif;
     font-size: 24px;
-    filter: drop-shadow(10 10 10 10) ;
+    filter: drop-shadow(10 10 10 10);
 
     
     &--test {

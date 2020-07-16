@@ -562,7 +562,7 @@ const suggestCSSDeclarationValue = (
   let currentChunk = "";
 
   while (1) {
-    scanner.skipSuperfluous();
+    // scanner.skipSuperfluous();
 
     if (!scanner.current) {
       return {
@@ -582,7 +582,9 @@ const suggestCSSDeclarationValue = (
     if (scanner.peek()?.value === "(") {
       // take other declaration parts into consideration
       const name = currentChunk.split(" ").pop();
+      currentChunk += name;
       scanner.next(); // eat name
+      currentChunk += scanner.current?.value || "";
       scanner.next(); // eat (
       if (!scanner.current) {
         return {
@@ -593,8 +595,12 @@ const suggestCSSDeclarationValue = (
       }
 
       let buffer = getBuffer(scanner, scanner => scanner.current.value !== ")");
+      currentChunk += buffer;
+      currentChunk += scanner.current?.value || "";
 
       scanner.next(); // eat )
+
+      currentChunk += scanner.current?.value || "";
 
       if (!scanner.current) {
         return {

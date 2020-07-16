@@ -123,7 +123,7 @@ describe(__filename, () => {
       {
         kind: SuggestContextKind.CSS_DECLARATION_VALUE,
         declarationName: "color",
-        declarationValuePrefix: "bl"
+        declarationValuePrefix: " bl"
       }
     ],
     [
@@ -131,7 +131,7 @@ describe(__filename, () => {
       {
         kind: SuggestContextKind.CSS_DECLARATION_VALUE,
         declarationName: "white-space",
-        declarationValuePrefix: ""
+        declarationValuePrefix: " "
       }
     ],
     [
@@ -226,6 +226,22 @@ describe(__filename, () => {
         paramsPrefix: "--col"
       }
     ],
+    [
+      `<style> .div { background: --`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_VALUE,
+        declarationValuePrefix: " --",
+        declarationName: "background"
+      }
+    ],
+    [
+      `<style> .div { filter: drop-shadow(10 10 10 10) `,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_VALUE,
+        declarationValuePrefix: " drop-shadowdrop-shadow(10 10 10 10)  ",
+        declarationName: "filter"
+      }
+    ],
 
     // smoke test getting passed var
     [
@@ -234,14 +250,6 @@ describe(__filename, () => {
         kind: SuggestContextKind.CSS_DECLARATION_VALUE,
         declarationValuePrefix: "",
         declarationName: "display"
-      }
-    ],
-    [
-      `<style> .div { background: --`,
-      {
-        kind: SuggestContextKind.CSS_DECLARATION_VALUE,
-        declarationValuePrefix: "--",
-        declarationName: "background"
       }
     ],
 

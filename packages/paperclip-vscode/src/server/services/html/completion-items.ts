@@ -124,7 +124,8 @@ for (const name in CSS_DECLARATION_VALUE_MAP) {
 }
 
 const URL_COMPLETION_ITEM: CompletionItem = {
-  label: "url()",
+  label: "url",
+  detail: "url()",
   insertText: "url($1)",
   insertTextFormat: InsertTextFormat.Snippet,
   command: RETRIGGER_COMMAND
