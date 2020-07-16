@@ -1,4 +1,13 @@
-<style> 
+<style>
+  .rule {
+    --space: 40px;
+    color: #F60;
+    font-family: sans-serif;
+    font-size: 24px;
+    font: 10;
+  }
 </style>
 
-<img src="ytmnd.jpg">
+<div className="rule">
+  color me this
+</div>

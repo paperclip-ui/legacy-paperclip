@@ -576,7 +576,7 @@ const suggestCSSDeclarationValue = (
       break;
     }
 
-    currentChunk = scanner.current.value;
+    currentChunk += scanner.current.value;
 
     if (currentChunk === "var" && scanner.peek()?.value === "(") {
       scanner.next(); // eat var
@@ -593,6 +593,7 @@ const suggestCSSDeclarationValue = (
           scanner.current.value === "-" ||
           scanner.current.kind === TokenKind.Word
       );
+
       if (!scanner.current) {
         return {
           kind: SuggestContextKind.CSS_VARIABLE,

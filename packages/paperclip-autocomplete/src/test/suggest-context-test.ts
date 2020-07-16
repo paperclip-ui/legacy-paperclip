@@ -233,6 +233,14 @@ describe(__filename, () => {
         declarationName: "display"
       }
     ],
+    [
+      `<style> .div { background: --`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_VALUE,
+        declarationValuePrefix: "--",
+        declarationName: "background"
+      }
+    ],
 
     // smoke test popping out of styles
     [

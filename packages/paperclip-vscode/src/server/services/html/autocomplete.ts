@@ -73,6 +73,7 @@ export class PCAutocomplete {
     if (!context || !data) {
       return [];
     }
+    console.log("SUG", text, context);
 
     switch (context.kind) {
       case SuggestContextKind.HTML_TAG_NAME:
@@ -281,6 +282,17 @@ export class PCAutocomplete {
     info: CSSDeclarationValueSuggestionContext,
     data: LoadedData
   ) {
+    // This is the easiest approach. Ignore if there's text right before cursor -- this is to prevent bad autocompletions. E.g
+    // -- expanded to --var(--color)
+    if (
+      info.declarationValuePrefix &&
+      info.declarationValuePrefix.charAt(
+        info.declarationValuePrefix.length - 1
+      ) !== " "
+    ) {
+      return [];
+    }
+
     let list = [
       ...stringArrayToAutoCompleteItems(
         CSS_DECLARATION_VALUE_MAP[info.declarationName] || EMPTY_ARRAY
