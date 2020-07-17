@@ -1,6 +1,6 @@
 {
   "name": "paperclip-tailwind-example",
-  "version": "14.0.3",
+  "version": "14.0.4",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -9,8 +9,8 @@
   "license": "ISC",
   "devDependencies": {
     "autoprefixer": "^9.8.4",
-    "paperclip-cli": "^14.0.3",
-    "paperclip-compiler-react": "^14.0.3",
+    "paperclip-cli": "^14.0.4",
+    "paperclip-compiler-react": "^14.0.4",
     "postcss": "^7.0.32",
     "tailwindcss": "^1.4.6"
   }
