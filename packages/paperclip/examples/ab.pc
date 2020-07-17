@@ -1,5 +1,5 @@
 <import src="module.pc" as="module">
 
 <div className="div">
-  fdsfsdfds
+  fdsfsdf
 </div>
