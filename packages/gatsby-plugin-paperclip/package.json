@@ -11,5 +11,10 @@
     "paperclip": "^14.0.4",
     "paperclip-loader": "^14.0.4"
   },
-  "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159"
+  "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
+    "@typescript-eslint/parser": "^3.6.1",
+    "eslint": "^7.4.0"
+  }
 }

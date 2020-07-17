@@ -5,6 +5,7 @@ import {
   stringifyVirtualNode,
   stringifyCSSSheet
 } from "paperclip-utils";
+import { noop } from "../../utils";
 
 describe(__filename + "#", () => {
   it("can render a simple style", async () => {
@@ -30,7 +31,7 @@ describe(__filename + "#", () => {
         </style>
       `
     };
-    const engine = createMockEngine(graph, () => {}, {
+    const engine = createMockEngine(graph, noop, {
       resolveFile(uri) {
         return null;
       }
@@ -77,7 +78,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.run("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(noop);
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -121,7 +122,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.run("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(noop);
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -141,7 +142,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.run("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(noop);
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -163,7 +164,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.run("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(noop);
       const e = await p;
       // expect(e).to.eql({
       //   kind: 'Error',
@@ -189,7 +190,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.run("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(noop);
       const e = await p;
       expect(e).to.eql({
         kind: "Error",
@@ -214,7 +215,7 @@ describe(__filename + "#", () => {
       };
       const engine = createMockEngine(graph);
       const p = waitForError(engine);
-      engine.run("/entry.pc").catch(() => {});
+      engine.run("/entry.pc").catch(noop);
       const e = await p;
       expect(e).to.eql({
         kind: "Error",

@@ -4,7 +4,8 @@ import { Engine } from "../../engine";
 import {
   stringifyLoadResult,
   TEST_FIXTURE_DIRECTORY,
-  waitForError
+  waitForError,
+  noop
 } from "../utils";
 
 describe(__filename + "#", () => {
@@ -15,7 +16,7 @@ describe(__filename + "#", () => {
         "file://" + path.join(TEST_FIXTURE_DIRECTORY, "good-import.pc")
       )
     );
-    expect(result.replace(/ data\-pc\-[^>\s]+/, "")).to.eql(
+    expect(result.replace(/ data-pc-[^>\s]+/, "")).to.eql(
       `<style></style><div>I'm a secret! </div>`
     );
   });
@@ -23,9 +24,9 @@ describe(__filename + "#", () => {
   it("Won't load module src where the casing is incorrect", async () => {
     const e = new Engine();
     const ep = waitForError(e);
-    e.run(
-      "file://" + path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc")
-    ).catch(() => {});
+    e.run("file://" + path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc")).catch(
+      noop
+    );
     const error = await ep;
     expect(error.errorKind).to.eql("Graph");
     expect(error.info.message).to.eql("import not found");
