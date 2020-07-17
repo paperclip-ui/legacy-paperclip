@@ -12,7 +12,7 @@ import {
 export const generateRandomPaperclipDocument = (options: Options) => {
   let buffer = "";
 
-  let context: Context = { depth: 0 };
+  const context: Context = { depth: 0 };
 
   buffer += randomArray(options.minWidth, options.maxWidth)
     .map(() => {
@@ -88,7 +88,7 @@ const generateAttribute = (options: Options, context: Context) => {
 };
 
 const generateKeyValueAttribute = (options: Options, context: Context) => {
-  let buffer = randomChars(1, 3, 3);
+  const buffer = randomChars(1, 3, 3);
 
   if (pickRandom([true, false], [2, 1])) {
     return buffer + "=" + generateAttributeValue(options, context);

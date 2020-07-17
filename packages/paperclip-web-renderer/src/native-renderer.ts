@@ -9,7 +9,7 @@ export type DOMNodeMap = Map<Node, string>;
 const XMLNS_NAMESPACE = "http://www.w3.org/2000/svg";
 
 export const getNativeNodePath = (root: Node, node: Node) => {
-  let path: number[] = [];
+  const path: number[] = [];
 
   let current = node;
 
@@ -86,7 +86,7 @@ const createNativeElement = (
   const childNamespaceUri =
     element.tagName === "svg" ? XMLNS_NAMESPACE : namespaceUri;
 
-  for (let name in element.attributes) {
+  for (const name in element.attributes) {
     let value = element.attributes[name];
     if (name === "src" && protocol) {
       value = value.replace("file:", protocol);

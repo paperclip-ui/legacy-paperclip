@@ -29,7 +29,6 @@ import {
   getParts,
   findByNamespace,
   hasAttribute,
-  getAttribute,
   VirtSheet,
   DynamicStringAttributeValuePartKind,
   ReferencePart,
@@ -49,17 +48,12 @@ import {
   getComponentName,
   RENAME_PROPS,
   REV_PROP,
-  getPartClassName,
   strToClassName,
-  pascalCase,
-  classNameToStyleName
+  pascalCase
 } from "./utils";
 import { camelCase, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
-import * as crc32 from "crc32";
-import { getAttributeValue } from "paperclip";
-import { start } from "repl";
 import { ClassNameExport } from "paperclip/src";
 
 const entities = new Html5Entities();
@@ -73,7 +67,7 @@ export const compile = (
   { ast, sheet, classNames }: Config,
   fileUri: string,
   options: Options = {}
-) => {
+): string => {
   const imports = getImports(ast).reduce((record, element) => {
     const _as = getAttributeStringValue(AS_ATTR_NAME, element);
     const _src = getAttributeStringValue("src", element);
@@ -188,7 +182,7 @@ const translateUtils = (ast: Node, context: TranslateContext) => {
 
 const translateStyleScopeAttributes = (
   context: TranslateContext,
-  newLine: string = ""
+  newLine = ""
 ) => {
   context = addBuffer(
     `"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`,
@@ -670,7 +664,7 @@ const translateAttribute = (
     let name = isComponentInstance
       ? attr.name
       : RENAME_PROPS[attr.name] || attr.name;
-    let value = attr.value;
+    const value = attr.value;
 
     if (name === "string") {
       console.warn("Can't handle style tag for now");
@@ -863,7 +857,7 @@ const translateSlot = (slot: Slot, context: TranslateContext) => {
 const translateReferencePath = (
   path: ReferencePart[],
   context: TranslateContext,
-  min: number = -1
+  min = -1
 ) => {
   // webpack trips over this statement without parens -- tries
   // to evaluate it.

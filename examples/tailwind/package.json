@@ -4,9 +4,7 @@
   "private": true,
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "lint": "eslint src"
-  },
+  "scripts": {},
   "author": "",
   "license": "ISC",
   "devDependencies": {

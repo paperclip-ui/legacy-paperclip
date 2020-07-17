@@ -344,7 +344,7 @@ const maybeAddReference = (
 
 export const getMixins = (ast: Node): Record<string, MixinRule> => {
   const styles = getStyleElements(ast);
-  let mixins: Record<string, MixinRule> = {};
+  const mixins: Record<string, MixinRule> = {};
   for (const style of styles) {
     traverseSheet(style.sheet, rule => {
       if (rule && isRule(rule) && rule.kind === RuleKind.Mixin) {

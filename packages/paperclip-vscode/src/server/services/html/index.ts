@@ -192,7 +192,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   ) {
     const colors =
       matchColor(declaration.value) ||
-      declaration.value.match(/\#[^\s,;]+|(var)\(.*?\)/g) ||
+      declaration.value.match(/#[^\s,;]+|(var)\(.*?\)/g) ||
       [];
 
     for (const color of colors) {
@@ -442,7 +442,7 @@ const getVariableValue = (name: string, data: LoadedData) => {
 
 const matchColor = (value: string) => {
   return (
-    value.match(/\#[a-zA-Z0-9]+|(rgba|rgb|hsl|hsla|var)\(.*?\)/g) ||
+    value.match(/#[a-zA-Z0-9]+|(rgba|rgb|hsl|hsla|var)\(.*?\)/g) ||
     value.match(CSS_COLOR_NAME_REGEXP)
   );
 };

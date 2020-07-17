@@ -5,14 +5,12 @@ import {
   Element,
   getLogicElement,
   infer,
-  NodeKind,
   ShapeProperty,
   getPartIds,
   DEFAULT_PART_ID,
   getVisibleChildNodes,
   EXPORT_TAG_NAME,
   InferenceKind,
-  ReferencePart,
   getParts,
   Inference,
   hasAttribute,
@@ -35,7 +33,7 @@ export const compile = (
   }: { ast: Node; classNames?: Record<string, ClassNameExport> },
   filePath: string,
   options: Options = {}
-) => {
+): string => {
   let context = createTranslateContext(
     filePath,
     getImportIds(ast),

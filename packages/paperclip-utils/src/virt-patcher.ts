@@ -75,7 +75,7 @@ const updateNode = (
   ancestor: VirtualNode,
   nodePath: number[],
   newNode: VirtualNode,
-  depth: number = 0
+  depth = 0
 ) => {
   if (depth === nodePath.length) {
     return newNode;

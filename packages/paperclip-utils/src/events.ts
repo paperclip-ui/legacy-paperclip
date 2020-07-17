@@ -94,7 +94,7 @@ export type GraphErrorInfo = SyntaxGraphErrorInfo | IncludNotFoundErrorInfo;
 
 export type GraphErrorEvent = {
   info: GraphErrorInfo;
-  message: String;
+  message: string;
 } & BaseEngineErrorEvent<EngineErrorKind.Graph>;
 
 export type RuntimeErrorEvent = {

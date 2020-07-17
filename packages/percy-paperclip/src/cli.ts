@@ -72,9 +72,8 @@ export const run = async (
 
 const isEmpty = (source: string) => {
   return (
-    source
-      .replace(/[\r\n\s\t]+/g, "")
-      .replace(/\<style\>.*?\<\/style\>/g, "") === EMPTY_CONTENT_STATE
+    source.replace(/[\r\n\s\t]+/g, "").replace(/<style>.*?<\/style>/g, "") ===
+    EMPTY_CONTENT_STATE
   );
 };
 

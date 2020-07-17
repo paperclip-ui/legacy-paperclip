@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "lint": "eslint src",
     "build:watch": "tsc --watch",
     "test": "mocha -R spec lib/test/**/*-test.js --timeout=2000"
   },

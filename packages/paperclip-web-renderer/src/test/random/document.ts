@@ -7,7 +7,7 @@ import { generateStyleElement } from "./styles";
 export const generateRandomPaperclipDocument = (options: Options) => {
   let buffer = "";
 
-  let context: Context = { depth: 0 };
+  const context: Context = { depth: 0 };
 
   buffer += randomArray(options.minWidth, options.maxWidth)
     .map(() => {

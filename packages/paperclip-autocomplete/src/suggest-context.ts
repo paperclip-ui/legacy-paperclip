@@ -178,13 +178,13 @@ const suggestTagName = (scanner: TokenScanner): [SuggestContext, string[]] => {
     return [{ kind: SuggestContextKind.HTML_TAG_NAME, path: [] }, null];
   }
 
-  let path = [];
+  const path = [];
   let cpart = "";
 
   // capture tag name
   while (scanner.current) {
     // stop at whitespace, or /?>
-    if (/[>\/\s]/.test(scanner.current.value)) {
+    if (/[>/\s]/.test(scanner.current.value)) {
       if (cpart.length) {
         path.push(cpart);
       }
@@ -227,7 +227,7 @@ const suggestAttribute = (
     }
 
     // stop at /?>
-    if (/[\>\/]/.test(scanner.current.value)) {
+    if (/[>/]/.test(scanner.current.value)) {
       break;
     }
 
@@ -594,7 +594,10 @@ const suggestCSSDeclarationValue = (
         };
       }
 
-      let buffer = getBuffer(scanner, scanner => scanner.current.value !== ")");
+      const buffer = getBuffer(
+        scanner,
+        scanner => scanner.current.value !== ")"
+      );
       currentChunk += buffer;
       currentChunk += scanner.current?.value || "";
 

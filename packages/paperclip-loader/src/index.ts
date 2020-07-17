@@ -23,7 +23,7 @@ const getEngine = (): Engine => {
   if (_engine) {
     return _engine;
   }
-  return (_engine = new Engine({}, () => {}));
+  return (_engine = new Engine({}));
 };
 
 const virtualModuleInstances = new Map();
@@ -56,15 +56,14 @@ async function pcLoader(
   const compiler = require(resolve.sync(config.compilerOptions.name, {
     basedir: process.cwd()
   }));
+
+  // need to update virtual content to bust the cache
+  await engine.updateVirtualFileContent(resourceUrl, source);
   const ast = engine.parseContent(source);
   const { sheet, exports } = await engine.run(resourceUrl);
 
   const styleCache = { ..._loadedStyleFiles };
   _loadedStyleFiles = styleCache;
-
-  const styleMap = {
-    resourceUrl: sheet
-  };
 
   let code = compiler.compile(
     { ast, classNames: exports.style.classNames },

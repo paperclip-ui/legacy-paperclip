@@ -5,9 +5,8 @@ import * as path from "path";
 export const mockDOMFactory: DOMFactory = {
   createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
   createElementNS: tagName => (new MockElement(tagName) as any) as HTMLElement,
-  createDocumentFragment: () =>
-    (new MockFragment() as Object) as DocumentFragment,
-  createTextNode: nodeValue => (new MockTextNode(nodeValue) as Object) as Text
+  createDocumentFragment: () => (new MockFragment() as any) as DocumentFragment,
+  createTextNode: nodeValue => (new MockTextNode(nodeValue) as any) as Text
 };
 
 abstract class BaseNode {
@@ -73,6 +72,8 @@ class MockElement extends ParentNode {
   setAttribute(name: string, value: string) {
     this.attributes[name] = value;
   }
+
+  // eslint-disable-next-line
   addEventListener() {}
   removeAttribute(name: string) {
     delete this.attributes[name];
@@ -119,22 +120,19 @@ export type Graph = {
 };
 
 export const createMockEngine = (graph: Graph) =>
-  new Engine(
-    {
-      io: {
-        readFile: uri => graph[uri.replace("file://", "")] || graph[uri],
-        fileExists: uri =>
-          Boolean(graph[uri.replace("file://", "")] || graph[uri]),
-        resolveFile: (from, to) => {
-          const prefix = from.indexOf("file:") === 0 ? "file://" : "";
-          return (
-            prefix + path.join(path.dirname(from.replace("file://", "")), to)
-          );
-        }
+  new Engine({
+    io: {
+      readFile: uri => graph[uri.replace("file://", "")] || graph[uri],
+      fileExists: uri =>
+        Boolean(graph[uri.replace("file://", "")] || graph[uri]),
+      resolveFile: (from, to) => {
+        const prefix = from.indexOf("file:") === 0 ? "file://" : "";
+        return (
+          prefix + path.join(path.dirname(from.replace("file://", "")), to)
+        );
       }
-    },
-    () => {}
-  );
+    }
+  });
 
-export const createMockRenderer = (uri: string, protocol: string = "") =>
+export const createMockRenderer = (uri: string, protocol = "") =>
   new Renderer(protocol, uri, mockDOMFactory);

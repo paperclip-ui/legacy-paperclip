@@ -12,11 +12,11 @@ export type FigmaResponse<TMeta> = {
 };
 
 export type GetTeamStylesMeta = {
-  cursor: Object;
+  cursor: any;
   styles: any[];
 };
 
-export type GetStyleMeta = {};
+export type GetStyleMeta = any;
 
 type GetFileParams = {
   version?: string;
