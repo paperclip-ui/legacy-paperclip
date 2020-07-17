@@ -5,7 +5,7 @@ on:
       - master # Change this to your default branch
 jobs:
   publish-packages:
-    name: Publish NPM
+    name: Publish packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
