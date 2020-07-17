@@ -9,7 +9,7 @@ jobs:
       - uses: actions/setup-node@v1
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
-      - run: npm lint
+      - run: npm run lint
       - run: npm run publish:packages
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
