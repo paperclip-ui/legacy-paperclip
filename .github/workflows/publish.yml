@@ -16,6 +16,7 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
       - run: npm run build
-      - run: npm run publish:npm
+      - run: npm run publish:packages
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
