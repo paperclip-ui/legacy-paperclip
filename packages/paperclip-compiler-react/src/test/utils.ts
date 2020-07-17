@@ -1,10 +1,7 @@
-import * as pc from "paperclip";
 import { compile } from "../code-compiler";
 import { Engine } from "paperclip";
-import { fileURLToPath } from "url";
 import * as babel from "@babel/core";
 import * as React from "react";
-import * as path from "path";
 
 const builtin = {
   react: React
