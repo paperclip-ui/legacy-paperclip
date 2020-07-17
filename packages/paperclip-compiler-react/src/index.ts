@@ -1,4 +1,4 @@
-import { Node } from "paperclip";
+import { Node, ClassNameExport } from "paperclip";
 import { compile as compileCode } from "./code-compiler";
 import { compile as compileDefinition } from "./definition-compiler";
 
@@ -15,7 +15,7 @@ export const getOutputFilePath = (filePath: string, options: Options = {}) => {
 };
 
 export const compile = (
-  info: { ast: Node; sheet?: any; classNames: string[] },
+  info: { ast: Node; sheet?: any; classNames: Record<string, ClassNameExport> },
   filePath: string,
   options: Options = {}
 ) => {
