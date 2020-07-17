@@ -1,8 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "private": true,
-  "version": "14.0.4",
+  "version": "14.0.8",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "description": "",
@@ -94,7 +93,8 @@
     "test:e2e": "node lib/test/run",
     "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",
-    "publish:marketplace": "vsce package && vsce publish"
+    "postpublish": "npm run publish:marketplace",
+    "publish:marketplace": "npm install && vsce package && vsce publish -p $VSCE_TOKEN"
   },
   "author": "",
   "license": "MIT",
@@ -110,6 +110,7 @@
     "mocha": "^8.0.1",
     "p-limit": "^3.0.2",
     "typescript": "^3.7.5",
+    "vsce": "^1.77.0",
     "vscode-test": "^1.4.0"
   },
   "dependencies": {
@@ -120,10 +121,9 @@
     "paperclip-autocomplete": "^14.0.0",
     "paperclip-utils": "^14.0.2",
     "paperclip-web-renderer": "^14.0.4",
-    "vsce": "^1.77.0",
     "vscode-languageclient": "^6.0.1",
     "vscode-languageserver": "^6.0.1",
     "vscode-languageserver-textdocument": "^1.0.0"
   },
-  "gitHead": "9345014f8f582c890387948c5b437d608e995a64"
+  "gitHead": "c57fa4658fb31214f2918c29e961bf2b16f459f1"
 }
