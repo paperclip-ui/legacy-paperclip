@@ -7,7 +7,7 @@ use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
-use crate::pc::runtime::evaluator::{evaluate as evaluate_pc};
+use crate::pc::runtime::evaluator::evaluate as evaluate_pc;
 use crate::pc::runtime::export as pc_export;
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
@@ -159,7 +159,7 @@ impl Engine {
   pub async fn parse_content(&mut self, content: &String) -> Result<pc_ast::Node, ParseError> {
     parse_pc(content)
   }
-  
+
   pub async fn update_virtual_file_content(
     &mut self,
     uri: &String,
