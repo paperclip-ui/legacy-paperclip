@@ -2,7 +2,7 @@
   "name": "paperclip-website",
   "private": true,
   "description": "A simple starter to get up and developing quickly with Gatsby",
-  "version": "14.0.0",
+  "version": "14.0.1",
   "dependencies": {
     "gatsby": "^2.19.7",
     "gatsby-image": "^2.2.39",
@@ -29,7 +29,7 @@
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
     "gh-pages": "^2.2.0",
-    "paperclip-cli": "^14.0.0",
+    "paperclip-cli": "^14.0.1",
     "prettier": "^1.19.1"
   },
   "keywords": [
