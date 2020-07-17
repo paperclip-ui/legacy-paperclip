@@ -5,7 +5,7 @@ on:
       - master # Change this to your default branch
 jobs:
   publish-packages:
-    name: Publish packages
+    name: Publish NPM
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -16,6 +16,6 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
       - run: npm run build
-      - run: npm run publish:packages
+      - run: npm run publish:npm
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
