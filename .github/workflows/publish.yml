@@ -5,7 +5,7 @@ on:
       - master # Change this to your default branch
 jobs:
   publish-packages:
-    name: publish-packages
+    name: publish:packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -13,7 +13,8 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-      - run: yarn install
+      - run: npm install
+      - run: npm run build
       - run: npm run publish:packages
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
