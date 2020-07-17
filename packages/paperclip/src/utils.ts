@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
+import * as fsa from "fs";
 import {
   findPCConfigUrl,
   PaperclipConfig,
@@ -10,7 +11,8 @@ import {
 const findResourcesFromConfig = (
   get: (config: PaperclipConfig, options: any) => string[]
 ) => fs => (fromUri: string, relative?: boolean) => {
-  const fromPath = new URL(fromUri).pathname;
+  // symlinks may fudge module resolution, so we need to find the real path
+  const fromPath = fs.realpathSync(new URL(fromUri).pathname);
   const fromPathDirname = path.dirname(fromPath);
   const configUrl = findPCConfigUrl(fs)(fromUri);
 
@@ -75,23 +77,23 @@ export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
 const getModulePath = (
   configUri: string,
   config: PaperclipConfig,
-  modulePath: string,
+  fullPath: string,
   fromDir?: string
 ) => {
   const configDir = path.dirname(new URL(configUri).pathname);
 
   const moduleDirectory = path.join(configDir, config.sourceDirectory) + "/";
 
-  if (modulePath.indexOf(moduleDirectory) === 0) {
-    const relativePath = modulePath.replace(moduleDirectory, "");
+  if (fullPath.indexOf(moduleDirectory) === 0) {
+    const modulePath = fullPath.replace(moduleDirectory, "");
 
     const nextDirectory =
-      path.join(moduleDirectory, relativePath.split("/")[0]) + "/";
+      path.join(moduleDirectory, modulePath.split("/")[0]) + "/";
 
     if (!fromDir || fromDir.indexOf(nextDirectory) === -1) {
-      return relativePath;
+      return modulePath;
     }
   }
 
-  return modulePath;
+  return fullPath;
 };

@@ -1,9 +1,9 @@
-<import as="tw" src="tailwind.pc">
+<import src="tailwind.pc" as="tw">
 
 <style>
   .message {
     font-family: Helvetica;
-    color: rgb(255, 255, 255);
+    color: rgb(255, 108, 108);
     font-weight: 100;
     letter-spacing: 0.05em;
     padding: 40px;
@@ -11,6 +11,6 @@
   }
 </style>
 
-<div className="message >>>tw.sm:bg-gray-700 >>>tw.space-y-0">
-  Hello Something
+<div className="message >>>tw.sm:bg-gray-700 >>>tw.tracking-tighter">
+  something
 </div>
