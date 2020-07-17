@@ -9,18 +9,18 @@ For the Alpha version of Paperclip, you'll need this stuff:
 Here's what you can do next:
 
 1. Install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip).
-1. With VS Code open, create a `src/hello-world.pc` & open it.
+1. With VS Code open, create a `hello-world.pc` file & open it.
 1. You'll see a pop up to open a live preview, click OK.
 1. Start typing away! You should see a live preview of your text at this point.
 
 
-You're _almost_ done. Next you'll need to set up the build tools. For that, run `npm install paperclip-cli --save-dev`. Then run:
+Next, you'll need to set up the build tools. For that, run `npm install paperclip-cli --save-dev`. Then run:
 
 ```
 npx paperclip init
 ```
 
-☝🏻 This will ask you a few questions. Then after that, you'll have a `paperclip.config.json` that the CLI tool will for compiling JavaScript code. 
+☝🏻 This will ask you a few questions. Then after that, you'll have a `paperclip.config.json` that the CLI tool will for compiling your Paperclip files. 
 
 > [The CLI main README has more documentation](../../packages/paperclip-cli)
 
