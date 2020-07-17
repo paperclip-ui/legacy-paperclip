@@ -91,6 +91,7 @@
   "scripts": {
     "build": "tsc",
     "test:e2e": "node lib/test/run",
+    "lint": "eslint src",
     "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",
     "postpublish": "npm run publish:marketplace",

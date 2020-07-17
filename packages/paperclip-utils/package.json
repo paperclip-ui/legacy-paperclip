@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "lint": "eslint src",
     "build:watch": "tsc --watch"
   },
   "author": "",

@@ -1,18 +1,15 @@
 name: publish
-on:
-  push:
-    branches:
-      - master # Change this to your default branch
+on: push
 jobs:
   publish-packages:
-    name: Publish packages
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
-      - run: npm run build
+      - run: npm lint
       - run: npm run publish:packages
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
