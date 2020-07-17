@@ -33,7 +33,7 @@ const RULES = [
 ];
 
 export class TokenScanner {
-  public pos: number = 0;
+  public pos = 0;
   public current: Token;
   constructor(readonly source: Token[]) {
     this.current = this.next();
@@ -82,7 +82,7 @@ export class TokenScanner {
     }
     return (this.current = this.source[this.pos++]);
   }
-  peek(count: number = 0) {
+  peek(count = 0) {
     return this.source[this.pos + count];
   }
 }
@@ -93,7 +93,7 @@ export const tokenize = (source: string) => {
 
   while (!scanner.isEOF()) {
     for (const { regexp, kind } of RULES) {
-      let pos = scanner.pos;
+      const pos = scanner.pos;
       const value = scanner.scan(regexp);
 
       if (value) {

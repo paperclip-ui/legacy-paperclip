@@ -1,6 +1,6 @@
 {
   "name": "percy-paperclip",
-  "version": "14.0.4",
+  "version": "14.0.9",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "lint": "eslint src",
     "build:watch": "tsc --watch"
   },
   "author": "",
@@ -15,6 +16,9 @@
   "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
   "devDependencies": {
     "@types/mime": "^2.0.2",
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
+    "@typescript-eslint/parser": "^3.6.1",
+    "eslint": "^7.4.0",
     "typescript": "^3.9.5"
   },
   "dependencies": {
@@ -23,7 +27,7 @@
     "glob": "^7.1.6",
     "lodash": "^4.17.19",
     "mime": "^2.4.6",
-    "paperclip": "^14.0.4",
+    "paperclip": "^14.0.9",
     "w3c-xmlhttprequest": "^2.1.3",
     "yargs": "^15.3.1"
   }

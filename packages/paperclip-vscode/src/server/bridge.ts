@@ -268,7 +268,7 @@ export class VSCServiceBridge {
   private _onColorPresentationRequest = (params: ColorPresentationParams) => {
     const presentation = getColorPresentation(params.color, params.range);
 
-    let document = this._documents[params.textDocument.uri];
+    const document = this._documents[params.textDocument.uri];
 
     const { textEdit } = presentation;
     const source = TextDocument.applyEdits(document, [textEdit]);

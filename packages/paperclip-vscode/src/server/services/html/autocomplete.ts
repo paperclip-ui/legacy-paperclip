@@ -286,7 +286,7 @@ export class PCAutocomplete {
       return [];
     }
 
-    let list = [
+    const list = [
       ...(CSS_DECLARATION_VALUE_COMPLETION_ITEMS[info.declarationName] ||
         EMPTY_ARRAY)
     ];
@@ -343,9 +343,9 @@ export class PCAutocomplete {
 
   private _getCSSClassReferenceSuggestion(
     data: LoadedData,
-    includeImports: boolean = true
+    includeImports = true
   ) {
-    let list: CompletionItem[] = [];
+    const list: CompletionItem[] = [];
 
     for (const className in data.exports.style.classNames) {
       list.push({

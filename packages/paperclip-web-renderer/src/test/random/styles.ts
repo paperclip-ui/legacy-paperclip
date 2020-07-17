@@ -51,9 +51,6 @@ const generateCSSStyleRule = (options: Options, context: Context) => {
   );
 };
 
-// TODO
-const generateCSSKeyframesRule = (options: Options, context: Context) => {};
-
 const generateCSSSDeclaration = (options: Options, context: Context) => {
   // don't want to be totally random
   return `${randomChars(1, 4, 3)}: ${randomChars(1, 4)};`;

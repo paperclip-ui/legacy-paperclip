@@ -91,8 +91,8 @@ export class Unload extends BaseNotification<
   }
 }
 
-export class Crash extends BaseNotification<NotificationType.CRASH, {}> {
-  constructor(params: {}) {
+export class Crash extends BaseNotification<NotificationType.CRASH, any> {
+  constructor(params: any) {
     super(NotificationType.CRASH, params);
   }
 }

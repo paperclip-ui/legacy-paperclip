@@ -1,19 +1,24 @@
 {
   "name": "paperclip-compiler-html",
-  "version": "14.0.3",
+  "version": "14.0.9",
   "private": true,
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "lint": "eslint src"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/mocha": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
+    "@typescript-eslint/parser": "^3.6.1",
     "chai": "^4.2.0",
+    "eslint": "^7.4.0",
     "mocha": "^8.0.1",
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "paperclip-utils": "^14.0.2"
+    "paperclip-utils": "^14.0.9"
   }
 }

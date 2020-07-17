@@ -1,5 +1,5 @@
 export class StringScanner {
-  public pos: number = 0;
+  public pos = 0;
   constructor(readonly source: string) {}
   isEOF() {
     return this.pos >= this.source.length;

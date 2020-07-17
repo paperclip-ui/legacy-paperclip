@@ -29,7 +29,7 @@ for (const tagName in ELEMENT_ATTRIBUTES) {
     if (tagName === "import" && attrName === "src") {
       item = {
         ...item,
-        insertText: `src="\$1"`,
+        insertText: `src="$1"`,
         insertTextFormat: InsertTextFormat.Snippet,
         command: RETRIGGER_COMMAND
       };

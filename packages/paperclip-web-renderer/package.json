@@ -1,11 +1,12 @@
 {
   "name": "paperclip-web-renderer",
-  "version": "14.0.4",
+  "version": "14.0.9",
   "description": "My webpack project",
   "main": "index.js",
   "scripts": {
     "test": "mocha ./lib/test --timeout=5000",
     "build": "tsc && webpack",
+    "lint": "eslint src",
     "build:watch": "tsc --watch & webpack --watch",
     "start": "webpack-dev-server",
     "prepublishOnly": "npm run build"
@@ -14,17 +15,20 @@
   "license": "MIT",
   "dependencies": {
     "html-entities": "^1.2.1",
-    "paperclip-utils": "^14.0.2"
+    "paperclip-utils": "^14.0.9"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.157",
     "@types/mocha": "^5.2.7",
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
+    "@typescript-eslint/parser": "^3.6.1",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "chai": "^4.2.0",
+    "eslint": "^7.4.0",
     "html-webpack-plugin": "^3.2.0",
     "lodash": "^4.17.19",
     "mocha": "^7.0.1",
-    "paperclip": "^14.0.4",
+    "paperclip": "^14.0.9",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",

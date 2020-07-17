@@ -71,34 +71,13 @@ const createShapeInference = (
   properties: {
     [identifier: string]: ShapeProperty;
   } = {},
-  fromSpread: boolean = false
+  fromSpread = false
 ): ShapeInference => ({ kind: InferenceKind.Shape, fromSpread, properties });
 
-const createShapeProperty = (
-  value: Inference,
-  optional?: boolean
-): ShapeProperty => ({ value, optional });
-
-const createArrayInference = (value: Inference): ArrayInference => ({
-  kind: InferenceKind.Array,
-  value
-});
 const createAnyInference = (): AnyInference => ({ kind: InferenceKind.Any });
-const createInference = (kind: InferenceKind) => {
-  switch (kind) {
-    case InferenceKind.Any:
-      return createAnyInference();
-    case InferenceKind.Shape:
-      return createShapeInference();
-    case InferenceKind.Array:
-      return createArrayInference(createAnyInference());
-  }
-};
 
 const ANY_INFERENCE = createAnyInference();
 const SPREADED_SHAPE_INFERENCE = createShapeInference({}, true);
-const SHAPE_INFERENCE = createShapeInference({});
-const ARRAY_INFERENCE = createArrayInference(createAnyInference());
 
 const addShapeInferenceProperty = (
   part: ReferencePart,
@@ -142,7 +121,7 @@ const addInferenceProperty = (
   path: ReferencePart[],
   value: Inference,
   owner: Inference,
-  _index: number = 0
+  _index = 0
 ): Inference => {
   if (path.length === 0) {
     return owner;
@@ -193,7 +172,7 @@ const unfurlScopePath = (
 
   let entirePath = path;
 
-  while (1) {
+  while (true) {
     const property = cpath[0].name;
     const newCPath = context.scope[property];
 

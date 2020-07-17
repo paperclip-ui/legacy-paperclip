@@ -28,7 +28,6 @@ enum RenderEventTypes {
   META_CLICK = "META_CLICK",
   ERROR_BANNER_CLICK = "ERROR_BANNER_CLICK"
 }
-declare var vscode;
 
 export class Renderer {
   private _em: EventEmitter;
@@ -143,7 +142,7 @@ export class Renderer {
 
   public handleError(error: EngineErrorEvent) {
     let message;
-    let uri = error.uri;
+    const uri = error.uri;
 
     // running in node
     if (typeof window == "undefined") {

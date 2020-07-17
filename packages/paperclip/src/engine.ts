@@ -21,6 +21,7 @@ import {
   ChangeKind
 } from "paperclip-utils";
 import { fileURLToPath } from "url";
+import { noop } from "./utils";
 
 export type FileContent = {
   [identifier: string]: string;
@@ -62,7 +63,7 @@ export class Engine {
 
   constructor(
     private _options: EngineOptions = {},
-    private _onCrash: (err) => void = () => {}
+    private _onCrash: (err) => void = noop
   ) {
     const io: EngineIO = Object.assign(
       {
@@ -102,15 +103,13 @@ export class Engine {
     this.onEvent(this._onEngineEvent);
   }
 
-  dispose() {}
-
   onEvent(listener: EngineEventListener) {
     if (listener == null) {
       throw new Error(`listener cannot be undefined`);
     }
     this._listeners.push(listener);
     return () => {
-      let i = this._listeners.indexOf(listener);
+      const i = this._listeners.indexOf(listener);
       if (i !== -1) {
         this._listeners.splice(i, 1);
       }
@@ -256,12 +255,8 @@ export class Engine {
   };
   private _dispatch = (event: EngineEvent) => {
     // try-catch since engine will throw opaque error.
-    try {
-      for (const listener of this._listeners) {
-        listener(event);
-      }
-    } catch (e) {
-      throw e;
+    for (const listener of this._listeners) {
+      listener(event);
     }
   };
 }

@@ -80,3 +80,6 @@ export const stringifyLoadResult = ({
 export const cleanHTML = (value: string) => {
   return value.replace(/[\r\n\t\s]+/g, " ").trim();
 };
+
+// eslint-disable-next-line
+export const noop = () => {};

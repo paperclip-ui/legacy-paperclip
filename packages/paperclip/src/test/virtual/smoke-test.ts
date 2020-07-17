@@ -723,7 +723,7 @@ describe(__filename + "#", () => {
       {},
       `<style>[class]._80f4925f_a { } [class]._80f4925f_a + b[data-pc-80f4925f] { } [class]._80f4925f_a + b[data-pc-80f4925f]:hover:active:test { }</style>`
     ]
-  ].forEach(([graph, context, expectedHTML]: [Graph, Object, string]) => {
+  ].forEach(([graph, context, expectedHTML]: [Graph, any, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
       const engine = createMockEngine(graph);
 

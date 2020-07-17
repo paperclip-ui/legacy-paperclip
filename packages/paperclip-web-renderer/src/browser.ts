@@ -1,8 +1,8 @@
 import { Renderer } from "./renderer";
 
-declare var vscode;
-declare var TARGET_URI;
-declare var PROTOCOL;
+declare const vscode;
+declare const TARGET_URI;
+declare const PROTOCOL;
 
 const thisScript = Array.from(document.querySelectorAll("script")).pop();
 

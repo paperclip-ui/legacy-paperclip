@@ -30,7 +30,7 @@ export const createTranslateContext = (
   partIds: string[],
   hasLogicFile: boolean,
   args: Options,
-  indent: string = "  "
+  indent = "  "
 ): TranslateContext => ({
   buffer: "",
   classNames,

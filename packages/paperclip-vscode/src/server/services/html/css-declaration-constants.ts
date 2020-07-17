@@ -384,7 +384,7 @@
 
 */
 
-const { uniq } = require("lodash");
+import { uniq } from "lodash";
 
 const USER_SELECT_VALUES = uniq(["auto", "none", "text", "all"]);
 

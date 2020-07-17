@@ -1,7 +1,7 @@
-import * as React from "react";
-import Home from "./home/index.pc";
-const SyntaxHighlighter = require("react-syntax-highlighter").default;
-const { atomOneDark: codeStyle } = require("react-syntax-highlighter/dist/esm/styles/hljs");
+import * as React from "react"
+import Home from "./home/index.pc"
+import SyntaxHighlighter from "react-syntax-highlighter"
+import { atomOneDark as codeStyle } from "react-syntax-highlighter/dist/esm/styles/hljs"
 // agate
 // androidstudio
 const PC_CODE = `
@@ -34,7 +34,7 @@ all of your components look like together.
 -->
 
 <Counter preview currentCount={10} />
-`.trim();
+`.trim()
 
 const JS_CODE = `
 
@@ -54,26 +54,28 @@ export function Counter() {
     onClick={onClick} 
   />;
 };
-`.trim();
+`.trim()
 
 type CodeBlockProps = {
-  language: string,
+  language: string
   code: string
-};
+}
 
-const CodeBlock = ({code, language}: CodeBlockProps) => {
-  return <SyntaxHighlighter language={language} style={codeStyle}>
-  {code}
-</SyntaxHighlighter>;
-};
-
+const CodeBlock = ({ code, language }: CodeBlockProps) => {
+  return (
+    <SyntaxHighlighter language={language} style={codeStyle}>
+      {code}
+    </SyntaxHighlighter>
+  )
+}
 
 const IndexPage = () => {
-  return <Home paperclipSnippet={
-    <CodeBlock code={PC_CODE} language="markup" />
-  } reactSnippet={
-    <CodeBlock code={JS_CODE} language="jsx" />
-  } />
-};
+  return (
+    <Home
+      paperclipSnippet={<CodeBlock code={PC_CODE} language="markup" />}
+      reactSnippet={<CodeBlock code={JS_CODE} language="jsx" />}
+    />
+  )
+}
 
-export default IndexPage;
+export default IndexPage

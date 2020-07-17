@@ -46,7 +46,7 @@ type LivePreviewState = {
 export const activate = (client: LanguageClient, context: ExtensionContext) => {
   const { extensionPath } = context;
 
-  let _previews: LivePreview[] = [];
+  const _previews: LivePreview[] = [];
 
   let _showedOpenLivePreviewPrompt = false;
 
@@ -77,7 +77,7 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
 
   const registerLivePreview = (preview: LivePreview) => {
     _previews.push(preview);
-    let disposeListener = preview.onDidDispose(() => {
+    const disposeListener = preview.onDidDispose(() => {
       const index = _previews.indexOf(preview);
       if (index !== -1) {
         _previews.splice(index, 1);
@@ -385,6 +385,8 @@ class LivePreview {
     this._disposeEngineListener();
     try {
       this.panel.dispose();
-    } catch (e) {}
+    } catch (e) {
+      console.warn(e);
+    }
   }
 }

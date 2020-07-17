@@ -3,8 +3,6 @@
 <import as="Controls" src="./controls.pc">
 <import as="Learn" src="./learn.pc">
 
-
-
 <style>
   .app {
     font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -16,7 +14,7 @@
     -moz-osx-font-smoothing: grayscale;
     font-weight: 300;
     color: #4d4d4d;
-    background: url(assets/happy-cat.jpg)
+    /* background: url(assets/happy-cat.jpg); */
   }
   
   .app-container {

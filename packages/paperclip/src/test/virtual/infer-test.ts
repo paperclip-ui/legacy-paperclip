@@ -1,10 +1,4 @@
-import {
-  Engine,
-  infer,
-  Inference,
-  InferenceKind,
-  ShapeInference
-} from "../../..";
+import { Engine, infer } from "../../..";
 import { expect } from "chai";
 
 describe(__filename + "#", () => {
@@ -240,7 +234,7 @@ describe(__filename + "#", () => {
     ]
   ];
 
-  const engine = new Engine({}, () => {});
+  const engine = new Engine({});
   for (const [source, inference] of cases) {
     it(`can infer ${source}`, () => {
       const ast = engine.parseContent(String(source));

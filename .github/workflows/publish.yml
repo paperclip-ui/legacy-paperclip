@@ -10,9 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org/
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
       - run: npm run build

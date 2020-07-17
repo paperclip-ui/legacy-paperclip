@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli",
-  "version": "14.0.4",
+  "version": "14.0.9",
   "description": "Examples:",
   "main": "index.js",
   "bin": {
@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "lint": "eslint src"
   },
   "author": "",
   "license": "MIT",
@@ -18,14 +19,17 @@
     "chokidar": "^3.3.1",
     "glob": "^7.1.6",
     "inquirer": "^7.3.0",
-    "paperclip": "^14.0.4",
+    "paperclip": "^14.0.9",
     "resolve": "^1.15.1",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
     "@types/fs-extra": "^9.0.1",
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
+    "@typescript-eslint/parser": "^3.6.1",
     "chalk": "^4.1.0",
+    "eslint": "^7.4.0",
     "fs-extra": "^9.0.1",
     "typescript": "^3.9.6"
   }

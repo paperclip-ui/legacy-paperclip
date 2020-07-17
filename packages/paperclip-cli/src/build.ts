@@ -42,6 +42,8 @@ export const build = async (options: BuildOptions) => {
     localConfig = require(resolve2(
       options.config || path.join(process.cwd(), "/paperclip.config")
     ));
+
+    // eslint-disable-next-line
   } catch (e) {}
 
   const config: PaperclipConfig = {
@@ -94,7 +96,7 @@ function initBuild(
   }
 
   async function compileFile(relativePath) {
-    let fullPath = `file://${path
+    const fullPath = `file://${path
       .resolve(process.cwd(), relativePath)
       .replace(/\\/g, "/")
       .replace(":", "%3A")}`;

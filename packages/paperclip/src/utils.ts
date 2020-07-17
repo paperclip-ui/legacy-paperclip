@@ -97,3 +97,6 @@ const getModulePath = (
 
   return fullPath;
 };
+
+// eslint-disable-next-line
+export const noop = () => {};
