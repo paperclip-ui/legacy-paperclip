@@ -2,7 +2,7 @@
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
   "private": true,
-  "version": "14.0.4",
+  "version": "14.0.5",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "description": "",
