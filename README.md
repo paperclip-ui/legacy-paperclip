@@ -34,6 +34,8 @@ Paperclip is a language for building UI primitives. Here's an Example:
   {children}
 </div>
 
+<!-- These are just previews of the component -->
+
 <Button>
   This is a primary button
 </Button>
