@@ -8,6 +8,7 @@ import {
   Engine,
   VirtualFragment,
   VirtualNodeKind,
+  paperclipSourceGlobPattern,
   VirtualStyleElement
 } from "paperclip";
 import { PCDocument } from "./pc-document";
@@ -20,10 +21,13 @@ export type RunOptions = {
 const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
 
 export const run = async (
-  filePattern: string,
+  sourceDirectory: string,
   { cwd = process.cwd(), keepEmpty }: Partial<RunOptions> = {}
 ) => {
-  const paperclipFilePaths = glob.sync(filePattern, { cwd, absolute: true });
+  const paperclipFilePaths = glob.sync(
+    paperclipSourceGlobPattern(sourceDirectory),
+    { cwd, absolute: true }
+  );
 
   const engine = new Engine();
   const agent = new PercyAgent({
