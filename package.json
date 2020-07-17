@@ -16,8 +16,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged && cd packages/paperclip/native && cargo fmt",
-      "pre-push": "npm run test"
+      "pre-commit": "pretty-quick --staged && cd packages/paperclip/native && cargo fmt"
     }
   },
   "scripts": {
