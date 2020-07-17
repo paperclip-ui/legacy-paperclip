@@ -20,7 +20,7 @@ You're _almost_ done. Next you'll need to set up the build tools. For that, run 
 npx paperclip init
 ```
 
-☝🏻 This will ask you a few questions. Then after that, you'll have a `pcconfig.json` that the CLI tool will for compiling JavaScript code. 
+☝🏻 This will ask you a few questions. Then after that, you'll have a `paperclip.config.json` that the CLI tool will for compiling JavaScript code. 
 
 > [The CLI main README has more documentation](../../packages/paperclip-cli)
 

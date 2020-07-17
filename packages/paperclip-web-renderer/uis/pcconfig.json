@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "name": "paperclip-compiler-html"
-  },
-  "moduleDirectories": ["./src", "./node_modules"],
-  "filesGlob": "./src/**/*.pc"
-}

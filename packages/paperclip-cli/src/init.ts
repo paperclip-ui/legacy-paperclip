@@ -4,16 +4,11 @@ import { prompt } from "inquirer";
 import { PaperclipConfig, PC_CONFIG_FILE_NAME } from "paperclip";
 
 export const init = async () => {
-  const { filePattern, moduleDirectory } = await prompt([
+  const { sourceDirectory } = await prompt([
     {
-      name: "filePattern",
-      message: "File pattern for *.pc files",
-      default: "./src/**/*.pc"
-    },
-    {
-      name: "moduleDirectory",
-      message: "Modules directory",
-      default: "node_modules"
+      name: "sourceDirectory",
+      message: "Source directory where your *.pc files live",
+      default: "./src"
     }
   ]);
 
@@ -22,8 +17,7 @@ export const init = async () => {
       // no option here, yet
       name: "paperclip-compiler-react"
     },
-    filesGlob: filePattern,
-    moduleDirectories: [moduleDirectory]
+    sourceDirectory
   };
 
   const filePath = path.join(process.cwd(), PC_CONFIG_FILE_NAME);

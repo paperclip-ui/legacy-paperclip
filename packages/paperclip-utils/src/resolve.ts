@@ -39,21 +39,18 @@ const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
 
   // need to parse each time in case config changed.
   const config = JSON.parse(fs.readFileSync(url, "utf8"));
-  if (!config.moduleDirectories) return null;
   const configPathDir = path.dirname(stripFileProtocol(configUrl));
-  for (const moduleDirectory of config.moduleDirectories) {
-    fs.realpat;
-    const moduleFileUrl =
-      "file://" +
-      fixPath(
-        path.normalize(
-          path.join(configPathDir, moduleDirectory, moduleRelativePath)
-        )
-      );
-    if (fs.existsSync(new URL(moduleFileUrl))) {
-      // Need to follow symlinks
-      return "file://" + fixPath(fs.realpathSync(new URL(moduleFileUrl)));
-    }
+  const moduleFileUrl =
+    "file://" +
+    fixPath(
+      path.normalize(
+        path.join(configPathDir, config.sourceDirectory, moduleRelativePath)
+      )
+    );
+
+  if (fs.existsSync(new URL(moduleFileUrl))) {
+    // Need to follow symlinks
+    return "file://" + fixPath(fs.realpathSync(new URL(moduleFileUrl)));
   }
   return null;
 };

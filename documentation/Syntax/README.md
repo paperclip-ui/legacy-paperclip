@@ -533,55 +533,6 @@ export function TodoList() {
 ```
 
 
-#### Importing files from module directories
-
-There may be cases where you want to import files from a common directory, like global styles. To define a module directory, you can update your `pcconfig.json` like so:
-
-```javascript
-{
-  // ... more config
-  "moduleDirectories": ["./packages"],
-  // ... more config
-}
-```
-
-Assuming that you have a file `./packages/design-system/src/typography.pc`, you can import it like this:
-
-```html
-<import src="design-system/src/global.pc">
-```
-<!-- 
-### Overriding component styles (>>>class-name)
-
-You'll probably want to override component styles from time-to-time. Suppose that you have a `Message.pc` component:
-
-```html
-<style>
-  .message {
-    color: red;
-  }
-</style>
-<div export component as="default" class="message {myClass}">
-</div>
-```
-
-☝🏻Here, we're defining a `Message` component with a `class` that allows us to override the `Messsage` styles. Since styles are scoped, we'll need to use the special _deep_ operator `>>>` for that. Here's how you use it:
-
-```html
-<import as="Message" src="./message.pc">
-
-<style>
-  .message2 {
-    color: blue;
-  }
-</style>
-
-<Message myClass=">>>message2" />
-```
-
-The `>>>` operator allows you to deeply set class names that are defined within this component. Note that this can't be made dynamic. -->
-
-
 ### Fragments (`<fragment></fragment>`)
 
 Fragments are useful if you want to render a collection of elements. For example:

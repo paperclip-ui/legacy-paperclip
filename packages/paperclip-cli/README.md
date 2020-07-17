@@ -12,7 +12,7 @@ paperclip help
 # show command help menu
 paperclip [command] help
 
-# build paperclip files with pcconfig.json from current directory
+# build paperclip files with paperclip.config.json from current directory
 paperclip build
 
 # build typed definition files & start file watcher
@@ -21,10 +21,10 @@ paperclip build --definition --watch
 
 #### Setup
 
-To initialize a new project, run `paperclip init`. This will ask you a few questions, then write a `pcconfig.json` file that the
+To initialize a new project, run `paperclip init`. This will ask you a few questions, then write a `paperclip.config.json` file that the
 compiler will use.
 
-> Documentation for `pcconfig.json` can be viewed [here](../../documentation/Paperclip%20Config).
+> Documentation for `paperclip.config.json` can be viewed [here](../../documentation/Paperclip%20Config).
 
 Next, add a `.pc` file with the following content:
 

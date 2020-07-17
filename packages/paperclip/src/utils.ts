@@ -1,6 +1,10 @@
 import * as path from "path";
 import * as glob from "glob";
-import { findPCConfigUrl, PaperclipConfig } from "paperclip-utils";
+import {
+  findPCConfigUrl,
+  PaperclipConfig,
+  paperclipSourceGlobPattern
+} from "paperclip-utils";
 
 // TODO - move to paperclip-utils as soon as we have a glob library that can handle virtual file systems
 const findResourcesFromConfig = (
@@ -51,22 +55,21 @@ const findResourcesFromConfig = (
 
 export const resolveAllPaperclipFiles = findResourcesFromConfig(
   (config, cwd) => {
-    return glob.sync(config.filesGlob, { cwd, realpath: true });
+    return glob.sync(paperclipSourceGlobPattern(config.sourceDirectory), {
+      cwd,
+      realpath: true
+    });
   }
 );
 export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
   const ext = `+(jpg|jpeg|png|gif|svg)`;
 
-  return config.moduleDirectories.reduce((files, dir) => {
-    if (dir === ".") {
-      return [...files, ...glob.sync(`**/*.${ext}`, { cwd, realpath: true })];
-    }
+  const sourceDir = config.sourceDirectory;
+  if (sourceDir === ".") {
+    return glob.sync(`**/*.${ext}`, { cwd, realpath: true });
+  }
 
-    return [
-      ...files,
-      ...glob.sync(`${dir}/**/*.${ext}`, { cwd, realpath: true })
-    ];
-  }, []);
+  return glob.sync(`${sourceDir}/**/*.${ext}`, { cwd, realpath: true });
 });
 
 const getModulePath = (
@@ -77,19 +80,16 @@ const getModulePath = (
 ) => {
   const configDir = path.dirname(new URL(configUri).pathname);
 
-  for (const moduleRelativeDirectory of config.moduleDirectories || []) {
-    //
-    const moduleDirectory = path.join(configDir, moduleRelativeDirectory) + "/";
+  const moduleDirectory = path.join(configDir, config.sourceDirectory) + "/";
 
-    if (modulePath.indexOf(moduleDirectory) === 0) {
-      const relativePath = modulePath.replace(moduleDirectory, "");
+  if (modulePath.indexOf(moduleDirectory) === 0) {
+    const relativePath = modulePath.replace(moduleDirectory, "");
 
-      const nextDirectory =
-        path.join(moduleDirectory, relativePath.split("/")[0]) + "/";
+    const nextDirectory =
+      path.join(moduleDirectory, relativePath.split("/")[0]) + "/";
 
-      if (!fromDir || fromDir.indexOf(nextDirectory) === -1) {
-        return relativePath;
-      }
+    if (!fromDir || fromDir.indexOf(nextDirectory) === -1) {
+      return relativePath;
     }
   }
 

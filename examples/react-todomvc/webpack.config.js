@@ -38,7 +38,7 @@ module.exports = {
         include: [path.resolve(__dirname, "src")],
         exclude: [/node_modules/],
         options: {
-          config: require("./pcconfig.json")
+          config: require("./paperclip.config.json")
         }
       },
       {

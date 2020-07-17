@@ -1,4 +1,4 @@
-The Paperclip Config (`pcconfig.json`) contains configuration information for the compilers & runtime. Here's a breakdown of the options you can use:
+The Paperclip Config (`paperclip.config.json`) contains configuration information for the compilers & runtime. Here's a breakdown of the options you can use:
 
 ```javascript
 {
@@ -10,12 +10,9 @@ The Paperclip Config (`pcconfig.json`) contains configuration information for th
     "name": "paperclip-compiler-react"
   },
 
-  // Module directories where import statements resolve from.
-  "moduleDirectories": ["./src"],
-
-  // File pattern for all of your Paperclip files.
-  "filesGlob": "./src/**/*.pc"
+  // Where your source paperclip files live
+  "soureDirectory": "./src",
 }
 ```
 
-> ⚠️ Note that `pcconfig.json` files are JSON, so comments should be omitted.
+> ⚠️ Note that `paperclip.config.json` files are JSON, so comments should be omitted.

@@ -15,3 +15,4 @@ export * from "./stringify-virt-node";
 export * from "./css-virt";
 export * from "./virt-patcher";
 export * from "./exports";
+export * from "./utils";

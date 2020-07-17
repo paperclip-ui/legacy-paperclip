@@ -4,8 +4,10 @@ export type CompilerOptions = {
 };
 
 export type PaperclipConfig = {
+  // drops PC extension, so you're left with *.js instead of *.pc.js
   dropPcExtension?: boolean;
-  filesGlob: string;
-  moduleDirectories: string[];
+
+  sourceDirectory: string;
+
   compilerOptions: CompilerOptions;
 };

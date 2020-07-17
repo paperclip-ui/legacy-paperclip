@@ -19,8 +19,8 @@ module.exports = {
         loader: "paperclip-loader",
         options: {
           
-          // pcconfig.json can be generated via the paperclip-cli tool
-          config: require("./pcconfig.json")
+          // paperclip.config.json can be generated via the paperclip-cli tool
+          config: require("./paperclip.config.json")
         }
       },
 

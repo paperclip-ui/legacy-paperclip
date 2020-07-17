@@ -1,4 +1,4 @@
-export const PC_CONFIG_FILE_NAME = "pcconfig.json";
+export const PC_CONFIG_FILE_NAME = "paperclip.config.json";
 export const DEFAULT_PART_ID = "default";
 export const EXPORT_TAG_NAME = "export";
 export const COMPONENT_ATTR_NAME = "component";

@@ -7,6 +7,7 @@ import {
   PaperclipConfig,
   CompilerOptions,
   Engine,
+  paperclipSourceGlobPattern,
   Node,
   Sheet,
   getPrettyMessage,
@@ -23,7 +24,7 @@ export type BuildOptions = {
   watch: boolean;
   dropPcExtension: boolean;
   compilerName: string;
-  filePatterns: string;
+  sourceDirectory: string;
 };
 
 type CompileInfo = {
@@ -41,15 +42,14 @@ export const build = async (options: BuildOptions) => {
 
   try {
     localConfig = require(resolve2(
-      options.config || path.join(process.cwd(), "/pcconfig")
+      options.config || path.join(process.cwd(), "/paperclip.config")
     ));
   } catch (e) {}
 
   const config: PaperclipConfig = {
     ...(localConfig || {}),
-    moduleDirectories: localConfig.moduleDirectories || [],
     dropPcExtension: options.dropPcExtension || localConfig.dropPcExtension,
-    filesGlob: options.filePatterns || localConfig.filesGlob,
+    sourceDirectory: options.sourceDirectory || localConfig.sourceDirectory,
     compilerOptions: {
       ...localConfig.compilerOptions,
       definition: options.definition || localConfig.compilerOptions.definition,
@@ -58,7 +58,7 @@ export const build = async (options: BuildOptions) => {
   };
 
   const compiler = config.compilerOptions.name;
-  const filesGlob = config.filesGlob;
+  const sourceDirectory = config.sourceDirectory;
 
   const compilerModulePath = resolve2(compiler);
   if (!compilerModulePath) {
@@ -73,12 +73,12 @@ export const build = async (options: BuildOptions) => {
     process.exit();
   }
 
-  initBuild(process.cwd(), filesGlob, compileModule, options, config);
+  initBuild(process.cwd(), sourceDirectory, compileModule, options, config);
 };
 
 function initBuild(
   cwd,
-  filesGlob: string,
+  sourceDirectory: string,
   { compile, getOutputFilePath }: CompilerModule,
   options: BuildOptions,
   config: PaperclipConfig
@@ -151,8 +151,10 @@ function initBuild(
     }
   }
 
+  console.log(paperclipSourceGlobPattern(sourceDirectory), cwd);
+
   glob(
-    filesGlob,
+    paperclipSourceGlobPattern(sourceDirectory),
     {
       cwd: cwd
     },
@@ -162,7 +164,7 @@ function initBuild(
   );
 
   if (options.watch) {
-    watch(cwd, filesGlob, compileFile);
+    watch(cwd, paperclipSourceGlobPattern(sourceDirectory), compileFile);
   }
 }
 
