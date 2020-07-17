@@ -45,8 +45,6 @@ const init = async (connection: Connection) => {
     connection.sendNotification(...new Crash({}).getArgs());
   });
 
-  // TODO - may eventually want to watch for this -- something like a config watcher?
-
   watchPaperclipSources(engine);
 
   // Language service for handling information about the document such as colors, references,
@@ -58,8 +56,8 @@ const init = async (connection: Connection) => {
 };
 
 const watchPaperclipSources = (engine: Engine, cwd: string = process.cwd()) => {
+  // TODO - may eventually want to watch for this -- something like a config watcher?
   const configUrl = findPCConfigUrl(fs)(cwd);
-  console.log(configUrl);
 
   if (configUrl) {
     const config = JSON.parse(
