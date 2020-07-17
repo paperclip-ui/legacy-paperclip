@@ -94,7 +94,8 @@
     "test:e2e": "node lib/test/run",
     "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",
-    "publish:marketplace": "vsce package && vsce publish"
+    "postpublish": "npm run publish:marketplace",
+    "publish:marketplace": "npm install && vsce package && vsce publish"
   },
   "author": "",
   "license": "MIT",
