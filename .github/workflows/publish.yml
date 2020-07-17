@@ -2,7 +2,7 @@ name: publish
 on:
   push:
     branches:
-      - master # Change this to your default branch
+      - master
 jobs:
   publish-packages:
     name: Publish packages
