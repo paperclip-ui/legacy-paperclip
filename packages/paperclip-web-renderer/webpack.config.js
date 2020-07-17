@@ -33,6 +33,9 @@ module.exports = {
     filename: "browser.js",
     path: path.resolve(__dirname, "dist")
   },
+  externals: {
+    chokidar: "{}"
+  },
 
   plugins: [new webpack.ProgressPlugin(), new HtmlWebpackPlugin()],
 

@@ -1,17 +1,12 @@
 // Some inspiration from https://github.com/sveltejs/svelte-loader/blob/master/index.js
 // License: https://github.com/sveltejs/svelte-loader#license
-import * as fs from "fs";
 import * as url from "url";
 import {
   Engine,
-  getImports,
-  evaluateAllFileStyles,
   PaperclipConfig,
   stringifyCSSSheet,
-  resolveImportFile,
   PC_CONFIG_FILE_NAME,
-  getAllVirtSheetClassNames,
-  getAttributeStringValue
+  getAllVirtSheetClassNames
 } from "paperclip";
 import * as path from "path";
 import * as resolve from "resolve";
@@ -66,25 +61,10 @@ function pcLoader(
   const sheet = engine.evaluateContentStyles(source, resourceUrl);
 
   const styleCache = { ..._loadedStyleFiles };
-  const importedStyles = evaluateAllFileStyles(
-    engine,
-    ast,
-    resourceUrl,
-    styleCache
-  );
-
-  for (const transformPath in importedStyles) {
-    if (_loadedStyleFiles[transformPath]) continue;
-    virtualModules.writeModule(
-      transformPath,
-      stringifyCSSSheet(importedStyles[transformPath], null)
-    );
-  }
   _loadedStyleFiles = styleCache;
 
   const styleMap = {
-    resourceUrl: sheet,
-    ...importedStyles
+    resourceUrl: sheet
   };
 
   let code = compiler.compile(

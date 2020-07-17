@@ -16,8 +16,11 @@ import {
   getAttributeStringValue,
   VirtualNode,
   LoadedData,
-  DiffedEvent
+  DiffedEvent,
+  PaperclipSourceWatcher,
+  ChangeKind
 } from "paperclip-utils";
+import { fileURLToPath } from "url";
 
 export type FileContent = {
   [identifier: string]: string;
@@ -98,6 +101,8 @@ export class Engine {
 
     this.onEvent(this._onEngineEvent);
   }
+
+  dispose() {}
 
   onEvent(listener: EngineEventListener) {
     if (listener == null) {
@@ -271,23 +276,23 @@ export class Engine {
   };
 }
 
-export const evaluateAllFileStyles = (
-  engine: Engine,
-  ast: Node,
-  resourceUrl: string,
-  _loadedStyleFiles = {}
-) => {
-  const imports = getImports(ast);
-  const map = {};
-  for (const imp of imports) {
-    const src = getAttributeStringValue("src", imp);
-  }
-  return map;
-};
-
 const existsSyncCaseSensitive = (uri: URL) => {
   const pathname = uri.pathname;
   const dir = path.dirname(pathname);
   const basename = path.basename(pathname);
   return fs.readdirSync(dir).includes(basename);
+};
+
+export const keepEngineInSyncWithFileSystem = (
+  watcher: PaperclipSourceWatcher,
+  engine: Engine
+) => {
+  return watcher.onChange((kind, uri) => {
+    if (kind === ChangeKind.Changed) {
+      engine.updateVirtualFileContent(
+        uri,
+        fs.readFileSync(new URL(uri).pathname, "utf8")
+      );
+    }
+  });
 };

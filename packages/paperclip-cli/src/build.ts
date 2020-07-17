@@ -9,10 +9,8 @@ import {
   Engine,
   paperclipSourceGlobPattern,
   Node,
-  Sheet,
   getPrettyMessage,
   getAllVirtSheetClassNames,
-  evaluateAllFileStyles,
   stringifyCSSSheet
 } from "paperclip";
 import * as glob from "glob";
@@ -113,8 +111,7 @@ function initBuild(
       }
 
       const styleMap = {
-        [fullPath]: sheet,
-        ...evaluateAllFileStyles(pcEngine, ast, fullPath)
+        [fullPath]: sheet
       };
       const result = compile(
         { ast, classNames: getAllVirtSheetClassNames(styleMap) },

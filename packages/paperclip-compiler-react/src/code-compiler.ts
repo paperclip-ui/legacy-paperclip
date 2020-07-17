@@ -60,7 +60,7 @@ import { camelCase, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import * as crc32 from "crc32";
-import { getAttributeValue } from "paperclip/src";
+import { getAttributeValue } from "paperclip";
 import { start } from "repl";
 
 const entities = new Html5Entities();

@@ -56,7 +56,7 @@ const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
 };
 
 export const findPCConfigUrl = fs => (fromPath: string): string | null => {
-  let cdir: string = path.dirname(stripFileProtocol(fromPath));
+  let cdir: string = stripFileProtocol(fromPath);
 
   // can't cache in case PC config was moved.
   do {
