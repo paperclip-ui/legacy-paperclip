@@ -27,7 +27,7 @@ export const compileModules = async (graph: Record<string, string>) => {
     const { sheet, exports } = await engine.run(path);
     const ast = engine.getLoadedAst(path) as any;
     const es6 = compile(
-      { ast, sheet, classNames: Object.keys(exports.style.classNames) },
+      { ast, sheet, classNames: exports.style.classNames },
       path
     );
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
