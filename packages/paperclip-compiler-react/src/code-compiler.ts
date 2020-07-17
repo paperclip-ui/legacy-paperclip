@@ -9,7 +9,6 @@ import {
   getDefaultPart,
   getLogicElement,
   PropertyBoundAttribute,
-  getAllVirtSheetClassNames,
   Statement,
   EXPORT_TAG_NAME,
   StatementKind,

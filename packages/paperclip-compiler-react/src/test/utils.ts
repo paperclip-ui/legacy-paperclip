@@ -1,6 +1,6 @@
 import * as pc from "paperclip";
 import { compile } from "../code-compiler";
-import { Engine, getAllVirtSheetClassNames } from "paperclip";
+import { Engine } from "paperclip";
 import { fileURLToPath } from "url";
 import * as babel from "@babel/core";
 import * as React from "react";

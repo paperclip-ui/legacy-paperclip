@@ -10,7 +10,6 @@ import {
   paperclipSourceGlobPattern,
   Node,
   getPrettyMessage,
-  getAllVirtSheetClassNames,
   stringifyCSSSheet
 } from "paperclip";
 import * as glob from "glob";
