@@ -183,7 +183,7 @@ Mixins allow us to define a group of CSS properties to use in style rules. For e
 
 #### @export
 
-The `@export` util allows us to export mixins, classes, and keyframes. For example, suppose I have a `typography.pc` file:
+The `@export` util allows us to export mixins, classes, and keyframes. For example, suppose you have a `typography.pc` file:
 
 ```html
 <style>
@@ -204,7 +204,7 @@ The `@export` util allows us to export mixins, classes, and keyframes. For examp
 </style>
 ```
 
-I can use those exports like so:
+You can use those exports like so:
 
 ```html
 <import as="typography" src="design-system/typography.pc">
@@ -378,27 +378,20 @@ We can also include bindings in attribute strings. For example:
 > ☝🏻 The `class` attribute can also be defined as `className`. Though, I'd recommend using `className` instead if you're
 using these components in JSX for consistency. 
 
-#### spreads (...props)
+#### HTML in bindings
 
-You can spread properties to elements too. For example:
+Bindings can also take HTML like so:
 
 ```html
-<!-- some-input.pc -->
-<input type="text" {...inputProps}>
-```
+<div export component as="Panel">
+  <div className="header">{header}</div>
+  <div className="content">{content}</div>
+</div>
 
-This can be used in JSX code like so:
-
-```jsx
-import SomeInputView from "./some-input.pc";
-export function SomeInput() {
-  return <SomeInputView inputProps={{
-    onKeyPress: event => {
-      // do something
-    },
-    defaultValue: "somrthing"
-  }}>
-}
+<Panel
+  header={<h1>I'm a header</h1>}
+  content={<AnotherComponent>More stuff</AnotherComponent>}
+/>
 ```
 
 #### Optional bindings `{binding?}`
