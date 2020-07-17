@@ -369,8 +369,8 @@ fn evaluate_style_rule2(
   if class_name_re.is_match(selector_text.to_string().as_ref()) {
     // url check
     for caps in class_name_re.captures_iter(selector_text.to_string().as_str()) {
-      let class_name = caps.get(1).unwrap().as_str();
-      let class_name = scope_re.replace(class_name, "").to_string();
+      let scoped_class_name = caps.get(1).unwrap().as_str();
+      let class_name = scope_re.replace(scoped_class_name, "").to_string();
 
       let existing_option = context.exports.class_names.get(&class_name);
 
@@ -379,6 +379,7 @@ fn evaluate_style_rule2(
           class_name.to_string(),
           ClassNameExport {
             name: class_name.to_string(),
+            scoped_name: scoped_class_name.to_string(),
             public: context.in_public_scope,
           },
         );

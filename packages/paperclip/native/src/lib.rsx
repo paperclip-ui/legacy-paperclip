@@ -97,39 +97,6 @@ declare_types! {
       Ok(cx.string(&json).upcast())
     }
 
-    method evaluateFileStyles(mut cx) {
-      let uri: String = cx.argument::<JsString>(0)?.value();
-
-      let mut this = cx.this();
-      let result = cx.borrow_mut(&mut this, |mut engine| {
-        block_on(engine.evaluate_file_styles(&uri))
-      }
-
-      let json = match result {
-        Ok(node) => serde_json::to_string(&node).unwrap(),
-        Err(error) => format!("{{\"error\":{}}}", serde_json::to_string(&error).unwrap())
-      };
-        
-      Ok(cx.string(&json).upcast())
-    }
-
-    method evaluateContentStyles(mut cx) {
-      let content: String = cx.argument::<JsString>(0)?.value();
-      let uri: String = cx.argument::<JsString>(1)?.value();
-
-      let mut this = cx.this();
-      let result = cx.borrow_mut(&mut this, |mut engine| {
-        block_on(engine.evaluate_content_styles(&content, &uri))
-      });
-
-      let json = match result {
-        Ok(node) => serde_json::to_string(&node).unwrap(),
-        Err(error) => format!("{{\"error\":{}}}", serde_json::to_string(&error).unwrap())
-      };
-        
-      Ok(cx.string(&json).upcast())
-    }
-
     method updateVirtualFileContent(mut cx) {
       let uri: String = cx.argument::<JsString>(0)?.value();
       let content: String = cx.argument::<JsString>(1)?.value();

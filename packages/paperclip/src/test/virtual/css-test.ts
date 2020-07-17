@@ -376,11 +376,19 @@ describe(__filename + "#", () => {
     const result = await engine.run("/entry.pc");
 
     expect(result.exports.style.classNames).to.eql({
-      color: { name: "color", public: false },
-      div: { name: "div", public: true },
-      child: { name: "child", public: false },
-      "element--child": { name: "element--child", public: false },
-      element: { name: "element", public: false }
+      color: { name: "color", public: false, scopedName: "_80f4925f_color" },
+      div: { name: "div", public: true, scopedName: "_80f4925f_div" },
+      child: { name: "child", public: false, scopedName: "child" },
+      "element--child": {
+        name: "element--child",
+        public: false,
+        scopedName: "_80f4925f_element--child"
+      },
+      element: {
+        name: "element",
+        public: false,
+        scopedName: "_80f4925f_element"
+      }
     });
   });
 

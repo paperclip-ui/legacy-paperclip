@@ -1,4 +1,5 @@
 import { Options } from "./utils";
+import { ClassNameExport } from "paperclip/src";
 
 export type TranslateContext = {
   fileUri: string;
@@ -10,7 +11,7 @@ export type TranslateContext = {
   };
   isNewLine: boolean;
   hasLogicFile: boolean;
-  classNames: string[];
+  classNames: Record<string, ClassNameExport>;
   indent: string;
 
   // @deprecated
@@ -25,7 +26,7 @@ export const createTranslateContext = (
   fileUri: string,
   importIds: string[],
   imports: Record<string, string>,
-  classNames: string[],
+  classNames: Record<string, ClassNameExport>,
   partIds: string[],
   hasLogicFile: boolean,
   args: Options,

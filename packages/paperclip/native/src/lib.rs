@@ -74,16 +74,6 @@ impl NativeEngine {
       listener.call1(&this, &arg).unwrap();
     }));
   }
-  pub fn evaluate_content_styles(&mut self, content: String, uri: String) -> JsValue {
-    console_error_panic_hook::set_once();
-    let result = block_on(self.target.evaluate_content_styles(&content, &uri));
-    JsValue::from_serde(&result).unwrap()
-  }
-  pub fn evaluate_file_styles(&mut self, uri: String) -> JsValue {
-    console_error_panic_hook::set_once();
-    let result = block_on(self.target.evaluate_file_styles(&uri));
-    JsValue::from_serde(&result).unwrap()
-  }
   pub fn get_loaded_ast(&mut self, uri: String) -> JsValue {
     console_error_panic_hook::set_once();
     let result = self.target.get_loaded_ast(&uri);

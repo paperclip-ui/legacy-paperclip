@@ -7,8 +7,7 @@ use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
-use crate::pc::runtime::evaluator::EvalInfo as PCEvalInfo;
-use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, evaluate_document_styles};
+use crate::pc::runtime::evaluator::{evaluate as evaluate_pc};
 use crate::pc::runtime::export as pc_export;
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
@@ -78,21 +77,6 @@ pub enum EngineEvent<'a> {
 
 pub struct EvalOptions {
   part: Option<String>,
-}
-
-async fn evaluate_content_styles(
-  content: &String,
-  uri: &String,
-  vfs: &VirtualFileSystem,
-  graph: &DependencyGraph,
-) -> Result<css_virt::CSSSheet, EngineError> {
-  parse_pc(content)
-    .map_err(|err| EngineError::Parser(err))
-    .and_then(|node_ast| {
-      let (sheet, _) = evaluate_document_styles(&node_ast, uri, vfs, graph, false)
-        .map_err(|err| EngineError::Runtime(err))?;
-      Ok(sheet)
-    })
 }
 
 type EngineEventListener = dyn Fn(&EngineEvent);
@@ -175,26 +159,7 @@ impl Engine {
   pub async fn parse_content(&mut self, content: &String) -> Result<pc_ast::Node, ParseError> {
     parse_pc(content)
   }
-
-  pub async fn evaluate_file_styles(
-    &mut self,
-    uri: &String,
-  ) -> Result<css_virt::CSSSheet, EngineError> {
-    // need to load in case of imports
-    self.load(uri).await;
-    let content = self.vfs.reload(uri).await.unwrap().to_string();
-    evaluate_content_styles(&content, uri, &self.vfs, &self.dependency_graph).await
-  }
-
-  pub async fn evaluate_content_styles(
-    &mut self,
-    content: &String,
-    uri: &String,
-  ) -> Result<css_virt::CSSSheet, EngineError> {
-    self.load(uri).await;
-    evaluate_content_styles(content, uri, &self.vfs, &self.dependency_graph).await
-  }
-
+  
   pub async fn update_virtual_file_content(
     &mut self,
     uri: &String,

@@ -14,6 +14,7 @@ import {
   stringifyCSSSheet
 } from "paperclip";
 import * as glob from "glob";
+import { ClassNameExport } from "paperclip/src";
 
 export type BuildOptions = {
   config: string;
@@ -27,7 +28,7 @@ export type BuildOptions = {
 
 type CompileInfo = {
   ast: Node;
-  classNames: string[];
+  classNames: Record<string, ClassNameExport>;
 };
 
 type CompilerModule = {
@@ -104,17 +105,14 @@ function initBuild(
       if (ast.error) {
         return handleError(ast.error, fullPath);
       }
-      const sheet = pcEngine.evaluateFileStyles(fullPath);
+      const { preview, sheet, exports } = await pcEngine.run(fullPath);
 
       if (sheet.error) {
         return handleError(sheet.error, fullPath);
       }
 
-      const styleMap = {
-        [fullPath]: sheet
-      };
       const result = compile(
-        { ast, classNames: getAllVirtSheetClassNames(styleMap) },
+        { ast, classNames: exports.style.classNames },
         fullPath,
         compilerOptions
       );

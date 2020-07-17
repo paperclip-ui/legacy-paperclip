@@ -50,7 +50,6 @@ import {
   getComponentName,
   RENAME_PROPS,
   REV_PROP,
-  getClassExportNameMap,
   getPartClassName,
   strToClassName,
   pascalCase,
@@ -62,9 +61,14 @@ import { Html5Entities } from "html-entities";
 import * as crc32 from "crc32";
 import { getAttributeValue } from "paperclip";
 import { start } from "repl";
+import { ClassNameExport } from "paperclip/src";
 
 const entities = new Html5Entities();
-type Config = { ast: Node; sheet?: any; classNames: string[] };
+type Config = {
+  ast: Node;
+  sheet?: any;
+  classNames: Record<string, ClassNameExport>;
+};
 
 export const compile = (
   { ast, sheet, classNames }: Config,
@@ -95,7 +99,7 @@ export const compile = (
 const translateRoot = (
   ast: Node,
   sheet: any,
-  classNames: string[],
+  classNames: Record<string, ClassNameExport>,
   context: TranslateContext
 ) => {
   context = translateImports(ast, context);
@@ -150,17 +154,19 @@ const translateStyleSheet = (sheet: VirtSheet, context: TranslateContext) => {
 };
 
 const translateClassNames = (
-  classNames: string[],
+  classNames: Record<string, ClassNameExport>,
   context: TranslateContext
 ) => {
-  const classNameMap = getClassExportNameMap(classNames);
-
   context = addBuffer(`export const classNames = {\n`, context);
   context = startBlock(context);
-  for (const exportName in classNameMap) {
+  for (const exportName in classNames) {
+    const info = classNames[exportName];
+    if (!info.public) {
+      continue;
+    }
     context = addBuffer(
       `${JSON.stringify(exportName)}: ${JSON.stringify(
-        classNameMap[exportName]
+        info.scopedName + " " + info.name
       )},\n`,
       context
     );

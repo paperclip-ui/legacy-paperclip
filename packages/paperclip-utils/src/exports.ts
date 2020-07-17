@@ -21,6 +21,7 @@ export type ComponentExport = {
 
 export type ClassNameExport = {
   name: string;
+  scopedName: string;
   public: boolean;
 };
 

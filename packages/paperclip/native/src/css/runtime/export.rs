@@ -16,6 +16,8 @@ pub struct Exports {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ClassNameExport {
   pub name: String,
+  #[serde(rename = "scopedName")]
+  pub scoped_name: String,
   pub public: bool,
 }
 

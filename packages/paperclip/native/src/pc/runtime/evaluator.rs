@@ -68,13 +68,10 @@ pub fn evaluate<'a>(
     )));
     let mut context = create_context(node_expr, uri, graph, vfs, &data, None, imports);
 
-    let mut preview = wrap_as_fragment(
+    let preview = wrap_as_fragment(
       evaluate_instance_node(node_expr, &mut context, RenderStrategy::Auto, false, None)?,
       &context,
     );
-
-    // don't want to do this, actually.
-    // let style = evaluate_jumbo_style(node_expr, &mut context)?;
 
     let (sheet, css_exports) = evaluate_document_sheet(uri, node_expr, &mut context)?;
 
@@ -271,99 +268,12 @@ where
   }
 }
 
-pub fn evaluate_document_styles<'a>(
-  node_expr: &ast::Node,
-  uri: &String,
-  vfs: &'a VirtualFileSystem,
-  graph: &'a DependencyGraph,
-  include_imported_styled: bool,
-) -> Result<(css_virt::CSSSheet, css_export::Exports), RuntimeError> {
-  let mut sheet = css_virt::CSSSheet { rules: vec![] };
-  let entry = graph.dependencies.get(uri).unwrap();
-
-  let mut css_imports: BTreeMap<String, css_export::Exports> = BTreeMap::new();
-
-  for (id, dep_uri) in &entry.dependencies {
-    let imp_option = graph.dependencies.get(dep_uri);
-
-    if let Some(imp) = imp_option {
-      match &imp.content {
-        DependencyContent::Node(imp_node) => {
-          let (imp_sheet, imp_exports) =
-            evaluate_document_styles(imp_node, dep_uri, vfs, graph, include_imported_styled)?;
-
-          css_imports.insert(id.to_string(), imp_exports);
-          if include_imported_styled {
-            sheet.extend(imp_sheet);
-          }
-        }
-        DependencyContent::StyleSheet(imp_style) => {
-          let info = evaluate_css(
-            imp_style,
-            dep_uri,
-            &get_document_style_scope(&dep_uri),
-            &BTreeMap::new(),
-            vfs,
-            &BTreeMap::new(),
-          )?;
-
-          match info {
-            CSSEvalInfo {
-              sheet: imp_sheet,
-              exports: imp_exports,
-            } => {
-              css_imports.insert(id.to_string(), imp_exports);
-              if include_imported_styled {
-                sheet.extend(imp_sheet);
-              }
-            }
-          }
-        }
-      }
-    };
-  }
-
-  let mut css_exports: css_export::Exports = css_export::Exports::new();
-
-  let children_option = ast::get_children(&node_expr);
-  let scopes = get_import_scopes(&entry);
-  let scope = get_document_style_scope(uri);
-  if let Some(children) = children_option {
-    // style elements are only allowed in root, so no need to traverse
-    for child in children {
-      if let ast::Node::StyleElement(style_element) = &child {
-        let info = evaluate_css(
-          &style_element.sheet,
-          uri,
-          &scope,
-          &scopes,
-          vfs,
-          &css_imports,
-        )?;
-
-        match info {
-          CSSEvalInfo {
-            sheet: child_sheet,
-            exports: child_exports,
-          } => {
-            sheet.extend(child_sheet);
-            css_exports.extend(&child_exports);
-          }
-        }
-      }
-    }
-  }
-
-  Ok((sheet, css_exports))
-}
-
 fn evaluate_document_sheet<'a>(
   uri: &String,
   entry_expr: &ast::Node,
   context: &'a mut Context,
 ) -> Result<(css_virt::CSSSheet, css_export::Exports), RuntimeError> {
   let mut sheet = css_virt::CSSSheet { rules: vec![] };
-  let entry = context.graph.dependencies.get(uri).unwrap();
 
   let mut css_exports: css_export::Exports = css_export::Exports::new();
   let mut css_imports: BTreeMap<String, css_export::Exports> = BTreeMap::new();
@@ -371,13 +281,6 @@ fn evaluate_document_sheet<'a>(
   for (id, imp) in context.imports {
     css_imports.insert(id.to_string(), imp.style.clone());
   }
-
-  // for (id, dep_uri) in &entry.dependencies {
-  //   let imp_option = context.imports.get(dep_uri);
-  //   if let Some(imp) = imp_option {
-  //     css_imports.insert(id.to_string(), imp.style.clone());
-  //   }
-  // }
 
   let children_option = ast::get_children(&entry_expr);
   let scope = get_document_style_scope(uri);
@@ -407,24 +310,6 @@ fn evaluate_document_sheet<'a>(
   }
 
   Ok((sheet, css_exports))
-}
-
-pub fn evaluate_jumbo_style<'a>(
-  entry_expr: &ast::Node,
-  context: &'a mut Context,
-) -> Result<virt::Node, RuntimeError> {
-  let mut sheet = css_virt::CSSSheet { rules: vec![] };
-  let uri = context.uri;
-
-  // this element styles always get priority.
-  let (child_sheet, _) =
-    evaluate_document_styles(&entry_expr, &uri, context.vfs, context.graph, true)?;
-  sheet.extend(child_sheet);
-
-  Ok(virt::Node::StyleElement(virt::StyleElement {
-    sheet,
-    source: ExprSource::virt(context.uri.clone()),
-  }))
 }
 
 pub fn evaluate_instance_node<'a>(

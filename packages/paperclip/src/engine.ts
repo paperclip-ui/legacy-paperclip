@@ -185,16 +185,6 @@ export class Engine {
   getLoadedAst(uri: string): DependencyContent {
     return this._tryCatch(() => this._native.get_loaded_ast(uri));
   }
-  evaluateFileStyles(uri: string) {
-    return this._tryCatch(() =>
-      mapResult(this._native.evaluate_file_styles(uri))
-    );
-  }
-  evaluateContentStyles(content: string, uri: string) {
-    return this._tryCatch(() =>
-      mapResult(this._native.evaluate_content_styles(content, uri))
-    );
-  }
   parseContent(content: string) {
     return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }

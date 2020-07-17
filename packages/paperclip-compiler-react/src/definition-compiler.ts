@@ -25,15 +25,14 @@ import {
   endBlock,
   addBuffer
 } from "./translate-utils";
-import {
-  Options,
-  RENAME_PROPS,
-  getClassExportNameMap,
-  getPartClassName
-} from "./utils";
+import { Options, RENAME_PROPS, getPartClassName } from "./utils";
+import { ClassNameExport } from "paperclip/src";
 
 export const compile = (
-  { ast, classNames = [] }: { ast: Node; classNames?: string[] },
+  {
+    ast,
+    classNames = {}
+  }: { ast: Node; classNames?: Record<string, ClassNameExport> },
   filePath: string,
   options: Options = {}
 ) => {
@@ -41,8 +40,8 @@ export const compile = (
     filePath,
     getImportIds(ast),
     {},
+    {},
     getPartIds(ast),
-    [],
     Boolean(getLogicElement(ast)),
     options
   );
@@ -52,7 +51,7 @@ export const compile = (
 
 const translateRoot = (
   ast: Node,
-  classNames: string[],
+  classNames: Record<string, ClassNameExport>,
   context: TranslateContext
 ) => {
   context = addBuffer(`/* eslint-disable */\n`, context);
@@ -60,48 +59,6 @@ const translateRoot = (
     `import {ReactNode, ReactElement} from "react";\n\n`,
     context
   );
-
-  // KEEP ME: logic taken out, but keep if it's re-added
-  // later kn
-  // const allImports = getImports(ast);
-
-  // for (const imp of allImports) {
-  //   const id = getAttributeStringValue(AS_ATTR_NAME, imp);
-  //   const src = getAttributeStringValue("src", imp);
-  //   if (!id || !src) {
-  //     continue;
-  //   }
-  //   const relativePath = getRelativeFilePath(context.filePath, src);
-  //   context = addBuffer(
-  //     `import {EnhancedProps as ${pascalCase(
-  //       getInstancePropsName(imp)
-  //     )}} from "${relativePath}";\n`,
-  //     context
-  //   );
-  // }
-
-  // context = addBuffer(`\n`, context);
-
-  // TODO: keep for logic
-  // const logicElement = getLogicElement(ast);
-  // if (logicElement) {
-  //   const src = getAttributeStringValue("src", logicElement);
-  //   if (src) {
-  //     const logicRelativePath = getRelativeFilePath(context.filePath, src);
-  //     context = addBuffer(
-  //       `import {Props as LogicProps} from "${logicRelativePath.replace(
-  //         /\.tsx?$/,
-  //         ""
-  //       )}";\n`,
-  //       context
-  //     );
-  //   }
-  // }
-
-  // context = addBuffer(
-  //   `type ElementProps = InputHTMLAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>;\n\n`,
-  //   context
-  // );
 
   context = addBuffer(`type DefaultProps = {\n`, context);
   context = startBlock(context);
@@ -130,15 +87,18 @@ const translateRoot = (
 
 const translateUtils = (
   _ast: Node,
-  classNames: string[],
+  classNames: Record<string, ClassNameExport>,
   context: TranslateContext
 ) => {
   context = addBuffer(`export declare const classNames: {\n`, context);
 
-  const map = getClassExportNameMap(classNames);
   context = startBlock(context);
 
-  for (const exportName in map) {
+  for (const exportName in classNames) {
+    const info = classNames[exportName];
+    if (!info.public) {
+      continue;
+    }
     context = addBuffer(`${JSON.stringify(exportName)}: string,\n`, context);
   }
 

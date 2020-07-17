@@ -5,8 +5,7 @@ import {
   Engine,
   PaperclipConfig,
   stringifyCSSSheet,
-  PC_CONFIG_FILE_NAME,
-  getAllVirtSheetClassNames
+  PC_CONFIG_FILE_NAME
 } from "paperclip";
 import * as path from "path";
 import * as resolve from "resolve";
@@ -33,7 +32,7 @@ const fixPath = path => path.replace(/\\/g, "/");
 
 let _loadedStyleFiles = {};
 
-function pcLoader(
+async function pcLoader(
   source: string,
   virtualModules: VirtualModules,
   resourceUrl: string
@@ -58,7 +57,7 @@ function pcLoader(
     basedir: process.cwd()
   }));
   const ast = engine.parseContent(source);
-  const sheet = engine.evaluateContentStyles(source, resourceUrl);
+  const { sheet, exports } = await engine.run(resourceUrl);
 
   const styleCache = { ..._loadedStyleFiles };
   _loadedStyleFiles = styleCache;
@@ -68,7 +67,7 @@ function pcLoader(
   };
 
   let code = compiler.compile(
-    { ast, classNames: getAllVirtSheetClassNames(styleMap) },
+    { ast, classNames: exports.style.classNames },
     resourceUrl,
     config.compilerOptions
   );

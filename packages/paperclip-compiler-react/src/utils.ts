@@ -66,17 +66,17 @@ export const classNameToStyleName = (value: string) => {
   return value.charAt(0).toLowerCase() + value.substr(1);
 };
 
-export const getClassExportNameMap = (classNames: string[]) => {
-  const map = {};
-  for (const className of classNames) {
-    const mapName = className.replace(/^_.*?_/g, "");
+// export const getClassExportNameMap = (classNames: string[]) => {
+//   const map = {};
+//   for (const className of classNames) {
+//     const mapName = className.replace(/^_.*?_/g, "");
 
-    if (!map[mapName]) {
-      map[mapName] = className;
-    } else {
-      // combine class names in case they're defined in other imported styles
-      map[mapName] = map[mapName] + " " + className;
-    }
-  }
-  return map;
-};
+//     if (!map[mapName]) {
+//       map[mapName] = className;
+//     } else {
+//       // combine class names in case they're defined in other imported styles
+//       map[mapName] = map[mapName] + " " + className;
+//     }
+//   }
+//   return map;
+// };
