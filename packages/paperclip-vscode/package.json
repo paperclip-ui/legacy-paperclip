@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "14.0.8",
+  "version": "14.0.9",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "description": "",
@@ -121,10 +121,10 @@
     "@types/react": "^16.9.20",
     "color": "^3.1.2",
     "lodash": "^4.17.15",
-    "paperclip": "^14.0.4",
-    "paperclip-autocomplete": "^14.0.0",
-    "paperclip-utils": "^14.0.2",
-    "paperclip-web-renderer": "^14.0.4",
+    "paperclip": "^14.0.9",
+    "paperclip-autocomplete": "^14.0.9",
+    "paperclip-utils": "^14.0.9",
+    "paperclip-web-renderer": "^14.0.9",
     "vscode-languageclient": "^6.0.1",
     "vscode-languageserver": "^6.0.1",
     "vscode-languageserver-textdocument": "^1.0.0"

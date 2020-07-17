@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli",
-  "version": "14.0.4",
+  "version": "14.0.9",
   "description": "Examples:",
   "main": "index.js",
   "bin": {
@@ -19,7 +19,7 @@
     "chokidar": "^3.3.1",
     "glob": "^7.1.6",
     "inquirer": "^7.3.0",
-    "paperclip": "^14.0.4",
+    "paperclip": "^14.0.9",
     "resolve": "^1.15.1",
     "yargs": "^15.1.0"
   },
