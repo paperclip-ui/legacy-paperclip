@@ -11,6 +11,7 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
       - uses: jetli/wasm-pack-action@v0.3.0
+      - uses: GabrielBB/xvfb-action@v1.0
       - run: npm install
       - run: npm run build
       - run: npm run test
