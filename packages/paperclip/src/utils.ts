@@ -38,7 +38,8 @@ const findResourcesFromConfig = (
           pathname,
           fromPathDirname
         );
-        if (modulePath.charAt(0) !== "/") {
+
+        if (!path.isAbsolute(modulePath)) {
           return modulePath;
         }
 
@@ -52,6 +53,9 @@ const findResourcesFromConfig = (
       }
 
       return url.pathToFileURL(pathname).href;
+    })
+    .map(filePath => {
+      return filePath.replace(/\\/g, "/");
     });
 };
 

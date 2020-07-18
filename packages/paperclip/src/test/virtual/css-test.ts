@@ -486,6 +486,27 @@ describe(__filename + "#", () => {
     );
   });
 
+  it("AST location is correct with unicode characters", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      /* 👍🏻 */
+      // 👍🏻
+      .div {
+        content: "👌"
+      }
+      .another {
+      }
+    </style>`
+    };
+    const engine = createMockEngine(graph);
+    await engine.run("/entry.pc");
+    const ast = engine.getLoadedAst("/entry.pc") as any;
+    expect(ast.children[0].sheet.rules[1].location).to.eql({
+      start: 88,
+      end: 111
+    });
+  });
+
   it("includes keyframes in export", async () => {
     const graph = {
       "/entry.pc": `<style>

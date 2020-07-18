@@ -1,6 +1,6 @@
 {
   "name": "paperclip-docco",
-  "version": "14.0.11",
+  "version": "14.0.12",
   "private": true,
   "description": "Paperclip documentation generator - very much a WIP",
   "main": "index.js",
@@ -13,7 +13,6 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "eslint": "^7.4.0",
-    "nyc": "^15.1.0",
     "typescript": "^3.9.7"
   }
 }

@@ -621,7 +621,7 @@ const suggestCSSDeclarationValue = (
 };
 
 const startOfCloseTag = (scanner: TokenScanner) => {
-  return scanner.current.value === "<" && scanner.peek()?.value === "/";
+  return scanner.current?.value === "<" && scanner.peek()?.value === "/";
 };
 
 const getAttributeName = (scanner: TokenScanner) => {

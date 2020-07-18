@@ -13,29 +13,15 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
       - uses: jetli/wasm-pack-action@v0.3.0
-      - run: yarn install
-      - run: yarn build
+      - run: npm install
+      - run: npm run build
       - uses: GabrielBB/xvfb-action@v1.0
         with:
-          run: yarn test
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-      - uses: jetli/wasm-pack-action@v0.3.0
-      - run: yarn install
-      - run: yarn build
-      - uses: GabrielBB/xvfb-action@v1.0
-        with:
-          run: yarn test
-      - run: yarn coverage:upload
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          run: npm test
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-      - run: yarn install
-      - run: yarn lint
+      - run: npm install
+      - run: npm run lint

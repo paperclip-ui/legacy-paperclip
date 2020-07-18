@@ -417,6 +417,17 @@ describe(__filename, () => {
         kind: SuggestContextKind.CSS_DECLARATION_NAME,
         prefix: ""
       }
+    ],
+    [
+      `<import src="./styles/global.pc">
+      <import as="ListItem" src="./item.pc">
+      <import as="Controls" src="./controls.pc">
+      <import as="Learn" src="./learn.pc">
+      
+      <style>
+        /* `,
+
+      null
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {
