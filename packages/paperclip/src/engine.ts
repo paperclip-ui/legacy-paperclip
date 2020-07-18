@@ -9,18 +9,15 @@ import {
   EngineEventKind,
   resolveImportUri,
   DependencyContent,
-  getImports,
   SheetInfo,
   Node,
   EvaluatedEvent,
-  getAttributeStringValue,
   VirtualNode,
   LoadedData,
   DiffedEvent,
   PaperclipSourceWatcher,
   ChangeKind
 } from "paperclip-utils";
-import { fileURLToPath } from "url";
 import { noop } from "./utils";
 
 export type FileContent = {
