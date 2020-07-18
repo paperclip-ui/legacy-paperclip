@@ -46,5 +46,9 @@
     "url": "https://github.com/crcn/paperclip/issues"
   },
   "homepage": "https://github.com/crcn/paperclip#readme",
-  "dependencies": {}
+  "dependencies": {},
+  "workspaces": [
+    "examples/*",
+    "packages/*"
+  ]
 }
