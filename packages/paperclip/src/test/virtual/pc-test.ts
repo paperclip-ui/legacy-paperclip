@@ -115,7 +115,6 @@ describe(__filename + "#", () => {
     const e = waitForError(engine);
     engine.run("/entry.pc").catch(noop);
     const err = await e;
-    console.log(err);
     expect(err).to.eql({
       kind: "Error",
       errorKind: "Graph",

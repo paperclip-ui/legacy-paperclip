@@ -2,7 +2,6 @@ import * as path from "path";
 import * as url from "url";
 import { stripFileProtocol } from "./utils";
 import { PC_CONFIG_FILE_NAME } from "./constants";
-import { config } from "process";
 
 export const resolveImportUri = fs => (fromPath: string, toPath: string) => {
   const filePath = resolveImportFile(fs)(fromPath, toPath);
@@ -52,17 +51,16 @@ const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
   return null;
 };
 
-export const findPCConfigUrl = fs => (fromPath: string): string | null => {
-  let cdir: string = stripFileProtocol(fromPath);
+export const findPCConfigUrl = fs => (fromUri: string): string | null => {
+  let cdir: string = url.fileURLToPath(fromUri);
 
   // can't cache in case PC config was moved.
   do {
     const configUrl = url.pathToFileURL(path.join(cdir, PC_CONFIG_FILE_NAME));
-
     if (fs.existsSync(configUrl)) {
       return configUrl.href;
     }
     cdir = path.dirname(cdir);
-  } while (cdir !== "/" && cdir !== ".");
+  } while (cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir));
   return null;
 };

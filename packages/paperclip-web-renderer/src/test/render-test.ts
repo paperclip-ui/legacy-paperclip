@@ -354,7 +354,9 @@ describe(__filename + "#", () => {
     renderer.initialize(await engine.run("file:///entry.pc"));
     engine.onEvent(renderer.handleEngineEvent);
 
-    expect(renderer.mount.innerHTML.replace("\n", "")).to.eql(
+    expect(
+      renderer.mount.innerHTML.replace("\n", "").replace(/\\+/g, "/")
+    ).to.eql(
       `<div></div><div><style></style></div><div><img src="blah:///file.jpg"></img>      </div><div></div><div></div>`
     );
 
@@ -365,7 +367,9 @@ describe(__filename + "#", () => {
     `
     );
 
-    expect(renderer.mount.innerHTML.replace("\n", "")).to.eql(
+    expect(
+      renderer.mount.innerHTML.replace("\n", "").replace(/\\/g, "/Z/")
+    ).to.eql(
       `<div></div><div><style></style></div><div><img src="blah:///something-else.jpg"></img>    </div><div></div><div></div>`
     );
   });

@@ -1,5 +1,4 @@
 import * as resolve from "resolve";
-import { URL } from "url";
 import * as chokidar from "chokidar";
 import * as path from "path";
 import * as url from "url";
@@ -124,15 +123,18 @@ function initBuild(
         if (config.dropPcExtension) {
           outputFilePath = outputFilePath.replace(".pc", "");
         }
-        const url = new URL(outputFilePath);
-        console.log("Writing %s", path.relative(process.cwd(), url.pathname));
-        fs.writeFileSync(url, result);
+        const uri = new url.URL(outputFilePath);
+        console.log(
+          "Writing %s",
+          path.relative(process.cwd(), url.fileURLToPath(uri))
+        );
+        fs.writeFileSync(uri, result);
 
         if (!compilerOptions.definition) {
           const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
           console.log("Writing %s", cssFilePath);
           fs.writeFileSync(
-            new URL(cssFilePath),
+            new url.URL(cssFilePath),
             stringifyCSSSheet(sheet, "file://")
           );
         }

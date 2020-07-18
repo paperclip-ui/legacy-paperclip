@@ -273,7 +273,7 @@ export const keepEngineInSyncWithFileSystem = (
     if (kind === ChangeKind.Changed) {
       engine.updateVirtualFileContent(
         uri,
-        fs.readFileSync(new URL(uri).pathname, "utf8")
+        fs.readFileSync(new url.URL(uri), "utf8")
       );
     }
   });

@@ -50,8 +50,24 @@ describe(__filename + "#", () => {
     } catch (e) {
       err = e;
     }
+
     expect(err).not.to.eq(null);
     expect(err.errorKind).to.eql("Runtime");
     expect(err.message).to.eql("Unable to resolve file.");
+  });
+
+  it("can resolve module using module path syntax", async () => {
+    const e = new Engine();
+    let err;
+
+    const result = await e.run(
+      url
+        .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "mod-import.pc"))
+        .toString()
+    );
+
+    expect(stringifyLoadResult(result).replace(/ data-pc-[^>\s]+/, "")).to.eql(
+      `<style></style><div>I'm a secret! </div>`
+    );
   });
 });

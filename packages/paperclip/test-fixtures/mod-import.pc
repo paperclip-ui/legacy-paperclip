@@ -1,0 +1,3 @@
+<import src="module.pc" as="test">
+
+<test.SecretMessage />
