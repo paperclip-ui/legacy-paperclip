@@ -73,7 +73,7 @@ class MockElement extends ParentNode {
     this.attributes[name] = value;
   }
 
-  // eslint-disableE-next-line
+  // eslint-disable-next-line
   addEventListener() {}
   removeAttribute(name: string) {
     delete this.attributes[name];
