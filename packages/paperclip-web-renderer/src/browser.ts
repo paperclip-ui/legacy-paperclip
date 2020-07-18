@@ -4,7 +4,6 @@ declare const vscode;
 declare const TARGET_URI;
 declare const PROTOCOL;
 
-document.body.innerHTML = "OK";
 const LOADER_HTML = `
 <style>
   @keyframes _80f4925f_lds-ellipsis1 
