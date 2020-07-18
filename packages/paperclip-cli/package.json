@@ -9,7 +9,8 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test": "nyc mocha ./lib/test/**/*-test.js && nyc merge .nyc_output ../../.nyc_output/paperclip-cli.json"
   },
   "author": "",
   "license": "MIT",
@@ -31,6 +32,7 @@
     "chalk": "^4.1.0",
     "eslint": "^7.4.0",
     "fs-extra": "^9.0.1",
+    "mocha": "^8.0.1",
     "nyc": "^15.1.0",
     "typescript": "^3.9.6"
   }
