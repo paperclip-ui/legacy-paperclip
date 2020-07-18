@@ -35,6 +35,8 @@ import { Engine } from "paperclip";
 
 const VIEW_TYPE = "paperclip-preview";
 
+const RENDERER_MODULE_NAME = "paperclip-web-renderer";
+
 enum OpenLivePreviewOptions {
   Yes = "Yes",
   No = "No"
@@ -66,7 +68,8 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
         enableScripts: true,
         localResourceRoots: [
           Uri.file(extensionPath),
-          Uri.file(workspace.rootPath)
+          Uri.file(workspace.rootPath),
+          Uri.file(resolveSync(RENDERER_MODULE_NAME, extensionPath))
         ]
       }
     );
@@ -342,7 +345,7 @@ class LivePreview {
   private _getHTML() {
     const scriptPathOnDisk = Uri.file(
       path.join(
-        resolveSync("paperclip-web-renderer", this._extensionPath),
+        resolveSync(RENDERER_MODULE_NAME, this._extensionPath),
         "dist",
         "browser.js"
       )
@@ -390,7 +393,7 @@ class LivePreview {
   }
 }
 
-const resolveSync = (moduleName: string, fromDir: string) => {
+function resolveSync(moduleName: string, fromDir: string) {
   let cdir = fromDir;
   do {
     const possiblePath = path.join(cdir, "node_modules", moduleName);
@@ -399,8 +402,8 @@ const resolveSync = (moduleName: string, fromDir: string) => {
       return possiblePath;
     }
 
-    cdir = path.dirname(fromDir);
+    cdir = path.dirname(cdir);
   } while (cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir));
 
   throw new Error(`Could not resolve ${moduleName} in ${fromDir}`);
-};
+}
