@@ -11,7 +11,7 @@ import {
 export type Graph = {
   [identifier: string]: string;
 };
-export const TEST_FIXTURE_DIRECTORY = path.join(
+export const TEST_FIXTURE_DIRECTORY = path.resolve(
   __dirname,
   "../../test-fixtures"
 );
