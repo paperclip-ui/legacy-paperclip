@@ -2,6 +2,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as url from "url";
 import { NativeEngine } from "../native/pkg/paperclip";
 import {
   EngineEvent,
@@ -10,7 +11,6 @@ import {
   resolveImportUri,
   DependencyContent,
   SheetInfo,
-  Node,
   EvaluatedEvent,
   VirtualNode,
   LoadedData,
@@ -259,7 +259,7 @@ export class Engine {
 }
 
 const existsSyncCaseSensitive = (uri: URL) => {
-  const pathname = uri.pathname;
+  const pathname = url.fileURLToPath(uri as any);
   const dir = path.dirname(pathname);
   const basename = path.basename(pathname);
   return fs.readdirSync(dir).includes(basename);

@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as url from "url";
 import { expect } from "chai";
 import { Engine } from "../../engine";
 import {
@@ -13,7 +14,9 @@ describe(__filename + "#", () => {
     const e = new Engine();
     const result = stringifyLoadResult(
       await e.run(
-        "file://" + path.join(TEST_FIXTURE_DIRECTORY, "good-import.pc")
+        url
+          .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "good-import.pc"))
+          .toString()
       )
     );
     expect(result.replace(/ data-pc-[^>\s]+/, "")).to.eql(
@@ -24,9 +27,11 @@ describe(__filename + "#", () => {
   it("Won't load module src where the casing is incorrect", async () => {
     const e = new Engine();
     const ep = waitForError(e);
-    e.run("file://" + path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc")).catch(
-      noop
-    );
+    e.run(
+      url
+        .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc"))
+        .toString()
+    ).catch(noop);
     const error = await ep;
     expect(error.errorKind).to.eql("Graph");
     expect(error.info.message).to.eql("import not found");
@@ -38,7 +43,9 @@ describe(__filename + "#", () => {
 
     try {
       await e.run(
-        "file://" + path.join(TEST_FIXTURE_DIRECTORY, "bad-css-url.pc")
+        url
+          .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "bad-css-url.pc"))
+          .toString()
       );
     } catch (e) {
       err = e;
