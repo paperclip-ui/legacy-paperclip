@@ -7,7 +7,7 @@
     "build": "tsc",
     "lint": "eslint src",
     "build:watch": "tsc --watch",
-    "test": "nyc mocha -R spec lib/test/**/*-test.js && nyc merge .nyc_output ../../.nyc_output/paperclip-autocomplete.json"
+    "test": "mocha -R spec lib/test/**/*-test.js"
   },
   "author": "",
   "license": "ISC",
@@ -19,7 +19,6 @@
     "chai": "^4.2.0",
     "eslint": "^7.4.0",
     "mocha": "^8.0.1",
-    "nyc": "^15.1.0",
     "typescript": "^3.9.6"
   },
   "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159"
