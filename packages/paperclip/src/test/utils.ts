@@ -11,10 +11,10 @@ import {
 export type Graph = {
   [identifier: string]: string;
 };
-export const TEST_FIXTURE_DIRECTORY = path.resolve(
-  __dirname,
-  "../../test-fixtures"
-);
+
+export const TEST_FIXTURE_DIRECTORY = path
+  .resolve(__dirname, "../../test-fixtures")
+  .replace(/\\/, "/");
 
 export const createMockEngine = (
   graph: Graph,
