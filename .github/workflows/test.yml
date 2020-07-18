@@ -6,7 +6,10 @@ on:
 jobs:
   test-packages:
     name: Test packages
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -26,9 +29,5 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-      - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
-      - run: npm run build
       - run: npm run lint
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
