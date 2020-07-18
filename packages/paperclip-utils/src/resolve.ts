@@ -61,7 +61,6 @@ export const findPCConfigUrl = fs => (fromUri: string): string | null => {
       return configUrl.href;
     }
     cdir = path.dirname(cdir);
-    console.log("RESOLVE", cdir);
   } while (cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir));
   return null;
 };
