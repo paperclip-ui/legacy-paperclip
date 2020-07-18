@@ -1,8 +1,8 @@
 import {
   EngineEvent,
-  EvaluatedEvent,
   EngineEventKind,
-  EngineErrorEvent
+  EngineErrorEvent,
+  stripFileProtocol
 } from "paperclip-utils";
 import {
   Uri,
@@ -279,7 +279,7 @@ class LivePreview {
   private async _openDoc(uri: string) {
     return (
       workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
-      (await workspace.openTextDocument(uri.replace("file://", "")))
+      (await workspace.openTextDocument(stripFileProtocol(uri)))
     );
   }
   private _onMessage = () => {

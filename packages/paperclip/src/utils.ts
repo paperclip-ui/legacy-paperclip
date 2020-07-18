@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
-import * as fsa from "fs";
+import * as url from "url";
 import {
   findPCConfigUrl,
   PaperclipConfig,
@@ -51,7 +51,7 @@ const findResourcesFromConfig = (
         return relativePath;
       }
 
-      return "file://" + pathname;
+      return url.pathToFileURL(pathname).href;
     });
 };
 

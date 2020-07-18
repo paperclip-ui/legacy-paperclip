@@ -22,7 +22,6 @@ import {
   EngineErrorKind,
   ChangedSheetsEvent,
   GraphErrorEvent,
-  getCompletionItems,
   DiffedEvent,
   SourceLocation,
   RuntimeErrorEvent,
@@ -34,6 +33,7 @@ import { throttle } from "lodash";
 
 import * as parseColor from "color";
 import * as fs from "fs";
+import * as url from "url";
 import {
   Color,
   Range,
@@ -55,8 +55,7 @@ import {
   TextDocumentContentChangeEvent
 } from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
-import { CompletionItem } from "vscode";
-import { connect } from "http2";
+import { stripFileProtocol } from "paperclip";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
@@ -185,7 +184,7 @@ export class VSCServiceBridge {
                 sourceUri,
                 "paperclip",
                 null,
-                fs.readFileSync(sourceUri.replace("file://", ""), "utf8")
+                fs.readFileSync(stripFileProtocol(sourceUri), "utf8")
               );
 
             return {
@@ -387,7 +386,7 @@ export class VSCServiceBridge {
         uri,
         "paperclip",
         0,
-        fs.readFileSync(uri.replace("file://", ""), "utf8")
+        fs.readFileSync(url.fileURLToPath(uri), "utf8")
       );
     }
 
