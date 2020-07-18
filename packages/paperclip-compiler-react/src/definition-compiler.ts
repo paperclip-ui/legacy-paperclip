@@ -24,7 +24,7 @@ import {
   addBuffer
 } from "./translate-utils";
 import { Options, RENAME_PROPS, getPartClassName } from "./utils";
-import { ClassNameExport } from "paperclip/src";
+import { ClassNameExport } from "paperclip";
 
 export const compile = (
   {

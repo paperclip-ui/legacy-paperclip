@@ -4,6 +4,7 @@ import {
   EngineErrorEvent,
   stripFileProtocol
 } from "paperclip-utils";
+import * as url from "url";
 import {
   Uri,
   window,
