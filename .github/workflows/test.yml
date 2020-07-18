@@ -4,19 +4,30 @@ on:
     branches:
       - "*"
 jobs:
-  publish-packages:
+  test-packages:
     name: Test packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org/
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
       - run: npm run build
       - run: npm run lint
+      - run: npm run test
+      - run: npm run coverage:upload
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  lint-packages:
+    name: Lint packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+      - uses: jetli/wasm-pack-action@v0.3.0
+      - run: npm install
+      - run: npm run build
       - run: npm run test
       - run: npm run coverage:upload
         env:
