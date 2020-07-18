@@ -4,7 +4,7 @@
   "description": "My webpack project",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./lib/test --timeout=5000",
+    "test": "nyc mocha ./lib/test --timeout=5000 &&  nyc merge .nyc_output ../../.nyc_output/paperclip-web-renderer.json",
     "build": "tsc && webpack",
     "lint": "eslint src",
     "build:watch": "tsc --watch & webpack --watch",
@@ -28,6 +28,7 @@
     "html-webpack-plugin": "^3.2.0",
     "lodash": "^4.17.19",
     "mocha": "^7.0.1",
+    "nyc": "^15.1.0",
     "paperclip": "^14.0.9",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.5",

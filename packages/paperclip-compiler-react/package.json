@@ -17,7 +17,7 @@
     "build": "tsc",
     "lint": "eslint src",
     "build:watch": "tsc --watch",
-    "test": "mocha -R spec lib/test/**/*-test.js --timeout=2000"
+    "test": "nyc mocha -R spec lib/test/**/*-test.js --timeout=2000 &&  nyc merge .nyc_output ../../.nyc_output/paperclip-compiler-react.json"
   },
   "author": "",
   "license": "MIT",
@@ -37,6 +37,7 @@
     "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^7.4.0",
     "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }

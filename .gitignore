@@ -3,9 +3,12 @@ target/
 node_modules/
 dist/
 *.node
+coverage.json
 *.artifacts
 tmp/
 *.pc.d.ts
 *.vsix
 *.DS_Store
+.nyc_output/
+coverage/
 lerna-debug.log
