@@ -1,0 +1,17 @@
+{
+  "processes": {
+    "d9535025-ff05-4e97-b574-2ec433dbc325": { "parent": null, "children": [] }
+  },
+  "files": {
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-autocomplete/lib/suggest-context.js": [
+      "d9535025-ff05-4e97-b574-2ec433dbc325"
+    ],
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-autocomplete/lib/tokenizer.js": [
+      "d9535025-ff05-4e97-b574-2ec433dbc325"
+    ],
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-autocomplete/lib/string-scanner.js": [
+      "d9535025-ff05-4e97-b574-2ec433dbc325"
+    ]
+  },
+  "externalIds": {}
+}

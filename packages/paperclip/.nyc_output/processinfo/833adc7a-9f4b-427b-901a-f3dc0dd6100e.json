@@ -1,0 +1,29 @@
+{
+  "parent": null,
+  "pid": 91116,
+  "argv": [
+    "/usr/local/Cellar/node/14.3.0_1/bin/node",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip/node_modules/.bin/mocha",
+    "./lib/test/file-system/pc-test.js",
+    "./lib/test/virtual/css-test.js",
+    "./lib/test/virtual/infer-test.js",
+    "./lib/test/virtual/pc-test.js",
+    "./lib/test/virtual/smoke-test.js"
+  ],
+  "execArgv": [],
+  "cwd": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip",
+  "time": 1595113326443,
+  "ppid": 91115,
+  "coverageFilename": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip/.nyc_output/833adc7a-9f4b-427b-901a-f3dc0dd6100e.json",
+  "externalId": "",
+  "uuid": "833adc7a-9f4b-427b-901a-f3dc0dd6100e",
+  "files": [
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip/lib/engine.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip/native/pkg/paperclip.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip/lib/utils.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip/lib/test/utils.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip/index.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip/lib/index.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip/lib/infer.js"
+  ]
+}

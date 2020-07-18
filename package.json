@@ -28,7 +28,6 @@
     "build": "lerna run build",
     "lint": "lerna run lint",
     "postinstall": "lerna bootstrap",
-    "coverage:upload": "nyc merge .nyc_output && codecov -t $CODECOV_TOKEN -f coverage.json",
     "build:watch": "lerna run build:watch --parallel",
     "publish:packages": "lerna publish from-package --yes",
     "publish:marketplace": "lerna run publish:marketplace",

@@ -1,0 +1,23 @@
+{
+  "parent": null,
+  "pid": 91107,
+  "argv": [
+    "/usr/local/Cellar/node/14.3.0_1/bin/node",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-autocomplete/node_modules/.bin/mocha",
+    "-R",
+    "spec",
+    "lib/test/**/*-test.js"
+  ],
+  "execArgv": [],
+  "cwd": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-autocomplete",
+  "time": 1595113325079,
+  "ppid": 91105,
+  "coverageFilename": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-autocomplete/.nyc_output/d9535025-ff05-4e97-b574-2ec433dbc325.json",
+  "externalId": "",
+  "uuid": "d9535025-ff05-4e97-b574-2ec433dbc325",
+  "files": [
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-autocomplete/lib/suggest-context.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-autocomplete/lib/tokenizer.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-autocomplete/lib/string-scanner.js"
+  ]
+}

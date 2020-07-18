@@ -1,0 +1,25 @@
+{
+  "parent": null,
+  "pid": 91134,
+  "argv": [
+    "/usr/local/Cellar/node/14.3.0_1/bin/node",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react/node_modules/.bin/mocha",
+    "-R",
+    "spec",
+    "lib/test/**/*-test.js",
+    "--timeout=2000"
+  ],
+  "execArgv": [],
+  "cwd": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react",
+  "time": 1595113328559,
+  "ppid": 91129,
+  "coverageFilename": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react/.nyc_output/867857ef-5fe0-4ae2-8544-b247d37ffa77.json",
+  "externalId": "",
+  "uuid": "867857ef-5fe0-4ae2-8544-b247d37ffa77",
+  "files": [
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react/lib/test/utils.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react/lib/code-compiler.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react/lib/translate-utils.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-compiler-react/lib/utils.js"
+  ]
+}

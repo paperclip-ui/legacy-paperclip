@@ -1,0 +1,29 @@
+{
+  "parent": null,
+  "pid": 91136,
+  "argv": [
+    "/usr/local/Cellar/node/14.3.0_1/bin/node",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/node_modules/.bin/mocha",
+    "./lib/test",
+    "--timeout=5000"
+  ],
+  "execArgv": [],
+  "cwd": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer",
+  "time": 1595113328736,
+  "ppid": 91132,
+  "coverageFilename": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/.nyc_output/4758e425-b1fc-4f54-9d2b-c0e6f0d07c91.json",
+  "externalId": "",
+  "uuid": "4758e425-b1fc-4f54-9d2b-c0e6f0d07c91",
+  "files": [
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/test/random/index.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/test/random/document.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/test/random/html.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/test/random/utils.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/test/random/styles.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/test/utils.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/renderer.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/native-renderer.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/utils.js",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-web-renderer/lib/dom-patcher.js"
+  ]
+}

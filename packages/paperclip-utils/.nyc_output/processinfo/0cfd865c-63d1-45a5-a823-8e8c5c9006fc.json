@@ -1,0 +1,17 @@
+{
+  "parent": null,
+  "pid": 91108,
+  "argv": [
+    "/usr/local/Cellar/node/14.3.0_1/bin/node",
+    "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-utils/node_modules/.bin/mocha",
+    "./lib/test/**/*-test.js"
+  ],
+  "execArgv": [],
+  "cwd": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-utils",
+  "time": 1595113325153,
+  "ppid": 91106,
+  "coverageFilename": "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-utils/.nyc_output/0cfd865c-63d1-45a5-a823-8e8c5c9006fc.json",
+  "externalId": "",
+  "uuid": "0cfd865c-63d1-45a5-a823-8e8c5c9006fc",
+  "files": []
+}
