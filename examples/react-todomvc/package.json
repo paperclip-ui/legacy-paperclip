@@ -5,11 +5,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "yarn build:definitions && webpack",
+    "build": "npm run build:definitions && webpack",
     "build:dist": "webpack",
     "lint": "eslint src",
     "snapshot": "percy exec -- percy-paperclip",
-    "build:watch": "yarn build:definitions -- --watch & webpack --watch",
+    "build:watch": "npm run build:definitions -- --watch & webpack --watch",
     "build:definitions": "paperclip build --compiler=paperclip-compiler-react --definition --write"
   },
   "author": "",
