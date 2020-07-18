@@ -401,9 +401,7 @@ impl<'a> Tokenizer<'a> {
         self.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
         Ok(Token::Whitespace)
       }
-      _ => {
-        self.next_utf16_char()
-      }
+      _ => self.next_utf16_char(),
     }
   }
 
@@ -482,10 +480,8 @@ impl<'a> Tokenizer<'a> {
             self.set_pos(pos);
             break;
           }
-        },
-        _ => {
-
         }
+        _ => {}
       }
     }
     Ok(())
