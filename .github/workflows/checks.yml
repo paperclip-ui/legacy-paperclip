@@ -1,11 +1,10 @@
-name: Test
+name: Checks
 on:
   push:
     branches:
-      - "*"
+      - dev
 jobs:
-  test-packages:
-    name: Test packages
+  test:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
@@ -19,12 +18,21 @@ jobs:
       - uses: GabrielBB/xvfb-action@v1.0
         with:
           run: npm run test
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+      - uses: jetli/wasm-pack-action@v0.3.0
+      - run: npm install
+      - run: npm run build
+      - uses: GabrielBB/xvfb-action@v1.0
+        with:
+          run: npm run test
       - run: npm run coverage:upload
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  lint-packages:
-    name: Lint packages
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
