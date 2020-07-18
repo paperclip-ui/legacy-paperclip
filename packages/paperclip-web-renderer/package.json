@@ -9,7 +9,7 @@
     "lint": "eslint src",
     "build:watch": "tsc --watch & webpack --watch",
     "start": "webpack-dev-server",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "yarn build"
   },
   "author": "",
   "license": "MIT",

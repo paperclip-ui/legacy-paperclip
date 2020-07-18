@@ -92,10 +92,10 @@
     "build": "tsc",
     "test": "node lib/test/run",
     "lint": "eslint src",
-    "build:watch": "npm run build -- --watch",
-    "prepublishOnly": "npm run build",
-    "postpublish": "npm run publish:marketplace",
-    "publish:marketplace": "npm install && vsce package && vsce publish -p $VSCE_TOKEN"
+    "build:watch": "yarn build --watch",
+    "prepublishOnly": "yarn run build",
+    "postpublish": "yarn publish:marketplace",
+    "publish:marketplace": "yarn install && vsce package && vsce publish -p $VSCE_TOKEN"
   },
   "author": "",
   "license": "MIT",

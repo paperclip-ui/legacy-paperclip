@@ -1,6 +1,6 @@
 ⚠️ WIP, not done yet! ⚠️
 
-Installation: `npm install zeplin-paperclip --save-dev`
+Installation: `yarn add zeplin-paperclip --save-dev`
 
 This util allows you to download Zeplin design tokens to Paperclip UIs. Here's how you use it:
 

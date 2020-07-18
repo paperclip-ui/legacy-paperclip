@@ -19,7 +19,7 @@ From there, you can start the build server:
 ```
 
 # needs to be called first
-npm run build && npm run build:watch
+yarn build && yarn build:watch
 ```
 
 ☝🏻This will build all packages & examples.

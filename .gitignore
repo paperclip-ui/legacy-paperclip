@@ -3,6 +3,7 @@ target/
 node_modules/
 dist/
 *.node
+yarn-*.log
 coverage.json
 *.artifacts
 tmp/

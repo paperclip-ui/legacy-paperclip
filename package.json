@@ -31,7 +31,7 @@
     "lint": "lerna run lint",
     "coverage:upload": "nyc merge .nyc_output && codecov -t $CODECOV_TOKEN -f coverage.json",
     "build:watch": "lerna run build:watch --parallel",
-    "postinstall": "npm run bootstrap",
+    "postinstall": "yarn bootstrap",
     "bootstrap": "lerna bootstrap",
     "publish:packages": "lerna publish from-package --yes",
     "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --package-lock-only --no-audit && git add packages/*/package-lock.json"
