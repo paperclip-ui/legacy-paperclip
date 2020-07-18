@@ -14,7 +14,7 @@ export type Graph = {
 
 export const TEST_FIXTURE_DIRECTORY = path
   .resolve(__dirname, "../../test-fixtures")
-  .replace(/\\/, "/");
+  .replace(/\\/g, "/");
 
 export const createMockEngine = (
   graph: Graph,
