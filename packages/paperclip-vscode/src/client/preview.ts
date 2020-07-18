@@ -4,6 +4,7 @@ import {
   EngineErrorEvent,
   stripFileProtocol
 } from "paperclip-utils";
+import * as fs from "fs";
 import {
   Uri,
   window,
@@ -341,9 +342,7 @@ class LivePreview {
   private _getHTML() {
     const scriptPathOnDisk = Uri.file(
       path.join(
-        this._extensionPath,
-        "node_modules",
-        "paperclip-web-renderer",
+        resolveSync("paperclip-web-renderer", this._extensionPath),
         "dist",
         "browser.js"
       )
@@ -390,3 +389,18 @@ class LivePreview {
     }
   }
 }
+
+const resolveSync = (moduleName: string, fromDir: string) => {
+  let cdir = fromDir;
+  do {
+    const possiblePath = path.join(cdir, "node_modules", moduleName);
+
+    if (fs.existsSync(possiblePath)) {
+      return possiblePath;
+    }
+
+    cdir = path.dirname(fromDir);
+  } while (cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir));
+
+  throw new Error(`Could not resolve ${moduleName} in ${fromDir}`);
+};
