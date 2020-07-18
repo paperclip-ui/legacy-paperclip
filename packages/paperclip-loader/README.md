@@ -1,4 +1,4 @@
-Installation: `npm install paperclip-loader --save-dev`
+Installation: `yarn add paperclip-loader --save-dev`
 
 This loader allows you use Paperclip files (`*.pc`) in your application code. Here's a basic Webpack example:
 

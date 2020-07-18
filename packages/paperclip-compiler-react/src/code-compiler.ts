@@ -54,7 +54,7 @@ import {
 import { camelCase, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
-import { ClassNameExport } from "paperclip/src";
+import { ClassNameExport } from "paperclip";
 
 const entities = new Html5Entities();
 type Config = {

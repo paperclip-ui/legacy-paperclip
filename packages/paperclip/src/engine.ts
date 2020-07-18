@@ -2,6 +2,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as url from "url";
 import { NativeEngine } from "../native/pkg/paperclip";
 import {
   EngineEvent,
@@ -9,18 +10,14 @@ import {
   EngineEventKind,
   resolveImportUri,
   DependencyContent,
-  getImports,
   SheetInfo,
-  Node,
   EvaluatedEvent,
-  getAttributeStringValue,
   VirtualNode,
   LoadedData,
   DiffedEvent,
   PaperclipSourceWatcher,
   ChangeKind
 } from "paperclip-utils";
-import { fileURLToPath } from "url";
 import { noop } from "./utils";
 
 export type FileContent = {
@@ -262,7 +259,7 @@ export class Engine {
 }
 
 const existsSyncCaseSensitive = (uri: URL) => {
-  const pathname = uri.pathname;
+  const pathname = url.fileURLToPath(uri as any);
   const dir = path.dirname(pathname);
   const basename = path.basename(pathname);
   return fs.readdirSync(dir).includes(basename);
@@ -276,7 +273,7 @@ export const keepEngineInSyncWithFileSystem = (
     if (kind === ChangeKind.Changed) {
       engine.updateVirtualFileContent(
         uri,
-        fs.readFileSync(new URL(uri).pathname, "utf8")
+        fs.readFileSync(new url.URL(uri), "utf8")
       );
     }
   });

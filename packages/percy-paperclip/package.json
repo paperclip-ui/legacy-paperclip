@@ -1,6 +1,6 @@
 {
   "name": "percy-paperclip",
-  "version": "14.0.9",
+  "version": "14.0.11",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -19,6 +19,7 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "eslint": "^7.4.0",
+    "nyc": "^15.1.0",
     "typescript": "^3.9.5"
   },
   "dependencies": {
@@ -27,7 +28,7 @@
     "glob": "^7.1.6",
     "lodash": "^4.17.19",
     "mime": "^2.4.6",
-    "paperclip": "^14.0.9",
+    "paperclip": "^14.0.11",
     "w3c-xmlhttprequest": "^2.1.3",
     "yargs": "^15.3.1"
   }

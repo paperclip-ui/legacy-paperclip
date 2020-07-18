@@ -4,8 +4,6 @@ declare const vscode;
 declare const TARGET_URI;
 declare const PROTOCOL;
 
-const thisScript = Array.from(document.querySelectorAll("script")).pop();
-
 const LOADER_HTML = `
 <style>
   @keyframes _80f4925f_lds-ellipsis1 

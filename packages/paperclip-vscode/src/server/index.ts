@@ -9,6 +9,7 @@ import {
 } from "vscode-languageserver";
 
 import * as fs from "fs";
+import * as url from "url";
 import { Engine } from "paperclip";
 import { createServices } from "./services";
 import { VSCServiceBridge } from "./bridge";
@@ -60,9 +61,7 @@ const watchPaperclipSources = (engine: Engine, cwd: string = process.cwd()) => {
   const configUrl = findPCConfigUrl(fs)(cwd);
 
   if (configUrl) {
-    const config = JSON.parse(
-      fs.readFileSync(new URL(configUrl).pathname, "utf8")
-    );
+    const config = JSON.parse(fs.readFileSync(new url.URL(configUrl), "utf8"));
 
     const watcher = new PaperclipSourceWatcher(config, cwd);
     keepEngineInSyncWithFileSystem(watcher, engine);

@@ -1,5 +1,6 @@
 import * as chokidar from "chokidar";
 import * as path from "path";
+import * as url from "url";
 import { EventEmitter } from "events";
 import { PaperclipConfig } from "./config";
 import { paperclipSourceGlobPattern } from "./utils";
@@ -42,7 +43,7 @@ export class PaperclipSourceWatcher {
           : relativePath;
       const changeKind = CHOKIDAR_EVENT_MAP[eventName];
       if (changeKind) {
-        this._em.emit("change", changeKind, "file://" + filePath);
+        this._em.emit("change", changeKind, url.pathToFileURL(filePath).href);
       }
     });
   }

@@ -14,7 +14,7 @@ Here's what you can do next:
 1. Start typing away! You should see a live preview of your text at this point.
 
 
-Next, you'll need to set up the build tools. For that, run `npm install paperclip-cli --save-dev`. Then run:
+Next, you'll need to set up the build tools. For that, run `yarn add paperclip-cli --save-dev`. Then run:
 
 ```
 npx paperclip init

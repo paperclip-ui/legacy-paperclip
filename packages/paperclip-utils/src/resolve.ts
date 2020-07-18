@@ -1,10 +1,7 @@
 import * as path from "path";
 import * as url from "url";
-import * as glob from "glob";
 import { stripFileProtocol } from "./utils";
 import { PC_CONFIG_FILE_NAME } from "./constants";
-import { config } from "process";
-import { PaperclipConfig } from "./config";
 
 export const resolveImportUri = fs => (fromPath: string, toPath: string) => {
   const filePath = resolveImportFile(fs)(fromPath, toPath);
@@ -35,40 +32,35 @@ const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
   const configUrl = findPCConfigUrl(fs)(fromPath);
   if (!configUrl) return null;
 
-  const url = new URL(configUrl) as any;
+  const uri = new URL(configUrl) as any;
 
   // need to parse each time in case config changed.
-  const config = JSON.parse(fs.readFileSync(url, "utf8"));
+  const config = JSON.parse(fs.readFileSync(uri, "utf8"));
   const configPathDir = path.dirname(stripFileProtocol(configUrl));
-  const moduleFileUrl =
-    "file://" +
-    fixPath(
-      path.normalize(
-        path.join(configPathDir, config.sourceDirectory, moduleRelativePath)
-      )
-    );
 
-  if (fs.existsSync(new URL(moduleFileUrl))) {
+  const moduleFileUrl = url.pathToFileURL(
+    path.normalize(
+      path.join(configPathDir, config.sourceDirectory, moduleRelativePath)
+    )
+  );
+
+  if (fs.existsSync(moduleFileUrl)) {
     // Need to follow symlinks
-    return "file://" + fixPath(fs.realpathSync(new URL(moduleFileUrl)));
+    return url.pathToFileURL(fs.realpathSync(moduleFileUrl)).href;
   }
   return null;
 };
 
-export const findPCConfigUrl = fs => (fromPath: string): string | null => {
-  let cdir: string = stripFileProtocol(fromPath);
+export const findPCConfigUrl = fs => (fromUri: string): string | null => {
+  let cdir: string = stripFileProtocol(fromUri);
 
   // can't cache in case PC config was moved.
   do {
-    const configPath =
-      "file://" + fixPath(path.join(cdir, PC_CONFIG_FILE_NAME));
-    const configUrl = new URL(configPath) as any;
+    const configUrl = url.pathToFileURL(path.join(cdir, PC_CONFIG_FILE_NAME));
     if (fs.existsSync(configUrl)) {
-      return configPath;
+      return configUrl.href;
     }
     cdir = path.dirname(cdir);
-  } while (cdir !== "/" && cdir !== ".");
+  } while (cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir));
   return null;
 };
-
-const fixPath = (path: string) => path.replace(/\\/g, "/");

@@ -11,9 +11,11 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
+    "codecov": "^3.7.1",
     "eslint": "^7.4.0",
     "husky": "^4.2.5",
     "lerna": "^3.22.1",
+    "nyc": "^15.1.0",
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1"
   },
@@ -25,11 +27,9 @@
   "scripts": {
     "test": "lerna run test",
     "build": "lerna run build",
-    "link": "lerna link",
     "lint": "lerna run lint",
+    "coverage:upload": "nyc merge .nyc_output && codecov -t $CODECOV_TOKEN -f coverage.json",
     "build:watch": "lerna run build:watch --parallel",
-    "postinstall": "npm run bootstrap",
-    "bootstrap": "lerna bootstrap",
     "publish:packages": "lerna publish from-package --yes",
     "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --package-lock-only --no-audit && git add packages/*/package-lock.json"
   },
@@ -43,5 +43,9 @@
     "url": "https://github.com/crcn/paperclip/issues"
   },
   "homepage": "https://github.com/crcn/paperclip#readme",
-  "dependencies": {}
+  "dependencies": {},
+  "workspaces": [
+    "examples/*",
+    "packages/*"
+  ]
 }

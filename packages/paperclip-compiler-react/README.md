@@ -1,6 +1,6 @@
 
 
-Installation: `npm install paperclip-compiler-react --save-dev`
+Installation: `yarn add paperclip-compiler-react --save-dev`
 
 This is a compiler that translates paperclip templates into React code. Here's an example PC file:
 
@@ -106,7 +106,7 @@ import {Progress} from "./progress.pc";
 
 #### generating typed definition files
 
-You'll need to install the CLI package: `npm install paperclip-cli --save-dev`. Assuming that you have a `paperclip.config.json` file (see [paperclip-cli](../packages/paperclip-cli) docs for info), go ahead around run:
+You'll need to install the CLI package: `yarn add paperclip-cli --save-dev`. Assuming that you have a `paperclip.config.json` file (see [paperclip-cli](../packages/paperclip-cli) docs for info), go ahead around run:
 
 ```
 npx paperclip build --definition --write

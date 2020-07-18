@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
-import * as fsa from "fs";
+import * as url from "url";
 import {
   findPCConfigUrl,
   PaperclipConfig,
@@ -12,7 +12,7 @@ const findResourcesFromConfig = (
   get: (config: PaperclipConfig, options: any) => string[]
 ) => fs => (fromUri: string, relative?: boolean) => {
   // symlinks may fudge module resolution, so we need to find the real path
-  const fromPath = fs.realpathSync(new URL(fromUri).pathname);
+  const fromPath = fs.realpathSync(new url.URL(fromUri));
   const fromPathDirname = path.dirname(fromPath);
   const configUrl = findPCConfigUrl(fs)(fromUri);
 
@@ -23,12 +23,12 @@ const findResourcesFromConfig = (
     return [];
   }
 
-  const configPath = new URL(configUrl).pathname;
+  const configUri = new url.URL(configUrl);
   const config: PaperclipConfig = JSON.parse(
-    fs.readFileSync(configPath, "utf8")
+    fs.readFileSync(configUri, "utf8")
   );
 
-  return get(config, path.dirname(configPath))
+  return get(config, path.dirname(url.fileURLToPath(configUri)))
     .filter(pathname => pathname !== fromPath)
     .map(pathname => {
       if (relative) {
@@ -51,7 +51,7 @@ const findResourcesFromConfig = (
         return relativePath;
       }
 
-      return "file://" + pathname;
+      return url.pathToFileURL(pathname).href;
     });
 };
 
@@ -80,7 +80,7 @@ const getModulePath = (
   fullPath: string,
   fromDir?: string
 ) => {
-  const configDir = path.dirname(new URL(configUri).pathname);
+  const configDir = path.dirname(url.fileURLToPath(configUri));
 
   const moduleDirectory = path.join(configDir, config.sourceDirectory) + "/";
 
