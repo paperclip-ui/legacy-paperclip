@@ -1,5 +1,5 @@
 <div>
-  <a href="https://circleci.com/gh/crcn/paperclip/tree/master"><img src="https://img.shields.io/circleci/project/github/crcn/paperclip/master.svg?sanitize=true" alt="Build Status"></a>
+  ![Checks](https://github.com/crcn/paperclip/workflows/Checks/badge.svg?branch=master)
   <a href="https://github.com/crcn/paperclip/blob/master/MIT-LICENSE.txt"><img src="https://img.shields.io/github/license/crcn/paperclip" alt="License"></a>
 </div>
 
