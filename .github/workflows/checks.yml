@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
       - uses: jetli/wasm-pack-action@v0.3.0
-      - run: yarn bootstrap
+      - run: yarn install
       - run: yarn build
       - uses: GabrielBB/xvfb-action@v1.0
         with:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
       - uses: jetli/wasm-pack-action@v0.3.0
-      - run: yarn bootstrap
+      - run: yarn install
       - run: yarn build
       - uses: GabrielBB/xvfb-action@v1.0
         with:
@@ -37,5 +37,5 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
-      - run: yarn bootstrap
+      - run: yarn install
       - run: yarn lint
