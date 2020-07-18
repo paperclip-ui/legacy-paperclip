@@ -16,6 +16,7 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
       - run: npm run build
+      - run: npm run lint
       - run: npm run test
       - run: npm run coverage:upload
         env:
