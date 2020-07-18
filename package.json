@@ -31,6 +31,7 @@
     "coverage:upload": "nyc merge .nyc_output && codecov -t $CODECOV_TOKEN -f coverage.json",
     "build:watch": "lerna run build:watch --parallel",
     "publish:packages": "lerna publish from-package --yes",
+    "publish:marketplace": "lerna run publish:marketplace",
     "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --package-lock-only --no-audit && git add packages/*/package-lock.json"
   },
   "repository": {
@@ -44,8 +45,14 @@
   },
   "homepage": "https://github.com/crcn/paperclip#readme",
   "dependencies": {},
-  "workspaces": [
-    "examples/*",
-    "packages/*"
-  ]
+  "workspaces": {
+    "packages": [
+      "examples/*",
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/paperclip-vscode",
+      "**/paperclip-vscode/**"
+    ]
+  }
 }

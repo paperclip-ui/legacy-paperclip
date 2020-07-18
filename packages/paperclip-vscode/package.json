@@ -94,8 +94,7 @@
     "lint": "eslint src",
     "build:watch": "yarn build --watch",
     "prepublishOnly": "yarn run build",
-    "postpublish": "yarn publish:marketplace",
-    "publish:marketplace": "yarn install && vsce package && vsce publish -p $VSCE_TOKEN"
+    "publish:marketplace": "rm -rf node_modules && npm install --production && vsce package && vsce publish -p $VSCE_TOKEN"
   },
   "author": "",
   "license": "MIT",

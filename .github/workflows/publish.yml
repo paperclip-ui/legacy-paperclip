@@ -17,6 +17,7 @@ jobs:
       - run: yarn install
       - run: yarn build
       - run: yarn publish:packages
+      - run: yarn publish:marketplace
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
