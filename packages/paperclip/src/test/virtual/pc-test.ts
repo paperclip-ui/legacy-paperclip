@@ -157,7 +157,7 @@ describe(__filename + "#", () => {
       `
     };
     const engine = createMockEngine(graph, noop, {
-      resolveFile(uri) {
+      resolveFile() {
         return null;
       }
     });
@@ -443,7 +443,6 @@ describe(__filename + "#", () => {
     };
 
     const engine = createMockEngine(graph);
-    const p = waitForError(engine);
 
     expect(stringifyLoadResult(await engine.run("/entry.pc"))).to.eql(
       "<style></style> ×"
