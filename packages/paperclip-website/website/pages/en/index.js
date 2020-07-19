@@ -60,14 +60,14 @@ class HomeSplash extends React.Component {
 
     return (
       <SplashContainer>
-        <Logo img_src={`${baseUrl}img/undraw_monitor.svg`} />
+        {/* <Logo img_src={`${baseUrl}img/undraw_monitor.svg`} /> */}
         <div className="inner">
           <ProjectTitle tagline={siteConfig.tagline} title={siteConfig.title} />
-          <PromoSection>
+          {/* <PromoSection>
             <Button href="#try">Try It Out</Button>
             <Button href={docUrl("doc1.html")}>Example Link</Button>
             <Button href={docUrl("doc2.html")}>Example Link 2</Button>
-          </PromoSection>
+          </PromoSection> */}
         </div>
       </SplashContainer>
     )
@@ -151,16 +151,25 @@ class Index extends React.Component {
       <Block layout="fourColumn">
         {[
           {
-            content: "This is the content of my feature",
+            content:
+              "Paperclip only covers basic components & styling that you can import into your existing code.",
             image: `${baseUrl}img/undraw_react.svg`,
             imageAlign: "top",
-            title: "Feature One",
+            title: "Just primitives",
           },
           {
-            content: "The content of my second feature",
+            content:
+              "No more switching back and forth between the browser & code. Paperclip comes with a VS Code extension that allows you to preview UIs in realtime.",
             image: `${baseUrl}img/undraw_operating_system.svg`,
             imageAlign: "top",
-            title: "Feature Two",
+            title: "Realtime visual development",
+          },
+          {
+            content:
+              "Styles in Paperclip are scoped to the documents they're defined in, so you don't have to worry about style collisions.",
+            image: `${baseUrl}img/undraw_operating_system.svg`,
+            imageAlign: "top",
+            title: "Scoped styling",
           },
         ]}
       </Block>
@@ -199,12 +208,12 @@ class Index extends React.Component {
       <div>
         <HomeSplash siteConfig={siteConfig} language={language} />
         <div className="mainContainer">
-          <Features />
-          <FeatureCallout />
-          <LearnHow />
-          <TryOut />
-          <Description />
-          <Showcase />
+          {/* <Features /> */}
+          {/* <FeatureCallout /> */}
+          {/* <LearnHow /> */}
+          {/* <TryOut /> */}
+          {/* <Description /> */}
+          {/* <Showcase /> */}
         </div>
       </div>
     )

@@ -22,6 +22,7 @@ class Footer extends React.Component {
   }
 
   render() {
+    return null
     return (
       <footer className="nav-footer" id="footer">
         <section className="sitemap">
