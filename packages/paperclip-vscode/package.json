@@ -92,7 +92,7 @@
     "build": "tsc",
     "test": "node lib/test/run",
     "lint": "eslint src",
-    "build:watch": "npm run build --watch",
+    "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",
     "publish:marketplace": "rm -rf node_modules && npm install --production && vsce package && vsce publish -p $VSCE_TOKEN"
   },
