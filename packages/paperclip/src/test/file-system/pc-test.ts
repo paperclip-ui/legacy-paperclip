@@ -58,7 +58,6 @@ describe(__filename + "#", () => {
 
   it("can resolve module using module path syntax", async () => {
     const e = new Engine();
-    let err;
 
     const result = await e.run(
       url

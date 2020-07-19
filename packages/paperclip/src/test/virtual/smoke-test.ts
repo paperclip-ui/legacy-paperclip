@@ -1,12 +1,5 @@
-import * as path from "path";
-import { Engine } from "../../engine";
 import { expect } from "chai";
-import {
-  EngineEventKind,
-  stringifyVirtualNode,
-  EvaluatedEvent,
-  stringifyCSSSheet
-} from "paperclip-utils";
+import { stringifyVirtualNode, stringifyCSSSheet } from "paperclip-utils";
 import { createMockEngine, Graph } from "../utils";
 
 describe(__filename + "#", () => {
@@ -723,7 +716,7 @@ describe(__filename + "#", () => {
       {},
       `<style>[class]._80f4925f_a { } [class]._80f4925f_a + b[data-pc-80f4925f] { } [class]._80f4925f_a + b[data-pc-80f4925f]:hover:active:test { }</style>`
     ]
-  ].forEach(([graph, context, expectedHTML]: [Graph, any, string]) => {
+  ].forEach(([graph, , expectedHTML]: [Graph, any, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
       const engine = createMockEngine(graph);
 

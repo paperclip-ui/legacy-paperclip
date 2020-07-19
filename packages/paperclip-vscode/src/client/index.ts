@@ -2,8 +2,8 @@ import { ExtensionContext, workspace, window } from "vscode";
 import * as fs from "fs";
 import * as findUp from "find-up";
 import { activate as activateLanguageClient } from "./language";
-import { setFlagsFromString } from "v8";
 
+// eslint-disable-next-line
 const selfPkg = require("../../package");
 
 export const activate = (context: ExtensionContext) => {
@@ -49,7 +49,7 @@ const checkVersionMatch = (context: ExtensionContext) => {
   if (selfMajor !== cliMajor) {
     const details = `(extension version: v${
       selfPkg.version
-    }, dependency version: v${pcCLIVersion.replace(/[^\wd\.]/g, "")})`;
+    }, dependency version: v${pcCLIVersion.replace(/[^\wd.]/g, "")})`;
 
     let message = "";
 

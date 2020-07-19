@@ -38,7 +38,7 @@ export const createMockEngine = (
 
 export const waitForError = (
   engine: Engine,
-  test = (event: EngineErrorEvent) => true
+  test: (event: EngineErrorEvent) => boolean = () => true
 ) => {
   return new Promise<any>(resolve => {
     engine.onEvent(event => {
@@ -51,7 +51,7 @@ export const waitForError = (
 
 export const waitForRender = (
   engine: Engine,
-  test = (event: LoadedEvent) => true
+  test: (event: LoadedEvent) => boolean = () => true
 ) => {
   return new Promise<any>(resolve => {
     engine.onEvent(event => {
