@@ -4,8 +4,6 @@
   }
 
   @mixin stripes {
-    background-image: linear-gradient(45deg, #98CD8D 12.50%, rgba(0, 0, 0, 0) 12.50%, rgba(0, 0, 0, 0) 50%, #98CD8D 50%, #98CD8D 62.50%, rgba(0, 0, 0, 0) 62.50%, rgba(0, 0, 0, 0) 100%);
-    background-size: 5.66px 5.66px;
   }
 
   .Canvas {
@@ -37,14 +35,55 @@
       background: rgb(131, 131, 131);
     }
   }
+
+
+  .BoxModel {
+    --stripe-color: #98CD8D;
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background-image: linear-gradient(to right, black, black), linear-gradient(45deg, var(--stripe-color) 12.50%, rgba(0, 0, 0, 0) 12.50%, rgba(0, 0, 0, 0) 50%, var(--stripe-color) 50%, var(--stripe-color) 62.50%, rgba(0, 0, 0, 0) 62.50%, rgba(0, 0, 0, 0) 100%);
+    background-size: 6px 6px;
+    background-clip: content-box, border-box;
+    mix-blend-mode:lighten;
+  }
+
+  .PaddingModel.BoxModel {
+    --stripe-color: rgb(13, 245, 175);
+  }
+
+
+  .MarginModel.BoxModel {
+    --stripe-color: rgb(245, 13, 233);
+    left: -80px;
+    top: -20px;
+    width: calc(100% + 160px);
+    height: calc(100% + 40px);
+    padding: 20px 80px;
+  }
 </style>
 
 
+<div component as="BoxModel" className="BoxModel">
+  
+</div>
+<div component as="PaddingModel" className="PaddingModel BoxModel">
+  
+</div>
+<div component as="MarginModel" className="MarginModel BoxModel">
+  
+</div>
 
 <div className="Canvas">
   <div className="CanvasPreview">
     <div className="box">
       I am a box.
+      <!-- <PaddingModel /> -->
+      <MarginModel />
     </div>
   </div>
   <div className="CanvasTools">
