@@ -10,4 +10,9 @@ TODOS:
 - [ ] ability to change colors
 - [ ] measurement tools
 - [ ] grid tools
-- [ ] possibly using doc-comments to add metadata about screens 
+- [ ] possibly using doc-comments to add metadata about screens
+
+Rules around editing CSS:
+
+- edit style rule that appears first in `className`
+- if edited className is selecting multiple _unique_ elements (not instances), then create a new style rule and prepend that to `className`
