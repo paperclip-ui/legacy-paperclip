@@ -74,15 +74,19 @@ the `class:prop` functionality allows you to easily create variants of a compone
 <style>
   .button {
     color: black;
-    &.alt {
+    &--alt {
       color: red;
     }
-    &.secondary {
+    &--secondary {
       color: gold;
     }
   }
 </style>
-<div component as="Button" class="button" class:alt class:secondary>
+
+<div component as="Button" 
+  class="button" 
+  class:alt="button--alt" 
+  class:secondary="button--secondary">
   {children}
 </div>
 
@@ -96,6 +100,28 @@ the `class:prop` functionality allows you to easily create variants of a compone
   I'm the secondary button
 </Button>
 ```
+
+You can also use the shorthand version:
+
+
+```html
+<style>
+  .button {
+    color: black;
+    &.alt {
+      color: red;
+    }
+  }
+</style>
+
+<div component as="Button" 
+  class="button" 
+  class:alt>
+  {children}
+</div>
+```
+
+However, be aware that using the shorthand version may prevent you from overriding styles because of [CSS specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity).
 
 ### Mixins
 
@@ -128,7 +154,7 @@ Mixins allow us to define a group of CSS properties to use in style rules. For e
 }
 ```
 
-### Exporting
+### Exporting CSS
 
 The `@export` util allows us to export mixins, classes, and keyframes. For example, suppose you have a `typography.pc` file:
 
