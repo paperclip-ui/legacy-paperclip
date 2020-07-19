@@ -46,7 +46,7 @@ const checkVersionMatch = (context: ExtensionContext) => {
 
   const selfMajor = getMajorVersion(selfPkg.version);
 
-  if (selfMajor === cliMajor) {
+  if (selfMajor !== cliMajor) {
     const details = `(extension version: v${
       selfPkg.version
     }, dependency version: v${pcCLIVersion.replace(/[^\wd\.]/g, "")})`;
