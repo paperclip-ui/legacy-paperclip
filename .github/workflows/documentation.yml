@@ -5,7 +5,7 @@ on:
       - master
 jobs:
   publish-documentation:
-    name: Publish documentation
+    name: Publish gh-pages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
