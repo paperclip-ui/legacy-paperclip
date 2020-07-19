@@ -154,12 +154,11 @@ Here's a peak at what's planned for Paperclip:
 ## Resources
 
 - [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode)
-- [Getting started](./documentation/Getting%20Started)
-- [Syntax](./documentation/Syntax)
-- [Troubleshooting](./documentation/Troubleshooting)
+- [Documentation](http://paperclip.dev/docs/getting-started-installation)
+  - [Syntax](http://paperclip.dev/docs/usage-syntax)
+  - [Troubleshooting](http://paperclip.dev/docs/usage-troubleshooting)
 - Integrations
-  - [React](./packages/paperclip-compiler-react)
-  - [Webpack](./packages/paperclip-loader)
+  - [React](http://paperclip.dev/docs/usage-react)
 - Examples
   - [React TodoMVC](./examples/react-todomvc)
   - [Tailwind](./examples/tailwind)

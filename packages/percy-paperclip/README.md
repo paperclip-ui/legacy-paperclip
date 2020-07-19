@@ -1,5 +1,4 @@
-[Percy](https://percy.io) integration. To run, just `cd` to your project directory where you also have a `paperclip.config.json` file, then run:
+Visual regression CLI tool for your Paperclip UI files.
 
-```
-PERCY_TOKEN=[TOKEN] percy exec -- percy-paperclip
-```
+Installation: `npm install percy-paperclip --save-dev`
+Documentation: http://paperclip.dev/docs/safety-visual-regression

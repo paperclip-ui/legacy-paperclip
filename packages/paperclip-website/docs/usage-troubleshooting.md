@@ -1,6 +1,10 @@
-There are a few gotchas that are useful to be aware of when you're writing Paperclip UIs. 
+---
+id: usage-troubleshooting
+title: Troubleshooting
+sidebar_label: Troubleshooting
+---
 
-# Can't override variant styles
+## Can't override variant styles
 
 You may be dealing with CSS specificity issues. Suppose that you have an input:
 

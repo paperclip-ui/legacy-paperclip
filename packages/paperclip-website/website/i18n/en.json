@@ -3,35 +3,58 @@
   "localized-strings": {
     "next": "Next",
     "previous": "Previous",
-    "tagline": "A website for testing",
+    "tagline": "A language for building UI primitives",
     "docs": {
-      "doc1": {
-        "title": "Latin-ish",
-        "sidebar_label": "Example Page"
+      "configuring-paperclip": {
+        "title": "Configuring Paperclip",
+        "sidebar_label": "Configuring Paperclip"
       },
-      "doc2": {
-        "title": "document number 2"
+      "configuring-webpack": {
+        "title": "Setting up Webpack",
+        "sidebar_label": "Webpack setup"
       },
-      "doc3": {
-        "title": "This is document number 3"
+      "getting-started-installation": {
+        "title": "Installing Paperclip",
+        "sidebar_label": "Installation"
       },
-      "doc4": {
-        "title": "Other Document"
+      "getting-started-vscode": {
+        "title": "Installing the VS Code extension",
+        "sidebar_label": "Installing the VS Code extension"
       },
-      "doc5": {
-        "title": "Fifth Document"
+      "safety-typescript": {
+        "title": "Generating Typed Definition files",
+        "sidebar_label": "Typed definition files"
+      },
+      "safety-visual-regression": {
+        "title": "Setting up visual regression tests",
+        "sidebar_label": "Visual regression testing"
+      },
+      "usage-cli": {
+        "title": "Command line tools",
+        "sidebar_label": "CLI"
+      },
+      "usage-react": {
+        "title": "Using Paperclip in React apps",
+        "sidebar_label": "React usage"
+      },
+      "usage-syntax": {
+        "title": "Paperclip Syntax",
+        "sidebar_label": "Syntax"
+      },
+      "usage-troubleshooting": {
+        "title": "Troubleshooting",
+        "sidebar_label": "Troubleshooting"
       }
     },
     "links": {
       "Docs": "Docs",
-      "API": "API",
-      "Help": "Help",
-      "Blog": "Blog"
+      "GitHub": "GitHub"
     },
     "categories": {
-      "Docusaurus": "Docusaurus",
-      "First Category": "First Category",
-      "Second Category": "Second Category"
+      "Getting started": "Getting started",
+      "Usage": "Usage",
+      "Safety": "Safety",
+      "Syntax": "Syntax"
     }
   },
   "pages-strings": {
