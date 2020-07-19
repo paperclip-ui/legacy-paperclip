@@ -1,5 +1,12 @@
 <import src="module.pc" as="module">
 
+<style>
+  .div {
+    color: red;
+    font-family: Helvetica;
+  }
+</style>
+
 <div className="div">
-  fdsfsdffdsfdfs
+  something like this
 </div>

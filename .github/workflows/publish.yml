@@ -6,7 +6,7 @@ on:
 jobs:
   publish-packages:
     name: Publish packages
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -16,6 +16,7 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
       - run: npm run build
+      - run: npm install vsce
       - run: npm run publish:packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
