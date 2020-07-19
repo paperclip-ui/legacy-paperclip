@@ -185,7 +185,7 @@ Components are defined by adding a `component` and `as` attribute to any element
 
 > Note that you can name components however you want, just bare in mind that the names will be in `PascalCase` when they're compiled to code. Because of that, I'd recommend using `PascalCase` for component names to make things more obvious.
 
-## Exporting components
+### Exporting components
 
 If you want to use components in JavaScript code, you'll need to define an `export` attribute. For example:
 
@@ -213,7 +213,7 @@ export function Counter() {
 };
 ```
 
-## Default components 
+### Default components 
 
 Default exports can be defined using `default` for the `as` attribute:
 
