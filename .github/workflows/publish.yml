@@ -1,11 +1,11 @@
-name: Publish
+name: Publish Packages
 on:
   push:
     branches:
       - master
 jobs:
   publish-packages:
-    name: Publish packages
+    name: Publish NPM & Marketplaces
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v1
