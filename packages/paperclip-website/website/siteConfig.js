@@ -24,7 +24,7 @@ const siteConfig = {
   title: "Paperclip", // Title for your website.
   tagline: "A website for testing",
   url: "https://paperclip.dev", // Your website URL
-  baseUrl: "https://github.com/crcn/paperclip",
+  baseUrl: "/",
 
   algolia: {
     apiKey: "24dd5424911cddbd61fa5057d8452c70",
