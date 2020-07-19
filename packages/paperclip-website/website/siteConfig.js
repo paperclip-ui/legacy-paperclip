@@ -21,16 +21,24 @@ const users = [
 ]
 
 const siteConfig = {
-  title: "Test Site", // Title for your website.
+  title: "Paperclip", // Title for your website.
   tagline: "A website for testing",
-  url: "https://your-docusaurus-test-site.com", // Your website URL
+  url: "https://paperclip.ev", // Your website URL
   baseUrl: "/", // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
   //   url: 'https://facebook.github.io',
   //   baseUrl: '/test-site/',
 
+  algolia: {
+    apiKey: "24dd5424911cddbd61fa5057d8452c70",
+    indexName: "prod_paperclip",
+    algoliaOptions: {
+      facetFilters: ["language:LANGUAGE", "version:VERSION"],
+    },
+  },
+
   // Used for publishing and more
-  projectName: "test-site",
+  projectName: "Paperclip",
   organizationName: "facebook",
   // For top-level user or org sites, the organization is still the same.
   // e.g., for the https://JoelMarcey.github.io site, it would be set like...
