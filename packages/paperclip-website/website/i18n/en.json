@@ -3,7 +3,7 @@
   "localized-strings": {
     "next": "Next",
     "previous": "Previous",
-    "tagline": "A language for building UI primitives",
+    "tagline": "A language for UI primitives",
     "docs": {
       "configuring-paperclip": {
         "title": "Configuring Paperclip",
