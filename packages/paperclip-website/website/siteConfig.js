@@ -22,7 +22,7 @@ const users = [
 
 const siteConfig = {
   title: "Paperclip", // Title for your website.
-  tagline: "A language for building UI primitives",
+  tagline: "A language for UI primitives",
   url: "https://paperclip.dev", // Your website URL
   baseUrl: "/",
 
