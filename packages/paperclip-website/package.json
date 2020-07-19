@@ -11,7 +11,8 @@
     "docusaurus": "^1.14.4"
   },
   "scripts": {
-    "build": "cd website && npm run build"
+    "build": "cd website && npm run build",
+    "publish:documentation": "cd website && npm install && npm run publish-gh-pages"
   },
   "author": "",
   "license": "ISC"
