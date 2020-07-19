@@ -1,60 +1,18 @@
 {
   "name": "paperclip-website",
-  "private": true,
-  "description": "A simple starter to get up and developing quickly with Gatsby",
-  "version": "14.0.14",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
   "dependencies": {
-    "gatsby": "^2.19.7",
-    "gatsby-image": "^2.2.39",
-    "gatsby-plugin-manifest": "^2.2.39",
-    "gatsby-plugin-offline": "^3.0.32",
-    "gatsby-plugin-paperclip": "^14.0.14",
-    "gatsby-plugin-react-helmet": "^3.1.21",
-    "gatsby-plugin-sharp": "^2.4.3",
-    "gatsby-plugin-typescript": "^2.2.2",
-    "gatsby-source-filesystem": "^2.1.46",
-    "gatsby-transformer-sharp": "^2.3.13",
-    "paperclip-compiler-react": "^14.0.14",
-    "prism-react-renderer": "^1.0.2",
-    "prismjs": "^1.19.0",
-    "prop-types": "^15.7.2",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-helmet": "^5.2.1",
-    "react-syntax-highlighter": "^12.2.1",
-    "typescript": "^3.8.3"
+    "docusaurus": "^1.14.4"
   },
-  "devDependencies": {
-    "@types/node": "^13.9.0",
-    "@types/react": "^16.9.23",
-    "@types/react-dom": "^16.9.5",
-    "@typescript-eslint/eslint-plugin": "^3.6.1",
-    "@typescript-eslint/parser": "^3.6.1",
-    "eslint": "^7.4.0",
-    "gh-pages": "^2.2.0",
-    "paperclip-cli": "^14.0.14",
-    "prettier": "^1.19.1"
-  },
-  "keywords": [
-    "gatsby"
-  ],
-  "license": "MIT",
+  "devDependencies": {},
   "scripts": {
-    "lint": "eslint src",
-    "build--broken--circleci": "npm run build:definitions && gatsby build",
-    "deploy": "gatsby build --prefix-paths && gh-pages -d public",
-    "build:definitions": "paperclip build --definition --write",
-    "develop": "gatsby develop",
-    "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
-    "start": "npm run develop",
-    "serve": "gatsby serve",
-    "clean": "gatsby clean"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
-  },
-  "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
-  }
+  "author": "",
+  "license": "ISC"
 }
