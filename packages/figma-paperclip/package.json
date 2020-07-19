@@ -1,6 +1,6 @@
 {
   "name": "figma-paperclip",
-  "version": "14.0.12",
+  "version": "14.0.13",
   "description": "Download Zeplin colors, typography, and spacing to Paperclip",
   "main": "index.js",
   "bin": {
