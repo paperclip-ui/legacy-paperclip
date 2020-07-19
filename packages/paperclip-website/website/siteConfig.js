@@ -23,7 +23,7 @@ const users = [
 const siteConfig = {
   title: "Paperclip", // Title for your website.
   tagline: "A website for testing",
-  url: "https://paperclip.ev", // Your website URL
+  url: "https://paperclip.dev", // Your website URL
   baseUrl: "https://github.com/crcn/paperclip",
 
   algolia: {
