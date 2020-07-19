@@ -17,7 +17,8 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm run publish:packages
-      - run: npm run publish:marketplace
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm run publish:marketplace
+        env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
