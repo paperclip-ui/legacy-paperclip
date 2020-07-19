@@ -6,3 +6,4 @@ TODOS:
 - [ ] ability to change colors
 - [ ] measurement tools
 - [ ] grid tools
+- [ ] possibly using doc-comments to add metadata about screens 
