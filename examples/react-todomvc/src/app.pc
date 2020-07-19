@@ -15,6 +15,7 @@
     -moz-osx-font-smoothing: grayscale;
     font-weight: 300;
     color: #4d4d4d;
+
     /* background: url(assets/happy-cat.jpg); */
   }
   
@@ -157,8 +158,8 @@
       background: none;
     }
   }
-
 </style>
+
 
 <div export component as="default" class="app-container">
   <div class="app">
