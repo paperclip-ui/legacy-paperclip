@@ -16,10 +16,10 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: npm install
       - run: npm run build
-      - run: npm install vsce
       - run: npm run publish:packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm install vsce
       - run: npm run publish:marketplace
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
