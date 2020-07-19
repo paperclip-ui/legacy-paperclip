@@ -1,61 +1,8 @@
-<!-- 
-
-TODOS:
-
--->
-
-Here's a kitchen sink example of most syntaxes:
-
-```html
-
-<!-- you can import components from other files -->
-<import as="my-button" src="./button.pc">
-<import as="typography" src="design-system/typography.pc">
-
-<!-- all styles are scoped to this file -->
-<style>
-
-  .button {
-    text-decoration: underline;
-  }
-
-  div {
-    color: red;
-  }
-
-  .message {
-
-    /* We can define & include mixins from other files  */
-    @include typography.default-text;
-    color: red;
-    &.alt {
-      color: blue;
-    }
-  }
-</style>
-
-<!-- components allow you to re-use groups of elements & text -->
-<span component as="Message" className="message {className?}" className:alt>Hello {children}!</span>
-
-<!-- renders as "Hello World!" -->
-<Message>
-  World
-</Message>
-
-<!-- exports component for code usage -->
-<span export component as="AnotherThing" {onClick}>
-  <div {...someProps}>
-    More children
-
-    <!-- >>> allows us to pierce & reference styles -->
-    <my-button className=">>>button">
-      Some button
-    </my-button>
-  </div>
-</span>
-```
-
-# Syntax
+---
+id: usage-syntax
+title: Paperclip Syntax
+sidebar_label: Syntax
+---
 
 ## Styling
 
@@ -73,7 +20,7 @@ You can style elements using the native `<style />` element. **Note that styles 
 
 The `div { }` rule here is only applied to `<div>Something</div>`.
 
-#### Global selectors
+### Global selectors
 
 Global selectors allow you to apply styles _outside_ of the scope of this file. To do that, you can define:
 
@@ -85,7 +32,7 @@ Global selectors allow you to apply styles _outside_ of the scope of this file. 
 
 **This property should be reserved for very special cases whre you need it.** For most other cases where you need to override styles, I'd recomend you use the style piercing operator (`>>>`).
 
-#### Class reference (>>>)
+### Class references
 
 Class references allow you to explicitly reference class names, and it's a way to define or reference styles in other files. Suppose for example I have a module `message.pc`:
 
@@ -119,7 +66,7 @@ The `>>>my-style-override` is like an explicit reference to `.my-style-override`
 
 We can also reference styles from imported documents. For that, check out the `@exports` section.
 
-#### Variant class bindings
+### Variant class bindings
 
 the `class:prop` functionality allows you to easily create variants of a component. For example:
 
@@ -150,7 +97,7 @@ the `class:prop` functionality allows you to easily create variants of a compone
 </Button>
 ```
 
-#### Mixins
+### Mixins
 
 Mixins allow us to define a group of CSS properties to use in style rules. For example:
 
@@ -181,7 +128,7 @@ Mixins allow us to define a group of CSS properties to use in style rules. For e
 }
 ```
 
-#### @export
+### Exporting
 
 The `@export` util allows us to export mixins, classes, and keyframes. For example, suppose you have a `typography.pc` file:
 
@@ -296,7 +243,7 @@ export function Counter() {
 };
 ```
 
-## {Bindings}
+## Bindings
 
 Bindings help you define dynamic parts of your components. For example:
 
@@ -321,7 +268,7 @@ Bindings help you define dynamic parts of your components. For example:
 </Message>
 ```
 
-#### attribute bindings
+### attribute bindings
 
 Example:
 
@@ -378,7 +325,7 @@ We can also include bindings in attribute strings. For example:
 > ☝🏻 The `class` attribute can also be defined as `className`. Though, I'd recommend using `className` instead if you're
 using these components in JSX for consistency. 
 
-#### HTML in bindings
+### HTML in bindings
 
 Bindings can also take HTML like so:
 
@@ -394,7 +341,7 @@ Bindings can also take HTML like so:
 />
 ```
 
-#### Optional bindings `{binding?}`
+### Optional bindings 
 
 Paperclip supports optional properties like so:
 
@@ -420,7 +367,7 @@ export const Test = (props: TestProps) => {
 };
 ```
 
-### `<import />`
+## Importing documents
 
 > For a good example of this, check out the [React TodoMVC example](./../examples/react-todomvc).
 
@@ -451,7 +398,7 @@ You can import that file like so:
 
 > For  `<fragment></fragment>` docs, check [here](#fragments-).
 
-#### Rendering components from import
+### Rendering components from import
 
 In some cases you may want to use different components from your imported file. For example:
 
@@ -500,7 +447,7 @@ In some cases you may want to use different components from your imported file. 
 
 Here's what the preview looks like:
 
-<img width="508" alt="Screen Shot 2020-03-03 at 8 12 14 PM" src="https://user-images.githubusercontent.com/757408/75837752-6d12b000-5d8b-11ea-9948-949442731cf5.png">
+![todos demo](assets/todos-demo.png)
 
 The JSX usage code for that might look something like:
 
@@ -526,7 +473,7 @@ export function TodoList() {
 ```
 
 
-### Fragments (`<fragment></fragment>`)
+## Fragments
 
 Fragments are useful if you want to render a collection of elements. For example:
 

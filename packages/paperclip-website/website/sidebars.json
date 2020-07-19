@@ -1,10 +1,18 @@
 {
   "docs": {
-    "Docusaurus": ["doc1"],
-    "First Category": ["doc2"],
-    "Second Category": ["doc3"]
-  },
-  "docs-other": {
-    "First Category": ["doc4", "doc5"]
+    "Getting started": [
+      "getting-started-installation",
+      "getting-started-vscode",
+      "configuring-webpack"
+    ],
+    "Usage": [
+      "usage-react",
+      "usage-syntax",
+      "usage-cli",
+      "usage-troubleshooting",
+      "configuring-paperclip"
+    ],
+    "Safety": ["safety-visual-regression"],
+    "Syntax": ["syntax-all"]
   }
 }
