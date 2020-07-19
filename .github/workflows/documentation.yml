@@ -26,11 +26,11 @@ jobs:
           IdentityFile ~/.ssh/id_rsa
           EOT
       - name: Release to GitHub Pages
-        env:
-          USE_SSH: true
-          GIT_USER: crcn
         run: |
           git config --global user.email "craig.j.condon@gmail.com"
           git config --global user.name "crcn"
           npm install
           npm run publish:documentation
+        env:
+          USE_SSH: true
+          GIT_USER: crcn
