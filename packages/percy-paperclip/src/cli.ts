@@ -2,12 +2,14 @@ import PercyAgent from "@percy/agent";
 import * as glob from "glob";
 import * as path from "path";
 import * as chalk from "chalk";
+import * as url from "url";
 import { XMLHttpRequest } from "w3c-xmlhttprequest";
 import domTransformation from "./dom-transformation";
 import {
   Engine,
   VirtualFragment,
   VirtualNodeKind,
+  paperclipSourceGlobPattern,
   VirtualStyleElement
 } from "paperclip";
 import { PCDocument } from "./pc-document";
@@ -20,10 +22,13 @@ export type RunOptions = {
 const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
 
 export const run = async (
-  filePattern: string,
+  sourceDirectory: string,
   { cwd = process.cwd(), keepEmpty }: Partial<RunOptions> = {}
 ) => {
-  const paperclipFilePaths = glob.sync(filePattern, { cwd, absolute: true });
+  const paperclipFilePaths = glob.sync(
+    paperclipSourceGlobPattern(sourceDirectory),
+    { cwd, absolute: true }
+  );
 
   const engine = new Engine();
   const agent = new PercyAgent({
@@ -41,7 +46,7 @@ export const run = async (
     let result;
 
     try {
-      result = await engine.run("file://" + filePath);
+      result = await engine.run(url.pathToFileURL(filePath).href);
     } catch (e) {
       console.error(e);
       process.exit(1);

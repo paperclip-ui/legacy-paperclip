@@ -90,7 +90,7 @@ module.exports = function(source: string) {
   const virtualModules = virtualModuleInstances.get(this._compiler);
 
   const resourcePath = this.resourcePath;
-  const resourceUrl = "file://" + fixPath(resourcePath);
+  const resourceUrl = url.pathToFileURL(resourcePath).href;
   return pcLoader.call(this, source, virtualModules, resourceUrl);
 };
 

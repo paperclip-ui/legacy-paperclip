@@ -1,7 +1,7 @@
 ⚠️ Experimental. Use `zeplin-paperclip` instead. ⚠️
 
 
-Installation: `npm install figma-paperclip --save-dev`
+Installation: `yarn add figma-paperclip --save-dev`
 
 This util allows you to download Figma design tokens to Paperclip UIs. Here's how you use it:
 

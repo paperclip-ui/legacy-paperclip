@@ -122,13 +122,20 @@ export type Graph = {
 export const createMockEngine = (graph: Graph) =>
   new Engine({
     io: {
-      readFile: uri => graph[uri.replace("file://", "")] || graph[uri],
+      readFile: uri =>
+        graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],
       fileExists: uri =>
-        Boolean(graph[uri.replace("file://", "")] || graph[uri]),
+        Boolean(
+          graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
+        ),
       resolveFile: (from, to) => {
         const prefix = from.indexOf("file:") === 0 ? "file://" : "";
+
         return (
-          prefix + path.join(path.dirname(from.replace("file://", "")), to)
+          prefix +
+          path
+            .join(path.dirname(from.replace("file://", "")), to)
+            .replace(/\\+/g, "/")
         );
       }
     }

@@ -4,6 +4,7 @@
 <import as="Learn" src="./learn.pc">
 
 <style>
+
   .app {
     font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
     line-height: 1.4em;
@@ -14,6 +15,7 @@
     -moz-osx-font-smoothing: grayscale;
     font-weight: 300;
     color: #4d4d4d;
+
     /* background: url(assets/happy-cat.jpg); */
   }
   
@@ -156,8 +158,8 @@
       background: none;
     }
   }
-
 </style>
+
 
 <div export component as="default" class="app-container">
   <div class="app">

@@ -1,3 +1,0 @@
-<import as="right-gutter" src="./right-gutter.pc">
-
-<right-gutter />

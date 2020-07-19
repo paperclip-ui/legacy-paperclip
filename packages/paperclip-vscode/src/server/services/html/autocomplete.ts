@@ -58,7 +58,16 @@ export class PCAutocomplete {
     text: string,
     data?: LoadedData
   ): CompletionItem[] {
-    const context = getSuggestionContext(text);
+    let context;
+
+    // some lingering bugs, so try & catch them
+    try {
+      context = getSuggestionContext(text);
+    } catch (e) {
+      // more detailed when we log it out like this
+      console.error(e.stack);
+      throw e;
+    }
     if (!context || !data) {
       return [];
     }

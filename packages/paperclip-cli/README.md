@@ -1,6 +1,6 @@
 CLI tool for compiling paperclip templates.
 
-**Installation: `npm i paperclip-cli --save-dev`**
+**Installation: `yarn add paperclip-cli --save-dev`**
 
 #### Examples
 

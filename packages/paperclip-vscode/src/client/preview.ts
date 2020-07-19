@@ -1,9 +1,10 @@
 import {
   EngineEvent,
-  EvaluatedEvent,
   EngineEventKind,
-  EngineErrorEvent
+  EngineErrorEvent,
+  stripFileProtocol
 } from "paperclip-utils";
+import * as fs from "fs";
 import {
   Uri,
   window,
@@ -33,6 +34,8 @@ import {
 import { Engine } from "paperclip";
 
 const VIEW_TYPE = "paperclip-preview";
+
+const RENDERER_MODULE_NAME = "paperclip-web-renderer";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -65,7 +68,8 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
         enableScripts: true,
         localResourceRoots: [
           Uri.file(extensionPath),
-          Uri.file(workspace.rootPath)
+          Uri.file(workspace.rootPath),
+          Uri.file(resolveSync(RENDERER_MODULE_NAME, extensionPath))
         ]
       }
     );
@@ -279,7 +283,7 @@ class LivePreview {
   private async _openDoc(uri: string) {
     return (
       workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
-      (await workspace.openTextDocument(uri.replace("file://", "")))
+      (await workspace.openTextDocument(stripFileProtocol(uri)))
     );
   }
   private _onMessage = () => {
@@ -341,9 +345,7 @@ class LivePreview {
   private _getHTML() {
     const scriptPathOnDisk = Uri.file(
       path.join(
-        this._extensionPath,
-        "node_modules",
-        "paperclip-web-renderer",
+        resolveSync(RENDERER_MODULE_NAME, this._extensionPath),
         "dist",
         "browser.js"
       )
@@ -389,4 +391,19 @@ class LivePreview {
       console.warn(e);
     }
   }
+}
+
+function resolveSync(moduleName: string, fromDir: string) {
+  let cdir = fromDir;
+  do {
+    const possiblePath = path.join(cdir, "node_modules", moduleName);
+
+    if (fs.existsSync(possiblePath)) {
+      return possiblePath;
+    }
+
+    cdir = path.dirname(cdir);
+  } while (cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir));
+
+  throw new Error(`Could not resolve ${moduleName} in ${fromDir}`);
 }

@@ -1,5 +1,6 @@
 import * as path from "path";
 import { relative } from "path";
+import * as url from "url";
 
 export const stringifyCSSSheet = (
   sheet,
@@ -77,9 +78,9 @@ const stringifyStyle = ({ name, value }, protocol, uri) => {
     // required for bundling, otherwise file protocol is maintained
     if (uri) {
       const urls = value.match(/(file:\/\/.*?)(?=['")])/g) || [];
-      const selfPathname = new URL(uri).pathname;
+      const selfPathname = url.fileURLToPath(uri);
       for (const url of urls) {
-        const pathname = new URL(url).pathname;
+        const pathname = url.fileURLToPath(url);
         let relativePath = path.relative(path.dirname(selfPathname), pathname);
         if (relativePath.charAt(0) !== ".") {
           relativePath = "./" + relativePath;

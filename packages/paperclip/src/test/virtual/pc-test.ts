@@ -115,7 +115,6 @@ describe(__filename + "#", () => {
     const e = waitForError(engine);
     engine.run("/entry.pc").catch(noop);
     const err = await e;
-    console.log(err);
     expect(err).to.eql({
       kind: "Error",
       errorKind: "Graph",
@@ -158,7 +157,7 @@ describe(__filename + "#", () => {
       `
     };
     const engine = createMockEngine(graph, noop, {
-      resolveFile(uri) {
+      resolveFile() {
         return null;
       }
     });
@@ -444,7 +443,6 @@ describe(__filename + "#", () => {
     };
 
     const engine = createMockEngine(graph);
-    const p = waitForError(engine);
 
     expect(stringifyLoadResult(await engine.run("/entry.pc"))).to.eql(
       "<style></style> ×"

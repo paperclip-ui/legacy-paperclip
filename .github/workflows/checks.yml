@@ -1,0 +1,27 @@
+name: Checks
+on:
+  push:
+    branches:
+      - "*"
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+      - uses: jetli/wasm-pack-action@v0.3.0
+      - run: npm install
+      - run: npm run build
+      - uses: GabrielBB/xvfb-action@v1.0
+        with:
+          run: npm test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+      - run: npm install
+      - run: npm run lint

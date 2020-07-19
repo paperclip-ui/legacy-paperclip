@@ -1,5 +1,5 @@
 import { Options } from "./utils";
-import { ClassNameExport } from "paperclip/src";
+import { ClassNameExport } from "paperclip";
 
 export type TranslateContext = {
   fileUri: string;

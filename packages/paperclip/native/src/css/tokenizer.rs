@@ -214,7 +214,7 @@ impl<'a> Tokenizer<'a> {
             {
               break;
             }
-            self.forward(1);
+            self.next_utf16_char()?;
           }
           Ok(Token::ScriptCommentOpen)
         } else {
@@ -401,34 +401,37 @@ impl<'a> Tokenizer<'a> {
         self.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
         Ok(Token::Whitespace)
       }
-      _ => {
-        let mut len = 1;
-        let mut utf8_step = 1;
+      _ => self.next_utf16_char(),
+    }
+  }
 
-        if c < 0x80 {
-          len = 1;
-        } else if c < 0xC0 {
-          len = 1;
-        } else if c < 0xE0 {
-          len = 2;
-        } else if c < 0xF0 {
-          len = 3;
-        } else if c < 0xF8 {
-          len = 4;
-          utf8_step = 2;
-        }
+  fn next_utf16_char(&mut self) -> Result<Token<'a>, ParseError> {
+    let c = self.curr_byte()?;
+    let mut len = 1;
+    let mut utf8_step = 1;
 
-        if len == 1 {
-          self.forward(1);
-          Ok(Token::Byte(c))
-        } else {
-          let utf8_pos = self.utf16_pos;
-          let buffer = &self.source[self.pos..(self.pos + len)];
-          self.forward(len);
-          self.utf16_pos = utf8_pos + utf8_step;
-          Ok(Token::Cluster(buffer))
-        }
-      }
+    if c < 0x80 {
+      len = 1;
+    } else if c < 0xC0 {
+      len = 1;
+    } else if c < 0xE0 {
+      len = 2;
+    } else if c < 0xF0 {
+      len = 3;
+    } else if c < 0xF8 {
+      len = 4;
+      utf8_step = 2;
+    }
+
+    if len == 1 {
+      self.forward(1);
+      Ok(Token::Byte(c))
+    } else {
+      let utf8_pos = self.utf16_pos;
+      let buffer = &self.source[self.pos..(self.pos + len)];
+      self.forward(len);
+      self.utf16_pos = utf8_pos + utf8_step;
+      Ok(Token::Cluster(buffer))
     }
   }
 
@@ -463,20 +466,25 @@ impl<'a> Tokenizer<'a> {
     std::str::from_utf8(&self.source[start..self.pos]).unwrap()
   }
 
-  fn scan<FF>(&mut self, test: FF)
+  fn scan<FF>(&mut self, test: FF) -> Result<(), ParseError>
   where
     FF: Fn(u8) -> bool,
   {
     while !self.is_eof() {
-      let c = self.source[self.pos];
-      self.pos += 1;
-      self.utf16_pos += 1;
-      if !test(c) {
-        self.pos -= 1;
-        self.utf16_pos -= 1;
-        break;
+      let pos = self.get_pos();
+      let c = self.next_utf16_char()?;
+
+      match c {
+        Token::Byte(b) => {
+          if !test(b) {
+            self.set_pos(pos);
+            break;
+          }
+        }
+        _ => {}
       }
     }
+    Ok(())
   }
   pub fn is_eof(&mut self) -> bool {
     self.pos >= self.source.len()

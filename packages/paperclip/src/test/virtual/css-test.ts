@@ -1,10 +1,6 @@
 import { expect } from "chai";
 import { createMockEngine, stringifyLoadResult, waitForError } from "../utils";
-import {
-  EngineEventKind,
-  stringifyVirtualNode,
-  stringifyCSSSheet
-} from "paperclip-utils";
+
 import { noop } from "../../utils";
 
 describe(__filename + "#", () => {
@@ -32,13 +28,13 @@ describe(__filename + "#", () => {
       `
     };
     const engine = createMockEngine(graph, noop, {
-      resolveFile(uri) {
+      resolveFile() {
         return null;
       }
     });
 
     const e = waitForError(engine);
-    engine.run("/entry.pc");
+    engine.run("/entry.pc").catch(noop);
     const err = await e;
     expect(err).to.eql({
       kind: "Error",
@@ -166,13 +162,13 @@ describe(__filename + "#", () => {
       const p = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const e = await p;
-      // expect(e).to.eql({
-      //   kind: 'Error',
-      //   errorKind: 'Runtime',
-      //   uri: '/entry.pc',
-      //   location: { start: 45, end: 48 },
-      //   message: 'Reference not found.'
-      // });
+      expect(e).to.eql({
+        kind: "Error",
+        errorKind: "Runtime",
+        uri: "/entry.pc",
+        location: { start: 45, end: 46 },
+        message: "Reference not found."
+      });
     });
 
     it("Displays an error if a mixin is used but not exported", async () => {
@@ -309,7 +305,7 @@ describe(__filename + "#", () => {
     const engine = createMockEngine(graph);
     let err;
     try {
-      const result = await engine.run("/entry.pc");
+      await engine.run("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -449,7 +445,6 @@ describe(__filename + "#", () => {
 
     const engine = createMockEngine(graph);
     const result = await engine.run("/entry.pc");
-    const ast = await engine.getLoadedAst("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>@keyframes _80f4925f_lds-something3 { } div[data-pc-80f4925f] { animation:_80f4925f_lds-something3 1s; }</style>`
     );
@@ -480,10 +475,30 @@ describe(__filename + "#", () => {
 
     const engine = createMockEngine(graph);
     const result = await engine.run("/entry.pc");
-    const ast = await engine.getLoadedAst("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] > b[data-pc-80f4925f] { } a[data-pc-80f4925f] + c[data-pc-80f4925f] { } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { } a[data-pc-80f4925f] [data-pc-80f4925f]:not([class]._80f4925f_div) { } a[data-pc-80f4925f] [data-pc-80f4925f]::active { }</style>`
     );
+  });
+
+  it("AST location is correct with unicode characters", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      /* 👍🏻 */
+      // 👍🏻
+      .div {
+        content: "👌"
+      }
+      .another {
+      }
+    </style>`
+    };
+    const engine = createMockEngine(graph);
+    await engine.run("/entry.pc");
+    const ast = engine.getLoadedAst("/entry.pc") as any;
+    expect(ast.children[0].sheet.rules[1].location).to.eql({
+      start: 88,
+      end: 111
+    });
   });
 
   it("includes keyframes in export", async () => {

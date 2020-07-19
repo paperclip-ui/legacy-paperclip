@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { memoize } from "lodash";
 import * as mime from "mime";
+import * as url from "url";
 import { VirtualFragment, stringifyVirtualNode } from "paperclip";
 
 export class PCDocument {
@@ -37,7 +38,7 @@ const embedAssets = memoize((source: string) => {
 
     // shouldn't happen, but just in case
     try {
-      const pathname = new URL(uri).pathname;
+      const pathname = url.fileURLToPath(uri);
       if (fs.existsSync(pathname)) {
         const body = fs.readFileSync(pathname, "base64");
         const contentType = mime.getType(pathname);

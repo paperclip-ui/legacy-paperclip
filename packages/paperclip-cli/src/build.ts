@@ -1,7 +1,7 @@
 import * as resolve from "resolve";
-import { URL } from "url";
 import * as chokidar from "chokidar";
 import * as path from "path";
+import * as url from "url";
 import * as fs from "fs";
 import {
   PaperclipConfig,
@@ -13,7 +13,7 @@ import {
   stringifyCSSSheet
 } from "paperclip";
 import * as glob from "glob";
-import { ClassNameExport } from "paperclip/src";
+import { ClassNameExport, stripFileProtocol } from "paperclip";
 
 export type BuildOptions = {
   config: string;
@@ -89,24 +89,24 @@ function initBuild(
     console.error(
       getPrettyMessage(
         error,
-        fs.readFileSync(filePath.replace("file://", ""), "utf8"),
+        fs.readFileSync(stripFileProtocol(filePath), "utf8"),
         filePath
       )
     );
   }
 
   async function compileFile(relativePath) {
-    const fullPath = `file://${path
-      .resolve(process.cwd(), relativePath)
-      .replace(/\\/g, "/")
-      .replace(":", "%3A")}`;
+    const fullPath = url.pathToFileURL(
+      path.resolve(process.cwd(), relativePath)
+    ).href;
+
     const compilerOptions = config.compilerOptions;
     try {
       const ast = pcEngine.parseFile(fullPath);
       if (ast.error) {
         return handleError(ast.error, fullPath);
       }
-      const { preview, sheet, exports } = await pcEngine.run(fullPath);
+      const { sheet, exports } = await pcEngine.run(fullPath);
 
       if (sheet.error) {
         return handleError(sheet.error, fullPath);
@@ -123,15 +123,18 @@ function initBuild(
         if (config.dropPcExtension) {
           outputFilePath = outputFilePath.replace(".pc", "");
         }
-        const url = new URL(outputFilePath);
-        console.log("Writing %s", path.relative(process.cwd(), url.pathname));
-        fs.writeFileSync(url, result);
+        const uri = new url.URL(outputFilePath);
+        console.log(
+          "Writing %s",
+          path.relative(process.cwd(), url.fileURLToPath(uri))
+        );
+        fs.writeFileSync(uri, result);
 
         if (!compilerOptions.definition) {
           const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
           console.log("Writing %s", cssFilePath);
           fs.writeFileSync(
-            new URL(cssFilePath),
+            new url.URL(cssFilePath),
             stringifyCSSSheet(sheet, "file://")
           );
         }
