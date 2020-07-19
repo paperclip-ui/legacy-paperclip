@@ -12,7 +12,7 @@
       "usage-troubleshooting",
       "configuring-paperclip"
     ],
-    "Safety": ["safety-typescript", "safety-visual-regression"],
+    "Safety": ["safety-visual-regression"],
     "Syntax": ["syntax-all"]
   }
 }
