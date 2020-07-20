@@ -22,5 +22,4 @@ Then run:
 npx paperclip init
 ```
 
-☝🏻 This will ask you a few questions. After that, you'll have a `paperclip.config.json` that will be used to compile
-your Paperclip files.
+☝🏻 This will setup a `paperclip.config.json` file that will be used by Paperclip. If you're starting a new project, the `paperclip init` will also walk you through the entire setup process. 

@@ -6,6 +6,8 @@ sidebar_label: React usage
 
 ## Installation
 
+> You can skip this step if you set up a new Paperclip project using the [CLI tool](usage-cli.md).
+
 To use Paperclip in React, you'll need to install the compiler first:
 
 ```sh
