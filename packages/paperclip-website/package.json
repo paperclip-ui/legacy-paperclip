@@ -1,12 +1,11 @@
 {
   "name": "paperclip-website",
-  "version": "1.0.0",
+  "version": "14.0.15",
   "description": "",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
-  "dependencies": {},
   "devDependencies": {
     "docusaurus": "^1.14.4"
   },
