@@ -31,12 +31,16 @@ export const generateProjectFiles = async (
 
   // WRITE
   for (const relativePath in files) {
+    const content = files[relativePath];
+    if (!content) {
+      continue;
+    }
     const absPath = path.join(options.cwd, relativePath);
 
     // Normalize relative dirs
     console.log(`✍️  Writing ${path.relative(options.cwd, absPath)}`);
     fsa.mkdirpSync(path.dirname(absPath));
-    fsa.writeFileSync(absPath, files[relativePath]);
+    fsa.writeFileSync(absPath, content);
   }
 
   await run(usedGenerators, "install", prepInfo);

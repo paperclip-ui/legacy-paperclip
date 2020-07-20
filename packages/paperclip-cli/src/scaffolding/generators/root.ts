@@ -51,6 +51,11 @@ export const root = {
       [GeneratorKind.Root]: params
     };
   },
+  postinstall(params) {
+    return {
+      [GeneratorKind.Root]: params
+    };
+  },
   generate(
     { sourceDirectory, isNewProject }: any,
     { [GeneratorKind.Root]: { compilerName } = { compilerName: null } }: any
@@ -69,5 +74,10 @@ export const root = {
         ? HELLO_WORLD_CONTENT
         : null
     };
+  },
+  fin({ isNewProject }) {
+    if (!isNewProject) {
+      console.warn("🎉 All done!");
+    }
   }
 };
