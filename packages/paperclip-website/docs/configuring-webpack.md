@@ -80,30 +80,21 @@ module.exports = {
 That's it! from there you can start using Paperclip in your UIs. For example:
 
 ```html
-<style>
-  .Message {
-    font-size: 24px;
-  }
-</style>
-<div export component as="Counter" className="Counter">
-  {children}
-  <button onClick={onIncrementClick}>
-    increment
-  </button>
+<div export component as="Greeter">
+  Hello {children}!
 </div>
 ```
 
-Can be used in React like so:
+Then, in React code:
 
 ```javascript
-import * as ui from "./counter.pc";
-import React, {useState} from "react";
+import * as ui from "./greater.pc";
+import React from "react";
+import ReactDOM from "react-dom";
 
-const Counter = () => {
-  cconst [currentValue, setCurrentValue] = useState(0);
-  const onIncrementClick = () => setCurrentValue(curentValue + 1);
-  return <ui.Counter onIncrementClick={onIncrementClick}>
-    {currentValue}
-  </ui.Counter>
-};
+ReactDOM.render(<ui.Greeter>
+  Paperclip
+</ui.Greeter>, document.getElementById("mount"));
 ```
+
+☝🏻 This should render: `Hello Paperclip!`.
