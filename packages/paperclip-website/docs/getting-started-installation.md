@@ -22,8 +22,4 @@ Then run:
 npx paperclip init
 ```
 
-☝🏻 I'd recommend calling this in an empty directory first. Paperclip will identify that as a new project 
-& walk you through the entire setup. Once you've done that, you can start using Paperclip!
-
-> If you call `paperclip init` within an existing project, Paperclip will just create a `paperclip.config.json` file
-for you. The rest of the setup would have to be manually done.
+☝🏻 This will setup a `paperclip.config.json` file that will be used by Paperclip. If you're starting a new project, the `paperclip init` will also walk you through the entire setup process. 

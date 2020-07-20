@@ -9,7 +9,7 @@ sidebar_label: CLI
 To initialize a new project, run `paperclip init`. This will ask you a few questions, then write a `paperclip.config.json` file that the
 compiler will use.
 
-> Documentation for `paperclip.config.json` can be viewed [here](../../documentation/Paperclip%20Config).
+> Documentation for `paperclip.config.json` can be viewed [here](configuring-paperclip.md).
 
 Next, add a `.pc` file with the following content:
 

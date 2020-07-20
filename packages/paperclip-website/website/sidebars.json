@@ -8,11 +8,10 @@
       "usage-react",
       "usage-syntax",
       "usage-cli",
-      "usage-troubleshooting",
       "configuring-paperclip",
-      "configuring-webpack"
+      "configuring-webpack",
+      "usage-troubleshooting"
     ],
-    "Safety": ["safety-visual-regression"],
-    "Syntax": ["syntax-all"]
+    "Safety": ["safety-visual-regression"]
   }
 }
