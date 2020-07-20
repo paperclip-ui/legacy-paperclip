@@ -2,15 +2,15 @@
   "docs": {
     "Getting started": [
       "getting-started-installation",
-      "getting-started-vscode",
-      "configuring-webpack"
+      "getting-started-vscode"
     ],
     "Usage": [
       "usage-react",
       "usage-syntax",
       "usage-cli",
       "usage-troubleshooting",
-      "configuring-paperclip"
+      "configuring-paperclip",
+      "configuring-webpack"
     ],
     "Safety": ["safety-visual-regression"],
     "Syntax": ["syntax-all"]

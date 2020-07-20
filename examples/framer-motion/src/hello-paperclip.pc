@@ -41,7 +41,7 @@ To open the live preview, type `command + shift + p`, and select
 <!-- Components -->
 
 <div export component as="Message" className="Message">
-  {children}
+  {children}!!
 </div>
 
 <!-- Preview -->
