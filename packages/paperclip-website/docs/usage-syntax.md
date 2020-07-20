@@ -20,18 +20,6 @@ You can style elements using the native `<style />` element. **Note that styles 
 
 The `div { }` rule here is only applied to `<div>Something</div>`.
 
-### Global selectors
-
-Global selectors allow you to apply styles _outside_ of the scope of this file. To do that, you can define:
-
-```css
-:global(.selector) {
-  color: red;
-}
-```
-
-**This property should be reserved for very special cases whre you need it.** For most other cases where you need to override styles, I'd recomend you use the style piercing operator (`>>>`).
-
 ### Class references
 
 Class references allow you to explicitly reference class names, and it's a way to define or reference styles in other files. Suppose for example I have a module `message.pc`:
@@ -66,7 +54,7 @@ The `>>>my-style-override` is like an explicit reference to `.my-style-override`
 
 We can also reference styles from imported documents. For that, check out the `@exports` section.
 
-### Variant class bindings
+### Variant styles
 
 the `class:prop` functionality allows you to easily create variants of a component. For example:
 
@@ -123,7 +111,7 @@ You can also use the shorthand version:
 
 However, be aware that using the shorthand version may prevent you from overriding styles because of [CSS specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity).
 
-### Mixins
+### Style mixins
 
 Mixins allow us to define a group of CSS properties to use in style rules. For example:
 
@@ -154,7 +142,7 @@ Mixins allow us to define a group of CSS properties to use in style rules. For e
 }
 ```
 
-### Exporting CSS
+### Exporting styles
 
 The `@export` util allows us to export mixins, classes, and keyframes. For example, suppose you have a `typography.pc` file:
 
@@ -192,6 +180,18 @@ You can use those exports like so:
   Something
 </div>
 ```
+
+### Global selectors
+
+Global selectors allow you to apply styles _outside_ of the scope of this file. To do that, you can define:
+
+```css
+:global(.selector) {
+  color: red;
+}
+```
+
+**This property should be reserved for very special cases whre you need it.** For most other cases where you need to override styles, I'd recomend you use the style piercing operator (`>>>`).
 
 
 ## Components
@@ -294,7 +294,7 @@ Bindings help you define dynamic parts of your components. For example:
 </Message>
 ```
 
-### attribute bindings
+### Attribute bindings
 
 Example:
 
