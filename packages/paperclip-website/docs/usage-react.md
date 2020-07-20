@@ -46,31 +46,31 @@ export default () => {
 
 ```html
 <style>
-   .counter {
+   .Container {
      font-family: Helvetica;
      cursor: pointer;
    }
-   .current-count {
+   .CurrentCount {
      font-weight: 400;
    }
 </style>
 
 <!-- Components -->
 
-<div export component as="Container">
+<div export component as="Container" className="Container">
   Current count: {children}
 </div>
-<div export component as="CurrentCount">
+<div export component as="CurrentCount" className="CurrentCount">
   {children}
 </div>
 
 <!-- Previews -->
 
-<default>
+<Container>
   <CurrentCount>
     50
   </CurrentCount>
-</default>
+</Container>
 ```
 
 
