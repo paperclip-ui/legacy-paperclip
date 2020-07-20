@@ -5,4 +5,4 @@ import * as ReactDOM from "react-dom";
 const mount = document.createElement("div");
 document.body.appendChild(mount);
 
-ReactDOM.render(<ui.Message>Hello framer motion</ui.Message>, mount);
+ReactDOM.render(<ui.Message>Hello test</ui.Message>, mount);

@@ -24,8 +24,25 @@ export const root = {
     ]);
 
     let includePercy = false;
+    let overwrite;
 
-    if (isNewDirectory) {
+    if (!isNewDirectory) {
+      overwrite = (
+        await prompt([
+          {
+            name: "overwrite",
+            message:
+              "Would you like to continue as a new project (some files may be overwritten)?",
+            type: "confirm",
+            default: false
+          }
+        ])
+      ).overwrite;
+    } else {
+      overwrite = true;
+    }
+
+    if (overwrite) {
       includePercy = (
         await prompt([
           {
@@ -41,9 +58,9 @@ export const root = {
     return [
       {
         sourceDirectory,
-        isNewProject: isNewDirectory
+        overwrite
       },
-      [...(isNewDirectory ? [node] : []), ...(includePercy ? [percy] : [])]
+      [...(overwrite ? [node] : []), ...(includePercy ? [percy] : [])]
     ];
   },
   prepare(params) {
@@ -57,7 +74,7 @@ export const root = {
     };
   },
   generate(
-    { sourceDirectory, isNewProject }: any,
+    { sourceDirectory, overwrite }: any,
     { [GeneratorKind.Root]: { compilerName } = { compilerName: null } }: any
   ) {
     const config: PaperclipConfig = {
@@ -70,13 +87,13 @@ export const root = {
 
     return {
       "paperclip.config.json": JSON.stringify(config, null, 2),
-      [sourceDirectory + "/hello-paperclip.pc"]: isNewProject
+      [sourceDirectory + "/hello-paperclip.pc"]: overwrite
         ? HELLO_WORLD_CONTENT
         : null
     };
   },
-  fin({ isNewProject }) {
-    if (!isNewProject) {
+  fin({ overwrite }) {
+    if (!overwrite) {
       console.warn("🎉 All done!");
     }
   }

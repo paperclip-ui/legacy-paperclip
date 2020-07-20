@@ -1,4 +1,6 @@
 {
-  "compilerOptions": {},
+  "compilerOptions": {
+    "name": "paperclip-compiler-react"
+  },
   "sourceDirectory": "./src"
 }
