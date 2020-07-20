@@ -118,30 +118,20 @@
 };
 </code></pre>
 <p>That's it! from there you can start using Paperclip in your UIs. For example:</p>
-<pre><code class="hljs css language-html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="css">
-  <span class="hljs-selector-class">.Message</span> {
-    <span class="hljs-attribute">font-size</span>: <span class="hljs-number">24px</span>;
-  }
-</span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">export</span> <span class="hljs-attr">component</span> <span class="hljs-attr">as</span>=<span class="hljs-string">"Counter"</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"Counter"</span>&gt;</span>
-  {children}
-  <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{onIncrementClick}</span>&gt;</span>
-    increment
-  <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<pre><code class="hljs css language-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">export</span> <span class="hljs-attr">component</span> <span class="hljs-attr">as</span>=<span class="hljs-string">"Greeter"</span>&gt;</span>
+  Hello {children}!
 <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
 </code></pre>
-<p>Can be used in React like so:</p>
-<pre><code class="hljs css language-javascript"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> ui <span class="hljs-keyword">from</span> <span class="hljs-string">"./counter.pc"</span>;
-<span class="hljs-keyword">import</span> React, {useState} <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<p>Then, in React code:</p>
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> ui <span class="hljs-keyword">from</span> <span class="hljs-string">"./greater.pc"</span>;
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> ReactDOM <span class="hljs-keyword">from</span> <span class="hljs-string">"react-dom"</span>;
 
-<span class="hljs-keyword">const</span> Counter = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  cconst [currentValue, setCurrentValue] = useState(<span class="hljs-number">0</span>);
-  <span class="hljs-keyword">const</span> onIncrementClick = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> setCurrentValue(curentValue + <span class="hljs-number">1</span>);
-  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ui.Counter</span> <span class="hljs-attr">onIncrementClick</span>=<span class="hljs-string">{onIncrementClick}</span>&gt;</span>
-    {currentValue}
-  <span class="hljs-tag">&lt;/<span class="hljs-name">ui.Counter</span>&gt;</span></span>
-};
+ReactDOM.render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ui.Greeter</span>&gt;</span>
+  Paperclip
+<span class="hljs-tag">&lt;/<span class="hljs-name">ui.Greeter</span>&gt;</span></span>, <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"mount"</span>));
 </code></pre>
+<p>☝🏻 This should render: <code>Hello Paperclip!</code>.</p>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/getting-started-vscode"><span class="arrow-prev">← </span><span>Installing the VS Code extension</span></a><a class="docs-next button" href="/docs/usage-react"><span>React usage</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
