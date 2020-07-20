@@ -1,14 +1,13 @@
 <style>
-  .something[data-done] {
-    text-decoration: line-through;
-  }
-
-  .something2[data-done] {
-   color: grey;
+  .container {
+    position: relative;
+    font-family: Helvetica;
+    color: rgb(216, 34, 34);
+    font-size: 24px;
+    margin: 20px;
   }
 </style>
-<div export component as="Something" data-done={done} class="something {class}">
-  blah
-</div>
 
-<Something class=">>>something2" done />
+<div className="container">
+  Hello World
+</div>

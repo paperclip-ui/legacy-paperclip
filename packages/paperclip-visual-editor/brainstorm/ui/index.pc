@@ -76,13 +76,17 @@
   }
 
   .ElementStyles {
-    width: 300px;
+    width: 250px;
     height: 100%;
     background: rgb(63, 63, 63);
     color: rgb(219, 219, 219);
+    flex-shrink: 0;
     & .header {
       padding: 10px 20px;
       background: #333;
+    }
+    & .content {
+      padding: 6px;
     }
   }
 
@@ -108,10 +112,70 @@
 
   .Dropdown {
     background: #333;
-    display: inline-block;
-    padding: 10px 10px;
+    display: inline-flex;
+    padding: 4px 8px;
+    box-sizing: border-box;
     border-radius: 2px;
-    margin: 8px;
+    align-content: center;
+    width: 100%;
+    &:after {
+      margin-left: auto;
+      content: " ";
+      display: inline-block;
+      background: white;
+      -webkit-mask-image: url(./chevron.svg);
+      -webkit-mask-size: 1em 1em;
+      width: 1em;
+      height: 1em;
+    }
+  }
+
+  .Field {
+    display: inline-flex;
+    vertical-align: bottom;
+    box-sizing: border-box;
+    padding: 6px;
+    & .label {
+      align-self: center;
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+    & .input {
+      box-sizing: border-box;
+      flex-grow: 1;
+      height: 20px;
+    }
+    &.col1 {
+      width: 100%;
+      flex-direction: column;
+      & .label {
+        align-self: flex-start;
+        margin-bottom: 6px;
+      }
+    }
+    &.col1 {
+      width: 100%;
+      flex-direction: column;
+      & .label {
+        align-self: flex-start;
+        margin-bottom: 6px;
+      }
+    }
+    &.col2 {
+      width: 50%;
+      flex-direction: row;
+      & .label {
+      }
+    }
+  }
+
+  .LineHeightIcon {
+    background: white;
+    -webkit-mask-image: url(./line-height.svg);
+    -webkit-mask-size: 1.2em 1.2em;
+    width: 1.2em;
+    height: 1.2em;
+
   }
 </style>
 
@@ -129,8 +193,16 @@
   @frame { width: 100px, height: 100px, left: 100px, top: 100px }
 -->
 
+<div component as="Field" className="Field" className:col1 className:col2>
+  <div className="label">{label}</div>
+  <div className="input">{input}</div>
+</div>
+
 <div component as="Dropdown" className="Dropdown">
-  I'm a dropdown
+  {children}
+</div>
+
+<div component as="LineHeightIcon"  className="LineHeightIcon">
 </div>
 
 <div className="Editor">
@@ -154,8 +226,24 @@
 
   <div className="ElementStyles">
     <div className="header">
-      Typography
+      .BigBox .SmallerBox
     </div>
-    <Dropdown />
+    <div className="content">
+      <Field
+        label="Font Family"
+        input={<Dropdown>Roboto</Dropdown>}
+        col1
+      />
+      <Field
+        label={<LineHeightIcon />}
+        input={<Dropdown>12px</Dropdown>}
+        col2
+      />
+      <Field
+        label={<LineHeightIcon />}
+        input={<Dropdown>Roboto</Dropdown>}
+        col2
+      />
+    </div>
   </div>
 </div>
