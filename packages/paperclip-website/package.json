@@ -1,19 +1,31 @@
 {
   "name": "paperclip-website",
-  "version": "14.0.15",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
-  "devDependencies": {
-    "docusaurus": "^1.14.4"
-  },
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "postinstall": "cd website && npm install",
-    "build": "cd website && npm run build",
-    "publish:documentation": "cd website && npm install && npm run publish-gh-pages"
+    "start": "docusaurus start",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "publish:documentation": "npm install && docusaurus deploy"
   },
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "@docusaurus/core": "^2.0.0-alpha.58",
+    "@docusaurus/preset-classic": "^2.0.0-alpha.58",
+    "clsx": "^1.1.1",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

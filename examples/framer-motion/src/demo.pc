@@ -1,0 +1,23 @@
+<style>
+  .box {
+    background: orange;
+    width: 100px;
+    height: 100px;
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-family: sans-serif;
+    color: #F60;
+    padding: 8px;
+    /* transform-origin: ; */
+  }
+</style>
+
+<div export component as="Box" className="box">
+  {children}
+</div>
+
+<Box>
+  A box
+</Box>
