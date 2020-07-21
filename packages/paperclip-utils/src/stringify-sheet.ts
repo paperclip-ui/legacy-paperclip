@@ -79,13 +79,13 @@ const stringifyStyle = ({ name, value }, protocol, uri) => {
     if (uri) {
       const urls = value.match(/(file:\/\/.*?)(?=['")])/g) || [];
       const selfPathname = url.fileURLToPath(uri);
-      for (const url of urls) {
-        const pathname = url.fileURLToPath(url);
+      for (const foundUrl of urls) {
+        const pathname = url.fileURLToPath(foundUrl);
         let relativePath = path.relative(path.dirname(selfPathname), pathname);
         if (relativePath.charAt(0) !== ".") {
           relativePath = "./" + relativePath;
         }
-        value = value.replace(url, relativePath);
+        value = value.replace(foundUrl, relativePath);
       }
     }
     if (protocol) {
