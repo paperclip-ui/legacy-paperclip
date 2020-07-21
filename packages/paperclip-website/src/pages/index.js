@@ -49,6 +49,23 @@ function Feature({ imageUrl, title, description }) {
   );
 }
 
+function BigFeature({ imageUrl, title, description }) {
+  const imgUrl = useBaseUrl(imageUrl);
+  return (
+    <div className="container">
+      <div className="row">
+        <div className={clsx("col col--6", styles.feature)}>
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </div>
+        <div className={clsx("col col--6", styles.feature)}>
+          <img src={imageUrl} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Home() {
   const context = useDocusaurusContext();
   const { siteConfig = {} } = context;
@@ -86,6 +103,13 @@ function Home() {
             </div>
           </section>
         )}
+        {/* <section className={styles.features}>
+          <div className="container">
+            <div className="row">
+              <BigFeature title="Visual programming" description="Watch your changes live, directly within VS Code." imageUrl="img/realtime-editing-2.gif" />
+            </div>
+          </div>
+        </section> */}
       </main>
     </Layout>
   );

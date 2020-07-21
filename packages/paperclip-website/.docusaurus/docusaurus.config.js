@@ -57,13 +57,13 @@ export default {
         docs: {
           homePageId: "getting-started-installation",
           sidebarPath:
-            "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-website2/sidebars.js",
+            "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-website/sidebars.js",
           editUrl:
             "https://github.com/crcn/paperclip/packages//edit/master/website/"
         },
         theme: {
           customCss:
-            "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-website2/src/css/custom.css"
+            "/Users/craigcondon/Developer/public/paperclip/packages/paperclip-website/src/css/custom.css"
         }
       }
     ]
