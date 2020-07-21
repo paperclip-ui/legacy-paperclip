@@ -1,0 +1,19 @@
+{
+  "id": "getting-started-vscode",
+  "isDocsHomePage": false,
+  "title": "Installing the VS Code extension",
+  "description": "The VS Code Extension enables you to visually",
+  "source": "@site/docs/getting-started-vscode.md",
+  "permalink": "/docs/getting-started-vscode",
+  "editUrl": "https://github.com/crcn/paperclip/packages/edit/master/website/docs/getting-started-vscode.md",
+  "sidebar_label": "Installing the VS Code extension",
+  "sidebar": "docs",
+  "previous": {
+    "title": "Installing Paperclip",
+    "permalink": "/docs/"
+  },
+  "next": {
+    "title": "Using Paperclip in React apps",
+    "permalink": "/docs/usage-react"
+  }
+}

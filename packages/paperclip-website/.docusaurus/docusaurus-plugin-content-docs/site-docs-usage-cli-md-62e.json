@@ -1,0 +1,19 @@
+{
+  "id": "usage-cli",
+  "isDocsHomePage": false,
+  "title": "Command line tools",
+  "description": "Setup",
+  "source": "@site/docs/usage-cli.md",
+  "permalink": "/docs/usage-cli",
+  "editUrl": "https://github.com/crcn/paperclip/packages/edit/master/website/docs/usage-cli.md",
+  "sidebar_label": "CLI",
+  "sidebar": "docs",
+  "previous": {
+    "title": "Paperclip Syntax",
+    "permalink": "/docs/usage-syntax"
+  },
+  "next": {
+    "title": "Configuring Paperclip",
+    "permalink": "/docs/configuring-paperclip"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "safety-visual-regression",
+  "isDocsHomePage": false,
+  "title": "Setting up visual regression tests",
+  "description": "Installation",
+  "source": "@site/docs/safety-visual-regresion.md",
+  "permalink": "/docs/safety-visual-regression",
+  "editUrl": "https://github.com/crcn/paperclip/packages/edit/master/website/docs/safety-visual-regresion.md",
+  "sidebar_label": "Visual regression testing",
+  "sidebar": "docs",
+  "previous": {
+    "title": "Troubleshooting",
+    "permalink": "/docs/usage-troubleshooting"
+  }
+}

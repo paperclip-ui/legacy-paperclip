@@ -1,0 +1,19 @@
+{
+  "id": "usage-syntax",
+  "isDocsHomePage": false,
+  "title": "Paperclip Syntax",
+  "description": "Styling",
+  "source": "@site/docs/usage-syntax.md",
+  "permalink": "/docs/usage-syntax",
+  "editUrl": "https://github.com/crcn/paperclip/packages/edit/master/website/docs/usage-syntax.md",
+  "sidebar_label": "Syntax",
+  "sidebar": "docs",
+  "previous": {
+    "title": "Using Paperclip in React apps",
+    "permalink": "/docs/usage-react"
+  },
+  "next": {
+    "title": "Command line tools",
+    "permalink": "/docs/usage-cli"
+  }
+}

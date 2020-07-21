@@ -1,0 +1,10 @@
+{
+  "id": "safety-typescript",
+  "isDocsHomePage": false,
+  "title": "Generating Typed Definition files",
+  "description": "TODO",
+  "source": "@site/docs/safety-typescript.md",
+  "permalink": "/docs/safety-typescript",
+  "editUrl": "https://github.com/crcn/paperclip/packages/edit/master/website/docs/safety-typescript.md",
+  "sidebar_label": "Typed definition files"
+}

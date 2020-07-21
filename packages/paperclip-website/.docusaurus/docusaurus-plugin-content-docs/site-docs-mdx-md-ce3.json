@@ -1,0 +1,9 @@
+{
+  "id": "mdx",
+  "isDocsHomePage": false,
+  "title": "Powered by MDX",
+  "description": "You can write JSX and use React components within your Markdown thanks to MDX.",
+  "source": "@site/docs/mdx.md",
+  "permalink": "/docs/mdx",
+  "editUrl": "https://github.com/crcn/paperclip/packages/edit/master/website/docs/mdx.md"
+}

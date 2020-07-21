@@ -1,0 +1,15 @@
+{
+  "id": "getting-started-installation",
+  "isDocsHomePage": true,
+  "title": "Installing Paperclip",
+  "description": "Paperclip is currently in Alpha, so in the meantime it's limited to small set of tooling:",
+  "source": "@site/docs/getting-started-installation.md",
+  "permalink": "/docs/",
+  "editUrl": "https://github.com/crcn/paperclip/packages/edit/master/website/docs/getting-started-installation.md",
+  "sidebar_label": "Installation",
+  "sidebar": "docs",
+  "next": {
+    "title": "Installing the VS Code extension",
+    "permalink": "/docs/getting-started-vscode"
+  }
+}

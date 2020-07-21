@@ -1,0 +1,19 @@
+{
+  "id": "configuring-paperclip",
+  "isDocsHomePage": false,
+  "title": "Configuring Paperclip",
+  "description": "Paperclip uses a paperclip.config.json file which provides information about your project, and how",
+  "source": "@site/docs/configuring-paperclip.md",
+  "permalink": "/docs/configuring-paperclip",
+  "editUrl": "https://github.com/crcn/paperclip/packages/edit/master/website/docs/configuring-paperclip.md",
+  "sidebar_label": "Configuring Paperclip",
+  "sidebar": "docs",
+  "previous": {
+    "title": "Command line tools",
+    "permalink": "/docs/usage-cli"
+  },
+  "next": {
+    "title": "Setting up Webpack",
+    "permalink": "/docs/configuring-webpack"
+  }
+}
