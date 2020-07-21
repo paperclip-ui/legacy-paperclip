@@ -28,7 +28,7 @@ export const node = {
       },
       {
         name: "isPrivate",
-        message: "is this package private?",
+        message: "Is this package private?",
         type: "confirm",
         default: true
       },
