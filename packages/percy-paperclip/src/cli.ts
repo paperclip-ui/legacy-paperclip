@@ -7,6 +7,7 @@ import { XMLHttpRequest } from "w3c-xmlhttprequest";
 import domTransformation from "./dom-transformation";
 import {
   Engine,
+  createEngine,
   VirtualFragment,
   VirtualNodeKind,
   paperclipSourceGlobPattern,
@@ -30,7 +31,7 @@ export const run = async (
     { cwd, absolute: true }
   );
 
-  const engine = new Engine();
+  const engine = createEngine();
   const agent = new PercyAgent({
     xhr: XMLHttpRequest,
     domTransformation

@@ -15,6 +15,7 @@ import { createServices } from "./services";
 import { VSCServiceBridge } from "./bridge";
 import { Crash } from "../common/notifications";
 import {
+  createEngine,
   keepEngineInSyncWithFileSystem,
   PaperclipSourceWatcher,
   findPCConfigUrl
@@ -42,7 +43,7 @@ connection.onInitialize(() => {
 
 const init = async (connection: Connection) => {
   // Paperclip engine for parsing & evaluating documents
-  const engine = new Engine({}, () => {
+  const engine = createEngine({}, () => {
     connection.sendNotification(...new Crash({}).getArgs());
   });
 

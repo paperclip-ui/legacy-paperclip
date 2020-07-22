@@ -6,7 +6,7 @@ import * as fs from "fs";
 import {
   PaperclipConfig,
   CompilerOptions,
-  Engine,
+  createEngine,
   paperclipSourceGlobPattern,
   Node,
   getPrettyMessage,
@@ -83,7 +83,7 @@ function initBuild(
   options: BuildOptions,
   config: PaperclipConfig
 ) {
-  const pcEngine = new Engine();
+  const pcEngine = createEngine();
 
   function handleError(error, filePath) {
     console.error(

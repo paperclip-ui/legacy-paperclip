@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as url from "url";
 import { expect } from "chai";
-import { Engine } from "../../engine";
+import { createEngine } from "../../../";
 import {
   stringifyLoadResult,
   TEST_FIXTURE_DIRECTORY,
@@ -11,7 +11,7 @@ import {
 
 describe(__filename + "#", () => {
   it("Can load an entry that has an import", async () => {
-    const e = new Engine();
+    const e = createEngine();
     const result = stringifyLoadResult(
       await e.run(
         url
@@ -25,7 +25,7 @@ describe(__filename + "#", () => {
   });
 
   it("Won't load module src where the casing is incorrect", async () => {
-    const e = new Engine();
+    const e = createEngine();
     const ep = waitForError(e);
     e.run(
       url
@@ -38,7 +38,7 @@ describe(__filename + "#", () => {
   });
 
   it("Displays an error for 404 CSS url", async () => {
-    const e = new Engine();
+    const e = createEngine();
     let err;
 
     try {
@@ -57,7 +57,7 @@ describe(__filename + "#", () => {
   });
 
   it("can resolve module using module path syntax", async () => {
-    const e = new Engine();
+    const e = createEngine();
 
     const result = await e.run(
       url

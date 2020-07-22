@@ -1,4 +1,4 @@
-const { NativeEngine } = require("./native/node/paperclip");
+const { NativeEngine } = require("./native/bundler/paperclip");
 const { createEngine, ...rest } = require("./lib");
 
 module.exports = {

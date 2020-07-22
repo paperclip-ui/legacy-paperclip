@@ -3,6 +3,7 @@
 import * as url from "url";
 import {
   Engine,
+  createEngine,
   PaperclipConfig,
   stringifyCSSSheet,
   PC_CONFIG_FILE_NAME
@@ -23,7 +24,7 @@ const getEngine = (): Engine => {
   if (_engine) {
     return _engine;
   }
-  return (_engine = new Engine({}));
+  return (_engine = createEngine({}));
 };
 
 const virtualModuleInstances = new Map();

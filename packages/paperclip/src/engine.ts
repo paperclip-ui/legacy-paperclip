@@ -3,7 +3,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
-import { NativeEngine } from "../native/pkg/paperclip";
 import {
   EngineEvent,
   patchVirtNode,
@@ -52,13 +51,13 @@ export type LoadResult = {
   sheet: any;
   preview: VirtualNode;
 };
-
 export class Engine {
-  private _native: NativeEngine;
+  private _native: any;
   private _listeners: EngineEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
 
   constructor(
+    private _nativeEngineClass: any,
     private _options: EngineOptions = {},
     private _onCrash: (err) => void = noop
   ) {
@@ -85,7 +84,7 @@ export class Engine {
     );
 
     const initNative = () => {
-      this._native = NativeEngine.new(
+      this._native = this._nativeEngineClass.new(
         io.readFile,
         io.fileExists,
         io.resolveFile
@@ -257,6 +256,13 @@ export class Engine {
     }
   };
 }
+
+export const createEngine = nativeEngineClass => (
+  options: EngineOptions,
+  onCrash: any
+) => {
+  return new Engine(nativeEngineClass, options, onCrash);
+};
 
 const existsSyncCaseSensitive = (uri: URL) => {
   const pathname = url.fileURLToPath(uri as any);
