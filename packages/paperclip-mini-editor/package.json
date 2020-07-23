@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "private": false,
   "browser": "browser.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "paperclip build --definition --write & webpack",
     "build:web": "tsc && paperclip build --write && cp src/ui.pc.js src/ui.pc.css src/prism.css lib && mkdir -p dist && cp node_modules/paperclip/dist/* dist",

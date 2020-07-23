@@ -1162,7 +1162,7 @@ fn evaluate_attribute_string<'a>(
         val = value.to_string();
       } else {
         return Err(RuntimeError::new(
-          "Unable to resolve file.".to_string(),
+          format!("Unable to resolve file: {} from {}", value, context.uri),
           context.uri,
           location,
         ));

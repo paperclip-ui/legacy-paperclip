@@ -8,6 +8,7 @@ import { Renderer } from "paperclip-web-renderer";
 import memoize from "fast-memoize";
 
 import "prismjs/components/prism-clike";
+import "prismjs/components/prism-css";
 import "prismjs/components/prism-markup";
 import "prismjs/components/prism-javascript";
 import "./prism.css";

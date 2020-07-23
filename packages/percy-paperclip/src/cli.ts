@@ -31,7 +31,7 @@ export const run = async (
     { cwd, absolute: true }
   );
 
-  const engine = createEngine();
+  const engine = await createEngine();
   const agent = new PercyAgent({
     xhr: XMLHttpRequest,
     domTransformation

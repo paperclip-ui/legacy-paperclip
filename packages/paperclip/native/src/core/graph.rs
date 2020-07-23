@@ -282,7 +282,7 @@ impl<'a> Dependency {
         dependency_uri_maps.insert(src.to_string(), resolved_src.to_string());
       } else {
         return Err(ParseError::unexpected(
-          "unable to resolve path".to_string(),
+          format!("Unable to resolve path: {} from {}", src, uri),
           0,
           0,
         ));
