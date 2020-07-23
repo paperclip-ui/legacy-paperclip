@@ -8,7 +8,7 @@ const builtin = {
 };
 
 export const compileModules = async (graph: Record<string, string>) => {
-  const engine = createEngine({
+  const engine = await createEngine({
     io: {
       readFile: uri => graph[uri],
       fileExists: uri => Boolean(graph[uri]),

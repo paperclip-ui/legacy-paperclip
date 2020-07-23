@@ -94,7 +94,7 @@ export class Renderer {
     this._em.addListener(RenderEventTypes.ERROR_BANNER_CLICK, listener);
   };
 
-  initialize({ sheet, preview, importedSheets }: LoadedData) {
+  initialize = ({ sheet, preview, importedSheets }: LoadedData) => {
     removeAllChildren(this._stage);
     removeAllChildren(this._mainStyleContainer);
     removeAllChildren(this._importedStylesContainer);
@@ -115,7 +115,7 @@ export class Renderer {
     );
     this._mainStyleContainer.appendChild(style);
     this._stage.appendChild(node);
-  }
+  };
 
   private _addSheets(importedSheets: SheetInfo[]) {
     for (const { uri, sheet } of importedSheets) {

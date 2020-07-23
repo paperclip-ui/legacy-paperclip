@@ -3,4 +3,4 @@ export * from "./src";
 export declare const createEngine: (
   options?: EngineOptions,
   onCrash?: any
-) => Engine;
+) => Promise<Engine>;

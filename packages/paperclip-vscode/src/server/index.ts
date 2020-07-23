@@ -43,7 +43,7 @@ connection.onInitialize(() => {
 
 const init = async (connection: Connection) => {
   // Paperclip engine for parsing & evaluating documents
-  const engine = createEngine({}, () => {
+  const engine = await createEngine({}, () => {
     connection.sendNotification(...new Crash({}).getArgs());
   });
 

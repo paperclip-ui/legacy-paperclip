@@ -12,7 +12,7 @@ describe(__filename + "#", () => {
         }
       </style>`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql("<style>[class]._80f4925f_a { color:b; }</style>");
   });
@@ -27,7 +27,7 @@ describe(__filename + "#", () => {
         </style>
       `
     };
-    const engine = createMockEngine(graph, noop, {
+    const engine = await createMockEngine(graph, noop, {
       resolveFile() {
         return null;
       }
@@ -57,7 +57,7 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const text = stringifyLoadResult(await engine.run("/entry.pc"));
       expect(text).to.eql(
         "<style>div[data-pc-80f4925f] { color:blue; }</style>"
@@ -72,7 +72,7 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const p = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const e = await p;
@@ -100,7 +100,7 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const text = stringifyLoadResult(await engine.run("/entry.pc"));
       expect(text).to.eql(
         "<style>div[data-pc-80f4925f] { color:orange; }</style>"
@@ -116,7 +116,7 @@ describe(__filename + "#", () => {
         "/module.pc": `<style>
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const p = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const e = await p;
@@ -136,7 +136,7 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const p = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const e = await p;
@@ -158,7 +158,7 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const p = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const e = await p;
@@ -184,7 +184,7 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const p = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const e = await p;
@@ -209,7 +209,7 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const p = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const e = await p;
@@ -243,7 +243,7 @@ describe(__filename + "#", () => {
         </style>`
       };
 
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const result = await engine.run("/entry.pc");
       expect(stringifyLoadResult(result)).to.eql(
         `<style>[class]._80f4925f_company_list { list-style:none; margin:0; padding:0; } [class]._80f4925f_company_list li[data-pc-80f4925f] { display:block; padding:var(--spacing-600) 0; } [class]._80f4925f_company_list li[data-pc-80f4925f] + [class]._80f4925f_company_list li[data-pc-80f4925f] { border-top:1px solid var(--color-black-100); }</style>`
@@ -259,7 +259,7 @@ describe(__filename + "#", () => {
       </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._80f4925f_a\\:b { }</style>`
@@ -288,7 +288,7 @@ describe(__filename + "#", () => {
       </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>input:checked[data-pc-80f4925f] { } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label { background:var(--midnight-darker); } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label::after { transform:rotate(90deg); } input:checked[data-pc-80f4925f] ~ [class]._80f4925f_tab-content { max-height:100vh; padding:1em; }</style>`
@@ -302,7 +302,7 @@ describe(__filename + "#", () => {
       </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     let err;
     try {
       await engine.run("/entry.pc");
@@ -328,7 +328,7 @@ describe(__filename + "#", () => {
         }
       </style>ab`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
 
     expect(result.exports.style.variables["--color"]).to.eql({
@@ -369,7 +369,7 @@ describe(__filename + "#", () => {
         }
       </style>ab`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
 
     expect(result.exports.style.classNames).to.eql({
@@ -405,7 +405,7 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._80f4925f_todo { } [class]._80f4925f_todo:hover [class]._80f4925f_destroy { display:inline-block; } [class]._80f4925f_todo [class]._80f4925f_todo { } [class]._80f4925f_todo [class]._80f4925f_todo--item [class]._80f4925f_destroy { display:inline-block; }</style>`
@@ -423,7 +423,7 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] svg:a[data-pc-80f4925f] { margin-right:4px; }</style>`
@@ -443,7 +443,7 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>@keyframes _80f4925f_lds-something3 { } div[data-pc-80f4925f] { animation:_80f4925f_lds-something3 1s; }</style>`
@@ -473,7 +473,7 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] > b[data-pc-80f4925f] { } a[data-pc-80f4925f] + c[data-pc-80f4925f] { } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { } a[data-pc-80f4925f] [data-pc-80f4925f]:not([class]._80f4925f_div) { } a[data-pc-80f4925f] [data-pc-80f4925f]::active { }</style>`
@@ -492,7 +492,7 @@ describe(__filename + "#", () => {
       }
     </style>`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     await engine.run("/entry.pc");
     const ast = engine.getLoadedAst("/entry.pc") as any;
     expect(ast.children[0].sheet.rules[1].location).to.eql({
@@ -516,7 +516,7 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(result.exports.style.keyframes).to.eql({
       b: {

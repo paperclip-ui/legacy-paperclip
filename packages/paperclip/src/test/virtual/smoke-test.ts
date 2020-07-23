@@ -718,7 +718,7 @@ describe(__filename + "#", () => {
     ]
   ].forEach(([graph, , expectedHTML]: [Graph, any, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
 
       const { sheet, preview, importedSheets: sheets } = await engine.run(
         "/entry.pc"

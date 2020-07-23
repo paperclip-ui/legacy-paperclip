@@ -7,7 +7,7 @@ describe(__filename + "#", () => {
       "/entry.pc": "Hello World"
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -21,7 +21,7 @@ describe(__filename + "#", () => {
       "/entry.pc": "<a href='#'>abc</a>"
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -35,7 +35,7 @@ describe(__filename + "#", () => {
       "/entry.pc": "a"
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -53,7 +53,7 @@ describe(__filename + "#", () => {
       "/entry.pc": `<span><div a="b"></div></span>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -74,7 +74,7 @@ describe(__filename + "#", () => {
       "/entry.pc": `<style> a { color: blue; } </style><span></span>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -89,7 +89,7 @@ describe(__filename + "#", () => {
       "/module.pc": `<style> a { color: black; } </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -104,7 +104,7 @@ describe(__filename + "#", () => {
       "/module.pc": `<style> a { color: black; } </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -126,7 +126,7 @@ describe(__filename + "#", () => {
       "file:///module.pc": `<style> a { color: black; } </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("file:///entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("file:///entry.pc");
@@ -147,7 +147,7 @@ describe(__filename + "#", () => {
       "/module.pc": `<style> a { color: black; } </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -170,7 +170,7 @@ describe(__filename + "#", () => {
       "/module2.pc": `<style> a { color: orange; } </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -197,7 +197,7 @@ describe(__filename + "#", () => {
       "/module.pc": `<style> a { color: black; } </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     // const renderer = createMockRenderer("/entry.pc");
     // engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -220,7 +220,7 @@ describe(__filename + "#", () => {
       "/module.pc": `<style> a { color: black; } </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     // const renderer = createMockRenderer("/entry.pc");
     // engine.onEvent(renderer.handleEngineEvent);
     await engine.run("/entry.pc");
@@ -252,7 +252,7 @@ describe(__filename + "#", () => {
       "/module-d.pc": `<style> a { color: d; } </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     await engine.run("/entry.pc");
 
     const renderer = createMockRenderer("/entry.pc");
@@ -300,7 +300,7 @@ describe(__filename + "#", () => {
       </preview>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     renderer.initialize(await engine.run("/entry.pc"));
     engine.onEvent(renderer.handleEngineEvent);
@@ -349,7 +349,7 @@ describe(__filename + "#", () => {
       "file:///something-else.jpg": ``
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("file:///entry.pc", "blah:");
     renderer.initialize(await engine.run("file:///entry.pc"));
     engine.onEvent(renderer.handleEngineEvent);

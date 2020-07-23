@@ -20,11 +20,11 @@ type Options = {
   emitCss?: boolean;
 };
 
-const getEngine = (): Engine => {
+const getEngine = async (): Promise<Engine> => {
   if (_engine) {
     return _engine;
   }
-  return (_engine = createEngine({}));
+  return (_engine = await createEngine({}));
 };
 
 const virtualModuleInstances = new Map();
@@ -53,7 +53,7 @@ async function pcLoader(
     throw new Error(`Config file could not be loaded: ${configFilePath}`);
   }
 
-  const engine = getEngine();
+  const engine = await getEngine();
   const compiler = require(resolve.sync(config.compilerOptions.name, {
     basedir: process.cwd()
   }));

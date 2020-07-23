@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 /*
  * We've enabled HtmlWebpackPlugin for you! This generates a html
@@ -24,7 +25,15 @@ module.exports = {
   },
   devtool: false,
 
-  plugins: [new HtmlWebpackPlugin()],
+  plugins: [
+    new HtmlWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, "node_modules/paperclip/dist") }
+      ]
+    })
+  ],
+
   externals: {
     glob: "{}",
     fs: "{}",
@@ -33,7 +42,6 @@ module.exports = {
     "glob-parent": "{}",
     chokidar: "{}"
   },
-
   module: {
     // I also left out the defaultRule for .esm files
     // since it had conditional values
@@ -48,10 +56,6 @@ module.exports = {
       }
     ],
     rules: [
-      {
-        test: /\.wasm$/,
-        loaders: ["wasm-loader"]
-      },
       {
         test: /\.(ts|tsx)?$/,
         loader: "ts-loader",

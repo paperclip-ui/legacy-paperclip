@@ -12,7 +12,7 @@ import {
   getPrettyMessage,
   stringifyCSSSheet
 } from "paperclip";
-import * as glob from "glob";
+import { glob } from "glob";
 import { ClassNameExport, stripFileProtocol } from "paperclip";
 
 export type BuildOptions = {
@@ -73,17 +73,23 @@ export const build = async (options: BuildOptions) => {
     process.exit();
   }
 
-  initBuild(process.cwd(), sourceDirectory, compileModule, options, config);
+  await initBuild(
+    process.cwd(),
+    sourceDirectory,
+    compileModule,
+    options,
+    config
+  );
 };
 
-function initBuild(
+async function initBuild(
   cwd,
   sourceDirectory: string,
   { compile, getOutputFilePath }: CompilerModule,
   options: BuildOptions,
   config: PaperclipConfig
 ) {
-  const pcEngine = createEngine();
+  const pcEngine = await createEngine();
 
   function handleError(error, filePath) {
     console.error(

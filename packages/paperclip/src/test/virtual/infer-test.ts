@@ -1,7 +1,7 @@
 import { createEngine, infer } from "../../..";
 import { expect } from "chai";
 
-describe(__filename + "#", () => {
+describe(__filename + "#", async () => {
   const cases = [
     [
       `{a}`,
@@ -234,7 +234,7 @@ describe(__filename + "#", () => {
     ]
   ];
 
-  const engine = createEngine({});
+  const engine = await createEngine({});
   for (const [source, inference] of cases) {
     it(`can infer ${source}`, () => {
       const ast = engine.parseContent(String(source));

@@ -1,7 +1,7 @@
-const { NativeEngine } = require("./native/bundler/paperclip");
-const { createEngine, ...rest } = require("./lib");
+import { createEngine as createEngine2 } from "./lib";
 
-module.exports = {
-  createEngine: createEngine(NativeEngine),
-  ...rest
-};
+export const createEngine = createEngine2(async (...args) => {
+  return import("./native/bundler").then(({ NativeEngine }) => {
+    return NativeEngine.new(...args);
+  });
+});
