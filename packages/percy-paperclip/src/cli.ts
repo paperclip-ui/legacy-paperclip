@@ -39,7 +39,7 @@ export const run = async (
 
   // wait for the agent to do a quick health check (needed so that the agent doesn't display "not connected" error)
   await new Promise(resolve => {
-    setTimeout(resolve, 500);
+    setTimeout(resolve, 1000);
   });
 
   for (const filePath of paperclipFilePaths) {
