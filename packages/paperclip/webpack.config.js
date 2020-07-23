@@ -3,7 +3,8 @@ const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 module.exports = {
   entry: "./browser.js", // input file of the JS bundle
   output: {
-    filename: "bundle.js", // output filename
+    // publicPath: "/",
+    filename: "paperclip.bundle.js", // output filename
     libraryTarget: "commonjs-module",
     path: path.resolve(__dirname, "dist") // directory of where the bundle will be created at
   },

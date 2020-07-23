@@ -82,6 +82,7 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} Craig Condon`
     }
   },
+  themes: [require.resolve("./plugins/live-editor")],
   presets: [
     [
       "@docusaurus/preset-classic",

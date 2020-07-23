@@ -4,23 +4,18 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
-/*
- * We've enabled HtmlWebpackPlugin for you! This generates a html
- * page for you when you compile webpack, which will make you start
- * developing and prototyping faster.
- *
- * https://github.com/jantimon/html-webpack-plugin
- *
- */
-
 module.exports = {
   mode: "development",
   entry: {
-    index: "./src/entry.tsx"
+    index: "./src/index.ts"
   },
 
+  devtool: "source-map",
   output: {
-    filename: "[name].js",
+    // publicPath: "/",
+    library: "__MINI_PC_EDITOR__",
+    filename: "mini-editor.bundle.js",
+    libraryTarget: "global",
     path: path.resolve(__dirname, "dist")
   },
   devtool: false,
@@ -35,16 +30,13 @@ module.exports = {
   ],
 
   externals: {
-    glob: "{}",
-    fs: "{}",
-    fsevents: "{}",
-    readdirp: "{}",
-    "glob-parent": "{}",
-    chokidar: "{}"
+    glob: "[]",
+    fs: "[]",
+    fsevents: "[]",
+    readdirp: "[]",
+    chokidar: "[]"
   },
   module: {
-    // I also left out the defaultRule for .esm files
-    // since it had conditional values
     defaultRules: [
       {
         type: "javascript/auto",

@@ -3,14 +3,17 @@
   "description": "",
   "version": "1.0.0",
   "private": false,
+  "browser": "browser.js",
   "scripts": {
     "build": "paperclip build --definition --write & webpack",
+    "build:web": "tsc && paperclip build --write && cp src/ui.pc.js src/ui.pc.css src/prism.css lib && mkdir -p dist && cp node_modules/paperclip/dist/* dist",
     "start": "paperclip build --definition --write --watch & webpack-dev-server",
     "build:watch": "paperclip build --definition --write --watch & webpack --watch",
     "build:definitions": "paperclip build --definition --write"
   },
   "license": "",
   "dependencies": {
+    "fast-memoize": "^2.5.2",
     "paperclip": "^14.0.16",
     "paperclip-web-renderer": "^14.0.16",
     "react": "^16.13.1",

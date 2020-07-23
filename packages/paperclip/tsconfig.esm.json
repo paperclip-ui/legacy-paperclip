@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "outDir": "lib",
+    "outDir": "esm",
     "target": "es6",
     "moduleResolution": "node",
-    "esModuleInterop": true,
-    "jsx": "react"
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "node_modules",
