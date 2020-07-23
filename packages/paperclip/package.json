@@ -9,12 +9,11 @@
     "lint": "eslint src",
     "test:node": "mocha ./lib/test/**/*-test.js",
     "test:watch": "mocha ./lib/test --watch & (cd native && cargo watch -x test)",
-    "build": "npm run build:wasm:node && npm run build:node && npm run buid:wasm:bundler",
+    "build": "npm run build:wasm:node && npm run build:node && npm run build:browser",
     "build:watch": "tsc --watch & (cd native && cargo watch -i .gitignore -i \"pkg/*\" -s 'wasm-pack build --release --target nodejs')",
     "build:node": "tsc",
     "build:native": "cd native && cargo build --release",
     "build:browser": "webpack",
-    "build:wasm:bundler": "cd native && wasm-pack build --release --target bundler --out-dir bundler",
     "build:wasm:node": "cd native && wasm-pack build --release --target nodejs --out-dir node"
   },
   "author": "",

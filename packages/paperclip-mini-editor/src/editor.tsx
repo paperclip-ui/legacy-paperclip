@@ -76,7 +76,7 @@ export const Editor = () => {
       >
         <SimpleEditor
           value={code}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: "100%", height: "100%", overflow: "scroll" }}
           preClassName="language-html"
           onValueChange={onCodeChange}
           highlight={code => highlight(code, languages.html)}
