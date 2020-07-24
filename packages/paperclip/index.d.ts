@@ -1,5 +1,5 @@
-import { Engine, EngineOptions } from "./src";
-export * from "./src";
+import { Engine, EngineOptions } from "./lib";
+export * from "./lib";
 export declare const createEngine: (
   options?: EngineOptions,
   onCrash?: any

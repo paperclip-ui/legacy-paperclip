@@ -3,15 +3,17 @@ import * as ui from "./ui.pc";
 import { createEngine, Engine } from "paperclip/browser";
 
 import SimpleEditor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
+
+import Highlight, { Prism } from "prism-react-renderer";
+// import { languages } from "prismjs/components/prism-core";
 import { Renderer } from "paperclip-web-renderer";
 import memoize from "fast-memoize";
 
-import "prismjs/components/prism-clike";
-import "prismjs/components/prism-css";
-import "prismjs/components/prism-markup";
-import "prismjs/components/prism-javascript";
-import "./prism.css";
+// import "prismjs/components/prism-clike";
+// import "prismjs/components/prism-css";
+// import "prismjs/components/prism-markup";
+// import "prismjs/components/prism-javascript";
+// import "./prism.css";
 import { render } from "react-dom";
 
 export const createComponentClass = ({
@@ -46,12 +48,13 @@ export const createComponentClass = ({
     serializer: graph => JSON.stringify(graph)
   });
 
-  const Editor = ({ graph, defaultUri }) => {
+  const Editor = ({ graph, defaultUri, theme }) => {
     const initialGraph = cachedGraph(graph);
     const [currentGraph, setGraph] = useState(initialGraph);
     const [currentUri, setCurrentUri] = useState(defaultUri);
 
     const code = currentGraph[currentUri];
+    console.log(theme);
 
     const engine = usePaperclipEngine(initialGraph);
 
@@ -66,8 +69,16 @@ export const createComponentClass = ({
       }
     };
 
+    const baseTheme =
+      theme && typeof theme.plain === "object" ? theme.plain : {};
+
+    console.log(baseTheme);
     return (
-      <ui.Editor>
+      <ui.Editor
+        style={{
+          "--background": theme.plain?.backgroundColor
+        }}
+      >
         <ui.CodePane
           tabs={
             <>
@@ -86,14 +97,40 @@ export const createComponentClass = ({
         >
           <SimpleEditor
             value={code}
-            style={{ width: "100%", minHeight: "100%" }}
+            style={{
+              width: "100%",
+              minHeight: "100%",
+              padding: "8px",
+              ...baseTheme
+            }}
             preClassName="language-html"
             onValueChange={onCodeChange}
-            highlight={code => highlight(code, languages.html)}
+            highlight={code => highlight(code, "html", theme)}
           />
         </ui.CodePane>
         <Preview engine={engine} currentUri={currentUri} />
       </ui.Editor>
+    );
+  };
+
+  const highlight = (code, language, theme) => {
+    console.log(theme, Prism, code);
+    return (
+      <Highlight Prism={Prism} code={code} theme={theme} language={language}>
+        {({ tokens, getLineProps, getTokenProps }) => (
+          <>
+            {tokens.map((line, i) => (
+              // eslint-disable-next-line react/jsx-key
+              <div {...getLineProps({ line, key: i })}>
+                {line.map((token, key) => (
+                  // eslint-disable-next-line react/jsx-key
+                  <span {...getTokenProps({ token, key })} />
+                ))}
+              </div>
+            ))}
+          </>
+        )}
+      </Highlight>
     );
   };
 

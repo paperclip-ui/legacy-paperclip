@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "docusaurus start",
-    "build-broken": "docusaurus build",
+    "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "publish:documentation": "npm install && docusaurus deploy"
@@ -31,6 +31,8 @@
     ]
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^6.0.3"
+    "copy-webpack-plugin": "^6.0.3",
+    "null-loader": "^4.0.0",
+    "webpack": "^4.43.0"
   }
 }

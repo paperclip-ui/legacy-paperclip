@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "target": "es6",
+    "declaration": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "jsx": "react"

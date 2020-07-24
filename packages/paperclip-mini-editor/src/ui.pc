@@ -15,6 +15,7 @@
   }
 
   .Editor {
+    --background: var(--color-dark-200);
     --border-radius: 4px;
     font-family: sans-serif;
     display: flex;
@@ -31,21 +32,22 @@
   }
 
   .code {
-    background: var(--color-dark-200);
+    /* --background: #F60; */
+    background: var(--background);
     border-bottom-left-radius: var(--border-radius);
     border-top-left-radius: var(--border-radius);
-    border-right: 1px solid var(--color-grey-300);
+    /* border-right: 1px solid var(--color-grey-300); */
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     overflow: scroll;
     .content {
-      padding: 15px;
-      overflow: scroll;
-      letter-spacing: 0.05em;
+      /* overflow: scroll; */
+      /* letter-spacing: 0.05em; */
       :global(textarea) {
         outline: none;
+        padding: 8px !important;
         
       }
     }
@@ -54,9 +56,11 @@
       margin: 0;
       padding: 0;
       color: var(--color-grey-500);
-      background: var(--color-dark-100);
+      /* background: var(--color-dark-100); */
       border-top-left-radius: var(--border-radius);
       flex-shrink: 0;
+      background-image: linear-gradient(to left, var(--background), var(--background)), linear-gradient(to left, rgba(255,255,255,0.2), rgba(255,255,255,0.2));
+      background-blend-mode: overlay, screen;
       .tab {
         cursor: pointer;
         margin: 0;
@@ -66,27 +70,29 @@
         &:first-child {
           border-top-left-radius: 4px;
         }
-        background: var(--color-dark-100);
-        border-right: 1px solid var(--color-dark-200);
+        /* background: var(--color-dark-100); */
+        /* border-right: 1px solid var(--color-dark-200); */
         padding: 8px 15px;
         &:last-child {
           border-right: none;
         }
         &--selected {
-          background: var(--color-dark-200);
+          background: var(--background);
         }
       }
     }
   }
 
   .Preview {
-    width: 100%;
+    width: 66%;
     height: 100%;
     display: flex;
     flex-direction: column;
     .header {
       padding: 8px 15px;
-      background: var(--color-grey-300);
+      /* background: var(--color-grey-300); */
+      background-image: linear-gradient(to left, var(--background), var(--background)), linear-gradient(to left, rgba(255,255,255,0.4), rgba(255,255,255,0.4));
+      background-blend-mode: overlay, screen;
       border-top-right-radius: var(--border-radius);
       flex-shrink: 0;
       
@@ -125,7 +131,7 @@
   <iframe ref={iframeRef}></iframe>
 </div>
 
-<div export component as="Editor" className="Editor">
+<div export component as="Editor" {style?} className="Editor">
   {children}
 </div>
 

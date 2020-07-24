@@ -6,7 +6,7 @@
   "browser": "browser.js",
   "main": "lib/index.js",
   "scripts": {
-    "build": "paperclip build --definition --write & webpack",
+    "build": "paperclip build --definition --write & npm run build:web",
     "build:web": "tsc && paperclip build --write && cp src/ui.pc.js src/ui.pc.css src/prism.css lib && mkdir -p dist && cp node_modules/paperclip/dist/* dist",
     "start": "paperclip build --definition --write --watch & webpack-dev-server",
     "build:watch": "paperclip build --definition --write --watch & webpack --watch",
@@ -32,6 +32,7 @@
     "paperclip-cli": "^14.0.17",
     "paperclip-compiler-react": "^14.0.17",
     "paperclip-loader": "^14.0.17",
+    "prism-react-renderer": "^1.1.1",
     "prismjs": "^1.20.0",
     "style-loader": "^1.2.1",
     "text-encoding": "^0.7.0",
