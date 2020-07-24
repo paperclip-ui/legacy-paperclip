@@ -4,7 +4,7 @@ title: Paperclip Syntax
 sidebar_label: Syntax
 ---
 
-### Writing HTML & CSS
+### Basics
 
 You can start writing HTML and CSS as soon as you open up a Paperclip document. Here's an example:
 
@@ -163,7 +163,7 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 
 ### @export
 
-The `@export` rule allows you to export styles that are referencable in other documents, as well as application code.
+The `@export` rule allows you to export styles to other documents, as well as application code.
 
 **Syntax**:
 
@@ -202,7 +202,7 @@ You're also welcome to reference styles from other documents, specifically `clas
 
 <!-- >>> is a class reference - docs below -->
 <div className="header-text >>>styles.default-text">
-  Does "heterological" describe itself?
+  Hello again!
 </div>
 
 // file: styles.pc
@@ -264,6 +264,44 @@ import * as typography from "./typography.pc";
 
 Note that `.header-text` is not exported, so it's not available in our app code.
 
+### >>>class-reference
+
+Paperclip allows you to explicitly reference class selectors, which is helpful if you're looking to reference or overrides styles in other documents. 
+
+**Syntax**:
+
+```html
+
+<div className=">>>class-name" />
+
+<div className=">>>imported-doc.class-name" />
+```
+
+**Example**:
+
+```html live
+// file: main.pc
+<import src="./atoms.pc" as="atoms">
+
+<span className=">>>atoms.font-default">
+  Hello
+</span>
+// file: atoms.pc
+
+<style>
+  @export {
+    .font-default {
+      font-family: Helvetica;
+      color: blue;
+      font-size: 32px;
+      letter-spacing: 0.05em;
+    }
+  }
+</style>
+```
+
+You can also use class references to [override component styles](#overriding-component-styles).
+
 ### :global
 
 All style rules are, by default, scoped to the document they're defined in. This ensures that they don't leak & have unintended side-effects. However, there _are_ rare cases when you may need to define a global style rule, such as styling HTML defined outside of Paperclip that doesn't have a way to define a `class` attribute. 
@@ -316,6 +354,7 @@ Here's an example that stylizes parts of [react-select](https://github.com/JedWa
 </div>
 ```
 
+
 Here's how you use the above styles in React code:
 
 ```jsx
@@ -332,7 +371,139 @@ import * as ui from './Select.pc';
 
 <!-- TODO: how to import existing CSS guide -->
 
-## Defining components
+### Other global styles
+
+`:root` and `:global` CSS properties are applied globally when imported. Here's an example:
+
+```html live
+// file: demo.pc
+<import src="./styles.pc">
+<style>
+  .message {
+    color: var(--color-red-default);
+  }
+</style>
+<div className="message">
+  A male barber shaves all and only those men who do not shave themselves. Does he shave himself?
+</div>
+// file: styles.pc
+<style>
+  :root {
+    --color-red-default: #900;
+  }
+
+  /* Try to avoid doing this 🙅‍♂️. Use mixins or class references instead. */
+  :global(body) {
+    font-family: Kai;
+    font-size: 18px;
+  }
+</style>
+```
+
+It's okay to define `:root` variables - this is common pattern around theming. Try to avoid `:global` selectors whenever possible since they leak into other documents, and may result in unintended side-effects. If you need to use `:global` try to wrap it around a style rule that's scoped to the document. For example:
+
+```css
+/* Safer to use */
+.container {
+  :global(body) {
+
+  }
+}
+```
+
+<!-- TODO: theming guide -->
+
+<!-- TODO BELOW: why you should avoid :global -->
+
+<!-- TODO: guide overriding UIs -->
+
+## Import
+
+You can import [styles](#styling) & [components](#components) from other files. 
+
+**Syntax**:
+
+```html
+<import src="./path/to/document.pc" as="unique-namespace">
+```
+
+
+**Example**:
+
+```html live
+// file: main.pc
+<import src="./pane.pc" as="pane">
+<import src="./atoms.pc" as="atoms">
+
+<pane.Container>
+  <pane.Header>
+    <span className=">>>atoms.font-big">
+      Header content
+    </span>
+  </pane.Header>
+  <pane.Content>
+    Some content
+  </pane.Content>
+</pane.Container>
+
+
+// file: pane.pc
+<import src="./atoms.pc" as="atoms">
+<style>
+  .Container {
+    @include atoms.font-default;
+  }
+  .Header, .Content {
+    margin: 0px 8px;
+  }
+  .Header {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .Content {
+  }
+</style>
+
+<div export component as="Container" className="Container">
+  {children}
+</div>
+
+<div export component as="Header" className="Header">
+  {children}
+</div>
+
+<div export component as="Content" className="Content">
+  {children}
+</div>
+
+<!-- Preview -->
+
+Nothing here!
+
+// file: atoms.pc
+
+<style>
+  @export {
+    @mixin font-default {
+      font-family: Helvetica;
+    }
+    .font-big {
+      @include font-default;
+      font-size: 24px;
+    }
+  }
+</style>
+```
+
+The `as` keyword is your access point into anything exported by the imported document, like above. 
+
+**Other examples**:
+
+- [Exporting styles](#export)
+- [Exporting components](#exporting-components)
+
+
+## Components
 
 Components are your UI building blocks. 
 
@@ -374,7 +545,7 @@ Components are your UI building blocks.
 </Message>
 ```
 
-You can define a component from _any_ root element (meaning that it's not a child of any element) by adding a `component` and `as="unique-component-name"` attribute.  Any other element that does _not_ have a `component` attribute is rendered to the screen. Think of those as previews. 
+You can define a component from _any_ root element (meaning that it's not a child of any element) by using the syntax above.  Any other element that does _not_ have a `component` attribute is rendered to the screen. Think of those as previews. 
 
 <!--Here's an example of how you can import the above component in React:
 
@@ -389,7 +560,7 @@ Note that for components to be available in application code, they _must_ have t
 
 <!-- TODO: link to rendering previews -->
 
-### Defining previews
+### Component previews
 
 Anything that doesn't have a `component` attribute is rendered to the screen, so you can utilize that behavior to see what you're working on.  For example:
 
@@ -682,9 +853,9 @@ in other previews -->
 No preview here!
 ```
 
-☝🏻 This is a pattern that's used quite a bit - creating various `preview` components & then using them in other documents to preview your entire application UI. They're removed from your application bundle (so long as you don't use them in app code) because of [tree-shaking](https://webpack.js.org/guides/tree-shaking/).
+☝🏻 This is a pattern is pretty useful - creating various `preview` components & then using them in other documents to preview your entire application UI. They're removed from your application bundle (so long as you don't use them in app code) because of [tree-shaking](https://webpack.js.org/guides/tree-shaking/).
 
-## Overriding component styles
+### Overriding component styles
 
 You can override styles in other components assuming that a component exposes an attribute that's bound to `className`. 
 
@@ -721,193 +892,7 @@ attributeBoundToClassName=">>>class-name"
 </div>
 ```
 
-The `>>>` syntax can also be used to reference styles from other documents:
-
-```html live
-// file: entry.pc
-<import src="./typography.pc" as="typography">
-<span className=">>>typography.default-font">
-  Hola amigo!
-</span>
-
-// file: typography.pc
-<style>
-  @export {
-    .default-font {
-      font-family: papyrus;
-      letter-spacing: 0.05em;
-      font-size: 32px;
-      color: green;
-    }
-  }
-</style>
-```
-
-<!--Bare in mind that components that take a class attribute must _always_ contain `>>>` prefix. For example:
-
-```html live
-<style>
-  .SomeText {
-    font-family: SignPainter;
-    font-size: 32px;
-  }
-  .purple-text {
-    color: purple;
-  }
-</style>
-
-<div component as="SomeText" className="SomeText {customClassName?}">
-  {children}
-</div>
-
-<SomeText customClassName=">>>purple-text">
-  This is purple text
-</SomeText>
-
-<SomeText customClassName="purple-text">
-  This is <strong>not</strong> purple text
-</SomeText>
-```
-
-☝🏻 This reason for this is that Paperclip doesn't know that `customClassName` _is_ a className, so you need to provide a `>>>` to help with that. -->
-
-
-<!--## Components of components
-
-There may be a case where you want to define a component of a component. Just add the `component` + `as="component-name"` combo on an instance like so:
-
-```html live
-<style>
-  .Input {
-    border-radius: 2px;
-    border: 1px solid orange;
-    display: block;
-    &::placeholder {
-      color: orange;
-    }
-  }
-  .CustomInput {
-    border: 1px solid red;
-  }
-  .preview {
-    margin: 10px;
-  }
-</style>
-
-<input component as="MyInput" 
-  className="Input {customClassName?}" 
-  {placeholder?}
-  {value?} 
-  {defaultValue?}>
-
-<MyInput component as="CustomInput"
-  customClassName=">>>CustomInput {customClassName?}" 
-  {placeholder?}
-/>
-
-<MyInput customClassName=">>>preview" placeholder="default input" />
-<CustomInput customClassName=">>>preview" placeholder="custom input" />
-```
-
-☝🏻 This particular pattern is useful if you need to override styles & also want to keep the overrides in one spot.  -->
-
-## Importing documents
-
-You can import styles & components into your document.
-
-**Syntax**:
-
-```html
-<import src="./path/to/document.pc" as="unique-namespace">
-```
-
-
-**Example**:
-
-```html live
-// file: main.pc
-<import src="./pane.pc" as="pane">
-
-<pane.Container>
-  <pane.Header>
-    Header content
-  </pane.Header>
-  <pane.Content>
-    Some content
-  </pane.Content>
-</pane.Container>
-
-
-// file: pane.pc
-<style>
-  .Container {
-
-  }
-  .Header, .Content {
-    margin: 0px 8px;
-  }
-  .Header {
-    font-size: 18px;
-    font-weight: 600;
-  }
-  .Content {
-  }
-</style>
-
-<div export component as="Container" className="Container">
-  {children}
-</div>
-
-<div export component as="Header" className="Header">
-  {children}
-</div>
-
-<div export component as="Content" className="Content">
-  {children}
-</div>
-
-<!-- Preview -->
-
-Nothing here!
-```
-
-The `as` keyword is your access point into anything exported by the imported document, like above. 
-
-
-### Global styles
-
-`:root` and `:global` CSS properties are applied globally when imported. Here's an example:
-
-```html live
-// file: demo.pc
-<import src="./styles.pc">
-<style>
-  .message {
-    color: var(--color-red-default);
-  }
-</style>
-<div className="message">
-  A male barber shaves all and only those men who do not shave themselves. Does he shave himself?
-</div>
-// file: styles.pc
-<style>
-  :root {
-    --color-red-default: #900;
-  }
-
-  /* Try to avoid doing this 🙅‍♂️. Use mixins or class references instead. */
-  :global(body) {
-    font-family: Kai;
-    font-size: 18px;
-  }
-</style>
-```
-
-It's okay to define `:root` variables - this is common pattern around defining themes. Try to avoid `:global` selectors whenever possible however since they leak into other documents, and may result in unintended side-effects. More on this below.
-
-<!-- TODO BELOW: why you should avoid :global -->
-
-<!-- TODO: guide overriding UIs -->
+Check out [class references](#class-reference) for more information on how to use `>>>`.
 
 ## Bindings
 
@@ -915,7 +900,20 @@ Bindings allow you to define dynamic behavior in components.
 
 ### Child bindings
 
-The `{children}` binding works like so:
+**Syntax**:
+
+```html
+<div component as="MyComponent">
+
+  <!-- reserved keyword - takes element children. -->
+  {children}
+  
+  <!-- can be defined via attributes -->
+  {anotherSlot}
+</div>
+```
+
+**Example**:
 
 ```html live
 <h1 component as="Header">
@@ -926,8 +924,6 @@ The `{children}` binding works like so:
   I'm not a header
 </Header>
 ```
-
-`{children}` is _reserved_, meaning that it can only be used specifically for child elements. 
 
 There will probably be the case where you want to define multiple areas of a component for children to go into. Here's an example of that:
 
@@ -985,7 +981,7 @@ There will probably be the case where you want to define multiple areas of a com
 </style>
 ```
 
-`{title}` and `{controls}` (and technically also `{children}`) are considered _slots_ for children to go into, and they can be filled in via attributes:
+`{title}` and `{controls}` (and technically also `{children}`) are considered _slots_ for child nodes to go into, and they can be filled in via attributes:
 
 ```html
 <Pane 
@@ -997,7 +993,7 @@ There will probably be the case where you want to define multiple areas of a com
 
 ### Attribute bindings
 
-Attributes basically allow you to define dynamic data on a component. For example:
+Attributes allow you to define dynamic component properties. For example:
 
 ```html live
 // file: buttons.pc
@@ -1056,19 +1052,6 @@ Nothing to see!
 Nothing to see!
 ```
 
-Here's how you could use do a similar thing in React:
-
-```jsx
-import cx from "classnames";
-import * as ui from "./buttons.pc"
-import * as typography from "./typography.pc"
-
-<ui.Button className={cx(
-  typography.classNames["big-text"],
-  typography.classNames["strong"]
-)} />
-```
-
 Bindings can also be defined outside of string attributes. For example:
 
 ```html
@@ -1093,7 +1076,7 @@ You can also use the shorthand approach like so:
 </div>
 ```
 
-This is particularly useful for removing some redundancy in your code. For example:
+This is particularly useful for making your code more DRY. For example:
 
 ```html
 <input export component as="Input" 
@@ -1127,13 +1110,26 @@ type MessageProps = {
 export const Message: React.FC<MessageProps>;
 ```
 
-So in other words, your application won't compile if you're providing the incorrect Paperclip UI props.
+> For more information around type safety, take a look at the [type safety doc](safety-type-definitions).
 
 <!-- TODO: docs on type safety -->
 
 ### Variant styles
 
-Variant styles were touched on a bit under the [Defining reviews](#defining-previews) section. Basically, you can apply different class names depending on your component properties. Here's an example:
+The variant style syntax allows you to apply classes based on component properties - useful for creating variants.
+
+**Syntax**:
+
+```html
+<div component as="MyComponent" className:variant-name="class-name">
+</div>
+
+<!-- Usage -->
+
+<MyComponent variant-name />
+```
+
+**Example**:
 
 ```html live
 <style>
@@ -1195,4 +1191,19 @@ Fragments are useful if you want to render a collection of elements. For example
     <li>feed me</li>
   </fragment>}
 />
+```
+
+You can also define components from them:
+
+```html
+<fragment component as="Items">
+  <li>Item</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+  <li>Item 4</li>
+</fragment>
+
+<ul>
+  <Items />
+</ul>
 ```
