@@ -29,7 +29,25 @@ Styles in Paperclip have a bit more behavior than regular CSS.
 
 ### Nested rules
 
-In Paperclip, you can nest style rules. For example:
+Nested rules eliminates some redundancy around defining style selectors.
+
+**Syntax**:
+
+```css
+.parent-rule {
+
+  /* equivalent to: .parent-rule .child-rule */
+  .child-rule {
+
+  }
+  /* equivalent to: .parent-rule--variant */
+  &--variant-rule {
+
+  }
+}
+```
+
+**Example**:
 
 
 ```html live
@@ -88,9 +106,28 @@ In Paperclip, you can nest style rules. For example:
 </div>
 ```
 
-### Style mixins
+### @mixin
 
-Style mixins are useful for defining a bundle of style declarations (like `color`, `font-size`) that you then can include into style rules. For example:
+Style mixins are useful for defining a bundle of style declarations (like `color`, `font-size`) that you then can include into style rules.
+
+**Syntax**:
+
+```css
+@mixin mixin-name {
+  /* style props */
+  decl-name: decl-value;
+}
+```
+
+**Including mixins syntax**:
+
+```css
+.my-style {
+  @include mixin-name another-mixin and-another-mixin;
+}
+```
+
+ **Example**:
 
 ```html live
 // file: mixin-demo.pc
@@ -124,9 +161,120 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 </div>
 ```
 
-### Global styles
+### @export
+
+The `@export` rule allows you to export styles that are referencable in other documents, as well as application code.
+
+**Syntax**:
+
+```css
+@export {
+  .my-style {
+    /* styles here */
+  }
+
+  @keyframes my-keyframe {
+    /* keyframe code here */
+  }
+
+  @mixin my-mixin {
+    /* styles here */
+  }
+}
+```
+
+**Example**:
+
+```html live 
+
+You're also welcome to reference styles from other documents, specifically `class names`, `mixins`, and `keyframes`. For example:
+
+```html live
+// file: main.pc
+<import src="./styles.pc" as="styles">
+
+<style>
+  .header-text {
+    @include styles.big-text;
+    animation: styles.pulse 1s infinite;
+  }
+</style>
+
+<!-- >>> is a class reference - docs below -->
+<div className="header-text >>>styles.default-text">
+  Does "heterological" describe itself?
+</div>
+
+// file: styles.pc
+
+<style>
+
+  /* Exported mixins */
+
+  /* @export docs below */
+  @export {
+    @mixin text-color-green-default {
+      color: green;
+    }
+    @mixin big-text {
+      font-size: 32px;
+    }
+  }
+
+  /* Exported classes */
+
+  @export {
+    .default-text {
+      font-family: Herculanum;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  /* Exported animations */
+
+  @export {
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  }
+</style>
+```
+
+Note that you _must_ wrap styles around `@export` if you want to reference them. 
+
+> On that note, I'd recommend only exporting things that you need in other documents since export keywords (`@export`, `export`) make it clear around what's public & private. 
+
+You can reference class names in React code like so:
+
+```jsx
+import * as cx from "classnames";
+import * as typography from "./typography.pc";
+<div className={cx(
+  typography.classNames["default-text"]
+)}>
+```
+
+Note that `.header-text` is not exported, so it's not available in our app code.
+
+### :global
 
 All style rules are, by default, scoped to the document they're defined in. This ensures that they don't leak & have unintended side-effects. However, there _are_ rare cases when you may need to define a global style rule, such as styling HTML defined outside of Paperclip that doesn't have a way to define a `class` attribute. 
+
+**Syntax**:
+
+```css
+:global(.my-selector-here > div ~ .another-selector) {
+  name: value;
+}
+```
 
 Here's an example that stylizes parts of [react-select](https://github.com/JedWatson/react-select):
 
@@ -186,7 +334,22 @@ import * as ui from './Select.pc';
 
 ## Defining components
 
-Components are your UI building blocks. Here's an example:
+Components are your UI building blocks. 
+
+**Syntax**:
+
+```html
+
+<!-- defining the component -->
+<element-name component as="my-component-name">
+</element-name>
+
+<!-- using it -->
+<my-component-name />
+```
+
+
+**Example**:
 
 ```html live
 <style>
@@ -288,16 +451,25 @@ Nothing to see here!
 
 > Check out the [React Todo MVC Example](https://github.com/crcn/paperclip/blob/master/examples/react-todomvc/src/app.pc) if you're looking for a more extensive demo. 
 
-I'd recommend that you render every visual state of your UI in Paperclip since since that will enable you to set up more reliable [visual regression tests](safety-visual-regression.md).
-
-Also note that preview elements won't affect your application size since they're not compiled, so you can write previews to your hearts content. 
+I'd recommend that you render every visual state of your UI in Paperclip since since that will enable you to set up more reliable [visual regression tests](safety-visual-regression.md). Also note that preview elements won't affect your application size since they're not compiled, so you can write previews to your hearts content. 
 
 <!-- TODO - point to class name variants -->
 <!-- TODO - point to guide around defining previews -->
 
 ### Exporting components
 
-To export a component, simply add an `export` attribute like so:
+Components can be exported to be used in application code, as well as other documents.
+
+**Syntax**:
+
+```html
+
+<!-- just add the "export" attribute to any component -->
+<div export component as="MyComponent">
+</div>
+```
+
+**Example**:
 
 ```html live
 // file: todos.pc
@@ -405,9 +577,124 @@ const TodoApp = () => {
 }
 ```
 
+We can also use our exported component in other Paperclip documents. Here's an example:
+
+
+```html live
+// file: importing-components-demo.pc
+<import src="./todos.pc" as="todos">
+
+<style>
+  .preview {
+    display: flex;
+    &-item {
+      margin-left: 20px;
+    }
+  }
+</style>
+
+<div className="preview">
+  <todos.Preview className=">>>preview-item" />
+  <todos.EmptyPreview className=">>>preview-item" />
+</div>
+
+// file: todos.pc
+<import src="./styles.pc" as="styles">
+
+<!-- Components -->
+
+<div export component as="App" className=">>>styles.App {className?}">
+  {children}
+</div>
+
+<input export component as="NewItemInput" {onChange} />
+
+<div export component as="Header" className=">>>styles.Header">
+  <h4>Todos</h4>
+  {children}
+</div>
+
+<ul export component as="List" className=">>>styles.List">
+  {children}
+</ul>
+
+<li export component as="Item" className=">>>styles.Item" {onClick}>
+  <input type="checkbox" checked={completed}> 
+  <span className=">>>styles.label">{children}</span>
+</li>
+
+<!-- Export re-usable previews that can be used
+in other previews -->
+
+<App export component as="Preview" {className?}>
+  <Header>
+    <NewItemInput />
+  </Header>
+  <List>
+    <Item>Clean cat car</Item>
+    <Item>Wash car</Item>
+    <Item completed>Wash car</Item>
+  </List>
+</App>
+
+
+<App export component as="EmptyPreview" {className?}>
+  <Header>
+    <NewItemInput />
+  </Header>
+  Nothing to see here
+</App>
+
+<!-- render main preview -->
+<Preview />
+
+// file: styles.pc
+
+<!-- Typically in the same file as components, but they're here for this demo since they're not the focus. -->
+<style>
+  .App {
+    font-family: Chalkduster;
+  }
+  .Header {  
+    h4 {
+      margin: 0;
+      margin-bottom: 8px;
+    }
+    margin-bottom: 8px;
+  }
+  .List {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  .Item {
+
+    // Needs
+    :global(input[type="checkbox"]) {
+      margin-right: 8px;
+      &:checked ~ .label {
+        text-decoration: line-through;
+      }
+    }
+  }
+</style>
+
+No preview here!
+```
+
+☝🏻 This is a pattern that's used quite a bit - creating various `preview` components & then using them in other documents to preview your entire application UI. They're removed from your application bundle (so long as you don't use them in app code) because of [tree-shaking](https://webpack.js.org/guides/tree-shaking/).
+
 ## Overriding component styles
 
-You can override component styles using the `>>>` syntax like so:
+You can override styles in other components assuming that a component exposes an attribute that's bound to `className`. 
+
+**Syntax**:
+
+```html
+attributeBoundToClassName=">>>class-name"
+```
+
+**Example**:
 
 ```html live
 // file: style-override-demo.pc
@@ -526,7 +813,16 @@ There may be a case where you want to define a component of a component. Just ad
 
 ## Importing documents
 
-Documents can export styles & components, which can then be imported into other Paperclip docs. For example:
+You can import styles & components into your document.
+
+**Syntax**:
+
+```html
+<import src="./path/to/document.pc" as="unique-namespace">
+```
+
+
+**Example**:
 
 ```html live
 // file: main.pc
@@ -575,76 +871,10 @@ Documents can export styles & components, which can then be imported into other 
 Nothing here!
 ```
 
-The import element takes a `src` and an _optional_ `as="unique-namespace"` attribute. The `as` keyword is your access point into anything exported by the imported document, like above. 
+The `as` keyword is your access point into anything exported by the imported document, like above. 
 
-### Importing styles
 
-You're also welcome to reference exported styles from other documents, too - particularly `class names`, `mixins`, and `keyframes`. For example:
-
-```html live
-// file: main.pc
-<import src="./styles.pc" as="styles">
-
-<style>
-  .header-text {
-    @include styles.big-text;
-    animation: styles.pulse 1s infinite;
-  }
-</style>
-
-<!-- >>> is a class reference - docs below -->
-<div className="header-text >>>styles.default-text">
-  Does "heterological" describe itself?
-</div>
-
-// file: styles.pc
-
-<style>
-
-  /* Exported mixins */
-
-  /* @export docs below */
-  @export {
-    @mixin text-color-green-default {
-      color: green;
-    }
-    @mixin big-text {
-      font-size: 32px;
-    }
-  }
-
-  /* Exported classes */
-
-  @export {
-    .default-text {
-      font-family: Herculanum;
-      letter-spacing: 0.05em;
-    }
-  }
-
-  /* Exported animations */
-
-  @export {
-    @keyframes pulse {
-      0% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.5;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-  }
-</style>
-```
-
-Note that you _must_ wrap styles around `@export` if you want to reference them. 
-
-> I'd recommend only exporting things that you need in other documents since export keywords (`@export`, `export`) make it clear around what's public & private. 
-
-### Global imports
+### Global styles
 
 `:root` and `:global` CSS properties are applied globally when imported. Here's an example:
 
@@ -681,7 +911,7 @@ It's okay to define `:root` variables - this is common pattern around defining t
 
 ## Bindings
 
-You may have noticed the use of `{children}` above - this is a binding, and Paperclip has a number of ways to define them.
+Bindings allow you to define dynamic behavior in components.
 
 ### Child bindings
 
@@ -901,15 +1131,18 @@ So in other words, your application won't compile if you're providing the incorr
 
 <!-- TODO: docs on type safety -->
 
-### Variant bindings
+### Variant styles
 
-Variant bindings were touched on a bit under the [Defining reviews](#defining-previews) section. Basically, you can apply different class names depending on your component properties. Here's an example:
+Variant styles were touched on a bit under the [Defining reviews](#defining-previews) section. Basically, you can apply different class names depending on your component properties. Here's an example:
 
 ```html live
 <style>
   .Header {
     font-family: Luminari;
     font-size: 12px;
+
+    /* I recommend that you do this instead of &.big to avoid
+    CSS specificity issues */
     &--big {
       font-size: 32px;
     }
@@ -923,9 +1156,43 @@ Variant bindings were touched on a bit under the [Defining reviews](#defining-pr
 </style>
 
 <div component as="Header"
-  className="Header">
-  TODO
+  className="Header"
+  className:big="Header--big"
+  className:medium="Header--medium"
+  className:small="Header--small">
+  {children}
 </div>
 
-<Header />
+<Header big>
+  Big header
+</Header>
+<Header medium>
+  Medium header
+</Header>
+<Header small>
+  Small header
+</Header>
+<Header>
+  Regular header
+</Header>
+```
+
+
+
+## Fragments
+
+Fragments are useful if you want to render a collection of elements. For example:
+
+```html live
+<ul component as="List">
+  {listItems}
+</ul>
+
+<List
+  listItems={<fragment>
+    <li>feed fish</li>
+    <li>feed cat</li>
+    <li>feed me</li>
+  </fragment>}
+/>
 ```
