@@ -15,7 +15,7 @@ export default props => {
     let entry;
 
     for (const file of files) {
-      const name = (file.match(/(.*?\.pc)/) || [, "entry.pc"])[1];
+      const name = (file.match(/(.*?\.pc)/) || [, "main.pc"])[1];
       if (!entry) {
         entry = name;
       }

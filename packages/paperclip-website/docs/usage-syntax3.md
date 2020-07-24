@@ -1,0 +1,530 @@
+---
+id: usage-syntax2
+title: Paperclip Syntax
+sidebar_label: Syntax
+---
+
+## Styling
+
+You can style elements using the native `<style />` element. **Note that styles are scoped to the template, meaning that they won't leak to _other_ templates.** For example:
+
+```html live
+<style>
+  div {
+    color: red;
+  }
+</style> 
+
+<div>Something</div>
+```
+
+☝🏻 The `div { }` rule here is only applied to `<div>Something</div>`.
+
+### Class references
+
+Class references use the `>>>class-name` syntax, and they allow you to apply or reference styles in other Paperclip files. **For example, here's how
+you apply styles in another file**:
+
+```html live
+// file: entry.pc
+
+<import as="Message" src="./message.pc">
+<style>
+  .my-style-override {
+    text-decoration: underline;
+  }
+</style>
+<Message className=">>>my-style-override">
+  Hello World
+</Message>
+
+// file: message.pc
+
+<style>
+  .message {
+    font-size: 24px;
+    font-family: Helvetica;
+  }
+</style>
+<div export component as="default" className="message {className?}">
+  {children}
+</div>
+```
+
+**And here's how you reference classes defined in other files**:
+
+```html live
+// file: entry.pc
+<import src="./typography.pc" as="typography">
+<span className=">>>typography.default-font">
+  Hola amigo!
+</span>
+
+// file: typography.pc
+<style>
+  @export {
+    .default-font {
+      font-family: papyrus;
+      letter-spacing: 0.05em;
+      font-size: 32px;
+      color: green;
+    }
+  }
+</style>
+```
+
+### Exporting styles
+
+The `@export` util allows us to export `mixins`, `classes`, and `keyframes`. For example:
+
+```html live
+// file: export-examples.pc
+<style>
+  @export {
+    @mixin default-font {
+      font-family: Helvetica;
+      color: #333;
+    }
+    
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+      transform: rotate(360deg);
+      }
+    }
+
+    @mixin big-text {
+      font-size: 24px;
+    }
+
+    .header {
+      @include big-text default-font;
+      transform-origin: center;
+      display: inline-block;
+    }
+  }
+  
+  .spinning {
+      animation: spin 1s infinite;
+  }
+</style>
+
+<div className="header">
+  I'm a header!
+</div>
+
+<div className="header spinning">
+  I'm a header!
+</div>
+
+// file: preview.pc
+
+<import as="export-examples" src="./export-examples.pc">
+
+<style>
+  .some-style {
+    @include export-examples.big-text;
+    animation: export-examples.spin 1s infinite;
+  }
+</style>
+
+<div className=">>>export-examples.header some-style">
+  Something
+</div>
+```
+
+
+### Variant styles
+
+the `class:prop` functionality allows you to easily create variants of a component. For example:
+
+```html
+<style>
+  .button {
+    color: black;
+    &--alt {
+      color: red;
+    }
+    &--secondary {
+      color: gold;
+    }
+  }
+</style>
+
+<div component as="Button" 
+  class="button" 
+  class:alt="button--alt" 
+  class:secondary="button--secondary">
+  {children}
+</div>
+
+<Button>
+  I'm the default button
+</Button>
+<Button alt>
+  I'm an alt button
+</Button>
+<Button secondary>
+  I'm the secondary button
+</Button>
+```
+
+You can also use the shorthand version:
+
+
+```html
+<style>
+  .button {
+    color: black;
+    &.alt {
+      color: red;
+    }
+  }
+</style>
+
+<div component as="Button" 
+  class="button" 
+  class:alt>
+  {children}
+</div>
+```
+
+However, be aware that using the shorthand version may prevent you from overriding styles because of [CSS specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity).
+
+### Global selectors
+
+Global selectors allow you to apply styles _outside_ of the scope of this file. To do that, you can define:
+
+```css
+:global(.selector) {
+  color: red;
+}
+```
+
+**This property should be reserved for very special cases whre you need it.** For most other cases where you need to override styles, I'd recomend you use the style piercing operator (`>>>`).
+
+
+## Components
+
+Components are useful for reusing groups of elements & text. Here's how you create one:
+
+```html
+<div component as="Message">
+  Hello {text}
+</div>
+
+<!-- prints Hello World -->
+<Message text="World" />
+```
+
+Components are defined by adding a `component` and `as` attribute to any element at the highest level in the template document. 
+
+> Note that you can name components however you want, just bare in mind that the names will be in `PascalCase` when they're compiled to code. Because of that, I'd recommend using `PascalCase` for component names to make things more obvious.
+
+### Exporting components
+
+If you want to use components in JavaScript code, you'll need to define an `export` attribute. For example:
+
+```html
+<!-- counter.pc -->
+<div export component as="Counter" {onClick}>
+  Hello {currentCount}
+</div>
+```
+
+Then in JSX code, you can import component:
+
+```javascript
+import {Counter as CounterView} from "./message.pc";
+import React, {useState} from "react";
+
+export function Counter() {
+  const [currentCount, setCount] = useState(0);
+  const onClick = () => setCount(currentCount + 1);
+
+  return <CounterView 
+    currentCount={currentCount} 
+    onClick={onClick} 
+  />;
+};
+```
+
+### Default components 
+
+Default exports can be defined using `default` for the `as` attribute:
+
+```html
+<!-- counter.pc -->
+<div export component as="default" {onClick}>
+  Hello {currentCount}
+</div>
+```
+
+Here's how you import this component is JSX code:
+
+
+```javascript
+import CounterView from "./counter.pc";
+import React, {useState} from "react";
+
+export function Counter() {
+
+  // code here...
+  const currentCount = 0;
+  const onClick = () => {};
+  return <CounterView 
+    currentCount={currentCount} 
+    onClick={onClick} 
+  />;
+};
+```
+
+## Bindings
+
+Bindings help you define dynamic parts of your components. For example:
+
+```html
+<div component as="Message">
+  Hello {text}
+</div>
+
+<Message text="World" />
+<Message text={<strong>World</strong>} />
+```
+
+`{children}` behaves a bit differently:
+
+```html
+<div component as="Message">
+  Hello {children}
+</div>
+
+<Message>
+  <strong>World</strong>
+</Message>
+```
+
+### Attribute bindings
+
+Example:
+
+```html
+
+<style>
+  .red {
+    color: red;
+  }
+  .blue {
+    color: blue;
+  }
+</style>
+
+<div export component as="Message" class={class}>
+  {children}
+</div>
+
+<Message class="red">
+  Hello World
+</Message>
+
+<Message class="blue">
+  Hello World
+</Message>
+```
+
+Since the attribute key & binding share the same name, we can use the **shorthand approach**:
+
+```html
+<!-- styles here -->
+<div export component as="Message" {class}>
+  {children}
+</div>
+
+<Message class="red">
+  Hello World
+</Message>
+```
+
+We can also include bindings in attribute strings. For example:
+
+```html
+<!-- styles here -->
+<div export component as="Message" className="some-class {className}">
+  {children}
+</div>
+
+<Message class="red">
+  Hello World
+</Message>
+```
+
+> ☝🏻 The `class` attribute can also be defined as `className`. Though, I'd recommend using `className` instead if you're
+using these components in JSX for consistency. 
+
+### HTML in bindings
+
+Bindings can also take HTML like so:
+
+```html
+<div export component as="Panel">
+  <div className="header">{header}</div>
+  <div className="content">{content}</div>
+</div>
+
+<Panel
+  header={<h1>I'm a header</h1>}
+  content={<AnotherComponent>More stuff</AnotherComponent>}
+/>
+```
+
+### Optional bindings 
+
+Paperclip supports optional properties like so:
+
+```html
+<div export component as="Test">
+  {fullName?.first}
+</div>
+```
+
+Which is translated into something like:
+
+```typescript
+type TestProps = {
+  fullName?: {
+    first: any
+  }
+};
+
+export const Test = (props: TestProps) => {
+  return <div>
+    {props.fullName && props.fullName.first}
+  </div>;
+};
+```
+
+## Importing documents
+
+> For a good example of this, check out the [React TodoMVC example](./../examples/react-todomvc).
+
+`<import />` allows you to import other templates into your component files.  Suppose you have a `todo-item.pc` file:
+
+```html
+<li export component as="default">{label}</li>
+```
+
+You can import that file like so:
+
+```html
+<!-- todo-list.pc -->
+<import as="TodoItem" src="./todo-item.pc">
+
+<ul component as="TodoItems">
+  {todoItems}
+</ul>
+
+<!-- preview -->
+<TodoItems
+  todoItems={<fragment>
+    <TodoItem label="wash car" />
+    <TodoItem label="feed dog" />
+  </fragment>}
+/>
+```
+
+> For  `<fragment></fragment>` docs, check [here](#fragments-).
+
+### Rendering components from import
+
+In some cases you may want to use different components from your imported file. For example:
+
+```html
+<style>
+  li.completed {
+    text-decoration: line-through;
+  }
+</style>
+
+<li export component as="default" class:completed>
+  <input type="checkbox" onClick={onCompleteCheckboxClick}>
+  {label}
+</li>
+<!--  
+  Part that is used to preview component. no-compile tells
+  compilers not to include this part.
+-->
+
+<default export component as="CompletedPreview" {label} completed />
+<default export component as="IncompletePreview" {label} />
+```
+
+☝🏻`CompletedPreview`, and `IncompletePreview` give us different previews of our `TodoItem` component. To use these parts in an import, we can do something like this:
+
+```html
+<!-- todo-list.pc -->
+
+<import as="TodoItem" src="./todo-item.pc">
+
+<div export component as="TodoList">
+
+  <h1>Todos:</h1>
+  <input type="text" onKeyPress={onNewTodoKeyPress}>
+
+  <ul>
+    {todoItems}
+  </ul>
+</div>
+
+<TodoList todoItems={<fragment>
+  <TodoItem:CompletedPreview label="Clean car" />
+  <TodoItem:IncompletePreview label="Walk dog" />
+</fragment>} />
+```
+
+Here's what the preview looks like:
+
+![todos demo](assets/todos-demo.png)
+
+The JSX usage code for that might look something like:
+
+```javascript
+// todo-list.jsx 
+
+import React from "react";
+import {TodoList as TodoListView} from "./todo-list.pc";
+
+// We're using the TodoItem component assuming that it's using the todo-item.pc template.
+import TodoItem from "./todo-item.tsx";
+
+export function TodoList() {
+  const todos = [
+    { label: "Eat food" },
+    { label: "Wash car" }
+  ];
+
+  return <TodoListView todoItems={
+    todos.map(todo => <TodoItem item={item} />)
+  } />
+}
+```
+
+
+## Fragments
+
+Fragments are useful if you want to render a collection of elements. For example:
+
+```html
+<ul component as="List">
+  {listItems}
+</ul>
+
+<List
+  listItems={<fragment>
+    <li>feed fish</li>
+    <li>feed cat</li>
+    <li>feed me</li>
+  </fragment>}
+/>
+```
