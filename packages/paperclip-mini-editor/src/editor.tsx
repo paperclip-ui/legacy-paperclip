@@ -54,7 +54,6 @@ export const createComponentClass = ({
     const [currentUri, setCurrentUri] = useState(defaultUri);
 
     const code = currentGraph[currentUri];
-    console.log(theme);
 
     const engine = usePaperclipEngine(initialGraph);
 
@@ -114,7 +113,6 @@ export const createComponentClass = ({
   };
 
   const highlight = (code, language, theme) => {
-    console.log(theme, Prism, code);
     return (
       <Highlight Prism={Prism} code={code} theme={theme} language={language}>
         {({ tokens, getLineProps, getTokenProps }) => (
