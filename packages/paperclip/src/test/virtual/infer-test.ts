@@ -200,7 +200,7 @@ describe(__filename + "#", async () => {
       }
     ],
     [
-      `<div component as="a" class:test>
+      `<div component as="a" class:test="test">
       </div>`,
       {
         kind: 0,
@@ -216,7 +216,7 @@ describe(__filename + "#", async () => {
       }
     ],
     [
-      `<div component as="a" class:test>
+      `<div component as="a" class:test="test">
         {test}
       </div>`,
       {

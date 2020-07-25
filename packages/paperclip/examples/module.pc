@@ -3,3 +3,6 @@
     // 
   }
 </style>
+
+<a test:className="ab" className:a="a">
+</a>

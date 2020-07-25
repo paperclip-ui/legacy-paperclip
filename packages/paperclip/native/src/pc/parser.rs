@@ -435,9 +435,15 @@ fn parse_key_value_attribute<'a>(
 
     let mut value = None;
 
+
     if tokenizer.peek(1)? == Token::Equals {
       tokenizer.next()?; // eat =
       value = Some(parse_attribute_value(tokenizer)?);
+    
+    // Fix https://github.com/crcn/paperclip/issues/306
+    // Keep in case we want to turn this back on.
+    } else {
+      return Err(ParseError::unexpected_token(tokenizer.utf16_pos));
     }
 
     Ok(pc_ast::Attribute::PropertyBoundAttribute(

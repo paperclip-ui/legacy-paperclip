@@ -30,7 +30,7 @@ describe(__filename + "#", () => {
   it("dynamic attributes work", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Component" class="primary" class:alt="alt" class:alt2>
+        <div component as="Component" class="primary" class:alt="alt" class:alt2="alt2">
           {children}
         </div>
 
@@ -285,7 +285,7 @@ describe(__filename + "#", () => {
     xit("Displays error for class binding outside of component", async () => {
       const graph = {
         "/entry.pc": `
-          <div class:a>
+          <div class:a="a">
           </div>
         `
       };
@@ -452,7 +452,7 @@ describe(__filename + "#", () => {
   it("Returns component properties", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" class:a {f} {b} className="{c}">
+        <div component as="Test" class:a="a" {f} {b} className="{c}">
           {d}
           {e?}
           {f?}
