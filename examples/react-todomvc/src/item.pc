@@ -154,7 +154,7 @@
 </fragment>
 
 <fragment export component as="default">
-  <li class="todo" class:editing class:completed>
+  <li class="todo" class:editing="editing" class:completed="completed">
     {children}
   </li>
 </fragment>

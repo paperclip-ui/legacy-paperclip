@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "target": "es5",
+    "declaration": true,
     "moduleResolution": "node",
     "module": "commonjs",
     "allowSyntheticDefaultImports": true,

@@ -7,6 +7,8 @@ yarn-*.log
 *.artifacts
 tmp/
 *.pc.d.ts
+*.pc.js
+*.pc.css
 *.vsix
 *.DS_Store
 lerna-debug.log

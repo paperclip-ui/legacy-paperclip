@@ -4,6 +4,7 @@ title: Using Paperclip in React apps
 sidebar_label: React usage
 ---
 
+
 ## Installation
 
 > You can skip this step if you set up a new Paperclip project using the [CLI tool](usage-cli.md).
@@ -46,7 +47,7 @@ export default () => {
 
 ☝🏻 This example uses the following Paperclip UI file:
 
-```html
+```html live
 <style>
    .Container {
      font-family: Helvetica;
@@ -104,12 +105,13 @@ export default () => {
 
 There will be some cases where you might want to add more behavior around styling than what Paperclip can do. For that you can just use inline styles. Here's an example:
 
-```html
+```html live
 <style>
   .progress {
-    background: #333;
+    background: linear-gradient(to right, #F60, #00CC00);
     border-radius: 99px;
     height: 3px;
+    margin: 4px;
   }
 </style>
 

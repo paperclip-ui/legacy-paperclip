@@ -1,7 +1,7 @@
-import { Engine, infer } from "../../..";
+import { createEngine, infer } from "../../..";
 import { expect } from "chai";
 
-describe(__filename + "#", () => {
+describe(__filename + "#", async () => {
   const cases = [
     [
       `{a}`,
@@ -200,7 +200,7 @@ describe(__filename + "#", () => {
       }
     ],
     [
-      `<div component as="a" class:test>
+      `<div component as="a" class:test="test">
       </div>`,
       {
         kind: 0,
@@ -216,7 +216,7 @@ describe(__filename + "#", () => {
       }
     ],
     [
-      `<div component as="a" class:test>
+      `<div component as="a" class:test="test">
         {test}
       </div>`,
       {
@@ -234,7 +234,7 @@ describe(__filename + "#", () => {
     ]
   ];
 
-  const engine = new Engine({});
+  const engine = await createEngine({});
   for (const [source, inference] of cases) {
     it(`can infer ${source}`, () => {
       const ast = engine.parseContent(String(source));

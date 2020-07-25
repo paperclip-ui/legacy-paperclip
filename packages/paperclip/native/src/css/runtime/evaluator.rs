@@ -755,7 +755,10 @@ fn evaluate_style_key_value_declaration<'a>(
           .to_string();
       } else {
         return Err(RuntimeError::new(
-          "Unable to resolve file.".to_string(),
+          format!(
+            "Unable to resolve file: {} from {}",
+            relative_path, context.uri
+          ),
           context.uri,
           &expr.value_location,
         ));

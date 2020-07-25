@@ -94,7 +94,7 @@ export class Renderer {
     this._em.addListener(RenderEventTypes.ERROR_BANNER_CLICK, listener);
   };
 
-  initialize({ sheet, preview, importedSheets }: LoadedData) {
+  initialize = ({ sheet, preview, importedSheets }: LoadedData) => {
     removeAllChildren(this._stage);
     removeAllChildren(this._mainStyleContainer);
     removeAllChildren(this._importedStylesContainer);
@@ -115,7 +115,7 @@ export class Renderer {
     );
     this._mainStyleContainer.appendChild(style);
     this._stage.appendChild(node);
-  }
+  };
 
   private _addSheets(importedSheets: SheetInfo[]) {
     for (const { uri, sheet } of importedSheets) {
@@ -170,21 +170,26 @@ export class Renderer {
 
     const errorElement = this._domFactory.createElement("div");
 
-    // To style this, copy & paste in paperclip.
-    errorElement.innerHTML = `
-    <div style="position: fixed; cursor: pointer; bottom: 0; width: 100%; word-break: break-word; box-sizing: border-box; font-family: Helvetica; padding: 10px; background: rgb(255, 152, 152); color: rgb(138, 31, 31); line-height: 1.1em">
-      <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">
-        Error&nbsp;in&nbsp;${url.fileURLToPath(uri)}:
+    // url.fileURLToPath may be null in some cases
+    try {
+      // To style this, copy & paste in paperclip.
+      errorElement.innerHTML = `
+      <div style="position: fixed; cursor: pointer; bottom: 0; width: 100%; word-break: break-word; box-sizing: border-box; font-family: Helvetica; padding: 10px; background: rgb(255, 152, 152); color: rgb(138, 31, 31); line-height: 1.1em">
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">
+          Error&nbsp;in&nbsp;${url.fileURLToPath(uri)}:
+        </div>
+        <div style="font-size: 14px;">
+        ${message}
+        </div>
       </div>
-      <div style="font-size: 14px;">
-      ${message}
-      </div>
-    </div>
-    `;
+      `;
 
-    errorElement.onclick = this._onErrorBannerClick.bind(this, error);
+      errorElement.onclick = this._onErrorBannerClick.bind(this, error);
 
-    this._errorOverlay.appendChild(errorElement);
+      this._errorOverlay.appendChild(errorElement);
+    } catch (e) {
+      console.warn(e);
+    }
   }
   _onErrorBannerClick = (error: EngineErrorEvent) => {
     this._clearErrors();

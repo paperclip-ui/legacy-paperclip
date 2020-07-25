@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    [
+      "bundled-import-meta",
+      {
+        "mappings": {
+          "node_modules": "/assets"
+        },
+        "bundleDir": "."
+      }
+    ]
+  ]
+}

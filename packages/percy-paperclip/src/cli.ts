@@ -7,6 +7,7 @@ import { XMLHttpRequest } from "w3c-xmlhttprequest";
 import domTransformation from "./dom-transformation";
 import {
   Engine,
+  createEngine,
   VirtualFragment,
   VirtualNodeKind,
   paperclipSourceGlobPattern,
@@ -30,7 +31,7 @@ export const run = async (
     { cwd, absolute: true }
   );
 
-  const engine = new Engine();
+  const engine = await createEngine();
   const agent = new PercyAgent({
     xhr: XMLHttpRequest,
     domTransformation
@@ -38,7 +39,7 @@ export const run = async (
 
   // wait for the agent to do a quick health check (needed so that the agent doesn't display "not connected" error)
   await new Promise(resolve => {
-    setTimeout(resolve, 500);
+    setTimeout(resolve, 1000);
   });
 
   for (const filePath of paperclipFilePaths) {

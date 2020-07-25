@@ -14,7 +14,7 @@ describe(__filename + "#", () => {
       "/entry.pc": `<import src="/module.pc">`,
       "/module.pc": `<import src="/entry.pc">`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const p = new Promise<any>(resolve => {
       engine.onEvent(event => {
         if (event.kind === EngineEventKind.Error) {
@@ -30,7 +30,7 @@ describe(__filename + "#", () => {
   it("dynamic attributes work", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Component" class="primary" class:alt="alt" class:alt2>
+        <div component as="Component" class="primary" class:alt="alt" class:alt2="alt2">
           {children}
         </div>
 
@@ -39,7 +39,7 @@ describe(__filename + "#", () => {
         <Component alt2 />
       `
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const { preview } = await engine.run("/entry.pc");
     const buffer = `${stringifyVirtualNode(preview)}`;
 
@@ -65,7 +65,7 @@ describe(__filename + "#", () => {
         </style>
       `
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
 
     const buffer = `${stringifyLoadResult(result)}`;
@@ -85,7 +85,7 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `<bad`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const e = waitForError(engine);
     engine.run("/entry.pc").catch(noop);
     const err = await e;
@@ -111,7 +111,7 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `<bad!`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const e = waitForError(engine);
     engine.run("/entry.pc").catch(noop);
     const err = await e;
@@ -137,7 +137,7 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `nothing to export!`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const e = waitForError(engine);
     engine.run("/entry.pc").catch(noop);
     const err = await e;
@@ -156,7 +156,7 @@ describe(__filename + "#", () => {
         <img src="/not/found.png">
       `
     };
-    const engine = createMockEngine(graph, noop, {
+    const engine = await createMockEngine(graph, noop, {
       resolveFile() {
         return null;
       }
@@ -170,7 +170,7 @@ describe(__filename + "#", () => {
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 19, end: 33 },
-      message: "Unable to resolve file."
+      message: "Unable to resolve file: /not/found.png from /entry.pc"
     });
   });
 
@@ -181,7 +181,7 @@ describe(__filename + "#", () => {
           <div a={<div />}></div>
         `
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const { preview } = await engine.run("/entry.pc");
       const buffer = `${stringifyVirtualNode(preview)}`;
 
@@ -199,7 +199,7 @@ describe(__filename + "#", () => {
           <Component class="a">b</Component>
         `
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const { preview } = await engine.run("/entry.pc");
       const buffer = `${stringifyVirtualNode(preview)}`;
 
@@ -213,7 +213,7 @@ describe(__filename + "#", () => {
           <a {class}></a>
         `
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const e = waitForError(engine);
       engine.run("/entry.pc");
       const err = await e;
@@ -231,7 +231,7 @@ describe(__filename + "#", () => {
           <a a={class}></a>
         `
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const e = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const err = await e;
@@ -250,7 +250,7 @@ describe(__filename + "#", () => {
           <a {...class}></a>
         `
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const e = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const err = await e;
@@ -269,7 +269,7 @@ describe(__filename + "#", () => {
           {a}
         `
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const e = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const err = await e;
@@ -285,11 +285,11 @@ describe(__filename + "#", () => {
     xit("Displays error for class binding outside of component", async () => {
       const graph = {
         "/entry.pc": `
-          <div class:a>
+          <div class:a="a">
           </div>
         `
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const e = waitForError(engine);
       engine.run("/entry.pc").catch(noop);
       const err = await e;
@@ -310,7 +310,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(result).to.eql(`<style></style> abc`);
 
@@ -364,7 +364,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(result).to.eql(
       `<style></style><div data-pc-139cec8e>abc cde </div>`
@@ -423,7 +423,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const p = waitForError(engine);
     engine.run("/entry.pc").catch();
     expect(await p).to.eql({
@@ -442,7 +442,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
 
     expect(stringifyLoadResult(await engine.run("/entry.pc"))).to.eql(
       "<style></style> ×"
@@ -452,7 +452,7 @@ describe(__filename + "#", () => {
   it("Returns component properties", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" class:a {f} {b} className="{c}">
+        <div component as="Test" class:a="a" {f} {b} className="{c}">
           {d}
           {e?}
           {f?}
@@ -462,7 +462,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
 
     expect(result.exports.components).to.eql({
@@ -514,7 +514,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
 
     let err;
 
@@ -547,7 +547,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
 
     let err;
 
@@ -575,7 +575,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
 
     let err;
 
@@ -595,5 +595,76 @@ describe(__filename + "#", () => {
         location: { start: 14, end: 15 }
       }
     });
+  });
+
+  it("Can apply a class to {className?} without needing >>>", async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" {className}>
+        </div>
+        <Test className="ok" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_80f4925f_ok ok" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can apply a class to className={className?} without needing >>>`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" className={className?}>
+        </div>
+        <Test className="ok" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_80f4925f_ok ok" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can apply a class to className="a {className?}" without needing >>>`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" className="a {className?}">
+        </div>
+        <Test className="ok" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_80f4925f_a a _80f4925f_ok ok" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Doesn't apply scope if >>> is provided`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="module">
+        <module.Test className=">>>ok" />
+      `,
+      "/module.pc": `
+        <div export component as="Test" className="a {className?}">
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_139cec8e_a a _80f4925f_ok ok" data-pc-139cec8e></div>`
+    );
   });
 });

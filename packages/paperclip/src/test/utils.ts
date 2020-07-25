@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Engine, LoadResult, EngineIO } from "../engine";
+import { Engine, createEngine, LoadResult, EngineIO } from "../../";
 import {
   EngineErrorEvent,
   EngineEventKind,
@@ -22,7 +22,7 @@ export const createMockEngine = (
   onErr = e => console.error(e),
   io: Partial<EngineIO> = {}
 ) =>
-  new Engine(
+  createEngine(
     {
       io: {
         readFile: uri => graph[uri],

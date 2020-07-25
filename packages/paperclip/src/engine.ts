@@ -3,7 +3,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
-import { NativeEngine } from "../native/pkg/paperclip";
 import {
   EngineEvent,
   patchVirtNode,
@@ -52,17 +51,18 @@ export type LoadResult = {
   sheet: any;
   preview: VirtualNode;
 };
-
 export class Engine {
-  private _native: NativeEngine;
+  private _native: any;
   private _listeners: EngineEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
+  private _io: EngineIO;
 
   constructor(
+    private _createNativeEngine: any,
     private _options: EngineOptions = {},
     private _onCrash: (err) => void = noop
   ) {
-    const io: EngineIO = Object.assign(
+    this._io = Object.assign(
       {
         readFile: uri => {
           return fs.readFileSync(new URL(uri) as any, "utf8");
@@ -83,21 +83,22 @@ export class Engine {
       },
       _options.io
     );
+  }
 
-    const initNative = () => {
-      this._native = NativeEngine.new(
-        io.readFile,
-        io.fileExists,
-        io.resolveFile
-      );
+  async $$load() {
+    const io = this._io;
 
-      // only one native listener to for buffer performance
-      this._native.add_listener(this._dispatch);
-    };
+    this._native = await this._createNativeEngine(
+      io.readFile,
+      io.fileExists,
+      io.resolveFile
+    );
 
-    initNative();
+    // only one native listener to for buffer performance
+    this._native.add_listener(this._dispatch);
 
     this.onEvent(this._onEngineEvent);
+    return this;
   }
 
   onEvent(listener: EngineEventListener) {
@@ -257,6 +258,13 @@ export class Engine {
     }
   };
 }
+
+export const createEngine = createNativeEngine => async (
+  options: EngineOptions,
+  onCrash: any
+) => {
+  return await new Engine(createNativeEngine, options, onCrash).$$load();
+};
 
 const existsSyncCaseSensitive = (uri: URL) => {
   const pathname = url.fileURLToPath(uri as any);

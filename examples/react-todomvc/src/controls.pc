@@ -95,7 +95,7 @@ button {
 </style>
 
 <li export component as="Filter">
-  <a {href} class:active>{label}</a>
+  <a {href} class:active="active">{label}</a>
 </li>
 
 <div export component as="default">

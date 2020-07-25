@@ -13,6 +13,7 @@ use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
 use crate::js::runtime::evaluator::evaluate as evaluate_js;
 use crate::js::runtime::virt as js_virt;
+use regex::Regex;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::iter::FromIterator;
@@ -873,9 +874,11 @@ fn evaluate_native_element<'a>(
           &sh_attr.location,
           context,
         )?;
-        let js_value = evaluate_attribute_slot(&sh_attr.reference, context)?;
+        let mut js_value = evaluate_attribute_slot(&sh_attr.reference, context)?;
 
         if js_value.truthy() {
+          js_value = maybe_transform_class_js_value(name, js_value, true, context);
+
           attributes.insert(
             name.to_string(),
             Some(stringify_attribute_value(&name, &js_value)),
@@ -1070,7 +1073,8 @@ fn evaluate_attribute_value<'a>(
     }
     ast::AttributeValue::Slot(value) => {
       assert_attr_slot_restrictions(tag_name, name, &value.location, context)?;
-      evaluate_attribute_slot(&value.script, context)
+      let value = evaluate_attribute_slot(&value.script, context)?;
+      Ok(maybe_transform_class_js_value(name, value, true, context))
     }
   }
 }
@@ -1116,9 +1120,15 @@ fn evaluate_attribute_dynamic_string<'a>(
         }
       }
       ast::AttributeDynamicStringPart::Slot(statement) => {
-        evaluate_attribute_slot(statement, context)
+        let value = evaluate_attribute_slot(statement, context)
           .unwrap()
-          .to_string()
+          .to_string();
+        if let Some(prefixed_value) = maybe_transform_class_value(name, &value, is_native, context)
+        {
+          prefixed_value
+        } else {
+          value
+        }
       }
     })
     .collect::<Vec<String>>()
@@ -1133,6 +1143,63 @@ fn evaluate_attribute_dynamic_string<'a>(
   }))
 }
 
+fn is_class_attribute_name(name: &String) -> bool {
+  name == "class" || name == "className"
+}
+
+fn transform_class_value<'a>(name: &String, value: &String, context: &mut Context) -> String {
+  lazy_static! {
+    static ref scope_re: Regex = Regex::new(r"_\w+_").unwrap();
+  }
+
+  if scope_re.is_match(value) {
+    return value.to_string();
+  }
+
+  let class_name_parts: Vec<&str> = value.split(" ").collect();
+  class_name_parts
+    .iter()
+    .map(|class| {
+      if class != &"" {
+        format!("_{}_{} {}", context.scope, class, class).to_string()
+      } else {
+        class.to_string()
+      }
+    })
+    .collect::<Vec<String>>()
+    .join(" ")
+}
+
+fn maybe_transform_class_value<'a>(
+  name: &String,
+  value: &String,
+  is_native: bool,
+  context: &mut Context,
+) -> Option<String> {
+  if is_class_attribute_name(name) && is_native {
+    Some(transform_class_value(name, value, context))
+  } else {
+    None
+  }
+}
+
+fn maybe_transform_class_js_value<'a>(
+  name: &String,
+  value: js_virt::JsValue,
+  is_native: bool,
+  context: &mut Context,
+) -> js_virt::JsValue {
+  if let Some(prefixed_value) = maybe_transform_class_value(name, &value.to_string(), true, context)
+  {
+    js_virt::JsValue::JsString(js_virt::JsString {
+      value: prefixed_value.to_string(),
+      source: value.get_source().clone(),
+    })
+  } else {
+    value
+  }
+}
+
 fn evaluate_attribute_string<'a>(
   name: &String,
   value: &String,
@@ -1142,19 +1209,8 @@ fn evaluate_attribute_string<'a>(
 ) -> Result<js_virt::JsValue, RuntimeError> {
   let mut val = value.clone();
 
-  if (name == "class" || name == "className") && is_native {
-    let class_name_parts: Vec<&str> = val.split(" ").collect();
-    val = class_name_parts
-      .iter()
-      .map(|class| {
-        if class != &"" {
-          format!("_{}_{} {}", context.scope, class, class).to_string()
-        } else {
-          class.to_string()
-        }
-      })
-      .collect::<Vec<String>>()
-      .join(" ");
+  if let Some(prefixed_class) = maybe_transform_class_value(name, value, is_native, context) {
+    val = prefixed_class;
   } else if name == "src" {
     if is_relative_path(&value) {
       let value_option = context.vfs.resolve(context.uri, &value);
@@ -1162,7 +1218,7 @@ fn evaluate_attribute_string<'a>(
         val = value.to_string();
       } else {
         return Err(RuntimeError::new(
-          "Unable to resolve file.".to_string(),
+          format!("Unable to resolve file: {} from {}", value, context.uri),
           context.uri,
           location,
         ));

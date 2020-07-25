@@ -240,7 +240,7 @@ describe(__filename + "#", () => {
       },
 
       {},
-      `<style></style><span class="red" data-pc-1acb798>message </span>`
+      `<style></style><span class="_1acb798_red red" data-pc-1acb798>message </span>`
     ],
     [
       // style classes prefixed with scope
@@ -258,19 +258,6 @@ describe(__filename + "#", () => {
       },
       {},
       `<style>[class]._80f4925f_something > [class]._80f4925f_something2 { }</style><span class="_80f4925f_something2 something2" data-pc-80f4925f></span>`
-    ],
-    [
-      // style classes prefixed with scope
-      {
-        "/entry.pc": `
-          <span component as="test" class="a {class}">
-          </span>
-          <test class="b" />
-          <test class=">>>b" />
-        `
-      },
-      {},
-      `<style></style><span class="_80f4925f_a a b" data-pc-80f4925f></span><span class="_80f4925f_a a _80f4925f_b b" data-pc-80f4925f></span>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -718,7 +705,7 @@ describe(__filename + "#", () => {
     ]
   ].forEach(([graph, , expectedHTML]: [Graph, any, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
 
       const { sheet, preview, importedSheets: sheets } = await engine.run(
         "/entry.pc"

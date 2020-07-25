@@ -400,13 +400,14 @@ const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
   // only suggest declaration if on new line -- UX is wierd otherwise
   const ws = scanner.current?.value;
   scanner.skipSuperfluous();
+
   if (!scanner.current) {
     if (ws && /[\n\r]/.test(ws)) {
       return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" };
     }
   }
 
-  if (scanner.current?.value === "}") {
+  if (!scanner.current || scanner.current?.value === "}") {
     return null;
   }
 
@@ -487,8 +488,8 @@ const suggestCSSAtRule = (
 
   while (
     scanner.current &&
-    scanner.current.value !== ";" &&
-    scanner.current.value !== "{"
+    scanner.current?.value !== ";" &&
+    scanner.current?.value !== "{"
   ) {
     params += scanner.current.value;
     scanner.next();
@@ -503,7 +504,7 @@ const suggestCSSAtRule = (
   }
 
   if (scanner.current?.value === "{") {
-    if (prefix === "media" || prefix == "keyframes") {
+    if (prefix === "media" || prefix == "keyframes" || prefix === "export") {
       return suggestContainerAtRule(scanner);
     } else {
       return suggestStyleAtRule(scanner);

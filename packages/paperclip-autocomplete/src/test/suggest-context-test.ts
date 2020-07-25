@@ -428,6 +428,15 @@ describe(__filename, () => {
         /* `,
 
       null
+    ],
+    [`<style> @export { `, null],
+    [`<style> @export { a`, null],
+    [
+      `<style> @export { a {\n`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_NAME,
+        prefix: ""
+      }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {

@@ -1,6 +1,6 @@
 {
   "name": "paperclip-website",
-  "version": "14.0.16",
+  "version": "14.0.17",
   "private": true,
   "scripts": {
     "start": "docusaurus start",
@@ -12,7 +12,9 @@
   "dependencies": {
     "@docusaurus/core": "^2.0.0-alpha.58",
     "@docusaurus/preset-classic": "^2.0.0-alpha.58",
+    "@docusaurus/theme-classic": "^2.0.0-alpha.37",
     "clsx": "^1.1.1",
+    "paperclip-mini-editor": "^14.0.17",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
   },
@@ -27,5 +29,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^6.0.3",
+    "null-loader": "^4.0.0",
+    "webpack": "^4.43.0"
   }
 }

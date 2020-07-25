@@ -17,7 +17,7 @@
 </style>
 
 <!-- This component is compiled to code -->
-<div export component as="Button" class:secondary class="button">
+<div export component as="Button" class:secondary="secondary" class="button">
   {children}
 </div>
 
