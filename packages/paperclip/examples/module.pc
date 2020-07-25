@@ -1,8 +1,12 @@
 <style>
-  @export {
-    // 
+  .blarg {
+    color: red;
   }
 </style>
 
-<a test:className="ab" className:a="a">
-</a>
+<div component as="Test" {className?}>
+  Hello
+</div>
+
+<Test className="blarg" />
+<Test className=">>>blarg" />

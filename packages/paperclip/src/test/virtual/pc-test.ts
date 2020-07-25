@@ -596,4 +596,75 @@ describe(__filename + "#", () => {
       }
     });
   });
+
+  it("Can apply a class to {className?} without needing >>>", async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" {className}>
+        </div>
+        <Test className="ok" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_80f4925f_ok ok" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can apply a class to className={className?} without needing >>>`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" className={className?}>
+        </div>
+        <Test className="ok" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_80f4925f_ok ok" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can apply a class to className="a {className?}" without needing >>>`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" className="a {className?}">
+        </div>
+        <Test className="ok" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_80f4925f_a a _80f4925f_ok ok" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Doesn't apply scope if >>> is provided`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="module">
+        <module.Test className=">>>ok" />
+      `,
+      "/module.pc": `
+        <div export component as="Test" className="a {className?}">
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_139cec8e_a a _80f4925f_ok ok" data-pc-139cec8e></div>`
+    );
+  });
 });
