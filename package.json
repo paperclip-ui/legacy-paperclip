@@ -27,6 +27,7 @@
     "test": "lerna run test",
     "build": "lerna run build",
     "lint": "lerna run lint",
+    "link": "lerna run link",
     "postinstall": "lerna bootstrap",
     "build:watch": "lerna run build:watch --parallel",
     "publish:packages": "lerna publish from-package --yes",
