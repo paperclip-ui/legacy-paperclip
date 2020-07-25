@@ -63,6 +63,7 @@ Object.assign(iframe.style, {
   border: "none"
 });
 
+// addresses https://github.com/crcn/paperclip/issues/310
 iframe.srcdoc = `
   <!doctype html>
   <html>

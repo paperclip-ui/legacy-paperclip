@@ -187,7 +187,9 @@ export class Renderer {
       errorElement.onclick = this._onErrorBannerClick.bind(this, error);
 
       this._errorOverlay.appendChild(errorElement);
-    } catch (e) {}
+    } catch (e) {
+      console.warn(e);
+    }
   }
   _onErrorBannerClick = (error: EngineErrorEvent) => {
     this._clearErrors();
