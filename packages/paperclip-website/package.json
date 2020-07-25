@@ -1,6 +1,6 @@
 {
   "name": "paperclip-website",
-  "version": "14.0.17",
+  "version": "14.0.18",
   "private": true,
   "scripts": {
     "start": "docusaurus start",
@@ -14,7 +14,7 @@
     "@docusaurus/preset-classic": "^2.0.0-alpha.58",
     "@docusaurus/theme-classic": "^2.0.0-alpha.37",
     "clsx": "^1.1.1",
-    "paperclip-mini-editor": "^14.0.17",
+    "paperclip-mini-editor": "^14.0.18",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
   },
