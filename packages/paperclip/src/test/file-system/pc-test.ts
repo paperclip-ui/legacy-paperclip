@@ -53,9 +53,7 @@ describe(__filename + "#", () => {
 
     expect(err).not.to.eq(null);
     expect(err.errorKind).to.eql("Runtime");
-    expect(err.message).to.eql(
-      "Unable to resolve file: /not/found.png from file:///Users/craigcondon/Developer/public/paperclip/packages/paperclip/test-fixtures/bad-css-url.pc"
-    );
+    expect(err.message).to.contain("Unable to resolve file: /not/found.png");
   });
 
   it("can resolve module using module path syntax", async () => {
