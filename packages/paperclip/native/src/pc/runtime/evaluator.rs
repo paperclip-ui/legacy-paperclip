@@ -11,9 +11,9 @@ use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEv
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
-use regex::Regex;
 use crate::js::runtime::evaluator::evaluate as evaluate_js;
 use crate::js::runtime::virt as js_virt;
+use regex::Regex;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::iter::FromIterator;
@@ -1121,9 +1121,10 @@ fn evaluate_attribute_dynamic_string<'a>(
       }
       ast::AttributeDynamicStringPart::Slot(statement) => {
         let value = evaluate_attribute_slot(statement, context)
-        .unwrap()
-        .to_string();
-        if let Some(prefixed_value) = maybe_transform_class_value(name, &value, is_native, context) {
+          .unwrap()
+          .to_string();
+        if let Some(prefixed_value) = maybe_transform_class_value(name, &value, is_native, context)
+        {
           prefixed_value
         } else {
           value
@@ -1147,7 +1148,6 @@ fn is_class_attribute_name(name: &String) -> bool {
 }
 
 fn transform_class_value<'a>(name: &String, value: &String, context: &mut Context) -> String {
-
   lazy_static! {
     static ref scope_re: Regex = Regex::new(r"_\w+_").unwrap();
   }
@@ -1170,8 +1170,12 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
     .join(" ")
 }
 
-
-fn maybe_transform_class_value<'a>(name: &String, value: &String, is_native: bool, context: &mut Context) -> Option<String> {
+fn maybe_transform_class_value<'a>(
+  name: &String,
+  value: &String,
+  is_native: bool,
+  context: &mut Context,
+) -> Option<String> {
   if is_class_attribute_name(name) && is_native {
     Some(transform_class_value(name, value, context))
   } else {
@@ -1179,11 +1183,17 @@ fn maybe_transform_class_value<'a>(name: &String, value: &String, is_native: boo
   }
 }
 
-fn maybe_transform_class_js_value<'a>(name: &String, value: js_virt::JsValue, is_native: bool, context: &mut Context) -> js_virt::JsValue {
-  if let Some(prefixed_value) = maybe_transform_class_value(name, &value.to_string(), true, context) {
+fn maybe_transform_class_js_value<'a>(
+  name: &String,
+  value: js_virt::JsValue,
+  is_native: bool,
+  context: &mut Context,
+) -> js_virt::JsValue {
+  if let Some(prefixed_value) = maybe_transform_class_value(name, &value.to_string(), true, context)
+  {
     js_virt::JsValue::JsString(js_virt::JsString {
       value: prefixed_value.to_string(),
-      source: value.get_source().clone()
+      source: value.get_source().clone(),
     })
   } else {
     value
