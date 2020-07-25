@@ -72,7 +72,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 59, end: 91 },
-        message: "Unable to resolve file."
+        message: "Unable to resolve file: /not/found.png from /entry.pc"
       });
     }));
   describe("Mixins", () => {

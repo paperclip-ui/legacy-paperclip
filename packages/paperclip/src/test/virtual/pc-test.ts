@@ -170,7 +170,7 @@ describe(__filename + "#", () => {
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 19, end: 33 },
-      message: "Unable to resolve file."
+      message: "Unable to resolve file: /not/found.png from /entry.pc"
     });
   });
 

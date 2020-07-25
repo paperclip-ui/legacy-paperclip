@@ -4,6 +4,7 @@
   "description": "- real-time editing. Biggest priority is to have a bundler that  - Interoperability. Paperclip should work with any web framework.  - Type safety.  - Visually editable.",
   "main": "./index.js",
   "browser": "./browser.js",
+  "typings": "index.d.ts",
   "scripts": {
     "test": "npm run test:node && cd native && cargo test",
     "lint": "eslint src",
@@ -13,8 +14,7 @@
     "build:watch": "tsc --watch & (cd native && cargo watch -i .gitignore -i \"pkg/*\" -s 'wasm-pack build --release --target nodejs')",
     "build:node": "tsc",
     "build:native": "cd native && cargo build --release",
-    "build:browser": "webpack",
-    "build:bundler": "mkdir -p dist && yarn build:wasm:bundler && cp native/bundler/paperclip_bg.wasm dist/paperclip_bg.wasm",
+    "build:browser": "npm run build:esm && npm run build:wasm:web",
     "build:esm": "tsc --build tsconfig.esm.json",
     "build:wasm:web": "cd native && wasm-pack build --release --target web --out-dir web &&  cat web/paperclip.js | sed 's/import.meta.url/_NOOP_/g' > web/paperclip-no-import-meta.js && cd .. && mkdir -p dist && cp native/web/paperclip_bg.wasm dist/paperclip_bg.wasm",
     "build:wasm:node": "cd native && wasm-pack build --release --target nodejs --out-dir node"
@@ -31,17 +31,9 @@
   },
   "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
   "devDependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.10.5",
-    "@babel/plugin-syntax-import-meta": "^7.10.4",
-    "@babel/preset-env": "^7.10.4",
     "@types/node": "^14.0.20",
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
-    "@wasm-tool/wasm-pack-plugin": "^1.3.1",
-    "babel-plugin-bundled-import-meta": "^0.3.2",
-    "eslint": "^7.4.0",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12"
+    "eslint": "^7.4.0"
   }
 }
