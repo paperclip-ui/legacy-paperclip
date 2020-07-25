@@ -30,6 +30,7 @@ jobs:
           git config --global user.email "craig.j.condon@gmail.com"
           git config --global user.name "crcn"
           npm install
+          npm run build
           npm run publish:documentation
         env:
           USE_SSH: true
