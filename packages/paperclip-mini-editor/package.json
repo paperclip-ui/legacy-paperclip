@@ -1,7 +1,7 @@
 {
   "name": "paperclip-mini-editor",
   "description": "",
-  "version": "14.0.17",
+  "version": "14.0.18",
   "private": false,
   "browser": "browser.js",
   "main": "lib/index.js",
@@ -15,8 +15,8 @@
   "license": "",
   "dependencies": {
     "fast-memoize": "^2.5.2",
-    "paperclip": "^14.0.17",
-    "paperclip-web-renderer": "^14.0.17",
+    "paperclip": "^14.0.18",
+    "paperclip-web-renderer": "^14.0.18",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-simple-code-editor": "^0.11.0"
@@ -29,9 +29,9 @@
     "css-loader": "^3.6.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
-    "paperclip-cli": "^14.0.17",
-    "paperclip-compiler-react": "^14.0.17",
-    "paperclip-loader": "^14.0.17",
+    "paperclip-cli": "^14.0.18",
+    "paperclip-compiler-react": "^14.0.18",
+    "paperclip-loader": "^14.0.18",
     "prism-react-renderer": "^1.1.1",
     "prismjs": "^1.20.0",
     "style-loader": "^1.2.1",
