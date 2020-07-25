@@ -6,7 +6,7 @@
   "browser": "browser.js",
   "main": "lib/index.js",
   "scripts": {
-    "build": "paperclip build --definition --write & npm run build:web",
+    "build": "paperclip build --definition --write && npm run build:web",
     "build:web": "tsc && paperclip build --write && cp src/ui.pc.js src/ui.pc.css src/prism.css lib && mkdir -p dist && cp node_modules/paperclip/dist/* dist",
     "start": "paperclip build --definition --write --watch & webpack-dev-server",
     "build:watch": "paperclip build --definition --write --watch & webpack --watch",
