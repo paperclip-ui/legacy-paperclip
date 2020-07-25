@@ -4,7 +4,7 @@ import { webpack } from "./webpack";
 import { react } from "./react";
 import { typescript } from "./typescript";
 import * as shell from "shelljs";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import { kebabCase } from "lodash";
 
 export const node = {
