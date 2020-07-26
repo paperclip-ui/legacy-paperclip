@@ -12,41 +12,10 @@ import MAIN_DEMO_GRAPH from "./demos/main";
 import IMPORT_CODE_DEMO_SOURCE from "./demos/import-code";
 import CodeBlock from "@theme-init/CodeBlock";
 import * as styles2 from "./index.pc";
+import * as buttonStyles from "./button.pc";
+import * as typography from "./styles/typography.pc";
 
 const Editor = createComponentClass({ React, useState, useEffect, useRef });
-
-const features = [
-  {
-    title: <>Just the visuals</>,
-    // imageUrl: 'img/undraw_docusaurus_mountain.svg',
-    description: (
-      <>
-        Paperclip compliments your existing codebase by covering basic,
-        re-usable components.
-      </>
-    )
-  },
-  {
-    title: <>Scoped styles</>,
-    // imageUrl: 'img/undraw_docusaurus_tree.svg',
-    description: (
-      <>
-        Styles are only applied to the document they're defined in, so you can
-        worry less about leaky CSS rules.
-      </>
-    )
-  },
-  {
-    title: <>Strongly typed</>,
-    // imageUrl: 'img/undraw_docusaurus_react.svg',
-    description: (
-      <>
-        Paperclip UIs compile to strongly typed code, so you never have to deal
-        with missing props.
-      </>
-    )
-  }
-];
 
 const DEMO_URL = Object.keys(MAIN_DEMO_GRAPH)[0];
 
@@ -74,97 +43,75 @@ function Home() {
       title={`Hello from ${siteConfig.title}`}
       description="Description will go into a meta tag in <head />"
     >
-      <styles2.Header></styles2.Header>
-      <header className={clsx("hero hero--primary", styles.heroBanner)}>
-        <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
-          <p className="hero__subtitle">{siteConfig.tagline}</p>
-          <div className={styles.buttons}>
-            <Link
-              className={clsx(
-                "button button--outline button--secondary button--lg",
-                styles.getStarted
-              )}
-              to={useBaseUrl("docs/")}
-            >
-              Get Started
-            </Link>
-          </div>
-          <div className={clsx(styles.heroDemo, "row")}>
-            <div className="col col--12">
-              <Editor
-                graph={MAIN_DEMO_GRAPH}
-                responsive={false}
-                defaultUri={DEMO_URL}
-                theme={prismTheme}
-              />
-            </div>
-          </div>
-        </div>
-      </header>
-      <main>
-        <section className={styles.features}>
-          <div className="container">
-            <div className="row">
-              <BigFeature
-                title="Build UIs faster"
-                description={
-                  <>
-                    You should be able to <i>see</i> what you're building in
-                    realtime, and that's what Paperclip provides - tooling to
-                    build your UIs <i>visually</i>. No more need to jump back
-                    and forth between the browser and code.
-                  </>
-                }
-                preview={
-                  <img
-                    className={styles.preview}
-                    src="img/realtime-editing-2.gif"
-                  />
-                }
-              />
-            </div>
-          </div>
-        </section>
-        <section className={styles.features}>
-          <div className="container">
-            <div className={clsx("col col--12", styles.nuggets)}>
-              <div className="row">
-                {features.map((props, idx) => (
-                  <Feature key={idx} {...props} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+      <styles2.Home>
+        <styles2.Header
+          title={
+            <>
+              Build UIs in <styles2.Highlight>realtime</styles2.Highlight>,
+              directly within <styles2.Highlight>VS Code</styles2.Highlight>
+            </>
+          }
+          description={
+            <>
+              Paperclip is a language designed for visual UI development. No
+              more switching between the browser and code.{" "}
+              <span className="_emoji">🙌</span>
+            </>
+          }
+          cta={
+            <>
+              <buttonStyles.Anchor
+                className={typography.classNames["semi-bold"]}
+              >
+                Get started
+              </buttonStyles.Anchor>
+            </>
+          }
+          preview={<img src="img/realtime-editing-2.gif" />}
+        />
 
-        <section className={styles.features}>
-          <div className="container">
-            <div className="row">
-              <BigFeature
-                title="Import directly into your React app"
-                preview={
-                  <CodeBlock className="language-jsx">
-                    {IMPORT_CODE_DEMO_SOURCE}
-                  </CodeBlock>
-                }
-              />
-            </div>
-          </div>
-        </section>
+        <styles2.MainFeatures>
+          <styles2.MainFeatureItem
+            iconName="shapes"
+            title="Just the basics"
+            description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and basic component "
+          />
+          <styles2.MainFeatureItem
+            iconName="plug"
+            title="Import directly into React code"
+            description="Paperclip documents compile to plain code that you can import directly into your code"
+          />
+        </styles2.MainFeatures>
 
-        <section className={styles.features}>
-          <div className="container">
-            <div className="row">
-              <BigFeature
-                title="Never miss a CSS bug"
-                description="Watch your changes live, directly within VS Code."
-                preview={<img src="img/realtime-editing-2.gif" />}
-              />
-            </div>
-          </div>
-        </section>
-      </main>
+        <styles2.VariousFeatures>
+          <styles2.VariousFeatureItem
+            iconName="chaotic-1"
+            title="Scoped styles"
+            description="Styles are only applied to the document they're in, so no more leaky CSS"
+          />
+          <styles2.VariousFeatureItem
+            iconName="link"
+            title="Strongly typed"
+            description="compile to strongly typed code, so worry less about breaking changes"
+          />
+          <styles2.VariousFeatureItem
+            iconName="grow"
+            title="Incrementally adoptable"
+            description="Paperclip compliments your existing codebase, so use it as you go"
+          />
+        </styles2.VariousFeatures>
+        <styles2.BigFeature
+          title="IDE integration"
+          description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster"
+          preview={<img src="img/realtime-editing-2.gif" />}
+        />
+
+        <styles2.BigFeature
+          title="Never miss a CSS Bug"
+          description="Use the visual regression tool to catch every visual state of your UI. No more broken window CSS. 🎉"
+          preview={<img src="img/realtime-editing-2.gif" />}
+        />
+      </styles2.Home>
     </Layout>
   );
 }

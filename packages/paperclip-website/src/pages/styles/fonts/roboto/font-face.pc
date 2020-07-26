@@ -3,22 +3,22 @@
 <style> 
   @font-face {
     font-family: Roboto;
-    src: url(./Roboto-Light.ttf);
+    /* src: url(./Roboto-Light.ttf); */
     font-weight: 200;
   }
   @font-face {
     font-family: Roboto;
-    src: url(./Roboto-Regular.ttf);
+    /* src: url(./Roboto-Regular.ttf); */
     font-weight: 400;
   }
   @font-face {
     font-family: Roboto;
-    src: url(./Roboto-Medium.ttf);
+    /* src: url(./Roboto-Medium.ttf); */
     font-weight: 500;
   }
   @font-face {
     font-family: Roboto;
-    src: url(./Roboto-Bold.ttf);
+    /* src: url(./Roboto-Bold.ttf); */
     font-weight: 600;
   }
 </style>

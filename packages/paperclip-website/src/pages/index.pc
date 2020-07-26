@@ -4,6 +4,12 @@
 <import src="./button.pc" as="button">
 <import src="./styles/icons/icons.pc" as="icons">
 
+<!-- You should be able to <i>see</i> what you're building in
+                    realtime, and that's what Paperclip provides - tooling to
+                    build your UIs <i>visually</i>. No more need to jump back
+                    and forth between the browser and code.
+
+                    -->
 <style>
   @mixin section-icon {
     margin-right: 8px;
@@ -11,10 +17,6 @@
     font-size: 1.7em;
     position: relative;
     /* top: 2px; */
-  }
-  img {
-    width: 100%;
-    border-radius: 4px;
   }
   ._home {
     background: rgb(245, 245, 245);
@@ -28,12 +30,10 @@
   }
   ._main {
     padding-top: 70px;
-    /* padding-top: var(--gap-7); */
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
     height: 400px;
-    /* display: flex; */
 
     ._blurb {
         margin-top: 40px;
@@ -41,6 +41,7 @@
         flex-shrink:0;
         margin-right: 30px;
       ._title {
+        filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.164));
         @include typography.text-secondary;
         font-size: 1.58em;
         line-height: 1.3em;
@@ -51,8 +52,9 @@
       }
       ._subtext {
         color: rgba(255, 255, 255, 0.7);
+        filter: drop-shadow(0px 0px 1px rgb(0, 0, 0));
         font-size: 0.9em;
-        font-weight: 100;
+        font-weight: 400;
         line-height: 1.7em;
         ._emoji {
           color: rgba(255, 255, 255, 1);
@@ -74,7 +76,7 @@
       /* left: calc(100% - 400px); */
       width: 100%;
       /* box-shadow: -4px 1px 4px 4px rgb(153, 153, 153); */
-      img {
+      :global(img) {
         border-radius: 4px;
         box-shadow: -2px -2px 6px 0px rgba(0, 0, 0, 0.247);
         border: 1px solid rgba(99, 99, 99, 0.404);
@@ -203,7 +205,7 @@
         margin-right: 0;
       }
       ._preview {
-        img {
+        :global(img) {
           position: relative;
           width: 100%;
         }
@@ -226,7 +228,7 @@
 
 </style>
 
-<span component as="Highlight" className="_highlight">
+<span export component as="Highlight" className="_highlight">
   {children}
 </span>
 
