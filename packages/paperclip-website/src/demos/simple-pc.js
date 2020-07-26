@@ -28,7 +28,7 @@ export default SOURCE;
 
 const SOURCE = `
 
-<!-- Scoped styles here -->
+<!-- These styles are scoped -->
 <style>
   ol {
     padding-left: 1em;
@@ -40,7 +40,6 @@ const SOURCE = `
 </style>
 
 <!-- Components exported to code -->
-
 <ol export component as="List">
   {children}
 </ol>
@@ -50,7 +49,6 @@ const SOURCE = `
 </li>
 
 <!-- Preview of UI -->
-
 <List>
   <ListItem>Something</ListItem>
   <ListItem>Something</ListItem>
