@@ -28,7 +28,7 @@ export default SOURCE;
 
 const SOURCE = `
 
-<!-- These styles are scoped -->
+<!-- These styles are scoped to this document -->
 <style>
   ol {
     padding-left: 1em;
@@ -48,11 +48,15 @@ const SOURCE = `
   {children}
 </li>
 
-<!-- Preview of UI -->
+<!-- 
+  Preview of UI for docs, development,
+  and visual regression tests 
+-->
 <List>
-  <ListItem>Something</ListItem>
-  <ListItem>Something</ListItem>
-  <ListItem>Something</ListItem>
+  <ListItem>Bagels 🥯</ListItem>
+  <ListItem>Coffee ☕️</ListItem>
+  <ListItem>Tofurky 🦃</ListItem>
+  <ListItem>Skittles 🌈</ListItem>
 </List>
 `.trim();
 
