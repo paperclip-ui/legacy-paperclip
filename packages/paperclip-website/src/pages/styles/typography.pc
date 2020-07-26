@@ -1,0 +1,27 @@
+<import src="./colors.pc">
+<import src="./fonts/roboto/font-face.pc">
+<import src="./fonts/sora/font-face.pc">
+<import src="./fonts/open-sans/font-face.pc">
+
+<style>
+  @export {
+    @mixin text-secondary {
+      font-family: Sora;
+    }
+    .text-secondary {
+      @include text-secondary;
+    }
+    .text-default {
+      font-size: 16px;
+      font-family: Open Sans;
+      letter-spacing: 0.06em;
+      color: var(--color-grey-100);
+    }
+    .semi-bold {
+      font-weight: 500;
+    }
+    .light {
+      font-weight: 100;
+    }
+  }
+</style>

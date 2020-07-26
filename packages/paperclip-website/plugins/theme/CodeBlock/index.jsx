@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-const { createComponentClass } = require("paperclip-mini-editor");
+import { createComponentClass } from "paperclip-mini-editor";
 import CodeBlock from "@theme-init/CodeBlock";
 import usePrismTheme from "@theme/hooks/usePrismTheme";
 
@@ -23,12 +23,15 @@ export default props => {
       const content = file.replace(name, "").trim();
       graph[name] = content;
     }
+
     return (
       <>
         <Editor graph={graph} defaultUri={entry} theme={prismTheme} />
       </>
     );
   }
+
+  console.log(props);
 
   return <CodeBlock {...props} />;
 };

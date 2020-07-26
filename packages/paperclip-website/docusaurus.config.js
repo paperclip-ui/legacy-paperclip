@@ -1,12 +1,17 @@
 module.exports = {
   title: "Paperclip",
-  tagline: "A language for building UI primitives",
+  tagline: "A language for building UIs in a flash ⚡️",
   url: "https://paperclip.dev",
   baseUrl: "/",
   favicon: "img/favicon.ico",
   organizationName: "crcn", // Usually your GitHub org/user name.
   projectName: "paperclip", // Usually your repo name.
   themeConfig: {
+    colorMode: {
+      defaultMode: "light",
+      // for now
+      disableSwitch: true
+    },
     navbar: {
       title: "Paperclip",
       // logo: {
@@ -82,7 +87,10 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} Craig Condon`
     }
   },
-  themes: [require.resolve("./plugins/live-editor")],
+  themes: [
+    require.resolve("./plugins/live-editor"),
+    require.resolve("./plugins/paperclip")
+  ],
   presets: [
     [
       "@docusaurus/preset-classic",

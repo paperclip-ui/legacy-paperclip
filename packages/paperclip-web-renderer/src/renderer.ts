@@ -176,7 +176,7 @@ export class Renderer {
       errorElement.innerHTML = `
       <div style="position: fixed; cursor: pointer; bottom: 0; width: 100%; word-break: break-word; box-sizing: border-box; font-family: Helvetica; padding: 10px; background: rgb(255, 152, 152); color: rgb(138, 31, 31); line-height: 1.1em">
         <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">
-          Error&nbsp;in&nbsp;${url.fileURLToPath(uri)}:
+          Error&nbsp;in&nbsp;${String(uri).replace("file://", "")}:
         </div>
         <div style="font-size: 14px;">
         ${message}

@@ -1,0 +1,37 @@
+<import src="../preview.pc" as="preview">
+
+<style> 
+  @font-face {
+    font-family: Sora;
+    src: url(./Sora-ExtraLight.ttf);
+    font-weight: 100;
+  }
+  @font-face {
+    font-family: Sora;
+    src: url(./Sora-Light.ttf);
+    font-weight: 200;
+  }
+  @font-face {
+    font-family: Sora;
+    src: url(./Sora-Regular.ttf);
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: Sora;
+    src: url(./Sora-SemiBold.ttf);
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: Sora;
+    src: url(./Sora-Bold.ttf);
+    font-weight: 600;
+  }
+  @font-face {
+    font-family: Sora;
+    src: url(./Sora-ExtraBold.ttf);
+    font-weight: 700;
+  }
+
+</style>
+
+<preview fontFamily="Sora"  />
