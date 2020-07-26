@@ -82,7 +82,7 @@ function Home() {
           <styles.VariousFeatureItem
             iconName="chaotic-1"
             title="Scoped styles"
-            description="Styles are only applied to the document they're defined in, so you don't have to worry about them leaking."
+            description="Styles are only applied to the documents they're defined in, so you don't have to worry about them leaking."
           />
           <styles.VariousFeatureItem
             iconName="link"
