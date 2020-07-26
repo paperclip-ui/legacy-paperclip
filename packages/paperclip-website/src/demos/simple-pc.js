@@ -39,7 +39,7 @@ const SOURCE = `
   }
 </style>
 
-<!-- Components exported to code -->
+<!-- Components that can be imported into app code -->
 <ol export component as="List">
   {children}
 </ol>
