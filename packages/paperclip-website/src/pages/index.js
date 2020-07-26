@@ -97,13 +97,13 @@ function Home() {
         </styles.VariousFeatures>
         <styles.BigFeature
           title="Build UIs faster"
-          description="The VS Code extension comes with realtime previews, intellisense, and other tools to help you build UIs faster."
+          description="The VS Code extension comes with super fast realtime previews that are powered by Rust, so you can enjoy uninterupted UI development, regardless of your project size. "
           preview={<img src="img/button-demo.gif" />}
         />
 
         <styles.BigFeature
           title="Never miss a CSS Bug"
-          description="Use the visual regression tool to catch every UI state. No more broken window CSS. 🎉"
+          description="Use the visual regression tool to catch every UI state. No more worrying about how changes to CSS affect your app. 🎉"
           preview={<img src="img/snapshot.gif" />}
         />
       </styles.Home>
