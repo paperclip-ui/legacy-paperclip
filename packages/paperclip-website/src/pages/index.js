@@ -97,7 +97,7 @@ function Home() {
         </styles.VariousFeatures>
         <styles.BigFeature
           title="Build UIs faster"
-          description="The VS Code extension comes with super fast realtime previews that are powered by Rust, so you can enjoy uninterupted UI development, regardless of your project size. "
+          description="The VS Code extension comes with a super fast realtime preview that's powered by Rust, so you can enjoy uninterupted UI development, regardless of your project size. "
           preview={<img src="img/button-demo.gif" />}
         />
 
