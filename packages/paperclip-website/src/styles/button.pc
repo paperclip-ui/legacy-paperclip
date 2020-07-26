@@ -1,4 +1,4 @@
-<import src="./styles/colors.pc">
+<import src="./colors.pc">
 <style>
   ._button {
     /* background: var(--color-green-neon-light); */

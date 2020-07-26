@@ -3,7 +3,6 @@ const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = function(context, options) {
-  console.log("PGGG");
   return {
     name: "paperclip-plugin",
     configureWebpack(config, isServer) {
@@ -22,7 +21,7 @@ module.exports = function(context, options) {
             //   use: [MiniCssExtractPlugin.loader, "css-loader"]
             // },
             {
-              test: /\.(png|jpe?g|gif|ttf|svg)$/i,
+              test: /\.(png|jpe?g|gif|ttf)$/i,
               use: [
                 {
                   loader: "file-loader"

@@ -12,6 +12,6 @@ module.exports = {
       "configuring-webpack",
       "usage-troubleshooting"
     ],
-    Safety: ["safety-visual-regression", "safety-type-definitions"]
+    Safety: ["safety-visual-regression", "safety-definition-files"]
   }
 };

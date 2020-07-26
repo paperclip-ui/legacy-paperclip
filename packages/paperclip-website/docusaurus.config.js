@@ -88,8 +88,8 @@ module.exports = {
     }
   },
   themes: [
-    // require.resolve("./plugins/live-editor"),
-    // require.resolve("./plugins/paperclip")
+    require.resolve("./plugins/live-editor"),
+    require.resolve("./plugins/paperclip")
   ],
   presets: [
     [
