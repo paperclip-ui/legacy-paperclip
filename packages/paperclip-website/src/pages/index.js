@@ -8,8 +8,9 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 import usePrismTheme from "@theme/hooks/usePrismTheme";
 import dedent from "dedent";
 import MAIN_DEMO_GRAPH from "../demos/main";
-// import IMPORT_CODE_DEMO_SOURCE from "./demos/import-code";
-// import CodeBlock from "@theme-init/CodeBlock";
+import IMPORT_CODE_DEMO_SOURCE from "../demos/import-code";
+import PRIMITIVE_UI_EXAMPLE from "../demos/simple-pc";
+import CodeBlock from "@theme-init/CodeBlock";
 import * as styles2 from "../styles/index.pc";
 import * as buttonStyles from "../styles/button.pc";
 import * as typography from "../styles/typography.pc";
@@ -57,13 +58,23 @@ function Home() {
         <styles2.MainFeatures>
           <styles2.MainFeatureItem
             iconName="shapes"
-            title="Just the basics"
-            description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and basic component "
+            title="Just the visuals"
+            description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and primitive components."
+            example={
+              <CodeBlock className="language-html" style={{ height: 500 }}>
+                {PRIMITIVE_UI_EXAMPLE}
+              </CodeBlock>
+            }
           />
           <styles2.MainFeatureItem
             iconName="plug"
             title="Import directly into React code"
-            description="Paperclip documents compile to plain code that you can import directly into your code"
+            description="Paperclip documents compile to plain code that you can import directly into your code."
+            example={
+              <CodeBlock className="language-jsx">
+                {IMPORT_CODE_DEMO_SOURCE}
+              </CodeBlock>
+            }
           />
         </styles2.MainFeatures>
 
@@ -71,22 +82,22 @@ function Home() {
           <styles2.VariousFeatureItem
             iconName="chaotic-1"
             title="Scoped styles"
-            description="Styles are only applied to the document they're in, so no more leaky CSS"
+            description="Styles are only applied to the document they're in, so no more leaky CSS."
           />
           <styles2.VariousFeatureItem
             iconName="link"
             title="Strongly typed"
-            description="compile to strongly typed code, so worry less about breaking changes"
+            description="compile to strongly typed code, so worry less about breaking changes."
           />
           <styles2.VariousFeatureItem
             iconName="grow"
             title="Incrementally adoptable"
-            description="Paperclip compliments your existing codebase, so use it as you go"
+            description="Paperclip compliments your existing codebase, so use it as you go."
           />
         </styles2.VariousFeatures>
         <styles2.BigFeature
           title="IDE integration"
-          description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster"
+          description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster."
           preview={<img src="img/realtime-editing-2.gif" />}
         />
 

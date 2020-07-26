@@ -20,6 +20,7 @@
   }
   ._home {
     background: rgb(245, 245, 245);
+    line-height: 1.4em;
     * { 
       box-sizing: border-box;
     }
@@ -41,7 +42,7 @@
         flex-shrink:0;
         margin-right: 30px;
       ._title {
-        filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.164));
+        /* filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.164)); */
         @include typography.text-secondary;
         font-size: 1.58em;
         line-height: 1.3em;
@@ -52,7 +53,7 @@
       }
       ._subtext {
         color: rgba(255, 255, 255, 0.7);
-        filter: drop-shadow(0px 0px 1px rgb(0, 0, 0));
+        /* filter: drop-shadow(0px 0px 1px rgb(0, 0, 0)); */
         font-size: 0.9em;
         font-weight: 400;
         line-height: 1.7em;
@@ -88,14 +89,10 @@
   }
 
   ._main-features {
-    @include layout.row;
-    display: flex;
-    flex-direction: row;
-
     border-top: 1px solid rgb(226, 226, 226);
     border-bottom: 1px solid rgb(226, 226, 226);
     ._item {
-      @include layout.py-6 layout.col-6;
+      @include layout.py-6;
       display: flex;
       flex-direction: column;
       ._heading {
@@ -118,6 +115,15 @@
           }
         }
       }
+      ._example {
+        font-size: 14px;
+        :global(.prism-code) {
+          max-height: 400px;
+        }
+        :global(.prism-code > div) {
+          /* height: 400px; */
+        }
+      }
       &:first-child {
         border-right: 1px solid rgb(226, 226, 226);
         padding-right: 30px;
@@ -133,20 +139,24 @@
       min-height: 200px;
       background: rgb(221, 221, 221);
       border-radius: 6px;
+      
     }
   }
 
   ._various-features {
-    @include layout.row;
     border-top: 1px solid rgb(255, 255, 255);
+    border-bottom: 1px solid rgb(226, 226, 226);
     /* text-align: right; */
 
     ._item  {
       @include layout.py-6;
       display: flex;
-      margin: 0px aut0;
+      margin: 0px auto;
       /* background: blue; */
       margin-left: 10px;
+      &:first-child {
+        margin-left: 0;
+      }
 
       ._info {
         width: 100%;
@@ -173,11 +183,20 @@
     }
   }
 
-  .big-feature {
-    border-top: 1px solid rgb(226, 226, 226);
-    ._info {
-      /* margin-left: 45px; */
-      /* margin-right: 40px; */
+  ._big-feature {
+    border-bottom: 1px solid rgb(226, 226, 226);
+    border-top: 1px solid rgb(255, 255, 255);
+    ._item {
+      display: flex;
+      ._icon {
+        @include section-icon;
+        visibility: hidden;
+      }
+
+      ._info {
+        /* margin-left: 45px; */
+        /* margin-right: 40px; */
+      }
     }
     ._title {
       @include typography.text-secondary;
@@ -188,6 +207,12 @@
     }
     ._preview {
       margin-left: 15px;
+      :global(img) {
+        border-radius: 4px;
+        /* border: 1px solid rgba(255, 255, 255, 0.363); */
+        /* box-shadow: 4px 4px 4px 4px #F60; */
+        /* filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.226)); */
+      }
     }
   }
   
@@ -211,7 +236,7 @@
         }
       }
     }
-    ._main-feature {
+    ._main-features {
       ._item {
         &:first-child {
           padding-right: 0px;
@@ -220,6 +245,23 @@
         &:last-child {
           padding-top: 0px;
           padding-left: 0px;
+          border-left: 0;
+        }
+      }
+    }
+
+    ._various-features {
+      ._item {
+          margin-left: 0;
+      }
+    }
+
+
+    ._big-feature {
+      ._preview {
+        margin-left: 0;
+        :global(img) {
+          width: 100%;
         }
       }
     }
@@ -258,11 +300,11 @@
 <div component as="CodePreview" className="_code-preview">
 </div>
 
-<div export component as="MainFeatures" className="_main-features">
+<div export component as="MainFeatures" className="_main-features >>>layout._row">
   {children}
 </div>
 
-<div export component as="MainFeatureItem" className="_item">
+<div export component as="MainFeatureItem" className="_item >>>layout._col >>>layout._col6">
   <div className="_heading">
     <icons.Icon name={iconName} className=">>>_icon" />
     <div className="_info">
@@ -272,15 +314,17 @@
       <div className="_details">{description}</div>
     </div>
   </div>
-  {example}
+  <div className="_example">
+    {example}
+  </div>
 </div>
 
 
-<div export component as="VariousFeatures" className="_various-features">
+<div export component as="VariousFeatures" className="_various-features >>>layout._row">
   {children}
 </div>
 
-<div export component as="VariousFeatureItem" className="_item >>>layout._col3">
+<div export component as="VariousFeatureItem" className="_item  >>>layout._col >>>layout._col3">
   <icons.Icon name={iconName} className=">>>_icon" />
   <div className="_info">
     <div className="_title">
@@ -292,13 +336,16 @@
   </div>
 </div>
 
-<div export component as="BigFeature" className="big-feature >>>layout._section >>>layout._row">
-  <div className=">>>layout._col3 _info">
-    <div className="_title">
-      {title}
-    </div>
-    <div className="_details">
-      {description}
+<div export component as="BigFeature" className="_big-feature >>>layout._section >>>layout._row">
+  <div className="_item >>>layout._col >>>layout._col3">
+    <icons.Icon name="grow" className=">>>_icon" />
+    <div clasName="_info">
+      <div className="_title">
+        {title}
+      </div>
+      <div className="_details">
+        {description}
+      </div>
     </div>
   </div>
   <div className=">>>layout.col9 _preview">
@@ -318,13 +365,13 @@
     <MainFeatureItem
       iconName="shapes"
       title="Just the basics"
-      description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and basic component "
+      description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and basic component."
       example={<CodePreview />}
     />
     <MainFeatureItem
       iconName="plug"
       title="Import directly into React code"
-      description="Paperclip documents compile to plain code that you can import directly into your code"
+      description="Paperclip documents compile to plain code that you can import directly into your code."
       example={<CodePreview />}
     />
   </MainFeatures>
@@ -333,23 +380,23 @@
     <VariousFeatureItem 
       iconName="chaotic-1"
       title="Scoped styles"
-      description="Styles are only applied to the document they're in, so no more leaky CSS"
+      description="Styles are only applied to the document they're in, so no more leaky CSS."
     /> 
     <VariousFeatureItem 
       iconName="link"
       title="Strongly typed"
-      description="UIs compile to strongly typed code, so worry less about breaking changes"
+      description="UIs compile to strongly typed code, so worry less about breaking changes."
     />
     <VariousFeatureItem 
       iconName="grow"
       title="Incrementally adoptable"
-      description="Paperclip compliments your existing codebase, so use it as you go"
+      description="Paperclip compliments your existing codebase, so use it as you go."
     />
   </VariousFeatures>
 
   <BigFeature 
     title="IDE integration"
-    description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster"
+    description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster."
     preview={<img src="./assets/realtime-editing-2.gif">}
   />
 

@@ -136,7 +136,7 @@ const translateStyleSheet = (sheet: VirtSheet, context: TranslateContext) => {
   );
   context = addBuffer(
     `style.textContent = ${JSON.stringify(
-      stringifyCSSSheet(sheet, null).replace(/[\s\r\n\t]+/g, " ")
+      stringifyCSSSheet(sheet).replace(/[\s\r\n\t]+/g, " ")
     )};\n`,
     context
   );

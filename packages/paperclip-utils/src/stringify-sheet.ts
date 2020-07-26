@@ -5,7 +5,6 @@ import * as url from "url";
 export type StringifySheetOptions = {
   protocol?: string;
   uri?: string;
-  root?: string;
 };
 
 export const stringifyCSSSheet = (
@@ -87,11 +86,13 @@ const stringifyStyle = (
         if (relativePath.charAt(0) !== ".") {
           relativePath = "./" + relativePath;
         }
+
         value = value.replace(foundUrl, relativePath);
       }
     }
+
     if (protocol) {
-      value = value.replace(/file:/, protocol);
+      value = value.replace(/file:/g, protocol);
     }
   }
 

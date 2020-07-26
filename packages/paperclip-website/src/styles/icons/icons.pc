@@ -3,6 +3,7 @@
     background-repeat: no-repeat;
     width: 1em;
     height: 1em;
+    position: relative;
     /* background-position: 50% 50%; */
   }
 
@@ -18,17 +19,20 @@
       @include icon;
       background-image: url(./grow.svg);
       background-size: 1em 1em;
+      top: -2px;
     }
 
     @mixin link {
       @include icon;
       background-image: url(./link.svg);
       background-size: 1em 1em;
+      top: -2px;
     }
     @mixin shapes {
       @include icon;
       background-image: url(./shapes.svg);
       background-size: 1em 1em;
+      top: -2px;
     }
     @mixin plug {
       @include icon;
