@@ -23,6 +23,7 @@ export default props => {
       const content = file.replace(name, "").trim();
       graph[name] = content;
     }
+
     return (
       <>
         <Editor graph={graph} defaultUri={entry} theme={prismTheme} />

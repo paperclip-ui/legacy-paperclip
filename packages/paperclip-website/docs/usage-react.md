@@ -1,7 +1,7 @@
 ---
 id: usage-react
 title: Using Paperclip in React apps
-sidebar_label: React usage
+sidebar_label: React
 ---
 
 

@@ -17,7 +17,7 @@ let _engine: Engine;
 
 type Options = {
   configFile: string;
-  emitCss?: boolean;
+  resourceProtocol?: string;
 };
 
 const getEngine = async (): Promise<Engine> => {
@@ -29,8 +29,6 @@ const getEngine = async (): Promise<Engine> => {
 
 const virtualModuleInstances = new Map();
 
-const fixPath = path => path.replace(/\\/g, "/");
-
 let _loadedStyleFiles = {};
 
 async function pcLoader(
@@ -41,7 +39,7 @@ async function pcLoader(
   this.cacheable();
   const callback = this.async();
 
-  const { configFile = PC_CONFIG_FILE_NAME }: Options =
+  const { resourceProtocol, configFile = PC_CONFIG_FILE_NAME }: Options =
     loaderUtils.getOptions(this) || {};
 
   let config: PaperclipConfig;
@@ -72,7 +70,10 @@ async function pcLoader(
     config.compilerOptions
   );
 
-  const sheetCode = stringifyCSSSheet(sheet, null, resourceUrl);
+  const sheetCode = stringifyCSSSheet(sheet, {
+    uri: resourceUrl,
+    protocol: resourceProtocol
+  });
 
   const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);

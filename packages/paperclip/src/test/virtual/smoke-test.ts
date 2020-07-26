@@ -713,7 +713,7 @@ describe(__filename + "#", () => {
 
       const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
         .map(sheet => {
-          return stringifyCSSSheet(sheet, "");
+          return stringifyCSSSheet(sheet, { protocol: "" });
         })
         .join("\n")
         .trim();

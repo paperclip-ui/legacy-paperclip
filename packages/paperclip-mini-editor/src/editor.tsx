@@ -48,7 +48,7 @@ export const createComponentClass = ({
     serializer: graph => JSON.stringify(graph)
   });
 
-  const Editor = ({ graph, defaultUri, theme }) => {
+  const Editor = ({ graph, defaultUri, theme, responsive = true }) => {
     const initialGraph = cachedGraph(graph);
     const [currentGraph, setGraph] = useState(initialGraph);
     const [currentUri, setCurrentUri] = useState(defaultUri);
@@ -71,9 +71,9 @@ export const createComponentClass = ({
     const baseTheme =
       theme && typeof theme.plain === "object" ? theme.plain : {};
 
-    console.log(baseTheme);
     return (
       <ui.Editor
+        responsive={responsive}
         style={{
           "--background": theme.plain?.backgroundColor
         }}

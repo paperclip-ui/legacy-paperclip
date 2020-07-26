@@ -5,15 +5,16 @@
   "scripts": {
     "start": "docusaurus start",
     "build": "docusaurus build",
+    "serve": "docusaurus serve",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "publish:documentation": "docusaurus deploy"
   },
   "dependencies": {
-    "@docusaurus/core": "^2.0.0-alpha.58",
     "@docusaurus/preset-classic": "^2.0.0-alpha.58",
     "@docusaurus/theme-classic": "^2.0.0-alpha.37",
     "clsx": "^1.1.1",
+    "dedent": "^0.7.0",
     "paperclip-mini-editor": "^14.0.18",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
@@ -31,8 +32,14 @@
     ]
   },
   "devDependencies": {
+    "@docusaurus/core": "^2.0.0-alpha.59",
     "copy-webpack-plugin": "^6.0.3",
+    "css-loader": "^4.0.0",
+    "file-loader": "^6.0.0",
+    "mini-css-extract-plugin": "^0.9.0",
     "null-loader": "^4.0.0",
+    "paperclip-compiler-react": "^14.0.18",
+    "paperclip-loader": "^14.0.18",
     "webpack": "^4.43.0"
   }
 }

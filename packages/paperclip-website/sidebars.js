@@ -4,7 +4,7 @@ module.exports = {
       "getting-started-installation",
       "getting-started-vscode"
     ],
-    Usage: [
+    "API Reference": [
       "usage-syntax",
       "usage-react",
       "usage-cli",
@@ -12,6 +12,6 @@ module.exports = {
       "configuring-webpack",
       "usage-troubleshooting"
     ],
-    Safety: ["safety-visual-regression", "safety-type-definitions"]
+    Safety: ["safety-visual-regression", "safety-definition-files"]
   }
 };

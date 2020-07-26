@@ -1,0 +1,91 @@
+<style>
+  @mixin icon {
+    background-repeat: no-repeat;
+    width: 1em;
+    height: 1em;
+    position: relative;
+    /* background-position: 50% 50%; */
+  }
+
+  @export {
+
+    @mixin chaotic-1 {
+      @include icon;
+      background-image: url(./chaotic-1.svg);
+      background-size: 0.75em;
+    }
+
+    @mixin grow {
+      @include icon;
+      background-image: url(./grow.svg);
+      background-size: 1em 1em;
+      top: -2px;
+    }
+
+    @mixin link {
+      @include icon;
+      background-image: url(./link.svg);
+      background-size: 1em 1em;
+      top: -2px;
+    }
+    @mixin shapes {
+      @include icon;
+      background-image: url(./shapes.svg);
+      background-size: 1em 1em;
+      top: -2px;
+    }
+    @mixin plug {
+      @include icon;
+      background-image: url(./plug.svg);
+      background-size: 0.8em 0.8em;
+    }
+    @mixin reactjs {
+      @include icon;
+      background-image: url(./reactjs.svg);
+      background-size: 0.9em 0.9em;
+    }
+    .chaotic-1 {
+      @include chaotic-1;
+    }
+
+    .grow {
+      @include grow;
+    }
+
+    .link {
+      @include link;
+    }
+
+    .shapes {
+      @include shapes;
+    }
+    .plug {
+      @include plug;
+    }
+    .reactjs {
+      @include reactjs;
+    }
+  }
+
+  .icon {
+    display: inline-block;
+    font-size: 2em;
+  }
+
+  .preview {
+    font-size: 21px;
+    display: flex;
+  }
+</style>
+
+<div export component as="Icon" className="icon {name} {className?}" />
+
+
+<div className="preview">
+  <Icon name="chaotic-1" />
+  <Icon name="grow" />
+  <Icon name="link" />
+  <Icon name="shapes" />
+  <Icon name="plug" />
+  <Icon name="reactjs" />
+</div>

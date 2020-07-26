@@ -1,0 +1,174 @@
+<style>
+
+  /* margins */
+
+  @export {
+    @mixin py-6 {
+      padding-top: var(--gap-6);
+      padding-bottom: var(--gap-6);
+    }
+    ._my-1 {
+      margin-top: var(--gap-4);
+      margin-bottom:  var(--gap-4);
+    }
+    ._py-6 {
+      @include py-6;
+    }
+  }
+  
+  :root {
+    --gap-inc: 2.2;
+    --gap-2: 2px;
+    --gap-3: calc(var(--gap-2) * var(--gap-inc));
+    --gap-4: calc(var(--gap-3) * var(--gap-inc));
+    --gap-5: calc(var(--gap-4) * var(--gap-inc));
+    --gap-6: calc(var(--gap-5) * var(--gap-inc));
+    --gap-7: calc(var(--gap-6) * var(--gap-inc));
+
+
+    --col-gap: var(--gap-5);
+  }
+
+  @export {
+
+    @mixin col-3 {
+      flex-shrink: 0;
+      width: 33.333%;
+    }
+
+    @mixin col-2 {
+      flex-shrink: 0;
+      width: 25%;
+    }
+
+
+    @mixin col-6 {
+      flex-shrink: 0;
+      width: 50%;
+    }
+
+    @mixin row {
+      display: flex;
+      padding-left: var(--gap-7);
+      padding-right: var(--gap-7);
+    }
+    ._section {
+      @include py-6;
+    }
+
+    ._row {
+      @include row;
+    }
+
+    ._col {
+      display: inline-block;
+      box-sizing: border-box;
+      padding-right: var(--col-gap);
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+    ._col2 {
+      @include col-2;
+    }
+    ._col3 {
+      @include col-3;
+    }
+    ._col9 {
+      flex-shrink: 0;
+      width: 66.666%;
+    }
+    ._col6 {
+      @include col-6;
+    }
+    ._col12 {
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: 900px) {
+    ._row {
+      flex-direction: column;
+      padding-left: var(--gap-6);
+      padding-right: var(--gap-6);
+    }
+    ._col {
+      width: 100%;
+      margin-bottom: var(--col-gap);
+      margin-right: 0;
+      padding-right: 0;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+
+  /* misc */
+
+  @export {
+    @mixin text-center {
+      text-align: center;
+    }
+    .text-center {
+      @include text-center;
+    }
+  }
+
+
+
+</style>
+
+<div export component as="C3" className="_col _col3 {className?}">
+  {children}
+</div>
+<div export component as="C6" className="_col _col6 {className?}">
+  {children}
+</div>
+<div export component as="C9" className="_col _col9 {className?}">
+  {children}
+</div>
+<div export component as="C12" className="_col _col12 {className?}">
+  {children}
+</div>
+<div export component as="Row" className="_row {className?}">
+  {children}
+</div>
+<div export component as="Container" className="_container {className?}">
+  {children}
+</div>
+
+<Container>
+  <Row>
+    <C3>
+      3
+    </C3>
+    <C3>
+      3
+    </C3>
+    <C3>
+      3
+    </C3>
+  </Row>
+  <Row>
+    <C3>
+      3
+    </C3>
+    <C9>
+      9
+    </C9>
+  </Row>
+  <Row>
+    <C6>
+      6
+    </C6>
+    <C6>
+      6
+    </C6>
+  </Row>
+  <Row>
+    <C12>
+      12
+    </C12>
+  </Row>
+</Container>

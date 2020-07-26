@@ -1110,7 +1110,7 @@ type MessageProps = {
 export const Message: React.FC<MessageProps>;
 ```
 
-> For more information around type safety, take a look at the [type safety doc](safety-type-definitions).
+> For more information around type safety, take a look at the [type safety doc](safety-definition-files.md).
 
 <!-- TODO: docs on type safety -->
 
