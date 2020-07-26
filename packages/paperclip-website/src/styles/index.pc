@@ -11,6 +11,9 @@
 
                     -->
 <style>
+  @export {
+    ._emoji {}
+  }
   @mixin section-icon {
     margin-right: 8px;
     flex-shrink: 0;
@@ -20,14 +23,14 @@
   }
   ._home {
     background: rgb(245, 245, 245);
-    line-height: 1.4em;
+    line-height: 1.6em;
     * { 
       box-sizing: border-box;
     }
   }
   ._header {
-    background: rgb(56, 56, 56);
-    color: white;
+    background: rgb(57, 61, 70);
+    /* color: white; */
   }
   ._main {
     padding-top: 70px;
@@ -42,21 +45,23 @@
         flex-shrink:0;
         margin-right: 30px;
       ._title {
+        color: rgba(255, 255, 255, 0.9);
+
         /* filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.164)); */
         @include typography.text-secondary;
         font-size: 1.58em;
         line-height: 1.3em;
         /* white-space: nowrap; */
-        margin-bottom: var(--gap-4);
+        margin-bottom: var(--gap-5);
         font-weight: 600;
         letter-spacing: 0.04em;
       }
       ._subtext {
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.9);
         /* filter: drop-shadow(0px 0px 1px rgb(0, 0, 0)); */
-        font-size: 0.9em;
-        font-weight: 400;
-        line-height: 1.7em;
+        font-weight: 500;
+        letter-spacing: 0.075em;
+        line-height: 1.6em;
         ._emoji {
           color: rgba(255, 255, 255, 1);
         }
@@ -64,7 +69,7 @@
     }
 
     ._cta {
-      margin: 20px 0px;
+      margin: var(--gap-5) 0;
     }
 
     ._highlight {
@@ -356,7 +361,7 @@
 <Home>
   <Header 
     title={<fragment>Build UIs in <Highlight>realtime</Highlight>, directly within <Highlight>VS Code</Highlight></fragment>}
-    description={<fragment>Paperclip is a language designed for visual UI development. No more switching between the browser and code. <span className="_emoji">🙌</span></fragment>}
+    description={<fragment>Paperclip is a language designed for visual UI development. No more wasting time switching between the browser and code. <span className="_emoji">🙌</span></fragment>}
     cta={<button.Anchor className=">>>typography.semi-bold">Get started</button.Anchor>}
     preview={<img src="../../static/img/realtime-editing-2.gif">}
   />
@@ -369,7 +374,7 @@
       example={<CodePreview />}
     />
     <MainFeatureItem
-      iconName="plug"
+      iconName="reactjs"
       title="Import directly into React code"
       description="Paperclip documents compile to plain code that you can import directly into your code."
       example={<CodePreview />}

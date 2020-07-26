@@ -7,10 +7,8 @@ module.exports = {
   organizationName: "crcn", // Usually your GitHub org/user name.
   projectName: "paperclip", // Usually your repo name.
   themeConfig: {
-    colorMode: {
-      defaultMode: "light",
-      // for now
-      disableSwitch: true
+    prism: {
+      theme: require("prism-react-renderer/themes/oceanicNext")
     },
     navbar: {
       title: "Paperclip",
@@ -85,6 +83,12 @@ module.exports = {
         // },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Craig Condon`
+    },
+    colorMode: {
+      disableDarkMode: true,
+      defaultMode: "dark",
+      disableSwitch: true,
+      respectPrefersColorScheme: true
     }
   },
   themes: [

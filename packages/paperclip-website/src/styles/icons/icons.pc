@@ -39,6 +39,11 @@
       background-image: url(./plug.svg);
       background-size: 0.8em 0.8em;
     }
+    @mixin reactjs {
+      @include icon;
+      background-image: url(./reactjs.svg);
+      background-size: 0.9em 0.9em;
+    }
     .chaotic-1 {
       @include chaotic-1;
     }
@@ -56,6 +61,9 @@
     }
     .plug {
       @include plug;
+    }
+    .reactjs {
+      @include reactjs;
     }
   }
 
@@ -79,4 +87,5 @@
   <Icon name="link" />
   <Icon name="shapes" />
   <Icon name="plug" />
+  <Icon name="reactjs" />
 </div>

@@ -39,14 +39,15 @@ function Home() {
           description={
             <>
               Paperclip is a language designed for visual UI development. No
-              more switching between the browser and code.{" "}
-              <span className="_emoji">🙌</span>
+              more wasting time switching between the browser and code.{" "}
+              <span className={styles2.classNames["_emoji"]}>🙌</span>
             </>
           }
           cta={
             <>
               <buttonStyles.Anchor
                 className={typography.classNames["semi-bold"]}
+                href="/docs"
               >
                 Get started
               </buttonStyles.Anchor>
@@ -67,9 +68,9 @@ function Home() {
             }
           />
           <styles2.MainFeatureItem
-            iconName="plug"
+            iconName="reactjs"
             title="Import directly into React code"
-            description="Paperclip documents compile to plain code that you can import directly into your code."
+            description="Paperclip documents compile to plain code that you can import directly into your app."
             example={
               <CodeBlock className="language-jsx">
                 {IMPORT_CODE_DEMO_SOURCE}
@@ -96,14 +97,14 @@ function Home() {
           />
         </styles2.VariousFeatures>
         <styles2.BigFeature
-          title="IDE integration"
-          description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster."
+          title="Build UIs faster"
+          description="The VS Code extension comes with realtime previews, intellisense, and other tools to help you build UIs faster."
           preview={<img src="img/realtime-editing-2.gif" />}
         />
 
         <styles2.BigFeature
           title="Never miss a CSS Bug"
-          description="Use the visual regression tool to catch every visual state of your UI. No more broken window CSS. 🎉"
+          description="Use the visual regression tool to catch every UI state. No more broken window CSS. 🎉"
           preview={<img src="img/realtime-editing-2.gif" />}
         />
       </styles2.Home>
