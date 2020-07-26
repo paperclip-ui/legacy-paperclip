@@ -54,7 +54,7 @@ const SOURCE = `
 -->
 <List>
   <ListItem>Bagels 🥯</ListItem>
-  <ListItem>Coffee ☕️</ListItem>
+  <ListItem>Yakitori 🍢</ListItem>
   <ListItem>Tofurky 🦃</ListItem>
   <ListItem>Skittles 🌈</ListItem>
 </List>
