@@ -58,7 +58,7 @@ function Home() {
         <styles.MainFeatures>
           <styles.MainFeatureItem
             iconName="shapes"
-            title="Just the visuals"
+            title="Minimalistic UI language"
             description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and primitive components."
             example={
               <CodeBlock className="language-html" style={{ height: 500 }}>
