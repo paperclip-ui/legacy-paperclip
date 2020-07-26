@@ -69,7 +69,7 @@ function Home() {
           <styles.MainFeatureItem
             iconName="reactjs"
             title="Import directly into React code"
-            description="Paperclip documents compile to plain code that you can import directly into your app."
+            description="Paperclip UIs compile to plain code that you can import directly into your app."
             example={
               <CodeBlock className="language-jsx">
                 {IMPORT_CODE_DEMO_SOURCE}
@@ -82,12 +82,12 @@ function Home() {
           <styles.VariousFeatureItem
             iconName="chaotic-1"
             title="Scoped styles"
-            description="Styles are only applied to the document they're in, so no more leaky CSS."
+            description="Styles are only applied to the document they're defined in, so you don't have to worry about them leaking."
           />
           <styles.VariousFeatureItem
             iconName="link"
             title="Strongly typed"
-            description="Compiles to strongly typed code, so you can worry less about breaking changes."
+            description="Paperclip UIs compile to strongly typed code, so you can feel more confident that UI changes won't break anything."
           />
           <styles.VariousFeatureItem
             iconName="grow"
