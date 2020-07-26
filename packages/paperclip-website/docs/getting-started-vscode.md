@@ -7,7 +7,7 @@ sidebar_label: Installing the VS Code extension
 The [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip) enables you to visually
 create your Paperclip files in realtime. 
 
-![alt Realtime editing](assets/realtime-demo.gif)
+![alt Realtime editing](/img/button-demo.gif)
 
 After installing the extension, you'll be prompted to open the live preview whenever you open a Paperclip file (`*.pc`). 
 

@@ -21,7 +21,7 @@ PERCY_TOKEN=[TOKEN] percy exec -- percy-paperclip
 
 After that, you should see something like this:
 
-![Percy demo](assets/percy-snapshots.gif)
+![Percy demo](/img/snapshot.gif)
 
 
 ## Setting up with GitHub actions
