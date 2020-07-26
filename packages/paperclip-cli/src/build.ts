@@ -141,7 +141,7 @@ async function initBuild(
           console.log("Writing %s", cssFilePath);
           fs.writeFileSync(
             new url.URL(cssFilePath),
-            stringifyCSSSheet(sheet, "file://")
+            stringifyCSSSheet(sheet, { protocol: "file://" })
           );
         }
       } else {

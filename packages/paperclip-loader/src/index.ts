@@ -72,7 +72,7 @@ async function pcLoader(
     config.compilerOptions
   );
 
-  const sheetCode = stringifyCSSSheet(sheet, null, resourceUrl);
+  const sheetCode = stringifyCSSSheet(sheet, { uri: resourceUrl });
 
   const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);
