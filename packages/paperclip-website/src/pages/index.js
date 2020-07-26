@@ -24,8 +24,8 @@ function Home() {
   const prismTheme = usePrismTheme();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
+      title={`${siteConfig.title} - build UIs faster`}
+      description="A language for building UI faster, safer, and more accurately"
     >
       <styles.Home>
         <styles.Header
