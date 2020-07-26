@@ -1,142 +1,95 @@
 ![Checks](https://github.com/crcn/paperclip/workflows/Checks/badge.svg?branch=master)
 <a href="https://github.com/crcn/paperclip/blob/master/MIT-LICENSE.txt"><img src="https://img.shields.io/github/license/crcn/paperclip" alt="License"></a>
 
-<br />
 
-⚠️ This is Alpha, so expect some bugs! ⚠️
 
-Paperclip is a language for building UI primitives. Here's an Example:
+# What is Paperclip?
+
+Paperclip is a language for UI primitives. The goal of the library is centered around increasing the speed, safety, and accuracy of developing web interfaces. Here's how:
+
+- **Realtime visual editing** - Paperclip's VS Code extension comes with a realtime preview that's powered by Rust.
+- **Automatic visual regression testing** - Just run the `percy-paperclip`, and you'll get visual snapshots of every UI state defined in Paperclip, so you can worry less about how changes to CSS affect your app. 
+- **Scoped styling** - Styles are scoped to the documents that they're defined in, so you don't have to worry about them leaking out.
+- **Compiles to strongly typed React code** - Paperclip compiles to plain TypeScript code that you can import directly into your React app (other frameworks will be supported soon).
+
+### Other features
+
+- **No runtime libraries** - Paperclip comes with a CLI tool and webpack loader that compiles Paperclip UIs into plain code.
+- **SASS-like syntax** - Paperclip supports some sass-like features such as mixins, & nested rules. 
+- **Rich VS Code experience** - Intellisense, color pickers, autocomplete, and more.
+- **Zeplin integration** - (Experimental) sync design tokens to your project & use them in Paperclip UIs.
+
+# Installation
+
+- [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
+- [VSCode Extension](https://paperclip.dev/docs/getting-started-vscode) - Getting started with the VS Code extension.
+- [Webpack setup](https://paperclip.dev/docs/configuring-webpack) - Setting up with Webpack
+
+# Documentation
+
+- [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
+- [React](https://paperclip.dev/docs/usage-react) - using Paperclip UIs in your React code
+
+# Example
+
+Here's a basic Paperclip UI file:
 
 ```html
-
-<!-- Styles are scoped to this document, so you don't have to worry about them leaking out  -->
-<style> 
-  .button {
-    font-family: Helvetica;
-    display: inline-block;
-    border-radius: 10px;
-    padding: 10px 20px;
-    color: #FFF;
-    background: rgb(51, 51, 51);
-    &.secondary {
-      color: #333;
-      border: 1px solid #333;
-      background: transparent;
-    }
+<!-- Scoped styles here -->
+<style>
+  ol {
+    padding-left: 1em;
+    font-family: Open Sans;
+  }
+  li {
+    margin-top: 6px;
   }
 </style>
 
-<!-- This component is compiled to code -->
-<div export component as="Button" class:secondary class="button">
+<!-- Components exported to code -->
+
+<ol export component as="List">
   {children}
-</div>
+</ol>
 
-<!-- These are just previews of the component -->
+<li export component as="ListItem">
+  {children}
+</li>
 
-<Button>
-  This is a primary button
-</Button>
+<!-- Preview of UI -->
 
-<Button secondary>
-  This is a secondary button
-</Button>
+<List>
+  <ListItem>Something</ListItem>
+  <ListItem>Something</ListItem>
+  <ListItem>Something</ListItem>
+</List>
 ```
 
-☝🏻 Not much else to this. Here's how you use it in React (using Webpack or CLI tool):
+☝🏻 Here's how you can import this file in React code:
 
-```typescript
-import {Button} from "./button.pc";
+```jsx
+import * as styles from "./styles.pc";
 
-export SomeForm = () => {
-  return <>
-    <Button>
-      This is a primary button
-    </Button>
-    <Button secondary>
-      This is a secondary button
-    </Button>
-  </>;
-};
+function GroceryList() {
+
+  const groceries = [
+    "Milk 🥛", 
+    "Water 💧", 
+    "Taco seasoning 🌮"
+  ];
+
+  return <styles.List>
+    {
+      groceries.map(item => (
+        <styles.ListItem>{item}</styles.ListItem>;
+      ))
+    }
+  </styles.List>;  
+}
 ```
 
-> ☝🏻 Currently React is the only compiler target, but more are planned. 
 
-## Why use Paperclip?
-
-
-### Just primitives
-
-Paperclip only covers basic components & styling that you can import into your existing code. 
-
-
-### Scoped styling
-
-Styles in Paperclip are scoped to the documents they're defined in, so you don't have to worry about style collisions. 
-
-<!-- ### Sass-like syntax out of the box
-
-Mixins, nested rules, and other sass-like features work out of the box.  -->
-
-### Faster development
-
-No more switching back and forth between the browser & code. Paperclip comes with a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip)  that allows you to preview UIs in realtime. 
-
-<!-- ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif) -->
-
-![VSCode Demo](./assets/button-demo.gif)
-
-
-### Visual regression testing
-
-Just run `percy-paperclip` to do visual regression testing across all of your application's visual states that are defined in Paperclip UI. Worry less about CSS bugs reaching production.
-
-![Percy snapshots](./assets/snapshot.gif)
-
-
-### Perfect for design systems
-
-Paperclip makes it easy to set up & document design systems that are discoverable, and re-usable. 
-
-![Design system](./assets/design-system.gif)
-
-### Synchronizes with Zeplin
-
-Use the zeplin-paperclip tool to automatically download design tokens and component styles to your project. 
-
-![Zeplin sync](./assets/design-system-pull.gif)
-
-### Strongly typed
-
-Paperclip's CLI tool generates TypeScript definition files so that you can safely include Paperclip UIs in your project. Here's an example:
-
-```typescript
-/* eslint-disable */
-import {ReactNode, ReactElement} from "react";
-
-type Factory<TProps> = (props: TProps) => ReactElement;
-
-export declare const classNames: {
-  "app": string,
-  "app-container": string,
-  "todoapp": string,
-  "new-todo": string,
-  "toggle-all": string,
-  "info": string,
-  "todo-list": string,
-  "main": string,
-};
-
-type Props = {
-  onNewTodoKeyPress: Function,
-  items: ReactNode,
-  controls: ReactNode,
-};
-
-declare const View: Factory<Props>;
-export default View;
-```
-
-### Roadmap
+# Roadmap
 
 Here's a peak at what's planned for Paperclip:
 
@@ -149,16 +102,3 @@ Here's a peak at what's planned for Paperclip:
   - various editors for colors, box shadows, filters, etc
 - A11Y
 - Code splitting so that you don't need to include all of your CSS into one bundle
-- IDE intellisense
-
-## Resources
-
-- [Documentation](http://paperclip.dev/docs/getting-started-installation)
-  - [Syntax](http://paperclip.dev/docs/usage-syntax)
-  - [Troubleshooting](http://paperclip.dev/docs/usage-troubleshooting)
-- [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode)
-- Integrations
-  - [React](http://paperclip.dev/docs/usage-react)
-- Examples
-  - [React TodoMVC](./examples/react-todomvc)
-  - [Tailwind](./examples/tailwind)

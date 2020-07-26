@@ -6,12 +6,11 @@ import Layout from "@theme/Layout";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import usePrismTheme from "@theme/hooks/usePrismTheme";
-import dedent from "dedent";
 import MAIN_DEMO_GRAPH from "../demos/main";
 import IMPORT_CODE_DEMO_SOURCE from "../demos/import-code";
 import PRIMITIVE_UI_EXAMPLE from "../demos/simple-pc";
 import CodeBlock from "@theme-init/CodeBlock";
-import * as styles2 from "../styles/index.pc";
+import * as styles from "../styles/index.pc";
 import * as buttonStyles from "../styles/button.pc";
 import * as typography from "../styles/typography.pc";
 
@@ -28,19 +27,19 @@ function Home() {
       title={`Hello from ${siteConfig.title}`}
       description="Description will go into a meta tag in <head />"
     >
-      <styles2.Home>
-        <styles2.Header
+      <styles.Home>
+        <styles.Header
           title={
             <>
-              Build UIs in <styles2.Highlight>realtime</styles2.Highlight>,
-              directly within <styles2.Highlight>VS Code</styles2.Highlight>
+              Build UIs in <styles.Highlight>realtime</styles.Highlight>,
+              directly within <styles.Highlight>VS Code</styles.Highlight>
             </>
           }
           description={
             <>
               Paperclip is a language designed for visual UI development. No
               more wasting time switching between the browser and code.{" "}
-              <span className={styles2.classNames["_emoji"]}>🙌</span>
+              <span className={styles.classNames["_emoji"]}>🙌</span>
             </>
           }
           cta={
@@ -56,8 +55,8 @@ function Home() {
           preview={<img src="img/realtime-editing-2.gif" />}
         />
 
-        <styles2.MainFeatures>
-          <styles2.MainFeatureItem
+        <styles.MainFeatures>
+          <styles.MainFeatureItem
             iconName="shapes"
             title="Just the visuals"
             description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and primitive components."
@@ -67,7 +66,7 @@ function Home() {
               </CodeBlock>
             }
           />
-          <styles2.MainFeatureItem
+          <styles.MainFeatureItem
             iconName="reactjs"
             title="Import directly into React code"
             description="Paperclip documents compile to plain code that you can import directly into your app."
@@ -77,37 +76,37 @@ function Home() {
               </CodeBlock>
             }
           />
-        </styles2.MainFeatures>
+        </styles.MainFeatures>
 
-        <styles2.VariousFeatures>
-          <styles2.VariousFeatureItem
+        <styles.VariousFeatures>
+          <styles.VariousFeatureItem
             iconName="chaotic-1"
             title="Scoped styles"
             description="Styles are only applied to the document they're in, so no more leaky CSS."
           />
-          <styles2.VariousFeatureItem
+          <styles.VariousFeatureItem
             iconName="link"
             title="Strongly typed"
             description="compile to strongly typed code, so worry less about breaking changes."
           />
-          <styles2.VariousFeatureItem
+          <styles.VariousFeatureItem
             iconName="grow"
             title="Incrementally adoptable"
             description="Paperclip compliments your existing codebase, so use it as you go."
           />
-        </styles2.VariousFeatures>
-        <styles2.BigFeature
+        </styles.VariousFeatures>
+        <styles.BigFeature
           title="Build UIs faster"
           description="The VS Code extension comes with realtime previews, intellisense, and other tools to help you build UIs faster."
           preview={<img src="img/button-demo.gif" />}
         />
 
-        <styles2.BigFeature
+        <styles.BigFeature
           title="Never miss a CSS Bug"
           description="Use the visual regression tool to catch every UI state. No more broken window CSS. 🎉"
           preview={<img src="img/snapshot.gif" />}
         />
-      </styles2.Home>
+      </styles.Home>
     </Layout>
   );
 }
