@@ -1,14 +1,14 @@
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
-// const MiniCssExtractPlugin = require('extract-css-chunks-webpack-plugin');
+const MiniCssExtractPlugin = require("extract-css-chunks-webpack-plugin");
 
 module.exports = function(context, options) {
   return {
     name: "paperclip-plugin",
     configureWebpack(config, isServer) {
       return {
-        // plugins: [new MiniCssExtractPlugin()],
+        plugins: [new MiniCssExtractPlugin()],
         module: {
           rules: [
             {

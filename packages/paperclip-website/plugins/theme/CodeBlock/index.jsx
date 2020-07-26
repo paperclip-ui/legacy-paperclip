@@ -31,7 +31,5 @@ export default props => {
     );
   }
 
-  console.log(props);
-
   return <CodeBlock {...props} />;
 };
