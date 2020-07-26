@@ -99,13 +99,13 @@ function Home() {
         <styles2.BigFeature
           title="Build UIs faster"
           description="The VS Code extension comes with realtime previews, intellisense, and other tools to help you build UIs faster."
-          preview={<img src="img/realtime-editing-2.gif" />}
+          preview={<img src="img/button-demo.gif" />}
         />
 
         <styles2.BigFeature
           title="Never miss a CSS Bug"
           description="Use the visual regression tool to catch every UI state. No more broken window CSS. 🎉"
-          preview={<img src="img/realtime-editing-2.gif" />}
+          preview={<img src="img/snapshot.gif" />}
         />
       </styles2.Home>
     </Layout>
