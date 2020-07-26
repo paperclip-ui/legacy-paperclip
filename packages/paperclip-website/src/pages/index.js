@@ -87,12 +87,12 @@ function Home() {
           <styles.VariousFeatureItem
             iconName="link"
             title="Strongly typed"
-            description="compile to strongly typed code, so worry less about breaking changes."
+            description="Compiles to strongly typed code, so you can worry less about breaking changes."
           />
           <styles.VariousFeatureItem
             iconName="grow"
             title="Incrementally adoptable"
-            description="Paperclip compliments your existing codebase, so use it as you go."
+            description="Paperclip compliments your existing codebase - use it as you go."
           />
         </styles.VariousFeatures>
         <styles.BigFeature
