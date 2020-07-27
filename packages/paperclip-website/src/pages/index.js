@@ -38,7 +38,7 @@ function Home() {
           description={
             <>
               Paperclip is a language designed for visual UI development. No
-              more wasting time switching between the browser and code.{" "}
+              more wasting time juggling between the browser and code.{" "}
               <span className={styles.classNames["_emoji"]}>🙌</span>
             </>
           }
@@ -58,7 +58,7 @@ function Home() {
         <styles.MainFeatures>
           <styles.MainFeatureItem
             iconName="shapes"
-            title="Minimalistic UI language"
+            title="A minimalistic UI language"
             description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and primitive components."
             example={
               <CodeBlock className="language-html" style={{ height: 500 }}>
