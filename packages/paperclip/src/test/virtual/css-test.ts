@@ -543,4 +543,33 @@ describe(__filename + "#", () => {
       }
     });
   });
+
+  // Addresses https://github.com/crcn/paperclip/issues/319
+  it("shows an error if including a mixin that doesn't exist within a mixin that's exported", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @export {
+        @mixin {
+          @include no-boom;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 60, end: 67 },
+      message: "Reference not found."
+    });
+  });
 });

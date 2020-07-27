@@ -308,7 +308,7 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
   context.in_public_scope = true;
 
   for rule in &expr.rules {
-    evaluate_rule(rule, context);
+    evaluate_rule(rule, context)?;
 
     match rule {
       ast::Rule::Mixin(mixin) => {

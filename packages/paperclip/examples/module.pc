@@ -1,12 +1,53 @@
 <style>
-  .blarg {
-    color: red;
+  @mixin icon {
+
+  }
+
+  @export {
+
+    @mixin chaotic-1 {
+      @include dd;
+      background: url(./chaotic-1.svg);
+      width: 0.8em;
+      height: 0.8em;
+      background-size: 0.8em 0.8em;
+      background-position: 10px;
+    }
+
+    @mixin grow {
+      background: url(./grow.svg);
+      width: 1em;
+      height: 1em;
+      background-size: 1em 1em;
+    }
+
+    @mixin link {
+      background: url(./link.svg);
+      width: 1em;
+      height: 1em;
+      background-size: 1em 1em;
+    }
+    .chaotic-1 {
+      @include chaotic-1;
+    }
+
+    .grow {
+      @include grow;
+    }
+
+    .link {
+      @include link;
+    }
+  }
+
+  .preview {
+    font-size: 42px;
+    display: flex;
   }
 </style>
 
-<div component as="Test" {className?}>
-  Hello
+<div className="preview">
+  <div className="chaotic-1" />
+  <div className="grow" />
+  <div className="link" />
 </div>
-
-<Test className="blarg" />
-<Test className=">>>blarg" />
