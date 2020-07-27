@@ -622,7 +622,7 @@ Nothing to see here!
 
 > Check out the [React Todo MVC Example](https://github.com/crcn/paperclip/blob/master/examples/react-todomvc/src/app.pc) if you're looking for a more extensive demo. 
 
-I'd recommend that you render every visual state of your UI in Paperclip since since that will enable you to set up more reliable [visual regression tests](safety-visual-regression.md). Also note that preview elements won't affect your application size since they're not compiled, so you can write previews to your hearts content. 
+I'd recommend that you render every visual state of your UI in Paperclip since since that will enable you to set up more reliable [visual regression tests](configure-percy.md). Also note that preview elements won't affect your application size since they're not compiled, so you can write previews to your hearts content. 
 
 <!-- TODO - point to class name variants -->
 <!-- TODO - point to guide around defining previews -->

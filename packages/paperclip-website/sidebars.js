@@ -2,16 +2,19 @@ module.exports = {
   docs: {
     "Getting started": [
       "getting-started-installation",
-      "getting-started-vscode"
+      "getting-started-vscode",
+      "getting-started-first-ui"
     ],
     "API Reference": [
       "usage-syntax",
       "usage-react",
       "usage-cli",
-      "configuring-paperclip",
-      "configuring-webpack",
-      "usage-troubleshooting"
+      "configure-paperclip"
     ],
-    Safety: ["safety-visual-regression", "safety-definition-files"]
+    Integrations: [
+      "configure-webpack",
+      "configure-typescript",
+      "configure-percy"
+    ]
   }
 };

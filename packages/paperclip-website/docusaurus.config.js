@@ -47,7 +47,7 @@ module.exports = {
             },
             {
               label: "Visual regression testing",
-              to: "docs/safety-visual-regression"
+              to: "docs/configure-percy"
             }
           ]
         }
