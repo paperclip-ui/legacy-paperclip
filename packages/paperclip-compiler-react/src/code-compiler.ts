@@ -231,7 +231,18 @@ const translateCastStyleUtil = (context: TranslateContext) => {
   );
   context = startBlock(context);
   context = addBuffer(`const [key, value] = keyValue.split(":");\n`, context);
-  context = addBuffer(`obj[key.trim()] = value.trim();\n`, context);
+  context = addBuffer(
+    `if (!value || value === "undefined") return obj;\n`,
+    context
+  );
+  context = addBuffer(`const trimmedValue = value.trim();\n`, context);
+
+  // partially https://github.com/crcn/paperclip/issues/336
+  context = addBuffer(
+    `if (trimmedValue === "undefined") return obj;\n`,
+    context
+  );
+  context = addBuffer(`obj[key.trim()] = value && value.trim();\n`, context);
   context = addBuffer(`return obj;\n`, context);
   context = endBlock(context);
   context = addBuffer(`}, {});\n`, context);
@@ -839,9 +850,13 @@ const translateAttributeValue = (
           context
         );
       } else if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
-        context = addBuffer(`getClassName(`, context);
+        if (name === "className") {
+          context = addBuffer(`getClassName(`, context);
+        }
         context = translateStatment(part, false, false, context);
-        context = addBuffer(`)`, context);
+        if (name === "className") {
+          context = addBuffer(`)`, context);
+        }
       }
 
       if (i < length - 1) {

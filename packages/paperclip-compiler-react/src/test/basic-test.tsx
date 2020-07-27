@@ -127,6 +127,38 @@ describe(__filename + "#", () => {
       }
     ],
     [
+      "can render a dynamic style string",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" style="color: {color?}"></div>
+        `
+      },
+      {
+        Entry: {
+          color: "red"
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" style="color:red"></div>`
+      }
+    ],
+    [
+      "Can render a dynamic string when the value is undefined",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" style="a: {a1}; b: {b2};"></div>
+        `
+      },
+      {
+        Entry: {
+          a1: "red"
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" style="a:red"></div>`
+      }
+    ],
+    [
       "Applies scope classes when class names dynamic string in component",
       {
         "/entry.pc": `
