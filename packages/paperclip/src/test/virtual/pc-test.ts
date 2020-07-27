@@ -667,4 +667,26 @@ describe(__filename + "#", () => {
       `<style></style><div className="_139cec8e_a a _80f4925f_ok ok" data-pc-139cec8e></div>`
     );
   });
+
+  // addresses https://github.com/crcn/paperclip/issues/336
+  it(`Dynamic styles are ommitted if their associated prop is undefined`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" style="--color: {color?}; --background: {background?};">
+        </div>
+
+        <Test color="a" />
+        <Test background="b" />
+        <Test color="a" background="b" />
+        <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div data-pc-80f4925f style="--color: a;"></div><div data-pc-80f4925f style="--background: b;"></div><div data-pc-80f4925f style="--color: a; --background: b;"></div><div data-pc-80f4925f></div>`
+    );
+  });
 });

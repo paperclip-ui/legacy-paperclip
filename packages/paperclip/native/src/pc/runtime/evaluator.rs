@@ -678,7 +678,7 @@ fn create_component_instance_data<'a>(
                   context,
                 )?
               } else {
-                evaluate_attribute_string(
+                evaluate_attribute_key_value_string(
                   &kv_attr.name,
                   &kv_attr.binding_name,
                   &kv_attr.location,
@@ -830,9 +830,6 @@ fn evaluate_native_element<'a>(
         if name == "export" || name == "component" || name == "as" {
           continue;
         }
-
-        // value_option = evaluate_attribute_string_value(&name, value_option, context);
-
         attributes.insert(name.to_string(), value_option);
       }
       ast::Attribute::PropertyBoundAttribute(kv_attr) => {
@@ -877,7 +874,7 @@ fn evaluate_native_element<'a>(
         let mut js_value = evaluate_attribute_slot(&sh_attr.reference, context)?;
 
         if js_value.truthy() {
-          js_value = maybe_transform_class_js_value(name, js_value, true, context);
+          js_value = maybe_cast_attribute_js_value(name, js_value, true, context);
 
           attributes.insert(
             name.to_string(),
@@ -904,7 +901,7 @@ fn evaluate_native_element<'a>(
                   context,
                 )?
               } else {
-                evaluate_attribute_string(
+                evaluate_attribute_key_value_string(
                   &kv_attr.name,
                   &kv_attr.binding_name,
                   &kv_attr.location,
@@ -979,23 +976,6 @@ fn stringify_attribute_value(key: &String, value: &js_virt::JsValue) -> String {
   return value.to_string();
 }
 
-// fn evaluate_attribute_string_value<'a>(name: &String, value_option: Option<String>, context: &'a Context) -> Option<String> {
-//   let mut value_option2 = value_option;
-
-//   if name == "src" {
-//     if let Some(value) = value_option2 {
-//       if is_relative_path(&value) {
-//         let full_path = context.vfs.resolve(context.uri, &value);
-//         value_option2 = Some(full_path);
-//       } else {
-//         value_option2 = None;
-//       }
-//     }
-//   }
-
-//   value_option2
-// }
-
 fn evaluate_import_element<'a>(
   _element: &ast::Element,
   _context: &'a mut Context,
@@ -1069,12 +1049,12 @@ fn evaluate_attribute_value<'a>(
       evaluate_attribute_dynamic_string(name, st, &st.location, is_native, context)
     }
     ast::AttributeValue::String(st) => {
-      evaluate_attribute_string(name, &st.value, &st.location, is_native, context)
+      evaluate_attribute_key_value_string(name, &st.value, &st.location, is_native, context)
     }
     ast::AttributeValue::Slot(value) => {
       assert_attr_slot_restrictions(tag_name, name, &value.location, context)?;
       let value = evaluate_attribute_slot(&value.script, context)?;
-      Ok(maybe_transform_class_js_value(name, value, true, context))
+      Ok(maybe_cast_attribute_js_value(name, value, true, context))
     }
   }
 }
@@ -1091,9 +1071,7 @@ fn evaluate_attribute_dynamic_string<'a>(
     .iter()
     .map(|val| match val {
       ast::AttributeDynamicStringPart::Literal(value) => {
-        evaluate_attribute_string(name, &value.value, &value.location, is_native, context)
-          .unwrap()
-          .to_string()
+        value.value.to_string()
       }
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
         if pierce.class_name.contains(".") {
@@ -1120,27 +1098,24 @@ fn evaluate_attribute_dynamic_string<'a>(
         }
       }
       ast::AttributeDynamicStringPart::Slot(statement) => {
-        let value = evaluate_attribute_slot(statement, context)
-          .unwrap()
-          .to_string();
-        if let Some(prefixed_value) = maybe_transform_class_value(name, &value, is_native, context)
-        {
-          prefixed_value
-        } else {
-          value
-        }
+        evaluate_attribute_slot(statement, context)
+          .unwrap().to_string()
       }
     })
     .collect::<Vec<String>>()
     .join("");
 
-  Ok(js_virt::JsValue::JsString(js_virt::JsString {
+  
+
+  let js_value = js_virt::JsValue::JsString(js_virt::JsString {
     value: val.to_string(),
     source: ExprSource {
       uri: context.uri.clone(),
       location: location.clone(),
     },
-  }))
+  });
+
+  Ok(maybe_cast_attribute_js_value(name, js_value, is_native, context))
 }
 
 fn is_class_attribute_name(name: &String) -> bool {
@@ -1152,16 +1127,31 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
     static ref scope_re: Regex = Regex::new(r"_\w+_").unwrap();
   }
 
-  if scope_re.is_match(value) {
-    return value.to_string();
-  }
+  // if scope_re.is_match(value) {
+  //   return value.to_string();
+  // }
+
+  let mut skip_next = false;
 
   let class_name_parts: Vec<&str> = value.split(" ").collect();
   class_name_parts
     .iter()
     .map(|class| {
+      
+      // if previous class is scoped, then skip
+      if skip_next {
+        skip_next = false;
+        return class.to_string();
+      }
+
+      // if already scoped, then skip
+      if scope_re.is_match(class) {
+        skip_next = true;
+        return class.to_string();
+      }
+
       if class != &"" {
-        format!("_{}_{} {}", context.scope, class, class).to_string()
+        format!("_{}_{} {}", context.scope, class, class)
       } else {
         class.to_string()
       }
@@ -1170,29 +1160,65 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
     .join(" ")
 }
 
-fn maybe_transform_class_value<'a>(
+fn transform_style_value<'a>(
+  name: &String,
+  value: &String,
+  context: &mut Context,
+) -> String { 
+
+  // Fixes https://github.com/crcn/paperclip/issues/336
+  // Primitive but easy solution
+  lazy_static! {
+    static ref undefined_styles_re: Regex = Regex::new(r"[^\s]+:\s*undefined;?").unwrap();
+  }
+
+  if undefined_styles_re.is_match(value) {
+
+    let mut new_value = value.to_string();
+
+    for caps in undefined_styles_re.captures_iter(value.to_string().as_str()) {
+      let undefined_decl = caps.get(0).unwrap().as_str();
+      new_value = undefined_styles_re.replace(new_value.as_str(), "").to_string();
+    }
+
+    // trim in case string is empty
+    return new_value.trim().to_string();
+  }
+  
+  return value.to_string();
+}
+
+
+fn cast_attribute_value<'a>(
   name: &String,
   value: &String,
   is_native: bool,
   context: &mut Context,
 ) -> Option<String> {
-  if is_class_attribute_name(name) && is_native {
+  if !is_native {
+    return None;
+  }
+  if is_class_attribute_name(name) {
     Some(transform_class_value(name, value, context))
+  } else if name == "style" {
+    Some(transform_style_value(name, value, context))
   } else {
     None
   }
 }
 
-fn maybe_transform_class_js_value<'a>(
+fn maybe_cast_attribute_js_value<'a>(
   name: &String,
   value: js_virt::JsValue,
   is_native: bool,
   context: &mut Context,
 ) -> js_virt::JsValue {
-  if let Some(prefixed_value) = maybe_transform_class_value(name, &value.to_string(), true, context)
-  {
+
+  let str_value = value.to_string();
+
+  if let Some(casted_value) = cast_attribute_value(name, &str_value, is_native, context) {
     js_virt::JsValue::JsString(js_virt::JsString {
-      value: prefixed_value.to_string(),
+      value: casted_value.to_string(),
       source: value.get_source().clone(),
     })
   } else {
@@ -1200,7 +1226,7 @@ fn maybe_transform_class_js_value<'a>(
   }
 }
 
-fn evaluate_attribute_string<'a>(
+fn evaluate_attribute_key_value_string<'a>(
   name: &String,
   value: &String,
   location: &Location,
@@ -1209,8 +1235,8 @@ fn evaluate_attribute_string<'a>(
 ) -> Result<js_virt::JsValue, RuntimeError> {
   let mut val = value.clone();
 
-  if let Some(prefixed_class) = maybe_transform_class_value(name, value, is_native, context) {
-    val = prefixed_class;
+  if let Some(casted_value) = cast_attribute_value(name, value, is_native, context) {
+    val = casted_value;
   } else if name == "src" {
     if is_relative_path(&value) {
       let value_option = context.vfs.resolve(context.uri, &value);
