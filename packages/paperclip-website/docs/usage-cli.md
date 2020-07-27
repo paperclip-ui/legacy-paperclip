@@ -1,64 +1,49 @@
 ---
 id: usage-cli
-title: Command line tools
+title: CLI Usage
 sidebar_label: CLI
 ---
 
-## Setup
+The CLI tool is used primarily to compile Paperclip files into your target framework. 
 
-To initialize a new project, run `paperclip init`. This will ask you a few questions, then write a `paperclip.config.json` file that the
-compiler will use.
+## Installation
 
-> Documentation for `paperclip.config.json` can be viewed [here](configuring-paperclip.md).
+`npm install paperclip-cli --save-dev`
 
-Next, add a `.pc` file with the following content:
+## Commands
 
-```html
-<div export component as="Test">
-  {children}
-</div>
+### paperclip init
+
+Initializes Paperclip for a new or existing project. If you're starting a new project, the `init` command will all a few questions, then generate project files for you.
+
+### paperclip build
+
+Generates code based on your [paperclip config](configure-paperclip.md). 
+
+**Options**
+
+- `write` - Option to write compiled UI files to disk. Output is otherwise printed in the console log. Currently, files are written to the same directory as the `*.pc` files, so be sure to add `*.pc.*` to your `.gitignore`.
+- `watch` - Starts the file watcher & rebuilds UIs whenever they change.
+- `definition` - Generate a typed definition file (Specific to TypeScript)
+
+**Examples**
+
+```sh
+
+# Build all Paperclip files and print to stdout
+paperclip build 
+
+# Build Paperclip files & writes them
+paperclip build --write
+
+# Starts watcher & writes them whenever they change
+paperclip build --write --watch
+
+# Start typed definition watcher
+paperclip build --write --definition --watch
 ```
 
-then run:
+If you're using [Webpack](usage-webpack.md), then you probably don't need to run `paperclip build --write` since the paperclip loader handles that for you. 
 
-```bash
-npx paperclip build --write
-```
+If you're using [TypeScript](configure-typescript.md), then you'll probably want to use the `paperclip build --write --definition --watch` to generate typed definition files.
 
-☝🏻This will compile your paperclip file to JavaScript code. Alternatively, you can generate TypeScript definition files with
-the following command:
-
-```bash
-npx paperclip build --write --definition
-```
-
-☝🏻This is useful if you're using Paperclip within a TypeScript project. If you're doing that, I recommend you add this
-command a s a script in your package.json file. For example:
-
-```javascript
-{
-  "name": "my-module-name",
-  "scripts": {
-    "build:paperclip-definitions": "paperclip build --definition --write",
-    "build:watch:paperclip-definitions": "paperclip build --definition --write --watch",
-  }
-}
-```
-
-
-## Examples
-
-```
-
-# show general help menu
-paperclip help 
-
-# show command help menu
-paperclip [command] help
-
-# build paperclip files with paperclip.config.json from current directory
-paperclip build
-
-# build typed definition files & start file watcher
-paperclip build --definition --watch
-```

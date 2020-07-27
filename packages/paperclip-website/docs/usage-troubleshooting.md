@@ -4,6 +4,8 @@ title: Troubleshooting
 sidebar_label: Troubleshooting
 ---
 
+Not necessarily gotchas, but things to be aware of when you're using Paperclip.
+
 ## Can't override variant styles
 
 You may be dealing with CSS specificity issues. Suppose that you have an input:

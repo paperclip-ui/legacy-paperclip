@@ -24,6 +24,8 @@
     "paperclip": "^14.0.18",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
+    "chalk": "^4.1.0",
+    "fs-extra": "^9.0.1",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
@@ -31,9 +33,7 @@
     "@types/fs-extra": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
-    "chalk": "^4.1.0",
     "eslint": "^7.4.0",
-    "fs-extra": "^9.0.1",
     "lodash": "^4.17.19",
     "mocha": "^8.0.1",
     "typescript": "^3.9.6"

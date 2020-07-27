@@ -1,7 +1,7 @@
 ---
 id: getting-started-vscode
 title: Installing the VS Code extension
-sidebar_label: Installing the VS Code extension
+sidebar_label: VS Code Extension
 ---
 
 The [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip) enables you to visually
