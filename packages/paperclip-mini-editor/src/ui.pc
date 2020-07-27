@@ -6,11 +6,11 @@
   }
 
   :root {
-    --color-grey-100: rgb(226, 226, 226);
-    --color-grey-200: rgb(212, 212, 212);
-    --color-grey-300: rgb(145, 145, 145);
-    --color-grey-400: rgb(122, 122, 122);
-    --color-grey-500: rgb(90, 90, 90);
+    --me-color-grey-100: rgb(226, 226, 226);
+    --me-color-grey-200: rgb(212, 212, 212);
+    --me-color-grey-300: rgb(145, 145, 145);
+    --me-color-grey-400: rgb(122, 122, 122);
+    --me-color-grey-500: rgb(90, 90, 90);
 
     --color-dark-100: rgb(100, 100, 100);
     --color-dark-200: rgb(51, 51, 51);
@@ -51,7 +51,7 @@
     background: var(--background);
     border-bottom-left-radius: var(--border-radius);
     border-top-left-radius: var(--border-radius);
-    /* border-right: 1px solid var(--color-grey-300); */
+    /* border-right: 1px solid var(--me-color-grey-300); */
     height: 100%;
     width: 66.66%;
     display: flex;
@@ -72,7 +72,7 @@
       list-style-type: none;
       margin: 0;
       padding: 0;
-      color: var(--color-grey-500);
+      color: var(--me-color-grey-500);
       /* background: var(--color-dark-100); */
       width: 100%;
       overflow: scroll;
@@ -96,7 +96,7 @@
       .tab {
         cursor: pointer;
         margin: 0;
-        color: var(--color-grey-100);
+        color: var(--me-color-grey-100);
         display: inline-block;
         font-weight: normal;
         &:first-child {
@@ -126,7 +126,7 @@
     .header {
       text-align: left;
       padding: 8px 15px;
-      /* background: var(--color-grey-300); */
+      /* background: var(--me-color-grey-300); */
       background-image: linear-gradient(to left, var(--background), var(--background)), linear-gradient(to left, rgba(255,255,255,0.4), rgba(255,255,255,0.4));
       background-blend-mode: overlay, screen;
       border-top-right-radius: var(--border-radius);
