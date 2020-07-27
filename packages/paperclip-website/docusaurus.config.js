@@ -105,7 +105,7 @@ module.exports = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl:
-            "https://github.com/crcn/paperclip/packages//edit/master/website/"
+            "https://github.com/crcn/paperclip/edit/master/packages/paperclip-website/"
         },
         // blog: {
         //   showReadingTime: true,
