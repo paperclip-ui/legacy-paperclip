@@ -310,8 +310,9 @@ export class Renderer {
     const rect = element.getBoundingClientRect();
     Object.assign(this._hoverOverlay.style, {
       display: "block",
-      left: `${elementWindow.document.body.scrollLeft + rect.left}px`,
-      top: `${elementWindow.document.body.scrollTop + rect.top}px`,
+      left: `${elementWindow.document.scrollingElement.scrollLeft +
+        rect.left}px`,
+      top: `${elementWindow.document.scrollingElement.scrollTop + rect.top}px`,
       width: `${rect.width}px`,
       height: `${rect.height}px`
     });

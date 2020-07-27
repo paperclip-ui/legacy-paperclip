@@ -41,12 +41,18 @@
 
   .preview {
     font-size: 42px;
-    display: flex;
+    height: 1000px;
+  }
+  .box {
+    height: 100px;
+    width: 100px;
+    background: blue;
+    margin-top: 100px;
   }
 </style>
 
 <div className="preview">
-  <div className="chaotic-1" />
-  <div className="grow" />
-  <div className="link" />
+  <div className="box" /><br />
+  <div className="box" /><br />
+  <div className="box" /><br />
 </div>
