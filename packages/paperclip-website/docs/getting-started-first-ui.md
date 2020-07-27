@@ -4,7 +4,7 @@ title: Creating your first UI
 sidebar_label: Your first UI
 ---
 
-Time to start using Paperclip! Create a new file in your source directory (defined in `paperclip.config.json`) that's called `GroceryList.pc`, then add this stuff:
+Time to start using Paperclip! Create a new file in your source directory that's called `GroceryList.pc`, then add this stuff:
 
 ```html
 <!-- These styles are scoped to this document -->
@@ -73,12 +73,14 @@ If you created a new project via `paperclip init`, then change your `entry.tsx` 
 import * as React from "react";
 import * as ui from "./hello-paperclip.pc";
 import * as ReactDOM from "react-dom";
+
+// import this 👇🏻
 import { GroceryList } from "./GroceryList";
 
 const mount = document.createElement("div");
 document.body.appendChild(mount);
 
-
+// change to this 👇🏻
 ReactDOM.render(<GroceryList />, mount);
 ```
 
