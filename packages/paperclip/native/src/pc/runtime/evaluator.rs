@@ -1070,9 +1070,7 @@ fn evaluate_attribute_dynamic_string<'a>(
     .values
     .iter()
     .map(|val| match val {
-      ast::AttributeDynamicStringPart::Literal(value) => {
-        value.value.to_string()
-      }
+      ast::AttributeDynamicStringPart::Literal(value) => value.value.to_string(),
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
         if pierce.class_name.contains(".") {
           let parts = pierce.class_name.split(".").collect::<Vec<&str>>();
@@ -1099,13 +1097,12 @@ fn evaluate_attribute_dynamic_string<'a>(
       }
       ast::AttributeDynamicStringPart::Slot(statement) => {
         evaluate_attribute_slot(statement, context)
-          .unwrap().to_string()
+          .unwrap()
+          .to_string()
       }
     })
     .collect::<Vec<String>>()
     .join("");
-
-  
 
   let js_value = js_virt::JsValue::JsString(js_virt::JsString {
     value: val.to_string(),
@@ -1115,7 +1112,9 @@ fn evaluate_attribute_dynamic_string<'a>(
     },
   });
 
-  Ok(maybe_cast_attribute_js_value(name, js_value, is_native, context))
+  Ok(maybe_cast_attribute_js_value(
+    name, js_value, is_native, context,
+  ))
 }
 
 fn is_class_attribute_name(name: &String) -> bool {
@@ -1137,7 +1136,6 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
   class_name_parts
     .iter()
     .map(|class| {
-      
       // if previous class is scoped, then skip
       if skip_next {
         skip_next = false;
@@ -1160,12 +1158,7 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
     .join(" ")
 }
 
-fn transform_style_value<'a>(
-  name: &String,
-  value: &String,
-  context: &mut Context,
-) -> String { 
-
+fn transform_style_value<'a>(name: &String, value: &String, context: &mut Context) -> String {
   // Fixes https://github.com/crcn/paperclip/issues/336
   // Primitive but easy solution
   lazy_static! {
@@ -1173,21 +1166,21 @@ fn transform_style_value<'a>(
   }
 
   if undefined_styles_re.is_match(value) {
-
     let mut new_value = value.to_string();
 
     for caps in undefined_styles_re.captures_iter(value.to_string().as_str()) {
       let undefined_decl = caps.get(0).unwrap().as_str();
-      new_value = undefined_styles_re.replace(new_value.as_str(), "").to_string();
+      new_value = undefined_styles_re
+        .replace(new_value.as_str(), "")
+        .to_string();
     }
 
     // trim in case string is empty
     return new_value.trim().to_string();
   }
-  
+
   return value.to_string();
 }
-
 
 fn cast_attribute_value<'a>(
   name: &String,
@@ -1213,7 +1206,6 @@ fn maybe_cast_attribute_js_value<'a>(
   is_native: bool,
   context: &mut Context,
 ) -> js_virt::JsValue {
-
   let str_value = value.to_string();
 
   if let Some(casted_value) = cast_attribute_value(name, &str_value, is_native, context) {
