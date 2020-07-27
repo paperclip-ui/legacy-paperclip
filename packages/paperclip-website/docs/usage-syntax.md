@@ -1068,8 +1068,8 @@ Bindings can also be defined outside of string attributes. For example:
 You can also use the shorthand approach like so:
 
 ```html
-<div component as="Test">
-  <span className="title" {spanRef}>
+<div component as="Test" {ref}>
+  <span className="title">
     {title}
   </span>
   {children}
