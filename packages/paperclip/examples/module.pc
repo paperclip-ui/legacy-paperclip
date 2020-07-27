@@ -6,7 +6,6 @@
   @export {
 
     @mixin chaotic-1 {
-      @include dd;
       background: url(./chaotic-1.svg);
       width: 0.8em;
       height: 0.8em;
