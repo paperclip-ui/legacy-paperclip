@@ -572,4 +572,24 @@ describe(__filename + "#", () => {
       message: "Reference not found."
     });
   });
+
+  // Addresses https://github.com/crcn/paperclip/issues/326
+  it("can have nested pseudo selectors", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      .parent {
+        .child:first-child {
+          color: blue
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>[class]._80f4925f_parent { } [class]._80f4925f_child:first-child { color:blue ; }</style>"
+    );
+  });
 });
