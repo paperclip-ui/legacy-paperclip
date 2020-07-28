@@ -363,7 +363,7 @@ fn evaluate_style_rule2(
 
   lazy_static! {
     static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
-    static ref scope_re: Regex = Regex::new(r"_\w+_").unwrap();
+    static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
   }
 
   if class_name_re.is_match(selector_text.to_string().as_ref()) {

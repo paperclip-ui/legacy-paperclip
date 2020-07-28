@@ -1,58 +1,5 @@
 <style>
-  @mixin icon {
+  ._a {
 
-  }
-
-  @export {
-
-    @mixin chaotic-1 {
-      background: url(./chaotic-1.svg);
-      width: 0.8em;
-      height: 0.8em;
-      background-size: 0.8em 0.8em;
-      background-position: 10px;
-    }
-
-    @mixin grow {
-      background: url(./grow.svg);
-      width: 1em;
-      height: 1em;
-      background-size: 1em 1em;
-    }
-
-    @mixin link {
-      background: url(./link.svg);
-      width: 1em;
-      height: 1em;
-      background-size: 1em 1em;
-    }
-    .chaotic-1 {
-      @include chaotic-1;
-    }
-
-    .grow {
-      @include grow;
-    }
-
-    .link {
-      @include link;
-    }
-  }
-
-  .preview {
-    font-size: 42px;
-    height: 1000px;
-  }
-  .box {
-    height: 100px;
-    width: 100px;
-    background: blue;
-    margin-top: 100px;
   }
 </style>
-
-<div className="preview">
-  <div className="box" /><br />
-  <div className="box" /><br />
-  <div className="box" /><br />
-</div>

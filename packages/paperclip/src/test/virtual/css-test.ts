@@ -544,6 +544,25 @@ describe(__filename + "#", () => {
     });
   });
 
+  it("can export class names with _ prefix", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @export {
+        ._b {
+
+        }
+      }
+
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(result.exports.style.classNames).to.eql({
+      _b: { name: "_b", scopedName: "_80f4925f__b", public: true }
+    });
+  });
+
   // Addresses https://github.com/crcn/paperclip/issues/319
   it("shows an error if including a mixin that doesn't exist within a mixin that's exported", async () => {
     const graph = {
