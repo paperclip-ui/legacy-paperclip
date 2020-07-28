@@ -437,6 +437,13 @@ describe(__filename, () => {
         kind: SuggestContextKind.CSS_DECLARATION_NAME,
         prefix: ""
       }
+    ],
+    [
+      `<style>@font-face {\n`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_NAME,
+        prefix: ""
+      }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {
