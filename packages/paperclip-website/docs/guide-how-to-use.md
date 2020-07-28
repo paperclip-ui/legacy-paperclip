@@ -1,10 +1,10 @@
 ---
 id: guide-how-to-use
-title: Organizing Paperclip files
+title: How To Use Paperclip
 sidebar_label: How to use
 ---
 
-You can think of Paperclip as a tool that focuses _purely_ on your web application's appearance -  just covering HTML, CSS, and basic components. With that, you can construct almost _all_ of your applications UI in Paperclip. For example, here's a simple list in Paperclip:
+You can think of Paperclip as a tool that focuses _purely_ on your web application's appearance -  just covering HTML, CSS, and basic components. With that, you can construct almost _all_ of your application UI in Paperclip. For example, here's a simple list:
 
 ```html live
 <style>
@@ -42,9 +42,9 @@ You can think of Paperclip as a tool that focuses _purely_ on your web applicati
 </List>
 ```
 
-The `<!-- Preview -->` section isn't actually production code -- it's used primarily for development, and visual regression testing purposes. It's a veeeery important part of Paperclip's design, so you'll be missing out a whole lot if you don't create previews. 
+The `<!-- Preview -->` section isn't actually production code -- it's used primarily for development, and visual regression testing purposes. It's a veeeery important part of Paperclip's design, so you'll be missing out a whole lot if you don't create previews. Take a look at the [guide on writing previews](guide-writing-previews.md) for more information on this. 
 
-Here's how you can use the above template in a React app:
+Moving on, here's how you can use the template above in a React app:
 
 ```jsx
 import * as React from "react";
@@ -68,34 +68,40 @@ export function GroceryList() {
 }
 ```
 
-☝🏻 Basically, we're just using the exported components from the Paperclip file & creating a dynamic component out those building blocks.  
+☝🏻 Basically, the only thing that this component is doing is adding dynamic behavior from building blocks defined within the `*.pc` file. And that's all there is to it between Paperclip UIs and code, really. UIs go in Paperclip, logic goes in code. That's it. To put this into more visual terms: 
 
-Here's a more sophisticated 👌. Here's are the basic UI building blocks for an address book app:
+![alt I'm secretly an MVC fan](assets/view-code-relationship.png)
+
+> Look familar? Definitely not the VC in MVC. Don't you go there! 
+
+This separation between UI and code actually unlocks a lot of really cool features. Namely, by isolating the UI we can optimize for very UI-specific things such as:
+
+- Better tooling around creating UIs: realtime previews, visual editing tools.
+- Better safety with free visual regression testing.
+
+☝🏻To name a few. In other words, the "separation of concerns" behind Paperclip is really about _function_ over principle. In all honesty, If I had it my way, I'd keep code & UI together, but it seems like the unverse doesn't gel with that idea based on my experience - things get messy. Separation between UI and logic almost always happens in _some_ form based on my experience, and Paperclip puts that separation to good use.
+
+Now let's get a little use a more sophisticated example to illustrate this separation. Here's a basic UI for an address book app:
 
 ```html live
+// file: app.pc
+
 <style>
+  .App {
+
+  }
 </style>
 
-<div component as="Gutter" className="gutter">
+<div export component as="Sidebar" className="Sidebar">
   {children}
 </div>
 
-<div component as="Contact" className="contact">
+<div export component as="App" className="App">
   {children}
 </div>
 
-<div component as="App">
-  {children}
-</div>
-
-<App>
-  <Gutter>
-  </Gutter>
-  <Contact>
-    <div>First name</div>
-    <div>Last Name</div>
-  </Contact>
-</App>
 
 ```
+
+
 
