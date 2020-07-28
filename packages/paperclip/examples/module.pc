@@ -1,12 +1,5 @@
 <style>
-  .blarg {
-    color: red;
+  ._a {
+
   }
 </style>
-
-<div component as="Test" {className?}>
-  Hello
-</div>
-
-<Test className="blarg" />
-<Test className=">>>blarg" />

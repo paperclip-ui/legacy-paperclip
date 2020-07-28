@@ -70,7 +70,7 @@ repository:
   attribute:
     # attribute="value"
     patterns:
-      - begin: (component|preview|export)
+      - begin: (component|export)
         beginCaptures:
           "1": { name: keyword.control }
         end: (?=\s*+[^=\s])

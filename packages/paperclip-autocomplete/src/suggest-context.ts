@@ -476,12 +476,22 @@ const suggestCSSAtRule = (
     return { kind: atRuleKind, prefix: "" };
   }
 
-  const prefix = scanner.current.value;
+  let name = scanner.current.value;
 
   scanner.next();
+  while (scanner.current) {
+    if (
+      scanner.current.kind === TokenKind.Whitespace ||
+      scanner.current.value === "{"
+    ) {
+      break;
+    }
+    name += scanner.current.value;
+    scanner.next();
+  }
 
   if (!scanner.current) {
-    return { kind: atRuleKind, prefix };
+    return { kind: atRuleKind, prefix: name };
   }
 
   let params = "";
@@ -497,14 +507,14 @@ const suggestCSSAtRule = (
     if (!scanner.current) {
       return {
         kind: SuggestContextKind.CSS_AT_RULE_PARAMS,
-        atRuleName: prefix,
+        atRuleName: name,
         params: params.trim()
       };
     }
   }
 
   if (scanner.current?.value === "{") {
-    if (prefix === "media" || prefix == "keyframes" || prefix === "export") {
+    if (name === "media" || name == "keyframes" || name === "export") {
       return suggestContainerAtRule(scanner);
     } else {
       return suggestStyleAtRule(scanner);
@@ -520,7 +530,6 @@ const suggestStyleAtRule = (scanner: TokenScanner): SuggestContext => {
   if (scanner.current?.value === "{") {
     scanner.next();
     while (scanner.current) {
-      scanner.skipSuperfluous();
       if (String(scanner.current?.value) === "}") {
         break;
       }

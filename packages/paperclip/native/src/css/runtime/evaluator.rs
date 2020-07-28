@@ -308,7 +308,7 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
   context.in_public_scope = true;
 
   for rule in &expr.rules {
-    evaluate_rule(rule, context);
+    evaluate_rule(rule, context)?;
 
     match rule {
       ast::Rule::Mixin(mixin) => {
@@ -363,7 +363,7 @@ fn evaluate_style_rule2(
 
   lazy_static! {
     static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
-    static ref scope_re: Regex = Regex::new(r"_\w+_").unwrap();
+    static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
   }
 
   if class_name_re.is_match(selector_text.to_string().as_ref()) {
