@@ -1,1 +1,7 @@
-<!-- https://github.com/crcn/paperclip/issues/301 -->
+---
+id: configure-percy
+title: Organizing Paperclip files
+sidebar_label: Organization
+---
+
+Generally speaking, Paperclip files 
