@@ -282,7 +282,9 @@ Let's move onto something a bit more sophisticated 👌. Here's a site:
 </style>
 ```
 
-There are a few things going on here, but I'm just going to focus on the preview components & how this all integrates with code. About preview components: every file has them. This makes it easy to re-use previews within other UI files to see how the _entire_ UI shapes-up. Keep in mind that these preview components _aren't_ intended to be used in application code - they're purely for development & testing purposes. And if you're using Webpack, Rollup, Parcel, or some other bundler, these previews will be shaken out of the application bundle, so you can add as many of them as you want without increasing your overall application size.
+There are a few things going on here, but I'm just going to focus on the preview components & how this all integrates with code. 
+
+About preview components: every file has them. This makes it easy to re-use previews within other UI files to see how the _entire_ UI shapes-up. Keep in mind that these preview components _aren't_ intended to be used in application code - they're purely for development & testing purposes. And if you're using Webpack, Rollup, Parcel, or some other bundler, these previews will be shaken out of the application bundle, so you can add as many of them as you want without increasing your overall application size.
 
 Testing-wise, all we need to do at this point is run the [Percy](docs/configure-percy) CLI tool to run visual regression tests. No other setup needed. 
 
