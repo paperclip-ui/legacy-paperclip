@@ -42,7 +42,7 @@ You can think of Paperclip as a tool that focuses _purely_ on your web applicati
 </List>
 ```
 
-The `<!-- Preview -->` section isn't actually production code -- it's used primarily for development, and visual regression testing purposes. It's a veeeery important part of Paperclip's design, so you'll be missing out a whole lot if you don't create previews. More on this later on.
+The `<!-- Preview -->` section isn't actually production code -- it's used primarily for development, and visual regression testing purposes. It's a veeeery important part of Paperclip's design, so you'll be missing out a whole lot if you don't create previews. More on that in a sec.
 
 Here's how you can use the template above in a React app:
 
