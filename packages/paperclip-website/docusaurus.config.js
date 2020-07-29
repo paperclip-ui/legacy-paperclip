@@ -13,9 +13,9 @@ module.exports = {
     navbar: {
       title: "Paperclip",
       logo: {
-        alt: "My Site Logo",
+        alt: "Paperclip",
         src: "img/logo.svg",
-        height: 20
+        srcDark: "img/logo-dark.svg"
       },
       links: [
         {
