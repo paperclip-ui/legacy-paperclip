@@ -27,7 +27,7 @@ Paperclip is a language for UI primitives. The goal of the library is centered a
   - [Webpack setup](https://paperclip.dev/docs/configuring-webpack) - Setting up with Webpack
 - Documentation
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
-  - [React](https://paperclip.dev/docs/usage-react) - using Paperclip UIs in your React code
+  - [React](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
 - Example projects
   - [Paperclip website](./packages/paperclip-website)
   - [Todo MVC](./examples/react-todomvc)
