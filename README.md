@@ -3,7 +3,7 @@
 
 
 
-# <img src="assets/logo.svg" style="position: relative; top: 8px; height: 30px"> Paperclip 
+# Paperclip 
 
 Paperclip is a language for UI primitives. The goal of the library is centered around increasing the speed, safety, and accuracy of developing web interfaces. Here's how:
 
