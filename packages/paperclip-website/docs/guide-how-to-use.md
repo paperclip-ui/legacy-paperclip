@@ -83,7 +83,7 @@ To name a few. Really, the "separation of concerns" behind Paperclip isn't about
 
 Let's move onto something a bit more sophisticated 👌. Here's a site:
 
-```html live
+```html live height=350px
 // file: HomePage.pc
 <import src="./Page.pc" as="Page">
 

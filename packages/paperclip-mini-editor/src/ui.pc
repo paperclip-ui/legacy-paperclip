@@ -165,7 +165,7 @@
       .Preview {
         width: 100%;
         border-bottom-left-radius: var(--border-radius);
-        height: 300px;
+        height: 250px;
         .header {
 
         border-top-right-radius: 0;
@@ -194,7 +194,7 @@
   </div>
 </div>
 
-<div export component as="PreviewPane" className="Preview">
+<div export component as="PreviewPane" className="Preview" {style?}>
   <div className="header">
     <span className="bolt">⚡️</span> Preview
   </div>

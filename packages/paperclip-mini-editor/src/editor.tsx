@@ -48,7 +48,13 @@ export const createComponentClass = ({
     serializer: graph => JSON.stringify(graph)
   });
 
-  const Editor = ({ graph, defaultUri, theme, responsive = true }) => {
+  const Editor = ({
+    graph,
+    defaultUri,
+    theme,
+    previewStyle,
+    responsive = true
+  }) => {
     const initialGraph = cachedGraph(graph);
     const [currentGraph, setGraph] = useState(initialGraph);
     const [currentUri, setCurrentUri] = useState(defaultUri);
@@ -107,7 +113,7 @@ export const createComponentClass = ({
             highlight={code => highlight(code, "html", theme)}
           />
         </ui.CodePane>
-        <Preview engine={engine} currentUri={currentUri} />
+        <Preview engine={engine} style={previewStyle} currentUri={currentUri} />
       </ui.Editor>
     );
   };
@@ -135,9 +141,10 @@ export const createComponentClass = ({
   type PreviewProps = {
     engine?: Engine;
     currentUri: string;
+    style: any;
   };
 
-  const Preview = ({ engine, currentUri }: PreviewProps) => {
+  const Preview = ({ engine, currentUri, style }: PreviewProps) => {
     const [iframeBody, setIframeBody] = useState();
     let renderer: Renderer;
     const iframeRef = useRef();
@@ -152,7 +159,9 @@ export const createComponentClass = ({
       const init = async () => {
         try {
           renderer.initialize(await engine.run(currentUri));
-          disposeListener = engine.onEvent(renderer.handleEngineEvent);
+          disposeListener = engine.onEvent(event => {
+            renderer.handleEngineEvent(event);
+          });
         } catch (e) {
           console.warn(e);
 
@@ -195,7 +204,7 @@ export const createComponentClass = ({
       };
     }, [iframeBody]);
 
-    return <ui.PreviewPane iframeRef={iframeRef} />;
+    return <ui.PreviewPane style={style} iframeRef={iframeRef} />;
   };
 
   return Editor;

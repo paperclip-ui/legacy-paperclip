@@ -26,7 +26,14 @@ export default props => {
 
     return (
       <>
-        <Editor graph={graph} defaultUri={entry} theme={prismTheme} />
+        <Editor
+          graph={graph}
+          previewStyle={{
+            height: props.height
+          }}
+          defaultUri={entry}
+          theme={prismTheme}
+        />
       </>
     );
   }

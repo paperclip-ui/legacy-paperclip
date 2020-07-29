@@ -9,7 +9,7 @@ sidebar_label: Syntax
 You can start writing HTML and CSS as soon as you open up a Paperclip document. Here's an example:
 
 
-```html live
+```html live height=150px
 <style>
   div {
     color: purple;
@@ -50,7 +50,7 @@ Nested rules eliminates some redundancy around defining style selectors.
 **Example**:
 
 
-```html live
+```html live height=150px
 // file: nested-style-demo.pc
 <style>
   .container {
@@ -78,7 +78,7 @@ Nested rules eliminates some redundancy around defining style selectors.
 
 `&` can be used to combine the _parent_ selector in nested rules like so:
 
-```html live
+```html live height=150px
 // file: nested-combine-demo.pc
 <style>
   .button {
@@ -129,7 +129,7 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 
  **Example**:
 
-```html live
+```html live height=150px
 // file: mixin-demo.pc
 <style>
   :root {
@@ -185,11 +185,7 @@ The `@export` rule allows you to export styles to other documents, as well as ap
 
 **Example**:
 
-```html live 
-
-You're also welcome to reference styles from other documents, specifically `class names`, `mixins`, and `keyframes`. For example:
-
-```html live
+```html live  height=150px
 // file: main.pc
 <import src="./styles.pc" as="styles">
 
@@ -279,7 +275,7 @@ Paperclip allows you to explicitly reference class selectors, which is helpful i
 
 **Example**:
 
-```html live
+```html live height=150px
 // file: main.pc
 <import src="./atoms.pc" as="atoms">
 
@@ -375,7 +371,7 @@ import * as ui from './Select.pc';
 
 `:root` and `:global` CSS properties are applied globally when imported. Here's an example:
 
-```html live
+```html live height=150px
 // file: demo.pc
 <import src="./styles.pc">
 <style>
@@ -430,7 +426,7 @@ You can import [styles](#styling) & [components](#components) from other files.
 
 **Example**:
 
-```html live
+```html live height=150px
 // file: main.pc
 <import src="./pane.pc" as="pane">
 <import src="./atoms.pc" as="atoms">
@@ -522,7 +518,7 @@ Components are your UI building blocks.
 
 **Example**:
 
-```html live
+```html live height=150px
 <style>
   .Message {
     font-family: Comic Sans MS;
@@ -564,7 +560,7 @@ Note that for components to be available in application code, they _must_ have t
 
 Anything that doesn't have a `component` attribute is rendered to the screen, so you can utilize that behavior to see what you're working on.  For example:
 
-```html live
+```html live height=150px
 // file: buttons.pc
 <import src="./styles.pc" as="styles">
 
@@ -642,7 +638,7 @@ Components can be exported to be used in application code, as well as other docu
 
 **Example**:
 
-```html live
+```html live height=250px
 // file: todos.pc
 <import src="./styles.pc" as="styles">
 
@@ -751,7 +747,7 @@ const TodoApp = () => {
 We can also use our exported component in other Paperclip documents. Here's an example:
 
 
-```html live
+```html live height=250px
 // file: importing-components-demo.pc
 <import src="./todos.pc" as="todos">
 
@@ -867,7 +863,7 @@ attributeBoundToClassName=">>>class-name"
 
 **Example**:
 
-```html live
+```html live height=150px
 // file: style-override-demo.pc
 <import as="Message" src="./message.pc">
 <style>
@@ -915,19 +911,19 @@ Bindings allow you to define dynamic behavior in components.
 
 **Example**:
 
-```html live
+```html live height=150px
 <h1 component as="Header">
   {children}
 </h1>
 
 <Header>
-  I'm not a header
+  I'm a header
 </Header>
 ```
 
 There will probably be the case where you want to define multiple areas of a component for children to go into. Here's an example of that:
 
-```html live
+```html live height=250px
 // file: main.pc
 <import src="./styles.pc" as="styles">
 
@@ -995,7 +991,7 @@ There will probably be the case where you want to define multiple areas of a com
 
 Attributes allow you to define dynamic component properties. For example:
 
-```html live
+```html live height=150px
 // file: buttons.pc
 <import src="./typography.pc" as="typography">
 <import src="./styles.pc" as="styles">
@@ -1131,7 +1127,7 @@ The variant style syntax allows you to apply classes based on component properti
 
 **Example**:
 
-```html live
+```html live height=200px
 <style>
   .Header {
     font-family: Luminari;
@@ -1179,7 +1175,7 @@ The variant style syntax allows you to apply classes based on component properti
 
 Fragments are useful if you want to render a collection of elements. For example:
 
-```html live
+```html live height=200px
 <ul component as="List">
   {listItems}
 </ul>
