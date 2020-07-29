@@ -44,6 +44,12 @@
       background-image: url(./reactjs.svg);
       background-size: 0.9em 0.9em;
     }
+    @mixin chevron-right {
+      @include icon;
+      background-image: url(./chevron-right.svg);
+      background-size: 0.7em 0.7em;
+      background-position: 50%;
+    }
     .chaotic-1 {
       @include chaotic-1;
     }
@@ -64,6 +70,9 @@
     }
     .reactjs {
       @include reactjs;
+    }
+    .chevron-right {
+      @include chevron-right;
     }
   }
 
@@ -88,4 +97,5 @@
   <Icon name="shapes" />
   <Icon name="plug" />
   <Icon name="reactjs" />
+  <Icon name="chevron-right" />
 </div>

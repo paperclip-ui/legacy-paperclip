@@ -19,16 +19,19 @@ Paperclip is a language for UI primitives. The goal of the library is centered a
 - **Rich VS Code experience** - Intellisense, color pickers, autocomplete, and more.
 - **Zeplin integration** - (Experimental) sync design tokens to your project & use them in Paperclip UIs.
 
-# Installation
+# Resources
 
-- [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
-- [VSCode Extension](https://paperclip.dev/docs/getting-started-vscode) - Getting started with the VS Code extension.
-- [Webpack setup](https://paperclip.dev/docs/configuring-webpack) - Setting up with Webpack
+- Installation
+  - [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
+  - [VSCode Extension](https://paperclip.dev/docs/getting-started-vscode) - Getting started with the VS Code extension.
+  - [Webpack setup](https://paperclip.dev/docs/configuring-webpack) - Setting up with Webpack
+- Documentation
+  - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
+  - [React](https://paperclip.dev/docs/usage-react) - using Paperclip UIs in your React code
+- Example projects
+  - [Paperclip website](./packages/paperclip-website)
+  - [Todo MVC](./examples/react-todomvc)
 
-# Documentation
-
-- [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
-- [React](https://paperclip.dev/docs/usage-react) - using Paperclip UIs in your React code
 
 # Example
 
@@ -87,7 +90,6 @@ function GroceryList() {
   </styles.List>;  
 }
 ```
-
 
 # Roadmap
 

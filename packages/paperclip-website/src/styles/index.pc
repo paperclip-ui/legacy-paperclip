@@ -32,6 +32,21 @@
     background: rgb(57, 61, 70);
     /* color: white; */
   }
+
+  ._mini-cta-link {
+    display: flex;
+    margin-top: 10px;
+    opacity: 0.5;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+
+
+    ._mini-cta-icon {
+      font-size: 0.9em;
+      margin-left: 6px;
+    }
+  }
   ._main {
     padding-top: 70px;
     box-sizing: border-box;
@@ -72,6 +87,12 @@
 
     ._cta {
       margin-top: 30px;
+      :global(a) { 
+        margin-left: 15px;
+        &:first-child {
+          margin-left: 0;
+        }
+      }
     }
 
     ._highlight {
@@ -353,6 +374,9 @@
       <div className="_details">
         {description}
       </div>
+      <a className="_mini-cta-link" href={ctaHref?}>
+        {ctaText} <icons.Icon name="chevron-right" className=">>>_mini-cta-icon" />
+      </a>
     </div>
   </div>
   <div className=">>>layout.col9 _preview">
@@ -364,7 +388,10 @@
   <Header 
     title={<fragment>Build UIs in <Highlight>realtime</Highlight>, directly within <Highlight>VS Code</Highlight></fragment>}
     description={<fragment>Paperclip is a language designed for visual UI development. No more wasting time switching between the browser and code. <span className="_emoji">🙌</span></fragment>}
-    cta={<button.Anchor className=">>>typography.semi-bold">Get started</button.Anchor>}
+    cta={<fragment>
+      <button.Anchor className=">>>typography.semi-bold">Get started</button.Anchor>
+      <button.Anchor className=">>>typography.semi-bold">Check out on GitHub</button.Anchor>
+    </fragment>}
     preview={<img src="../../static/img/realtime-editing-2.gif">}
   />
 
@@ -405,12 +432,14 @@
     title="IDE integration"
     description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster."
     preview={<img src="./assets/realtime-editing-2.gif">}
+    ctaText="View the extension"
   />
 
   <BigFeature 
     title="Never miss a CSS Bug"
     description="Use the visual regression tool to catch every visual state of your UI. No more broken window CSS. 🎉"
     preview={<img src="./assets/realtime-editing-2.gif">}
+    ctaText="View the API"
   />
 
 </Home>

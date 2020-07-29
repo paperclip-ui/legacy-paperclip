@@ -50,6 +50,12 @@ function Home() {
               >
                 Get started
               </buttonStyles.Anchor>
+              <buttonStyles.Anchor
+                className={typography.classNames["semi-bold"]}
+                href="http://github.com/crcn/paperclip"
+              >
+                Check out on GitHub
+              </buttonStyles.Anchor>
             </>
           }
           preview={<img src="img/realtime-editing-2.gif" />}
@@ -99,12 +105,16 @@ function Home() {
           title="Build UIs faster"
           description="The VS Code extension comes with a super fast realtime preview that's powered by Rust, so you can enjoy uninterupted UI development, regardless of your project size. "
           preview={<img src="img/button-demo.gif" />}
+          ctaText="View the extension"
+          ctaHref={"https://paperclip.dev/docs/getting-started-vscode"}
         />
 
         <styles.BigFeature
           title="Never miss a CSS Bug"
-          description="Use the visual regression tool to catch every UI state. No more worrying about how changes to CSS affect your app. 🎉"
+          description="Use the visual regression tool to catch every UI state. No more worrying about breaking CSS changes. 🎉"
           preview={<img src="img/snapshot.gif" />}
+          ctaText="View the API"
+          ctaHref={"https://paperclip.dev/docs/configure-percy"}
         />
       </styles.Home>
     </Layout>
