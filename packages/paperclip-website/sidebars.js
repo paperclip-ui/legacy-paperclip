@@ -11,7 +11,7 @@ module.exports = {
       "usage-cli",
       "configure-paperclip"
     ],
-    Guides: ["guide-how-to-use"],
+    Guides: ["guide-how-to-use", "guide-workarounds"],
     Integrations: [
       "configure-webpack",
       "configure-typescript",

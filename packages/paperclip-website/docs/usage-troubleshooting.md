@@ -87,3 +87,30 @@ And _then_ you can apply style overrides:
 ```
 
 ☝🏻 In this case, `TextColorOverride` properties will be applied. 
+
+## CSS is being applied outside of Paperclip
+
+The most common cause of this is if you have a CSS class name defined within Paperclip that is also defined globally
+in your application. For example, here's a PC file:
+
+```html
+<style>
+
+  /* very common name that could be defined globally, especially in third-party CSS */
+  .header {
+
+  }
+</style>
+
+<div className="header">
+</div>
+```
+
+If you're coming from global CSS & have `.header` defined, then the template above will also catch that style. 
+
+> The reason for this is because class names in Paperclip are compiled to _scoped_ + _global_ parts. `<div className="header">` for example is compiled to `<div className="_document-scope_header header">`. This is by design to allow for `:global` selectors to be applied when you need it. 
+
+The fix for this is either:
+
+- Remove the global CSS. I think this is preferrable since to me, I don't think there shouldn't be any global CSS to begin with (aside from edge cases).
+- Use a prefix in your class names such as `_` (much like private `_` properties in JavaScript) to add some safety from this happening again. 
