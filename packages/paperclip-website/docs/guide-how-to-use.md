@@ -337,7 +337,7 @@ Our JSX graph looks very similar:
 ![alt JSX & PC dependency graph](/img/pc-usage/pc-and-tsx-deps.png)
 
 
-And this makes sense both PC and JSX files both represent the same UI. They're going naturally fall into similar structures. For the most part, an entire application can be written like this. There will be a few cases that Paperclip can't handle of course, but the language is unopinionated enough to get out of your way when you want it to, so you can easily handle those edge cases. Next, I'll show you how to do that.
+And this makes sense since both PC and JSX files both represent the same UI. They're going naturally fall into similar structures. For the most part, an entire application can be written like this. There will be a few cases that Paperclip can't handle of course, but the language is unopinionated enough to get out of your way when you want it to, so you can easily handle those edge cases. Next, I'll show you how to do that.
 
 
 
