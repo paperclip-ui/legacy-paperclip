@@ -12,10 +12,11 @@ module.exports = {
     },
     navbar: {
       title: "Paperclip",
-      // logo: {
-      //   alt: 'My Site Logo',
-      //   src: 'img/logo.svg',
-      // },
+      logo: {
+        alt: "My Site Logo",
+        src: "img/logo.svg",
+        height: 20
+      },
       links: [
         {
           to: "docs/",
