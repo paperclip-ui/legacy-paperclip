@@ -85,7 +85,7 @@ Let's move onto something a bit more sophisticated 👌. Here's a site:
 
 ```html live
 // file: HomePage.pc
-<import src="./page.pc" as="Page">
+<import src="./Page.pc" as="Page">
 
 <!-- Previews -->
 
@@ -94,9 +94,9 @@ Let's move onto something a bit more sophisticated 👌. Here's a site:
 </Page.Preview>
 
 // file: Page.pc
-<import src="./header.pc" as="Header">
-<import src="./footer.pc" as="Footer">
-<import src="./tokens.pc" as="tokens">
+<import src="./Header.pc" as="Header">
+<import src="./Footer.pc" as="Footer">
+<import src="./Tokens.pc" as="tokens">
 
 <style>
   .page {
@@ -144,7 +144,7 @@ Let's move onto something a bit more sophisticated 👌. Here's a site:
 </Preview>
 
 // file: Header.pc
-<import src="./tokens.pc" as="tokens">
+<import src="./Tokens.pc" as="tokens">
 
 <style>
   .header {
@@ -227,7 +227,7 @@ Let's move onto something a bit more sophisticated 👌. Here's a site:
 
 
 // file: Footer.pc
-<import src="./tokens.pc" as="tokens">
+<import src="./Tokens.pc" as="tokens">
 
 <style>
   .content {
