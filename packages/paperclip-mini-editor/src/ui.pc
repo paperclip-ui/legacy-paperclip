@@ -145,19 +145,27 @@
 
   @media screen and (max-width: 2000px) {
     .Editor--responsive {
-      flex-direction: column;
+      flex-direction: column-reverse;
       height: auto;
       .code {
         width: 100%;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
         .tabs {
-          border-top-right-radius: var(--border-radius);
+          border-top-right-radius: 0;
+          border-top-left-radius: 0;
+          .tab {
+            &:first-child {
+              border-top-left-radius: 0;
+            }
+          }
         }
         border-bottom-left-radius: 0;
       }
       .Preview {
         width: 100%;
         border-bottom-left-radius: var(--border-radius);
-        height: 400px;
+        height: 300px;
         .header {
 
         border-top-right-radius: 0;
