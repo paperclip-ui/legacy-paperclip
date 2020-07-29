@@ -14,8 +14,8 @@ module.exports = {
       title: "Paperclip",
       logo: {
         alt: "Paperclip",
-        src: "img/logo-fill-color.svg",
-        srcDark: "img/logo-dark.svg"
+        src: "img/logo-color.svg",
+        srcDark: "img/logo-dark-2.svg"
       },
       links: [
         {
