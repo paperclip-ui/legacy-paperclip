@@ -1,1 +1,7 @@
-<!-- https://github.com/crcn/paperclip/issues/301 -->
+---
+id: guide-organization
+title: Organizing Paperclip files
+sidebar_label: Organization
+---
+
+Generally speaking, Paperclip files 

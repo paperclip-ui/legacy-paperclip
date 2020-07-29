@@ -157,6 +157,7 @@
       .Preview {
         width: 100%;
         border-bottom-left-radius: var(--border-radius);
+        height: 400px;
         .header {
 
         border-top-right-radius: 0;
@@ -199,7 +200,7 @@
   {children}
 </div>
 
-<Editor>
+<Editor responsive>
   <CodePane tabs={<fragment>
     <Tab>component.pc</Tab>
     <Tab selected>component.tsx</Tab>

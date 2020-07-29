@@ -182,7 +182,11 @@ export const createComponentClass = ({
 
       const timer = setInterval(() => {
         if (iframeRef.current?.contentDocument?.body) {
-          setIframeBody(iframeRef.current.contentDocument.body);
+          const body = iframeRef.current.contentDocument.body;
+          const style = body.ownerDocument.createElement("style");
+          style.textContent = `html, body { margin: 0; padding: 0 }`;
+          body.appendChild(style);
+          setIframeBody(body);
         }
       }, 500);
 
