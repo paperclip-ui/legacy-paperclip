@@ -4,6 +4,8 @@ title: Setting Up Webpack
 sidebar_label: Webpack
 ---
 
+> Take a look at the [TODO MVC example](https://github.com/crcn/paperclip/tree/master/examples/react-todomvc) to see how everything is put together. 
+
 You can use Paperclip with [Webpack](https://webpack.js.org/) by installing the loader:
 
 ```sh
@@ -33,7 +35,7 @@ After that, you can can include `paperclip-loader` in your webpack config rules:
 }
 ```
 
-> ☝🏻be sure that you have a [paperclip.config.json](configuring-paperclip.md) file.
+> ☝🏻be sure that you have a [paperclip.config.json](/docs/configure-paperclip) file.
 
 For context, here's what your entire Webpack config might look like:
 
