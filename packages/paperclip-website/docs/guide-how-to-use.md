@@ -70,7 +70,7 @@ export function GroceryList() {
 
 ☝🏻 Basically, all this component is doing is adding dynamic behavior to our Paperclip building blocks, and that's all there is to it between Paperclip UIs and code, really. UIs go in Paperclip, logic goes in code. That's it. To put this into more visual terms: 
 
-![alt I'm secretly an MVC fan](assets/pc-usage/pc-jsx.png)
+![alt I'm secretly an MVC fan](/docs/assets/pc-usage/pc-jsx.png)
 
 > Look familar? Definitely not the VC in MVC. Don't you go there! 
 
@@ -328,11 +328,11 @@ export function Page({ children, dark }) {
 Can you see the pattern here? The structure & dependengy graph of our JSX components are just about the same
 as the PC components. If we're looking at the PC graph:
 
-![alt TSX dependency graph](assets/pc-usage/pc-deps.png)
+![alt TSX dependency graph](/docs/assets/pc-usage/pc-deps.png)
 
 Our JSX graph looks very similar:
 
-![alt JSX & PC dependency graph](assets/pc-usage/pc-and-tsx-deps.png)
+![alt JSX & PC dependency graph](/docs/assets/pc-usage/pc-and-tsx-deps.png)
 
 
 And this makes sense both PC and JSX files both represent the same UI. They're going naturally fall into similar structures. For the most part, an entire application can be written like this. There will be a few cases that Paperclip can't handle of course, but the language is unopinionated enough to get out of your way when you want it to, so you can easily handle those edge cases. Next, I'll show you how to do that.
