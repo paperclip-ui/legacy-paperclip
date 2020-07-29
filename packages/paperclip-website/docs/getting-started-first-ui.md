@@ -1,7 +1,7 @@
 ---
 id: getting-started-first-ui
-title: Creating your first UI
-sidebar_label: Your first UI
+title: Creating Your First UI
+sidebar_label: Your First UI
 ---
 
 Time to start using Paperclip! Create a new file in your source directory that's called `GroceryList.pc`, then add this stuff:

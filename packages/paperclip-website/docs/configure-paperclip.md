@@ -1,7 +1,7 @@
 ---
 id: configure-paperclip
-title: Paperclip Config
-sidebar_label: paperclip.config.json
+title: Paperclip Configuration
+sidebar_label: Paperclip Config
 ---
 
 Paperclip looks for a `paperclip.config.json` file which provides information about your project, and how

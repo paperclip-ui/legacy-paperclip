@@ -1,6 +1,6 @@
 ---
 id: configure-webpack
-title: Setting up Webpack
+title: Setting Up Webpack
 sidebar_label: Webpack
 ---
 
