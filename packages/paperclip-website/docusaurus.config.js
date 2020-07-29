@@ -23,6 +23,16 @@ module.exports = {
           label: "Docs",
           position: "left"
         },
+        {
+          label: "API",
+          to: "/docs/usage-syntax",
+          position: "left"
+        },
+        {
+          label: "Basics",
+          to: "/docs/guide-how-to-use",
+          position: "left"
+        },
         // {to: 'blog', label: 'Blog', position: 'left'},
         {
           href: "https://github.com/crcn/paperclip",
