@@ -42,7 +42,7 @@ You can think of Paperclip as a language that focuses _purely_ on your web appli
 </List>
 ```
 
-The `<!-- Preview -->` section isn't actually production code -- it's used primarily for development, and visual regression testing purposes. It's a veeeery important part of Paperclip's design, so you'll be missing out a whole lot if you don't create previews. More on that in a sec.
+The `<!-- Preview -->` section isn't actually production code -- it's used primarily for development, and visual regression testing purposes. It's an important part of Paperclip's design, so you'll be missing out a whole lot if you don't create previews. More on that in a sec.
 
 Here's how you can use the template above in a React app:
 
@@ -70,9 +70,7 @@ export function GroceryList() {
 
 ☝🏻 Basically, all this component is doing is adding dynamic behavior to our Paperclip building blocks, and that's all there is to it between Paperclip UIs and code, really. UIs go in Paperclip, logic goes in code. That's it. To put this into more visual terms: 
 
-![alt I'm secretly an MVC fan](/img/pc-usage/pc-jsx.png)
-
-> Look familar? Definitely not the VC in MVC. Don't you go there! 
+![alt pc + jsx](/img/pc-usage/pc-jsx.png)
 
 This separation between UI and code actually unlocks a lot of really cool features. Namely, by isolating the UI we can optimize for very UI-specific things such as:
 
