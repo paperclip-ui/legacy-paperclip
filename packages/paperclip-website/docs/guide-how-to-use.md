@@ -68,9 +68,9 @@ export function GroceryList() {
 }
 ```
 
-☝🏻 Basically, all this component is doing is adding dynamic behavior out of our Paperclip building blocks, and that's all there is to it between Paperclip UIs and code, really. UIs go in Paperclip, logic goes in code. That's it. To put this into more visual terms: 
+☝🏻 Basically, all this component is doing is adding dynamic behavior to our Paperclip building blocks, and that's all there is to it between Paperclip UIs and code, really. UIs go in Paperclip, logic goes in code. That's it. To put this into more visual terms: 
 
-![alt I'm secretly an MVC fan](assets/view-code-relationship.png)
+![alt I'm secretly an MVC fan](assets/pc-usage/pc-jsx.png)
 
 > Look familar? Definitely not the VC in MVC. Don't you go there! 
 
@@ -79,7 +79,7 @@ This separation between UI and code actually unlocks a lot of really cool featur
 - Better tooling around creating UIs: realtime previews, visual editing tools.
 - Better safety with free visual regression testing.
 
-☝🏻To name a few. In other words, the "separation of concerns" behind Paperclip is really about _function_ over principle. In all honesty, If I had it my way, I'd keep code & UI together, but it seems like the unverse doesn't gel with that idea based on my experience - things get messy. Separation between UI and logic almost always happens in _some_ form based on my experience, and Paperclip puts that separation to good use.
+To name a few. Really, the "separation of concerns" behind Paperclip isn't about principle, it's about function. 
 
 Let's move onto something a bit more sophisticated 👌. Here's a site:
 
@@ -282,7 +282,7 @@ Let's move onto something a bit more sophisticated 👌. Here's a site:
 </style>
 ```
 
-There are a few things going on here, but I'm just going to focus on the preview components & how this all integrates with code. About preview components, every file has them. This makes it really easy to re-use previews within other UI files to see how the _entire_ UI shapes-up. Keep in mind, these preview components _aren't_ intended to be used in app code - they're purely for development & testing purposes. And if you're using Webpack, Rollup, Parcel, or some other bundler, these previews will be shaken out of the application bundle, so you can add as many of them as you want without increasing your overall application size.
+There are a few things going on here, but I'm just going to focus on the preview components & how this all integrates with code. About preview components: every file has them. This makes it easy to re-use previews within other UI files to see how the _entire_ UI shapes-up. Keep in mind that these preview components _aren't_ intended to be used in application code - they're purely for development & testing purposes. And if you're using Webpack, Rollup, Parcel, or some other bundler, these previews will be shaken out of the application bundle, so you can add as many of them as you want without increasing your overall application size.
 
 Testing-wise, all we need to do at this point is run the [Percy](docs/configure-percy) CLI tool to run visual regression tests. No other setup needed. 
 
@@ -325,18 +325,17 @@ export function Page({ children, dark }) {
 }
 ```
 
-Can you see the pattern here? The structure of our JSX components are just about the same
+Can you see the pattern here? The structure & dependengy graph of our JSX components are just about the same
 as the PC components. If we're looking at the PC graph:
-
 
 ![alt TSX dependency graph](assets/pc-usage/pc-deps.png)
 
-Our JSX graph would look like this:
+Our JSX graph looks very similar:
 
 ![alt JSX & PC dependency graph](assets/pc-usage/pc-and-tsx-deps.png)
 
 
-And this makes since both PC and JSX files both represent the same UI. They're going naturally fall into similar structures.
+And this makes sense both PC and JSX files both represent the same UI. They're going naturally fall into similar structures. For the most part, an entire application can be written like this. There will be a few cases that Paperclip can't handle of course, but the language is unopinionated enough to get out of your way when you want it to, so you can easily handle those edge cases. Next, I'll show you how to do that.
 
 
 
