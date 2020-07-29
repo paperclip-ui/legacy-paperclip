@@ -1,7 +1,7 @@
 ---
 id: guide-how-to-use
-title: How To Use Paperclip
-sidebar_label: How to use
+title: Paperclip Basics
+sidebar_label: The Basics
 ---
 
 You can think of Paperclip as a tool that focuses _purely_ on your web application's appearance -  just covering HTML, CSS, and basic components. With that, you can construct almost _all_ of your application UI in Paperclip. For example, here's a simple list:
@@ -42,9 +42,9 @@ You can think of Paperclip as a tool that focuses _purely_ on your web applicati
 </List>
 ```
 
-The `<!-- Preview -->` section isn't actually production code -- it's used primarily for development, and visual regression testing purposes. It's a veeeery important part of Paperclip's design, so you'll be missing out a whole lot if you don't create previews. Take a look at the [guide on writing previews](guide-writing-previews.md) for more information on this. 
+The `<!-- Preview -->` section isn't actually production code -- it's used primarily for development, and visual regression testing purposes. It's a veeeery important part of Paperclip's design, so you'll be missing out a whole lot if you don't create previews. More on this later on.
 
-Moving on, here's how you can use the template above in a React app:
+Here's how you can use the template above in a React app:
 
 ```jsx
 import * as React from "react";
@@ -68,7 +68,7 @@ export function GroceryList() {
 }
 ```
 
-☝🏻 Basically, the only thing that this component is doing is adding dynamic behavior from building blocks defined within the `*.pc` file. And that's all there is to it between Paperclip UIs and code, really. UIs go in Paperclip, logic goes in code. That's it. To put this into more visual terms: 
+☝🏻 Basically, all this component is doing is adding dynamic behavior out of our Paperclip building blocks, and that's all there is to it between Paperclip UIs and code, really. UIs go in Paperclip, logic goes in code. That's it. To put this into more visual terms: 
 
 ![alt I'm secretly an MVC fan](assets/view-code-relationship.png)
 
@@ -81,27 +81,266 @@ This separation between UI and code actually unlocks a lot of really cool featur
 
 ☝🏻To name a few. In other words, the "separation of concerns" behind Paperclip is really about _function_ over principle. In all honesty, If I had it my way, I'd keep code & UI together, but it seems like the unverse doesn't gel with that idea based on my experience - things get messy. Separation between UI and logic almost always happens in _some_ form based on my experience, and Paperclip puts that separation to good use.
 
-Now let's get a little use a more sophisticated example to illustrate this separation. Here's a basic UI for an address book app:
+Let's move onto something a bit more sophisticated 👌. Here's a site:
 
 ```html live
-// file: app.pc
+// file: HomePage.pc
+<import src="./page.pc" as="Page">
+
+<!-- Previews -->
+
+<Page.Preview>
+    Some home content
+</Page.Preview>
+
+// file: Page.pc
+<import src="./header.pc" as="Header">
+<import src="./footer.pc" as="Footer">
+<import src="./tokens.pc" as="tokens">
 
 <style>
-  .App {
+  .page {
+    @include tokens.default-font;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
 
+  .content {
+    background: var(--color-background-1);
+    height: 100%;
+    padding: var(--tb-spacing) var(--lr-spacing);
+  }
+
+  h4 {
+    @include tokens.default-font;
   }
 </style>
 
-<div export component as="Sidebar" className="Sidebar">
+<div export component as="Page" className="page" className:dark=">>>tokens.dark">
   {children}
 </div>
 
-<div export component as="App" className="App">
+<div export component as="Content" className="content"> 
   {children}
 </div>
 
+<!-- We export the preview here so that _other_ previews can use it -->
 
+<Page export component as="Preview" {dark?}>
+  <Header.Preview />
+  <Content>{children}</Content>
+  <Footer.Preview />
+</Page>
+
+<h4>default mode: </h4>
+<Preview>
+  page content here
+</Preview>
+
+<h4>dark mode: </h4>
+<Preview dark>
+  page content here
+</Preview>
+
+// file: Header.pc
+<import src="./tokens.pc" as="tokens">
+
+<style>
+  .header {
+    @include tokens.default-font;
+    box-sizing: border-box;
+    background: var(--color-background-2);
+    width: 100%;
+    padding: var(--tb-spacing) var(--lr-spacing);
+    .links {
+      display: flex;
+      float: right;
+      .link {  
+        padding: 8px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        color: var(--color-text-1);
+        &--hover {
+          background: var(--color-background-3);
+        }
+      }
+    }
+    .info {
+      display: flex;
+      flex-direction: column;
+      padding: 30px 0px;
+      .headline {
+        font-size: 24px;
+        margin-bottom: 6px;
+      }
+      .desc {
+        font-size: 0.8em;
+      }
+    }
+  }
+
+</style>
+
+<div export component as="Header" 
+  className="header"
+  className:dark=">>>tokens.dark">
+  {children}
+</div>
+
+<div export component as="Links" className="links">
+  {children}
+</div>
+
+<a export component as="Link" 
+  className="link"
+  className:hover="link--hover"
+  {href?}>
+  {children}
+</a>
+
+<div export component as="Info" className="info">
+  <div className="headline">
+    {title}
+  </div>
+  <div className="desc">
+    {description}
+  </div>
+</div>
+
+<!-- Preview for re-use -->
+
+<Header export component as="Preview" {dark?}>
+  <Links>
+    <Link href="#">Link 1</Link>
+    <Link href="#" hover>Link 2</Link>
+    <Link href="#">Link 3</Link>
+    <Link href="#">Link 4</Link>
+  </Links>
+  <Info title="Lorem ipsum" description={<fragment>
+    sit amet <strong>sollicitudin</strong> nulla eleifend at.
+  </fragment>} />
+</Header>
+
+<Preview />
+<Preview dark />
+
+
+// file: Footer.pc
+<import src="./tokens.pc" as="tokens">
+
+<style>
+  .content {
+    height: 100%;
+    padding: var(--tb-spacing) var(--lr-spacing);
+  }
+  
+  .footer {
+    @include tokens.default-font;
+    background: var(--color-background-2);
+    padding: var(--tb-spacing) var(--lr-spacing);
+  }
+</style>
+
+<div export component as="Footer" className="footer" className:dark=">>>tokens.dark">
+  {children}
+</div>
+
+<Footer export component as="Preview" {dark?}>
+  footer content 
+</Footer>
+
+<Preview />
+<Preview dark />
+
+// file: Tokens.pc
+
+<style>
+  :root {
+    --lr-spacing: 40px;
+    --tb-spacing: 20px;
+    --color-background-1: #FFF;
+    --color-background-2: rgba(240, 240, 240, 1);
+    --color-background-3: rgba(220, 220, 220, 1);
+    --color-text-1: #444;
+  }
+
+
+  @export {
+    @mixin default-font {
+      font-family: sans-serif;
+      color: var(--color-text-1);
+    }
+
+    .dark {
+      --color-background-1: #222;
+      --color-background-2: #333;
+      --color-background-3: #555;
+      --color-text-1: rgba(255, 255, 255, 0.8);
+    }
+  }
+</style>
 ```
+
+There are a few things going on here, but I'm just going to focus on the preview components & how this all integrates with code. About preview components, every file has them. This makes it really easy to re-use previews within other UI files to see how the _entire_ UI shapes-up. Keep in mind, these preview components _aren't_ intended to be used in app code - they're purely for development & testing purposes. And if you're using Webpack, Rollup, Parcel, or some other bundler, these previews will be shaken out of the application bundle, so you can add as many of them as you want without increasing your overall application size.
+
+Testing-wise, all we need to do at this point is run the [Percy](docs/configure-percy) CLI tool to run visual regression tests. No other setup needed. 
+
+Now onto how this integrates with code. We'll start off with the `Header` component since it has a few extra moving parts. Here's how it might be used in a React component:
+
+```jsx
+import * as ui from "./Header.pc";
+
+export function Header() {
+  return <ui.Header>
+    <ui.Links>
+      <ui.Link>Home</ui.Link>
+      <ui.Link href="">About</ui.Link>
+      <ui.Link>Contact</ui.Link>
+    </ui.Links>
+    <ui.Info title="My website" description={<>
+      My description
+    </>} />
+  </ui.Header>
+};
+```
+
+Next, we'll move onto our `Page` component:
+
+```jsx
+import * as ui from "./Page.pc";
+
+// extension added for clarity. Usually it's omitted.
+import {Header} from "./Header.tsx"; 
+
+// We're assuming that Footer is already done, too
+import {Footer} from "./Footer.tsx"; 
+
+export function Page({ children, dark }) {
+  return <ui.Page dark={dark}>
+    <Header />
+    <ui.Content>{children}</ui.Content>
+    <Footer />
+  </ui.Page>;
+}
+```
+
+Can you see the pattern here? The structure of our JSX components are just about the same
+as the PC components. If we're looking at the PC graph:
+
+
+![alt TSX dependency graph](assets/pc-usage/pc-deps.png)
+
+Our JSX graph would look like this:
+
+![alt JSX & PC dependency graph](assets/pc-usage/pc-and-tsx-deps.png)
+
+
+And this makes since both PC and JSX files both represent the same UI. They're going naturally fall into similar structures.
+
+
+
+
 
 
 

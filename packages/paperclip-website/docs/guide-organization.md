@@ -1,5 +1,5 @@
 ---
-id: configure-percy
+id: guide-organization
 title: Organizing Paperclip files
 sidebar_label: Organization
 ---
