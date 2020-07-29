@@ -45,9 +45,9 @@ This must be converted to Paperclip like so:
 </style>
 ```
 
-> The `@export` block is necessary for CSS that you plan on using in other Paperclip files, since Paperclip requires _explicity_. If you really want to you can make all selectors `:global`, but I don't recommend that because you're losing safety in favor of convenience. 
+> The `@export` block is necessary for CSS that you plan on using in other Paperclip files, since Paperclip requires _explicity_. You can make all selectors global with `:global` if you really want to, but I don't recommend that because you're losing safety in favor of convenience. 
 
-☝🏻Here's how you can use this in a Paperclip file:
+☝🏻Here's how you can use these styles in another Paperclip file:
 
 ```html
 <import src="modules/tailwind.pc" as="tw">
@@ -92,7 +92,7 @@ in order to debug your styles. To make things easier, you can copy & paste the t
 
 ![alt copy-paste html](/img/third-party-libraries/copy-paste.gif)
 
-Let's use a real example now. Here are some custom styles for the [react select](https://react-select.com/) module:
+Let's use a real example now. Here's a custom theme for the [react select](https://react-select.com/) module:
 
 ```html live
 // file: Select.pc
@@ -350,14 +350,14 @@ Let's use a real example now. Here are some custom styles for the [react select]
 </style>
 ```
 
-Here's how we apply these styles in React code:
+Here's how we can apply this theme in React code:
 
 ```jsx
 import { Wrapper as SelectWrapper } from './Select.pc';
 import Select from 'react-select';
 
 function StyledSelect(props) {
-  return (
+  return (    
     <SelectWrapper>
       <Select classNamePrefix="select" {...props} />
     </SelectWrapper>
