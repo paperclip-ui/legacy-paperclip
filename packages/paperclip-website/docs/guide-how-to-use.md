@@ -4,7 +4,7 @@ title: Paperclip Basics
 sidebar_label: The Basics
 ---
 
-You can think of Paperclip as a tool that focuses _purely_ on your web application's appearance -  just covering HTML, CSS, and basic components. With that, you can construct almost _all_ of your application UI in Paperclip. For example, here's a simple list:
+You can think of Paperclip as a language that focuses _purely_ on your web application's appearance -  just covering HTML, CSS, and basic components. With that, you can construct almost _all_ of your application UI in Paperclip. For example, here's a simple list:
 
 ```html live
 <style>
