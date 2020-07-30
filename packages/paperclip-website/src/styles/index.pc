@@ -86,9 +86,10 @@
     }
 
     ._cta {
-      margin-top: 30px;
+      margin-top: 15px;
       :global(a) { 
         margin-left: 15px;
+        margin-top: 15px;
         &:first-child {
           margin-left: 0;
         }

@@ -1,17 +1,8 @@
-> ⚠️ Note that Paperclip is currently in Alpha, so expect a few bugs!
+**Paperclip is a UI language centered around increasing the speed, safety, and accuracy of developing web interfaces**. This extension allows you to build them in realtime. 
 
-This extension allows you to create Paperclip UIs in realtime. 
+Documentation for this extension can be viewed [here](https://paperclip.dev/docs/getting-started-vscode).
 
 ![VSCode Demo](https://user-images.githubusercontent.com/757408/75412579-f0965200-58f0-11ea-8043-76a0b0ec1a08.gif)
-
-#### Getting Started
-
-1. Download the VS Code extension
-1. Create a new `hello-world.pc` file in your project directory.
-1. Open `hello-world.pc`, then press `cmd + shift + p` to open a preview of it.
-1. Start typing HTML & CSS!
-
-> More documentation around how to use Paperclip can be viewed here: https://github.com/crcn/paperclip/tree/master/documentation/Getting%20Started
 
 ####  Extension Features
 

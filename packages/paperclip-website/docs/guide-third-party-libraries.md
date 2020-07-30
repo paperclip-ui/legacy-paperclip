@@ -47,7 +47,7 @@ This must be converted to Paperclip like so:
 
 > The `@export` block is necessary for CSS that you plan on using in other Paperclip files, since Paperclip requires _explicity_. You can make all selectors global with `:global` if you really want to, but I don't recommend that because you're losing safety in favor of convenience. 
 
-☝🏻Here's how you can use these styles in another Paperclip file:
+☝ Here's how you can use these styles in another Paperclip file:
 
 ```html
 <import src="modules/tailwind.pc" as="tw">
@@ -87,8 +87,8 @@ import SomeThirdPartyComponent from "some-third-paty-component";
 <SomeThirdPartyComponent className={ui.classNames["my-style"]} />
 ```
 
-☝🏻this works for many cases. However, it's a bit inconvenient since you'll be using the browser
-in order to debug your styles. To make things easier, you can copy & paste the third-party component's HTML & CSS directly in your PC file & open it up in VS Code to visually style it. Don't worry, this approach is only to make styling easier. It's not for production.
+☝ this works for many cases. However, it's a bit inconvenient since you'll be using the browser
+in order to debug your styles. To make things easier, you can copy & paste the third-party component's HTML & CSS directly in your PC file & open it up in VS Code to visually style it. Don't worry, this approach is only a guide to make custom styling easier. It's not for production.
 
 ![alt copy-paste html](/img/third-party-libraries/copy-paste.gif)
 

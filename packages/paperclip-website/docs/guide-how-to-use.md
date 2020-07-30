@@ -76,7 +76,7 @@ export function GroceryList() {
 
 This separation between UI and code actually unlocks a lot of really cool features. Namely, by isolating the UI we can optimize for very UI-specific things such as:
 
-- Better tooling around creating UIs: realtime previews, visual editing tools.
+- Better tooling around creating UIs: linting, realtime previews, visual editing tools.
 - Better safety with free visual regression testing.
 
 To name a few. Really, the "separation of concerns" behind Paperclip isn't about principle, it's about function. 
