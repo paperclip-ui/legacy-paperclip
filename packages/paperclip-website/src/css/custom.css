@@ -16,6 +16,13 @@
   --ifm-color-primary-lighter: #709bd3;
   --ifm-color-primary-lightest: #90b1dd;
   --ifm-code-font-size: 95%;
+  --ifm-font-family-base: Open Sans;
+}
+
+.navbar__title {
+  font-family: Sora;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .docusaurus-highlight-code-line {
