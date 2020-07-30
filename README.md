@@ -2,7 +2,7 @@
 <a href="https://github.com/crcn/paperclip/blob/master/MIT-LICENSE.txt"><img src="https://img.shields.io/github/license/crcn/paperclip" alt="License"></a>
 
 <div style="">
-  <img src="assets/logo.png" style="margin: 0px auto; width: 200px;">
+  <img src="assets/logo.png" width="200" style="margin: 0px auto; width: 200px;">
 </div>
 
 ---
