@@ -4,9 +4,8 @@
 <br />
 <br />
 
-<img src="assets/logo.png" width="200">
+# <img src="assets/logo.png" width="200">
 
----
 
 Paperclip is a language for UI primitives. The goal of the library is centered around increasing the speed, safety, and accuracy of developing web interfaces. Here's how:
 
