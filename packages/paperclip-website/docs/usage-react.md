@@ -111,3 +111,22 @@ not accessible.
   }
 </style>
 ```
+
+## Adding props
+
+Props can be defined just like any ordinary React component. Take this template for example:
+
+```html
+<div export component as="Button" {onClick?}>
+  {children}
+</div>
+```
+> The `?` in `{onClick?}` flags the prop as optional.
+
+In React code, we can define our `onClick` handler like so:
+
+```html
+import * as styles from "./button.pc";
+
+<styles.Button onClick={handleClick} />
+```
