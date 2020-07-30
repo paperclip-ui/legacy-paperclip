@@ -13,8 +13,10 @@ module.exports = {
     ],
     Guides: [
       "guide-how-to-use",
+      "guide-organization",
       "guide-third-party-libraries",
-      "guide-dynamic-styles"
+      "guide-dynamic-styles",
+      "guide-theming"
     ],
     Integrations: [
       "configure-webpack",

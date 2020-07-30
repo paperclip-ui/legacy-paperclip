@@ -43,7 +43,7 @@ import {Progress} from "./progress.pc";
 <Progress barStyle={{ width: `${progress}%` }} />
 ```
 
-That's just about it. Just pass a `style` attribute to Paperclip whenever you need to do styling in JavaScript. And be sure to expose `{style?}` in Paperclip, otherwise it won't work. If you need to styleize nested elements, you can do this:
+That's just about it. Just pass a `style` attribute to Paperclip whenever you need to do styling in JavaScript. And be sure to expose `{style?}` in Paperclip, otherwise it won't work. If you need to stylize nested elements, you can do this:
 
 ```html
 <div export component as="Something">
