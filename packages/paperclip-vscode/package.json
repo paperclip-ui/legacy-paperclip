@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "14.0.24",
+  "version": "14.0.25",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "description": "A language for building UI primitives",

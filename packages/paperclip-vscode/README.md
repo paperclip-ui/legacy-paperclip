@@ -1,5 +1,4 @@
-
-This extension allows you to create [Paperclip](http://paperclip.dev) UIs in realtime. Paperclip is a UI primitive language centered around increasing the speed, safety, and accuracy of developing web interfaces. 
+**Paperclip is a UI language centered around increasing the speed, safety, and accuracy of developing web interfaces**. This extension allows you to build them in realtime. 
 
 Documentation for for this extension can be viewed [here](https://paperclip.dev/docs/getting-started-vscode).
 
