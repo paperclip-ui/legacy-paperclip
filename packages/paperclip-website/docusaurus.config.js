@@ -6,7 +6,11 @@ module.exports = {
   favicon: "img/favicon.ico",
   organizationName: "crcn", // Usually your GitHub org/user name.
   projectName: "paperclip", // Usually your repo name.
+  plugins: ["@docusaurus/plugin-google-analytics"],
   themeConfig: {
+    googleAnalytics: {
+      trackingID: "UA-173953110-1"
+    },
     prism: {
       theme: require("prism-react-renderer/themes/oceanicNext")
     },
