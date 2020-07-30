@@ -1,9 +1,11 @@
 ![Checks](https://github.com/crcn/paperclip/workflows/Checks/badge.svg?branch=master)
 <a href="https://github.com/crcn/paperclip/blob/master/MIT-LICENSE.txt"><img src="https://img.shields.io/github/license/crcn/paperclip" alt="License"></a>
 
+<div style="">
+  <img src="assets/logo.png" style="margin: 0px auto; height: 50px;">
+</div>
 
-
-# Paperclip 
+---
 
 Paperclip is a language for UI primitives. The goal of the library is centered around increasing the speed, safety, and accuracy of developing web interfaces. Here's how:
 

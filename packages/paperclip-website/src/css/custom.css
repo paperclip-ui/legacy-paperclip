@@ -22,7 +22,8 @@
 .navbar__title {
   font-family: Sora;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.005em;
+  /* font-size: 1.2em; */
 }
 
 .docusaurus-highlight-code-line {
