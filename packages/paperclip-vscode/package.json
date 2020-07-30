@@ -1,10 +1,12 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "14.0.22",
+  "version": "14.0.24",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
-  "description": "",
+  "description": "A language for building UI primitives",
+  "homepage": "http://paperclip.dev",
+  "icon": "assets/logo.png",
   "preview": true,
   "repository": {
     "type": "git",
