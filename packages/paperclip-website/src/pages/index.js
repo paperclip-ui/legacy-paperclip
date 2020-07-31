@@ -37,10 +37,14 @@ function Home() {
           }
           description={
             <>
-              Paperclip is a language designed for visual UI development. No
-              more wasting time juggling between the browser and code.{" "}
-              <span className={styles.classNames["_emoji"]}>🙌</span>
+              Paperclip is a language that provides a better way of creating
+              user interfaces.
             </>
+            // <>
+            //   Paperclip is a language designed for visual UI development. No
+            //   more wasting time juggling between the browser and code.{" "}
+            //   <span className={styles.classNames["_emoji"]}>🙌</span>
+            // </>
           }
           cta={
             <>
