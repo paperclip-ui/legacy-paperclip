@@ -24,22 +24,47 @@ function Home() {
   const prismTheme = usePrismTheme();
   return (
     <Layout
-      title={`${siteConfig.title} - build UIs faster`}
-      description="A language for building UI faster, safer, and more accurately"
+      title={`${siteConfig.title} - build UIs in record time`}
+      description="A language for creating UI faster, safer, and more accurately"
     >
       <styles.Home>
         <styles.Header
           title={
             <>
-              Build UIs in <styles.Highlight>realtime</styles.Highlight>,
-              directly within <styles.Highlight>VS Code</styles.Highlight>
+              Build web applications{" "}
+              <styles.Highlight noBreak>in record time</styles.Highlight>
             </>
+            // <>
+            //   Build UIs in <styles.Highlight>realtime</styles.Highlight>,
+            //   directly within <styles.Highlight>VS Code</styles.Highlight>
+            // </>
           }
           description={
+            /* 
+
+            Thoughts floating around in my head:
+
+            - no more broken window CSS - feeling confident that CSS changes won't break
+            - A kind-of type system for CSS changes
+            - More natural than the current way of building UIs
+            */
+
+            // <>
+            //   Paperclip is a simple language for building user interfaces.
+            // </>
             <>
-              Paperclip is a simple language that provides a better way of
-              creating user interfaces.
+              Paperclip is a language for building user interfaces. With
+              features such as{" "}
+              <styles.Highlight>realtime previews</styles.Highlight>, and{" "}
+              <styles.Highlight>tools for catching CSS bugs</styles.Highlight>,
+              you'll be creating pixel-perfect web applications in no time.
             </>
+            // <>
+            //   Paperclip comes with realtime visual editing within VS Code, visual regression tools, scoped styling. Paperclipn
+            // </>
+            // <>
+            //   <styles.Highlight>Realtime previews</styles.Highlight>, <styles.Highlight>visual regression testing</styles.Highlight>, and more. Paperclip is a better way to build web applications in record time.
+            // </>
             // <>
             //   Paperclip is a language designed for visual UI development. No
             //   more wasting time juggling between the browser and code.{" "}
@@ -106,7 +131,7 @@ function Home() {
           />
         </styles.VariousFeatures>
         <styles.BigFeature
-          title="Build UIs faster"
+          title="Realtime previews in VS Code"
           description="The VS Code extension comes with a super fast realtime preview that's powered by Rust, so you can enjoy uninterupted UI development, regardless of your project size. "
           preview={<img src="img/button-demo.gif" />}
           ctaText="View the extension"
