@@ -98,7 +98,9 @@
 
     ._highlight {
       color: var(--color-green-neon-light);
-      white-space: nowrap;
+      &--noBreak {
+        white-space: nowrap;
+      }
     }
 
     ._preview {
@@ -299,7 +301,7 @@
 
 </style>
 
-<span export component as="Highlight" className="_highlight">
+<span export component as="Highlight" className="_highlight" className:noBreak="_highlight--noBreak">
   {children}
 </span>
 
@@ -387,7 +389,7 @@
 
 <Home>
   <Header 
-    title={<fragment>Build UIs in <Highlight>realtime</Highlight>, directly within <Highlight>VS Code</Highlight></fragment>}
+    title={<fragment>Build UIs in <Highlight>realtime</Highlight>, directly within <Highlight noBreak>VS Code</Highlight></fragment>}
     description={<fragment>Paperclip is a language designed for visual UI development. No more wasting time switching between the browser and code. <span className="_emoji">🙌</span></fragment>}
     cta={<fragment>
       <button.Anchor className=">>>typography.semi-bold">Get started</button.Anchor>
