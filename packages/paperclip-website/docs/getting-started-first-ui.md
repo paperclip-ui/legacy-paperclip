@@ -1,7 +1,7 @@
 ---
 id: getting-started-first-ui
-title: Creating Your First UI
-sidebar_label: Your First UI
+title: Using Paperclip With React
+sidebar_label: Using With React
 ---
 
 Time to start using Paperclip! Create a new file in your source directory that's called `GroceryList.pc`, then add this stuff:
@@ -41,7 +41,8 @@ Time to start using Paperclip! Create a new file in your source directory that's
 
 > If you're using the VS Code extension, you'll be prompted to preview the UI. 
 
-In the same directory, create a file called `GroceryList.tsx` with this content:
+Paperclip files are just like any ordinary component file, so all we need to do is import PC components into
+a React component. In the same directory, create a file called `GroceryList.tsx` with this content:
 
 ```tsx
 import * as React from "react";
@@ -65,9 +66,27 @@ export function GroceryList() {
 }
 ```
 
-> Generally, I like to name `*.pc` files & their associated `*.tsx` files the same because it's an easy convention, and it describes exactly what files go together. 
+You'll notice that _all_ components that are exported from the Paperclip file are now accessible in our React component, and
+the API is pretty similar to React's. For example, if we have a template like this:
 
-If you created a new project via `paperclip init`, then change your `entry.tsx` file to this:
+```html
+<div export component as="Button" {onClick}>
+</div>
+```
+
+We can use the exported `Button` component like this:
+
+```jsx
+import { Button } from "./Button.pc";
+
+<Button onClick={() => {
+  /* do something */
+}} />
+```
+
+Check out the [React API](/docs/usage-react) for more information on all the things you can do with Paperclip files.
+
+Back to our demo. If you created a new project via `paperclip init`, then change your `entry.tsx` file to this:
 
 ```tsx
 import * as React from "react";
@@ -88,3 +107,5 @@ ReactDOM.render(<GroceryList />, mount);
 Here's a full walkthrough:
 
 ![alt](/img/first-ui-demo.gif)
+
+And that's it! You've now fully integrated Paperclip into a React app. 

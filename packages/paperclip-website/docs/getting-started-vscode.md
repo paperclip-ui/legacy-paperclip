@@ -4,16 +4,14 @@ title: Installing the VS Code extension
 sidebar_label: VS Code Extension
 ---
 
-The [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) enables you to visually create your Paperclip files in realtime. It also comes with other tooling such as color pickers, autocompletion, and error highlighting. 
+You'll want the [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) extension since it has realtime previews, and other tools like color pickers, autocompletion, and such.
+
+After installing the extension, I'd recommend just playing around with it by creating a new `hello-world.pc` file & writing HTML.  Play around by creating a style block, use the color pickers.  Get a real good feel for the app. 
 
 ![alt Realtime editing](/img/button-demo.gif)
 
-After installing the extension, create a new PC file & open it up - you should be prompted to show a live preview. You can also preview `*.pc` files by running the `Paperclip: Open Live Preview` command (can be opened via `cmd + shift + p`)
+Here are some tips:
 
-### Inspecting the preview window
-
-If you want to use the web inspector in VS Code to see how UIs, just run `Developer: Open Webview Developer tools`. 
-
-### Bugs
-
-You may run into a few bugs during Alpha that could cause the extension to stop working. If that happens, run the `Developer: Reload Window` command. 
+- You can open any preview with the command: `Paperclip: Open Live Preview`.
+- You can open the web inspector by running the command: `Developer: Open Webview Developer tools`.
+- If the extension stops working for whatever reason (might happen during Alpha), then run the `Developer: Reload Window` command. 
