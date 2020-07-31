@@ -15,6 +15,7 @@ Paperclip is a language for UI primitives. The goal of the library is centered a
 
 ### Other features
 
+- **No lock-in** - You can easily move away from Paperclip if you want to. I'd even wager that it's faster to build UIs in Paperclip _first_, then translate to something else. 
 - **No runtime libraries** - Paperclip comes with a CLI tool and webpack loader that compiles Paperclip UIs into plain code.
 - **SASS-like syntax** - Paperclip supports some sass-like features such as mixins, & nested rules. 
 - **Rich VS Code experience** - Intellisense, color pickers, autocomplete, and more.

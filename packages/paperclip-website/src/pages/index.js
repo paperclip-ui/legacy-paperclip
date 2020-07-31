@@ -32,7 +32,7 @@ function Home() {
           title={
             <>
               Build web applications{" "}
-              <styles.Highlight noBreak>in record time</styles.Highlight>
+              <styles.Highlight noBreak>in record time.</styles.Highlight>
             </>
             // <>
             //   Build UIs in <styles.Highlight>realtime</styles.Highlight>,

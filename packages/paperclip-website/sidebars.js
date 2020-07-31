@@ -8,6 +8,7 @@ module.exports = {
     Guides: [
       "guide-how-to-use",
       "guide-organization",
+      "guide-migrating-to-paperclip",
       "guide-third-party-libraries",
       "guide-dynamic-styles",
       "guide-theming"
