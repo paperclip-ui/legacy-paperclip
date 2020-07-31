@@ -37,8 +37,8 @@ function Home() {
           }
           description={
             <>
-              Paperclip is a language that provides a better way of creating
-              user interfaces.
+              Paperclip is a simple language that provides a better way of
+              creating user interfaces.
             </>
             // <>
             //   Paperclip is a language designed for visual UI development. No
