@@ -66,21 +66,23 @@ export function GroceryList() {
 ```
 
 You'll notice that _all_ components that are exported from the Paperclip file are now accessible in our React component, and
-the API is pretty similar to React's. For example, a simple template like this:
+the API is pretty similar to React's. For example, a simple UI like this:
 
 ```html
-<div export component as="Button" {onClick}>
+<!-- styles up here -->
+<div export component as="Header" className="header">
+  {children}
 </div>
 ```
 
-Can use the exported `Button` component like this:
+Can be used like this:
 
 ```jsx
-import { Button } from "./Button.pc";
+import * as styles from "./Header.pc";
 
-<Button onClick={() => {
-  /* do something */
-}} />
+<styles.Header>
+  header content
+</styles.Header>
 ```
 
 Check out the [React API](/docs/usage-react) for more information on all the things you can do with Paperclip files.

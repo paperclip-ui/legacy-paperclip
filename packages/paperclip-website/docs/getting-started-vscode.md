@@ -4,7 +4,7 @@ title: Installing the VS Code extension
 sidebar_label: VS Code Extension
 ---
 
-The [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) is a really good place to start that works out of the box. Just create a new `hello-world.pc` file, and start writing plain HTML & CSS. Play around by creating a style block, use the color pickers.  Get a real good feel for the app. 
+The [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) is a really good place to start since it works out of the box. Just create a new `hello-world.pc` file, and start writing plain HTML & CSS. Play around by creating a style block, use the color pickers.  Get a real good feel for Paperclip. 
 
 ![alt Realtime editing](/img/button-demo.gif)
 
