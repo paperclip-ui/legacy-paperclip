@@ -24,7 +24,7 @@ function Home() {
   const prismTheme = usePrismTheme();
   return (
     <Layout
-      title={`${siteConfig.title} - build UIs in record time`}
+      title={`${siteConfig.title} - build web applications in record time`}
       description="A language for creating UI faster, safer, and more accurately"
     >
       <styles.Home>

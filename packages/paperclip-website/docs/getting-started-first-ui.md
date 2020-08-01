@@ -39,10 +39,9 @@ Time to start using Paperclip! Create a new file in your source directory that's
 </List>
 ```
 
-> If you're using the VS Code extension, you'll be prompted to preview the UI. 
+> If you're using the VS Code extension, you should be prompted to open a few of this file. If not, you cna run the command: `Paperclip: Open Live Preview`. 
 
-Paperclip files are just like any ordinary component file, so all we need to do is import PC components into
-a React component. In the same directory, create a file called `GroceryList.tsx` with this content:
+Paperclip files are just like any ordinary component file, so all we need to do is import PC components into a React component. In the same directory, create a file called `GroceryList.tsx` with this content:
 
 ```tsx
 import * as React from "react";
@@ -67,26 +66,28 @@ export function GroceryList() {
 ```
 
 You'll notice that _all_ components that are exported from the Paperclip file are now accessible in our React component, and
-the API is pretty similar to React's. For example, if we have a template like this:
+the API is pretty similar to React's. For example, a simple UI like this:
 
 ```html
-<div export component as="Button" {onClick}>
+<!-- styles up here -->
+<div export component as="Header" className="header">
+  {children}
 </div>
 ```
 
-We can use the exported `Button` component like this:
+Can be used like this:
 
 ```jsx
-import { Button } from "./Button.pc";
+import * as styles from "./Header.pc";
 
-<Button onClick={() => {
-  /* do something */
-}} />
+<styles.Header>
+  header content
+</styles.Header>
 ```
 
 Check out the [React API](/docs/usage-react) for more information on all the things you can do with Paperclip files.
 
-Back to our demo. If you created a new project via `paperclip init`, then change your `entry.tsx` file to this:
+Back to our demo. If you created a new project with `paperclip init`, change your `entry.tsx` file to this:
 
 ```tsx
 import * as React from "react";
