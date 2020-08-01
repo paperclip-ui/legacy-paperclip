@@ -1,8 +1,8 @@
 module.exports = {
   docs: {
     "Getting started": [
-      "getting-started-installation",
       "getting-started-vscode",
+      "getting-started-installation",
       "getting-started-first-ui"
     ],
     Guides: [

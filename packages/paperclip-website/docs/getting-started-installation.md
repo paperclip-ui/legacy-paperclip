@@ -1,10 +1,10 @@
 ---
 id: getting-started-installation
-title: Installing Paperclip
-sidebar_label: Installation 
+title: NPM Installation
+sidebar_label: NPM Installation 
 ---
 
-Paperclip is currently in Alpha, so in the meantime it's limited to [React](https://reactjs.org/). Assuming that you're using it, go ahead and `cd` into your project directory, then run:
+Keep in mind that Paperclip is currently in Alpha, and in the meantime it's limited to [React](https://reactjs.org/). Assuming that you're okay with that, go ahead and `cd` into your project directory, then run:
 
 ```sh
 npm install paperclip-cli --save-dev

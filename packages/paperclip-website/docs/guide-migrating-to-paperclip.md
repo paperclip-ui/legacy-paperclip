@@ -6,7 +6,7 @@ sidebar_label: Migrating Code
 
 ###  Migrating from CSS 
 
-All you really need to do here is copy & paste CSS into a Paperclip file. Here's an example:
+All you need to do is copy & paste CSS into a Paperclip file. Here's an example:
 
 ```css
 .container {
@@ -20,7 +20,7 @@ All you really need to do here is copy & paste CSS into a Paperclip file. Here's
 }
 ```
 
-☝ Just copy & paste this into a Paperclip file, and then wrap this stuff with `@export`:
+☝ After copying, wrap this stuff with `@export`:
 
 ```html
 <style>
@@ -37,9 +37,9 @@ All you really need to do here is copy & paste CSS into a Paperclip file. Here's
 </style>
 ```
 The `@export` allows for your selectors to be used in other documents. Without it, these styles 
-would only work in the document above. 
+would only work in the document the document they're defined in. 
 
-From here, you can start using your styles:
+From there you can start using your styles:
 
 ```html live
 // file: demo.pc
@@ -70,7 +70,7 @@ From here, you can start using your styles:
 
 ###  Migrating from Styled Components, Emotion, etc
 
-For the most part, translating styled components to Paperclip is a 1-1 map. Here's example of some styled components:
+For the most part, translating styled components to Paperclip is a 1-1 map. Here's an example of some styled components:
 
 ```jsx
 import styled from "styled-component";
