@@ -1,0 +1,47 @@
+<style>
+  .button {
+    background: #333;
+    border: 2px solid #333;
+    border-radius: 4px;
+    padding: 8px 16px;
+    color: white;
+
+    &--secondary {
+      color: inherit;
+      background: transparent;
+    }
+    &--negate {
+      background: #C00;
+      border-color: #C00;
+    }
+    &--negate&--secondary {
+      background: transparent;
+      color: #C00;
+    }
+  }
+  .preview {
+    margin: 10px;
+  }
+</style>
+<button export component as="Button" 
+  className="button {className?}"
+  className:secondary="button--secondary"
+  className:negate="button--negate">
+  {children}
+</button>
+
+<Button className="preview">
+  primary
+</Button>
+
+<Button className="preview" secondary>
+  Secondary
+</Button>
+
+<Button className="preview" negate>
+  Negate
+</Button>
+
+<Button className="preview" negate secondary>
+  Negate Secondary
+</Button>
