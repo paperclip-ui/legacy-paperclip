@@ -11,6 +11,9 @@
     text-decoration: none;
     transition: 0.1s linear;
     color: inherit;
+    &--strong {
+      font-weight: 600;
+    }
     &:hover {
       border-color: var(--color-green-neon);
       background-color: var(--color-green-neon);
@@ -30,7 +33,7 @@
   }
 </style>
 
-<a export component as="Anchor" className="_button {className?}" className:secondary="_button--secondary" {href?}>
+<a export component as="Anchor" className="_button {className?}" className:secondary="_button--secondary" className:strong="_button--strong" {href?}>
   {children}
 </a>
 

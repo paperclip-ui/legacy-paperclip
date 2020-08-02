@@ -49,8 +49,13 @@ function Home() {
             //   Paperclip is a simple language for building user interfaces.
             // </>
             <>
-              Realtime previews, visual regression testing. With Paperclip
-              you'll be creating web aplications in no time.
+              With tooling such as{" "}
+              <styles.Highlight>realtime previews</styles.Highlight> &{" "}
+              <styles.Highlight>
+                automatic visual regresion tests
+              </styles.Highlight>
+              , you can build UIs in no time using the language you already
+              know.
             </>
             // <>
             //   Paperclip is a language for building user interfaces. With
@@ -94,7 +99,7 @@ function Home() {
         <styles.MainFeatures>
           <styles.MainFeatureItem
             iconName="shapes"
-            title="Use plain HTML & CSS"
+            title="Write plain HTML & CSS"
             description="Use plain 'ol HTML & CSS to define building blocks of your entire application UI."
             example={
               <CodeBlock className="language-html" style={{ height: 500 }}>

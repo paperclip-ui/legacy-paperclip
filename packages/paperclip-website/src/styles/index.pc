@@ -55,7 +55,7 @@
     height: 600px;
 
     ._blurb {
-        margin-top: 150px;
+        margin-top: 100px;
         width: 50%;
         flex-shrink:0;
         margin-right: 30px;
@@ -72,7 +72,6 @@
         letter-spacing: 0.04em;
       }
       ._subtext {
-        display: none;
         color: rgba(255, 255, 255, 0.9);
         /* filter: drop-shadow(0px 0px 1px rgb(0, 0, 0)); */
         font-weight: 500;
@@ -416,9 +415,9 @@
 <Home>
   <Header 
     title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
-    description={<fragment>With realtime previews & visual regression t</fragment>}
+    description={<fragment>With tooling for <Highlight>realtime previews</Highlight> & <Highlight>automatic visual regresion testing</Highlight>, you can build UIs in no time using the language you already know.</fragment>}
     cta={<fragment>
-      <button.Anchor className=">>>typography.semi-bold">Get started</button.Anchor>
+      <button.Anchor className=">>>typography.semi-bold" strong>Get started</button.Anchor>
       <button.Anchor secondary className=">>>typography.semi-bold">Check out on GitHub</button.Anchor>
     </fragment>}
     preview={<img src="../../static/img/realtime-editing-2.gif">}
