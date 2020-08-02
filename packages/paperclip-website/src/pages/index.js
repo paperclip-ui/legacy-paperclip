@@ -44,19 +44,27 @@ function Home() {
             - A kind-of type system for CSS changes
             - More natural than the current way of building UIs
             */
+            <>
+              Paperclip allows you to import HTML & CSS directly into code, and
+              build faster than ever with{" "}
+              <styles.Highlight>realtime previews</styles.Highlight> &{" "}
+              <styles.Highlight>
+                automatic visual regression tests.
+              </styles.Highlight>
+            </>
 
             // <>
             //   Paperclip is a simple language for building user interfaces.
             // </>
-            <>
-              With tooling such as{" "}
-              <styles.Highlight>realtime previews</styles.Highlight> &{" "}
-              <styles.Highlight>
-                automatic visual regresion tests
-              </styles.Highlight>
-              , you can build UIs in no time using the language you already
-              know.
-            </>
+            // <>
+            //   With tooling such as{" "}
+            //   <styles.Highlight>realtime previews</styles.Highlight> &{" "}
+            //   <styles.Highlight>
+            //     automatic visual regresion tests
+            //   </styles.Highlight>
+            //   , you can build UIs in no time using the language you already
+            //   know.
+            // </>
             // <>
             //   Paperclip is a language for building user interfaces. With
             //   features such as{" "}
@@ -81,6 +89,7 @@ function Home() {
               <buttonStyles.Anchor
                 className={typography.classNames["semi-bold"]}
                 href="/docs"
+                strong
               >
                 Get started
               </buttonStyles.Anchor>
@@ -100,7 +109,7 @@ function Home() {
           <styles.MainFeatureItem
             iconName="shapes"
             title="Write plain HTML & CSS"
-            description="Use plain 'ol HTML & CSS to define building blocks of your entire application UI."
+            description="Use plain 'ol HTML & CSS to define your application's UI building blocks."
             example={
               <CodeBlock className="language-html" style={{ height: 500 }}>
                 {PRIMITIVE_UI_EXAMPLE}
@@ -110,7 +119,7 @@ function Home() {
           <styles.MainFeatureItem
             iconName="reactjs"
             title="Import directly into React code"
-            description="Import the HTML & CSS building blocks directly into your application to add some interactivity."
+            description="Paperclip compiles your HTML & CSS that you can then import directly into code."
             example={
               <CodeBlock className="language-jsx">
                 {IMPORT_CODE_DEMO_SOURCE}
@@ -123,7 +132,7 @@ function Home() {
           <styles.VariousFeatureItem
             iconName="chaotic-1"
             title="Scoped styles"
-            description="Styles are only applied to the documents they're defined in, so you don't have to worry about them leaking."
+            description="Styles are only applied to the documents they're defined in, so you don't have to worry about them leaking out."
           />
           <styles.VariousFeatureItem
             iconName="link"
@@ -132,9 +141,14 @@ function Home() {
           />
           <styles.VariousFeatureItem
             iconName="grow"
+            title="Pays back the more you use it"
+            description="Every Paperclip file is covered with visual regression tests, so the more you use Paperclip, the more test coverage you'll have against CSS bugs. "
+          />
+          {/* <styles.VariousFeatureItem
+            iconName="grow"
             title="Incrementally adoptable"
             description="Paperclip compliments your existing codebase - use it as you go."
-          />
+          /> */}
         </styles.VariousFeatures>
         <styles.BigFeature
           title="Realtime previews in VS Code"
