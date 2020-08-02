@@ -6,6 +6,7 @@ module.exports = {
       "getting-started-first-ui"
     ],
     Guides: [
+      "guide-why",
       "guide-how-to-use",
       "guide-organization",
       "guide-migrating-to-paperclip",
