@@ -25,19 +25,15 @@ function Home() {
   return (
     <Layout
       title={`${siteConfig.title} - build web applications in record time`}
-      description="A language for creating UI faster, safer, and more accurately"
+      description="Import HTML & CSS building blocks directly into your web application."
     >
       <styles.Home>
         <styles.Header
           title={
             <>
-              Build web applications{" "}
-              <styles.Highlight noBreak>in record time.</styles.Highlight>
+              Use plain HTML & CSS to build web applications{" "}
+              <styles.Highlight>record time.</styles.Highlight>
             </>
-            // <>
-            //   Build UIs in <styles.Highlight>realtime</styles.Highlight>,
-            //   directly within <styles.Highlight>VS Code</styles.Highlight>
-            // </>
           }
           description={
             /* 
@@ -53,12 +49,21 @@ function Home() {
             //   Paperclip is a simple language for building user interfaces.
             // </>
             <>
-              Paperclip is a language for building user interfaces. With
-              features such as{" "}
-              <styles.Highlight>realtime previews</styles.Highlight>, and{" "}
-              <styles.Highlight>tools for catching CSS bugs</styles.Highlight>,
-              you'll be creating pixel-perfect web applications in no time.
+              With tooling such as{" "}
+              <styles.Highlight>realtime previews</styles.Highlight> &{" "}
+              <styles.Highlight>
+                automatic visual regresion tests
+              </styles.Highlight>
+              , you can build UIs in no time using the language you already
+              know.
             </>
+            // <>
+            //   Paperclip is a language for building user interfaces. With
+            //   features such as{" "}
+            //   <styles.Highlight>realtime previews</styles.Highlight>, and{" "}
+            //   <styles.Highlight>tools for catching CSS bugs</styles.Highlight>,
+            //   you'll be creating pixel-perfect web applications in no time.
+            // </>
             // <>
             //   Paperclip comes with realtime visual editing within VS Code, visual regression tools, scoped styling. Paperclipn
             // </>
@@ -82,6 +87,7 @@ function Home() {
               <buttonStyles.Anchor
                 className={typography.classNames["semi-bold"]}
                 href="http://github.com/crcn/paperclip"
+                secondary
               >
                 Check out on GitHub
               </buttonStyles.Anchor>
@@ -93,8 +99,8 @@ function Home() {
         <styles.MainFeatures>
           <styles.MainFeatureItem
             iconName="shapes"
-            title="A minimalistic UI language"
-            description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and primitive components."
+            title="Write plain HTML & CSS"
+            description="Use plain 'ol HTML & CSS to define building blocks of your entire application UI."
             example={
               <CodeBlock className="language-html" style={{ height: 500 }}>
                 {PRIMITIVE_UI_EXAMPLE}
@@ -104,7 +110,7 @@ function Home() {
           <styles.MainFeatureItem
             iconName="reactjs"
             title="Import directly into React code"
-            description="Paperclip UIs compile to plain code that you can import directly into your app."
+            description="Import the HTML & CSS building blocks directly into your application to add some interactivity."
             example={
               <CodeBlock className="language-jsx">
                 {IMPORT_CODE_DEMO_SOURCE}
