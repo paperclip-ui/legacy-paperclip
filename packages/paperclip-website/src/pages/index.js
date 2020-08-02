@@ -46,7 +46,7 @@ function Home() {
             */
             <>
               Paperclip allows you to import HTML & CSS directly into code, and
-              build faster than ever using{" "}
+              build faster than ever with{" "}
               <styles.Highlight>realtime previews</styles.Highlight> &{" "}
               <styles.Highlight>
                 automatic visual regression tests.
