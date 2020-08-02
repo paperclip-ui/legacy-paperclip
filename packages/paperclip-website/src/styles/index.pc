@@ -416,7 +416,7 @@
 <Home>
   <Header 
     title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
-    description={<fragment>Paperclip is a language designed for visual UI development. No more wasting time switching between the browser and code. <span className="_emoji">🙌</span></fragment>}
+    description={<fragment>With realtime previews & visual regression t</fragment>}
     cta={<fragment>
       <button.Anchor className=">>>typography.semi-bold">Get started</button.Anchor>
       <button.Anchor secondary className=">>>typography.semi-bold">Check out on GitHub</button.Anchor>
@@ -424,7 +424,7 @@
     preview={<img src="../../static/img/realtime-editing-2.gif">}
   />
 
-  <!-- <Summary title="Web development is slow" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " /> -->
+  <Summary title="Web development is slow" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
 
   <MainFeatures>
     <MainFeatureItem
