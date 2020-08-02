@@ -55,7 +55,7 @@
     height: 600px;
 
     ._blurb {
-        margin-top: 100px;
+        margin-top: 150px;
         width: 50%;
         flex-shrink:0;
         margin-right: 30px;
@@ -72,6 +72,7 @@
         letter-spacing: 0.04em;
       }
       ._subtext {
+        display: none;
         color: rgba(255, 255, 255, 0.9);
         /* filter: drop-shadow(0px 0px 1px rgb(0, 0, 0)); */
         font-weight: 500;
@@ -116,6 +117,19 @@
         width: auto;
         max-width: 1024px;
       }
+    }
+  }
+  ._summary {
+    border-top: 1px solid rgb(226, 226, 226);
+    @include layout.py-6;
+    ._title {
+      @include typography.text-secondary;
+      font-size: 1.2em;
+      font-weight: 500;
+      margin-bottom: var(--gap-4);
+    }
+    ._text {
+
     }
   }
 
@@ -331,6 +345,18 @@
 <div component as="CodePreview" className="_code-preview">
 </div>
 
+<div export component as="Summary" className="_summary >>>layout._row">
+  <div className=">>>layout._col12">
+    <div className="_title">
+      {title}
+    </div>
+    <div className="_text">
+      {text}
+    </div>
+  </div>
+</div>
+
+
 <div export component as="MainFeatures" className="_main-features >>>layout._row">
   {children}
 </div>
@@ -389,14 +415,16 @@
 
 <Home>
   <Header 
-    title={<fragment>Build UIs in <Highlight>realtime</Highlight>, directly within <Highlight noBreak>VS Code</Highlight></fragment>}
+    title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
     description={<fragment>Paperclip is a language designed for visual UI development. No more wasting time switching between the browser and code. <span className="_emoji">🙌</span></fragment>}
     cta={<fragment>
       <button.Anchor className=">>>typography.semi-bold">Get started</button.Anchor>
-      <button.Anchor className=">>>typography.semi-bold">Check out on GitHub</button.Anchor>
+      <button.Anchor secondary className=">>>typography.semi-bold">Check out on GitHub</button.Anchor>
     </fragment>}
     preview={<img src="../../static/img/realtime-editing-2.gif">}
   />
+
+  <!-- <Summary title="Web development is slow" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " /> -->
 
   <MainFeatures>
     <MainFeatureItem

@@ -1,23 +1,36 @@
 <import src="./colors.pc">
 <style>
   ._button {
-    /* background: var(--color-green-neon-light); */
-    color: var(--color-green-neon-light);
+    background: var(--color-green-neon-light);
+    /* color: var(--color-green-neon-light); */
     border: 2px solid var(--color-green-neon-light);
     border-radius: 24px;
     /* box-shadow: 0px 0px 4px 4px rgba(0, 0, 0, 0.05); */
     padding: 8px 20px;
     display: inline-block;
     text-decoration: none;
-    transition: 0.5s linear;
+    transition: 0.1s linear;
+    color: inherit;
     &:hover {
-      color: var(--color-green-neon);
-      border: 2px solid var(--color-green-neon);
+      border-color: var(--color-green-neon);
+      background-color: var(--color-green-neon);
+    }
+    &--secondary {
+
+      /* higher priority */
+      && {
+        background-color: transparent;
+      }
+
+      color: var(--color-green-neon-light);
+      &:hover {
+        color: var(--color-green-neon);
+      }
     }
   }
 </style>
 
-<a export component as="Anchor" className="_button {className?}" {href?}>
+<a export component as="Anchor" className="_button {className?}" className:secondary="_button--secondary" {href?}>
   {children}
 </a>
 
