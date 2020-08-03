@@ -70,7 +70,14 @@ pub fn evaluate<'a>(
     let mut context = create_context(node_expr, uri, graph, vfs, &data, None, imports);
 
     let preview = wrap_as_fragment(
-      evaluate_instance_node(node_expr, &mut context, RenderStrategy::Auto, false, 0, None)?,
+      evaluate_instance_node(
+        node_expr,
+        &mut context,
+        RenderStrategy::Auto,
+        false,
+        0,
+        None,
+      )?,
       &context,
     );
 
@@ -383,10 +390,14 @@ pub fn evaluate_node<'a>(
     ast::Node::Element(el) => evaluate_element(&el, is_root, depth, instance_source, context),
     ast::Node::StyleElement(el) => {
       if depth != 1 {
-        return Err(RuntimeError::new("Style blocks needs to be defined at the root.".to_string(), context.uri, &el.location));
+        return Err(RuntimeError::new(
+          "Style blocks needs to be defined at the root.".to_string(),
+          context.uri,
+          &el.location,
+        ));
       }
       return evaluate_style_element(&el, context);
-    },
+    }
     ast::Node::Text(text) => Ok(Some(virt::Node::Text(virt::Text {
       source: ExprSource {
         uri: context.uri.to_string(),
@@ -419,9 +430,12 @@ fn evaluate_element<'a>(
               RenderStrategy::Part(id.to_string()),
             )
           {
-
             if depth != 1 {
-              return Err(RuntimeError::new("Components need to be defined at the root.".to_string(), context.uri, &element.location));
+              return Err(RuntimeError::new(
+                "Components need to be defined at the root.".to_string(),
+                context.uri,
+                &element.location,
+              ));
             }
             return Ok(None);
           }
@@ -734,10 +748,11 @@ fn create_component_instance_data<'a>(
     context.uri.clone(),
     instance_element.location.clone(),
   ));
-  let children: Vec<js_virt::JsValue> = evaluate_children(&instance_element.children, depth, context)?
-    .into_iter()
-    .map(|child| js_virt::JsValue::JsNode(child))
-    .collect();
+  let children: Vec<js_virt::JsValue> =
+    evaluate_children(&instance_element.children, depth, context)?
+      .into_iter()
+      .map(|child| js_virt::JsValue::JsNode(child))
+      .collect();
 
   js_children.values.extend(children);
 

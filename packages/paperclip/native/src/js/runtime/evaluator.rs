@@ -90,7 +90,9 @@ fn evaluate_array<'a>(
 ) -> Result<virt::JsValue, RuntimeError> {
   let mut js_array = virt::JsArray::new(ExprSource::new(context.uri.clone(), ary.location.clone()));
   for value in &ary.values {
-    js_array.values.push(evaluate_statement(&value, depth, context)?);
+    js_array
+      .values
+      .push(evaluate_statement(&value, depth, context)?);
   }
   Ok(virt::JsValue::JsArray(js_array))
 }
