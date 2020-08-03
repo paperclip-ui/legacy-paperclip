@@ -8,10 +8,12 @@ import {
   stringifyCSSSheet,
   PC_CONFIG_FILE_NAME
 } from "paperclip";
+import { getPrettyMessage } from "paperclip-cli";
 import * as path from "path";
 import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import * as VirtualModules from "webpack-virtual-modules";
+import { LoadedData } from "paperclip/src";
 
 let _engine: Engine;
 
@@ -55,11 +57,31 @@ async function pcLoader(
   const compiler = require(resolve.sync(config.compilerOptions.name, {
     basedir: process.cwd()
   }));
+  let info: LoadedData;
+  let ast: any;
 
-  // need to update virtual content to bust the cache
-  await engine.updateVirtualFileContent(resourceUrl, source);
-  const ast = engine.parseContent(source);
-  const { sheet, exports } = await engine.run(resourceUrl);
+  try {
+    // need to update virtual content to bust the cache
+    await engine.updateVirtualFileContent(resourceUrl, source);
+    ast = engine.parseContent(source);
+
+    info = await engine.run(resourceUrl);
+  } catch (e) {
+    console.error("OFDSNFJDSNFBJDSKBFDSJKFBDSJKFBDSKJ");
+
+    // eesh 🙈
+    const info =
+      e && e.location ? e : e.info && e.info.location ? e.info : null;
+    if (info && info.location) {
+      console.error(getPrettyMessage(info, source, resourceUrl, process.cwd()));
+    }
+
+    return callback(
+      new Error("Could not compile. See further up for details.")
+    );
+  }
+
+  const { sheet, exports } = info;
 
   const styleCache = { ..._loadedStyleFiles };
   _loadedStyleFiles = styleCache;

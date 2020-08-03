@@ -7,7 +7,7 @@ export * from "./css-ast";
 export * from "./base-ast";
 export * from "./config";
 export * from "./constants";
-export * from "./errors";
+// export * from "./errors";
 export * from "./graph";
 export * from "./virt-mtuation";
 export * from "./resolve";
