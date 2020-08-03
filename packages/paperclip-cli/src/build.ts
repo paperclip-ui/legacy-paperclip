@@ -9,10 +9,10 @@ import {
   createEngine,
   paperclipSourceGlobPattern,
   Node,
-  getPrettyMessage,
   stringifyCSSSheet
 } from "paperclip";
 import { glob } from "glob";
+import { getPrettyMessage } from "./pretty-message";
 import { ClassNameExport, stripFileProtocol } from "paperclip";
 
 export type BuildOptions = {
@@ -96,7 +96,8 @@ async function initBuild(
       getPrettyMessage(
         error,
         fs.readFileSync(stripFileProtocol(filePath), "utf8"),
-        filePath
+        filePath,
+        cwd
       )
     );
   }
@@ -151,8 +152,12 @@ async function initBuild(
         console.log(result);
       }
     } catch (e) {
-      console.log("Err %s", relativePath);
-      console.error(e);
+      if (e.location) {
+        handleError(e, fullPath);
+      } else {
+        console.log("Err %s", relativePath);
+        console.error(e);
+      }
     }
   }
 
