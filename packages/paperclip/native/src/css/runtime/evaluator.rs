@@ -30,7 +30,7 @@ pub fn evaluate<'a>(
   import_scopes: &'a BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
   imports: &'a BTreeMap<String, Exports>,
-  existing_exports: Option<&Exports>
+  existing_exports: Option<&Exports>,
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     scope,
@@ -46,7 +46,7 @@ pub fn evaluate<'a>(
   if let Some(existing_exports) = existing_exports {
     context.exports.extend(existing_exports);
   }
-  
+
   for rule in &expr.rules {
     evaluate_rule(&rule, &mut context)?;
   }
