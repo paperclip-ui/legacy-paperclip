@@ -1,7 +1,7 @@
 ---
 id: guide-why
 title: Why Paperclip?
-sidebar_label: Why
+sidebar_label: Why Paperclip?
 ---
 
 There are a number of reasons why Paperclip was created. 
