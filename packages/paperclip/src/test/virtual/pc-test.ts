@@ -689,4 +689,115 @@ describe(__filename + "#", () => {
       `<style></style><div data-pc-80f4925f style="--color: a;"></div><div data-pc-80f4925f style="--background: b;"></div><div data-pc-80f4925f style="--color: a; --background: b;"></div><div data-pc-80f4925f></div>`
     );
   });
+
+  // addresses https://github.com/crcn/paperclip/issues/362
+  it(`Can have class names with underscores in them`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          .its_a_match {
+
+          }
+        </style>
+        <div className="its_a_match"></div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style>[class]._80f4925f_its_a_match { }</style><div className="_80f4925f_its_a_match its_a_match" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Errors if style block isn't defined at the root`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div>
+          <style>
+          </style>
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+      const ast = engine.getLoadedAst("/entry.pc");
+      console.log(JSON.stringify(ast, null, 2));
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 25, end: 51 },
+      message: "Style blocks needs to be defined at the root."
+    });
+  });
+
+  // Addresses https://github.com/crcn/paperclip/issues/299
+  it(`Errors if component is not defined at the root`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div>
+          <div component as="Test">
+          </div>
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+      const ast = engine.getLoadedAst("/entry.pc");
+      console.log(JSON.stringify(ast, null, 2));
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 25, end: 67 },
+      message: "Components need to be defined at the root."
+    });
+  });
+
+  it(`Errors if component defined in element within a slot`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div test={<div component as="blarg" />}>
+          
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+      const ast = engine.getLoadedAst("/entry.pc");
+      console.log(JSON.stringify(ast, null, 2));
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 20, end: 48 },
+      message: "Components need to be defined at the root."
+    });
+  });
 });

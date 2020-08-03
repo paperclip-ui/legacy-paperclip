@@ -70,7 +70,14 @@ pub fn evaluate<'a>(
     let mut context = create_context(node_expr, uri, graph, vfs, &data, None, imports);
 
     let preview = wrap_as_fragment(
-      evaluate_instance_node(node_expr, &mut context, RenderStrategy::Auto, false, None)?,
+      evaluate_instance_node(
+        node_expr,
+        &mut context,
+        RenderStrategy::Auto,
+        false,
+        0,
+        None,
+      )?,
       &context,
     );
 
@@ -296,6 +303,7 @@ fn evaluate_document_sheet<'a>(
           &context.import_scopes,
           context.vfs,
           &css_imports,
+          Some(&css_exports),
         )?;
         match info {
           CSSEvalInfo {
@@ -318,6 +326,7 @@ pub fn evaluate_instance_node<'a>(
   context: &'a mut Context,
   render_strategy: RenderStrategy,
   imported: bool,
+  depth: u32,
   instance_source: Option<ExprSource>,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   context
@@ -325,7 +334,7 @@ pub fn evaluate_instance_node<'a>(
     .push((context.uri.to_string(), render_strategy.clone()));
   let target_option = get_instance_target_node(node_expr, &render_strategy, imported);
   if let Some(target) = target_option {
-    evaluate_node(target, true, instance_source, context)
+    evaluate_node(target, true, depth, instance_source, context)
   } else {
     Ok(None)
   }
@@ -373,12 +382,22 @@ fn get_import_scopes<'a>(entry: &Dependency) -> BTreeMap<String, String> {
 pub fn evaluate_node<'a>(
   node_expr: &ast::Node,
   is_root: bool,
+  depth: u32,
   instance_source: Option<ExprSource>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   match &node_expr {
-    ast::Node::Element(el) => evaluate_element(&el, is_root, instance_source, context),
-    ast::Node::StyleElement(el) => evaluate_style_element(&el, context),
+    ast::Node::Element(el) => evaluate_element(&el, is_root, depth, instance_source, context),
+    ast::Node::StyleElement(el) => {
+      if depth != 1 {
+        return Err(RuntimeError::new(
+          "Style blocks needs to be defined at the root.".to_string(),
+          context.uri,
+          &el.location,
+        ));
+      }
+      return evaluate_style_element(&el, context);
+    }
     ast::Node::Text(text) => Ok(Some(virt::Node::Text(virt::Text {
       source: ExprSource {
         uri: context.uri.to_string(),
@@ -386,8 +405,8 @@ pub fn evaluate_node<'a>(
       },
       value: text.value.to_string(),
     }))),
-    ast::Node::Slot(slot) => evaluate_slot(&slot, context),
-    ast::Node::Fragment(el) => evaluate_fragment(&el, context),
+    ast::Node::Slot(slot) => evaluate_slot(&slot, depth, context),
+    ast::Node::Fragment(el) => evaluate_fragment(&el, depth, context),
     ast::Node::Comment(_el) => Ok(None),
   }
 }
@@ -395,6 +414,7 @@ pub fn evaluate_node<'a>(
 fn evaluate_element<'a>(
   element: &ast::Element,
   is_root: bool,
+  depth: u32,
   instance_source: Option<ExprSource>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -410,6 +430,13 @@ fn evaluate_element<'a>(
               RenderStrategy::Part(id.to_string()),
             )
           {
+            if depth != 1 {
+              return Err(RuntimeError::new(
+                "Components need to be defined at the root.".to_string(),
+                context.uri,
+                &element.location,
+              ));
+            }
             return Ok(None);
           }
         }
@@ -418,7 +445,7 @@ fn evaluate_element<'a>(
       let source = instance_or_element_source(element, context.uri, instance_source);
 
       if context.import_ids.contains(&ast::get_tag_name(&element)) {
-        let result = evaluate_imported_component(element, source, context);
+        let result = evaluate_imported_component(element, source, depth, context);
 
         if Ok(None) == result {
           return Err(RuntimeError::new(
@@ -430,12 +457,12 @@ fn evaluate_element<'a>(
 
         result
       } else if context.part_ids.contains(&element.tag_name) {
-        evaluate_part_instance_element(element, source, context)
+        evaluate_part_instance_element(element, source, depth, context)
       } else {
         if element.tag_name == "fragment" {
-          evaluate_children_as_fragment(&element.children, &element.location, context)
+          evaluate_children_as_fragment(&element.children, depth, &element.location, context)
         } else {
-          evaluate_native_element(element, is_root, source, context)
+          evaluate_native_element(element, is_root, depth, source, context)
         }
       }
     }
@@ -459,12 +486,13 @@ fn instance_or_element_source<'a>(
 
 fn evaluate_slot<'a>(
   slot: &ast::Slot,
+  depth: u32,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   assert_slot_restrictions(&slot.location, context)?;
 
   let script = &slot.script;
-  let mut js_value = evaluate_js(script, context)?;
+  let mut js_value = evaluate_js(script, depth + 1, context)?;
 
   // if array of values, then treat as document fragment
   if let js_virt::JsValue::JsArray(ary) = &mut js_value {
@@ -497,6 +525,7 @@ fn evaluate_slot<'a>(
 pub fn evaluate_imported_component<'a>(
   element: &ast::Element,
   instance_source: Option<ExprSource>,
+  depth: u32,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
@@ -513,6 +542,7 @@ pub fn evaluate_imported_component<'a>(
       RenderStrategy::Part("default".to_string())
     },
     true,
+    depth,
     instance_source,
     dep_uri,
     context,
@@ -558,6 +588,7 @@ fn check_instance_loop<'a>(
 fn evaluate_part_instance_element<'a>(
   element: &ast::Element,
   instance_source: Option<ExprSource>,
+  depth: u32,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
@@ -567,6 +598,7 @@ fn evaluate_part_instance_element<'a>(
       element,
       RenderStrategy::Part(element.tag_name.to_string()),
       false,
+      depth,
       instance_source,
       context.uri,
       context,
@@ -579,6 +611,7 @@ fn evaluate_part_instance_element<'a>(
 
 fn create_component_instance_data<'a>(
   instance_element: &ast::Element,
+  depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
   let mut data = js_virt::JsObject::new(ExprSource {
@@ -606,6 +639,7 @@ fn create_component_instance_data<'a>(
             &kv_attr.name,
             &kv_attr.value.as_ref().unwrap(),
             false,
+            depth,
             context,
           )?;
 
@@ -614,7 +648,7 @@ fn create_component_instance_data<'a>(
       }
       ast::Attribute::SpreadAttribute(attr) => {
         assert_slot_restrictions(&attr.location, context)?;
-        let attr_data = evaluate_js(&attr.script, context)?;
+        let attr_data = evaluate_js(&attr.script, depth + 1, context)?;
         match attr_data {
           js_virt::JsValue::JsObject(mut object) => {
             for (key, value) in object.values.drain() {
@@ -645,7 +679,7 @@ fn create_component_instance_data<'a>(
 
         data.values.insert(
           name.to_string(),
-          evaluate_attribute_slot(&sh_attr.reference, context)?,
+          evaluate_attribute_slot(&sh_attr.reference, depth, context)?,
         );
       }
       ast::Attribute::PropertyBoundAttribute(kv_attr) => {
@@ -675,6 +709,7 @@ fn create_component_instance_data<'a>(
                   &kv_attr.name,
                   attr_value,
                   false,
+                  depth,
                   context,
                 )?
               } else {
@@ -713,10 +748,11 @@ fn create_component_instance_data<'a>(
     context.uri.clone(),
     instance_element.location.clone(),
   ));
-  let children: Vec<js_virt::JsValue> = evaluate_children(&instance_element.children, context)?
-    .into_iter()
-    .map(|child| js_virt::JsValue::JsNode(child))
-    .collect();
+  let children: Vec<js_virt::JsValue> =
+    evaluate_children(&instance_element.children, depth, context)?
+      .into_iter()
+      .map(|child| js_virt::JsValue::JsNode(child))
+      .collect();
 
   js_children.values.extend(children);
 
@@ -746,6 +782,7 @@ fn evaluate_component_instance<'a>(
   instance_element: &ast::Element,
   render_strategy: RenderStrategy,
   imported: bool,
+  depth: u32,
   instance_source: Option<ExprSource>,
   dep_uri: &String,
   context: &'a mut Context,
@@ -755,7 +792,7 @@ fn evaluate_component_instance<'a>(
     .dependencies
     .get(&dep_uri.to_string())
     .unwrap();
-  let data = create_component_instance_data(instance_element, context)?;
+  let data = create_component_instance_data(instance_element, depth, context)?;
 
   if let DependencyContent::Node(node) = &dep.content {
     let mut instance_context = create_context(
@@ -784,6 +821,7 @@ fn evaluate_component_instance<'a>(
       &mut instance_context,
       render_strategy,
       imported,
+      depth,
       Some(source),
     )
   } else {
@@ -794,6 +832,7 @@ fn evaluate_component_instance<'a>(
 fn evaluate_native_element<'a>(
   element: &ast::Element,
   is_root: bool,
+  depth: u32,
   instance_source: Option<ExprSource>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -816,6 +855,7 @@ fn evaluate_native_element<'a>(
             &kv_attr.name,
             &kv_attr.value.as_ref().unwrap(),
             true,
+            depth,
             context,
           )?;
           if !value.truthy() {
@@ -843,7 +883,7 @@ fn evaluate_native_element<'a>(
       }
       ast::Attribute::SpreadAttribute(attr) => {
         assert_slot_restrictions(&attr.location, context)?;
-        let attr_data = evaluate_js(&attr.script, context)?;
+        let attr_data = evaluate_js(&attr.script, depth + 1, context)?;
         match attr_data {
           js_virt::JsValue::JsObject(mut object) => {
             for (key, value) in object.values.drain() {
@@ -871,7 +911,7 @@ fn evaluate_native_element<'a>(
           &sh_attr.location,
           context,
         )?;
-        let mut js_value = evaluate_attribute_slot(&sh_attr.reference, context)?;
+        let mut js_value = evaluate_attribute_slot(&sh_attr.reference, depth, context)?;
 
         if js_value.truthy() {
           js_value = maybe_cast_attribute_js_value(name, js_value, true, context);
@@ -898,6 +938,7 @@ fn evaluate_native_element<'a>(
                   &kv_attr.name,
                   &kv_value,
                   true,
+                  depth,
                   context,
                 )?
               } else {
@@ -945,7 +986,7 @@ fn evaluate_native_element<'a>(
 
   attributes.insert(name.to_string(), None);
 
-  let children = evaluate_children(&element.children, context)?;
+  let children = evaluate_children(&element.children, depth, context)?;
 
   Ok(Some(virt::Node::Element(virt::Element {
     source: if let Some(source) = &instance_source {
@@ -992,12 +1033,13 @@ fn evaluate_style_element<'a>(
 
 fn evaluate_children<'a>(
   children_expr: &Vec<ast::Node>,
+  depth: u32,
   context: &'a mut Context,
 ) -> Result<Vec<virt::Node>, RuntimeError> {
   let mut children: Vec<virt::Node> = vec![];
 
   for child_expr in children_expr {
-    match evaluate_node(child_expr, false, None, context)? {
+    match evaluate_node(child_expr, false, depth + 1, None, context)? {
       Some(c) => match c {
         virt::Node::Fragment(mut fragment) => {
           for child in fragment.children.drain(0..) {
@@ -1017,17 +1059,19 @@ fn evaluate_children<'a>(
 
 fn evaluate_fragment<'a>(
   fragment: &ast::Fragment,
+  depth: u32,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-  evaluate_children_as_fragment(&fragment.children, &fragment.location, context)
+  evaluate_children_as_fragment(&fragment.children, depth, &fragment.location, context)
 }
 
 fn evaluate_children_as_fragment<'a>(
   children: &Vec<ast::Node>,
+  depth: u32,
   location: &Location,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-  let mut children = evaluate_children(&children, context)?;
+  let mut children = evaluate_children(&children, depth, context)?;
   Ok(Some(virt::Node::Fragment(virt::Fragment {
     children,
     source: ExprSource {
@@ -1042,18 +1086,19 @@ fn evaluate_attribute_value<'a>(
   name: &String,
   value: &ast::AttributeValue,
   is_native: bool,
+  depth: u32,
   context: &mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
   match value {
     ast::AttributeValue::DyanmicString(st) => {
-      evaluate_attribute_dynamic_string(name, st, &st.location, is_native, context)
+      evaluate_attribute_dynamic_string(name, st, &st.location, is_native, depth, context)
     }
     ast::AttributeValue::String(st) => {
       evaluate_attribute_key_value_string(name, &st.value, &st.location, is_native, context)
     }
     ast::AttributeValue::Slot(value) => {
       assert_attr_slot_restrictions(tag_name, name, &value.location, context)?;
-      let value = evaluate_attribute_slot(&value.script, context)?;
+      let value = evaluate_attribute_slot(&value.script, depth, context)?;
       Ok(maybe_cast_attribute_js_value(name, value, true, context))
     }
   }
@@ -1064,6 +1109,7 @@ fn evaluate_attribute_dynamic_string<'a>(
   value: &ast::AttributeDynamicStringValue,
   location: &Location,
   is_native: bool,
+  depth: u32,
   context: &mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
   let val = value
@@ -1096,7 +1142,7 @@ fn evaluate_attribute_dynamic_string<'a>(
         }
       }
       ast::AttributeDynamicStringPart::Slot(statement) => {
-        evaluate_attribute_slot(statement, context)
+        evaluate_attribute_slot(statement, depth, context)
           .unwrap()
           .to_string()
       }
@@ -1123,7 +1169,7 @@ fn is_class_attribute_name(name: &String) -> bool {
 
 fn transform_class_value<'a>(name: &String, value: &String, context: &mut Context) -> String {
   lazy_static! {
-    static ref scope_re: Regex = Regex::new(r"_\w+_").unwrap();
+    static ref scope_re: Regex = Regex::new(r"^_\w+_").unwrap();
   }
 
   // if scope_re.is_match(value) {
@@ -1169,7 +1215,6 @@ fn transform_style_value<'a>(name: &String, value: &String, context: &mut Contex
     let mut new_value = value.to_string();
 
     for caps in undefined_styles_re.captures_iter(value.to_string().as_str()) {
-      let undefined_decl = caps.get(0).unwrap().as_str();
       new_value = undefined_styles_re
         .replace(new_value.as_str(), "")
         .to_string();
@@ -1255,9 +1300,10 @@ fn evaluate_attribute_key_value_string<'a>(
 
 fn evaluate_attribute_slot<'a>(
   script: &js_ast::Statement,
+  depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
-  evaluate_js(script, context)
+  evaluate_js(script, depth + 1, context)
 }
 
 fn assert_attr_slot_restrictions(

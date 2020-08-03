@@ -3,10 +3,10 @@ module.exports = {
     "Getting started": [
       "getting-started-vscode",
       "getting-started-installation",
-      "getting-started-first-ui"
+      "getting-started-first-ui",
+      "guide-why"
     ],
     Guides: [
-      "guide-why",
       "guide-how-to-use",
       "guide-organization",
       "guide-migrating-to-paperclip",

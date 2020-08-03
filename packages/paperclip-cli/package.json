@@ -1,8 +1,8 @@
 {
   "name": "paperclip-cli",
-  "version": "14.0.22",
-  "description": "Examples:",
-  "main": "index.js",
+  "version": "14.0.27",
+  "description": "CLI util for Paperclip",
+  "main": "lib/cli.js",
   "bin": {
     "paperclip": "./bin/paperclip"
   },
@@ -20,10 +20,12 @@
     "@types/shelljs": "^0.8.8",
     "chalk": "^4.1.0",
     "chokidar": "^3.3.1",
+    "dedent": "^0.7.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "inquirer": "^7.3.0",
-    "paperclip": "^14.0.22",
+    "paperclip": "^14.0.27",
+    "paperclip-utils": "^14.0.22",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
     "yargs": "^15.1.0"
