@@ -1123,7 +1123,7 @@ fn is_class_attribute_name(name: &String) -> bool {
 
 fn transform_class_value<'a>(name: &String, value: &String, context: &mut Context) -> String {
   lazy_static! {
-    static ref scope_re: Regex = Regex::new(r"_\w+_").unwrap();
+    static ref scope_re: Regex = Regex::new(r"^_\w+_").unwrap();
   }
 
   // if scope_re.is_match(value) {
@@ -1169,7 +1169,6 @@ fn transform_style_value<'a>(name: &String, value: &String, context: &mut Contex
     let mut new_value = value.to_string();
 
     for caps in undefined_styles_re.captures_iter(value.to_string().as_str()) {
-      let undefined_decl = caps.get(0).unwrap().as_str();
       new_value = undefined_styles_re
         .replace(new_value.as_str(), "")
         .to_string();

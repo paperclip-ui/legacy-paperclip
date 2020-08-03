@@ -689,4 +689,25 @@ describe(__filename + "#", () => {
       `<style></style><div data-pc-80f4925f style="--color: a;"></div><div data-pc-80f4925f style="--background: b;"></div><div data-pc-80f4925f style="--color: a; --background: b;"></div><div data-pc-80f4925f></div>`
     );
   });
+
+  // addresses https://github.com/crcn/paperclip/issues/362
+  it(`Can have class names with underscores in them`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          .its_a_match {
+
+          }
+        </style>
+        <div className="its_a_match"></div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style>[class]._80f4925f_its_a_match { }</style><div className="_80f4925f_its_a_match its_a_match" data-pc-80f4925f></div>`
+    );
+  });
 });
