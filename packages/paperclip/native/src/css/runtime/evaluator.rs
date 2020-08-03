@@ -30,6 +30,7 @@ pub fn evaluate<'a>(
   import_scopes: &'a BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
   imports: &'a BTreeMap<String, Exports>,
+  existing_exports: Option<&Exports>
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     scope,
@@ -41,6 +42,11 @@ pub fn evaluate<'a>(
     exports: Exports::new(),
     all_rules: vec![],
   };
+
+  if let Some(existing_exports) = existing_exports {
+    context.exports.extend(existing_exports);
+  }
+  
   for rule in &expr.rules {
     evaluate_rule(&rule, &mut context)?;
   }
@@ -273,14 +279,14 @@ fn evaluate_style_declarations<'a>(
               style.extend(mixin_decls.declarations.clone());
             } else {
               return Err(RuntimeError::new(
-                "Reference not found.".to_string(),
+                "Reference not found or used before it was declared.".to_string(),
                 context.uri,
                 &mixin_path.parts.last().unwrap().location,
               ));
             }
           } else {
             return Err(RuntimeError::new(
-              "Reference not found.".to_string(),
+              "Reference not found or used before it was declared.".to_string(),
               context.uri,
               &mixin_path.parts.first().unwrap().location,
             ));

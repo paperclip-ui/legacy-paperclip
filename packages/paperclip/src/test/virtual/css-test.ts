@@ -81,7 +81,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
-        message: "Reference not found."
+        message: "Reference not found or used before it was declared."
       });
     });
 
@@ -125,7 +125,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 84, end: 85 },
-        message: "Reference not found."
+        message: "Reference not found or used before it was declared."
       });
     });
     it("Displays an error if the import is not found", async () => {
@@ -145,7 +145,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 48 },
-        message: "Reference not found."
+        message: "Reference not found or used before it was declared."
       });
     });
 
@@ -167,7 +167,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
-        message: "Reference not found."
+        message: "Reference not found or used before it was declared."
       });
     });
 
@@ -588,7 +588,7 @@ describe(__filename + "#", () => {
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 60, end: 67 },
-      message: "Reference not found."
+      message: "Reference not found or used before it was declared."
     });
   });
 
@@ -610,5 +610,26 @@ describe(__filename + "#", () => {
     expect(text).to.eql(
       "<style>[class]._80f4925f_parent { } [class]._80f4925f_child:first-child { color:blue ; }</style>"
     );
+  });
+
+  // Addresses: https://github.com/crcn/paperclip/issues/340
+  it("Can use mixins in other style blocks defined in the same page", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin a {
+        color: blue;
+      }
+    </style>
+    <style>
+      .div {
+        @include a;
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql("<style>[class]._80f4925f_div { color:blue; }</style>");
   });
 });

@@ -296,6 +296,7 @@ fn evaluate_document_sheet<'a>(
           &context.import_scopes,
           context.vfs,
           &css_imports,
+          Some(&css_exports)
         )?;
         match info {
           CSSEvalInfo {
