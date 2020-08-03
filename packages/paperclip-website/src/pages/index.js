@@ -31,7 +31,7 @@ function Home() {
         <styles.Header
           title={
             <>
-              Use plain HTML & CSS to build web applications{" "}
+              Use plain HTML & CSS to build web applications in{" "}
               <styles.Highlight>record time.</styles.Highlight>
             </>
           }
