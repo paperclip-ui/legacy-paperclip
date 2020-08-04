@@ -45,8 +45,10 @@ function Home() {
             - More natural than the current way of building UIs
             */
             <>
-              Paperclip allows you to use plain HTML & CSS to build user
-              interfaces for your React app, directly within VS Code.
+              Paperclip allows you to use{" "}
+              <styles.Highlight>plain HTML & CSS</styles.Highlight> to build
+              user interfaces for your React app,{" "}
+              <styles.Highlight>directly within VS Code</styles.Highlight>.
             </>
 
             // <>
@@ -138,7 +140,7 @@ function Home() {
           <styles.VariousFeatureItem
             iconName="grow"
             title="Pays back the more you use it"
-            description="Every Paperclip file is covered with visual regression tests, so the more you use Paperclip, the more test coverage you'll have against CSS bugs. "
+            description="Every Paperclip file is automatically covered by visual regression tests, so the more you use Paperclip, the more test coverage you'll have against CSS bugs. "
           />
           {/* <styles.VariousFeatureItem
             iconName="grow"
