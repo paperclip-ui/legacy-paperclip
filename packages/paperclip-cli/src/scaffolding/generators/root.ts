@@ -1,4 +1,5 @@
 import * as fsa from "fs-extra";
+import chalk from "chalk";
 import * as path from "path";
 import { FILES_DIR } from "./utils";
 import { GeneratorKind } from "./base";
@@ -100,7 +101,15 @@ export const root = {
   },
   fin({ overwrite }) {
     if (!overwrite) {
-      console.warn("🎉 All done!");
+      console.info("🎉 Successfuly installed Paperclip dependencies!");
+      console.info("");
+      console.info(
+        chalk.yellowBright(
+          "Next, you'll need to configure your project. Instructions for that are here: \n\n" +
+            chalk.underline(`https://paperclip.dev/docs/project-setup`)
+        )
+      );
+      console.info("");
     }
   }
 };

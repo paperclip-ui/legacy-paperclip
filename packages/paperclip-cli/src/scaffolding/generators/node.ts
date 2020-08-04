@@ -121,7 +121,7 @@ export const node = {
     };
   },
   async install({ packageManager, cwd, devDependencies, dependencies }) {
-    console.log("🔗 Installing dependencies");
+    console.info("🔗 Installing dependencies");
 
     const pm = packageManager;
 
@@ -138,18 +138,23 @@ export const node = {
       }
     );
   },
-  async postinstall({ cwd, packageManager }) {
+  async postinstall(
+    { cwd, packageManager },
+    { [GeneratorKind.Root]: { overwrite } }
+  ) {
     return {
-      [GeneratorKind.Node]: {
-        completionMessage: `🎉 All done! Go ahead and run ${chalk.bold(
-          `${packageManager} start`
-        )}`
-      }
+      [GeneratorKind.Node]: overwrite
+        ? {
+            completionMessage: `🎉 All done! Go ahead and run ${chalk.bold(
+              `${packageManager} start`
+            )}`
+          }
+        : {}
     };
   },
   fin({ completionMessage }) {
     if (completionMessage) {
-      console.log(completionMessage);
+      console.info(completionMessage);
     }
   }
 };
