@@ -44,9 +44,14 @@ module.exports = {
         },
         // {to: 'blog', label: 'Blog', position: 'left'},
         {
+          href: "https://chat.paperclip.dev/",
+          label: "Help",
+          position: "right"
+        },
+        {
           href: "https://github.com/crcn/paperclip",
           label: "GitHub",
-          position: "left"
+          position: "right"
         }
       ]
     },
