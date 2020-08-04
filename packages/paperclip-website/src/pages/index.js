@@ -31,8 +31,8 @@ function Home() {
         <styles.Header
           title={
             <>
-              Create React applications in{" "}
-              <styles.Highlight>record time.</styles.Highlight>
+              A <styles.Highlight>faster</styles.Highlight> way to create React
+              applications.
             </>
           }
           description={
