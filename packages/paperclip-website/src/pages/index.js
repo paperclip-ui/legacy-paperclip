@@ -153,7 +153,7 @@ function Home() {
           description="The VS Code extension comes with a super fast realtime preview that's powered by Rust, so you can enjoy uninterupted UI development, regardless of your project size. "
           preview={<img src="img/button-demo.gif" />}
           ctaText="View the extension"
-          ctaHref={"https://paperclip.dev/docs/getting-started-vscode"}
+          ctaHref={"https://paperclip.dev/docs"}
         />
 
         <styles.BigFeature
