@@ -31,7 +31,7 @@ function Home() {
         <styles.Header
           title={
             <>
-              Use plain HTML & CSS to build web applications in{" "}
+              Create React applications in{" "}
               <styles.Highlight>record time.</styles.Highlight>
             </>
           }
@@ -45,13 +45,8 @@ function Home() {
             - More natural than the current way of building UIs
             */
             <>
-              Paperclip allows you to import HTML & CSS directly into code, and
-              comes with tooling such as{" "}
-              <styles.Highlight>realtime previews</styles.Highlight> &{" "}
-              <styles.Highlight>
-                automatic visual regression tests
-              </styles.Highlight>{" "}
-              to help you build UIs in no time.
+              Paperclip allows you to use plain HTML & CSS to build user
+              interfaces for your React app, directly within VS Code.
             </>
 
             // <>
