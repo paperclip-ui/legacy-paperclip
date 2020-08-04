@@ -38,7 +38,7 @@ export const generateProjectFiles = async (
     const absPath = path.join(options.cwd, relativePath);
 
     // Normalize relative dirs
-    console.log(`✍️  Writing ${path.relative(options.cwd, absPath)}`);
+    console.info(`✍️  Writing ${path.relative(options.cwd, absPath)}`);
     fsa.mkdirpSync(path.dirname(absPath));
     fsa.writeFileSync(absPath, content);
   }

@@ -800,4 +800,34 @@ describe(__filename + "#", () => {
       message: "Components need to be defined at the root."
     });
   });
+
+  // Addresses https://github.com/crcn/paperclip/issues/372
+  it(`Displays an error if a shadow pierce reference is missing`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div className=">>>tw.test">
+          
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+      const ast = engine.getLoadedAst("/entry.pc");
+      console.log(JSON.stringify(ast, null, 2));
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 24, end: 35 },
+      message: "Reference not found."
+    });
+  });
 });

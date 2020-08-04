@@ -4,7 +4,10 @@ title: Using Paperclip With React
 sidebar_label: Using With React
 ---
 
-Time to start using Paperclip! Create a new file in your source directory that's called `GroceryList.pc`, then add this stuff:
+At this point, you should have Paperclip configured & ready to start using in your project. If not, head back over to the [installation page](getting-started-installation.md). If you're all setup, then it's time to started using Paperclip!
+
+
+Create a new file in your source directory that's called `GroceryList.pc`, then add this stuff:
 
 ```html
 <!-- These styles are scoped to this document -->

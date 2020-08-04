@@ -35,7 +35,7 @@ After that, you can can include `paperclip-loader` in your webpack config rules:
 }
 ```
 
-> ☝🏻be sure that you have a [paperclip.config.json](/docs/configure-paperclip) file.
+> ☝ be sure that you have a [paperclip.config.json](/docs/configure-paperclip) file.
 
 For context, here's what your entire Webpack config might look like:
 
@@ -100,4 +100,4 @@ ReactDOM.render(<ui.Greeter>
 </ui.Greeter>, document.getElementById("mount"));
 ```
 
-☝🏻 This should render: `Hello Paperclip!`.
+☝ This should render: `Hello Paperclip!`.

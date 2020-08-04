@@ -1,23 +1,35 @@
 ---
 id: getting-started-installation
-title: NPM Installation
-sidebar_label: NPM Installation 
+title: Installation
+sidebar_label: Installation 
 ---
 
-> Keep in mind that Paperclip is currently in Alpha, so in the meantime it's limited to [React](https://reactjs.org/). 
+Paperclip's installation is the same for **new** and **existing** projects. If you're using Paperclip for the first time, I'd recommend starting with a new project _first_ so that you can get a good feel for the tool. It's super quick to set up.
 
-Open up terminal, and `cd` into your project directory, then run:
+### Existing projects
 
-```sh
-npm install paperclip-cli --save-dev
-```
+To install Paperclip in an existing project, `cd` into your project directory, then run:
 
-Next, run:
-
-```sh
+```bash
 npx paperclip init
 ```
 
-☝ This will setup a `paperclip.config.json` file that will be used by Paperclip. If you're starting a new project, the `paperclip init` will generate it for you. 
+This will install all of the necessary dependencies for Paperclip. After that, you'll need to **manually
+configure your project**. The next page will help you do that. 
 
-If you've started a new project, you can go ahead and run `npm start` to start the Webpack server. 
+### New projects
+
+For new projects, just run:
+
+```sh
+mkdir my-new-project && cd my-new-project && npx paperclip init
+```
+
+You'll be asked some questions, then a new project will be generated for you. After that, just run:
+
+```
+npm start
+```
+
+Since you'll have a project that's already configured, you can skip the next page, and jump straight into
+[Using With React](getting-started-first-ui.md).

@@ -1,7 +1,7 @@
 ---
 id: getting-started-vscode
 title: Installing the VS Code extension
-sidebar_label: VS Code Extension
+sidebar_label: Extension Installation
 ---
 
 The [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) is a really good place to start since it works out of the box. Just create a new `hello-world.pc` file, and start writing plain HTML & CSS. Play around by creating a style block, use the color pickers.  Get a real good feel for Paperclip. 

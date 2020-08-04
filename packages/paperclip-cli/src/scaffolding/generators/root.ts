@@ -1,4 +1,5 @@
 import * as fsa from "fs-extra";
+import chalk from "chalk";
 import * as path from "path";
 import { FILES_DIR } from "./utils";
 import { GeneratorKind } from "./base";
@@ -14,7 +15,7 @@ const HELLO_WORLD_CONTENT = fsa.readFileSync(
 
 export const root = {
   kind: GeneratorKind.Root,
-  async getParams({ isNewDirectory }) {
+  async getParams({ cwd, isNewDirectory }) {
     const { sourceDirectory } = await prompt([
       {
         name: "sourceDirectory",
@@ -24,23 +25,23 @@ export const root = {
     ]);
 
     let includePercy = false;
-    let overwrite;
+    const overwrite = isNewDirectory;
 
-    if (!isNewDirectory) {
-      overwrite = (
-        await prompt([
-          {
-            name: "overwrite",
-            message:
-              "Would you like to continue as a new project (some files may be overwritten)?",
-            type: "confirm",
-            default: false
-          }
-        ])
-      ).overwrite;
-    } else {
-      overwrite = true;
-    }
+    // if (!isNewDirectory) {
+    //   overwrite = (
+    //     await prompt([
+    //       {
+    //         name: "overwrite",
+    //         message:
+    //           "Would you like to continue as a new project (some files may be overwritten)?",
+    //         type: "confirm",
+    //         default: false
+    //       }
+    //     ])
+    //   ).overwrite;
+    // } else {
+    //   overwrite = true;
+    // }
 
     if (overwrite) {
       includePercy = (
@@ -57,10 +58,11 @@ export const root = {
 
     return [
       {
+        cwd,
         sourceDirectory,
         overwrite
       },
-      [...(overwrite ? [node] : []), ...(includePercy ? [percy] : [])]
+      [node, ...(includePercy ? [percy] : [])]
     ];
   },
   prepare(params) {
@@ -74,7 +76,7 @@ export const root = {
     };
   },
   generate(
-    { sourceDirectory, overwrite }: any,
+    { sourceDirectory, overwrite, cwd }: any,
     { [GeneratorKind.Root]: { compilerName } = { compilerName: null } }: any
   ) {
     const config: PaperclipConfig = {
@@ -85,16 +87,31 @@ export const root = {
       sourceDirectory
     };
 
-    return {
-      "paperclip.config.json": JSON.stringify(config, null, 2),
+    const files = {
       [sourceDirectory + "/hello-paperclip.pc"]: overwrite
         ? HELLO_WORLD_CONTENT
         : null
     };
+
+    if (!fsa.existsSync(path.join(cwd, "paperclip.config.json"))) {
+      files["paperclip.config.json"] = JSON.stringify(config, null, 2);
+    }
+
+    return files;
   },
   fin({ overwrite }) {
     if (!overwrite) {
-      console.warn("🎉 All done!");
+      console.info("🎉 Successfuly installed Paperclip dependencies!");
+      console.info("");
+      console.info(
+        chalk.yellowBright(
+          "Next, you'll need to configure your project. Instructions for that are here: \n\n" +
+            chalk.underline(
+              `https://paperclip.dev/docs/getting-started-project-setup`
+            )
+        )
+      );
+      console.info("");
     }
   }
 };

@@ -10,8 +10,14 @@ const WEBPACK_CONTENT = fsa.readFileSync(
 
 export const webpack = {
   kind: GeneratorKind.Webpack,
-  prepare() {
+  getParams({ cwd }) {
+    return [{ cwd }, []];
+  },
+  prepare(params) {
     return {
+      [GeneratorKind.Webpack]: {
+        ...params
+      },
       [GeneratorKind.Node]: {
         devDependencies: [
           "webpack",
@@ -27,12 +33,16 @@ export const webpack = {
         scripts: {
           build: ["webpack"],
           "build:watch": ["webpack --watch"],
-          start: ["webpack-dev-server"]
+          start: ["webpack-dev-server --open"]
         }
       }
     };
   },
-  generate({ rules, entry }) {
+  generate({ rules, entry, cwd }) {
+    if (fsa.existsSync(path.join(cwd, "package.json"))) {
+      return {};
+    }
+
     return {
       "webpack.config.js": WEBPACK_CONTENT.replace("{{ENTRY}}", entry).replace(
         "{{RULES}}",
