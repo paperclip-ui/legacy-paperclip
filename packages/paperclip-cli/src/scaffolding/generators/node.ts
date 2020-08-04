@@ -4,46 +4,67 @@ import { webpack } from "./webpack";
 import { react } from "./react";
 import { typescript } from "./typescript";
 import * as shell from "shelljs";
+import * as path from "path";
+import * as fs from "fs";
 import chalk from "chalk";
 import { kebabCase } from "lodash";
+
+const readPackage = (cwd: string) => {
+  const pkgPath = path.join(cwd, "package.json");
+  return fs.existsSync(pkgPath) ? fs.readFileSync(pkgPath, "utf8") : null;
+};
 
 export const node = {
   kind: GeneratorKind.Node,
   async getParams({ cwd }) {
-    const {
-      name,
-      description,
-      packageManager,
-      useTypescript,
-      isPrivate
-    } = await prompt([
-      {
-        name: "name",
-        message: "Project name",
-        validate: Boolean
-      },
-      {
-        name: "description",
-        message: "Project description"
-      },
-      {
-        name: "isPrivate",
-        message: "Is this package private?",
-        type: "confirm",
-        default: true
-      },
-      {
+    const options = [];
+
+    if (readPackage(cwd)) {
+      options.push(
+        {
+          name: "name",
+          message: "Project name",
+          validate: Boolean
+        },
+        {
+          name: "description",
+          message: "Project description"
+        },
+        {
+          name: "isPrivate",
+          message: "Is this package private?",
+          type: "confirm",
+          default: true
+        },
+        {
+          name: "useTypescript",
+          message: "Use TypeScript?",
+          type: "confirm"
+        }
+      );
+    }
+
+    const hasYarnLock = fs.existsSync(path.join(cwd, "yarn.lock"));
+    const hasPackageLock = fs.existsSync(path.join(cwd, "package-lock.json"));
+
+    if (!hasYarnLock && !hasPackageLock) {
+      options.push({
         name: "packageManager",
         message: "What package manager?",
         type: "list",
         choices: ["npm", "yarn"]
-      },
-      {
-        name: "useTypescript",
-        message: "Use TypeScript?",
-        type: "confirm"
-      }
-    ]);
+      });
+    }
+
+    const {
+      name,
+      description,
+      packageManager = hasYarnLock ? "yarn" : "npm",
+      useTypescript,
+      isPrivate
+    } = await prompt(options);
+
+    console.log(packageManager);
 
     return [
       {
@@ -74,7 +95,12 @@ export const node = {
       }
     };
   },
-  generate({ name, description, isPrivate, license, scripts }: any) {
+  generate({ name, description, isPrivate, license, scripts, cwd }: any) {
+    // ignore if existing package?
+    if (readPackage(cwd)) {
+      return {};
+    }
+
     const pkg = {
       name: kebabCase(name),
       description,

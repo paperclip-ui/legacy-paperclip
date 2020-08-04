@@ -523,7 +523,10 @@ fn parse_attribute_string_value<'a>(
       .to_string();
 
       parts.push(pc_ast::AttributeDynamicStringPart::ClassNamePierce(
-        pc_ast::AttributeDynamicStringClassNamePierce { class_name, location: Location::new(pos, tokenizer.utf16_pos) },
+        pc_ast::AttributeDynamicStringClassNamePierce {
+          class_name,
+          location: Location::new(pos, tokenizer.utf16_pos),
+        },
       ));
     } else if curr == Token::CurlyOpen {
       tokenizer.next_expect(Token::CurlyOpen)?;

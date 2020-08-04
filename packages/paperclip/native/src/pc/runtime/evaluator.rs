@@ -1112,7 +1112,6 @@ fn evaluate_attribute_dynamic_string<'a>(
   depth: u32,
   context: &mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
-
   let mut buffer = vec![];
 
   for part in value.values.iter() {
@@ -1133,7 +1132,11 @@ fn evaluate_attribute_dynamic_string<'a>(
             let class_name = parts.last().unwrap();
             format!("_{}_{}", get_document_style_scope(dep_uri), class_name)
           } else {
-            return Err(RuntimeError::new("Reference not found.".to_string(), context.uri, &pierce.location));
+            return Err(RuntimeError::new(
+              "Reference not found.".to_string(),
+              context.uri,
+              &pierce.location,
+            ));
           }
         } else {
           format!(
@@ -1154,7 +1157,7 @@ fn evaluate_attribute_dynamic_string<'a>(
   // let val = value
   //   .values
   //   .iter()
-  //   .map(|val| 
+  //   .map(|val|
   //   })
   //   .collect::<Vec<String>>()
   //   .join("");

@@ -148,7 +148,7 @@ pub struct AttributeDynamicStringLiteral {
 pub struct AttributeDynamicStringClassNamePierce {
   #[serde(rename = "className")]
   pub class_name: String,
-  pub location: Location
+  pub location: Location,
 }
 
 impl fmt::Display for AttributeStringValue {
