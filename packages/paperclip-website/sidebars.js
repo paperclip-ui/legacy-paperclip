@@ -3,6 +3,7 @@ module.exports = {
     "Getting started": [
       "getting-started-vscode",
       "getting-started-installation",
+      "getting-started-project-setup",
       "getting-started-first-ui",
       "guide-why"
     ],

@@ -16,7 +16,7 @@ const readPackage = (cwd: string) => {
 
 export const node = {
   kind: GeneratorKind.Node,
-  async getParams({ cwd }) {
+  async getParams({ cwd, isNewDirectory }) {
     const options = [];
 
     if (!readPackage(cwd)) {
@@ -74,7 +74,11 @@ export const node = {
         description,
         license: ""
       },
-      [useTypescript ? typescript : null, webpack, react].filter(Boolean)
+      [
+        useTypescript ? typescript : null,
+        isNewDirectory ? null : webpack,
+        react
+      ].filter(Boolean)
     ];
   },
   prepare(params) {
