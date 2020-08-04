@@ -1112,10 +1112,11 @@ fn evaluate_attribute_dynamic_string<'a>(
   depth: u32,
   context: &mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
-  let val = value
-    .values
-    .iter()
-    .map(|val| match val {
+
+  let mut buffer = vec![];
+
+  for part in value.values.iter() {
+    buffer.push(match part {
       ast::AttributeDynamicStringPart::Literal(value) => value.value.to_string(),
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
         if pierce.class_name.contains(".") {
@@ -1132,7 +1133,7 @@ fn evaluate_attribute_dynamic_string<'a>(
             let class_name = parts.last().unwrap();
             format!("_{}_{}", get_document_style_scope(dep_uri), class_name)
           } else {
-            pierce.class_name.to_string()
+            return Err(RuntimeError::new("Reference not found.".to_string(), context.uri, &pierce.location));
           }
         } else {
           format!(
@@ -1146,9 +1147,17 @@ fn evaluate_attribute_dynamic_string<'a>(
           .unwrap()
           .to_string()
       }
-    })
-    .collect::<Vec<String>>()
-    .join("");
+    });
+  }
+
+  let val = buffer.join("");
+  // let val = value
+  //   .values
+  //   .iter()
+  //   .map(|val| 
+  //   })
+  //   .collect::<Vec<String>>()
+  //   .join("");
 
   let js_value = js_virt::JsValue::JsString(js_virt::JsString {
     value: val.to_string(),

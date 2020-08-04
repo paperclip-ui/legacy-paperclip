@@ -892,6 +892,7 @@ const prefixWthStyleScopes = (
         if (!scopeFilePath) {
           // Just some information to communicate that the class doesn't do anything.
           scopeFilePath = "noop";
+
           console.warn(`import "${importId}" is not defined`);
         }
       } else {
