@@ -37,11 +37,11 @@ module.exports = {
           to: "/docs/guide-how-to-use",
           position: "left"
         },
-        {
-          label: "Why",
-          to: "/docs/guide-why",
-          position: "left"
-        },
+        // {
+        //   label: "Why",
+        //   to: "/docs/guide-why",
+        //   position: "left"
+        // },
         // {to: 'blog', label: 'Blog', position: 'left'},
         {
           href: "https://chat.paperclip.dev/",
