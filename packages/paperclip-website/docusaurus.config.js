@@ -7,6 +7,10 @@ module.exports = {
   organizationName: "crcn", // Usually your GitHub org/user name.
   projectName: "paperclip", // Usually your repo name.
   themeConfig: {
+    algolia: {
+      apiKey: "692b36b7f6c2f8b247884702fc82e7c3",
+      indexName: "paperclip"
+    },
     googleAnalytics: {
       trackingID: "UA-173953110-1"
     },
