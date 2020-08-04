@@ -24,7 +24,7 @@ function Home() {
   const prismTheme = usePrismTheme();
   return (
     <Layout
-      title={`${siteConfig.title} - build web applications in record time`}
+      title={`${siteConfig.title} - build React applications in record time`}
       description="Import HTML & CSS building blocks directly into your web application."
     >
       <styles.Home>
