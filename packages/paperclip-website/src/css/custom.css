@@ -20,6 +20,10 @@
   --ifm-font-family-base: Open Sans;
 }
 
+.footer--dark {
+  background: rgb(48, 50, 56);
+}
+
 .navbar__title {
   font-family: Sora;
   font-weight: 600;
