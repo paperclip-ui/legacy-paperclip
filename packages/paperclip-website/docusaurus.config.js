@@ -104,6 +104,19 @@ module.exports = {
               to: "docs/configure-typescript"
             }
           ]
+        },
+        {
+          title: "More",
+          items: [
+            {
+              label: "Help",
+              href: "https://chat.paperclip.dev"
+            },
+            {
+              href: "https://github.com/crcn/paperclip",
+              label: "GitHub"
+            }
+          ]
         }
         // {
         //   title: 'Community',
