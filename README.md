@@ -6,7 +6,7 @@
 # <img src="assets/logo.png" width="230">
 
 
-Paperclip is a language for UI primitives. The goal of the library is centered around increasing the speed, safety, and accuracy of developing web interfaces. Here's how:
+Paperclip allows you to define UI primitives out of plain HTML & CSS. The goal of the library is centered around increasing the speed, safety, and accuracy of developing web interfaces. Here's how:
 
 - **Realtime visual editing** - Paperclip's VS Code extension comes with a realtime preview that's powered by Rust, so you don't have to juggle back and forth between the browser & code anymore for writing basic HTML & CSS.
 - **Automatic visual regression testing** - Just run the `percy-paperclip`, and you'll get visual snapshots of every UI state defined in Paperclip, so you can worry less about breaking CSS changes.
