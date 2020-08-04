@@ -10,7 +10,10 @@ const ENTRY_TSX_CONTENT = fsa.readFileSync(
 
 export const react = {
   kind: GeneratorKind.React,
-  prepare(_info, allInfo) {
+  getParams({ cwd }) {
+    return [{ cwd }, []];
+  },
+  prepare({ cwd }, allInfo) {
     const devDependencies = ["paperclip-compiler-react"];
 
     if (allInfo[GeneratorKind.Node].useTypescript) {
@@ -18,6 +21,9 @@ export const react = {
     }
 
     return {
+      [GeneratorKind.React]: {
+        cwd
+      },
       [GeneratorKind.Node]: {
         dependencies: ["react", "react-dom"],
         devDependencies
@@ -37,7 +43,11 @@ export const react = {
       (allInfo[GeneratorKind.Node].useTypescript ? "tsx" : "jsx")
     );
   },
-  generate(info, allInfo) {
+  generate({ cwd }, allInfo) {
+    if (fsa.existsSync(path.join(cwd, "package.json"))) {
+      return {};
+    }
+
     return {
       [this.getEntry(allInfo)]: ENTRY_TSX_CONTENT.replace(
         "{{PROJECT_NAME}}",

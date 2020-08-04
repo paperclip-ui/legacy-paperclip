@@ -19,7 +19,7 @@ export const node = {
   async getParams({ cwd }) {
     const options = [];
 
-    if (readPackage(cwd)) {
+    if (!readPackage(cwd)) {
       options.push(
         {
           name: "name",
@@ -63,8 +63,6 @@ export const node = {
       useTypescript,
       isPrivate
     } = await prompt(options);
-
-    console.log(packageManager);
 
     return [
       {
