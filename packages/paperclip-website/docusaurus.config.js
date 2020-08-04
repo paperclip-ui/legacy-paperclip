@@ -59,19 +59,49 @@ module.exports = {
       style: "dark",
       links: [
         {
-          title: "Docs",
+          title: "Get Started",
+          items: [
+            {
+              label: "Installation",
+              to: "docs/getting-started-installation"
+            },
+            {
+              label: "Why Paperclip?",
+              to: "docs/guide-why"
+            }
+          ]
+        },
+        {
+          title: "API",
           items: [
             {
               label: "Syntax",
               to: "docs/usage-syntax"
             },
             {
-              label: "React usage",
+              label: "React",
               to: "docs/usage-react"
             },
             {
-              label: "Visual regression testing",
+              label: "CLI",
+              to: "docs/usage-cli"
+            }
+          ]
+        },
+        {
+          title: "Integrations",
+          items: [
+            {
+              label: "Webpack",
+              to: "docs/configure-webpack"
+            },
+            {
+              label: "Percy",
               to: "docs/configure-percy"
+            },
+            {
+              label: "TypeScript",
+              to: "docs/configure-typescript"
             }
           ]
         }
