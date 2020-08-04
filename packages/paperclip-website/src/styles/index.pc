@@ -109,9 +109,9 @@
       width: 100%;
       /* box-shadow: -4px 1px 4px 4px rgb(153, 153, 153); */
       :global(img) {
-        border-radius: 4px;
-        box-shadow: -2px -2px 6px 0px rgba(0, 0, 0, 0.247);
-        border: 1px solid rgba(99, 99, 99, 0.404);
+        /* border-radius: 4px; */
+        /* box-shadow: -2px -2px 6px 0px rgba(0, 0, 0, 0.247); */
+        /* border: 1px solid rgba(99, 99, 99, 0.404); */
         position: absolute;
         width: auto;
         max-width: 1024px;
@@ -420,7 +420,7 @@
       <button.Anchor className=">>>typography.semi-bold" strong>Get started</button.Anchor>
       <button.Anchor secondary className=">>>typography.semi-bold">Check out on GitHub</button.Anchor>
     </fragment>}
-    preview={<img src="../../static/img/realtime-editing-2.gif">}
+    preview={<img src="../../static/img/vscode-screenshot.png">}
   />
 
   <Summary title="Web development is slow" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
