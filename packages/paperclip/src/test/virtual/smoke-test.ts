@@ -661,7 +661,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class]._139cec8e_button { color:red; }</style><div className="_139cec8e_button" data-pc-80f4925f></div>`
+      `<style>[class]._139cec8e_button { color:red; }</style><div className="_139cec8e_button button" data-pc-80f4925f></div>`
     ],
     [
       {

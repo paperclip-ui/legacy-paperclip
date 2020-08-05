@@ -1177,7 +1177,7 @@ fn evaluate_attribute_dynamic_string<'a>(
           };
 
           if class_export.public {
-            format!("_{}_{}", get_document_style_scope(dep_uri), class_name)
+            format!("_{}_{} {}", get_document_style_scope(dep_uri), class_name, class_name)
           } else {
             return Err(RuntimeError::new(
               "This class reference is private.".to_string(),
