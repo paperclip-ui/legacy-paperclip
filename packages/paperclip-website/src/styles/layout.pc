@@ -89,8 +89,8 @@
   @media screen and (max-width: 900px) {
     ._row {
       flex-direction: column;
-      padding-left: var(--gap-6);
-      padding-right: var(--gap-6);
+      padding-left: var(--gap-5);
+      padding-right: var(--gap-5);
     }
     ._col {
       width: 100%;
