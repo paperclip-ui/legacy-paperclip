@@ -1128,35 +1128,53 @@ fn evaluate_attribute_dynamic_string<'a>(
             .unwrap()
             .dependencies
             .get(&imp);
-          if let Some(dep_uri) = dep_option {
-            let class_name = parts.last().unwrap();
-            let import = context.imports.get(&imp).unwrap();
-            let class_export_option = import.style.class_names.get(&class_name.to_string());
 
-            if let Some(class_export) = class_export_option {
-              if class_export.public {
-                format!("_{}_{}", get_document_style_scope(dep_uri), class_name)
-              } else {
-                return Err(RuntimeError::new(
-                  "This class reference is private.".to_string(),
-                  context.uri,
-                  &pierce.location,
-                ));
-              }
-            } else {
-              return Err(RuntimeError::new(
-                "Class name not found.".to_string(),
-                context.uri,
-                &pierce.location,
-              ));
-            }
+          let dep_uri = if let Some(dep_uri) = dep_option {
+            dep_uri
           } else {
             return Err(RuntimeError::new(
               "Reference not found.".to_string(),
               context.uri,
               &pierce.location,
             ));
+          };
+
+
+          let class_name = parts.last().unwrap();
+          let import_option = context.imports.get(&imp);
+
+          let import = if let Some(import) = import_option {
+            import
+          } else {
+            return Err(RuntimeError::new(
+              "Reference not found.".to_string(),
+              context.uri,
+              &pierce.location,
+            ));
+          };
+
+          let class_export_option = import.style.class_names.get(&class_name.to_string());
+
+          let class_export = if let Some(class_export) = class_export_option {
+            class_export
+          } else {
+            return Err(RuntimeError::new(
+              "Class name not found.".to_string(),
+              context.uri,
+              &pierce.location,
+            ));
+          };
+
+          if class_export.public {
+            format!("_{}_{}", get_document_style_scope(dep_uri), class_name)
+          } else {
+            return Err(RuntimeError::new(
+              "This class reference is private.".to_string(),
+              context.uri,
+              &pierce.location,
+            ));
           }
+
         } else {
           format!(
             "_{}_{} {}",
