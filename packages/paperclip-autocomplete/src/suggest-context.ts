@@ -427,7 +427,7 @@ const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
       if (scanner.current.value === "{") {
         isDeclaration = false;
         break;
-      } else if (scanner.current.value === ":") {
+      } else if (scanner.current.value === ";") {
         break;
       }
       scanner.next();

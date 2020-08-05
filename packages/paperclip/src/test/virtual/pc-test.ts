@@ -802,7 +802,7 @@ describe(__filename + "#", () => {
   });
 
   // Addresses https://github.com/crcn/paperclip/issues/372
-  it(`Displays an error if a shadow pierce reference is missing`, async () => {
+  it(`Displays an error if a shadow pierce import is missing`, async () => {
     const graph = {
       "/entry.pc": `
         <div className=">>>tw.test">
@@ -817,8 +817,6 @@ describe(__filename + "#", () => {
 
     try {
       await engine.run("/entry.pc");
-      const ast = engine.getLoadedAst("/entry.pc");
-      console.log(JSON.stringify(ast, null, 2));
     } catch (e) {
       err = e;
     }
@@ -829,5 +827,100 @@ describe(__filename + "#", () => {
       location: { start: 24, end: 35 },
       message: "Reference not found."
     });
+  });
+
+  // addresses: https://github.com/crcn/paperclip/issues/389
+  it(`Displays an error if a class name is not found for shadow pierce`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div className=">>>tw.test">
+          
+        </div>
+      `,
+      "/module.pc": `
+        <style>
+
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 67, end: 78 },
+      message: "Class name not found."
+    });
+  });
+
+  it(`Display an error if class name is private for shadow pierce`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div className=">>>tw.test">
+          
+        </div>
+      `,
+      "/module.pc": `
+        <style>
+          .test {
+
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 67, end: 78 },
+      message: "This class reference is private."
+    });
+  });
+
+  it(`Can use a public class pierce`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div className=">>>tw.test">
+          
+        </div>
+      `,
+      "/module.pc": `
+        <style>
+          @export {
+            .test {
+
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test" data-pc-80f4925f></div>`
+    );
   });
 });

@@ -1130,7 +1130,26 @@ fn evaluate_attribute_dynamic_string<'a>(
             .get(&imp);
           if let Some(dep_uri) = dep_option {
             let class_name = parts.last().unwrap();
-            format!("_{}_{}", get_document_style_scope(dep_uri), class_name)
+            let import = context.imports.get(&imp).unwrap();
+            let class_export_option = import.style.class_names.get(&class_name.to_string());
+
+            if let Some(class_export) = class_export_option {
+              if class_export.public {
+                format!("_{}_{}", get_document_style_scope(dep_uri), class_name)
+              } else {
+                return Err(RuntimeError::new(
+                  "This class reference is private.".to_string(),
+                  context.uri,
+                  &pierce.location,
+                ));
+              }
+            } else {
+              return Err(RuntimeError::new(
+                "Class name not found.".to_string(),
+                context.uri,
+                &pierce.location,
+              ));
+            }
           } else {
             return Err(RuntimeError::new(
               "Reference not found.".to_string(),
