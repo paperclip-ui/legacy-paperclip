@@ -8,13 +8,21 @@
 /* You can override the default Infima variables here. */
 /* https://v2.docusaurus.io/docs/migrating-from-v1-to-v2/#colors */
 :root {
-  --ifm-color-primary: #5084c9;
+  /* --ifm-color-primary: #5084c9;
   --ifm-color-primary-dark: #3c75c1;
   --ifm-color-primary-darker: #386fb7;
   --ifm-color-primary-darkest: #2e5b96;
   --ifm-color-primary-light: #6593d0;
   --ifm-color-primary-lighter: #709bd3;
-  --ifm-color-primary-lightest: #90b1dd;
+  --ifm-color-primary-lightest: #90b1dd; */
+  --ifm-color-primary: #5bd365;
+  --ifm-color-primary-dark: #43cd4f;
+  --ifm-color-primary-darker: #37c943;
+  --ifm-color-primary-darkest: #2da737;
+  --ifm-color-primary-light: #73d97b;
+  --ifm-color-primary-lighter: #7fdd87;
+  --ifm-color-primary-lightest: #a2e6a8;
+
   --ifm-heading-font-weight: 600;
   --ifm-code-font-size: 95%;
   --ifm-font-family-base: Open Sans;
