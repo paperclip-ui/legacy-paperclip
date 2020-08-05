@@ -90,7 +90,7 @@
     ._cta {
       margin-top: 15px;
       :global(a) { 
-        margin-left: 15px;
+        margin-right: 15px;
         margin-top: 15px;
         &:first-child {
           margin-left: 0;
@@ -276,9 +276,10 @@
         margin-right: 0;
       }
       ._preview {
-        :global(img) {
-          position: relative;
-          width: 100%;
+        :global(img) {          
+          position: absolute;
+          width: calc(100% + 80px);
+          left: -40px;
         }
       }
     }
@@ -308,6 +309,19 @@
         margin-left: 0;
         :global(img) {
           width: 100%;
+        }
+      }
+    }
+  }
+
+
+  @media screen and (max-width: 430px) {
+    ._main {
+      ._cta {
+        :global(a) {
+          width: 100%;
+          box-sizing: border-box;
+          margin-right: 0;
         }
       }
     }
