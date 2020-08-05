@@ -923,4 +923,58 @@ describe(__filename + "#", () => {
       `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test" data-pc-80f4925f></div>`
     );
   });
+  it(`Can use a public class pierce on a component`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div export component as="Test" className=">>>tw.test">
+          
+        </div>
+        <Test />
+      `,
+      "/module.pc": `
+        <style>
+          @export {
+            .test {
+
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test" data-pc-80f4925f></div>`
+    );
+  });
+  it(`Can use a component that's referencing a public class`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="mod">
+        <mod.Test />
+      `,
+      "/module.pc": `
+        <import src="./module2.pc" as="tw">
+        <div export component as="Test" className=">>>tw.test">
+        </div>
+      `,
+      "/module2.pc": `
+        <style>
+          @export {
+            .test {
+
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._11a847ab_test { }</style><div className="_11a847ab_test" data-pc-139cec8e></div>`
+    );
+  });
 });

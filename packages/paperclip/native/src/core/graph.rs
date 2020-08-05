@@ -216,7 +216,7 @@ pub struct Dependency {
   pub uri: String,
   pub dependencies: BTreeMap<String, String>,
   pub dependency_uri_maps: BTreeMap<String, String>,
-  pub content: DependencyContent,
+  pub content: DependencyContent
 }
 
 impl<'a> Dependency {

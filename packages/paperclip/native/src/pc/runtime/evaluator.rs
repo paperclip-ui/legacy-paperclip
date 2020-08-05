@@ -29,7 +29,7 @@ pub struct Context<'a> {
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
-  pub imports: &'a BTreeMap<String, Exports>,
+  pub import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
 }
 
 impl<'a> Context<'a> {
@@ -59,7 +59,7 @@ pub fn evaluate<'a>(
   uri: &String,
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
-  imports: &'a BTreeMap<String, Exports>,
+  import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
 ) -> Result<Option<EvalInfo>, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   if let DependencyContent::Node(node_expr) = &dep.content {
@@ -67,7 +67,7 @@ pub fn evaluate<'a>(
       uri.clone(),
       node_expr.get_location().clone(),
     )));
-    let mut context = create_context(node_expr, uri, graph, vfs, &data, None, imports);
+    let mut context = create_context(node_expr, uri, graph, vfs, &data, None, import_graph);
 
     let preview = wrap_as_fragment(
       evaluate_instance_node(
@@ -286,7 +286,13 @@ fn evaluate_document_sheet<'a>(
   let mut css_exports: css_export::Exports = css_export::Exports::new();
   let mut css_imports: BTreeMap<String, css_export::Exports> = BTreeMap::new();
 
-  for (id, imp) in context.imports {
+  let imports = if let Some(imports) = context.import_graph.get(context.uri) {
+    imports
+  } else {
+    return Err(RuntimeError::unknown(context.uri));
+  };
+
+  for (id, imp) in imports {
     css_imports.insert(id.to_string(), imp.style.clone());
   }
 
@@ -347,7 +353,7 @@ fn create_context<'a>(
   vfs: &'a VirtualFileSystem,
   data: &'a js_virt::JsValue,
   parent_option: Option<&'a Context>,
-  imports: &'a BTreeMap<String, Exports>,
+  import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
 ) -> Context<'a> {
   let render_call_stack = if let Some(parent) = parent_option {
     parent.render_call_stack.clone()
@@ -362,7 +368,7 @@ fn create_context<'a>(
     uri,
     vfs,
     render_call_stack,
-    imports,
+    import_graph,
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
     import_scopes: get_import_scopes(graph.dependencies.get(uri).unwrap()),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
@@ -802,7 +808,7 @@ fn evaluate_component_instance<'a>(
       context.vfs,
       &data,
       Some(&context),
-      context.imports,
+      context.import_graph,
     );
     check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
     // TODO: if fragment, then wrap in span. If not, then copy these attributes to root element
@@ -1140,7 +1146,13 @@ fn evaluate_attribute_dynamic_string<'a>(
           };
 
           let class_name = parts.last().unwrap();
-          let import_option = context.imports.get(&imp);
+          let imports = if let Some(imports) = context.import_graph.get(context.uri) {
+            imports
+          } else {
+            return Err(RuntimeError::unknown(context.uri));
+          };
+
+          let import_option = imports.get(&imp);
 
           let import = if let Some(import) = import_option {
             import
@@ -1494,7 +1506,10 @@ mod tests {
       Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
     );
 
-    evaluate(&uri, &graph, &vfs, &BTreeMap::new())
+    let mut import_graph = HashMap::new();
+    import_graph.insert(uri.to_string(), BTreeMap::new());
+
+    evaluate(&uri, &graph, &vfs, &import_graph)
   }
 
   #[test]
