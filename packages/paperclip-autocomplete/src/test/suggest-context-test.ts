@@ -444,6 +444,24 @@ describe(__filename, () => {
         kind: SuggestContextKind.CSS_DECLARATION_NAME,
         prefix: ""
       }
+    ],
+    [
+      `<style>
+        .a {
+          :global(b) {
+
+          }
+        }
+      </style>
+      
+      <div {title?}>
+      
+      </div>
+      <`,
+      {
+        kind: SuggestContextKind.HTML_TAG_NAME,
+        path: []
+      }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {
     it(`Can produce suggestion context for ${source}`, () => {
