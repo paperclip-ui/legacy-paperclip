@@ -409,7 +409,7 @@
       </a>
     </div>
   </div>
-  <div className=">>>layout.col9 _preview">
+  <div className="_preview">
     {preview}
   </div>
 </div>
