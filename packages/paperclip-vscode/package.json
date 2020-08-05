@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "14.1.1",
+  "version": "14.1.2",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "description": "A language for building UI primitives",
@@ -122,10 +122,10 @@
     "color": "^3.1.2",
     "find-up": "^4.1.0",
     "lodash": "^4.17.15",
-    "paperclip": "^14.1.1",
+    "paperclip": "^14.1.2",
     "paperclip-autocomplete": "^14.1.1",
     "paperclip-utils": "^14.1.0",
-    "paperclip-web-renderer": "^14.1.1",
+    "paperclip-web-renderer": "^14.1.2",
     "vscode-languageclient": "^6.0.1",
     "vscode-languageserver": "^6.0.1",
     "vscode-languageserver-textdocument": "^1.0.0"
