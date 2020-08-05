@@ -31,7 +31,7 @@ function Home() {
         <styles.Header
           title={
             <>
-              A <styles.Highlight>faster</styles.Highlight> way to create React
+              A <styles.Highlight>faster</styles.Highlight> way to build React
               applications.
             </>
           }
