@@ -1139,7 +1139,6 @@ fn evaluate_attribute_dynamic_string<'a>(
             ));
           };
 
-
           let class_name = parts.last().unwrap();
           let import_option = context.imports.get(&imp);
 
@@ -1174,7 +1173,6 @@ fn evaluate_attribute_dynamic_string<'a>(
               &pierce.location,
             ));
           }
-
         } else {
           format!(
             "_{}_{} {}",
