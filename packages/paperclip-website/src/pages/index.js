@@ -107,7 +107,7 @@ function Home() {
           <styles.MainFeatureItem
             iconName="shapes"
             title="Write plain HTML & CSS"
-            description="Use plain 'ol HTML & CSS to define your application's UI building blocks."
+            description="Use plain 'ol HTML & CSS to define the UI building blocks for your web application."
             example={
               <CodeBlock className="language-html" style={{ height: 500 }}>
                 {PRIMITIVE_UI_EXAMPLE}
@@ -117,7 +117,7 @@ function Home() {
           <styles.MainFeatureItem
             iconName="reactjs"
             title="Import directly into React code"
-            description="Paperclip compiles your HTML & CSS that you can then import directly into code."
+            description="Paperclip compiles the HTML & CSS into JavaScript that you can import directly in your app."
             example={
               <CodeBlock className="language-jsx">
                 {IMPORT_CODE_DEMO_SOURCE}
@@ -129,12 +129,12 @@ function Home() {
         <styles.VariousFeatures>
           <styles.VariousFeatureItem
             iconName="chaotic-1"
-            title="Scoped styles"
+            title="No global styles"
             description="Styles are only applied to the documents they're defined in, so you don't have to worry about them leaking out."
           />
           <styles.VariousFeatureItem
             iconName="link"
-            title="Strongly typed"
+            title="TypeScript integration"
             description="Paperclip UIs compile to strongly typed code, so you can feel more confident that UI changes won't break anything."
           />
           <styles.VariousFeatureItem
