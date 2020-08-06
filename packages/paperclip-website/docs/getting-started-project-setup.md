@@ -46,7 +46,7 @@ Also, to make it easier you can that you include the build script in your `start
 }
 ```
 
-☝🏻 This will start the Paperclip compiler in parallel with your usual start script. 
+☝ This will start the Paperclip compiler in parallel with your usual start script. 
 
 Here's a walkthrough: 
 
