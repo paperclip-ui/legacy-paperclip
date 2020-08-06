@@ -101,7 +101,7 @@ export const root = {
   },
   fin({ overwrite }) {
     if (!overwrite) {
-      console.info("🎉 Successfuly installed Paperclip dependencies!");
+      console.info("🎉 Successfully installed Paperclip dependencies!");
       console.info("");
       console.info(
         chalk.yellowBright(
