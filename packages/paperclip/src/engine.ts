@@ -52,48 +52,15 @@ export type LoadResult = {
   preview: VirtualNode;
 };
 export class Engine {
-  private _native: any;
   private _listeners: EngineEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
   private _io: EngineIO;
 
   constructor(
-    private _createNativeEngine: any,
+    private _native: any,
     private _options: EngineOptions = {},
     private _onCrash: (err) => void = noop
   ) {
-    this._io = Object.assign(
-      {
-        readFile: uri => {
-          return fs.readFileSync(new URL(uri) as any, "utf8");
-        },
-        fileExists: uri => {
-          try {
-            const url = new URL(uri) as any;
-
-            // need to make sure that case matches _exactly_ since some
-            // systems are sensitive to that.
-            return existsSyncCaseSensitive(url) && fs.lstatSync(url).isFile();
-          } catch (e) {
-            console.error(e);
-            return false;
-          }
-        },
-        resolveFile: resolveImportUri(fs)
-      },
-      _options.io
-    );
-  }
-
-  async $$load() {
-    const io = this._io;
-
-    this._native = await this._createNativeEngine(
-      io.readFile,
-      io.fileExists,
-      io.resolveFile
-    );
-
     // only one native listener to for buffer performance
     this._native.add_listener(this._dispatch);
 
@@ -259,11 +226,51 @@ export class Engine {
   };
 }
 
+const getIOOptions = (options: EngineOptions = {}) =>
+  Object.assign(
+    {
+      readFile: uri => {
+        return fs.readFileSync(new URL(uri) as any, "utf8");
+      },
+      fileExists: uri => {
+        try {
+          const url = new URL(uri) as any;
+
+          // need to make sure that case matches _exactly_ since some
+          // systems are sensitive to that.
+          return existsSyncCaseSensitive(url) && fs.lstatSync(url).isFile();
+        } catch (e) {
+          console.error(e);
+          return false;
+        }
+      },
+      resolveFile: resolveImportUri(fs)
+    },
+    options.io
+  );
+
 export const createEngine = createNativeEngine => async (
   options: EngineOptions,
   onCrash: any
 ) => {
-  return await new Engine(createNativeEngine, options, onCrash).$$load();
+  const { readFile, fileExists, resolveFile } = getIOOptions(options);
+  return new Engine(
+    await createNativeEngine(readFile, fileExists, resolveFile),
+    options,
+    onCrash
+  );
+};
+
+export const createEngineSync = createNativeEngine => (
+  options: EngineOptions,
+  onCrash: any
+) => {
+  const { readFile, fileExists, resolveFile } = getIOOptions(options);
+  return new Engine(
+    createNativeEngine(readFile, fileExists, resolveFile),
+    options,
+    onCrash
+  );
 };
 
 const existsSyncCaseSensitive = (uri: URL) => {
