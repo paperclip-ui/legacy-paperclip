@@ -119,6 +119,10 @@ module.exports = {
             {
               href: "https://github.com/crcn/paperclip",
               label: "GitHub"
+            },
+            {
+              href: "https://twitter.com/paperclipui",
+              label: "Twitter"
             }
           ]
         }
