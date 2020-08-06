@@ -4,6 +4,14 @@
   "version": "14.1.4",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
+  "keywords": [
+    "React",
+    "CSS",
+    "HTML",
+    "visual",
+    "preview",
+    "realtime"
+  ],
   "description": "Use plain HTML & CSS to build web UIs visually",
   "homepage": "http://paperclip.dev",
   "icon": "assets/logo.png",
