@@ -1,6 +1,6 @@
 {
   "name": "paperclip-website",
-  "version": "14.1.8",
+  "version": "14.1.9",
   "private": true,
   "scripts": {
     "start": "docusaurus start",
@@ -15,7 +15,7 @@
     "@docusaurus/theme-classic": "^2.0.0-alpha.37",
     "clsx": "^1.1.1",
     "dedent": "^0.7.0",
-    "paperclip-mini-editor": "^14.1.8",
+    "paperclip-mini-editor": "^14.1.9",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
   },
@@ -40,7 +40,7 @@
     "mini-css-extract-plugin": "^0.9.0",
     "null-loader": "^4.0.0",
     "paperclip-compiler-react": "^14.1.4",
-    "paperclip-loader": "^14.1.8",
+    "paperclip-loader": "^14.1.9",
     "webpack": "^4.43.0"
   }
 }

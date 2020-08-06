@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli",
-  "version": "14.1.8",
+  "version": "14.1.9",
   "description": "CLI util for Paperclip",
   "main": "lib/cli.js",
   "bin": {
