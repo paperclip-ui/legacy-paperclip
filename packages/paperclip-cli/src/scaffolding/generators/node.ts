@@ -3,6 +3,7 @@ import { prompt } from "inquirer";
 import { webpack } from "./webpack";
 import { react } from "./react";
 import { typescript } from "./typescript";
+import { javascript } from "./javascript";
 import * as shell from "shelljs";
 import * as path from "path";
 import * as fs from "fs";
@@ -75,7 +76,7 @@ export const node = {
         license: ""
       },
       [
-        useTypescript ? typescript : null,
+        useTypescript ? typescript : javascript,
         isNewDirectory ? webpack : null,
         react
       ].filter(Boolean)

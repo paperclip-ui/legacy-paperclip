@@ -3,7 +3,7 @@ import * as path from "path";
 import { GeneratorKind } from "./base";
 import { FILES_DIR } from "./utils";
 
-const WEBPACK_CONTENT = fsa.readFileSync(
+const WEBPACK_JS_CONTENT = fsa.readFileSync(
   path.join(FILES_DIR, "webpack.config-js"),
   "utf8"
 );
@@ -27,8 +27,7 @@ export const webpack = {
           "webpack-cli",
           "css-loader",
           "style-loader",
-          "file-loader",
-          "ts-loader"
+          "file-loader"
         ],
         scripts: {
           build: ["webpack"],
@@ -44,10 +43,10 @@ export const webpack = {
     }
 
     return {
-      "webpack.config.js": WEBPACK_CONTENT.replace("{{ENTRY}}", entry).replace(
-        "{{RULES}}",
-        rules && rules.length ? rules + "," : ""
-      )
+      "webpack.config.js": WEBPACK_JS_CONTENT.replace(
+        "{{ENTRY}}",
+        entry
+      ).replace("{{RULES}}", rules && rules.length ? rules + "," : "")
     };
   }
 };
