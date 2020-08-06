@@ -53,10 +53,7 @@ const translateRoot = (
   context: TranslateContext
 ) => {
   context = addBuffer(`/* eslint-disable */\n`, context);
-  context = addBuffer(
-    `import {ReactNode, ReactElement} from "react";\n\n`,
-    context
-  );
+  context = addBuffer(`import {ReactElement} from "react";\n\n`, context);
 
   context = addBuffer(`type DefaultProps = {\n`, context);
   context = startBlock(context);
@@ -114,7 +111,7 @@ const BLACK_LIST_PROPS = {
   // children: true
 };
 
-const DEFAULT_PARAM_TYPE = `ReactNode`;
+const DEFAULT_PARAM_TYPE = `any`;
 
 const translateInference = (
   inference: Inference,

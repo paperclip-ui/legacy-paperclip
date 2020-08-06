@@ -1,0 +1,11 @@
+<style>
+  div {
+    color: red;
+    font-size: 24px;
+    font-family: sans-serif;
+  }
+</style>
+
+<div>
+  something
+</div>

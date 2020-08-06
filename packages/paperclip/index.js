@@ -1,7 +1,10 @@
 const { NativeEngine } = require("./native/node/paperclip");
-const { createEngine, ...rest } = require("./lib");
+const { createEngine, createEngineSync, ...rest } = require("./lib");
+
+const creator = (...args) => NativeEngine.new(...args);
 
 module.exports = {
-  createEngine: createEngine((...args) => NativeEngine.new(...args)),
+  createEngine: createEngine(creator),
+  createEngineSync: createEngineSync(creator),
   ...rest
 };

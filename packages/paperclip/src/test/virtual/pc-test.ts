@@ -6,7 +6,7 @@ import {
   stringifyLoadResult,
   noop
 } from "../utils";
-import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
+import { stringifyVirtualNode } from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
@@ -15,15 +15,12 @@ describe(__filename + "#", () => {
       "/module.pc": `<import src="/entry.pc">`
     };
     const engine = await createMockEngine(graph);
-    const p = new Promise<any>(resolve => {
-      engine.onEvent(event => {
-        if (event.kind === EngineEventKind.Error) {
-          resolve(event);
-        }
-      });
-    });
-    engine.run("/module.pc").catch(noop);
-    const err = await p;
+    let err;
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err.message).to.eql("Circular dependencies are not supported yet.");
   });
 
@@ -86,11 +83,13 @@ describe(__filename + "#", () => {
       "/module.pc": `<bad`
     };
     const engine = await createMockEngine(graph);
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Graph",
       uri: "/module.pc",
       info: {
@@ -112,11 +111,13 @@ describe(__filename + "#", () => {
       "/module.pc": `<bad!`
     };
     const engine = await createMockEngine(graph);
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Graph",
       uri: "/module.pc",
       info: {
@@ -138,11 +139,13 @@ describe(__filename + "#", () => {
       "/module.pc": `nothing to export!`
     };
     const engine = await createMockEngine(graph);
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 56, end: 64 },
@@ -162,11 +165,13 @@ describe(__filename + "#", () => {
       }
     });
 
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 19, end: 33 },
@@ -214,9 +219,12 @@ describe(__filename + "#", () => {
         `
       };
       const engine = await createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc");
-      const err = await e;
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -232,9 +240,12 @@ describe(__filename + "#", () => {
         `
       };
       const engine = await createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const err = await e;
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -251,9 +262,12 @@ describe(__filename + "#", () => {
         `
       };
       const engine = await createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const err = await e;
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -270,9 +284,12 @@ describe(__filename + "#", () => {
         `
       };
       const engine = await createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const err = await e;
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -290,9 +307,12 @@ describe(__filename + "#", () => {
         `
       };
       const engine = await createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const err = await e;
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -424,10 +444,13 @@ describe(__filename + "#", () => {
     };
 
     const engine = await createMockEngine(graph);
-    const p = waitForError(engine);
-    engine.run("/entry.pc").catch();
-    expect(await p).to.eql({
-      kind: "Error",
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+    expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 10, end: 18 },
