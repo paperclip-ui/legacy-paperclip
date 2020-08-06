@@ -48,6 +48,10 @@ Also, to make it easier you can that you include the build script in your `start
 
 ☝🏻 This will start the Paperclip compiler in parallel with your usual start script. 
 
+Here's a walkthrough: 
+
+![CRA walkthrough](/img/cra-walkthrough.gif)
+
 ### TypeScript
 
 If you're using TypeScript, you can generate Typed Definitions from Paperclip files by running:
