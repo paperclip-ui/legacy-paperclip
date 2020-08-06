@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { createMockEngine, stringifyLoadResult, waitForError } from "../utils";
+import { createMockEngine, stringifyLoadResult } from "../utils";
 
 import { noop } from "../../utils";
 
