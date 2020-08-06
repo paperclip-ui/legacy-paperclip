@@ -119,7 +119,7 @@ async function initBuild(
         return handleError(sheet.error, fullPath);
       }
 
-      const result = compile(
+      let code = compile(
         { ast, classNames: exports.style.classNames },
         fullPath,
         compilerOptions
@@ -131,25 +131,34 @@ async function initBuild(
           outputFilePath = outputFilePath.replace(".pc", "");
         }
         const uri = new url.URL(outputFilePath);
-        console.log(
-          "Writing %s",
-          path.relative(process.cwd(), url.fileURLToPath(uri))
-        );
-        fs.writeFileSync(uri, result);
 
         if (!compilerOptions.definition) {
           const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
-          console.log("Writing %s", cssFilePath);
+          const basename = path.basename(url.fileURLToPath(cssFilePath));
+
+          console.log(
+            "Writing %s",
+            path.relative(process.cwd(), url.fileURLToPath(cssFilePath))
+          );
+
           fs.writeFileSync(
             new url.URL(cssFilePath),
             stringifyCSSSheet(sheet, { protocol: "file://" })
           );
+
+          code = `import "./${basename}"\n\n` + code;
         }
+
+        console.log(
+          "Writing %s",
+          path.relative(process.cwd(), url.fileURLToPath(uri))
+        );
+        fs.writeFileSync(uri, code);
       } else {
         console.log("Compiling %s", relativePath);
 
         // Keep me for stdout
-        console.log(result);
+        console.log(code);
       }
     } catch (e) {
       if (e.location) {
