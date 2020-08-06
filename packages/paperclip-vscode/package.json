@@ -1,13 +1,20 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "14.1.4",
+  "version": "14.1.10",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
-  "description": "A language for building UI primitives",
+  "keywords": [
+    "React",
+    "CSS",
+    "HTML",
+    "visual",
+    "preview",
+    "realtime"
+  ],
+  "description": "Use plain HTML & CSS to build web UIs visually",
   "homepage": "http://paperclip.dev",
   "icon": "assets/logo.png",
-  "preview": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/crcn/paperclip.git"
