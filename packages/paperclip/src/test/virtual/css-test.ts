@@ -33,11 +33,14 @@ describe(__filename + "#", () => {
       }
     });
 
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      console.log(e);
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 59, end: 91 },
@@ -73,11 +76,13 @@ describe(__filename + "#", () => {
         </style>`
       };
       const engine = await createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
@@ -117,11 +122,13 @@ describe(__filename + "#", () => {
         </style>`
       };
       const engine = await createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 84, end: 85 },
@@ -137,11 +144,13 @@ describe(__filename + "#", () => {
         </style>`
       };
       const engine = await createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 48 },
@@ -159,11 +168,13 @@ describe(__filename + "#", () => {
         </style>`
       };
       const engine = await createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
@@ -185,11 +196,13 @@ describe(__filename + "#", () => {
         </style>`
       };
       const engine = await createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 84, end: 89 },
@@ -210,11 +223,13 @@ describe(__filename + "#", () => {
         </style>`
       };
       const engine = await createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 98, end: 103 },

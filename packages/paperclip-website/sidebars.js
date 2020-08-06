@@ -24,7 +24,8 @@ module.exports = {
     Integrations: [
       "configure-webpack",
       "configure-typescript",
-      "configure-percy"
+      "configure-percy",
+      "configure-jest"
     ]
   }
 };

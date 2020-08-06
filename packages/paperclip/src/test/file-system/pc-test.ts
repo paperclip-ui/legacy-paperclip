@@ -2,12 +2,7 @@ import * as path from "path";
 import * as url from "url";
 import { expect } from "chai";
 import { createEngine } from "../../../";
-import {
-  stringifyLoadResult,
-  TEST_FIXTURE_DIRECTORY,
-  waitForError,
-  noop
-} from "../utils";
+import { stringifyLoadResult, TEST_FIXTURE_DIRECTORY } from "../utils";
 
 describe(__filename + "#", () => {
   it("Can load an entry that has an import", async () => {
@@ -26,15 +21,20 @@ describe(__filename + "#", () => {
 
   it("Won't load module src where the casing is incorrect", async () => {
     const e = await createEngine();
-    const ep = waitForError(e);
-    e.run(
-      url
-        .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc"))
-        .toString()
-    ).catch(noop);
-    const error = await ep;
-    expect(error.errorKind).to.eql("Graph");
-    expect(error.info.message).to.eql("import not found");
+
+    let err;
+    try {
+      e.run(
+        url
+          .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc"))
+          .toString()
+      );
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err.errorKind).to.eql("Graph");
+    expect(err.info.message).to.eql("import not found");
   });
 
   it("Displays an error for 404 CSS url", async () => {

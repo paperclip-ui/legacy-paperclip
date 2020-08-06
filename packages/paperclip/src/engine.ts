@@ -56,11 +56,7 @@ export class Engine {
   private _rendered: Record<string, LoadedData> = {};
   private _io: EngineIO;
 
-  constructor(
-    private _native: any,
-    private _options: EngineOptions = {},
-    private _onCrash: (err) => void = noop
-  ) {
+  constructor(private _native: any, private _onCrash: (err) => void = noop) {
     // only one native listener to for buffer performance
     this._native.add_listener(this._dispatch);
 
@@ -202,13 +198,13 @@ export class Engine {
     return deps;
   }
 
-  async run(uri: string): Promise<LoadedData> {
+  run(uri: string): LoadedData {
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
-      return Promise.reject(result.error);
+      throw result.error;
     }
 
-    return this._waitForLoadedData(uri);
+    return this._rendered[uri];
   }
   private _tryCatch = <TRet>(fn: () => TRet) => {
     try {
@@ -256,7 +252,6 @@ export const createEngine = createNativeEngine => async (
   const { readFile, fileExists, resolveFile } = getIOOptions(options);
   return new Engine(
     await createNativeEngine(readFile, fileExists, resolveFile),
-    options,
     onCrash
   );
 };
@@ -268,7 +263,6 @@ export const createEngineSync = createNativeEngine => (
   const { readFile, fileExists, resolveFile } = getIOOptions(options);
   return new Engine(
     createNativeEngine(readFile, fileExists, resolveFile),
-    options,
     onCrash
   );
 };
