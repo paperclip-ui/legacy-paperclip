@@ -13,7 +13,7 @@ export const typescript = {
   prepare() {
     return {
       [GeneratorKind.Node]: {
-        devDependencies: ["typescript"]
+        devDependencies: ["typescript", "ts-loader"]
       },
       [GeneratorKind.Webpack]: {
         rules: `{

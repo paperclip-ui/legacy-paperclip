@@ -3,6 +3,7 @@ export enum GeneratorKind {
   Webpack,
   React,
   TypeScript,
+  JavaScript,
   Root,
   Percy
 }
