@@ -76,7 +76,7 @@ export const node = {
       },
       [
         useTypescript ? typescript : null,
-        isNewDirectory ? null : webpack,
+        isNewDirectory ? webpack : null,
         react
       ].filter(Boolean)
     ];

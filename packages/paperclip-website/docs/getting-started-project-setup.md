@@ -6,7 +6,7 @@ sidebar_label: Project Setup
 
 For **existing projects**, you'll need to manually configure Paperclip. If you're starting fresh, just follow the steps in the [installation doc](getting-started-installation.md#new-projects). 
 
-First up, be sure to have run `npx paperclip init` in your existing project directory. This will install necessary dependencies & also include a `paperclip.config.json` that's required.
+First up, be sure to have run `npx paperclip-cli init` in your existing project directory. This will install necessary dependencies & also include a `paperclip.config.json` that's required.
 
 ### Webpack Setup
 
