@@ -1,5 +1,5 @@
 {
-  "name": "paperclip-jest",
+  "name": "jest-paperclip",
   "version": "14.1.11",
   "description": "",
   "main": "lib/index.js",
