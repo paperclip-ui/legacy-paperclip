@@ -76,7 +76,11 @@ export const node = {
         license: ""
       },
       [
-        useTypescript ? typescript : javascript,
+        useTypescript
+          ? typescript
+          : useTypescript === false
+          ? javascript
+          : null,
         isNewDirectory ? webpack : null,
         react
       ].filter(Boolean)
@@ -126,8 +130,6 @@ export const node = {
     };
   },
   async install({ packageManager, cwd, devDependencies, dependencies }) {
-    console.info("🔗 Installing dependencies");
-
     const pm = packageManager;
 
     await this._installDeps(pm, dependencies, false, cwd);
