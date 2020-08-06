@@ -48,6 +48,8 @@ Paperclip files are just like any ordinary component file, so all we need to do 
 
 ```tsx
 import * as React from "react";
+
+// this will be "./GroceryList.pc.js" if you're using CRA.
 import * as styles from "./GroceryList.pc";
 
 export function GroceryList() {

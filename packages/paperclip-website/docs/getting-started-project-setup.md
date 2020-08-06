@@ -17,6 +17,37 @@ Documentation for this can be found in the [Webpack Integration](configure-webpa
 - `css-loader` - required with style-loader.
 - `file-loader` - required for CSS files that have `url()`'s in them & other media. 
 
+
+### Create React App (CRA)
+
+If you're using CRA, then just run `paperclip build --write` in your project directory to emit JS files that you can then import into your app. After that, you can import any component like so: 
+
+```javascript
+import * as myComponentStyles from "./my-component.pc.js";
+
+<myComponentStyles.MyComponent />
+```
+
+I'd recommend that you include this in your `.gitignore` too:
+
+```sh
+*.pc.js
+*.pc.css
+```
+
+Also, to make it easier you can that you include the build script in your `start` script like so:
+
+```json
+{
+  "name": "my-app-name",
+  "scripts": {
+    "start": "react-scripts start & paperclip build --watch --write"
+  }
+}
+```
+
+☝🏻 This will start the Paperclip compiler in parallel with your usual start script. 
+
 ### TypeScript
 
 If you're using TypeScript, you can generate Typed Definitions from Paperclip files by running:
