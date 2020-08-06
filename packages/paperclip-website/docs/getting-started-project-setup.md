@@ -20,7 +20,7 @@ Documentation for this can be found in the [Webpack Integration](configure-webpa
 
 ### Create React App (CRA)
 
-If you're using CRA, then just run `yarn paperclip build --write` in your project directory to emit JS files that you can then import into your app. After that, you can import any component like so: 
+If you're using CRA, then just run `yarn paperclip build --write` in your project directory to emit JS files. After that, you can import any component like so: 
 
 ```javascript
 import * as myComponentStyles from "./my-component.pc.js";
@@ -35,7 +35,7 @@ I'd recommend that you include this in your `.gitignore` too:
 *.pc.css
 ```
 
-Also, to make it easier you can that you include the build script in your `start` script like so:
+Also, to make it easier you can include the build script in your `start` script like so:
 
 ```json
 {
