@@ -11,7 +11,7 @@ Paperclip's installation is the same for **new** and **existing** projects. If y
 To install Paperclip in an existing project, `cd` into your project directory, then run:
 
 ```bash
-npx paperclip init
+npx paperclip-cli init
 ```
 
 This will install all of the necessary dependencies for Paperclip. After that, you'll need to **manually
@@ -22,7 +22,7 @@ configure your project**. The next page will help you do that.
 For new projects, just run:
 
 ```sh
-mkdir my-new-project && cd my-new-project && npx paperclip init
+mkdir my-new-project && cd my-new-project && npx paperclip-cli init
 ```
 
 You'll be asked some questions, then a new project will be generated for you. After that, just run:
