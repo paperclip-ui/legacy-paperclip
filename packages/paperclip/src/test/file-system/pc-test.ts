@@ -2,7 +2,7 @@ import * as path from "path";
 import * as url from "url";
 import { expect } from "chai";
 import { createEngine } from "../../../";
-import { stringifyLoadResult, TEST_FIXTURE_DIRECTORY } from "../utils";
+import { stringifyLoadResult, TEST_FIXTURE_SRC_DIRECTORY } from "../utils";
 
 describe(__filename + "#", () => {
   it("Can load an entry that has an import", async () => {
@@ -10,7 +10,9 @@ describe(__filename + "#", () => {
     const result = stringifyLoadResult(
       await e.run(
         url
-          .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "good-import.pc"))
+          .pathToFileURL(
+            path.join(TEST_FIXTURE_SRC_DIRECTORY, "good-import.pc")
+          )
           .toString()
       )
     );
@@ -26,7 +28,7 @@ describe(__filename + "#", () => {
     try {
       e.run(
         url
-          .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "bad-import.pc"))
+          .pathToFileURL(path.join(TEST_FIXTURE_SRC_DIRECTORY, "bad-import.pc"))
           .toString()
       );
     } catch (e) {
@@ -44,7 +46,9 @@ describe(__filename + "#", () => {
     try {
       await e.run(
         url
-          .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "bad-css-url.pc"))
+          .pathToFileURL(
+            path.join(TEST_FIXTURE_SRC_DIRECTORY, "bad-css-url.pc")
+          )
           .toString()
       );
     } catch (e) {
@@ -61,7 +65,7 @@ describe(__filename + "#", () => {
 
     const result = await e.run(
       url
-        .pathToFileURL(path.join(TEST_FIXTURE_DIRECTORY, "mod-import.pc"))
+        .pathToFileURL(path.join(TEST_FIXTURE_SRC_DIRECTORY, "mod-import.pc"))
         .toString()
     );
 
