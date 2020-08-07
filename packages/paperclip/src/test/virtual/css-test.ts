@@ -647,4 +647,24 @@ describe(__filename + "#", () => {
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql("<style>[class]._80f4925f_div { color:blue; }</style>");
   });
+
+  // Addresses https://github.com/crcn/paperclip/issues/417
+  it("properly renders global * selector", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      div {
+        > :global(*) {
+          color: blue;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>div[data-pc-80f4925f] { } div[data-pc-80f4925f] > * { color:blue; }</style>"
+    );
+  });
 });

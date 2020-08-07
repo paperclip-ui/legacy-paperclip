@@ -475,7 +475,11 @@ fn stringify_element_selector(
   };
 
   let scoped_selector_text = match selector {
-    ast::Selector::AllSelector => format!("{}", scope_selector),
+    ast::Selector::AllSelector => format!("{}", if scope_selector == "" { 
+      "*".to_string()
+    } else {
+      scope_selector
+    }),
     ast::Selector::None => "".to_string(),
     ast::Selector::Class(selector) => {
       // Don't hate me for adding [class] -- it's the browsers fault, I promise. Each
