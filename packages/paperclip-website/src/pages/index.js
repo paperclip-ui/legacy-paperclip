@@ -129,7 +129,7 @@ function Home() {
         <styles.VariousFeatures>
           <styles.VariousFeatureItem
             iconName="chaotic-1"
-            title="No global styles"
+            title="Isolated styles"
             description="Styles are only applied to the documents they're defined in, so you don't have to worry about them leaking out."
           />
           <styles.VariousFeatureItem
