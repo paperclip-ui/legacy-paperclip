@@ -9,17 +9,17 @@ You can include Paperclip UIs directly in your Jest tests.
 ## Installation
 
 ```sh
-npm install paperclip-jest --save-dev
+npm install jest-paperclip --save-dev
 ```
 
 ## package.json Config
 
-After installing the `paperclip-jest` module, You'll need to update the `jest.transform` property like so:
+After installing the `jest-paperclip` module, You'll need to update the `jest.transform` property like so:
 
 ```json
 "jest": {
   "transform": {
-    "^.+\\.pc$": "paperclip-jest"
+    "^.+\\.pc$": "jest-paperclip"
   }
 }
 ```
