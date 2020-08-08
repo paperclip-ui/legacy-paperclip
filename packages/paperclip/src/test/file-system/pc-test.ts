@@ -69,8 +69,8 @@ describe(__filename + "#", () => {
         .toString()
     );
 
-    expect(stringifyLoadResult(result).replace(/ data-pc-[^>\s]+/, "")).to.eql(
-      `<style></style><div>Some Module <div data-pc-23518f1a>from test.pc </div></div>`
+    expect(stringifyLoadResult(result).replace(/ data-pc-[^>\s]+/g, "")).to.eql(
+      `<style></style><div>Some Module <div>from test.pc </div></div>`
     );
   });
 });
