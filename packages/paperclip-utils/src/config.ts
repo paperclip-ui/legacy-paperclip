@@ -10,4 +10,6 @@ export type PaperclipConfig = {
   sourceDirectory: string;
 
   compilerOptions: CompilerOptions;
+
+  moduleDirectories?: string[];
 };
