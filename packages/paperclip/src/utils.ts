@@ -4,8 +4,10 @@ import * as url from "url";
 import {
   findPCConfigUrl,
   PaperclipConfig,
-  paperclipSourceGlobPattern
+  paperclipSourceGlobPattern,
+  PC_CONFIG_FILE_NAME
 } from "paperclip-utils";
+import * as fs from "fs";
 
 // TODO - move to paperclip-utils as soon as we have a glob library that can handle virtual file systems
 const findResourcesFromConfig = (
@@ -61,10 +63,44 @@ const findResourcesFromConfig = (
 
 export const resolveAllPaperclipFiles = findResourcesFromConfig(
   (config, cwd) => {
-    return glob.sync(paperclipSourceGlobPattern(config.sourceDirectory), {
-      cwd,
-      realpath: true
-    });
+    const pcSources = glob.sync(
+      paperclipSourceGlobPattern(config.sourceDirectory),
+      {
+        cwd,
+        realpath: true
+      }
+    );
+
+    if (config.moduleDirectories) {
+      for (const modulesDirname of config.moduleDirectories) {
+        for (const dirname of fs.readdirSync(modulesDirname)) {
+          const moduleDir = path.join(cwd, modulesDirname, dirname);
+
+          const pcConfigPath = path.join(moduleDir, PC_CONFIG_FILE_NAME);
+          console.log(pcConfigPath);
+          if (!fs.existsSync(pcConfigPath)) {
+            continue;
+          }
+          const moduleConfig: PaperclipConfig = JSON.parse(
+            fs.readFileSync(pcConfigPath, "utf8")
+          );
+
+          const moduleSources = glob.sync(
+            paperclipSourceGlobPattern(
+              path.join(moduleDir, moduleConfig.sourceDirectory)
+            ),
+            {
+              cwd,
+              realpath: true
+            }
+          );
+
+          pcSources.push(...moduleSources);
+        }
+      }
+    }
+
+    return pcSources;
   }
 );
 export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
@@ -96,6 +132,15 @@ const getModulePath = (
 
     if (!fromDir || fromDir.indexOf(nextDirectory) === -1) {
       return modulePath;
+    }
+  }
+
+  if (config.moduleDirectories) {
+    for (const moduleDirectory of config.moduleDirectories) {
+      const fullModulePath = path.join(configDir, moduleDirectory);
+      if (fullPath.indexOf(fullModulePath) === 0) {
+        return fullPath.replace(fullModulePath, "").substr(1);
+      }
     }
   }
 

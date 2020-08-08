@@ -1,0 +1,5 @@
+<import src="component.pc" as="component">
+
+<component>
+  something
+</component>

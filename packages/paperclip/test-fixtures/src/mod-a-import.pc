@@ -1,1 +1,4 @@
+
 <import src="module-a/src/component.pc" as="component">
+
+<component />

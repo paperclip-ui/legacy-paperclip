@@ -1,3 +1,7 @@
+<import src="test.pc" as="test">
 <div export component as="default">
   Some Module
+  <test />
 </div>
+
+<default />

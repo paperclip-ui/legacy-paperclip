@@ -60,17 +60,17 @@ describe(__filename + "#", () => {
     expect(err.message).to.contain("Unable to resolve file: /not/found.png");
   });
 
-  it("can resolve module using module path syntax", async () => {
+  it("can resolve a pc file from a a module", async () => {
     const e = await createEngine();
 
     const result = await e.run(
       url
-        .pathToFileURL(path.join(TEST_FIXTURE_SRC_DIRECTORY, "mod-import.pc"))
+        .pathToFileURL(path.join(TEST_FIXTURE_SRC_DIRECTORY, "mod-a-import.pc"))
         .toString()
     );
 
     expect(stringifyLoadResult(result).replace(/ data-pc-[^>\s]+/, "")).to.eql(
-      `<style></style><div>I'm a secret! </div>`
+      `<style></style><div>Some Module <div data-pc-23518f1a>from test.pc </div></div>`
     );
   });
 });
