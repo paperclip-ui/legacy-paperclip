@@ -151,7 +151,7 @@ function Home() {
         </styles.VariousFeatures>
         <styles.BigFeature
           title="Realtime previews in VS Code"
-          description="The VS Code extension comes with realtime previews, so you can iterate faster on your UIs."
+          description="The VS Code extension comes with realtime previews, so you can spend less time tweaking CSS, and more time on other parts of your codebase that matter."
           preview={<img src="img/button-demo.gif" />}
           ctaText="View the extension"
           ctaHref={"https://paperclip.dev/docs"}
