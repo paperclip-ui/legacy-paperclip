@@ -104,7 +104,7 @@ Here's a peek at what's planned for Paperclip:
 
 - Multiple compiler targets so that you can re-use your Paperclip UIs in different languages & frameworks
 - Extension for Atom, Sublime, and other editors
-- Remote UI preview that you can use across devises & browsers (such as BrowserStack).
+- Remote UI preview that you can use across devices & browsers (such as BrowserStack).
 - Storybook integration
 - UI editor controls:
   - CSS animation editor
