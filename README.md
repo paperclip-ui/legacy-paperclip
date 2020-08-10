@@ -5,7 +5,7 @@
 
 # <img src="assets/logo.png" width="230">
 
-A language for creating UI primitives fast, and with fewer CSS bugs.
+A language for creating UI primitives faster, and with fewer CSS bugs.
 
 ![alt button demo](assets/button-demo.gif)
 
