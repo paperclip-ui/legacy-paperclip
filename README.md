@@ -11,7 +11,7 @@ Paperclip is a language for creating UI primitives.
 
 ### Why? 
 
-I find that a lot of time is wasted tweaking CSS because of tooling bottlenecks (slow browser refreshes, large bundle sizes, etc), where that time could be better spent on other tasks. Large projects are also problematic since CSS is notoriously difficult to test & is usually manual. Paperclip was created to address these issues, and is centered around speed, safety, and accuracy of developing web interfaces. Here's how:
+I find that a lot of time is wasted tweaking CSS because of tooling bottlenecks (slow browser refreshes, large bundle sizes, etc), where that time could be better spent on other tasks. Large projects are also problematic since CSS is notoriously difficult to test & is usually manually done. Paperclip was created to address these issues, and is centered around speed, safety, and accuracy of developing web interfaces. Here's how:
 
 - **Realtime visual editing** - Paperclip's VS Code extension comes with a realtime preview, so you can iterate faster in your UIs, and spend less time tweaking CSS.
 - **Automatic visual regression testing** - Just run the `percy-paperclip`, and you'll get visual snapshots of every UI state defined in Paperclip, so you can worry less about breaking CSS changes.
