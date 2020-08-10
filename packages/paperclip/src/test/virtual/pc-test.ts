@@ -6,7 +6,7 @@ import {
   stringifyLoadResult,
   noop
 } from "../utils";
-import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
+import { stringifyVirtualNode } from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
@@ -14,23 +14,20 @@ describe(__filename + "#", () => {
       "/entry.pc": `<import src="/module.pc">`,
       "/module.pc": `<import src="/entry.pc">`
     };
-    const engine = createMockEngine(graph);
-    const p = new Promise<any>(resolve => {
-      engine.onEvent(event => {
-        if (event.kind === EngineEventKind.Error) {
-          resolve(event);
-        }
-      });
-    });
-    engine.run("/module.pc").catch(noop);
-    const err = await p;
+    const engine = await createMockEngine(graph);
+    let err;
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err.message).to.eql("Circular dependencies are not supported yet.");
   });
 
   it("dynamic attributes work", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Component" class="primary" class:alt="alt" class:alt2>
+        <div component as="Component" class="primary" class:alt="alt" class:alt2="alt2">
           {children}
         </div>
 
@@ -39,7 +36,7 @@ describe(__filename + "#", () => {
         <Component alt2 />
       `
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const { preview } = await engine.run("/entry.pc");
     const buffer = `${stringifyVirtualNode(preview)}`;
 
@@ -65,7 +62,7 @@ describe(__filename + "#", () => {
         </style>
       `
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
 
     const buffer = `${stringifyLoadResult(result)}`;
@@ -85,12 +82,14 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `<bad`
     };
-    const engine = createMockEngine(graph);
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    const engine = await createMockEngine(graph);
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Graph",
       uri: "/module.pc",
       info: {
@@ -111,12 +110,14 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `<bad!`
     };
-    const engine = createMockEngine(graph);
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    const engine = await createMockEngine(graph);
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Graph",
       uri: "/module.pc",
       info: {
@@ -137,12 +138,14 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `nothing to export!`
     };
-    const engine = createMockEngine(graph);
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    const engine = await createMockEngine(graph);
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 56, end: 64 },
@@ -156,21 +159,23 @@ describe(__filename + "#", () => {
         <img src="/not/found.png">
       `
     };
-    const engine = createMockEngine(graph, noop, {
-      resolveFile(uri) {
+    const engine = await createMockEngine(graph, noop, {
+      resolveFile() {
         return null;
       }
     });
 
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 19, end: 33 },
-      message: "Unable to resolve file."
+      message: "Unable to resolve file: /not/found.png from /entry.pc"
     });
   });
 
@@ -181,7 +186,7 @@ describe(__filename + "#", () => {
           <div a={<div />}></div>
         `
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const { preview } = await engine.run("/entry.pc");
       const buffer = `${stringifyVirtualNode(preview)}`;
 
@@ -199,7 +204,7 @@ describe(__filename + "#", () => {
           <Component class="a">b</Component>
         `
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const { preview } = await engine.run("/entry.pc");
       const buffer = `${stringifyVirtualNode(preview)}`;
 
@@ -213,10 +218,13 @@ describe(__filename + "#", () => {
           <a {class}></a>
         `
       };
-      const engine = createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc");
-      const err = await e;
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -231,10 +239,13 @@ describe(__filename + "#", () => {
           <a a={class}></a>
         `
       };
-      const engine = createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const err = await e;
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -250,10 +261,13 @@ describe(__filename + "#", () => {
           <a {...class}></a>
         `
       };
-      const engine = createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const err = await e;
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -269,10 +283,13 @@ describe(__filename + "#", () => {
           {a}
         `
       };
-      const engine = createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const err = await e;
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -285,14 +302,17 @@ describe(__filename + "#", () => {
     xit("Displays error for class binding outside of component", async () => {
       const graph = {
         "/entry.pc": `
-          <div class:a>
+          <div class:a="a">
           </div>
         `
       };
-      const engine = createMockEngine(graph);
-      const e = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const err = await e;
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
       expect(err).to.eql({
         kind: "Error",
         errorKind: "Runtime",
@@ -310,7 +330,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(result).to.eql(`<style></style> abc`);
 
@@ -364,7 +384,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(result).to.eql(
       `<style></style><div data-pc-139cec8e>abc cde </div>`
@@ -423,11 +443,14 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
-    const p = waitForError(engine);
-    engine.run("/entry.pc").catch();
-    expect(await p).to.eql({
-      kind: "Error",
+    const engine = await createMockEngine(graph);
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+    expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 10, end: 18 },
@@ -442,8 +465,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
-    const p = waitForError(engine);
+    const engine = await createMockEngine(graph);
 
     expect(stringifyLoadResult(await engine.run("/entry.pc"))).to.eql(
       "<style></style> ×"
@@ -453,7 +475,7 @@ describe(__filename + "#", () => {
   it("Returns component properties", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" class:a {f} {b} className="{c}">
+        <div component as="Test" class:a="a" {f} {b} className="{c}">
           {d}
           {e?}
           {f?}
@@ -463,7 +485,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
 
     expect(result.exports.components).to.eql({
@@ -515,7 +537,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
 
     let err;
 
@@ -548,7 +570,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
 
     let err;
 
@@ -576,7 +598,7 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
 
     let err;
 
@@ -596,5 +618,413 @@ describe(__filename + "#", () => {
         location: { start: 14, end: 15 }
       }
     });
+  });
+
+  it("Can apply a class to {className?} without needing >>>", async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" {className}>
+        </div>
+        <Test className="ok" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_80f4925f_ok ok" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can apply a class to className={className?} without needing >>>`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" className={className?}>
+        </div>
+        <Test className="ok" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_80f4925f_ok ok" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can apply a class to className="a {className?}" without needing >>>`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" className="a {className?}">
+        </div>
+        <Test className="ok" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_80f4925f_a a _80f4925f_ok ok" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Doesn't apply scope if >>> is provided`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="module">
+        <module.Test className=">>>ok" />
+      `,
+      "/module.pc": `
+        <div export component as="Test" className="a {className?}">
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div className="_139cec8e_a a _80f4925f_ok ok" data-pc-139cec8e></div>`
+    );
+  });
+
+  // addresses https://github.com/crcn/paperclip/issues/336
+  it(`Dynamic styles are ommitted if their associated prop is undefined`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" style="--color: {color?}; --background: {background?};">
+        </div>
+
+        <Test color="a" />
+        <Test background="b" />
+        <Test color="a" background="b" />
+        <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style></style><div data-pc-80f4925f style="--color: a;"></div><div data-pc-80f4925f style="--background: b;"></div><div data-pc-80f4925f style="--color: a; --background: b;"></div><div data-pc-80f4925f></div>`
+    );
+  });
+
+  // addresses https://github.com/crcn/paperclip/issues/362
+  it(`Can have class names with underscores in them`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          .its_a_match {
+
+          }
+        </style>
+        <div className="its_a_match"></div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(buffer).to.eql(
+      `<style>[class]._80f4925f_its_a_match { }</style><div className="_80f4925f_its_a_match its_a_match" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Errors if style block isn't defined at the root`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div>
+          <style>
+          </style>
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+      const ast = engine.getLoadedAst("/entry.pc");
+      console.log(JSON.stringify(ast, null, 2));
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 25, end: 51 },
+      message: "Style blocks needs to be defined at the root."
+    });
+  });
+
+  // Addresses https://github.com/crcn/paperclip/issues/299
+  it(`Errors if component is not defined at the root`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div>
+          <div component as="Test">
+          </div>
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+      const ast = engine.getLoadedAst("/entry.pc");
+      console.log(JSON.stringify(ast, null, 2));
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 25, end: 67 },
+      message: "Components need to be defined at the root."
+    });
+  });
+
+  it(`Errors if component defined in element within a slot`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div test={<div component as="blarg" />}>
+          
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+      const ast = engine.getLoadedAst("/entry.pc");
+      console.log(JSON.stringify(ast, null, 2));
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 20, end: 48 },
+      message: "Components need to be defined at the root."
+    });
+  });
+
+  // Addresses https://github.com/crcn/paperclip/issues/372
+  it(`Displays an error if a shadow pierce import is missing`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div className=">>>tw.test">
+          
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 24, end: 35 },
+      message: "Reference not found."
+    });
+  });
+
+  // addresses: https://github.com/crcn/paperclip/issues/389
+  it(`Displays an error if a class name is not found for shadow pierce`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div className=">>>tw.test">
+          
+        </div>
+      `,
+      "/module.pc": `
+        <style>
+
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 67, end: 78 },
+      message: "Class name not found."
+    });
+  });
+
+  it(`Display an error if class name is private for shadow pierce`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div className=">>>tw.test">
+          
+        </div>
+      `,
+      "/module.pc": `
+        <style>
+          .test {
+
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 67, end: 78 },
+      message: "This class reference is private."
+    });
+  });
+
+  it(`Can use a public class pierce`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div className=">>>tw.test">
+          
+        </div>
+      `,
+      "/module.pc": `
+        <style>
+          @export {
+            .test {
+
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test test" data-pc-80f4925f></div>`
+    );
+  });
+  it(`Can use a public class pierce on a component`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div export component as="Test" className=">>>tw.test">
+          
+        </div>
+        <Test />
+      `,
+      "/module.pc": `
+        <style>
+          @export {
+            .test {
+
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test test" data-pc-80f4925f></div>`
+    );
+  });
+  it(`Can use a component that's referencing a public class`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="mod">
+        <mod.Test />
+      `,
+      "/module.pc": `
+        <import src="./module2.pc" as="tw">
+        <div export component as="Test" className=">>>tw.test">
+        </div>
+      `,
+      "/module2.pc": `
+        <style>
+          @export {
+            .test {
+
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._11a847ab_test { }</style><div className="_11a847ab_test test" data-pc-139cec8e></div>`
+    );
+  });
+
+  it(`Prefixes classnames if they come after shadow pierce`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div export component as="Test" className=">>>tw.test checkbox">
+          
+        </div>
+        <Test />
+      `,
+      "/module.pc": `
+        <style>
+          @export {
+            .test {
+
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test test _80f4925f_checkbox checkbox" data-pc-80f4925f></div>`
+    );
   });
 });

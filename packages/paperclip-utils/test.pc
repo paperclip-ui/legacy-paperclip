@@ -1,10 +1,15 @@
 <style>
-  li {
-    color: rgb(99, 224, 15);
+  .test {
+    /* @include a; */
   }
+  /* @mixin a {
+    color: blue;
+    @include b;
+  }
+  @mixin b {
+    background: orange;
+  } */
 </style>
 
-<preview>
-  <self something="big list test" />
-</preview>
-dddddddfds
+<div className="test">
+</div>

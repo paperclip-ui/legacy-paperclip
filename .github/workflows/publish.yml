@@ -1,23 +1,27 @@
-name: Publish
+name: Publish Packages
 on:
   push:
     branches:
       - master
 jobs:
   publish-packages:
-    name: Publish packages
+    name: Publish NPM & Marketplaces
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: "12.x"
           registry-url: https://registry.npmjs.org/
       - uses: jetli/wasm-pack-action@v0.3.0
-      - run: yarn install
-      - run: yarn build
-      - run: yarn publish:packages
-      - run: yarn publish:marketplace
+      - run: npm install
+      - run: npm run build
+      - run: npm run publish:packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm install vsce
+      - run: npm run publish:marketplace
+        env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+
+          name: documentation

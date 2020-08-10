@@ -1,0 +1,11 @@
+<style>
+  :root {
+    --color-green-neon:   rgb(117, 255, 129);
+    --color-green-army:  rgb(51, 78, 26);
+    --color-green-neon-light:  rgb(181, 255, 186);
+
+    --color-grey-100: rgb(78, 78, 78);
+    --color-grey-light: rgb(153, 153, 153);
+    --color-white-almost: rgb(219, 219, 219);
+  }
+</style>

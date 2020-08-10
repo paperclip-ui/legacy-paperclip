@@ -1,5 +1,5 @@
 import { DOMFactory, Renderer } from "../renderer";
-import { Engine } from "paperclip";
+import { createEngine } from "paperclip";
 import * as path from "path";
 
 export const mockDOMFactory: DOMFactory = {
@@ -120,7 +120,7 @@ export type Graph = {
 };
 
 export const createMockEngine = (graph: Graph) =>
-  new Engine({
+  createEngine({
     io: {
       readFile: uri =>
         graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],

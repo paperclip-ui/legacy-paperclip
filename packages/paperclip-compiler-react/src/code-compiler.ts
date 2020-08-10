@@ -55,6 +55,7 @@ import { camelCase, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import { ClassNameExport } from "paperclip";
+import { connect } from "http2";
 
 const entities = new Html5Entities();
 type Config = {
@@ -135,7 +136,7 @@ const translateStyleSheet = (sheet: VirtSheet, context: TranslateContext) => {
   );
   context = addBuffer(
     `style.textContent = ${JSON.stringify(
-      stringifyCSSSheet(sheet, null).replace(/[\s\r\n\t]+/g, " ")
+      stringifyCSSSheet(sheet).replace(/[\s\r\n\t]+/g, " ")
     )};\n`,
     context
   );
@@ -174,6 +175,7 @@ const translateUtils = (ast: Node, context: TranslateContext) => {
   // context = translateStyledUtil(ast, context);
   context = translateGetDefaultUtil(context);
   context = translateCastStyleUtil(context);
+  context = translateClassNamesUtil(context);
 
   // KEEP ME: for logic
   // context = translateExtendsPropsUtil(ast, context);
@@ -229,12 +231,42 @@ const translateCastStyleUtil = (context: TranslateContext) => {
   );
   context = startBlock(context);
   context = addBuffer(`const [key, value] = keyValue.split(":");\n`, context);
-  context = addBuffer(`obj[key.trim()] = value.trim();\n`, context);
+  context = addBuffer(
+    `if (!value || value === "undefined") return obj;\n`,
+    context
+  );
+  context = addBuffer(`const trimmedValue = value.trim();\n`, context);
+
+  // partially https://github.com/crcn/paperclip/issues/336
+  context = addBuffer(
+    `if (trimmedValue === "undefined") return obj;\n`,
+    context
+  );
+  context = addBuffer(`obj[key.trim()] = value && value.trim();\n`, context);
   context = addBuffer(`return obj;\n`, context);
   context = endBlock(context);
   context = addBuffer(`}, {});\n`, context);
   context = endBlock(context);
   context = addBuffer(`};\n\n`, context);
+  return context;
+};
+
+const translateClassNamesUtil = (context: TranslateContext) => {
+  context = addBuffer(`const getClassName = (className) => {\n`, context);
+  context = startBlock(context);
+  // context = addBuffer(`return classNames.map(className => {\n`, context);
+  // context = startBlock(context);
+  context = addBuffer(
+    `return className ? "_${getStyleScopeId(
+      context.fileUri
+    )}_" + className + " " + className : "";\n`,
+    context
+  );
+  // context = endBlock(context);
+  // context = addBuffer(`}).join(" ");\n`, context);
+  context = endBlock(context);
+  context = addBuffer(`};\n\n`, context);
+
   return context;
 };
 
@@ -586,7 +618,7 @@ const translateChildren = (
 };
 
 const isSpecialPropName = (name: string) =>
-  /^on/.test(name) || name === "checked" || name === "style";
+  /^on/.test(name) || name === "checked" || name === "style" || name === "ref";
 
 const collectPropertyBoundAttributes = (element: Element) =>
   element.attributes.reduce((record, attr) => {
@@ -732,7 +764,16 @@ const translateAttribute = (
       context
     );
 
+    const name = RENAME_PROPS[property.name] || property.name;
+
+    if (name === "className") {
+      context = addBuffer("getClassName(", context);
+    }
+
     context = addBuffer(`${value}`, context);
+    if (name === "className") {
+      context = addBuffer(")", context);
+    }
     context = addPropertyBoundAttribute(
       element,
       property.name,
@@ -764,12 +805,20 @@ const translateAttributeValue = (
     return addBuffer("true", context);
   }
   if (value.attrValueKind === AttributeValueKind.Slot) {
-    return translateStatment(
+    if (name === "className") {
+      context = addBuffer("getClassName(", context);
+    }
+    context = translateStatment(
       value.script,
       false,
       isPropOnNativeElement && !isSpecialPropName(name),
       context
     );
+    if (name === "className") {
+      context = addBuffer(")", context);
+    }
+
+    return context;
   } else if (value.attrValueKind === AttributeValueKind.String) {
     let strValue = JSON.stringify(value.value);
     if (name === "src") {
@@ -801,7 +850,13 @@ const translateAttributeValue = (
           context
         );
       } else if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
+        if (name === "className") {
+          context = addBuffer(`getClassName(`, context);
+        }
         context = translateStatment(part, false, false, context);
+        if (name === "className") {
+          context = addBuffer(`)`, context);
+        }
       }
 
       if (i < length - 1) {
@@ -837,7 +892,8 @@ const prefixWthStyleScopes = (
         if (!scopeFilePath) {
           // Just some information to communicate that the class doesn't do anything.
           scopeFilePath = "noop";
-          console.error(`import "${importId}" is not defined`);
+
+          console.warn(`import "${importId}" is not defined`);
         }
       } else {
         scopeFilePath = context.fileUri;

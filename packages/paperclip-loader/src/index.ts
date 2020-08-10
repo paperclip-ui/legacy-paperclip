@@ -3,32 +3,33 @@
 import * as url from "url";
 import {
   Engine,
+  createEngine,
   PaperclipConfig,
   stringifyCSSSheet,
   PC_CONFIG_FILE_NAME
 } from "paperclip";
+import { getPrettyMessage } from "paperclip-cli";
 import * as path from "path";
 import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import * as VirtualModules from "webpack-virtual-modules";
+import { LoadedData } from "paperclip/src";
 
 let _engine: Engine;
 
 type Options = {
   configFile: string;
-  emitCss?: boolean;
+  resourceProtocol?: string;
 };
 
-const getEngine = (): Engine => {
+const getEngine = async (): Promise<Engine> => {
   if (_engine) {
     return _engine;
   }
-  return (_engine = new Engine({}));
+  return (_engine = await createEngine({}));
 };
 
 const virtualModuleInstances = new Map();
-
-const fixPath = path => path.replace(/\\/g, "/");
 
 let _loadedStyleFiles = {};
 
@@ -40,7 +41,7 @@ async function pcLoader(
   this.cacheable();
   const callback = this.async();
 
-  const { configFile = PC_CONFIG_FILE_NAME }: Options =
+  const { resourceProtocol, configFile = PC_CONFIG_FILE_NAME }: Options =
     loaderUtils.getOptions(this) || {};
 
   let config: PaperclipConfig;
@@ -52,15 +53,35 @@ async function pcLoader(
     throw new Error(`Config file could not be loaded: ${configFilePath}`);
   }
 
-  const engine = getEngine();
+  const engine = await getEngine();
   const compiler = require(resolve.sync(config.compilerOptions.name, {
     basedir: process.cwd()
   }));
+  let info: LoadedData;
+  let ast: any;
 
-  // need to update virtual content to bust the cache
-  await engine.updateVirtualFileContent(resourceUrl, source);
-  const ast = engine.parseContent(source);
-  const { sheet, exports } = await engine.run(resourceUrl);
+  try {
+    // need to update virtual content to bust the cache
+    await engine.updateVirtualFileContent(resourceUrl, source);
+    ast = engine.parseContent(source);
+
+    info = await engine.run(resourceUrl);
+  } catch (e) {
+    console.error("OFDSNFJDSNFBJDSKBFDSJKFBDSJKFBDSKJ");
+
+    // eesh 🙈
+    const info =
+      e && e.location ? e : e.info && e.info.location ? e.info : null;
+    if (info && info.location) {
+      console.error(getPrettyMessage(info, source, resourceUrl, process.cwd()));
+    }
+
+    return callback(
+      new Error("Could not compile. See further up for details.")
+    );
+  }
+
+  const { sheet, exports } = info;
 
   const styleCache = { ..._loadedStyleFiles };
   _loadedStyleFiles = styleCache;
@@ -71,7 +92,10 @@ async function pcLoader(
     config.compilerOptions
   );
 
-  const sheetCode = stringifyCSSSheet(sheet, null, resourceUrl);
+  const sheetCode = stringifyCSSSheet(sheet, {
+    uri: resourceUrl,
+    protocol: resourceProtocol
+  });
 
   const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);

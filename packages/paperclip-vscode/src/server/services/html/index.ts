@@ -195,6 +195,8 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       declaration.value.match(/#[^\s,;]+|(var)\(.*?\)/g) ||
       [];
 
+    let modelDecl = declaration.value;
+
     for (const color of colors) {
       let colorValue;
       if (/var\(.*?\)/.test(color)) {
@@ -214,7 +216,11 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
         continue;
       }
 
-      const colorIndex = declaration.value.indexOf(color);
+      const colorIndex = modelDecl.indexOf(color);
+
+      // ensure that color isn't there in case there is another instance
+      // in the string -- want to go through each one.
+      modelDecl = modelDecl.replace(color, "_".repeat(color.length));
 
       // Color(color)
       // const {color: [r, g, b], valpha: a } = Color(color);

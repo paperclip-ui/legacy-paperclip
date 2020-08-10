@@ -1,11 +1,9 @@
 import { Statement, StatementKind, Reference } from "./js-ast";
 import {
   Sheet,
-  getSheetClassNames,
   traverseSheet,
   MixinRule,
   RuleKind,
-  Rule,
   isRule,
   StyleExpression
 } from "./css-ast";

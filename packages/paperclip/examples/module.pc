@@ -1,31 +1,5 @@
-
 <style>
-  .rule {
-    --space: 40px;
-    color: #F60;
-    font-family: sans-serif;
-    font-size: 24px;
-    filter: drop-shadow(10 10 10 10);
+  ._a {
 
-    
-    &--test {
-    }
   }
 </style>
-
-<div className="rule" className:a="rule--test">
-  color me this
-</div>
-
-<div component as="test2">
-  <div>blarg</div>
-</div>
-
-
-<div component as="test">
-  <test2>{children}</test2>
-</div>
-
-<test>
-  <span>ffs</span>
-</test>

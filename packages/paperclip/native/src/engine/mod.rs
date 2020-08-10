@@ -86,6 +86,7 @@ pub struct Engine {
   pub vfs: VirtualFileSystem,
   pub running: HashSet<String>,
   pub evaluated_data: HashMap<String, EvaluateData>,
+  pub import_graph: HashMap<String, BTreeMap<String, pc_export::Exports>>,
   pub dependency_graph: DependencyGraph,
 }
 
@@ -99,6 +100,7 @@ impl Engine {
       listeners: vec![],
       running: HashSet::new(),
       evaluated_data: HashMap::new(),
+      import_graph: HashMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
       dependency_graph: DependencyGraph::new(),
     }
@@ -231,7 +233,9 @@ impl Engine {
       imports.insert(id.to_string(), data.exports.clone());
     }
 
-    let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &imports);
+    self.import_graph.insert(uri.to_string(), imports.clone());
+
+    let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &self.import_graph);
 
     match node_result {
       Ok(node_option) => {

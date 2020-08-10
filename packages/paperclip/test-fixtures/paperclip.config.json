@@ -1,4 +1,5 @@
 {
   "compilerOptions": {},
-  "sourceDirectory": "."
+  "sourceDirectory": "./src",
+  "moduleDirectories": ["./modules"]
 }

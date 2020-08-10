@@ -1,10 +1,6 @@
 import { expect } from "chai";
-import { createMockEngine, stringifyLoadResult, waitForError } from "../utils";
-import {
-  EngineEventKind,
-  stringifyVirtualNode,
-  stringifyCSSSheet
-} from "paperclip-utils";
+import { createMockEngine, stringifyLoadResult } from "../utils";
+
 import { noop } from "../../utils";
 
 describe(__filename + "#", () => {
@@ -16,7 +12,7 @@ describe(__filename + "#", () => {
         }
       </style>`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql("<style>[class]._80f4925f_a { color:b; }</style>");
   });
@@ -31,21 +27,24 @@ describe(__filename + "#", () => {
         </style>
       `
     };
-    const engine = createMockEngine(graph, noop, {
-      resolveFile(uri) {
+    const engine = await createMockEngine(graph, noop, {
+      resolveFile() {
         return null;
       }
     });
 
-    const e = waitForError(engine);
-    engine.run("/entry.pc").catch(noop);
-    const err = await e;
+    let err;
+    try {
+      engine.run("/entry.pc");
+    } catch (e) {
+      console.log(e);
+      err = e;
+    }
     expect(err).to.eql({
-      kind: "Error",
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 59, end: 91 },
-      message: "Unable to resolve file."
+      message: "Unable to resolve file: /not/found.png from /entry.pc"
     });
   });
 
@@ -61,7 +60,7 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const text = stringifyLoadResult(await engine.run("/entry.pc"));
       expect(text).to.eql(
         "<style>div[data-pc-80f4925f] { color:blue; }</style>"
@@ -76,16 +75,18 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
-        message: "Reference not found."
+        message: "Reference not found or used before it was declared."
       });
     });
 
@@ -104,7 +105,7 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const text = stringifyLoadResult(await engine.run("/entry.pc"));
       expect(text).to.eql(
         "<style>div[data-pc-80f4925f] { color:orange; }</style>"
@@ -120,16 +121,18 @@ describe(__filename + "#", () => {
         "/module.pc": `<style>
         </style>`
       };
-      const engine = createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 84, end: 85 },
-        message: "Reference not found."
+        message: "Reference not found or used before it was declared."
       });
     });
     it("Displays an error if the import is not found", async () => {
@@ -140,16 +143,18 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 48 },
-        message: "Reference not found."
+        message: "Reference not found or used before it was declared."
       });
     });
 
@@ -162,17 +167,19 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      // expect(e).to.eql({
-      //   kind: 'Error',
-      //   errorKind: 'Runtime',
-      //   uri: '/entry.pc',
-      //   location: { start: 45, end: 48 },
-      //   message: 'Reference not found.'
-      // });
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
+        errorKind: "Runtime",
+        uri: "/entry.pc",
+        location: { start: 45, end: 46 },
+        message: "Reference not found or used before it was declared."
+      });
     });
 
     it("Displays an error if a mixin is used but not exported", async () => {
@@ -188,12 +195,14 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 84, end: 89 },
@@ -213,12 +222,14 @@ describe(__filename + "#", () => {
           }
         </style>`
       };
-      const engine = createMockEngine(graph);
-      const p = waitForError(engine);
-      engine.run("/entry.pc").catch(noop);
-      const e = await p;
-      expect(e).to.eql({
-        kind: "Error",
+      const engine = await createMockEngine(graph);
+      let err;
+      try {
+        await engine.run("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+      expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 98, end: 103 },
@@ -247,7 +258,7 @@ describe(__filename + "#", () => {
         </style>`
       };
 
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
       const result = await engine.run("/entry.pc");
       expect(stringifyLoadResult(result)).to.eql(
         `<style>[class]._80f4925f_company_list { list-style:none; margin:0; padding:0; } [class]._80f4925f_company_list li[data-pc-80f4925f] { display:block; padding:var(--spacing-600) 0; } [class]._80f4925f_company_list li[data-pc-80f4925f] + [class]._80f4925f_company_list li[data-pc-80f4925f] { border-top:1px solid var(--color-black-100); }</style>`
@@ -263,7 +274,7 @@ describe(__filename + "#", () => {
       </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._80f4925f_a\\:b { }</style>`
@@ -292,7 +303,7 @@ describe(__filename + "#", () => {
       </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>input:checked[data-pc-80f4925f] { } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label { background:var(--midnight-darker); } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label::after { transform:rotate(90deg); } input:checked[data-pc-80f4925f] ~ [class]._80f4925f_tab-content { max-height:100vh; padding:1em; }</style>`
@@ -306,10 +317,10 @@ describe(__filename + "#", () => {
       </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     let err;
     try {
-      const result = await engine.run("/entry.pc");
+      await engine.run("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -332,7 +343,7 @@ describe(__filename + "#", () => {
         }
       </style>ab`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
 
     expect(result.exports.style.variables["--color"]).to.eql({
@@ -373,7 +384,7 @@ describe(__filename + "#", () => {
         }
       </style>ab`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
 
     expect(result.exports.style.classNames).to.eql({
@@ -409,7 +420,7 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._80f4925f_todo { } [class]._80f4925f_todo:hover [class]._80f4925f_destroy { display:inline-block; } [class]._80f4925f_todo [class]._80f4925f_todo { } [class]._80f4925f_todo [class]._80f4925f_todo--item [class]._80f4925f_destroy { display:inline-block; }</style>`
@@ -427,7 +438,7 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] svg:a[data-pc-80f4925f] { margin-right:4px; }</style>`
@@ -447,9 +458,8 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
-    const ast = await engine.getLoadedAst("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>@keyframes _80f4925f_lds-something3 { } div[data-pc-80f4925f] { animation:_80f4925f_lds-something3 1s; }</style>`
     );
@@ -478,9 +488,8 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
-    const ast = await engine.getLoadedAst("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] > b[data-pc-80f4925f] { } a[data-pc-80f4925f] + c[data-pc-80f4925f] { } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { } a[data-pc-80f4925f] [data-pc-80f4925f]:not([class]._80f4925f_div) { } a[data-pc-80f4925f] [data-pc-80f4925f]::active { }</style>`
     );
@@ -498,7 +507,7 @@ describe(__filename + "#", () => {
       }
     </style>`
     };
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     await engine.run("/entry.pc");
     const ast = engine.getLoadedAst("/entry.pc") as any;
     expect(ast.children[0].sheet.rules[1].location).to.eql({
@@ -522,7 +531,7 @@ describe(__filename + "#", () => {
     </style>`
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(result.exports.style.keyframes).to.eql({
       b: {
@@ -548,5 +557,114 @@ describe(__filename + "#", () => {
         }
       }
     });
+  });
+
+  it("can export class names with _ prefix", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @export {
+        ._b {
+
+        }
+      }
+
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(result.exports.style.classNames).to.eql({
+      _b: { name: "_b", scopedName: "_80f4925f__b", public: true }
+    });
+  });
+
+  // Addresses https://github.com/crcn/paperclip/issues/319
+  it("shows an error if including a mixin that doesn't exist within a mixin that's exported", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @export {
+        @mixin {
+          @include no-boom;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      await engine.run("/entry.pc");
+    } catch (e) {
+      err = e;
+    }
+    expect(err).to.eql({
+      errorKind: "Runtime",
+      uri: "/entry.pc",
+      location: { start: 60, end: 67 },
+      message: "Reference not found or used before it was declared."
+    });
+  });
+
+  // Addresses https://github.com/crcn/paperclip/issues/326
+  it("can have nested pseudo selectors", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      .parent {
+        .child:first-child {
+          color: blue
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>[class]._80f4925f_parent { } [class]._80f4925f_child:first-child { color:blue ; }</style>"
+    );
+  });
+
+  // Addresses: https://github.com/crcn/paperclip/issues/340
+  it("Can use mixins in other style blocks defined in the same page", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin a {
+        color: blue;
+      }
+    </style>
+    <style>
+      .div {
+        @include a;
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql("<style>[class]._80f4925f_div { color:blue; }</style>");
+  });
+
+  // Addresses https://github.com/crcn/paperclip/issues/417
+  it("properly renders global * selector", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      div {
+        > :global(*) {
+          color: blue;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>div[data-pc-80f4925f] { } div[data-pc-80f4925f] > * { color:blue; }</style>"
+    );
   });
 });

@@ -15,7 +15,6 @@
     "eslint": "^7.4.0",
     "husky": "^4.2.5",
     "lerna": "^3.22.1",
-    "nyc": "^15.1.0",
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1"
   },
@@ -28,10 +27,12 @@
     "test": "lerna run test",
     "build": "lerna run build",
     "lint": "lerna run lint",
-    "coverage:upload": "nyc merge .nyc_output && codecov -t $CODECOV_TOKEN -f coverage.json",
+    "link": "lerna run link",
+    "postinstall": "lerna bootstrap",
     "build:watch": "lerna run build:watch --parallel",
     "publish:packages": "lerna publish from-package --yes",
     "publish:marketplace": "lerna run publish:marketplace",
+    "publish:documentation": "lerna run publish:documentation",
     "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --package-lock-only --no-audit && git add packages/*/package-lock.json"
   },
   "repository": {
@@ -44,15 +45,5 @@
     "url": "https://github.com/crcn/paperclip/issues"
   },
   "homepage": "https://github.com/crcn/paperclip#readme",
-  "dependencies": {},
-  "workspaces": {
-    "packages": [
-      "examples/*",
-      "packages/*"
-    ],
-    "nohoist": [
-      "**/paperclip-vscode",
-      "**/paperclip-vscode/**"
-    ]
-  }
+  "dependencies": {}
 }

@@ -1,0 +1,33 @@
+<style>
+  .font {
+    font-size: 24px;
+  }
+  .extra-light {
+    font-weight: 100;
+  }
+  .light {
+    font-weight: 200;
+  }
+  .medium {
+    font-weight: 500;
+  }
+  .bold {
+    font-weight: 600;
+  }
+  .extra-bold {
+    font-weight: 700;
+  }
+</style>
+
+<div component as="Sample" className="font {className}">
+  A quick brown fox jumped over the lazy dog
+</div>
+
+<div export component as="default" style="font-family: {fontFamily}">
+  <Sample className="extra-light" />
+  <Sample className="light" />
+  <Sample />
+  <Sample className="medium" />
+  <Sample className="bold" />
+  <Sample className="extra-bold" />
+</div>

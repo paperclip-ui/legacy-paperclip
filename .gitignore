@@ -4,12 +4,11 @@ node_modules/
 dist/
 *.node
 yarn-*.log
-coverage.json
 *.artifacts
 tmp/
 *.pc.d.ts
+*.pc.js
+*.pc.css
 *.vsix
 *.DS_Store
-.nyc_output/
-coverage/
 lerna-debug.log

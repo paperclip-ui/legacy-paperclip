@@ -19,7 +19,7 @@ describe(__filename + "#", () => {
       "/entry.pc": currentDocumentSource
     };
 
-    const engine = createMockEngine(graph);
+    const engine = await createMockEngine(graph);
 
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineEvent);
@@ -27,7 +27,7 @@ describe(__filename + "#", () => {
 
     for (let i = 30; i--; ) {
       const randomDocument = generateRandomPaperclipDocument(randOptions);
-      const baselineEngine = createMockEngine({
+      const baselineEngine = await createMockEngine({
         "/entry.pc": randomDocument
       });
 

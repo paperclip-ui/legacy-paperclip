@@ -1,6 +1,6 @@
 {
   "name": "zeplin-paperclip",
-  "version": "14.0.12",
+  "version": "14.1.12",
   "description": "Download Zeplin colors, typography, and spacing to Paperclip",
   "main": "index.js",
   "bin": {
@@ -18,7 +18,6 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "eslint": "^7.4.0",
-    "nyc": "^15.1.0",
     "typescript": "^3.9.6",
     "yargs": "^15.4.0"
   },

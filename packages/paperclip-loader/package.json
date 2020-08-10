@@ -1,13 +1,13 @@
 {
   "name": "paperclip-loader",
-  "version": "14.0.12",
+  "version": "14.1.14",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
     "lint": "eslint src",
-    "test": "nyc mocha ./lib/test/**/*-test.js && nyc merge .nyc_output ../../.nyc_output/paperclip-loader.json",
+    "test": "mocha ./lib/test/**/*-test.js",
     "create:symlinks": "ln -s `pwd` examples/hello-world/node_modules/paperclip-loader"
   },
   "author": "",
@@ -16,7 +16,8 @@
   "dependencies": {
     "@types/node": "^13.7.7",
     "loader-utils": "^1.2.3",
-    "paperclip": "^14.0.12",
+    "paperclip": "^14.1.14",
+    "paperclip-cli": "^14.1.14",
     "resolve": "^1.15.1",
     "typescript": "^3.8.3",
     "webpack-virtual-modules": "0.2.1"
@@ -25,7 +26,6 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "eslint": "^7.4.0",
-    "mocha": "^8.0.1",
-    "nyc": "^15.1.0"
+    "mocha": "^8.0.1"
   }
 }

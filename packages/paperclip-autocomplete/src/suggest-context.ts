@@ -400,13 +400,14 @@ const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
   // only suggest declaration if on new line -- UX is wierd otherwise
   const ws = scanner.current?.value;
   scanner.skipSuperfluous();
+
   if (!scanner.current) {
     if (ws && /[\n\r]/.test(ws)) {
       return { kind: SuggestContextKind.CSS_DECLARATION_NAME, prefix: "" };
     }
   }
 
-  if (scanner.current?.value === "}") {
+  if (!scanner.current || scanner.current?.value === "}") {
     return null;
   }
 
@@ -426,7 +427,7 @@ const suggestCSSDeclaration = (scanner: TokenScanner): SuggestContext => {
       if (scanner.current.value === "{") {
         isDeclaration = false;
         break;
-      } else if (scanner.current.value === ":") {
+      } else if (scanner.current.value === ";") {
         break;
       }
       scanner.next();
@@ -475,20 +476,30 @@ const suggestCSSAtRule = (
     return { kind: atRuleKind, prefix: "" };
   }
 
-  const prefix = scanner.current.value;
+  let name = scanner.current.value;
 
   scanner.next();
+  while (scanner.current) {
+    if (
+      scanner.current.kind === TokenKind.Whitespace ||
+      scanner.current.value === "{"
+    ) {
+      break;
+    }
+    name += scanner.current.value;
+    scanner.next();
+  }
 
   if (!scanner.current) {
-    return { kind: atRuleKind, prefix };
+    return { kind: atRuleKind, prefix: name };
   }
 
   let params = "";
 
   while (
     scanner.current &&
-    scanner.current.value !== ";" &&
-    scanner.current.value !== "{"
+    scanner.current?.value !== ";" &&
+    scanner.current?.value !== "{"
   ) {
     params += scanner.current.value;
     scanner.next();
@@ -496,14 +507,14 @@ const suggestCSSAtRule = (
     if (!scanner.current) {
       return {
         kind: SuggestContextKind.CSS_AT_RULE_PARAMS,
-        atRuleName: prefix,
+        atRuleName: name,
         params: params.trim()
       };
     }
   }
 
   if (scanner.current?.value === "{") {
-    if (prefix === "media" || prefix == "keyframes") {
+    if (name === "media" || name == "keyframes" || name === "export") {
       return suggestContainerAtRule(scanner);
     } else {
       return suggestStyleAtRule(scanner);
@@ -519,7 +530,6 @@ const suggestStyleAtRule = (scanner: TokenScanner): SuggestContext => {
   if (scanner.current?.value === "{") {
     scanner.next();
     while (scanner.current) {
-      scanner.skipSuperfluous();
       if (String(scanner.current?.value) === "}") {
         break;
       }

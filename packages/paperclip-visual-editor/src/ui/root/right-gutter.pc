@@ -1,9 +1,0 @@
-<style>
-  .right-gutter {
-    font-family: Helvetica;
-  }
-</style>
-
-<div export component class="right-gutter" as="default">
-  Some design
-</div>

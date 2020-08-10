@@ -1,5 +1,5 @@
 import { compile } from "../code-compiler";
-import { Engine } from "paperclip";
+import { createEngine } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
 
@@ -8,7 +8,7 @@ const builtin = {
 };
 
 export const compileModules = async (graph: Record<string, string>) => {
-  const engine = new Engine({
+  const engine = await createEngine({
     io: {
       readFile: uri => graph[uri],
       fileExists: uri => Boolean(graph[uri]),

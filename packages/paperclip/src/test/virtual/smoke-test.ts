@@ -1,12 +1,5 @@
-import * as path from "path";
-import { Engine } from "../../engine";
 import { expect } from "chai";
-import {
-  EngineEventKind,
-  stringifyVirtualNode,
-  EvaluatedEvent,
-  stringifyCSSSheet
-} from "paperclip-utils";
+import { stringifyVirtualNode, stringifyCSSSheet } from "paperclip-utils";
 import { createMockEngine, Graph } from "../utils";
 
 describe(__filename + "#", () => {
@@ -247,7 +240,7 @@ describe(__filename + "#", () => {
       },
 
       {},
-      `<style></style><span class="red" data-pc-1acb798>message </span>`
+      `<style></style><span class="_1acb798_red red" data-pc-1acb798>message </span>`
     ],
     [
       // style classes prefixed with scope
@@ -265,19 +258,6 @@ describe(__filename + "#", () => {
       },
       {},
       `<style>[class]._80f4925f_something > [class]._80f4925f_something2 { }</style><span class="_80f4925f_something2 something2" data-pc-80f4925f></span>`
-    ],
-    [
-      // style classes prefixed with scope
-      {
-        "/entry.pc": `
-          <span component as="test" class="a {class}">
-          </span>
-          <test class="b" />
-          <test class=">>>b" />
-        `
-      },
-      {},
-      `<style></style><span class="_80f4925f_a a b" data-pc-80f4925f></span><span class="_80f4925f_a a _80f4925f_b b" data-pc-80f4925f></span>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -681,7 +661,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class]._139cec8e_button { color:red; }</style><div className="_139cec8e_button" data-pc-80f4925f></div>`
+      `<style>[class]._139cec8e_button { color:red; }</style><div className="_139cec8e_button button" data-pc-80f4925f></div>`
     ],
     [
       {
@@ -723,9 +703,9 @@ describe(__filename + "#", () => {
       {},
       `<style>[class]._80f4925f_a { } [class]._80f4925f_a + b[data-pc-80f4925f] { } [class]._80f4925f_a + b[data-pc-80f4925f]:hover:active:test { }</style>`
     ]
-  ].forEach(([graph, context, expectedHTML]: [Graph, any, string]) => {
+  ].forEach(([graph, , expectedHTML]: [Graph, any, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {
-      const engine = createMockEngine(graph);
+      const engine = await createMockEngine(graph);
 
       const { sheet, preview, importedSheets: sheets } = await engine.run(
         "/entry.pc"
@@ -733,7 +713,7 @@ describe(__filename + "#", () => {
 
       const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
         .map(sheet => {
-          return stringifyCSSSheet(sheet, "");
+          return stringifyCSSSheet(sheet, { protocol: "" });
         })
         .join("\n")
         .trim();

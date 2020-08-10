@@ -1,0 +1,62 @@
+/* stylelint-disable docusaurus/copyright-header */
+
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroDemo {
+  /* margin: 0px auto; */
+  margin-top: 24px;
+  /* max-width: 1024px; */
+}
+
+.preview {
+  border-radius: 4px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 966px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.features {
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+  width: 100%;
+}
+
+.nuggets {
+  background: rgb(235, 235, 235);
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.nuggets :global(.col) {
+  border-right: 1px solid rgb(218, 218, 218);
+}
+.nuggets :global(.col:last-child) {
+  border-right: none;
+}
+
+.featureImage {
+  height: 200px;
+  width: 200px;
+}

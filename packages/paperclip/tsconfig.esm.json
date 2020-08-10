@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "outDir": "esm",
+    "target": "es6",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "node_modules",
+    "*-test",
+    "lib",
+    "index.d.ts",
+    "test",
+    "examples"
+  ],
+  "filesGlob": ["./src/**/*.ts"]
+}

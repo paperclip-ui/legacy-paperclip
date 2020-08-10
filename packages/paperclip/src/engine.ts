@@ -3,7 +3,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
-import { NativeEngine } from "../native/pkg/paperclip";
 import {
   EngineEvent,
   patchVirtNode,
@@ -52,52 +51,17 @@ export type LoadResult = {
   sheet: any;
   preview: VirtualNode;
 };
-
 export class Engine {
-  private _native: NativeEngine;
   private _listeners: EngineEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
+  private _io: EngineIO;
 
-  constructor(
-    private _options: EngineOptions = {},
-    private _onCrash: (err) => void = noop
-  ) {
-    const io: EngineIO = Object.assign(
-      {
-        readFile: uri => {
-          return fs.readFileSync(new URL(uri) as any, "utf8");
-        },
-        fileExists: uri => {
-          try {
-            const url = new URL(uri) as any;
-
-            // need to make sure that case matches _exactly_ since some
-            // systems are sensitive to that.
-            return existsSyncCaseSensitive(url) && fs.lstatSync(url).isFile();
-          } catch (e) {
-            console.error(e);
-            return false;
-          }
-        },
-        resolveFile: resolveImportUri(fs)
-      },
-      _options.io
-    );
-
-    const initNative = () => {
-      this._native = NativeEngine.new(
-        io.readFile,
-        io.fileExists,
-        io.resolveFile
-      );
-
-      // only one native listener to for buffer performance
-      this._native.add_listener(this._dispatch);
-    };
-
-    initNative();
+  constructor(private _native: any, private _onCrash: (err) => void = noop) {
+    // only one native listener to for buffer performance
+    this._native.add_listener(this._dispatch);
 
     this.onEvent(this._onEngineEvent);
+    return this;
   }
 
   onEvent(listener: EngineEventListener) {
@@ -234,13 +198,13 @@ export class Engine {
     return deps;
   }
 
-  async run(uri: string): Promise<LoadedData> {
+  run(uri: string): LoadedData {
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
-      return Promise.reject(result.error);
+      throw result.error;
     }
 
-    return this._waitForLoadedData(uri);
+    return this._rendered[uri];
   }
   private _tryCatch = <TRet>(fn: () => TRet) => {
     try {
@@ -257,6 +221,51 @@ export class Engine {
     }
   };
 }
+
+const getIOOptions = (options: EngineOptions = {}) =>
+  Object.assign(
+    {
+      readFile: uri => {
+        return fs.readFileSync(new URL(uri) as any, "utf8");
+      },
+      fileExists: uri => {
+        try {
+          const url = new URL(uri) as any;
+
+          // need to make sure that case matches _exactly_ since some
+          // systems are sensitive to that.
+          return existsSyncCaseSensitive(url) && fs.lstatSync(url).isFile();
+        } catch (e) {
+          console.error(e);
+          return false;
+        }
+      },
+      resolveFile: resolveImportUri(fs)
+    },
+    options.io
+  );
+
+export const createEngine = createNativeEngine => async (
+  options: EngineOptions,
+  onCrash: any
+) => {
+  const { readFile, fileExists, resolveFile } = getIOOptions(options);
+  return new Engine(
+    await createNativeEngine(readFile, fileExists, resolveFile),
+    onCrash
+  );
+};
+
+export const createEngineSync = createNativeEngine => (
+  options: EngineOptions,
+  onCrash: any
+) => {
+  const { readFile, fileExists, resolveFile } = getIOOptions(options);
+  return new Engine(
+    createNativeEngine(readFile, fileExists, resolveFile),
+    onCrash
+  );
+};
 
 const existsSyncCaseSensitive = (uri: URL) => {
   const pathname = url.fileURLToPath(uri as any);

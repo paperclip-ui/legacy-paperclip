@@ -716,11 +716,8 @@ fn parse_declarations_and_children<'a, 'b>(
       while !context.ended()? {
         let tok = context.tokenizer.next()?;
 
-        if tok == Token::Colon {
-          // declaration name length is 0, so we have a pseudo-selector
-          if context.tokenizer.pos == pos.u8_pos + 1 {
-            is_declaration = false;
-          }
+        if tok == Token::Semicolon || tok == Token::CurlyClose {
+          is_declaration = true;
           break;
         } else if tok == Token::CurlyOpen {
           is_declaration = false;
@@ -746,60 +743,6 @@ fn parse_declarations_and_children<'a, 'b>(
 fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
   eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
 }
-
-// fn parse_child_style_rule2<'a, 'b>(
-//   context: &mut Context<'a, 'b>,
-// ) -> Result<ChildStyleRule, ParseError> {
-//   let selector = parse_group_selector(context)?;
-
-//   while !context.tokenizer.is_eof() {
-//     // look for things like &--primary
-//     let connector = if context.tokenizer.peek(1)? == Token::Byte(b'&') {
-//       context.tokenizer.next()?;
-//       get_buffer(context.tokenizer, |tokenizer| {
-//         let token = tokenizer.peek(1)?;
-//         Ok(part_of_selector_name(&token) || token == Token::Whitespace)
-//       })?
-//       .to_string()
-//     } else {
-//       " ".to_string()
-//     };
-
-//     eat_superfluous(context)?;
-
-//     let selector: Option<Selector> = if context.tokenizer.peek(1)? == Token::CurlyOpen {
-//       None
-//     } else {
-//       Some(parse_next_pair_selector(Selector::None, context)?)
-//     };
-
-//     selectors.push(ChildRuleSelector {
-//       connector,
-//       selector,
-//     });
-
-//     eat_superfluous(context)?;
-
-//     if context.tokenizer.peek(1)? != Token::Comma {
-//       break;
-//     }
-//     context.tokenizer.next()?;
-
-//     eat_superfluous(context)?;
-//   }
-
-//   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
-
-//   let (declarations, children) = parse_declarations_and_children(context)?;
-//   context.tokenizer.next_expect(Token::CurlyClose)?; // eat }
-//   eat_superfluous(context)?;
-
-//   Ok(ChildStyleRule {
-//     selectors,
-//     declarations,
-//     children,
-//   })
-// }
 
 fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
   if context.tokenizer.peek(1)? == Token::At {

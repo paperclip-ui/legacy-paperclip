@@ -2,94 +2,97 @@ import * as path from "path";
 import { relative } from "path";
 import * as url from "url";
 
-export const stringifyCSSSheet = (
-  sheet,
-  protocol: string | null,
-  uri?: string
-) => {
-  return sheet.rules
-    .map(rule => stringifyCSSRule(rule, protocol, uri))
-    .join("\n");
+export type StringifySheetOptions = {
+  protocol?: string;
+  uri?: string;
 };
 
-const stringifyCSSRule = (rule, protocol, uri) => {
+export const stringifyCSSSheet = (
+  sheet,
+  options: StringifySheetOptions = {}
+) => {
+  return sheet.rules.map(rule => stringifyCSSRule(rule, options)).join("\n");
+};
+
+const stringifyCSSRule = (rule, options: StringifySheetOptions) => {
   switch (rule.kind) {
     case "Style":
-      return stringifyStyleRule(rule, protocol, uri);
+      return stringifyStyleRule(rule, options);
     case "Page":
     case "Supports":
     case "Media":
-      return stringifyConditionRule(rule, protocol, uri);
+      return stringifyConditionRule(rule, options);
     case "FontFace":
-      return stringifyFontFaceRule(rule, protocol, uri);
+      return stringifyFontFaceRule(rule, options);
     case "Keyframes":
-      return stringifyKeyframesRule(rule, protocol);
+      return stringifyKeyframesRule(rule, options);
   }
 };
 
 const stringifyConditionRule = (
   { name, condition_text, rules },
-  protocol?: string,
-  uri?: string
+  options: StringifySheetOptions
 ) => {
   return `@${name} ${condition_text} {
-    ${rules.map(style => stringifyStyleRule(style, protocol, uri)).join("\n")}
+    ${rules.map(style => stringifyStyleRule(style, options)).join("\n")}
   }`;
 };
 
 const stringifyKeyframesRule = (
   { name, rules },
-  protocol?: string,
-  uri?: string
+  options: StringifySheetOptions
 ) => {
   return `@keyframes ${name} {
-    ${rules.map(style => stringifyKeyframeRule(style, protocol)).join("\n")}
+    ${rules.map(style => stringifyKeyframeRule(style, options)).join("\n")}
   }`;
 };
 
 const stringifyKeyframeRule = (
   { key, style },
-  protocol?: string,
-  uri?: string
+  options: StringifySheetOptions
 ) => {
   return `${key} {
-    ${style.map(style => stringifyStyle(style, protocol, uri)).join("\n")}
+    ${style.map(style => stringifyStyle(style, options)).join("\n")}
   }`;
 };
 
-const stringifyFontFaceRule = ({ style }, protocol?: string, uri?: string) => {
+const stringifyFontFaceRule = ({ style }, options: StringifySheetOptions) => {
   return `@font-face {
-    ${style.map(style => stringifyStyle(style, protocol, uri)).join("\n")}
+    ${style.map(style => stringifyStyle(style, options)).join("\n")}
   }`;
 };
 
 const stringifyStyleRule = (
   { selector_text, style },
-  protocol: string,
-  uri: string
+  options: StringifySheetOptions
 ) => {
   return `${selector_text} {
-    ${style.map(style => stringifyStyle(style, protocol, uri)).join("\n")}
+    ${style.map(style => stringifyStyle(style, options)).join("\n")}
   }`;
 };
 
-const stringifyStyle = ({ name, value }, protocol, uri) => {
+const stringifyStyle = (
+  { name, value },
+  { uri, protocol }: StringifySheetOptions
+) => {
   if (value) {
     // required for bundling, otherwise file protocol is maintained
     if (uri) {
       const urls = value.match(/(file:\/\/.*?)(?=['")])/g) || [];
       const selfPathname = url.fileURLToPath(uri);
-      for (const url of urls) {
-        const pathname = url.fileURLToPath(url);
+      for (const foundUrl of urls) {
+        const pathname = url.fileURLToPath(foundUrl);
         let relativePath = path.relative(path.dirname(selfPathname), pathname);
         if (relativePath.charAt(0) !== ".") {
           relativePath = "./" + relativePath;
         }
-        value = value.replace(url, relativePath);
+
+        value = value.replace(foundUrl, relativePath);
       }
     }
+
     if (protocol) {
-      value = value.replace(/file:/, protocol);
+      value = value.replace(/file:/g, protocol);
     }
   }
 

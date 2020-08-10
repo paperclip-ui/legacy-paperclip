@@ -1,0 +1,20 @@
+{
+  "processes": {
+    "e18144c5-579c-4103-9fcb-3ae1cfc5ba42": { "parent": null, "children": [] }
+  },
+  "files": {
+    "C:\\Users\\craigcondon\\Developer\\public\\paperclip\\packages\\paperclip-compiler-react\\lib\\test\\utils.js": [
+      "e18144c5-579c-4103-9fcb-3ae1cfc5ba42"
+    ],
+    "C:\\Users\\craigcondon\\Developer\\public\\paperclip\\packages\\paperclip-compiler-react\\lib\\code-compiler.js": [
+      "e18144c5-579c-4103-9fcb-3ae1cfc5ba42"
+    ],
+    "C:\\Users\\craigcondon\\Developer\\public\\paperclip\\packages\\paperclip-compiler-react\\lib\\translate-utils.js": [
+      "e18144c5-579c-4103-9fcb-3ae1cfc5ba42"
+    ],
+    "C:\\Users\\craigcondon\\Developer\\public\\paperclip\\packages\\paperclip-compiler-react\\lib\\utils.js": [
+      "e18144c5-579c-4103-9fcb-3ae1cfc5ba42"
+    ]
+  },
+  "externalIds": {}
+}

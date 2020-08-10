@@ -1,5 +1,5 @@
 import * as path from "path";
-import { Engine, LoadResult, EngineIO } from "../engine";
+import { Engine, createEngine, LoadResult, EngineIO } from "../../";
 import {
   EngineErrorEvent,
   EngineEventKind,
@@ -12,9 +12,9 @@ export type Graph = {
   [identifier: string]: string;
 };
 
-export const TEST_FIXTURE_DIRECTORY = path.join(
+export const TEST_FIXTURE_SRC_DIRECTORY = path.join(
   __dirname,
-  "../../test-fixtures"
+  "../../test-fixtures/src"
 );
 
 export const createMockEngine = (
@@ -22,7 +22,7 @@ export const createMockEngine = (
   onErr = e => console.error(e),
   io: Partial<EngineIO> = {}
 ) =>
-  new Engine(
+  createEngine(
     {
       io: {
         readFile: uri => graph[uri],
@@ -38,7 +38,7 @@ export const createMockEngine = (
 
 export const waitForError = (
   engine: Engine,
-  test = (event: EngineErrorEvent) => true
+  test: (event: EngineErrorEvent) => boolean = () => true
 ) => {
   return new Promise<any>(resolve => {
     engine.onEvent(event => {
@@ -51,7 +51,7 @@ export const waitForError = (
 
 export const waitForRender = (
   engine: Engine,
-  test = (event: LoadedEvent) => true
+  test: (event: LoadedEvent) => boolean = () => true
 ) => {
   return new Promise<any>(resolve => {
     engine.onEvent(event => {
@@ -69,7 +69,7 @@ export const stringifyLoadResult = ({
 }: LoadResult) => {
   const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
     .map(sheet => {
-      return stringifyCSSSheet(sheet, "");
+      return stringifyCSSSheet(sheet, { protocol: "" });
     })
     .join("\n")
     .trim();

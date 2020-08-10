@@ -1,0 +1,17 @@
+{
+  "parent": null,
+  "pid": 2336,
+  "argv": [
+    "C:\\Program Files\\nodejs\\node.exe",
+    "C:\\Users\\craigcondon\\Developer\\public\\paperclip\\node_modules\\mocha\\bin\\mocha",
+    "./lib/test/**/*-test.js"
+  ],
+  "execArgv": [],
+  "cwd": "C:\\Users\\craigcondon\\Developer\\public\\paperclip\\packages\\paperclip-loader",
+  "time": 1595103998374,
+  "ppid": 9696,
+  "coverageFilename": "C:\\Users\\craigcondon\\Developer\\public\\paperclip\\packages\\paperclip-loader\\.nyc_output\\7e79a70a-9ee5-4e44-a30c-39ef914499f3.json",
+  "externalId": "",
+  "uuid": "7e79a70a-9ee5-4e44-a30c-39ef914499f3",
+  "files": []
+}

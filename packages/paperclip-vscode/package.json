@@ -1,11 +1,20 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "14.0.12",
+  "version": "14.1.14",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
-  "description": "",
-  "preview": true,
+  "keywords": [
+    "React",
+    "CSS",
+    "HTML",
+    "visual",
+    "preview",
+    "realtime"
+  ],
+  "description": "Use plain HTML & CSS to build web UIs visually",
+  "homepage": "http://paperclip.dev",
+  "icon": "assets/logo.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/crcn/paperclip.git"
@@ -92,8 +101,8 @@
     "build": "tsc",
     "test": "node lib/test/run",
     "lint": "eslint src",
-    "build:watch": "yarn build --watch",
-    "prepublishOnly": "yarn run build",
+    "build:watch": "npm run build -- --watch",
+    "prepublishOnly": "npm run build",
     "publish:marketplace": "rm -rf node_modules && npm install --production && vsce package && vsce publish -p $VSCE_TOKEN"
   },
   "author": "",
@@ -111,20 +120,19 @@
     "eslint": "^7.4.0",
     "glob": "^7.1.6",
     "mocha": "^8.0.1",
-    "nyc": "^15.1.0",
     "p-limit": "^3.0.2",
-    "typescript": "^3.7.5",
-    "vsce": "^1.77.0",
+    "typescript": "^3.9.7",
     "vscode-test": "^1.4.0"
   },
   "dependencies": {
     "@types/react": "^16.9.20",
     "color": "^3.1.2",
+    "find-up": "^4.1.0",
     "lodash": "^4.17.15",
-    "paperclip": "^14.0.12",
-    "paperclip-autocomplete": "^14.0.12",
-    "paperclip-utils": "^14.0.12",
-    "paperclip-web-renderer": "^14.0.12",
+    "paperclip": "^14.1.14",
+    "paperclip-autocomplete": "^14.1.12",
+    "paperclip-utils": "^14.1.14",
+    "paperclip-web-renderer": "^14.1.14",
     "vscode-languageclient": "^6.0.1",
     "vscode-languageserver": "^6.0.1",
     "vscode-languageserver-textdocument": "^1.0.0"

@@ -24,7 +24,7 @@ describe(__filename + "#", () => {
     [
       "can render various slots",
       {
-        "/entry.pc": `<div export component as="Entry" className="{className} b" className:test>
+        "/entry.pc": `<div export component as="Entry" className="{className} b" className:test="b">
           {message}
         </div>`
       },
@@ -34,7 +34,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-3402f12b="true" class="undefined _3402f12b_b b">bbb</div>`
+        Entry: `<div data-pc-3402f12b="true" class=" _3402f12b_b b">bbb</div>`
       }
     ],
     [
@@ -124,6 +124,106 @@ describe(__filename + "#", () => {
       },
       {
         Entry: `<div data-pc-3402f12b="true" style="color:red"></div>`
+      }
+    ],
+    [
+      "can render a dynamic style string",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" style="color: {color?}"></div>
+        `
+      },
+      {
+        Entry: {
+          color: "red"
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" style="color:red"></div>`
+      }
+    ],
+    [
+      "Can render a dynamic string when the value is undefined",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" style="a: {a1}; b: {b2};"></div>
+        `
+      },
+      {
+        Entry: {
+          a1: "red"
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" style="a:red"></div>`
+      }
+    ],
+    [
+      "Applies scope classes when class names dynamic string in component",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" className="{className?}">
+          </div>
+        `
+      },
+      {
+        Entry: {
+          className: "ab"
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" class="_3402f12b_ab ab"></div>`
+      }
+    ],
+    [
+      "Applies scope classes when {className?} applied to component",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" {className?}>
+          </div>
+        `
+      },
+      {
+        Entry: {
+          className: "ab"
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" class="_3402f12b_ab ab"></div>`
+      }
+    ],
+    [
+      "Applies scope classes for className={className?} applied to component",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" className={className?}>
+          </div>
+        `
+      },
+      {
+        Entry: {
+          className: "ab"
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" class="_3402f12b_ab ab"></div>`
+      }
+    ],
+    [
+      "Applies scope classes for class={className?} applied to component",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" class={className?}>
+          </div>
+        `
+      },
+      {
+        Entry: {
+          className: "ab"
+        }
+      },
+      {
+        Entry: `<div data-pc-3402f12b="true" class="_3402f12b_ab ab"></div>`
       }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {

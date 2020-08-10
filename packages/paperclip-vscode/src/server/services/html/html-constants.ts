@@ -157,7 +157,7 @@ export const NATIVE_TAG_NAMES = [
   "xmp"
 ].sort();
 
-const RESERVED_TAG_NAMES = ["import"];
+const RESERVED_TAG_NAMES = ["import", "fragment"];
 
 const ALL_TAG_NAMES = [...NATIVE_TAG_NAMES, ...RESERVED_TAG_NAMES].sort();
 

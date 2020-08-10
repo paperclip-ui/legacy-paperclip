@@ -1,5 +1,17 @@
 <import src="module.pc" as="module">
 
+<style>
+  @mixin a {
+    color: blue;
+  }
+</style>
+
+<style>
+  .div {
+    @include a;
+  }
+</style>
+
 <div className="div">
-  fdsfsdffdsfdfs
+  something like this
 </div>

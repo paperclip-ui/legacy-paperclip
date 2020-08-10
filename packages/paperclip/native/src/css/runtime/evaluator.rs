@@ -30,6 +30,7 @@ pub fn evaluate<'a>(
   import_scopes: &'a BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
   imports: &'a BTreeMap<String, Exports>,
+  existing_exports: Option<&Exports>,
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     scope,
@@ -41,6 +42,11 @@ pub fn evaluate<'a>(
     exports: Exports::new(),
     all_rules: vec![],
   };
+
+  if let Some(existing_exports) = existing_exports {
+    context.exports.extend(existing_exports);
+  }
+
   for rule in &expr.rules {
     evaluate_rule(&rule, &mut context)?;
   }
@@ -273,14 +279,14 @@ fn evaluate_style_declarations<'a>(
               style.extend(mixin_decls.declarations.clone());
             } else {
               return Err(RuntimeError::new(
-                "Reference not found.".to_string(),
+                "Reference not found or used before it was declared.".to_string(),
                 context.uri,
                 &mixin_path.parts.last().unwrap().location,
               ));
             }
           } else {
             return Err(RuntimeError::new(
-              "Reference not found.".to_string(),
+              "Reference not found or used before it was declared.".to_string(),
               context.uri,
               &mixin_path.parts.first().unwrap().location,
             ));
@@ -308,7 +314,7 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
   context.in_public_scope = true;
 
   for rule in &expr.rules {
-    evaluate_rule(rule, context);
+    evaluate_rule(rule, context)?;
 
     match rule {
       ast::Rule::Mixin(mixin) => {
@@ -363,7 +369,7 @@ fn evaluate_style_rule2(
 
   lazy_static! {
     static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
-    static ref scope_re: Regex = Regex::new(r"_\w+_").unwrap();
+    static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
   }
 
   if class_name_re.is_match(selector_text.to_string().as_ref()) {
@@ -469,7 +475,14 @@ fn stringify_element_selector(
   };
 
   let scoped_selector_text = match selector {
-    ast::Selector::AllSelector => format!("{}", scope_selector),
+    ast::Selector::AllSelector => format!(
+      "{}",
+      if scope_selector == "" {
+        "*".to_string()
+      } else {
+        scope_selector
+      }
+    ),
     ast::Selector::None => "".to_string(),
     ast::Selector::Class(selector) => {
       // Don't hate me for adding [class] -- it's the browsers fault, I promise. Each
@@ -755,7 +768,10 @@ fn evaluate_style_key_value_declaration<'a>(
           .to_string();
       } else {
         return Err(RuntimeError::new(
-          "Unable to resolve file.".to_string(),
+          format!(
+            "Unable to resolve file: {} from {}",
+            relative_path, context.uri
+          ),
           context.uri,
           &expr.value_location,
         ));

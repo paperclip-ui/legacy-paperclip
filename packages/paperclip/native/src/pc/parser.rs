@@ -438,6 +438,11 @@ fn parse_key_value_attribute<'a>(
     if tokenizer.peek(1)? == Token::Equals {
       tokenizer.next()?; // eat =
       value = Some(parse_attribute_value(tokenizer)?);
+
+    // Fix https://github.com/crcn/paperclip/issues/306
+    // Keep in case we want to turn this back on.
+    } else {
+      return Err(ParseError::unexpected_token(tokenizer.utf16_pos));
     }
 
     Ok(pc_ast::Attribute::PropertyBoundAttribute(
@@ -518,7 +523,10 @@ fn parse_attribute_string_value<'a>(
       .to_string();
 
       parts.push(pc_ast::AttributeDynamicStringPart::ClassNamePierce(
-        pc_ast::AttributeDynamicStringClassNamePierce { class_name },
+        pc_ast::AttributeDynamicStringClassNamePierce {
+          class_name,
+          location: Location::new(pos, tokenizer.utf16_pos),
+        },
       ));
     } else if curr == Token::CurlyOpen {
       tokenizer.next_expect(Token::CurlyOpen)?;

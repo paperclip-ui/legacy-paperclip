@@ -6,13 +6,13 @@ import * as fs from "fs";
 import {
   PaperclipConfig,
   CompilerOptions,
-  Engine,
+  createEngine,
   paperclipSourceGlobPattern,
   Node,
-  getPrettyMessage,
   stringifyCSSSheet
 } from "paperclip";
-import * as glob from "glob";
+import { glob } from "glob";
+import { getPrettyMessage } from "./pretty-message";
 import { ClassNameExport, stripFileProtocol } from "paperclip";
 
 export type BuildOptions = {
@@ -73,24 +73,31 @@ export const build = async (options: BuildOptions) => {
     process.exit();
   }
 
-  initBuild(process.cwd(), sourceDirectory, compileModule, options, config);
+  await initBuild(
+    process.cwd(),
+    sourceDirectory,
+    compileModule,
+    options,
+    config
+  );
 };
 
-function initBuild(
+async function initBuild(
   cwd,
   sourceDirectory: string,
   { compile, getOutputFilePath }: CompilerModule,
   options: BuildOptions,
   config: PaperclipConfig
 ) {
-  const pcEngine = new Engine();
+  const pcEngine = await createEngine();
 
   function handleError(error, filePath) {
     console.error(
       getPrettyMessage(
         error,
         fs.readFileSync(stripFileProtocol(filePath), "utf8"),
-        filePath
+        filePath,
+        cwd
       )
     );
   }
@@ -112,7 +119,7 @@ function initBuild(
         return handleError(sheet.error, fullPath);
       }
 
-      const result = compile(
+      let code = compile(
         { ast, classNames: exports.style.classNames },
         fullPath,
         compilerOptions
@@ -124,29 +131,42 @@ function initBuild(
           outputFilePath = outputFilePath.replace(".pc", "");
         }
         const uri = new url.URL(outputFilePath);
+
+        if (!compilerOptions.definition) {
+          const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
+          const basename = path.basename(url.fileURLToPath(cssFilePath));
+
+          console.log(
+            "Writing %s",
+            path.relative(process.cwd(), url.fileURLToPath(cssFilePath))
+          );
+
+          fs.writeFileSync(
+            new url.URL(cssFilePath),
+            stringifyCSSSheet(sheet, { protocol: "file://" })
+          );
+
+          code = `import "./${basename}"\n\n` + code;
+        }
+
         console.log(
           "Writing %s",
           path.relative(process.cwd(), url.fileURLToPath(uri))
         );
-        fs.writeFileSync(uri, result);
-
-        if (!compilerOptions.definition) {
-          const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
-          console.log("Writing %s", cssFilePath);
-          fs.writeFileSync(
-            new url.URL(cssFilePath),
-            stringifyCSSSheet(sheet, "file://")
-          );
-        }
+        fs.writeFileSync(uri, code);
       } else {
         console.log("Compiling %s", relativePath);
 
         // Keep me for stdout
-        console.log(result);
+        console.log(code);
       }
     } catch (e) {
-      console.log("Err %s", relativePath);
-      console.error(e);
+      if (e.location) {
+        handleError(e, fullPath);
+      } else {
+        console.log("Err %s", relativePath);
+        console.error(e);
+      }
     }
   }
 
