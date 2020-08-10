@@ -29,12 +29,7 @@ function Home() {
     >
       <styles.Home>
         <styles.Header
-          title={
-            <>
-              A <styles.Highlight>faster</styles.Highlight> way to build React
-              applications.
-            </>
-          }
+          title={<>Spend less time tweaking CSS.</>}
           description={
             /* 
 
@@ -45,10 +40,10 @@ function Home() {
             - More natural than the current way of building UIs
             */
             <>
-              Paperclip allows you to use{" "}
-              <styles.Highlight>plain HTML & CSS</styles.Highlight> to build
-              user interfaces for your React app,{" "}
-              <styles.Highlight>directly within VS Code</styles.Highlight>.
+              With <styles.Highlight>Realtime previews</styles.Highlight>, and{" "}
+              <styles.Highlight>visual regression testing</styles.Highlight>,
+              Paperclip is a language allows you to build React applications
+              faster than ever.
             </>
 
             // <>
@@ -106,8 +101,8 @@ function Home() {
         <styles.MainFeatures>
           <styles.MainFeatureItem
             iconName="shapes"
-            title="Write plain HTML & CSS"
-            description="Use plain 'ol HTML & CSS to define the UI building blocks for your web application."
+            title="Write HTML & CSS"
+            description="Use plain 'ol HTML & CSS to define the UI building blocks for your web application. "
             example={
               <CodeBlock className="language-html" style={{ height: 500 }}>
                 {PRIMITIVE_UI_EXAMPLE}
@@ -150,7 +145,7 @@ function Home() {
         </styles.VariousFeatures>
         <styles.BigFeature
           title="Realtime previews in VS Code"
-          description="The VS Code extension comes with a super fast realtime preview that's powered by Rust, so you can enjoy uninterupted UI development, regardless of your project size. "
+          description="The VS Code extension comes with realtime previews, so you can iterate faster on your UIs."
           preview={<img src="img/button-demo.gif" />}
           ctaText="View the extension"
           ctaHref={"https://paperclip.dev/docs"}
