@@ -67,7 +67,6 @@ async function pcLoader(
 
     info = await engine.run(resourceUrl);
   } catch (e) {
-    console.error("OFDSNFJDSNFBJDSKBFDSJKFBDSJKFBDSKJ");
 
     // eesh 🙈
     const info =
