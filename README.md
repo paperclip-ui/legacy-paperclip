@@ -5,7 +5,7 @@
 
 # <img src="assets/logo.png" width="230">
 
-Paperclip is a language for creating UI primitives using basic HTML & CSS visually. 
+Paperclip is a language for creating UI primitives visually. 
 
 ![alt button demo](assets/button-demo.gif)
 
