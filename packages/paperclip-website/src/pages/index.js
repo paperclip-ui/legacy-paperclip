@@ -43,7 +43,7 @@ function Home() {
               With <styles.Highlight>Realtime previews</styles.Highlight>, and{" "}
               <styles.Highlight>visual regression testing</styles.Highlight>,
               Paperclip is a language allows you to build React applications
-              faster than ever.
+              faster, and with fewer CSS bugs.
             </>
 
             // <>
