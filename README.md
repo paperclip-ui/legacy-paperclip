@@ -100,7 +100,7 @@ function GroceryList() {
 
 # Roadmap
 
-Here's a peak at what's planned for Paperclip:
+Here's a peek at what's planned for Paperclip:
 
 - Multiple compiler targets so that you can re-use your Paperclip UIs in different languages & frameworks
 - Extension for Atom, Sublime, and other editors
