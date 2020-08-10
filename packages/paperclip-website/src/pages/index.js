@@ -24,8 +24,8 @@ function Home() {
   const prismTheme = usePrismTheme();
   return (
     <Layout
-      title={`${siteConfig.title} - build React applications in record time`}
-      description="Import HTML & CSS building blocks directly into your web application."
+      title={`${siteConfig.title} - build React apps live in VS Code`}
+      description="Paperclip is a language for UI primitives that helps you build web apps more quickly."
     >
       <styles.Home>
         <styles.Header
