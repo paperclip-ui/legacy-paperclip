@@ -101,7 +101,7 @@ function Home() {
         <styles.MainFeatures>
           <styles.MainFeatureItem
             iconName="shapes"
-            title="Uses plain HTML & CSS"
+            title="Use familiar syntax"
             description={
               <>
                 Paperclip uses familiar syntax for creating UI primitives. See
