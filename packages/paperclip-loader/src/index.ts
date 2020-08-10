@@ -98,7 +98,9 @@ async function pcLoader(
 
   const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);
-  virtualModules.writeModule(sheetFilePath, sheetCode);
+
+  // covers bug with node@10.13.0 where
+  virtualModules.writeModule(sheetFilePath.replace(/\/+/g, "\\"), sheetCode);
   code = `import "./${sheetFileName}";\n${code}`;
 
   callback(null, code);
