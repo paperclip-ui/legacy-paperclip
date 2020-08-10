@@ -98,13 +98,6 @@
       }
     }
 
-    ._highlight {
-      color: var(--color-green-neon-light);
-      &--noBreak {
-        white-space: nowrap;
-      }
-    }
-
     ._preview {
       position: relative;
       /* left: calc(100% - 400px); */
@@ -118,6 +111,19 @@
         width: auto;
         max-width: 1024px;
       }
+    }
+  }
+  ._highlight {
+    color: var(--color-green-neon-light);
+    &--darker {
+      color: var(--color-green-army);
+    }
+    &--bold {
+      font-weight: 600;
+    }
+    font-weight: 500;
+    &--noBreak {
+      white-space: nowrap;
     }
   }
   ._summary {
@@ -330,7 +336,10 @@
 
 </style>
 
-<span export component as="Highlight" className="_highlight" className:noBreak="_highlight--noBreak">
+<span export component as="Highlight" className="_highlight" 
+  className:noBreak="_highlight--noBreak"
+  className:darker="_highlight--darker"
+  className:bold="_highlight--bold">
   {children}
 </span>
 

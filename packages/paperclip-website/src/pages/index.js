@@ -101,8 +101,14 @@ function Home() {
         <styles.MainFeatures>
           <styles.MainFeatureItem
             iconName="shapes"
-            title="Write HTML & CSS"
-            description="Use plain 'ol HTML & CSS to define the UI building blocks for your web application. "
+            title="Uses plain HTML & CSS"
+            description={
+              <>
+                Paperclip uses familiar syntax for creating UI primitives. See
+                your changes <strong>in realtime</strong> using the{" "}
+                <a href="/docs/">VS Code extension</a>.
+              </>
+            }
             example={
               <CodeBlock className="language-html" style={{ height: 500 }}>
                 {PRIMITIVE_UI_EXAMPLE}
@@ -112,7 +118,7 @@ function Home() {
           <styles.MainFeatureItem
             iconName="reactjs"
             title="Import directly into React code"
-            description="Paperclip compiles the HTML & CSS into JavaScript that you can import directly in your app."
+            description="Paperclip compiles the UIs into plan code that you can import directly in your React app. No runtimes needed."
             example={
               <CodeBlock className="language-jsx">
                 {IMPORT_CODE_DEMO_SOURCE}
