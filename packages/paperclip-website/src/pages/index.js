@@ -40,10 +40,8 @@ function Home() {
             - More natural than the current way of building UIs
             */
             <>
-              With <styles.Highlight>Realtime previews</styles.Highlight>, and{" "}
-              <styles.Highlight>visual regression testing</styles.Highlight>,
-              Paperclip is a language that allows you to build React
-              applications more quickly, and with fewer CSS bugs.
+              Paperclip is a language for UI primitives that allows you to build
+              React applications more quickly, and with fewer CSS bugs.
             </>
 
             // <>
