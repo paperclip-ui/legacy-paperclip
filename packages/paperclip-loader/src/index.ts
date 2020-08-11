@@ -67,7 +67,6 @@ async function pcLoader(
 
     info = await engine.run(resourceUrl);
   } catch (e) {
-
     // eesh 🙈
     const info =
       e && e.location ? e : e.info && e.info.location ? e.info : null;
@@ -96,11 +95,15 @@ async function pcLoader(
     protocol: resourceProtocol
   });
 
-  const sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
+  let sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);
 
-  // covers bug with node@10.13.0 where
-  virtualModules.writeModule(sheetFilePath.replace(/\/+/g, "\\"), sheetCode);
+  // covers bug with node@10.13.0 where paths aren't stringified correctly (C:/this/path/is/bad)
+  if (process.platform === "win32") {
+    sheetFilePath = sheetFilePath.replace(/\/+/g, "\\");
+  }
+
+  virtualModules.writeModule(sheetFilePath, sheetCode);
   code = `import "./${sheetFileName}";\n${code}`;
 
   callback(null, code);
