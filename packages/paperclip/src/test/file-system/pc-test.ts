@@ -1,8 +1,11 @@
+import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
 import { expect } from "chai";
 import { createEngine } from "../../../";
 import { stringifyLoadResult, TEST_FIXTURE_SRC_DIRECTORY } from "../utils";
+import { resolveImportUri } from "paperclip-utils";
+import { resolveAllPaperclipFiles } from "../../utils";
 
 describe(__filename + "#", () => {
   it("Can load an entry that has an import", async () => {
@@ -66,6 +69,22 @@ describe(__filename + "#", () => {
     const result = await e.run(
       url
         .pathToFileURL(path.join(TEST_FIXTURE_SRC_DIRECTORY, "mod-a-import.pc"))
+        .toString()
+    );
+
+    expect(stringifyLoadResult(result).replace(/ data-pc-[^>\s]+/g, "")).to.eql(
+      `<style></style><div>Some Module <div>from test.pc </div></div>`
+    );
+  });
+
+  it("can resolve a pc file from a nested module", async () => {
+    const e = await createEngine();
+
+    const result = await e.run(
+      url
+        .pathToFileURL(
+          path.join(TEST_FIXTURE_SRC_DIRECTORY, "nested-mod-import.pc")
+        )
         .toString()
     );
 

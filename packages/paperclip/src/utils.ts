@@ -61,6 +61,23 @@ const findResourcesFromConfig = (
     });
 };
 
+const resolveModuleRoot = (fromDir: string) => {
+  if (!fs.lstatSync(fromDir).isDirectory()) {
+    return null;
+  }
+  if (fs.existsSync(path.join(fromDir, "package.json"))) {
+    return fromDir;
+  }
+
+  for (const dirname of fs.readdirSync(fromDir)) {
+    const possibleRoot = resolveModuleRoot(path.join(fromDir, dirname));
+    if (possibleRoot) {
+      return possibleRoot;
+    }
+  }
+  return null;
+};
+
 export const resolveAllPaperclipFiles = findResourcesFromConfig(
   (config, cwd) => {
     const pcSources = glob.sync(
@@ -73,11 +90,17 @@ export const resolveAllPaperclipFiles = findResourcesFromConfig(
 
     if (config.moduleDirectories) {
       for (const modulesDirname of config.moduleDirectories) {
-        for (const dirname of fs.readdirSync(modulesDirname)) {
-          const moduleDir = path.join(cwd, modulesDirname, dirname);
+        const moduleDirPath = path.join(cwd, modulesDirname);
+        for (const dirname of fs.readdirSync(moduleDirPath)) {
+          // need to scan until there's a package. This covers @organization namespaces.
+          const moduleDir = resolveModuleRoot(
+            path.join(moduleDirPath, dirname)
+          );
+          if (!moduleDir) {
+            continue;
+          }
 
           const pcConfigPath = path.join(moduleDir, PC_CONFIG_FILE_NAME);
-          console.log(pcConfigPath);
           if (!fs.existsSync(pcConfigPath)) {
             continue;
           }

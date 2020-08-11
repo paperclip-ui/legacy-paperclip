@@ -1,0 +1,5 @@
+<div export component as="default">
+  from test.pc
+</div>
+fsdfs
+fdsfsd
