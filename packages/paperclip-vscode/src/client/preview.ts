@@ -15,7 +15,8 @@ import {
   ViewColumn,
   workspace,
   Selection,
-  env
+  env,
+  ConfigurationTarget
 } from "vscode";
 import { isPaperclipFile } from "./utils";
 import * as path from "path";
@@ -25,13 +26,9 @@ import {
   NotificationType,
   Load,
   Unload,
-  PreviewInitParams,
-  ErrorLoading,
-  LoadParams,
   LoadedParams,
   ErrorLoadingParams
 } from "../common/notifications";
-import { Engine } from "paperclip";
 
 const VIEW_TYPE = "paperclip-preview";
 
@@ -39,11 +36,13 @@ const RENDERER_MODULE_NAME = "paperclip-web-renderer";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
+  Always = "Always",
   No = "No"
 }
 
 type LivePreviewState = {
   targetUri: string;
+  sticky: boolean;
 };
 
 export const activate = (client: LanguageClient, context: ExtensionContext) => {
@@ -53,7 +52,7 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
 
   let _showedOpenLivePreviewPrompt = false;
 
-  const openLivePreview = async (editor: TextEditor) => {
+  const openLivePreview = async (editor: TextEditor, sticky: boolean) => {
     const paperclipUri = String(editor.document.uri);
 
     // NOTE - don't get in the way of opening the live preview since
@@ -75,7 +74,7 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
     );
 
     registerLivePreview(
-      new LivePreview(client, panel, extensionPath, paperclipUri)
+      new LivePreview(client, panel, extensionPath, paperclipUri, sticky)
     );
   };
 
@@ -90,43 +89,71 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
     });
   };
 
+  const getStickyWindow = () => {
+    return _previews.find(preview => preview.sticky);
+  };
+
   /**
    * This really just provides a lower barrier to entry -- prompts once with
    * info about the command, then disappear
    */
 
   const askToDisplayLivePreview = async (editor: TextEditor) => {
-    if (_showedOpenLivePreviewPrompt || _previews.length) {
-      return;
+    if (_showedOpenLivePreviewPrompt) {
+      return false;
     }
 
     _showedOpenLivePreviewPrompt = true;
 
     const option = await window.showInformationMessage(
       `Would you like to open a live preview? Command: "Paperclip: Open Live Preview" is also available. `,
+      OpenLivePreviewOptions.Always,
       OpenLivePreviewOptions.Yes,
       OpenLivePreviewOptions.No
     );
 
     if (option === OpenLivePreviewOptions.Yes) {
-      openLivePreview(editor);
+      openLivePreview(editor, false);
+    } else if (option === OpenLivePreviewOptions.Always) {
+      await workspace
+        .getConfiguration()
+        .update(
+          "paperclip.preview.alwaysShow",
+          true,
+          ConfigurationTarget.Global
+        );
+      openLivePreview(editor, true);
     }
+
+    return true;
   };
 
-  const onTextEditorChange = (editor: TextEditor) => {
+  const onTextEditorChange = async (editor: TextEditor) => {
     const uri = String(editor.document.uri);
     if (isPaperclipFile(uri)) {
-      askToDisplayLivePreview(editor);
+      const stickyWindow = getStickyWindow();
+      if (stickyWindow) {
+        stickyWindow.setTargetUri(uri);
+      } else if (
+        workspace.getConfiguration().get("paperclip.preview.alwaysShow")
+      ) {
+        console.log(
+          workspace.getConfiguration().get("paperclip.preview.alwaysShow")
+        );
+        openLivePreview(editor, true);
+      } else if (!_previews.length) {
+        askToDisplayLivePreview(editor);
+      }
     }
   };
 
   window.registerWebviewPanelSerializer(VIEW_TYPE, {
     async deserializeWebviewPanel(
       panel: WebviewPanel,
-      { targetUri }: LivePreviewState
+      { targetUri, sticky }: LivePreviewState
     ) {
       registerLivePreview(
-        new LivePreview(client, panel, extensionPath, targetUri)
+        new LivePreview(client, panel, extensionPath, targetUri, sticky)
       );
     }
   });
@@ -138,17 +165,26 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
     }
   }, 500);
 
-  commands.registerCommand("paperclip.openPreview", () => {
+  const handlePreviewCommand = (sticky: boolean) => () => {
     if (window.activeTextEditor) {
       if (isPaperclipFile(String(window.activeTextEditor.document.uri))) {
-        openLivePreview(window.activeTextEditor);
+        openLivePreview(window.activeTextEditor, sticky);
       } else {
         window.showErrorMessage(
           `Only Paperclip (.pc) are supported in Live Preview`
         );
       }
     }
-  });
+  };
+
+  commands.registerCommand(
+    "paperclip.openPreview",
+    handlePreviewCommand(false)
+  );
+  commands.registerCommand(
+    "paperclip.openStickyPreview",
+    handlePreviewCommand(true)
+  );
 
   commands.registerCommand("paperclip.giveFeedback", () => {
     env.openExternal(Uri.parse("https://github.com/crcn/paperclip/issues"));
@@ -183,16 +219,17 @@ class LivePreview {
   private _disposeEngineListener: () => void;
   private _previewReady: () => void;
   private _readyPromise: Promise<any>;
-  public readonly targetUri: string;
+  private _targetUri: string;
 
   constructor(
     private _client: LanguageClient,
     readonly panel: WebviewPanel,
     private readonly _extensionPath: string,
-    targetUri: string
+    targetUri: string,
+    readonly sticky: boolean
   ) {
     this._em = new EventEmitter();
-    this.targetUri = targetUri;
+    this._targetUri = targetUri;
     this.panel.webview.onDidReceiveMessage(this._onMessage);
     this._render();
     panel.onDidDispose(this._onPanelDispose);
@@ -215,9 +252,20 @@ class LivePreview {
     });
     this.panel.webview.onDidReceiveMessage(this._onPreviewMessage);
   }
+  getTargetUri() {
+    return this._targetUri;
+  }
+  setTargetUri(value: string) {
+    this.panel.title = `⚡️ ${
+      this.sticky ? "sticky preview" : path.basename(value)
+    }`;
+    this._targetUri = value;
+    this._render();
+  }
   getState(): LivePreviewState {
     return {
-      targetUri: this.targetUri
+      targetUri: this._targetUri,
+      sticky: this.sticky
     };
   }
   private _createReadyPromise() {
@@ -234,7 +282,7 @@ class LivePreview {
     this._createReadyPromise();
 
     this._client.sendNotification(
-      ...new Load({ uri: this.targetUri }).getArgs()
+      ...new Load({ uri: this._targetUri }).getArgs()
     );
   }
   private _onPanelDispose = () => {
@@ -290,7 +338,7 @@ class LivePreview {
     // TODO when live preview tools are available
   };
   public async $$handleErrorLoading({ uri, error }: ErrorLoadingParams) {
-    if (uri === this.targetUri) {
+    if (uri === this._targetUri) {
       await this._readyPromise;
       this._needsReloading = true;
       this.panel.webview.postMessage({
@@ -300,7 +348,7 @@ class LivePreview {
     }
   }
   public async $$handleLoaded({ uri, data }: LoadedParams) {
-    if (uri === this.targetUri) {
+    if (uri === this._targetUri) {
       await this._readyPromise;
       this.panel.webview.postMessage({
         type: "INIT",
@@ -320,14 +368,14 @@ class LivePreview {
     // all error events get passed to preview.
     if (event.kind !== EngineEventKind.Error) {
       if (
-        event.uri !== this.targetUri &&
+        event.uri !== this._targetUri &&
         !this._dependencies.includes(event.uri)
       ) {
         return;
       }
 
       if (
-        event.uri == this.targetUri &&
+        event.uri == this._targetUri &&
         (event.kind === EngineEventKind.Evaluated ||
           event.kind === EngineEventKind.Loaded ||
           event.kind === EngineEventKind.Diffed ||
@@ -374,7 +422,7 @@ class LivePreview {
     <body>
       <script>
         const PROTOCOL = "${scriptUri.scheme}://${scriptUri.authority}/file";
-        const TARGET_URI = "${this.targetUri}";
+        const TARGET_URI = "${this._targetUri}";
         const vscode = acquireVsCodeApi();
         vscode.setState(${JSON.stringify(this.getState())});
       </script>

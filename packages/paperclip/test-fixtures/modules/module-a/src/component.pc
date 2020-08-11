@@ -3,5 +3,7 @@
   Some Module
   <test />
 </div>
+something like this
+
 
 <default />

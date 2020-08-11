@@ -31,10 +31,26 @@
     "Programming Languages"
   ],
   "contributes": {
+    "configuration": [
+      {
+        "title": "Paperclip",
+        "properties": {
+          "paperclip.preview.alwaysShow": {
+            "type": "boolean",
+            "default": false,
+            "description": "Always show preview of Paperclip file when opened"
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "paperclip.openPreview",
         "title": "Paperclip: Open Live Preview"
+      },
+      {
+        "command": "paperclip.openStickyPreview",
+        "title": "Paperclip: Open Sticky Preview"
       },
       {
         "command": "paperclip.giveFeedback",
@@ -46,6 +62,10 @@
         {
           "command": "paperclip.openPreview",
           "when": "editorLangId == paperclip"
+        },
+        {
+          "command": "paperclip.openStickyPreview",
+          "when": "editorLangId == paperclip"
         }
       ]
     },
@@ -53,6 +73,11 @@
       {
         "command": "paperclip.openPreview",
         "key": "shift+cmd+v",
+        "when": "editorLangId == paperclip"
+      },
+      {
+        "command": "paperclip.openStickyPreview",
+        "key": "shift+cmd+b",
         "when": "editorLangId == paperclip"
       }
     ],
