@@ -13,7 +13,11 @@ describe(__filename + "#", () => {
       ).href,
       true
     );
-    expect(results).to.eql([
+    expect(
+      results.map(path => {
+        return path.replace(/^\.\//, "");
+      })
+    ).to.eql([
       "bad-css-url.pc",
       "bad-import.pc",
       "good-import.pc",
