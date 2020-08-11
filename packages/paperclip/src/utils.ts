@@ -103,56 +103,75 @@ const filterAllFiles = (filter: (filePath: string) => boolean) => {
   return scan;
 };
 
-export const resolveAllPaperclipFiles = findResourcesFromConfig(
-  (config, cwd) => {
-    const pcSources = glob.sync(
-      paperclipSourceGlobPattern(config.sourceDirectory),
-      {
-        cwd,
-        realpath: true
-      }
-    );
+const resolveResources = (
+  config: PaperclipConfig,
+  cwd: string,
+  filterFiles: (dir: string) => string[]
+) => {
+  const sourceDir =
+    config.sourceDirectory === "."
+      ? cwd
+      : path.join(cwd, config.sourceDirectory);
+  const filePaths = filterFiles(sourceDir);
 
-    if (config.moduleDirectories) {
-      for (const modulesDirname of config.moduleDirectories) {
-        const moduleDirPath = path.join(cwd, modulesDirname);
-        const moduleRoots = resolveModuleRoots(moduleDirPath);
-        for (const moduleDir of moduleRoots) {
-          // need to scan until there's a package. This covers @organization namespaces.
+  if (config.moduleDirectories) {
+    for (const modulesDirname of config.moduleDirectories) {
+      const moduleDirPath = path.join(cwd, modulesDirname);
+      const moduleRoots = resolveModuleRoots(moduleDirPath);
+      for (const moduleDir of moduleRoots) {
+        // need to scan until there's a package. This covers @organization namespaces.
 
-          if (!moduleDir) {
-            continue;
-          }
-
-          const pcConfigPath = path.join(moduleDir, PC_CONFIG_FILE_NAME);
-          if (!fs.existsSync(pcConfigPath)) {
-            continue;
-          }
-          const moduleConfig: PaperclipConfig = JSON.parse(
-            fs.readFileSync(pcConfigPath, "utf8")
-          );
-
-          const moduleSources = filterAllFiles(
-            filePath => path.extname(filePath) === ".pc"
-          )(path.join(moduleDir, moduleConfig.sourceDirectory));
-
-          pcSources.push(...moduleSources);
+        if (!moduleDir) {
+          continue;
         }
+
+        const pcConfigPath = path.join(moduleDir, PC_CONFIG_FILE_NAME);
+        if (!fs.existsSync(pcConfigPath)) {
+          continue;
+        }
+        const moduleConfig: PaperclipConfig = JSON.parse(
+          fs.readFileSync(pcConfigPath, "utf8")
+        );
+
+        const moduleSources = filterFiles(
+          path.join(moduleDir, moduleConfig.sourceDirectory)
+        );
+
+        filePaths.push(...moduleSources);
       }
     }
+  }
 
-    return pcSources;
+  return filePaths;
+};
+
+export const resolveAllPaperclipFiles = findResourcesFromConfig(
+  (config, cwd) => {
+    return resolveResources(
+      config,
+      cwd,
+      filterAllFiles(filePath => path.extname(filePath) === ".pc")
+    );
   }
 );
 export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
-  const ext = `+(jpg|jpeg|png|gif|svg)`;
+  // const ext = `+(jpg|jpeg|png|gif|svg)`;
+  const exts = [".jpg", ".jpeg", ".png", ".gif", ".svg"];
 
-  const sourceDir = config.sourceDirectory;
-  if (sourceDir === ".") {
-    return glob.sync(`**/*.${ext}`, { cwd, realpath: true });
-  }
+  // const sourceDir = config.sourceDirectory;
 
-  return glob.sync(`${sourceDir}/**/*.${ext}`, { cwd, realpath: true });
+  return resolveResources(
+    config,
+    cwd,
+    filterAllFiles(filePath => exts.includes(path.extname(filePath)))
+  );
+  // if (sourceDir === ".") {
+  //   return filterAllFiles(filePath => exts.includes(path.extname(filePath)))(cwd);
+  //   // return glob.sync(`**/*.${ext}`, { cwd, realpath: true });
+  // }
+
+  // // return glob.sync(`${sourceDir}/**/*.${ext}`, { cwd, realpath: true });
+  // return filterAllFiles(filePath => exts.includes(path.extname(filePath)))(path.join(cwd, sourceDir));
 });
 
 const getModulePath = (
