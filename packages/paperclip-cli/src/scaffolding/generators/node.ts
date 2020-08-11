@@ -90,7 +90,7 @@ export const node = {
     return {
       [GeneratorKind.Node]: {
         ...params,
-        devDependencies: ["paperclip-cli"],
+        devDependencies: ["paperclip-cli", "concurrently"],
         scripts: params.useTypescript
           ? {
               build: ["paperclip build --definition --write"],
@@ -115,7 +115,15 @@ export const node = {
       private: isPrivate,
       scripts: Object.keys(scripts || {}).reduce(
         (joinedScripts, scriptName) => {
-          joinedScripts[scriptName] = scripts[scriptName].join(" & ");
+          if (scripts[scriptName].length > 1) {
+            joinedScripts[scriptName] = `concurrently ${scripts[scriptName]
+              .map(script => {
+                return `"${script}"`;
+              })
+              .join(" ")}`;
+          } else {
+            joinedScripts[scriptName] = scripts[scriptName].join("");
+          }
           return joinedScripts;
         },
         {}
