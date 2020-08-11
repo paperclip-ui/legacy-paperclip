@@ -8,7 +8,7 @@ export const percy = {
     return {
       [GeneratorKind.Node]: {
         scripts: {
-          snapshot: ["percy -- --percy-paperclip"]
+          snapshot: ["percy exec -- percy-paperclip"]
         },
         devDependencies: ["percy", "percy-paperclip"]
       }
