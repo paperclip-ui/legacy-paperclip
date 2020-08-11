@@ -1,11 +1,8 @@
-import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
 import { expect } from "chai";
 import { createEngine } from "../../../";
 import { stringifyLoadResult, TEST_FIXTURE_SRC_DIRECTORY } from "../utils";
-import { resolveImportUri } from "paperclip-utils";
-import { resolveAllPaperclipFiles } from "../../utils";
 
 describe(__filename + "#", () => {
   it("Can load an entry that has an import", async () => {
