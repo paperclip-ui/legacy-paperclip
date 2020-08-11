@@ -441,10 +441,6 @@ const containsClasses = (data: LoadedData) => {
   return containsExports(data, "classNames");
 };
 
-const containsKeyframes = (data: LoadedData) => {
-  return containsExports(data, "keyframes");
-};
-
 const containsExports = (
   data: LoadedData,
   kind: "classNames" | "keyframes" | "variables"

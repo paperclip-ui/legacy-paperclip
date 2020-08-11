@@ -1,6 +1,6 @@
 // https://code.visualstudio.com/api/language-extensions/language-server-extension-guide
 
-import { workspace, ExtensionContext, window, languages } from "vscode";
+import { workspace, ExtensionContext, window } from "vscode";
 import * as path from "path";
 import {
   LanguageClient,

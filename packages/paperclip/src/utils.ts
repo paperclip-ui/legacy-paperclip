@@ -61,21 +61,46 @@ const findResourcesFromConfig = (
     });
 };
 
-const resolveModuleRoot = (fromDir: string) => {
-  if (!fs.lstatSync(fromDir).isDirectory()) {
-    return null;
+const resolveModuleRoots = (fromDir: string, roots: string[] = []) => {
+  const stat = fs.lstatSync(fromDir);
+  const realpath = stat.isSymbolicLink() ? fs.realpathSync(fromDir) : fromDir;
+  const newStat = realpath === fromDir ? stat : fs.lstatSync(realpath);
+  if (!newStat.isDirectory()) {
+    return roots;
   }
   if (fs.existsSync(path.join(fromDir, "package.json"))) {
-    return fromDir;
-  }
-
-  for (const dirname of fs.readdirSync(fromDir)) {
-    const possibleRoot = resolveModuleRoot(path.join(fromDir, dirname));
-    if (possibleRoot) {
-      return possibleRoot;
+    roots.push(fromDir);
+  } else {
+    for (const dirname of fs.readdirSync(realpath)) {
+      resolveModuleRoots(path.join(fromDir, dirname), roots);
     }
   }
-  return null;
+  return roots;
+};
+
+const filterAllFiles = (filter: (filePath: string) => boolean) => {
+  const scan = (currentPath: string, results: string[] = []) => {
+    const stat = fs.lstatSync(currentPath);
+    const realpath = stat.isSymbolicLink()
+      ? fs.realpathSync(currentPath)
+      : currentPath;
+
+    const newStat = realpath === currentPath ? stat : fs.lstatSync(realpath);
+    if (newStat.isDirectory()) {
+      for (const dirname of fs.readdirSync(realpath)) {
+        const dirpath = path.join(currentPath, dirname);
+        scan(dirpath, results);
+      }
+    } else {
+      if (filter(currentPath)) {
+        results.push(currentPath);
+      }
+    }
+
+    return results;
+  };
+
+  return scan;
 };
 
 export const resolveAllPaperclipFiles = findResourcesFromConfig(
@@ -91,11 +116,10 @@ export const resolveAllPaperclipFiles = findResourcesFromConfig(
     if (config.moduleDirectories) {
       for (const modulesDirname of config.moduleDirectories) {
         const moduleDirPath = path.join(cwd, modulesDirname);
-        for (const dirname of fs.readdirSync(moduleDirPath)) {
+        const moduleRoots = resolveModuleRoots(moduleDirPath);
+        for (const moduleDir of moduleRoots) {
           // need to scan until there's a package. This covers @organization namespaces.
-          const moduleDir = resolveModuleRoot(
-            path.join(moduleDirPath, dirname)
-          );
+
           if (!moduleDir) {
             continue;
           }
@@ -108,15 +132,9 @@ export const resolveAllPaperclipFiles = findResourcesFromConfig(
             fs.readFileSync(pcConfigPath, "utf8")
           );
 
-          const moduleSources = glob.sync(
-            paperclipSourceGlobPattern(
-              path.join(moduleDir, moduleConfig.sourceDirectory)
-            ),
-            {
-              cwd,
-              realpath: true
-            }
-          );
+          const moduleSources = filterAllFiles(
+            filePath => path.extname(filePath) === ".pc"
+          )(path.join(moduleDir, moduleConfig.sourceDirectory));
 
           pcSources.push(...moduleSources);
         }
