@@ -31,18 +31,7 @@
     "Programming Languages"
   ],
   "contributes": {
-    "configuration": [
-      {
-        "title": "Paperclip",
-        "properties": {
-          "paperclip.preview.alwaysShow": {
-            "type": "boolean",
-            "default": false,
-            "description": "Always show preview of Paperclip file when opened"
-          }
-        }
-      }
-    ],
+    "configuration": [],
     "commands": [
       {
         "command": "paperclip.openPreview",

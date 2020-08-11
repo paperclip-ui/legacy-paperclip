@@ -43,6 +43,7 @@ enum OpenLivePreviewOptions {
 type LivePreviewState = {
   targetUri: string;
   sticky: boolean;
+  closeWithFile: boolean;
 };
 
 export const activate = (client: LanguageClient, context: ExtensionContext) => {
@@ -52,7 +53,11 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
 
   let _showedOpenLivePreviewPrompt = false;
 
-  const openLivePreview = async (editor: TextEditor, sticky: boolean) => {
+  const openLivePreview = async (
+    editor: TextEditor,
+    sticky: boolean,
+    closeWithFile: boolean
+  ) => {
     const paperclipUri = String(editor.document.uri);
 
     // NOTE - don't get in the way of opening the live preview since
@@ -74,7 +79,14 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
     );
 
     registerLivePreview(
-      new LivePreview(client, panel, extensionPath, paperclipUri, sticky)
+      new LivePreview(
+        client,
+        panel,
+        extensionPath,
+        paperclipUri,
+        sticky,
+        closeWithFile
+      )
     );
   };
 
@@ -113,34 +125,23 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
     );
 
     if (option === OpenLivePreviewOptions.Yes) {
-      openLivePreview(editor, false);
+      openLivePreview(editor, false, false);
     } else if (option === OpenLivePreviewOptions.Always) {
-      await workspace
-        .getConfiguration()
-        .update(
-          "paperclip.preview.alwaysShow",
-          true,
-          ConfigurationTarget.Global
-        );
-      openLivePreview(editor, true);
+      openLivePreview(editor, true, false);
     }
 
     return true;
   };
 
   const onTextEditorChange = async (editor: TextEditor) => {
+    if (!editor) {
+      return;
+    }
     const uri = String(editor.document.uri);
+    const stickyWindow = getStickyWindow();
     if (isPaperclipFile(uri)) {
-      const stickyWindow = getStickyWindow();
       if (stickyWindow) {
         stickyWindow.setTargetUri(uri);
-      } else if (
-        workspace.getConfiguration().get("paperclip.preview.alwaysShow")
-      ) {
-        console.log(
-          workspace.getConfiguration().get("paperclip.preview.alwaysShow")
-        );
-        openLivePreview(editor, true);
       } else if (!_previews.length) {
         askToDisplayLivePreview(editor);
       }
@@ -150,10 +151,17 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
   window.registerWebviewPanelSerializer(VIEW_TYPE, {
     async deserializeWebviewPanel(
       panel: WebviewPanel,
-      { targetUri, sticky }: LivePreviewState
+      { targetUri, sticky, closeWithFile }: LivePreviewState
     ) {
       registerLivePreview(
-        new LivePreview(client, panel, extensionPath, targetUri, sticky)
+        new LivePreview(
+          client,
+          panel,
+          extensionPath,
+          targetUri,
+          sticky,
+          closeWithFile
+        )
       );
     }
   });
@@ -168,7 +176,7 @@ export const activate = (client: LanguageClient, context: ExtensionContext) => {
   const handlePreviewCommand = (sticky: boolean) => () => {
     if (window.activeTextEditor) {
       if (isPaperclipFile(String(window.activeTextEditor.document.uri))) {
-        openLivePreview(window.activeTextEditor, sticky);
+        openLivePreview(window.activeTextEditor, sticky, false);
       } else {
         window.showErrorMessage(
           `Only Paperclip (.pc) are supported in Live Preview`
@@ -216,7 +224,6 @@ class LivePreview {
   private _em: EventEmitter;
   private _dependencies: string[] = [];
   private _needsReloading: boolean;
-  private _disposeEngineListener: () => void;
   private _previewReady: () => void;
   private _readyPromise: Promise<any>;
   private _targetUri: string;
@@ -226,7 +233,8 @@ class LivePreview {
     readonly panel: WebviewPanel,
     private readonly _extensionPath: string,
     targetUri: string,
-    readonly sticky: boolean
+    readonly sticky: boolean,
+    readonly closeWithFile: boolean
   ) {
     this._em = new EventEmitter();
     this._targetUri = targetUri;
@@ -265,7 +273,8 @@ class LivePreview {
   getState(): LivePreviewState {
     return {
       targetUri: this._targetUri,
-      sticky: this.sticky
+      sticky: this.sticky,
+      closeWithFile: this.closeWithFile
     };
   }
   private _createReadyPromise() {
@@ -432,7 +441,6 @@ class LivePreview {
   }
   dispose() {
     this._em.emit("didDispose");
-    this._disposeEngineListener();
     try {
       this.panel.dispose();
     } catch (e) {
