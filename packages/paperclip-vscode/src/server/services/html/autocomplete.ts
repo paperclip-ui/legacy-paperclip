@@ -260,6 +260,7 @@ export class PCAutocomplete {
   ) {
     if (context.tagPath.length === 1 && context.tagPath[0] === "import") {
       if (context.attributeName == "src") {
+        console.log(context.attributeValuePrefix);
         return stringArrayToAutoCompleteItems(
           resolveAllPaperclipFiles(fs)(uri, true)
         );
@@ -439,10 +440,6 @@ const containsVars = (data: LoadedData) => {
 
 const containsClasses = (data: LoadedData) => {
   return containsExports(data, "classNames");
-};
-
-const containsKeyframes = (data: LoadedData) => {
-  return containsExports(data, "keyframes");
 };
 
 const containsExports = (

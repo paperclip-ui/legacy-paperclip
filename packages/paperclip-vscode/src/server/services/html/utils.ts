@@ -16,7 +16,7 @@ export const RETRIGGER_COMMAND = {
 export const stringArrayToAutoCompleteItems = memoize(
   (values: string[]): CompletionItem[] =>
     values.sort().map((value, i) => ({
-      label: value,
+      label: String(value),
 
       // ensures that completion list is always scrolled at the top
       preselect: i === 0
