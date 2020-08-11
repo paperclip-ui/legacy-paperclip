@@ -49,7 +49,7 @@ module.exports = {
         // {to: 'blog', label: 'Blog', position: 'left'},
         {
           href: "https://chat.paperclip.dev/",
-          label: "Help",
+          label: "Chat",
           position: "right"
         },
         {
