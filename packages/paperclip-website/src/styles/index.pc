@@ -343,11 +343,11 @@
   {children}
 </span>
 
-<div export component as="Home" className="_home >>>typography.text-default">
+<div export component as="Home" className="_home $typography.text-default">
   {children}
 </div>
 
-<layout.Container export component as="Header" className=">>>_header >>>_main">
+<layout.Container export component as="Header" className="$_header $_main">
   <layout.Row>
     <div className="_blurb">
       <div className="_title">
@@ -369,8 +369,8 @@
 <div component as="CodePreview" className="_code-preview">
 </div>
 
-<div export component as="Summary" className="_summary >>>layout._row">
-  <div className=">>>layout._col12">
+<div export component as="Summary" className="_summary $layout._row">
+  <div className="$layout._col12">
     <div className="_title">
       {title}
     </div>
@@ -381,13 +381,13 @@
 </div>
 
 
-<div export component as="MainFeatures" className="_main-features >>>layout._row">
+<div export component as="MainFeatures" className="_main-features $layout._row">
   {children}
 </div>
 
-<div export component as="MainFeatureItem" className="_item >>>layout._col >>>layout._col6">
+<div export component as="MainFeatureItem" className="_item $layout._col $layout._col6">
   <div className="_heading">
-    <icons.Icon name={iconName} className=">>>_icon" />
+    <icons.Icon name={iconName} className="$_icon" />
     <div className="_info">
       <div className="_title">
         <span>{title}</span>
@@ -401,12 +401,12 @@
 </div>
 
 
-<div export component as="VariousFeatures" className="_various-features >>>layout._row">
+<div export component as="VariousFeatures" className="_various-features $layout._row">
   {children}
 </div>
 
-<div export component as="VariousFeatureItem" className="_item  >>>layout._col >>>layout._col3">
-  <icons.Icon name={iconName} className=">>>_icon" />
+<div export component as="VariousFeatureItem" className="_item  $layout._col $layout._col3">
+  <icons.Icon name={iconName} className="$_icon" />
   <div className="_info">
     <div className="_title">
       <span>{title}</span>
@@ -417,9 +417,9 @@
   </div>
 </div>
 
-<div export component as="BigFeature" className="_big-feature >>>layout._section >>>layout._row">
-  <div className="_item >>>layout._col >>>layout._col3">
-    <icons.Icon name="grow" className=">>>_icon" />
+<div export component as="BigFeature" className="_big-feature $layout._section $layout._row">
+  <div className="_item $layout._col $layout._col3">
+    <icons.Icon name="grow" className="$_icon" />
     <div clasName="_info">
       <div className="_title">
         {title}
@@ -428,7 +428,7 @@
         {description}
       </div>
       <a className="_mini-cta-link" href={ctaHref?}>
-        {ctaText} <icons.Icon name="chevron-right" className=">>>_mini-cta-icon" />
+        {ctaText} <icons.Icon name="chevron-right" className="$_mini-cta-icon" />
       </a>
     </div>
   </div>
@@ -442,8 +442,8 @@
     title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
     description={<fragment>With tooling for <Highlight>realtime previews</Highlight> & <Highlight>automatic visual regresion testing</Highlight>, you can build UIs in no time using the language you already know.</fragment>}
     cta={<fragment>
-      <button.Anchor className=">>>typography.semi-bold" strong>Get started</button.Anchor>
-      <button.Anchor secondary className=">>>typography.semi-bold">Check out on GitHub</button.Anchor>
+      <button.Anchor className="$typography.semi-bold" strong>Get started</button.Anchor>
+      <button.Anchor secondary className="$typography.semi-bold">Check out on GitHub</button.Anchor>
     </fragment>}
     preview={<img src="../../static/img/vscode-screenshot.png">}
   />

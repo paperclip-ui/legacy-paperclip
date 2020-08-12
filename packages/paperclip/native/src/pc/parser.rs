@@ -350,7 +350,7 @@ fn parse_tag_name<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<String, ParseErro
     get_buffer(tokenizer, |tokenizer| {
       Ok(matches!(
         tokenizer.peek(1)?,
-        Token::Word(_) | Token::Minus | Token::Dot | Token::Byte(b'$') | Token::Byte(b'_')
+        Token::Word(_) | Token::Minus | Token::Dot | Token::Dollar | Token::Byte(b'_')
       ))
     })?
     .to_string(),
@@ -514,11 +514,11 @@ fn parse_attribute_string_value<'a>(
       break;
     }
 
-    if curr == Token::Pierce {
-      tokenizer.next()?; // eat >>>
+    if curr == Token::Pierce || curr == Token::Dollar {
+      tokenizer.next()?; // eat $
       let class_name = get_buffer(tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
-        Ok(!matches!(tok, Token::Whitespace | Token::Pierce | Token::CurlyOpen) && tok != quote)
+        Ok(!matches!(tok, Token::Whitespace | Token::Pierce | Token::Dollar | Token::CurlyOpen) && tok != quote)
       })?
       .to_string();
 
@@ -536,7 +536,7 @@ fn parse_attribute_string_value<'a>(
       let start = tokenizer.utf16_pos;
       let value = get_buffer(tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
-        Ok(!matches!(tok, Token::Pierce | Token::CurlyOpen) && tok != quote)
+        Ok(!matches!(tok, Token::Pierce |  Token::Dollar | Token::CurlyOpen) && tok != quote)
       })?
       .to_string();
       parts.push(pc_ast::AttributeDynamicStringPart::Literal({

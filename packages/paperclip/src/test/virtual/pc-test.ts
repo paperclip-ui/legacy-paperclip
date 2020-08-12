@@ -620,7 +620,7 @@ describe(__filename + "#", () => {
     });
   });
 
-  it("Can apply a class to {className?} without needing >>>", async () => {
+  it("Can apply a class to {className?} without needing $", async () => {
     const graph = {
       "/entry.pc": `
         <div component as="Test" {className}>
@@ -637,7 +637,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Can apply a class to className={className?} without needing >>>`, async () => {
+  it(`Can apply a class to className={className?} without needing $`, async () => {
     const graph = {
       "/entry.pc": `
         <div component as="Test" className={className?}>
@@ -654,7 +654,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Can apply a class to className="a {className?}" without needing >>>`, async () => {
+  it(`Can apply a class to className="a {className?}" without needing $`, async () => {
     const graph = {
       "/entry.pc": `
         <div component as="Test" className="a {className?}">
@@ -671,11 +671,11 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Doesn't apply scope if >>> is provided`, async () => {
+  it(`Doesn't apply scope if $ is provided`, async () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="module">
-        <module.Test className=">>>ok" />
+        <module.Test className="$ok" />
       `,
       "/module.pc": `
         <div export component as="Test" className="a {className?}">
@@ -828,7 +828,7 @@ describe(__filename + "#", () => {
   it(`Displays an error if a shadow pierce import is missing`, async () => {
     const graph = {
       "/entry.pc": `
-        <div className=">>>tw.test">
+        <div className="$tw.test">
           
         </div>
       `
@@ -847,7 +847,7 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 24, end: 35 },
+      location: { start: 24, end: 33 },
       message: "Reference not found."
     });
   });
@@ -857,7 +857,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw">
-        <div className=">>>tw.test">
+        <div className="$tw.test">
           
         </div>
       `,
@@ -881,7 +881,7 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 67, end: 78 },
+      location: { start: 67, end: 76 },
       message: "Class name not found."
     });
   });
@@ -890,7 +890,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw">
-        <div className=">>>tw.test">
+        <div className="$tw.test">
           
         </div>
       `,
@@ -916,12 +916,38 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 67, end: 78 },
+      location: { start: 67, end: 76 },
       message: "This class reference is private."
     });
   });
 
   it(`Can use a public class pierce`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./module.pc" as="tw">
+        <div className="$tw.test">
+          
+        </div>
+      `,
+      "/module.pc": `
+        <style>
+          @export {
+            .test {
+
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test test" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Deprecated >>> works`, async () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw">
@@ -950,7 +976,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw">
-        <div export component as="Test" className=">>>tw.test">
+        <div export component as="Test" className="$tw.test">
           
         </div>
         <Test />
@@ -980,7 +1006,7 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `
         <import src="./module2.pc" as="tw">
-        <div export component as="Test" className=">>>tw.test">
+        <div export component as="Test" className="$tw.test">
         </div>
       `,
       "/module2.pc": `
@@ -1005,7 +1031,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw">
-        <div export component as="Test" className=">>>tw.test checkbox">
+        <div export component as="Test" className="$tw.test checkbox">
           
         </div>
         <Test />

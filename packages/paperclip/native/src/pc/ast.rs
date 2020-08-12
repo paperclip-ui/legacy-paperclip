@@ -113,7 +113,7 @@ impl fmt::Display for AttributeDynamicStringValue {
           stmt.fmt(f);
         }
         AttributeDynamicStringPart::ClassNamePierce(stmt) => {
-          write!(f, ">>>{}", stmt.class_name);
+          write!(f, "${}", stmt.class_name);
         }
         AttributeDynamicStringPart::Literal(stmt) => {
           write!(f, "{}", stmt.value);

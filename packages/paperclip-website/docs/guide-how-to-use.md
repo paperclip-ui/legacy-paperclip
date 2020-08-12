@@ -117,7 +117,7 @@ Let's move onto something a bit more sophisticated 👌. Here's a site:
   }
 </style>
 
-<div export component as="Page" className="page" className:dark=">>>tokens.dark">
+<div export component as="Page" className="page" className:dark="$tokens.dark">
   {children}
 </div>
 
@@ -184,7 +184,7 @@ Let's move onto something a bit more sophisticated 👌. Here's a site:
 
 <div export component as="Header" 
   className="header"
-  className:dark=">>>tokens.dark">
+  className:dark="$tokens.dark">
   {children}
 </div>
 
@@ -242,7 +242,7 @@ Let's move onto something a bit more sophisticated 👌. Here's a site:
   }
 </style>
 
-<div export component as="Footer" className="footer" className:dark=">>>tokens.dark">
+<div export component as="Footer" className="footer" className:dark="$tokens.dark">
   {children}
 </div>
 

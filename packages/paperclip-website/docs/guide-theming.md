@@ -85,8 +85,8 @@ that components are being stylized correctly, and that no CSS bugs are introduce
 
 <div export component as="Button" 
   className="button"
-  className:dark=">>>theme.dark"
-  className:light=">>>theme.light">
+  className:dark="$theme.dark"
+  className:light="$theme.light">
   {children}
 </div>
 

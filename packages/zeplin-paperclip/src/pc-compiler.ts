@@ -220,7 +220,7 @@ export const compileLayers = (
       `<${tagName} export component as="${componentName}" className="${className}${
         textMixinMap[className]
           ? textMixinMap[className]
-              .map(mixinName => ` >>>typography.${mixinName}`)
+              .map(mixinName => ` $typography.${mixinName}`)
               .join("")
           : ""
       } {className?}" className:absolute>\n`

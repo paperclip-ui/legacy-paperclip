@@ -6,14 +6,14 @@ export default {
       
     <!-- This is exported to code -->  
     <div export component as="Button"
-      className=">>>styles.Button"
-      className:secondary=">>>styles.Button--secondary"
-      className:negate=">>>styles.Button--negate">
+      className="$styles.Button"
+      className:secondary="$styles.Button--secondary"
+      className:negate="$styles.Button--negate">
       {children}
     </div>
     
     <!-- This is a preview -->
-    <div className=">>>styles.preview">
+    <div className="$styles.preview">
       <Button>
         Primary button
       </Button>
