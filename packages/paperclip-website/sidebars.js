@@ -13,6 +13,7 @@ module.exports = {
       "guide-migrating-to-paperclip",
       "guide-third-party-libraries",
       "guide-dynamic-styles",
+      "guide-modules",
       "guide-theming"
     ],
     "API Reference": [

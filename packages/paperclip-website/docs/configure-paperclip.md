@@ -21,6 +21,9 @@ Here's an example of what it might look like:
   },
 
   // directory where all of the Paperclip files live
-  "sourceDirectory": "./src"
+  "sourceDirectory": "./src",
+
+  // paths to module directories
+  "moduleDirectories": ["node_modules"]
 }
 ```
