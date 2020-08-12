@@ -1,10 +1,8 @@
 import * as path from "path";
-import * as glob from "glob";
 import * as url from "url";
 import {
   findPCConfigUrl,
   PaperclipConfig,
-  paperclipSourceGlobPattern,
   PC_CONFIG_FILE_NAME
 } from "paperclip-utils";
 import * as fs from "fs";

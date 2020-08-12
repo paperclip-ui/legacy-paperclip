@@ -518,7 +518,12 @@ fn parse_attribute_string_value<'a>(
       tokenizer.next()?; // eat $
       let class_name = get_buffer(tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
-        Ok(!matches!(tok, Token::Whitespace | Token::Pierce | Token::Dollar | Token::CurlyOpen) && tok != quote)
+        Ok(
+          !matches!(
+            tok,
+            Token::Whitespace | Token::Pierce | Token::Dollar | Token::CurlyOpen
+          ) && tok != quote,
+        )
       })?
       .to_string();
 
@@ -536,7 +541,7 @@ fn parse_attribute_string_value<'a>(
       let start = tokenizer.utf16_pos;
       let value = get_buffer(tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
-        Ok(!matches!(tok, Token::Pierce |  Token::Dollar | Token::CurlyOpen) && tok != quote)
+        Ok(!matches!(tok, Token::Pierce | Token::Dollar | Token::CurlyOpen) && tok != quote)
       })?
       .to_string();
       parts.push(pc_ast::AttributeDynamicStringPart::Literal({
