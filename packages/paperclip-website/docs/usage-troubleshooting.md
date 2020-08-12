@@ -33,7 +33,7 @@ And then you have another component that's using TextInput:
   }
 </style>
 
-<TextInput className=">>>TextColorOverride" xsmall>
+<TextInput className="$TextColorOverride" xsmall>
 ```
 
 ☝🏻 `TextColorOverride` won't actually be applied. This is because to native CSS, the xsmall selector has a _higher priority_. Here's an example to illustrate this:
@@ -83,7 +83,7 @@ And _then_ you can apply style overrides:
   }
 </style>
 
-<TextInput className=">>>TextColorOverride" xsmall>
+<TextInput className="$TextColorOverride" xsmall>
 ```
 
 ☝🏻 In this case, `TextColorOverride` properties will be applied. 

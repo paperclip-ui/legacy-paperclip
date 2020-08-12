@@ -196,8 +196,8 @@ The `@export` rule allows you to export styles to other documents, as well as ap
   }
 </style>
 
-<!-- >>> is a class reference - docs below -->
-<div className="header-text >>>styles.default-text">
+<!-- $ is a class reference - docs below -->
+<div className="header-text $styles.default-text">
   Hello again!
 </div>
 
@@ -260,7 +260,7 @@ import * as typography from "./typography.pc";
 
 Note that `.header-text` is not exported, so it's not available in our app code.
 
-### >>>class-reference
+### $class-reference
 
 Paperclip allows you to explicitly reference class selectors, which is helpful if you're looking to reference or overrides styles in other documents. 
 
@@ -268,9 +268,9 @@ Paperclip allows you to explicitly reference class selectors, which is helpful i
 
 ```html
 
-<div className=">>>class-name" />
+<div className="$class-name" />
 
-<div className=">>>imported-doc.class-name" />
+<div className="$imported-doc.class-name" />
 ```
 
 **Example**:
@@ -279,7 +279,7 @@ Paperclip allows you to explicitly reference class selectors, which is helpful i
 // file: main.pc
 <import src="./atoms.pc" as="atoms">
 
-<span className=">>>atoms.font-default">
+<span className="$atoms.font-default">
   Hello
 </span>
 // file: atoms.pc
@@ -433,7 +433,7 @@ You can import [styles](#styling) & [components](#components) from other files.
 
 <pane.Container>
   <pane.Header>
-    <span className=">>>atoms.font-big">
+    <span className="$atoms.font-big">
       Header content
     </span>
   </pane.Header>
@@ -566,11 +566,11 @@ Anything that doesn't have a `component` attribute is rendered to the screen, so
 
 <!-- Components -->
 
-<!-- >>> is a class reference -- docs below -->
+<!-- $ is a class reference -- docs below -->
 <div component as="Button" 
-  className=">>>styles.Button"
-  className:secondary=">>>styles.Button--secondary"
-  className:negate=">>>styles.Button--negate">
+  className="$styles.Button"
+  className:secondary="$styles.Button--secondary"
+  className:negate="$styles.Button--negate">
   {children}
 </div>
 
@@ -644,24 +644,24 @@ Components can be exported to be used in application code, as well as other docu
 
 <!-- Components -->
 
-<div export component as="App" className=">>>styles.App">
+<div export component as="App" className="$styles.App">
   {children}
 </div>
 
 <input export component as="NewItemInput" {onChange} />
 
-<div export component as="Header" className=">>>styles.Header">
+<div export component as="Header" className="$styles.Header">
   <h4>Todos</h4>
   {children}
 </div>
 
-<ul export component as="List" className=">>>styles.List">
+<ul export component as="List" className="$styles.List">
   {children}
 </ul>
 
-<li export component as="Item" className=">>>styles.Item" {onClick}>
+<li export component as="Item" className="$styles.Item" {onClick}>
   <input type="checkbox" checked={completed}> 
-  <span className=">>>styles.label">{children}</span>
+  <span className="$styles.label">{children}</span>
 </li>
 
 <!-- Preview -->
@@ -761,8 +761,8 @@ We can also use our exported component in other Paperclip documents. Here's an e
 </style>
 
 <div className="preview">
-  <todos.Preview className=">>>preview-item" />
-  <todos.EmptyPreview className=">>>preview-item" />
+  <todos.Preview className="$preview-item" />
+  <todos.EmptyPreview className="$preview-item" />
 </div>
 
 // file: todos.pc
@@ -770,24 +770,24 @@ We can also use our exported component in other Paperclip documents. Here's an e
 
 <!-- Components -->
 
-<div export component as="App" className=">>>styles.App {className?}">
+<div export component as="App" className="$styles.App {className?}">
   {children}
 </div>
 
 <input export component as="NewItemInput" {onChange} />
 
-<div export component as="Header" className=">>>styles.Header">
+<div export component as="Header" className="$styles.Header">
   <h4>Todos</h4>
   {children}
 </div>
 
-<ul export component as="List" className=">>>styles.List">
+<ul export component as="List" className="$styles.List">
   {children}
 </ul>
 
-<li export component as="Item" className=">>>styles.Item" {onClick}>
+<li export component as="Item" className="$styles.Item" {onClick}>
   <input type="checkbox" checked={completed}> 
-  <span className=">>>styles.label">{children}</span>
+  <span className="$styles.label">{children}</span>
 </li>
 
 <!-- Export re-usable previews that can be used
@@ -858,7 +858,7 @@ You can override styles in other components assuming that a component exposes an
 **Syntax**:
 
 ```html
-attributeBoundToClassName=">>>class-name"
+attributeBoundToClassName="$class-name"
 ```
 
 **Example**:
@@ -871,7 +871,7 @@ attributeBoundToClassName=">>>class-name"
     text-decoration: underline;
   }
 </style>
-<Message className=">>>my-style-override">
+<Message className="$my-style-override">
   Hello World
 </Message>
 
@@ -888,7 +888,7 @@ attributeBoundToClassName=">>>class-name"
 </div>
 ```
 
-Check out [class references](#class-reference) for more information on how to use `>>>`.
+Check out [class references](#class-reference) for more information on how to use `$`.
 
 ## Bindings
 
@@ -929,12 +929,12 @@ There will probably be the case where you want to define multiple areas of a com
 
 <!-- Components -->
 
-<div component as="Pane" className=">>>styles.Pane">
-  <div className=">>>styles.header">
-    <div className=">>>styles.title">{title}</div>
-    <div className=">>>styles.controls">{controls}</div>
+<div component as="Pane" className="$styles.Pane">
+  <div className="$styles.header">
+    <div className="$styles.title">{title}</div>
+    <div className="$styles.controls">{controls}</div>
   </div>
-  <div className=">>>styles.content">
+  <div className="$styles.content">
     {children}
   </div>
 </div>
@@ -1000,13 +1000,13 @@ Attributes allow you to define dynamic component properties. For example:
 
 <!-- Generally I'd recommend just a `{className}` binding instead of `{customClassName}` class name, which I'm only using here to make more clear around how it works. -->
 <div component as="Button" 
-  className=">>>styles.button {customClassName}">
+  className="$styles.button {customClassName}">
   {children}
 </div>
 
 <!-- Previews -->
 
-<Button customClassName=">>>typography.big-text >>>typography.strong">
+<Button customClassName="$typography.big-text $typography.strong">
   Button
 </Button>
 

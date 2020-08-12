@@ -45,8 +45,8 @@ From there you can start using your styles:
 // file: demo.pc
 <import src="./migrated-css.pc" as="migrated-css">
 
-<div className=">>>migrated-css.container">
-  <div className=">>>migrated-css.content"> 
+<div className="$migrated-css.container">
+  <div className="$migrated-css.content"> 
     Some content!
   </div>
 </div>

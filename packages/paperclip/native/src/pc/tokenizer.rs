@@ -32,6 +32,9 @@ pub enum Token<'a> {
   // >>>
   Pierce,
 
+  // $
+  Dollar,
+
   // />
   SelfTagClose,
 
@@ -209,6 +212,10 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           Ok(Token::Backslash)
         }
+      }
+      b'$' => {
+        self.forward(1);
+        Ok(Token::Dollar)
       }
       b'>' => {
         if self.starts_with(b">>>") {

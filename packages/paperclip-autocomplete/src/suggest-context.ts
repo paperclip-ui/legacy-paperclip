@@ -1,4 +1,4 @@
-import { Token, tokenize, TokenScanner, TokenKind } from "./tokenizer";
+import { tokenize, TokenScanner, TokenKind } from "./tokenizer";
 
 export enum SuggestContextKind {
   // HTML
@@ -6,7 +6,7 @@ export enum SuggestContextKind {
   HTML_CLOSE_TAG_NAME = "HTML_CLOSE_TAG_NAME",
   HTML_ATTRIBUTE_NAME = "HTML_ATTRIBUTE_NAME",
   HTML_STRING_ATTRIBUTE_VALUE = "HTML_STRING_ATTRIBUTE_VALUE",
-  HTML_CSS_REFERENCE = "HTML_CSS_REFERENCE", // >>>reference
+  HTML_CSS_REFERENCE = "HTML_CSS_REFERENCE", // $reference
 
   // CSS
   CSS_INCLUDE = "CSS_INCLUDE",
@@ -275,13 +275,16 @@ const suggestAttributeValue = (
       } else if (scanner.current.value === boundary) {
         break;
       } else if (
-        String(scanner.current?.value) === ">" &&
-        scanner.peek()?.value === ">" &&
-        scanner.peek(1)?.value === ">"
+        String(scanner.current?.value) === "$" ||
+        (String(scanner.current?.value) === ">" &&
+          scanner.peek()?.value === ">" &&
+          scanner.peek(1)?.value === ">")
       ) {
-        scanner.next(); // eat >
-        scanner.next(); // eat >
-        scanner.next(); // eat >
+        scanner.next(); // eat > or $
+        if (String(scanner.current?.value) === ">") {
+          scanner.next(); // eat >
+          scanner.next(); // eat >
+        }
         if (!scanner.current) {
           return {
             kind: SuggestContextKind.CSS_CLASS_REFERENCE,

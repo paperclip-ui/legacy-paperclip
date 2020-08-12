@@ -1521,7 +1521,7 @@ mod tests {
   fn can_evaluate_class_pierce() {
     let result = evaluate_source(
       "
-      <div something='>>>something >>>that' />
+      <div something='$something $that' />
     ",
     )
     .unwrap();

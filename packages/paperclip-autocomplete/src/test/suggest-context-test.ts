@@ -265,14 +265,14 @@ describe(__filename, () => {
 
     // smoke test getting passed var
     [
-      `<div className=">>>`,
+      `<div className="$`,
       {
         kind: SuggestContextKind.CSS_CLASS_REFERENCE,
         prefix: ""
       }
     ],
     [
-      `<div className=">>>ab`,
+      `<div className="$ab`,
       {
         kind: SuggestContextKind.CSS_CLASS_REFERENCE,
         prefix: "ab"

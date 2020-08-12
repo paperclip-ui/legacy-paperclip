@@ -52,7 +52,7 @@ This must be converted to Paperclip like so:
 ```html
 <import src="modules/tailwind.pc" as="tw">
 
-<div className=">>>tw.text-color-black-100 >>>tw.my-1">
+<div className="$tw.text-color-black-100 $tw.my-1">
   Something
 </div>
 ```

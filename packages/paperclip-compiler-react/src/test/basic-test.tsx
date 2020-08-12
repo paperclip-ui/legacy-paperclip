@@ -42,7 +42,7 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
           <import src="/colors.pc" as="colors">
-          <div export component as="Entry" className=">>>colors.text-red"></div>
+          <div export component as="Entry" className="$colors.text-red"></div>
         `,
         "/colors.pc": `
           <style>

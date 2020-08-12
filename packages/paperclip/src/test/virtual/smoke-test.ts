@@ -214,7 +214,7 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
           <import as="Message" src="./message.pc">
-          <Message class=">>>red" />
+          <Message class="$red" />
         `,
 
         // ensure that root is span
@@ -264,7 +264,7 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
           <import as="Message" src="./message.pc">
-          <Message class=">>>red" />
+          <Message class="$red" />
           <span />
         `,
 
@@ -648,7 +648,7 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
           <import as="test" src="./module.pc">
-          <div className=">>>test.button"></div>
+          <div className="$test.button"></div>
         `,
         "/module.pc": `
           <style>
