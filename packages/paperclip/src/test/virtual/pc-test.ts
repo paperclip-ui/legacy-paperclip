@@ -1134,6 +1134,7 @@ describe(__filename + "#", () => {
         "/b.pc",
         `<div export component as="default">b</div><div value">`
       );
+      // eslint-disable-next-line
     } catch (e) {}
     await engine.updateVirtualFileContent("/a.pc", `aa`);
     await engine.updateVirtualFileContent(
