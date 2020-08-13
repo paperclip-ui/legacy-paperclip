@@ -1053,4 +1053,39 @@ describe(__filename + "#", () => {
       `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test test _80f4925f_checkbox checkbox" data-pc-80f4925f></div>`
     );
   });
+
+  it(`Can change the tag name of an element`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div {tagName?} component as="Test">
+          
+        </div>
+        <Test />
+        <Test tagName="span" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style></style><div data-pc-80f4925f></div><span data-pc-80f4925f></span>`
+    );
+  });
+  it(`Cannot change tag name if not exposed`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test">
+          
+        </div>
+        <Test />
+        <Test tagName="span" />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style></style><div data-pc-80f4925f></div><div data-pc-80f4925f></div>`
+    );
+  });
 });

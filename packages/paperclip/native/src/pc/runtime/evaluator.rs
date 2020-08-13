@@ -844,7 +844,7 @@ fn evaluate_native_element<'a>(
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
 
-  let tag_name = ast::get_tag_name(element);
+  let mut tag_name = ast::get_tag_name(element);
 
   let mut property_bound_attrs: Vec<&ast::PropertyBoundAttribute> = vec![];
 
@@ -991,6 +991,14 @@ fn evaluate_native_element<'a>(
   let name = format!("data-pc-{}", context.scope.to_string()).to_string();
 
   attributes.insert(name.to_string(), None);
+
+  // allow for tag name to be dynamically changed.
+  if let Some(tag_name_attr_value_option) = attributes.get("tagName") {
+    if let Some(tag_name_attr_value) = tag_name_attr_value_option {
+      tag_name = tag_name_attr_value.to_string();
+    }
+    attributes.remove("tagName");
+  }
 
   let children = evaluate_children(&element.children, depth, context)?;
 

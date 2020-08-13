@@ -494,26 +494,19 @@ const translateElement = (
   const isPartComponentInstance = context.partIds.indexOf(namespace) !== -1;
   const isComponentInstance =
     isImportComponentInstance || isPartComponentInstance;
-  const propsName = null;
-
-  // KEEP ME: for logic
-  // const propsName = id
-  //   ? `props.${camelCase(id)}Props`
-  //   : isComponentInstance
-  //   ? `props.${camelCase(element.tagName)}Props`
-  //   : null;
-
   const tag = isPartComponentInstance
     ? strToClassName(element.tagName, context.fileUri)
     : isImportComponentInstance
     ? getImportTagName(element.tagName)
     : JSON.stringify(element.tagName);
 
-  context = addBuffer(`React.createElement(${tag}, `, context);
+  context = addBuffer(
+    `React.createElement(${
+      isComponentInstance ? tag : "props.tagName || " + tag
+    }, `,
+    context
+  );
 
-  if (propsName) {
-    context = addBuffer(`extendProps(`, context);
-  }
   context = addBuffer(`{\n`, context);
   context = startBlock(context);
   context = startBlock(context);
@@ -558,9 +551,6 @@ const translateElement = (
 
   context = endBlock(context);
   context = addBuffer(`}`, context);
-  if (propsName) {
-    context = addBuffer(`, ${propsName})`, context);
-  }
   context = endBlock(context);
   if (element.children.length) {
     context = addBuffer(`,\n`, context);
@@ -702,6 +692,10 @@ const translateAttribute = (
       console.warn("Can't handle style tag for now");
     }
 
+    if (name === "tagName" && !isComponentInstance) {
+      return context;
+    }
+
     if (/^(component|export|as)$/.test(name)) {
       return context;
     }
@@ -748,6 +742,10 @@ const translateAttribute = (
   } else if (attr.kind === AttributeKind.ShorthandAttribute) {
     const property = (attr.reference as Reference).path[0];
     added[property.name] = true;
+
+    if (property.name === "tagName" && !isComponentInstance) {
+      return context;
+    }
 
     let value = `${context.scopes[property.name] ? "" : "props."}${camelCase(
       property.name
