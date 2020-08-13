@@ -1088,4 +1088,21 @@ describe(__filename + "#", () => {
       `<style></style><div data-pc-80f4925f></div><div data-pc-80f4925f></div>`
     );
   });
+  it(`Does not render undefined if child isn't present`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test">
+          {children}
+          {slot}
+        </div>
+        <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style></style><div data-pc-80f4925f></div>`
+    );
+  });
 });

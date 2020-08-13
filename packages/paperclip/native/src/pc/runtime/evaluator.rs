@@ -524,7 +524,11 @@ fn evaluate_slot<'a>(
 
   Ok(Some(virt::Node::Text(virt::Text {
     source: js_value.get_source().clone(),
-    value: js_value.to_string(),
+    value: if js_value.truthy() {
+      js_value.to_string()
+    } else {
+      "".to_string()
+    },
   })))
 }
 
