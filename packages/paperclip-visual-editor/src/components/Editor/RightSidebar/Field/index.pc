@@ -1,3 +1,6 @@
+<import src="../../../Theme/index.pc" as="theme">
+<import src="../../../Select/index.pc" as="Select">
+
 <style>
   .input {
     
@@ -9,4 +12,8 @@
   <div className="input">
     {children}
   </div>
+</div>
+
+<div className="$theme.font-default">
+  <Select value" />
 </div>

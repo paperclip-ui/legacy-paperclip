@@ -1,0 +1,5 @@
+<import src="a.pc" as="a">
+<import src="b.pc" as="b">
+
+<a />
+<b />

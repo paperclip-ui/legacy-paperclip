@@ -61,6 +61,9 @@ pub fn evaluate<'a>(
   vfs: &'a VirtualFileSystem,
   import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
 ) -> Result<Option<EvalInfo>, RuntimeError> {
+
+
+
   let dep = graph.dependencies.get(uri).unwrap();
   if let DependencyContent::Node(node_expr) = &dep.content {
     let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(ExprSource::new(
@@ -362,6 +365,7 @@ fn create_context<'a>(
   };
 
   let scope = get_document_style_scope(uri);
+  
 
   Context {
     graph,
@@ -538,7 +542,11 @@ pub fn evaluate_imported_component<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+  
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
+
+
+  
   let dep_uri = &self_dep
     .dependencies
     .get(&ast::get_tag_name(element))
@@ -797,6 +805,14 @@ fn evaluate_component_instance<'a>(
   dep_uri: &String,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+
+  // if matches!(&context
+  //   .graph
+  //   .dependencies
+  //   .get(&dep_uri.to_string()), None) {
+  //   panic!("UH OH!");
+  // }
+
   let dep = &context
     .graph
     .dependencies

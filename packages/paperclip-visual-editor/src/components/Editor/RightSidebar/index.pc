@@ -1,6 +1,6 @@
 <import src="../../Theme/index.pc" as="theme">
 <import src="./Pane/index.pc" as="Pane">
-<import src="./Selector/index.pc" as="Selector">
+<!-- <import src="./Selector/index.pc" as="Selector"> -->
 <import src="./Field/index.pc" as="Field">
 <import src="../../Select/index.pc" as="Select">
 
@@ -9,7 +9,6 @@
     width: 250px;
     height: 100vh;
   }
-  
 </style>
 
 <div export component as="default" className="right-sidebar $theme.font-default $theme.background-1">
@@ -18,9 +17,9 @@
 
 <div export component as="Preview">
   <default>
-    <Selector.Preview />
+    <!-- <Selector.Preview /> -->
     <Pane title="Typography">
-      <Field label="font-family">
+      <Field label="font-family" col1>
         <Select.Preview />
       </Field>
     </Pane>
