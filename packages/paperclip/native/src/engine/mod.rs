@@ -107,8 +107,7 @@ impl Engine {
   }
 
   pub async fn run(&mut self, uri: &String) -> Result<(), EngineError> {
-
-    // need to purge cache in case there's a parse error. 
+    // need to purge cache in case there's a parse error.
     self.evaluated_data.remove(uri);
     self.running.insert(uri.to_string());
     self.load(uri).await?;
@@ -188,7 +187,6 @@ impl Engine {
     uri: &String,
     stack: &mut HashSet<String>,
   ) -> Result<(), RuntimeError> {
-
     // prevent infinite loop
     if stack.contains(uri) {
       let err = RuntimeError::new(
