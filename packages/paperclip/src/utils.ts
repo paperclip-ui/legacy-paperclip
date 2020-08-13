@@ -185,10 +185,9 @@ const getModulePath = (
   if (fullPath.indexOf(moduleDirectory) === 0) {
     const modulePath = fullPath.replace(moduleDirectory, "");
 
-    const nextDirectory =
-      path.join(moduleDirectory, modulePath.split("/")[0]) + "/";
+    const relativePath = path.relative(fromDir, fullPath);
 
-    if (!fromDir || fromDir.indexOf(nextDirectory) === -1) {
+    if (relativePath.match(/\.\.\//g)?.length > 0) {
       return modulePath;
     }
   }

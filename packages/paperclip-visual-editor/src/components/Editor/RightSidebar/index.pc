@@ -1,8 +1,9 @@
-<import src="../../Theme/index.pc" as="theme">
-<import src="./Pane/index.pc" as="Pane">
+<import src="components/Theme/index.pc" as="theme">
+<import src="./Styling/index.pc" as="Styling">
+<import src="components/Pane/index.pc" as="Pane">
 <!-- <import src="./Selector/index.pc" as="Selector"> -->
-<import src="./Field/index.pc" as="Field">
-<import src="../../Select/index.pc" as="Select">
+<import src="components/Field/index.pc" as="Field">
+<import src="components/Select/index.pc" as="Select">
 
 <style>
   .right-sidebar {
@@ -17,12 +18,7 @@
 
 <div export component as="Preview">
   <default>
-    <!-- <Selector.Preview /> -->
-    <Pane title="Typography">
-      <Field label="font-family" col1>
-        <Select.Preview />
-      </Field>
-    </Pane>
+    <Styling.Preview />
   </default>
 </div>
 

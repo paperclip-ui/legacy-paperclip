@@ -1,3 +1,5 @@
+<import src="./open-sans/font-face.pc">
+
 <style>
 
   // basic colors
@@ -15,7 +17,7 @@
 
   // atom part colors
   :root {
-    --font-1: sans-serif;
+    --font-1: Open Sans;
     --background-1: var(--color-dark-3);
     --background-2: var(--color-dark-5);
     --border-1: var(--color-dark-5);
@@ -24,7 +26,10 @@
   
   @export {
     .font-default {
-      font-family: var(--font-1);
+      font-weight: 400;
+      font-family: Open Sans;
+      font-size: 13px;
+      letter-spacing: 0.05em;
     }
     .background-1 {
       background: var(--background-1);

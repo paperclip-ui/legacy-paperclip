@@ -1,0 +1,36 @@
+<import src="components/Theme/index.pc" as="theme">
+<import src="components/Select/index.pc" as="Select">
+
+
+<style>
+  .field {
+    display: flex;
+    
+    label {
+      white-space: nowrap;
+      margin-right: 8px;
+    }
+    &--col1 {
+      align-items: center;
+      flex-direction: row;
+      & .input {
+        width: 100%;
+      }
+    }
+  }
+  .input {
+    
+  }
+  
+</style>
+
+<div export component as="default" className="field" className:col1="field--col1">
+  <label>{label}</label>
+  <div className="input">
+    {children}
+  </div>
+</div>
+
+<div className="$theme.font-default">
+  <Select  />
+</div>

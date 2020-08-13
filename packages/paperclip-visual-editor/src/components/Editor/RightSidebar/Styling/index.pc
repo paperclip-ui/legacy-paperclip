@@ -1,0 +1,15 @@
+<import src="components/Field/index.pc" as="Field">
+<import src="components/Select/index.pc" as="Select">
+
+<div export component as="Preview">
+fdss
+    <Pane title="Typography">
+      <Field label="font-family" col1>
+        <Select.Preview />
+      </Field>
+      <Field  col1>
+        <Select.Preview />
+      </Field>
+    </Pane>
+
+</div>
