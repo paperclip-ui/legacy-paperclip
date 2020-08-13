@@ -39,7 +39,7 @@ export class Renderer {
   private _importedStylesContainer: HTMLElement;
   private _virtualRootNode: any;
   private _errorOverlay: HTMLElement;
-  private _mount: HTMLElement;
+  readonly mount: HTMLElement;
   readonly frame: HTMLElement;
 
   constructor(
@@ -72,14 +72,14 @@ export class Renderer {
     });
 
     this._stage = this._domFactory.createElement("div");
-    const mount = (this._mount = this._domFactory.createElement("div"));
+    const mount = (this.mount = this._domFactory.createElement("div"));
     this._mainStyleContainer = this._domFactory.createElement("div");
     this._importedStylesContainer = this._domFactory.createElement("div");
-    this._mount.appendChild(this._importedStylesContainer);
-    this._mount.appendChild(this._mainStyleContainer);
-    this._mount.appendChild(this._stage);
-    this._mount.appendChild(this._hoverOverlay);
-    this._mount.appendChild(this._errorOverlay);
+    this.mount.appendChild(this._importedStylesContainer);
+    this.mount.appendChild(this._mainStyleContainer);
+    this.mount.appendChild(this._stage);
+    this.mount.appendChild(this._hoverOverlay);
+    this.mount.appendChild(this._errorOverlay);
     this._stage.addEventListener("mousedown", this._onStageMouseDown, true);
     this._stage.addEventListener("mouseup", preventDefault, true);
     this._stage.addEventListener("mouseover", this._onStageMouseOver);
@@ -326,7 +326,7 @@ export class Renderer {
     event.stopImmediatePropagation();
     const element = event.target as Element;
     if (element.nodeType !== 1 || !event.metaKey) return;
-    const nodePath = getNativeNodePath(this._mount, element);
+    const nodePath = getNativeNodePath(this.mount, element);
     const virtNode = getVirtTarget(this._virtualRootNode, nodePath);
     if (!virtNode) return;
     this._em.emit(RenderEventTypes.META_CLICK, virtNode);
@@ -336,7 +336,7 @@ export class Renderer {
     const element = event.target as Element;
     const elementWindow = element.ownerDocument.defaultView;
     if (element.nodeType !== 1 || !event.metaKey) return;
-    this._mount.style.cursor = "pointer";
+    this.mount.style.cursor = "pointer";
     const rect = element.getBoundingClientRect();
     Object.assign(this._hoverOverlay.style, {
       display: "block",
@@ -351,7 +351,7 @@ export class Renderer {
   private _onStageMouseOut = (event: MouseEvent) => {
     const element = event.target as Node;
     if (element.nodeType !== 1) return;
-    this._mount.style.cursor = "default";
+    this.mount.style.cursor = "default";
     Object.assign(this._hoverOverlay.style, {
       display: "none"
     });
