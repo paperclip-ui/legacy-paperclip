@@ -890,6 +890,28 @@ attributeBoundToClassName="$class-name"
 
 Check out [class references](#class-reference) for more information on how to use `$`.
 
+### Changing the tag name
+
+You may want to change the native tag name of a component. An example of this is a `Button` component that may be a `button` or `a` tag. 
+
+**Syntax**
+
+```html
+<button export component as="Button" {tagName?}>
+  {children}
+</button>
+```
+
+**Example**
+
+```html live
+// file: demo.pc 
+<input component as="Input" {tagName?} {placeholder} />
+
+<Input placeholder="I'm a text input" />
+<Input tagName="textarea" placeholder="I'm a text area" />
+```
+
 ## Bindings
 
 Bindings allow you to define dynamic behavior in components.

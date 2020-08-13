@@ -225,6 +225,31 @@ describe(__filename + "#", () => {
       {
         Entry: `<div data-pc-3402f12b="true" class="_3402f12b_ab ab"></div>`
       }
+    ],
+    [
+      "Can change the tag name of a component",
+      {
+        "/entry.pc": `
+
+          <div export component as="Test" {tagName?}>
+          </div>
+
+          <div export component as="Entry">
+            <Test {tagName?} />
+            <Test tagName={tagName2?} />
+            <Test tagName={tagName3?} />
+          </div>
+        `
+      },
+      {
+        Entry: {
+          tagName: "span",
+          tagName2: "h1"
+        }
+      },
+      {
+        Entry: `<span data-pc-3402f12b="true"><span data-pc-3402f12b="true"></span><h1 data-pc-3402f12b="true"></h1><div data-pc-3402f12b="true"></div></span>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {
