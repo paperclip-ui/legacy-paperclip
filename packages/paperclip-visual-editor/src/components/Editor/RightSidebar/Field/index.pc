@@ -1,0 +1,12 @@
+<style>
+  .input {
+    
+  }
+</style>
+
+<div export component as="default">
+  <label>{label}</label>
+  <div className="input">
+    {children}
+  </div>
+</div>

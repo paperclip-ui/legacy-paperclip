@@ -1,6 +1,8 @@
 <import src="../../Theme/index.pc" as="theme">
 <import src="./Pane/index.pc" as="Pane">
 <import src="./Selector/index.pc" as="Selector">
+<import src="./Field/index.pc" as="Field">
+<import src="../../Select/index.pc" as="Select">
 
 <style>
   .right-sidebar {
@@ -17,9 +19,11 @@
 <div export component as="Preview">
   <default>
     <Selector.Preview />
-    <pane title="Typography">
-      CONTENT
-    </pane>
+    <Pane title="Typography">
+      <Field label="font-family">
+        <Select.Preview />
+      </Field>
+    </Pane>
   </default>
 </div>
 

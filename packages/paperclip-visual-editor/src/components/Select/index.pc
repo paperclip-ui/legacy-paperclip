@@ -1,0 +1,21 @@
+<import src="../Theme/index.pc" as="theme">
+<style>
+  .select {
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+</style>
+
+<div export component as="default" className="select $theme.background-2"> 
+  {children}
+</div>
+
+<default export component as="Preview">
+  <default>
+    select
+  </default>
+</default>
+
+<div className="$theme.background-1 $theme.font-default">
+  <Preview />
+</div>
