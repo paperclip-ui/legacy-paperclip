@@ -1,0 +1,32 @@
+<import src="../../../Theme/index.pc" as="theme">
+<style>
+  .pane {
+    padding: 10px;
+    .title {
+      padding-bottom: 10px ;
+      border-bottom: 1px solid var(--border-1);
+    }
+    .content {
+      padding-top: 10px;
+    }
+  }
+</style>
+
+<div export component as="default" className="pane">
+  <div className="title">
+    {title}
+  </div>
+  <div className="content">
+    {children}
+  </div>
+</div>
+
+<div export component as="Preview">
+  <default title="Pane">
+    content
+  </default>
+</div>
+
+<div className="$theme.background-1 $theme.font-default">
+  <Preview />
+</div>

@@ -1,0 +1,64 @@
+<style>
+
+  // basic colors
+  :root {
+    --color-dark-1: rgb(66, 66, 66);
+    --color-dark-2: rgb(54, 54, 54);
+    --color-dark-3: rgb(44, 44, 44);
+    --color-dark-4: rgb(39, 39, 39);
+    --color-dark-5: rgb(29, 29, 29);
+  }
+
+  // Spacing
+  :root {
+  }
+
+  // atom part colors
+  :root {
+    --font-1: sans-serif;
+    --background-1: var(--color-dark-3);
+    --border-1: var(--color-dark-5);
+    --color-negate-1: rgb(204, 204, 204);
+  }
+  
+  @export {
+    .font-default {
+      font-family: var(--font-1);
+    }
+    .background-1 {
+      background: var(--background-1);
+      color: var(--color-negate-1);
+    }
+  }
+
+  .color {
+    display: inline;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-left: 8px;
+    &--dark {
+      color:var(--color-negate-1);
+    }
+  }
+
+  div {
+    font-family: var(--font-1);
+  }
+</style>
+
+<div component as="Section">
+  <h3>{title}</h3>
+  {children}
+</div>
+
+<div component as="Color" className="color {className?}" className:dark="color--dark" style="background: var({value});">
+  var(--background-1)
+</div>
+
+<Section title="Typography">
+</Section>
+<Section title="Colors">
+  <Color value="--background-1" dark />
+</Section>
+<Section title="Spacing">
+</Section>

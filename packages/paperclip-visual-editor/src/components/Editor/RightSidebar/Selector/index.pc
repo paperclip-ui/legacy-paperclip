@@ -1,0 +1,28 @@
+<import src="../../../Theme/index.pc" as="theme">
+
+<style>
+  .selectors {
+    padding: 10px;
+  }
+  .pill {
+    
+  }
+</style>
+
+<div component as="Pill" className="pill">
+  PILL
+</div>
+
+<div export component as="default" className="selectors">
+  {children}
+</div>
+
+<div export component as="Preview">
+  <default>
+    <Pill></Pill>
+  </default>
+</div>
+
+<div className="$theme.font-default $theme.background-1">
+  <Preview />
+</div>

@@ -1,0 +1,26 @@
+<import src="../../Theme/index.pc" as="theme">
+<import src="./Pane/index.pc" as="Pane">
+<import src="./Selector/index.pc" as="Selector">
+
+<style>
+  .right-sidebar {
+    width: 250px;
+    height: 100vh;
+  }
+  
+</style>
+
+<div export component as="default" className="right-sidebar $theme.font-default $theme.background-1">
+  {children}
+</div>
+
+<div export component as="Preview">
+  <default>
+    <Selector.Preview />
+    <pane title="Typography">
+      CONTENT
+    </pane>
+  </default>
+</div>
+
+<Preview />

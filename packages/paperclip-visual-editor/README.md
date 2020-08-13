@@ -4,6 +4,10 @@ UI around that.
 
 TODOS:
 
+- [ ] insert element (D key)
+- [ ] insert text (T key)
+- [ ] 
+
 - [ ] box-model controls (margin & padding sizing)
 - [ ] zoom in & out
 - [ ] abiliy to change font (from file system)
