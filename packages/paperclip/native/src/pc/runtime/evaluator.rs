@@ -539,6 +539,7 @@ pub fn evaluate_imported_component<'a>(
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
+
   let dep_uri = &self_dep
     .dependencies
     .get(&ast::get_tag_name(element))
@@ -797,6 +798,13 @@ fn evaluate_component_instance<'a>(
   dep_uri: &String,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+  // if matches!(&context
+  //   .graph
+  //   .dependencies
+  //   .get(&dep_uri.to_string()), None) {
+  //   panic!("UH OH!");
+  // }
+
   let dep = &context
     .graph
     .dependencies

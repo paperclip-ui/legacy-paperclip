@@ -1105,4 +1105,48 @@ describe(__filename + "#", () => {
       `<style></style><div data-pc-80f4925f></div>`
     );
   });
+
+  it(`Doesn't crash when dependency is updated`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="a.pc">
+        <import src="b.pc" as="b">
+        
+        <b />
+      `,
+      "/a.pc": `a`,
+      "/b.pc": `
+        <div export component as="default">b</div>
+      `
+    };
+
+    let crashErr;
+
+    const engine = await createMockEngine(graph, e => {
+      crashErr = e;
+    });
+
+    await engine.run("/entry.pc");
+    await engine.run("/b.pc");
+
+    try {
+      await engine.updateVirtualFileContent(
+        "/b.pc",
+        `<div export component as="default">b</div><div value">`
+      );
+      // eslint-disable-next-line
+    } catch (e) {}
+    await engine.updateVirtualFileContent("/a.pc", `aa`);
+    await engine.updateVirtualFileContent(
+      "/b.pc",
+      `<div export component as="default">bb</div>`
+    );
+
+    expect(crashErr).to.eql(undefined);
+    const result = await engine.run("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql(
+      "<style></style><div data-pc-8ae793af>bb</div>"
+    );
+  });
 });
