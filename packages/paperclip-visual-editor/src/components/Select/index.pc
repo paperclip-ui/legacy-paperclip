@@ -10,7 +10,7 @@
     }
     &--open {
       i {
-        -webkit-mask-image: url(./chevron-down.svg);
+        -webkit-mask-image: url(./chevron-down-2.svg);
         -webkit-mask-size: 1em 1em;
         width: 1em;
         height: 1em;

@@ -1,0 +1,43 @@
+<import src="components/Pane/index.pc" as="Pane">
+<import src="components/Field/index.pc" as="Field">
+<import src="components/Select/index.pc" as="Select">
+
+<style>
+  .icon {
+    --size: 1em;
+    display: inline-block;
+    width: var(--size);
+    height: var(--size);
+    -webkit-mask-size: var(--size) var(--size);
+    background-color: currentColor;
+    margin-right: 4px;
+    &.text-left {
+       -webkit-mask-image: url(./text-left-5.svg);
+    }
+    &.text-center {
+       -webkit-mask-image: url(./text-center-4.svg);
+    }
+    &.text-right {
+       -webkit-mask-image: url(./text-right-4.svg);
+    }
+  }
+</style>
+
+<div export component as="Preview">
+<Pane title="Typography">
+  <Field label="font-family" col1>
+    <Select.Preview />
+  </Field>
+  <Field label="font weight" col1>
+    <i className="icon text-left" />
+    <i className="icon text-center" />
+    <i className="icon text-right" />
+  </Field>
+  <Field label="font-weight" col2>
+    <Select.Preview />
+  </Field>
+  <Field label="font-weight" col2>
+    <Select.Preview />
+  </Field>
+</Pane>
+</div>

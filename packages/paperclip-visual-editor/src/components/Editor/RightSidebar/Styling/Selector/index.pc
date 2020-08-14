@@ -1,4 +1,4 @@
-<import src="../../../Theme/index.pc" as="theme">
+<import src="components/Theme/index.pc" as="theme">
 
 <style>
   .selectors {
