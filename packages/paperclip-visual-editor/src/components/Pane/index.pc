@@ -2,9 +2,32 @@
 <style>
   .pane {
     padding: 10px;
-    .title {
-      padding-bottom: 10px ;
+    &--no-more {
+      .more-button {
+        display: none;
+      }
+    }
+    .header {
+      /* font-weight: 600; */
+      /* letter-spacing: 0.05em; */
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 10px;
       border-bottom: 1px solid rgb(65, 65, 65);
+    }
+    .more-button {
+      cursor: pointer;
+      --size: 2em;
+      background: white;
+      width: var(--size);
+      height: calc(var(--size) / 2);
+      -webkit-mask-image: url(./dots.svg);
+      -webkit-mask-size: var(--size) var(--size);
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: 50% 50%;
+      &:active {
+        background: var(--background-active-1);
+      }
     }
     .content {
       padding-top: 10px;
@@ -13,9 +36,11 @@
   }
 </style>
 
-<div export component as="default" className="pane">
-  <div className="title">
-    {title}
+<div export component as="default" 
+  className="pane"
+  className:noMore="pane--no-more">
+  <div className="header">
+    {title} <button className="more-button"></button>
   </div>
   <div className="content">
     {children}

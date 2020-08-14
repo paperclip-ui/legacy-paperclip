@@ -1,0 +1,18 @@
+<import src="components/Theme/index.pc" as="theme">
+
+<style>
+  .input {
+    background: var(--background-2);
+    border: 0;
+    border-radius: var(--border-radius);
+    padding: var(--input-padding);
+    width: 100%;
+    box-sizing: border-box;
+  }
+</style>
+
+<input export component as="default" className="input"
+  {placeholder?}
+  {value?}
+  {defaultValue?}
+/>

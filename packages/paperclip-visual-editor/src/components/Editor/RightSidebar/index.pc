@@ -4,11 +4,18 @@
 <!-- <import src="./Selector/index.pc" as="Selector"> -->
 <import src="components/Field/index.pc" as="Field">
 <import src="components/Select/index.pc" as="Select">
-
+<import src="./MoreStyles/index.pc" as="MoreStyles">
 <style>
   .right-sidebar {
     width: 250px;
     height: 100vh;
+    border-right: 2px solid var(--background-2);
+  }
+  .more-styles {
+    position: absolute;
+    left: 252px;
+    white-space: nowrap;
+    top:0;
   }
 </style>
 
@@ -19,6 +26,9 @@
 <div export component as="Preview">
   <default>
     <Styling.Preview />
+    <div className="more-styles">
+      <MoreStyles.Preview />
+    </div>
   </default>
 </div>
 
