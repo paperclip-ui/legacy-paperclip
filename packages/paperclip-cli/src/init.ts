@@ -23,7 +23,8 @@ export const initOld = async () => {
   const config: PaperclipConfig = {
     compilerOptions: {
       // no option here, yet
-      name: "paperclip-compiler-react"
+      name: "paperclip-compiler-react",
+      module: "es6"
     },
     sourceDirectory
   };
