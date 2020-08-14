@@ -3,10 +3,7 @@
   "version": "14.3.3",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "build": "webpack",
-    "lint": "eslint src"
-  },
+  "scripts": {},
   "author": "",
   "license": "MIT",
   "gitHead": "2ea51225cf122f65f101634b60276a70e667c8d4",
