@@ -1,6 +1,6 @@
 {
   "name": "paperclip-visual-editor",
-  "version": "14.3.3",
+  "version": "14.3.4",
   "description": "",
   "main": "index.js",
   "scripts": {},
@@ -17,8 +17,8 @@
     "eslint": "^7.4.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
-    "paperclip-cli": "^14.3.2",
-    "paperclip-loader": "^14.3.2",
+    "paperclip-cli": "^14.3.4",
+    "paperclip-loader": "^14.3.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "style-loader": "^1.2.1",

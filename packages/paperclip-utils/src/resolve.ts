@@ -4,19 +4,27 @@ import { stripFileProtocol } from "./utils";
 import { PC_CONFIG_FILE_NAME } from "./constants";
 import { PaperclipConfig } from "./config";
 
-export const resolveImportUri = fs => (fromPath: string, toPath: string) => {
-  const filePath = resolveImportFile(fs)(fromPath, toPath);
+export const resolveImportUri = fs => (
+  fromPath: string,
+  toPath: string,
+  resolveOutput?: boolean
+) => {
+  const filePath = resolveImportFile(fs)(fromPath, toPath, resolveOutput);
   return filePath;
 };
 
-export const resolveImportFile = fs => (fromPath: string, toPath: string) => {
+export const resolveImportFile = fs => (
+  fromPath: string,
+  toPath: string,
+  resolveOutput?: boolean
+) => {
   try {
     if (/\w+:\/\//.test(toPath)) {
       return toPath;
     }
 
     if (toPath.charAt(0) !== ".") {
-      const uri = resolveModule(fs)(fromPath, toPath);
+      const uri = resolveModule(fs)(fromPath, toPath, resolveOutput);
       if (!uri) {
         throw new Error(`module ${toPath} not found`);
       }
@@ -32,7 +40,11 @@ export const resolveImportFile = fs => (fromPath: string, toPath: string) => {
 const readJSONSync = fs => (uri: string) =>
   JSON.parse(fs.readFileSync(uri, "utf8"));
 
-const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
+const resolveModule = fs => (
+  fromPath: string,
+  moduleRelativePath: string,
+  resolveOutput: boolean
+) => {
   const configUrl = findPCConfigUrl(fs)(fromPath);
   if (!configUrl) return null;
 
@@ -63,23 +75,31 @@ const resolveModule = fs => (fromPath: string, moduleRelativePath: string) => {
     for (let i = 0, { length } = config.moduleDirectories; i < length; i++) {
       const moduleDir = config.moduleDirectories[i];
       const moduleDirectory = path.join(configPathDir, moduleDir, moduleName);
-      // const modulePath = resolveModule(fs)(moduleDirectory, srcPath);
-      // const modulePCFilePath = path.join(moduleDirectory, PC_CONFIG_FILE_NAME);
-
-      // if (!fs.existsSync(modulePCFilePath)) {
-      //   continue;
-      // }
-
-      // const moduleConfig: PaperclipConfig = readJSONSync(modulePCFilePath);
 
       const modulePath = path.join(moduleDirectory, srcPath);
+      const moduleConfigUrl = findPCConfigUrl(fs)(modulePath);
 
-      if (fs.existsSync(modulePath)) {
-        return url.pathToFileURL(modulePath).href;
+      if (moduleConfigUrl === configUrl) {
+        continue;
       }
 
-      // const moduleConfig: PaperclipConfig = readJSONSync(fs)(modulePCFilePath);
-      // console.log(moduleConfig);
+      if (fs.existsSync(modulePath)) {
+        const moduleConfig: PaperclipConfig = readJSONSync(fs)(
+          new URL(moduleConfigUrl) as any
+        );
+        const sourceDir = path.join(
+          path.dirname(url.fileURLToPath(moduleConfigUrl)),
+          moduleConfig.sourceDirectory
+        );
+        const outputDir = path.join(
+          path.dirname(url.fileURLToPath(moduleConfigUrl)),
+          moduleConfig.outputDirectory || moduleConfig.sourceDirectory
+        );
+        const actualPath = resolveOutput
+          ? modulePath.replace(sourceDir, outputDir)
+          : modulePath;
+        return url.pathToFileURL(actualPath).href;
+      }
     }
   }
 

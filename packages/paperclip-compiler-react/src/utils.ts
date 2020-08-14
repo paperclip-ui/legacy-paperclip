@@ -24,6 +24,7 @@ export const REV_PROP = {
 
 export type Options = {
   definition?: boolean;
+  module?: "es6" | "commonjs";
 };
 
 export const pascalCase = (value: string) => {
