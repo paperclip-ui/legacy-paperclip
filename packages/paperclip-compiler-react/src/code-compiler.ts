@@ -151,7 +151,11 @@ const translateClassNames = (
   classNames: Record<string, ClassNameExport>,
   context: TranslateContext
 ) => {
-  context = addBuffer(`export const classNames = {\n`, context);
+  context = addModuleVariant(
+    `export const classNames = {\n`,
+    `exports.classNames = {\n`,
+    context
+  );
   context = startBlock(context);
   for (const exportName in classNames) {
     const info = classNames[exportName];
@@ -286,8 +290,52 @@ const translateClassNamesUtil = (context: TranslateContext) => {
 //   return context;
 // };
 
+const addModuleVariant = (
+  es6Variant: string,
+  commonJSVariant: string,
+  context: TranslateContext
+) => {
+  if (context.args.module === "commonjs") {
+    return addBuffer(commonJSVariant, context);
+  } else {
+    return addBuffer(es6Variant, context);
+  }
+};
+
+const addImportFrom = (modulePath: string, context: TranslateContext) => {
+  if (context.args.module === "commonjs") {
+    return addBuffer(` = require("${modulePath}");\n`, context);
+  } else {
+    return addBuffer(` from "${modulePath}";\n`, context);
+  }
+};
+
+const addNSImport = (
+  namespace: string,
+  modulePath: string,
+  context: TranslateContext
+) => {
+  context = addModuleVariant(
+    `import * as ${namespace}`,
+    `const ${namespace}`,
+    context
+  );
+  context = addImportFrom(modulePath, context);
+  return context;
+};
+
+const stringifyImportDefinition = (
+  imp: string,
+  sep: string,
+  prefix: string,
+  context: TranslateContext
+) => {
+  const className = strToClassName(imp, context.fileUri);
+  return `${className}${sep}${prefix}${pascalCase(className)}`;
+};
+
 const translateImports = (ast: Node, context: TranslateContext) => {
-  context = addBuffer(`import * as React from "react";\n`, context);
+  context = addNSImport("React", "react", context);
 
   const imports = getImports(ast);
   for (const imp of imports) {
@@ -328,33 +376,67 @@ const translateImports = (ast: Node, context: TranslateContext) => {
       usedExports = uniq(usedExports);
 
       if (usingDefault || usedExports.length) {
-        context = addBuffer(`import `, context);
+        context = addModuleVariant(`import `, `const `, context);
+        // context = addBuffer(`import `, context);
         const baseName = pascalCase(id);
-        if (usingDefault) {
-          context = addBuffer(`${baseName}`, context);
-        }
 
-        if (usedExports.length) {
+        if (context.args.module === "commonjs") {
+          context = addBuffer(`{`, context);
           if (usingDefault) {
-            context = addBuffer(`, `, context);
+            context = addBuffer(`default: ${baseName}, `, context);
           }
           context = addBuffer(
-            `{${usedExports
+            usedExports
               .map(imp => {
-                const className = strToClassName(imp, context.fileUri);
-                return `${className} as ${baseName}${pascalCase(className)}`;
+                return stringifyImportDefinition(imp, ": ", baseName, context);
               })
-              .join(", ")}} `,
+              .join(", "),
             context
           );
+          context = addBuffer(`}`, context);
+        } else {
+          if (usingDefault) {
+            context = addBuffer(`${baseName}`, context);
+          }
+
+          if (usedExports.length) {
+            if (usingDefault) {
+              context = addBuffer(`, `, context);
+            }
+            context = addBuffer(
+              `{${usedExports
+                .map(imp => {
+                  return stringifyImportDefinition(
+                    imp,
+                    " as ",
+                    baseName,
+                    context
+                  );
+                })
+                .join(", ")}} `,
+              context
+            );
+          }
         }
 
-        context = addBuffer(` from "${relativePath}";\n`, context);
+        context = addModuleVariant(
+          ` from "${relativePath}";\n`,
+          ` = require("${relativePath}");\n`,
+          context
+        );
       } else {
-        context = addBuffer(`import "${relativePath}";\n`, context);
+        context = addModuleVariant(
+          `import "${relativePath}";\n`,
+          `require("${relativePath}");\n`,
+          context
+        );
       }
     } else {
-      context = addBuffer(`import "${relativePath}";\n`, context);
+      context = addModuleVariant(
+        `import "${relativePath}";\n`,
+        ` = require("${relativePath}");\n`,
+        context
+      );
     }
   }
   context = addBuffer("\n", context);
@@ -394,9 +476,7 @@ const translateComponent = (
 ) => {
   context = startBlock(
     addBuffer(
-      `${
-        shouldExport ? "export " : ""
-      }const ${componentName} = React.memo(React.forwardRef(function ${componentName}(props, ref) {\n`,
+      `const ${componentName} = React.memo(React.forwardRef(function ${componentName}(props, ref) {\n`,
       context
     )
   );
@@ -406,7 +486,17 @@ const translateComponent = (
   context = endBlock(context);
   context = addBuffer(";\n", context);
 
-  context = addBuffer(`}));\n\n`, context);
+  context = addBuffer(`}));\n`, context);
+
+  if (shouldExport) {
+    context = addModuleVariant(
+      `export { ${componentName} };\n\n`,
+      `exports.${componentName} = ${componentName};\n\n`,
+      context
+    );
+  } else {
+    context = addBuffer(`\n`, context);
+  }
 
   return context;
 };
@@ -429,7 +519,11 @@ const translateDefaultView = (root: Node, context: TranslateContext) => {
   //   );
   // }
 
-  context = addBuffer(`export default ${componentName};\n`, context);
+  context = addModuleVariant(
+    `export default ${componentName};\n`,
+    `exports.default = ${componentName};\n`,
+    context
+  );
 
   return context;
 };

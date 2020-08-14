@@ -1,5 +1,6 @@
 export type CompilerOptions = {
   name: string;
+  module: "es6" | "commonjs";
   [identifier: string]: any;
 };
 

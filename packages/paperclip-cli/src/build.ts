@@ -28,6 +28,7 @@ export type BuildOptions = {
 
 type CompileInfo = {
   ast: Node;
+  module: "es6" | "commonjs";
   classNames: Record<string, ClassNameExport>;
 };
 
@@ -133,7 +134,11 @@ async function initBuild(
       }
 
       let code = compile(
-        { ast, classNames: exports.style.classNames },
+        {
+          ast,
+          classNames: exports.style.classNames,
+          module: config.compilerOptions.module
+        },
         fullPath,
         compilerOptions
       );

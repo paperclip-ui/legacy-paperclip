@@ -17,11 +17,15 @@ Here's an example of what it might look like:
   "compilerOptions": {
 
     // compiler that translate `*.pc` files into the target framework. 
-    "name": "paperclip-compiler-react"
+    "name": "paperclip-compiler-react",
+
+    // (optional) compile as es6 or commonjs module. ES6 is default.
+    "module": "es6" | "commonjs",
   },
 
   // (optional) directory where JS & CSS files are compiled to
   "outputDirectory": "./lib",
+
 
   // directory where all of the Paperclip files live
   "sourceDirectory": "./src",
