@@ -1,14 +1,15 @@
-<import src="../../../Theme/index.pc" as="theme">
+<import src="components/Theme/index.pc" as="theme">
 <style>
   .pane {
     padding: 10px;
     .title {
       padding-bottom: 10px ;
-      border-bottom: 1px solid var(--border-1);
+      border-bottom: 1px solid rgb(65, 65, 65);
     }
     .content {
       padding-top: 10px;
     }
+    
   }
 </style>
 

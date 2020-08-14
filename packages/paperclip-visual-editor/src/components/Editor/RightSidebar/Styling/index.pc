@@ -1,0 +1,6 @@
+<import src="components/Field/index.pc" as="Field">
+<import src="components/Select/index.pc" as="Select">
+<import src="./Typography/index.pc" as="Typography">
+<div export component as="Preview">
+  <Typography.Preview />
+</div>
