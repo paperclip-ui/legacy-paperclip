@@ -82,7 +82,8 @@ export const root = {
     const config: PaperclipConfig = {
       compilerOptions: {
         // no option here, yet
-        name: compilerName
+        name: compilerName,
+        module: "es6"
       },
       sourceDirectory
     };
