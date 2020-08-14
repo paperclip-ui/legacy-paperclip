@@ -434,7 +434,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
     } else {
       context = addModuleVariant(
         `import "${relativePath}";\n`,
-        ` = require("${relativePath}");\n`,
+        `require("${relativePath}");\n`,
         context
       );
     }
