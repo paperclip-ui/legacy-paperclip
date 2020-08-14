@@ -9,11 +9,11 @@
   .right-sidebar {
     width: 250px;
     height: 100vh;
-    border-right: 2px solid var(--background-2);
+    border-left: 2px solid var(--background-2);
   }
   .more-styles {
     position: absolute;
-    left: 252px;
+    right: 252px;
     white-space: nowrap;
     top:0;
   }

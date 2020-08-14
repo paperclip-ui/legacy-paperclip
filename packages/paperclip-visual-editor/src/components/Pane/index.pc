@@ -40,7 +40,7 @@
   className="pane"
   className:noMore="pane--no-more">
   <div className="header">
-    {title} <button className="more-button"></button>
+    {title} {controls}
   </div>
   <div className="content">
     {children}

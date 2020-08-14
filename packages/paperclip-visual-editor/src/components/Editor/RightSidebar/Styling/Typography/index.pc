@@ -15,6 +15,7 @@ TODO:
 <import src="components/Toggle/index.pc" as="Toggle">
 <import src="components/TextInput/index.pc" as="TextInput">
 <import src="components/Grid/index.pc" as="Grid">
+<import src="components/icons/index.pc" as="icons">
 
 <style>
   .icon {
@@ -44,7 +45,7 @@ TODO:
 </style>
 
 <div export component as="Preview" className="$theme.font-default">
-<Pane title="Typography">
+<Pane title="Typography" controls={<fragment><icons.Icon dots /></fragment>}>
   <Grid.Container columns="1fr 1fr">
 
     <!-- font family -->
