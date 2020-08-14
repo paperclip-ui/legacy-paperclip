@@ -3,11 +3,12 @@
 
 <style>
   .field {
-    display: flex;
+    display: inline-flex;
+    box-sizing: border-box;
+    align-items: center;
+    &--inline {
 
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 8px;
+    }
     
     label {
       white-space: nowrap;
@@ -23,14 +24,24 @@
         width: 100%;
       }
     }
+
+
+    &--noLabel {
+      label {
+        display: none;
+      }
+    }
   }
   .input {
-    
+    width: 100%;
   }
   
 </style>
 
-<div export component as="default" className="field" className:col1="field--col1">
+<div export component as="default" className="field" 
+  className:col1="field--col1" 
+  className:inline="field--inline" 
+  className:noLabel="field--noLabel">
   <label>{label}</label>
   <div className="input">
     {children}

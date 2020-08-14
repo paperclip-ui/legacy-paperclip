@@ -1,0 +1,29 @@
+<style>
+  .icon {
+    --size: 2em;
+    width: var(--size);
+    height: var(--size);
+    mask-size: var(--size) var(--size);
+    mask-position: 50%;
+    background-color: currentColor;
+    &--dots {
+      height: calc(var(--size) / 2);
+      mask-image: url(./dots.svg);
+    }
+    &--plus {
+      --size: 1em;
+      mask-image: url(./plus.svg);
+    }
+  }
+</style>
+
+<div export component as="Icon" 
+  className="icon {className?}"
+  className:dots="icon--dots"
+  className:plus="icon--plus">
+</div>
+
+<div>
+  <Icon dots />
+  <Icon plus />
+</div>

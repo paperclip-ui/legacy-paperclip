@@ -667,4 +667,22 @@ describe(__filename + "#", () => {
       "<style>div[data-pc-80f4925f] { } div[data-pc-80f4925f] > * { color:blue; }</style>"
     );
   });
+
+  it("Certain declarations are auto-prefixed", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      div {
+        mask-image: d;
+        
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>div[data-pc-80f4925f] { mask-image:d; -webkit-mask-image:d; }</style>"
+    );
+  });
 });

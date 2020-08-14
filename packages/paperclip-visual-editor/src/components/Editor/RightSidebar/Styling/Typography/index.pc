@@ -1,6 +1,21 @@
+<!-- 
+
+TODO:
+
+- letter spacing
+- align top / middle / bottom
+- Decoration
+- Casing
+-->
+
+<import src="components/Theme/index.pc" as="theme">
 <import src="components/Pane/index.pc" as="Pane">
 <import src="components/Field/index.pc" as="Field">
 <import src="components/Select/index.pc" as="Select">
+<import src="components/Toggle/index.pc" as="Toggle">
+<import src="components/TextInput/index.pc" as="TextInput">
+<import src="components/Grid/index.pc" as="Grid">
+<import src="components/icons/index.pc" as="icons">
 
 <style>
   .icon {
@@ -8,36 +23,67 @@
     display: inline-block;
     width: var(--size);
     height: var(--size);
-    -webkit-mask-size: var(--size) var(--size);
+    mask-size: var(--size) var(--size);
     background-color: currentColor;
     margin-right: 4px;
     &.text-left {
-       -webkit-mask-image: url(./text-left-5.svg);
+       mask-image: url(./text-left-5.svg);
     }
     &.text-center {
-       -webkit-mask-image: url(./text-center-4.svg);
+       mask-image: url(./text-center-4.svg);
     }
     &.text-right {
-       -webkit-mask-image: url(./text-right-4.svg);
+       mask-image: url(./text-right-4.svg);
+    }
+    &.line-height {
+      mask-image: url(./line-height-1.svg);
+    }
+    &.letter-spacing {
+      mask-image: url(./letter-spacing-2.svg);
     }
   }
 </style>
 
-<div export component as="Preview">
-<Pane title="Typography">
-  <Field label="font-family" col1>
-    <Select.Preview />
-  </Field>
-  <Field label="font weight" col1>
-    <i className="icon text-left" />
-    <i className="icon text-center" />
-    <i className="icon text-right" />
-  </Field>
-  <Field label="font-weight" col2>
-    <Select.Preview />
-  </Field>
-  <Field label="font-weight" col2>
-    <Select.Preview />
-  </Field>
+<div export component as="Preview" className="$theme.font-default">
+<Pane title="Typography" controls={<fragment><icons.Icon dots /></fragment>}>
+  <Grid.Container columns="1fr 1fr">
+
+    <!-- font family -->
+    <Field noLabel>
+      <Select.Preview placeholder="Open Sans" />
+    </Field>
+
+    <!-- font weight -->
+    <Field noLabel>
+      <Select.Preview placeholder="400" />
+    </Field>
+
+    <!-- text align -->
+    <Field noLabel>
+      <Toggle.ButtonGroup>
+        <Toggle.Button>
+          <i className="icon text-left" />
+        </Toggle.Button>
+        <Toggle.Button>
+          <i className="icon text-center" />
+        </Toggle.Button>
+        <Toggle.Button>
+          <i className="icon text-right" />
+        </Toggle.Button>
+      </Toggle.ButtonGroup>
+    </Field>
+
+    <!-- line height -->
+    <Field label={<i className="icon line-height" />} inline>
+      <TextInput />
+    </Field>
+    <Field label={<i className="icon letter-spacing" />}>
+      <TextInput />
+    </Field>
+
+
+  </Grid.Container>
 </Pane>
 </div>
+
+<Preview />

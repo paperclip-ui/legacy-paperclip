@@ -1,0 +1,24 @@
+<import src="components/Theme/index.pc" as="theme">
+<import src="./RightSidebar/index.pc" as="RightSidebar">
+
+<style>
+  .editor {
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+
+<div export component as="default" className="editor">
+  {children}
+</div>
+
+<div component as="Center">
+  {children}
+</div>
+
+<div className="$theme.font-default">
+  <default>
+    <Center />
+    <RightSidebar.Preview />
+  </default>
+</div>

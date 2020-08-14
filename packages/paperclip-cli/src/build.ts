@@ -3,6 +3,7 @@ import * as chokidar from "chokidar";
 import * as path from "path";
 import * as url from "url";
 import * as fs from "fs";
+import { mkdirpSync } from "fs-extra";
 import {
   PaperclipConfig,
   CompilerOptions,
@@ -58,7 +59,7 @@ export const build = async (options: BuildOptions) => {
   };
 
   const compiler = config.compilerOptions.name;
-  const sourceDirectory = config.sourceDirectory;
+  const srcDirectory = config.sourceDirectory;
 
   const compilerModulePath = resolve2(compiler);
   if (!compilerModulePath) {
@@ -73,23 +74,25 @@ export const build = async (options: BuildOptions) => {
     process.exit();
   }
 
-  await initBuild(
-    process.cwd(),
-    sourceDirectory,
-    compileModule,
-    options,
-    config
-  );
+  await initBuild(process.cwd(), srcDirectory, compileModule, options, config);
 };
 
 async function initBuild(
   cwd,
-  sourceDirectory: string,
+  srcDirectory: string,
   { compile, getOutputFilePath }: CompilerModule,
   options: BuildOptions,
   config: PaperclipConfig
 ) {
   const pcEngine = await createEngine();
+  const srcDir = path.join(
+    cwd,
+    config.sourceDirectory || config.sourceDirectory
+  );
+  const outDir =
+    config.outputDirectory && !options.definition
+      ? path.join(cwd, config.outputDirectory)
+      : srcDir;
 
   function handleError(error, filePath) {
     console.error(
@@ -101,6 +104,16 @@ async function initBuild(
       )
     );
   }
+
+  const writeFileSync = (sourcePath: string, content: string) => {
+    const outUri = sourcePath.replace(srcDir, outDir);
+    const outFilePath = url.fileURLToPath(outUri);
+    mkdirpSync(path.dirname(outFilePath));
+
+    console.log("Writing %s", path.relative(process.cwd(), outFilePath));
+
+    fs.writeFileSync(new url.URL(outUri), content);
+  };
 
   async function compileFile(relativePath) {
     const fullPath = url.pathToFileURL(
@@ -135,25 +148,15 @@ async function initBuild(
         if (!compilerOptions.definition) {
           const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
           const basename = path.basename(url.fileURLToPath(cssFilePath));
-
-          console.log(
-            "Writing %s",
-            path.relative(process.cwd(), url.fileURLToPath(cssFilePath))
-          );
-
-          fs.writeFileSync(
-            new url.URL(cssFilePath),
+          writeFileSync(
+            cssFilePath,
             stringifyCSSSheet(sheet, { protocol: "file://" })
           );
 
           code = `import "./${basename}"\n\n` + code;
         }
 
-        console.log(
-          "Writing %s",
-          path.relative(process.cwd(), url.fileURLToPath(uri))
-        );
-        fs.writeFileSync(uri, code);
+        writeFileSync(uri.href, code);
       } else {
         console.log("Compiling %s", relativePath);
 
@@ -170,10 +173,8 @@ async function initBuild(
     }
   }
 
-  console.log(paperclipSourceGlobPattern(sourceDirectory), cwd);
-
   glob(
-    paperclipSourceGlobPattern(sourceDirectory),
+    paperclipSourceGlobPattern(srcDirectory),
     {
       cwd: cwd
     },
@@ -183,7 +184,7 @@ async function initBuild(
   );
 
   if (options.watch) {
-    watch(cwd, paperclipSourceGlobPattern(sourceDirectory), compileFile);
+    watch(cwd, paperclipSourceGlobPattern(srcDirectory), compileFile);
   }
 }
 

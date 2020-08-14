@@ -241,7 +241,7 @@ fn evaluate_style_declarations<'a>(
   for property in declarations {
     match property {
       ast::Declaration::KeyValue(kv) => {
-        style.push(evaluate_style_key_value_declaration(kv, context)?);
+        evaluate_style_key_value_declaration(kv, &mut style, context)?;
       }
       ast::Declaration::Include(inc) => {
         let mut imp_mixins: BTreeMap<String, MixinExport> = BTreeMap::new();
@@ -719,13 +719,24 @@ fn format_scoped_reference(value: &str, context: &Context) -> String {
 
 fn evaluate_style_key_value_declaration<'a>(
   expr: &'a ast::KeyValueDeclaration,
+  declarations: &mut Vec<virt::CSSStyleProperty>,
   context: &mut Context,
-) -> Result<virt::CSSStyleProperty, RuntimeError> {
+) -> Result<(), RuntimeError> {
   let mut value = expr.value.to_string();
 
   lazy_static! {
     static ref url_re: Regex = Regex::new(r#"url\((?:['"]?)(.*?)(?:['"]?)\)"#).unwrap();
     static ref protocol_re: Regex = Regex::new(r"^\w+:").unwrap();
+
+    // Only want to cover CSS that can affect the preview. All other CSS prefixing can happen via
+    // CSS autoprefixer. This is primarily for performance reasons. _Maybe_ at some point we can have an option that
+    // allows for autoprefixing everything.
+    static ref css3_name_starts: Vec<&'static str> = vec![
+      "mask"
+    ];
+    static ref css3_prefixes: Vec<&'static str> = vec![
+      "-webkit-"
+    ];
   }
 
   if expr.name == "animation-name" {
@@ -790,8 +801,21 @@ fn evaluate_style_key_value_declaration<'a>(
     );
   }
 
-  Ok(virt::CSSStyleProperty {
+  declarations.push(virt::CSSStyleProperty {
     name: expr.name.to_string(),
-    value,
-  })
+    value: value.to_string(),
+  });
+
+  for start in css3_name_starts.iter() {
+    if expr.name.starts_with(start) {
+      for prefix in css3_prefixes.iter() {
+        declarations.push(virt::CSSStyleProperty {
+          name: format!("{}{}", prefix, expr.name.to_string()),
+          value: value.to_string(),
+        });
+      }
+    }
+  }
+
+  Ok(())
 }

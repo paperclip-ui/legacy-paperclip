@@ -9,19 +9,31 @@
     --color-dark-3: rgb(44, 44, 44);
     --color-dark-4: rgb(39, 39, 39);
     --color-dark-5: rgb(29, 29, 29);
+
+    --color-blue-1: rgb(94, 160, 245);
+    --color-blue-2: rgb(0, 110, 255);
   }
 
   // Spacing
   :root {
   }
 
+  // Etc
+  :root {
+    --border-radius: 4px;
+  }
+
+
   // atom part colors
   :root {
     --font-1: Open Sans;
     --background-1: var(--color-dark-3);
     --background-2: var(--color-dark-5);
+    --background-active-1: var(--color-blue-1);
+    --background-selected-1: var(--color-blue-2);
     --border-1: var(--color-dark-5);
     --color-negate-1: rgb(204, 204, 204);
+    --input-padding: 6px 12px;
   }
   
   @export {

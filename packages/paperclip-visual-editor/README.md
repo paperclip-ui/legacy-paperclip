@@ -6,7 +6,7 @@ TODOS:
 
 - [ ] insert element (D key)
 - [ ] insert text (T key)
-- [ ] 
+- [ ] display height of elements**
 
 - [ ] box-model controls (margin & padding sizing)
 - [ ] zoom in & out
@@ -15,6 +15,13 @@ TODOS:
 - [ ] measurement tools
 - [ ] grid tools
 - [ ] possibly using doc-comments to add metadata about screens
+
+Considerations:
+
+- [ ] Mixins
+- [ ] Imports
+- [ ] nested style rules
+- [ ] components vs preview elements
 
 Rules around editing CSS:
 
