@@ -1,4 +1,5 @@
 {
   "compilerOptions": {},
+  "outputDirectory": "./lib",
   "sourceDirectory": "./src"
 }

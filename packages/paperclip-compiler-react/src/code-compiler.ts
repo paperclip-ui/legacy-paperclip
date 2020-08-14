@@ -73,7 +73,7 @@ export const compile = (
     const _as = getAttributeStringValue(AS_ATTR_NAME, element);
     const _src = getAttributeStringValue("src", element);
     if (_as) {
-      record[_as] = resolveImportFile(fs)(fileUri, _src) || _src;
+      record[_as] = resolveImportFile(fs)(fileUri, _src, true) || _src;
     }
     return record;
   }, {});
@@ -301,7 +301,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
     let relativePath = path
       .relative(
         path.dirname(context.fileUri),
-        resolveImportFile(fs)(context.fileUri, src) || src
+        resolveImportFile(fs)(context.fileUri, src, true) || src
       )
       .replace(/\\/g, "/");
 
