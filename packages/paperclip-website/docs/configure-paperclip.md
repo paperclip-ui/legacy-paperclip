@@ -20,6 +20,9 @@ Here's an example of what it might look like:
     "name": "paperclip-compiler-react"
   },
 
+  // (optional) directory where JS & CSS files are compiled to
+  "outputDirectory": "./lib",
+
   // directory where all of the Paperclip files live
   "sourceDirectory": "./src",
 

@@ -2,5 +2,6 @@
   "compilerOptions": {
     "name": "paperclip-compiler-react"
   },
+  "outputDirectory": "./dist",
   "sourceDirectory": "./src"
 }
