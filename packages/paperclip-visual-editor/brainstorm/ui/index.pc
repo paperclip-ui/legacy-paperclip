@@ -123,8 +123,8 @@
       content: " ";
       display: inline-block;
       background: white;
-      -webkit-mask-image: url(./chevron.svg);
-      -webkit-mask-size: 1em 1em;
+      mask-image: url(./chevron.svg);
+      mask-size: 1em 1em;
       width: 1em;
       height: 1em;
     }
@@ -171,8 +171,8 @@
 
   .LineHeightIcon {
     background: white;
-    -webkit-mask-image: url(./line-height.svg);
-    -webkit-mask-size: 1.2em 1.2em;
+    mask-image: url(./line-height.svg);
+    mask-size: 1.2em 1.2em;
     width: 1.2em;
     height: 1.2em;
 

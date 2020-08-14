@@ -730,7 +730,7 @@ fn evaluate_style_key_value_declaration<'a>(
 
     // Only want to cover CSS that can affect the preview. All other CSS prefixing can happen via
     // CSS autoprefixer. This is primarily for performance reasons. _Maybe_ at some point we can have an option that
-    // allows for autoprefixing everything. 
+    // allows for autoprefixing everything.
     static ref css3_name_starts: Vec<&'static str> = vec![
       "mask"
     ];
@@ -738,7 +738,6 @@ fn evaluate_style_key_value_declaration<'a>(
       "-webkit-"
     ];
   }
-
 
   if expr.name == "animation-name" {
     value = format_scoped_reference(value.as_str(), context);

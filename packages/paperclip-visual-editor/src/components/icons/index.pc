@@ -3,16 +3,16 @@
     --size: 2em;
     width: var(--size);
     height: var(--size);
-    -webkit-mask-size: var(--size) var(--size);
-    -webkit-mask-position: 50%;
+    mask-size: var(--size) var(--size);
+    mask-position: 50%;
     background-color: currentColor;
     &--dots {
       height: calc(var(--size) / 2);
-      -webkit-mask-image: url(./dots.svg);
+      mask-image: url(./dots.svg);
     }
     &--plus {
       --size: 1em;
-      -webkit-mask-image: url(./plus.svg);
+      mask-image: url(./plus.svg);
     }
   }
 </style>

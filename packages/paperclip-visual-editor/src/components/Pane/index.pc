@@ -21,10 +21,10 @@
       background: white;
       width: var(--size);
       height: calc(var(--size) / 2);
-      -webkit-mask-image: url(./dots.svg);
-      -webkit-mask-size: var(--size) var(--size);
-      -webkit-mask-repeat: no-repeat;
-      -webkit-mask-position: 50% 50%;
+      mask-image: url(./dots.svg);
+      mask-size: var(--size) var(--size);
+      mask-repeat: no-repeat;
+      mask-position: 50% 50%;
       &:active {
         background: var(--background-active-1);
       }

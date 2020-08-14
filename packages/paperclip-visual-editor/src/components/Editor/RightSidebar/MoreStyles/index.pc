@@ -7,7 +7,7 @@
   <Pane title="More" noMore>
     <List>
       <List.Item>font-family: Helvetica</List.Item>
-      <List.Item>-webkit-some-obscure-prop: something</List.Item>
+      <List.Item>some-obscure-prop: something</List.Item>
     </List>
   </Pane>
 </div>

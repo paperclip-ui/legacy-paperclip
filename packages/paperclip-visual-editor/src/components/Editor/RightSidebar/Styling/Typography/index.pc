@@ -23,23 +23,23 @@ TODO:
     display: inline-block;
     width: var(--size);
     height: var(--size);
-    -webkit-mask-size: var(--size) var(--size);
+    mask-size: var(--size) var(--size);
     background-color: currentColor;
     margin-right: 4px;
     &.text-left {
-       -webkit-mask-image: url(./text-left-5.svg);
+       mask-image: url(./text-left-5.svg);
     }
     &.text-center {
-       -webkit-mask-image: url(./text-center-4.svg);
+       mask-image: url(./text-center-4.svg);
     }
     &.text-right {
-       -webkit-mask-image: url(./text-right-4.svg);
+       mask-image: url(./text-right-4.svg);
     }
     &.line-height {
-      -webkit-mask-image: url(./line-height-1.svg);
+      mask-image: url(./line-height-1.svg);
     }
     &.letter-spacing {
-      -webkit-mask-image: url(./letter-spacing-2.svg);
+      mask-image: url(./letter-spacing-2.svg);
     }
   }
 </style>
