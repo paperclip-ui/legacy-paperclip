@@ -1,7 +1,7 @@
 <import src="components/Theme/index.pc" as="theme">
 
 <style>
-  .canvas {
+  .preview {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -10,7 +10,5 @@
   }
 </style>
 
-<div export component as="Canvas" className="canvas">
-  {children}
-</div>
-
+<div export component as="Preview" 
+  className="preview" />

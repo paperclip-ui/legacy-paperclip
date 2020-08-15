@@ -1,30 +1,48 @@
 import { BaseAction, actionCreator } from "./base";
-import { EngineEvent, LoadedData, EngineErrorEvent } from "paperclip-utils";
+import { VirtualNode } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
 
 export enum ActionType {
-  ENGINE_EVENT_RECEIVED = "ENGINE_EVENT_RECEIVED",
-  ENGINE_ERROR_RECEIVED = "ENGINE_ERROR_RECEIVED",
-  INIT_RECEIVED = "INIT_RECEIVED"
+  RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
+  RENDERER_CHANGED = "RENDERER_CHANGED",
+  CANVAS_ELEMENT_CLICKED = "CANVAS_ELEMENT_CLICKED",
+  RECTS_CAPTURED = "RECTS_CAPTURED"
 }
 
-export type EngineEventReceived = BaseAction<
-  ActionType.ENGINE_EVENT_RECEIVED,
-  EngineEvent
+export type RendererInitialized = BaseAction<
+  ActionType.RENDERER_INITIALIZED,
+  { element: HTMLElement }
 >;
-export type EngineErrorReceived = BaseAction<
-  ActionType.ENGINE_ERROR_RECEIVED,
-  EngineErrorEvent
+
+export type RendererChanged = BaseAction<
+  ActionType.RENDERER_CHANGED,
+  { virtualRoot: VirtualNode }
 >;
-export type InitReceived = BaseAction<ActionType.INIT_RECEIVED, LoadedData>;
 
-export const engineEventReceived = actionCreator<EngineEventReceived>(
-  ActionType.ENGINE_EVENT_RECEIVED
+export type CanvasElementClicked = BaseAction<
+  ActionType.CANVAS_ELEMENT_CLICKED,
+  { metaKey: boolean; nodePath: string }
+>;
+
+export type RectsCaptured = BaseAction<
+  ActionType.RECTS_CAPTURED,
+  Record<string, ClientRect>
+>;
+
+export const rendererInitialized = actionCreator<RendererInitialized>(
+  ActionType.RENDERER_INITIALIZED
 );
-export const engineErrorReceived = actionCreator<EngineErrorReceived>(
-  ActionType.ENGINE_ERROR_RECEIVED
+export const rectsCaptured = actionCreator<RectsCaptured>(
+  ActionType.RECTS_CAPTURED
 );
-export const initReceived = actionCreator<InitReceived>(
-  ActionType.INIT_RECEIVED
+export const canvasElementClicked = actionCreator<CanvasElementClicked>(
+  ActionType.CANVAS_ELEMENT_CLICKED
+);
+export const rendererChanged = actionCreator<RendererChanged>(
+  ActionType.RENDERER_CHANGED
 );
 
-export type Action = EngineEventReceived | InitReceived | EngineErrorReceived;
+export type Action =
+  | RendererInitialized
+  | RectsCaptured
+  | CanvasElementClicked
+  | RendererChanged;

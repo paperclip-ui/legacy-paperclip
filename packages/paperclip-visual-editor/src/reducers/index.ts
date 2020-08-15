@@ -1,25 +1,25 @@
-import { AppState } from "../state";
+import { AppState, mergeBoxesFromClientRects } from "../state";
 import { produce } from "immer";
 import { Action, ActionType } from "../actions";
 
 export default (state: AppState, action: Action) => {
   switch (action.type) {
-    case ActionType.ENGINE_EVENT_RECEIVED: {
+    case ActionType.RENDERER_INITIALIZED: {
       return produce(state, newState => {
-        newState.currentEngineEvent = action.payload;
-        newState.currentEngineError = null;
-        newState.currentLoadedData = null;
+        newState.rendererElement = action.payload.element as any;
       });
     }
-    case ActionType.ENGINE_ERROR_RECEIVED: {
+    case ActionType.RECTS_CAPTURED: {
       return produce(state, newState => {
-        newState.currentEngineError = action.payload;
+        newState.boxes = mergeBoxesFromClientRects(
+          newState.boxes,
+          action.payload
+        );
       });
     }
-    case ActionType.INIT_RECEIVED: {
+    case ActionType.RENDERER_CHANGED: {
       return produce(state, newState => {
-        newState.currentLoadedData = action.payload;
-        newState.currentEngineError = null;
+        newState.virtualRootNode = action.payload.virtualRoot;
       });
     }
   }

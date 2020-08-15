@@ -1,5 +1,6 @@
 import { PCExports } from "./exports";
 import { Mutation } from "./virt-mtuation";
+import { SourceLocation } from "./base-ast";
 
 export enum VirtualNodeKind {
   Element = "Element",
@@ -38,6 +39,7 @@ export type LoadedData = EvaluateData & {
 
 type VirtualBaseNode<KKind extends VirtualNodeKind> = {
   kind: KKind;
+  source: any;
 };
 
 export type VirtualStyleElement = {

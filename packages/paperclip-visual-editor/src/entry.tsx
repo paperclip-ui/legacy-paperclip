@@ -6,32 +6,21 @@ const mount = document.createElement("div");
 
 ReactDOM.render(<Editor />, mount);
 
-const iframe = document.createElement("iframe");
-Object.assign(iframe.style, {
-  width: "100%",
-  height: "100%",
-  border: "none"
+// console.log(Array.from(document.head.querySelectorAll("style")));
+Array.from(document.head.querySelectorAll("style")).forEach(style => {
+  // Clear VS Code styles.
+  if (/_vscodeApiScript|_defaultStyles/.test(String(style.id))) {
+    style.remove();
+  }
 });
-
-// addresses https://github.com/crcn/paperclip/issues/310
-iframe.srcdoc = `
-  <!doctype html>
-  <html>
-    <head>
-      <style>
-        html, body {
-          margin: 0;
-          padding: 0;
-        }
-      </style>
-    </head>
-    <body>
-    </body>
-  </html>
+const defaultStyle = document.createElement("style");
+defaultStyle.textContent = `
+  html, body {
+    margin: 0;
+    background: white;
+  }
 `;
 
-iframe.onload = () => {
-  iframe.contentWindow.document.body.appendChild(mount);
-};
+document.head.appendChild(defaultStyle);
 
-document.body.appendChild(iframe);
+document.body.appendChild(mount);

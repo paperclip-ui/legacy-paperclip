@@ -11,10 +11,11 @@ import {
   EngineErrorEvent,
   SheetInfo,
   EngineErrorKind,
-  LoadedData
+  LoadedData,
+  VirtualNode
 } from "paperclip-utils";
 import { EventEmitter } from "events";
-import { preventDefault } from "./utils";
+import { preventDefault, traverseNativeNode } from "./utils";
 import { patchNativeNode } from "./dom-patcher";
 
 export type DOMFactory = {
@@ -37,7 +38,7 @@ export class Renderer {
   private _importedStyles: Record<string, HTMLElement>;
   private _mainStyleContainer: HTMLElement;
   private _importedStylesContainer: HTMLElement;
-  private _virtualRootNode: any;
+  private _virtualRootNode: VirtualNode;
   private _errorOverlay: HTMLElement;
   readonly mount: HTMLElement;
   readonly frame: HTMLElement;
@@ -114,6 +115,10 @@ export class Renderer {
     iframe.onload = () => {
       iframe.contentWindow.document.body.appendChild(mount);
     };
+  }
+
+  get virtualRootNode() {
+    return this._virtualRootNode;
   }
 
   onMetaClick = (listener: (element: any) => void) => {
@@ -331,6 +336,19 @@ export class Renderer {
     if (!virtNode) return;
     this._em.emit(RenderEventTypes.META_CLICK, virtNode);
   };
+
+  public getRects() {
+    const rects: Record<string, ClientRect> = {};
+    traverseNativeNode(this._stage, (node, path) => {
+      if (node.nodeType === 1) {
+        const pathStr = path.join(".");
+        if (pathStr) {
+          rects[pathStr] = (node as Element).getBoundingClientRect();
+        }
+      }
+    });
+    return rects;
+  }
 
   private _onStageMouseOver = (event: MouseEvent) => {
     const element = event.target as Element;
