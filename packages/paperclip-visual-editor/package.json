@@ -1,6 +1,6 @@
 {
   "name": "paperclip-visual-editor",
-  "version": "14.3.4",
+  "version": "14.4.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,8 +14,8 @@
   "dependencies": {
     "immer": "^7.0.7",
     "lodash": "^4.17.20",
-    "paperclip-utils": "^14.3.4",
-    "paperclip-web-renderer": "^14.3.4",
+    "paperclip-utils": "^14.4.0",
+    "paperclip-web-renderer": "^14.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "redux": "^4.0.5",
@@ -35,9 +35,9 @@
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
     "lru-cache": "^6.0.0",
-    "paperclip-cli": "^14.3.4",
-    "paperclip-compiler-react": "^14.3.4",
-    "paperclip-loader": "^14.3.4",
+    "paperclip-cli": "^14.4.0",
+    "paperclip-compiler-react": "^14.4.0",
+    "paperclip-loader": "^14.4.0",
     "style-loader": "^1.2.1",
     "ts-loader": "^8.0.2",
     "typescript": "^3.9.7",
