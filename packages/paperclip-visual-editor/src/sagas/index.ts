@@ -74,7 +74,7 @@ function* handleRenderer() {
 
 function* handleCanvasElementClicked(action: CanvasElementClicked) {
   if (!action.payload.metaKey) {
-    return;
+    // return;
   }
 
   const state: AppState = yield select();

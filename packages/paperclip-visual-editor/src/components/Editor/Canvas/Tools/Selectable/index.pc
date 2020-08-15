@@ -2,11 +2,12 @@
 
 <style>
   .overlay {
+    --zoom: 1;
     cursor: pointer;
     width: 100%;
     height: 100%;
     position: absolute;
-    box-shadow: 0px 0px 0px 4px rgb(225, 0, 255);
+    box-shadow: 0px 0px 0px calc(3px / var(--zoom)) rgb(0, 132, 255);
   }
 
   .preview-box {

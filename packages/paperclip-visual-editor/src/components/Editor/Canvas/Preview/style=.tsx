@@ -6,11 +6,9 @@ import { Transform } from "../../../../state";
 declare const TARGET_URI;
 declare const PROTOCOL;
 
-type Props = {
-  transform: Transform;
-};
+type Props = {};
 
-export const Preview = React.memo(({ transform }: Props) => {
+export const Preview = React.memo(({}: Props) => {
   const { state } = useAppStore();
   const mountRef = useRef<HTMLDivElement>();
 
@@ -20,17 +18,5 @@ export const Preview = React.memo(({ transform }: Props) => {
     }
   }, [mountRef, state.rendererElement]);
 
-  console.log(
-    `translateX(${transform.x}px) translateY(${transform.y}px) translateZ(${transform.z}px)`
-  );
-
-  return (
-    <styles.Preview
-      ref={mountRef}
-      style={{
-        transform: `translateX(${transform.x}px) translateY(${transform.y}px) scale(${transform.z})`,
-        transformOrigin: "top left"
-      }}
-    />
-  );
+  return <styles.Preview ref={mountRef} />;
 });

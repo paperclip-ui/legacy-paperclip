@@ -7,6 +7,7 @@ import * as os from "os";
 
 export type Canvas = {
   showTools: boolean;
+  panning: boolean;
   transform: Transform;
 };
 
@@ -27,6 +28,7 @@ export const INITIAL_STATE: AppState = {
   boxes: {},
   zoomLevel: 1,
   canvas: {
+    panning: false,
     showTools: true,
     transform: {
       x: 0,

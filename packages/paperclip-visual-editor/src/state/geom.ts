@@ -67,3 +67,10 @@ export const centerTransformZoom = (
     z: nz
   };
 };
+
+export const getScaledPoint = (point: Point, transform: Transform) => {
+  return {
+    x: (point.x - transform.x) / transform.z,
+    y: (point.y - transform.y) / transform.z
+  };
+};

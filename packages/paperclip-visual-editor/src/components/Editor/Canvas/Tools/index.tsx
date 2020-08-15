@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Point, findIntersectingBox } from "../../../../state";
+import { Box, Point, findIntersectingBox, Transform } from "../../../../state";
 import { useAppStore } from "../../../../hooks/useAppStore";
 type Props = {
   boxes: Record<string, Box>;
@@ -7,55 +7,37 @@ type Props = {
 import * as styles from "./index.pc";
 import { Selectable } from "./Selectable";
 import { canvasPanned } from "../../../../actions";
+import { getScaledPoint } from "../../../../state";
+
 export const Tools = () => {
   const {
-    state: { boxes },
+    state: { boxes, canvas },
     dispatch
   } = useAppStore();
   const [mousePoint, setMousePoint] = useState<Point>(null);
-  const canvasRef = useRef<HTMLElement>();
 
   const onMouseMove = (event: React.MouseEvent<any>) => {
     setMousePoint({ x: event.pageX, y: event.pageY });
   };
 
-  const onWheel = (event: React.WheelEvent<any>) => {
-    if (!canvasRef.current) {
-      return;
-    }
-    const rect = canvasRef.current.getBoundingClientRect();
-    dispatch(
-      canvasPanned({
-        delta: {
-          x: event.deltaX,
-          y: event.deltaY
-        },
-        mousePosition: {
-          x: event.pageX,
-          y: event.pageY
-        },
-        metaKey: event.metaKey,
-        size: {
-          width: rect.width,
-          height: rect.height
-        }
-      })
-    );
-  };
-
   const onMouseLeave = () => setMousePoint(null);
+  const { panning } = canvas;
 
   return (
-    <styles.Tools
-      ref={canvasRef}
-      onWheel={onWheel}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-    >
-      <Selectable
-        dispatch={dispatch}
-        intersectingRect={mousePoint && findIntersectingBox(mousePoint, boxes)}
-      />
+    <styles.Tools onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
+      {!panning && (
+        <Selectable
+          dispatch={dispatch}
+          canvasTransform={canvas.transform}
+          intersectingRect={
+            mousePoint &&
+            findIntersectingBox(
+              getScaledPoint(mousePoint, canvas.transform),
+              boxes
+            )
+          }
+        />
+      )}
     </styles.Tools>
   );
 };

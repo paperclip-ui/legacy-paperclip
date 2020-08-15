@@ -30,6 +30,16 @@ export default (state: AppState, action: Action) => {
         );
       });
     }
+    case ActionType.CANVAS_PAN_START: {
+      return produce(state, newState => {
+        newState.canvas.panning = true;
+      });
+    }
+    case ActionType.CANVAS_PAN_END: {
+      return produce(state, newState => {
+        newState.canvas.panning = false;
+      });
+    }
     case ActionType.CANVAS_PANNED: {
       const {
         delta: { x: deltaX, y: deltaY },
