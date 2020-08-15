@@ -2,13 +2,15 @@ import produce from "immer";
 import { isEqual } from "lodash";
 import { memoize } from "../utils";
 import { VirtualNode } from "paperclip-utils";
-import { Transform, Box, Point } from "./geom";
+import { Transform, Box, Point, Size } from "./geom";
 import * as os from "os";
 
 export type Canvas = {
   showTools: boolean;
   panning: boolean;
   transform: Transform;
+  size: Size;
+  mousePosition: Point;
 };
 
 export type IntersectingBox = {
@@ -30,6 +32,8 @@ export const INITIAL_STATE: AppState = {
   canvas: {
     panning: false,
     showTools: true,
+    size: { width: 0, height: 0 },
+    mousePosition: { x: 0, y: 0 },
     transform: {
       x: 0,
       y: 0,

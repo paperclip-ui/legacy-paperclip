@@ -3,6 +3,7 @@ import * as ReactDOM from "react-dom";
 import { Editor } from "./components/Editor";
 
 const mount = document.createElement("div");
+Object.assign(mount.style, { width: "100%", height: "100%" });
 
 ReactDOM.render(<Editor />, mount);
 

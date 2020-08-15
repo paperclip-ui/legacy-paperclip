@@ -1,0 +1,52 @@
+<import src="components/Theme/index.pc" as="theme">
+<import src="components/icons/index.pc" as="icons">
+<style>
+  .toolbar {
+    background: var(--vscode-breadcrumb-background, var(--background-2));
+    color: var(--vscode-breadcrumb-foreground, var(--color-negate-1));
+    border-bottom: 1px solid var(--vscode-editorGroupHeader-tabsBackground, #000);
+    flex-shrink: 0;
+    // box-shadow: 0px 2px 4px 1px rgb(192, 192, 192);
+  }
+
+  .zoom {
+    padding: 5px 15px;
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+    button {
+      cursor: pointer;
+      color: inherit;
+      margin-right: 4px;
+      line-height: 0;
+      display: inline-block;
+      border: none;
+      --size: 1em;
+      &.minus {
+        mask-image: url(./minus.svg);
+      }
+      &.plus {
+        mask-image: url(./plus.svg);
+      }
+    }
+  }
+</style>
+
+<div export component as="Zoom" className="zoom">
+  <button className="$icons.icon minus" onClick={onMinusClick}></button>
+  <button className="$icons.icon plus" onClick={onPlusClick}></button>
+  {amount}% 
+</div>
+
+<div export component as="Container" className="toolbar $theme.background-2">
+  {children}
+</div>
+
+<Container export component as="Preview">
+  <Zoom amount="100" />
+</Container>
+
+<div className="$theme.font-default">
+  <Preview />
+</div>
+

@@ -1,7 +1,12 @@
 import React from "react";
 import { withAppStore } from "../../hocs";
-import { Canvas } from "./Canvas";
+import { Center } from "./Center";
+import * as styles from "./index.pc";
 
 export const Editor = withAppStore(() => {
-  return <Canvas />;
+  return (
+    <styles.Container>
+      <Center />
+    </styles.Container>
+  );
 });

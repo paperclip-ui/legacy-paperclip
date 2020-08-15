@@ -95,6 +95,9 @@ export class Renderer {
       border: "none"
     });
 
+    Object.assign(this._stage.style, { width: "100%", height: "100%" });
+    Object.assign(mount.style, { width: "100%", height: "100%" });
+
     // addresses https://github.com/crcn/paperclip/issues/310
     iframe.srcdoc = `
       <!doctype html>
@@ -104,6 +107,8 @@ export class Renderer {
             html, body {
               margin: 0;
               padding: 0;
+              width: 100%;
+              height: 100%;
             }
           </style>
         </head>

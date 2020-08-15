@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useAppStore } from "../../../../hooks/useAppStore";
+import { useAppStore } from "../../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
-import { Transform } from "../../../../state";
+import { Transform } from "../../../../../state";
 
 declare const TARGET_URI;
 declare const PROTOCOL;

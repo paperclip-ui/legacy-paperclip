@@ -1,9 +1,8 @@
 import React from "react";
-import { IntersectingBox, Transform } from "../../../../../state";
+import { IntersectingBox, Transform } from "../../../../../../state";
 import * as styles from "./index.pc";
 import { Dispatch } from "redux";
-import { Action, canvasElementClicked } from "../../../../../actions";
-import { transform } from "lodash";
+import { Action, canvasElementClicked } from "../../../../../../actions";
 
 type Props = {
   intersectingRect: IntersectingBox;

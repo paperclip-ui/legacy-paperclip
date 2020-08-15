@@ -2,11 +2,6 @@
 <style>
   .pane {
     padding: 10px;
-    &--no-more {
-      .more-button {
-        display: none;
-      }
-    }
     .header {
       /* font-weight: 600; */
       /* letter-spacing: 0.05em; */
@@ -14,20 +9,6 @@
       justify-content: space-between;
       padding-bottom: 10px;
       border-bottom: 1px solid rgb(65, 65, 65);
-    }
-    .more-button {
-      cursor: pointer;
-      --size: 2em;
-      background: white;
-      width: var(--size);
-      height: calc(var(--size) / 2);
-      mask-image: url(./dots.svg);
-      mask-size: var(--size) var(--size);
-      mask-repeat: no-repeat;
-      mask-position: 50% 50%;
-      &:active {
-        background: var(--background-active-1);
-      }
     }
     .content {
       padding-top: 10px;

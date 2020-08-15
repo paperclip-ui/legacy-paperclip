@@ -1,9 +1,15 @@
 import React, { useRef, useState, useEffect } from "react";
 import * as styles from "./index.pc";
-import { Preview } from "./Preview/style=";
+import { Preview } from "./Preview";
 import { Tools } from "./Tools";
-import { useAppStore } from "../../../hooks/useAppStore";
-import { canvasPanEnd, canvasPanned, canvasPanStart } from "../../../actions";
+import { useAppStore } from "../../../../hooks/useAppStore";
+import {
+  canvasPanEnd,
+  canvasPanned,
+  canvasPanStart,
+  canvasResized,
+  canvasMouseMoved
+} from "../../../../actions";
 
 export const Canvas = React.memo(() => {
   const {
@@ -51,11 +57,43 @@ export const Canvas = React.memo(() => {
     );
   };
 
+  useEffect(() => {
+    if (!canvasRef.current) {
+      return;
+    }
+    const onResize = () => {
+      const { width, height } = canvasRef.current.getBoundingClientRect();
+      dispatch(
+        canvasResized({
+          width,
+          height
+        })
+      );
+    };
+
+    window.addEventListener("resize", onResize);
+
+    setImmediate(onResize);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+    };
+  }, [canvasRef]);
+
+  const onMouseMove = (event: React.MouseEvent<any>) => {
+    dispatch(
+      canvasMouseMoved({
+        x: event.pageX,
+        y: event.pageY
+      })
+    );
+  };
+
   return (
-    <styles.Canvas ref={canvasRef} onWheel={onWheel}>
+    <styles.Canvas ref={canvasRef} onWheel={onWheel} onMouseMove={onMouseMove}>
       <styles.Inner
         style={{
-          transform: `translateX(${transform.x}px) translateY(${transform.y}px) scale(${transform.z})`,
+          transform: `translateX(${transform.x}px) translateY(${transform.y}px) scale(${transform.z}) translateZ(0)`,
           transformOrigin: "top left"
         }}
       >

@@ -2,7 +2,8 @@ import {
   AppState,
   mergeBoxesFromClientRects,
   centerTransformZoom,
-  IS_WINDOWS
+  IS_WINDOWS,
+  Canvas
 } from "../state";
 import { produce, current } from "immer";
 import { Action, ActionType } from "../actions";
@@ -27,6 +28,22 @@ export default (state: AppState, action: Action) => {
         newState.boxes = mergeBoxesFromClientRects(
           newState.boxes,
           action.payload
+        );
+      });
+    }
+    case ActionType.ZOOM_IN_BUTTON_CLICKED: {
+      return produce(state, newState => {
+        newState.canvas = setCanvasZoom(
+          normalizeZoom(state.canvas.transform.z) * 2,
+          state.canvas
+        );
+      });
+    }
+    case ActionType.ZOOM_OUT_BUTTON_CLICKED: {
+      return produce(state, newState => {
+        newState.canvas = setCanvasZoom(
+          normalizeZoom(state.canvas.transform.z) / 2,
+          state.canvas
         );
       });
     }
@@ -87,6 +104,16 @@ export default (state: AppState, action: Action) => {
         );
       });
     }
+    case ActionType.CANVAS_MOUSE_MOVED: {
+      return produce(state, newState => {
+        newState.canvas.mousePosition = action.payload;
+      });
+    }
+    case ActionType.CANVAS_RESIZED: {
+      return produce(state, newState => {
+        newState.canvas.size = action.payload;
+      });
+    }
     case ActionType.RENDERER_CHANGED: {
       return produce(state, newState => {
         newState.virtualRootNode = action.payload.virtualRoot;
@@ -94,4 +121,19 @@ export default (state: AppState, action: Action) => {
     }
   }
   return state;
+};
+
+const normalizeZoom = zoom => {
+  return zoom < 1 ? 1 / Math.round(1 / zoom) : Math.round(zoom);
+};
+
+const setCanvasZoom = (zoom: number, state: Canvas) => {
+  return produce(state, newState => {
+    newState.transform = centerTransformZoom(
+      state.transform,
+      { x: 0, y: 0, ...state.size },
+      zoom,
+      state.mousePosition
+    );
+  });
 };

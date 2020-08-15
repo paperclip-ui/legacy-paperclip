@@ -52,7 +52,10 @@ module.exports = {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,
         use: [
           {
-            loader: "file-loader"
+            loader: "url-loader",
+            options: {
+              limit: Infinity
+            }
           }
         ]
       }

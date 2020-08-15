@@ -6,6 +6,10 @@ export enum ActionType {
   RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
   RENDERER_CHANGED = "RENDERER_CHANGED",
   CANVAS_ELEMENT_CLICKED = "CANVAS_ELEMENT_CLICKED",
+  ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
+  ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
+  CANVAS_RESIZED = "CANVAS_RESIZED",
+  CANVAS_MOUSE_MOVED = "CANVAS_MOUSE_MOVED",
   CANVAS_PAN_START = "CANVAS_PAN_START",
   CANVAS_PAN_END = "CANVAS_PAN_END",
   CANVAS_PANNED = "CANVAS_PANNED",
@@ -33,6 +37,13 @@ export type CanvasPanned = BaseAction<
 >;
 export type CanvasPanStart = BaseAction<ActionType.CANVAS_PAN_START>;
 export type CanvasPanEnd = BaseAction<ActionType.CANVAS_PAN_END>;
+export type CanvasResized = BaseAction<ActionType.CANVAS_RESIZED, Size>;
+export type CanvasMouseMoved = BaseAction<ActionType.CANVAS_MOUSE_MOVED, Point>;
+
+export type ZoomInButtonClicked = BaseAction<ActionType.ZOOM_IN_BUTTON_CLICKED>;
+export type ZoomOutButtonClicked = BaseAction<
+  ActionType.ZOOM_OUT_BUTTON_CLICKED
+>;
 
 export type RectsCaptured = BaseAction<
   ActionType.RECTS_CAPTURED,
@@ -57,8 +68,20 @@ export const canvasPanStart = actionCreator<CanvasPanStart>(
 export const canvasPanEnd = actionCreator<CanvasPanEnd>(
   ActionType.CANVAS_PAN_END
 );
+export const canvasResized = actionCreator<CanvasResized>(
+  ActionType.CANVAS_RESIZED
+);
+export const canvasMouseMoved = actionCreator<CanvasMouseMoved>(
+  ActionType.CANVAS_MOUSE_MOVED
+);
 export const rendererChanged = actionCreator<RendererChanged>(
   ActionType.RENDERER_CHANGED
+);
+export const zoomInButtonClicked = actionCreator<ZoomInButtonClicked>(
+  ActionType.ZOOM_IN_BUTTON_CLICKED
+);
+export const zoomOutButtonClicked = actionCreator<ZoomOutButtonClicked>(
+  ActionType.ZOOM_OUT_BUTTON_CLICKED
 );
 
 export type Action =
@@ -68,4 +91,8 @@ export type Action =
   | RendererChanged
   | CanvasPanned
   | CanvasPanStart
-  | CanvasPanEnd;
+  | CanvasPanEnd
+  | CanvasResized
+  | CanvasMouseMoved
+  | ZoomInButtonClicked
+  | ZoomOutButtonClicked;

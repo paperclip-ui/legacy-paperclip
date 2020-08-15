@@ -1,4 +1,3 @@
-<import src="./open-sans/font-face.pc">
 
 <style>
 
@@ -23,10 +22,9 @@
     --border-radius: 4px;
   }
 
-
   // atom part colors
   :root {
-    --font-1: Open Sans;
+    --font-1: var(--vscode-font-family, sans-serif);
     --background-1: var(--color-dark-3);
     --background-2: var(--color-dark-5);
     --background-active-1: var(--color-blue-1);
@@ -39,7 +37,7 @@
   @export {
     .font-default {
       font-weight: 400;
-      font-family: Open Sans;
+      font-family: var(--font-1);
       font-size: 13px;
       letter-spacing: 0.05em;
     }
@@ -50,6 +48,10 @@
     .background-2 {
       background: var(--background-2);
       color: var(--color-negate-1);
+    }
+    .full-wh {
+      width: 100%;
+      height: 100%;
     }
   }
 
