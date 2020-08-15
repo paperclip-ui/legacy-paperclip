@@ -1,10 +1,12 @@
 import { BaseAction, actionCreator } from "./base";
 import { VirtualNode } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
+import { Point, Size } from "../state";
 
 export enum ActionType {
   RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
   RENDERER_CHANGED = "RENDERER_CHANGED",
   CANVAS_ELEMENT_CLICKED = "CANVAS_ELEMENT_CLICKED",
+  CANVAS_PANNED = "CANVAS_PANNED",
   RECTS_CAPTURED = "RECTS_CAPTURED"
 }
 
@@ -23,6 +25,11 @@ export type CanvasElementClicked = BaseAction<
   { metaKey: boolean; nodePath: string }
 >;
 
+export type CanvasPanned = BaseAction<
+  ActionType.CANVAS_PANNED,
+  { delta: Point; metaKey: boolean; mousePosition: Point; size: Size }
+>;
+
 export type RectsCaptured = BaseAction<
   ActionType.RECTS_CAPTURED,
   Record<string, ClientRect>
@@ -37,6 +44,9 @@ export const rectsCaptured = actionCreator<RectsCaptured>(
 export const canvasElementClicked = actionCreator<CanvasElementClicked>(
   ActionType.CANVAS_ELEMENT_CLICKED
 );
+export const canvasPanned = actionCreator<CanvasPanned>(
+  ActionType.CANVAS_PANNED
+);
 export const rendererChanged = actionCreator<RendererChanged>(
   ActionType.RENDERER_CHANGED
 );
@@ -45,4 +55,5 @@ export type Action =
   | RendererInitialized
   | RectsCaptured
   | CanvasElementClicked
-  | RendererChanged;
+  | RendererChanged
+  | CanvasPanned;

@@ -1,11 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
+import { Transform } from "../../../../state";
 
 declare const TARGET_URI;
 declare const PROTOCOL;
 
-export const Preview = React.memo(() => {
+type Props = {
+  transform: Transform;
+};
+
+export const Preview = React.memo(({ transform }: Props) => {
   const { state } = useAppStore();
   const mountRef = useRef<HTMLDivElement>();
 
@@ -15,5 +20,17 @@ export const Preview = React.memo(() => {
     }
   }, [mountRef, state.rendererElement]);
 
-  return <styles.Preview ref={mountRef} />;
+  console.log(
+    `translateX(${transform.x}px) translateY(${transform.y}px) translateZ(${transform.z}px)`
+  );
+
+  return (
+    <styles.Preview
+      ref={mountRef}
+      style={{
+        transform: `translateX(${transform.x}px) translateY(${transform.y}px) scale(${transform.z})`,
+        transformOrigin: "top left"
+      }}
+    />
+  );
 });

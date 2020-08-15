@@ -1,18 +1,13 @@
 import produce from "immer";
 import { isEqual } from "lodash";
 import { memoize } from "../utils";
-import { VirtualNode } from "paperclip-web-renderer/node_modules/paperclip-utils";
+import { VirtualNode } from "paperclip-utils";
+import { Transform, Box, Point } from "./geom";
+import * as os from "os";
 
-export type Box = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
-export type Point = {
-  x: number;
-  y: number;
+export type Canvas = {
+  showTools: boolean;
+  transform: Transform;
 };
 
 export type IntersectingBox = {
@@ -22,6 +17,7 @@ export type IntersectingBox = {
 
 export type AppState = {
   rendererElement?: any;
+  canvas: Canvas;
   virtualRootNode?: VirtualNode;
   boxes: Record<string, Box>;
   zoomLevel: number;
@@ -29,8 +25,18 @@ export type AppState = {
 
 export const INITIAL_STATE: AppState = {
   boxes: {},
-  zoomLevel: 1
+  zoomLevel: 1,
+  canvas: {
+    showTools: true,
+    transform: {
+      x: 0,
+      y: 0,
+      z: 1
+    }
+  }
 };
+
+export const IS_WINDOWS = os.platform() === "win32";
 
 export const mergeBoxesFromClientRects = (
   boxes: Record<string, Box>,
@@ -82,3 +88,5 @@ export const findIntersectingBox = memoize(
     };
   }
 );
+
+export * from "./geom";

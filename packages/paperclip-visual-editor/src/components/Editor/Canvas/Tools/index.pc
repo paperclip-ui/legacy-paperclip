@@ -15,9 +15,12 @@
 <div export component as="Tools" 
   className="tools" 
   {onMouseMove?}
-  {onMouseLeave?}>
+  {onMouseLeave?}
+  {onWheel?}
+  >
   {children}
 </div>
 
 <Tools>
+  
 </Tools>

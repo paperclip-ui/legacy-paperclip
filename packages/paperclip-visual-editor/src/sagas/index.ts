@@ -80,7 +80,6 @@ function* handleCanvasElementClicked(action: CanvasElementClicked) {
   const state: AppState = yield select();
 
   const nodePathParts = action.payload.nodePath.split(".").map(Number);
-  console.log(state.virtualRootNode, nodePathParts);
   const virtualNode = getVirtTarget(state.virtualRootNode, nodePathParts);
 
   parent.postMessage(
