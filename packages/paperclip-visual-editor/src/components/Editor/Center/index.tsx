@@ -6,14 +6,14 @@ import { ErrorBanner } from "./ErrorBanner";
 import { useAppStore } from "../../../hooks/useAppStore";
 
 export const Center = () => {
-  const { state } = useAppStore();
+  const { state, dispatch } = useAppStore();
   return (
     <styles.Container>
       <Toolbar />
       <styles.CanvasContainer>
         <Canvas />
       </styles.CanvasContainer>
-      <ErrorBanner error={state.currentError} />
+      <ErrorBanner error={state.currentError} dispatch={dispatch} />
     </styles.Container>
   );
 };

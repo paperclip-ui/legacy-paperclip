@@ -82,7 +82,7 @@
 
 <div component as="Color" className="color {className?}" className:dark="color--dark" style="background: var({value});">
   var(--background-1)
-</div>
+</div> 
 
 <Section title="Typography">
 </Section>

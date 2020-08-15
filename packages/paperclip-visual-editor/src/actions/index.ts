@@ -9,6 +9,7 @@ export enum ActionType {
   RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
   RENDERER_CHANGED = "RENDERER_CHANGED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
+  ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
   CANVAS_ELEMENT_CLICKED = "CANVAS_ELEMENT_CLICKED",
   ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
@@ -47,6 +48,10 @@ export type EngineErrored = BaseAction<
   ActionType.ENGINE_ERRORED,
   EngineErrorEvent
 >;
+export type ErrorBannerClicked = BaseAction<
+  ActionType.ERROR_BANNER_CLICKED,
+  EngineErrorEvent
+>;
 
 export type ZoomInButtonClicked = BaseAction<ActionType.ZOOM_IN_BUTTON_CLICKED>;
 export type ZoomOutButtonClicked = BaseAction<
@@ -57,6 +62,10 @@ export type RectsCaptured = BaseAction<
   ActionType.RECTS_CAPTURED,
   Record<string, ClientRect>
 >;
+
+export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
+  ActionType.ERROR_BANNER_CLICKED
+);
 
 export const rendererInitialized = actionCreator<RendererInitialized>(
   ActionType.RENDERER_INITIALIZED
@@ -105,6 +114,7 @@ export type Action =
   | CanvasPanEnd
   | CanvasResized
   | CanvasMouseMoved
+  | ErrorBannerClicked
   | ZoomInButtonClicked
   | EngineErrored
   | ZoomOutButtonClicked;

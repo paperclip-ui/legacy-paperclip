@@ -37,6 +37,11 @@ export default (state: AppState, action: Action) => {
         newState.currentError = action.payload;
       });
     }
+    case ActionType.ERROR_BANNER_CLICKED: {
+      return produce(state, newState => {
+        newState.currentError = null;
+      });
+    }
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {
       return produce(state, newState => {
         newState.canvas = setCanvasZoom(
@@ -134,6 +139,7 @@ const normalizeZoom = zoom => {
 };
 
 const setCanvasZoom = (zoom: number, state: Canvas) => {
+  zoom = clamp(zoom, MIN_ZOOM, MAX_ZOOM);
   return produce(state, newState => {
     newState.transform = centerTransformZoom(
       state.transform,

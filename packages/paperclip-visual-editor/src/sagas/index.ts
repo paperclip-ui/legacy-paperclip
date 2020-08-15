@@ -6,12 +6,17 @@ import {
   ActionType,
   CanvasElementClicked,
   rendererChanged,
+  ErrorBannerClicked,
   engineErrored
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { render } from "react-dom";
 import { AppState } from "../state";
-import { getVirtTarget, VirtualElement } from "paperclip-utils";
+import {
+  getVirtTarget,
+  VirtualElement,
+  EngineErrorEvent
+} from "paperclip-utils";
 
 declare const vscode;
 declare const TARGET_URI;
@@ -23,6 +28,7 @@ export default function* mainSaga() {
     ActionType.CANVAS_ELEMENT_CLICKED,
     handleCanvasElementClicked
   );
+  yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
 }
 
 const parent = typeof vscode != "undefined" ? vscode : window;
@@ -93,6 +99,16 @@ function* handleCanvasElementClicked(action: CanvasElementClicked) {
     {
       type: "metaElementClicked",
       source: virtualNode.source
+    },
+    location.origin
+  );
+}
+
+function handleErrorBannerClicked({ payload: error }: ErrorBannerClicked) {
+  parent.postMessage(
+    {
+      type: "errorBannerClicked",
+      error
     },
     location.origin
   );
