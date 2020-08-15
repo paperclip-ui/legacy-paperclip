@@ -5,7 +5,8 @@
     "target": "es5",
     "moduleResolution": "node",
     "module": "commonjs",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "*-test", "lib", "index.d.ts", "test"],
   "filesGlob": ["./src/**/*.ts"]

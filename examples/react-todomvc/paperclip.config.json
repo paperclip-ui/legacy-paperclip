@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "name": "paperclip-compiler-react",
-    "module": "commonjs"
+    "name": "paperclip-compiler-react"
   },
   "outputDirectory": "./dist",
   "sourceDirectory": "./src"

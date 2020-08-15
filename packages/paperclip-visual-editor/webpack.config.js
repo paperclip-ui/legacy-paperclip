@@ -17,7 +17,7 @@ module.exports = {
   entry: "./src/entry.tsx",
 
   output: {
-    filename: "[name].js",
+    filename: "browser.js",
     path: path.resolve(__dirname, "dist")
   },
   devtool: false,
