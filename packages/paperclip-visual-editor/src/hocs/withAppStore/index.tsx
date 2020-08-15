@@ -5,10 +5,15 @@ import { AppStoreContext } from "../../contexts";
 
 import defaultReducer from "../../reducers";
 import defaultSaga from "../../sagas";
+import { INITIAL_STATE } from "../../state";
 
 export const withAppStore = (render: React.FC) => {
   const sagaMiddleware = createSagaMiddleware();
-  const store = createStore(defaultReducer, applyMiddleware(sagaMiddleware));
+  const store = createStore(
+    defaultReducer,
+    INITIAL_STATE,
+    applyMiddleware(sagaMiddleware)
+  );
   sagaMiddleware.run(defaultSaga);
 
   return props => {

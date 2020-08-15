@@ -23,6 +23,9 @@ module.exports = {
   devtool: false,
 
   plugins: [new HtmlWebpackPlugin()],
+  externals: {
+    chokidar: "{}"
+  },
 
   module: {
     rules: [
