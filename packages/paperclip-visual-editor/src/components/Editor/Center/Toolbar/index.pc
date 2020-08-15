@@ -4,16 +4,21 @@
   .toolbar {
     background: var(--vscode-breadcrumb-background, var(--background-2));
     color: var(--vscode-breadcrumb-foreground, var(--color-negate-1));
-    border-bottom: 1px solid var(--vscode-editorGroupHeader-tabsBackground, #000);
+    border-bottom: 1px solid var(--vscode-editorGroup-border, #000);
+    height: 21px;
     flex-shrink: 0;
-    // box-shadow: 0px 2px 4px 1px rgb(192, 192, 192);
+    flex-grow: 0;
+    // box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.301);
   }
 
   .zoom {
-    padding: 5px 15px;
+    padding:4px 14px;
     font-size: 0.8em;
     display: flex;
     align-items: center;
+    span {
+      user-select: none;
+    }
     button {
       cursor: pointer;
       color: inherit;
@@ -35,7 +40,7 @@
 <div export component as="Zoom" className="zoom">
   <button className="$icons.icon minus" onClick={onMinusClick}></button>
   <button className="$icons.icon plus" onClick={onPlusClick}></button>
-  {amount}% 
+  <span>{amount}%</span>
 </div>
 
 <div export component as="Container" className="toolbar $theme.background-2">
