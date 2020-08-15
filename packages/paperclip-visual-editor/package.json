@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "yarn build:definitions && webpack",
     "build:watch": "webpack --watch & paperclip build --write --definition --watch",
     "build:definitions": "paperclip build --write --definition"
   },
