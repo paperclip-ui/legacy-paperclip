@@ -25,10 +25,16 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.RECTS_CAPTURED: {
       return produce(state, newState => {
+        newState.currentError = null;
         newState.boxes = mergeBoxesFromClientRects(
           newState.boxes,
           action.payload
         );
+      });
+    }
+    case ActionType.ENGINE_ERRORED: {
+      return produce(state, newState => {
+        newState.currentError = action.payload;
       });
     }
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {

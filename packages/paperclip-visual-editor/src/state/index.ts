@@ -1,7 +1,7 @@
 import produce from "immer";
 import { isEqual } from "lodash";
 import { memoize } from "../utils";
-import { VirtualNode } from "paperclip-utils";
+import { VirtualNode, EngineErrorEvent } from "paperclip-utils";
 import { Transform, Box, Point, Size } from "./geom";
 import * as os from "os";
 
@@ -19,6 +19,7 @@ export type IntersectingBox = {
 };
 
 export type AppState = {
+  currentError?: EngineErrorEvent;
   rendererElement?: any;
   canvas: Canvas;
   virtualRootNode?: VirtualNode;

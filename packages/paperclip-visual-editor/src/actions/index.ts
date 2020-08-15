@@ -1,10 +1,14 @@
 import { BaseAction, actionCreator } from "./base";
-import { VirtualNode } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
+import {
+  VirtualNode,
+  EngineErrorEvent
+} from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
 import { Point, Size } from "../state";
 
 export enum ActionType {
   RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
   RENDERER_CHANGED = "RENDERER_CHANGED",
+  ENGINE_ERRORED = "ENGINE_ERRORED",
   CANVAS_ELEMENT_CLICKED = "CANVAS_ELEMENT_CLICKED",
   ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
@@ -39,6 +43,10 @@ export type CanvasPanStart = BaseAction<ActionType.CANVAS_PAN_START>;
 export type CanvasPanEnd = BaseAction<ActionType.CANVAS_PAN_END>;
 export type CanvasResized = BaseAction<ActionType.CANVAS_RESIZED, Size>;
 export type CanvasMouseMoved = BaseAction<ActionType.CANVAS_MOUSE_MOVED, Point>;
+export type EngineErrored = BaseAction<
+  ActionType.ENGINE_ERRORED,
+  EngineErrorEvent
+>;
 
 export type ZoomInButtonClicked = BaseAction<ActionType.ZOOM_IN_BUTTON_CLICKED>;
 export type ZoomOutButtonClicked = BaseAction<
@@ -77,6 +85,9 @@ export const canvasMouseMoved = actionCreator<CanvasMouseMoved>(
 export const rendererChanged = actionCreator<RendererChanged>(
   ActionType.RENDERER_CHANGED
 );
+export const engineErrored = actionCreator<EngineErrored>(
+  ActionType.ENGINE_ERRORED
+);
 export const zoomInButtonClicked = actionCreator<ZoomInButtonClicked>(
   ActionType.ZOOM_IN_BUTTON_CLICKED
 );
@@ -95,4 +106,5 @@ export type Action =
   | CanvasResized
   | CanvasMouseMoved
   | ZoomInButtonClicked
+  | EngineErrored
   | ZoomOutButtonClicked;

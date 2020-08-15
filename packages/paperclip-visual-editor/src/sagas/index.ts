@@ -5,7 +5,8 @@ import {
   rectsCaptured,
   ActionType,
   CanvasElementClicked,
-  rendererChanged
+  rendererChanged,
+  engineErrored
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { render } from "react-dom";
@@ -37,11 +38,17 @@ function* handleRenderer() {
 
     const onMessage = ({ data: { type, payload } }: MessageEvent) => {
       if (type === "ENGINE_EVENT") {
+        const engineEvent = JSON.parse(payload);
+        if (engineEvent.kind === "Error") {
+          return emit(engineErrored(engineEvent));
+        }
         renderer.handleEngineEvent(JSON.parse(payload));
       } else if (type === "INIT") {
         renderer.initialize(JSON.parse(payload));
       } else if (type === "ERROR") {
-        renderer.handleError(JSON.parse(payload));
+        // renderer.handleError(JSON.parse(payload));
+        emit(engineErrored(JSON.parse(payload)));
+        return;
       }
 
       emit(rendererChanged({ virtualRoot: renderer.virtualRootNode }));
