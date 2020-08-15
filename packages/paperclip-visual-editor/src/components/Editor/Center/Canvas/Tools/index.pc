@@ -1,0 +1,26 @@
+<import src="components/Theme/index.pc" as="theme">
+
+<style>
+  .tools {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background: transparent;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2;
+  }
+</style>
+
+<div export component as="Tools" 
+  className="tools" 
+  {onMouseMove?}
+  {onMouseLeave?}
+  {onWheel?}
+  >
+  {children}
+</div>
+
+<Tools>
+  
+</Tools>

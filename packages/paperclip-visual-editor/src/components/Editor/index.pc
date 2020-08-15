@@ -1,24 +1,19 @@
 <import src="components/Theme/index.pc" as="theme">
 <import src="./RightSidebar/index.pc" as="RightSidebar">
+<import src="./Center/index.pc" as="Center">
 
 <style>
   .editor {
-    display: flex;
-    justify-content: space-between;
+    width: 100%;
+    height: 100%;
   }
 </style>
 
-<div export component as="default" className="editor">
+<div export component as="Container" className="editor $theme.font-default $theme.full-wh">
   {children}
 </div>
 
-<div component as="Center">
-  {children}
-</div>
 
-<div className="$theme.font-default">
-  <default>
-    <Center />
-    <RightSidebar.Preview />
-  </default>
-</div>
+<Container>
+  <Center.Container />
+</Container>

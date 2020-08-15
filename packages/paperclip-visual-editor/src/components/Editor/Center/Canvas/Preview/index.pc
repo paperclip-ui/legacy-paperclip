@@ -1,0 +1,12 @@
+<import src="components/Theme/index.pc" as="theme">
+
+<style>
+  .preview {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+  }
+</style>
+
+<div export component as="Preview" 
+  className="preview $theme.full-wh" />

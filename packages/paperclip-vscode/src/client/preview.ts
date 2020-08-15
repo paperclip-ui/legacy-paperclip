@@ -15,8 +15,7 @@ import {
   ViewColumn,
   workspace,
   Selection,
-  env,
-  ConfigurationTarget
+  env
 } from "vscode";
 import { isPaperclipFile } from "./utils";
 import * as path from "path";
@@ -32,7 +31,7 @@ import {
 
 const VIEW_TYPE = "paperclip-preview";
 
-const RENDERER_MODULE_NAME = "paperclip-web-renderer";
+const RENDERER_MODULE_NAME = "paperclip-visual-editor";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -46,7 +45,10 @@ type LivePreviewState = {
   closeWithFile: boolean;
 };
 
-export const activate = (client: LanguageClient, context: ExtensionContext) => {
+export const activate = (
+  client: LanguageClient,
+  context: ExtensionContext
+): void => {
   const { extensionPath } = context;
 
   const _previews: LivePreview[] = [];

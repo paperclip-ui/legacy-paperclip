@@ -17,12 +17,15 @@ module.exports = {
   entry: "./src/entry.tsx",
 
   output: {
-    filename: "[name].js",
+    filename: "browser.js",
     path: path.resolve(__dirname, "dist")
   },
   devtool: false,
 
   plugins: [new HtmlWebpackPlugin()],
+  externals: {
+    chokidar: "{}"
+  },
 
   module: {
     rules: [
@@ -46,10 +49,13 @@ module.exports = {
         use: ["style-loader", "css-loader"]
       },
       {
-        test: /\.(png|jpe?g|gif)$/i,
+        test: /\.(png|jpe?g|gif|ttf|svg)$/i,
         use: [
           {
-            loader: "file-loader"
+            loader: "url-loader",
+            options: {
+              limit: Infinity
+            }
           }
         ]
       }
