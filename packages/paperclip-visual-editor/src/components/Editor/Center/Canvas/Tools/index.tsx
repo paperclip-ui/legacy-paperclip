@@ -1,5 +1,10 @@
 import React, { useState, useRef } from "react";
-import { Box, Point, findIntersectingBox } from "../../../../../state";
+import {
+  Box,
+  Point,
+  findIntersectingBox,
+  addPoint
+} from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
 import * as styles from "./index.pc";
@@ -35,11 +40,16 @@ export const Tools = () => {
       {!panning && (
         <Selectable
           dispatch={dispatch}
+          canvasScroll={canvas.scrollPosition}
           canvasTransform={canvas.transform}
           intersectingRect={
             mousePoint &&
             findIntersectingBox(
-              getScaledPoint(mousePoint, canvas.transform),
+              getScaledPoint(
+                mousePoint,
+                canvas.transform,
+                canvas.scrollPosition
+              ),
               boxes
             )
           }

@@ -68,9 +68,20 @@ export const centerTransformZoom = (
   };
 };
 
-export const getScaledPoint = (point: Point, transform: Transform) => {
+export const getScaledPoint = (
+  point: Point,
+  transform: Transform,
+  scroll: Point = { x: 0, y: 0 }
+) => {
   return {
-    x: (point.x - transform.x) / transform.z,
-    y: (point.y - transform.y) / transform.z
+    x: (point.x - transform.x) / transform.z + scroll.x,
+    y: (point.y - transform.y) / transform.z + scroll.y
+  };
+};
+
+export const addPoint = (point: Point, minus: Point) => {
+  return {
+    x: point.x + minus.x,
+    y: point.y + minus.y
   };
 };
