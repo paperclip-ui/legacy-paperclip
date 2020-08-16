@@ -29,6 +29,9 @@ export const Selectable = React.memo(
       <>
         <styles.Overlay
           onClick={onClick}
+          size={`${Math.round(intersectingRect.box.width)}x${Math.round(
+            intersectingRect.box.height
+          )}`}
           style={{
             "--zoom": 1,
             left:
