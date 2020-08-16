@@ -1,26 +1,34 @@
 import React from "react";
 import * as styles from "./index.pc";
-import { Transform } from "../../../../../../state";
+import { Canvas } from "../../../../../../state";
 
 type Props = {
-  canvasTransform: Transform;
+  canvas: Canvas;
 };
 
 const MIN_ZOOM = 5;
 
-export const Pixels = ({ canvasTransform: { z, x, y } }: Props) => {
+export const Pixels = ({
+  canvas: {
+    transform: { z, x, y },
+    size: { width, height }
+  }
+}: Props) => {
   if (z < MIN_ZOOM) {
     return null;
   }
-  const strokeWidth = 1 / z;
+  const strokeWidth = 1;
+  const gridSize = 1 * z;
 
   return (
     <styles.Pixels
       style={{
-        transform: `translateX(${-x / z}px) translateY(${-y /
-          z}px) translateZ(0)`,
+        transform: `translateX(${x}px) translateY(${y}px)`,
+        width: `${width * z}px`,
+        height: `${height * z}px`,
         transformOrigin: "top left",
-        backgroundImage: `url("data:image/svg+xml;utf8,<svg width='2px' height='2' xmlns='http://www.w3.org/2000/svg'><line x1='0' y1='2' x2='4' y2='2' style='stroke: black; stroke-width: ${strokeWidth}px;' /><line x1='2' y1='0' x2='2' y2='4' style='stroke: black; stroke-width: ${strokeWidth}px;' /></svg>")`
+        backgroundImage: `url("data:image/svg+xml;utf8,<svg width='${gridSize}px' height='${gridSize}px' xmlns='http://www.w3.org/2000/svg'><line x1='0' y1='${gridSize}' x2='${gridSize}' y2='${gridSize}' style='stroke: black; stroke-width: ${strokeWidth}px;' /><line x1='${gridSize}' y1='0' x2='${gridSize}' y2='${gridSize}' style='stroke: black; stroke-width: ${strokeWidth}px;' /></svg>")`,
+        backgroundSize: `${gridSize}px`
       }}
     />
   );
