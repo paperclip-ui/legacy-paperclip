@@ -105,13 +105,13 @@ export default (state: AppState, action: Action) => {
 
         newState.canvas.transform.x = clamp(
           newState.canvas.transform.x,
-          -size.width * transform.z + size.width,
-          size.width * transform.z - size.width
+          -(size.width * newState.canvas.transform.z - size.width),
+          0
         );
         newState.canvas.transform.y = clamp(
           newState.canvas.transform.y,
-          -size.height * transform.z + size.height,
-          size.height * transform.z - size.height
+          -(size.height * newState.canvas.transform.z - size.height),
+          0
         );
       });
     }

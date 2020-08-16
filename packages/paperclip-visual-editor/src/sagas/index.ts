@@ -42,6 +42,15 @@ function* handleRenderer() {
   const chan = eventChannel(emit => {
     let timer: any;
 
+    const collectRects = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        emit(rectsCaptured(renderer.getRects()));
+      }, 100);
+    };
+
+    window.addEventListener("resize", collectRects);
+
     const onMessage = ({ data: { type, payload } }: MessageEvent) => {
       if (type === "ENGINE_EVENT") {
         const engineEvent = JSON.parse(payload);
@@ -60,10 +69,7 @@ function* handleRenderer() {
       emit(rendererChanged({ virtualRoot: renderer.virtualRootNode }));
 
       // we want to capture rects on _every_ change
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        emit(rectsCaptured(renderer.getRects()));
-      }, 100);
+      collectRects();
     };
     window.onmessage = onMessage;
     return () => {
