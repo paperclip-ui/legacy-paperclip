@@ -110,6 +110,12 @@ export class Renderer {
               width: 100%;
               height: 100%;
             }
+            body {
+
+              /* need to hide scrollbar so that it doesn't show
+              up in visual editor. Need to make this optional. */
+              overflow: hidden;
+            }
           </style>
         </head>
         <body>
