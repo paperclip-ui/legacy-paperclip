@@ -102,17 +102,7 @@ export default (state: AppState, action: Action) => {
           newState.canvas.transform.x = transform.x - delta2X; // clamp(transform.x - delta2X, 0, size.width * transform.z - size.width);
           newState.canvas.transform.y = transform.y - delta2Y; // clamp(transform.y - delta2Y, 0, size.height * transform.z - size.height);
         }
-
-        newState.canvas.transform.x = clamp(
-          newState.canvas.transform.x,
-          -size.width * transform.z + size.width,
-          size.width * transform.z - size.width
-        );
-        newState.canvas.transform.y = clamp(
-          newState.canvas.transform.y,
-          -size.height * transform.z + size.height,
-          size.height * transform.z - size.height
-        );
+        newState.canvas = clampCanvasTransform(newState.canvas);
       });
     }
     case ActionType.CANVAS_MOUSE_MOVED: {
@@ -138,14 +128,31 @@ const normalizeZoom = zoom => {
   return zoom < 1 ? 1 / Math.round(1 / zoom) : Math.round(zoom);
 };
 
-const setCanvasZoom = (zoom: number, state: Canvas) => {
-  zoom = clamp(zoom, MIN_ZOOM, MAX_ZOOM);
-  return produce(state, newState => {
-    newState.transform = centerTransformZoom(
-      state.transform,
-      { x: 0, y: 0, ...state.size },
-      zoom,
-      state.mousePosition
+const clampCanvasTransform = (canvas: Canvas) => {
+  return produce(canvas, newCanvas => {
+    newCanvas.transform.x = clamp(
+      newCanvas.transform.x,
+      -(newCanvas.size.width * newCanvas.transform.z - canvas.size.width),
+      0
+    );
+    newCanvas.transform.y = clamp(
+      newCanvas.transform.y,
+      -(newCanvas.size.height * newCanvas.transform.z - canvas.size.height),
+      0
     );
   });
+};
+
+const setCanvasZoom = (zoom: number, state: Canvas) => {
+  zoom = clamp(zoom, MIN_ZOOM, MAX_ZOOM);
+  return clampCanvasTransform(
+    produce(state, newState => {
+      newState.transform = centerTransformZoom(
+        state.transform,
+        { x: 0, y: 0, ...state.size },
+        zoom,
+        state.mousePosition
+      );
+    })
+  );
 };
