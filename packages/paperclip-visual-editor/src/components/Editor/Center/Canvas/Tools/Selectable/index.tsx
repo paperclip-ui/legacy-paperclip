@@ -1,17 +1,18 @@
 import React from "react";
-import { IntersectingBox, Transform } from "../../../../../../state";
+import { IntersectingBox, Transform, Point } from "../../../../../../state";
 import * as styles from "./index.pc";
 import { Dispatch } from "redux";
 import { Action, canvasElementClicked } from "../../../../../../actions";
 
 type Props = {
+  canvasScroll: Point;
   intersectingRect: IntersectingBox;
   canvasTransform: Transform;
   dispatch: Dispatch<Action>;
 };
 
 export const Selectable = React.memo(
-  ({ intersectingRect, canvasTransform, dispatch }: Props) => {
+  ({ intersectingRect, canvasTransform, canvasScroll, dispatch }: Props) => {
     if (!intersectingRect) {
       return null;
     }
@@ -31,8 +32,11 @@ export const Selectable = React.memo(
           style={{
             "--zoom": 1,
             left:
-              intersectingRect.box.x * canvasTransform.z + canvasTransform.x,
-            top: intersectingRect.box.y * canvasTransform.z + canvasTransform.y,
+              (intersectingRect.box.x - canvasScroll.x) * canvasTransform.z +
+              canvasTransform.x,
+            top:
+              (intersectingRect.box.y - canvasScroll.y) * canvasTransform.z +
+              canvasTransform.y,
             width: intersectingRect.box.width * canvasTransform.z,
             height: intersectingRect.box.height * canvasTransform.z,
             transformOrigin: `top left`
