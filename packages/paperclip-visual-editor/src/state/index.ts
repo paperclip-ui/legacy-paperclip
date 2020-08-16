@@ -10,6 +10,7 @@ export type Canvas = {
   panning: boolean;
   transform: Transform;
   size: Size;
+  scrollPosition: Point;
   mousePosition: Point;
 };
 
@@ -23,6 +24,8 @@ export type AppState = {
   rendererElement?: any;
   canvas: Canvas;
   virtualRootNode?: VirtualNode;
+  scrollSize?: Size;
+  frameSize?: Size;
   boxes: Record<string, Box>;
   zoomLevel: number;
 };
@@ -33,6 +36,7 @@ export const INITIAL_STATE: AppState = {
   canvas: {
     panning: false,
     showTools: true,
+    scrollPosition: { x: 0, y: 0 },
     size: { width: 0, height: 0 },
     mousePosition: { x: 0, y: 0 },
     transform: {
@@ -95,5 +99,27 @@ export const findIntersectingBox = memoize(
     };
   }
 );
+
+export const calcFrameBox = memoize((rects: Record<string, Box>) => {
+  let x = 0;
+  let y = 0;
+  let width = 0;
+  let height = 0;
+
+  for (const nodeId in rects) {
+    const rect = rects[nodeId];
+    x = Math.min(x, rect.x);
+    y = Math.min(y, rect.y);
+    width = Math.max(width, rect.width);
+    height = Math.max(height, rect.height);
+  }
+
+  return {
+    x,
+    y,
+    width,
+    height
+  };
+});
 
 export * from "./geom";

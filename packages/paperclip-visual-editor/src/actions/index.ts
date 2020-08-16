@@ -60,7 +60,11 @@ export type ZoomOutButtonClicked = BaseAction<
 
 export type RectsCaptured = BaseAction<
   ActionType.RECTS_CAPTURED,
-  Record<string, ClientRect>
+  {
+    rects: Record<string, ClientRect>;
+    frameSize: Size;
+    scrollSize: Size;
+  }
 >;
 
 export const errorBannerClicked = actionCreator<ErrorBannerClicked>(

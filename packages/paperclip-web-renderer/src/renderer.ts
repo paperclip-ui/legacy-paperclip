@@ -41,7 +41,7 @@ export class Renderer {
   private _virtualRootNode: VirtualNode;
   private _errorOverlay: HTMLElement;
   readonly mount: HTMLElement;
-  readonly frame: HTMLElement;
+  readonly frame: HTMLIFrameElement;
 
   constructor(
     readonly protocol: string,

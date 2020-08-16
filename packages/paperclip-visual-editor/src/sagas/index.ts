@@ -45,7 +45,18 @@ function* handleRenderer() {
     const collectRects = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        emit(rectsCaptured(renderer.getRects()));
+        emit(
+          rectsCaptured({
+            rects: renderer.getRects(),
+            frameSize: renderer.frame.getBoundingClientRect(),
+            scrollSize: {
+              width:
+                renderer.frame.contentDocument.scrollingElement.scrollWidth,
+              height:
+                renderer.frame.contentDocument.scrollingElement.scrollHeight
+            }
+          })
+        );
       }, 100);
     };
 
