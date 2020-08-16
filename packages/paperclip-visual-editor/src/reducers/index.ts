@@ -95,7 +95,7 @@ export default (state: AppState, action: Action) => {
               height: size.height
             },
             clamp(
-              transform.z + (transform.z * deltaY) / ZOOM_SENSITIVITY,
+              transform.z + (transform.z * -deltaY) / ZOOM_SENSITIVITY,
               MIN_ZOOM,
               MAX_ZOOM
             ),
@@ -112,7 +112,10 @@ export default (state: AppState, action: Action) => {
 
         // end of iframe bounds. Onto scrolling now. Note that this should only
         // work for full screen mode
-        if (isEqual(newState.canvas.transform, state.canvas.transform)) {
+        if (
+          !metaKey &&
+          isEqual(newState.canvas.transform, state.canvas.transform)
+        ) {
           console.log(newState.frameSize, newState.scrollSize);
           newState.canvas.scrollPosition.x = clamp(
             newState.canvas.scrollPosition.x + delta2X,
