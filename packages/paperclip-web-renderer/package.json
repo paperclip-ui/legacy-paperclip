@@ -1,6 +1,6 @@
 {
   "name": "paperclip-web-renderer",
-  "version": "14.4.0",
+  "version": "14.4.3",
   "description": "My webpack project",
   "main": "index.js",
   "scripts": {
