@@ -3,13 +3,14 @@ import {
   mergeBoxesFromClientRects,
   centerTransformZoom,
   IS_WINDOWS,
-  Canvas
+  Canvas,
+  calcFrameBox,
+  Box
 } from "../state";
-import { produce, current } from "immer";
+import { produce } from "immer";
 import { Action, ActionType } from "../actions";
-import { clamp } from "lodash";
+import { clamp, isEqual } from "lodash";
 
-const PAN_SPEED = 0.01;
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const PAN_Y_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -25,11 +26,11 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.RECTS_CAPTURED: {
       return produce(state, newState => {
+        const { rects, frameSize, scrollSize } = action.payload;
         newState.currentError = null;
-        newState.boxes = mergeBoxesFromClientRects(
-          newState.boxes,
-          action.payload
-        );
+        newState.boxes = mergeBoxesFromClientRects(newState.boxes, rects);
+        newState.frameSize = frameSize;
+        newState.scrollSize = scrollSize;
       });
     }
     case ActionType.ENGINE_ERRORED: {
@@ -46,7 +47,8 @@ export default (state: AppState, action: Action) => {
       return produce(state, newState => {
         newState.canvas = setCanvasZoom(
           normalizeZoom(state.canvas.transform.z) * 2,
-          state.canvas
+          state.canvas,
+          newState.boxes
         );
       });
     }
@@ -54,7 +56,8 @@ export default (state: AppState, action: Action) => {
       return produce(state, newState => {
         newState.canvas = setCanvasZoom(
           normalizeZoom(state.canvas.transform.z) / 2,
-          state.canvas
+          state.canvas,
+          newState.boxes
         );
       });
     }
@@ -92,7 +95,7 @@ export default (state: AppState, action: Action) => {
               height: size.height
             },
             clamp(
-              transform.z + (transform.z * deltaY) / ZOOM_SENSITIVITY,
+              transform.z + (transform.z * -deltaY) / ZOOM_SENSITIVITY,
               MIN_ZOOM,
               MAX_ZOOM
             ),
@@ -102,7 +105,29 @@ export default (state: AppState, action: Action) => {
           newState.canvas.transform.x = transform.x - delta2X; // clamp(transform.x - delta2X, 0, size.width * transform.z - size.width);
           newState.canvas.transform.y = transform.y - delta2Y; // clamp(transform.y - delta2Y, 0, size.height * transform.z - size.height);
         }
-        newState.canvas = clampCanvasTransform(newState.canvas);
+        Object.assign(
+          newState.canvas,
+          clampCanvasTransform(newState.canvas, newState.boxes)
+        );
+
+        // end of iframe bounds. Onto scrolling now. Note that this should only
+        // work for full screen mode
+        if (
+          !metaKey &&
+          isEqual(newState.canvas.transform, state.canvas.transform)
+        ) {
+          console.log(newState.frameSize, newState.scrollSize);
+          newState.canvas.scrollPosition.x = clamp(
+            newState.canvas.scrollPosition.x + delta2X,
+            0,
+            newState.scrollSize.width - newState.frameSize.width
+          );
+          newState.canvas.scrollPosition.y = clamp(
+            newState.canvas.scrollPosition.y + delta2Y,
+            0,
+            newState.scrollSize.height - newState.frameSize.height
+          );
+        }
       });
     }
     case ActionType.CANVAS_MOUSE_MOVED: {
@@ -128,22 +153,26 @@ const normalizeZoom = zoom => {
   return zoom < 1 ? 1 / Math.round(1 / zoom) : Math.round(zoom);
 };
 
-const clampCanvasTransform = (canvas: Canvas) => {
+const clampCanvasTransform = (canvas: Canvas, rects: Record<string, Box>) => {
   return produce(canvas, newCanvas => {
     newCanvas.transform.x = clamp(
       newCanvas.transform.x,
-      -(newCanvas.size.width * newCanvas.transform.z - canvas.size.width),
+      -(canvas.size.width * newCanvas.transform.z - canvas.size.width),
       0
     );
     newCanvas.transform.y = clamp(
       newCanvas.transform.y,
-      -(newCanvas.size.height * newCanvas.transform.z - canvas.size.height),
+      -(canvas.size.height * newCanvas.transform.z - canvas.size.height),
       0
     );
   });
 };
 
-const setCanvasZoom = (zoom: number, state: Canvas) => {
+const setCanvasZoom = (
+  zoom: number,
+  state: Canvas,
+  rects: Record<string, Box>
+) => {
   zoom = clamp(zoom, MIN_ZOOM, MAX_ZOOM);
   return clampCanvasTransform(
     produce(state, newState => {
@@ -153,6 +182,7 @@ const setCanvasZoom = (zoom: number, state: Canvas) => {
         zoom,
         state.mousePosition
       );
-    })
+    }),
+    rects
   );
 };
