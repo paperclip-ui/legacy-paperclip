@@ -110,6 +110,8 @@ export default (state: AppState, action: Action) => {
           clampCanvasTransform(newState.canvas, newState.boxes)
         );
 
+        // end of iframe bounds. Onto scrolling now. Note that this should only
+        // work for full screen mode
         if (isEqual(newState.canvas.transform, state.canvas.transform)) {
           console.log(newState.frameSize, newState.scrollSize);
           newState.canvas.scrollPosition.x = clamp(
