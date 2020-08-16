@@ -1,10 +1,5 @@
 import React, { useState, useRef } from "react";
-import {
-  Box,
-  Point,
-  findIntersectingBox,
-  addPoint
-} from "../../../../../state";
+import { Point, findIntersectingBox } from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
 import * as styles from "./index.pc";

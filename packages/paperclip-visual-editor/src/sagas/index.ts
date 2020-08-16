@@ -45,22 +45,36 @@ function* handleRenderer() {
     const collectRects = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
+        const scrollingElement =
+          renderer.frame.contentDocument.scrollingElement;
+        const scrollLeft = scrollingElement.scrollLeft;
+        const scrollTop = scrollingElement.scrollTop;
+        scrollingElement.scrollTop = 0;
+        scrollingElement.scrollLeft = 0;
+
         emit(
           rectsCaptured({
             rects: renderer.getRects(),
             frameSize: renderer.frame.getBoundingClientRect(),
             scrollSize: {
-              width:
-                renderer.frame.contentDocument.scrollingElement.scrollWidth,
-              height:
-                renderer.frame.contentDocument.scrollingElement.scrollHeight
+              width: scrollingElement.scrollWidth,
+              height: scrollingElement.scrollHeight
             }
           })
         );
+
+        scrollingElement.scrollLeft = scrollLeft;
+        scrollingElement.scrollTop = scrollTop;
       }, 100);
     };
 
-    window.addEventListener("resize", collectRects);
+    renderer.frame.addEventListener("load", () => {
+      renderer.frame.contentWindow.addEventListener("resize", collectRects);
+      // const observer = new MutationObserver(collectRects);
+      // observer.observe(renderer.frame.contentDocument, {
+      //   attributes: true, childList: true, subtree: true
+      // });
+    });
 
     const onMessage = ({ data: { type, payload } }: MessageEvent) => {
       if (type === "ENGINE_EVENT") {

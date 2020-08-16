@@ -9,6 +9,7 @@ export const Preview = React.memo(() => {
   const {
     state: {
       rendererElement,
+      frameSize,
       canvas: { scrollPosition }
     }
   } = useAppStore();
@@ -24,7 +25,7 @@ export const Preview = React.memo(() => {
     const scrollingElement = rendererElement.contentDocument.scrollingElement;
     scrollingElement.scrollTop = scrollPosition.y;
     scrollingElement.scrollLeft = scrollPosition.x;
-  }, [rendererElement, scrollPosition]);
+  }, [rendererElement, scrollPosition, frameSize]);
 
   return <styles.Preview ref={mountRef} />;
 });
