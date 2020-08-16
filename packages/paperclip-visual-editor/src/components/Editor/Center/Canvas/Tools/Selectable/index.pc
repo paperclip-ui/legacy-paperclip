@@ -2,20 +2,22 @@
 
 <style>
   .overlay {
-    --color: rgb(0, 132, 255);
+    --background: var(--vscode-button-hoverBackground, rgb(0, 132, 255));
+    --foreground: var(--vscode-button-foreground, white);
     --zoom: 1;
     cursor: pointer;
     width: 100%;
     height: 100%;
     position: absolute;
-    box-shadow: inset 0px 0px 0px calc(3px / var(--zoom)) var(--color);
+    box-shadow: 0px 0px 0px calc(3px / var(--zoom)) var(--background);
     .size {
-      color: white;
+      color: var(--foreground);
       font-size: 0.8em;
-      background: var(--color);
+      background: var(--background);
       position: absolute;
       top: 100%;
       padding: 4px 8px;
+      left: -3px;
 
     }
   }

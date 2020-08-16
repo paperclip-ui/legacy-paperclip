@@ -25,6 +25,14 @@ export const Selectable = React.memo(
       );
     };
 
+    const left =
+      (intersectingRect.box.x - canvasScroll.x) * canvasTransform.z +
+      canvasTransform.x;
+    const top =
+      (intersectingRect.box.y - canvasScroll.y) * canvasTransform.z +
+      canvasTransform.y;
+    console.log(left, top, canvasTransform.z);
+
     return (
       <>
         <styles.Overlay
@@ -34,12 +42,7 @@ export const Selectable = React.memo(
           )}`}
           style={{
             "--zoom": 1,
-            left:
-              (intersectingRect.box.x - canvasScroll.x) * canvasTransform.z +
-              canvasTransform.x,
-            top:
-              (intersectingRect.box.y - canvasScroll.y) * canvasTransform.z +
-              canvasTransform.y,
+            transform: `translateX(${left}px) translateY(${top}px)`,
             width: intersectingRect.box.width * canvasTransform.z,
             height: intersectingRect.box.height * canvasTransform.z,
             transformOrigin: `top left`

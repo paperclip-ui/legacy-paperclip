@@ -123,9 +123,9 @@ export class Renderer {
       </html>
     `;
 
-    iframe.onload = () => {
+    iframe.addEventListener("load", () => {
       iframe.contentWindow.document.body.appendChild(mount);
-    };
+    });
   }
 
   get virtualRootNode() {

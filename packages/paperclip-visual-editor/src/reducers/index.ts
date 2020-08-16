@@ -116,7 +116,6 @@ export default (state: AppState, action: Action) => {
           !metaKey &&
           isEqual(newState.canvas.transform, state.canvas.transform)
         ) {
-          console.log(newState.frameSize, newState.scrollSize);
           newState.canvas.scrollPosition.x = clamp(
             newState.canvas.scrollPosition.x + delta2X,
             0,
