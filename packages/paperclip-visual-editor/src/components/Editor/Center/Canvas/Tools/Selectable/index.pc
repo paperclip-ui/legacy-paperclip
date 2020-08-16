@@ -15,7 +15,7 @@
       font-size: 0.8em;
       background: var(--background);
       position: absolute;
-      top: 100%;
+      top: calc(100% + 3px);
       padding: 4px 8px;
       left: -3px;
 
