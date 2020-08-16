@@ -91,13 +91,13 @@ export const Canvas = React.memo(() => {
 
   return (
     <styles.Canvas ref={canvasRef} onWheel={onWheel} onMouseMove={onMouseMove}>
+      <Tools />
       <styles.Inner
         style={{
           transform: `translateX(${transform.x}px) translateY(${transform.y}px) scale(${transform.z}) translateZ(0)`,
           transformOrigin: "top left"
         }}
       >
-        <Tools />
         <Preview />
       </styles.Inner>
     </styles.Canvas>

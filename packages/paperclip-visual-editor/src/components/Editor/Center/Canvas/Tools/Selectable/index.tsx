@@ -29,11 +29,12 @@ export const Selectable = React.memo(
         <styles.Overlay
           onClick={onClick}
           style={{
-            "--zoom": canvasTransform.z,
-            left: intersectingRect.box.x,
-            top: intersectingRect.box.y,
-            width: intersectingRect.box.width,
-            height: intersectingRect.box.height,
+            "--zoom": 1,
+            left:
+              intersectingRect.box.x * canvasTransform.z + canvasTransform.x,
+            top: intersectingRect.box.y * canvasTransform.z + canvasTransform.y,
+            width: intersectingRect.box.width * canvasTransform.z,
+            height: intersectingRect.box.height * canvasTransform.z,
             transformOrigin: `top left`
           }}
         />

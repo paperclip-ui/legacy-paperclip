@@ -31,7 +31,7 @@ export const Tools = () => {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >
-      {/* <Pixels canvasTransform={canvas.transform} /> */}
+      <Pixels canvas={canvas} />
       {!panning && (
         <Selectable
           dispatch={dispatch}

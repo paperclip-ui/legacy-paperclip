@@ -7,7 +7,6 @@ Object.assign(mount.style, { width: "100%", height: "100%" });
 
 ReactDOM.render(<Editor />, mount);
 
-// console.log(Array.from(document.head.querySelectorAll("style")));
 Array.from(document.head.querySelectorAll("style")).forEach(style => {
   // Clear VS Code styles.
   if (/_vscodeApiScript|_defaultStyles/.test(String(style.id))) {
