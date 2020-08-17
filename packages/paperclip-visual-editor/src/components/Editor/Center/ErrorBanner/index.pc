@@ -2,6 +2,7 @@
   .error-banner {
     position: absolute;
     bottom: 0;
+    z-index: 999;
   }
 </style>
 
