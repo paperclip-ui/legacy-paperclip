@@ -68,7 +68,7 @@ export const activate = (
 
     const panel = window.createWebviewPanel(
       VIEW_TYPE,
-      `⚡️ ${path.basename(paperclipUri)}`,
+      sticky ? "sticky preview" : `⚡️ ${path.basename(paperclipUri)}`,
       ViewColumn.Beside,
       {
         enableScripts: true,
