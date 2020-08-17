@@ -55,6 +55,7 @@ export const IS_WINDOWS = os.platform() === "win32";
 
 export const resetCanvas = (canvas: Canvas) => ({
   ...canvas,
+  scrollPosition: { x: 0, y: 0 },
   transform: { x: 0, y: 0, z: 1 }
 });
 
