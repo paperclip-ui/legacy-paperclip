@@ -1,29 +1,33 @@
 import React, { useState, useRef } from "react";
-import { Point, findIntersectingBox } from "../../../../../state";
+import { Point, findBoxNodeInfo } from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
 import * as styles from "./index.pc";
 import { Selectable } from "./Selectable";
 import { getScaledPoint } from "../../../../../state";
 import { Pixels } from "./Pixels";
+import { StatementKind } from "paperclip-utils";
 
 export const Tools = () => {
   const {
-    state: { boxes, canvas },
+    state: { boxes, canvas, toolsLayerEnabled, selectedNodePath },
     dispatch
   } = useAppStore();
   const [mousePoint, setMousePoint] = useState<Point>(null);
   const toolsRef = useRef<HTMLDivElement>();
 
   const onMouseMove = (event: React.MouseEvent<any>) => {
-    const rect = toolsRef.current.getBoundingClientRect();
-
     // need to subtract topbar
     setMousePoint({ x: event.pageX, y: event.pageY - 22 });
   };
 
   const onMouseLeave = () => setMousePoint(null);
   const { panning } = canvas;
+  const selectedBox = selectedNodePath && boxes[selectedNodePath];
+
+  if (!toolsLayerEnabled) {
+    return null;
+  }
 
   return (
     <styles.Tools
@@ -39,7 +43,7 @@ export const Tools = () => {
           canvasTransform={canvas.transform}
           intersectingRect={
             mousePoint &&
-            findIntersectingBox(
+            findBoxNodeInfo(
               getScaledPoint(
                 mousePoint,
                 canvas.transform,
@@ -48,6 +52,14 @@ export const Tools = () => {
               boxes
             )
           }
+        />
+      )}
+      {!panning && selectedBox && (
+        <Selectable
+          dispatch={dispatch}
+          canvasScroll={canvas.scrollPosition}
+          canvasTransform={canvas.transform}
+          intersectingRect={{ nodePath: selectedNodePath, box: selectedBox }}
         />
       )}
     </styles.Tools>

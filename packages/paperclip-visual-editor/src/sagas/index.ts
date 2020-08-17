@@ -1,4 +1,4 @@
-import { fork, put, take, takeEvery, select } from "redux-saga/effects";
+import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
   rendererInitialized,
@@ -29,6 +29,7 @@ export default function* mainSaga() {
     handleCanvasElementClicked
   );
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
+  yield fork(handleKeyCommands);
 }
 
 const parent = typeof vscode != "undefined" ? vscode : window;
@@ -110,11 +111,26 @@ function* handleRenderer() {
   });
 
   yield put(rendererInitialized({ element: renderer.frame }));
+  yield fork(handleInteractionsForRenderer(renderer));
 
   parent.postMessage({
     type: "ready"
   });
 }
+
+const handleInteractionsForRenderer = (renderer: Renderer) =>
+  function*() {
+    function* syncScrollbarVisibilityState() {
+      const state: AppState = yield select();
+      renderer.hideScrollbars = state.toolsLayerEnabled;
+    }
+
+    yield call(syncScrollbarVisibilityState);
+    yield takeEvery(
+      ActionType.PAINT_BUTTON_CLICKED,
+      syncScrollbarVisibilityState
+    );
+  };
 
 function* handleCanvasElementClicked(action: CanvasElementClicked) {
   if (!action.payload.metaKey) {
@@ -142,5 +158,23 @@ function handleErrorBannerClicked({ payload: error }: ErrorBannerClicked) {
       error
     },
     location.origin
+  );
+}
+
+function* handleKeyCommands() {
+  yield fork(handleEscape);
+}
+
+function handleEscape() {
+  // TODO - can't capture escape, so need alternative
+  document.body.addEventListener(
+    "keypress",
+    event => {
+      // console.log("KEY", event.key);
+      // if (event.keyCode === "Escape") {
+      //   console.log("ESCAPEE!");
+      // }
+    },
+    true
   );
 }

@@ -2,31 +2,61 @@
 <import src="components/icons/index.pc" as="icons">
 <style>
   .toolbar {
+    --border-color: var(--vscode-editorGroup-border, #777);
+    --active-background: var(--vscode-activityBar-foreground, rgb(0, 132, 255));
     background: var(--vscode-breadcrumb-background, var(--background-2));
-    color: var(--vscode-breadcrumb-foreground, var(--color-negate-1));
-    border-bottom: 1px solid var(--vscode-editorGroup-border, #000);
+    color: var(--vscode-activityBar-inactiveForeground, var(--color-negate-1));
+    border-bottom: 1px solid var(--border-color);
     height: 21px;
     flex-shrink: 0;
     flex-grow: 0;
+    display: flex;
     // box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.301);
   }
 
-  .zoom {
+  .controls {
     padding:4px 14px;
+    display: flex;
+    align-items: center;
+  }
+
+  .brush {
+    && {
+      --size: 1em;
+    }
+    mask-size: 0.95em;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    mask-image: url(./drop2.svg);
+    display: inline-block;
+    margin-right: 7px;
+    &--active {
+      color: var(--active-background); 
+    }
+  }
+
+  .zoom {
+    border-left: 1px solid var(--border-color);
+    padding:0px 7px;
     font-size: 0.8em;
     display: flex;
     align-items: center;
     span {
       user-select: none;
+      position: relative;
+      top: -1px;
     }
     button {
+      --size: 1em;
       cursor: pointer;
       color: inherit;
       margin-right: 4px;
       line-height: 0;
       display: inline-block;
+      mask-size: 0.8em;
       border: none;
-      --size: 1em;
+      padding:0;
       &.minus {
         mask-image: url(./minus.svg);
       }
@@ -43,12 +73,24 @@
   <span>{amount}%</span>
 </div>
 
+<button export component as="PaintButton" {onClick?} 
+  className="$icons.icon brush"
+  className:active="brush--active">
+</button>
+
+<div export component as="Controls" className="controls">
+  {children}
+</div>
+
 <div export component as="Container" className="toolbar $theme.background-2">
   {children}
 </div>
 
 <Container export component as="Preview">
-  <Zoom amount="100" />
+  <Controls>
+    <PaintButton active />
+    <Zoom amount="100" />
+  </Controls>
 </Container>
 
 <div className="$theme.font-default">

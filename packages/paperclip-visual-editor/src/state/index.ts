@@ -14,14 +14,16 @@ export type Canvas = {
   mousePosition: Point;
 };
 
-export type IntersectingBox = {
+export type BoxNodeInfo = {
   nodePath: string;
   box: Box;
 };
 
 export type AppState = {
+  toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
   rendererElement?: any;
+  selectedNodePath: string;
   canvas: Canvas;
   virtualRootNode?: VirtualNode;
   scrollSize?: Size;
@@ -31,8 +33,10 @@ export type AppState = {
 };
 
 export const INITIAL_STATE: AppState = {
+  toolsLayerEnabled: true,
   boxes: {},
   zoomLevel: 1,
+  selectedNodePath: null,
   canvas: {
     panning: false,
     showTools: true,
@@ -48,6 +52,12 @@ export const INITIAL_STATE: AppState = {
 };
 
 export const IS_WINDOWS = os.platform() === "win32";
+
+export const resetCanvas = (canvas: Canvas) => ({
+  ...canvas,
+  scrollPosition: { x: 0, y: 0 },
+  transform: { x: 0, y: 0, z: 1 }
+});
 
 export const mergeBoxesFromClientRects = (
   boxes: Record<string, Box>,
@@ -72,8 +82,8 @@ export const boxIntersectsPoint = (box: Box, point: Point) => {
   );
 };
 
-export const findIntersectingBox = memoize(
-  (point: Point, boxes: Record<string, Box>): IntersectingBox | null => {
+export const findBoxNodeInfo = memoize(
+  (point: Point, boxes: Record<string, Box>): BoxNodeInfo | null => {
     let bestIntersetingBox;
     let bestIntersetingNodePath;
     for (const nodePath in boxes) {
