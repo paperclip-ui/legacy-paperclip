@@ -3,9 +3,9 @@
 <style>
   .toolbar {
     --border-color: var(--vscode-editorGroup-border, #777);
-    --active-background: var(--vscode-button-hoverBackground, rgb(0, 132, 255));
+    --active-background: var(--vscode-activityBar-foreground, rgb(0, 132, 255));
     background: var(--vscode-breadcrumb-background, var(--background-2));
-    color: var(--vscode-breadcrumb-foreground, var(--color-negate-1));
+    color: var(--vscode-activityBar-inactiveForeground, var(--color-negate-1));
     border-bottom: 1px solid var(--border-color);
     height: 21px;
     flex-shrink: 0;
