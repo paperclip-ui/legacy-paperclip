@@ -62,16 +62,16 @@ export class Renderer {
 
     this._hoverOverlay = _domFactory.createElement("div");
     Object.assign(this._hoverOverlay.style, {
-      position: "absolute",
-      zIndex: 1024,
-      display: "none",
-      background: "rgba(124, 154, 236, 0.5)",
-      width: `100px`,
-      height: `100px`,
-      cursor: "pointer",
-      pointerEvents: "none",
-      top: `0px`,
-      left: `0px`
+      // position: "absolute",
+      // zIndex: 1024,
+      // display: "none",
+      // background: "rgba(124, 154, 236, 0.5)",
+      // width: `100px`,
+      // height: `100px`,
+      // cursor: "pointer",
+      // pointerEvents: "none",
+      // top: `0px`,
+      // left: `0px`
     });
 
     this._stage = this._domFactory.createElement("div");
@@ -81,7 +81,7 @@ export class Renderer {
     this.mount.appendChild(this._importedStylesContainer);
     this.mount.appendChild(this._mainStyleContainer);
     this.mount.appendChild(this._stage);
-    // this.mount.appendChild(this._hoverOverlay);
+    this.mount.appendChild(this._hoverOverlay);
     this.mount.appendChild(this._errorOverlay);
     this._stage.addEventListener("mousedown", this._onStageMouseDown, true);
     this._stage.addEventListener("mouseup", preventDefault, true);
