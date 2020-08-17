@@ -9,7 +9,7 @@ import { Pixels } from "./Pixels";
 
 export const Tools = () => {
   const {
-    state: { boxes, canvas },
+    state: { boxes, canvas, toolsLayerEnabled },
     dispatch
   } = useAppStore();
   const [mousePoint, setMousePoint] = useState<Point>(null);
@@ -25,6 +25,10 @@ export const Tools = () => {
   const onMouseLeave = () => setMousePoint(null);
   const { panning } = canvas;
 
+  if (!toolsLayerEnabled) {
+    return null;
+  }
+
   return (
     <styles.Tools
       ref={toolsRef}
@@ -32,23 +36,27 @@ export const Tools = () => {
       onMouseLeave={onMouseLeave}
     >
       <Pixels canvas={canvas} />
-      {!panning && (
-        <Selectable
-          dispatch={dispatch}
-          canvasScroll={canvas.scrollPosition}
-          canvasTransform={canvas.transform}
-          intersectingRect={
-            mousePoint &&
-            findIntersectingBox(
-              getScaledPoint(
-                mousePoint,
-                canvas.transform,
-                canvas.scrollPosition
-              ),
-              boxes
-            )
-          }
-        />
+      {toolsLayerEnabled && (
+        <styles.Inner>
+          {!panning && (
+            <Selectable
+              dispatch={dispatch}
+              canvasScroll={canvas.scrollPosition}
+              canvasTransform={canvas.transform}
+              intersectingRect={
+                mousePoint &&
+                findIntersectingBox(
+                  getScaledPoint(
+                    mousePoint,
+                    canvas.transform,
+                    canvas.scrollPosition
+                  ),
+                  boxes
+                )
+              }
+            />
+          )}
+        </styles.Inner>
       )}
     </styles.Tools>
   );

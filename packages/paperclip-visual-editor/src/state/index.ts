@@ -20,6 +20,7 @@ export type IntersectingBox = {
 };
 
 export type AppState = {
+  toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
   rendererElement?: any;
   canvas: Canvas;
@@ -31,6 +32,7 @@ export type AppState = {
 };
 
 export const INITIAL_STATE: AppState = {
+  toolsLayerEnabled: true,
   boxes: {},
   zoomLevel: 1,
   canvas: {
@@ -48,6 +50,11 @@ export const INITIAL_STATE: AppState = {
 };
 
 export const IS_WINDOWS = os.platform() === "win32";
+
+export const resetCanvas = (canvas: Canvas) => ({
+  ...canvas,
+  transform: { x: 0, y: 0, z: 1 }
+});
 
 export const mergeBoxesFromClientRects = (
   boxes: Record<string, Box>,

@@ -40,6 +40,7 @@ export class Renderer {
   private _importedStylesContainer: HTMLElement;
   private _virtualRootNode: VirtualNode;
   private _errorOverlay: HTMLElement;
+  private _hideScrollbars: boolean;
   readonly mount: HTMLElement;
   readonly frame: HTMLIFrameElement;
 
@@ -49,6 +50,7 @@ export class Renderer {
     private _domFactory: DOMFactory = document
   ) {
     this._importedStyles = {};
+    this._hideScrollbars = false;
     this._em = new EventEmitter();
     this._errorOverlay = _domFactory.createElement("div");
     Object.assign(this._errorOverlay.style, {
@@ -79,7 +81,7 @@ export class Renderer {
     this.mount.appendChild(this._importedStylesContainer);
     this.mount.appendChild(this._mainStyleContainer);
     this.mount.appendChild(this._stage);
-    this.mount.appendChild(this._hoverOverlay);
+    // this.mount.appendChild(this._hoverOverlay);
     this.mount.appendChild(this._errorOverlay);
     this._stage.addEventListener("mousedown", this._onStageMouseDown, true);
     this._stage.addEventListener("mouseup", preventDefault, true);
@@ -110,12 +112,6 @@ export class Renderer {
               width: 100%;
               height: 100%;
             }
-            body {
-
-              /* need to hide scrollbar so that it doesn't show
-              up in visual editor. Need to make this optional. */
-              overflow: hidden;
-            }
           </style>
         </head>
         <body>
@@ -123,13 +119,40 @@ export class Renderer {
       </html>
     `;
 
-    iframe.addEventListener("load", () => {
+    this.loaded().then(() => {
       iframe.contentWindow.document.body.appendChild(mount);
+    });
+  }
+
+  async loaded() {
+    return new Promise(resolve => {
+      const onLoaded = () => {
+        this.frame.removeEventListener("load", onLoaded);
+        resolve();
+      };
+
+      if (this.frame.contentDocument?.body) {
+        return resolve();
+      }
+      this.frame.addEventListener("load", onLoaded);
     });
   }
 
   get virtualRootNode() {
     return this._virtualRootNode;
+  }
+
+  get hideScrollbars() {
+    return this._hideScrollbars;
+  }
+
+  set hideScrollbars(value: boolean) {
+    this._hideScrollbars = value;
+    this.loaded().then(() => {
+      this.frame.contentDocument.body.style.overflow = value
+        ? "hidden"
+        : "scroll";
+    });
   }
 
   onMetaClick = (listener: (element: any) => void) => {

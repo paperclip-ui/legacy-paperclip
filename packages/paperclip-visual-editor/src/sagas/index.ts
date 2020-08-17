@@ -1,4 +1,4 @@
-import { fork, put, take, takeEvery, select } from "redux-saga/effects";
+import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
   rendererInitialized,
@@ -110,11 +110,26 @@ function* handleRenderer() {
   });
 
   yield put(rendererInitialized({ element: renderer.frame }));
+  yield fork(handleInteractionsForRenderer(renderer));
 
   parent.postMessage({
     type: "ready"
   });
 }
+
+const handleInteractionsForRenderer = (renderer: Renderer) =>
+  function*() {
+    function* syncScrollbarVisibilityState() {
+      const state: AppState = yield select();
+      renderer.hideScrollbars = state.toolsLayerEnabled;
+    }
+
+    yield call(syncScrollbarVisibilityState);
+    yield takeEvery(
+      ActionType.PAINT_BUTTON_CLICKED,
+      syncScrollbarVisibilityState
+    );
+  };
 
 function* handleCanvasElementClicked(action: CanvasElementClicked) {
   if (!action.payload.metaKey) {

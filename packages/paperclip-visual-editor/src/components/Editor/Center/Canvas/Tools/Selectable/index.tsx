@@ -31,7 +31,6 @@ export const Selectable = React.memo(
     const top =
       (intersectingRect.box.y - canvasScroll.y) * canvasTransform.z +
       canvasTransform.y;
-    console.log(left, top, canvasTransform.z);
 
     return (
       <>

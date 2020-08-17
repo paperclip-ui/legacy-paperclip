@@ -6,9 +6,18 @@
     top: 0px;
     left: 0px;
     background: transparent;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     z-index: 2;
+  }
+
+  .inner {
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    background: transparent;
   }
 </style>
 
@@ -17,6 +26,11 @@
   {onMouseMove?}
   {onMouseLeave?}
   {onWheel?}
+  >
+  {children}
+</div>
+
+<div export component as="Inner" 
   >
   {children}
 </div>

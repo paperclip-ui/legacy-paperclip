@@ -5,7 +5,8 @@ import {
   IS_WINDOWS,
   Canvas,
   calcFrameBox,
-  Box
+  Box,
+  resetCanvas
 } from "../state";
 import { produce } from "immer";
 import { Action, ActionType } from "../actions";
@@ -41,6 +42,12 @@ export default (state: AppState, action: Action) => {
     case ActionType.ERROR_BANNER_CLICKED: {
       return produce(state, newState => {
         newState.currentError = null;
+      });
+    }
+    case ActionType.PAINT_BUTTON_CLICKED: {
+      return produce(state, newState => {
+        newState.toolsLayerEnabled = !newState.toolsLayerEnabled;
+        newState.canvas = resetCanvas(newState.canvas);
       });
     }
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {

@@ -13,6 +13,7 @@ export enum ActionType {
   CANVAS_ELEMENT_CLICKED = "CANVAS_ELEMENT_CLICKED",
   ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
+  PAINT_BUTTON_CLICKED = "PAINT_BUTTON_CLICKED",
   CANVAS_RESIZED = "CANVAS_RESIZED",
   CANVAS_MOUSE_MOVED = "CANVAS_MOUSE_MOVED",
   CANVAS_PAN_START = "CANVAS_PAN_START",
@@ -57,6 +58,7 @@ export type ZoomInButtonClicked = BaseAction<ActionType.ZOOM_IN_BUTTON_CLICKED>;
 export type ZoomOutButtonClicked = BaseAction<
   ActionType.ZOOM_OUT_BUTTON_CLICKED
 >;
+export type PainButtonClicked = BaseAction<ActionType.PAINT_BUTTON_CLICKED>;
 
 export type RectsCaptured = BaseAction<
   ActionType.RECTS_CAPTURED,
@@ -107,6 +109,9 @@ export const zoomInButtonClicked = actionCreator<ZoomInButtonClicked>(
 export const zoomOutButtonClicked = actionCreator<ZoomOutButtonClicked>(
   ActionType.ZOOM_OUT_BUTTON_CLICKED
 );
+export const paintButtonClicked = actionCreator<PainButtonClicked>(
+  ActionType.PAINT_BUTTON_CLICKED
+);
 
 export type Action =
   | RendererInitialized
@@ -120,5 +125,6 @@ export type Action =
   | CanvasMouseMoved
   | ErrorBannerClicked
   | ZoomInButtonClicked
+  | PainButtonClicked
   | EngineErrored
   | ZoomOutButtonClicked;
