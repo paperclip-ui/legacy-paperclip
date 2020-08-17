@@ -29,6 +29,7 @@ export default function* mainSaga() {
     handleCanvasElementClicked
   );
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
+  yield fork(handleKeyCommands);
 }
 
 const parent = typeof vscode != "undefined" ? vscode : window;
@@ -157,5 +158,23 @@ function handleErrorBannerClicked({ payload: error }: ErrorBannerClicked) {
       error
     },
     location.origin
+  );
+}
+
+function* handleKeyCommands() {
+  yield fork(handleEscape);
+}
+
+function handleEscape() {
+  // TODO - can't capture escape, so need alternative
+  document.body.addEventListener(
+    "keypress",
+    event => {
+      // console.log("KEY", event.key);
+      // if (event.keyCode === "Escape") {
+      //   console.log("ESCAPEE!");
+      // }
+    },
+    true
   );
 }

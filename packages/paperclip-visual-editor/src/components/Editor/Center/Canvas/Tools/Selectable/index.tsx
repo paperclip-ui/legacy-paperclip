@@ -1,12 +1,12 @@
 import React from "react";
-import { IntersectingBox, Transform, Point } from "../../../../../../state";
+import { BoxNodeInfo, Transform, Point, Box } from "../../../../../../state";
 import * as styles from "./index.pc";
 import { Dispatch } from "redux";
 import { Action, canvasElementClicked } from "../../../../../../actions";
 
 type Props = {
   canvasScroll: Point;
-  intersectingRect: IntersectingBox;
+  intersectingRect: BoxNodeInfo;
   canvasTransform: Transform;
   dispatch: Dispatch<Action>;
 };

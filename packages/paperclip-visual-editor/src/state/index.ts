@@ -14,7 +14,7 @@ export type Canvas = {
   mousePosition: Point;
 };
 
-export type IntersectingBox = {
+export type BoxNodeInfo = {
   nodePath: string;
   box: Box;
 };
@@ -23,6 +23,7 @@ export type AppState = {
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
   rendererElement?: any;
+  selectedNodePath: string;
   canvas: Canvas;
   virtualRootNode?: VirtualNode;
   scrollSize?: Size;
@@ -35,6 +36,7 @@ export const INITIAL_STATE: AppState = {
   toolsLayerEnabled: true,
   boxes: {},
   zoomLevel: 1,
+  selectedNodePath: null,
   canvas: {
     panning: false,
     showTools: true,
@@ -79,8 +81,8 @@ export const boxIntersectsPoint = (box: Box, point: Point) => {
   );
 };
 
-export const findIntersectingBox = memoize(
-  (point: Point, boxes: Record<string, Box>): IntersectingBox | null => {
+export const findBoxNodeInfo = memoize(
+  (point: Point, boxes: Record<string, Box>): BoxNodeInfo | null => {
     let bestIntersetingBox;
     let bestIntersetingNodePath;
     for (const nodePath in boxes) {
