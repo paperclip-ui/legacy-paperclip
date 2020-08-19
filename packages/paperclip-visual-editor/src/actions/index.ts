@@ -19,7 +19,10 @@ export enum ActionType {
   CANVAS_PAN_START = "CANVAS_PAN_START",
   CANVAS_PAN_END = "CANVAS_PAN_END",
   CANVAS_PANNED = "CANVAS_PANNED",
-  RECTS_CAPTURED = "RECTS_CAPTURED"
+  RECTS_CAPTURED = "RECTS_CAPTURED",
+  GLOBAL_ESCAPE_KEY_PRESSED = "GLOBAL_ESCAPE_KEY_PRESSED",
+  GLOBAL_META_KEY_DOWN = "GLOBAL_META_KEY_DOWN",
+  GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP"
 }
 
 export type RendererInitialized = BaseAction<
@@ -69,6 +72,24 @@ export type RectsCaptured = BaseAction<
   }
 >;
 
+export type ElementMouseEnter = BaseAction<
+  ActionType.ELEMENT_MOUSE_ENTER,
+  {
+    metaKey: boolean;
+    nodePath: string;
+  }
+>;
+
+export type ElementMouseLeave = BaseAction<
+  ActionType.ELEMENT_MOUSE_LEAVE,
+  {
+    metaKey: boolean;
+    nodePath: string;
+  }
+>;
+
+export type KeyComboPressed<TType extends ActionType> = BaseAction<TType, null>;
+
 export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
 );
@@ -112,6 +133,15 @@ export const zoomOutButtonClicked = actionCreator<ZoomOutButtonClicked>(
 export const paintButtonClicked = actionCreator<PainButtonClicked>(
   ActionType.PAINT_BUTTON_CLICKED
 );
+export const globalEscapeKeyPressed = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
+>(ActionType.GLOBAL_ESCAPE_KEY_PRESSED);
+export const globalMetaKeyDown = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
+>(ActionType.GLOBAL_META_KEY_DOWN);
+export const globalMetaKeyUp = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
+>(ActionType.GLOBAL_META_KEY_UP);
 
 export type Action =
   | RendererInitialized
@@ -126,5 +156,8 @@ export type Action =
   | ErrorBannerClicked
   | ZoomInButtonClicked
   | PainButtonClicked
+  | KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
+  | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
+  | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
   | EngineErrored
   | ZoomOutButtonClicked;

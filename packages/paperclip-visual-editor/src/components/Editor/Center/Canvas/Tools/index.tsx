@@ -6,11 +6,18 @@ import * as styles from "./index.pc";
 import { Selectable } from "./Selectable";
 import { getScaledPoint } from "../../../../../state";
 import { Pixels } from "./Pixels";
-import { StatementKind } from "paperclip-utils";
+import { Distance } from "./Distance";
 
 export const Tools = () => {
   const {
-    state: { boxes, canvas, toolsLayerEnabled, selectedNodePath },
+    state: {
+      boxes,
+      canvas,
+      toolsLayerEnabled,
+      selectedNodePath,
+      hoveringNodePath,
+      metaKeyDown
+    },
     dispatch
   } = useAppStore();
   const [mousePoint, setMousePoint] = useState<Point>(null);
@@ -29,6 +36,13 @@ export const Tools = () => {
     return null;
   }
 
+  const hoveringNodeInfo =
+    mousePoint &&
+    findBoxNodeInfo(
+      getScaledPoint(mousePoint, canvas.transform, canvas.scrollPosition),
+      boxes
+    );
+
   return (
     <styles.Tools
       ref={toolsRef}
@@ -41,17 +55,7 @@ export const Tools = () => {
           dispatch={dispatch}
           canvasScroll={canvas.scrollPosition}
           canvasTransform={canvas.transform}
-          intersectingRect={
-            mousePoint &&
-            findBoxNodeInfo(
-              getScaledPoint(
-                mousePoint,
-                canvas.transform,
-                canvas.scrollPosition
-              ),
-              boxes
-            )
-          }
+          intersectingRect={hoveringNodeInfo}
         />
       )}
       {!panning && selectedBox && (
@@ -60,6 +64,14 @@ export const Tools = () => {
           canvasScroll={canvas.scrollPosition}
           canvasTransform={canvas.transform}
           intersectingRect={{ nodePath: selectedNodePath, box: selectedBox }}
+        />
+      )}
+      {metaKeyDown && selectedBox && hoveringNodeInfo && (
+        <Distance
+          canvasScroll={canvas.scrollPosition}
+          canvasTransform={canvas.transform}
+          from={{ nodePath: selectedNodePath, box: selectedBox }}
+          to={hoveringNodeInfo}
         />
       )}
     </styles.Tools>

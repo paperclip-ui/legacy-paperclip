@@ -14,6 +14,7 @@
   "dependencies": {
     "immer": "^7.0.7",
     "lodash": "^4.17.20",
+    "mousetrap": "^1.6.5",
     "paperclip-utils": "^14.4.0",
     "paperclip-web-renderer": "^14.4.7",
     "react": "^16.13.1",

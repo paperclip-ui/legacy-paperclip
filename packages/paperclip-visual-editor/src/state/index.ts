@@ -24,6 +24,8 @@ export type AppState = {
   currentError?: EngineErrorEvent;
   rendererElement?: any;
   selectedNodePath: string;
+  hoveringNodePath?: string;
+  metaKeyDown?: boolean;
   canvas: Canvas;
   virtualRootNode?: VirtualNode;
   scrollSize?: Size;
