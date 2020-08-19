@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100pt" height="100pt" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <path d="m40 0v40h-40v-40z"/>
+  <path d="m100 0v39.77h-40v-39.77z"/>
+  <path d="m0 60h39.77v40h-39.77z"/>
+  <path d="m60.23 60.16h39.602l-0.003906 39.578h-39.598z"/>
+ </g>
+</svg>
