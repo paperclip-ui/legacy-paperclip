@@ -72,22 +72,6 @@ export type RectsCaptured = BaseAction<
   }
 >;
 
-export type ElementMouseEnter = BaseAction<
-  ActionType.ELEMENT_MOUSE_ENTER,
-  {
-    metaKey: boolean;
-    nodePath: string;
-  }
->;
-
-export type ElementMouseLeave = BaseAction<
-  ActionType.ELEMENT_MOUSE_LEAVE,
-  {
-    metaKey: boolean;
-    nodePath: string;
-  }
->;
-
 export type KeyComboPressed<TType extends ActionType> = BaseAction<TType, null>;
 
 export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
