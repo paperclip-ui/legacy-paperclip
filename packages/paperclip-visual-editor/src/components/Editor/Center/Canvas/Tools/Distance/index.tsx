@@ -120,7 +120,7 @@ export const Distance = ({
           key="east-south-guide"
           style={{
             left: (left + distance) * canvasTransform.z,
-            height: (bottom(to.box) - top) * canvasTransform.z,
+            height: (to.box.y - top) * canvasTransform.z,
             top: top * canvasTransform.z
           }}
         />
