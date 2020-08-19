@@ -29,22 +29,25 @@
     height: 0px;
     border: 0.5px solid var(--color);
     color: var(--color);
-    .label {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      &--vertical&--flip {
-        color: blue;
-      }
-      &--vertical {
-        transform: translateX(4px) translateY(-50%);
-      }
-      &--horizontal {
-        transform: translateX(-50%) translateY(4px);
-      }
-      &--horizontal&--flip {
-        color: blue;
-      }
+    box-sizing: border-box;
+    
+  }
+  .measuring-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    /* text-shadow: 1px 1px 0px ; */
+    &--vertical {
+      transform: translateX(4px) translateY(-50%);
+    }
+    &--horizontal {
+      transform: translateX(-50%) translateY(4px);
+    }
+    &--horizontal&--flip {
+      transform: translateY(calc(-100% - 4px)) translateX(-50%);
+    }
+    &--vertical&--flip {
+      transform: translateY(-50%) translateX(calc(-100% - 4px));
     }
   }
   
@@ -53,6 +56,7 @@
     position: absolute;
     width: 0px;
     height: 0px;
+    box-sizing: border-box;
     border: 0.5px solid var(--color);
     color: var(--color);
     border-style: dashed;
@@ -70,10 +74,10 @@
 </div>
 
 <div export component as="MeasuringStick" {style} className="measuring-stick">
-  <span className="label" 
-    className:vertical="label--vertical"
-    className:horizontal="label--horizontal"
-    className:flipLabel="label--flip"
+  <span className="measuring-label" 
+    className:vertical="measuring-label--vertical"
+    className:horizontal="measuring-label--horizontal"
+    className:flipLabel="measuring-label--flip"
     >{distance}</span>
 </div>
 

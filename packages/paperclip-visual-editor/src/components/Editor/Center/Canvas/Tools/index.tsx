@@ -50,15 +50,14 @@ export const Tools = () => {
       onMouseLeave={onMouseLeave}
     >
       <Pixels canvas={canvas} />
-      {!panning && (
-        <Selectable
-          dispatch={dispatch}
-          canvasScroll={canvas.scrollPosition}
-          canvasTransform={canvas.transform}
-          intersectingRect={hoveringNodeInfo}
-        />
-      )}
-      {!panning && selectedBox && (
+
+      <Selectable
+        dispatch={dispatch}
+        canvasScroll={canvas.scrollPosition}
+        canvasTransform={canvas.transform}
+        intersectingRect={hoveringNodeInfo}
+      />
+      {selectedBox && (
         <Selectable
           dispatch={dispatch}
           canvasScroll={canvas.scrollPosition}
