@@ -98,7 +98,7 @@ const resolveModule = fs => (
         const actualPath = resolveOutput
           ? modulePath.replace(sourceDir, outputDir)
           : modulePath;
-        return url.pathToFileURL(actualPath).href;
+        return url.pathToFileURL(fs.realpathSync(actualPath)).href;
       }
     }
   }
