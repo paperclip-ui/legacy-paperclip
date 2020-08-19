@@ -4,7 +4,6 @@ import {
   centerTransformZoom,
   IS_WINDOWS,
   Canvas,
-  calcFrameBox,
   Box,
   resetCanvas
 } from "../state";
@@ -51,10 +50,32 @@ export default (state: AppState, action: Action) => {
         newState.canvas = resetCanvas(newState.canvas);
       });
     }
+    case ActionType.GLOBAL_ESCAPE_KEY_PRESSED: {
+      // Don't do this until deselecting can be handled properly
+      return produce(state, newState => {
+        newState.selectedNodePath = null;
+      });
+    }
+    case ActionType.GLOBAL_META_KEY_DOWN: {
+      // TODO
+      return produce(state, newState => {
+        newState.metaKeyDown = true;
+      });
+    }
+    case ActionType.GLOBAL_META_KEY_UP: {
+      // TODO
+      return produce(state, newState => {
+        newState.metaKeyDown = false;
+      });
+    }
     case ActionType.CANVAS_ELEMENT_CLICKED: {
       // Don't do this until deselecting can be handled properly
       return produce(state, newState => {
-        // newState.selectedNodePath = action.payload.nodePath;
+        // allow toggle selecting elements - necessary since escape key doesn't work.
+        newState.selectedNodePath =
+          newState.selectedNodePath === action.payload.nodePath
+            ? null
+            : action.payload.nodePath;
       });
     }
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {

@@ -1,3 +1,5 @@
+import * as Mousetrap from "mousetrap";
+
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
@@ -7,7 +9,10 @@ import {
   CanvasElementClicked,
   rendererChanged,
   ErrorBannerClicked,
-  engineErrored
+  engineErrored,
+  globalEscapeKeyPressed,
+  globalMetaKeyDown,
+  globalMetaKeyUp
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { render } from "react-dom";
@@ -134,7 +139,7 @@ const handleInteractionsForRenderer = (renderer: Renderer) =>
 
 function* handleCanvasElementClicked(action: CanvasElementClicked) {
   if (!action.payload.metaKey) {
-    // return;
+    return;
   }
 
   const state: AppState = yield select();
@@ -162,19 +167,27 @@ function handleErrorBannerClicked({ payload: error }: ErrorBannerClicked) {
 }
 
 function* handleKeyCommands() {
-  yield fork(handleEscape);
-}
+  const chan = eventChannel(emit => {
+    Mousetrap.bind("esc", () => {
+      emit(globalEscapeKeyPressed(null));
+    });
 
-function handleEscape() {
-  // TODO - can't capture escape, so need alternative
-  document.body.addEventListener(
-    "keypress",
-    event => {
-      // console.log("KEY", event.key);
-      // if (event.keyCode === "Escape") {
-      //   console.log("ESCAPEE!");
-      // }
-    },
-    true
-  );
+    Mousetrap.bind("meta", () => {
+      emit(globalMetaKeyDown(null));
+    });
+    Mousetrap.bind(
+      "meta",
+      () => {
+        emit(globalMetaKeyUp(null));
+      },
+      "keyup"
+    );
+
+    // eslint-disable-next-line
+    return () => {};
+  });
+
+  while (1) {
+    yield put(yield take(chan));
+  }
 }

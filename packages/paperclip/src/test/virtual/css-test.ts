@@ -685,4 +685,25 @@ describe(__filename + "#", () => {
       "<style>div[data-pc-80f4925f] { mask-image:d; -webkit-mask-image:d; }</style>"
     );
   });
+
+  it("Properly renders nested selectors", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      .a {
+        .b {
+          &--c&--d {
+
+          }
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>[class]._80f4925f_a { } [class]._80f4925f_a [class]._80f4925f_b { } [class]._80f4925f_a [class]._80f4925f_b--c[class]._80f4925f_a [class]._80f4925f_b--d { }</style>"
+    );
+  });
 });
