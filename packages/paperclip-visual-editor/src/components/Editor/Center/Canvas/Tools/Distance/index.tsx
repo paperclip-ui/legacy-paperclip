@@ -45,7 +45,7 @@ export const Distance = ({
       <styles.MeasuringStick
         key="north"
         vertical
-        flipLabel={false}
+        flipLabel={isRight}
         distance={Math.round(distance)}
         style={{
           left: left * canvasTransform.z,
@@ -91,7 +91,7 @@ export const Distance = ({
       <styles.MeasuringStick
         key="east"
         horizontal
-        flipLabel={false}
+        flipLabel={isBelow}
         distance={Math.round(distance)}
         style={{
           left: left * canvasTransform.z + 3,
