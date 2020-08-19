@@ -139,7 +139,7 @@ const handleInteractionsForRenderer = (renderer: Renderer) =>
 
 function* handleCanvasElementClicked(action: CanvasElementClicked) {
   if (!action.payload.metaKey) {
-    // return;
+    return;
   }
 
   const state: AppState = yield select();
