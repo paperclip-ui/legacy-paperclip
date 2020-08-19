@@ -86,7 +86,7 @@ export const Distance = ({
     const left = right(from.box);
     const top = from.box.y + from.box.height / 2;
     const isAbove = bottom(to.box) < top;
-    const isBelow = to.box.y > bottom(from.box);
+    const isBelow = to.box.y > top;
     sticks.push(
       <styles.MeasuringStick
         key="east"
@@ -131,8 +131,8 @@ export const Distance = ({
   if (we < from.box.x) {
     const distance = from.box.x - we;
     const top = from.box.y + from.box.height / 2;
-    const isBelow = to.box.y > bottom(from.box);
-    const isAbove = bottom(to.box) < from.box.y;
+    const isBelow = to.box.y > top;
+    const isAbove = bottom(to.box) < top;
     const left = we;
     sticks.push(
       <styles.MeasuringStick
