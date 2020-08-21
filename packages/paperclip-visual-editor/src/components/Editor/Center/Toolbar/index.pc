@@ -21,18 +21,47 @@
   }
 
   .brush {
-    && {
-      --size: 1em;
-    }
-    mask-size: 0.95em;
     border: none;
-    cursor: pointer;
     color: inherit;
-    mask-image: url(./drop2.svg);
-    display: inline-block;
+    padding: 0;
+    background: transparent;
+    display: flex;
     margin-right: 7px;
-    &--active {
-      color: var(--active-background); 
+
+    i {
+      --size: 1em;
+      padding: 0;
+      mask-size: 0.95em;
+      cursor: pointer;
+      mask-image: url(./drop2.svg);
+      display: inline-block;
+      /* position: relative; */
+      /* top: -1px; */
+      &.active {
+        color: var(--active-background); 
+      }
+    }
+  }
+  .grid {
+    border: none;
+    color: inherit;
+    padding: 0;
+    margin-right: 7px;
+    background: transparent;
+    display: flex;
+    border-left: 1px solid var(--border-color);
+    padding-left: 7px;
+
+    i {
+      --size: 1em;
+      padding: 0;
+      mask-size: 0.93em;
+      cursor: pointer;
+      mask-image: url(./grid.svg);
+      display: inline-block;
+      &.active {
+        color: var(--active-background); 
+      }
     }
   }
 
@@ -74,8 +103,12 @@
 </div>
 
 <button export component as="PaintButton" {onClick?} 
-  className="$icons.icon brush"
-  className:active="brush--active">
+  className="brush">
+  <i className="$icons.icon" className:active="active" />
+</button>
+<button export component as="GridButton" {onClick?} 
+  className="grid">
+  <i className="$icons.icon" className:active="active" />
 </button>
 
 <div export component as="Controls" className="controls">
@@ -89,6 +122,7 @@
 <Container export component as="Preview">
   <Controls>
     <PaintButton active />
+    <GridButton active />
     <Zoom amount="100" />
   </Controls>
 </Container>

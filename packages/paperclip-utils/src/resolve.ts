@@ -74,8 +74,10 @@ const resolveModule = fs => (
     const srcPath = moduleRelativePath.substr(firstSlashIndex);
     for (let i = 0, { length } = config.moduleDirectories; i < length; i++) {
       const moduleDir = config.moduleDirectories[i];
-      const moduleDirectory = path.join(configPathDir, moduleDir, moduleName);
-
+      const moduleDirectory = path.join(
+        resolveModuleDirectory(fs)(configPathDir, moduleDir),
+        moduleName
+      );
       const modulePath = path.join(moduleDirectory, srcPath);
       const moduleConfigUrl = findPCConfigUrl(fs)(modulePath);
 
@@ -106,6 +108,22 @@ const resolveModule = fs => (
   return null;
 };
 
+const resolveModuleDirectory = fs => (cwd: string, moduleDir: string) => {
+  const c0 = moduleDir.charAt(0);
+  if (c0 === "/" || c0 === ".") {
+    return path.join(cwd, moduleDir);
+  }
+  let cdir = cwd;
+
+  do {
+    const maybeDir = path.join(cdir, moduleDir);
+    if (fs.existsSync(maybeDir)) {
+      return maybeDir;
+    }
+    cdir = path.dirname(cdir);
+  } while (isntRoot(cdir));
+};
+
 export const findPCConfigUrl = fs => (fromUri: string): string | null => {
   let cdir: string = stripFileProtocol(fromUri);
 
@@ -116,6 +134,9 @@ export const findPCConfigUrl = fs => (fromUri: string): string | null => {
       return configUrl.href;
     }
     cdir = path.dirname(cdir);
-  } while (cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir));
+  } while (isntRoot(cdir));
   return null;
 };
+
+const isntRoot = (cdir: string) =>
+  cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir);

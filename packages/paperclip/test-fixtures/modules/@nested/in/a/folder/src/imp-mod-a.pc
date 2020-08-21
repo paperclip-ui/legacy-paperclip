@@ -1,0 +1,3 @@
+<import src="module-a/src/module.pc" as="mod">
+
+<mod />

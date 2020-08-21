@@ -171,7 +171,6 @@ function* handleKeyCommands() {
     Mousetrap.bind("esc", () => {
       emit(globalEscapeKeyPressed(null));
     });
-
     Mousetrap.bind("meta", () => {
       emit(globalMetaKeyDown(null));
     });
