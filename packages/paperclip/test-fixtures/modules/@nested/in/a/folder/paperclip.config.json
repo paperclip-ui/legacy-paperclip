@@ -1,5 +1,6 @@
 {
   "compilerOptions": {},
   "outputDirectory": "./lib",
-  "sourceDirectory": "./src"
+  "sourceDirectory": "./src",
+  "moduleDirectories": ["modules"]
 }
