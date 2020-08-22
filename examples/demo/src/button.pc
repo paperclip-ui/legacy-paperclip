@@ -6,7 +6,7 @@
   }
 
   @mixin test {
-    color: blue;
+    color: rgb(255, 170, 11);
   }
 
   .test {

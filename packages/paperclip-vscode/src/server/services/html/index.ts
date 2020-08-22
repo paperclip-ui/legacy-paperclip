@@ -39,15 +39,10 @@ import {
 
 import CSS_COLOR_NAMES from "./css-color-names";
 import { Engine } from "paperclip";
-import {
-  getSuggestionContext,
-  SuggestContextKind
-} from "paperclip-autocomplete";
 import { PCAutocomplete } from "./autocomplete";
 import { CompletionItem } from "vscode-languageclient";
 import { PCCompletionItem } from "./utils";
-import { PCExports, LoadedData } from "paperclip";
-import { connect } from "http2";
+import { LoadedData } from "paperclip";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -269,6 +264,11 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
           }
         }
       }
+    }
+
+    this._handleDeclarations(declaration.declarations, context);
+    for (const rule of declaration.rules) {
+      this._handleStyleRule(rule, context);
     }
   }
 
