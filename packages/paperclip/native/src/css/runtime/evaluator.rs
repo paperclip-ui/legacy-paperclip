@@ -137,7 +137,7 @@ fn evaluate_font_family_rule(
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::FontFace(virt::FontFaceRule {
-    style: evaluate_style_declarations(&font_family.declarations,  &"".to_string(), context)?,
+    style: evaluate_style_declarations(&font_family.declarations, &"".to_string(), context)?,
   }))
 }
 
@@ -146,7 +146,11 @@ fn evaluate_media_rule(
 
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
-  Ok(virt::Rule::Media(evaluate_condition_rule(rule, &"".to_string(),  context)?))
+  Ok(virt::Rule::Media(evaluate_condition_rule(
+    rule,
+    &"".to_string(),
+    context,
+  )?))
 }
 
 fn evaluate_supports_rule(
@@ -155,7 +159,9 @@ fn evaluate_supports_rule(
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Supports(evaluate_condition_rule(
-    rule, &"".to_string(), context,
+    rule,
+    &"".to_string(),
+    context,
   )?))
 }
 fn evaluate_page_rule(
@@ -163,7 +169,11 @@ fn evaluate_page_rule(
 
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
-  Ok(virt::Rule::Page(evaluate_condition_rule(rule,  &"".to_string(), context)?))
+  Ok(virt::Rule::Page(evaluate_condition_rule(
+    rule,
+    &"".to_string(),
+    context,
+  )?))
 }
 
 fn evaluate_document_rule(
@@ -172,7 +182,9 @@ fn evaluate_document_rule(
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Document(evaluate_condition_rule(
-    rule,  &"".to_string(), context,
+    rule,
+    &"".to_string(),
+    context,
   )?))
 }
 
@@ -184,18 +196,18 @@ fn evaluate_condition_rule(
   let mut child_context = create_child_context(context);
   evaluate_style_rules(&rule.rules, parent_selector_text, &mut child_context)?;
 
-
   if rule.declarations.len() > 0 {
-    let style = evaluate_style_declarations(&rule.declarations, parent_selector_text, &mut child_context)?;
-    child_context.all_rules.push(virt::Rule::Style(virt::StyleRule {
-      selector_text: parent_selector_text.to_string(),
-      style
-    }))
+    let style =
+      evaluate_style_declarations(&rule.declarations, parent_selector_text, &mut child_context)?;
+    child_context
+      .all_rules
+      .push(virt::Rule::Style(virt::StyleRule {
+        selector_text: parent_selector_text.to_string(),
+        style,
+      }))
   }
-  
 
   context.exports.extend(&child_context.exports);
-  
 
   Ok(virt::ConditionRule {
     name: rule.name.to_string(),
@@ -407,8 +419,13 @@ fn include_mixin<'a>(
   let inc_decl = evaluate_style_declarations(&inc.declarations, parent_selector_text, context)?;
   let mut child_context = create_child_context(context);
   evaluate_style_rules(&inc.rules, &"".to_string(), &mut child_context)?;
-  let (declarations, child_rules) =
-    evaluate_mixin(mixin, dependency_uri, parent_selector_text, Some((inc_decl, child_context.all_rules)), context)?;
+  let (declarations, child_rules) = evaluate_mixin(
+    mixin,
+    dependency_uri,
+    parent_selector_text,
+    Some((inc_decl, child_context.all_rules)),
+    context,
+  )?;
   style.extend(declarations);
   context.all_rules.extend(child_rules);
 
@@ -548,7 +565,13 @@ fn evaluate_include_rule<'a>(
   let mut child_context = create_child_context(context);
   evaluate_style_rules(&expr.rules, parent_selector_text, &mut child_context)?;
 
-  let (_, rules) = evaluate_mixin(mixin, dep_uri, parent_selector_text, Some((style, child_context.all_rules)), context)?;
+  let (_, rules) = evaluate_mixin(
+    mixin,
+    dep_uri,
+    parent_selector_text,
+    Some((style, child_context.all_rules)),
+    context,
+  )?;
   context.all_rules.extend(rules);
 
   Ok(())

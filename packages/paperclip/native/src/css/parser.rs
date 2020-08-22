@@ -211,7 +211,6 @@ fn parse_condition_rule<'a, 'b>(
 
   let (declarations, rules) = parse_declaration_body(context)?;
 
-
   Ok(ConditionRule {
     name,
     condition_text,
@@ -741,14 +740,11 @@ fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), Pars
 }
 
 fn parse_at_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
-
   context.tokenizer.next_expect(Token::At)?;
   let keyword = context.tokenizer.next()?;
 
   match keyword {
-    Token::Keyword("include") => {
-      Ok((Declaration::Include(parse_include(context)?)))
-    }
+    Token::Keyword("include") => Ok((Declaration::Include(parse_include(context)?))),
     Token::Keyword("media") => {
       Ok((Declaration::Media(parse_condition_rule("media".to_string(), context)?)))
     }
