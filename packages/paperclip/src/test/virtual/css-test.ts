@@ -871,7 +871,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  it("works", async () => {
+  it("can include a media query mixin", async () => {
     const graph = {
       "/entry.pc": `<style>
       @mixin desktop {
@@ -893,7 +893,37 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      "<style>@media screen and (max-width: 400px) { [class]._80f4925f_test { font-size:40px; } } [class]._80f4925f_test { font-family:sans-serif; }</style>"
+      "<style>[class]._80f4925f_test { font-family:sans-serif; } @media screen and (max-width: 400px) { [class]._80f4925f_test { font-size:40px; } }</style>"
+    );
+  });
+  it("properly orders include with nested selector", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin desktop {
+        @media screen and (max-width: 400px) {
+          @content;
+        }
+      }
+    
+      .test {
+        font-family: sans-serif;
+        .b {
+          color: blue;
+        }
+        @include desktop {
+          .b {
+            font-size: 40px;
+          }
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>[class]._80f4925f_test { font-family:sans-serif; } [class]._80f4925f_test [class]._80f4925f_b { color:blue; } @media screen and (max-width: 400px) { [class]._80f4925f_test [class]._80f4925f_b { font-size:40px; } [class]._80f4925f_test { } }</style>"
     );
   });
 });

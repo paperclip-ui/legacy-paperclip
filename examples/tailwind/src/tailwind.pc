@@ -1209,10 +1209,12 @@
   background-color: rgba(203, 213, 224, var(--bg-opacity))
 }
 
-.bg-gray-500 {
-  --bg-opacity: 1;
-  background-color: #a0aec0;
-  background-color: rgba(160, 174, 192, var(--bg-opacity))
+@export {
+  .bg-gray-500 {
+    --bg-opacity: 1;
+    background-color: #a0aec0;
+    background-color: rgba(160, 174, 192, var(--bg-opacity))
+  }
 }
 
 .bg-gray-600 {

@@ -176,6 +176,8 @@ type MediaRule = BaseConditionRule<RuleKind.Media>;
 type BaseInclude = {
   mixinName: IncludeReference;
   location: SourceLocation;
+  declarations: StyleDeclaration[];
+  rules: StyleRule[];
 };
 
 type IncludeRule = BaseInclude & BaseRule<RuleKind.Include>;

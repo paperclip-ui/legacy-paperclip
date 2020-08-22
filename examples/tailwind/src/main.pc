@@ -3,7 +3,7 @@
 <style>
   .message {
     font-family: Helvetica;
-    color: rgb(255, 108, 108);
+    color: rgb(30, 90, 255);
     font-weight: 100;
     letter-spacing: 0.05em;
     padding: 40px;
@@ -11,6 +11,6 @@
   }
 </style>
 
-<div className="message $tw.tracking-tighter">
-  something like this
+<div className="message $tw.space-y-0 $tw.bg-gray-500">
+  This is fine
 </div>

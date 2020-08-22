@@ -645,16 +645,21 @@ fn evaluate_style_rule2(
     }
   } else {
     let child_rule_prefix = selector_text.clone();
+    let rule_len = context.all_rules.len();
+    
+    evaluate_style_rules(&expr.children, &child_rule_prefix, context)?;
+
     let style = evaluate_style_declarations(&expr.declarations, &selector_text, context)?;
+    
     if style.len() > 0 {
       let main_style_rule = virt::StyleRule {
         selector_text,
         style,
       };
-      context.all_rules.push(virt::Rule::Style(main_style_rule));
-    }
 
-    evaluate_style_rules(&expr.children, &child_rule_prefix, context)?;
+      // it's possible
+      context.all_rules.insert(rule_len, virt::Rule::Style(main_style_rule));
+    }
   }
 
   Ok(())
