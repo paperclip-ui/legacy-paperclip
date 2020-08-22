@@ -347,10 +347,13 @@ const suggestCSS = (scanner: TokenScanner): SuggestContext => {
   return null;
 };
 
-const suggestRule = (scanner: TokenScanner): SuggestContext => {
-  scanner.skipSuperfluous();
-
+const suggestRule = (
+  scanner: TokenScanner,
+  inStyleRule = false
+): SuggestContext => {
   if (scanner.current?.value === "@") {
+    scanner.skipSuperfluous();
+
     const declSuggestion = suggestCSSAtRule(
       scanner,
       SuggestContextKind.CSS_AT_RULE_NAME
@@ -360,11 +363,14 @@ const suggestRule = (scanner: TokenScanner): SuggestContext => {
       return declSuggestion;
     }
   } else {
-    // Assume selector
-    const suggestion = suggestStyleRule(scanner);
-    if (suggestion) {
-      return suggestion;
-    }
+    return suggestCSSDeclaration(scanner);
+
+    // if (inStyleRule) {
+    //   return suggestCSSDeclaration(scanner);
+    // } else {
+    //   scanner.skipSuperfluous();
+    //   return suggestStyleRule(scanner);
+    // }
   }
 };
 
@@ -547,16 +553,18 @@ const suggestStyleAtRule = (scanner: TokenScanner): SuggestContext => {
   return null;
 };
 
-const suggestContainerAtRule = (scanner: TokenScanner): SuggestContext => {
+const suggestContainerAtRule = (
+  scanner: TokenScanner,
+  inStyleRule = false
+): SuggestContext => {
   if (scanner.current?.value === "{") {
     scanner.next(); // eat {
     while (scanner.current) {
-      scanner.skipSuperfluous();
       if (String(scanner.current?.value) === "}") {
         scanner.next();
         break;
       }
-      const suggestion = suggestRule(scanner);
+      const suggestion = suggestRule(scanner, inStyleRule);
       if (suggestion) {
         return suggestion;
       }

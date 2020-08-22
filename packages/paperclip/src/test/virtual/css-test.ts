@@ -755,4 +755,145 @@ describe(__filename + "#", () => {
       "<style>a[data-pc-80f4925f] b[data-pc-80f4925f] [class]._80f4925f_e { color:blue; } a[data-pc-80f4925f] c[data-pc-80f4925f] [class]._80f4925f_e { color:blue; } a[data-pc-80f4925f] d[data-pc-80f4925f] [class]._80f4925f_e { color:blue; }</style>"
     );
   });
+
+  it("Can include media declarations within style rule", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      a {
+        @media screen and (max-width: 450px) {
+          color: red;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>@media screen and (max-width: 450px) { a[data-pc-80f4925f] { color:red; } }</style>"
+    );
+  });
+
+  it("Can include a nested rule within a media rule", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      a {
+        @media screen and (max-width: 450px) {
+          color: red;
+          b {
+            color: orange;
+          }
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>@media screen and (max-width: 450px) { a[data-pc-80f4925f] b[data-pc-80f4925f] { color:orange; } a[data-pc-80f4925f] { color:red; } }</style>"
+    );
+  });
+
+  it("Can define a selector mixin with @content", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin div {
+        div {
+          @content;
+        }
+      }
+
+      @include div {
+        color: red;
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql("<style>div[data-pc-80f4925f] { color:red; }</style>");
+  });
+
+  it("Can include @content with a rule", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin desktop {
+        a {
+          @content;
+        }
+      }
+
+      @include desktop {
+        b {
+          color: red;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>a[data-pc-80f4925f] b[data-pc-80f4925f] { color:red; }</style>"
+    );
+  });
+
+  it("Can include @content within @media", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin desktop {
+        @media a {
+          @content;
+        }
+      }
+
+      @include desktop {
+        b {
+          color: red;
+        }
+        c {
+          color: red;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>@media a { b[data-pc-80f4925f] { color:red; } c[data-pc-80f4925f] { color:red; } { } }</style>"
+    );
+  });
+
+  it("works", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin desktop {
+        @media screen and (max-width: 400px) {
+          @content;
+        }
+      }
+    
+      .test {
+        font-family: sans-serif;
+        @include desktop {
+          font-size: 40px;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>@media screen and (max-width: 400px) { [class]._80f4925f_test { font-size:40px; } } [class]._80f4925f_test { font-family:sans-serif; }</style>"
+    );
+  });
 });

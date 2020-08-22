@@ -26,7 +26,7 @@ export type ClassNameExport = {
 };
 
 export type MixinExport = {
-  declarations: any;
+  // declarations: any;
   public: boolean;
 };
 

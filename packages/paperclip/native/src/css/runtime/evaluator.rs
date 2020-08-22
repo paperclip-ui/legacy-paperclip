@@ -1,18 +1,19 @@
-use super::super::ast;
 use super::super::super::pc::ast as pc_ast;
-use super::super::super::pc::runtime::export as pc_export;
 use super::super::super::pc::runtime::evaluator as pc_runtime;
+use super::super::super::pc::runtime::export as pc_export;
+use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
 use crate::base::ast::ExprSource;
 use crate::base::runtime::RuntimeError;
+use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use std::collections::{BTreeMap, HashMap};
-use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 
 pub struct Context<'a> {
   scope: &'a str,
+  content: Option<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>)>,
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
   uri: &'a String,
@@ -43,6 +44,7 @@ pub fn evaluate<'a>(
     uri,
     vfs,
     graph,
+    content: None,
     import_graph,
     import_scopes,
     in_public_scope: false,
@@ -135,7 +137,7 @@ fn evaluate_font_family_rule(
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::FontFace(virt::FontFaceRule {
-    style: evaluate_style_declarations(&font_family.declarations, &"".to_string(), context)?,
+    style: evaluate_style_declarations(&font_family.declarations,  &"".to_string(), context)?,
   }))
 }
 
@@ -144,7 +146,7 @@ fn evaluate_media_rule(
 
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
-  Ok(virt::Rule::Media(evaluate_condition_rule(rule, context)?))
+  Ok(virt::Rule::Media(evaluate_condition_rule(rule, &"".to_string(),  context)?))
 }
 
 fn evaluate_supports_rule(
@@ -153,7 +155,7 @@ fn evaluate_supports_rule(
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Supports(evaluate_condition_rule(
-    rule, context,
+    rule, &"".to_string(), context,
   )?))
 }
 fn evaluate_page_rule(
@@ -161,7 +163,7 @@ fn evaluate_page_rule(
 
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
-  Ok(virt::Rule::Page(evaluate_condition_rule(rule, context)?))
+  Ok(virt::Rule::Page(evaluate_condition_rule(rule,  &"".to_string(), context)?))
 }
 
 fn evaluate_document_rule(
@@ -170,19 +172,30 @@ fn evaluate_document_rule(
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Document(evaluate_condition_rule(
-    rule, context,
+    rule,  &"".to_string(), context,
   )?))
 }
 
 fn evaluate_condition_rule(
   rule: &ast::ConditionRule,
-
+  parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = create_child_context(context);
-  evaluate_style_rules(&rule.rules, &"".to_string(), &mut child_context)?;
+  evaluate_style_rules(&rule.rules, parent_selector_text, &mut child_context)?;
+
+
+  if rule.declarations.len() > 0 {
+    let style = evaluate_style_declarations(&rule.declarations, parent_selector_text, &mut child_context)?;
+    child_context.all_rules.push(virt::Rule::Style(virt::StyleRule {
+      selector_text: parent_selector_text.to_string(),
+      style
+    }))
+  }
+  
 
   context.exports.extend(&child_context.exports);
+  
 
   Ok(virt::ConditionRule {
     name: rule.name.to_string(),
@@ -233,7 +246,10 @@ fn evaluate_keyframe_rule(
   })
 }
 
-fn get_mixin<'a>(iref: &ast::IncludeReference, context: &mut Context<'a>) -> Result<(Option<&'a ast::MixinRule>, &'a String), RuntimeError> {
+fn get_mixin<'a>(
+  iref: &ast::IncludeReference,
+  context: &mut Context<'a>,
+) -> Result<(Option<&'a ast::MixinRule>, &'a String), RuntimeError> {
   let self_dep = context.graph.dependencies.get(context.uri).unwrap();
 
   let dep = if iref.parts.len() == 1 {
@@ -245,15 +261,25 @@ fn get_mixin<'a>(iref: &ast::IncludeReference, context: &mut Context<'a>) -> Res
     if let Some(dep_uri) = dep_uri_option {
       context.graph.dependencies.get(dep_uri).unwrap()
     } else {
-      return Err(RuntimeError::new("Reference not found.".to_string(), &context.uri, &inc_part.location));
+      return Err(RuntimeError::new(
+        "Reference not found.".to_string(),
+        &context.uri,
+        &inc_part.location,
+      ));
     }
   };
 
-  Ok((get_mixin_from_dep(dep, &iref.parts.last().unwrap().name, context), &dep.uri))
+  Ok((
+    get_mixin_from_dep(dep, &iref.parts.last().unwrap().name, context),
+    &dep.uri,
+  ))
 }
 
-
-fn get_mixin_from_dep<'a>(dep: &'a Dependency, name: &String, context: &Context) -> Option<&'a ast::MixinRule> {
+fn get_mixin_from_dep<'a>(
+  dep: &'a Dependency,
+  name: &String,
+  context: &Context,
+) -> Option<&'a ast::MixinRule> {
   match &dep.content {
     DependencyContent::Node(content) => {
       return get_mixin_from_pc_doc(content, name);
@@ -264,7 +290,10 @@ fn get_mixin_from_dep<'a>(dep: &'a Dependency, name: &String, context: &Context)
   }
 }
 
-fn get_mixin_from_pc_doc<'a>(content: &'a pc_ast::Node, name: &String) -> Option<&'a ast::MixinRule> {
+fn get_mixin_from_pc_doc<'a>(
+  content: &'a pc_ast::Node,
+  name: &String,
+) -> Option<&'a ast::MixinRule> {
   if let Some(children) = pc_ast::get_children(content) {
     for child in children {
       match &child {
@@ -274,9 +303,7 @@ fn get_mixin_from_pc_doc<'a>(content: &'a pc_ast::Node, name: &String) -> Option
             return option;
           }
         }
-        _ => {
-          
-        }
+        _ => {}
       }
     }
   }
@@ -284,20 +311,22 @@ fn get_mixin_from_pc_doc<'a>(content: &'a pc_ast::Node, name: &String) -> Option
   None
 }
 
-fn get_mixin_from_rules<'a>(rules: &'a Vec<ast::Rule>, name: &String) -> Option<&'a ast::MixinRule> {
+fn get_mixin_from_rules<'a>(
+  rules: &'a Vec<ast::Rule>,
+  name: &String,
+) -> Option<&'a ast::MixinRule> {
   for rule in rules {
     if let ast::Rule::Export(export) = rule {
       if let Some(found) = get_mixin_from_rules(&export.rules, name) {
         return Some(found);
       }
     }
-    
+
     if let ast::Rule::Mixin(mixin) = rule {
       if &mixin.name.value == name {
         return Some(mixin);
       }
     }
-
   }
   None
 }
@@ -310,6 +339,7 @@ fn create_child_context<'a>(context: &mut Context<'a>) -> Context<'a> {
   Context {
     scope: context.scope,
     uri: context.uri,
+    content: context.content.clone(),
     vfs: context.vfs,
     all_rules: vec![],
     graph: context.graph,
@@ -324,24 +354,40 @@ fn fork_context<'a>(dependency_uri: &'a String, context: &mut Context<'a>) -> Co
   let mut child = create_child_context(context);
   child.uri = &dependency_uri;
   child.in_public_scope = false;
-  child.import_scopes = pc_runtime::get_import_scopes(context.graph.dependencies.get(dependency_uri).unwrap());
+  child.import_scopes =
+    pc_runtime::get_import_scopes(context.graph.dependencies.get(dependency_uri).unwrap());
 
   return child;
 }
 
-fn assert_get_mixin<'a>(iref: &ast::IncludeReference, context: &mut Context<'a>) -> Result<(&'a ast::MixinRule, &'a String), RuntimeError> {
+fn assert_get_mixin<'a>(
+  iref: &ast::IncludeReference,
+  context: &mut Context<'a>,
+) -> Result<(&'a ast::MixinRule, &'a String), RuntimeError> {
   let (mixin_option, dependency_uri) = get_mixin(&iref, context)?;
   if let Some(mixin) = mixin_option {
-
     // make sure it's public
     if dependency_uri != context.uri {
-      let export = context.import_graph.get(context.uri).unwrap().get(&iref.parts.first().unwrap().name).unwrap().style.mixins.get(&iref.parts.last().unwrap().name).unwrap();
+      let export = context
+        .import_graph
+        .get(context.uri)
+        .unwrap()
+        .get(&iref.parts.first().unwrap().name)
+        .unwrap()
+        .style
+        .mixins
+        .get(&iref.parts.last().unwrap().name)
+        .unwrap();
       if !export.public {
-        return Err(RuntimeError::new("This mixin is private.".to_string(), context.uri, &iref.parts.last().unwrap().location));
+        return Err(RuntimeError::new(
+          "This mixin is private.".to_string(),
+          context.uri,
+          &iref.parts.last().unwrap().location,
+        ));
       }
     }
 
-    return Ok((mixin, dependency_uri))
+    return Ok((mixin, dependency_uri));
   } else {
     return Err(RuntimeError::new(
       "Reference not found.".to_string(),
@@ -349,15 +395,44 @@ fn assert_get_mixin<'a>(iref: &ast::IncludeReference, context: &mut Context<'a>)
       &iref.parts.last().unwrap().location,
     ));
   }
-
 }
 
-fn include_mixin<'a>(inc: &ast::Include, style: &mut Vec<virt::CSSStyleProperty>, parent_selector_text: &String, context: &mut Context) -> Result<(), RuntimeError> {
+fn include_mixin<'a>(
+  inc: &ast::Include,
+  style: &mut Vec<virt::CSSStyleProperty>,
+  parent_selector_text: &String,
+  context: &mut Context,
+) -> Result<(), RuntimeError> {
   let (mixin, dependency_uri) = assert_get_mixin(&inc.mixin_name, context)?;
-  let (declarations, child_rules) = evaluate_mixin(mixin, dependency_uri, parent_selector_text, context)?;
+  let inc_decl = evaluate_style_declarations(&inc.declarations, parent_selector_text, context)?;
+  let mut child_context = create_child_context(context);
+  evaluate_style_rules(&inc.rules, &"".to_string(), &mut child_context)?;
+  let (declarations, child_rules) =
+    evaluate_mixin(mixin, dependency_uri, parent_selector_text, Some((inc_decl, child_context.all_rules)), context)?;
   style.extend(declarations);
   context.all_rules.extend(child_rules);
 
+  Ok(())
+}
+
+fn include_content<'a>(
+  all_styles: &mut Vec<virt::CSSStyleProperty>,
+  parent_selector_text: &String,
+  context: &mut Context,
+) -> Result<(), RuntimeError> {
+  if let Some((style, rules)) = &context.content {
+    for rule in rules {
+      if let virt::Rule::Style(style_rule) = rule {
+        let mut style_rule = style_rule.clone();
+        style_rule.selector_text = format!("{} {}", parent_selector_text, style_rule.selector_text);
+        context.all_rules.push(virt::Rule::Style(style_rule));
+      } else {
+        context.all_rules.push(rule.clone());
+      }
+    }
+
+    all_styles.extend(style.clone());
+  }
   Ok(())
 }
 
@@ -374,6 +449,15 @@ fn evaluate_style_declarations<'a>(
       }
       ast::Declaration::Include(inc) => {
         include_mixin(inc, &mut style, parent_selector_text, context)?;
+      }
+      ast::Declaration::Content => {
+        include_content(&mut style, parent_selector_text, context)?;
+      }
+      ast::Declaration::Media(media) => {
+        let rule = evaluate_condition_rule(media, parent_selector_text, context)?;
+        if rule.rules.len() > 0 {
+          context.all_rules.push(virt::Rule::Media(rule));
+        }
       }
     }
   }
@@ -437,19 +521,34 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
   Ok(())
 }
 
-fn evaluate_mixin<'a>(expr: &ast::MixinRule, owner_uri: &'a String, parent_selector_text: &String, context: &mut Context<'a>) -> Result<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>), RuntimeError> {
-  
+fn evaluate_mixin<'a>(
+  expr: &ast::MixinRule,
+  owner_uri: &'a String,
+  parent_selector_text: &String,
+  content: Option<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>)>,
+  context: &mut Context<'a>,
+) -> Result<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>), RuntimeError> {
   let mut child_context = fork_context(owner_uri, context);
-  let declarations = evaluate_style_declarations(&expr.declarations, parent_selector_text, &mut child_context)?;
+  child_context.content = content;
+  let declarations =
+    evaluate_style_declarations(&expr.declarations, parent_selector_text, &mut child_context)?;
 
   evaluate_style_rules(&expr.rules, parent_selector_text, &mut child_context)?;
 
   Ok((declarations, child_context.all_rules))
 }
 
-fn evaluate_include_rule<'a>(expr: &ast::Include,  parent_selector_text: &String, context: &mut Context<'a>) -> Result<(), RuntimeError> {
+fn evaluate_include_rule<'a>(
+  expr: &ast::Include,
+  parent_selector_text: &String,
+  context: &mut Context<'a>,
+) -> Result<(), RuntimeError> {
   let (mixin, dep_uri) = assert_get_mixin(&expr.mixin_name, context)?;
-  let (_, rules) = evaluate_mixin(mixin, dep_uri, parent_selector_text, context)?;
+  let style = evaluate_style_declarations(&expr.declarations, parent_selector_text, context)?;
+  let mut child_context = create_child_context(context);
+  evaluate_style_rules(&expr.rules, parent_selector_text, &mut child_context)?;
+
+  let (_, rules) = evaluate_mixin(mixin, dep_uri, parent_selector_text, Some((style, child_context.all_rules)), context)?;
   context.all_rules.extend(rules);
 
   Ok(())
@@ -462,8 +561,8 @@ fn evaluate_style_rule2(
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   let mut selector_text =
-  stringify_element_selector(&expr.selector, true, parent_selector_text, true, context);
-  
+    stringify_element_selector(&expr.selector, true, parent_selector_text, true, context);
+
   lazy_static! {
     static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
     static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
@@ -490,7 +589,6 @@ fn evaluate_style_rule2(
     }
   }
 
-
   let mut is_global_selector = false;
 
   let target_selector = if let ast::Selector::Global(selector) = &expr.selector {
@@ -501,10 +599,8 @@ fn evaluate_style_rule2(
   };
 
   if let ast::Selector::Group(group) = &target_selector {
-    
     // context.all_rules.push(virt::Rule::Style(main_style_rule));
     for selector in &group.selectors {
-      
       let selector_text2 = stringify_element_selector(
         &selector,
         !is_global_selector,
@@ -512,16 +608,15 @@ fn evaluate_style_rule2(
         true,
         context,
       );
-      
+
       let style = evaluate_style_declarations(&expr.declarations, &selector_text2, context)?;
-      
+
       if style.len() > 0 {
         context.all_rules.push(virt::Rule::Style(virt::StyleRule {
           selector_text: selector_text2.clone(),
           style,
         }));
       }
-
 
       evaluate_style_rules(&expr.children, &selector_text2, context)?;
     }

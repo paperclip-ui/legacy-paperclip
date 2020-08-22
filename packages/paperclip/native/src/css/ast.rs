@@ -7,6 +7,8 @@ use std::fmt;
 pub enum Declaration {
   KeyValue(KeyValueDeclaration),
   Include(Include),
+  Content,
+  Media(ConditionRule),
 }
 
 impl fmt::Display for Declaration {
@@ -14,6 +16,8 @@ impl fmt::Display for Declaration {
     match self {
       Declaration::KeyValue(kv) => kv.fmt(f),
       Declaration::Include(inc) => inc.fmt(f),
+      Declaration::Media(media) => media.fmt(f),
+      Declaration::Content => writeln!(f, "@content;"),
     }
   }
 }
@@ -40,6 +44,7 @@ impl fmt::Display for KeyValueDeclaration {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Include {
+  #[serde(rename = "mixinName")]
   pub mixin_name: IncludeReference,
   pub declarations: Vec<Declaration>,
   pub rules: Vec<StyleRule>,
@@ -48,19 +53,10 @@ pub struct Include {
 
 impl fmt::Display for Include {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(
-      f,
-      "@include {}",
-      &self
-        .mixin_name
-    )?;
+    write!(f, "@include {}", &self.mixin_name)?;
 
     if (self.rules.len() > 0 || self.declarations.len() > 0) {
-
-      writeln!(
-        f,
-        "{{"
-      )?;
+      writeln!(f, "{{")?;
 
       for decl in &self.declarations {
         writeln!(f, "{}", decl.to_string());
@@ -69,11 +65,7 @@ impl fmt::Display for Include {
       for rule in &self.rules {
         writeln!(f, "{}", rule.to_string());
       }
-      writeln!(
-        f,
-        "}}"
-      )?;
-
+      writeln!(f, "}}")?;
     } else {
       writeln!(f, ";");
     }
@@ -228,6 +220,7 @@ pub struct ConditionRule {
   pub name: String,
   pub condition_text: String,
   pub rules: Vec<StyleRule>,
+  pub declarations: Vec<Declaration>,
   pub location: Location,
 }
 

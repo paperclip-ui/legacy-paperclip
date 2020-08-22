@@ -9,6 +9,7 @@ export enum RuleKind {
   Style = "Style",
   Charset = "Charset",
   Namespace = "Namespace",
+  Include = "Include",
   FontFace = "FontFace",
   Media = "Media",
   Mixin = "Mixin",
@@ -125,7 +126,9 @@ export type Selector =
 
 export enum StyleDeclarationKind {
   KeyValue = "KeyValue",
-  Include = "Include"
+  Include = "Include",
+  Media = "Media",
+  Content = "Content"
 }
 
 type BaseStyleDeclaration<TKind extends StyleDeclarationKind> = {
@@ -140,10 +143,8 @@ export type KeyValueDeclaration = {
   valueLocation: SourceLocation;
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
-export type Include = {
-  mixins: IncludeReference[];
-  location: SourceLocation;
-} & BaseStyleDeclaration<StyleDeclarationKind.Include>;
+export type Include = BaseInclude &
+  BaseStyleDeclaration<StyleDeclarationKind.Include>;
 
 export type IncludeReference = {
   parts: IncludePart[];
@@ -172,6 +173,13 @@ type BaseConditionRule<TRule extends RuleKind> = {
 } & BaseRule<TRule>;
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
+type BaseInclude = {
+  mixinName: IncludeReference;
+  location: SourceLocation;
+};
+
+type IncludeRule = BaseInclude & BaseRule<RuleKind.Include>;
+
 export type MixinRule = {
   name: MixinName;
   declarations: StyleDeclaration[];
@@ -189,7 +197,12 @@ export type ExportRule = {
 } & BaseRule<RuleKind.Export>;
 
 export type ConditionRule = MediaRule;
-export type Rule = StyleRule | ConditionRule | MixinRule | ExportRule;
+export type Rule =
+  | StyleRule
+  | ConditionRule
+  | MixinRule
+  | ExportRule
+  | IncludeRule;
 export type StyleExpression =
   | Rule
   | Include
@@ -291,11 +304,9 @@ export const traverseStyleExpression = (
   } else if (isStyleDeclaration(rule)) {
     switch (rule.declarationKind) {
       case StyleDeclarationKind.Include: {
-        for (const mixin of rule.mixins) {
-          for (const part of mixin.parts) {
-            if (!traverseStyleExpression(part, each)) {
-              return false;
-            }
+        for (const part of rule.mixinName.parts) {
+          if (!traverseStyleExpression(part, each)) {
+            return false;
           }
         }
         return true;

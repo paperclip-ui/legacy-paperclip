@@ -22,7 +22,9 @@ const CSS_AT_RULE_NAMES = [
   "charset",
 
   // custom
-  "mixin"
+  "mixin",
+  "content",
+  "include"
 ].sort();
 
 const CSS_DECLARATION_NAMES = Object.keys(CSS_DECLARATION_VALUE_MAP);

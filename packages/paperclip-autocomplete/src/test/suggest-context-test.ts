@@ -430,7 +430,13 @@ describe(__filename, () => {
       null
     ],
     [`<style> @export { `, null],
-    [`<style> @export { a`, null],
+    [
+      `<style> @export { a`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_NAME,
+        prefix: "a"
+      }
+    ],
     [
       `<style> @export { a {\n`,
       {
@@ -461,6 +467,24 @@ describe(__filename, () => {
       {
         kind: SuggestContextKind.HTML_TAG_NAME,
         path: []
+      }
+    ],
+    [
+      `<style>
+        div {
+          @m`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_AT_RULE,
+        prefix: "m"
+      }
+    ],
+    [
+      `<style>
+        div {
+          @media screen {\n`,
+      {
+        kind: SuggestContextKind.CSS_DECLARATION_NAME,
+        prefix: ""
       }
     ]
   ].forEach(([source, expectedContext]: [string, string]) => {

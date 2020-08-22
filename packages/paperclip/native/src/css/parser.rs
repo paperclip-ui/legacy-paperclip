@@ -167,9 +167,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       name.to_string(),
       context,
     )?)),
-    "include" => Ok(Rule::Include(parse_include(
-      context,
-    )?)),
+    "include" => Ok(Rule::Include(parse_include(context)?)),
     "export" => Ok(Rule::Export(parse_export_rule(context)?)),
     "keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context)?)),
     "font-face" => Ok(Rule::FontFace(parse_font_face_rule(context)?)),
@@ -211,24 +209,17 @@ fn parse_condition_rule<'a, 'b>(
   })?
   .to_string();
 
-  context.tokenizer.next_expect(Token::CurlyOpen)?;
-  eat_superfluous(context)?;
+  let (declarations, rules) = parse_declaration_body(context)?;
 
-  let mut rules = vec![];
-
-  while context.tokenizer.peek(1)? != Token::CurlyClose {
-    rules.push(parse_style_rule2(context, false)?);
-  }
-  context.tokenizer.next_expect(Token::CurlyClose)?;
 
   Ok(ConditionRule {
     name,
     condition_text,
+    declarations,
     rules,
     location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
-
 
 fn parse_mixin_rule<'a, 'b>(
   start: usize,
@@ -708,7 +699,7 @@ fn parse_declarations_and_children<'a, 'b>(
     if let Token::Byte(b'&') = context.tokenizer.peek(1)? {
       children.push(parse_style_rule2(context, false)?);
     } else if context.tokenizer.peek(1)? == Token::At {
-      declarations.push(parse_include_declaration(context)?);
+      declarations.push(parse_at_declaration(context)?);
     } else {
       // declarations.push(parse_key_value_declaration(context)?);
 
@@ -749,17 +740,29 @@ fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), Pars
   eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
 }
 
-fn parse_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
-  if context.tokenizer.peek(1)? == Token::At {
-    parse_include_declaration(context)
-  } else {
-    parse_key_value_declaration(context)
+fn parse_at_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
+
+  context.tokenizer.next_expect(Token::At)?;
+  let keyword = context.tokenizer.next()?;
+
+  match keyword {
+    Token::Keyword("include") => {
+      Ok((Declaration::Include(parse_include(context)?)))
+    }
+    Token::Keyword("media") => {
+      Ok((Declaration::Media(parse_condition_rule("media".to_string(), context)?)))
+    }
+    Token::Keyword("content") => {
+      context.tokenizer.next_expect(Token::Semicolon);
+      Ok(Declaration::Content)
+    }
+    _ => {
+      return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos));
+    }
   }
 }
 
-fn parse_include<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<Include, ParseError> {
+fn parse_include<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Include, ParseError> {
   let start = context.tokenizer.utf16_pos;
   eat_superfluous(context)?;
   let mut mixin_path: Vec<IncludeReferencePart> = vec![];
@@ -807,8 +810,6 @@ fn parse_include<'a, 'b>(
 fn parse_include_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<Declaration, ParseError> {
-  context.tokenizer.next_expect(Token::At)?;
-  context.tokenizer.next_expect(Token::Keyword("include"))?;
   Ok(Declaration::Include(parse_include(context)?))
 }
 

@@ -235,37 +235,37 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
 
   private _handleInclude(declaration: Include, context: HandleContext) {
     const mixins = getMixins(context.root);
-    for (const mixinRef of declaration.mixins) {
-      // @include local-ref;
-      if (mixinRef.parts.length === 1) {
-        const ref = mixinRef.parts[0];
-        const mixin = mixins[ref.name];
-        if (mixin) {
-          this._handleMixinRef(ref, mixin, context.uri, context);
-        }
-      } else if (mixinRef.parts.length === 2) {
-        const impRef = mixinRef.parts[0];
-        const ref = mixinRef.parts[1];
+    const mixinRef = declaration.mixinName;
 
-        if (context.importIds.includes(impRef.name)) {
-          const [imp, impAst, impUri] = getImportSourceAst(
-            impRef.name,
-            context.root,
-            context.uri,
-            this._engine
-          );
+    // @include local-ref;
+    if (mixinRef.parts.length === 1) {
+      const ref = mixinRef.parts[0];
+      const mixin = mixins[ref.name];
+      if (mixin) {
+        this._handleMixinRef(ref, mixin, context.uri, context);
+      }
+    } else if (mixinRef.parts.length === 2) {
+      const impRef = mixinRef.parts[0];
+      const ref = mixinRef.parts[1];
 
-          if (impAst) {
-            context.info.definitions.push({
-              sourceUri: context.uri,
-              sourceLocation: imp.openTagLocation,
-              sourceDefinitionLocation: imp.openTagLocation,
-              instanceLocation: impRef.location
-            });
-            const mixin = getMixins(impAst)[ref.name];
-            if (mixin) {
-              this._handleMixinRef(ref, mixin, impUri, context);
-            }
+      if (context.importIds.includes(impRef.name)) {
+        const [imp, impAst, impUri] = getImportSourceAst(
+          impRef.name,
+          context.root,
+          context.uri,
+          this._engine
+        );
+
+        if (impAst) {
+          context.info.definitions.push({
+            sourceUri: context.uri,
+            sourceLocation: imp.openTagLocation,
+            sourceDefinitionLocation: imp.openTagLocation,
+            instanceLocation: impRef.location
+          });
+          const mixin = getMixins(impAst)[ref.name];
+          if (mixin) {
+            this._handleMixinRef(ref, mixin, impUri, context);
           }
         }
       }
