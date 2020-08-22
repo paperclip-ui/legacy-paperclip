@@ -19,6 +19,11 @@
       @content;
     }
   }
+  @mixin tiny {
+    @media screen and (max-width: 430px) {
+      @content;
+    }
+  }
   @mixin section-icon {
     margin-right: 8px;
     flex-shrink: 0;
@@ -107,6 +112,11 @@
         margin-top: 15px;
         &:first-child {
           margin-left: 0;
+        }
+        @include tiny {
+          width: 100%;
+          box-sizing: border-box;
+          margin-right: 0;
         }
       }
     }
@@ -268,12 +278,17 @@
       ._details {
 
       }
+
+      @include mobile {
+        margin-left: 0;
+      }
     }
   }
 
   ._big-feature {
     border-bottom: 1px solid rgb(226, 226, 226);
     border-top: 1px solid rgb(255, 255, 255);
+    
     ._item {
       display: flex;
       ._icon {
@@ -295,56 +310,23 @@
     }
     ._preview {
       margin-left: 15px;
+      @include mobile {
+        margin-left: 0;
+      }
       :global(img) {
         border-radius: 4px;
         /* border: 1px solid rgba(255, 255, 255, 0.363); */
         /* box-shadow: 4px 4px 4px 4px #F60; */
         /* filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.226)); */
+        @include mobile {
+          width: 100%;
+        }
       }
     }
   }
   
 </style>
 
-<!-- Smaller screens -->
-<style>
-  @media screen and (max-width: 900px) {
-    ._main-features {
-      
-    }
-
-    ._various-features {
-      ._item {
-          margin-left: 0;
-      }
-    }
-
-
-    ._big-feature {
-      ._preview {
-        margin-left: 0;
-        :global(img) {
-          width: 100%;
-        }
-      }
-    }
-  }
-
-
-  @media screen and (max-width: 430px) {
-    ._main {
-      ._cta {
-        :global(a) {
-          width: 100%;
-          box-sizing: border-box;
-          margin-right: 0;
-        }
-      }
-    }
-  }
-  
-
-</style>
 
 <span export component as="Highlight" className="_highlight" 
   className:noBreak="_highlight--noBreak"
