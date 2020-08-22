@@ -140,22 +140,22 @@ export type KeyValueDeclaration = {
   valueLocation: SourceLocation;
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
-export type IncludeDeclaration = {
-  mixins: IncludeDeclarationReference[];
+export type Include = {
+  mixins: IncludeReference[];
   location: SourceLocation;
 } & BaseStyleDeclaration<StyleDeclarationKind.Include>;
 
-export type IncludeDeclarationReference = {
-  parts: IncludeDeclarationPart[];
+export type IncludeReference = {
+  parts: IncludePart[];
   location: SourceLocation;
 };
 
-export type IncludeDeclarationPart = {
+export type IncludePart = {
   name: string;
   location: SourceLocation;
 };
 
-export type StyleDeclaration = KeyValueDeclaration | IncludeDeclaration;
+export type StyleDeclaration = KeyValueDeclaration | Include;
 
 export type StyleRule = {
   location: SourceLocation;
@@ -192,10 +192,10 @@ export type ConditionRule = MediaRule;
 export type Rule = StyleRule | ConditionRule | MixinRule | ExportRule;
 export type StyleExpression =
   | Rule
-  | IncludeDeclaration
+  | Include
   | MixinName
-  | IncludeDeclarationPart
-  | IncludeDeclarationReference;
+  | IncludePart
+  | IncludeReference;
 
 export const getSheetClassNames = (
   sheet: Sheet,
@@ -257,9 +257,9 @@ export const isStyleDeclaration = (
   );
 };
 
-export const isIncludeDeclarationPart = (
+export const isIncludePart = (
   expression: Expression
-): expression is IncludeDeclarationPart => {
+): expression is IncludePart => {
   return (expression as any).name != null;
 };
 

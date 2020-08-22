@@ -8,7 +8,7 @@ import {
   Element,
   NodeKind,
   StyleDeclarationKind,
-  IncludeDeclarationPart,
+  IncludePart,
   StyleDeclaration,
   getParts,
   RuleKind,
@@ -17,7 +17,7 @@ import {
   ConditionRule,
   MixinRule,
   KeyValueDeclaration,
-  IncludeDeclaration,
+  Include,
   EngineEvent,
   getImportIds,
   EngineEventKind,
@@ -173,7 +173,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
           break;
         }
         case StyleDeclarationKind.Include: {
-          this._handleIncludeDeclaration(declaration, context);
+          this._handleInclude(declaration, context);
           break;
         }
       }
@@ -233,10 +233,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     }
   }
 
-  private _handleIncludeDeclaration(
-    declaration: IncludeDeclaration,
-    context: HandleContext
-  ) {
+  private _handleInclude(declaration: Include, context: HandleContext) {
     const mixins = getMixins(context.root);
     for (const mixinRef of declaration.mixins) {
       // @include local-ref;
@@ -276,7 +273,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   }
 
   private _handleMixinRef(
-    name: IncludeDeclarationPart,
+    name: IncludePart,
     mixin: MixinRule,
     sourceUri: string,
     context: HandleContext

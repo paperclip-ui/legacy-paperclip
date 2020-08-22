@@ -66,59 +66,61 @@ describe(__filename + "#", () => {
         "/button.pc": `
           <style>
             /* indivisual selectors */
-            .class { }
-            .a1.b1 {}
-            .a.b.c {}
-            .a.b {}
+            .class {
+              color: blue;
+            }
+            .a1.b1 {color: blue;}
+            .a.b.c {color: blue;}
+            .a.b {color: blue;}
 
-            .class[a] {}
-            .class1.class2 {}
-            .class1 .class2 {}
-            #id {}
-            * {}
-            element {}
-            element.class {}
-            [attribute] {}
-            [attribute=value]  {}
-            [attribute="value"]  {}
-            [attribute='value']  {}
-            /*[attribute~='value']  {}
-            [attribute^='value']  {}
-            [attribute$='value']  {}
-            [attribute$='value']  {}
+            .class[a] {color: blue;}
+            .class1.class2 {color: blue;}
+            .class1 .class2 {color: blue;}
+            #id {color: blue;}
+            * {color: blue;}
+            element {color: blue;}
+            element.class {color: blue;}
+            [attribute] {color: blue;}
+            [attribute=value]  {color: blue;}
+            [attribute="value"]  {color: blue;}
+            [attribute='value']  {color: blue;}
+            /*[attribute~='value']  {color: blue;}
+            [attribute^='value']  {color: blue;}
+            [attribute$='value']  {color: blue;}
+            [attribute$='value']  {color: blue;}
             [attribute*='value']  {}*/
-            div[attr1][attr1]  {}
-            :active {}
-            ::active {}
-            element::active {}
-            ::after {}
+            div[attr1][attr1]  {color: blue;}
+            :active {color: blue;}
+            ::active {color: blue;}
+            element::active {color: blue;}
+            ::after {color: blue;}
 
             /* functions */
-            ::lang(it) {}
-            p::lang(it) {}
-            :not(p) {}
-            :nth-child(5) {}
-            :placeholder {}
+            ::lang(it) {color: blue;}
+            p::lang(it) {color: blue;}
+            :not(p) {color: blue;}
+            :nth-child(5) {color: blue;}
+            :placeholder {color: blue;}
 
             /* groups */
-            element1, element2 {}
-            element, .class, #id.class {}
+            element1, element2 {color: blue;}
+            element, .class, #id.class {color: blue;}
 
             /* descendent */
-            element1 element2 {}
-            element1.class element2[attr][attr2] {}
-            element1.class element2[attr], #id.group {}
+            element1 element2 {color: blue;}
+            element1.class element2[attr][attr2] {color: blue;}
+            element1.class element2[attr], #id.group {color: blue;}
 
             /* children */
-            element1 > element2 {}
-            element1 > .child .descendent {}
-            element1 > .child .descendent, [group-attr="something"] {}
+            element1 > element2 {color: blue;}
+            element1 > .child .descendent {color: blue;}
+            element1 > .child .descendent, [group-attr="something"] {color: blue;}
 
             /* next sibling */
-            element1 + element2 {}
+            element1 + element2 {color: blue;}
 
             /* sibling */
-            element1 ~ element2 {}
+            element1 ~ element2 {color: blue;}
 
             /* media queries */
             @media only screen and (max-width: 600px) {
@@ -143,7 +145,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class]._1d7dbc06_class { } [class]._1d7dbc06_a1[class]._1d7dbc06_b1 { } [class]._1d7dbc06_a[class]._1d7dbc06_b[class]._1d7dbc06_c { } [class]._1d7dbc06_a[class]._1d7dbc06_b { } [class]._1d7dbc06_class[a] { } [class]._1d7dbc06_class1[class]._1d7dbc06_class2 { } [class]._1d7dbc06_class1 [class]._1d7dbc06_class2 { } #id[data-pc-1d7dbc06] { } [data-pc-1d7dbc06] { } element[data-pc-1d7dbc06] { } element[class]._1d7dbc06_class { } [attribute][data-pc-1d7dbc06] { } [attribute=value][data-pc-1d7dbc06] { } [attribute="value"][data-pc-1d7dbc06] { } [attribute='value'][data-pc-1d7dbc06] { } div[attr1][attr1][data-pc-1d7dbc06] { } [data-pc-1d7dbc06]:active { } [data-pc-1d7dbc06]::active { } element::active[data-pc-1d7dbc06] { } [data-pc-1d7dbc06]::after { } [data-pc-1d7dbc06]:lang(it) { } p:lang(it)[data-pc-1d7dbc06] { } [data-pc-1d7dbc06]:not(p[data-pc-1d7dbc06]) { } [data-pc-1d7dbc06]:nth-child(5) { } [data-pc-1d7dbc06]:placeholder { } element1[data-pc-1d7dbc06], element2[data-pc-1d7dbc06] { } element[data-pc-1d7dbc06], [class]._1d7dbc06_class, #id[class]._1d7dbc06_class { } element1[data-pc-1d7dbc06] element2[data-pc-1d7dbc06] { } element1[class]._1d7dbc06_class element2[attr][attr2][data-pc-1d7dbc06] { } element1[class]._1d7dbc06_class element2[attr][data-pc-1d7dbc06], #id[class]._1d7dbc06_group { } element1[data-pc-1d7dbc06] > element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] > [class]._1d7dbc06_child [class]._1d7dbc06_descendent { } element1[data-pc-1d7dbc06] > [class]._1d7dbc06_child [class]._1d7dbc06_descendent, [group-attr="something"][data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] + element2[data-pc-1d7dbc06] { } element1[data-pc-1d7dbc06] ~ element2[data-pc-1d7dbc06] { } @media only screen and (max-width: 600px) { div[data-pc-1d7dbc06] { color:red; } } @keyframes _1d7dbc06_mymove { from { top:0px; } to { top:200px; } }</style><span data-pc-1d7dbc06>hello world!</span>`
+      `<style>[class]._1d7dbc06_class { color:blue; } [class]._1d7dbc06_a1[class]._1d7dbc06_b1 { color:blue; } [class]._1d7dbc06_a[class]._1d7dbc06_b[class]._1d7dbc06_c { color:blue; } [class]._1d7dbc06_a[class]._1d7dbc06_b { color:blue; } [class]._1d7dbc06_class[a] { color:blue; } [class]._1d7dbc06_class1[class]._1d7dbc06_class2 { color:blue; } [class]._1d7dbc06_class1 [class]._1d7dbc06_class2 { color:blue; } #id[data-pc-1d7dbc06] { color:blue; } [data-pc-1d7dbc06] { color:blue; } element[data-pc-1d7dbc06] { color:blue; } element[class]._1d7dbc06_class { color:blue; } [attribute][data-pc-1d7dbc06] { color:blue; } [attribute=value][data-pc-1d7dbc06] { color:blue; } [attribute="value"][data-pc-1d7dbc06] { color:blue; } [attribute='value'][data-pc-1d7dbc06] { color:blue; } div[attr1][attr1][data-pc-1d7dbc06] { color:blue; } [data-pc-1d7dbc06]:active { color:blue; } [data-pc-1d7dbc06]::active { color:blue; } element::active[data-pc-1d7dbc06] { color:blue; } [data-pc-1d7dbc06]::after { color:blue; } [data-pc-1d7dbc06]:lang(it) { color:blue; } p:lang(it)[data-pc-1d7dbc06] { color:blue; } [data-pc-1d7dbc06]:not(p[data-pc-1d7dbc06]) { color:blue; } [data-pc-1d7dbc06]:nth-child(5) { color:blue; } [data-pc-1d7dbc06]:placeholder { color:blue; } element1[data-pc-1d7dbc06] { color:blue; } element2[data-pc-1d7dbc06] { color:blue; } element[data-pc-1d7dbc06] { color:blue; } [class]._1d7dbc06_class { color:blue; } #id[class]._1d7dbc06_class { color:blue; } element1[data-pc-1d7dbc06] element2[data-pc-1d7dbc06] { color:blue; } element1[class]._1d7dbc06_class element2[attr][attr2][data-pc-1d7dbc06] { color:blue; } element1[class]._1d7dbc06_class element2[attr][data-pc-1d7dbc06] { color:blue; } #id[class]._1d7dbc06_group { color:blue; } element1[data-pc-1d7dbc06] > element2[data-pc-1d7dbc06] { color:blue; } element1[data-pc-1d7dbc06] > [class]._1d7dbc06_child [class]._1d7dbc06_descendent { color:blue; } element1[data-pc-1d7dbc06] > [class]._1d7dbc06_child [class]._1d7dbc06_descendent { color:blue; } [group-attr="something"][data-pc-1d7dbc06] { color:blue; } element1[data-pc-1d7dbc06] + element2[data-pc-1d7dbc06] { color:blue; } element1[data-pc-1d7dbc06] ~ element2[data-pc-1d7dbc06] { color:blue; } @media only screen and (max-width: 600px) { div[data-pc-1d7dbc06] { color:red; } } @keyframes _1d7dbc06_mymove { from { top:0px; } to { top:200px; } }</style><span data-pc-1d7dbc06>hello world!</span>`
 
       // TODO - import css
     ],
@@ -248,7 +250,7 @@ describe(__filename + "#", () => {
         "/entry.pc": `
           <style>
             .something > .something2 {
-
+              color: blue;
             }
           </style>
           <span component as="test" class="something2">
@@ -257,7 +259,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class]._80f4925f_something > [class]._80f4925f_something2 { }</style><span class="_80f4925f_something2 something2" data-pc-80f4925f></span>`
+      `<style>[class]._80f4925f_something > [class]._80f4925f_something2 { color:blue; }</style><span class="_80f4925f_something2 something2" data-pc-80f4925f></span>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -324,7 +326,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class].a { color:blue; display:block; } [class].a--secondary { } [class].a--secondary--thirdly { color:blue; } [class].a[class].c { } [class].a [class]._80f4925f_d { } [class].a > [class].e { color:blue; } [class].a > [class].e-f { color:red; }</style><div data-pc-80f4925f>ok</div>`
+      `<style>[class].a { color:blue; display:block; } [class].a--secondary--thirdly { color:blue; } [class].a > [class].e { color:blue; } [class].a > [class].e-f { color:red; }</style><div data-pc-80f4925f>ok</div>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -359,7 +361,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class]._80f4925f_a, [class]._80f4925f_b { } [class]._80f4925f_a--c { color:blue; } [class]._80f4925f_b--c { color:blue; }</style>`
+      `<style>[class]._80f4925f_a--c { color:blue; } [class]._80f4925f_b--c { color:blue; }</style>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -375,7 +377,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class].a, [class].b { } [class].a--c { color:blue; } [class].b--c { color:blue; }</style>`
+      `<style>[class].a--c { color:blue; } [class].b--c { color:blue; }</style>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -391,7 +393,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class].a, [class].b { } [class].a--c { color:blue; } [class].b--c { color:blue; }</style>`
+      `<style>[class].a--c { color:blue; } [class].b--c { color:blue; }</style>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -407,7 +409,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class]._80f4925f_a { } [class]._80f4925f_a--c { color:blue; }</style>`
+      `<style>[class]._80f4925f_a--c { color:blue; }</style>`
     ],
     [
       // no class mod for components if shadow pierce operator is not defined
@@ -423,7 +425,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class].a, [class].b { } [class].a--c { color:blue; } [class].b--c { color:blue; }</style>`
+      `<style>[class].a--c { color:blue; } [class].b--c { color:blue; }</style>`
     ],
     [
       {
@@ -531,6 +533,7 @@ describe(__filename + "#", () => {
           <style>
             div {
               &[b] {
+                color: blue;
               }
             }
           </style>
@@ -538,7 +541,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>div[data-pc-80f4925f] { } div[data-pc-80f4925f][b] { }</style>`
+      `<style>div[data-pc-80f4925f][b] { color:blue; }</style>`
     ],
     [
       {
@@ -556,7 +559,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>div[data-pc-80f4925f] { } div[data-pc-80f4925f][data-hover], div[data-pc-80f4925f]:hover { color:orange; } div[data-pc-80f4925f] [data-hover][data-pc-80f4925f], div[data-pc-80f4925f] [data-pc-80f4925f]:hover { color:blue; }</style>`
+      `<style>div[data-pc-80f4925f][data-hover] { color:orange; } div[data-pc-80f4925f]:hover { color:orange; } div[data-pc-80f4925f] [data-hover][data-pc-80f4925f] { color:blue; } div[data-pc-80f4925f] [data-pc-80f4925f]:hover { color:blue; }</style>`
     ],
     [
       {
@@ -573,7 +576,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f]-b, a[data-pc-80f4925f]-b2 { } a[data-pc-80f4925f]-b-c, a[data-pc-80f4925f]-b-c2 { color:blue; } a[data-pc-80f4925f]-b2-c, a[data-pc-80f4925f]-b2-c2 { color:blue; }</style>`
+      `<style>a[data-pc-80f4925f]-b-c { color:blue; } a[data-pc-80f4925f]-b-c2 { color:blue; } a[data-pc-80f4925f]-b2-c { color:blue; } a[data-pc-80f4925f]-b2-c2 { color:blue; }</style>`
     ],
 
     // & + &
@@ -590,7 +593,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>div[data-pc-80f4925f] { } div[data-pc-80f4925f] + div[data-pc-80f4925f] { color:blue; }</style>`
+      `<style>div[data-pc-80f4925f] + div[data-pc-80f4925f] { color:blue; }</style>`
     ],
     [
       {
@@ -636,7 +639,8 @@ describe(__filename + "#", () => {
             }
 
             div {
-              @include a b;
+              @include a;
+              @include b;
             }
           </style>
         `
@@ -693,7 +697,7 @@ describe(__filename + "#", () => {
             .a {
               & + b {
                 &:hover:active:test {
-
+                  color: blue;
                 }
               }
             }
@@ -701,7 +705,7 @@ describe(__filename + "#", () => {
         `
       },
       {},
-      `<style>[class]._80f4925f_a { } [class]._80f4925f_a + b[data-pc-80f4925f] { } [class]._80f4925f_a + b[data-pc-80f4925f]:hover:active:test { }</style>`
+      `<style>[class]._80f4925f_a + b[data-pc-80f4925f]:hover:active:test { color:blue; }</style>`
     ]
   ].forEach(([graph, , expectedHTML]: [Graph, any, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

@@ -37,7 +37,7 @@ pub struct KeyframesExport {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinExport {
-  pub declarations: Vec<virt::CSSStyleProperty>,
+  pub name: String,
   pub public: bool,
 }
 

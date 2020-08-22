@@ -6,7 +6,7 @@ use std::fmt;
 #[serde(tag = "declarationKind")]
 pub enum Declaration {
   KeyValue(KeyValueDeclaration),
-  Include(IncludeDeclaration),
+  Include(Include),
 }
 
 impl fmt::Display for Declaration {
@@ -39,34 +39,55 @@ impl fmt::Display for KeyValueDeclaration {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct IncludeDeclaration {
-  pub mixins: Vec<IncludeDeclarationReference>,
+pub struct Include {
+  pub mixin_name: IncludeReference,
+  pub declarations: Vec<Declaration>,
+  pub rules: Vec<StyleRule>,
   pub location: Location,
 }
 
-impl fmt::Display for IncludeDeclaration {
+impl fmt::Display for Include {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    writeln!(
+    write!(
       f,
       "@include {}",
       &self
-        .mixins
-        .iter()
-        .map(|path| { path.to_string() })
-        .collect::<Vec<String>>()
-        .join(" ")
+        .mixin_name
     )?;
+
+    if (self.rules.len() > 0 || self.declarations.len() > 0) {
+
+      writeln!(
+        f,
+        "{{"
+      )?;
+
+      for decl in &self.declarations {
+        writeln!(f, "{}", decl.to_string());
+      }
+
+      for rule in &self.rules {
+        writeln!(f, "{}", rule.to_string());
+      }
+      writeln!(
+        f,
+        "}}"
+      )?;
+
+    } else {
+      writeln!(f, ";");
+    }
     Ok(())
   }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct IncludeDeclarationReference {
-  pub parts: Vec<IncludeDeclarationPart>,
+pub struct IncludeReference {
+  pub parts: Vec<IncludeReferencePart>,
   pub location: Location,
 }
 
-impl fmt::Display for IncludeDeclarationReference {
+impl fmt::Display for IncludeReference {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     writeln!(
       f,
@@ -83,12 +104,12 @@ impl fmt::Display for IncludeDeclarationReference {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct IncludeDeclarationPart {
+pub struct IncludeReferencePart {
   pub name: String,
   pub location: Location,
 }
 
-impl fmt::Display for IncludeDeclarationPart {
+impl fmt::Display for IncludeReferencePart {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     writeln!(f, "{}", &self.name)?;
     Ok(())
@@ -105,6 +126,7 @@ pub enum Rule {
   Media(ConditionRule),
   Export(ExportRule),
   Mixin(MixinRule),
+  Include(Include),
   Supports(ConditionRule),
   Page(ConditionRule),
   Document(ConditionRule),
@@ -121,6 +143,7 @@ impl fmt::Display for Rule {
       Rule::FontFace(rule) => write!(f, "{}", rule.to_string()),
       Rule::Media(rule) => write!(f, "{}", rule.to_string()),
       Rule::Mixin(rule) => write!(f, "{}", rule.to_string()),
+      Rule::Include(rule) => write!(f, "{}", rule.to_string()),
       Rule::Supports(rule) => write!(f, "{}", rule.to_string()),
       Rule::Keyframes(rule) => write!(f, "{}", rule.to_string()),
       Rule::Document(rule) => write!(f, "{}", rule.to_string()),
@@ -225,6 +248,7 @@ pub struct MixinRule {
   pub name: MixinName,
   pub location: Location,
   pub declarations: Vec<Declaration>,
+  pub rules: Vec<StyleRule>,
 }
 
 impl fmt::Display for MixinRule {
@@ -232,6 +256,9 @@ impl fmt::Display for MixinRule {
     writeln!(f, "@mixin {} {{", &self.name.value)?;
     for decl in &self.declarations {
       write!(f, "{}\n", &decl.to_string())?;
+    }
+    for rule in &self.rules {
+      write!(f, "{}\n", &rule.to_string())?;
     }
     writeln!(f, "}}")?;
 

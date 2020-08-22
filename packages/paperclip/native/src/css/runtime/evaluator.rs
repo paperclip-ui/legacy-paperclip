@@ -1,4 +1,7 @@
 use super::super::ast;
+use super::super::super::pc::ast as pc_ast;
+use super::super::super::pc::runtime::export as pc_export;
+use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
 use crate::base::ast::ExprSource;
@@ -6,13 +9,15 @@ use crate::base::runtime::RuntimeError;
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use std::collections::{BTreeMap, HashMap};
+use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 
 pub struct Context<'a> {
   scope: &'a str,
   vfs: &'a VirtualFileSystem,
+  graph: &'a DependencyGraph,
   uri: &'a String,
-  imports: &'a BTreeMap<String, Exports>,
-  import_scopes: &'a BTreeMap<String, String>,
+  import_scopes: BTreeMap<String, String>,
+  import_graph: &'a HashMap<String, BTreeMap<String, pc_export::Exports>>,
   exports: Exports,
   in_public_scope: bool,
   all_rules: Vec<virt::Rule>,
@@ -27,16 +32,18 @@ pub fn evaluate<'a>(
   expr: &ast::Sheet,
   uri: &'a String,
   scope: &'a str,
-  import_scopes: &'a BTreeMap<String, String>,
+  import_scopes: BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
-  imports: &'a BTreeMap<String, Exports>,
+  graph: &'a DependencyGraph,
+  import_graph: &'a HashMap<String, BTreeMap<String, pc_export::Exports>>,
   existing_exports: Option<&Exports>,
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     scope,
     uri,
     vfs,
-    imports,
+    graph,
+    import_graph,
     import_scopes,
     in_public_scope: false,
     exports: Exports::new(),
@@ -67,6 +74,9 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
     }
     ast::Rule::Mixin(mixin) => {
       evaluate_mixin_rule(mixin, context)?;
+    }
+    ast::Rule::Include(mixin) => {
+      evaluate_include_rule(mixin, &"".to_string(), context)?;
     }
     ast::Rule::Namespace(namespace) => {
       context
@@ -125,7 +135,7 @@ fn evaluate_font_family_rule(
   context: &mut Context,
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::FontFace(virt::FontFaceRule {
-    style: evaluate_style_declarations(&font_family.declarations, context)?,
+    style: evaluate_style_declarations(&font_family.declarations, &"".to_string(), context)?,
   }))
 }
 
@@ -169,17 +179,7 @@ fn evaluate_condition_rule(
 
   context: &mut Context,
 ) -> Result<virt::ConditionRule, RuntimeError> {
-  let mut child_context = Context {
-    scope: context.scope,
-    uri: context.uri,
-    vfs: context.vfs,
-    all_rules: vec![],
-    import_scopes: context.import_scopes,
-    imports: context.imports,
-    in_public_scope: context.in_public_scope,
-    exports: context.exports.clone(),
-  };
-
+  let mut child_context = create_child_context(context);
   evaluate_style_rules(&rule.rules, &"".to_string(), &mut child_context)?;
 
   context.exports.extend(&child_context.exports);
@@ -226,15 +226,144 @@ fn evaluate_keyframe_rule(
   rule: &ast::KeyframeRule,
   context: &mut Context,
 ) -> Result<virt::KeyframeRule, RuntimeError> {
-  let mut style = evaluate_style_declarations(&rule.declarations, context)?;
+  let mut style = evaluate_style_declarations(&rule.declarations, &"".to_string(), context)?;
   Ok(virt::KeyframeRule {
     key: rule.key.to_string(),
     style,
   })
 }
 
+fn get_mixin<'a>(iref: &ast::IncludeReference, context: &mut Context<'a>) -> Result<(Option<&'a ast::MixinRule>, &'a String), RuntimeError> {
+  let self_dep = context.graph.dependencies.get(context.uri).unwrap();
+
+  let dep = if iref.parts.len() == 1 {
+    self_dep
+  } else {
+    let inc_part = iref.parts.first().unwrap();
+    let dep_uri_option = self_dep.dependencies.get(&inc_part.name);
+
+    if let Some(dep_uri) = dep_uri_option {
+      context.graph.dependencies.get(dep_uri).unwrap()
+    } else {
+      return Err(RuntimeError::new("Reference not found.".to_string(), &context.uri, &inc_part.location));
+    }
+  };
+
+  Ok((get_mixin_from_dep(dep, &iref.parts.last().unwrap().name, context), &dep.uri))
+}
+
+
+fn get_mixin_from_dep<'a>(dep: &'a Dependency, name: &String, context: &Context) -> Option<&'a ast::MixinRule> {
+  match &dep.content {
+    DependencyContent::Node(content) => {
+      return get_mixin_from_pc_doc(content, name);
+    }
+    DependencyContent::StyleSheet(content) => {
+      return get_mixin_from_rules(&content.rules, name);
+    }
+  }
+}
+
+fn get_mixin_from_pc_doc<'a>(content: &'a pc_ast::Node, name: &String) -> Option<&'a ast::MixinRule> {
+  if let Some(children) = pc_ast::get_children(content) {
+    for child in children {
+      match &child {
+        pc_ast::Node::StyleElement(element) => {
+          let option = get_mixin_from_rules(&element.sheet.rules, name);
+          if option != None {
+            return option;
+          }
+        }
+        _ => {
+          
+        }
+      }
+    }
+  }
+
+  None
+}
+
+fn get_mixin_from_rules<'a>(rules: &'a Vec<ast::Rule>, name: &String) -> Option<&'a ast::MixinRule> {
+  for rule in rules {
+    if let ast::Rule::Export(export) = rule {
+      if let Some(found) = get_mixin_from_rules(&export.rules, name) {
+        return Some(found);
+      }
+    }
+    
+    if let ast::Rule::Mixin(mixin) = rule {
+      if &mixin.name.value == name {
+        return Some(mixin);
+      }
+    }
+
+  }
+  None
+}
+
+fn get_imports<'a>(context: &'a Context) -> &'a BTreeMap<String, pc_export::Exports> {
+  context.import_graph.get(context.uri).unwrap()
+}
+
+fn create_child_context<'a>(context: &mut Context<'a>) -> Context<'a> {
+  Context {
+    scope: context.scope,
+    uri: context.uri,
+    vfs: context.vfs,
+    all_rules: vec![],
+    graph: context.graph,
+    import_scopes: context.import_scopes.clone(),
+    import_graph: context.import_graph,
+    in_public_scope: context.in_public_scope,
+    exports: context.exports.clone(),
+  }
+}
+
+fn fork_context<'a>(dependency_uri: &'a String, context: &mut Context<'a>) -> Context<'a> {
+  let mut child = create_child_context(context);
+  child.uri = &dependency_uri;
+  child.in_public_scope = false;
+  child.import_scopes = pc_runtime::get_import_scopes(context.graph.dependencies.get(dependency_uri).unwrap());
+
+  return child;
+}
+
+fn assert_get_mixin<'a>(iref: &ast::IncludeReference, context: &mut Context<'a>) -> Result<(&'a ast::MixinRule, &'a String), RuntimeError> {
+  let (mixin_option, dependency_uri) = get_mixin(&iref, context)?;
+  if let Some(mixin) = mixin_option {
+
+    // make sure it's public
+    if dependency_uri != context.uri {
+      let export = context.import_graph.get(context.uri).unwrap().get(&iref.parts.first().unwrap().name).unwrap().style.mixins.get(&iref.parts.last().unwrap().name).unwrap();
+      if !export.public {
+        return Err(RuntimeError::new("This mixin is private.".to_string(), context.uri, &iref.parts.last().unwrap().location));
+      }
+    }
+
+    return Ok((mixin, dependency_uri))
+  } else {
+    return Err(RuntimeError::new(
+      "Reference not found.".to_string(),
+      context.uri,
+      &iref.parts.last().unwrap().location,
+    ));
+  }
+
+}
+
+fn include_mixin<'a>(inc: &ast::Include, style: &mut Vec<virt::CSSStyleProperty>, parent_selector_text: &String, context: &mut Context) -> Result<(), RuntimeError> {
+  let (mixin, dependency_uri) = assert_get_mixin(&inc.mixin_name, context)?;
+  let (declarations, child_rules) = evaluate_mixin(mixin, dependency_uri, parent_selector_text, context)?;
+  style.extend(declarations);
+  context.all_rules.extend(child_rules);
+
+  Ok(())
+}
+
 fn evaluate_style_declarations<'a>(
   declarations: &Vec<ast::Declaration>,
+  parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<Vec<virt::CSSStyleProperty>, RuntimeError> {
   let mut style = vec![];
@@ -244,54 +373,7 @@ fn evaluate_style_declarations<'a>(
         evaluate_style_key_value_declaration(kv, &mut style, context)?;
       }
       ast::Declaration::Include(inc) => {
-        let mut imp_mixins: BTreeMap<String, MixinExport> = BTreeMap::new();
-
-        for mixin_path in &inc.mixins {
-          let mixin_context_option: Option<&BTreeMap<String, MixinExport>> =
-            if mixin_path.parts.len() == 2 {
-              if let Some(imp) = context.imports.get(&mixin_path.parts.first().unwrap().name) {
-                for (key, imp_mixin) in &imp.mixins {
-                  if key == &mixin_path.parts.last().unwrap().name {
-                    if imp_mixin.public {
-                      imp_mixins.insert(key.to_string(), imp_mixin.clone());
-                    } else {
-                      return Err(RuntimeError::new(
-                        "This mixin is private.".to_string(),
-                        context.uri,
-                        &mixin_path.parts.last().unwrap().location,
-                      ));
-                    }
-                  }
-                }
-                Some(&imp_mixins)
-              } else {
-                None
-              }
-            } else if mixin_path.parts.len() == 1 {
-              Some(&context.exports.mixins)
-            } else {
-              None
-            };
-
-          if let Some(mixin_context) = mixin_context_option {
-            let mixin_decls_option = mixin_context.get(&mixin_path.parts.last().unwrap().name);
-            if let Some(mixin_decls) = mixin_decls_option {
-              style.extend(mixin_decls.declarations.clone());
-            } else {
-              return Err(RuntimeError::new(
-                "Reference not found or used before it was declared.".to_string(),
-                context.uri,
-                &mixin_path.parts.last().unwrap().location,
-              ));
-            }
-          } else {
-            return Err(RuntimeError::new(
-              "Reference not found or used before it was declared.".to_string(),
-              context.uri,
-              &mixin_path.parts.first().unwrap().location,
-            ));
-          }
-        }
+        include_mixin(inc, &mut style, parent_selector_text, context)?;
       }
     }
   }
@@ -336,13 +418,11 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
   Ok(())
 }
 fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(), RuntimeError> {
-  let declarations = evaluate_style_declarations(&expr.declarations, context)?;
-
   if None == context.exports.mixins.get(&expr.name.value) {
     context.exports.mixins.insert(
       expr.name.value.to_string(),
       MixinExport {
-        declarations,
+        name: expr.name.value.to_string(),
         public: false,
       },
     );
@@ -357,16 +437,33 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
   Ok(())
 }
 
+fn evaluate_mixin<'a>(expr: &ast::MixinRule, owner_uri: &'a String, parent_selector_text: &String, context: &mut Context<'a>) -> Result<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>), RuntimeError> {
+  
+  let mut child_context = fork_context(owner_uri, context);
+  let declarations = evaluate_style_declarations(&expr.declarations, parent_selector_text, &mut child_context)?;
+
+  evaluate_style_rules(&expr.rules, parent_selector_text, &mut child_context)?;
+
+  Ok((declarations, child_context.all_rules))
+}
+
+fn evaluate_include_rule<'a>(expr: &ast::Include,  parent_selector_text: &String, context: &mut Context<'a>) -> Result<(), RuntimeError> {
+  let (mixin, dep_uri) = assert_get_mixin(&expr.mixin_name, context)?;
+  let (_, rules) = evaluate_mixin(mixin, dep_uri, parent_selector_text, context)?;
+  context.all_rules.extend(rules);
+
+  Ok(())
+}
+
 fn evaluate_style_rule2(
   expr: &ast::StyleRule,
 
   parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
-  let style = evaluate_style_declarations(&expr.declarations, context)?;
   let mut selector_text =
-    stringify_element_selector(&expr.selector, true, parent_selector_text, true, context);
-
+  stringify_element_selector(&expr.selector, true, parent_selector_text, true, context);
+  
   lazy_static! {
     static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
     static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
@@ -393,10 +490,6 @@ fn evaluate_style_rule2(
     }
   }
 
-  let main_style_rule = virt::StyleRule {
-    selector_text,
-    style,
-  };
 
   let mut is_global_selector = false;
 
@@ -408,8 +501,10 @@ fn evaluate_style_rule2(
   };
 
   if let ast::Selector::Group(group) = &target_selector {
-    context.all_rules.push(virt::Rule::Style(main_style_rule));
+    
+    // context.all_rules.push(virt::Rule::Style(main_style_rule));
     for selector in &group.selectors {
+      
       let selector_text2 = stringify_element_selector(
         &selector,
         !is_global_selector,
@@ -417,12 +512,29 @@ fn evaluate_style_rule2(
         true,
         context,
       );
+      
+      let style = evaluate_style_declarations(&expr.declarations, &selector_text2, context)?;
+      
+      if style.len() > 0 {
+        context.all_rules.push(virt::Rule::Style(virt::StyleRule {
+          selector_text: selector_text2.clone(),
+          style,
+        }));
+      }
+
 
       evaluate_style_rules(&expr.children, &selector_text2, context)?;
     }
   } else {
-    let child_rule_prefix = main_style_rule.selector_text.clone();
-    context.all_rules.push(virt::Rule::Style(main_style_rule));
+    let child_rule_prefix = selector_text.clone();
+    let style = evaluate_style_declarations(&expr.declarations, &selector_text, context)?;
+    if style.len() > 0 {
+      let main_style_rule = virt::StyleRule {
+        selector_text,
+        style,
+      };
+      context.all_rules.push(virt::Rule::Style(main_style_rule));
+    }
 
     evaluate_style_rules(&expr.children, &child_rule_prefix, context)?;
   }
