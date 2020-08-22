@@ -106,6 +106,16 @@ Nested rules eliminates some redundancy around defining style selectors.
 </div>
 ```
 
+Also note that you can nest `@media` queries like so:
+
+```css
+div {
+  @media screen and (max-width: 400px) {
+    color: blue;
+  }
+}
+```
+
 ### @mixin
 
 Style mixins are useful for defining a bundle of style declarations (like `color`, `font-size`) that you then can include into style rules.
@@ -116,6 +126,14 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 @mixin mixin-name {
   /* style props */
   decl-name: decl-value;
+
+  /* nested rules */
+  div {
+    color: blue;
+  }
+
+  /* takes body of include statement */
+  @content;
 }
 ```
 
@@ -123,7 +141,14 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 
 ```css
 .my-style {
-  @include mixin-name another-mixin and-another-mixin;
+  @include mixin-name;
+
+  @include mixin-with-content {
+    display: block;
+    div {
+      color: blue;
+    }
+  }
 }
 ```
 
@@ -159,6 +184,28 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 <div className="message">
   What has to be broken before you can use it?
 </div>
+```
+
+### Re-using media queries
+
+Media queries are re-usable in Paperclip by using the following pattern:
+
+```css
+
+/* Define a media mixin */
+@mixin desktop {
+  @media screen and (max-width: 1400px) {
+    @content;
+  }
+}
+
+div {
+
+  /* use media mixin in any selector */
+  @include desktop {
+    font-size: 24px;
+  }
+}
 ```
 
 ### @export

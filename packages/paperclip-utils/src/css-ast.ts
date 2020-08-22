@@ -9,6 +9,7 @@ export enum RuleKind {
   Style = "Style",
   Charset = "Charset",
   Namespace = "Namespace",
+  Include = "Include",
   FontFace = "FontFace",
   Media = "Media",
   Mixin = "Mixin",
@@ -125,7 +126,9 @@ export type Selector =
 
 export enum StyleDeclarationKind {
   KeyValue = "KeyValue",
-  Include = "Include"
+  Include = "Include",
+  Media = "Media",
+  Content = "Content"
 }
 
 type BaseStyleDeclaration<TKind extends StyleDeclarationKind> = {
@@ -140,22 +143,20 @@ export type KeyValueDeclaration = {
   valueLocation: SourceLocation;
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
-export type IncludeDeclaration = {
-  mixins: IncludeDeclarationReference[];
-  location: SourceLocation;
-} & BaseStyleDeclaration<StyleDeclarationKind.Include>;
+export type Include = BaseInclude &
+  BaseStyleDeclaration<StyleDeclarationKind.Include>;
 
-export type IncludeDeclarationReference = {
-  parts: IncludeDeclarationPart[];
+export type IncludeReference = {
+  parts: IncludePart[];
   location: SourceLocation;
 };
 
-export type IncludeDeclarationPart = {
+export type IncludePart = {
   name: string;
   location: SourceLocation;
 };
 
-export type StyleDeclaration = KeyValueDeclaration | IncludeDeclaration;
+export type StyleDeclaration = KeyValueDeclaration | Include;
 
 export type StyleRule = {
   location: SourceLocation;
@@ -172,6 +173,13 @@ type BaseConditionRule<TRule extends RuleKind> = {
 } & BaseRule<TRule>;
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
+type BaseInclude = {
+  mixinName: IncludeReference;
+  location: SourceLocation;
+};
+
+type IncludeRule = BaseInclude & BaseRule<RuleKind.Include>;
+
 export type MixinRule = {
   name: MixinName;
   declarations: StyleDeclaration[];
@@ -189,13 +197,18 @@ export type ExportRule = {
 } & BaseRule<RuleKind.Export>;
 
 export type ConditionRule = MediaRule;
-export type Rule = StyleRule | ConditionRule | MixinRule | ExportRule;
+export type Rule =
+  | StyleRule
+  | ConditionRule
+  | MixinRule
+  | ExportRule
+  | IncludeRule;
 export type StyleExpression =
   | Rule
-  | IncludeDeclaration
+  | Include
   | MixinName
-  | IncludeDeclarationPart
-  | IncludeDeclarationReference;
+  | IncludePart
+  | IncludeReference;
 
 export const getSheetClassNames = (
   sheet: Sheet,
@@ -257,9 +270,9 @@ export const isStyleDeclaration = (
   );
 };
 
-export const isIncludeDeclarationPart = (
+export const isIncludePart = (
   expression: Expression
-): expression is IncludeDeclarationPart => {
+): expression is IncludePart => {
   return (expression as any).name != null;
 };
 
@@ -291,11 +304,9 @@ export const traverseStyleExpression = (
   } else if (isStyleDeclaration(rule)) {
     switch (rule.declarationKind) {
       case StyleDeclarationKind.Include: {
-        for (const mixin of rule.mixins) {
-          for (const part of mixin.parts) {
-            if (!traverseStyleExpression(part, each)) {
-              return false;
-            }
+        for (const part of rule.mixinName.parts) {
+          if (!traverseStyleExpression(part, each)) {
+            return false;
           }
         }
         return true;

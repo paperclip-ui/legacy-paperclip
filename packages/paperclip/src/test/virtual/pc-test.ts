@@ -719,7 +719,7 @@ describe(__filename + "#", () => {
       "/entry.pc": `
         <style>
           .its_a_match {
-
+            color: blue;
           }
         </style>
         <div className="its_a_match"></div>
@@ -730,7 +730,7 @@ describe(__filename + "#", () => {
 
     const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(buffer).to.eql(
-      `<style>[class]._80f4925f_its_a_match { }</style><div className="_80f4925f_its_a_match its_a_match" data-pc-80f4925f></div>`
+      `<style>[class]._80f4925f_its_a_match { color:blue; }</style><div className="_80f4925f_its_a_match its_a_match" data-pc-80f4925f></div>`
     );
   });
 
@@ -933,7 +933,7 @@ describe(__filename + "#", () => {
         <style>
           @export {
             .test {
-
+              color: blue;
             }
           }
         </style>
@@ -943,7 +943,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test test" data-pc-80f4925f></div>`
+      `<style>[class]._139cec8e_test { color:blue; }</style><div className="_139cec8e_test test" data-pc-80f4925f></div>`
     );
   });
 
@@ -959,7 +959,7 @@ describe(__filename + "#", () => {
         <style>
           @export {
             .test {
-
+              color: orange;
             }
           }
         </style>
@@ -969,7 +969,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test test" data-pc-80f4925f></div>`
+      `<style>[class]._139cec8e_test { color:orange; }</style><div className="_139cec8e_test test" data-pc-80f4925f></div>`
     );
   });
   it(`Can use a public class pierce on a component`, async () => {
@@ -985,7 +985,7 @@ describe(__filename + "#", () => {
         <style>
           @export {
             .test {
-
+              background: blue;
             }
           }
         </style>
@@ -995,7 +995,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test test" data-pc-80f4925f></div>`
+      `<style>[class]._139cec8e_test { background:blue; }</style><div className="_139cec8e_test test" data-pc-80f4925f></div>`
     );
   });
   it(`Can use a component that's referencing a public class`, async () => {
@@ -1013,7 +1013,7 @@ describe(__filename + "#", () => {
         <style>
           @export {
             .test {
-
+              color: blue;
             }
           }
         </style>
@@ -1023,7 +1023,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._11a847ab_test { }</style><div className="_11a847ab_test test" data-pc-139cec8e></div>`
+      `<style>[class]._11a847ab_test { color:blue; }</style><div className="_11a847ab_test test" data-pc-139cec8e></div>`
     );
   });
 
@@ -1040,7 +1040,7 @@ describe(__filename + "#", () => {
         <style>
           @export {
             .test {
-
+              color: blue;
             }
           }
         </style>
@@ -1050,7 +1050,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._139cec8e_test { }</style><div className="_139cec8e_test test _80f4925f_checkbox checkbox" data-pc-80f4925f></div>`
+      `<style>[class]._139cec8e_test { color:blue; }</style><div className="_139cec8e_test test _80f4925f_checkbox checkbox" data-pc-80f4925f></div>`
     );
   });
 

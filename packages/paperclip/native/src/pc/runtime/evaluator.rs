@@ -284,17 +284,6 @@ fn evaluate_document_sheet<'a>(
   let mut sheet = css_virt::CSSSheet { rules: vec![] };
 
   let mut css_exports: css_export::Exports = css_export::Exports::new();
-  let mut css_imports: BTreeMap<String, css_export::Exports> = BTreeMap::new();
-
-  let imports = if let Some(imports) = context.import_graph.get(context.uri) {
-    imports
-  } else {
-    return Err(RuntimeError::unknown(context.uri));
-  };
-
-  for (id, imp) in imports {
-    css_imports.insert(id.to_string(), imp.style.clone());
-  }
 
   let children_option = ast::get_children(&entry_expr);
   let scope = get_document_style_scope(uri);
@@ -306,9 +295,10 @@ fn evaluate_document_sheet<'a>(
           &style_element.sheet,
           uri,
           &scope,
-          &context.import_scopes,
+          context.import_scopes.clone(),
           context.vfs,
-          &css_imports,
+          context.graph,
+          &context.import_graph,
           Some(&css_exports),
         )?;
         match info {
@@ -377,7 +367,7 @@ fn create_context<'a>(
   }
 }
 
-fn get_import_scopes<'a>(entry: &Dependency) -> BTreeMap<String, String> {
+pub fn get_import_scopes<'a>(entry: &Dependency) -> BTreeMap<String, String> {
   let mut scopes = BTreeMap::new();
   for (id, uri) in &entry.dependencies {
     scopes.insert(id.to_string(), get_document_style_scope(uri));

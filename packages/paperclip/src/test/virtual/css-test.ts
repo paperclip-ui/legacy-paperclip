@@ -37,7 +37,6 @@ describe(__filename + "#", () => {
     try {
       engine.run("/entry.pc");
     } catch (e) {
-      console.log(e);
       err = e;
     }
     expect(err).to.eql({
@@ -86,7 +85,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
-        message: "Reference not found or used before it was declared."
+        message: "Reference not found."
       });
     });
 
@@ -132,7 +131,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 84, end: 85 },
-        message: "Reference not found or used before it was declared."
+        message: "Reference not found."
       });
     });
     it("Displays an error if the import is not found", async () => {
@@ -154,7 +153,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 48 },
-        message: "Reference not found or used before it was declared."
+        message: "Reference not found."
       });
     });
 
@@ -178,7 +177,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
-        message: "Reference not found or used before it was declared."
+        message: "Reference not found."
       });
     });
 
@@ -270,6 +269,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `<style>
         .a\\:b {
+          color: blue;
         }
       </style>`
     };
@@ -277,7 +277,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._80f4925f_a\\:b { }</style>`
+      `<style>[class]._80f4925f_a\\:b { color:blue; }</style>`
     );
   });
 
@@ -306,7 +306,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>input:checked[data-pc-80f4925f] { } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label { background:var(--midnight-darker); } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label::after { transform:rotate(90deg); } input:checked[data-pc-80f4925f] ~ [class]._80f4925f_tab-content { max-height:100vh; padding:1em; }</style>`
+      `<style>input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label { background:var(--midnight-darker); } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label::after { transform:rotate(90deg); } input:checked[data-pc-80f4925f] ~ [class]._80f4925f_tab-content { max-height:100vh; padding:1em; }</style>`
     );
   });
 
@@ -423,7 +423,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._80f4925f_todo { } [class]._80f4925f_todo:hover [class]._80f4925f_destroy { display:inline-block; } [class]._80f4925f_todo [class]._80f4925f_todo { } [class]._80f4925f_todo [class]._80f4925f_todo--item [class]._80f4925f_destroy { display:inline-block; }</style>`
+      `<style>[class]._80f4925f_todo:hover [class]._80f4925f_destroy { display:inline-block; } [class]._80f4925f_todo [class]._80f4925f_todo--item [class]._80f4925f_destroy { display:inline-block; }</style>`
     );
   });
 
@@ -441,7 +441,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] svg:a[data-pc-80f4925f] { margin-right:4px; }</style>`
+      `<style>a[data-pc-80f4925f] svg:a[data-pc-80f4925f] { margin-right:4px; }</style>`
     );
   });
 
@@ -470,19 +470,19 @@ describe(__filename + "#", () => {
       "/entry.pc": `<style>
       a {
         > b {
-          
+          color: blue;
         }
         + c {
-          
+          color: black;
         }
         ~ d {
-          
+          color: red;
         }
         :not(.div) {
-
+          color: voilet;
         }
         ::active {
-
+          color: green;
         }
       }
     </style>`
@@ -491,7 +491,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>a[data-pc-80f4925f] { } a[data-pc-80f4925f] > b[data-pc-80f4925f] { } a[data-pc-80f4925f] + c[data-pc-80f4925f] { } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { } a[data-pc-80f4925f] [data-pc-80f4925f]:not([class]._80f4925f_div) { } a[data-pc-80f4925f] [data-pc-80f4925f]::active { }</style>`
+      `<style>a[data-pc-80f4925f] > b[data-pc-80f4925f] { color:blue; } a[data-pc-80f4925f] + c[data-pc-80f4925f] { color:black; } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f] [data-pc-80f4925f]:not([class]._80f4925f_div) { color:voilet; } a[data-pc-80f4925f] [data-pc-80f4925f]::active { color:green; }</style>`
     );
   });
 
@@ -583,9 +583,13 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `<style>
       @export {
-        @mixin {
+        @mixin ab {
           @include no-boom;
         }
+      }
+
+      .test {
+        @include ab;
       }
     </style>`
     };
@@ -595,15 +599,16 @@ describe(__filename + "#", () => {
     let err;
 
     try {
-      await engine.run("/entry.pc");
+      const r = await engine.run("/entry.pc");
+      console.log(stringifyLoadResult(r));
     } catch (e) {
       err = e;
     }
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 60, end: 67 },
-      message: "Reference not found or used before it was declared."
+      location: { start: 63, end: 70 },
+      message: "Reference not found."
     });
   });
 
@@ -623,7 +628,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      "<style>[class]._80f4925f_parent { } [class]._80f4925f_child:first-child { color:blue ; }</style>"
+      "<style>[class]._80f4925f_child:first-child { color:blue ; }</style>"
     );
   });
 
@@ -664,7 +669,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      "<style>div[data-pc-80f4925f] { } div[data-pc-80f4925f] > * { color:blue; }</style>"
+      "<style>div[data-pc-80f4925f] > * { color:blue; }</style>"
     );
   });
 
@@ -692,7 +697,7 @@ describe(__filename + "#", () => {
       .a {
         .b {
           &--c&--d {
-
+            color: blue;
           }
         }
       }
@@ -703,7 +708,192 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      "<style>[class]._80f4925f_a { } [class]._80f4925f_a [class]._80f4925f_b { } [class]._80f4925f_a [class]._80f4925f_b--c[class]._80f4925f_a [class]._80f4925f_b--d { }</style>"
+      "<style>[class]._80f4925f_a [class]._80f4925f_b--c[class]._80f4925f_a [class]._80f4925f_b--d { color:blue; }</style>"
+    );
+  });
+
+  it("Can include style rules within mixins", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin test {
+        .a {
+          color: blue;
+        }
+      }
+
+      @include test;
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql("<style>[class]._80f4925f_a { color:blue; }</style>");
+  });
+
+  it("Can include mixin rules into a style rule", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin test {
+        .e {
+          color: blue;
+        }
+      }
+
+      a {
+        b, c, d {
+          @include test;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>a[data-pc-80f4925f] b[data-pc-80f4925f] [class]._80f4925f_e { color:blue; } a[data-pc-80f4925f] c[data-pc-80f4925f] [class]._80f4925f_e { color:blue; } a[data-pc-80f4925f] d[data-pc-80f4925f] [class]._80f4925f_e { color:blue; }</style>"
+    );
+  });
+
+  it("Can include media declarations within style rule", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      a {
+        @media screen and (max-width: 450px) {
+          color: red;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>@media screen and (max-width: 450px) { a[data-pc-80f4925f] { color:red; } }</style>"
+    );
+  });
+
+  it("Can include a nested rule within a media rule", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      a {
+        @media screen and (max-width: 450px) {
+          color: red;
+          b {
+            color: orange;
+          }
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>@media screen and (max-width: 450px) { a[data-pc-80f4925f] b[data-pc-80f4925f] { color:orange; } a[data-pc-80f4925f] { color:red; } }</style>"
+    );
+  });
+
+  it("Can define a selector mixin with @content", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin div {
+        div {
+          @content;
+        }
+      }
+
+      @include div {
+        color: red;
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql("<style>div[data-pc-80f4925f] { color:red; }</style>");
+  });
+
+  it("Can include @content with a rule", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin desktop {
+        a {
+          @content;
+        }
+      }
+
+      @include desktop {
+        b {
+          color: red;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>a[data-pc-80f4925f] b[data-pc-80f4925f] { color:red; }</style>"
+    );
+  });
+
+  it("Can include @content within @media", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin desktop {
+        @media a {
+          @content;
+        }
+      }
+
+      @include desktop {
+        b {
+          color: red;
+        }
+        c {
+          color: red;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>@media a { b[data-pc-80f4925f] { color:red; } c[data-pc-80f4925f] { color:red; } { } }</style>"
+    );
+  });
+
+  it("works", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+      @mixin desktop {
+        @media screen and (max-width: 400px) {
+          @content;
+        }
+      }
+    
+      .test {
+        font-family: sans-serif;
+        @include desktop {
+          font-size: 40px;
+        }
+      }
+    </style>`
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      "<style>@media screen and (max-width: 400px) { [class]._80f4925f_test { font-size:40px; } } [class]._80f4925f_test { font-family:sans-serif; }</style>"
     );
   });
 });

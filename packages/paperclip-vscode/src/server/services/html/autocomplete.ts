@@ -72,29 +72,37 @@ export class PCAutocomplete {
       return [];
     }
 
-    switch (context.kind) {
-      case SuggestContextKind.HTML_TAG_NAME:
-        return this._getHTMLTagNameSuggestions(data);
-      case SuggestContextKind.HTML_ATTRIBUTE_NAME:
-        return this._getAttributeNameSuggestions(context, data);
-      case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
-        return this._getHTMLAttributeStringValueSuggestions(uri, context, data);
-      case SuggestContextKind.CSS_DECLARATION_NAME:
-        return this._getCSSDeclarationNameSuggestion(context, data);
-      case SuggestContextKind.CSS_DECLARATION_AT_RULE:
-        return this._getCSSDeclarationAtRuleSuggestion(context, data);
-      case SuggestContextKind.CSS_AT_RULE_PARAMS:
-        return this._getCSSDeclarationAtRuleParamsSuggestion(context, data);
-      case SuggestContextKind.CSS_AT_RULE_NAME:
-        return this._getCSSAtRuleSuggestion(context);
-      case SuggestContextKind.CSS_DECLARATION_VALUE:
-        return this._getCSSDeclarationValueSugestion(context, data);
-      case SuggestContextKind.CSS_FUNCTION:
-        return this._getCSSFunctionSuggestion(context, uri, data);
-      case SuggestContextKind.CSS_CLASS_REFERENCE:
-        return this._getCSSClassReferenceSuggestion(data);
-      // case SuggestContextKind.HTML_CLOSE_TAG_NAME:
-      //   return this._getCloseTagSuggestion(context);
+    try {
+      switch (context.kind) {
+        case SuggestContextKind.HTML_TAG_NAME:
+          return this._getHTMLTagNameSuggestions(data);
+        case SuggestContextKind.HTML_ATTRIBUTE_NAME:
+          return this._getAttributeNameSuggestions(context, data);
+        case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
+          return this._getHTMLAttributeStringValueSuggestions(
+            uri,
+            context,
+            data
+          );
+        case SuggestContextKind.CSS_DECLARATION_NAME:
+          return this._getCSSDeclarationNameSuggestion(context, data);
+        case SuggestContextKind.CSS_DECLARATION_AT_RULE:
+          return this._getCSSDeclarationAtRuleSuggestion(context, data);
+        case SuggestContextKind.CSS_AT_RULE_PARAMS:
+          return this._getCSSDeclarationAtRuleParamsSuggestion(context, data);
+        case SuggestContextKind.CSS_AT_RULE_NAME:
+          return this._getCSSAtRuleSuggestion(context);
+        case SuggestContextKind.CSS_DECLARATION_VALUE:
+          return this._getCSSDeclarationValueSugestion(context, data);
+        case SuggestContextKind.CSS_FUNCTION:
+          return this._getCSSFunctionSuggestion(context, uri, data);
+        case SuggestContextKind.CSS_CLASS_REFERENCE:
+          return this._getCSSClassReferenceSuggestion(data);
+        // case SuggestContextKind.HTML_CLOSE_TAG_NAME:
+        //   return this._getCloseTagSuggestion(context);
+      }
+    } catch (e) {
+      console.error(e.stack);
     }
 
     return [];
@@ -160,7 +168,7 @@ export class PCAutocomplete {
   }
 
   private _getCSSDeclarationAtRuleSuggestion(
-    context: CSSDeclarationAtRuleSuggestionContext,
+    _context: CSSDeclarationAtRuleSuggestionContext,
     data: LoadedData
   ) {
     return [
@@ -171,6 +179,10 @@ export class PCAutocomplete {
         command: loadedMixinsAsCompletionList(data).length
           ? RETRIGGER_COMMAND
           : null
+      },
+      {
+        label: "content",
+        insertText: "content;"
       }
     ];
   }
@@ -460,10 +472,11 @@ const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
   const list: CompletionItem[] = [];
 
   for (const mixinName in data.exports.style.mixins) {
-    const mixin = data.exports.style.mixins[mixinName];
+    // const mixin = data.exports.style.mixins[mixinName];
     list.push({
-      label: mixinName,
-      detail: stringifyDeclarations(mixin.declarations)
+      label: mixinName
+
+      // detail: stringifyDeclarations(mixin.declarations)
     });
   }
 
@@ -479,8 +492,8 @@ const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
         continue;
       }
       list.push({
-        label: `${importId}.${mixinName}`,
-        detail: stringifyDeclarations(mixin.declarations)
+        label: `${importId}.${mixinName}`
+        // detail: stringifyDeclarations(mixin.declarations)
       });
     }
   }
