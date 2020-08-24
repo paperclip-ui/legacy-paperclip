@@ -271,15 +271,15 @@ https://www.ibm.com/design/language/color
 
 <div component as="Icon" 
   className="Icon" 
-  className:folderOpen 
-  className:folderClosed
-  className:isComponent
-  className:isFont
-  className:isMixin
-  className:isStyle>
+  className:folderOpen="folderOpen"
+  className:folderClosed="folderClosed"
+  className:isComponent="isComponent"
+  className:isFont="isFont"
+  className:isMixin="isMixin"
+  className:isStyle="isMixin">
 </div>
 
-<div component as="Title" className="Title" className:selected>
+<div component as="Title" className="Title" className:selected="selected">
   {children}
 </div>
 
@@ -337,7 +337,7 @@ https://www.ibm.com/design/language/color
   </Group>
 </div>
 
-<div component as="Color" className="Color" className:dark className:light style="background: var({varName})">
+<div component as="Color" className="Color" className:dark="dark" className:light="light" style="background: var({varName})">
   <div className="info">
     <div className="name">{varName}</div>
     <div className="value">{value}</div>

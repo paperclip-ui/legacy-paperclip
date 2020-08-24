@@ -187,10 +187,15 @@ repository:
       - name: string.quoted.single
         begin: "'"
         end: "'"
+        beginCaptures:
+          "1": { name: punctuation.separator.key-value.html }
+        patterns:
+          - include: "#class-pierce"
+          - include: "#slots"
 
   class-pierce:
     patterns:
-      - match: (>>>|\$)([^\s">{]+)
+      - match: (>>>|\$)([^\s"'>{]+)
         captures:
           "0": { name: keyword.control }
   strings:

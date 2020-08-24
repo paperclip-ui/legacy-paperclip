@@ -11,6 +11,6 @@
   }
 </style>
 
-<div className="message $tw.space-y-0 $tw.bg-gray-500">
+<div className='message $tw.space-y-0 $tw.bg-gray-500'>
   This is fine
 </div>
