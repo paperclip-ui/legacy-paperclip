@@ -166,6 +166,7 @@ fn diff_children<'a>(a: &Vec<Node>, b: &Vec<Node>, context: &mut Context<'a>) {
     }
   }
 }
+
 fn diff_style_element<'a>(a: &StyleElement, b: &StyleElement, context: &mut Context<'a>) {
   // will want to diff & patch styles later on
   context.mutations.push(Mutation::new(

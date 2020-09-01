@@ -21,6 +21,7 @@ import {
 export enum NodeKind {
   Fragment = "Fragment",
   Text = "Text",
+  Metadata = "Metadata",
   Element = "Element",
   StyleElement = "StyleElement",
   Slot = "Slot"
@@ -36,6 +37,28 @@ export type Text = {
   location: SourceLocation;
 } & BaseNode<NodeKind.Text>;
 
+export type Metadata = { 
+  properties: MetadataProperty[]
+} & BaseNode<NodeKind.Metadata>;
+
+export enum MetadataPropertyKind {
+  Description = "Description",
+  Named = "Named"
+}
+
+type BaseMetadataProperty<TKind extends MetadataPropertyKind> = {
+  kind: TKind
+};
+
+export type MetadataDescriptionProperty = {
+  value: string;
+} & BaseMetadataProperty<MetadataPropertyKind.Description>;
+
+export type MetadataProperty = {
+  name: string;
+  value: Statement;
+} &  BaseMetadataProperty<MetadataPropertyKind.Description>;
+
 export type Element = {
   location: SourceLocation;
 
@@ -49,6 +72,7 @@ export type Element = {
   value: string;
   children: Node[];
 } & BaseNode<NodeKind.Element>;
+
 
 export type StyleElement = {
   sheet: Sheet;
