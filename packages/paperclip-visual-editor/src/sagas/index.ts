@@ -15,12 +15,9 @@ import {
   globalMetaKeyUp
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
-import { render } from "react-dom";
 import { AppState } from "../state";
 import {
   getVirtTarget,
-  VirtualElement,
-  EngineErrorEvent
 } from "paperclip-utils";
 
 declare const vscode;

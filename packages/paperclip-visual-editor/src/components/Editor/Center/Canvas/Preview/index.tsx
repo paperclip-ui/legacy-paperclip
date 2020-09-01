@@ -25,7 +25,7 @@ export const Preview = React.memo(() => {
     const scrollingElement = rendererElement.contentDocument.scrollingElement;
     scrollingElement.scrollTop = scrollPosition.y;
     scrollingElement.scrollLeft = scrollPosition.x;
-  }, [rendererElement, scrollPosition, frameSize]);
+  }, [rendererElement, scrollPosition.x, scrollPosition.y, frameSize?.width, frameSize?.height]);
 
   return <styles.Preview ref={mountRef} />;
 });
