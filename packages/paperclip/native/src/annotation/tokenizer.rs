@@ -84,7 +84,6 @@ impl<'a> Tokenizer<'a> {
   }
 
   pub fn next(&mut self) -> Result<Token<'a>, ParseError> {
-
     if self.is_eof() {
       return Err(ParseError::eof());
     }
@@ -92,9 +91,7 @@ impl<'a> Tokenizer<'a> {
     let c = self.curr_byte()?;
 
     match c {
-      b'@' => {
-        Ok(Token::At)
-      }
+      b'@' => Ok(Token::At),
       b'a'..=b'z' | b'A'..=b'Z' => {
         Ok(Token::Word(self.search(|c| -> bool {
           matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9')
@@ -108,7 +105,6 @@ impl<'a> Tokenizer<'a> {
     let c = self.curr_byte()?;
     let mut len = 1;
     let mut utf8_step = 1;
-
 
     if c < 0x80 {
       len = 1;
@@ -134,7 +130,6 @@ impl<'a> Tokenizer<'a> {
       Ok(Token::Cluster(buffer))
     }
   }
-
 
   fn starts_with(&mut self, pattern: &[u8]) -> bool {
     self.source[self.pos..].starts_with(pattern)

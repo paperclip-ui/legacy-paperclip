@@ -1,6 +1,7 @@
 use crate::base::ast::Location;
 use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
+use crate::annotation::ast as annotation_ast;
 use serde::Serialize;
 use std::fmt;
 
@@ -35,6 +36,7 @@ pub enum Node {
   Comment(ValueObject),
   Element(Element),
   Fragment(Fragment),
+  Annotation(annotation_ast::Annotation),
   StyleElement(StyleElement),
   Slot(Slot),
 }
@@ -47,6 +49,7 @@ impl Node {
       Node::Element(value) => &value.location,
       Node::Fragment(value) => &value.location,
       Node::StyleElement(value) => &value.location,
+      Node::Annotation(value) => &value.location,
       Node::Slot(value) => &value.location,
     }
   }

@@ -9,13 +9,13 @@ extern crate console_error_panic_hook;
 #[macro_use]
 extern crate lazy_static;
 
+mod annotation;
 mod base;
 mod core;
 mod css;
 mod engine;
 mod js;
 mod pc;
-mod annotation;
 
 use ::futures::executor::block_on;
 use engine::{Engine, EngineError};

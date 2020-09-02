@@ -7,13 +7,13 @@ extern crate matches;
 #[macro_use]
 extern crate lazy_static;
 
+mod annotation;
 mod base;
 mod core;
 mod css;
 mod engine;
 mod js;
 mod pc;
-mod annotation;
 
 use serde::{Deserialize, Serialize};
 // use jsonrpc_core::*;
