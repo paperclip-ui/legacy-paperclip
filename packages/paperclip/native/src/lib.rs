@@ -15,6 +15,7 @@ mod css;
 mod engine;
 mod js;
 mod pc;
+mod annotation;
 
 use ::futures::executor::block_on;
 use engine::{Engine, EngineError};

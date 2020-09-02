@@ -21,7 +21,7 @@ import {
 export enum NodeKind {
   Fragment = "Fragment",
   Text = "Text",
-  Metadata = "Metadata",
+  Annotation = "Annotation",
   Element = "Element",
   StyleElement = "StyleElement",
   Slot = "Slot"
@@ -37,27 +37,29 @@ export type Text = {
   location: SourceLocation;
 } & BaseNode<NodeKind.Text>;
 
-export type Metadata = { 
-  properties: MetadataProperty[]
-} & BaseNode<NodeKind.Metadata>;
+export type Annotation = {
+  properties: AnnotationProperty[];
+} & BaseNode<NodeKind.Annotation>;
 
-export enum MetadataPropertyKind {
-  Description = "Description",
-  Named = "Named"
+export enum AnnotationPropertyKind {
+  Text = "Text",
+  Declaration = "Declaration"
 }
 
-type BaseMetadataProperty<TKind extends MetadataPropertyKind> = {
-  kind: TKind
+type BaseAnnotationProperty<TKind extends AnnotationPropertyKind> = {
+  kind: TKind;
 };
 
-export type MetadataDescriptionProperty = {
+export type TextAnnotation = {
   value: string;
-} & BaseMetadataProperty<MetadataPropertyKind.Description>;
+} & BaseAnnotationProperty<AnnotationPropertyKind.Text>;
 
-export type MetadataProperty = {
+export type DeclarationAnnotation = {
   name: string;
   value: Statement;
-} &  BaseMetadataProperty<MetadataPropertyKind.Description>;
+} & BaseAnnotationProperty<AnnotationPropertyKind.Declaration>;
+
+export type AnnotationProperty = TextAnnotation | DeclarationAnnotation;
 
 export type Element = {
   location: SourceLocation;
@@ -72,7 +74,6 @@ export type Element = {
   value: string;
   children: Node[];
 } & BaseNode<NodeKind.Element>;
-
 
 export type StyleElement = {
   sheet: Sheet;
@@ -192,7 +193,7 @@ export type Slot = {
   location: SourceLocation;
 } & BaseNode<NodeKind.Slot>;
 
-export type Node = Text | Element | StyleElement | Fragment | Slot;
+export type Node = Text | Element | StyleElement | Fragment | Slot | Annotation;
 export type Expression = Node | Attribute | AttributeValue | StyleExpression;
 
 const a: AttributeValue = null;

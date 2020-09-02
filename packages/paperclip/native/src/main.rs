@@ -13,6 +13,7 @@ mod css;
 mod engine;
 mod js;
 mod pc;
+mod annotation;
 
 use serde::{Deserialize, Serialize};
 // use jsonrpc_core::*;

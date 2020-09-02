@@ -6,21 +6,6 @@ pub enum Token<'a> {
   // @
   At,
 
-  // /*
-  CommentOpen,
-
-  // */
-  CommentOpen,
-
-  // <!--
-  HtmlCommentOpen,
-
-  // //
-  LineCommentOpen,
-
-  // -->
-  HtmlCommentClose,
-
   Word(&'a str),
 
   Byte(u8),
@@ -99,8 +84,57 @@ impl<'a> Tokenizer<'a> {
   }
 
   pub fn next(&mut self) -> Result<Token<'a>, ParseError> {
-    return Token::At;
+
+    if self.is_eof() {
+      return Err(ParseError::eof());
+    }
+
+    let c = self.curr_byte()?;
+
+    match c {
+      b'@' => {
+        Ok(Token::At)
+      }
+      b'a'..=b'z' | b'A'..=b'Z' => {
+        Ok(Token::Word(self.search(|c| -> bool {
+          matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9')
+        })))
+      }
+      _ => self.next_utf16_char(),
+    }
   }
+
+  fn next_utf16_char(&mut self) -> Result<Token<'a>, ParseError> {
+    let c = self.curr_byte()?;
+    let mut len = 1;
+    let mut utf8_step = 1;
+
+
+    if c < 0x80 {
+      len = 1;
+    } else if c < 0xC0 {
+      len = 1;
+    } else if c < 0xE0 {
+      len = 2;
+    } else if c < 0xF0 {
+      len = 3;
+    } else if c < 0xF8 {
+      len = 4;
+      utf8_step = 2;
+    }
+
+    if len == 1 {
+      self.forward(1);
+      Ok(Token::Byte(c))
+    } else {
+      let utf8_pos = self.utf16_pos;
+      let buffer = &self.source[self.pos..(self.pos + len)];
+      self.forward(len);
+      self.utf16_pos = utf8_pos + utf8_step;
+      Ok(Token::Cluster(buffer))
+    }
+  }
+
 
   fn starts_with(&mut self, pattern: &[u8]) -> bool {
     self.source[self.pos..].starts_with(pattern)

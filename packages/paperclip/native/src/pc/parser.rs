@@ -5,6 +5,7 @@ use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
+use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
 use crate::js::ast as js_ast;
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
@@ -244,6 +245,8 @@ fn parse_next_basic_element_parts<'a>(
   };
   Ok(pc_ast::Node::Element(el))
 }
+
+// fn pase_annotation<'a>(toenizer: &mut Tokenizer<'a>) -> Result<
 
 fn parse_next_style_element_parts<'a>(
   attributes: Vec<pc_ast::Attribute>,
