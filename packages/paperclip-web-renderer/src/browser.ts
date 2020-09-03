@@ -1,6 +1,7 @@
 import { Renderer } from "./renderer";
 import * as sockjs from "sockjs-client";
 
+console.log("OKOKOKOK");
 console.log(sockjs);
 
 declare const vscode;

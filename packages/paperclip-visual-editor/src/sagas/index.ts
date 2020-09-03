@@ -1,5 +1,5 @@
 import * as Mousetrap from "mousetrap";
-
+import SockJSClient from "sockjs-client";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
@@ -16,13 +16,19 @@ import {
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState } from "../state";
-import {
-  getVirtTarget,
-} from "paperclip-utils";
+import { getVirtTarget } from "paperclip-utils";
 
 declare const vscode;
 declare const TARGET_URI;
 declare const PROTOCOL;
+console.log(SockJSClient);
+
+const client = new SockJSClient(
+  location.protocol + "//" + location.host + "/rt"
+);
+client.onopen = () => {
+  console.log("OK");
+};
 
 export default function* mainSaga() {
   yield fork(handleRenderer);
