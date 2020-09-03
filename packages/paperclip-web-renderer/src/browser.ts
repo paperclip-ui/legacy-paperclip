@@ -1,4 +1,7 @@
 import { Renderer } from "./renderer";
+import * as sockjs from "sockjs-client";
+
+console.log(sockjs);
 
 declare const vscode;
 declare const TARGET_URI;

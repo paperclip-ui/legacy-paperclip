@@ -4,6 +4,7 @@ import http from "http";
 import sockjs from "sockjs";
 import getPort from "get-port";
 import { Engine } from "paperclip";
+import * as URL from "url";
 
 export type ServerOptions = {
   engine: Engine;
@@ -37,9 +38,10 @@ export const startServer = async ({
 };
 
 const serveStatic = (root: string) => (req, res) => {
+  const url = URL.parse(req.url);
   const filePath = path.join(
     root,
-    path.normalize(req.url === "/" ? "/index.html" : req.url)
+    path.normalize(url.pathname === "/" ? "/index.html" : url.pathname)
   );
   if (!fs.existsSync(filePath)) {
     res.writeHead(404);
