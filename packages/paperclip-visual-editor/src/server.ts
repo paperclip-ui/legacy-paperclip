@@ -4,16 +4,19 @@ import http from "http";
 import sockjs from "sockjs";
 import getPort from "get-port";
 import { Engine } from "paperclip";
-import { fstat } from "fs";
 
 export type ServerOptions = {
-  // engine: Engine
+  engine: Engine;
   localResourceRoots: string[];
   port?: number;
 };
 
-export const start = async (options: ServerOptions) => {
-  const port = await getPort({ port: options.port });
+export const startServer = async ({
+  port: defaultPort,
+  engine,
+  localResourceRoots
+}: ServerOptions) => {
+  const port = await getPort({ port: defaultPort });
 
   const io = sockjs.createServer();
   io.on("connection", conn => {
@@ -34,7 +37,10 @@ export const start = async (options: ServerOptions) => {
 };
 
 const serveStatic = (root: string) => (req, res) => {
-  const filePath = path.join(root, path.normalize(req.url));
+  const filePath = path.join(
+    root,
+    path.normalize(req.url === "/" ? "/index.html" : req.url)
+  );
   if (!fs.existsSync(filePath)) {
     res.writeHead(404);
     return res.end("file not found");
@@ -42,5 +48,3 @@ const serveStatic = (root: string) => (req, res) => {
   res.writeHead(200);
   fs.createReadStream(filePath).pipe(res);
 };
-
-start({ localResourceRoots: [] });

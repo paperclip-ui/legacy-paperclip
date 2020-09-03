@@ -26,6 +26,7 @@
     "inquirer": "^7.3.0",
     "paperclip": "^14.5.3",
     "paperclip-utils": "^14.5.3",
+    "paperclip-visual-editor": "^14.5.3",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
     "yargs": "^15.1.0"

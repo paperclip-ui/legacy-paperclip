@@ -2,7 +2,7 @@
   "name": "paperclip-visual-editor",
   "version": "14.5.3",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "yarn build:definitions && tsc && webpack",
     "build:watch": "webpack --watch & tsc --watch & paperclip build --write --definition --watch",

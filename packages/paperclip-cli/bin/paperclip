@@ -3,7 +3,7 @@ const path = require("path");
 const resolve = require("resolve");
 const chokidar = require("chokidar");
 const glob = require("glob");
-const {build, init} = require("../lib/cli");
+const {build, init, devStart} = require("../lib/cli");
 const fs = require("fs");
 
 // const argv = require("yargs")
@@ -35,10 +35,6 @@ const argv = require("yargs")
   .option("write", desc("Write compiled file"))
   .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
   .option("definition", desc("Write typed definition type"))
-  // .example("$0", "Runs paperclip using the paperclip.config.json in the cwd")
-  // .example("$0 **/*.pc --compiler=paperclip-compiler-react", "Compiles PC files to React")
-  // .example("$0 path/to/file.pc --compiler=paperclip-compiler-react --definition", "Generates a Typed Definition file")
-  // .example("$0 --definition --write --watch", "Writes typed definition files & re-generates them when they change")
 }, argv => {
   build({
     config: argv.config,
@@ -53,6 +49,16 @@ const argv = require("yargs")
 .command("init", "Initialize new paperclip project", yargs => {
 }, argv => {
   init();
+})
+.command("dev", "Starts the dev server", yargs => {
+  yargs
+  .option("port", desc("HTTP port to listen on"))
+  .default("port", 4000)
+}, argv => {
+  devStart({
+    port: argv.port,
+    cwd: process.cwd()
+  });
 })
 .argv;
 
