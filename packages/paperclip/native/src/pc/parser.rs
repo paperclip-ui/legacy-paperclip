@@ -148,7 +148,6 @@ fn parse_slot_script<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<js_ast::Statem
 }
 
 pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
-
   /*
 
   tokenizer.next()?; // eat HTML comment open

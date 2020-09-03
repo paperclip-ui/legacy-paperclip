@@ -1,7 +1,7 @@
+use crate::annotation::ast as annotation_ast;
 use crate::base::ast::Location;
 use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
-use crate::annotation::ast as annotation_ast;
 use serde::Serialize;
 use std::fmt;
 
