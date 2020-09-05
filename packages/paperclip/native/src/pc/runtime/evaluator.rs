@@ -402,6 +402,7 @@ pub fn evaluate_node<'a>(
       value: text.value.to_string(),
     }))),
     ast::Node::Slot(slot) => evaluate_slot(&slot, depth, context),
+    ast::Node::Annotation(slot) => Err(RuntimeError::unknown(context.uri)),
     ast::Node::Fragment(el) => evaluate_fragment(&el, depth, context),
     ast::Node::Comment(_el) => Ok(None),
   }

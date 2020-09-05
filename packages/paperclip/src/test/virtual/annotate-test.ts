@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { createMockEngine } from "../utils";
 import { VirtualFragment } from "paperclip-utils";
 
-describe(__filename + "#", () => {
+xdescribe(__filename + "#", () => {
   it("can parse a text annotation", async () => {
     const graph = {
       "/entry.pc": `

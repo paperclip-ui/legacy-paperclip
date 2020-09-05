@@ -122,10 +122,6 @@
 
 </style>
 
-<div export component as="Test">
-  OK
-</div>
-
 <div export component as="default" class="learn-bar">
   <aside class="learn">
     <header>

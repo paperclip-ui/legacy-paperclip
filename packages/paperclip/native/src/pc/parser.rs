@@ -148,6 +148,24 @@ fn parse_slot_script<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<js_ast::Statem
 }
 
 pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
+
+  let start = tokenizer.get_pos();
+
+  tokenizer.next()?; // eat HTML comment open
+      let buffer = get_buffer(tokenizer, |tokenizer| {
+        let tok = tokenizer.peek(1)?;
+        Ok(tok != Token::HtmlCommentClose)
+      })?
+      .to_string();
+      let end = tokenizer.get_pos();
+      tokenizer.next()?; // eat -->
+      Ok(pc_ast::Node::Comment(pc_ast::ValueObject {
+        value: buffer.clone(),
+        location: Location {
+          start: start.u16_pos,
+          end: end.u16_pos,
+        },
+      }))
   /*
 
   tokenizer.next()?; // eat HTML comment open
@@ -167,7 +185,7 @@ pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Nod
       }))*
 
     */
-  Err(ParseError::unexpected_token(0))
+  // Err(ParseError::unexpected_token(0))
 }
 
 pub fn parse_tag<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {

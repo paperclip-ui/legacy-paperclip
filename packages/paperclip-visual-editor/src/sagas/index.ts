@@ -1,4 +1,5 @@
 import * as Mousetrap from "mousetrap";
+import * as Url from "url";
 import SockJSClient from "sockjs-client";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
@@ -17,18 +18,11 @@ import {
 import { Renderer } from "paperclip-web-renderer";
 import { AppState } from "../state";
 import { getVirtTarget } from "paperclip-utils";
+import { render } from "react-dom";
 
 declare const vscode;
 declare const TARGET_URI;
 declare const PROTOCOL;
-console.log(SockJSClient);
-
-const client = new SockJSClient(
-  location.protocol + "//" + location.host + "/rt"
-);
-client.onopen = () => {
-  console.log("OK");
-};
 
 export default function* mainSaga() {
   yield fork(handleRenderer);
@@ -42,10 +36,54 @@ export default function* mainSaga() {
 
 const parent = typeof vscode != "undefined" ? vscode : window;
 
+const getTargetUrl = () => {
+  if (typeof TARGET_URI !== "undefined") {
+    return TARGET_URI;
+  }
+
+  const parts = Url.parse(location.href, true);
+  return parts.query.open;
+};
+
+function handleSock(onMessage) {
+  const client = new SockJSClient(
+    location.protocol + "//" + location.host + "/rt"
+  );
+
+  client.onopen = () => {
+    const url = getTargetUrl();
+    if (url) {
+      client.send(JSON.stringify({ type: "OPEN", uri: url }));
+    }
+  };
+
+  client.onmessage = message => {
+    console.log(message, message.data);
+    onMessage(JSON.parse(message.data));
+  };
+
+  return () => {
+    client.close();
+  };
+}
+
+function handleIPC(onMessage) {
+  window.onmessage = ({ data: { type, payload } }: MessageEvent) => {
+    if (!type || !payload) {
+      return;
+    }
+
+    onMessage({
+      type,
+      payload: JSON.parse(payload)
+    });
+  };
+}
+
 function* handleRenderer() {
   const renderer = new Renderer(
     typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL,
-    typeof TARGET_URI === "undefined" ? null : TARGET_URI
+    getTargetUrl()
   );
 
   const chan = eventChannel(emit => {
@@ -79,24 +117,20 @@ function* handleRenderer() {
 
     renderer.frame.addEventListener("load", () => {
       renderer.frame.contentWindow.addEventListener("resize", collectRects);
-      // const observer = new MutationObserver(collectRects);
-      // observer.observe(renderer.frame.contentDocument, {
-      //   attributes: true, childList: true, subtree: true
-      // });
     });
 
-    const onMessage = ({ data: { type, payload } }: MessageEvent) => {
+    const onMessage = ({ type, payload }) => {
       if (type === "ENGINE_EVENT") {
-        const engineEvent = JSON.parse(payload);
+        const engineEvent = payload;
         if (engineEvent.kind === "Error") {
           return emit(engineErrored(engineEvent));
         }
-        renderer.handleEngineEvent(JSON.parse(payload));
+        renderer.handleEngineEvent(payload);
       } else if (type === "INIT") {
-        renderer.initialize(JSON.parse(payload));
+        renderer.initialize(payload);
       } else if (type === "ERROR") {
         // renderer.handleError(JSON.parse(payload));
-        emit(engineErrored(JSON.parse(payload)));
+        emit(engineErrored(payload));
         return;
       }
 
@@ -105,7 +139,9 @@ function* handleRenderer() {
       // we want to capture rects on _every_ change
       collectRects();
     };
-    window.onmessage = onMessage;
+
+    handleIPC(onMessage);
+    handleSock(onMessage);
     return () => {
       window.onmessage = undefined;
     };

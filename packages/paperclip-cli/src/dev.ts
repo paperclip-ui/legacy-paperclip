@@ -15,11 +15,11 @@ export const devStart = async ({ port, cwd }: ServerOptions) => {
   ) as PaperclipConfig;
 
   const engine = await createEngine();
-  const serverResult = await startServer({
+  const _serverResult = await startServer({
     port,
     engine,
     localResourceRoots: [cwd]
   });
 
-  exec(`open http://localhost:${serverResult.port}`);
+  // exec(`open http://localhost:${serverResult.port}`);
 };

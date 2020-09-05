@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
+import * as chokidar from "chokidar";
 import http from "http";
 import sockjs from "sockjs";
 import getPort from "get-port";
@@ -20,8 +21,77 @@ export const startServer = async ({
   const port = await getPort({ port: defaultPort });
 
   const io = sockjs.createServer();
+
+  let _watcher: chokidar.FSWatcher;
+
+  const watchEngineFiles = () => {
+    if (_watcher) {
+      _watcher.close();
+    }
+    _watcher = chokidar.watch(
+      engine.getGraphUris().map(uri => URL.fileURLToPath(uri)),
+      {
+        ignoreInitial: true
+      }
+    );
+    _watcher.on("change", filePath => {
+      console.log(URL.pathToFileURL(filePath).href);
+      engine.updateVirtualFileContent(
+        URL.pathToFileURL(filePath).href,
+        fs.readFileSync(filePath, "utf8")
+      );
+    });
+  };
+
+  const handleOpen = uri => {
+    const localPath = URL.fileURLToPath(uri);
+    if (!localResourceRoots.some(root => localPath.includes(root))) {
+      return;
+    }
+
+    const ret = engine.run(uri);
+    watchEngineFiles();
+    return ret;
+  };
+
   io.on("connection", conn => {
-    console.log("CON");
+    let targetUri;
+
+    const disposeEngineListener = engine.onEvent(event => {
+      console.log("EV", event.kind);
+      if (event.uri !== targetUri) {
+        return;
+      }
+
+      conn.write(
+        JSON.stringify({
+          type: "ENGINE_EVENT",
+          payload: event
+        })
+      );
+    });
+
+    conn.on("data", data => {
+      console.log("DAT");
+      const message = JSON.parse(data) as any;
+      if (message.type === "OPEN") {
+        targetUri = message.uri;
+        const result = handleOpen(message.uri);
+        if (result) {
+          conn.write(
+            JSON.stringify({
+              type: "INIT",
+              payload: result
+            })
+          );
+        }
+      }
+    });
+
+    conn.on("close", () => {
+      console.log("LOSOEOEO");
+      disposeEngineListener();
+    });
   });
 
   const server = http.createServer(
