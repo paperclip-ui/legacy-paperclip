@@ -5,7 +5,8 @@ import {
   createConnection,
   ProposedFeatures,
   InitializedParams,
-  TextDocumentSyncKind
+  TextDocumentSyncKind,
+  InitializeParams
 } from "vscode-languageserver";
 
 import * as fs from "fs";
@@ -23,7 +24,7 @@ import {
 
 const connection = createConnection(ProposedFeatures.all);
 
-connection.onInitialize(() => {
+connection.onInitialize((params: InitializeParams) => {
   return {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Incremental,

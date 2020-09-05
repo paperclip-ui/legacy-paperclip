@@ -46,6 +46,9 @@ const getTargetUrl = () => {
 };
 
 function handleSock(onMessage) {
+  if (!/^http/.test(location.protocol)) {
+    return;
+  }
   const client = new SockJSClient(
     location.protocol + "//" + location.host + "/rt"
   );

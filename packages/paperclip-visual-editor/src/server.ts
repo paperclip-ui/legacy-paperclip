@@ -89,7 +89,6 @@ export const startServer = async ({
     });
 
     conn.on("close", () => {
-      console.log("LOSOEOEO");
       disposeEngineListener();
     });
   });
