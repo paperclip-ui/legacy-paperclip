@@ -1,11 +1,14 @@
 <import src="components/Theme/index.pc" as="theme">
 <import src="./RightSidebar/index.pc" as="RightSidebar">
 <import src="./Center/index.pc" as="Center">
+<import src="./LeftSidebar/index.pc" as="LeftSidebar">
 
 <style>
   .editor {
     width: 100vw;
     height: 100vh;
+    display: flex;
+    flex-direction: row;
   }
 </style>
 
@@ -15,5 +18,6 @@
 
 
 <Container>
-  <Center.Container />
+  <LeftSidebar.Preview />
+  <Center.Preview />
 </Container>
