@@ -6,6 +6,7 @@ import sockjs from "sockjs";
 import getPort from "get-port";
 import { Engine } from "paperclip";
 import * as URL from "url";
+import { basename } from "path";
 
 export type ServerOptions = {
   engine: Engine;
@@ -57,36 +58,73 @@ export const startServer = async ({
   io.on("connection", conn => {
     let targetUri;
 
+    const emit = message => {
+      conn.write(JSON.stringify(message));
+    };
+
     const disposeEngineListener = engine.onEvent(event => {
-      console.log("EV", event.kind);
       if (event.uri !== targetUri) {
         return;
       }
 
-      conn.write(
-        JSON.stringify({
-          type: "ENGINE_EVENT",
-          payload: event
-        })
-      );
+      emit({
+        type: "ENGINE_EVENT",
+        payload: event
+      });
     });
 
     conn.on("data", data => {
-      console.log("DAT");
       const message = JSON.parse(data) as any;
-      if (message.type === "OPEN") {
-        targetUri = message.uri;
-        const result = handleOpen(message.uri);
-        if (result) {
-          conn.write(
-            JSON.stringify({
-              type: "INIT",
-              payload: result
-            })
-          );
-        }
+      switch (message.type) {
+        case "OPEN":
+          return onOpen(message);
       }
     });
+
+    const onOpen = message => {
+      targetUri = message.uri;
+      const result = handleOpen(message.uri);
+      if (result) {
+        emit({
+          type: "INIT",
+          payload: result
+        });
+      }
+    };
+
+    const loadDirectory = (dirPath: string, isRoot = false) => {
+      fs.readdir(dirPath, (err, basenames) => {
+        if (err) {
+          return;
+        }
+        emit({
+          type: "DIR_LOADED",
+          payload: {
+            isRoot,
+            item: {
+              absolutePath: dirPath,
+              kind: "directory",
+              name: path.basename(dirPath),
+              children: basenames.map(basename => {
+                const absolutePath = path.join(dirPath, basename);
+                const isDir = fs.lstatSync(absolutePath).isDirectory();
+                return {
+                  absolutePath,
+                  name: basename,
+                  kind: isDir ? "directory" : "file",
+                  children: isDir ? [] : undefined
+                };
+              })
+            }
+          }
+        });
+      });
+    };
+
+    // load initial since it has highest priority
+    if (localResourceRoots.length) {
+      loadDirectory(localResourceRoots[0], true);
+    }
 
     conn.on("close", () => {
       disposeEngineListener();

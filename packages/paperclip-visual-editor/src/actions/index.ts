@@ -3,7 +3,7 @@ import {
   VirtualNode,
   EngineErrorEvent
 } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
-import { Point, Size } from "../state";
+import { Directory, File, FSItem, FSItemKind, Point, Size } from "../state";
 
 export enum ActionType {
   RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
@@ -16,6 +16,8 @@ export enum ActionType {
   PAINT_BUTTON_CLICKED = "PAINT_BUTTON_CLICKED",
   CANVAS_RESIZED = "CANVAS_RESIZED",
   CANVAS_MOUSE_MOVED = "CANVAS_MOUSE_MOVED",
+  DIR_LOADED = "DIR_LOADED",
+  FS_ITEM_CLICKED = "FS_ITEM_CLICKED",
   CANVAS_PAN_START = "CANVAS_PAN_START",
   CANVAS_PAN_END = "CANVAS_PAN_END",
   CANVAS_PANNED = "CANVAS_PANNED",
@@ -62,6 +64,20 @@ export type ZoomOutButtonClicked = BaseAction<
   ActionType.ZOOM_OUT_BUTTON_CLICKED
 >;
 export type PainButtonClicked = BaseAction<ActionType.PAINT_BUTTON_CLICKED>;
+export type DirLoaded = BaseAction<
+  ActionType.DIR_LOADED,
+  {
+    isRoot: boolean;
+    item: Directory;
+  }
+>;
+export type FSItemClicked = BaseAction<
+  ActionType.FS_ITEM_CLICKED,
+  {
+    absolutePath: string;
+    kind: FSItemKind;
+  }
+>;
 
 export type RectsCaptured = BaseAction<
   ActionType.RECTS_CAPTURED,
@@ -126,6 +142,10 @@ export const globalMetaKeyDown = actionCreator<
 export const globalMetaKeyUp = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
 >(ActionType.GLOBAL_META_KEY_UP);
+export const dirLoaded = actionCreator<DirLoaded>(ActionType.DIR_LOADED);
+export const fsItemClicked = actionCreator<FSItemClicked>(
+  ActionType.FS_ITEM_CLICKED
+);
 
 export type Action =
   | RendererInitialized
@@ -144,4 +164,6 @@ export type Action =
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
   | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
   | EngineErrored
-  | ZoomOutButtonClicked;
+  | ZoomOutButtonClicked
+  | DirLoaded
+  | FSItemClicked;

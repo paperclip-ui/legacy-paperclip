@@ -1,0 +1,20 @@
+<style>
+  .container {
+
+  }
+
+  .header {
+    color: white;
+    background: var(--background-2);
+    padding: 3.5px 8px;
+    box-sizing: border-box;
+  }
+</style>
+
+<div export component as="Header" className="header"> 
+  {children}
+</div>
+
+<div export component as="Container" className="container"> 
+  {children}
+</div>

@@ -18,7 +18,6 @@ import {
 import { Renderer } from "paperclip-web-renderer";
 import { AppState } from "../state";
 import { getVirtTarget } from "paperclip-utils";
-import { render } from "react-dom";
 
 declare const vscode;
 declare const TARGET_URI;
@@ -58,10 +57,11 @@ function handleSock(onMessage) {
     if (url) {
       client.send(JSON.stringify({ type: "OPEN", uri: url }));
     }
+
+    onClient(client);
   };
 
   client.onmessage = message => {
-    console.log(message, message.data);
     onMessage(JSON.parse(message.data));
   };
 
@@ -122,25 +122,41 @@ function* handleRenderer() {
       renderer.frame.contentWindow.addEventListener("resize", collectRects);
     });
 
-    const onMessage = ({ type, payload }) => {
-      if (type === "ENGINE_EVENT") {
-        const engineEvent = payload;
-        if (engineEvent.kind === "Error") {
-          return emit(engineErrored(engineEvent));
-        }
-        renderer.handleEngineEvent(payload);
-      } else if (type === "INIT") {
-        renderer.initialize(payload);
-      } else if (type === "ERROR") {
-        // renderer.handleError(JSON.parse(payload));
-        emit(engineErrored(payload));
-        return;
-      }
-
+    const handleRenderChange = () => {
       emit(rendererChanged({ virtualRoot: renderer.virtualRootNode }));
 
       // we want to capture rects on _every_ change
       collectRects();
+    };
+
+    const onMessage = ({ type, payload }) => {
+      switch (type) {
+        case "ENGINE_EVENT": {
+          const engineEvent = payload;
+          if (engineEvent.kind === "Error") {
+            return emit(engineErrored(engineEvent));
+          }
+          renderer.handleEngineEvent(payload);
+          handleRenderChange();
+          break;
+        }
+        case "INIT": {
+          renderer.initialize(payload);
+          handleRenderChange();
+          break;
+        }
+        case "ERROR": {
+          // renderer.handleError(JSON.parse(payload));
+          emit(engineErrored(payload));
+          break;
+        }
+
+        // handle as regular action
+        default: {
+          emit({ type, payload });
+          break;
+        }
+      }
     };
 
     handleIPC(onMessage);

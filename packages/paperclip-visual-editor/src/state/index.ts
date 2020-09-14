@@ -19,12 +19,33 @@ export type BoxNodeInfo = {
   box: Box;
 };
 
+export enum FSItemKind {
+  FILE = "file",
+  DIRECTORY = "directory"
+}
+
+export type File = {
+  kind: FSItemKind.FILE;
+  absolutePath: string;
+  name: string;
+};
+
+export type Directory = {
+  name: string;
+  kind: FSItemKind.DIRECTORY;
+  absolutePath: string;
+  children: Array<FSItem>;
+};
+
+export type FSItem = File | Directory;
+
 export type AppState = {
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
   rendererElement?: any;
   selectedNodePath: string;
   hoveringNodePath?: string;
+  projectDirectory?: Directory;
   metaKeyDown?: boolean;
   canvas: Canvas;
   virtualRootNode?: VirtualNode;

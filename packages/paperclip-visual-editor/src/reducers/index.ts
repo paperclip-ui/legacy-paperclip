@@ -169,6 +169,11 @@ export default (state: AppState, action: Action) => {
         newState.canvas.mousePosition = action.payload;
       });
     }
+    case ActionType.DIR_LOADED: {
+      return produce(state, newState => {
+        newState.projectDirectory = action.payload.item;
+      });
+    }
     case ActionType.CANVAS_RESIZED: {
       return produce(state, newState => {
         newState.canvas.size = action.payload;

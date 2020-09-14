@@ -1,0 +1,11 @@
+<import src="components/Editor/Pane/index.pc" as="Pane">
+<import src="components/Tree/index.pc" as="Tree">
+
+<div export component as="Preview">
+  <Pane.Container>
+    <Pane.Header>
+      Files
+    </Pane.Header>
+    <Tree.Preview />
+  </Pane.Container>
+</div>

@@ -1,10 +1,28 @@
+<import src="styles/colors.pc" as="colors">
+<import src="components/Editor/Pane/index.pc" as="Pane">
+<import src="./files/index.pc" as="Files">
+
 <style>
   .container {
     width: 200px;
-    background: rgb(129, 129, 129);
+    color: white;
+    background: var(--background-1);
     height: 100%;
+    box-sizing: border-box;
+    border-right: 1px solid var(--background-3);
+  }
+
+  .header {
+    color: white;
+    background: var(--background-2);
+    padding: 3.5px 8px;
+    box-sizing: border-box;
   }
 </style>
+
+<div export component as="Header" className="header"> 
+  {children}
+</div>
 
 <div export component as="Container" className="container"> 
   {children}
@@ -12,6 +30,6 @@
 
 <div export component as="Preview">
   <Container>
-    CHILDREN
+    <Files.Preview />
   </Container>
 </div>

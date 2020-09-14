@@ -1,10 +1,13 @@
 import React from "react";
+import { FilesPane } from "./files";
 import * as styles from "./index.pc";
 
 export const LeftSidebar = () => {
   return (
     <>
-      <styles.Container>CONTAINR;</styles.Container>
+      <styles.Container>
+        <FilesPane />
+      </styles.Container>
     </>
   );
 };
