@@ -7,6 +7,8 @@ import getPort from "get-port";
 import { Engine } from "paperclip";
 import * as URL from "url";
 import { basename } from "path";
+import { ActionType, FSItemClicked } from "./actions";
+import { FSItemKind } from "./state";
 
 export type ServerOptions = {
   engine: Engine;
@@ -36,7 +38,6 @@ export const startServer = async ({
       }
     );
     _watcher.on("change", filePath => {
-      console.log(URL.pathToFileURL(filePath).href);
       engine.updateVirtualFileContent(
         URL.pathToFileURL(filePath).href,
         fs.readFileSync(filePath, "utf8")
@@ -63,9 +64,11 @@ export const startServer = async ({
     };
 
     const disposeEngineListener = engine.onEvent(event => {
+      console.log(event.uri, targetUri);
       if (event.uri !== targetUri) {
         return;
       }
+      console.log("EV");
 
       emit({
         type: "ENGINE_EVENT",
@@ -78,8 +81,22 @@ export const startServer = async ({
       switch (message.type) {
         case "OPEN":
           return onOpen(message);
+        case ActionType.FS_ITEM_CLICKED: {
+          return onFSItemClicked(message);
+        }
       }
     });
+
+    const onFSItemClicked = (action: FSItemClicked) => {
+      if (action.payload.kind === FSItemKind.DIRECTORY) {
+        loadDirectory(action.payload.absolutePath);
+      } else {
+        if (/\.pc$/.test(action.payload.absolutePath)) {
+          targetUri = URL.pathToFileURL(action.payload.absolutePath).href;
+          engine.run(targetUri);
+        }
+      }
+    };
 
     const onOpen = message => {
       targetUri = message.uri;

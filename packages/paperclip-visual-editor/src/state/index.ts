@@ -155,4 +155,21 @@ export const calcFrameBox = memoize((rects: Record<string, Box>) => {
   };
 });
 
+export const getFSItem = (absolutePath: string, current: FSItem) => {
+  if (current.absolutePath === absolutePath) {
+    return current;
+  }
+
+  if (current.kind === FSItemKind.DIRECTORY) {
+    for (const child of current.children) {
+      const found = getFSItem(absolutePath, child);
+      if (found) {
+        return found;
+      }
+    }
+  }
+
+  return null;
+};
+
 export * from "./geom";

@@ -8,6 +8,7 @@ export type ChildProps = {
 export type NodeProps = {
   selected: boolean;
   label: any;
+  isFile?: boolean;
   depth: number;
   onExpand?: () => void;
   children: (props: ChildProps) => any;
@@ -17,6 +18,7 @@ export const Node = ({
   depth,
   selected,
   label,
+  isFile,
   children,
   onExpand
 }: NodeProps) => {
@@ -35,6 +37,7 @@ export const Node = ({
       leaf={label}
       open={expanded}
       selected={selected}
+      isFile={isFile}
       onLeafClick={onLeafClick}
     >
       {expanded &&

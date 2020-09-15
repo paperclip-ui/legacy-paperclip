@@ -13,11 +13,13 @@ import {
   engineErrored,
   globalEscapeKeyPressed,
   globalMetaKeyDown,
-  globalMetaKeyUp
+  globalMetaKeyUp,
+  Action
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState } from "../state";
 import { getVirtTarget } from "paperclip-utils";
+import { render } from "react-dom";
 
 declare const vscode;
 declare const TARGET_URI;
@@ -44,7 +46,7 @@ const getTargetUrl = () => {
   return parts.query.open;
 };
 
-function handleSock(onMessage) {
+function handleSock(onMessage, onClient) {
   if (!/^http/.test(location.protocol)) {
     return;
   }
@@ -58,7 +60,9 @@ function handleSock(onMessage) {
       client.send(JSON.stringify({ type: "OPEN", uri: url }));
     }
 
-    onClient(client);
+    onClient({
+      send: message => client.send(JSON.stringify(message))
+    });
   };
 
   client.onmessage = message => {
@@ -88,6 +92,8 @@ function* handleRenderer() {
     typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL,
     getTargetUrl()
   );
+
+  let _client: any;
 
   const chan = eventChannel(emit => {
     let timer: any;
@@ -160,7 +166,9 @@ function* handleRenderer() {
     };
 
     handleIPC(onMessage);
-    handleSock(onMessage);
+    handleSock(onMessage, client => {
+      _client = client;
+    });
     return () => {
       window.onmessage = undefined;
     };
@@ -170,6 +178,15 @@ function* handleRenderer() {
     while (1) {
       const action = yield take(chan);
       yield put(action);
+    }
+  });
+
+  yield takeEvery([ActionType.FS_ITEM_CLICKED], (action: Action) => {
+    if (action.type === ActionType.FS_ITEM_CLICKED) {
+      renderer.targetUri = Url.pathToFileURL(action.payload.absolutePath).href;
+    }
+    if (_client) {
+      _client.send(action);
     }
   });
 

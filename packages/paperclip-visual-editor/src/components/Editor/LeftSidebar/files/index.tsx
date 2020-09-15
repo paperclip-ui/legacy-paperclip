@@ -45,7 +45,15 @@ const FSNode = ({ item, depth, onLeafClick }: FSItemNodeProps) => {
     return null;
   }
   return (
-    <Node label={item.name} depth={depth} selected={false}>
+    <Node
+      isFile={item.kind === FSItemKind.FILE}
+      label={item.name}
+      depth={depth}
+      onExpand={() => {
+        onLeafClick(item);
+      }}
+      selected={false}
+    >
       {({ depth }) => {
         if (item.kind === FSItemKind.DIRECTORY) {
           return item.children.map(child => (

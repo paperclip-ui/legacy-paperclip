@@ -5,7 +5,9 @@ import {
   IS_WINDOWS,
   Canvas,
   Box,
-  resetCanvas
+  resetCanvas,
+  getFSItem,
+  Directory
 } from "../state";
 import { produce } from "immer";
 import { Action, ActionType } from "../actions";
@@ -171,7 +173,19 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.DIR_LOADED: {
       return produce(state, newState => {
-        newState.projectDirectory = action.payload.item;
+        if (action.payload.isRoot) {
+          newState.projectDirectory = action.payload.item;
+        } else {
+          const target = getFSItem(
+            action.payload.item.absolutePath,
+            newState.projectDirectory
+          );
+          console.log(action.payload.item.absolutePath, target);
+          console.log(state.projectDirectory);
+          if (target) {
+            (target as Directory).children = action.payload.item.children;
+          }
+        }
       });
     }
     case ActionType.CANVAS_RESIZED: {

@@ -46,7 +46,7 @@ export class Renderer {
 
   constructor(
     readonly protocol: string,
-    readonly targetUri: string,
+    public targetUri: string,
     private _domFactory: DOMFactory = document
   ) {
     this._importedStyles = {};
