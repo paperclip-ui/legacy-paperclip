@@ -7,8 +7,9 @@
 
   .node {
     .leaf {
-      padding: 4px 8px;
-      padding-left: calc(var(--depth) * 10px);
+      font-size: 12px;
+      padding: 5px 8px;
+      padding-left: calc(10px + var(--depth) * 10px);
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -62,14 +63,14 @@
 </div>
 
 <div export component as="Preview">
-  <Node leaf="A" depth="1" open>
-    <Node leaf="a" depth="2" alt open>
-      <Node leaf="a" depth="3" isFile />
-      <Node leaf="a" depth="3" selected isFile />
-      <Node leaf="a" depth="3" isFile />
+  <Node leaf="A" depth="0" open>
+    <Node leaf="a" depth="1" alt open>
+      <Node leaf="a" depth="2" isFile />
+      <Node leaf="a" depth="2" selected isFile />
+      <Node leaf="a" depth="2" isFile />
     </Node>
-    <Node leaf="a" depth="2" alt open>
-      <Node leaf="a" depth="3" hovering>
+    <Node leaf="a" depth="1" alt open>
+      <Node leaf="a" depth="2" hovering>
       
       </Node>
     </Node>

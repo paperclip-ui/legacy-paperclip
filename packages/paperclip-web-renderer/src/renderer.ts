@@ -46,7 +46,7 @@ export class Renderer {
 
   constructor(
     readonly protocol: string,
-    public targetUri: string,
+    private _targetUri: string,
     private _domFactory: DOMFactory = document
   ) {
     this._importedStyles = {};
@@ -122,6 +122,17 @@ export class Renderer {
     this.loaded().then(() => {
       iframe.contentWindow.document.body.appendChild(mount);
     });
+  }
+
+  get targetUri(): string {
+    return this._targetUri;
+  }
+
+  reset(targetUri: string): void {
+    removeAllChildren(this._stage);
+    removeAllChildren(this._mainStyleContainer);
+    removeAllChildren(this._importedStylesContainer);
+    this._targetUri = targetUri;
   }
 
   async loaded() {

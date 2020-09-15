@@ -27,6 +27,7 @@ export enum FSItemKind {
 export type File = {
   kind: FSItemKind.FILE;
   absolutePath: string;
+  url: string;
   name: string;
 };
 
@@ -34,6 +35,7 @@ export type Directory = {
   name: string;
   kind: FSItemKind.DIRECTORY;
   absolutePath: string;
+  url: string;
   children: Array<FSItem>;
 };
 

@@ -1,15 +1,17 @@
-<import src="styles/colors.pc" as="colors">
+
 <import src="components/Editor/Pane/index.pc" as="Pane">
 <import src="./files/index.pc" as="Files">
 
 <style>
   .container {
     width: 200px;
+    flex-shrink: 0;
     color: white;
     background: var(--background-1);
     height: 100%;
     box-sizing: border-box;
     border-right: 1px solid var(--background-3);
+    overflow: scroll;
   }
 
   .header {

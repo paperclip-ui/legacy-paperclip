@@ -5,3 +5,5 @@ export const stripFileProtocol = (filePath: string) =>
 
 export const paperclipSourceGlobPattern = (dir: string) =>
   dir === "." ? "**/*.pc" : dir + "/**/*.pc";
+
+export const isPaperclipFile = (filePath: string) => /\.pc$/.test(filePath);

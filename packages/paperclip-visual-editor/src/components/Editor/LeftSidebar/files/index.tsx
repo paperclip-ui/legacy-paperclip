@@ -7,10 +7,11 @@ import { fsItemClicked } from "../../../../actions";
 
 export const FilesPane = () => {
   const { state, dispatch } = useAppStore();
-  const onLeafClick = ({ absolutePath, kind }: FSItem) => {
+  const onLeafClick = ({ absolutePath, url, kind }: FSItem) => {
     dispatch(
       fsItemClicked({
         absolutePath,
+        url,
         kind
       })
     );

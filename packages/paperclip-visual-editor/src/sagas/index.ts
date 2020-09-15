@@ -1,6 +1,7 @@
 import * as Mousetrap from "mousetrap";
-import * as Url from "url";
 import SockJSClient from "sockjs-client";
+import { isPaperclipFile } from "paperclip-utils";
+import * as Url from "url";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
@@ -19,7 +20,6 @@ import {
 import { Renderer } from "paperclip-web-renderer";
 import { AppState } from "../state";
 import { getVirtTarget } from "paperclip-utils";
-import { render } from "react-dom";
 
 declare const vscode;
 declare const TARGET_URI;
@@ -182,8 +182,11 @@ function* handleRenderer() {
   });
 
   yield takeEvery([ActionType.FS_ITEM_CLICKED], (action: Action) => {
-    if (action.type === ActionType.FS_ITEM_CLICKED) {
-      renderer.targetUri = Url.pathToFileURL(action.payload.absolutePath).href;
+    if (
+      action.type === ActionType.FS_ITEM_CLICKED &&
+      isPaperclipFile(action.payload.url)
+    ) {
+      renderer.reset(action.payload.url);
     }
     if (_client) {
       _client.send(action);

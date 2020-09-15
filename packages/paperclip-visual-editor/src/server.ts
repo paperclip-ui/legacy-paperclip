@@ -9,6 +9,7 @@ import * as URL from "url";
 import { basename } from "path";
 import { ActionType, FSItemClicked } from "./actions";
 import { FSItemKind } from "./state";
+import { url } from "inspector";
 
 export type ServerOptions = {
   engine: Engine;
@@ -120,6 +121,7 @@ export const startServer = async ({
             isRoot,
             item: {
               absolutePath: dirPath,
+              url: URL.pathToFileURL(dirPath),
               kind: "directory",
               name: path.basename(dirPath),
               children: basenames.map(basename => {
@@ -127,6 +129,7 @@ export const startServer = async ({
                 const isDir = fs.lstatSync(absolutePath).isDirectory();
                 return {
                   absolutePath,
+                  url: URL.pathToFileURL(absolutePath),
                   name: basename,
                   kind: isDir ? "directory" : "file",
                   children: isDir ? [] : undefined

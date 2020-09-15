@@ -75,6 +75,7 @@ export type FSItemClicked = BaseAction<
   ActionType.FS_ITEM_CLICKED,
   {
     absolutePath: string;
+    url: string;
     kind: FSItemKind;
   }
 >;
