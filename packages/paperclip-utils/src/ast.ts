@@ -39,6 +39,7 @@ export type Text = {
 
 export type Annotation = {
   properties: AnnotationProperty[];
+  location: SourceLocation;
 } & BaseNode<NodeKind.Annotation>;
 
 export enum AnnotationPropertyKind {
