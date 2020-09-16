@@ -27,7 +27,7 @@
   <default>
     <Styling.Preview />
     <div className="more-styles">
-      <MoreStyles.Preview />
+      <!-- <MoreStyles.Preview /> -->
     </div>
   </default>
 </div>

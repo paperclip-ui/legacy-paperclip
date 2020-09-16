@@ -2,6 +2,7 @@
 <import src="./RightSidebar/index.pc" as="RightSidebar">
 <import src="./Center/index.pc" as="Center">
 <import src="./LeftSidebar/index.pc" as="LeftSidebar">
+<import src="./RightSidebar/index.pc" as="RightSidebar">
 
 <style>
   .editor {
@@ -20,4 +21,5 @@
 <Container>
   <LeftSidebar.Preview />
   <Center.Preview />
+  <RightSidebar.Preview />
 </Container>
