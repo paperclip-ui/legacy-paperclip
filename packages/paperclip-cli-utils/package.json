@@ -1,8 +1,8 @@
 {
-  "name": "paperclip-cli",
+  "name": "paperclip-cli-utils",
   "version": "14.5.3",
   "description": "CLI util for Paperclip",
-  "main": "lib/cli.js",
+  "main": "lib/index.js",
   "bin": {
     "paperclip": "./bin/paperclip"
   },
@@ -26,7 +26,6 @@
     "inquirer": "^7.3.0",
     "paperclip": "^14.5.3",
     "paperclip-utils": "^14.5.3",
-    "paperclip-cli-utils": "^14.5.3",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
     "yargs": "^15.1.0"

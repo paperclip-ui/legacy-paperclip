@@ -13,7 +13,7 @@ import {
   stringifyCSSSheet
 } from "paperclip";
 import { glob } from "glob";
-import { getPrettyMessage } from "./pretty-message";
+import { getPrettyMessage } from "paperclip-cli-utils";
 import { ClassNameExport, stripFileProtocol } from "paperclip";
 
 export type BuildOptions = {

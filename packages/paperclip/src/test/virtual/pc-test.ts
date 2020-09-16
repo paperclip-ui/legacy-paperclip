@@ -1149,4 +1149,24 @@ describe(__filename + "#", () => {
       "<style></style><div data-pc-8ae793af>bb</div>"
     );
   });
+
+  xit(`Can define nested style blocks`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div>
+          <style>
+            :self(.test) {
+              color: red;
+            }
+          </style>
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style></style><div data-pc-80f4925f></div>`
+    );
+  });
 });

@@ -17,7 +17,7 @@
     "@types/node": "^13.7.7",
     "loader-utils": "^1.2.3",
     "paperclip": "^14.5.3",
-    "paperclip-cli": "^14.5.3",
+    "paperclip-cli-utils": "^14.5.3",
     "resolve": "^1.15.1",
     "typescript": "^3.8.3",
     "webpack-virtual-modules": "0.2.1"
