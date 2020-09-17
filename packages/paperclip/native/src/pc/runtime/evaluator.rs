@@ -285,36 +285,54 @@ fn evaluate_document_sheet<'a>(
 
   let mut css_exports: css_export::Exports = css_export::Exports::new();
 
-  let children_option = ast::get_children(&entry_expr);
+  evaluate_node_sheet(uri, entry_expr, &mut sheet, &mut css_exports, context)?;
+  
+
+  Ok((sheet, css_exports))
+}
+
+
+fn evaluate_node_sheet<'a>(
+  uri: &String,
+  current: &ast::Node,
+  sheet: &'a mut css_virt::CSSSheet,
+  css_exports: &'a mut css_export::Exports,
+  context: &'a mut Context
+) -> Result<(), RuntimeError> {
+
   let scope = get_document_style_scope(uri);
-  if let Some(children) = children_option {
-    // style elements are only allowed in root, so no need to traverse
-    for child in children {
-      if let ast::Node::StyleElement(style_element) = &child {
-        let info = evaluate_css(
-          &style_element.sheet,
-          uri,
-          &scope,
-          context.import_scopes.clone(),
-          context.vfs,
-          context.graph,
-          &context.import_graph,
-          Some(&css_exports),
-        )?;
-        match info {
-          CSSEvalInfo {
-            sheet: child_sheet,
-            exports: child_exports,
-          } => {
-            sheet.extend(child_sheet);
-            css_exports.extend(&child_exports);
-          }
-        }
+
+  if let ast::Node::StyleElement(style_element) = &current {
+    let info = evaluate_css(
+      &style_element.sheet,
+      uri,
+      &scope,
+      context.import_scopes.clone(),
+      context.vfs,
+      context.graph,
+      &context.import_graph,
+      Some(&css_exports),
+    )?;
+    match info {
+      CSSEvalInfo {
+        sheet: child_sheet,
+        exports: child_exports,
+      } => {
+        sheet.extend(child_sheet);
+        css_exports.extend(&child_exports);
       }
     }
   }
 
-  Ok((sheet, css_exports))
+  let children_option = ast::get_children(&current);
+  if let Some(children) = children_option {
+    // style elements are only allowed in root, so no need to traverse
+    for child in children {
+      evaluate_node_sheet(uri, child, sheet, css_exports, context)?;
+    }
+  }
+
+  Ok(())
 }
 
 pub fn evaluate_instance_node<'a>(
@@ -385,13 +403,13 @@ pub fn evaluate_node<'a>(
   match &node_expr {
     ast::Node::Element(el) => evaluate_element(&el, is_root, depth, instance_source, context),
     ast::Node::StyleElement(el) => {
-      if depth != 1 {
-        return Err(RuntimeError::new(
-          "Style blocks needs to be defined at the root.".to_string(),
-          context.uri,
-          &el.location,
-        ));
-      }
+      // if depth != 1 {
+      //   return Err(RuntimeError::new(
+      //     "Style blocks needs to be defined at the root.".to_string(),
+      //     context.uri,
+      //     &el.location,
+      //   ));
+      // }
       return evaluate_style_element(&el, context);
     }
     ast::Node::Text(text) => Ok(Some(virt::Node::Text(virt::Text {
@@ -975,25 +993,26 @@ fn evaluate_native_element<'a>(
     }
   }
 
-  // if is_root {
-  //   if let js_virt::JsValue::JsObject(object) = &context.data {
-  //     let class_key = "class".to_string();
-  //     let class_option = object.values.get(&class_key);
-  //     if let Some(class) = class_option {
-  //       let existing_option = attributes.get(&class_key);
-  //       if let Some(existing) = existing_option {
-  //         if existing != &None {
-  //           let combined_class = format!("{} {}", existing.clone().unwrap(), class);
-  //           attributes.insert(class_key, Some(combined_class));
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
   let name = format!("data-pc-{}", context.scope.to_string()).to_string();
 
   attributes.insert(name.to_string(), None);
+
+
+  let contains_style = element.children.iter().any(|child| match child {
+    ast::Node::StyleElement(_) => {
+      true
+    }
+    _ => {
+      false
+    }
+  });
+
+  if contains_style {
+
+    // TODO - this needs to be scoped
+    let scope_name = format!("data-pc2-{}", context.scope.to_string()).to_string();
+    attributes.insert(scope_name.to_string(), None);
+  }
 
   // allow for tag name to be dynamically changed.
   if let Some(tag_name_attr_value_option) = attributes.get("tagName") {

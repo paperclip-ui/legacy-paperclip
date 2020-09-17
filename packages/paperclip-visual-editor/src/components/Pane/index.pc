@@ -40,6 +40,9 @@
   </default>
 </div>
 
+<div export component as="Content" className="content">
+</div>
+
 <div className="$theme.background-1 $theme.font-default">
   <Preview />
 </div>
