@@ -12,7 +12,8 @@ use regex::Regex;
 use std::collections::{BTreeMap, HashMap};
 
 pub struct Context<'a> {
-  scope: &'a str,
+  document_scope: &'a str,
+  element_scope: Option<String>,
   content: Option<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>)>,
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
@@ -32,7 +33,8 @@ pub struct EvalInfo {
 pub fn evaluate<'a>(
   expr: &ast::Sheet,
   uri: &'a String,
-  scope: &'a str,
+  document_scope: &'a str,
+  element_scope: Option<String>,
   import_scopes: BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
@@ -40,7 +42,8 @@ pub fn evaluate<'a>(
   existing_exports: Option<&Exports>,
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
-    scope,
+    document_scope,
+    element_scope,
     uri,
     vfs,
     graph,
@@ -242,7 +245,7 @@ fn evaluate_keyframes_rule(
   );
 
   Ok(virt::Rule::Keyframes(virt::KeyframesRule {
-    name: format!("_{}_{}", context.scope, rule.name.to_string()),
+    name: format!("_{}_{}", context.document_scope, rule.name.to_string()),
     rules,
   }))
 }
@@ -349,7 +352,8 @@ fn get_imports<'a>(context: &'a Context) -> &'a BTreeMap<String, pc_export::Expo
 
 fn create_child_context<'a>(context: &mut Context<'a>) -> Context<'a> {
   Context {
-    scope: context.scope,
+    document_scope: context.document_scope,
+    element_scope: context.element_scope.clone(),
     uri: context.uri,
     content: context.content.clone(),
     vfs: context.vfs,
@@ -581,10 +585,14 @@ fn evaluate_style_rule2(
   expr: &ast::StyleRule,
 
   parent_selector_text: &String,
+  
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   let mut selector_text =
-    stringify_element_selector(&expr.selector, true, parent_selector_text, true, context);
+    stringify_element_selector(&expr.selector, true, parent_selector_text, true, parent_selector_text == "" && match expr.selector {
+      ast::Selector::This(_) => false,
+      _ => true
+    }, context);
 
   lazy_static! {
     static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
@@ -629,6 +637,10 @@ fn evaluate_style_rule2(
         !is_global_selector,
         parent_selector_text,
         true,
+        match selector {
+          ast::Selector::This(_) => false,
+          _ => true
+        },
         context,
       );
 
@@ -667,21 +679,6 @@ fn evaluate_style_rule2(
   Ok(())
 }
 
-fn stringify_optional_selector(
-  selector: &Option<Box<ast::Selector>>,
-
-  include_prefix: bool,
-  parent_selector_text: &String,
-  alt: &String,
-  context: &mut Context,
-) -> String {
-  if let Some(target) = &selector {
-    stringify_element_selector(target, true, parent_selector_text, true, context)
-  } else {
-    alt.to_string()
-  }
-}
-
 fn stringify_nestable_selector(
   selector: &ast::Selector,
 
@@ -689,7 +686,7 @@ fn stringify_nestable_selector(
   parent_selector_text: &String,
   context: &mut Context,
 ) -> String {
-  stringify_element_selector(selector, include_scope, parent_selector_text, true, context)
+  stringify_element_selector(selector, include_scope, parent_selector_text, true,  false, context)
 }
 
 fn stringify_element_selector(
@@ -697,10 +694,11 @@ fn stringify_element_selector(
   include_scope: bool,
   parent_selector_text: &String,
   include_prefix: bool,
+  include_element_scope: bool,
   context: &mut Context,
 ) -> String {
   let scope_selector = if include_scope {
-    format!("[data-pc-{}]", context.scope)
+    format!("[data-pc-{}]", context.document_scope)
   } else {
     "".to_string()
   };
@@ -711,7 +709,7 @@ fn stringify_element_selector(
     "".to_string()
   };
 
-  let scoped_selector_text = match selector {
+  let mut scoped_selector_text = match selector {
     ast::Selector::AllSelector => format!(
       "{}",
       if scope_selector == "" {
@@ -728,7 +726,7 @@ fn stringify_element_selector(
       if include_scope {
         format!(
           "{}[class]._{}_{}",
-          prefix, context.scope, selector.class_name
+          prefix, context.document_scope, selector.class_name
         )
       } else {
         format!("{}[class].{}", prefix, selector.class_name)
@@ -774,6 +772,7 @@ fn stringify_element_selector(
         include_scope,
         parent_selector_text,
         false,
+        false,
         context
       )
     ),
@@ -784,9 +783,34 @@ fn stringify_element_selector(
         false,
         parent_selector_text,
         include_prefix,
+        false,
         context
       )
     ),
+    ast::Selector::This(selector) => {
+      let self_selector = if let Some(scope) = &context.element_scope {
+        format!("[data-pc-{}]", scope)
+      } else {
+        scope_selector
+      };
+
+      if let Some(selector) = &selector.selector {
+        return format!(
+          "{}{}",
+          self_selector,
+          stringify_element_selector(
+            &selector,
+            false,
+            parent_selector_text,
+            include_prefix,
+            false,
+            context
+          )
+        );
+      } else {
+        return format!("{}", self_selector);
+      }
+    }
 
     // need to trim in case parent is None
     ast::Selector::Descendent(selector) => format!(
@@ -796,12 +820,14 @@ fn stringify_element_selector(
         include_scope,
         parent_selector_text,
         include_prefix,
+        false,
         context
       ),
       stringify_element_selector(
         &selector.descendent,
         include_scope,
         &"".to_string(),
+        false,
         false,
         context
       )
@@ -815,12 +841,14 @@ fn stringify_element_selector(
         include_scope,
         parent_selector_text,
         include_prefix,
+        false,
         context
       ),
       stringify_element_selector(
         &selector.child,
         include_scope,
         parent_selector_text,
+        false,
         false,
         context
       )
@@ -832,12 +860,14 @@ fn stringify_element_selector(
         include_scope,
         parent_selector_text,
         include_prefix,
+        false,
         context
       ),
       stringify_element_selector(
         &selector.next_sibling_selector,
         include_scope,
         parent_selector_text,
+        false,
         false,
         context
       )
@@ -849,12 +879,14 @@ fn stringify_element_selector(
         include_scope,
         parent_selector_text,
         include_prefix,
+        false,
         context
       ),
       stringify_element_selector(
         &selector.sibling_selector,
         include_scope,
         parent_selector_text,
+        false,
         false,
         context
       )
@@ -876,9 +908,9 @@ fn stringify_element_selector(
         .map(|child| {
           if let &ast::Selector::Class(_class_name) = &child {
             contains_classname = true;
-            stringify_element_selector(child, include_scope, parent_selector_text, false, context)
+            stringify_element_selector(child, include_scope, parent_selector_text, false, false, context)
           } else {
-            stringify_element_selector(child, false, parent_selector_text, false, context)
+            stringify_element_selector(child, false, parent_selector_text, false, false, context)
           }
         })
         .collect();
@@ -902,6 +934,7 @@ fn stringify_element_selector(
             false,
             parent_selector_text,
             false,
+            false,
             context
           )
         )
@@ -910,6 +943,12 @@ fn stringify_element_selector(
       }
     }
   };
+
+  if include_element_scope {
+    if let Some(element_scope) = &context.element_scope {
+      scoped_selector_text = format!("[data-pc-{}] {}", element_scope, scoped_selector_text);
+    }
+  }
 
   scoped_selector_text.to_string()
 }
@@ -940,7 +979,7 @@ fn is_reserved_keyframe_word<'a>(word: &'a str) -> bool {
 
 fn format_scoped_reference(value: &str, context: &Context) -> String {
   if !value.contains(".") {
-    format!("_{}_{}", context.scope, value)
+    format!("_{}_{}", context.document_scope, value)
   } else {
     let parts: Vec<&str> = value.split(".").collect();
     let scope_option = context

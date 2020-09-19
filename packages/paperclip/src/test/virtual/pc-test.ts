@@ -1148,13 +1148,20 @@ describe(__filename + "#", () => {
     );
   });
 
-  xit(`Can define nested style blocks`, async () => {
+  it(`Can define nested style blocks`, async () => {
     const graph = {
       "/entry.pc": `
         <div>
           <style>
+            :self {
+              color: blue;
+            }
             :self(.test) {
               color: red;
+            }
+            
+            #test2 {
+              color: blue;
             }
           </style>
         </div>
@@ -1164,14 +1171,16 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style></style><div data-pc-80f4925f>ss</div>`
+      `<style>[data-pc-75d05f16] { color:blue; } [data-pc-75d05f16][class].test { color:red; } [data-pc-75d05f16] #test2[data-pc-80f4925f] { color:blue; }</style><div data-pc-75d05f16 data-pc-80f4925f></div>`
     );
   });
 
   xit(`Can define nested slot style blocks`, async () => {
     const graph = {
       "/entry.pc": `
-        <div test={<span>
+        <div component as="Test">
+        </div>
+        <Test test={<span>
           <style> 
             :self {
               color: red;
@@ -1179,7 +1188,7 @@ describe(__filename + "#", () => {
           </style>
         </span>}>
           okay
-        </div>
+        </Test>
       `
     };
 

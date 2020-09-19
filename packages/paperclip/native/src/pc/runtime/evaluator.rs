@@ -2,6 +2,7 @@ use super::super::ast;
 use super::cache::Cache;
 use super::export::{ComponentExport, Exports, Property};
 use super::virt;
+use crc::crc32;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
@@ -285,28 +286,37 @@ fn evaluate_document_sheet<'a>(
 
   let mut css_exports: css_export::Exports = css_export::Exports::new();
 
-  evaluate_node_sheet(uri, entry_expr, &mut sheet, &mut css_exports, context)?;
-  
+  evaluate_node_sheet(uri, None, entry_expr, &mut sheet, &mut css_exports, context)?;
 
   Ok((sheet, css_exports))
 }
 
-
 fn evaluate_node_sheet<'a>(
   uri: &String,
+  parent: Option<&ast::Node>,
   current: &ast::Node,
   sheet: &'a mut css_virt::CSSSheet,
   css_exports: &'a mut css_export::Exports,
-  context: &'a mut Context
+  context: &'a mut Context,
 ) -> Result<(), RuntimeError> {
-
   let scope = get_document_style_scope(uri);
+
+  let element_scope = if let Some(parent) = parent {
+    if let ast::Node::Element(element) = parent {
+      Some(get_element_scope(element, context))
+    } else {
+      None
+    }
+  } else {
+    None
+  };
 
   if let ast::Node::StyleElement(style_element) = &current {
     let info = evaluate_css(
       &style_element.sheet,
       uri,
       &scope,
+      element_scope,
       context.import_scopes.clone(),
       context.vfs,
       context.graph,
@@ -328,7 +338,7 @@ fn evaluate_node_sheet<'a>(
   if let Some(children) = children_option {
     // style elements are only allowed in root, so no need to traverse
     for child in children {
-      evaluate_node_sheet(uri, child, sheet, css_exports, context)?;
+      evaluate_node_sheet(uri, Some(&current), child, sheet, css_exports, context)?;
     }
   }
 
@@ -425,6 +435,13 @@ pub fn evaluate_node<'a>(
     ast::Node::Comment(_el) => Ok(None),
   }
 }
+
+
+pub fn get_element_scope<'a>(element: &ast::Element, context: &Context) -> String {
+  let mut buff = format!("{}{}{}", context.scope, element.location.start, element.location.end);
+  format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
+}
+
 
 fn evaluate_element<'a>(
   element: &ast::Element,
@@ -768,8 +785,11 @@ fn create_component_instance_data<'a>(
     context.uri.clone(),
     instance_element.location.clone(),
   ));
+
+  let (ret_children, _) = evaluate_children(&instance_element.children, depth, context)?;
+
   let children: Vec<js_virt::JsValue> =
-    evaluate_children(&instance_element.children, depth, context)?
+  ret_children
       .into_iter()
       .map(|child| js_virt::JsValue::JsNode(child))
       .collect();
@@ -997,22 +1017,12 @@ fn evaluate_native_element<'a>(
 
   attributes.insert(name.to_string(), None);
 
+  // A bit dirty, but we need to quickly scan for style elements so that we can apply
+  // let contains_style = element.children.iter().any(|child| match child {
+  //   ast::Node::StyleElement(_) => true,
+  //   _ => false,
+  // });
 
-  let contains_style = element.children.iter().any(|child| match child {
-    ast::Node::StyleElement(_) => {
-      true
-    }
-    _ => {
-      false
-    }
-  });
-
-  if contains_style {
-
-    // TODO - this needs to be scoped
-    let scope_name = format!("data-pc2-{}", context.scope.to_string()).to_string();
-    attributes.insert(scope_name.to_string(), None);
-  }
 
   // allow for tag name to be dynamically changed.
   if let Some(tag_name_attr_value_option) = attributes.get("tagName") {
@@ -1022,7 +1032,15 @@ fn evaluate_native_element<'a>(
     attributes.remove("tagName");
   }
 
-  let children = evaluate_children(&element.children, depth, context)?;
+  let (children, contains_style) = evaluate_children(&element.children, depth, context)?;
+
+
+  if contains_style {
+    // TODO - this needs to be scoped
+    let element_scope = get_element_scope(element, context);
+    let scope_name = format!("data-pc-{}", element_scope).to_string();
+    attributes.insert(scope_name.to_string(), None);
+  }
 
   Ok(Some(virt::Node::Element(virt::Element {
     source: if let Some(source) = &instance_source {
@@ -1071,10 +1089,21 @@ fn evaluate_children<'a>(
   children_expr: &Vec<ast::Node>,
   depth: u32,
   context: &'a mut Context,
-) -> Result<Vec<virt::Node>, RuntimeError> {
+) -> Result<(Vec<virt::Node>, bool), RuntimeError> {
   let mut children: Vec<virt::Node> = vec![];
 
+  let mut contains_style = false;
+
   for child_expr in children_expr {
+    match child_expr {
+      ast::Node::StyleElement(_) => {
+        contains_style = true;
+      }
+      _ => {
+
+      }
+    }
+
     match evaluate_node(child_expr, false, depth + 1, None, context)? {
       Some(c) => match c {
         virt::Node::Fragment(mut fragment) => {
@@ -1090,7 +1119,7 @@ fn evaluate_children<'a>(
     }
   }
 
-  Ok(children)
+  Ok((children, contains_style))
 }
 
 fn evaluate_fragment<'a>(
@@ -1107,7 +1136,7 @@ fn evaluate_children_as_fragment<'a>(
   location: &Location,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-  let mut children = evaluate_children(&children, depth, context)?;
+  let (mut children, _) = evaluate_children(&children, depth, context)?;
   Ok(Some(virt::Node::Fragment(virt::Fragment {
     children,
     source: ExprSource {

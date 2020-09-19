@@ -488,6 +488,12 @@ fn parse_pseudo_element_selector<'a, 'b>(
         selector: Box::new(sel),
         location: Location::new(start, context.tokenizer.utf16_pos),
       })
+    } else if name == "self" {
+      let sel = parse_group_selector(context, false)?;
+      Selector::This(SelfSelector {
+        selector: Some(Box::new(sel)),
+        location: Location::new(start, context.tokenizer.utf16_pos),
+      })
     } else {
       let param = get_buffer(context.tokenizer, |tokenizer| {
         Ok(tokenizer.peek(1)? != Token::ParenClose)
@@ -504,11 +510,19 @@ fn parse_pseudo_element_selector<'a, 'b>(
     context.tokenizer.next_expect(Token::ParenClose)?;
     selector
   } else {
-    Selector::PseudoElement(PseudoElementSelector {
-      separator: ":".to_string().repeat(colon_count),
-      name,
-      location: Location::new(start, context.tokenizer.utf16_pos),
-    })
+    if name == "self" {
+      Selector::This(SelfSelector {
+        selector: None,
+        location: Location::new(start, context.tokenizer.utf16_pos),
+      }) 
+    } else {
+      Selector::PseudoElement(PseudoElementSelector {
+        separator: ":".to_string().repeat(colon_count),
+        name,
+        location: Location::new(start, context.tokenizer.utf16_pos),
+      })
+    }
+    
   };
 
   Ok(selector)

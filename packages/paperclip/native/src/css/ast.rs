@@ -314,6 +314,7 @@ pub enum Selector {
   PseudoParamElement(PseudoParamElementSelector),
   Not(NotSelector),
   Global(GlobalSelector),
+  This(SelfSelector),
   Child(ChildSelector),
   Adjacent(AdjacentSelector),
   Sibling(SiblingSelector),
@@ -353,6 +354,9 @@ impl Selector {
           return curr;
         }
         Selector::Global(selector) => {
+          return curr;
+        }
+        Selector::This(selector) => {
           return curr;
         }
         Selector::Adjacent(selector) => {
@@ -401,6 +405,7 @@ impl fmt::Display for Selector {
       Selector::Descendent(selector) => write!(f, "{}", selector.to_string()),
       Selector::Not(selector) => write!(f, "{}", selector.to_string()),
       Selector::Global(selector) => write!(f, "{}", selector.to_string()),
+      Selector::This(selector) => write!(f, "{}", selector.to_string()),
       Selector::Adjacent(selector) => write!(f, "{}", selector.to_string()),
       Selector::PseudoElement(selector) => write!(f, "{}", selector.to_string()),
       Selector::PseudoParamElement(selector) => write!(f, "{}", selector.to_string()),
@@ -501,6 +506,24 @@ impl fmt::Display for GlobalSelector {
     write!(f, ":global({})", self.selector.to_string())
   }
 }
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct SelfSelector {
+  pub selector: Option<Box<Selector>>,
+  pub location: Location,
+}
+
+impl fmt::Display for SelfSelector {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    if let Some(selector) = &self.selector {
+      write!(f, ":self({})", selector.to_string())
+    } else {
+      write!(f, ":self")
+    }
+  }
+}
+
+
 // a > b {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildSelector {
