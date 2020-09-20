@@ -1,5 +1,5 @@
-<import src="components/Theme/index.pc" as="theme">
-<import src="components/Select/index.pc" as="Select">
+<import src="components/Theme/index.pc" as="theme" />
+<import src="components/Select/index.pc" as="Select" />
 
 <style>
   .field {

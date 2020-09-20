@@ -1,4 +1,4 @@
 
-<import src="@nested/in/a/folder/src/component.pc" as="component">
+<import src="@nested/in/a/folder/src/component.pc" as="component" />
 
 <component />

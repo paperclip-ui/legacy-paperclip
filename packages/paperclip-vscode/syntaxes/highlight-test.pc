@@ -1,4 +1,4 @@
-<import as="something" src="./import-test.pc">
+<import as="something" src="./import-test.pc" />
 
 <style>
   /* comment */

@@ -1,4 +1,4 @@
-<import src="./styles/global.pc">
+<import src="./styles/global.pc"  />
 
 <style>
 

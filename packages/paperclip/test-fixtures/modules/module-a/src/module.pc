@@ -1,4 +1,4 @@
-<import src="component.pc" as="component">
+<import src="component.pc" as="component" />
 
 <export component as="default">
   something

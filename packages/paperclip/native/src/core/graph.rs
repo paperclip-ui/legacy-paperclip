@@ -9,7 +9,7 @@ use std::collections::{BTreeMap, HashSet};
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub enum GraphErrorInfo {
-  // <import />, <img />, <logic />
+  // <import  />, <img />, <logic />
   IncludeNotFound(IncludeNodeFoundError),
 
   Syntax(ParseError),

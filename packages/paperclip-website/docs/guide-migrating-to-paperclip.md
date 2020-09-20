@@ -43,7 +43,7 @@ From there you can start using your styles:
 
 ```html live
 // file: demo.pc
-<import src="./migrated-css.pc" as="migrated-css">
+<import src="./migrated-css.pc" as="migrated-css" />
 
 <div className="$migrated-css.container">
   <div className="$migrated-css.content"> 
@@ -95,7 +95,7 @@ The translation to Paperclip would be this:
 
 ```html live
 // file: button.pc
-<import src="./theme.pc" as="theme">
+<import src="./theme.pc" as="theme" />
 <style>
   .Button {
     font-family: var(--font-1);

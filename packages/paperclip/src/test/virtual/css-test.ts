@@ -91,7 +91,7 @@ describe(__filename + "#", () => {
 
     it("can use an imported mixin", async () => {
       const graph = {
-        "/entry.pc": `<import as="mod" src="./module.pc"><style>
+        "/entry.pc": `<import as="mod" src="./module.pc"  /><style>
           div {
             @include mod.a;
           }
@@ -112,7 +112,7 @@ describe(__filename + "#", () => {
     });
     it("Displays an error if an imported mixin is not found", async () => {
       const graph = {
-        "/entry.pc": `<import as="mod" src="./module.pc"><style>
+        "/entry.pc": `<import as="mod" src="./module.pc"  /><style>
           div {
             @include mod.a;
           }
@@ -130,7 +130,7 @@ describe(__filename + "#", () => {
       expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
-        location: { start: 84, end: 85 },
+        location: { start: 87, end: 88 },
         message: "Reference not found."
       });
     });
@@ -183,7 +183,7 @@ describe(__filename + "#", () => {
 
     it("Displays an error if a mixin is used but not exported", async () => {
       const graph = {
-        "/entry.pc": `<import as="mod" src="./module.pc"><style>
+        "/entry.pc": `<import as="mod" src="./module.pc"  /><style>
           div {
             @include mod.abcde;
           }
@@ -204,7 +204,7 @@ describe(__filename + "#", () => {
       expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
-        location: { start: 84, end: 89 },
+        location: { start: 87, end: 92 },
         message: "This mixin is private."
       });
     });

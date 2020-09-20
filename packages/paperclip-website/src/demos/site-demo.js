@@ -1,8 +1,8 @@
 const SOURCE = `// file: Button.pc
-<import src="./Preview.pc" as="Preview">
-<import src="./Colors.pc">
-<import src="./Typography.pc" as="typography">
-<import src="./Spacing.pc" as="spacing">
+<import src="./Preview.pc" as="Preview" />
+<import src="./Colors.pc" />
+<import src="./Typography.pc" as="typography" />
+<import src="./Spacing.pc" as="spacing" />
 
 <style>
   .button {

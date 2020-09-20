@@ -2,7 +2,7 @@ import dedent from "dedent";
 
 export default {
   "button.pc": dedent(`
-    <import src="./button-styles.pc" as="styles">
+    <import src="./button-styles.pc" as="styles" />
       
     <!-- This is exported to code -->  
     <div export component as="Button"
@@ -33,8 +33,8 @@ export default {
   `),
   "button-styles.pc": dedent(`
     <!-- Styles would typically go in the same file -->
-    <import src="./colors.pc">
-    <import src="./typography.pc" as="typography">
+    <import src="./colors.pc" />
+    <import src="./typography.pc" as="typography" />
     <style>
       @export {
         .Button {
@@ -73,7 +73,7 @@ export default {
   `),
   "typography.pc": dedent(`
       <!-- Typography styles -->
-      <import src="./colors.pc">
+      <import src="./colors.pc" />
 
       <style>
         @export {

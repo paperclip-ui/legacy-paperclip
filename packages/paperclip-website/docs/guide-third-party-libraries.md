@@ -50,7 +50,7 @@ This must be converted to Paperclip like so:
 ☝ Here's how you can use these styles in another Paperclip file:
 
 ```html
-<import src="modules/tailwind.pc" as="tw">
+<import src="modules/tailwind.pc" as="tw" />
 
 <div className="$tw.text-color-black-100 $tw.my-1">
   Something
@@ -97,7 +97,7 @@ Let's use a real example now. Here's a custom theme for the [react select](https
 ```html live
 // file: Select.pc
 
-<import src="./tokens.pc">
+<import src="./tokens.pc" />
 
 <!-- style overrides -->
 <style>

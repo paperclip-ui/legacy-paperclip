@@ -25,7 +25,7 @@ You may be dealing with CSS specificity issues. Suppose that you have an input:
 And then you have another component that's using TextInput:
 
 ```html
-<import as="TextInput" src="./text-input.pc">
+<import as="TextInput" src="./text-input.pc" />
 
 <style>
   .TextColorOverride {
@@ -75,7 +75,7 @@ And _then_ you can apply style overrides:
 
 
 ```html
-<import as="TextInput" src="./text-input.pc">
+<import as="TextInput" src="./text-input.pc" />
 
 <style>
   .TextColorOverride {

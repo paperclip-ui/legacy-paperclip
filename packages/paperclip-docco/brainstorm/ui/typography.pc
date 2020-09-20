@@ -1,4 +1,4 @@
-<import src="./colors.pc">
+<import src="./colors.pc" />
 <style>
 
   :global(body) {

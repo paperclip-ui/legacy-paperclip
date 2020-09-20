@@ -1,8 +1,8 @@
-<import src="./colors.pc">
-<import src="./typography.pc" as="typography">
-<import src="./layout.pc" as="layout">
-<import src="./button.pc" as="button">
-<import src="./icons/icons.pc" as="icons">
+<import src="./colors.pc" />
+<import src="./typography.pc" as="typography" />
+<import src="./layout.pc" as="layout" />
+<import src="./button.pc" as="button" />
+<import src="./icons/icons.pc" as="icons" />
 
 <!-- You should be able to <i>see</i> what you're building in
                     realtime, and that's what Paperclip provides - tooling to

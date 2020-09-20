@@ -8,14 +8,14 @@ TODO:
 - Casing
 -->
 
-<import src="components/Theme/index.pc" as="theme">
-<import src="components/Pane/index.pc" as="Pane">
-<import src="components/Field/index.pc" as="Field">
-<import src="components/Select/index.pc" as="Select">
-<import src="components/Toggle/index.pc" as="Toggle">
-<import src="components/TextInput/index.pc" as="TextInput">
-<import src="components/Grid/index.pc" as="Grid">
-<import src="components/icons/index.pc" as="icons">
+<import src="components/Theme/index.pc" as="theme" />
+<import src="components/Pane/index.pc" as="Pane" />
+<import src="components/Field/index.pc" as="Field" />
+<import src="components/Select/index.pc" as="Select" />
+<import src="components/Toggle/index.pc" as="Toggle" />
+<import src="components/TextInput/index.pc" as="TextInput" />
+<import src="components/Grid/index.pc" as="Grid" />
+<import src="components/icons/index.pc" as="icons" />
 
 <style>
   .icon {
