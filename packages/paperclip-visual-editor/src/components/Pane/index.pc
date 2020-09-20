@@ -1,9 +1,15 @@
 <import src="components/Theme/index.pc" as="theme" />
-<style>
-  .pane {
-    .header {
+
+<div export component as="default" 
+  className="pane"
+  className:noMore="pane--no-more">
+  <div>  
+    <style>
       padding: 10px;
-      .inner {
+    </style>
+    <div>
+      <style>
+
         /* font-weight: 600; */
         /* letter-spacing: 0.05em; */
         display: flex;
@@ -11,25 +17,12 @@
         padding-bottom: 10px;
         border-bottom: 1px solid rgb(65, 65, 65);
         /* height: 21px; */
-      }
-    }
+      </style>
 
-    .content {
-      padding-top: 10px;
-    }
-    
-  }
-</style>
-
-<div export component as="default" 
-  className="pane"
-  className:noMore="pane--no-more">
-  <div className="header">  
-    <div className="inner">
       {title} {controls}
     </div>
   </div>
-  <div className="content">
+  <div>
     {children}
   </div>
 </div>
@@ -40,7 +33,11 @@
   </default>
 </div>
 
-<div export component as="Content" className="content">
+<div export component as="Content">
+  <style>
+    padding: 10px;
+  </style>
+  {children}
 </div>
 
 <div className="$theme.background-1 $theme.font-default">

@@ -17,6 +17,7 @@ TODO:
 <import src="components/Grid/index.pc" as="Grid" />
 <import src="components/icons/index.pc" as="icons" />
 
+
 <style>
   .icon {
     --size: 1em;
@@ -45,45 +46,45 @@ TODO:
 </style>
 
 <div export component as="Preview" className="$theme.font-default">
-<Pane title="Typography" controls={<fragment><icons.Icon dots /></fragment>}>
-  <Grid.Container columns="1fr 1fr">
+  <Pane title="Typography" controls={<fragment><icons.Icon dots /></fragment>}>
+    <Pane.Content>
+      <Grid.Container columns="1fr 1fr">
 
-    <!-- font family -->
-    <Field noLabel>
-      <Select.Preview placeholder="Open Sans" />
-    </Field>
+        <!-- font family -->
+        <Field noLabel>
+          <Select.Preview placeholder="Open Sans" />
+        </Field>
 
-    <!-- font weight -->
-    <Field noLabel>
-      <Select.Preview placeholder="400" />
-    </Field>
+        <!-- font weight -->
+        <Field noLabel>
+          <Select.Preview placeholder="400" />
+        </Field>
 
-    <!-- text align -->
-    <Field noLabel>
-      <Toggle.ButtonGroup>
-        <Toggle.Button>
-          <i className="icon text-left" />
-        </Toggle.Button>
-        <Toggle.Button>
-          <i className="icon text-center" />
-        </Toggle.Button>
-        <Toggle.Button>
-          <i className="icon text-right" />
-        </Toggle.Button>
-      </Toggle.ButtonGroup>
-    </Field>
+        <!-- text align -->
+        <Field noLabel>
+          <Toggle.ButtonGroup>
+            <Toggle.Button>
+              <i className="icon text-left" />
+            </Toggle.Button>
+            <Toggle.Button>
+              <i className="icon text-center" />
+            </Toggle.Button>
+            <Toggle.Button>
+              <i className="icon text-right" />
+            </Toggle.Button>
+          </Toggle.ButtonGroup>
+        </Field>
 
-    <!-- line height -->
-    <Field label={<i className="icon line-height" />} inline>
-      <TextInput />
-    </Field>
-    <Field label={<i className="icon letter-spacing" />}>
-      <TextInput />
-    </Field>
-
-
-  </Grid.Container>
-</Pane>
+        <!-- line height -->
+        <Field label={<i className="icon line-height" />} inline>
+          <TextInput placeholder="0px" />
+        </Field>
+        <Field label={<i className="icon letter-spacing" />}>
+          <TextInput placeholder="0px" />
+        </Field>
+      </Grid.Container>
+    </Pane.Content>
+  </Pane>
 </div>
 
 <Preview />

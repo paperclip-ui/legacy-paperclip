@@ -1,4 +1,5 @@
 <import src="components/Theme/index.pc" as="theme" />
+<import src="components/Select/index.pc" as="Select" />
 
 <div component as="Pill" className="pill">  
   PILL

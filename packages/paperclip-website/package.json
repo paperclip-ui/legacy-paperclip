@@ -1,6 +1,6 @@
 {
   "name": "paperclip-website",
-  "version": "15.0.0",
+  "version": "15.0.1",
   "private": true,
   "scripts": {
     "start": "docusaurus start",
