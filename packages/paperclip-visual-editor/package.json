@@ -1,6 +1,6 @@
 {
   "name": "paperclip-visual-editor",
-  "version": "14.6.3",
+  "version": "14.6.4",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -43,7 +43,7 @@
     "html-webpack-plugin": "^4.3.0",
     "lru-cache": "^6.0.0",
     "paperclip-cli": "^14.6.3",
-    "paperclip-compiler-react": "^14.6.3",
+    "paperclip-compiler-react": "^14.6.4",
     "paperclip-loader": "^14.6.3",
     "style-loader": "^1.2.1",
     "ts-loader": "^8.0.2",

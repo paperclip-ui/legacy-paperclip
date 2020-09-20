@@ -1,6 +1,6 @@
 
 
-<div export component as="Test" className:ascending="a" className:variant="variant">
+<div export component as="Test" className:variant="variant">
 
   <style>
     color: rgb(24, 133, 33);
