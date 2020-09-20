@@ -59,9 +59,26 @@ pub fn evaluate<'a>(
     context.exports.extend(existing_exports);
   }
 
+  if expr.declarations.len() > 0 {
+    if let Some(scope) = &context.element_scope {
+
+      let el_scope = scope.to_string();
+
+      let style = evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
+      context.all_rules.push(virt::Rule::Style(virt::StyleRule {
+        selector_text: format!("[data-pc-{}]", el_scope),
+        style
+      }));
+    }
+  }
+
+
+
   for rule in &expr.rules {
     evaluate_rule(&rule, &mut context)?;
   }
+
+
   Ok(EvalInfo {
     sheet: virt::CSSSheet {
       rules: context.all_rules,
@@ -585,14 +602,21 @@ fn evaluate_style_rule2(
   expr: &ast::StyleRule,
 
   parent_selector_text: &String,
-  
+
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
-  let mut selector_text =
-    stringify_element_selector(&expr.selector, true, parent_selector_text, true, parent_selector_text == "" && match expr.selector {
-      ast::Selector::This(_) => false,
-      _ => true
-    }, context);
+  let mut selector_text = stringify_element_selector(
+    &expr.selector,
+    true,
+    parent_selector_text,
+    true,
+    parent_selector_text == ""
+      && match expr.selector {
+        ast::Selector::This(_) => false,
+        _ => true,
+      },
+    context,
+  );
 
   lazy_static! {
     static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
@@ -639,7 +663,7 @@ fn evaluate_style_rule2(
         true,
         match selector {
           ast::Selector::This(_) => false,
-          _ => true
+          _ => true,
         },
         context,
       );
@@ -686,7 +710,14 @@ fn stringify_nestable_selector(
   parent_selector_text: &String,
   context: &mut Context,
 ) -> String {
-  stringify_element_selector(selector, include_scope, parent_selector_text, true,  false, context)
+  stringify_element_selector(
+    selector,
+    include_scope,
+    parent_selector_text,
+    true,
+    false,
+    context,
+  )
 }
 
 fn stringify_element_selector(
@@ -908,7 +939,14 @@ fn stringify_element_selector(
         .map(|child| {
           if let &ast::Selector::Class(_class_name) = &child {
             contains_classname = true;
-            stringify_element_selector(child, include_scope, parent_selector_text, false, false, context)
+            stringify_element_selector(
+              child,
+              include_scope,
+              parent_selector_text,
+              false,
+              false,
+              context,
+            )
           } else {
             stringify_element_selector(child, false, parent_selector_text, false, false, context)
           }

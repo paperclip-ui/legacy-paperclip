@@ -2,7 +2,6 @@ use super::super::ast;
 use super::cache::Cache;
 use super::export::{ComponentExport, Exports, Property};
 use super::virt;
-use crc::crc32;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
@@ -14,6 +13,7 @@ use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
 use crate::js::runtime::evaluator::evaluate as evaluate_js;
 use crate::js::runtime::virt as js_virt;
+use crc::crc32;
 use regex::Regex;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
@@ -342,6 +342,21 @@ fn evaluate_node_sheet<'a>(
     }
   }
 
+  // scan slots for styles. Holy nested check batman.
+  if let ast::Node::Element(element) = current {
+    for attribute in &element.attributes {
+      if let ast::Attribute::KeyValueAttribute(kv) = attribute {
+        if let Some(value) = &kv.value {
+          if let ast::AttributeValue::Slot(slot) = value {
+            if let js_ast::Statement::Node(node) = &slot.script {
+              evaluate_node_sheet(uri, None, node, sheet, css_exports, context)?;
+            }
+          }
+        }
+      }
+    }
+  }
+
   Ok(())
 }
 
@@ -436,12 +451,13 @@ pub fn evaluate_node<'a>(
   }
 }
 
-
 pub fn get_element_scope<'a>(element: &ast::Element, context: &Context) -> String {
-  let mut buff = format!("{}{}{}", context.scope, element.location.start, element.location.end);
+  let mut buff = format!(
+    "{}{}{}",
+    context.scope, element.location.start, element.location.end
+  );
   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }
-
 
 fn evaluate_element<'a>(
   element: &ast::Element,
@@ -788,11 +804,10 @@ fn create_component_instance_data<'a>(
 
   let (ret_children, _) = evaluate_children(&instance_element.children, depth, context)?;
 
-  let children: Vec<js_virt::JsValue> =
-  ret_children
-      .into_iter()
-      .map(|child| js_virt::JsValue::JsNode(child))
-      .collect();
+  let children: Vec<js_virt::JsValue> = ret_children
+    .into_iter()
+    .map(|child| js_virt::JsValue::JsNode(child))
+    .collect();
 
   js_children.values.extend(children);
 
@@ -1023,7 +1038,6 @@ fn evaluate_native_element<'a>(
   //   _ => false,
   // });
 
-
   // allow for tag name to be dynamically changed.
   if let Some(tag_name_attr_value_option) = attributes.get("tagName") {
     if let Some(tag_name_attr_value) = tag_name_attr_value_option {
@@ -1033,7 +1047,6 @@ fn evaluate_native_element<'a>(
   }
 
   let (children, contains_style) = evaluate_children(&element.children, depth, context)?;
-
 
   if contains_style {
     // TODO - this needs to be scoped
@@ -1099,9 +1112,7 @@ fn evaluate_children<'a>(
       ast::Node::StyleElement(_) => {
         contains_style = true;
       }
-      _ => {
-
-      }
+      _ => {}
     }
 
     match evaluate_node(child_expr, false, depth + 1, None, context)? {

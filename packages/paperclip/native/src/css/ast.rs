@@ -523,7 +523,6 @@ impl fmt::Display for SelfSelector {
   }
 }
 
-
 // a > b {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ChildSelector {
@@ -704,6 +703,8 @@ impl fmt::Display for AttributeSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Sheet {
   pub rules: Vec<Rule>,
+  pub declarations: Vec<Declaration>,
+  
   pub location: Location,
 }
 
