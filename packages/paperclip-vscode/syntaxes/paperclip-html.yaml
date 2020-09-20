@@ -74,7 +74,7 @@ repository:
         beginCaptures:
           "1": { name: keyword.control }
         end: (?=\s*+[^=\s])
-      - begin: (as)
+      - begin: \s(as)\s
         beginCaptures:
           "1": { name: keyword.control }
         end: (?=\s*+[^=\s])

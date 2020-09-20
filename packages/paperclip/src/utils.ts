@@ -154,7 +154,7 @@ export const resolveAllPaperclipFiles = findResourcesFromConfig(
 );
 export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
   // const ext = `+(jpg|jpeg|png|gif|svg)`;
-  const exts = [".jpg", ".jpeg", ".png", ".gif", ".svg"];
+  const exts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".ttf"];
 
   // const sourceDir = config.sourceDirectory;
 
