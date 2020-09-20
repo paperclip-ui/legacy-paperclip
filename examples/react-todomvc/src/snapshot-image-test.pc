@@ -17,4 +17,4 @@
 
 <!-- Demo for percy -->
 
-<img src="./assets/happy-cat.jpg">
+<img src="./assets/happy-cat.jpg" />
