@@ -5,21 +5,13 @@
 <import src="components/Field/index.pc" as="Field">
 <import src="components/Select/index.pc" as="Select">
 <import src="./MoreStyles/index.pc" as="MoreStyles">
-<style>
-  .right-sidebar {
+
+<div export component as="default" className="right-sidebar $theme.font-default $theme.background-1">
+  <style>
     width: 250px;
     height: 100vh;
     border-left: 2px solid var(--background-2);
-  }
-  .more-styles {
-    position: absolute;
-    right: 252px;
-    white-space: nowrap;
-    top:0;
-  }
-</style>
-
-<div export component as="default" className="right-sidebar $theme.font-default $theme.background-1">
+  </style>
   {children}
 </div>
 
@@ -27,6 +19,12 @@
   <default>
     <Styling.Preview />
     <div className="more-styles">
+      <style>
+        position: absolute;
+        right: 252px;
+        white-space: nowrap;
+        top:0;
+      </style>
       <!-- <MoreStyles.Preview /> -->
     </div>
   </default>

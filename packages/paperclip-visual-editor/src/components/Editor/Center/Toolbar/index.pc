@@ -2,76 +2,14 @@
 <import src="components/icons/index.pc" as="icons">
 <import src="styles/utils.pc" as="utils">
 
-<style>
-  .toolbar {
-    --border-color: var(--vscode-editorGroup-border, #777);
-    --active-background: var(--vscode-activityBar-foreground, rgb(0, 132, 255));
-    background: var(--vscode-breadcrumb-background, var(--background-2));
-    color: var(--vscode-activityBar-inactiveForeground, var(--color-negate-1));
-    border-bottom: 1px solid var(--border-color);
-    height: 21px;
-    flex-shrink: 0;
-    flex-grow: 0;
-    display: flex;
-  }
-
-  .controls {
-    padding:4px 14px;
-    display: flex;
-    align-items: center;
-  }
-
-  .brush {
-    border: none;
-    color: inherit;
-    padding: 0;
-    background: transparent;
-    display: flex;
-    margin-right: 7px;
-
-    i {
-      --size: 1em;
-      padding: 0;
-      mask-size: 0.95em;
-      cursor: pointer;
-      mask-image: url(./drop2.svg);
-      display: inline-block;
-      /* position: relative; */
-      /* top: -1px; */
-      &.active {
-        color: var(--active-background); 
-      }
-    }
-  }
-  .grid {
-    border: none;
-    color: inherit;
-    padding: 0;
-    margin-right: 7px;
-    background: transparent;
-    display: flex;
-    border-left: 1px solid var(--border-color);
-    padding-left: 7px;
-
-    i {
-      --size: 1em;
-      padding: 0;
-      mask-size: 0.93em;
-      cursor: pointer;
-      mask-image: url(./grid.svg);
-      display: inline-block;
-      &.active {
-        color: var(--active-background); 
-      }
-    }
-  }
-
-  .zoom {
+<div export component as="Zoom" className="zoom">
+  <style>
     border-left: 1px solid var(--border-color);
     padding:0px 7px;
     font-size: 0.8em;
     display: flex;
     align-items: center;
+
     span {
       user-select: none;
       position: relative;
@@ -93,10 +31,7 @@
         mask-image: url(./plus.svg);
       }
     }
-  }
-</style>
-
-<div export component as="Zoom" className="zoom">
+  </style>
   <button className="$icons.icon minus" onClick={onMinusClick}></button>
   <button className="$icons.icon plus" onClick={onPlusClick}></button>
   <span>{amount}%</span>
@@ -104,18 +39,79 @@
 
 <button export component as="PaintButton" {onClick?} 
   className="brush">
+  <style>
+    border: none;
+    color: inherit;
+    padding: 0;
+    background: transparent;
+    display: flex;
+    margin-right: 7px;
+
+    i {
+      --size: 1em;
+      padding: 0;
+      mask-size: 0.95em;
+      cursor: pointer;
+      mask-image: url(./drop2.svg);
+      display: inline-block;
+      /* position: relative; */
+      /* top: -1px; */
+      &.active {
+        color: var(--active-background); 
+      }
+    }
+  </style>
   <i className="$icons.icon" className:active="active" />
 </button>
+
 <button export component as="GridButton" {onClick?} 
   className="grid">
+  <style>
+    border: none;
+    color: inherit;
+    padding: 0;
+    margin-right: 7px;
+    background: transparent;
+    display: flex;
+    border-left: 1px solid var(--border-color);
+    padding-left: 7px;
+
+    i {
+      --size: 1em;
+      padding: 0;
+      mask-size: 0.93em;
+      cursor: pointer;
+      mask-image: url(./grid.svg);
+      display: inline-block;
+      &.active {
+        color: var(--active-background); 
+      }
+    }
+  </style>
   <i className="$icons.icon" className:active="active" />
 </button>
 
 <div export component as="Controls" className="controls">
+  <style>
+    padding:4px 14px;
+    display: flex;
+    align-items: center;
+  </style>
   {children}
 </div>
 
 <div export component as="Container" className="toolbar $theme.background-2">
+  <style>
+    --border-color: var(--vscode-editorGroup-border, #777);
+    --active-background: var(--vscode-activityBar-foreground, rgb(0, 132, 255));
+    background: var(--vscode-breadcrumb-background, var(--background-2));
+    color: var(--vscode-activityBar-inactiveForeground, var(--color-negate-1));
+    border-bottom: 1px solid var(--border-color);
+    height: 21px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: flex;
+  </style>
   {children}
 </div>
 

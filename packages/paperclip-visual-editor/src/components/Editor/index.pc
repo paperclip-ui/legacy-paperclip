@@ -4,16 +4,13 @@
 <import src="./LeftSidebar/index.pc" as="LeftSidebar">
 <import src="./RightSidebar/index.pc" as="RightSidebar">
 
-<style>
-  .editor {
+<div export component as="Container" className="editor $theme.font-default $theme.full-wh">
+  <style>
     width: 100vw;
     height: 100vh;
     display: flex;
     flex-direction: row;
-  }
-</style>
-
-<div export component as="Container" className="editor $theme.font-default $theme.full-wh">
+  </style>
   {children}
 </div>
 

@@ -23,6 +23,7 @@ pub struct Context<'a> {
   exports: Exports,
   in_public_scope: bool,
   all_rules: Vec<virt::Rule>,
+  inc_declarations: Vec<virt::CSSStyleProperty>,
 }
 
 pub struct EvalInfo {
@@ -53,26 +54,32 @@ pub fn evaluate<'a>(
     in_public_scope: false,
     exports: Exports::new(),
     all_rules: vec![],
+    inc_declarations: vec![],
   };
 
   if let Some(existing_exports) = existing_exports {
     context.exports.extend(existing_exports);
   }
 
-  if expr.declarations.len() > 0 {
+  for rule in &expr.rules {
+    evaluate_rule(&rule, &mut context)?;
+  }
+
+  if expr.declarations.len() > 0 || context.inc_declarations.len() > 0 {
     if let Some(scope) = &context.element_scope {
       let el_scope = scope.to_string();
 
-      let style = evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
+      let mut style =
+        evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
+
+      // @include used
+      style.extend(context.inc_declarations.clone());
+
       context.all_rules.push(virt::Rule::Style(virt::StyleRule {
         selector_text: format!("[data-pc-{}]", el_scope),
         style,
       }));
     }
-  }
-
-  for rule in &expr.rules {
-    evaluate_rule(&rule, &mut context)?;
   }
 
   Ok(EvalInfo {
@@ -376,6 +383,7 @@ fn create_child_context<'a>(context: &mut Context<'a>) -> Context<'a> {
     import_graph: context.import_graph,
     in_public_scope: context.in_public_scope,
     exports: context.exports.clone(),
+    inc_declarations: vec![],
   }
 }
 
@@ -582,7 +590,7 @@ fn evaluate_include_rule<'a>(
   let mut child_context = create_child_context(context);
   evaluate_style_rules(&expr.rules, parent_selector_text, &mut child_context)?;
 
-  let (_, rules) = evaluate_mixin(
+  let (declarations, rules) = evaluate_mixin(
     mixin,
     dep_uri,
     parent_selector_text,
@@ -590,6 +598,7 @@ fn evaluate_include_rule<'a>(
     context,
   )?;
   context.all_rules.extend(rules);
+  context.inc_declarations.extend(declarations);
 
   Ok(())
 }

@@ -1,19 +1,13 @@
 <import src="components/Theme/index.pc" as="theme">
 
-<style>
-  .selectors {
-    padding: 10px;
-  }
-  .pill {
-    
-  }
-</style>
-
-<div component as="Pill" className="pill">
+<div component as="Pill" className="pill">  
   PILL
 </div>
 
 <div export component as="default" className="selectors">
+  <style>
+    padding: 10px;
+  </style>
   {children}
 </div>
 
