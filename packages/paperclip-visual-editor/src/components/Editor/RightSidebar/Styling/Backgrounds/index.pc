@@ -1,0 +1,43 @@
+<import src="components/Pane/index.pc" as="Pane">
+
+<div export component as="Preview">
+  <Pane title="Backgrounds" controls={
+    <button>
+      <style>
+        --size: 1.2em;
+        color: inherit;
+        background: transparent;
+        border: none;
+        mask-image: url(./plus.svg);
+        mask-size: var(--size);
+        background: currentColor;
+        width: var(--size);
+        height: var(--size);
+      </style>
+    </button>
+  }>
+
+    <ul>
+      <style>
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      </style>
+      <Item>rgba(0, 0, 0, 0)</Item>
+      <Item>Item</Item>
+      <Item selected>Item</Item>
+      <Item>Item</Item>
+    </ul>
+    
+  </Pane>
+</div>
+
+<li export component as="Item" className:selected="selected"> 
+  <style>
+    padding: 5px 10px;
+    :self(.selected) {
+      background: rgb(66, 66, 66);
+    }
+  </style>
+  {children}
+</li>

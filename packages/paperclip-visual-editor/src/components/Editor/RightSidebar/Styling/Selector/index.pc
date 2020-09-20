@@ -14,7 +14,7 @@
 
 <div export component as="Preview">
   <default>
-    <Pill></Pill>
+    <Select.Preview placeholder="div" />
   </default>
 </div>
 

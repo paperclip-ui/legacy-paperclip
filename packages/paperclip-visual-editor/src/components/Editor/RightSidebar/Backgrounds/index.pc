@@ -1,6 +1,9 @@
 <import src="components/Pane/index.pc" as="Pane">
 
+
 <div export component as="Preview">
-  <Pane title="Filters">
+  <Pane title="Backgrounds">
+
   </Pane>
 </div>
+
