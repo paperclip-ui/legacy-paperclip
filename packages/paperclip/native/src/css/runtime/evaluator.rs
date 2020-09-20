@@ -54,7 +54,7 @@ pub fn evaluate<'a>(
     in_public_scope: false,
     exports: Exports::new(),
     all_rules: vec![],
-    inc_declarations: vec![]
+    inc_declarations: vec![],
   };
 
   if let Some(existing_exports) = existing_exports {
@@ -65,11 +65,12 @@ pub fn evaluate<'a>(
     evaluate_rule(&rule, &mut context)?;
   }
 
-  if expr.declarations.len() > 0 || context.inc_declarations.len() > 0  {
+  if expr.declarations.len() > 0 || context.inc_declarations.len() > 0 {
     if let Some(scope) = &context.element_scope {
       let el_scope = scope.to_string();
 
-      let mut style = evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
+      let mut style =
+        evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
 
       // @include used
       style.extend(context.inc_declarations.clone());
@@ -382,7 +383,7 @@ fn create_child_context<'a>(context: &mut Context<'a>) -> Context<'a> {
     import_graph: context.import_graph,
     in_public_scope: context.in_public_scope,
     exports: context.exports.clone(),
-    inc_declarations: vec![]
+    inc_declarations: vec![],
   }
 }
 
