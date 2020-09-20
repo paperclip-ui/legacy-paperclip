@@ -3,6 +3,7 @@ import { Expression } from "./ast";
 
 export type Sheet = {
   rules: Rule[];
+  declarations: StyleDeclaration[];
 };
 
 export enum RuleKind {

@@ -7,6 +7,7 @@ extern crate matches;
 #[macro_use]
 extern crate lazy_static;
 
+mod annotation;
 mod base;
 mod core;
 mod css;

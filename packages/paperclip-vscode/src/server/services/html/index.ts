@@ -117,6 +117,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   }
 
   private _handleSheet(sheet: Sheet, context: HandleContext) {
+    this._handleDeclarations(sheet.declarations, context);
     this._handleRules(sheet.rules, context);
   }
 

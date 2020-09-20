@@ -2,6 +2,7 @@
 
 use super::ast as pc_ast;
 use super::tokenizer::{Token, Tokenizer};
+use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tokenizer;
 use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
@@ -68,23 +69,7 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
   match token {
     Token::CurlyOpen => parse_slot(tokenizer),
     Token::LessThan => parse_tag(tokenizer),
-    Token::HtmlCommentOpen => {
-      tokenizer.next()?; // eat HTML comment open
-      let buffer = get_buffer(tokenizer, |tokenizer| {
-        let tok = tokenizer.peek(1)?;
-        Ok(tok != Token::HtmlCommentClose)
-      })?
-      .to_string();
-      let end = tokenizer.get_pos();
-      tokenizer.next()?; // eat -->
-      Ok(pc_ast::Node::Comment(pc_ast::ValueObject {
-        value: buffer.clone(),
-        location: Location {
-          start: start.u16_pos,
-          end: end.u16_pos,
-        },
-      }))
-    }
+    Token::HtmlCommentOpen => parse_annotation(tokenizer),
     Token::TagClose => {
       let start = tokenizer.utf16_pos;
       tokenizer.next_expect(Token::TagClose)?;
@@ -160,6 +145,46 @@ fn parse_slot_script<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<js_ast::Statem
     )));
 
   stmt
+}
+
+pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
+  let start = tokenizer.get_pos();
+
+  tokenizer.next()?; // eat HTML comment open
+  let buffer = get_buffer(tokenizer, |tokenizer| {
+    let tok = tokenizer.peek(1)?;
+    Ok(tok != Token::HtmlCommentClose)
+  })?
+  .to_string();
+  let end = tokenizer.get_pos();
+  tokenizer.next()?; // eat -->
+  Ok(pc_ast::Node::Comment(pc_ast::ValueObject {
+    value: buffer.clone(),
+    location: Location {
+      start: start.u16_pos,
+      end: end.u16_pos,
+    },
+  }))
+  /*
+
+  tokenizer.next()?; // eat HTML comment open
+      let buffer = get_buffer(tokenizer, |tokenizer| {
+        let tok = tokenizer.peek(1)?;
+        Ok(tok != Token::HtmlCommentClose)
+      })?
+      .to_string();
+      let end = tokenizer.get_pos();
+      tokenizer.next()?; // eat -->
+      Ok(pc_ast::Node::Comment(pc_ast::ValueObject {
+        value: buffer.clone(),
+        location: Location {
+          start: start.u16_pos,
+          end: end.u16_pos,
+        },
+      }))*
+
+    */
+  // Err(ParseError::unexpected_token(0))
 }
 
 pub fn parse_tag<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
@@ -244,6 +269,8 @@ fn parse_next_basic_element_parts<'a>(
   };
   Ok(pc_ast::Node::Element(el))
 }
+
+// fn pase_annotation<'a>(toenizer: &mut Tokenizer<'a>) -> Result<
 
 fn parse_next_style_element_parts<'a>(
   attributes: Vec<pc_ast::Attribute>,

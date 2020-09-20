@@ -727,14 +727,13 @@ describe(__filename + "#", () => {
     };
 
     const engine = await createMockEngine(graph);
-
     const buffer = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(buffer).to.eql(
       `<style>[class]._80f4925f_its_a_match { color:blue; }</style><div className="_80f4925f_its_a_match its_a_match" data-pc-80f4925f></div>`
     );
   });
 
-  it(`Errors if style block isn't defined at the root`, async () => {
+  xit(`Errors if style block isn't defined at the root`, async () => {
     const graph = {
       "/entry.pc": `
         <div>
@@ -781,8 +780,7 @@ describe(__filename + "#", () => {
 
     try {
       await engine.run("/entry.pc");
-      const ast = engine.getLoadedAst("/entry.pc");
-      console.log(JSON.stringify(ast, null, 2));
+      engine.getLoadedAst("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -1147,6 +1145,79 @@ describe(__filename + "#", () => {
 
     expect(stringifyLoadResult(result)).to.eql(
       "<style></style><div data-pc-8ae793af>bb</div>"
+    );
+  });
+
+  it(`Can define nested style blocks`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div>
+          <style>
+            :self {
+              color: blue;
+            }
+            :self(.test) {
+              color: red;
+            }
+            
+            #test2 {
+              color: blue;
+            }
+          </style>
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[data-pc-75d05f16] { color:blue; } [data-pc-75d05f16][class].test { color:red; } [data-pc-75d05f16] #test2[data-pc-80f4925f] { color:blue; }</style><div data-pc-75d05f16 data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can define nested slot style blocks`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test"> 
+          {test}
+        </div>
+        <Test test={<span>
+          <style> 
+            :self {
+              color: red;
+            }
+          </style>
+          abba
+        </span>} />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[data-pc-2f535356] { color:red; }</style><div data-pc-80f4925f><span data-pc-2f535356 data-pc-80f4925f> abba </span></div>`
+    );
+  });
+
+  it(`Can define scoped styles without :self selector`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div>
+          <style>
+            color: red;
+            background: url("path.png");
+            :self(.variant) {
+              color: blue;
+            }
+          </style>
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[data-pc-b4582118] { color:red; background:url(/path.png); } [data-pc-b4582118][class].variant { color:blue; }</style><div data-pc-80f4925f data-pc-b4582118></div>`
     );
   });
 });

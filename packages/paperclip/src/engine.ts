@@ -64,6 +64,10 @@ export class Engine {
     return this;
   }
 
+  getGraphUris(): string[] {
+    return this._native.get_graph_uris();
+  }
+
   onEvent(listener: EngineEventListener) {
     if (listener == null) {
       throw new Error(`listener cannot be undefined`);

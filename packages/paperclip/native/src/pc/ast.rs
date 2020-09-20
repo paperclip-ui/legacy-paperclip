@@ -1,3 +1,4 @@
+use crate::annotation::ast as annotation_ast;
 use crate::base::ast::Location;
 use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
@@ -35,6 +36,7 @@ pub enum Node {
   Comment(ValueObject),
   Element(Element),
   Fragment(Fragment),
+  Annotation(annotation_ast::Annotation),
   StyleElement(StyleElement),
   Slot(Slot),
 }
@@ -47,6 +49,7 @@ impl Node {
       Node::Element(value) => &value.location,
       Node::Fragment(value) => &value.location,
       Node::StyleElement(value) => &value.location,
+      Node::Annotation(value) => &value.location,
       Node::Slot(value) => &value.location,
     }
   }
@@ -82,6 +85,7 @@ impl fmt::Display for Node {
       Node::Comment(comment) => write!(f, "<!--{}-->", &comment.value),
       Node::Fragment(node) => write!(f, "{}", node.to_string()),
       Node::Element(element) => write!(f, "{}", element.to_string()),
+      Node::Annotation(element) => write!(f, ""),
       Node::StyleElement(element) => write!(f, "{}", element.to_string()),
     }
   }

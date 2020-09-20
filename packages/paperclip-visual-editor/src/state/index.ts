@@ -19,12 +19,35 @@ export type BoxNodeInfo = {
   box: Box;
 };
 
+export enum FSItemKind {
+  FILE = "file",
+  DIRECTORY = "directory"
+}
+
+export type File = {
+  kind: FSItemKind.FILE;
+  absolutePath: string;
+  url: string;
+  name: string;
+};
+
+export type Directory = {
+  name: string;
+  kind: FSItemKind.DIRECTORY;
+  absolutePath: string;
+  url: string;
+  children: Array<FSItem>;
+};
+
+export type FSItem = File | Directory;
+
 export type AppState = {
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
   rendererElement?: any;
   selectedNodePath: string;
   hoveringNodePath?: string;
+  projectDirectory?: Directory;
   metaKeyDown?: boolean;
   canvas: Canvas;
   virtualRootNode?: VirtualNode;
@@ -133,5 +156,22 @@ export const calcFrameBox = memoize((rects: Record<string, Box>) => {
     height
   };
 });
+
+export const getFSItem = (absolutePath: string, current: FSItem) => {
+  if (current.absolutePath === absolutePath) {
+    return current;
+  }
+
+  if (current.kind === FSItemKind.DIRECTORY) {
+    for (const child of current.children) {
+      const found = getFSItem(absolutePath, child);
+      if (found) {
+        return found;
+      }
+    }
+  }
+
+  return null;
+};
 
 export * from "./geom";

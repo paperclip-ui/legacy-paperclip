@@ -1,0 +1,23 @@
+
+<style>
+  .container {
+    --border-color: rgb(63, 63, 63);
+  }
+
+  .header {
+    color: white;
+    background: var(--background-2);
+    padding: 2px 8px;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--border-color);
+  }
+</style>
+
+<div export component as="Header" className="header"> 
+  {children}
+</div>
+
+
+<div export component as="Container" className="container"> 
+  {children}
+</div>

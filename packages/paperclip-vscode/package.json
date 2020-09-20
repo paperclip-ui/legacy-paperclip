@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "14.5.3",
+  "version": "14.6.0",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "keywords": [
@@ -144,11 +144,11 @@
     "find-up": "^4.1.0",
     "lodash": "^4.17.15",
     "mousetrap": "^1.6.5",
-    "paperclip": "^14.5.3",
+    "paperclip": "^14.6.0",
     "paperclip-autocomplete": "^14.5.0",
-    "paperclip-utils": "^14.5.3",
-    "paperclip-visual-editor": "^14.5.3",
-    "paperclip-web-renderer": "^14.5.3",
+    "paperclip-utils": "^14.6.0",
+    "paperclip-visual-editor": "^14.6.0",
+    "paperclip-web-renderer": "^14.6.0",
     "vscode-languageclient": "^6.0.1",
     "vscode-languageserver": "^6.0.1",
     "vscode-languageserver-textdocument": "^1.0.0"

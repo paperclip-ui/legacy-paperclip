@@ -1,5 +1,7 @@
 import * as Mousetrap from "mousetrap";
-
+import SockJSClient from "sockjs-client";
+import { isPaperclipFile } from "paperclip-utils";
+import * as Url from "url";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
@@ -12,13 +14,12 @@ import {
   engineErrored,
   globalEscapeKeyPressed,
   globalMetaKeyDown,
-  globalMetaKeyUp
+  globalMetaKeyUp,
+  Action
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState } from "../state";
-import {
-  getVirtTarget,
-} from "paperclip-utils";
+import { getVirtTarget } from "paperclip-utils";
 
 declare const vscode;
 declare const TARGET_URI;
@@ -36,11 +37,63 @@ export default function* mainSaga() {
 
 const parent = typeof vscode != "undefined" ? vscode : window;
 
+const getTargetUrl = () => {
+  if (typeof TARGET_URI !== "undefined") {
+    return TARGET_URI;
+  }
+
+  const parts = Url.parse(location.href, true);
+  return parts.query.open;
+};
+
+function handleSock(onMessage, onClient) {
+  if (!/^http/.test(location.protocol)) {
+    return;
+  }
+  const client = new SockJSClient(
+    location.protocol + "//" + location.host + "/rt"
+  );
+
+  client.onopen = () => {
+    const url = getTargetUrl();
+    if (url) {
+      client.send(JSON.stringify({ type: "OPEN", uri: url }));
+    }
+
+    onClient({
+      send: message => client.send(JSON.stringify(message))
+    });
+  };
+
+  client.onmessage = message => {
+    onMessage(JSON.parse(message.data));
+  };
+
+  return () => {
+    client.close();
+  };
+}
+
+function handleIPC(onMessage) {
+  window.onmessage = ({ data: { type, payload } }: MessageEvent) => {
+    if (!type || !payload) {
+      return;
+    }
+
+    onMessage({
+      type,
+      payload: JSON.parse(payload)
+    });
+  };
+}
+
 function* handleRenderer() {
   const renderer = new Renderer(
     typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL,
-    typeof TARGET_URI === "undefined" ? null : TARGET_URI
+    getTargetUrl()
   );
+
+  let _client: any;
 
   const chan = eventChannel(emit => {
     let timer: any;
@@ -73,33 +126,49 @@ function* handleRenderer() {
 
     renderer.frame.addEventListener("load", () => {
       renderer.frame.contentWindow.addEventListener("resize", collectRects);
-      // const observer = new MutationObserver(collectRects);
-      // observer.observe(renderer.frame.contentDocument, {
-      //   attributes: true, childList: true, subtree: true
-      // });
     });
 
-    const onMessage = ({ data: { type, payload } }: MessageEvent) => {
-      if (type === "ENGINE_EVENT") {
-        const engineEvent = JSON.parse(payload);
-        if (engineEvent.kind === "Error") {
-          return emit(engineErrored(engineEvent));
-        }
-        renderer.handleEngineEvent(JSON.parse(payload));
-      } else if (type === "INIT") {
-        renderer.initialize(JSON.parse(payload));
-      } else if (type === "ERROR") {
-        // renderer.handleError(JSON.parse(payload));
-        emit(engineErrored(JSON.parse(payload)));
-        return;
-      }
-
+    const handleRenderChange = () => {
       emit(rendererChanged({ virtualRoot: renderer.virtualRootNode }));
 
       // we want to capture rects on _every_ change
       collectRects();
     };
-    window.onmessage = onMessage;
+
+    const onMessage = ({ type, payload }) => {
+      switch (type) {
+        case "ENGINE_EVENT": {
+          const engineEvent = payload;
+          if (engineEvent.kind === "Error") {
+            return emit(engineErrored(engineEvent));
+          }
+          renderer.handleEngineEvent(payload);
+          handleRenderChange();
+          break;
+        }
+        case "INIT": {
+          renderer.initialize(payload);
+          handleRenderChange();
+          break;
+        }
+        case "ERROR": {
+          // renderer.handleError(JSON.parse(payload));
+          emit(engineErrored(payload));
+          break;
+        }
+
+        // handle as regular action
+        default: {
+          emit({ type, payload });
+          break;
+        }
+      }
+    };
+
+    handleIPC(onMessage);
+    handleSock(onMessage, client => {
+      _client = client;
+    });
     return () => {
       window.onmessage = undefined;
     };
@@ -109,6 +178,18 @@ function* handleRenderer() {
     while (1) {
       const action = yield take(chan);
       yield put(action);
+    }
+  });
+
+  yield takeEvery([ActionType.FS_ITEM_CLICKED], (action: Action) => {
+    if (
+      action.type === ActionType.FS_ITEM_CLICKED &&
+      isPaperclipFile(action.payload.url)
+    ) {
+      renderer.reset(action.payload.url);
+    }
+    if (_client) {
+      _client.send(action);
     }
   });
 

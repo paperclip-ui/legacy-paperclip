@@ -1,5 +1,7 @@
 <import src="components/Theme/index.pc" as="theme">
 <import src="components/icons/index.pc" as="icons">
+<import src="styles/utils.pc" as="utils">
+
 <style>
   .toolbar {
     --border-color: var(--vscode-editorGroup-border, #777);
@@ -11,7 +13,6 @@
     flex-shrink: 0;
     flex-grow: 0;
     display: flex;
-    // box-shadow: 0px 2px 4px 1px rgba(0, 0, 0, 0.301);
   }
 
   .controls {
@@ -74,16 +75,15 @@
     span {
       user-select: none;
       position: relative;
-      top: -1px;
     }
     button {
-      --size: 1em;
+      --size: 9px;
       cursor: pointer;
       color: inherit;
       margin-right: 4px;
       line-height: 0;
       display: inline-block;
-      mask-size: 0.8em;
+      @include utils.mask;
       border: none;
       padding:0;
       &.minus {

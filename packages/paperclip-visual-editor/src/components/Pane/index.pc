@@ -1,15 +1,19 @@
 <import src="components/Theme/index.pc" as="theme">
 <style>
   .pane {
-    padding: 10px;
     .header {
-      /* font-weight: 600; */
-      /* letter-spacing: 0.05em; */
-      display: flex;
-      justify-content: space-between;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgb(65, 65, 65);
+      padding: 10px;
+      .inner {
+        /* font-weight: 600; */
+        /* letter-spacing: 0.05em; */
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgb(65, 65, 65);
+        /* height: 21px; */
+      }
     }
+
     .content {
       padding-top: 10px;
     }
@@ -20,8 +24,10 @@
 <div export component as="default" 
   className="pane"
   className:noMore="pane--no-more">
-  <div className="header">
-    {title} {controls}
+  <div className="header">  
+    <div className="inner">
+      {title} {controls}
+    </div>
   </div>
   <div className="content">
     {children}
@@ -32,6 +38,9 @@
   <default title="Pane">
     content
   </default>
+</div>
+
+<div export component as="Content" className="content">
 </div>
 
 <div className="$theme.background-1 $theme.font-default">

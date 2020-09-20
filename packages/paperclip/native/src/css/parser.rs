@@ -55,20 +55,29 @@ fn eat_comments<'a, 'b>(
 
 fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseError> {
   let start = context.tokenizer.utf16_pos;
+  let (rules, declarations) = parse_rules_and_declarations(context)?;
   Ok(Sheet {
-    rules: parse_rules(context)?,
+    rules,
+    declarations,
     location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
 
-fn parse_rules<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Vec<Rule>, ParseError> {
+fn parse_rules_and_declarations<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<(Vec<Rule>, Vec<Declaration>), ParseError> {
   let mut rules = vec![];
+  let mut declarations = vec![];
   eat_superfluous(context)?;
   while !context.ended()? {
-    rules.push(parse_rule(context)?);
+    if is_next_key_value_declaration(context)? {
+      declarations.push(parse_key_value_declaration(context)?);
+    } else {
+      rules.push(parse_rule(context)?);
+    }
     eat_superfluous(context)?;
   }
-  Ok(rules)
+  Ok((rules, declarations))
 }
 
 fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
@@ -488,6 +497,12 @@ fn parse_pseudo_element_selector<'a, 'b>(
         selector: Box::new(sel),
         location: Location::new(start, context.tokenizer.utf16_pos),
       })
+    } else if name == "self" {
+      let sel = parse_group_selector(context, false)?;
+      Selector::This(SelfSelector {
+        selector: Some(Box::new(sel)),
+        location: Location::new(start, context.tokenizer.utf16_pos),
+      })
     } else {
       let param = get_buffer(context.tokenizer, |tokenizer| {
         Ok(tokenizer.peek(1)? != Token::ParenClose)
@@ -504,11 +519,18 @@ fn parse_pseudo_element_selector<'a, 'b>(
     context.tokenizer.next_expect(Token::ParenClose)?;
     selector
   } else {
-    Selector::PseudoElement(PseudoElementSelector {
-      separator: ":".to_string().repeat(colon_count),
-      name,
-      location: Location::new(start, context.tokenizer.utf16_pos),
-    })
+    if name == "self" {
+      Selector::This(SelfSelector {
+        selector: None,
+        location: Location::new(start, context.tokenizer.utf16_pos),
+      })
+    } else {
+      Selector::PseudoElement(PseudoElementSelector {
+        separator: ":".to_string().repeat(colon_count),
+        name,
+        location: Location::new(start, context.tokenizer.utf16_pos),
+      })
+    }
   };
 
   Ok(selector)
@@ -700,29 +722,7 @@ fn parse_declarations_and_children<'a, 'b>(
     } else if context.tokenizer.peek(1)? == Token::At {
       declarations.push(parse_at_declaration(context)?);
     } else {
-      // declarations.push(parse_key_value_declaration(context)?);
-
-      // NOTE - some scenarios require & to be used (like "& > .child"), so
-      // this is turned off until that's resolved (if it ever is).
-
-      let pos = context.tokenizer.get_pos();
-      let mut is_declaration = true;
-
-      while !context.ended()? {
-        let tok = context.tokenizer.next()?;
-
-        if tok == Token::Semicolon || tok == Token::CurlyClose {
-          is_declaration = true;
-          break;
-        } else if tok == Token::CurlyOpen {
-          is_declaration = false;
-          break;
-        }
-      }
-
-      context.tokenizer.set_pos(pos);
-
-      if is_declaration {
+      if is_next_declaration(context)? {
         declarations.push(parse_key_value_declaration(context)?);
       } else {
         children.push(parse_style_rule2(context, true)?);
@@ -733,6 +733,54 @@ fn parse_declarations_and_children<'a, 'b>(
   }
 
   Ok((declarations, children))
+}
+
+fn is_next_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<bool, ParseError> {
+  let pos = context.tokenizer.get_pos();
+  let mut is_declaration = true;
+
+  while !context.ended()? {
+    let tok = context.tokenizer.next()?;
+
+    if tok == Token::Semicolon || tok == Token::CurlyClose {
+      is_declaration = true;
+      break;
+    } else if tok == Token::CurlyOpen {
+      is_declaration = false;
+      break;
+    }
+  }
+
+  context.tokenizer.set_pos(pos);
+
+  return Ok(is_declaration);
+}
+
+fn is_next_key_value_declaration<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<bool, ParseError> {
+  let pos = context.tokenizer.get_pos();
+  let mut found_semicolon = false;
+  let mut found_colon = false;
+  let mut found_curly_open = false;
+
+  while !context.ended()? {
+    let tok = context.tokenizer.next()?;
+
+    if tok == Token::Colon {
+      found_colon = true;
+    } else if tok == Token::Semicolon {
+      found_semicolon = true;
+      break;
+    } else if tok == Token::CurlyOpen {
+      found_curly_open = true;
+      break;
+    }
+  }
+
+  context.tokenizer.set_pos(pos);
+
+  return Ok((found_colon && found_semicolon) && !(found_curly_open));
 }
 
 fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {

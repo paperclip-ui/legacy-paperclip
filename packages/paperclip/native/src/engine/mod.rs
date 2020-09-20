@@ -124,6 +124,10 @@ impl Engine {
     }
   }
 
+  pub fn get_graph_uris(&self) -> Vec<String> {
+    self.dependency_graph.dependencies.keys().cloned().collect()
+  }
+
   pub fn get_loaded_ast(&self, uri: &String) -> Option<&DependencyContent> {
     let dep_option = self.dependency_graph.dependencies.get(uri);
     match dep_option {

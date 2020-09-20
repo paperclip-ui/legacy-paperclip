@@ -165,10 +165,9 @@
   <div class="app">
       <!-- more non-preview code. -->
       <Learn />
-      <Learn.Test />
       <section class="todoapp">
           <header class="header">
-              <h1>Todos</h1>
+              <h1>Todo</h1>
               <input onKeyPress={onNewTodoKeyPress} id="new-todo-input" autofocus="autofocus" autocomplete="off" placeholder="What needs to be done?" class="new-todo">
           </header>
 
