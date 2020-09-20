@@ -1217,7 +1217,54 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-b4582118] { color:red; background:url(/path.png); } [data-pc-b4582118][class].variant { color:blue; }</style><div data-pc-80f4925f data-pc-b4582118></div>`
+      `<style>[data-pc-b4582118][class].variant { color:blue; } [data-pc-b4582118] { color:red; background:url(/path.png); }</style><div data-pc-80f4925f data-pc-b4582118></div>`
+    );
+  });
+
+  it(`Can include mixins within scoped styles`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          @mixin a {
+            color: red;
+          }
+        </style>
+        <div>
+          <style>
+            @include a;
+          </style>
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[data-pc-cb2f1aea] { color:red; }</style><div data-pc-80f4925f data-pc-cb2f1aea></div>`
+    );
+  });
+
+  it(`Can include mixins within scoped styles with a decl`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          @mixin a {
+            color: red;
+          }
+        </style>
+        <div>
+          <style>
+            background: blue;
+            @include a;
+          </style>
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[data-pc-18ab1ffa] { background:blue; color:red; }</style><div data-pc-18ab1ffa data-pc-80f4925f></div>`
     );
   });
 });
