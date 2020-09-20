@@ -34,7 +34,7 @@ export const tagCompletionItem = (
   let insertText = tagName;
 
   if (tagName === "import") {
-    insertText = `${tagName} src="$1" as="$2">`;
+    insertText = `${tagName} src="$1" as="$2" />`;
     hasAttributes = true;
   }
 
