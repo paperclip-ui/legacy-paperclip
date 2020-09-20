@@ -704,7 +704,7 @@ impl fmt::Display for AttributeSelector {
 pub struct Sheet {
   pub rules: Vec<Rule>,
   pub declarations: Vec<Declaration>,
-  
+
   pub location: Location,
 }
 

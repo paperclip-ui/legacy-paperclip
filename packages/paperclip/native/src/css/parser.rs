@@ -63,7 +63,9 @@ fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseErro
   })
 }
 
-fn parse_rules_and_declarations<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(Vec<Rule>, Vec<Declaration>), ParseError> {
+fn parse_rules_and_declarations<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<(Vec<Rule>, Vec<Declaration>), ParseError> {
   let mut rules = vec![];
   let mut declarations = vec![];
   eat_superfluous(context)?;
@@ -734,7 +736,6 @@ fn parse_declarations_and_children<'a, 'b>(
 }
 
 fn is_next_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<bool, ParseError> {
-
   let pos = context.tokenizer.get_pos();
   let mut is_declaration = true;
 
@@ -755,9 +756,9 @@ fn is_next_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<bool, Pa
   return Ok(is_declaration);
 }
 
-
-fn is_next_key_value_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<bool, ParseError> {
-
+fn is_next_key_value_declaration<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<bool, ParseError> {
   let pos = context.tokenizer.get_pos();
   let mut found_semicolon = false;
   let mut found_colon = false;

@@ -281,10 +281,17 @@ export const getAttributeStringValue = (name: string, element: Element) => {
   );
 };
 
-export const getStyleElements = (ast: Node): StyleElement[] =>
-  getChildren(ast).filter(
-    child => child.kind === NodeKind.StyleElement
-  ) as StyleElement[];
+export const getStyleElements = (ast: Node): StyleElement[] => {
+  const styleElements: StyleElement[] = [];
+
+  traverseExpression(ast, (node: Node) => {
+    if (node.kind === NodeKind.StyleElement) {
+      styleElements.push(node);
+    }
+  });
+
+  return styleElements;
+};
 
 export const isVisibleElement = (ast: Element): boolean => {
   return !/^(import|logic|meta|style|part|preview)$/.test(ast.tagName);

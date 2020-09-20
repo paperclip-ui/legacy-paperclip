@@ -61,23 +61,19 @@ pub fn evaluate<'a>(
 
   if expr.declarations.len() > 0 {
     if let Some(scope) = &context.element_scope {
-
       let el_scope = scope.to_string();
 
       let style = evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
       context.all_rules.push(virt::Rule::Style(virt::StyleRule {
         selector_text: format!("[data-pc-{}]", el_scope),
-        style
+        style,
       }));
     }
   }
 
-
-
   for rule in &expr.rules {
     evaluate_rule(&rule, &mut context)?;
   }
-
 
   Ok(EvalInfo {
     sheet: virt::CSSSheet {
