@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as crc32 from "crc32";
 import {
   Node,
   getImports,
@@ -187,15 +188,24 @@ const translateUtils = (ast: Node, context: TranslateContext) => {
 };
 
 const translateStyleScopeAttributes = (
+  element: Element,
   context: TranslateContext,
   newLine = ""
 ) => {
   context = addBuffer(
-    `"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`,
+    `"data-pc-${getElementScopeId(element, context.fileUri)}": true,\n` +
+      `"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`,
     context
   );
   return context;
 };
+
+const getElementScopeId = (element: Element, contextUri: string) =>
+  crc32(
+    `${getStyleScopeId(contextUri)}${element.location.start}${
+      element.location.end
+    }`
+  );
 const translateExtendsPropsUtil = (ast: Node, context: TranslateContext) => {
   context = addBuffer(
     `const extendProps = (defaultProps, extender) => {\n`,
@@ -604,7 +614,7 @@ const translateElement = (
   context = addBuffer(`{\n`, context);
   context = startBlock(context);
   context = startBlock(context);
-  context = translateStyleScopeAttributes(context, "\n");
+  context = translateStyleScopeAttributes(element, context, "\n");
   if (isRoot) {
     context = addBuffer(`"ref": ref,\n`, context);
   }
