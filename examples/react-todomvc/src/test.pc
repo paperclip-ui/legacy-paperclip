@@ -1,6 +1,6 @@
 
 
-<div export component as="Test" className:variant="variant">
+<div export component as="Test" className:ascending="a" className:variant="variant">
 
   <style>
     color: rgb(24, 133, 33);
@@ -8,7 +8,7 @@
     font-size: 24px;
 
     :self(.variant) {
-      color: rgb(140, 0, 255)(155, 17, 17);
+      color: rgb(155, 17, 17);
     }
 
     span {
