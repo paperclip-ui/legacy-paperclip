@@ -29,7 +29,7 @@ function Home() {
     >
       <styles.Home>
         <styles.Header
-          title={<>A faster way to build web applications.</>}
+          title={<>Spend less time tweaking CSS.</>}
           description={
             /* 
 
