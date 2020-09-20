@@ -76,14 +76,8 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
       let tag_name = parse_tag_name(tokenizer)?;
       tokenizer.next_expect(Token::GreaterThan)?;
 
-      let message = if is_void_tag_name(tag_name.as_str()) {
-        "Void tag's shouldn't be closed."
-      } else {
-        "Closing tag doesn't have an open tag."
-      };
-
       Err(ParseError::unexpected(
-        message.to_string(),
+        "Closing tag doesn't have an open tag.".to_string(),
         start,
         tokenizer.utf16_pos,
       ))
@@ -212,15 +206,6 @@ fn parse_element<'a>(
   }
 }
 
-fn is_void_tag_name<'a>(tag_name: &'a str) -> bool {
-  match tag_name {
-    "area" | "base" | "basefont" | "bgsound" | "br" | "col" | "command" | "embed" | "frame"
-    | "hr" | "image" | "import" | "img" | "input" | "isindex" | "keygen" | "link" | "menuitem"
-    | "meta" | "property" | "logic" | "nextid" | "param" | "source" | "track" | "wbr" => true,
-    _ => false,
-  }
-}
-
 fn parse_next_basic_element_parts<'a>(
   tag_name: String,
   tag_name_end: usize,
@@ -241,14 +226,12 @@ fn parse_next_basic_element_parts<'a>(
     Token::GreaterThan => {
       tokenizer.next()?;
       end = tokenizer.utf16_pos;
-      if !is_void_tag_name(tag_name.as_str()) {
-        tokenizer.eat_whitespace();
-        while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1)? != Token::TagClose {
-          children.push(parse_node(tokenizer)?);
-        }
-
-        parse_close_tag(&tag_name.as_str(), tokenizer, start, end)?;
+      tokenizer.eat_whitespace();
+      while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1)? != Token::TagClose {
+        children.push(parse_node(tokenizer)?);
       }
+
+      parse_close_tag(&tag_name.as_str(), tokenizer, start, end)?;
     }
     _ => return Err(ParseError::unexpected_token(tokenizer.utf16_pos)),
   }
@@ -679,9 +662,9 @@ mod tests {
       {10.10.10}
       
       <!-- void tags -->
-      <br>
-      <import>
-      <logic>
+      <br />
+      <import  />
+      <logic />
 
       {block}
 
@@ -830,18 +813,6 @@ mod tests {
         "Closing tag doesn't have an open tag.".to_string(),
         0,
         6
-      ))
-    );
-  }
-
-  #[test]
-  fn displays_error_if_void_close_tag_present() {
-    assert_eq!(
-      parse("</meta>"),
-      Err(ParseError::unexpected(
-        "Void tag's shouldn't be closed.".to_string(),
-        0,
-        7
       ))
     );
   }

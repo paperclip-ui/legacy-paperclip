@@ -336,7 +336,7 @@ describe(__filename, () => {
       }
     ],
     [
-      `<div><import>`,
+      `<div><import />`,
       {
         kind: SuggestContextKind.HTML_CLOSE_TAG_NAME,
         openTagPath: ["div"]
@@ -419,10 +419,10 @@ describe(__filename, () => {
       }
     ],
     [
-      `<import src="./styles/global.pc">
-      <import as="ListItem" src="./item.pc">
-      <import as="Controls" src="./controls.pc">
-      <import as="Learn" src="./learn.pc">
+      `<import src="./styles/global.pc" />
+      <import as="ListItem" src="./item.pc" />
+      <import as="Controls" src="./controls.pc" />
+      <import as="Learn" src="./learn.pc" />
       
       <style>
         /* `,

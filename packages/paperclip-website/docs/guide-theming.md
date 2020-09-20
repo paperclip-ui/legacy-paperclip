@@ -31,7 +31,7 @@ Then, be sure to reference these variables in each of your PC files:
 
 ```html
 // file: button.pc
-<import src="./theme.pc" as="theme">
+<import src="./theme.pc" as="theme" />
 <style>
   .button {
     background: var(--color-background-1);
@@ -71,7 +71,7 @@ that components are being stylized correctly, and that no CSS bugs are introduce
 
 ```html live
 // file: button.pc
-<import src="./theme.pc" as="theme">
+<import src="./theme.pc" as="theme" />
 <style>
   .button {
     font-family: sans-serif;

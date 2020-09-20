@@ -1,4 +1,4 @@
-<import src="tailwind.pc" as="tw">
+<import src="tailwind.pc" as="tw"  />
 
 <style>
   .message {

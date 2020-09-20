@@ -85,7 +85,7 @@ describe(__filename + "#", () => {
 
   it("Renders imported styles", async () => {
     const graph = {
-      "/entry.pc": `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`,
+      "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`,
       "/module.pc": `<style> a { color: black; } </style>`
     };
 
@@ -100,7 +100,7 @@ describe(__filename + "#", () => {
 
   it("Removes styles if import is removed", async () => {
     const graph = {
-      "/entry.pc": `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`,
+      "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`,
       "/module.pc": `<style> a { color: black; } </style>`
     };
 
@@ -135,7 +135,7 @@ describe(__filename + "#", () => {
     );
     await engine.updateVirtualFileContent(
       "file:///entry.pc",
-      `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`
+      `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`
     );
     expect(renderer.mount.innerHTML).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
@@ -157,7 +157,7 @@ describe(__filename + "#", () => {
     );
     await engine.updateVirtualFileContent(
       "/entry.pc",
-      `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`
+      `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`
     );
     expect(renderer.mount.innerHTML).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
@@ -180,11 +180,11 @@ describe(__filename + "#", () => {
     );
     await engine.updateVirtualFileContent(
       "/entry.pc",
-      `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`
+      `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`
     );
     await engine.updateVirtualFileContent(
       "/module.pc",
-      `<import src="./module2.pc"><style> a { color: black; } </style>`
+      `<import src="./module2.pc" /><style> a { color: black; } </style>`
     );
     expect(renderer.mount.innerHTML).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style><style>a[data-pc-11a847ab] { color:orange; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
@@ -203,7 +203,7 @@ describe(__filename + "#", () => {
     await engine.run("/entry.pc");
     await engine.updateVirtualFileContent(
       "/entry.pc",
-      `<import src="./module.pc"><style> a { color: blue; } </style><span></span>`
+      `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`
     );
 
     const renderer = createMockRenderer("/entry.pc");
@@ -216,7 +216,7 @@ describe(__filename + "#", () => {
 
   it("styles that are _removed_ before renderer initializes are rendered", async () => {
     const graph = {
-      "/entry.pc": `<import src="./module.pc"><style> a { color: blue; } </style><span></span><style> a { color: blue; } </style>`,
+      "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span><style> a { color: blue; } </style>`,
       "/module.pc": `<style> a { color: black; } </style>`
     };
 
@@ -241,10 +241,10 @@ describe(__filename + "#", () => {
   it("removes styles", async () => {
     const graph = {
       "/entry.pc": `
-        <import src="./module-a.pc">
-        <import src="./module-b.pc">
-        <import src="./module-c.pc">
-        <import src="./module-d.pc">
+        <import src="./module-a.pc" />
+        <import src="./module-b.pc" />
+        <import src="./module-c.pc" />
+        <import src="./module-d.pc" />
       `,
       "/module-a.pc": `<style> a { color: a; } </style>`,
       "/module-b.pc": `<style> a { color: b; } </style>`,
@@ -266,8 +266,8 @@ describe(__filename + "#", () => {
     await engine.updateVirtualFileContent(
       "/entry.pc",
       `
-     <import src="./module-b.pc">
-     <import src="./module-d.pc">
+     <import src="./module-b.pc" />
+     <import src="./module-d.pc" />
      `
     );
 
@@ -343,7 +343,7 @@ describe(__filename + "#", () => {
   it(`Properly renders with a protocol`, async () => {
     const graph = {
       "file:///entry.pc": `
-        <img src="/file.jpg">
+        <img src="/file.jpg" />
       `,
       "file:///file.jpg": ``,
       "file:///something-else.jpg": ``
@@ -363,7 +363,7 @@ describe(__filename + "#", () => {
     engine.updateVirtualFileContent(
       "file:///entry.pc",
       `
-      <img src="./something-else.jpg">
+      <img src="./something-else.jpg" />
     `
     );
 

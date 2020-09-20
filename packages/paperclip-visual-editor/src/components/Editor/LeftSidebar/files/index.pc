@@ -1,6 +1,6 @@
-<import src="components/Editor/Pane/index.pc" as="Pane">
-<import src="components/Pane/index.pc" as="Pane2">
-<import src="components/Tree/index.pc" as="Tree">
+<import src="components/Editor/Pane/index.pc" as="Pane" />
+<import src="components/Pane/index.pc" as="Pane2" />
+<import src="components/Tree/index.pc" as="Tree" />
 
 <div export component as="Preview">
   <Pane2 title="Files">

@@ -1,7 +1,7 @@
-<import src="./styles/global.pc">
-<import as="ListItem" src="./item.pc">
-<import as="Controls" src="./controls.pc">
-<import as="Learn" src="./learn.pc">
+<import src="./styles/global.pc"  />
+<import as="ListItem" src="./item.pc"  />
+<import as="Controls" src="./controls.pc"  />
+<import as="Learn" src="./learn.pc"  />
 
 <style>
 
@@ -35,7 +35,6 @@
 
   <div class="app">
     <style>
-
       font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
       line-height: 1.4em;
       min-width: 230px;
@@ -58,53 +57,6 @@
 
 
           .new-todo {
-            position: relative;
-            margin: 0;
-            width: 100%;
-            font-size: 24px;
-            font-family: inherit;
-            font-weight: inherit;
-            line-height: 1.4em;
-            border: 0;
-            color: inherit;
-            padding: 6px;
-            border: 1px solid rgb(161, 62, 62);
-            box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            padding: 16px 16px 16px 60px;
-            border: none;
-            background: rgba(0, 0, 0, 0.003);
-            box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
-          }
-
-          .toggle-all {
-            text-align: center;
-            border: none; /* Mobile Safari */
-            opacity: 0;
-            position: absolute;
-            & + label {
-              width: 60px;
-              height: 34px;
-              font-size: 0;
-              position: absolute;
-              top: -52px;
-              left: -13px;
-              -webkit-transform: rotate(90deg);
-              transform: rotate(90deg);
-
-              &:before {
-                content: "❯";
-                font-size: 22px;
-                color: #e6e6e6;
-                padding: 10px 27px 10px 27px;
-              }
-            }
-
-            &:checked + label:before {
-              color: #737373;
-            }
           }
 
           /*
@@ -134,18 +86,65 @@
                 Todo
               </h1>
               <input onKeyPress={onNewTodoKeyPress} id="new-todo-input" autofocus="autofocus" autocomplete="off" placeholder="What needs to be done?" class="new-todo">
+                <style>
+                  position: relative;
+                  margin: 0;
+                  width: 100%;
+                  font-size: 24px;
+                  font-family: inherit;
+                  font-weight: inherit;
+                  line-height: 1.4em;
+                  border: 0;
+                  color: inherit;
+                  padding: 6px;
+                  border: 1px solid rgb(161, 62, 62);
+                  box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
+                  box-sizing: border-box;
+                  -webkit-font-smoothing: antialiased;
+                  -moz-osx-font-smoothing: grayscale;
+                  padding: 16px 16px 16px 60px;
+                  border: none;
+                  background: rgba(0, 0, 0, 0.003);
+                  box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
+                </style>
+              </input>
           </header>
 
           <!-- TODO - to hide -->
           <section class="main">
-            <style>
-
-              position: relative;
-              z-index: 2;
-              border-top: 1px solid #e6e6e6;
-            </style>
             <input id="toggle-all" type="checkbox" class="toggle-all">
-            <label for="toggle-all">Mark all as complete</label>
+              <style>
+                text-align: center;
+                border: none; /* Mobile Safari */
+                opacity: 0;
+                position: absolute;
+
+
+                :self:checked + label:before {
+                  color: #737373;
+                }
+              </style>
+            </input>
+            <label for="toggle-all">
+              <style>
+                width: 60px;
+                height: 34px;
+                font-size: 0;
+                position: absolute;
+                top: -52px;
+                left: -13px;
+                -webkit-transform: rotate(90deg);
+                transform: rotate(90deg);
+
+                :self(:before) {
+                  content: "❯";
+                  font-size: 22px;
+                  color: #e6e6e6;
+                  padding: 10px 27px 10px 27px;
+                }
+              </style>
+              Mark all as complete
+            </label>
             <ul class="todo-list">
               <style>
                 margin: 0;

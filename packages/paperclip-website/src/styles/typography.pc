@@ -1,7 +1,7 @@
-<import src="./colors.pc">
-<import src="./fonts/roboto/font-face.pc">
-<import src="./fonts/sora/font-face.pc">
-<import src="./fonts/open-sans/font-face.pc">
+<import src="./colors.pc" />
+<import src="./fonts/roboto/font-face.pc" />
+<import src="./fonts/sora/font-face.pc" />
+<import src="./fonts/open-sans/font-face.pc" />
 
 <style>
   @export {

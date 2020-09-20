@@ -1,4 +1,4 @@
-<import src="styles/utils.pc" as="utils">
+<import src="styles/utils.pc" as="utils" />
 
 <style>
   .container {

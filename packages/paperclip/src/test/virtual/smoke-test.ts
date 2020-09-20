@@ -51,7 +51,7 @@ describe(__filename + "#", () => {
 
         `,
         "/entry.pc": `
-          <import as="something" src="./button.pc" />
+          <import as="something" src="./button.pc"  />
           <something>hello world</something>
         `
       },
@@ -140,7 +140,7 @@ describe(__filename + "#", () => {
 
         `,
         "/entry.pc": `
-          <import as="something" src="./button.pc" />
+          <import as="something" src="./button.pc"  />
           <something>hello world</something>
         `
       },
@@ -198,7 +198,7 @@ describe(__filename + "#", () => {
       // class name isn't used if not explicitly defined in component
       {
         "/entry.pc": `
-          <import as="Message" src="./message.pc">
+          <import as="Message" src="./message.pc" />
           <Message class="red" />
         `,
 
@@ -215,7 +215,7 @@ describe(__filename + "#", () => {
       // class piercing
       {
         "/entry.pc": `
-          <import as="Message" src="./message.pc">
+          <import as="Message" src="./message.pc" />
           <Message class="$red" />
         `,
 
@@ -231,7 +231,7 @@ describe(__filename + "#", () => {
       // no class mod for components if shadow pierce operator is not defined
       {
         "/entry.pc": `
-          <import as="Message" src="./message.pc">
+          <import as="Message" src="./message.pc" />
           <Message class="red" />
         `,
 
@@ -265,7 +265,7 @@ describe(__filename + "#", () => {
       // no class mod for components if shadow pierce operator is not defined
       {
         "/entry.pc": `
-          <import as="Message" src="./message.pc">
+          <import as="Message" src="./message.pc" />
           <Message class="$red" />
           <span />
         `,
@@ -332,7 +332,7 @@ describe(__filename + "#", () => {
       // no class mod for components if shadow pierce operator is not defined
       {
         "/entry.pc": `
-          <import as="Message" src="./message.pc">
+          <import as="Message" src="./message.pc" />
           <Message component as="test">
             {children}!
           </Message>
@@ -471,7 +471,7 @@ describe(__filename + "#", () => {
     [
       {
         "/entry.pc": `
-          <import as="a" src="./module.pc">
+          <import as="a" src="./module.pc" />
           <style>
             @export {
               .c {
@@ -482,7 +482,7 @@ describe(__filename + "#", () => {
           </style>
         `,
         "/module.pc": `
-          <import as="a" src="./module2.pc">
+          <import as="a" src="./module2.pc" />
           <style>
             @export {
               @mixin b {
@@ -508,7 +508,7 @@ describe(__filename + "#", () => {
     [
       {
         "/entry.pc": `
-          <import as="mod" src="./module.pc">
+          <import as="mod" src="./module.pc" />
           <mod>
             <mod.item>a</mod.item>
             <mod.item>b</mod.item>
@@ -651,7 +651,7 @@ describe(__filename + "#", () => {
     [
       {
         "/entry.pc": `
-          <import as="test" src="./module.pc">
+          <import as="test" src="./module.pc" />
           <div className="$test.button"></div>
         `,
         "/module.pc": `

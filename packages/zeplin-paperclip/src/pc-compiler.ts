@@ -133,9 +133,9 @@ export const compileLayers = (
   textStyles: TypographyMap
 ) => {
   const buffer = [];
-  buffer.push(`<import src="../tokens/colors.pc">\n`);
-  buffer.push(`<import as="typography" src="../tokens/typography.pc">\n`);
-  buffer.push(`<import src="../tokens/spacing.pc">\n\n`);
+  buffer.push(`<import src="../tokens/colors.pc" />\n`);
+  buffer.push(`<import as="typography" src="../tokens/typography.pc" />\n`);
+  buffer.push(`<import src="../tokens/spacing.pc" />\n\n`);
   buffer.push(`<style>\n`);
 
   const textMixinMap = {};

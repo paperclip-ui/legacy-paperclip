@@ -1,6 +1,6 @@
-<import src="components/Theme/index.pc" as="theme">
-<import src="components/icons/index.pc" as="icons">
-<import src="styles/utils.pc" as="utils">
+<import src="components/Theme/index.pc" as="theme" />
+<import src="components/icons/index.pc" as="icons" />
+<import src="styles/utils.pc" as="utils" />
 
 <div export component as="Zoom" className="zoom">
   <style>

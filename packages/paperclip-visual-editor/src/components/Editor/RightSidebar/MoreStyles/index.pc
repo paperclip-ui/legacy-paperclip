@@ -1,6 +1,6 @@
-<import src="components/Theme/index.pc" as="theme">
-<import src="components/Pane/index.pc" as="Pane">
-<import src="components/List/index.pc" as="List">
+<import src="components/Theme/index.pc" as="theme" />
+<import src="components/Pane/index.pc" as="Pane" />
+<import src="components/List/index.pc" as="List" />
 
 
 <div export component as="default" className="$theme.font-default $theme.background-1">

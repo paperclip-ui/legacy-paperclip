@@ -1,10 +1,10 @@
-<import src="components/Theme/index.pc" as="theme">
-<import src="./Styling/index.pc" as="Styling">
-<import src="components/Pane/index.pc" as="Pane">
-<!-- <import src="./Selector/index.pc" as="Selector"> -->
-<import src="components/Field/index.pc" as="Field">
-<import src="components/Select/index.pc" as="Select">
-<import src="./MoreStyles/index.pc" as="MoreStyles">
+<import src="components/Theme/index.pc" as="theme" />
+<import src="./Styling/index.pc" as="Styling" />
+<import src="components/Pane/index.pc" as="Pane" />
+<!-- <import src="./Selector/index.pc" as="Selector" /> -->
+<import src="components/Field/index.pc" as="Field" />
+<import src="components/Select/index.pc" as="Select" />
+<import src="./MoreStyles/index.pc" as="MoreStyles" />
 
 <div export component as="default" className="right-sidebar $theme.font-default $theme.background-1">
   <style>

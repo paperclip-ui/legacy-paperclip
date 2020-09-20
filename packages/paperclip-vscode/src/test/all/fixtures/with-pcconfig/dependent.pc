@@ -1,4 +1,4 @@
-<import src="./module.pc" as="module">
+<import src="./module.pc" as="module" />
 
 <module.Message>
   {children}

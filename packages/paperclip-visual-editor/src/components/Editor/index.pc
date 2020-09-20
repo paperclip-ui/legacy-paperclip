@@ -1,8 +1,8 @@
-<import src="components/Theme/index.pc" as="theme">
-<import src="./RightSidebar/index.pc" as="RightSidebar">
-<import src="./Center/index.pc" as="Center">
-<import src="./LeftSidebar/index.pc" as="LeftSidebar">
-<import src="./RightSidebar/index.pc" as="RightSidebar">
+<import src="components/Theme/index.pc" as="theme" />
+<import src="./RightSidebar/index.pc" as="RightSidebar" />
+<import src="./Center/index.pc" as="Center" />
+<import src="./LeftSidebar/index.pc" as="LeftSidebar" />
+<import src="./RightSidebar/index.pc" as="RightSidebar" />
 
 <div export component as="Container" className="editor $theme.font-default $theme.full-wh">
   <style>

@@ -1,5 +1,5 @@
 
 <!-- bad import -- casing is wrong -->
-<import as="Module" src="./module.pc">
+<import as="Module" src="./module.pc" />
 
 <Module.SecretMessage />

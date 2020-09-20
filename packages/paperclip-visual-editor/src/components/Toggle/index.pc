@@ -1,4 +1,4 @@
-<import src="../Theme/index.pc" as="theme">
+<import src="../Theme/index.pc" as="theme" />
 
 <style>
   .button-group {

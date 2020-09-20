@@ -1,4 +1,4 @@
-<import src="../preview.pc" as="preview">
+<import src="../preview.pc" as="preview" />
 
 <style> 
   @font-face {

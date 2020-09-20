@@ -1,6 +1,6 @@
 
-<import src="components/Editor/Pane/index.pc" as="Pane">
-<import src="./files/index.pc" as="Files">
+<import src="components/Editor/Pane/index.pc" as="Pane" />
+<import src="./files/index.pc" as="Files" />
 
 <style>
   .container {

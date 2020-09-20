@@ -11,8 +11,8 @@ import { stringifyVirtualNode } from "paperclip-utils";
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
     const graph = {
-      "/entry.pc": `<import src="/module.pc">`,
-      "/module.pc": `<import src="/entry.pc">`
+      "/entry.pc": `<import src="/module.pc"  />`,
+      "/module.pc": `<import src="/entry.pc"  />`
     };
     const engine = await createMockEngine(graph);
     let err;
@@ -48,7 +48,7 @@ describe(__filename + "#", () => {
   it("Can import keyframes", async () => {
     const graph = {
       "/entry.pc": `
-        <import as="ab" src="./module.pc">
+        <import as="ab" src="./module.pc"  />
         <style>
           .rule {
             animation: ab.a 5s;
@@ -75,7 +75,7 @@ describe(__filename + "#", () => {
   it("Doesn't crash if importing module with parse error", async () => {
     const graph = {
       "/entry.pc": `
-        <import src="/module.pc">
+        <import src="/module.pc" />
 
         <div>
         </div>
@@ -103,7 +103,7 @@ describe(__filename + "#", () => {
   it("Doesn't crash if incorrect token is found in tag", async () => {
     const graph = {
       "/entry.pc": `
-        <import src="/module.pc">
+        <import src="/module.pc" />
 
         <div>
         </div>
@@ -131,7 +131,7 @@ describe(__filename + "#", () => {
   it("displays an error if a default component is used but not exported", async () => {
     const graph = {
       "/entry.pc": `
-        <import as="module" src="/module.pc">
+        <import as="module" src="/module.pc" />
 
         <module>
         </module>
@@ -148,7 +148,7 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 56, end: 64 },
+      location: { start: 58, end: 66 },
       message: "Unable to find component, or it's not exported."
     });
   });
@@ -156,7 +156,7 @@ describe(__filename + "#", () => {
   it("displays error if img src not found", async () => {
     const graph = {
       "/entry.pc": `
-        <img src="/not/found.png">
+        <img src="/not/found.png" />
       `
     };
     const engine = await createMockEngine(graph, noop, {
@@ -374,7 +374,7 @@ describe(__filename + "#", () => {
   it("Engine can't reload content if module errors", async () => {
     const graph = {
       "/entry.pc": `
-        <import as="Component" src="./module.pc">
+        <import as="Component" src="./module.pc" />
         <Component>abc</Component>
       `,
       "/module.pc": `
@@ -399,7 +399,7 @@ describe(__filename + "#", () => {
 
     await engine.updateVirtualFileContent(
       "/entry.pc",
-      `<import as="Component" src="./module.pc">
+      `<import as="Component" src="./module.pc" />
     <Component>defg</Component>`
     );
 
@@ -674,7 +674,7 @@ describe(__filename + "#", () => {
   it(`Doesn't apply scope if $ is provided`, async () => {
     const graph = {
       "/entry.pc": `
-        <import src="./module.pc" as="module">
+        <import src="./module.pc" as="module" />
         <module.Test className="$ok" />
       `,
       "/module.pc": `
@@ -854,7 +854,7 @@ describe(__filename + "#", () => {
   it(`Displays an error if a class name is not found for shadow pierce`, async () => {
     const graph = {
       "/entry.pc": `
-        <import src="./module.pc" as="tw">
+        <import src="./module.pc" as="tw" />
         <div className="$tw.test">
           
         </div>
@@ -879,7 +879,7 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 67, end: 76 },
+      location: { start: 69, end: 78 },
       message: "Class name not found."
     });
   });
@@ -887,7 +887,7 @@ describe(__filename + "#", () => {
   it(`Display an error if class name is private for shadow pierce`, async () => {
     const graph = {
       "/entry.pc": `
-        <import src="./module.pc" as="tw">
+        <import src="./module.pc" as="tw" />
         <div className="$tw.test">
           
         </div>
@@ -914,7 +914,7 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 67, end: 76 },
+      location: { start: 69, end: 78 },
       message: "This class reference is private."
     });
   });
@@ -922,7 +922,7 @@ describe(__filename + "#", () => {
   it(`Can use a public class pierce`, async () => {
     const graph = {
       "/entry.pc": `
-        <import src="./module.pc" as="tw">
+        <import src="./module.pc" as="tw" />
         <div className="$tw.test">
           
         </div>
@@ -948,7 +948,7 @@ describe(__filename + "#", () => {
   it(`Deprecated >>> works`, async () => {
     const graph = {
       "/entry.pc": `
-        <import src="./module.pc" as="tw">
+        <import src="./module.pc" as="tw" />
         <div className=">>>tw.test">
           
         </div>
@@ -973,7 +973,7 @@ describe(__filename + "#", () => {
   it(`Can use a public class pierce on a component`, async () => {
     const graph = {
       "/entry.pc": `
-        <import src="./module.pc" as="tw">
+        <import src="./module.pc" as="tw" />
         <div export component as="Test" className="$tw.test">
           
         </div>
@@ -999,11 +999,11 @@ describe(__filename + "#", () => {
   it(`Can use a component that's referencing a public class`, async () => {
     const graph = {
       "/entry.pc": `
-        <import src="./module.pc" as="mod">
+        <import src="./module.pc" as="mod" />
         <mod.Test />
       `,
       "/module.pc": `
-        <import src="./module2.pc" as="tw">
+        <import src="./module2.pc" as="tw" />
         <div export component as="Test" className="$tw.test">
         </div>
       `,
@@ -1028,7 +1028,7 @@ describe(__filename + "#", () => {
   it(`Prefixes classnames if they come after shadow pierce`, async () => {
     const graph = {
       "/entry.pc": `
-        <import src="./module.pc" as="tw">
+        <import src="./module.pc" as="tw" />
         <div export component as="Test" className="$tw.test checkbox">
           
         </div>
@@ -1107,8 +1107,8 @@ describe(__filename + "#", () => {
   it(`Doesn't crash when dependency is updated`, async () => {
     const graph = {
       "/entry.pc": `
-        <import src="a.pc">
-        <import src="b.pc" as="b">
+        <import src="a.pc" />
+        <import src="b.pc" as="b" />
         
         <b />
       `,
@@ -1265,6 +1265,62 @@ describe(__filename + "#", () => {
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[data-pc-18ab1ffa] { background:blue; color:red; }</style><div data-pc-18ab1ffa data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can define style tag for void elements`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <input>
+          <style>
+            background: blue;
+          </style>
+        </input>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[data-pc-5810fe6d] { background:blue; }</style><input data-pc-5810fe6d data-pc-80f4925f></input>`
+    );
+  });
+
+  it(`Can scope media queries`, async () => {
+    const graph = {
+      "/entry.pc": `
+
+        <style>
+          @mixin desktop {
+            @media screen and (max-width: 1280px) {
+              @content;
+            }
+          }
+        </style>
+        <input>
+          <style>
+            @media screen and (max-width: 400px) {
+              color: red;
+            }
+
+            @include desktop {
+              color: black;
+            }
+
+            label {
+              @include desktop {
+                color: blue;
+              }
+            }
+          </style>
+        </input>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>@media screen and (max-width: 400px) { [data-pc-93ddfa3b] { color:red; } } @media screen and (max-width: 1280px) { [data-pc-93ddfa3b] { color:black; } } @media screen and (max-width: 1280px) { [data-pc-93ddfa3b] label[data-pc-80f4925f] { color:blue; } }</style><input data-pc-80f4925f data-pc-93ddfa3b></input>`
     );
   });
 });

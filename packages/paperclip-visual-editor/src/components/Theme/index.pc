@@ -1,4 +1,4 @@
-<import src="./open-sans/font-face.pc">
+<import src="./open-sans/font-face.pc" />
 
 
 

@@ -234,7 +234,7 @@ The `@export` rule allows you to export styles to other documents, as well as ap
 
 ```html live  height=150px
 // file: main.pc
-<import src="./styles.pc" as="styles">
+<import src="./styles.pc" as="styles" />
 
 <style>
   .header-text {
@@ -324,7 +324,7 @@ Paperclip allows you to explicitly reference class selectors, which is helpful i
 
 ```html live height=150px
 // file: main.pc
-<import src="./atoms.pc" as="atoms">
+<import src="./atoms.pc" as="atoms" />
 
 <span className="$atoms.font-default">
   Hello
@@ -420,7 +420,7 @@ import * as ui from './Select.pc';
 
 ```html live height=150px
 // file: demo.pc
-<import src="./styles.pc">
+<import src="./styles.pc" />
 <style>
   .message {
     color: var(--color-red-default);
@@ -467,7 +467,7 @@ You can import [styles](#styling) & [components](#components) from other files.
 **Syntax**:
 
 ```html
-<import src="./path/to/document.pc" as="unique-namespace">
+<import src="./path/to/document.pc" as="unique-namespace" />
 ```
 
 
@@ -475,8 +475,8 @@ You can import [styles](#styling) & [components](#components) from other files.
 
 ```html live height=150px
 // file: main.pc
-<import src="./pane.pc" as="pane">
-<import src="./atoms.pc" as="atoms">
+<import src="./pane.pc" as="pane" />
+<import src="./atoms.pc" as="atoms" />
 
 <pane.Container>
   <pane.Header>
@@ -491,7 +491,7 @@ You can import [styles](#styling) & [components](#components) from other files.
 
 
 // file: pane.pc
-<import src="./atoms.pc" as="atoms">
+<import src="./atoms.pc" as="atoms" />
 <style>
   .Container {
     @include atoms.font-default;
@@ -609,7 +609,7 @@ Anything that doesn't have a `component` attribute is rendered to the screen, so
 
 ```html live height=150px
 // file: buttons.pc
-<import src="./styles.pc" as="styles">
+<import src="./styles.pc" as="styles" />
 
 <!-- Components -->
 
@@ -687,7 +687,7 @@ Components can be exported to be used in application code, as well as other docu
 
 ```html live height=250px
 // file: todos.pc
-<import src="./styles.pc" as="styles">
+<import src="./styles.pc" as="styles" />
 
 <!-- Components -->
 
@@ -796,7 +796,7 @@ We can also use our exported component in other Paperclip documents. Here's an e
 
 ```html live height=250px
 // file: importing-components-demo.pc
-<import src="./todos.pc" as="todos">
+<import src="./todos.pc" as="todos" />
 
 <style>
   .preview {
@@ -813,7 +813,7 @@ We can also use our exported component in other Paperclip documents. Here's an e
 </div>
 
 // file: todos.pc
-<import src="./styles.pc" as="styles">
+<import src="./styles.pc" as="styles" />
 
 <!-- Components -->
 
@@ -912,7 +912,7 @@ attributeBoundToClassName="$class-name"
 
 ```html live height=150px
 // file: style-override-demo.pc
-<import as="Message" src="./message.pc">
+<import as="Message" src="./message.pc" />
 <style>
   .my-style-override {
     text-decoration: underline;
@@ -994,7 +994,7 @@ There will probably be the case where you want to define multiple areas of a com
 
 ```html live height=250px
 // file: main.pc
-<import src="./styles.pc" as="styles">
+<import src="./styles.pc" as="styles" />
 
 <!-- Components -->
 
@@ -1062,8 +1062,8 @@ Attributes allow you to define dynamic component properties. For example:
 
 ```html live height=150px
 // file: buttons.pc
-<import src="./typography.pc" as="typography">
-<import src="./styles.pc" as="styles">
+<import src="./typography.pc" as="typography" />
+<import src="./styles.pc" as="styles" />
 
 <!-- Components -->
 
@@ -1080,7 +1080,7 @@ Attributes allow you to define dynamic component properties. For example:
 </Button>
 
 // file: styles.pc
-<import src="./typography.pc" as="typography">
+<import src="./typography.pc" as="typography" />
 <style>
   @export {
     .button {
