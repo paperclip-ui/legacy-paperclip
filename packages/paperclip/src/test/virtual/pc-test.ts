@@ -1285,4 +1285,42 @@ describe(__filename + "#", () => {
       `<style>[data-pc-5810fe6d] { background:blue; }</style><input data-pc-5810fe6d data-pc-80f4925f></input>`
     );
   });
+
+  it(`Can scope media queries`, async () => {
+    const graph = {
+      "/entry.pc": `
+
+        <style>
+          @mixin desktop {
+            @media screen and (max-width: 1280px) {
+              @content;
+            }
+          }
+        </style>
+        <input>
+          <style>
+            @media screen and (max-width: 400px) {
+              color: red;
+            }
+
+            @include desktop {
+              color: black;
+            }
+
+            label {
+              @include desktop {
+                color: blue;
+              }
+            }
+          </style>
+        </input>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>@media screen and (max-width: 400px) { [data-pc-93ddfa3b] { color:red; } } @media screen and (max-width: 1280px) { [data-pc-93ddfa3b] { color:black; } } @media screen and (max-width: 1280px) { [data-pc-93ddfa3b] label[data-pc-80f4925f] { color:blue; } }</style><input data-pc-80f4925f data-pc-93ddfa3b></input>`
+    );
+  });
 });

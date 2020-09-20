@@ -131,7 +131,7 @@
         <a href="https://github.com/crcn/paperclip/tree/master/examples/react-todomvc">Source</a>   
       </span> 
     </header>
-    <hr>
+    <hr />
     <blockquote class="quote speech-bubble">
       <p>
         Paperclip is a tiny language that's optimized
@@ -141,7 +141,7 @@
         <a href="http://paperclip.dev">Paperclip.js</a>
       </footer>
     </blockquote>
-    <hr>
+    <hr />
     <h4>Official Resources</h4>
     <ul>
         <li> <a href="http://paperclip.dev/guide/">Documentation</a> </li>
@@ -154,7 +154,7 @@
           <li> <a href="https://github.com/crcn/paperclip/issues">Discussions on GitHub</a> </li>
       </ul>
       <footer>
-        <hr> 
+        <hr /> 
         <em>
           If you have other helpful links to share, or find any of the links above no longer work, please <a href="https://github.com/tastejs/todomvc/issues">let us know</a>.
         </em> 

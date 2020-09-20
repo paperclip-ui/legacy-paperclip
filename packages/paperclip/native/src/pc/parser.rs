@@ -76,7 +76,6 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
       let tag_name = parse_tag_name(tokenizer)?;
       tokenizer.next_expect(Token::GreaterThan)?;
 
-
       Err(ParseError::unexpected(
         "Closing tag doesn't have an open tag.".to_string(),
         start,
@@ -206,7 +205,6 @@ fn parse_element<'a>(
     parse_next_basic_element_parts(tag_name, tag_name_end, attributes, tokenizer, start)
   }
 }
-
 
 fn parse_next_basic_element_parts<'a>(
   tag_name: String,

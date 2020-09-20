@@ -220,12 +220,21 @@ fn evaluate_condition_rule(
   evaluate_style_rules(&rule.rules, parent_selector_text, &mut child_context)?;
 
   if rule.declarations.len() > 0 {
+
+    let mut selector_text = parent_selector_text.to_string();
+
+    if parent_selector_text == "" {
+      if let Some(element_scope) = &context.element_scope {
+        selector_text = format!("[data-pc-{}]", element_scope);
+      }
+    }
+
     let style =
-      evaluate_style_declarations(&rule.declarations, parent_selector_text, &mut child_context)?;
+      evaluate_style_declarations(&rule.declarations, &selector_text, &mut child_context)?;
     child_context
       .all_rules
       .push(virt::Rule::Style(virt::StyleRule {
-        selector_text: parent_selector_text.to_string(),
+        selector_text,
         style,
       }))
   }
