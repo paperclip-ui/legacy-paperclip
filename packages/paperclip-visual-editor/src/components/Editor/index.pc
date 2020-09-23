@@ -1,3 +1,12 @@
+<!--
+TODOS:
+- variants
+
+- Position
+  - Display
+  - 
+-->
+
 <import src="components/Theme/index.pc" as="theme" />
 <import src="./RightSidebar/index.pc" as="RightSidebar" />
 <import src="./Center/index.pc" as="Center" />
