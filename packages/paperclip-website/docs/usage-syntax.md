@@ -116,6 +116,81 @@ div {
 }
 ```
 
+### Element scoping
+
+⚠️ This is currently an experimental feature.
+
+Style blocks that are the defined within elements are _scoped_ to that element. For example:
+
+```html live height=150px
+<div>
+  <style>
+    :self {
+      color: red;
+    }
+    span {
+      color: blue;
+    }
+  </style>
+
+  I'm red text!
+
+  <span>I'm blue text!</span>
+</div>
+
+I'm black text
+```
+
+The `:self` selector applies to the parent element that the style block is defined in. It can also be omitted like so:
+
+```html live height=150px
+
+<div>
+  <style>
+    color: red;
+    font-family: sans-serif;
+
+
+    span {
+      color: blue;
+    }
+  </style>
+
+  I'm red text!
+
+  <span>I'm blue text!</span>
+</div>
+```
+
+Scoped styles are recommended since they keep your styles & elements together in one spot, which makes them a bit more portable & maintianable if you're looking to move or refactor code. 
+
+
+### :self
+
+`:self` is a special selector that applies to _parent_ elements of `style blocks`. 
+
+### :self(selector)
+
+`:self([selector])` allows you to select parent elements with `[selector]`. For example:
+
+```html live height=150px
+<div className="blue">
+  <style>
+    color: red;
+    font-family: sans-serif;
+
+    :self(.blue) {
+      color: blue;
+    }
+  </style>
+
+  some text
+</div>
+```
+
+☝ This is particularly useful for [style variants](#variant-styles).
+
+
 ### @mixin
 
 Style mixins are useful for defining a bundle of style declarations (like `color`, `font-size`) that you then can include into style rules.
@@ -236,15 +311,14 @@ The `@export` rule allows you to export styles to other documents, as well as ap
 // file: main.pc
 <import src="./styles.pc" as="styles" />
 
-<style>
-  .header-text {
-    @include styles.big-text;
-    animation: styles.pulse 1s infinite;
-  }
-</style>
 
 <!-- $ is a class reference - docs below -->
-<div className="header-text $styles.default-text">
+<div className="$styles.default-text">
+  <style>
+    @include styles.big-text;
+    animation: styles.pulse 1s infinite;
+  </style>
+
   Hello again!
 </div>
 
@@ -421,12 +495,11 @@ import * as ui from './Select.pc';
 ```html live height=150px
 // file: demo.pc
 <import src="./styles.pc" />
-<style>
-  .message {
-    color: var(--color-red-default);
-  }
-</style>
+
 <div className="message">
+  <style>
+    color: var(--color-red-default);
+  </style>
   A male barber shaves all and only those men who do not shave themselves. Does he shave himself?
 </div>
 // file: styles.pc
@@ -493,29 +566,31 @@ You can import [styles](#styling) & [components](#components) from other files.
 // file: pane.pc
 <import src="./atoms.pc" as="atoms" />
 <style>
-  .Container {
-    @include atoms.font-default;
-  }
-  .Header, .Content {
+  @mixin padded {
     margin: 0px 8px;
-  }
-  .Header {
-    font-size: 18px;
-    font-weight: 600;
-  }
-  .Content {
   }
 </style>
 
 <div export component as="Container" className="Container">
+  <style>
+    @include atoms.font-default;
+  </style>
   {children}
 </div>
 
 <div export component as="Header" className="Header">
+  <style>
+    @include padded;
+    font-size: 18px;
+    font-weight: 600;
+  </style>
   {children}
 </div>
 
 <div export component as="Content" className="Content">
+  <style>
+    @include padded;
+  </style>
   {children}
 </div>
 
@@ -566,18 +641,14 @@ Components are your UI building blocks.
 **Example**:
 
 ```html live height=150px
-<style>
-  .Message {
-    font-family: Comic Sans MS;
-    font-size: 32px;
-    color: #F0F;
-  }
-</style>
-
-<!-- Components section -->
 
 <!-- className and class can be used interchangeably -->
 <div component as="Message" className="Message">
+  <style>
+    font-family: Comic Sans MS;
+    font-size: 32px;
+    color: #F0F;
+  </style>
   {children}
 </div>
 
@@ -924,13 +995,11 @@ attributeBoundToClassName="$class-name"
 
 // file: message.pc
 
-<style>
-  .message {
-    font-size: 24px;
-    font-family: Helvetica;
-  }
-</style>
-<div export component as="default" className="message {className?}">
+<div export component as="default" className="{className?}">
+  <style>
+      font-size: 24px;
+      font-family: Helvetica;
+  </style>
   {children}
 </div>
 ```
@@ -1197,30 +1266,31 @@ The variant style syntax allows you to apply classes based on component properti
 **Example**:
 
 ```html live height=200px
-<style>
-  .Header {
+
+
+<div component as="Header"
+  className:big="big"
+  className:medium="medium"
+  className:small="small">
+
+  <style>
     font-family: Luminari;
     font-size: 12px;
 
     /* I recommend that you do this instead of &.big to avoid
     CSS specificity issues */
-    &--big {
+    :self(.big) {
       font-size: 32px;
     }
-    &--medium {
+    :self(.medium) {
       font-size: 18px;
     }
-    &--small {
+    :self(.small) {
       font-size: 12px;
     }
-  }
-</style>
 
-<div component as="Header"
-  className="Header"
-  className:big="Header--big"
-  className:medium="Header--medium"
-  className:small="Header--small">
+  </style>
+
   {children}
 </div>
 
