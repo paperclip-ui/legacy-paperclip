@@ -303,7 +303,10 @@ fn evaluate_node_sheet<'a>(
 
   let element_scope = if let Some(parent) = parent {
     if let ast::Node::Element(element) = parent {
-      Some(get_element_scope(element, context))
+      Some((
+        get_element_scope(element, context),
+        is_component_instance(element, context),
+      ))
     } else {
       None
     }
@@ -802,7 +805,44 @@ fn create_component_instance_data<'a>(
     instance_element.location.clone(),
   ));
 
-  let (ret_children, _) = evaluate_children(&instance_element.children, depth, context)?;
+  let (ret_children, contains_style) =
+    evaluate_children(&instance_element.children, depth, context)?;
+
+  if contains_style {
+    let class_name_option = data
+      .values
+      .get("className")
+      .or_else(|| data.values.get("class"));
+
+    let class_name_value = if let Some(class_name) = class_name_option {
+      class_name.to_string()
+    } else {
+      "".to_string()
+    };
+
+    let scope_class_name = get_element_scope(instance_element, context);
+
+    let new_class_name = if let Some(class_name) = class_name_option {
+      format!("{} _{}", class_name.to_string(), scope_class_name)
+    } else {
+      format!("_{}", scope_class_name)
+    };
+
+    let new_class_name_value = js_virt::JsValue::JsString(js_virt::JsString {
+      value: new_class_name,
+      source: ExprSource {
+        uri: context.uri.clone(),
+        location: Location { start: 0, end: 0 },
+      },
+    });
+
+    data
+      .values
+      .insert("class".to_string(), new_class_name_value.clone());
+    data
+      .values
+      .insert("className".to_string(), new_class_name_value.clone());
+  }
 
   let children: Vec<js_virt::JsValue> = ret_children
     .into_iter()
@@ -842,13 +882,6 @@ fn evaluate_component_instance<'a>(
   dep_uri: &String,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-  // if matches!(&context
-  //   .graph
-  //   .dependencies
-  //   .get(&dep_uri.to_string()), None) {
-  //   panic!("UH OH!");
-  // }
-
   let dep = &context
     .graph
     .dependencies
@@ -1299,6 +1332,11 @@ fn evaluate_attribute_dynamic_string<'a>(
 
 fn is_class_attribute_name(name: &String) -> bool {
   name == "class" || name == "className"
+}
+
+fn is_component_instance<'a>(element: &ast::Element, context: &Context<'a>) -> bool {
+  context.import_ids.contains(&ast::get_tag_name(&element))
+    || context.part_ids.contains(&element.tag_name)
 }
 
 fn transform_class_value<'a>(name: &String, value: &String, context: &mut Context) -> String {

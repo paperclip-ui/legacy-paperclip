@@ -129,7 +129,10 @@ const translateStyleSheet = (sheet: VirtSheet, context: TranslateContext) => {
   if (!sheet.rules.length) {
     return context;
   }
-  context = addBuffer(`if (typeof document !== "undefined") {\n`, context);
+  context = addBuffer(
+    `if (typeof document !== "undefined" && typeof window !== "undefined") {\n`,
+    context
+  );
   context = startBlock(context);
   context = addBuffer(
     `const style = document.createElement("style");\n`,
@@ -179,6 +182,7 @@ const translateUtils = (ast: Node, context: TranslateContext) => {
   // context = translateStyleDataAttributes(context);
   // context = translateStyledUtil(ast, context);
   context = translateGetDefaultUtil(context);
+  context = translateAddClassUtil(context);
   context = translateCastStyleUtil(context);
   context = translateClassNamesUtil(context);
 
@@ -228,6 +232,24 @@ const translateGetDefaultUtil = (context: TranslateContext) => {
     `const getDefault = (module) => module.default || module;\n\n`,
     context
   );
+  return context;
+};
+
+const translateAddClassUtil = (context: TranslateContext) => {
+  context = addBuffer(
+    `const addClass = (className, properties) => ({\n`,
+    context
+  );
+
+  context = startBlock(context);
+  context = addBuffer(`...properties,\n`, context);
+  context = addBuffer(
+    `className: properties.className ? properties.className + " " + className : className,\n`,
+    context
+  );
+  context = endBlock(context);
+  context = addBuffer(`});\n\n`, context);
+
   return context;
 };
 
@@ -587,6 +609,9 @@ const translateJSXNode = (
   return context;
 };
 
+const containsStyleElement = (element: Element) =>
+  element.children.some(child => child.kind === NodeKind.StyleElement);
+
 const translateElement = (
   element: Element,
   isRoot: boolean,
@@ -610,6 +635,19 @@ const translateElement = (
     }, `,
     context
   );
+
+  const _containsStyleElement = containsStyleElement(element);
+  const shouldAddElementScopeClass =
+    _containsStyleElement && isComponentInstance;
+
+  // a wee-bit easier to use a utility class for attaching classes since it doesn't require any fancy logic to handle
+  // things like spread operators
+  if (shouldAddElementScopeClass) {
+    context = addBuffer(
+      `addClass("_${getElementScopeId(element, context.fileUri)}",`,
+      context
+    );
+  }
 
   context = addBuffer(`{\n`, context);
   context = startBlock(context);
@@ -655,6 +693,9 @@ const translateElement = (
 
   context = endBlock(context);
   context = addBuffer(`}`, context);
+  if (shouldAddElementScopeClass) {
+    context = addBuffer(`)`, context);
+  }
   context = endBlock(context);
   if (element.children.length) {
     context = addBuffer(`,\n`, context);

@@ -250,6 +250,92 @@ describe(__filename + "#", () => {
       {
         Entry: `<span data-pc-a08584c0="true" data-pc-3402f12b="true"><span data-pc-6d9daab6="true" data-pc-3402f12b="true"></span><h1 data-pc-6d9daab6="true" data-pc-3402f12b="true"></h1><div data-pc-6d9daab6="true" data-pc-3402f12b="true"></div></span>`
       }
+    ],
+    [
+      "Can apply scoped styles to component instance",
+      {
+        "/entry.pc": `
+
+          <div export component as="Test" {className?}>
+          </div>
+
+          <div export component as="Entry">
+            <Test>
+              <style>
+                color: blue;
+              </style>
+            </Test>
+          </div>
+        `
+      },
+      {
+        Entry: {
+          tagName: "span",
+          tagName2: "h1"
+        }
+      },
+      {
+        Entry: `<span data-pc-7d8b7cdd="true" data-pc-3402f12b="true"><div data-pc-84fe0f83="true" data-pc-3402f12b="true" class="_3402f12b__f347d198 _f347d198"></div></span>`
+      }
+    ],
+    [
+      "Can apply scoped styles to component instance that already has a class",
+      {
+        "/entry.pc": `
+
+          <div export component as="Test" {className?}>
+          </div>
+
+          <div export component as="Entry">
+            <Test className="another-test">
+              <style>
+                color: blue;
+              </style>
+            </Test>
+          </div>
+        `
+      },
+      {
+        Entry: {
+          tagName: "span",
+          tagName2: "h1"
+        }
+      },
+      {
+        Entry: `<span data-pc-281753a3="true" data-pc-3402f12b="true"><div data-pc-84fe0f83="true" data-pc-3402f12b="true" class="_3402f12b__3402f12b_another-test another-test _d5778291 _3402f12b_another-test another-test _d5778291"></div></span>`
+      }
+    ],
+    [
+      "Can apply scoped styles to a instance of instaance of component",
+      {
+        "/entry.pc": `
+
+          <div export component as="Test" {className?}>
+          </div>
+          <Test component as="Test2" className="blaaaa {className?}">
+            <style>
+              color: orange;
+            </style>
+          </Test>
+
+          <div export component as="Entry">
+            <Test2 className="another-test">
+              <style>
+                color: blue;
+              </style>
+            </Test2>
+          </div>
+        `
+      },
+      {
+        Entry: {
+          tagName: "span",
+          tagName2: "h1"
+        }
+      },
+      {
+        Entry: `<span data-pc-f76f97d="true" data-pc-3402f12b="true"><div data-pc-84fe0f83="true" data-pc-3402f12b="true" class="_3402f12b__3402f12b_blaaaa blaaaa _3402f12b__3402f12b_another-test another-test _d3bb99a3 _3402f12b_another-test another-test _d3bb99a3 _b7ad9c7c _3402f12b_blaaaa blaaaa _3402f12b__3402f12b_another-test another-test _d3bb99a3 _3402f12b_another-test another-test _d3bb99a3 _b7ad9c7c"></div></span>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {

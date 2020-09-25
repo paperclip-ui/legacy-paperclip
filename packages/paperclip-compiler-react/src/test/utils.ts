@@ -27,6 +27,7 @@ export const compileModules = async (graph: Record<string, string>) => {
       { ast, sheet, classNames: exports.style.classNames },
       path
     );
+
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
     const module = new Function(
       `require`,
