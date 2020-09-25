@@ -180,8 +180,6 @@ export default (state: AppState, action: Action) => {
             action.payload.item.absolutePath,
             newState.projectDirectory
           );
-          console.log(action.payload.item.absolutePath, target);
-          console.log(state.projectDirectory);
           if (target) {
             (target as Directory).children = action.payload.item.children;
           }

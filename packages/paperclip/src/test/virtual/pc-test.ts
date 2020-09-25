@@ -6,7 +6,7 @@ import {
   stringifyLoadResult,
   noop
 } from "../utils";
-import { stringifyVirtualNode } from "paperclip-utils";
+import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
@@ -604,8 +604,7 @@ describe(__filename + "#", () => {
 
     try {
       await engine.run("/entry.pc");
-      const ast = engine.getLoadedAst("/entry.pc");
-      console.log(JSON.stringify(ast, null, 2));
+      engine.getLoadedAst("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -749,8 +748,7 @@ describe(__filename + "#", () => {
 
     try {
       await engine.run("/entry.pc");
-      const ast = engine.getLoadedAst("/entry.pc");
-      console.log(JSON.stringify(ast, null, 2));
+      engine.getLoadedAst("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -808,8 +806,7 @@ describe(__filename + "#", () => {
 
     try {
       await engine.run("/entry.pc");
-      const ast = engine.getLoadedAst("/entry.pc");
-      console.log(JSON.stringify(ast, null, 2));
+      engine.getLoadedAst("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -1390,6 +1387,60 @@ describe(__filename + "#", () => {
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._9e9447b6 { background:blue; } [class]._60aee781 { background:orange; }</style><div className="_80f4925f_test test _80f4925f_test3 test3 _80f4925f__60aee781 _60aee781 _80f4925f__9e9447b6 _9e9447b6" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Properly emits correct events`, async () => {
+    const graph = {
+      "/entry.pc": `
+        a
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const events = [];
+    engine.onEvent(events.push.bind(events));
+    await engine.run("/entry.pc");
+    await engine.updateVirtualFileContent("/entry.pc", "b");
+    await engine.updateVirtualFileContent("/entry.pc", "c");
+    expect(events.map(event => event.kind)).to.eql([
+      EngineEventKind.Loaded,
+      EngineEventKind.Evaluated,
+      EngineEventKind.Diffed,
+      EngineEventKind.Diffed
+    ]);
+  });
+
+  // fixes https://github.com/crcn/paperclip/issues/508
+  it(`properly applies scoped style for nested & combo`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div component as="Test">
+        <style>
+          color: red;
+
+          a {
+            background: blue;
+
+            &.b, &.c {
+              opacity: 1;
+            }
+
+            e {
+              color: orange;
+            }
+          }
+        </style>
+      </div>
+      
+      <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      "<style>[data-pc-5578d99] a[data-pc-80f4925f] { background:blue; } [data-pc-5578d99] a[data-pc-80f4925f][class].b { opacity:1; } [data-pc-5578d99] a[data-pc-80f4925f][class].c { opacity:1; } [data-pc-5578d99] a[data-pc-80f4925f] e[data-pc-80f4925f] { color:orange; } [data-pc-5578d99] { color:red; }</style><div data-pc-5578d99 data-pc-80f4925f></div>"
     );
   });
 });

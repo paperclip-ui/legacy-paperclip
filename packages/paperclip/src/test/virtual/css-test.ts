@@ -599,8 +599,7 @@ describe(__filename + "#", () => {
     let err;
 
     try {
-      const r = await engine.run("/entry.pc");
-      console.log(stringifyLoadResult(r));
+      await engine.run("/entry.pc");
     } catch (e) {
       err = e;
     }

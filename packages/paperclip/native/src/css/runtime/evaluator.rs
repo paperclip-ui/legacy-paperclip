@@ -676,7 +676,7 @@ fn evaluate_style_rule2(
         true,
         match selector {
           ast::Selector::This(_) => false,
-          _ => true,
+          _ => parent_selector_text == "",
         },
         context,
       );
