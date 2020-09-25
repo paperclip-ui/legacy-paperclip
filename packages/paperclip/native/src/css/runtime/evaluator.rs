@@ -69,7 +69,6 @@ pub fn evaluate<'a>(
     if let Some(_) = &context.element_scope {
       let (scope, is_instance) = context.element_scope.clone().unwrap();
 
-
       let mut style =
         evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
 
@@ -1006,7 +1005,11 @@ fn stringify_element_selector(
 
   if include_element_scope {
     if let Some((scope, is_instance)) = &context.element_scope {
-      scoped_selector_text = format!("{} {}", get_element_scope_selector(scope, is_instance), scoped_selector_text);
+      scoped_selector_text = format!(
+        "{} {}",
+        get_element_scope_selector(scope, is_instance),
+        scoped_selector_text
+      );
     }
   }
 

@@ -1365,4 +1365,31 @@ describe(__filename + "#", () => {
       `<style>[class]._2a5db777 { background:blue; }</style><div className="_80f4925f_test test _80f4925f__2a5db777 _2a5db777" data-pc-80f4925f></div>`
     );
   });
+
+  it(`Can apply styles to instance of instance of component`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" {className?}>
+
+        </div>
+        <Test component as="Test2" className="test {className?}">
+          <style>
+            background: blue;
+          </style>
+        </Test>
+        <Test2 className="test3">
+          <style>
+            background: orange;
+          </style>
+        </Test2>
+
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._9e9447b6 { background:blue; } [class]._60aee781 { background:orange; }</style><div className="_80f4925f_test test _80f4925f_test3 test3 _80f4925f__60aee781 _60aee781 _80f4925f__9e9447b6 _9e9447b6" data-pc-80f4925f></div>`
+    );
+  });
 });
