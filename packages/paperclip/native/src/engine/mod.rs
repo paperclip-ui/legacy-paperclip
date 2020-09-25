@@ -108,7 +108,7 @@ impl Engine {
 
   pub async fn run(&mut self, uri: &String) -> Result<(), EngineError> {
     // need to purge cache in case there's a parse error.
-    self.evaluated_data.remove(uri);
+    // self.evaluated_data.remove(uri);
     self.running.insert(uri.to_string());
     self.load(uri).await?;
     Ok(())
@@ -153,6 +153,7 @@ impl Engine {
         Ok(())
       }
       Err(error) => {
+        self.evaluated_data.remove(uri);
         self.dispatch(EngineEvent::Error(EngineError::Graph(error.clone())));
         Err(EngineError::Graph(error))
       }
@@ -247,6 +248,7 @@ impl Engine {
       Ok(node_option) => {
         if let Some(info) = node_option {
           let existing_info_option = self.evaluated_data.remove(uri);
+          
 
           let data = EvaluateData {
             all_dependencies,
@@ -295,7 +297,7 @@ impl Engine {
         }
       }
       Err(err) => {
-        self.evaluated_data.remove(uri);
+        // self.evaluated_data.remove(uri);
         let e = EngineError::Runtime(err.clone());
         self.dispatch(EngineEvent::Error(e));
         Err(err)

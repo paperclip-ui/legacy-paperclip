@@ -65,7 +65,6 @@ export const startServer = async ({
     };
 
     const disposeEngineListener = engine.onEvent(event => {
-      console.log(event.uri, targetUri);
       if (event.uri !== targetUri) {
         return;
       }

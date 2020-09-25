@@ -6,7 +6,7 @@ import {
   stringifyLoadResult,
   noop
 } from "../utils";
-import { stringifyVirtualNode } from "paperclip-utils";
+import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
@@ -604,8 +604,7 @@ describe(__filename + "#", () => {
 
     try {
       await engine.run("/entry.pc");
-      const ast = engine.getLoadedAst("/entry.pc");
-      console.log(JSON.stringify(ast, null, 2));
+      engine.getLoadedAst("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -749,8 +748,7 @@ describe(__filename + "#", () => {
 
     try {
       await engine.run("/entry.pc");
-      const ast = engine.getLoadedAst("/entry.pc");
-      console.log(JSON.stringify(ast, null, 2));
+      engine.getLoadedAst("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -808,8 +806,7 @@ describe(__filename + "#", () => {
 
     try {
       await engine.run("/entry.pc");
-      const ast = engine.getLoadedAst("/entry.pc");
-      console.log(JSON.stringify(ast, null, 2));
+      engine.getLoadedAst("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -1391,5 +1388,26 @@ describe(__filename + "#", () => {
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._9e9447b6 { background:blue; } [class]._60aee781 { background:orange; }</style><div className="_80f4925f_test test _80f4925f_test3 test3 _80f4925f__60aee781 _60aee781 _80f4925f__9e9447b6 _9e9447b6" data-pc-80f4925f></div>`
     );
+  });
+
+  it(`Properly emits correct events`, async () => {
+    const graph = {
+      "/entry.pc": `
+        a
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const events = [];
+    engine.onEvent(events.push.bind(events));
+    await engine.run("/entry.pc");
+    await engine.updateVirtualFileContent("/entry.pc", "b");
+    await engine.updateVirtualFileContent("/entry.pc", "c");
+    expect(events.map(event => event.kind)).to.eql([
+      EngineEventKind.Loaded,
+      EngineEventKind.Evaluated,
+      EngineEventKind.Diffed,
+      EngineEventKind.Diffed
+    ]);
   });
 });
