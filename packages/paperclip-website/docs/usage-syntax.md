@@ -969,6 +969,7 @@ No preview here!
 
 ☝🏻 This is a pattern is pretty useful - creating various `preview` components & then using them in other documents to preview your entire application UI. They're removed from your application bundle (so long as you don't use them in app code) because of [tree-shaking](https://webpack.js.org/guides/tree-shaking/).
 
+
 ### Overriding component styles
 
 You can override styles in other components assuming that a component exposes an attribute that's bound to `className`. 
@@ -1005,6 +1006,34 @@ attributeBoundToClassName="$class-name"
 ```
 
 Check out [class references](#class-reference) for more information on how to use `$`.
+
+#### Using scoped styles
+
+Alternatively, you can overriding your components appearance by using scoped styles like so:
+
+```html live
+
+<!-- Note that className is still necessary here! -->
+<div export component as="Message" {className?}>
+  <style>
+    font-family: sans-serif;
+    color: red;
+  </style>
+  {children}
+</div>
+
+<Message>
+  <style>
+    color: blue;
+  </style>
+
+  I'm blue text!
+</Message>
+```
+
+Note that you need to provide a `className` in your component for inline style overrides to work. To see what I'm talking about, try removing the `{className?}` binding above and see what happens!
+
+☝🏻 this approach keeps your overrides together, which I find a bit easier to read. The other benefit to this approach is that your code remains portable since everything's in one spot -- super nice for refactoring. 
 
 ### Changing the tag name
 
