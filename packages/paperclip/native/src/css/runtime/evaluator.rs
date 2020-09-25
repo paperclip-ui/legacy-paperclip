@@ -13,7 +13,7 @@ use std::collections::{BTreeMap, HashMap};
 
 pub struct Context<'a> {
   document_scope: &'a str,
-  element_scope: Option<String>,
+  element_scope: Option<(String, bool)>,
   content: Option<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>)>,
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
@@ -35,7 +35,7 @@ pub fn evaluate<'a>(
   expr: &ast::Sheet,
   uri: &'a String,
   document_scope: &'a str,
-  element_scope: Option<String>,
+  element_scope: Option<(String, bool)>,
   import_scopes: BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
@@ -66,8 +66,9 @@ pub fn evaluate<'a>(
   }
 
   if expr.declarations.len() > 0 || context.inc_declarations.len() > 0 {
-    if let Some(scope) = &context.element_scope {
-      let el_scope = scope.to_string();
+    if let Some(_) = &context.element_scope {
+      let (scope, is_instance) = context.element_scope.clone().unwrap();
+
 
       let mut style =
         evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
@@ -76,7 +77,7 @@ pub fn evaluate<'a>(
       style.extend(context.inc_declarations.clone());
 
       context.all_rules.push(virt::Rule::Style(virt::StyleRule {
-        selector_text: format!("[data-pc-{}]", el_scope),
+        selector_text: get_element_scope_selector(&scope, &is_instance),
         style,
       }));
     }
@@ -223,7 +224,7 @@ fn evaluate_condition_rule(
     let mut selector_text = parent_selector_text.to_string();
 
     if parent_selector_text == "" {
-      if let Some(element_scope) = &context.element_scope {
+      if let Some((element_scope, is_instance)) = &context.element_scope {
         selector_text = format!("[data-pc-{}]", element_scope);
       }
     }
@@ -733,6 +734,14 @@ fn stringify_nestable_selector(
   )
 }
 
+fn get_element_scope_selector(scope: &String, is_instance: &bool) -> String {
+  if *is_instance {
+    format!("[class]._{}", scope)
+  } else {
+    format!("[data-pc-{}]", scope)
+  }
+}
+
 fn stringify_element_selector(
   selector: &ast::Selector,
   include_scope: bool,
@@ -832,8 +841,8 @@ fn stringify_element_selector(
       )
     ),
     ast::Selector::This(selector) => {
-      let self_selector = if let Some(scope) = &context.element_scope {
-        format!("[data-pc-{}]", scope)
+      let self_selector = if let Some((scope, is_instance)) = &context.element_scope {
+        get_element_scope_selector(scope, is_instance)
       } else {
         scope_selector
       };
@@ -996,8 +1005,8 @@ fn stringify_element_selector(
   };
 
   if include_element_scope {
-    if let Some(element_scope) = &context.element_scope {
-      scoped_selector_text = format!("[data-pc-{}] {}", element_scope, scoped_selector_text);
+    if let Some((scope, is_instance)) = &context.element_scope {
+      scoped_selector_text = format!("{} {}", get_element_scope_selector(scope, is_instance), scoped_selector_text);
     }
   }
 

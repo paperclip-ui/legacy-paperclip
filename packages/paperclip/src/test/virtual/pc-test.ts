@@ -1323,4 +1323,46 @@ describe(__filename + "#", () => {
       `<style>@media screen and (max-width: 400px) { [data-pc-93ddfa3b] { color:red; } } @media screen and (max-width: 1280px) { [data-pc-93ddfa3b] { color:black; } } @media screen and (max-width: 1280px) { [data-pc-93ddfa3b] label[data-pc-80f4925f] { color:blue; } }</style><input data-pc-80f4925f data-pc-93ddfa3b></input>`
     );
   });
+
+  it(`Can apply styles to a component`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" {className?}>
+
+        </div>
+        <Test>
+          <style>
+            background: blue;
+          </style>
+        </Test>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._4a9a3e92 { background:blue; }</style><div className="_80f4925f__4a9a3e92 _4a9a3e92" data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can apply styles to a component that has a class already defined`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test" {className?}>
+
+        </div>
+        <Test className="test">
+          <style>
+            background: blue;
+          </style>
+        </Test>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._2a5db777 { background:blue; }</style><div className="_80f4925f_test test _80f4925f__2a5db777 _2a5db777" data-pc-80f4925f></div>`
+    );
+  });
 });

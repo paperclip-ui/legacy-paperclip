@@ -1,28 +1,9 @@
-
-
-<div export component as="Test" className:variant="variant">
-
-  <style>
-    color: rgb(24, 133, 33);
-    font-family: sans-serif;
-    font-size: 24px;
-
-    :self(.variant) {
-      color: rgb(155, 17, 17);
-    }
-
-    span {
-      color: orange;
-    }
-  </style>
-
-  Color
-
-  <span>
-    something like this should work
-  </span>
-
+<div component as="Test" {className?}>
+  Hello world
 </div>
 
-<Test />
-<Test  variant />
+<Test>
+  <style>
+    color: red;
+  </style>
+</Test>
