@@ -248,7 +248,6 @@ impl Engine {
       Ok(node_option) => {
         if let Some(info) = node_option {
           let existing_info_option = self.evaluated_data.remove(uri);
-          
 
           let data = EvaluateData {
             all_dependencies,

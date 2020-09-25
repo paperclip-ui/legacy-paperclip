@@ -1410,4 +1410,37 @@ describe(__filename + "#", () => {
       EngineEventKind.Diffed
     ]);
   });
+
+  // fixes https://github.com/crcn/paperclip/issues/508
+  it(`properly applies scoped style for nested & combo`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div component as="Test">
+        <style>
+          color: red;
+
+          a {
+            background: blue;
+
+            &.b, &.c {
+              opacity: 1;
+            }
+
+            e {
+              color: orange;
+            }
+          }
+        </style>
+      </div>
+      
+      <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      "<style>[data-pc-5578d99] a[data-pc-80f4925f] { background:blue; } [data-pc-5578d99] a[data-pc-80f4925f][class].b { opacity:1; } [data-pc-5578d99] a[data-pc-80f4925f][class].c { opacity:1; } [data-pc-5578d99] a[data-pc-80f4925f] e[data-pc-80f4925f] { color:orange; } [data-pc-5578d99] { color:red; }</style><div data-pc-5578d99 data-pc-80f4925f></div>"
+    );
+  });
 });
