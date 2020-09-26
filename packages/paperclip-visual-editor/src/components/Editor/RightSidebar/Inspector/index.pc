@@ -1,1 +1,62 @@
-INSPECOR
+<import src="components/Select/index.pc" as="Select" />
+
+<div export component as="Preview">
+  
+  <div>
+    <style>
+      padding: 10px;
+      border-bottom: 1px solid rgb(90, 90, 90);
+    </style>
+    <Select.Preview placeholder="div" />
+  </div>
+
+  <div>
+    <style>
+    </style>
+    <div>
+      <style>
+        background: var(--background-2);
+        padding: 5px 10px;
+      </style>
+      style
+    </div>
+    <PropertyList>
+      <PropertyItem name="background" value="rgba(0,0,0)" />
+      <PropertyItem name="color" value="blue" />
+      <PropertyItem name="display" value="inline-block" />
+    </PropertyList>
+
+  </div>
+</div>
+
+<ul component as="PropertyList">
+  <style>
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  </style>
+  {children}
+</ul>
+
+<li component as="PropertyItem">
+  <style>
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    border-bottom: 1px solid rgb(70, 70, 70);
+    padding: 5px 10px;
+    .name {
+      width: 100%;
+    }
+    .value {
+      width: 100%;
+    }
+  </style>
+  <span className="name">
+    {name}
+  </span>
+  <span className="value">
+    {value}
+  </span>
+</li>

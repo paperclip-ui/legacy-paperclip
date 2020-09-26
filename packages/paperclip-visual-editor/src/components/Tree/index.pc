@@ -63,16 +63,14 @@
 </div>
 
 <div export component as="Preview">
-  <Node leaf="A" depth="0" open>
-    <Node leaf="a" depth="1" alt open>
-      <Node leaf="a" depth="2" isFile />
-      <Node leaf="a" depth="2" selected isFile />
-      <Node leaf="a" depth="2" isFile />
+  <Node leaf="src" depth="0" open>
+    <Node leaf="components" depth="1" alt open>
+      <Node leaf="Button.tsx" depth="2" isFile />
+      <Node leaf="Button.pc" depth="2" selected isFile />
+      <Node leaf="index.tsx" depth="2" isFile />
     </Node>
-    <Node leaf="a" depth="1" alt open>
-      <Node leaf="a" depth="2" hovering>
-      
-      </Node>
+    <Node leaf="reducers" depth="1" alt open>
+      <Node leaf="main.ts" depth="2" hovering isFile />
     </Node>
   </Node>
 </div>
