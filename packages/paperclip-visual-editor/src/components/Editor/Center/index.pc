@@ -1,5 +1,6 @@
 <import src="components/Theme/index.pc" as="theme" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
+<import src="./Canvas2/index.pc" as="Canvas" />
 <style>
   .center {
     position: relative;
@@ -23,7 +24,9 @@
 
 <Container export component as="Preview" className="center">
   <Toolbar.Preview />
-  <CanvasContainer />
+  <CanvasContainer>
+    <Canvas.Preview />
+  </CanvasContainer>
 </Container>
 
 <div className="$theme.font-default $theme.full-wh">
