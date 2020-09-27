@@ -1,0 +1,9 @@
+<import src="components/Pane/index.pc" as="Pane" />
+<import src="components/Tree/index.pc" as="Tree" />
+
+<Pane export component as="SymbolsPane" title="Open">
+  <Tree.Node depth="0" open leaf="Button.pc">
+  </Tree.Node>
+</Pane>
+
+<SymbolsPane export component as="Preview" />

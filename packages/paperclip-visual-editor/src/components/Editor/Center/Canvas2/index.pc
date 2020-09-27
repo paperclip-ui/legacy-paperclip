@@ -1,3 +1,53 @@
-<div export component as="Preview">
-  PREVIE
+<div export component as="Preview"> 
+  <style>
+    width: 100%;
+    height: 100%;
+  </style>
+
+  <!-- Background -->
+  <div>
+    <style>
+      background: rgb(211, 211, 211);
+      width: 100%;
+      height: 100%;
+    </style>
+  </div>
+
+  <!-- frame title -->
+  <div>
+    <span>
+      <style>
+        position: absolute;
+        transform: translateY(-100%);
+        color: grey;
+        text-shadow: 1px 1px white;
+      </style>
+      Some Frame
+    </span>
+    <style>
+      position: absolute;
+      width: 300px;
+      height: 200px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      z-index: 10999;
+    </style>
+  </div>
+
+  <!-- frame -->
+  <div>
+    <style>
+      position: absolute;
+      width: 300px;
+      height: 200px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      z-index: 1024;
+    </style>
+  </div>
+  
 </div>

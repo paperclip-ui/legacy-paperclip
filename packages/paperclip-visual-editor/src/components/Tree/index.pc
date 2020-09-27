@@ -36,7 +36,6 @@
       }
     }
 
-
     .controls {
       float: right;
       display: flex;
@@ -54,7 +53,8 @@
     className:isFile="leaf--file" 
     className:open="leaf--open"
     onClick={onLeafClick}
-    >
+    > 
+    {icon}
     {leaf}
     <div className="controls">
       {controls}

@@ -27,5 +27,5 @@ TODOS:
 <Container>
   <LeftSidebar.Preview />
   <Center.Preview />
-  <RightSidebar.InspectorPreview />
+  <RightSidebar.Preview />
 </Container>
