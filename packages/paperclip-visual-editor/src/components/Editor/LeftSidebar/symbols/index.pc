@@ -1,8 +1,49 @@
 <import src="components/Pane/index.pc" as="Pane" />
 <import src="components/Tree/index.pc" as="Tree" />
+<import src="styles/utils.pc" as="utils" />
 
-<Pane export component as="SymbolsPane" title="Open">
-  <Tree.Node depth="0" open leaf="Button.pc">
+<i export component as="CubeIcon">
+  <style>
+    --size: 1em;
+    @include utils.mask;
+    color: rgb(204, 0, 255);
+    mask-image: url(./cube.svg);
+  </style>
+</i>
+<i export component as="SocketIcon">
+  <style>
+    --size: 1em;
+    @include utils.mask;
+    color: rgb(204, 0, 255);
+    mask-image: url(./socket.svg);
+  </style>
+</i>
+
+<i export component as="SquareIcon">
+  <style>
+    --size: 0.7em;
+    @include utils.mask;
+    position: relative;
+    top: 1px;
+    padding-right: 6px;
+    mask-image: url(./square-solid.svg);
+  </style>
+</i>
+
+<Pane export component as="SymbolsPane" title="Open" primary>
+  <Tree.Node depth="0" open leaf="Button.pc" hasChildren icon={<Tree.FileIcon />} >
+    <Tree.Node leaf="ListItem" hasChildren open depth="1" icon={<CubeIcon />}>
+      <Tree.Node leaf="div" hasChildren open depth="2">
+        <Tree.Node leaf="span" hasChildren  depth="3">
+          
+        </Tree.Node>
+      </Tree.Node>
+    </Tree.Node>
+    <Tree.Node leaf="List" hasChildren open depth="1" icon={<CubeIcon />}>
+      <Tree.Node leaf="div" depth="2">
+        
+      </Tree.Node>
+    </Tree.Node>
   </Tree.Node>
 </Pane>
 
