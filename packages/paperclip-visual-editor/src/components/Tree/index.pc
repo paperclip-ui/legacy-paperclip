@@ -1,6 +1,6 @@
 <import src="styles/utils.pc" as="utils" />
 
-<div export component as="Node" className="node" style="--depth: {depth}">
+<div export component as="Node" className="node {className?}" style="--depth: {depth}">
   <style>
      .leaf {
       font-size: 12px;
@@ -9,6 +9,7 @@
       display: flex;
       align-items: center;
       cursor: pointer;
+      white-space: nowrap;
       :global(i) {
         flex-shrink: 0;
         margin-right: 3px;
