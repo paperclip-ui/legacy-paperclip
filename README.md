@@ -30,8 +30,8 @@ I find that a lot of time is wasted tweaking CSS because of tooling bottlenecks 
 
 - Installation
   - [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
-  - [VSCode Extension](https://paperclip.dev/docs/getting-started-vscode) - Getting started with the VS Code extension.
-  - [Webpack setup](https://paperclip.dev/docs/configuring-webpack) - Setting up with Webpack
+  - [VSCode Extension](https://paperclip.dev/docs/) - Getting started with the VS Code extension.
+  - [Webpack setup](https://paperclip.dev/docs/configure-webpack) - Setting up with Webpack
 - Documentation
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
   - [React](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
