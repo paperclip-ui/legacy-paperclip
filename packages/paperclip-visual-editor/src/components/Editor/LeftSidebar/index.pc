@@ -1,10 +1,11 @@
 
 <import src="components/Editor/Pane/index.pc" as="Pane" />
 <import src="./files/index.pc" as="Files" />
+<import src="./symbols/index.pc" as="Symbols" />
 
-<style>
-  .container {
-    width: 200px;
+<div export component as="Container" className="container"> 
+  <style>
+    width: 250px;
     flex-shrink: 0;
     color: white;
     background: var(--background-1);
@@ -12,26 +13,13 @@
     box-sizing: border-box;
     border-right: 1px solid var(--background-3);
     overflow: scroll;
-  }
-
-  .header {
-    color: white;
-    background: var(--background-2);
-    padding: 3.5px 8px;
-    box-sizing: border-box;
-  }
-</style>
-
-<div export component as="Header" className="header"> 
-  {children}
-</div>
-
-<div export component as="Container" className="container"> 
+  </style>
   {children}
 </div>
 
 <div export component as="Preview">
   <Container>
+    <Symbols.Preview />
     <Files.Preview />
   </Container>
 </div>

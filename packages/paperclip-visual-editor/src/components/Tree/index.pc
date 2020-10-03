@@ -1,32 +1,35 @@
 <import src="styles/utils.pc" as="utils" />
 
-<style>
-  .container {
-    --depth: 0;
-  }
-
-  .node {
-    .leaf {
+<div export component as="Node" className="node {className?}" style="--depth: {depth}">
+  <style>
+     .leaf {
       font-size: 12px;
       padding: 5px 8px;
-      padding-left: calc(10px + var(--depth) * 10px);
+      padding-left: calc(10px + var(--depth) * 14px);
       display: flex;
       align-items: center;
       cursor: pointer;
+      white-space: nowrap;
+      :global(i) {
+        flex-shrink: 0;
+        margin-right: 3px;
+      }
       &:before {
         --size: 0.7em;
         @include utils.mask;
-        margin-right: 4px;
-        content: "\00a0";
-        mask-image: url(./chevron-right.svg);
+        flex-shrink: 0;
+        margin-right: 3px;
+        background: transparent;
       }
-
-      &--open:before {
-        mask-image: url(./chevron-down.svg);
-      }
-
-      &--file:before {
-        mask-image: url(./file2.svg);
+      &--hasChildren {
+        &:before {
+          background: currentColor;
+          opacity: 0.4;
+          mask-image: url(./arrow-right.svg);
+        }
+        &--open:before {
+          mask-image: url(./arrow-down.svg);
+        }
       }
       
       &--selected {
@@ -40,39 +43,72 @@
       }
     }
 
-    .child-nodes {
+    .controls {
+      float: right;
+      display: flex;
+      align-content: flex-end;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      text-align: right;
     }
-  }
-
-</style>
-
-<div export component as="Node" className="node" style="--depth: {depth}">
+  </style>
   <div className="leaf" 
     className:alt="leaf--alt" 
     className:hovering="leaf--hovering" 
     className:selected="leaf--selected"
-    className:isFile="leaf--file" 
-    className:open="leaf--open"
+    className:open="leaf--hasChildren--open"
+    className:hasChildren="leaf--hasChildren"
     onClick={onLeafClick}
-    >
+    > 
+    {icon}
     {leaf}
+    <div className="controls">
+      {controls}
+    </div>
   </div>
   <div className="child-nodes">
     {children}
   </div>
 </div>
 
+<i export component as="FileIcon">
+  <style>
+    --size: 1.2em;
+    @include utils.mask;
+    mask-image: url(./file2.svg);
+  </style>
+</i>
+
+<i component as="FolderIcon">
+  <style>
+    --size: 1.4em;
+    @include utils.mask;
+    mask-image: url(./folder.svg);
+  </style>
+</i>
+
 <div export component as="Preview">
-  <Node leaf="A" depth="0" open>
-    <Node leaf="a" depth="1" alt open>
-      <Node leaf="a" depth="2" isFile />
-      <Node leaf="a" depth="2" selected isFile />
-      <Node leaf="a" depth="2" isFile />
+  <Node leaf="src" depth="0" icon={<FolderIcon />} hasChildren open>
+    <Node leaf="components" icon={<FolderIcon />} hasChildren depth="1" alt open>
+      <Node leaf="Button.tsx" icon={<FileIcon />} depth="2" isFile />
+      <Node leaf="Button.pc"  icon={<FileIcon />} controls={<fragment>
+
+        <!-- warning icon used to indicate files that have problems (like linting issues) -->
+        <i>
+          <style>
+            --size: 1em;
+            @include utils.mask;
+            mask-image: url(./warning.svg);
+          </style>
+        </i>
+      </fragment>} depth="2" selected isFile />
+      <Node leaf="index.tsx" icon={<FileIcon />}  depth="2" isFile />
     </Node>
-    <Node leaf="a" depth="1" alt open>
-      <Node leaf="a" depth="2" hovering>
-      
-      </Node>
+    <Node leaf="reducers" icon={<FolderIcon />} hasChildren depth="1" alt open>
+      <Node leaf="main.ts" icon={<FolderIcon />}  hasChildren depth="2" hovering isFile />
+    </Node>
+    <Node leaf="index.ts" icon={<FileIcon />} depth="1" alt open>
     </Node>
   </Node>
 </div>

@@ -11,13 +11,14 @@
 
   .test {
     font-family: sans-serif;
-    @include desktop {
-      @include test;
-      font-size: 40px;
-    }
+    color: blue;
+    
   }
 </style>
 
-<div className="test">
-  Test
+<div>
+  <style>
+    color: rgb(211, 30, 30);
+  </style>
+  Something like thisadf
 </div>

@@ -4,6 +4,14 @@ UI around that.
 
 TODOS:
 
+- [ ] Right sidepanel
+  - [ ] style inspector tab
+    - [ ] display list fo all styles within document, including scoped styles
+  - [ ] element inspector tab
+    - [ ] display element + currently selected style
+    - [ ] display mixins
+    - [ ] ability to reference css variables
+
 - [ ] insert element (D key)
 - [ ] insert text (T key)
 - [ ] display height of elements**
@@ -15,13 +23,26 @@ TODOS:
 - [ ] measurement tools
 - [ ] grid tools
 - [ ] possibly using doc-comments to add metadata about screens
+- [ ] linting
+  - [ ] warning when magic colors are used in doc
 
 Considerations:
 
-- [ ] Mixins
+- [ ] will need to evaluate ASTs of selected elements for styles
+- [ ] Mixins 
 - [ ] Imports
 - [ ] nested style rules
 - [ ] components vs preview elements
+- [ ] ability to define variants
+- [ ] css specificty
+- [ ] exportable properties
+- [ ] ability to define class names on element
+- [ ] 
+
+
+Ideas:
+
+- stick to just the computed output, and leave the details to code. 
 
 Rules around editing CSS:
 

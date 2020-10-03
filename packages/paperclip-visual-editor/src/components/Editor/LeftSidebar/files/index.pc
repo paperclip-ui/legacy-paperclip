@@ -3,7 +3,7 @@
 <import src="components/Tree/index.pc" as="Tree" />
 
 <div export component as="Preview">
-  <Pane2 title="Files">
+  <Pane2 title="Files" primary>
     <Tree.Preview />
   </Pane2>
 </div>

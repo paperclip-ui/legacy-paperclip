@@ -2,20 +2,26 @@
 
 <div export component as="default" 
   className="pane"
-  className:noMore="pane--no-more">
+  className:primary="primary">
   <div>  
     <style>
-      padding: 10px;
-    </style>
-    <div>
-      <style>
 
-        /* font-weight: 600; */
-        /* letter-spacing: 0.05em; */
+    </style>
+    <div className:primary="primary">
+      <style>
         display: flex;
+        padding: 8px 10px;
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: 0.9em;
         justify-content: space-between;
-        padding-bottom: 10px;
-        border-bottom: 1px solid rgb(65, 65, 65);
+
+        border-top: 1px solid rgb(68, 68, 68);
+
+        :self(.primary) {
+          border-top-color: transparent;
+          background: rgb(34, 34, 34);
+        }
         /* height: 21px; */
       </style>
 

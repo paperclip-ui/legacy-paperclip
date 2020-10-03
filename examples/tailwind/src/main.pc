@@ -8,9 +8,10 @@
     letter-spacing: 0.05em;
     padding: 40px;
     font-size: 24px;
+    color: rgb(145, 112, 51);
   }
 </style>
 
 <div className='message $tw.space-y-0 $tw.bg-gray-500'>
-  This is fine
+  Something other then that.
 </div>

@@ -454,10 +454,16 @@ pub fn evaluate_node<'a>(
   }
 }
 
-pub fn get_element_scope<'a>(element: &ast::Element, context: &Context) -> String {
-  let mut buff = format!(
-    "{}{}{}",
-    context.scope, element.location.start, element.location.end
+pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> String {
+  let buff = format!(
+    "{}{}",
+    context.scope,
+    element
+      .path
+      .iter()
+      .map(|i| i.to_string())
+      .collect::<Vec<String>>()
+      .join("-")
   );
   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }

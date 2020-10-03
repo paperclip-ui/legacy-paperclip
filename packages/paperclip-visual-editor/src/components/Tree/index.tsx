@@ -37,7 +37,9 @@ export const Node = ({
       leaf={label}
       open={expanded}
       selected={selected}
-      isFile={isFile}
+      icon={null}
+      controls={null}
+      // isFile={isFile}
       onLeafClick={onLeafClick}
     >
       {expanded &&

@@ -39,15 +39,20 @@ void elements: [ 'area',
 */
 
 pub fn parse<'a>(source: &'a str) -> Result<pc_ast::Node, ParseError> {
-  parse_fragment(&mut Tokenizer::new(source))
+  parse_fragment(&mut Tokenizer::new(source), vec![])
 }
 
-fn parse_fragment<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
+fn parse_fragment<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  path: Vec<usize>,
+) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.utf16_pos;
   let mut children: Vec<pc_ast::Node> = vec![];
 
   while !tokenizer.is_eof() {
-    children.push(parse_node(tokenizer)?);
+    let mut child_path = path.clone();
+    child_path.push(children.len());
+    children.push(parse_node(tokenizer, child_path)?);
   }
 
   Ok(pc_ast::Node::Fragment(pc_ast::Fragment {
@@ -56,7 +61,10 @@ fn parse_fragment<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, Par
   }))
 }
 
-fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
+fn parse_node<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  path: Vec<usize>,
+) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.get_pos();
   tokenizer.eat_whitespace();
 
@@ -68,7 +76,7 @@ fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
 
   match token {
     Token::CurlyOpen => parse_slot(tokenizer),
-    Token::LessThan => parse_tag(tokenizer),
+    Token::LessThan => parse_tag(tokenizer, path),
     Token::HtmlCommentOpen => parse_annotation(tokenizer),
     Token::TagClose => {
       let start = tokenizer.utf16_pos;
@@ -181,15 +189,19 @@ pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Nod
   // Err(ParseError::unexpected_token(0))
 }
 
-pub fn parse_tag<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
+pub fn parse_tag<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  path: Vec<usize>,
+) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.utf16_pos;
 
   tokenizer.next_expect(Token::LessThan)?;
-  parse_element(tokenizer, start)
+  parse_element(tokenizer, path, start)
 }
 
 fn parse_element<'a>(
   tokenizer: &mut Tokenizer<'a>,
+  path: Vec<usize>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   let tag_name = parse_tag_name(tokenizer)?;
@@ -200,9 +212,9 @@ fn parse_element<'a>(
   if tag_name == "style" {
     parse_next_style_element_parts(attributes, tokenizer, start)
   } else if tag_name == "script" {
-    parse_next_script_element_parts(attributes, tokenizer, start)
+    parse_next_script_element_parts(attributes, tokenizer, path, start)
   } else {
-    parse_next_basic_element_parts(tag_name, tag_name_end, attributes, tokenizer, start)
+    parse_next_basic_element_parts(tag_name, tag_name_end, attributes, tokenizer, path, start)
   }
 }
 
@@ -211,6 +223,7 @@ fn parse_next_basic_element_parts<'a>(
   tag_name_end: usize,
   attributes: Vec<pc_ast::Attribute>,
   tokenizer: &mut Tokenizer<'a>,
+  path: Vec<usize>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   let mut children: Vec<pc_ast::Node> = vec![];
@@ -228,7 +241,9 @@ fn parse_next_basic_element_parts<'a>(
       end = tokenizer.utf16_pos;
       tokenizer.eat_whitespace();
       while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1)? != Token::TagClose {
-        children.push(parse_node(tokenizer)?);
+        let mut child_path = path.clone();
+        child_path.push(children.len());
+        children.push(parse_node(tokenizer, child_path)?);
       }
 
       parse_close_tag(&tag_name.as_str(), tokenizer, start, end)?;
@@ -237,6 +252,7 @@ fn parse_next_basic_element_parts<'a>(
   }
 
   let el = pc_ast::Element {
+    path,
     tag_name_location: Location {
       start: start + 1,
       end: tag_name_end,
@@ -328,6 +344,7 @@ fn parse_close_tag<'a, 'b>(
 fn parse_next_script_element_parts<'a>(
   attributes: Vec<pc_ast::Attribute>,
   tokenizer: &mut Tokenizer<'a>,
+  path: Vec<usize>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   tokenizer.next_expect(Token::GreaterThan)?; // eat >
@@ -340,6 +357,7 @@ fn parse_next_script_element_parts<'a>(
   parse_close_tag("script", tokenizer, start, end)?;
 
   Ok(pc_ast::Node::Element(pc_ast::Element {
+    path,
     tag_name_location: Location {
       start: start + 1,
       end: start + 7,

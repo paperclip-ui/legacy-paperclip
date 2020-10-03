@@ -1,29 +1,28 @@
 <import src="components/Theme/index.pc" as="theme" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
-<style>
-  .center {
+<import src="./Canvas2/index.pc" as="Canvas" />
+<div export component as="Container" className="$theme.full-wh">
+  <style>
     position: relative;
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
-  }
-  .canvas-container {
+  </style>
+  {children}
+</div>
+
+<div export component as="CanvasContainer" className="$theme.full-wh">
+  <style>
     position: relative;
     overflow: hidden;
-  }
-</style>
-<div export component as="Container" className="center">
+  </style>
   {children}
 </div>
 
-<div export component as="CanvasContainer" className="canvas-container $theme.full-wh">
-  {children}
-</div>
-
-<Container export component as="Preview" className="center">
+<Container export component as="Preview">
   <Toolbar.Preview />
-  <CanvasContainer />
+  <CanvasContainer>
+    <Canvas.Preview />
+  </CanvasContainer>
 </Container>
 
 <div className="$theme.font-default $theme.full-wh">
