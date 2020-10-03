@@ -5,10 +5,9 @@ use crate::base::parser::{get_buffer, ParseError};
 use crate::pc::parser::parse_tag;
 use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
 
-
 struct Context<'a, 'b> {
   tokenizer: &'b mut Tokenizer<'a>,
-  id_seed: String
+  id_seed: String,
 }
 
 pub fn _parse<'a>(source: &'a str) -> Result<ast::Statement, ParseError> {
@@ -24,11 +23,7 @@ pub fn parse_with_tokenizer<'a, FUntil>(
 where
   FUntil: Fn(Token) -> bool,
 {
-
-  let mut context = Context {
-    tokenizer,
-    id_seed
-  };
+  let mut context = Context { tokenizer, id_seed };
 
   parse_statement(&mut context)
 }
@@ -50,8 +45,12 @@ fn parse_statement<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Stateme
 }
 
 fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
-  let mut pc_tokenizer = PCTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
-  let node = ast::Statement::Node(Box::new(parse_tag(&mut pc_tokenizer, vec![context.id_seed.to_string()])?));
+  let mut pc_tokenizer =
+    PCTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+  let node = ast::Statement::Node(Box::new(parse_tag(
+    &mut pc_tokenizer,
+    vec![context.id_seed.to_string()],
+  )?));
   context.tokenizer.set_pos(&pc_tokenizer.get_pos());
   Ok(node)
 }
@@ -81,7 +80,10 @@ fn parse_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement,
 fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
   let start_pos = context.tokenizer.utf16_pos;
   let start = context.tokenizer.next()?;
-  let value = get_buffer(context.tokenizer, |tokenizer| Ok(tokenizer.peek(1)? != start))?.to_string();
+  let value = get_buffer(context.tokenizer, |tokenizer| {
+    Ok(tokenizer.peek(1)? != start)
+  })?
+  .to_string();
   context.tokenizer.next_expect(start)?;
   Ok(ast::Statement::String(ast::Str {
     value,
@@ -94,7 +96,9 @@ fn parse_array<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, 
   context.tokenizer.next_expect(Token::SquareOpen)?;
   let mut values = vec![];
 
-  while !context.tokenizer.is_eof() && context.tokenizer.peek_eat_whitespace(1)? != Token::SquareClose {
+  while !context.tokenizer.is_eof()
+    && context.tokenizer.peek_eat_whitespace(1)? != Token::SquareClose
+  {
     values.push(parse_statement(context)?);
     if context.tokenizer.peek(1)? == Token::SquareClose {
       break;
@@ -117,7 +121,9 @@ fn parse_object<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement,
   context.tokenizer.next_expect(Token::CurlyOpen)?;
   let mut properties = vec![];
 
-  while !context.tokenizer.is_eof() && context.tokenizer.peek_eat_whitespace(1)? != Token::CurlyClose {
+  while !context.tokenizer.is_eof()
+    && context.tokenizer.peek_eat_whitespace(1)? != Token::CurlyClose
+  {
     let key = parse_statement(context)?;
 
     context.tokenizer.eat_whitespace();
