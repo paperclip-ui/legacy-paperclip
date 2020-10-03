@@ -458,12 +458,7 @@ pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> S
   let buff = format!(
     "{}{}",
     context.scope,
-    element
-      .path
-      .iter()
-      .map(|i| i.to_string())
-      .collect::<Vec<String>>()
-      .join("-")
+    element.id
   );
   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }
