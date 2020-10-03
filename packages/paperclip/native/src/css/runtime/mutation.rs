@@ -5,30 +5,30 @@ use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SetSelectorText {
-  pub selector_text: String
+  pub selector_text: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct InsertRule {
   pub index: usize,
-  pub rule: Rule
+  pub rule: Rule,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ReplaceRule {
   pub index: usize,
-  pub rule: Rule
+  pub rule: Rule,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct DeleteRule {
-  pub index: usize
+  pub index: usize,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SetDeclaration {
   pub name: String,
-  pub value: String
+  pub value: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -40,7 +40,6 @@ pub struct SourceChanged {
   pub new_source: ExprSource,
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub enum Action {
@@ -49,7 +48,7 @@ pub enum Action {
   ReplaceRule(ReplaceRule),
   SourceChanged(SourceChanged),
   SetDeclaration(SetDeclaration),
-  SetSelectorText(SetSelectorText)
+  SetSelectorText(SetSelectorText),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

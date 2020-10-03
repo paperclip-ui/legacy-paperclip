@@ -1,5 +1,5 @@
+pub mod diff;
 pub mod evaluator;
 pub mod export;
-pub mod virt;
 pub mod mutation;
-pub mod diff;
+pub mod virt;

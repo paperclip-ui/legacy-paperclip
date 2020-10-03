@@ -42,7 +42,10 @@ pub fn parse<'a>(source: &'a str) -> Result<pc_ast::Node, ParseError> {
   parse_fragment(&mut Tokenizer::new(source), vec![])
 }
 
-fn parse_fragment<'a>(tokenizer: &mut Tokenizer<'a>, path: Vec<usize>) -> Result<pc_ast::Node, ParseError> {
+fn parse_fragment<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  path: Vec<usize>,
+) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.utf16_pos;
   let mut children: Vec<pc_ast::Node> = vec![];
 
@@ -58,7 +61,10 @@ fn parse_fragment<'a>(tokenizer: &mut Tokenizer<'a>, path: Vec<usize>) -> Result
   }))
 }
 
-fn parse_node<'a>(tokenizer: &mut Tokenizer<'a>, path: Vec<usize>) -> Result<pc_ast::Node, ParseError> {
+fn parse_node<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  path: Vec<usize>,
+) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.get_pos();
   tokenizer.eat_whitespace();
 
@@ -183,7 +189,10 @@ pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Nod
   // Err(ParseError::unexpected_token(0))
 }
 
-pub fn parse_tag<'a>(tokenizer: &mut Tokenizer<'a>, path: Vec<usize>) -> Result<pc_ast::Node, ParseError> {
+pub fn parse_tag<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  path: Vec<usize>,
+) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.utf16_pos;
 
   tokenizer.next_expect(Token::LessThan)?;

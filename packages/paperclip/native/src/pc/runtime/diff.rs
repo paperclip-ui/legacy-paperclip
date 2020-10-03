@@ -1,10 +1,9 @@
 use super::mutation::{
   Action, DeleteChild, InsertChild, Mutation, RemoveAttribute, ReplaceNode, SetAttribute, SetText,
-  UpdateSheet,
-  SourceChanged,
+  SourceChanged, UpdateSheet,
 };
-use crate::css::runtime::diff::diff as diff_css;
 use super::virt::{Element, Fragment, Node, StyleElement, Text};
+use crate::css::runtime::diff::diff as diff_css;
 use std::cmp::{max, min};
 
 /*
@@ -170,10 +169,8 @@ fn diff_children<'a>(a: &Vec<Node>, b: &Vec<Node>, context: &mut Context<'a>) {
 }
 
 fn diff_style_element<'a>(a: &StyleElement, b: &StyleElement, context: &mut Context<'a>) {
-
   // skip if sheet is the same
   if (a.sheet == b.sheet) {
-
     if (a.source != b.source) {
       context.mutations.push(Mutation::new(
         context.node_path.clone(),
