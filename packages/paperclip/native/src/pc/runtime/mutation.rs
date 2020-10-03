@@ -1,5 +1,6 @@
 use super::virt::Node;
 use crate::base::ast::ExprSource;
+use crate::css::runtime::mutation as css_mutation;
 use crate::base::ast::Location;
 use serde::Serialize;
 
@@ -35,6 +36,11 @@ pub struct RemoveAttribute {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct UpdateSheet {
+  pub mutations: Vec<css_mutation::Mutation>
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SetText {
   pub value: String,
 }
@@ -54,6 +60,7 @@ pub enum Action {
   SourceChanged(SourceChanged),
   SetText(SetText),
   RemoveAttribute(RemoveAttribute),
+  UpdateSheet(UpdateSheet)
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

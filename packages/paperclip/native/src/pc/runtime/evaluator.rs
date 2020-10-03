@@ -30,7 +30,7 @@ pub struct Context<'a> {
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
-  pub import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  pub import_graph: &'a HashMap<String, BTreeMap<String, Exports>>
 }
 
 impl<'a> Context<'a> {
@@ -409,7 +409,7 @@ fn create_context<'a>(
     import_scopes: get_import_scopes(graph.dependencies.get(uri).unwrap()),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
     scope,
-    data,
+    data
   }
 }
 
@@ -454,10 +454,10 @@ pub fn evaluate_node<'a>(
   }
 }
 
-pub fn get_element_scope<'a>(element: &ast::Element, context: &Context) -> String {
-  let mut buff = format!(
-    "{}{}{}",
-    context.scope, element.location.start, element.location.end
+pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> String {
+  let buff = format!(
+    "{}{}",
+    context.scope, element.path.iter().map(|i | i.to_string()).collect::<Vec<String>>().join("-")
   );
   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }

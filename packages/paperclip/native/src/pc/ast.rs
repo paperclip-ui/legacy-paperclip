@@ -9,6 +9,8 @@ use crate::base::utils::get_document_style_scope;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
+  pub path: Vec<usize>,
+
   pub location: Location,
 
   #[serde(rename = "openTagLocation")]

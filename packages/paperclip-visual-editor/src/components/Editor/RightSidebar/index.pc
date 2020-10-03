@@ -30,7 +30,7 @@
   </default>
 </div>
 
-<div export component as="InspectorPreview">
+<div export component as="InspectorPreview2">
   <default>
     <Inspector.Preview />
   </default>

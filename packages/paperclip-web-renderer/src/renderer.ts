@@ -278,6 +278,7 @@ export class Renderer {
 
   handleEngineEvent = (event: EngineEvent) => {
     this._clearErrors();
+    console.log(event);
     switch (event.kind) {
       case EngineEventKind.Error: {
         this.handleError(event);
@@ -326,6 +327,7 @@ export class Renderer {
             this._domFactory,
             this.protocol
           );
+
           this._virtualRootNode = patchVirtNode(
             this._virtualRootNode,
             event.data.mutations

@@ -74,7 +74,7 @@
 
 <i export component as="FileIcon">
   <style>
-    --size: 1em;
+    --size: 1.2em;
     @include utils.mask;
     mask-image: url(./file2.svg);
   </style>
@@ -82,7 +82,7 @@
 
 <i component as="FolderIcon">
   <style>
-    --size: 1em;
+    --size: 1.4em;
     @include utils.mask;
     mask-image: url(./folder.svg);
   </style>

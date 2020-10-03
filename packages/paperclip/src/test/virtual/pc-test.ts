@@ -1168,7 +1168,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-75d05f16] { color:blue; } [data-pc-75d05f16][class].test { color:red; } [data-pc-75d05f16] #test2[data-pc-80f4925f] { color:blue; }</style><div data-pc-75d05f16 data-pc-80f4925f></div>`
+      `<style>[data-pc-406d2856] { color:blue; } [data-pc-406d2856][class].test { color:red; } [data-pc-406d2856] #test2[data-pc-80f4925f] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
     );
   });
 
@@ -1192,7 +1192,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-2f535356] { color:red; }</style><div data-pc-80f4925f><span data-pc-2f535356 data-pc-80f4925f> abba </span></div>`
+      `<style>[data-pc-bd4940fc] { color:red; }</style><div data-pc-80f4925f><span data-pc-80f4925f data-pc-bd4940fc> abba </span></div>`
     );
   });
 
@@ -1214,7 +1214,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-b4582118][class].variant { color:blue; } [data-pc-b4582118] { color:red; background:url(/path.png); }</style><div data-pc-80f4925f data-pc-b4582118></div>`
+      `<style>[data-pc-406d2856][class].variant { color:blue; } [data-pc-406d2856] { color:red; background:url(/path.png); }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
     );
   });
 
@@ -1237,7 +1237,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-cb2f1aea] { color:red; }</style><div data-pc-80f4925f data-pc-cb2f1aea></div>`
+      `<style>[data-pc-376a18c0] { color:red; }</style><div data-pc-376a18c0 data-pc-80f4925f></div>`
     );
   });
 
@@ -1261,7 +1261,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-18ab1ffa] { background:blue; color:red; }</style><div data-pc-18ab1ffa data-pc-80f4925f></div>`
+      `<style>[data-pc-376a18c0] { background:blue; color:red; }</style><div data-pc-376a18c0 data-pc-80f4925f></div>`
     );
   });
 
@@ -1279,7 +1279,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-5810fe6d] { background:blue; }</style><input data-pc-5810fe6d data-pc-80f4925f></input>`
+      `<style>[data-pc-406d2856] { background:blue; }</style><input data-pc-406d2856 data-pc-80f4925f></input>`
     );
   });
 
@@ -1317,7 +1317,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>@media screen and (max-width: 400px) { [data-pc-93ddfa3b] { color:red; } } @media screen and (max-width: 1280px) { [data-pc-93ddfa3b] { color:black; } } @media screen and (max-width: 1280px) { [data-pc-93ddfa3b] label[data-pc-80f4925f] { color:blue; } }</style><input data-pc-80f4925f data-pc-93ddfa3b></input>`
+      `<style>@media screen and (max-width: 400px) { [data-pc-376a18c0] { color:red; } } @media screen and (max-width: 1280px) { [data-pc-376a18c0] { color:black; } } @media screen and (max-width: 1280px) { [data-pc-376a18c0] label[data-pc-80f4925f] { color:blue; } }</style><input data-pc-376a18c0 data-pc-80f4925f></input>`
     );
   });
 
@@ -1338,7 +1338,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._4a9a3e92 { background:blue; }</style><div className="_80f4925f__4a9a3e92 _4a9a3e92" data-pc-80f4925f></div>`
+      `<style>[class]._376a18c0 { background:blue; }</style><div className="_80f4925f__376a18c0 _376a18c0" data-pc-80f4925f></div>`
     );
   });
 
@@ -1359,7 +1359,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._2a5db777 { background:blue; }</style><div className="_80f4925f_test test _80f4925f__2a5db777 _2a5db777" data-pc-80f4925f></div>`
+      `<style>[class]._376a18c0 { background:blue; }</style><div className="_80f4925f_test test _80f4925f__376a18c0 _376a18c0" data-pc-80f4925f></div>`
     );
   });
 
@@ -1386,7 +1386,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._9e9447b6 { background:blue; } [class]._60aee781 { background:orange; }</style><div className="_80f4925f_test test _80f4925f_test3 test3 _80f4925f__60aee781 _60aee781 _80f4925f__9e9447b6 _9e9447b6" data-pc-80f4925f></div>`
+      `<style>[class]._376a18c0 { background:blue; } [class]._ae63497a { background:orange; }</style><div className="_80f4925f_test test _80f4925f_test3 test3 _80f4925f__ae63497a _ae63497a _80f4925f__376a18c0 _376a18c0" data-pc-80f4925f></div>`
     );
   });
 
@@ -1440,7 +1440,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      "<style>[data-pc-5578d99] a[data-pc-80f4925f] { background:blue; } [data-pc-5578d99] a[data-pc-80f4925f][class].b { opacity:1; } [data-pc-5578d99] a[data-pc-80f4925f][class].c { opacity:1; } [data-pc-5578d99] a[data-pc-80f4925f] e[data-pc-80f4925f] { color:orange; } [data-pc-5578d99] { color:red; }</style><div data-pc-5578d99 data-pc-80f4925f></div>"
+      "<style>[data-pc-406d2856] a[data-pc-80f4925f] { background:blue; } [data-pc-406d2856] a[data-pc-80f4925f][class].b { opacity:1; } [data-pc-406d2856] a[data-pc-80f4925f][class].c { opacity:1; } [data-pc-406d2856] a[data-pc-80f4925f] e[data-pc-80f4925f] { color:orange; } [data-pc-406d2856] { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f></div>"
     );
   });
 });
