@@ -118,8 +118,6 @@ div {
 
 ### Element scoping
 
-⚠️ This is currently an experimental feature.
-
 Style blocks that are the defined within elements are _scoped_ to that element. For example:
 
 ```html live height=150px
