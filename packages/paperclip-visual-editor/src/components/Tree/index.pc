@@ -103,17 +103,7 @@
   <Node leaf="src" depth="0" icon={<FolderIcon />} hasChildren open>
     <Node leaf="components" icon={<FolderIcon />} hasChildren depth="1" alt open>
       <Node leaf="Button.tsx" icon={<FileIcon />} depth="2" isFile />
-      <Node leaf="Button.pc"  icon={<FileIcon  extension="pc" />} controls={<fragment>
-
-        <!-- warning icon used to indicate files that have problems (like linting issues) -->
-        <i>
-          <style>
-            --size: 1em;
-            @include utils.mask;
-            mask-image: url(./warning.svg);
-          </style>
-        </i>
-      </fragment>} depth="2" selected isFile />
+      <Node leaf="Button.pc"  icon={<FileIcon  extension="pc" />} depth="2" selected isFile />
       <Node leaf="index.tsx" icon={<FileIcon />}  depth="2" isFile />
     </Node>
     <Node leaf="reducers" icon={<FolderIcon />} hasChildren depth="1" alt open>

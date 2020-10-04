@@ -1,3 +1,5 @@
+
+
 <div export component as="Preview"> 
   <style>
     width: 100%;
@@ -22,12 +24,12 @@
         color: grey;
         text-shadow: 1px 1px white;
       </style>
-      Some Frame
+      Mobile
     </span>
     <style>
       position: absolute;
-      width: 300px;
-      height: 200px;
+      width: 320px;
+      height: 480px;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
