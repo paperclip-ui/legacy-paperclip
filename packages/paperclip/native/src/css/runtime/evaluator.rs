@@ -733,7 +733,11 @@ fn stringify_nestable_selector(
   )
 }
 
-fn get_element_scope_selector(scope: &String, is_instance: &bool, extra_specificity: bool) -> String {
+fn get_element_scope_selector(
+  scope: &String,
+  is_instance: &bool,
+  extra_specificity: bool,
+) -> String {
   if *is_instance {
     format!("[class]._{}", scope)
   } else {
