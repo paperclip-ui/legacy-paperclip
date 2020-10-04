@@ -1,7 +1,7 @@
 {
   "name": "paperclip-mini-editor",
   "description": "",
-  "version": "15.0.7",
+  "version": "15.0.8",
   "private": false,
   "browser": "browser.js",
   "main": "lib/index.js",
@@ -28,7 +28,7 @@
     "css-loader": "^3.6.0",
     "file-loader": "^6.0.0",
     "paperclip-cli": "^15.0.7",
-    "paperclip-compiler-react": "^15.0.7",
+    "paperclip-compiler-react": "^15.0.8",
     "paperclip-loader": "^15.0.7",
     "prism-react-renderer": "^1.1.1",
     "style-loader": "^1.2.1",
