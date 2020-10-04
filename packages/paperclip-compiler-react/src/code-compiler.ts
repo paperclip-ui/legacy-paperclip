@@ -62,11 +62,12 @@ const entities = new Html5Entities();
 type Config = {
   ast: Node;
   sheet?: any;
+  sheetRelativeFilePath?: string;
   classNames: Record<string, ClassNameExport>;
 };
 
 export const compile = (
-  { ast, sheet, classNames }: Config,
+  { ast, sheet, classNames, sheetRelativeFilePath }: Config,
   fileUri: string,
   options: Options = {}
 ): string => {
@@ -83,6 +84,7 @@ export const compile = (
     getImportIds(ast),
     imports,
     classNames,
+    sheetRelativeFilePath,
     getPartIds(ast),
     Boolean(getLogicElement(ast)),
     options
@@ -466,6 +468,14 @@ const translateImports = (ast: Node, context: TranslateContext) => {
         context
       );
     }
+  }
+
+  if (context.sheetRelativeFilePath) {
+    context = addModuleVariant(
+      `import "${context.sheetRelativeFilePath}";\n`,
+      `require("${context.sheetRelativeFilePath}");\n`,
+      context
+    );
   }
   context = addBuffer("\n", context);
   return context;

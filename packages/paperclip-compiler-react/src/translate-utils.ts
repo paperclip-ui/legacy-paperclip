@@ -12,6 +12,7 @@ export type TranslateContext = {
   isNewLine: boolean;
   hasLogicFile: boolean;
   classNames: Record<string, ClassNameExport>;
+  sheetRelativeFilePath?: string;
   indent: string;
 
   // @deprecated
@@ -27,6 +28,7 @@ export const createTranslateContext = (
   importIds: string[],
   imports: Record<string, string>,
   classNames: Record<string, ClassNameExport>,
+  sheetRelativeFilePath: string,
   partIds: string[],
   hasLogicFile: boolean,
   args: Options,
@@ -39,6 +41,7 @@ export const createTranslateContext = (
   partIds,
   scopes: {},
   imports,
+  sheetRelativeFilePath,
   hasLogicFile,
   isNewLine: true,
   lineNumber: 0,

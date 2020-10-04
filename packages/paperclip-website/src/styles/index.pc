@@ -343,7 +343,7 @@
   <div className="$layout._col $layout._col3">
     <style>
       :self {
-        &&& {
+        && {
           display: flex;
         }
       }
