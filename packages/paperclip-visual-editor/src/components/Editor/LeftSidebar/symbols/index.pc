@@ -115,11 +115,12 @@
     </style>
     {dirPath}
   </span>
+
 </div>
 
 
 <Pane export component as="SymbolsPane" title="Open" primary>
-  <Tree.Node depth="0" open leaf={<FileInfo fileName="Button.pc" dirPath="src/components" />} icon={<Tree.FileIcon extension="pc" />} />
+  <Tree.Node depth="0" selected open leaf={<FileInfo fileName="Button.pc" dirPath="src/components" />} controls={<span>&times</span>} icon={<Tree.FileIcon extension="pc" />} />
   <Tree.Node depth="0" open leaf="Button.pc" icon={<Tree.FileIcon extension="pc" />} />
   <Tree.Node depth="0" open leaf="index.pc" icon={<Tree.FileIcon extension="pc" />} />
 
