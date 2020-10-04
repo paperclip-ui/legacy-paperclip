@@ -74,10 +74,12 @@
 
 <i export component as="FileIcon" data-extension={extension?}>
   <style>
+
     --size: 1.3em;
     @include utils.mask;
     color: grey;
     mask-image: url(./file2.svg);
+
     :self([data-extension=pc]) {
       --size: 1.2em;
       padding-right: 1px;

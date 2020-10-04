@@ -1168,7 +1168,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-406d2856][data-pc-406d2856] { color:blue; } [data-pc-406d2856][class].test { color:red; } [data-pc-406d2856] #test2[data-pc-80f4925f] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>[data-pc-406d2856][data-pc-406d2856] { color:blue; } [data-pc-406d2856][data-pc-406d2856][class].test { color:red; } [data-pc-406d2856] #test2[data-pc-80f4925f] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
     );
   });
 
@@ -1214,7 +1214,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-406d2856][class].variant { color:blue; } [data-pc-406d2856][data-pc-406d2856] { color:red; background:url(/path.png); }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>[data-pc-406d2856][data-pc-406d2856][class].variant { color:blue; } [data-pc-406d2856][data-pc-406d2856] { color:red; background:url(/path.png); }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
     );
   });
 
