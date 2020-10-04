@@ -93,7 +93,7 @@ function Home() {
               </buttonStyles.Anchor>
             </>
           }
-          preview={<img src="img/vscode-screenshot.png" />}
+          preview={<img src="img/screenshot-6.png" />}
         />
 
         <styles.MainFeatures>

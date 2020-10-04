@@ -24,7 +24,7 @@ jobs:
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: "30s"
+          time: "60s"
       - run: npm install vsce
       - run: npm run publish:marketplace
         env:

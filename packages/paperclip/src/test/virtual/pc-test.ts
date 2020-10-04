@@ -1192,7 +1192,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[data-pc-bd4940fc] { color:red; }</style><div data-pc-80f4925f><span data-pc-80f4925f data-pc-bd4940fc> abba </span></div>`
+      `<style>[data-pc-6f887789] { color:red; }</style><div data-pc-80f4925f><span data-pc-6f887789 data-pc-80f4925f> abba </span></div>`
     );
   });
 

@@ -27,31 +27,25 @@ export default SOURCE;
 */
 
 const SOURCE = `
-
-<!-- These styles are scoped to this document -->
-<style>
-  ol {
+<ol export component as="List">
+  <style>
     padding-left: 1em;
     font-family: Open Sans;
-  }
-  li {
-    margin-top: 6px;
-  }
-</style>
-
-<!-- Components that can be imported into app code -->
-<ol export component as="List">
+  </style>
   {children}
 </ol>
 
 <li export component as="ListItem">
+  <style>
+    margin-top: 6px;
+  </style>
   {children}
 </li>
 
 <!-- 
-  Preview of UI for docs, development,
-  and visual regression tests 
+  Preview
 -->
+
 <List>
   <ListItem>Bagels 🥯</ListItem>
   <ListItem>Yakitori 🍢</ListItem>
