@@ -850,7 +850,7 @@ fn stringify_element_selector(
     ),
     ast::Selector::This(selector) => {
       let self_selector = if let Some((scope, is_instance)) = &context.element_scope {
-        get_element_scope_selector(scope, is_instance, selector.selector == None)
+        get_element_scope_selector(scope, is_instance, true)
       } else {
         scope_selector
       };

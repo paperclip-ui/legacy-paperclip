@@ -99,9 +99,36 @@
   </style>
 </i>
 
+<div export component as="FileInfo">
+  <!-- file name -->
+  <span>
+    <style>
+      margin-right: 8px;
+    </style>
+    {fileName}
+  </span>
+
+  <!-- file path -->
+  <span>
+    <style>
+      opacity: 0.5;
+    </style>
+    {dirPath}
+  </span>
+</div>
+
 
 <Pane export component as="SymbolsPane" title="Open" primary>
-  <Tree.Node depth="0" open leaf="Button.pc" hasChildren icon={<Tree.FileIcon />} >
+  <Tree.Node depth="0" open leaf={<FileInfo fileName="Button.pc" dirPath="src/components" />} icon={<Tree.FileIcon extension="pc" />} />
+  <Tree.Node depth="0" open leaf="Button.pc" icon={<Tree.FileIcon extension="pc" />} />
+  <Tree.Node depth="0" open leaf="index.pc" icon={<Tree.FileIcon extension="pc" />} />
+
+
+  <!-- TODO at some point -->
+  <Tree.Node depth="0" open leaf="Button.pc" icon={<Tree.FileIcon />} >
+    <style>
+      display: none;
+    </style>
     <Tree.Node leaf="ListItem" hasChildren open depth="1" icon={<CubeIcon />}>
       <Tree.Node leaf="div" hasChildren open  icon={<SquareIcon />} depth="2">
         <Tree.Node leaf="span" hasChildren open icon={<SquareIcon />} depth="3">

@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "15.0.11",
+  "version": "15.0.13",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "keywords": [
@@ -117,7 +117,7 @@
     "lint": "eslint src",
     "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",
-    "publish:marketplace": "rm -rf node_modules && npm install --production && vsce package && vsce publish -p $VSCE_TOKEN"
+    "publish:marketplace": "rm -rf node_modules && npm install && vsce package && vsce publish -p $VSCE_TOKEN"
   },
   "author": "",
   "license": "MIT",
@@ -128,27 +128,27 @@
     "@types/vscode": "^1.41.0",
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
-    "axios": "^0.19.2",
     "chai": "^4.2.0",
-    "cheerio": "^1.0.0-rc.3",
     "eslint": "^7.4.0",
-    "glob": "^7.1.6",
     "mocha": "^8.0.1",
-    "p-limit": "^3.0.2",
     "typescript": "^3.9.7",
     "vscode-test": "^1.4.0"
   },
   "dependencies": {
     "@types/react": "^16.9.20",
+    "axios": "^0.19.2",
+    "cheerio": "^1.0.0-rc.3",
     "color": "^3.1.2",
     "find-up": "^4.1.0",
+    "glob": "^7.1.6",
     "lodash": "^4.17.15",
     "mousetrap": "^1.6.5",
-    "paperclip": "^15.0.11",
+    "p-limit": "^3.0.2",
+    "paperclip": "^15.0.13",
     "paperclip-autocomplete": "^15.0.10",
     "paperclip-utils": "^15.0.10",
-    "paperclip-visual-editor": "^15.0.11",
-    "paperclip-web-renderer": "^15.0.11",
+    "paperclip-visual-editor": "^15.0.13",
+    "paperclip-web-renderer": "^15.0.13",
     "vscode-languageclient": "^6.0.1",
     "vscode-languageserver": "^6.0.1",
     "vscode-languageserver-textdocument": "^1.0.0"
