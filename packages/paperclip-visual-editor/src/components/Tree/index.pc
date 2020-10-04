@@ -4,7 +4,7 @@
   <style>
      .leaf {
       font-size: 12px;
-      padding: 5px 8px;
+      padding: 6px 8px;
       padding-left: calc(10px + var(--depth) * 14px);
       display: flex;
       align-items: center;
@@ -12,7 +12,7 @@
       white-space: nowrap;
       :global(i) {
         flex-shrink: 0;
-        margin-right: 3px;
+        margin-right: 4px;
       }
       &:before {
         --size: 0.7em;
@@ -72,18 +72,27 @@
   </div>
 </div>
 
-<i export component as="FileIcon">
+<i export component as="FileIcon" data-extension={extension?}>
   <style>
-    --size: 1.2em;
+    --size: 1.3em;
     @include utils.mask;
+    color: grey;
     mask-image: url(./file2.svg);
+    :self([data-extension=pc]) {
+      --size: 1.2em;
+      padding-right: 1px;
+      color: rgb(169, 240, 111);
+      mask-image: url(./shape-icon.svg);
+    }
   </style>
 </i>
+
 
 <i component as="FolderIcon">
   <style>
     --size: 1.4em;
     @include utils.mask;
+    color: grey;
     mask-image: url(./folder.svg);
   </style>
 </i>
@@ -92,7 +101,7 @@
   <Node leaf="src" depth="0" icon={<FolderIcon />} hasChildren open>
     <Node leaf="components" icon={<FolderIcon />} hasChildren depth="1" alt open>
       <Node leaf="Button.tsx" icon={<FileIcon />} depth="2" isFile />
-      <Node leaf="Button.pc"  icon={<FileIcon />} controls={<fragment>
+      <Node leaf="Button.pc"  icon={<FileIcon  extension="pc" />} controls={<fragment>
 
         <!-- warning icon used to indicate files that have problems (like linting issues) -->
         <i>
