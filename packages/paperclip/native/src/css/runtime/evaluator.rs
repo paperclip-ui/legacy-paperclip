@@ -76,7 +76,7 @@ pub fn evaluate<'a>(
       style.extend(context.inc_declarations.clone());
 
       context.all_rules.push(virt::Rule::Style(virt::StyleRule {
-        selector_text: get_element_scope_selector(&scope, &is_instance),
+        selector_text: get_element_scope_selector(&scope, &is_instance, true),
         style,
       }));
     }
@@ -733,11 +733,20 @@ fn stringify_nestable_selector(
   )
 }
 
-fn get_element_scope_selector(scope: &String, is_instance: &bool) -> String {
+fn get_element_scope_selector(
+  scope: &String,
+  is_instance: &bool,
+  extra_specificity: bool,
+) -> String {
   if *is_instance {
     format!("[class]._{}", scope)
   } else {
-    format!("[data-pc-{}]", scope)
+    let selector = format!("[data-pc-{}]", scope);
+    if extra_specificity {
+      format!("{}{}", selector, selector)
+    } else {
+      selector
+    }
   }
 }
 
@@ -841,7 +850,7 @@ fn stringify_element_selector(
     ),
     ast::Selector::This(selector) => {
       let self_selector = if let Some((scope, is_instance)) = &context.element_scope {
-        get_element_scope_selector(scope, is_instance)
+        get_element_scope_selector(scope, is_instance, selector.selector == None)
       } else {
         scope_selector
       };
@@ -1007,7 +1016,7 @@ fn stringify_element_selector(
     if let Some((scope, is_instance)) = &context.element_scope {
       scoped_selector_text = format!(
         "{} {}",
-        get_element_scope_selector(scope, is_instance),
+        get_element_scope_selector(scope, is_instance, false),
         scoped_selector_text
       );
     }
