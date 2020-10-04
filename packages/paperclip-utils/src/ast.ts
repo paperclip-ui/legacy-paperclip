@@ -63,6 +63,7 @@ export type DeclarationAnnotation = {
 export type AnnotationProperty = TextAnnotation | DeclarationAnnotation;
 
 export type Element = {
+  id: string;
   location: SourceLocation;
 
   // TODO - change this to OpenTag. Don't keep location here

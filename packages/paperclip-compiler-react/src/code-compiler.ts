@@ -205,11 +205,7 @@ const translateStyleScopeAttributes = (
 };
 
 const getElementScopeId = (element: Element, contextUri: string) =>
-  crc32(
-    `${getStyleScopeId(contextUri)}${element.location.start}${
-      element.location.end
-    }`
-  );
+  crc32(`${getStyleScopeId(contextUri)}${element.id}`);
 const translateExtendsPropsUtil = (ast: Node, context: TranslateContext) => {
   context = addBuffer(
     `const extendProps = (defaultProps, extender) => {\n`,
