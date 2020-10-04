@@ -278,7 +278,6 @@ export class Renderer {
 
   handleEngineEvent = (event: EngineEvent) => {
     this._clearErrors();
-    console.log(event);
     switch (event.kind) {
       case EngineEventKind.Error: {
         this.handleError(event);
