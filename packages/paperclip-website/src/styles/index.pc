@@ -31,339 +31,170 @@
     position: relative;
     /* top: 2px; */
   }
-  ._home {
+</style>
+
+
+<span export component as="Highlight" className="_highlight" 
+  className:noBreak="noBreak"
+  className:darker="darker"
+  className:bold="bold">
+  <style>
+    color: var(--color-green-neon-light);
+    :self(.darker) {
+      color: var(--color-green-army);
+    }
+    :self(.bold) {
+      font-weight: 600;
+    }
+    font-weight: 500;
+    :self(.noBreak) {
+      white-space: nowrap;
+    }
+  </style>
+  {children}
+</span>
+
+<div export component as="Home" className="_home $typography.text-default">
+  <style>
     background: rgb(245, 245, 245);
     line-height: 1.6em;
     * { 
       box-sizing: border-box;
     }
-  }
-  ._header {
+  </style>
+  {children}
+</div>
+
+<layout.Container export component as="Header" className="$_header $_main">
+  <style>
     /* background: rgb(58, 60, 65); */
     background: rgb(48, 50, 56);
     /* background: rgb(68, 70, 77); */
     /* color: white; */
-  }
 
-  ._mini-cta-link {
-    display: flex;
-    margin-top: 10px;
-    opacity: 0.5;
-    align-items: center;
-    color: inherit;
-    text-decoration: none;
-
-
-    ._mini-cta-icon {
-      font-size: 0.9em;
-      margin-left: 6px;
-    }
-  }
-  ._main {
     padding-top: 70px;
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
     height: 600px;
+  </style>
+  <style>
 
-    ._blurb {
-        margin-top: 100px;
-        width: 50%;
-        flex-shrink:0;
-        margin-right: 30px;
-      ._title {
-        color: rgba(255, 255, 255, 0.9);
-
-        /* filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.164)); */
-        @include typography.text-secondary;
-        font-size: 1.58em;
-        line-height: 1.3em;
-        /* white-space: nowrap; */
-        margin-bottom: var(--gap-5);
-        font-weight: 600;
-        letter-spacing: 0.04em;
-      }
-      ._subtext {
-        color: rgba(255, 255, 255, 0.9);
-        /* filter: drop-shadow(0px 0px 1px rgb(0, 0, 0)); */
-        font-weight: 500;
-        letter-spacing: 0.075em;
-        line-height: 1.8em;
-        /* padding-right: 20px; */
-
-        ._emoji {
-          color: rgba(255, 255, 255, 1);
-        }
-      }
-
-      @include mobile {
-        margin-top: 0;
-        margin-bottom: 30px;
-        text-align: center;
-        width: 100%;
-        margin-right: 0;
-      }
-    }
-
-    ._cta {
-      margin-top: 15px;
-      :global(a) { 
-        margin-right: 15px;
-        margin-top: 15px;
-        &:first-child {
-          margin-left: 0;
-        }
-        @include tiny {
-          width: 100%;
-          box-sizing: border-box;
-          margin-right: 0;
-        }
-      }
-    }
-
-    ._preview {
-      position: relative;
-      /* left: calc(100% - 400px); */
-      width: 100%;
-      /* box-shadow: -4px 1px 4px 4px rgb(153, 153, 153); */
-      :global(img) {
-        /* border-radius: 4px; */
-        /* box-shadow: -2px -2px 6px 0px rgba(0, 0, 0, 0.247); */
-        /* border: 1px solid rgba(99, 99, 99, 0.404); */
-        position: absolute;
-        width: auto;
-        max-width: 1024px;
-        @include mobile {      
-          position: absolute;
-          width: calc(100% + 80px);
-          left: -40px;
-        }
-      }
-
-      /* @include mobile {
-        :global(img) {          
-          position: absolute;
-          width: calc(100% + 80px);
-          left: -40px;
-        }
-      } */
-    }
-  }
-  ._highlight {
-    color: var(--color-green-neon-light);
-    &--darker {
-      color: var(--color-green-army);
-    }
-    &--bold {
-      font-weight: 600;
-    }
-    font-weight: 500;
-    &--noBreak {
-      white-space: nowrap;
-    }
-  }
-  ._summary {
-    border-top: 1px solid rgb(226, 226, 226);
-    @include layout.py-6;
-    ._title {
-      @include typography.text-secondary;
-      font-size: 1.2em;
-      font-weight: 500;
-      margin-bottom: var(--gap-4);
-    }
-    ._text {
-
-    }
-  }
-
-  ._main-features {
-    border-top: 1px solid rgb(226, 226, 226);
-    border-bottom: 1px solid rgb(226, 226, 226);
-    ._item {
-      @include layout.py-6;
-      display: flex;
-      flex-direction: column;
-      ._heading {
-        display: flex;
-        ._icon {
-          @include section-icon;
-        }
-        ._info {
-          display: flex;
-          flex-direction: column;
-          ._title {
-            @include typography.text-secondary;
-            font-size: 1.2em;
-            display: flex;
-            font-weight: 500;
-            margin-bottom: var(--gap-4);
-          }
-          ._details {
-            margin-bottom: 2em;
-          }
-        }
-      }
-      ._example {
-        font-size: 14px;
-        :global(.prism-code) {
-          max-height: 400px;
-        }
-        :global(.prism-code > div) {
-          /* height: 400px; */
-        }
-      }
-      &:first-child {
-        border-right: 1px solid rgb(226, 226, 226);
-        padding-right: 30px;
-
-        @include mobile {
-          padding-right: 0px;
-          border-right: 0px;
-        }
-      }
-      &:last-child {
-        border-left: 1px solid rgb(255, 255, 255);
-        padding-left: 30px;
-        @include mobile {
-          padding-top: 0px;
-          padding-left: 0px;
-          border-left: 0;
-        }
-      }
-    }
-    ._code-preview {
-      width: 100%;
-      height: 100%;
-      min-height: 200px;
-      background: rgb(221, 221, 221);
-      border-radius: 6px;
-      
-    }
-  }
-
-  ._various-features {
-    border-top: 1px solid rgb(255, 255, 255);
-    border-bottom: 1px solid rgb(226, 226, 226);
-    /* text-align: right; */
-
-    ._item  {
-      @include layout.py-6;
-      display: flex;
-      margin: 0px auto;
-      /* background: blue; */
-      margin-left: 10px;
-      &:first-child {
-        margin-left: 0;
-      }
-
-      ._info {
-        width: 100%;
-      }
-
-      &:last-child {
-        /* padding-left: 30px; */
-      }
-      ._icon {
-        @include section-icon;
-      }
-      ._title {
-
-        @include typography.text-secondary;
-        font-size: 18px;
-        font-weight: 500;
-        align-items: flex-start;
-        margin-bottom: 20px;
-      }
-
-      ._details {
-
-      }
-
-      @include mobile {
-        margin-left: 0;
-      }
-    }
-  }
-
-  ._big-feature {
-    border-bottom: 1px solid rgb(226, 226, 226);
-    border-top: 1px solid rgb(255, 255, 255);
-    
-    ._item {
-      display: flex;
-      ._icon {
-        @include section-icon;
-        visibility: hidden;
-      }
-
-      ._info {
-        /* margin-left: 45px; */
-        /* margin-right: 40px; */
-      }
-    }
-    ._title {
-      @include typography.text-secondary;
-      font-size: 1.3em;
-        margin-bottom: var(--gap-4);
-    }
-    ._details {
-    }
-    ._preview {
-      margin-left: 15px;
-      @include mobile {
-        margin-left: 0;
-      }
-      :global(img) {
-        border-radius: 4px;
-        /* border: 1px solid rgba(255, 255, 255, 0.363); */
-        /* box-shadow: 4px 4px 4px 4px #F60; */
-        /* filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.226)); */
-        @include mobile {
-          width: 100%;
-        }
-      }
-    }
-  }
-  
-</style>
-
-
-<span export component as="Highlight" className="_highlight" 
-  className:noBreak="_highlight--noBreak"
-  className:darker="_highlight--darker"
-  className:bold="_highlight--bold">
-  {children}
-</span>
-
-<div export component as="Home" className="_home $typography.text-default">
-  {children}
-</div>
-
-<layout.Container export component as="Header" className="$_header $_main">
+  </style>
   <layout.Row>
     <div className="_blurb">
+      <style>
+        :self {
+          margin-top: 100px;
+          width: 50%;
+          flex-shrink:0;
+          margin-right: 30px;
+        }
+        @include mobile {
+          margin-top: 0;
+          margin-bottom: 30px;
+          text-align: center;
+          width: 100%;
+          margin-right: 0;
+        }
+      </style>
       <div className="_title">
+        <style>
+          color: rgba(255, 255, 255, 0.9);
+
+          /* filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.164)); */
+          @include typography.text-secondary;
+          font-size: 1.58em;
+          line-height: 1.3em;
+          /* white-space: nowrap; */
+          margin-bottom: var(--gap-5);
+          font-weight: 600;
+          letter-spacing: 0.04em;
+        </style>
         {title}
       </div>
       <div className="_subtext">
+        <style>
+          color: rgba(255, 255, 255, 0.9);
+          /* filter: drop-shadow(0px 0px 1px rgb(0, 0, 0)); */
+          font-weight: 500;
+          letter-spacing: 0.075em;
+          line-height: 1.8em;
+          /* padding-right: 20px; */
+
+          ._emoji {
+            color: rgba(255, 255, 255, 1);
+          }
+        </style>
         {description}
       </div>
       <div className="_cta">
+        <style>
+          margin-top: 15px;
+          :global(a) { 
+            margin-right: 15px;
+            margin-top: 15px;
+            &:first-child {
+              margin-left: 0;
+            }
+            @include tiny {
+              width: 100%;
+              box-sizing: border-box;
+              margin-right: 0;
+            }
+          }
+        </style>
         {cta}
       </div>
     </div>
     <div className="_preview">
+      <style>
+        position: relative;
+        /* left: calc(100% - 400px); */
+        width: 100%;
+        /* box-shadow: -4px 1px 4px 4px rgb(153, 153, 153); */
+        :global(img) {
+          /* border-radius: 4px; */
+          /* box-shadow: -2px -2px 6px 0px rgba(0, 0, 0, 0.247); */
+          /* border: 1px solid rgba(99, 99, 99, 0.404); */
+          position: absolute;
+          width: auto;
+          max-width: 1024px;
+          @include mobile {      
+            position: absolute;
+            width: calc(100% + 80px);
+            left: -40px;
+          }
+        }
+      </style>
       {preview}
     </div>
   </layout.Row>
 </layout.Container>
 
 <div component as="CodePreview" className="_code-preview">
+  <style>
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    background: rgb(221, 221, 221);
+    border-radius: 6px;
+  </style>
 </div>
 
 <div export component as="Summary" className="_summary $layout._row">
+  <style>
+    border-top: 1px solid rgb(226, 226, 226);
+    @include layout.py-6;
+  </style>
   <div className="$layout._col12">
     <div className="_title">
+      <style>
+        @include typography.text-secondary;
+        font-size: 1.2em;
+        font-weight: 500;
+        margin-bottom: var(--gap-4);
+      </style>
       {title}
     </div>
     <div className="_text">
@@ -374,33 +205,128 @@
 
 
 <div export component as="MainFeatures" className="_main-features $layout._row">
+  <style>
+    border-top: 1px solid rgb(226, 226, 226);
+    border-bottom: 1px solid rgb(226, 226, 226);
+  </style>
   {children}
 </div>
 
 <div export component as="MainFeatureItem" className="_item $layout._col $layout._col6">
+  <style>
+    @include layout.py-6;
+    display: flex;
+    flex-direction: column;
+
+    :self(:first-child) {
+      border-right: 1px solid rgb(226, 226, 226);
+      padding-right: 30px;
+
+      @include mobile {
+        padding-right: 0px;
+        border-right: 0px;
+      }
+    }
+
+    :self(:last-child) {
+      border-left: 1px solid rgb(255, 255, 255);
+      padding-left: 30px;
+      @include mobile {
+        padding-top: 0px;
+        padding-left: 0px;
+        border-left: 0;
+      }
+    }
+  </style>
   <div className="_heading">
-    <icons.Icon name={iconName} className="$_icon" />
+    <style>
+     display: flex;
+    </style>
+    <icons.Icon name={iconName} className="$_icon">
+      <style>
+        @include section-icon;
+      </style>
+    </icons.Icon>
     <div className="_info">
+      <style>
+        display: flex;
+        flex-direction: column;
+      </style>
       <div className="_title">
+        <style>
+          @include typography.text-secondary;
+          font-size: 1.2em;
+          display: flex;
+          font-weight: 500;
+          margin-bottom: var(--gap-4);
+        </style>
         <span>{title}</span>
       </div>
-      <div className="_details">{description}</div>
+      <div className="_details">
+        <style>
+          margin-bottom: 2em;
+        </style>
+        {description}
+      </div>
     </div>
   </div>
   <div className="_example">
+    <style>
+      font-size: 14px;
+      :global(.prism-code) {
+        max-height: 400px;
+      }
+      :global(.prism-code > div) {
+        /* height: 400px; */
+      }
+    </style>
     {example}
   </div>
 </div>
 
 
 <div export component as="VariousFeatures" className="_various-features $layout._row">
+  <style>
+    border-top: 1px solid rgb(255, 255, 255);
+    border-bottom: 1px solid rgb(226, 226, 226);
+
+  </style>
   {children}
 </div>
 
-<div export component as="VariousFeatureItem" className="_item  $layout._col $layout._col3">
-  <icons.Icon name={iconName} className="$_icon" />
+<div export component as="VariousFeatureItem" className="_item $layout._col $layout._col3">
+  <style>
+    :self {
+      && {
+        @include layout.py-6;
+        display: flex;
+        margin: 0px auto;
+        /* background: blue; */
+        margin-left: 10px;
+        @include mobile {
+          margin-left: 0;
+        }
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+
+  </style>
+  <icons.Icon name={iconName} className="$_icon">
+    <style>
+      @include section-icon;
+    </style>
+  </icons.Icon>
   <div className="_info">
     <div className="_title">
+      <style>
+        @include typography.text-secondary;
+        font-size: 18px;
+        font-weight: 500;
+        align-items: flex-start;
+        margin-bottom: 20px;
+      </style>
       <span>{title}</span>
     </div>
     <div className="_details">
@@ -410,21 +336,74 @@
 </div>
 
 <div export component as="BigFeature" className="_big-feature $layout._section $layout._row">
-  <div className="_item $layout._col $layout._col3">
-    <icons.Icon name="grow" className="$_icon" />
+  <style>
+    border-bottom: 1px solid rgb(226, 226, 226);
+    border-top: 1px solid rgb(255, 255, 255);
+  </style>
+  <div className="$layout._col $layout._col3">
+    <style>
+      :self {
+        &&& {
+          display: flex;
+        }
+      }
+    </style>
+    <icons.Icon name="grow" className="$_icon">
+      <style>
+        @include section-icon;
+        visibility: hidden;
+      </style>
+    </icons.Icon>
     <div clasName="_info">
       <div className="_title">
+        <style>
+          @include typography.text-secondary;
+          font-size: 1.3em;
+          margin-bottom: var(--gap-4);
+        </style>
         {title}
       </div>
       <div className="_details">
         {description}
       </div>
       <a className="_mini-cta-link" href={ctaHref?}>
+        <style>
+          display: flex;
+          margin-top: 10px;
+          opacity: 0.5;
+          align-items: center;
+          color: inherit;
+          text-decoration: none;
+
+
+          ._mini-cta-icon {
+            font-size: 0.9em;
+            margin-left: 6px;
+          }
+        </style>
+
         {ctaText} <icons.Icon name="chevron-right" className="$_mini-cta-icon" />
       </a>
     </div>
   </div>
   <div className="_preview">
+    <style>
+      :self {
+        margin-left: 15px;
+        @include mobile {
+          margin-left: 0;
+        }
+        :global(img) {
+          border-radius: 4px;
+          /* border: 1px solid rgba(255, 255, 255, 0.363); */
+          /* box-shadow: 4px 4px 4px 4px #F60; */
+          /* filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.226)); */
+          @include mobile {
+            width: 100%;
+          }
+        }
+      }
+    </style>
     {preview}
   </div>
 </div>
