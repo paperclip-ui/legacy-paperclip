@@ -21,10 +21,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # wait for a bit for NPM packages to show up in registry
-      - name: Sleep for 30 seconds
+      - name: Sleep for a bit
         uses: jakejarvis/wait-action@master
         with:
-          time: "60s"
+          time: "120s"
       - run: npm install vsce
       - run: npm run publish:marketplace
         env:
