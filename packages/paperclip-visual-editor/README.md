@@ -1,6 +1,10 @@
 ⚠️ note -- need to build tooling out of necessity. Will create
 UI around that.
 
+Goals:
+
+  - Help with refactorability & re-usability of components
+
 TODOS:
 
 - [ ] Grid view of all components in project directory

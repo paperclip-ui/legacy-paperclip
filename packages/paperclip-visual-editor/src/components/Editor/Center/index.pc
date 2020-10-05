@@ -1,7 +1,7 @@
 <import src="components/Theme/index.pc" as="theme" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
 <import src="./Canvas2/index.pc" as="Canvas" />
-<import src="./Arial/index.pc" as="Arial" />
+<import src="./Arial/index.pc" as="Arial2" />
 
 <div export component as="Container" className="$theme.full-wh">
   <style>
@@ -30,7 +30,7 @@
 <Container export component as="ArialPreview">
   <Toolbar.Preview />
   <CanvasContainer>
-    <Arial.Preview />
+    <Arial2.Preview />
   </CanvasContainer>
 </Container>
 
