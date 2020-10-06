@@ -361,7 +361,10 @@ const stringifyImportDefinition = (
   context: TranslateContext
 ) => {
   const className = strToClassName(imp, context.fileUri);
-  return `${className}${sep}${prefix}${pascalCase(className)}`;
+
+  return `${className}${sep}_${crc32(context.fileUri)}_${prefix}${pascalCase(
+    className
+  )}`;
 };
 
 const translateImports = (ast: Node, context: TranslateContext) => {
@@ -585,9 +588,11 @@ const translateJSXRoot = (node: Node, context: TranslateContext) => {
   return context;
 };
 
-const getImportTagName = (tagName: string) => {
+const getImportTagName = (tagName: string, context: TranslateContext) => {
   const parts = tagName.split(".").map(pascalCase);
-  return parts.length > 1 ? parts.join("") : `${parts[0]}`;
+  return parts.length > 1
+    ? `_${crc32(context.fileUri)}_${parts.join("")}`
+    : `${parts[0]}`;
 };
 
 const translateJSXNode = (
@@ -632,7 +637,7 @@ const translateElement = (
   const tag = isPartComponentInstance
     ? strToClassName(element.tagName, context.fileUri)
     : isImportComponentInstance
-    ? getImportTagName(element.tagName)
+    ? getImportTagName(element.tagName, context)
     : JSON.stringify(element.tagName);
 
   context = addBuffer(
