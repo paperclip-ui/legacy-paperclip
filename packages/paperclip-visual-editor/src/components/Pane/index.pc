@@ -29,6 +29,9 @@
     </div>
   </div>
   <div>
+    <style>
+      padding: 6px 0px;
+    </style>
     {children}
   </div>
 </div>

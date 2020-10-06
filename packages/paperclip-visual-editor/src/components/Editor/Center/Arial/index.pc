@@ -1,0 +1,167 @@
+<import src="styles/utils.pc" as="utils" />
+<div export component as="Cell">
+  <style>
+    display: inline-block;
+    width: 33.333333%;
+    box-sizing: border-box;
+    height: 200px;
+    padding: 5px;
+  </style>
+
+  <!-- title -->
+
+  <!-- inner -->
+  <div>
+
+    <style>
+      background: rgb(233, 233, 233);
+      height: 100%;
+      border-radius: 2px;
+      box-sizing: border-box;
+      overflow: scroll;
+      position: relative;
+      :global(img) {
+        max-width: 100%;
+        max-height: 100%;
+      }
+    </style>
+
+    <div>
+      {children}
+    </div>
+
+    <div>
+      <style>
+        background: rgb(202, 202, 202);
+        padding: 3px 10px;
+        color: rgb(88, 88, 88);
+        display: flex;
+        white-space: nowrap;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        box-sizing: border-box;
+        font-weight: 500;
+        justify-content: space-between;
+        align-content: center;
+      </style>
+      <div>{label}</div>
+      <div>
+        <style>
+          margin-left: 10px;
+          opacity: 0.4;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        </style>
+        {dirPath}
+      </div>
+      <div>
+        {controls}
+      </div>
+    </div>
+
+  </div>
+  
+</div>
+
+<i component as="WarningIcon">
+  <style>
+    --size: 1.2em;
+    position: relative;
+    top: 2px;
+    @include utils.mask;
+    color: rgb(255, 238, 0);
+    mask-image: url(./warning.svg);
+    box-shadow: 0px 0px 2px 0px black;
+  </style>
+</i>
+
+<div export component as="Preview">
+  <style>
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  </style>
+
+  <div>
+    <style>
+      padding: 10px;
+      position: relative;
+      padding-bottom: 0px;
+      :self(:before) {
+        position: absolute;
+        top: 23px;
+        color: rgb(126, 126, 126);
+        left: 30px;
+        transform: translate(-100%, -50%);
+        --size: 15px;
+        @include utils.mask;
+        mask-image: url(./magnify.svg);
+      }
+    </style>
+    <input placeholder="Filter"> 
+      <style>
+        margin: 0px;
+        border-radius: 100px;
+        border: 1px solid rgb(161, 161, 161);
+        padding: 5px 10px;
+        padding-left: 25px;
+      </style>
+    </input>
+  </div>
+
+  <!-- Cells -->
+  <div>
+    <style>
+      /* display: grid; */
+      padding: 5px;
+      flex: 1;
+      height: 100%;
+      overflow: scroll;
+    </style>
+    <Cell label="Page / Top bar" controls={<WarningIcon />}><img src="./previews/0116800ba0b4383678bf58b68c18e3ec25bf8f2a0f86e02e9eef21182e0b00c9.jpg" /></Cell>
+    <Cell label="Analaytics"><img src="./previews/1872b7970e0515d14738fc30b340ed3c9bbe5743fc6897d90d2e4b364e27d578.jpg" /></Cell>
+    <Cell label="Link accounts page"><img src="./previews/2751624e31a0079e58548e88ace6de6e4e844f67a4bd651a996a0fa1d8f49da9.jpg" /></Cell>
+    <Cell label="Button groups"><img src="./previews/29486a432b90d3cc24a18501358a4cdc73cbe9f875738557dff1680a339660cb.jpg" /></Cell>
+    <Cell label="Modal" controls={<WarningIcon />}><img src="./previews/493420fe6b2b28bf69d2413ab1211194ec01254209b7dff42510a6b700d65b3b.jpg" /></Cell>
+    <Cell label="Topbar"><img src="./previews/4ef8588d3e22e320ef7ad28a8c2bbf808d2a8c48dc6a9205071f66229eed4b56.jpg" /></Cell>
+    <Cell label="Auth / Reset" controls={<WarningIcon />}><img src="./previews/5527651372db1946b99973f3d60148ed9718bf5c68fea4fcd22392d5e0e33b14.jpg" /></Cell>
+    <Cell label="Auth / Login"><img src="./previews/57316dacf231109e3c40c3b422dd119c8e268fc8ee71b6ad8b1e641a632396d5.jpg" /></Cell>
+    <Cell label="Theme / Font"><img src="./previews/5f8d7fa9f7f22c7af7daa3b32ffd8a963f87e5cfc09fe49769eab00363b5250c.jpg" /></Cell>
+    <Cell label="Inputs / Text"><img src="./previews/7d0f27f26875a7061dc3dd61e0129585e70e740c62c7d662cabc40ba5ad0c492.jpg" /></Cell>
+    <Cell label="Inputs / Button"><img src="./previews/85b0943f9426ecaee1187137b94283cd8cd8bc8023a3d2290f2f45ba517f07af.jpg" /></Cell>
+  </div>
+
+  <!-- Footer -->
+  <div>
+    <style>
+      padding: 10px;
+      background: rgb(63, 63, 63);
+      color: white;
+      position: relative;
+    </style>
+    <!-- Slider -->
+    <div>
+      <style>
+        background: rgb(168, 168, 168);
+        width: 100%;
+        height: 4px;
+        border-radius: 2px;
+        box-sizing: border-box;
+      </style>
+      <!-- knob -->
+      <div>
+        <style>
+          width: 12px;
+          height: 12px;
+          position: absolute;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          border-radius: 99px;
+          background: rgb(206, 206, 206);
+          filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.842));
+        </style>
+      </div>
+    </div>
+  </div>
+</div>
