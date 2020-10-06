@@ -1443,4 +1443,26 @@ describe(__filename + "#", () => {
       "<style>[data-pc-406d2856] a[data-pc-80f4925f] { background:blue; } [data-pc-406d2856] a[data-pc-80f4925f][class].b { opacity:1; } [data-pc-406d2856] a[data-pc-80f4925f][class].c { opacity:1; } [data-pc-406d2856] a[data-pc-80f4925f] e[data-pc-80f4925f] { color:orange; } [data-pc-406d2856][data-pc-406d2856] { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f></div>"
     );
   });
+
+  it(`can use :self with group selectors`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div component as="Test">
+        <style>
+          :self(a, :hover) {
+            color: blue;
+          }
+        </style>
+      </div>
+      
+      <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      "<style>[data-pc-406d2856][data-pc-406d2856]a, [data-pc-406d2856][data-pc-406d2856]:hover { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>"
+    );
+  });
 });

@@ -856,18 +856,35 @@ fn stringify_element_selector(
       };
 
       if let Some(selector) = &selector.selector {
-        return format!(
-          "{}{}",
-          self_selector,
-          stringify_element_selector(
-            &selector,
-            false,
-            parent_selector_text,
-            include_prefix,
-            false,
-            context
-          )
-        );
+        if let ast::Selector::Group(group) = selector.as_ref() {
+          return group.selectors.iter().map(|child_selector| {
+            format!(
+              "{}{}",
+              self_selector,
+              stringify_element_selector(
+                &child_selector,
+                false,
+                parent_selector_text,
+                include_prefix,
+                false,
+                context
+              )
+            )
+          }).collect::<Vec<String>>().join(", ");
+        } else {
+          return format!(
+            "{}{}",
+            self_selector,
+            stringify_element_selector(
+              &selector,
+              false,
+              parent_selector_text,
+              include_prefix,
+              false,
+              context
+            )
+          );
+        }
       } else {
         return format!("{}", self_selector);
       }
