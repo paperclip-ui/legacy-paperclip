@@ -5,7 +5,6 @@
 <div export component as="Zoom" className="zoom">
   <style>
     border-left: 1px solid var(--border-color);
-    padding:0px 7px;
     font-size: 0.8em;
     display: flex;
     align-items: center;
@@ -45,17 +44,17 @@
     padding: 0;
     background: transparent;
     display: flex;
-    margin-right: 7px;
+    height: 100%;
+
 
     i {
       --size: 1em;
-      padding: 0;
       mask-size: 0.95em;
       cursor: pointer;
       mask-image: url(./drop2.svg);
       display: inline-block;
-      /* position: relative; */
-      /* top: -1px; */
+
+      top: -1px;
       &.active {
         color: var(--active-background); 
       }
@@ -70,18 +69,19 @@
     border: none;
     color: inherit;
     padding: 0;
-    margin-right: 7px;
+
     background: transparent;
     display: flex;
-    border-left: 1px solid var(--border-color);
-    padding-left: 7px;
+    margin-right: 4px;
+    height: 100%;
 
     i {
-      --size: 1em;
-      padding: 0;
-      mask-size: 0.93em;
+      --size: 0.9em;
+      position: relative;
+      top: 1px;
+      /* mask-size: 0.93em; */
       cursor: pointer;
-      mask-image: url(./grid.svg);
+      mask-image: url(./grid4.svg);
       display: inline-block;
       &.active {
         color: var(--active-background); 
@@ -96,6 +96,17 @@
     padding:4px 14px;
     display: flex;
     align-items: center;
+    :self(& > *) {
+      border-left: 1px solid rgb(110, 110, 110);
+      padding-left: 6px;
+      padding-right: 6px;
+
+      &:first-child {
+        border-left: none;
+        padding-left: 0px;
+
+      }
+    }
   </style>
   {children}
 </div>
@@ -117,8 +128,8 @@
 
 <Container export component as="Preview">
   <Controls>
-    <PaintButton active />
     <GridButton active />
+    <PaintButton />
     <Zoom amount="100" />
   </Controls>
 </Container>
