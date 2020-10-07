@@ -6,6 +6,9 @@
     box-sizing: border-box;
     height: 200px;
     padding: 10px;
+    border-right: 1px solid red;
+    border-bottom: 1px solid red;
+    border-color: rgb(243, 243, 243);
   </style>
 
   <!-- title -->
@@ -14,10 +17,10 @@
   <div>
 
     <style>
-      background: rgb(233, 233, 233);
+      /* background: rgb(233, 233, 233); */
       height: 100%;
       border-radius: 2px;
-      border: 2px solid rgb(206, 206, 206);
+      /* border: 2px solid rgb(206, 206, 206); */
       box-sizing: border-box;
       overflow: scroll;
       position: relative;
@@ -26,22 +29,14 @@
         max-height: 100%;
       }
     </style>
-
     <div>
       <style>
-        opacity: 1;
-      </style>
-      {children}
-    </div>
-
-    <div>
-      <style>
-        background: rgb(202, 202, 202);
+        /* background: rgb(202, 202, 202); */
         padding: 3px 10px;
         color: rgb(29, 29, 29);
         display: flex;
         white-space: nowrap;
-        position: absolute;
+        /* position: absolute; */
         top: 0;
         width: 100%;
         box-sizing: border-box;
@@ -62,6 +57,13 @@
       <div>
         {controls}
       </div>
+    </div>
+
+    <div>
+      <style>
+        opacity: 1;
+      </style>
+      {children}
     </div>
 
   </div>
