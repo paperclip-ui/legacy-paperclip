@@ -3,7 +3,7 @@
 <import src="./Canvas2/index.pc" as="Canvas" />
 <import src="./Arial/index.pc" as="Arial" />
 
-<div export component as="Container" className="$theme.full-wh">
+<div export component as="Container" className="$theme.full-wh {className?}">
   <style>
     position: relative;
     display: flex;
@@ -27,7 +27,7 @@
   </CanvasContainer>
 </Container>
 
-<Container export component as="ArialPreview2">
+<Container export component as="ArialPreview2" className="light">
   <Toolbar.Preview />
   <CanvasContainer>
     <Arial.Preview />

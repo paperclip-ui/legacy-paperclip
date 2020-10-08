@@ -2,6 +2,19 @@
 <import src="components/icons/index.pc" as="icons" />
 <import src="styles/utils.pc" as="utils" />
 
+<style>
+  :root {
+    --topbar-background-active-1: var(--vscode-activityBar-foreground, var(--background-selected-1));
+    --toolbar-border-color: var(--border-color-1);
+  }
+
+  :global(.light) {
+     --toolbar-border-color: var(--border-color-1);
+     /* --topbar-background-active-1: red; */
+     /* --toolbar-border-color: transparent; */
+  }
+</style>
+
 <div export component as="Zoom" className="zoom">
   <style>
     border-left: 1px solid var(--border-color);
@@ -56,7 +69,7 @@
 
       top: -1px;
       &.active {
-        color: var(--active-background); 
+        color: var(--topbar-background-active-1); 
       }
     }
   </style>
@@ -84,7 +97,7 @@
       mask-image: url(./grid4.svg);
       display: inline-block;
       &.active {
-        color: var(--active-background); 
+        color: var(--topbar-background-active-1); 
       }
     }
   </style>
@@ -111,13 +124,13 @@
   {children}
 </div>
 
-<div export component as="Container" className="toolbar $theme.background-2">
+<div export component as="Container" className="toolbar {className?}">
   <style>
     --border-color: var(--vscode-editorGroup-border, #777);
-    --active-background: var(--vscode-activityBar-foreground, rgb(0, 132, 255));
+    /* --active-background: var(--vscode-activityBar-foreground, var(--active-background)); */
     background: var(--vscode-breadcrumb-background, var(--background-2));
     color: var(--vscode-activityBar-inactiveForeground, var(--color-negate-1));
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--toolbar-border-color);
     height: 21px;
     flex-shrink: 0;
     flex-grow: 0;
@@ -126,7 +139,7 @@
   {children}
 </div>
 
-<Container export component as="Preview">
+<Container export component as="Preview" className:light="light">
   <Controls>
     <GridButton active />
     <PaintButton />

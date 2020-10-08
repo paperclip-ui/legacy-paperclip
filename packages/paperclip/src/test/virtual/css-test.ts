@@ -625,9 +625,10 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
 
+    // console.log(JSON.stringify(engine.parseFile("/entry.pc"), null, 2));
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      "<style>[class]._80f4925f_child:first-child { color:blue ; }</style>"
+      "<style>[class]._80f4925f_parent [class]._80f4925f_child:first-child { color:blue ; }</style>"
     );
   });
 
@@ -821,14 +822,15 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `<style>
       @mixin desktop {
-        a {
+        b {
           @content;
         }
       }
-
-      @include desktop {
-        b {
-          color: red;
+      a {
+        @include desktop {
+          c {
+            color: red;
+          }
         }
       }
     </style>`
@@ -838,7 +840,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      "<style>a[data-pc-80f4925f] b[data-pc-80f4925f] { color:red; }</style>"
+      "<style>a[data-pc-80f4925f] b[data-pc-80f4925f] c[data-pc-80f4925f] { color:red; }</style>"
     );
   });
 
@@ -895,6 +897,41 @@ describe(__filename + "#", () => {
       "<style>[class]._80f4925f_test { font-family:sans-serif; } @media screen and (max-width: 400px) { [class]._80f4925f_test { font-size:40px; } }</style>"
     );
   });
+
+  // Fix https://github.com/crcn/paperclip/issues/529
+  xit(`can use & in media query include`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <style>
+        @mixin desktop {
+          @media screen and (max-width: 900px) {
+            @content;
+          }
+        }
+      </style>
+      <div component as="Test">
+        <style>
+          a {
+            @include desktop {
+              :nth-child(2n) {
+                color: red;
+              }
+            }
+          }
+        </style>
+      </div>
+      
+      <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      "<style>[data-pc-406d2856][data-pc-406d2856]a, [data-pc-406d2856][data-pc-406d2856]:hover { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>"
+    );
+  });
+
   it("properly orders include with nested selector", async () => {
     const graph = {
       "/entry.pc": `<style>

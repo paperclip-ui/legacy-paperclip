@@ -1465,4 +1465,46 @@ describe(__filename + "#", () => {
       "<style>[data-pc-406d2856][data-pc-406d2856]a, [data-pc-406d2856][data-pc-406d2856]:hover { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>"
     );
   });
+
+  it("properly scopes nested selectors in :self", async () => {
+    const graph = {
+      "/entry.pc": `
+      <div>
+        <style>
+          :self(.a) {
+            .b:hover {
+              color: blue;
+            }
+          }
+        </style>
+      </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      "<style>[data-pc-406d2856][data-pc-406d2856][class].a [class]._80f4925f_b:hover { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>"
+    );
+  });
+
+  it(`properly chains nested combo selector`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <style>
+        .a {
+          &.b.c {
+            color: blue;
+          }
+        }
+      </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      "<style>[class]._80f4925f_a[class].b[class].c { color:blue; }</style>"
+    );
+  });
 });

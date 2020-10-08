@@ -1,14 +1,33 @@
 <import src="styles/utils.pc" as="utils" />
+<import src="components/Theme/index.pc" as="theme" />
+
 <div export component as="Cell">
   <style>
-    display: inline-block;
-    width: 33.333333%;
-    box-sizing: border-box;
-    height: 200px;
-    padding: 10px;
-    border-right: 1px solid red;
-    border-bottom: 1px solid red;
-    border-color: rgb(243, 243, 243);
+    :self {
+      display: inline-block;
+      width: 25%;
+      box-sizing: border-box;
+      height: 200px;
+      padding: 16px;
+      border-right: 1px solid var(--border-color-1);
+      border-bottom: 1px solid var(--border-color-1);
+      &:nth-child(3n) {
+        border-right: none;
+      }
+      @include theme.desktop-m {
+        width: 33.3333%;
+
+      }
+      @include theme.desktop-s {
+        /* background: blue; */
+        width: 50%;
+        &:last-child {
+          font-size: 24px;
+        }
+      }
+    }
+    
+    /* border-color: rgb(243, 243, 243); */
   </style>
 
   <!-- title -->
@@ -32,7 +51,7 @@
     <div>
       <style>
         /* background: rgb(202, 202, 202); */
-        padding: 3px 10px;
+        padding-bottom: 10px;
         color: rgb(29, 29, 29);
         display: flex;
         white-space: nowrap;
@@ -76,7 +95,7 @@
     position: relative;
     top: 2px;
     @include utils.mask;
-    color: rgb(255, 238, 0);
+    color: rgb(255, 174, 0);
     mask-image: url(./warning.svg);
     box-shadow: 0px 0px 2px 0px black;
   </style>
@@ -89,52 +108,60 @@
     height: 100%;
   </style>
 
+  <!-- header -->
   <div>
     <style>
-      padding: 10px;
-      position: relative;
-      padding-bottom: 0px;
-      :self(:before) {
-        position: absolute;
-        top: 23px;
-        color: rgb(126, 126, 126);
-        left: 30px;
-        transform: translate(-100%, -50%);
-        --size: 15px;
-        @include utils.mask;
-        mask-image: url(./magnify.svg);
-      }
+      padding: 16px;
+
+      border-bottom: 1px solid var(--border-color-1);
     </style>
-    <input placeholder="Filter"> 
+    <!-- filter container -->
+    <div>
       <style>
-        margin: 0px;
-        border-radius: 100px;
-        border: 1px solid rgb(161, 161, 161);
-        padding: 5px 15px;
-        padding-left: 25px;
+        position: relative;
+
+        :self(:before) {
+          position: absolute;
+          top: 50%;
+          color: rgb(126, 126, 126);
+          left: 22px;
+          transform: translate(-100%, -50%);
+          --size: 15px;
+          @include utils.mask;
+          mask-image: url(./magnify.svg);
+        }
       </style>
-    </input>
+      <input placeholder="Filter"> 
+        <style>
+          margin: 0px;
+          border-radius: 100px;
+          border: 1px solid var(--border-color-1);
+          padding: 5px 15px;
+          padding-left: 25px;
+        </style>
+      </input>
+    </div>
   </div>
 
   <!-- Cells -->
   <div>
     <style>
       /* display: grid; */
-      padding: 5px;
+
       flex: 1;
       height: 100%;
       overflow: scroll;
     </style>
 
-    <Cell label="Page / Top bar" controls={<WarningIcon />}><img src="./previews/0116800ba0b4383678bf58b68c18e3ec25bf8f2a0f86e02e9eef21182e0b00c9.jpg" /></Cell>
+    <Cell label="Topbar" dir="src/components/test" controls={<WarningIcon />}><img src="./previews/0116800ba0b4383678bf58b68c18e3ec25bf8f2a0f86e02e9eef21182e0b00c9.jpg" /></Cell>
     <Cell label="Analaytics"><img src="./previews/1872b7970e0515d14738fc30b340ed3c9bbe5743fc6897d90d2e4b364e27d578.jpg" /></Cell>
-    <Cell label="Link accounts page"><img src="./previews/2751624e31a0079e58548e88ace6de6e4e844f67a4bd651a996a0fa1d8f49da9.jpg" /></Cell>
-    <Cell label="Button groups"><img src="./previews/29486a432b90d3cc24a18501358a4cdc73cbe9f875738557dff1680a339660cb.jpg" /></Cell>
+    <Cell label="LinkAccounts"><img src="./previews/2751624e31a0079e58548e88ace6de6e4e844f67a4bd651a996a0fa1d8f49da9.jpg" /></Cell>
+    <Cell label="ButtonGroup"><img src="./previews/29486a432b90d3cc24a18501358a4cdc73cbe9f875738557dff1680a339660cb.jpg" /></Cell>
     <Cell label="Modal" controls={<WarningIcon />}><img src="./previews/493420fe6b2b28bf69d2413ab1211194ec01254209b7dff42510a6b700d65b3b.jpg" /></Cell>
     <Cell label="Topbar"><img src="./previews/4ef8588d3e22e320ef7ad28a8c2bbf808d2a8c48dc6a9205071f66229eed4b56.jpg" /></Cell>
-    <Cell label="Auth / Reset" controls={<WarningIcon />}><img src="./previews/5527651372db1946b99973f3d60148ed9718bf5c68fea4fcd22392d5e0e33b14.jpg" /></Cell>
-    <Cell label="Auth / Login"><img src="./previews/57316dacf231109e3c40c3b422dd119c8e268fc8ee71b6ad8b1e641a632396d5.jpg" /></Cell>
-    <Cell label="Theme / Font"><img src="./previews/5f8d7fa9f7f22c7af7daa3b32ffd8a963f87e5cfc09fe49769eab00363b5250c.jpg" /></Cell>
+    <Cell label="ResetPasswordPreview" controls={<WarningIcon />}><img src="./previews/5527651372db1946b99973f3d60148ed9718bf5c68fea4fcd22392d5e0e33b14.jpg" /></Cell>
+    <Cell label="LoginPage"><img src="./previews/57316dacf231109e3c40c3b422dd119c8e268fc8ee71b6ad8b1e641a632396d5.jpg" /></Cell>
+    <Cell label=""><img src="./previews/5f8d7fa9f7f22c7af7daa3b32ffd8a963f87e5cfc09fe49769eab00363b5250c.jpg" /></Cell>
     <Cell label="Inputs / Text"><img src="./previews/7d0f27f26875a7061dc3dd61e0129585e70e740c62c7d662cabc40ba5ad0c492.jpg" /></Cell>
     <Cell label="Inputs / Button"><img src="./previews/85b0943f9426ecaee1187137b94283cd8cd8bc8023a3d2290f2f45ba517f07af.jpg" /></Cell>
   
