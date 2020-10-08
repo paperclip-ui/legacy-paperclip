@@ -70,11 +70,11 @@ repository:
   attribute:
     # attribute="value"
     patterns:
-      - begin: (component|export)
+      - begin: (?<=\s)(component|export)(?=\s)
         beginCaptures:
           "1": { name: keyword.control }
         end: (?=\s*+[^=\s])
-      - begin: \s(as)\s
+      - begin: \s(as)(?=\=)
         beginCaptures:
           "1": { name: keyword.control }
         end: (?=\s*+[^=\s])

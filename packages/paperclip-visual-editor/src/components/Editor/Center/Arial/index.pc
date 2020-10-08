@@ -30,10 +30,9 @@
     /* border-color: rgb(243, 243, 243); */
   </style>
 
-  <!-- title -->
 
   <!-- inner -->
-  <div>
+  <div componentName>
 
     <style>
       /* background: rgb(233, 233, 233); */

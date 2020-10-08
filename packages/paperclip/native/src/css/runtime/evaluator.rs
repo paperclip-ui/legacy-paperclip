@@ -1003,7 +1003,14 @@ fn stringify_element_selector(
               context,
             )
           } else {
-            stringify_element_selector(&child, false, parent_selector_text, include_prefix2, false, context)
+            stringify_element_selector(
+              &child,
+              false,
+              parent_selector_text,
+              include_prefix2,
+              false,
+              context,
+            )
           }
         })
         .collect();
