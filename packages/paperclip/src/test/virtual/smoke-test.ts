@@ -696,16 +696,20 @@ describe(__filename + "#", () => {
           <style>
             .a {
               & + b {
-                &:hover:active:test {
+                &.c.d.e.f.g {
+
                   color: blue;
                 }
+                // &:hover:active:test {
+                //   color: blue;
+                // }
               }
             }
           </style>
         `
       },
       {},
-      `<style>[class]._80f4925f_a + b[data-pc-80f4925f]:hover:active:test { color:blue; }</style>`
+      `<style>[class]._80f4925f_a + b[data-pc-80f4925f][class].c[class].d[class].e[class].f[class].g { color:blue; }</style>`
     ]
   ].forEach(([graph, , expectedHTML]: [Graph, any, string]) => {
     it(`can render "${JSON.stringify(graph)}"`, async () => {

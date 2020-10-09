@@ -32,7 +32,7 @@ TODOS:
 
 
 <Container>
-  <LeftSidebar.Preview />
+  <!-- <LeftSidebar.Preview /> -->
   <Center.ArialPreview2 />
   <!-- <RightSidebar.Preview /> -->
 </Container>

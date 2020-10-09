@@ -449,7 +449,7 @@ fn include_mixin<'a>(
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   let (mixin, dependency_uri) = assert_get_mixin(&inc.mixin_name, context)?;
-  let inc_decl = evaluate_style_declarations(&inc.declarations, parent_selector_text, context)?;
+  let inc_decl = evaluate_style_declarations(&inc.declarations, &"".to_string(), context)?;
   let mut child_context = create_child_context(context);
   evaluate_style_rules(&inc.rules, &"".to_string(), &mut child_context)?;
   let (declarations, child_rules) = evaluate_mixin(
@@ -988,19 +988,29 @@ fn stringify_element_selector(
 
       let text: Vec<String> = (&selector.selectors)
         .into_iter()
-        .map(|child| {
+        .enumerate()
+        .map(|(i, child)| {
+          let include_prefix2 = include_prefix && i == 0;
+
           if let &ast::Selector::Class(_class_name) = &child {
             contains_classname = true;
             stringify_element_selector(
-              child,
+              &child,
               include_scope,
               parent_selector_text,
-              false,
+              include_prefix2,
               false,
               context,
             )
           } else {
-            stringify_element_selector(child, false, parent_selector_text, false, false, context)
+            stringify_element_selector(
+              &child,
+              false,
+              parent_selector_text,
+              include_prefix2,
+              false,
+              context,
+            )
           }
         })
         .collect();
