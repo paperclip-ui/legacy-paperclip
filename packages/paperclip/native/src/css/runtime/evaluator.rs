@@ -467,15 +467,15 @@ fn include_content<'a>(
   parent_selector_text: &String,
   context: &mut Context<'a>,
 ) -> Result<(), RuntimeError> {
-
-  
-
   if let Some(inc) = &context.content {
-
     let inc2 = inc.clone();
 
     evaluate_style_rules(&inc2.rules, parent_selector_text, true, context)?;
-    all_styles.extend(evaluate_style_declarations(&inc2.declarations, parent_selector_text, context)?);
+    all_styles.extend(evaluate_style_declarations(
+      &inc2.declarations,
+      parent_selector_text,
+      context,
+    )?);
   }
 
   Ok(())
@@ -593,13 +593,8 @@ fn evaluate_include_rule<'a>(
   // let mut child_context = create_child_context(context);
   // evaluate_style_rules(&expr.rules, parent_selector_text, false, &mut child_context)?;
 
-  let (declarations, rules) = evaluate_mixin(
-    mixin,
-    dep_uri,
-    parent_selector_text,
-    Some(expr),
-    context,
-  )?;
+  let (declarations, rules) =
+    evaluate_mixin(mixin, dep_uri, parent_selector_text, Some(expr), context)?;
   context.all_rules.extend(rules);
   context.inc_declarations.extend(declarations);
 
