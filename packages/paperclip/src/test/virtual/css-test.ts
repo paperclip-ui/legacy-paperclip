@@ -899,7 +899,7 @@ describe(__filename + "#", () => {
   });
 
   // Fix https://github.com/crcn/paperclip/issues/529
-  xit(`can use & in media query include`, async () => {
+  it(`can use & in media query include`, async () => {
     const graph = {
       "/entry.pc": `
       <style>
@@ -913,7 +913,7 @@ describe(__filename + "#", () => {
         <style>
           a {
             @include desktop {
-              :nth-child(2n) {
+              &:nth-child(2n) {
                 color: red;
               }
             }
@@ -928,7 +928,49 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      "<style>[data-pc-406d2856][data-pc-406d2856]a, [data-pc-406d2856][data-pc-406d2856]:hover { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>"
+      "<style>@media screen and (max-width: 900px) { [data-pc-376a18c0] a[data-pc-80f4925f]:nth-child(2n) { color:red; } [data-pc-376a18c0] a[data-pc-80f4925f] { } }</style><div data-pc-376a18c0 data-pc-80f4925f></div>"
+    );
+  });
+
+  // sanity after #529
+  it(`can use & in media query include`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <style>
+        @mixin mixin-a {
+          @media screen and (max-width: 900px) {
+            @content
+            b {
+              c {
+                @content
+              }
+            }
+          }
+        }
+
+        a {
+          @include mixin-a {
+            background: blue;
+            ee {
+              color: red;
+            }
+
+            &.ff {
+              color: orange;
+            }
+          }
+        }
+
+      </style>
+      
+      <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+    expect(stringifyLoadResult(result)).to.eql(
+      "<style>@media screen and (max-width: 900px) { a[data-pc-80f4925f] b[data-pc-80f4925f] c[data-pc-80f4925f] { background:blue; } a[data-pc-80f4925f] b[data-pc-80f4925f] c[data-pc-80f4925f] ee[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f] b[data-pc-80f4925f] c[data-pc-80f4925f][class].ff { color:orange; } a[data-pc-80f4925f] ee[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f][class].ff { color:orange; } a[data-pc-80f4925f] { background:blue; } }</style><Test data-pc-80f4925f></Test>"
     );
   });
 

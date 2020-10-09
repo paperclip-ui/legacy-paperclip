@@ -14,7 +14,7 @@ use std::collections::{BTreeMap, HashMap};
 pub struct Context<'a> {
   document_scope: &'a str,
   element_scope: Option<(String, bool)>,
-  content: Option<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>)>,
+  content: Option<&'a ast::Include>,
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
   uri: &'a String,
@@ -145,12 +145,12 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
 
 pub fn evaluate_style_rules<'a>(
   rules: &Vec<ast::StyleRule>,
-
   parent_selector_text: &String,
+  include_parent_rule: bool,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   for rule in rules {
-    evaluate_style_rule2(&rule, parent_selector_text, context)?;
+    evaluate_style_rule2(&rule, parent_selector_text, include_parent_rule, context)?;
   }
   Ok(())
 }
@@ -217,7 +217,7 @@ fn evaluate_condition_rule(
   context: &mut Context,
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = create_child_context(context);
-  evaluate_style_rules(&rule.rules, parent_selector_text, &mut child_context)?;
+  evaluate_style_rules(&rule.rules, parent_selector_text, true, &mut child_context)?;
 
   if rule.declarations.len() > 0 {
     let mut selector_text = parent_selector_text.to_string();
@@ -449,14 +449,11 @@ fn include_mixin<'a>(
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   let (mixin, dependency_uri) = assert_get_mixin(&inc.mixin_name, context)?;
-  let inc_decl = evaluate_style_declarations(&inc.declarations, &"".to_string(), context)?;
-  let mut child_context = create_child_context(context);
-  evaluate_style_rules(&inc.rules, &"".to_string(), &mut child_context)?;
   let (declarations, child_rules) = evaluate_mixin(
     mixin,
     dependency_uri,
     parent_selector_text,
-    Some((inc_decl, child_context.all_rules)),
+    Some(inc),
     context,
   )?;
   style.extend(declarations);
@@ -468,28 +465,26 @@ fn include_mixin<'a>(
 fn include_content<'a>(
   all_styles: &mut Vec<virt::CSSStyleProperty>,
   parent_selector_text: &String,
-  context: &mut Context,
+  context: &mut Context<'a>,
 ) -> Result<(), RuntimeError> {
-  if let Some((style, rules)) = &context.content {
-    for rule in rules {
-      if let virt::Rule::Style(style_rule) = rule {
-        let mut style_rule = style_rule.clone();
-        style_rule.selector_text = format!("{} {}", parent_selector_text, style_rule.selector_text);
-        context.all_rules.push(virt::Rule::Style(style_rule));
-      } else {
-        context.all_rules.push(rule.clone());
-      }
-    }
+  if let Some(inc) = &context.content {
+    let inc2 = inc.clone();
 
-    all_styles.extend(style.clone());
+    evaluate_style_rules(&inc2.rules, parent_selector_text, true, context)?;
+    all_styles.extend(evaluate_style_declarations(
+      &inc2.declarations,
+      parent_selector_text,
+      context,
+    )?);
   }
+
   Ok(())
 }
 
 fn evaluate_style_declarations<'a>(
   declarations: &Vec<ast::Declaration>,
   parent_selector_text: &String,
-  context: &mut Context,
+  context: &mut Context<'a>,
 ) -> Result<Vec<virt::CSSStyleProperty>, RuntimeError> {
   let mut style = vec![];
   for property in declarations {
@@ -520,7 +515,7 @@ fn evaluate_style_rule(
   parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
-  evaluate_style_rule2(expr, parent_selector_text, context)?;
+  evaluate_style_rule2(expr, parent_selector_text, true, context)?;
   Ok(())
 }
 
@@ -571,11 +566,11 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
   Ok(())
 }
 
-fn evaluate_mixin<'a>(
+fn evaluate_mixin<'a, 'b>(
   expr: &ast::MixinRule,
   owner_uri: &'a String,
   parent_selector_text: &String,
-  content: Option<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>)>,
+  content: Option<&'b ast::Include>,
   context: &mut Context<'a>,
 ) -> Result<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>), RuntimeError> {
   let mut child_context = fork_context(owner_uri, context);
@@ -583,7 +578,7 @@ fn evaluate_mixin<'a>(
   let declarations =
     evaluate_style_declarations(&expr.declarations, parent_selector_text, &mut child_context)?;
 
-  evaluate_style_rules(&expr.rules, parent_selector_text, &mut child_context)?;
+  evaluate_style_rules(&expr.rules, parent_selector_text, true, &mut child_context)?;
 
   Ok((declarations, child_context.all_rules))
 }
@@ -594,17 +589,12 @@ fn evaluate_include_rule<'a>(
   context: &mut Context<'a>,
 ) -> Result<(), RuntimeError> {
   let (mixin, dep_uri) = assert_get_mixin(&expr.mixin_name, context)?;
-  let style = evaluate_style_declarations(&expr.declarations, parent_selector_text, context)?;
-  let mut child_context = create_child_context(context);
-  evaluate_style_rules(&expr.rules, parent_selector_text, &mut child_context)?;
+  // let style = evaluate_style_declarations(&expr.declarations, parent_selector_text, context)?;
+  // let mut child_context = create_child_context(context);
+  // evaluate_style_rules(&expr.rules, parent_selector_text, false, &mut child_context)?;
 
-  let (declarations, rules) = evaluate_mixin(
-    mixin,
-    dep_uri,
-    parent_selector_text,
-    Some((style, child_context.all_rules)),
-    context,
-  )?;
+  let (declarations, rules) =
+    evaluate_mixin(mixin, dep_uri, parent_selector_text, Some(expr), context)?;
   context.all_rules.extend(rules);
   context.inc_declarations.extend(declarations);
 
@@ -613,16 +603,15 @@ fn evaluate_include_rule<'a>(
 
 fn evaluate_style_rule2(
   expr: &ast::StyleRule,
-
   parent_selector_text: &String,
-
+  include_parent_rule: bool,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   let mut selector_text = stringify_element_selector(
     &expr.selector,
     true,
     parent_selector_text,
-    true,
+    include_parent_rule,
     parent_selector_text == ""
       && match expr.selector {
         ast::Selector::This(_) => false,
@@ -690,13 +679,13 @@ fn evaluate_style_rule2(
         }));
       }
 
-      evaluate_style_rules(&expr.children, &selector_text2, context)?;
+      evaluate_style_rules(&expr.children, &selector_text2, true, context)?;
     }
   } else {
     let child_rule_prefix = selector_text.clone();
     let rule_len = context.all_rules.len();
 
-    evaluate_style_rules(&expr.children, &child_rule_prefix, context)?;
+    evaluate_style_rules(&expr.children, &child_rule_prefix, true, context)?;
 
     let style = evaluate_style_declarations(&expr.declarations, &selector_text, context)?;
 
