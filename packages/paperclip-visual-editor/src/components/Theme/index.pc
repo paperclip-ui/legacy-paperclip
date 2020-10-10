@@ -91,12 +91,17 @@
       }
     }
     @mixin desktop-m {
-      @media screen and (max-width: 900px) {
+      @media screen and (max-width: 900px) and (min-width: 630px) {
         @content
       }
     }
     @mixin desktop-l {
-      @media screen and (max-width: 1024px) {
+      @media screen and ( max-width: 1024px) and (min-width: 900px) {
+        @content
+      }
+    }
+    @mixin desktop-xl {
+      @media screen and (min-width: 1024px) {
         @content
       }
     }

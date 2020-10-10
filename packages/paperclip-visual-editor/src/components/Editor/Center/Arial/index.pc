@@ -4,6 +4,7 @@
 <div export component as="Cell">
   <style>
     :self {
+      --pos: 2n;
       display: inline-block;
       width: 25%;
       box-sizing: border-box;
@@ -11,18 +12,42 @@
       padding: 16px;
       border-right: 1px solid var(--border-color-1);
       border-bottom: 1px solid var(--border-color-1);
-      &:nth-child(3n) {
-        border-right: none;
+
+      @include theme.desktop-xl {
+        width: 20%;
+
+        &:nth-child(5n) {
+          border-right-color: transparent;
+        }
+      }
+
+      @include theme.desktop-l {
+        width: 25%;
+
+        &:nth-child(4n) {
+          border-right-color: transparent;
+        }
+      }
+
+      @include theme.desktop-l {
+        width: 25%;
+
+        &:nth-child(4n) {
+          border-right-color: transparent;
+        }
       }
       @include theme.desktop-m {
         width: 33.3333%;
 
+        &:nth-child(3n) {
+          border-right-color: transparent;
+        }
       }
       @include theme.desktop-s {
-        /* background: blue; */
+
         width: 50%;
-        &:last-child {
-          font-size: 24px;
+        &:nth-child(2n) {
+          border-right-color: transparent;
         }
       }
     }
