@@ -140,7 +140,7 @@
     display: flex;
     justify-content: space-between;
     :self(.grid-mode) { 
-      > :first-child {
+      > :last-child {
         visibility: hidden;
       }
     }
@@ -149,12 +149,12 @@
 </div>
 
 <Container export component as="Preview" {gridMode?} className:light="light">
+  <Controls right>
+    <GridButton active />
+  </Controls>
   <Controls>
     <PaintButton />
     <Zoom amount="100" />
-  </Controls>
-  <Controls right>
-    <GridButton active />
   </Controls>
 </Container>
 
