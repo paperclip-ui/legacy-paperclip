@@ -104,7 +104,7 @@
   <i className="$icons.icon" className:active="active" />
 </button>
 
-<div export component as="Controls" className="controls">
+<div export component as="Controls" className:right="right" className="controls">
   <style>
     padding:4px 14px;
     display: flex;
@@ -120,11 +120,14 @@
 
       }
     }
+    :self(.right) {
+      float: right;
+    }
   </style>
   {children}
 </div>
 
-<div export component as="Container" className="toolbar {className?}">
+<div export component as="Container" className="toolbar {className?}" className:gridMode="grid-mode">
   <style>
     --border-color: var(--vscode-editorGroup-border, #777);
     /* --active-background: var(--vscode-activityBar-foreground, var(--active-background)); */
@@ -135,15 +138,23 @@
     flex-shrink: 0;
     flex-grow: 0;
     display: flex;
+    justify-content: space-between;
+    :self(.grid-mode) { 
+      > :first-child {
+        visibility: hidden;
+      }
+    }
   </style>
   {children}
 </div>
 
-<Container export component as="Preview" className:light="light">
+<Container export component as="Preview" {gridMode?} className:light="light">
   <Controls>
-    <GridButton active />
     <PaintButton />
     <Zoom amount="100" />
+  </Controls>
+  <Controls right>
+    <GridButton active />
   </Controls>
 </Container>
 
