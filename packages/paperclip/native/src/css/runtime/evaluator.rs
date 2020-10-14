@@ -67,8 +67,6 @@ pub fn evaluate<'a>(
 
   if expr.declarations.len() > 0 || context.inc_declarations.len() > 0 {
     if let Some(_) = &context.element_scope {
-      let (scope, is_instance) = context.element_scope.clone().unwrap();
-
       let mut style =
         evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
 
@@ -76,7 +74,7 @@ pub fn evaluate<'a>(
       style.extend(context.inc_declarations.clone());
 
       context.all_rules.push(virt::Rule::Style(virt::StyleRule {
-        selector_text: get_element_scope_selector(&scope, &is_instance, true),
+        selector_text: format!("{}", get_element_scope_selector(&context, true)),
         style,
       }));
     }
@@ -223,17 +221,21 @@ fn evaluate_condition_rule(
     let mut selector_text = parent_selector_text.to_string();
 
     if parent_selector_text == "" {
-      if let Some((element_scope, is_instance)) = &context.element_scope {
-        selector_text = format!("[data-pc-{}]", element_scope);
-      }
+      selector_text = get_element_scope_selector(context, false);
     }
+
+    let self_selector_text = if context.element_scope != None && parent_selector_text != "" {
+      format!("{} {}", get_element_scope_selector(context, false), selector_text)
+    } else {
+      selector_text.clone()
+    };
 
     let style =
       evaluate_style_declarations(&rule.declarations, &selector_text, &mut child_context)?;
     child_context
       .all_rules
       .push(virt::Rule::Style(virt::StyleRule {
-        selector_text,
+        selector_text: self_selector_text,
         style,
       }))
   }
@@ -378,7 +380,7 @@ fn get_imports<'a>(context: &'a Context) -> &'a BTreeMap<String, pc_export::Expo
   context.import_graph.get(context.uri).unwrap()
 }
 
-fn create_child_context<'a>(context: &mut Context<'a>) -> Context<'a> {
+fn create_child_context<'a>(context: &Context<'a>) -> Context<'a> {
   Context {
     document_scope: context.document_scope,
     element_scope: context.element_scope.clone(),
@@ -395,7 +397,7 @@ fn create_child_context<'a>(context: &mut Context<'a>) -> Context<'a> {
   }
 }
 
-fn fork_context<'a>(dependency_uri: &'a String, context: &mut Context<'a>) -> Context<'a> {
+fn fork_context<'a>(dependency_uri: &'a String, context: &Context<'a>) -> Context<'a> {
   let mut child = create_child_context(context);
   child.uri = &dependency_uri;
   child.in_public_scope = false;
@@ -589,10 +591,6 @@ fn evaluate_include_rule<'a>(
   context: &mut Context<'a>,
 ) -> Result<(), RuntimeError> {
   let (mixin, dep_uri) = assert_get_mixin(&expr.mixin_name, context)?;
-  // let style = evaluate_style_declarations(&expr.declarations, parent_selector_text, context)?;
-  // let mut child_context = create_child_context(context);
-  // evaluate_style_rules(&expr.rules, parent_selector_text, false, &mut child_context)?;
-
   let (declarations, rules) =
     evaluate_mixin(mixin, dep_uri, parent_selector_text, Some(expr), context)?;
   context.all_rules.extend(rules);
@@ -607,7 +605,7 @@ fn evaluate_style_rule2(
   include_parent_rule: bool,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
-  let mut selector_text = stringify_element_selector(
+  let selector_text = stringify_element_selector(
     &expr.selector,
     true,
     parent_selector_text,
@@ -617,7 +615,7 @@ fn evaluate_style_rule2(
         ast::Selector::This(_) => false,
         _ => true,
       },
-      true,
+    true,
     context,
   );
 
@@ -657,26 +655,29 @@ fn evaluate_style_rule2(
   };
 
   if let ast::Selector::Group(group) = &target_selector {
-    // context.all_rules.push(virt::Rule::Style(main_style_rule));
     for selector in &group.selectors {
       let selector_text2 = stringify_element_selector(
         &selector,
         !is_global_selector,
         parent_selector_text,
         true,
-        match selector {
-          ast::Selector::This(_) => false,
-          _ => parent_selector_text == "",
-        },
+        false,
         true,
         context,
       );
 
+      let self_selector_text = match selector {
+        ast::Selector::This(_) => selector_text2.clone(),
+        _ => format!("{} {}", get_element_scope_selector(context, false), selector_text2.clone()),
+      };
+
       let style = evaluate_style_declarations(&expr.declarations, &selector_text2, context)?;
 
       if style.len() > 0 {
+
+
         context.all_rules.push(virt::Rule::Style(virt::StyleRule {
-          selector_text: selector_text2.clone(),
+          selector_text: self_selector_text,
           style,
         }));
       }
@@ -687,13 +688,25 @@ fn evaluate_style_rule2(
     let child_rule_prefix = selector_text.clone();
     let rule_len = context.all_rules.len();
 
-    evaluate_style_rules(&expr.children, &child_rule_prefix, true, context)?;
+    let self_selector_text = if let ast::Selector::This(_) = &expr.selector {
 
+      // Dirty but works. :self is specified so we want to make sure that the element scope isn't present since it's
+      // already included in the parent scope
+      let element_scope = context.element_scope.clone();
+      context.element_scope = None;
+      evaluate_style_rules(&expr.children, &child_rule_prefix, true, context)?;
+      context.element_scope = element_scope;
+      selector_text.to_string()
+    } else {
+      evaluate_style_rules(&expr.children, &child_rule_prefix, true, context)?;
+      format!("{} {}", get_element_scope_selector(context, false), selector_text)
+    };
+    
     let style = evaluate_style_declarations(&expr.declarations, &selector_text, context)?;
 
     if style.len() > 0 {
       let main_style_rule = virt::StyleRule {
-        selector_text,
+        selector_text: self_selector_text,
         style,
       };
 
@@ -726,19 +739,22 @@ fn stringify_nestable_selector(
 }
 
 fn get_element_scope_selector(
-  scope: &String,
-  is_instance: &bool,
+  context: &Context,
   extra_specificity: bool,
 ) -> String {
-  if *is_instance {
-    format!("[class]._{}", scope)
-  } else {
-    let selector = format!("[data-pc-{}]", scope);
-    if extra_specificity {
-      format!("{}{}", selector, selector)
+  if let Some((scope, is_instance)) = &context.element_scope {
+    if *is_instance {
+      format!("[class]._{}", scope)
     } else {
-      selector
+      let selector = format!("[data-pc-{}]", scope);
+      if extra_specificity {
+        format!("{}{}", selector, selector)
+      } else {
+        selector
+      }
     }
+  } else {
+    "".to_string()
   }
 }
 
@@ -784,7 +800,6 @@ fn stringify_element_selector(
         "".to_string()
       };
 
-
       if include_scope {
         format!(
           "{}{}._{}_{}",
@@ -826,7 +841,6 @@ fn stringify_element_selector(
       format!("{}{}{}", prefix, selector.to_string(), scope_selector)
     }
     ast::Selector::Not(selector) => {
-
       // Note that we don't want extra specificty in :not selector since :not
       // doesn't support things like :not([class].class)
       return format!(
@@ -842,8 +856,8 @@ fn stringify_element_selector(
           false,
           context
         )
-      )
-    },
+      );
+    }
     ast::Selector::Global(selector) => format!(
       "{}",
       stringify_element_selector(
@@ -857,8 +871,8 @@ fn stringify_element_selector(
       )
     ),
     ast::Selector::This(selector) => {
-      let self_selector = if let Some((scope, is_instance)) = &context.element_scope {
-        get_element_scope_selector(scope, is_instance, true)
+      let self_selector = if context.element_scope != None {
+        get_element_scope_selector(context, true)
       } else {
         scope_selector
       };
@@ -1064,16 +1078,6 @@ fn stringify_element_selector(
       }
     }
   };
-
-  if include_element_scope {
-    if let Some((scope, is_instance)) = &context.element_scope {
-      scoped_selector_text = format!(
-        "{} {}",
-        get_element_scope_selector(scope, is_instance, false),
-        scoped_selector_text
-      );
-    }
-  }
 
   scoped_selector_text.to_string()
 }

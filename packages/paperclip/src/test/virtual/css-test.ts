@@ -1034,4 +1034,60 @@ describe(__filename + "#", () => {
       `<style>[class]._80f4925f_a[class].hover { color:blue; } [class]._80f4925f_a:not(:disabled):not(.transparent)[class].hover { color:red; }</style><div class="_80f4925f_a a _80f4925f_hover hover" data-pc-80f4925f>I'm red</div><div class="_80f4925f_a a _80f4925f_transparent transparent _80f4925f_hover hover" data-pc-80f4925f>I'm blue</div>`
     );
   });
+
+  // Fixes https://github.com/crcn/paperclip/issues/534
+  it("can add extra specificty for nested elements", async () => {
+    const graph = {
+      "/entry.pc": `
+    
+      <div>
+        <style>
+          ._button {
+            &&& {
+              color: red;
+            }
+          }
+        </style>
+        <div class="_button">I'm a button</div>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-406d2856] [class]._80f4925f__button[class]._80f4925f__button[class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f><div class="_80f4925f__button _button" data-pc-80f4925f>I'm a button</div></div>`
+    );
+  });
+
+  // Fixes https://github.com/crcn/paperclip/issues/534
+  it("ensures that :self selectors are given higher priority", async () => {
+    const graph = {
+      "/entry.pc": `
+    
+      <div>
+        <style>
+          :self {
+            ._button {
+              && {
+                color: red;
+              }
+            }
+          }
+        </style>
+        <div class="_button">I'm a button</div>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button[data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f><div class="_80f4925f__button _button" data-pc-80f4925f>I'm a button</div></div>`
+    );
+  });
 });
