@@ -683,7 +683,7 @@ fn evaluate_style_rule2(
           "{} {}",
           get_element_scope_selector(context, false),
           selector_text2.clone()
-        ),
+        ).trim().to_string()
       };
 
       let style = evaluate_style_declarations(&expr.declarations, &selector_text2, context)?;
@@ -715,7 +715,7 @@ fn evaluate_style_rule2(
         "{} {}",
         get_element_scope_selector(context, false),
         selector_text
-      )
+      ).trim().to_string()
     };
 
     let style = evaluate_style_declarations(&expr.declarations, &selector_text, context)?;
