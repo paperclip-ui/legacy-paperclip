@@ -64,10 +64,9 @@ pub fn evaluate<'a>(
   for rule in &expr.rules {
     evaluate_rule(&rule, &mut context)?;
   }
-  
-  if expr.declarations.len() > 0 || context.inc_declarations.len() > 0 {
 
-    // if element scope is provided, then the style block is inline, so we need to 
+  if expr.declarations.len() > 0 || context.inc_declarations.len() > 0 {
+    // if element scope is provided, then the style block is inline, so we need to
     // insert a rule
     if let Some(_) = &context.element_scope {
       let mut style =
@@ -78,10 +77,13 @@ pub fn evaluate<'a>(
 
       // insert rule with element scope at the beginning - declarations have lower priority than
       // explicit style rules.
-      context.all_rules.insert(0, virt::Rule::Style(virt::StyleRule {
-        selector_text: format!("{}", get_element_scope_selector(&context, true)),
-        style,
-      }));
+      context.all_rules.insert(
+        0,
+        virt::Rule::Style(virt::StyleRule {
+          selector_text: format!("{}", get_element_scope_selector(&context, true)),
+          style,
+        }),
+      );
     }
   }
 
