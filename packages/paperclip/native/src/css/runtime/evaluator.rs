@@ -617,6 +617,7 @@ fn evaluate_style_rule2(
         ast::Selector::This(_) => false,
         _ => true,
       },
+      true,
     context,
   );
 
@@ -667,6 +668,7 @@ fn evaluate_style_rule2(
           ast::Selector::This(_) => false,
           _ => parent_selector_text == "",
         },
+        true,
         context,
       );
 
@@ -718,6 +720,7 @@ fn stringify_nestable_selector(
     parent_selector_text,
     true,
     false,
+    true,
     context,
   )
 }
@@ -745,6 +748,7 @@ fn stringify_element_selector(
   parent_selector_text: &String,
   include_prefix: bool,
   include_element_scope: bool,
+  extra_specificity: bool,
   context: &mut Context,
 ) -> String {
   let scope_selector = if include_scope {
@@ -773,13 +777,21 @@ fn stringify_element_selector(
       // Don't hate me for adding [class] -- it's the browsers fault, I promise. Each
       // selector other than class has a [data-pc-*] attribute, and that gives priority over
       // any class. So to counter-balance that, we need to add [class] so that classes take priority, again.
+
+      let specificty_str = if extra_specificity {
+        "[class]".to_string()
+      } else {
+        "".to_string()
+      };
+
+
       if include_scope {
         format!(
-          "{}[class]._{}_{}",
-          prefix, context.document_scope, selector.class_name
+          "{}{}._{}_{}",
+          prefix, specificty_str, context.document_scope, selector.class_name
         )
       } else {
-        format!("{}[class].{}", prefix, selector.class_name)
+        format!("{}{}.{}", prefix, specificty_str, selector.class_name)
       }
     }
     ast::Selector::Id(selector) => format!("{}#{}{}", prefix, selector.id, scope_selector),
@@ -813,19 +825,25 @@ fn stringify_element_selector(
     ast::Selector::Attribute(selector) => {
       format!("{}{}{}", prefix, selector.to_string(), scope_selector)
     }
-    ast::Selector::Not(selector) => format!(
-      "{}{}:not({})",
-      prefix,
-      scope_selector,
-      stringify_element_selector(
-        &selector.selector,
-        include_scope,
-        parent_selector_text,
-        false,
-        false,
-        context
+    ast::Selector::Not(selector) => {
+
+      // Note that we don't want extra specificty in :not selector since :not
+      // doesn't support things like :not([class].class)
+      return format!(
+        "{}{}:not({})",
+        prefix,
+        scope_selector,
+        stringify_element_selector(
+          &selector.selector,
+          include_scope,
+          parent_selector_text,
+          false,
+          false,
+          false,
+          context
+        )
       )
-    ),
+    },
     ast::Selector::Global(selector) => format!(
       "{}",
       stringify_element_selector(
@@ -834,6 +852,7 @@ fn stringify_element_selector(
         parent_selector_text,
         include_prefix,
         false,
+        true,
         context
       )
     ),
@@ -859,6 +878,7 @@ fn stringify_element_selector(
                   parent_selector_text,
                   include_prefix,
                   false,
+                  true,
                   context
                 )
               )
@@ -875,6 +895,7 @@ fn stringify_element_selector(
               parent_selector_text,
               include_prefix,
               false,
+              true,
               context
             )
           );
@@ -893,6 +914,7 @@ fn stringify_element_selector(
         parent_selector_text,
         include_prefix,
         false,
+        true,
         context
       ),
       stringify_element_selector(
@@ -901,6 +923,7 @@ fn stringify_element_selector(
         &"".to_string(),
         false,
         false,
+        true,
         context
       )
     )
@@ -914,6 +937,7 @@ fn stringify_element_selector(
         parent_selector_text,
         include_prefix,
         false,
+        true,
         context
       ),
       stringify_element_selector(
@@ -922,6 +946,7 @@ fn stringify_element_selector(
         parent_selector_text,
         false,
         false,
+        true,
         context
       )
     ),
@@ -933,6 +958,7 @@ fn stringify_element_selector(
         parent_selector_text,
         include_prefix,
         false,
+        true,
         context
       ),
       stringify_element_selector(
@@ -941,6 +967,7 @@ fn stringify_element_selector(
         parent_selector_text,
         false,
         false,
+        true,
         context
       )
     ),
@@ -952,6 +979,7 @@ fn stringify_element_selector(
         parent_selector_text,
         include_prefix,
         false,
+        true,
         context
       ),
       stringify_element_selector(
@@ -960,6 +988,7 @@ fn stringify_element_selector(
         parent_selector_text,
         false,
         false,
+        true,
         context
       )
     ),
@@ -989,6 +1018,7 @@ fn stringify_element_selector(
               parent_selector_text,
               include_prefix2,
               false,
+              true,
               context,
             )
           } else {
@@ -998,6 +1028,7 @@ fn stringify_element_selector(
               parent_selector_text,
               include_prefix2,
               false,
+              true,
               context,
             )
           }
@@ -1024,6 +1055,7 @@ fn stringify_element_selector(
             parent_selector_text,
             false,
             false,
+            true,
             context
           )
         )
