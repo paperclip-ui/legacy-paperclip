@@ -27,12 +27,9 @@ TODOS:
 <Container>
   <LeftSidebar.Preview />
   <Center.Preview />
-  <!-- <RightSidebar.Preview /> -->
 </Container>
 
 
 <Container>
-  <!-- <LeftSidebar.Preview /> -->
   <Center.ArialPreview2 />
-  <!-- <RightSidebar.Preview /> -->
 </Container>

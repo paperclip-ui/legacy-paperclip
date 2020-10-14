@@ -491,7 +491,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>a[data-pc-80f4925f] > b[data-pc-80f4925f] { color:blue; } a[data-pc-80f4925f] + c[data-pc-80f4925f] { color:black; } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f] [data-pc-80f4925f]:not([class]._80f4925f_div) { color:voilet; } a[data-pc-80f4925f] [data-pc-80f4925f]::active { color:green; }</style>`
+      `<style>a[data-pc-80f4925f] > b[data-pc-80f4925f] { color:blue; } a[data-pc-80f4925f] + c[data-pc-80f4925f] { color:black; } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f] [data-pc-80f4925f]:not(._80f4925f_div) { color:voilet; } a[data-pc-80f4925f] [data-pc-80f4925f]::active { color:green; }</style>`
     );
   });
 
@@ -1002,6 +1002,116 @@ describe(__filename + "#", () => {
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
       "<style>[class]._80f4925f_test { font-family:sans-serif; } [class]._80f4925f_test [class]._80f4925f_b { color:blue; } @media screen and (max-width: 400px) { [class]._80f4925f_test [class]._80f4925f_b { font-size:40px; } [class]._80f4925f_test { } }</style>"
+    );
+  });
+
+  // fix https://github.com/crcn/paperclip/issues/535
+  it("multiple :not selectors work", async () => {
+    const graph = {
+      "/entry.pc": `<style>
+
+        .a {
+          &.hover {
+            color: blue;
+          }
+          &:not(:disabled):not(.transparent) {
+            &.hover {
+              color: red;
+            }
+          }
+        }
+    </style>
+    <div class="a hover">I'm red</div>
+    <div class="a transparent hover">I'm blue</div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[class]._80f4925f_a[class].hover { color:blue; } [class]._80f4925f_a:not(:disabled):not(.transparent)[class].hover { color:red; }</style><div class="_80f4925f_a a _80f4925f_hover hover" data-pc-80f4925f>I'm red</div><div class="_80f4925f_a a _80f4925f_transparent transparent _80f4925f_hover hover" data-pc-80f4925f>I'm blue</div>`
+    );
+  });
+
+  // Fixes https://github.com/crcn/paperclip/issues/534
+  it("can add extra specificty for nested elements", async () => {
+    const graph = {
+      "/entry.pc": `
+    
+      <div>
+        <style>
+          ._button {
+            &&& {
+              color: red;
+            }
+          }
+        </style>
+        <div class="_button">I'm a button</div>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-406d2856] [class]._80f4925f__button[class]._80f4925f__button[class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f><div class="_80f4925f__button _button" data-pc-80f4925f>I'm a button</div></div>`
+    );
+  });
+
+  // Fixes https://github.com/crcn/paperclip/issues/534
+  it("ensures that :self selectors are given higher priority", async () => {
+    const graph = {
+      "/entry.pc": `
+    
+      <div>
+        <style>
+          :self {
+            ._button {
+              && {
+                color: red;
+              }
+            }
+          }
+        </style>
+        <div class="_button">I'm a button</div>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button[data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f><div class="_80f4925f__button _button" data-pc-80f4925f>I'm a button</div></div>`
+    );
+  });
+
+  it(":self is given higher priority than declarations", async () => {
+    const graph = {
+      "/entry.pc": `
+    
+      <div>
+        <style>
+          color: red;
+          :self {
+            color: blue;
+          }
+        </style>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-406d2856][data-pc-406d2856] { color:red; } [data-pc-406d2856][data-pc-406d2856] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
     );
   });
 });

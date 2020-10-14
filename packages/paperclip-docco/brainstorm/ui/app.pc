@@ -352,7 +352,7 @@ https://www.ibm.com/design/language/color
   <LeftSidebar />
   <div className="Content">
     <h1>Atoms / Colors</h1>
-    <hr>
+    <hr />
 
     <!-- each :root would get its own block -->
     <div className="row">

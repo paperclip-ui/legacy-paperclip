@@ -28,7 +28,7 @@
 </Container>
 
 <Container export component as="ArialPreview2" className="light">
-  <Toolbar.Preview />
+  <Toolbar.Preview gridMode />
   <CanvasContainer>
     <Arial.Preview />
   </CanvasContainer>
