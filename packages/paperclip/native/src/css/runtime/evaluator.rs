@@ -64,8 +64,11 @@ pub fn evaluate<'a>(
   for rule in &expr.rules {
     evaluate_rule(&rule, &mut context)?;
   }
-
+  
   if expr.declarations.len() > 0 || context.inc_declarations.len() > 0 {
+
+    // if element scope is provided, then the style block is inline, so we need to 
+    // insert a rule
     if let Some(_) = &context.element_scope {
       let mut style =
         evaluate_style_declarations(&expr.declarations, &"".to_string(), &mut context)?;
@@ -73,7 +76,9 @@ pub fn evaluate<'a>(
       // @include used
       style.extend(context.inc_declarations.clone());
 
-      context.all_rules.push(virt::Rule::Style(virt::StyleRule {
+      // insert rule with element scope at the beginning - declarations have lower priority than
+      // explicit style rules.
+      context.all_rules.insert(0, virt::Rule::Style(virt::StyleRule {
         selector_text: format!("{}", get_element_scope_selector(&context, true)),
         style,
       }));
@@ -225,7 +230,11 @@ fn evaluate_condition_rule(
     }
 
     let self_selector_text = if context.element_scope != None && parent_selector_text != "" {
-      format!("{} {}", get_element_scope_selector(context, false), selector_text)
+      format!(
+        "{} {}",
+        get_element_scope_selector(context, false),
+        selector_text
+      )
     } else {
       selector_text.clone()
     };
@@ -668,14 +677,16 @@ fn evaluate_style_rule2(
 
       let self_selector_text = match selector {
         ast::Selector::This(_) => selector_text2.clone(),
-        _ => format!("{} {}", get_element_scope_selector(context, false), selector_text2.clone()),
+        _ => format!(
+          "{} {}",
+          get_element_scope_selector(context, false),
+          selector_text2.clone()
+        ),
       };
 
       let style = evaluate_style_declarations(&expr.declarations, &selector_text2, context)?;
 
       if style.len() > 0 {
-
-
         context.all_rules.push(virt::Rule::Style(virt::StyleRule {
           selector_text: self_selector_text,
           style,
@@ -689,7 +700,6 @@ fn evaluate_style_rule2(
     let rule_len = context.all_rules.len();
 
     let self_selector_text = if let ast::Selector::This(_) = &expr.selector {
-
       // Dirty but works. :self is specified so we want to make sure that the element scope isn't present since it's
       // already included in the parent scope
       let element_scope = context.element_scope.clone();
@@ -699,9 +709,13 @@ fn evaluate_style_rule2(
       selector_text.to_string()
     } else {
       evaluate_style_rules(&expr.children, &child_rule_prefix, true, context)?;
-      format!("{} {}", get_element_scope_selector(context, false), selector_text)
+      format!(
+        "{} {}",
+        get_element_scope_selector(context, false),
+        selector_text
+      )
     };
-    
+
     let style = evaluate_style_declarations(&expr.declarations, &selector_text, context)?;
 
     if style.len() > 0 {
@@ -738,10 +752,7 @@ fn stringify_nestable_selector(
   )
 }
 
-fn get_element_scope_selector(
-  context: &Context,
-  extra_specificity: bool,
-) -> String {
+fn get_element_scope_selector(context: &Context, extra_specificity: bool) -> String {
   if let Some((scope, is_instance)) = &context.element_scope {
     if *is_instance {
       format!("[class]._{}", scope)

@@ -1090,4 +1090,28 @@ describe(__filename + "#", () => {
       `<style>[data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button[data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f><div class="_80f4925f__button _button" data-pc-80f4925f>I'm a button</div></div>`
     );
   });
+
+  it(":self is given higher priority than declarations", async () => {
+    const graph = {
+      "/entry.pc": `
+    
+      <div>
+        <style>
+          color: red;
+          :self {
+            color: blue;
+          }
+        </style>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-406d2856][data-pc-406d2856] { color:red; } [data-pc-406d2856][data-pc-406d2856] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
+    );
+  });
 });
