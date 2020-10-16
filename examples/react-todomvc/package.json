@@ -7,6 +7,7 @@
   "scripts": {
     "build": "npm run build:definitions && webpack",
     "build:dist": "webpack",
+    "format": "prettier --write src/**/*.pc",
     "lint": "eslint src",
     "snapshot": "percy exec -- percy-paperclip",
     "build:watch": "npm run build:definitions -- --watch & webpack --watch",
@@ -27,6 +28,8 @@
     "paperclip-cli": "^15.0.20",
     "paperclip-compiler-react": "^15.0.20",
     "paperclip-loader": "^15.0.20",
+    "prettier": "^2.1.2",
+    "prettier-plugin-paperclip": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "style-loader": "^1.1.3",
