@@ -6,6 +6,7 @@ import {
   isAttribute,
   isAttributeValue,
   isNode,
+  isStyleDeclaration,
   Node,
   NodeKind
 } from "paperclip";
@@ -34,17 +35,23 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         return group(concat(path.map(print, "children")));
       }
       case NodeKind.Element: {
-        const buffer: Doc[] = [softline, "<", expr.tagName];
+        const buffer: Doc[] = [line, "<", expr.tagName];
         buffer.push(concat(path.map(print, "attributes")));
 
         if (expr.children.length) {
           buffer.push(">");
           buffer.push(indent(concat(path.map(print, "children"))));
-          buffer.push(softline, dedent(`</${expr.tagName}>`));
+          buffer.push(concat([line, `</${expr.tagName}>`]));
         } else {
           buffer.push(" />");
         }
 
+        return concat(buffer);
+      }
+      case NodeKind.StyleElement: {
+        const buffer: Doc[] = [line, "<style>"];
+        // buffer.push(concat(path.map(print, "sheet")));
+        buffer.push(line, "</style>");
         return concat(buffer);
       }
       case NodeKind.Text: {

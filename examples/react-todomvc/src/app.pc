@@ -3,28 +3,48 @@
 <import as="ListItem" src="./item.pc" />
 <import as="Controls" src="./controls.pc" />
 <import as="Learn" src="./learn.pc" />
+<style>
+</style>
 <div export component as="default" class="app-container">
+  <style>
+  </style>
   <div class="app">
+    <style>
+    </style>
     <Learn />
     <section class="todoapp">
+      <style>
+      </style>
       <header class="header">
         <h1>
+          <style>
+          </style>
           Todo
         </h1>
         <input onKeyPress={} id="new-todo-input" autofocus="autofocus" autocomplete="off" placeholder="What needs to be done?" class="new-todo">
+          <style>
+          </style>
         </input>
       </header>
       <section class="main">
         <input id="toggle-all" type="checkbox" class="toggle-all">
+          <style>
+          </style>
         </input>
         <label for="toggle-all">
+          <style>
+          </style>
           Mark all as complete
         </label>
         <ul class="todo-list">
+          <style>
+          </style>
         </ul>
       </section>
     </section>
     <footer class="info">
+      <style>
+      </style>
       <p>
         Double-click to edit a todo
       </p>
