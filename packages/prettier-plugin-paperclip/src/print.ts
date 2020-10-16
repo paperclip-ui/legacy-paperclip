@@ -1,9 +1,80 @@
 import { notEqual } from "assert";
-import { FastPath, Printer } from "prettier";
+import {
+  AttributeKind,
+  AttributeValueKind,
+  Expression,
+  isAttribute,
+  isAttributeValue,
+  isNode,
+  Node,
+  NodeKind
+} from "paperclip";
+import { Doc, FastPath, Printer, doc } from "prettier";
 
-export const print = (path: FastPath, options: Object, print) => {
-  const node = path.getValue();
-  // console.log("PRINT");
-  // console.log(node);
-  return node;
+const {
+  concat,
+  join,
+  line,
+  group,
+  indent,
+  dedent,
+  softline,
+  hardline,
+  fill,
+  breakParent,
+  literalline
+} = doc.builders;
+
+export const print = (path: FastPath, options: Object, print): Doc => {
+  const expr: Expression = path.getValue();
+
+  if (isNode(expr)) {
+    switch (expr.kind) {
+      case NodeKind.Fragment: {
+        return group(concat(path.map(print, "children")));
+      }
+      case NodeKind.Element: {
+        const buffer: Doc[] = [softline, "<", expr.tagName];
+        buffer.push(concat(path.map(print, "attributes")));
+
+        if (expr.children.length) {
+          buffer.push(">");
+          buffer.push(indent(concat(path.map(print, "children"))));
+          buffer.push(softline, dedent(`</${expr.tagName}>`));
+        } else {
+          buffer.push(" />");
+        }
+
+        return concat(buffer);
+      }
+      case NodeKind.Text: {
+        return concat([softline, expr.value.trim()]);
+      }
+    }
+  } else if (isAttribute(expr)) {
+    switch (expr.kind) {
+      case AttributeKind.KeyValueAttribute: {
+        const buffer: Doc[] = [" ", expr.name];
+        if (expr.value) {
+          buffer.push("=", path.call(print, "value"));
+        }
+
+        return concat(buffer);
+      }
+    }
+  } else if (isAttributeValue(expr)) {
+    switch (expr.attrValueKind) {
+      case AttributeValueKind.DyanmicString: {
+        break;
+      }
+      case AttributeValueKind.Slot: {
+        return concat(["{", "}"]);
+      }
+      case AttributeValueKind.String: {
+        return concat(['"', expr.value, '"']);
+      }
+    }
+  }
+
+  return "";
 };
