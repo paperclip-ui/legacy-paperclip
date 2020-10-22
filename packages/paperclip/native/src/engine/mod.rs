@@ -84,7 +84,6 @@ type EngineEventListener = dyn Fn(&EngineEvent);
 pub struct Engine {
   listeners: Vec<Box<EngineEventListener>>,
   pub vfs: VirtualFileSystem,
-  pub running: HashSet<String>,
   pub evaluated_data: HashMap<String, EvaluateData>,
   pub import_graph: HashMap<String, BTreeMap<String, pc_export::Exports>>,
   pub dependency_graph: DependencyGraph,
@@ -98,7 +97,6 @@ impl Engine {
   ) -> Engine {
     Engine {
       listeners: vec![],
-      running: HashSet::new(),
       evaluated_data: HashMap::new(),
       import_graph: HashMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
@@ -107,10 +105,11 @@ impl Engine {
   }
 
   pub async fn run(&mut self, uri: &String) -> Result<(), EngineError> {
-    // need to purge cache in case there's a parse error.
-    // self.evaluated_data.remove(uri);
-    self.running.insert(uri.to_string());
     self.load(uri).await?;
+    Ok(())
+  }
+
+  pub async fn evaluate_frames(&mut self, uri: &String) -> Result<(), EngineError> {
     Ok(())
   }
 

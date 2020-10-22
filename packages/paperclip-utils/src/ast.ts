@@ -253,6 +253,27 @@ export const findByNamespace = (
   for (const child of getChildren(current)) {
     findByNamespace(namespace, child, allChildrenByNamespace);
   }
+
+  if (current.kind === NodeKind.Element) {
+    for (const attribute of current.attributes) {
+      if (
+        attribute.kind === AttributeKind.KeyValueAttribute &&
+        attribute.value
+      ) {
+        if (
+          attribute.value.attrValueKind === AttributeValueKind.Slot &&
+          attribute.value.script.jsKind === StatementKind.Node
+        ) {
+          findByNamespace(
+            namespace,
+            attribute.value.script,
+            allChildrenByNamespace
+          );
+        }
+      }
+    }
+  }
+
   return allChildrenByNamespace;
 };
 

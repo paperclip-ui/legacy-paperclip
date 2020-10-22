@@ -1,5 +1,5 @@
 {
-  "name": "jest-paperclip",
+  "name": "prettier-plugin-paperclip",
   "version": "15.0.21",
   "description": "",
   "main": "lib/index.js",
@@ -9,13 +9,12 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@babel/core": "^7.11.1",
-    "@babel/preset-env": "^7.11.0",
-    "paperclip": "^15.0.21",
-    "resolve": "^1.17.0"
-  },
   "devDependencies": {
-    "typescript": "^3.9.7"
+    "@types/node": "^14.11.8",
+    "@types/prettier": "^2.1.2",
+    "prettier": "^2.1.2"
+  },
+  "dependencies": {
+    "paperclip": "^15.0.21"
   }
 }
