@@ -336,6 +336,28 @@ describe(__filename + "#", () => {
       {
         Entry: `<span data-pc-f7f5c2b8="true" data-pc-3402f12b="true"><div data-pc-19fba394="true" data-pc-3402f12b="true" class="_3402f12b__3402f12b_blaaaa blaaaa _3402f12b__3402f12b_another-test another-test _1e5c0865 _3402f12b_another-test another-test _1e5c0865 _6efc9302 _3402f12b_blaaaa blaaaa _3402f12b__3402f12b_another-test another-test _1e5c0865 _3402f12b_another-test another-test _1e5c0865 _6efc9302"></div></span>`
       }
+    ],
+    [
+      "Can import elements that are used in slots",
+      {
+        "/entry.pc": `
+          <import src="/button.pc" as="Button" />
+          <div export component as="Test">
+            {something}
+          </div>
+
+          <Test export component as="Entry" something={<Button.Button />} />
+        `,
+        "/button.pc": `
+          <div export component as="Button">click me!</div>
+        `
+      },
+      {
+        Entry: {}
+      },
+      {
+        Entry: `<div data-pc-6efc9302="true" data-pc-3402f12b="true"><div data-pc-b9b0d72d="true" data-pc-4aa1ff40="true">click me!</div></div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {

@@ -43,7 +43,15 @@ export const compileModules = async (graph: Record<string, string>) => {
       return exports;
     `
     );
-    const wrapper = () => module(path => builtin[path] || modules[path]);
+
+    const executed = {};
+
+    const wrapper = () =>
+      module(path => {
+        const mod = modules[path] || modules[path.substr(1)];
+        const ex = executed[path] || (executed[path] = mod && mod());
+        return builtin[path] || ex;
+      });
     modules[path] = wrapper;
   }
 
