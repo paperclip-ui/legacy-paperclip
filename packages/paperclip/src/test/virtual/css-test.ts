@@ -1114,4 +1114,85 @@ describe(__filename + "#", () => {
       `<style>[data-pc-406d2856][data-pc-406d2856] { color:red; } [data-pc-406d2856][data-pc-406d2856] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
     );
   });
+
+  it(":within applies styles when div is within ancestor", async () => {
+    const graph = {
+      "/entry.pc": `
+    
+      <div>
+        <style>
+          color: red;
+          :within(.variant) {
+            color: blue;
+          }
+        </style>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-406d2856][data-pc-406d2856] { color:red; } ._80f4925f_variant [data-pc-406d2856][data-pc-406d2856] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
+    );
+  });
+
+  it("can nest selectors in :within", async () => {
+    const graph = {
+      "/entry.pc": `
+      <div className="variant">
+        <div className="test">
+          <style>
+            color: red;
+            
+            :within(.variant) {
+              :self(.a) {
+                color: red;
+              }
+              .b {
+                color: blue;
+              }
+            }
+          </style>
+        </div>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; } ._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a { color:red; } ._80f4925f_variant [data-pc-9e7e6af9] [class]._80f4925f_b { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
+    );
+  });
+
+  it("can nest group selectors in :within", async () => {
+    const graph = {
+      "/entry.pc": `
+      <div className="variant">
+        <div className="test">
+          <style>
+            :within(.variant) {
+              :self(.a, .b) {
+                color: blue;
+              }
+            }
+          </style>
+        </div>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a, ._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].b { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
+    );
+  });
 });

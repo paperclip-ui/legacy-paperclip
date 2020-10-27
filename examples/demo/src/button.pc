@@ -16,9 +16,20 @@
   }
 </style>
 
-<div>
+<div component as="Test">
   <style>
     color: rgb(211, 30, 30);
+    font-family: sans-serif;
+    font-size: 32px;
+    :within(.variant) {
+      color: blue;
+    }
   </style>
-  Something like thisadf
+  Button
+</div>
+
+
+<Test />
+<div className="variant">
+  <Test />
 </div>

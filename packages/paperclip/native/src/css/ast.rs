@@ -315,6 +315,7 @@ pub enum Selector {
   Not(NotSelector),
   Global(GlobalSelector),
   This(SelfSelector),
+  Within(WithinSelector),
   Child(ChildSelector),
   Adjacent(AdjacentSelector),
   Sibling(SiblingSelector),
@@ -351,6 +352,9 @@ impl Selector {
           curr = selector.descendent.as_ref();
         }
         Selector::Not(selector) => {
+          return curr;
+        }
+        Selector::Within(selector) => {
           return curr;
         }
         Selector::Global(selector) => {
@@ -404,6 +408,7 @@ impl fmt::Display for Selector {
       Selector::Element(selector) => write!(f, "{}", selector.to_string()),
       Selector::Descendent(selector) => write!(f, "{}", selector.to_string()),
       Selector::Not(selector) => write!(f, "{}", selector.to_string()),
+      Selector::Within(selector) => write!(f, "{}", selector.to_string()),
       Selector::Global(selector) => write!(f, "{}", selector.to_string()),
       Selector::This(selector) => write!(f, "{}", selector.to_string()),
       Selector::Adjacent(selector) => write!(f, "{}", selector.to_string()),
@@ -530,6 +535,20 @@ pub struct ChildSelector {
   pub child: Box<Selector>,
   pub location: Location,
 }
+
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct WithinSelector {
+  pub selector: Box<Selector>,
+  pub location: Location,
+}
+
+impl fmt::Display for WithinSelector {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, ":within({})", self.selector.to_string())
+  }
+}
+
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NotSelector {
