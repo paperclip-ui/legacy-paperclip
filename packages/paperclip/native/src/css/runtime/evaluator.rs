@@ -23,7 +23,7 @@ pub struct Context<'a> {
   exports: Exports,
   in_public_scope: bool,
   all_rules: Vec<virt::Rule>,
-  inc_declarations: Vec<virt::CSSStyleProperty>
+  inc_declarations: Vec<virt::CSSStyleProperty>,
 }
 
 pub struct EvalInfo {
@@ -54,7 +54,7 @@ pub fn evaluate<'a>(
     in_public_scope: false,
     exports: Exports::new(),
     all_rules: vec![],
-    inc_declarations: vec![]
+    inc_declarations: vec![],
   };
 
   if let Some(existing_exports) = existing_exports {
@@ -156,7 +156,13 @@ pub fn evaluate_style_rules<'a>(
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
   for rule in rules {
-    evaluate_style_rule2(&rule, parent_selector_text, include_parent_rule, within_selector_text, context)?;
+    evaluate_style_rule2(
+      &rule,
+      parent_selector_text,
+      include_parent_rule,
+      within_selector_text,
+      context,
+    )?;
   }
   Ok(())
 }
@@ -223,7 +229,13 @@ fn evaluate_condition_rule(
   context: &mut Context,
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = create_child_context(context);
-  evaluate_style_rules(&rule.rules, parent_selector_text, true, &None, &mut child_context)?;
+  evaluate_style_rules(
+    &rule.rules,
+    parent_selector_text,
+    true,
+    &None,
+    &mut child_context,
+  )?;
 
   if rule.declarations.len() > 0 {
     let mut selector_text = parent_selector_text.to_string();
@@ -591,7 +603,13 @@ fn evaluate_mixin<'a, 'b>(
   let declarations =
     evaluate_style_declarations(&expr.declarations, parent_selector_text, &mut child_context)?;
 
-  evaluate_style_rules(&expr.rules, parent_selector_text, true, &None, &mut child_context)?;
+  evaluate_style_rules(
+    &expr.rules,
+    parent_selector_text,
+    true,
+    &None,
+    &mut child_context,
+  )?;
 
   Ok((declarations, child_context.all_rules))
 }
@@ -702,7 +720,13 @@ fn evaluate_style_rule2(
         }));
       }
 
-      evaluate_style_rules(&expr.children, &selector_text2, true, within_selector_text, context)?;
+      evaluate_style_rules(
+        &expr.children,
+        &selector_text2,
+        true,
+        within_selector_text,
+        context,
+      )?;
     }
   } else {
     let child_rule_prefix = selector_text.clone();
@@ -712,23 +736,49 @@ fn evaluate_style_rule2(
       ast::Selector::Within(selector) => {
         // let element_scope = context.element_scope.clone();
 
-        let selector_text2 = stringify_element_selector(&selector.selector, true, &"".to_string(), &None, false, false, false, context);
-        evaluate_style_rules(&expr.children, &"".to_string(), true, &Some(selector_text2), context)?;
+        let selector_text2 = stringify_element_selector(
+          &selector.selector,
+          true,
+          &"".to_string(),
+          &None,
+          false,
+          false,
+          false,
+          context,
+        );
+        evaluate_style_rules(
+          &expr.children,
+          &"".to_string(),
+          true,
+          &Some(selector_text2),
+          context,
+        )?;
         selector_text.to_string()
       }
-      ast::Selector::This(_) => { 
-
+      ast::Selector::This(_) => {
         // Dirty but works. :self is specified so we want to make sure that the element scope isn't present since it's
         // already included in the parent scope
 
         let element_scope = context.element_scope.clone();
         context.element_scope = None;
-        evaluate_style_rules(&expr.children, &child_rule_prefix, true, within_selector_text, context)?;
+        evaluate_style_rules(
+          &expr.children,
+          &child_rule_prefix,
+          true,
+          within_selector_text,
+          context,
+        )?;
         context.element_scope = element_scope;
         selector_text.to_string()
       }
       _ => {
-        evaluate_style_rules(&expr.children, &child_rule_prefix, true, within_selector_text, context)?;
+        evaluate_style_rules(
+          &expr.children,
+          &child_rule_prefix,
+          true,
+          within_selector_text,
+          context,
+        )?;
         format!(
           "{} {}",
           get_element_scope_selector(context, within_selector_text, false),
@@ -776,8 +826,11 @@ fn stringify_nestable_selector(
   )
 }
 
-fn get_element_scope_selector(context: &Context, within_selector_text: &Option<String>, extra_specificity: bool) -> String {
-
+fn get_element_scope_selector(
+  context: &Context,
+  within_selector_text: &Option<String>,
+  extra_specificity: bool,
+) -> String {
   let within_text = if let Some(text) = within_selector_text {
     format!("{} ", text)
   } else {
@@ -909,7 +962,6 @@ fn stringify_element_selector(
         scope_selector
       };
 
-      
       // Note that we don't want extra specificty in :not selector since :not
       // doesn't support things like :not([class].class)
       return format!(

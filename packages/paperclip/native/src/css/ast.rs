@@ -536,7 +536,6 @@ pub struct ChildSelector {
   pub location: Location,
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct WithinSelector {
   pub selector: Box<Selector>,
@@ -548,7 +547,6 @@ impl fmt::Display for WithinSelector {
     write!(f, ":within({})", self.selector.to_string())
   }
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NotSelector {
