@@ -734,21 +734,20 @@ fn evaluate_style_rule2(
 
     let self_selector_text = match &expr.selector {
       ast::Selector::Within(selector) => {
-
-        // Just 
+        // Just
         let within_selector_text = stringify_element_selector(
-          &selector.selector, 
-          true, 
+          &selector.selector,
+          true,
           &"".to_string(),
           &None,
           false,
           false,
           true,
-          context
+          context,
         );
 
         let el_selector = get_element_scope_selector(context, &None, false);
-        
+
         // Dirty but works. :self is specified so we want to make sure that the element scope isn't present since it's
         // already included in the parent scope
 
@@ -764,7 +763,6 @@ fn evaluate_style_rule2(
 
         context.element_scope = element_scope;
 
-        
         selector_text.to_string()
       }
       ast::Selector::This(_) => {
@@ -852,10 +850,9 @@ fn get_element_scope_selector(
   extra_specificity: bool,
 ) -> String {
   let within_text = get_within_scope_selector(within_selector_text);
-  
+
   if let Some((scope, is_instance)) = &context.element_scope {
     if *is_instance {
-
       format!("{}[class]._{}", within_text, scope)
     } else {
       let selector = format!("[data-pc-{}]", scope);
@@ -1010,7 +1007,6 @@ fn stringify_element_selector(
       )
     ),
     ast::Selector::This(selector) => {
-
       let self_selector = if context.element_scope != None {
         get_element_scope_selector(context, within_selector_text, true)
       } else {
