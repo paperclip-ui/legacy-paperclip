@@ -189,6 +189,25 @@ Scoped styles are recommended since they keep your styles & elements together in
 ☝ This is particularly useful for [style variants](#variant-styles).
 
 
+
+### :within(ancestor-selector)
+
+`:within([ancestor-selector])` allows you to apply styles with an ancestor that has `ancestor-selector`.
+
+```html live height=150px
+<div className="bolder">
+  <div>
+    <style>
+      :within(.bolder) {
+        font-weight: 600;
+      }
+    </style>
+    Some text
+  </div>
+</div>
+```
+
+
 ### @mixin
 
 Style mixins are useful for defining a bundle of style declarations (like `color`, `font-size`) that you then can include into style rules.

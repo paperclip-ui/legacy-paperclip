@@ -1148,7 +1148,7 @@ describe(__filename + "#", () => {
             color: red;
             
             :within(.variant) {
-              :self(.a) {
+              &.a {
                 color: red;
               }
               .b {
@@ -1166,7 +1166,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; } ._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a { color:red; } ._80f4925f_variant [data-pc-9e7e6af9] [class]._80f4925f_b { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
+      `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; } [class]._80f4925f_variant [data-pc-9e7e6af9][class].a { color:red; } [class]._80f4925f_variant [data-pc-9e7e6af9] [class]._80f4925f_b { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
   });
 
@@ -1177,7 +1177,7 @@ describe(__filename + "#", () => {
         <div className="test">
           <style>
             :within(.variant) {
-              :self(.a, .b) {
+              &.a, &.b {
                 color: blue;
               }
             }
@@ -1192,7 +1192,60 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      `<style>._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a, ._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].b { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
+      `<style>[class]._80f4925f_variant [data-pc-9e7e6af9][class].a { color:blue; } [class]._80f4925f_variant [data-pc-9e7e6af9][class].b { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
+    );
+  });
+
+  it(`:within(:global()) works`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div className="variant">
+        <div className="test">
+          <style>
+            :within(:global(.variant)) {
+              color: orange;
+            }
+          </style>
+        </div>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[class].variant [data-pc-9e7e6af9][data-pc-9e7e6af9] { color:orange; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
+    );
+  });
+
+  it(`nested & works`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div className="variant">
+        <div className="test">
+          <style>
+            :within(.variant) {
+              &&:empty {
+                display: block;
+              }
+              &&&& {
+                color: red;
+              }
+            }
+          </style>
+        </div>
+      </div>
+    
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { display:block; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
   });
 });
