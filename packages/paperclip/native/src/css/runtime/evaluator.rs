@@ -734,25 +734,37 @@ fn evaluate_style_rule2(
 
     let self_selector_text = match &expr.selector {
       ast::Selector::Within(selector) => {
-        // let element_scope = context.element_scope.clone();
 
-        let selector_text2 = stringify_element_selector(
-          &selector.selector,
-          true,
+        // Just 
+        let within_selector_text = stringify_element_selector(
+          &selector.selector, 
+          true, 
           &"".to_string(),
           &None,
           false,
           false,
-          false,
-          context,
+          true,
+          context
         );
+
+        let el_selector = get_element_scope_selector(context, &None, false);
+        
+        // Dirty but works. :self is specified so we want to make sure that the element scope isn't present since it's
+        // already included in the parent scope
+
+        let element_scope = context.element_scope.clone();
+        context.element_scope = None;
         evaluate_style_rules(
           &expr.children,
-          &"".to_string(),
+          &el_selector,
           true,
-          &Some(selector_text2),
+          &Some(within_selector_text.to_string()),
           context,
         )?;
+
+        context.element_scope = element_scope;
+
+        
         selector_text.to_string()
       }
       ast::Selector::This(_) => {
@@ -769,7 +781,7 @@ fn evaluate_style_rule2(
           context,
         )?;
         context.element_scope = element_scope;
-        selector_text.to_string()
+        format!("{}", selector_text.to_string()).trim().to_string()
       }
       _ => {
         evaluate_style_rules(
@@ -826,19 +838,24 @@ fn stringify_nestable_selector(
   )
 }
 
+fn get_within_scope_selector(within_selector_text: &Option<String>) -> String {
+  if let Some(text) = within_selector_text {
+    format!("{} ", text)
+  } else {
+    "".to_string()
+  }
+}
+
 fn get_element_scope_selector(
   context: &Context,
   within_selector_text: &Option<String>,
   extra_specificity: bool,
 ) -> String {
-  let within_text = if let Some(text) = within_selector_text {
-    format!("{} ", text)
-  } else {
-    "".to_string()
-  };
-
+  let within_text = get_within_scope_selector(within_selector_text);
+  
   if let Some((scope, is_instance)) = &context.element_scope {
     if *is_instance {
+
       format!("{}[class]._{}", within_text, scope)
     } else {
       let selector = format!("[data-pc-{}]", scope);
@@ -875,7 +892,7 @@ fn stringify_element_selector(
     "".to_string()
   };
 
-  let mut scoped_selector_text = match selector {
+  let scoped_selector_text = match selector {
     ast::Selector::AllSelector => format!(
       "{}",
       if scope_selector == "" {
@@ -993,6 +1010,7 @@ fn stringify_element_selector(
       )
     ),
     ast::Selector::This(selector) => {
+
       let self_selector = if context.element_scope != None {
         get_element_scope_selector(context, within_selector_text, true)
       } else {
@@ -1011,9 +1029,9 @@ fn stringify_element_selector(
                 stringify_element_selector(
                   &child_selector,
                   false,
-                  parent_selector_text,
+                  &"".to_string(),
                   &None,
-                  include_prefix,
+                  false,
                   false,
                   true,
                   context
@@ -1029,9 +1047,9 @@ fn stringify_element_selector(
             stringify_element_selector(
               &selector,
               false,
-              parent_selector_text,
+              &self_selector,
               &None,
-              include_prefix,
+              false,
               false,
               true,
               context

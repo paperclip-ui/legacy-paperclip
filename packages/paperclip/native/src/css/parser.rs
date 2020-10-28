@@ -492,7 +492,7 @@ fn parse_pseudo_element_selector<'a, 'b>(
         location: Location::new(start, context.tokenizer.utf16_pos),
       })
     } else if name == "within" {
-      let sel = parse_pair_selector(context, false)?;
+      let sel = parse_group_selector(context, false)?;
       Selector::Within(WithinSelector {
         selector: Box::new(sel),
         location: Location::new(start, context.tokenizer.utf16_pos),
