@@ -1,4 +1,4 @@
-import { Engine, EngineEvent, SourceLocation } from "paperclip";
+import { Engine, EngineDelegateEvent, SourceLocation } from "paperclip";
 import { CompletionItem } from "vscode-languageclient";
 import { LoadedData } from "paperclip";
 
@@ -42,14 +42,16 @@ export abstract class BaseEngineLanguageService<TAst>
 
   constructor(protected _engine: Engine) {
     this._astInfo = {};
-    _engine.onEvent(this._onEngineEvent);
+    _engine.onEvent(this._onEngineDelegateEvent);
   }
   abstract supports(uri: string): boolean;
   abstract resolveCompletionItem(item: CompletionItem): CompletionItem;
-  private _onEngineEvent = (event: EngineEvent) => {
-    this._handleEngineEvent(event);
+  private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
+    this._handleEngineDelegateEvent(event);
   };
-  protected abstract _handleEngineEvent(event: EngineEvent): void;
+  protected abstract _handleEngineDelegateEvent(
+    event: EngineDelegateEvent
+  ): void;
 
   protected abstract _getAST(uri: string): TAst;
 

@@ -160,7 +160,7 @@ export const createComponentClass = ({
         try {
           renderer.initialize(await engine.run(currentUri));
           disposeListener = engine.onEvent(event => {
-            renderer.handleEngineEvent(event);
+            renderer.handleEngineDelegateEvent(event);
           });
         } catch (e) {
           console.warn(e);

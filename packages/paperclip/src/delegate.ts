@@ -52,8 +52,21 @@ export type LoadResult = {
   preview: VirtualNode;
 };
 
-// DEPRECATED
-export class Engine {
+export enum EngineDelegateEventType {
+  Loaded = "Loaded",
+  ChangedSheets = "ChangedSheets"
+}
+
+/*
+
+
+
+const delegate = new EngineDelegate(new NativeEngine());
+
+delegate.
+*/
+
+export class EngineDelegate {
   private _listeners: EngineDelegateEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
   private _io: EngineIO;
@@ -186,7 +199,7 @@ export class Engine {
     return deps;
   }
 
-  run(uri: string): LoadedData {
+  open(uri: string): LoadedData {
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
       throw result.error;
@@ -233,24 +246,13 @@ const getIOOptions = (options: EngineOptions = {}) =>
     options.io
   );
 
-export const createEngine = createNativeEngine => async (
+export const createEngineDelegate = createNativeEngine => async (
   options: EngineOptions,
   onCrash: any
 ) => {
   const { readFile, fileExists, resolveFile } = getIOOptions(options);
-  return new Engine(
+  return new EngineDelegate(
     await createNativeEngine(readFile, fileExists, resolveFile),
-    onCrash
-  );
-};
-
-export const createEngineSync = createNativeEngine => (
-  options: EngineOptions,
-  onCrash: any
-) => {
-  const { readFile, fileExists, resolveFile } = getIOOptions(options);
-  return new Engine(
-    createNativeEngine(readFile, fileExists, resolveFile),
     onCrash
   );
 };
@@ -260,18 +262,4 @@ const existsSyncCaseSensitive = (uri: URL) => {
   const dir = path.dirname(pathname);
   const basename = path.basename(pathname);
   return fs.readdirSync(dir).includes(basename);
-};
-
-export const keepEngineInSyncWithFileSystem = (
-  watcher: PaperclipSourceWatcher,
-  engine: Engine
-) => {
-  return watcher.onChange((kind, uri) => {
-    if (kind === ChangeKind.Changed) {
-      engine.updateVirtualFileContent(
-        uri,
-        fs.readFileSync(new url.URL(uri), "utf8")
-      );
-    }
-  });
 };

@@ -1,6 +1,6 @@
 import {
-  EngineEvent,
-  EngineEventKind,
+  EngineDelegateEvent,
+  EngineDelegateEventKind,
   EngineErrorEvent,
   stripFileProtocol
 } from "paperclip-utils";
@@ -203,7 +203,7 @@ export const activate = (
   // There can only be one listener, so do that & handle across all previews
   client.onNotification(NotificationType.ENGINE_EVENT, event => {
     _previews.forEach(preview => {
-      preview.$$handleEngineEvent(event);
+      preview.$$handleEngineDelegateEvent(event);
     });
   });
 
@@ -367,17 +367,17 @@ class LivePreview {
       });
     }
   }
-  public $$handleEngineEvent(event: EngineEvent) {
+  public $$handleEngineDelegateEvent(event: EngineDelegateEvent) {
     if (
       this._needsReloading &&
-      (event.kind === EngineEventKind.Evaluated ||
-        event.kind === EngineEventKind.Diffed)
+      (event.kind === EngineDelegateEventKind.Evaluated ||
+        event.kind === EngineDelegateEventKind.Diffed)
     ) {
       this._render();
     }
 
     // all error events get passed to preview.
-    if (event.kind !== EngineEventKind.Error) {
+    if (event.kind !== EngineDelegateEventKind.Error) {
       if (
         event.uri !== this._targetUri &&
         !this._dependencies.includes(event.uri)
@@ -387,10 +387,10 @@ class LivePreview {
 
       if (
         event.uri == this._targetUri &&
-        (event.kind === EngineEventKind.Evaluated ||
-          event.kind === EngineEventKind.Loaded ||
-          event.kind === EngineEventKind.Diffed ||
-          event.kind === EngineEventKind.ChangedSheets)
+        (event.kind === EngineDelegateEventKind.Evaluated ||
+          event.kind === EngineDelegateEventKind.Loaded ||
+          event.kind === EngineDelegateEventKind.Diffed ||
+          event.kind === EngineDelegateEventKind.ChangedSheets)
       ) {
         this._dependencies = event.data.allDependencies;
       }

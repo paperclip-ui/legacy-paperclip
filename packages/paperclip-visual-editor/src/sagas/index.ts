@@ -142,7 +142,7 @@ function* handleRenderer() {
           if (engineEvent.kind === "Error") {
             return emit(engineErrored(engineEvent));
           }
-          renderer.handleEngineEvent(payload);
+          renderer.handleEngineDelegateEvent(payload);
           handleRenderChange();
           break;
         }

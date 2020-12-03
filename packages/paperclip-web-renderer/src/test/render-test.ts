@@ -9,7 +9,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       "<div></div><div><style></style></div><div>Hello World</div><div></div><div></div>"
@@ -23,7 +23,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style></style></div><div><a href="#">abc</a></div><div></div><div></div>`
@@ -37,7 +37,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style></style></div><div>a</div><div></div><div></div>`
@@ -55,7 +55,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style></style></div><div><span><div a="b"></div></span></div><div></div><div></div>`
@@ -76,7 +76,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
@@ -91,7 +91,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
@@ -106,7 +106,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
@@ -128,7 +128,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("file:///entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("file:///entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
@@ -149,7 +149,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     await engine.run("/module.pc");
     expect(renderer.mount.innerHTML).to.eql(
@@ -172,7 +172,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     await engine.run("/module.pc");
     expect(renderer.mount.innerHTML).to.eql(
@@ -199,7 +199,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     // const renderer = createMockRenderer("/entry.pc");
-    // engine.onEvent(renderer.handleEngineEvent);
+    // engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
     await engine.updateVirtualFileContent(
       "/entry.pc",
@@ -222,7 +222,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     // const renderer = createMockRenderer("/entry.pc");
-    // engine.onEvent(renderer.handleEngineEvent);
+    // engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
 
     await engine.updateVirtualFileContent(
@@ -257,7 +257,7 @@ describe(__filename + "#", () => {
 
     const renderer = createMockRenderer("/entry.pc");
     renderer.initialize(await engine.run("/entry.pc"));
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(renderer.mount.innerHTML.replace(/\n/g, "")).to.eql(
       `<div><style>a[data-pc-61a60758] { color:a; }</style><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-cbafcfd3] { color:c; }</style><style>a[data-pc-5678f76a] { color:d; }</style></div><div><style></style></div><div>      </div><div></div><div></div>`
@@ -303,7 +303,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     renderer.initialize(await engine.run("/entry.pc"));
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
 
     await engine.updateVirtualFileContent(
       "file:///entry.pc",
@@ -333,7 +333,7 @@ describe(__filename + "#", () => {
 
     const renderer2 = createMockRenderer("/entry.pc");
     renderer2.initialize(await engine.run("/entry.pc"));
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(renderer.mount.innerHTML).not.to.eql(undefined);
 
@@ -352,7 +352,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("file:///entry.pc", "blah:");
     renderer.initialize(await engine.run("file:///entry.pc"));
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(
       renderer.mount.innerHTML.replace("\n", "").replace(/\\+/g, "/")

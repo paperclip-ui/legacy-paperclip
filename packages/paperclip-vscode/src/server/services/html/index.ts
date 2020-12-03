@@ -18,9 +18,9 @@ import {
   MixinRule,
   KeyValueDeclaration,
   Include,
-  EngineEvent,
+  EngineDelegateEvent,
   getImportIds,
-  EngineEventKind,
+  EngineDelegateEventKind,
   getStyleElements,
   StyleRule,
   getAttributeValue,
@@ -67,10 +67,10 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   supports(uri: string) {
     return /\.pc$/.test(uri);
   }
-  protected _handleEngineEvent(event: EngineEvent) {
+  protected _handleEngineDelegateEvent(event: EngineDelegateEvent) {
     if (
-      event.kind === EngineEventKind.Evaluated ||
-      event.kind === EngineEventKind.Diffed
+      event.kind === EngineDelegateEventKind.Evaluated ||
+      event.kind === EngineDelegateEventKind.Diffed
     ) {
       this.clear(event.uri);
     }

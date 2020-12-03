@@ -1,4 +1,4 @@
-import { EngineEvent as PCEngineEvent } from "paperclip";
+import { EngineDelegateEvent as PCEngineDelegateEvent } from "paperclip";
 import {
   VirtualNode,
   LoadedData,
@@ -97,11 +97,11 @@ export class Crash extends BaseNotification<NotificationType.CRASH, any> {
   }
 }
 
-export class EngineEventNotification extends BaseNotification<
+export class EngineDelegateEventNotification extends BaseNotification<
   NotificationType.ENGINE_EVENT,
-  PCEngineEvent
+  PCEngineDelegateEvent
 > {
-  constructor(params: PCEngineEvent) {
+  constructor(params: PCEngineDelegateEvent) {
     super(NotificationType.ENGINE_EVENT, params);
   }
 }

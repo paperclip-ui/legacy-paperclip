@@ -1,6 +1,8 @@
 import { DOMFactory, Renderer } from "../renderer";
-import { createEngine } from "paperclip";
+import { createEngine, createEngineDelegate } from "paperclip";
 import * as path from "path";
+import { FrameRenderer } from "../frame-renderer";
+import { EngineDelegate } from "paperclip";
 
 export const mockDOMFactory: DOMFactory = {
   createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
@@ -141,5 +143,32 @@ export const createMockEngine = (graph: Graph) =>
     }
   });
 
+export const createMockEngineDelegate = (graph: Graph) =>
+  createEngineDelegate({
+    io: {
+      readFile: uri =>
+        graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],
+      fileExists: uri =>
+        Boolean(
+          graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
+        ),
+      resolveFile: (from, to) => {
+        const prefix = from.indexOf("file:") === 0 ? "file://" : "";
+
+        return (
+          prefix +
+          path
+            .join(path.dirname(from.replace("file://", "")), to)
+            .replace(/\\+/g, "/")
+        );
+      }
+    }
+  });
+
 export const createMockRenderer = (uri: string, protocol = "") =>
   new Renderer(protocol, uri, mockDOMFactory);
+
+export const createMockFramesRenderer = (
+  engine: EngineDelegate,
+  protocol = ""
+) => new FrameRenderer(engine, protocol, mockDOMFactory);

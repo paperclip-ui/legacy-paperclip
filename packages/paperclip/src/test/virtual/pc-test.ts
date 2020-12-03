@@ -6,7 +6,7 @@ import {
   stringifyLoadResult,
   noop
 } from "../utils";
-import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
+import { EngineDelegateEventKind, stringifyVirtualNode } from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
@@ -1404,10 +1404,10 @@ describe(__filename + "#", () => {
     await engine.updateVirtualFileContent("/entry.pc", "b");
     await engine.updateVirtualFileContent("/entry.pc", "c");
     expect(events.map(event => event.kind)).to.eql([
-      EngineEventKind.Loaded,
-      EngineEventKind.Evaluated,
-      EngineEventKind.Diffed,
-      EngineEventKind.Diffed
+      EngineDelegateEventKind.Loaded,
+      EngineDelegateEventKind.Evaluated,
+      EngineDelegateEventKind.Diffed,
+      EngineDelegateEventKind.Diffed
     ]);
   });
 
