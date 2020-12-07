@@ -11,7 +11,7 @@ describe(__filename + "#", () => {
       `
     });
 
-    const renderer = createMockFramesRenderer(engine);
+    const renderer = createMockFramesRenderer(engine, "/entry.pc");
     engine.open("/entry.pc");
     engine.updateVirtualFileContent("/entry.pc", "CONTENT");
   });

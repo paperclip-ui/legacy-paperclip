@@ -6,16 +6,8 @@ import { ATTR_ALIASES } from "./utils";
 
 const entities = new Html5Entities();
 
-export interface Patchable {
-  childNodes: ChildNode[] | NodeListOf<ChildNode>;
-  appendChild(child: Node);
-  removeChild(child: Node);
-  insertBefore(child: Node, before: Node);
-  namespaceURI: string;
-}
-
 export const patchNativeNode = (
-  mount: Patchable,
+  mount: HTMLElement,
   mutations: Mutation[],
   factory: DOMFactory,
   protocol: string | null
@@ -44,7 +36,7 @@ export const patchNativeNode = (
         break;
       }
       case ActionKind.ReplaceNode: {
-        const parent = (target as ChildNode).parentNode;
+        const parent = target.parentNode;
         parent.insertBefore(
           createNativeNode(
             action.replacement,
@@ -55,7 +47,7 @@ export const patchNativeNode = (
           target
         );
 
-        parent.removeChild(target);
+        target.remove();
         break;
       }
       case ActionKind.RemoveAttribute: {
@@ -82,8 +74,8 @@ export const patchNativeNode = (
   }
 };
 
-const getTarget = (mount: Patchable, mutation: Mutation) =>
+const getTarget = (mount: HTMLElement, mutation: Mutation) =>
   mutation.nodePath.reduce(
-    (current: Patchable, i) => current.childNodes[i],
+    (current: HTMLElement, i) => current.childNodes[i],
     mount
   );

@@ -22,6 +22,7 @@ abstract class BaseNode {
   get innerHTML() {
     return this.getInnerHTML();
   }
+  abstract cloneNode();
   abstract getInnerHTML();
   abstract toString();
 }
@@ -75,6 +76,17 @@ class MockElement extends ParentNode {
     this.attributes[name] = value;
   }
 
+  cloneNode() {
+    const el = new MockElement(this.tagName);
+    for (const key in this.attributes) {
+      el.setAttribute(key, el.attributes[key]);
+    }
+    for (const child of this.childNodes) {
+      el.appendChild(child.cloneNode());
+    }
+    return el;
+  }
+
   // eslint-disable-next-line
   addEventListener() {}
   removeAttribute(name: string) {
@@ -100,6 +112,13 @@ class MockElement extends ParentNode {
 }
 
 class MockFragment extends ParentNode {
+  cloneNode() {
+    const clone = new MockFragment();
+    for (const child of this.childNodes) {
+      clone.appendChild(child.cloneNode());
+    }
+    return clone;
+  }
   toString() {
     return "";
   }
@@ -108,6 +127,9 @@ class MockFragment extends ParentNode {
 class MockTextNode extends BaseNode {
   constructor(public nodeValue: string) {
     super();
+  }
+  cloneNode() {
+    return new MockTextNode(this.nodeValue);
   }
   getInnerHTML() {
     return this.toString();
@@ -170,5 +192,6 @@ export const createMockRenderer = (uri: string, protocol = "") =>
 
 export const createMockFramesRenderer = (
   engine: EngineDelegate,
+  uri = "",
   protocol = ""
-) => new FrameRenderer(engine, protocol, mockDOMFactory);
+) => new FrameRenderer(engine, uri, protocol, mockDOMFactory);

@@ -153,7 +153,9 @@ impl Engine {
       }
       Err(error) => {
         self.evaluated_data.remove(uri);
-        self.dispatch(EngineDelegateEvent::Error(EngineError::Graph(error.clone())));
+        self.dispatch(EngineDelegateEvent::Error(EngineError::Graph(
+          error.clone(),
+        )));
         Err(EngineError::Graph(error))
       }
     }
@@ -198,7 +200,9 @@ impl Engine {
         uri,
         &ast::Location { start: 0, end: 1 },
       );
-      self.dispatch(EngineDelegateEvent::Error(EngineError::Runtime(err.clone())));
+      self.dispatch(EngineDelegateEvent::Error(EngineError::Runtime(
+        err.clone(),
+      )));
       return Err(err);
     }
 

@@ -30,6 +30,10 @@ enum RenderEventTypes {
   ERROR_BANNER_CLICK = "ERROR_BANNER_CLICK"
 }
 
+/**
+ * DEPRECATED. Use frame-renderer + DIV frame creator
+ */
+
 export class Renderer {
   private _em: EventEmitter;
   private _hoverOverlay: HTMLElement;
