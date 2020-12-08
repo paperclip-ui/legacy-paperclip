@@ -8,19 +8,13 @@ import {
   patchVirtNode,
   SheetInfo,
   LoadedData,
-  VirtualNodeKind
+  VirtualNodeKind,
+  Sheet
 } from "paperclip-utils";
 import { EventEmitter } from "events";
 import { traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
-
-export type DOMFactory = {
-  createElement(tagName: string): HTMLElement;
-  createElementNS(namespace: string, tagName: string): HTMLElement;
-  createDocumentFragment(): DocumentFragment;
-  createTextNode(value: string): Text;
-};
-
+import { DOMFactory } from "./base";
 export type Frame = {
   bounds: {
     width: number;
@@ -39,17 +33,28 @@ export type Frame = {
   stage: HTMLElement;
 };
 
-// TODO - need to considr fragments
+// TODO
+// class FragmentProxy implements Patchable {
+//   constructor(private _mount: HTMLElement) {
+
+//   }
+// }
 
 class FramesProxy implements Patchable {
   private _frames: Frame[];
   private _childNodes: ChildNode[];
-  private _mainStyle: HTMLStyleElement;
+  private _mainStyle: any;
+  private _mainNativeStyle: HTMLStyleElement;
+  private _importedStyles: SheetInfo[];
   readonly namespaceURI = null;
 
-  constructor(private _domFactory: DOMFactory = document) {
+  constructor(
+    private _domFactory: DOMFactory = document,
+    private _protocol: string = null
+  ) {
     this._frames = [];
     this._childNodes = [];
+    this._importedStyles = [];
   }
   get frames() {
     return this._frames;
@@ -57,12 +62,52 @@ class FramesProxy implements Patchable {
   get childNodes() {
     return this._childNodes;
   }
-  setImportedSheets;
-  setMainStyle(style: HTMLStyleElement) {
+  get importedStyles() {
+    return this._importedStyles;
+  }
+  setMainStyle(style: any) {
     this._mainStyle = style;
+    const nativeStyle = (this._mainNativeStyle = createNativeStyleFromSheet(
+      style,
+      this._domFactory,
+      this._protocol
+    ));
     for (const frame of this._frames) {
       removeAllChildren(frame._mainStylesContainer);
-      frame._mainStylesContainer.appendChild(style.cloneNode(true));
+      frame._mainStylesContainer.appendChild(nativeStyle.cloneNode(true));
+    }
+  }
+  updateImportedStyles(newStyles: SheetInfo[], removeStyleUris: string[] = []) {
+    const rmIndices = [];
+
+    // need to remove sheet in case we're looking to replace
+    for (let i = this._importedStyles.length; i--; ) {
+      const style = this._importedStyles[i];
+      if (removeStyleUris.includes(style.uri)) {
+        rmIndices.unshift(i);
+        this._importedStyles.splice(i, 1);
+      }
+    }
+
+    // finally append
+    this._importedStyles.push(...newStyles);
+
+    for (const { sheet } of newStyles) {
+      const nativeSheet = createNativeStyleFromSheet(
+        sheet,
+        this._domFactory,
+        this._protocol
+      );
+      for (const frame of this._frames) {
+        frame._importedStylesContainer.appendChild(nativeSheet.cloneNode(true));
+      }
+    }
+
+    for (const i of rmIndices) {
+      for (const frame of this._frames) {
+        const nativeSheet = frame._importedStylesContainer.childNodes[i];
+        nativeSheet.remove();
+      }
     }
   }
   appendChild(child: Node) {
@@ -82,8 +127,8 @@ class FramesProxy implements Patchable {
   insert(child: Node, index: number) {
     const _importedStylesContainer = this._domFactory.createElement("div");
     const _mainStylesContainer = this._domFactory.createElement("div");
-    if (this._mainStyle) {
-      _mainStylesContainer.appendChild(this._mainStyle.cloneNode(true));
+    if (this._mainNativeStyle) {
+      _mainStylesContainer.appendChild(this._mainNativeStyle.cloneNode(true));
     }
     const _mount = this._domFactory.createElement("div");
     const stage = this._domFactory.createElement("div");
@@ -111,17 +156,14 @@ class FramesProxy implements Patchable {
 
 export class FramesRenderer {
   private _em: EventEmitter;
-  private _hoverOverlay: HTMLElement;
   private _dependencies: string[] = [];
-  private _importedStyles: Record<string, HTMLElement>;
   private _framesProxy: FramesProxy;
 
   constructor(
-    readonly protocol: string,
     private _targetUri: string,
+    readonly protocol: string,
     private _domFactory: DOMFactory = document
   ) {
-    this._importedStyles = {};
     this._framesProxy = new FramesProxy(_domFactory);
     this._em = new EventEmitter();
   }
@@ -134,42 +176,13 @@ export class FramesRenderer {
     return this._framesProxy.frames;
   }
 
-  private _addSheets(importedSheets: SheetInfo[]) {
-    for (const { uri, sheet } of importedSheets) {
-      const nativeSheet = createNativeStyleFromSheet(
-        sheet,
-        this._domFactory,
-        this.protocol
-      );
-      this._importedStyles[uri] = nativeSheet;
-      for (const frame of this.frames) {
-        frame._importedStylesContainer.appendChild(nativeSheet.cloneNode(true));
-      }
-    }
-  }
-
-  private _removeSheets(uris: string[]) {
-    for (const uri of uris) {
-      // Note that this should always exist. If null, then we want an error to be thrown.
-      this._importedStyles[uri].remove();
-      delete this._importedStyles[uri];
-    }
-  }
-
   private _initialize({ sheet, importedSheets, preview }: LoadedData) {
     const children =
       preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
 
     this._framesProxy = new FramesProxy(this._domFactory);
     this._dependencies = importedSheets.map(info => info.uri);
-
-    const mainStyle = createNativeStyleFromSheet(
-      sheet,
-      this._domFactory,
-      this.protocol
-    );
-
-    this._framesProxy.setMainStyle(mainStyle);
+    this._framesProxy.setMainStyle(sheet);
 
     for (const child of children) {
       const childNode = createNativeNode(
@@ -181,7 +194,7 @@ export class FramesRenderer {
       this._framesProxy.appendChild(childNode);
     }
 
-    this._addSheets(importedSheets);
+    this._framesProxy.updateImportedStyles(importedSheets);
   }
 
   /**
@@ -193,8 +206,10 @@ export class FramesRenderer {
       case EngineDelegateEventKind.ChangedSheets: {
         if (event.uri === this.targetUri) {
           this._dependencies = event.data.allDependencies;
-          this._addSheets(event.data.newSheets);
-          this._removeSheets(event.data.removedSheetUris);
+          this._framesProxy.updateImportedStyles(
+            event.data.newSheets,
+            event.data.removedSheetUris
+          );
         }
         break;
       }
@@ -209,26 +224,18 @@ export class FramesRenderer {
         if (event.uri === this.targetUri) {
           this._dependencies = event.data.allDependencies;
         } else if (this._dependencies.includes(event.uri)) {
-          const impStyle = this._importedStyles[event.uri];
-          if (impStyle) {
-            impStyle.remove();
-          }
-          const style = (this._importedStyles[
-            event.uri
-          ] = createNativeStyleFromSheet(
-            event.data.sheet,
-            this._domFactory,
-            this.protocol
-          ));
-
-          for (const frame of this.frames) {
-            frame._importedStylesContainer.appendChild(style.cloneNode(true));
-          }
+          // Replace
+          this._framesProxy.updateImportedStyles(
+            [event.data.sheet],
+            [event.uri]
+          );
         }
         break;
       }
       case EngineDelegateEventKind.Diffed: {
         if (event.uri === this.targetUri) {
+          this._dependencies = event.data.allDependencies;
+
           patchNativeNode(
             this._framesProxy,
             event.data.mutations,
@@ -237,50 +244,15 @@ export class FramesRenderer {
           );
 
           if (event.data.sheet) {
-            const sheet = createNativeStyleFromSheet(
-              event.data.sheet,
-              this._domFactory,
-              this.protocol
-            );
-            for (const frame of this._framesProxy.frames) {
-              removeAllChildren(frame._mainStylesContainer);
-              frame._mainStylesContainer.appendChild(sheet.cloneNode(true));
-            }
-          }
-
-          for (const importedSheetUri in this._importedStyles) {
-            if (!event.data.allDependencies.includes(importedSheetUri)) {
-              const sheet = this._importedStyles[importedSheetUri];
-              sheet.remove();
-              delete this._importedStyles[importedSheetUri];
-            }
-          }
-        } else if (event.data.sheet) {
-          // this._importedStylesContainer.appendChild(createNativeStyleFromSheet(event.sheet, this._domFactory, this.protocol));
-          const impStyle = this._importedStyles[event.uri];
-          if (impStyle) {
-            impStyle.remove();
-          }
-
-          const element = (this._importedStyles[
-            event.uri
-          ] = createNativeStyleFromSheet(
-            event.data.sheet,
-            this._domFactory,
-            this.protocol
-          ));
-
-          for (const frame of this._framesProxy.frames) {
-            frame._importedStylesContainer.appendChild(element.cloneNode(true));
+            this._framesProxy.setMainStyle(event.data.sheet);
           }
         }
-
         break;
       }
     }
   };
 
-  public getRects() {
+  public getRects(): Record<string, ClientRect> {
     const rects: Record<string, ClientRect> = {};
     for (const frame of this.frames) {
       traverseNativeNode(frame.stage, (node, path) => {

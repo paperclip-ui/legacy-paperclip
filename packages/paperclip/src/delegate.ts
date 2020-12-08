@@ -13,9 +13,7 @@ import {
   EvaluatedEvent,
   VirtualNode,
   LoadedData,
-  DiffedEvent,
-  PaperclipSourceWatcher,
-  ChangeKind
+  DiffedEvent
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -58,12 +56,9 @@ export enum EngineDelegateEventType {
 }
 
 /*
-
-
-
-const delegate = new EngineDelegate(new NativeEngine());
-
-delegate.
+Engine delegate is the bridge between JS and the rust engine. Primary reason
+for this class instead of shoving functionality into the engine itself is for performance & 
+reducing amount of data being passed between Rust <-> JS
 */
 
 export class EngineDelegate {

@@ -52,10 +52,10 @@ export const patchNativeNode = (
             protocol,
             parent.namespaceURI
           ),
-          target
+          target as ChildNode
         );
 
-        parent.removeChild(target);
+        parent.removeChild(target as ChildNode);
         break;
       }
       case ActionKind.RemoveAttribute: {

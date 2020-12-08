@@ -1,7 +1,7 @@
 import { DOMFactory, Renderer } from "../renderer";
 import { createEngine, createEngineDelegate } from "paperclip";
 import * as path from "path";
-import { FrameRenderer } from "../frame-renderer";
+import { FramesRenderer } from "../frame-renderer";
 import { EngineDelegate } from "paperclip";
 
 export const mockDOMFactory: DOMFactory = {
@@ -81,6 +81,7 @@ class MockElement extends ParentNode {
     for (const key in this.attributes) {
       el.setAttribute(key, el.attributes[key]);
     }
+    el.textContent = this.textContent;
     for (const child of this.childNodes) {
       el.appendChild(child.cloneNode());
     }
@@ -190,8 +191,7 @@ export const createMockEngineDelegate = (graph: Graph) =>
 export const createMockRenderer = (uri: string, protocol = "") =>
   new Renderer(protocol, uri, mockDOMFactory);
 
-export const createMockFramesRenderer = (
-  engine: EngineDelegate,
-  uri = "",
-  protocol = ""
-) => new FrameRenderer(engine, uri, protocol, mockDOMFactory);
+export const createMockFramesRenderer = (uri = "", protocol = "") =>
+  new FramesRenderer(uri, protocol, mockDOMFactory);
+
+export const trimWS = (str: string) => str.replace(/[\s\r\n\t]+/g, " ");
