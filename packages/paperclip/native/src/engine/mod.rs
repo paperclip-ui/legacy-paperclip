@@ -75,6 +75,14 @@ pub enum EngineDelegateEvent<'a> {
   Error(EngineError),
 }
 
+
+#[derive(Debug, PartialEq, Serialize)]
+#[serde(tag = "kind")]
+pub enum EngineMode {
+  SingleFrame,
+  MultiFrame
+}
+
 pub struct EvalOptions {
   part: Option<String>,
 }
@@ -94,6 +102,7 @@ impl Engine {
     read_file: Box<FileReaderFn>,
     file_exists: Box<FileExistsFn>,
     resolve_file: Box<FileResolverFn>,
+    mode: EngineMode
   ) -> Engine {
     Engine {
       listeners: vec![],
@@ -320,6 +329,7 @@ mod tests {
       Box::new(|_| "".to_string()),
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
+      EngineMode::SingleFrame
     );
 
     let result = block_on(engine.parse_content(&"{'a'}".to_string())).unwrap();

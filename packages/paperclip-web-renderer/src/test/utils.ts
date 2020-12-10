@@ -2,7 +2,6 @@ import { DOMFactory, Renderer } from "../renderer";
 import { createEngine, createEngineDelegate } from "paperclip";
 import * as path from "path";
 import { FramesRenderer } from "../frame-renderer";
-import { EngineDelegate } from "paperclip";
 
 export const mockDOMFactory: DOMFactory = {
   createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,

@@ -18,7 +18,7 @@ mod js;
 mod pc;
 
 use ::futures::executor::block_on;
-use engine::{Engine, EngineError};
+use engine::{Engine, EngineError, EngineMode};
 
 extern crate web_sys;
 
@@ -33,11 +33,18 @@ pub struct NativeEngine {
 }
 
 #[wasm_bindgen]
+pub enum NativeEngineMode {
+  SingleFrame,
+  MultiFrame
+}
+
+#[wasm_bindgen]
 impl NativeEngine {
   pub fn new(
     read_file: js_sys::Function,
     file_exists: js_sys::Function,
     resolve_file: js_sys::Function,
+    engine_mode: NativeEngineMode
   ) -> NativeEngine {
     NativeEngine {
       target: Engine::new(
@@ -57,6 +64,10 @@ impl NativeEngine {
           let arg2 = JsValue::from(relative_path);
           resolve_file.call2(&this, &arg, &arg2).unwrap().as_string()
         }),
+        match engine_mode {
+          NativeEngineMode::SingleFrame => EngineMode::SingleFrame,
+          NativeEngineMode::MultiFrame => EngineMode::MultiFrame
+        }
       ),
     }
   }

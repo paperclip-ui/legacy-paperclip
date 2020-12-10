@@ -27,8 +27,14 @@ export type EngineIO = {
   readFile?: (filePath: string) => string;
 };
 
+export enum EngineMode {
+  SingleFrame = "SingleFrame",
+  MultiFrame = "MultiFrame"
+}
+
 export type EngineOptions = {
   io?: EngineIO;
+  mode?: EngineMode;
 };
 
 const mapResult = result => {
@@ -236,7 +242,8 @@ const getIOOptions = (options: EngineOptions = {}) =>
           return false;
         }
       },
-      resolveFile: resolveImportUri(fs)
+      resolveFile: resolveImportUri(fs),
+      mode: EngineMode.SingleFrame
     },
     options.io
   );
@@ -245,9 +252,9 @@ export const createEngineDelegate = createNativeEngine => async (
   options: EngineOptions,
   onCrash: any
 ) => {
-  const { readFile, fileExists, resolveFile } = getIOOptions(options);
+  const { readFile, fileExists, resolveFile, mode } = getIOOptions(options);
   return new EngineDelegate(
-    await createNativeEngine(readFile, fileExists, resolveFile),
+    await createNativeEngine(readFile, fileExists, resolveFile, mode),
     onCrash
   );
 };
