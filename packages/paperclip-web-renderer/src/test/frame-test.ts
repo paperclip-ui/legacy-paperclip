@@ -4,6 +4,7 @@ import {
   trimWS
 } from "./utils";
 import { expect } from "chai";
+import { FramesRenderer } from "../frame-renderer";
 
 describe(__filename + "#", () => {
   it("can render a simple frame", async () => {
@@ -26,7 +27,7 @@ describe(__filename + "#", () => {
     });
 
     engine.open("/entry.pc");
-    expect(trimWS(renderer.frames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style>[data-pc-406d2856][data-pc-406d2856] { color:red; }</style></div><div><div> Hello world </div></div>`
     );
   });
@@ -48,16 +49,16 @@ describe(__filename + "#", () => {
     });
 
     engine.open("/entry.pc");
-    expect(trimWS(renderer.frames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><div>Hello world </div></div>`
     );
     engine.updateVirtualFileContent("/entry.pc", "span man");
-    expect(trimWS(renderer.frames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div>span man</div>`
     );
   });
 
-  it(`renderes root children as multiple frames`, async () => {
+  it(`renderes root children as multiple immutableFrames`, async () => {
     const engine = await createMockEngineDelegate({
       "/entry.pc": `a<span>b</span>`
     });
@@ -65,27 +66,61 @@ describe(__filename + "#", () => {
     const renderer = createMockFramesRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
     engine.open("/entry.pc");
-    expect(renderer.frames.length).to.eql(2);
-    expect(trimWS(renderer.frames[0].stage.innerHTML)).to.eql(
+    expect(renderer.immutableFrames.length).to.eql(2);
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div>a</div>`
     );
-    expect(trimWS(renderer.frames[1].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><span>b</span></div>`
     );
 
     // test update
     engine.updateVirtualFileContent("/entry.pc", "a<span>c</span>");
-    expect(trimWS(renderer.frames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div>a</div>`
     );
-    expect(trimWS(renderer.frames[1].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><span>c</span></div>`
     );
   });
 
-  xit(`main sheet is updated when it changes`);
+  it(`main style is shared across all immutableFrames`, async () => {
+    const graph = {
+      "/entry.pc": `<style>div {
+        color: red;
+      }</style><div>a</div><div>b</div>`
+    };
+    const engine = await createMockEngineDelegate(graph);
+    const renderer = createMockFramesRenderer("/entry.pc");
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+    engine.open("/entry.pc");
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+      `<div></div><div><style>div[data-pc-80f4925f] { color:red; }</style></div><div><div>a</div></div>`
+    );
+    expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
+      `<div></div><div><style>div[data-pc-80f4925f] { color:red; }</style></div><div><div>b</div></div>`
+    );
+  });
+
+  // it(`main sheet is updated when it changes`, () => {
+
+  // });
   xit(`fragments are rendered as their own frame`);
   xit(`fragment children can change`);
   xit(`imported sheet is removed when import is deleted`);
-  xit(`imported sheets across multiple frames when import changes`);
+  xit(`imported sheets across multiple immutableFrames when import changes`);
+  it(`properly renders with protocol`, async () => {
+    const graph = {
+      "file:///entry.pc": `<img src="/file.jpeg" />`
+    };
+
+    const renderer = createMockFramesRenderer("file:///entry.pc", "blah:");
+    const engine = await createMockEngineDelegate(graph);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+    await engine.open("file:///entry.pc");
+    expect(renderer.immutableFrames.length).to.eql(1);
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+      `<div></div><div><style></style></div><div><img src="blah:///file.jpeg"></img></div>`
+    );
+  });
 });

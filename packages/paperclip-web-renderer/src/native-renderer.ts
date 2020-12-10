@@ -1,5 +1,5 @@
 import { Html5Entities } from "html-entities";
-import { stringifyCSSSheet, stringifyVirtualNode } from "paperclip-utils";
+import { stringifyCSSSheet } from "paperclip-utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
 

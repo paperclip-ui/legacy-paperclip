@@ -5,14 +5,12 @@ import {
 import {
   EngineDelegateEvent,
   EngineDelegateEventKind,
-  patchVirtNode,
   SheetInfo,
   LoadedData,
-  VirtualNodeKind,
-  Sheet
+  VirtualNodeKind
 } from "paperclip-utils";
 import { EventEmitter } from "events";
-import { traverseNativeNode } from "./utils";
+import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
 export type Frame = {
@@ -56,7 +54,7 @@ class FramesProxy implements Patchable {
     this._childNodes = [];
     this._importedStyles = [];
   }
-  get frames() {
+  get immutableFrames() {
     return this._frames;
   }
   get childNodes() {
@@ -122,7 +120,7 @@ class FramesProxy implements Patchable {
   removeChild(child: Node) {
     const index = this._childNodes.findIndex(_child => _child === child);
     this._childNodes.splice(index, 1);
-    this._frames.splice(index, 1);
+    this._frames = arraySplice(this._frames, index, 1);
   }
   insert(child: Node, index: number) {
     const _importedStylesContainer = this._domFactory.createElement("div");
@@ -139,7 +137,7 @@ class FramesProxy implements Patchable {
     _mount.appendChild(child);
     this._childNodes.splice(index, 0, child as ChildNode);
 
-    this._frames.splice(index, 0, {
+    this._frames = arraySplice(this._frames, index, 0, {
       stage,
       _importedStylesContainer,
       _mainStylesContainer,
@@ -151,7 +149,7 @@ class FramesProxy implements Patchable {
 }
 
 /**
- * DEPRECATED. Use frame-renderer + DIV frame creator
+ * splits a file out into frames that can be
  */
 
 export class FramesRenderer {
@@ -172,8 +170,8 @@ export class FramesRenderer {
     return this._targetUri;
   }
 
-  get frames(): Frame[] {
-    return this._framesProxy.frames;
+  get immutableFrames(): Frame[] {
+    return this._framesProxy.immutableFrames;
   }
 
   private _initialize({ sheet, importedSheets, preview }: LoadedData) {
@@ -254,7 +252,7 @@ export class FramesRenderer {
 
   public getRects(): Record<string, ClientRect> {
     const rects: Record<string, ClientRect> = {};
-    for (const frame of this.frames) {
+    for (const frame of this.immutableFrames) {
       traverseNativeNode(frame.stage, (node, path) => {
         if (node.nodeType === 1) {
           const pathStr = path.join(".");

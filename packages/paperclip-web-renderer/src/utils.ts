@@ -19,3 +19,16 @@ export const traverseNativeNode = (
     traverseNativeNode(child, each, [...cpath, i]);
   }
 };
+
+export const arraySplice = <TArray extends Array<any>>(
+  array: TArray,
+  index: number,
+  deleteCount: number,
+  ...newValues: TArray
+) => {
+  return [
+    ...array.slice(0, index),
+    ...newValues,
+    ...array.slice(index + deleteCount)
+  ];
+};
