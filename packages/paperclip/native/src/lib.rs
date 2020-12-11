@@ -1,6 +1,8 @@
 extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
+use serde::Serialize;
+
 
 #[macro_use]
 extern crate matches;
@@ -18,7 +20,8 @@ mod js;
 mod pc;
 
 use ::futures::executor::block_on;
-use engine::{Engine, EngineError, EngineMode};
+use engine::{Engine, EngineError};
+use crate::pc::runtime::evaluator::{EngineMode};
 
 extern crate web_sys;
 
@@ -33,9 +36,11 @@ pub struct NativeEngine {
 }
 
 #[wasm_bindgen]
+#[derive(Debug, PartialEq, Serialize)]
+#[serde(tag = "kind")]
 pub enum NativeEngineMode {
   SingleFrame,
-  MultiFrame
+  MultiFrame,
 }
 
 #[wasm_bindgen]
@@ -44,7 +49,7 @@ impl NativeEngine {
     read_file: js_sys::Function,
     file_exists: js_sys::Function,
     resolve_file: js_sys::Function,
-    engine_mode: NativeEngineMode
+    engine_mode: NativeEngineMode,
   ) -> NativeEngine {
     NativeEngine {
       target: Engine::new(
@@ -66,8 +71,8 @@ impl NativeEngine {
         }),
         match engine_mode {
           NativeEngineMode::SingleFrame => EngineMode::SingleFrame,
-          NativeEngineMode::MultiFrame => EngineMode::MultiFrame
-        }
+          NativeEngineMode::MultiFrame => EngineMode::MultiFrame,
+        },
       ),
     }
   }

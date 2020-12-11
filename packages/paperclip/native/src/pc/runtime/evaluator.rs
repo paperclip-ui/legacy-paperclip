@@ -19,6 +19,13 @@ use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::iter::FromIterator;
 
+#[derive(Debug, PartialEq, Serialize)]
+#[serde(tag = "kind")]
+pub enum EngineMode {
+  SingleFrame,
+  MultiFrame,
+}
+
 #[derive(Clone)]
 pub struct Context<'a> {
   pub graph: &'a DependencyGraph,
@@ -31,6 +38,7 @@ pub struct Context<'a> {
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
   pub import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  pub mode: &'a EngineMode
 }
 
 impl<'a> Context<'a> {
@@ -61,6 +69,7 @@ pub fn evaluate<'a>(
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
   import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  mode: &EngineMode
 ) -> Result<Option<EvalInfo>, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   if let DependencyContent::Node(node_expr) = &dep.content {
@@ -68,7 +77,7 @@ pub fn evaluate<'a>(
       uri.clone(),
       node_expr.get_location().clone(),
     )));
-    let mut context = create_context(node_expr, uri, graph, vfs, &data, None, import_graph);
+    let mut context = create_context(node_expr, uri, graph, vfs, &data, None, import_graph, mode);
 
     let preview = wrap_as_fragment(
       evaluate_instance_node(
@@ -390,6 +399,7 @@ fn create_context<'a>(
   data: &'a js_virt::JsValue,
   parent_option: Option<&'a Context>,
   import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  mode: &'a EngineMode
 ) -> Context<'a> {
   let render_call_stack = if let Some(parent) = parent_option {
     parent.render_call_stack.clone()
@@ -410,6 +420,7 @@ fn create_context<'a>(
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
     scope,
     data,
+    mode,
   }
 }
 
@@ -470,6 +481,7 @@ fn evaluate_element<'a>(
     "import" => evaluate_import_element(element, context),
     "script" | "property" | "logic" => Ok(None),
     _ => {
+
       if ast::has_attribute("component", element) {
         if let Some(id) = ast::get_attribute_value("as", element) {
           if context.get_current_render_strategy()
@@ -485,7 +497,11 @@ fn evaluate_element<'a>(
                 &element.location,
               ));
             }
-            return Ok(None);
+
+            // components should render with multi-frame mode
+            if context.mode != &EngineMode::MultiFrame {
+              return Ok(None);
+            }
           }
         }
       }
@@ -507,7 +523,9 @@ fn evaluate_element<'a>(
       } else if context.part_ids.contains(&element.tag_name) {
         evaluate_part_instance_element(element, source, depth, context)
       } else {
-        if element.tag_name == "fragment" {
+
+        // fragments should be preserved if in multi frame mode
+        if element.tag_name == "fragment" && context.mode != &EngineMode::MultiFrame {
           evaluate_children_as_fragment(&element.children, depth, &element.location, context)
         } else {
           evaluate_native_element(element, is_root, depth, source, context)
@@ -895,6 +913,7 @@ fn evaluate_component_instance<'a>(
       &data,
       Some(&context),
       context.import_graph,
+      context.mode
     );
     check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
     // TODO: if fragment, then wrap in span. If not, then copy these attributes to root element
@@ -1619,7 +1638,7 @@ mod tests {
     let mut import_graph = HashMap::new();
     import_graph.insert(uri.to_string(), BTreeMap::new());
 
-    evaluate(&uri, &graph, &vfs, &import_graph)
+    evaluate(&uri, &graph, &vfs, &import_graph, &EngineMode::SingleFrame)
   }
 
   #[test]

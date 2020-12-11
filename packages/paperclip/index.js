@@ -6,7 +6,9 @@ const {
   ...rest
 } = require("./lib");
 
-const creator = (...args) => NativeEngine.new(...args);
+const creator = (...args) => {
+  return NativeEngine.new(...args);
+};
 
 module.exports = {
   createEngine: createEngine(creator),

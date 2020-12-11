@@ -18,6 +18,7 @@ import {
   ChangeKind
 } from "paperclip-utils";
 import { noop } from "./utils";
+import { EngineMode } from "./delegate";
 
 export type FileContent = {
   [identifier: string]: string;
@@ -31,6 +32,7 @@ export type EngineIO = {
 
 export type EngineOptions = {
   io?: EngineIO;
+  mode?: EngineMode;
 };
 
 const mapResult = result => {
@@ -228,9 +230,11 @@ const getIOOptions = (options: EngineOptions = {}) =>
           return false;
         }
       },
-      resolveFile: resolveImportUri(fs)
+      resolveFile: resolveImportUri(fs),
+      mode: options.mode
     },
-    options.io
+    options.io,
+    { mode: options.mode }
   );
 
 export const createEngine = createNativeEngine => async (
@@ -248,9 +252,9 @@ export const createEngineSync = createNativeEngine => (
   options: EngineOptions,
   onCrash: any
 ) => {
-  const { readFile, fileExists, resolveFile } = getIOOptions(options);
+  const { readFile, fileExists, resolveFile, mode } = getIOOptions(options);
   return new Engine(
-    createNativeEngine(readFile, fileExists, resolveFile),
+    createNativeEngine(readFile, fileExists, resolveFile, mode),
     onCrash
   );
 };

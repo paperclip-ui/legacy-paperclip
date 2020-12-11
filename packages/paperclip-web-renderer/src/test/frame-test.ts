@@ -4,7 +4,7 @@ import {
   trimWS
 } from "./utils";
 import { expect } from "chai";
-import { FramesRenderer } from "../frame-renderer";
+import { EngineMode } from "paperclip";
 
 describe(__filename + "#", () => {
   it("can render a simple frame", async () => {
@@ -122,5 +122,17 @@ describe(__filename + "#", () => {
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><img src="blah:///file.jpeg"></img></div>`
     );
+  });
+
+  it(`renders fragments as a single frame`, async () => {
+    const graph = {
+      "/entry.pc": `<fragment>a<span>b</span></fragment>`
+    };
+    const renderer = createMockFramesRenderer("/entry.pc");
+    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+    await engine.open("/entry.pc");
+
+    expect(renderer.immutableFrames.length).to.eql(1);
   });
 });

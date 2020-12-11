@@ -2,6 +2,7 @@ import { DOMFactory, Renderer } from "../renderer";
 import { createEngine, createEngineDelegate } from "paperclip";
 import * as path from "path";
 import { FramesRenderer } from "../frame-renderer";
+import { EngineMode } from "paperclip";
 
 export const mockDOMFactory: DOMFactory = {
   createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
@@ -165,7 +166,10 @@ export const createMockEngine = (graph: Graph) =>
     }
   });
 
-export const createMockEngineDelegate = (graph: Graph) =>
+export const createMockEngineDelegate = (
+  graph: Graph,
+  mode: EngineMode = EngineMode.SingleFrame
+) =>
   createEngineDelegate({
     io: {
       readFile: uri =>
@@ -184,7 +188,8 @@ export const createMockEngineDelegate = (graph: Graph) =>
             .replace(/\\+/g, "/")
         );
       }
-    }
+    },
+    mode
   });
 
 export const createMockRenderer = (uri: string, protocol = "") =>

@@ -28,8 +28,8 @@ export type EngineIO = {
 };
 
 export enum EngineMode {
-  SingleFrame = "SingleFrame",
-  MultiFrame = "MultiFrame"
+  SingleFrame,
+  MultiFrame
 }
 
 export type EngineOptions = {
@@ -245,7 +245,8 @@ const getIOOptions = (options: EngineOptions = {}) =>
       resolveFile: resolveImportUri(fs),
       mode: EngineMode.SingleFrame
     },
-    options.io
+    options.io,
+    { mode: options.mode }
   );
 
 export const createEngineDelegate = createNativeEngine => async (

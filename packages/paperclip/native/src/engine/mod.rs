@@ -7,7 +7,7 @@ use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
-use crate::pc::runtime::evaluator::evaluate as evaluate_pc;
+use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
@@ -75,14 +75,6 @@ pub enum EngineDelegateEvent<'a> {
   Error(EngineError),
 }
 
-
-#[derive(Debug, PartialEq, Serialize)]
-#[serde(tag = "kind")]
-pub enum EngineMode {
-  SingleFrame,
-  MultiFrame
-}
-
 pub struct EvalOptions {
   part: Option<String>,
 }
@@ -95,6 +87,7 @@ pub struct Engine {
   pub evaluated_data: HashMap<String, EvaluateData>,
   pub import_graph: HashMap<String, BTreeMap<String, pc_export::Exports>>,
   pub dependency_graph: DependencyGraph,
+  pub mode: EngineMode
 }
 
 impl Engine {
@@ -102,7 +95,7 @@ impl Engine {
     read_file: Box<FileReaderFn>,
     file_exists: Box<FileExistsFn>,
     resolve_file: Box<FileResolverFn>,
-    mode: EngineMode
+    mode: EngineMode,
   ) -> Engine {
     Engine {
       listeners: vec![],
@@ -110,6 +103,7 @@ impl Engine {
       import_graph: HashMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
       dependency_graph: DependencyGraph::new(),
+      mode,
     }
   }
 
@@ -254,7 +248,7 @@ impl Engine {
 
     self.import_graph.insert(uri.to_string(), imports.clone());
 
-    let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &self.import_graph);
+    let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &self.import_graph, &self.mode);
 
     match node_result {
       Ok(node_option) => {
@@ -329,7 +323,7 @@ mod tests {
       Box::new(|_| "".to_string()),
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
-      EngineMode::SingleFrame
+      EngineMode::SingleFrame,
     );
 
     let result = block_on(engine.parse_content(&"{'a'}".to_string())).unwrap();
