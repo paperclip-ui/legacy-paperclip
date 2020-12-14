@@ -26,6 +26,21 @@ export default (state: AppState, action: Action) => {
         newState.rendererElement = action.payload.element as any;
       });
     }
+    case ActionType.ENGINE_DELEGATE_CHANGED: {
+      return produce(state, newState => {
+        newState.currentEngineEvents.push(action.payload);
+      });
+    }
+    case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
+      return produce(state, newState => {
+        newState.currentEngineEvents = [];
+      });
+    }
+    case ActionType.FILE_OPENED: {
+      return produce(state, newState => {
+        newState.currentFileUri = action.payload.uri;
+      });
+    }
     case ActionType.RECTS_CAPTURED: {
       return produce(state, newState => {
         const { rects, frameSize, scrollSize } = action.payload;

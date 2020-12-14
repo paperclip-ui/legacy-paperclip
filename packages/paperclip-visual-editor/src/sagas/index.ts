@@ -15,7 +15,9 @@ import {
   globalEscapeKeyPressed,
   globalMetaKeyDown,
   globalMetaKeyUp,
-  Action
+  Action,
+  engineDelegateChanged,
+  fileOpened
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState } from "../state";
@@ -33,6 +35,7 @@ export default function* mainSaga() {
   );
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
   yield fork(handleKeyCommands);
+  yield put(fileOpened({ uri: getTargetUrl() }));
 }
 
 const parent = typeof vscode != "undefined" ? vscode : window;
@@ -142,7 +145,10 @@ function* handleRenderer() {
           if (engineEvent.kind === "Error") {
             return emit(engineErrored(engineEvent));
           }
+
+          // DEPRECATED
           renderer.handleEngineDelegateEvent(payload);
+          emit(engineDelegateChanged(engineEvent));
           handleRenderChange();
           break;
         }
@@ -181,12 +187,13 @@ function* handleRenderer() {
     }
   });
 
-  yield takeEvery([ActionType.FS_ITEM_CLICKED], (action: Action) => {
+  yield takeEvery([ActionType.FS_ITEM_CLICKED], function*(action: Action) {
     if (
       action.type === ActionType.FS_ITEM_CLICKED &&
       isPaperclipFile(action.payload.url)
     ) {
       renderer.reset(action.payload.url);
+      yield put(fileOpened({ uri: getTargetUrl() }));
     }
     if (_client) {
       _client.send(action);

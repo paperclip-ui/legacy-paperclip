@@ -3,6 +3,7 @@ import * as styles from "./index.pc";
 import { Preview } from "./Preview";
 import { Tools } from "./Tools";
 import { useAppStore } from "../../../../hooks/useAppStore";
+import { Frames } from "./Frames";
 import {
   canvasPanEnd,
   canvasPanned,
@@ -99,7 +100,8 @@ export const Canvas = React.memo(() => {
           transformOrigin: "top left"
         }}
       >
-        <Preview />
+        {/* <Preview /> */}
+        <Frames />
       </styles.Inner>
     </styles.Canvas>
   );

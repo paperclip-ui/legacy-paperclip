@@ -1,9 +1,10 @@
 import { BaseAction, actionCreator } from "./base";
 import {
   VirtualNode,
-  EngineErrorEvent
+  EngineErrorEvent,
+  EngineDelegateEvent
 } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
-import { Directory, File, FSItem, FSItemKind, Point, Size } from "../state";
+import { Directory, FSItemKind, Point, Size } from "../state";
 
 export enum ActionType {
   RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
@@ -24,13 +25,25 @@ export enum ActionType {
   RECTS_CAPTURED = "RECTS_CAPTURED",
   GLOBAL_ESCAPE_KEY_PRESSED = "GLOBAL_ESCAPE_KEY_PRESSED",
   GLOBAL_META_KEY_DOWN = "GLOBAL_META_KEY_DOWN",
-  GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP"
+  GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP",
+  ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
+  ENGINE_DELEGATE_EVENTS_HANDLED = "ENGINE_DELEGATE_EVENTS_HANDLED",
+  FILE_OPENED = "FILE_OPENED"
 }
 
 export type RendererInitialized = BaseAction<
   ActionType.RENDERER_INITIALIZED,
   { element: HTMLElement }
 >;
+
+export type EngineDelegateChanged = BaseAction<
+  ActionType.ENGINE_DELEGATE_CHANGED,
+  EngineDelegateEvent
+>;
+export type EngineDelegateEventsHandled = BaseAction<
+  ActionType.ENGINE_DELEGATE_EVENTS_HANDLED
+>;
+export type FileOpened = BaseAction<ActionType.FILE_OPENED, { uri: string }>;
 
 export type RendererChanged = BaseAction<
   ActionType.RENDERER_CHANGED,
@@ -91,6 +104,13 @@ export type RectsCaptured = BaseAction<
 
 export type KeyComboPressed<TType extends ActionType> = BaseAction<TType, null>;
 
+export const engineDelegateChanged = actionCreator<EngineDelegateChanged>(
+  ActionType.ENGINE_DELEGATE_CHANGED
+);
+export const engineDelegateEventsHandled = actionCreator<
+  EngineDelegateEventsHandled
+>(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
+export const fileOpened = actionCreator<FileOpened>(ActionType.FILE_OPENED);
 export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
 );
@@ -159,8 +179,11 @@ export type Action =
   | CanvasResized
   | CanvasMouseMoved
   | ErrorBannerClicked
+  | FileOpened
   | ZoomInButtonClicked
+  | EngineDelegateChanged
   | PainButtonClicked
+  | EngineDelegateEventsHandled
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
   | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>

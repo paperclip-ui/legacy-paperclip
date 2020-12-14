@@ -522,9 +522,9 @@ fn evaluate_element<'a>(
       } else if context.part_ids.contains(&element.tag_name) {
         evaluate_part_instance_element(element, source, depth, context)
       } else {
-
         // fragments should be preserved if in multi frame mode if root
-        if element.tag_name == "fragment" && (context.mode != &EngineMode::MultiFrame || depth > 1) {
+        if element.tag_name == "fragment" && (context.mode != &EngineMode::MultiFrame || depth > 1)
+        {
           evaluate_children_as_fragment(&element.children, depth, &element.location, context)
         } else {
           evaluate_native_element(element, is_root, depth, source, context)

@@ -1,9 +1,14 @@
 import produce from "immer";
 import { isEqual } from "lodash";
 import { memoize } from "../utils";
-import { VirtualNode, EngineErrorEvent } from "paperclip-utils";
+import {
+  VirtualNode,
+  EngineErrorEvent,
+  EngineDelegateEvent
+} from "paperclip-utils";
 import { Transform, Box, Point, Size } from "./geom";
 import * as os from "os";
+import { Frame } from "paperclip-web-renderer";
 
 export type Canvas = {
   showTools: boolean;
@@ -44,6 +49,8 @@ export type FSItem = File | Directory;
 export type AppState = {
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
+  currentFileUri: string;
+  currentEngineEvents: EngineDelegateEvent[];
   rendererElement?: any;
   selectedNodePath: string;
   hoveringNodePath?: string;
@@ -59,6 +66,8 @@ export type AppState = {
 
 export const INITIAL_STATE: AppState = {
   toolsLayerEnabled: true,
+  currentFileUri: null,
+  currentEngineEvents: [],
   boxes: {},
   zoomLevel: 1,
   selectedNodePath: null,
