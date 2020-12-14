@@ -31,13 +31,6 @@ export type Frame = {
   stage: HTMLElement;
 };
 
-// TODO
-// class FragmentProxy implements Patchable {
-//   constructor(private _mount: HTMLElement) {
-
-//   }
-// }
-
 class FramesProxy implements Patchable {
   private _frames: Frame[];
   private _childNodes: ChildNode[];

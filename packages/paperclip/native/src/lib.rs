@@ -1,8 +1,7 @@
 extern crate wasm_bindgen;
 
-use wasm_bindgen::prelude::*;
 use serde::Serialize;
-
+use wasm_bindgen::prelude::*;
 
 #[macro_use]
 extern crate matches;
@@ -19,9 +18,9 @@ mod engine;
 mod js;
 mod pc;
 
+use crate::pc::runtime::evaluator::EngineMode;
 use ::futures::executor::block_on;
 use engine::{Engine, EngineError};
-use crate::pc::runtime::evaluator::{EngineMode};
 
 extern crate web_sys;
 

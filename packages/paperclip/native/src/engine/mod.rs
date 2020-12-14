@@ -87,7 +87,7 @@ pub struct Engine {
   pub evaluated_data: HashMap<String, EvaluateData>,
   pub import_graph: HashMap<String, BTreeMap<String, pc_export::Exports>>,
   pub dependency_graph: DependencyGraph,
-  pub mode: EngineMode
+  pub mode: EngineMode,
 }
 
 impl Engine {
@@ -248,7 +248,13 @@ impl Engine {
 
     self.import_graph.insert(uri.to_string(), imports.clone());
 
-    let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &self.import_graph, &self.mode);
+    let node_result = evaluate_pc(
+      uri,
+      &self.dependency_graph,
+      &self.vfs,
+      &self.import_graph,
+      &self.mode,
+    );
 
     match node_result {
       Ok(node_option) => {

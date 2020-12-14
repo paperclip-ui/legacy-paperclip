@@ -134,5 +134,23 @@ describe(__filename + "#", () => {
     await engine.open("/entry.pc");
 
     expect(renderer.immutableFrames.length).to.eql(1);
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+      `<div></div><div><style></style></div><div><fragment>a<span>b</span></fragment></div>`
+    );
+  });
+
+  it(`flattens nested fragments`, async () => {
+    const graph = {
+      "/entry.pc": `<fragment><fragment>a<span>b</span></fragment></fragment>`
+    };
+    const renderer = createMockFramesRenderer("/entry.pc");
+    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+    await engine.open("/entry.pc");
+
+    expect(renderer.immutableFrames.length).to.eql(1);
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+      `<div></div><div><style></style></div><div><fragment>a<span>b</span></fragment></div>`
+    );
   });
 });
