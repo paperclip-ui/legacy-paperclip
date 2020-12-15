@@ -139,6 +139,7 @@ function* handleRenderer() {
     };
 
     const onMessage = ({ type, payload }) => {
+      console.log(type, payload);
       switch (type) {
         case "ENGINE_EVENT": {
           const engineEvent = payload;

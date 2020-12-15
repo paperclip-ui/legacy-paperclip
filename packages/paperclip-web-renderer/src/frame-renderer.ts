@@ -167,7 +167,7 @@ export class FramesRenderer {
     return this._framesProxy.immutableFrames;
   }
 
-  private _initialize({ sheet, importedSheets, preview }: LoadedData) {
+  public initialize({ sheet, importedSheets, preview }: LoadedData) {
     const children =
       preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
 
@@ -207,7 +207,7 @@ export class FramesRenderer {
       case EngineDelegateEventKind.Loaded: {
         if (event.uri === this.targetUri) {
           this._dependencies = event.data.allDependencies;
-          this._initialize(event.data);
+          this.initialize(event.data);
         }
         break;
       }

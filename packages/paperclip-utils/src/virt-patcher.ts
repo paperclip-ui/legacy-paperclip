@@ -3,9 +3,18 @@ import {
   VirtualNode,
   VirtualElement,
   VirtualText,
-  VirtualNodeKind
+  VirtualNodeKind,
+  EvaluateData,
+  LoadedData,
+  SheetInfo
 } from "./virt";
 import { getChildren } from "./ast";
+import {
+  DiffedEvent,
+  EngineDelegateEvent,
+  EngineDelegateEventKind,
+  EvaluatedEvent
+} from "./events";
 
 export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
   for (const mutation of mutations) {
@@ -99,4 +108,57 @@ const updateNode = (
       ...ancestor.children.slice(nodePath[depth] + 1)
     ]
   };
+};
+
+export const updateAllLoadedData = (
+  allData: Record<string, LoadedData>,
+  event: EngineDelegateEvent
+) => {
+  console.log(event);
+  if (event.kind === EngineDelegateEventKind.Evaluated) {
+    return {
+      ...allData,
+      [event.uri]: {
+        ...event.data,
+        importedSheets: getImportedSheets(allData, event)
+      }
+    };
+  } else if (event.kind === EngineDelegateEventKind.Diffed) {
+    const existingData = allData[event.uri];
+
+    return {
+      ...allData,
+      [event.uri]: {
+        ...existingData,
+        imports: event.data.imports,
+        exports: event.data.exports,
+        importedSheets: getImportedSheets(allData, event),
+        allDependencies: event.data.allDependencies,
+        sheet: event.data.sheet || existingData.sheet,
+        preview: patchVirtNode(existingData.preview, event.data.mutations)
+      }
+    };
+  }
+
+  return allData;
+};
+
+const getImportedSheets = (
+  allData: Record<string, LoadedData>,
+  { data: { allDependencies } }: EvaluatedEvent | DiffedEvent
+) => {
+  // ick, wworks for now.
+
+  const deps: SheetInfo[] = [];
+
+  for (const depUri of allDependencies) {
+    const data = allData[depUri];
+    if (!data) {
+      console.error(`data not loaded, this shouldn't happen 😬.`);
+    } else {
+      deps.push({ uri: depUri, sheet: data.sheet });
+    }
+  }
+
+  return deps;
 };

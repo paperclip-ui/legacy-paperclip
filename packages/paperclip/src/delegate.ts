@@ -5,15 +5,13 @@ import * as path from "path";
 import * as url from "url";
 import {
   EngineDelegateEvent,
-  patchVirtNode,
+  updateAllLoadedData,
   EngineDelegateEventKind,
   resolveImportUri,
   DependencyContent,
   SheetInfo,
-  EvaluatedEvent,
   VirtualNode,
-  LoadedData,
-  DiffedEvent
+  LoadedData
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -70,7 +68,6 @@ reducing amount of data being passed between Rust <-> JS
 export class EngineDelegate {
   private _listeners: EngineDelegateEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
-  private _io: EngineIO;
 
   constructor(private _native: any, private _onCrash: (err) => void = noop) {
     // only one native listener to for buffer performance
@@ -99,28 +96,16 @@ export class EngineDelegate {
 
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
     if (event.kind === EngineDelegateEventKind.Evaluated) {
-      const data: LoadedData = (this._rendered[event.uri] = {
-        ...event.data,
-        importedSheets: this.getImportedSheets(event)
-      });
-
+      this._rendered = updateAllLoadedData(this._rendered, event);
       this._dispatch({
         kind: EngineDelegateEventKind.Loaded,
         uri: event.uri,
-        data
+        data: this._rendered[event.uri]
       });
     } else if (event.kind === EngineDelegateEventKind.Diffed) {
       const existingData = this._rendered[event.uri];
-
-      const newData = (this._rendered[event.uri] = {
-        ...existingData,
-        imports: event.data.imports,
-        exports: event.data.exports,
-        importedSheets: this.getImportedSheets(event),
-        allDependencies: event.data.allDependencies,
-        sheet: event.data.sheet || existingData.sheet,
-        preview: patchVirtNode(existingData.preview, event.data.mutations)
-      });
+      this._rendered = updateAllLoadedData(this._rendered, event);
+      const newData = this._rendered[event.uri];
 
       const removedSheetUris = [];
 
@@ -179,25 +164,6 @@ export class EngineDelegate {
 
   public getLoadedData(uri: string): LoadedData | null {
     return this._rendered[uri];
-  }
-
-  getImportedSheets({
-    data: { allDependencies }
-  }: EvaluatedEvent | DiffedEvent) {
-    // ick, wworks for now.
-
-    const deps: SheetInfo[] = [];
-
-    for (const depUri of allDependencies) {
-      const data = this._rendered[depUri];
-      if (!data) {
-        console.error(`data not loaded, this shouldn't happen 😬.`);
-      } else {
-        deps.push({ uri: depUri, sheet: data.sheet });
-      }
-    }
-
-    return deps;
   }
 
   open(uri: string): LoadedData {

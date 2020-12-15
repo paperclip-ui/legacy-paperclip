@@ -4,7 +4,8 @@ import { memoize } from "../utils";
 import {
   VirtualNode,
   EngineErrorEvent,
-  EngineDelegateEvent
+  EngineDelegateEvent,
+  LoadedData
 } from "paperclip-utils";
 import { Transform, Box, Point, Size } from "./geom";
 import * as os from "os";
@@ -51,6 +52,7 @@ export type AppState = {
   currentError?: EngineErrorEvent;
   currentFileUri: string;
   currentEngineEvents: EngineDelegateEvent[];
+  allLoadedPCFileData: Record<string, LoadedData>;
   rendererElement?: any;
   selectedNodePath: string;
   hoveringNodePath?: string;
@@ -68,6 +70,7 @@ export const INITIAL_STATE: AppState = {
   toolsLayerEnabled: true,
   currentFileUri: null,
   currentEngineEvents: [],
+  allLoadedPCFileData: {},
   boxes: {},
   zoomLevel: 1,
   selectedNodePath: null,

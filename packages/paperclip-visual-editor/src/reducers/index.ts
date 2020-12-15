@@ -12,6 +12,11 @@ import {
 import { produce } from "immer";
 import { Action, ActionType } from "../actions";
 import { clamp, isEqual } from "lodash";
+import {
+  EngineDelegateEventKind,
+  patchVirtNode,
+  updateAllLoadedData
+} from "paperclip-utils";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -29,6 +34,10 @@ export default (state: AppState, action: Action) => {
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       return produce(state, newState => {
         newState.currentEngineEvents.push(action.payload);
+        newState.allLoadedPCFileData = updateAllLoadedData(
+          newState.allLoadedPCFileData,
+          action.payload
+        );
       });
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
