@@ -7,14 +7,15 @@ import { useAppStore } from "../../../../../hooks/useAppStore";
 export const Frames = memo(() => {
   const { state, dispatch } = useAppStore();
 
+  const frameData = state.allLoadedPCFileData[state.currentFileUri];
+
   const renderer = useMemo(() => {
     const renderer = new FramesRenderer(state.currentFileUri, "file://");
-    const pcFileData = state.allLoadedPCFileData[state.currentFileUri];
-    if (pcFileData) {
-      renderer.initialize(pcFileData);
+    if (frameData) {
+      renderer.initialize(frameData);
     }
     return renderer;
-  }, [state.currentFileUri]);
+  }, [state.currentFileUri, !!frameData]);
 
   useEffect(() => {
     if (state.currentEngineEvents.length) {
@@ -24,8 +25,7 @@ export const Frames = memo(() => {
   }, [renderer, state.currentEngineEvents]);
 
   return (
-    <div>
-      FRAME?
+    <div style={{ background: "grey" }}>
       {renderer.immutableFrames.map((frame, i) => {
         return <Frame key={i} frame={frame} />;
       })}
@@ -44,6 +44,10 @@ const Frame = memo(({ frame }: FrameProps) => {
     if (frameRef.current) {
       const iframe = document.createElement("iframe");
       // addresses https://github.com/crcn/paperclip/issues/310
+      Object.assign(iframe.style, {
+        border: "none",
+        background: "white"
+      });
       iframe.srcdoc = `
       <!doctype html>
       <html>
@@ -61,6 +65,7 @@ const Frame = memo(({ frame }: FrameProps) => {
         </body>
       </html>
     `;
+
       iframe.onload = () => {
         iframe.contentDocument.body.appendChild(frame.stage);
       };

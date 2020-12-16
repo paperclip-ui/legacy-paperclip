@@ -17,7 +17,8 @@ import {
   globalMetaKeyUp,
   Action,
   engineDelegateChanged,
-  fileOpened
+  fileOpened,
+  currentFileInitialized
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState } from "../state";
@@ -139,7 +140,7 @@ function* handleRenderer() {
     };
 
     const onMessage = ({ type, payload }) => {
-      console.log(type, payload);
+      console.log("onMessage", type, payload);
       switch (type) {
         case "ENGINE_EVENT": {
           const engineEvent = payload;
@@ -148,13 +149,14 @@ function* handleRenderer() {
           }
 
           // DEPRECATED
-          renderer.handleEngineDelegateEvent(payload);
+          // renderer.handleEngineDelegateEvent(payload);
           emit(engineDelegateChanged(engineEvent));
           handleRenderChange();
           break;
         }
         case "INIT": {
-          renderer.initialize(payload);
+          // renderer.initialize(payload);
+          emit(currentFileInitialized(payload));
           handleRenderChange();
           break;
         }

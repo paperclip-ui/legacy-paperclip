@@ -17,9 +17,12 @@ import { VSCServiceBridge } from "./bridge";
 import { Crash } from "../common/notifications";
 import {
   createEngine,
-  keepEngineInSyncWithFileSystem,
+  createEngineDelegate,
+  keepEngineInSyncWithFileSystem2,
   PaperclipSourceWatcher,
-  findPCConfigUrl
+  findPCConfigUrl,
+  EngineMode,
+  EngineDelegate
 } from "paperclip";
 
 const connection = createConnection(ProposedFeatures.all);
@@ -44,9 +47,12 @@ connection.onInitialize((params: InitializeParams) => {
 
 const init = async (connection: Connection) => {
   // Paperclip engine for parsing & evaluating documents
-  const engine = await createEngine({}, () => {
-    connection.sendNotification(...new Crash({}).getArgs());
-  });
+  const engine = await createEngineDelegate(
+    { mode: EngineMode.MultiFrame },
+    () => {
+      connection.sendNotification(...new Crash({}).getArgs());
+    }
+  );
 
   watchPaperclipSources(engine);
 
@@ -58,7 +64,10 @@ const init = async (connection: Connection) => {
   new VSCServiceBridge(engine, services, connection);
 };
 
-const watchPaperclipSources = (engine: Engine, cwd: string = process.cwd()) => {
+const watchPaperclipSources = (
+  engine: EngineDelegate,
+  cwd: string = process.cwd()
+) => {
   // TODO - may eventually want to watch for this -- something like a config watcher?
   const configUrl = findPCConfigUrl(fs)(cwd);
 
@@ -66,7 +75,7 @@ const watchPaperclipSources = (engine: Engine, cwd: string = process.cwd()) => {
     const config = JSON.parse(fs.readFileSync(new url.URL(configUrl), "utf8"));
 
     const watcher = new PaperclipSourceWatcher(config, cwd);
-    keepEngineInSyncWithFileSystem(watcher, engine);
+    keepEngineInSyncWithFileSystem2(watcher, engine);
   }
 };
 

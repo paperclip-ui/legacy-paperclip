@@ -43,6 +43,7 @@ import { PCAutocomplete } from "./autocomplete";
 import { CompletionItem } from "vscode-languageclient";
 import { PCCompletionItem } from "./utils";
 import { LoadedData } from "paperclip";
+import { EngineDelegate } from "paperclip/src";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -413,7 +414,7 @@ const getImportSourceAst = (
   id: string,
   root: Node,
   uri: string,
-  engine: Engine
+  engine: EngineDelegate
 ): [Element, DependencyNodeContent, string] => {
   const imp = getImportById(id, root);
 

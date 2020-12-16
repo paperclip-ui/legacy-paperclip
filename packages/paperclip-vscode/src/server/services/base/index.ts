@@ -1,6 +1,7 @@
 import { Engine, EngineDelegateEvent, SourceLocation } from "paperclip";
 import { CompletionItem } from "vscode-languageclient";
 import { LoadedData } from "paperclip";
+import { EngineDelegate } from "paperclip/src";
 
 export type ColorInfo = {
   color: string;
@@ -40,7 +41,7 @@ export abstract class BaseEngineLanguageService<TAst>
     [identifier: string]: ASTInfo;
   };
 
-  constructor(protected _engine: Engine) {
+  constructor(protected _engine: EngineDelegate) {
     this._astInfo = {};
     _engine.onEvent(this._onEngineDelegateEvent);
   }

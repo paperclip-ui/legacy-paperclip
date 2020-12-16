@@ -2,7 +2,8 @@ import { BaseAction, actionCreator } from "./base";
 import {
   VirtualNode,
   EngineErrorEvent,
-  EngineDelegateEvent
+  EngineDelegateEvent,
+  LoadedData
 } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
 import { Directory, FSItemKind, Point, Size } from "../state";
 
@@ -27,6 +28,7 @@ export enum ActionType {
   GLOBAL_META_KEY_DOWN = "GLOBAL_META_KEY_DOWN",
   GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP",
   ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
+  CURRENT_FILE_INITIALIZED = "CURRENT_FILE_INITIALIZED",
   ENGINE_DELEGATE_EVENTS_HANDLED = "ENGINE_DELEGATE_EVENTS_HANDLED",
   FILE_OPENED = "FILE_OPENED"
 }
@@ -40,6 +42,11 @@ export type EngineDelegateChanged = BaseAction<
   ActionType.ENGINE_DELEGATE_CHANGED,
   EngineDelegateEvent
 >;
+export type CurrentFileInitialized = BaseAction<
+  ActionType.CURRENT_FILE_INITIALIZED,
+  LoadedData
+>;
+
 export type EngineDelegateEventsHandled = BaseAction<
   ActionType.ENGINE_DELEGATE_EVENTS_HANDLED
 >;
@@ -106,6 +113,9 @@ export type KeyComboPressed<TType extends ActionType> = BaseAction<TType, null>;
 
 export const engineDelegateChanged = actionCreator<EngineDelegateChanged>(
   ActionType.ENGINE_DELEGATE_CHANGED
+);
+export const currentFileInitialized = actionCreator<CurrentFileInitialized>(
+  ActionType.CURRENT_FILE_INITIALIZED
 );
 export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
@@ -179,6 +189,7 @@ export type Action =
   | CanvasResized
   | CanvasMouseMoved
   | ErrorBannerClicked
+  | CurrentFileInitialized
   | FileOpened
   | ZoomInButtonClicked
   | EngineDelegateChanged

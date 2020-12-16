@@ -40,6 +40,16 @@ export default (state: AppState, action: Action) => {
         );
       });
     }
+    case ActionType.CURRENT_FILE_INITIALIZED: {
+      return produce(state, newState => {
+        console.log(
+          "CURRENT_FILE_INITIALIZED",
+          state.currentFileUri,
+          action.payload
+        );
+        newState.allLoadedPCFileData[state.currentFileUri] = action.payload;
+      });
+    }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
       return produce(state, newState => {
         newState.currentEngineEvents = [];

@@ -227,7 +227,9 @@ class LivePreview {
   private _dependencies: string[] = [];
   private _needsReloading: boolean;
   private _previewReady: () => void;
+  private _previewInitialized: () => void;
   private _readyPromise: Promise<any>;
+  private _initPromise: Promise<any>;
   private _targetUri: string;
 
   constructor(
@@ -281,7 +283,12 @@ class LivePreview {
   }
   private _createReadyPromise() {
     this._readyPromise = new Promise(resolve => {
-      this._previewReady = resolve;
+      this._previewReady = resolve as any;
+    });
+  }
+  private _createInitPromise() {
+    this._initPromise = new Promise(resolve => {
+      this._previewInitialized = resolve as any;
     });
   }
   private _render() {
@@ -291,6 +298,7 @@ class LivePreview {
     this.panel.webview.html = "";
     this.panel.webview.html = this._getHTML();
     this._createReadyPromise();
+    this._createInitPromise();
 
     this._client.sendNotification(
       ...new Load({ uri: this._targetUri }).getArgs()
@@ -361,18 +369,23 @@ class LivePreview {
   public async $$handleLoaded({ uri, data }: LoadedParams) {
     if (uri === this._targetUri) {
       await this._readyPromise;
+      console.log("$$handleLoaded");
       this.panel.webview.postMessage({
         type: "INIT",
         payload: JSON.stringify(data)
       });
+      this._previewInitialized();
     }
   }
-  public $$handleEngineDelegateEvent(event: EngineDelegateEvent) {
+  public async $$handleEngineDelegateEvent(event: EngineDelegateEvent) {
+    await this._initPromise;
+    console.log("$$handleEngineDelegateEvent", event);
     if (
       this._needsReloading &&
       (event.kind === EngineDelegateEventKind.Evaluated ||
         event.kind === EngineDelegateEventKind.Diffed)
     ) {
+      console.log("_RENDER");
       this._render();
     }
 

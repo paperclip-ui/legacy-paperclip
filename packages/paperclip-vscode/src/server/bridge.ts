@@ -56,6 +56,7 @@ import {
 } from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
 import { stripFileProtocol } from "paperclip";
+import { EngineDelegate } from "paperclip/src";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
@@ -71,7 +72,7 @@ export class VSCServiceBridge {
   private _documents: KeyValue<TextDocument> = {};
 
   constructor(
-    private _engine: Engine,
+    private _engine: EngineDelegate,
     private _service: LanguageServices,
     readonly connection: Connection
   ) {
@@ -97,7 +98,7 @@ export class VSCServiceBridge {
       NotificationType.LOAD,
       async ({ uri }: LoadParams) => {
         try {
-          const data = await _engine.run(uri);
+          const data = await _engine.open(uri);
           connection.sendNotification(...new Loaded({ uri, data }).getArgs());
         } catch (e) {
           console.warn(e);

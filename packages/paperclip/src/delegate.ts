@@ -11,7 +11,9 @@ import {
   DependencyContent,
   SheetInfo,
   VirtualNode,
-  LoadedData
+  LoadedData,
+  PaperclipSourceWatcher,
+  ChangeKind
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -95,6 +97,7 @@ export class EngineDelegate {
   }
 
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
+    console.log("EngineDelegate::_onEngineDelegateEvent", event);
     if (event.kind === EngineDelegateEventKind.Evaluated) {
       this._rendered = updateAllLoadedData(this._rendered, event);
       this._dispatch({
@@ -154,6 +157,7 @@ export class EngineDelegate {
     return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }
   updateVirtualFileContent(uri: string, content: string) {
+    console.log("EngineDelegate::updateVirtualFileContent", uri);
     return this._tryCatch(() => {
       const ret = mapResult(
         this._native.update_virtual_file_content(uri, content)
@@ -167,6 +171,7 @@ export class EngineDelegate {
   }
 
   open(uri: string): LoadedData {
+    console.log("EngineDelegate::open", uri);
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
       throw result.error;
@@ -231,4 +236,18 @@ const existsSyncCaseSensitive = (uri: URL) => {
   const dir = path.dirname(pathname);
   const basename = path.basename(pathname);
   return fs.readdirSync(dir).includes(basename);
+};
+
+export const keepEngineInSyncWithFileSystem2 = (
+  watcher: PaperclipSourceWatcher,
+  engine: EngineDelegate
+) => {
+  return watcher.onChange((kind, uri) => {
+    if (kind === ChangeKind.Changed) {
+      engine.updateVirtualFileContent(
+        uri,
+        fs.readFileSync(new url.URL(uri), "utf8")
+      );
+    }
+  });
 };
