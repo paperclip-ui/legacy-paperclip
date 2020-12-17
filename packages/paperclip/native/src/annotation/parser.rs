@@ -1,9 +1,9 @@
 use super::ast;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast as base_ast;
-use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
-use crate::js::tokenizer::{Tokenizer as JSTokenizer, Token as JSToken};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
+use crate::js::tokenizer::{Token as JSToken, Tokenizer as JSTokenizer};
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
@@ -72,23 +72,23 @@ fn parse_text_annotation<'a, 'b>(
 
   Ok(ast::AnnotationProperty::Text(ast::Text {
     value: buffer.to_string(),
-    location: base_ast::Location::new(start.u16_pos, end.u8_pos)
+    location: base_ast::Location::new(start.u16_pos, end.u8_pos),
   }))
 }
 
 fn parse_declaration_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
-
   let start = context.tokenizer.utf16_pos;
 
   context.tokenizer.next_expect(Token::At)?;
   let name = get_buffer(context.tokenizer, |tokenizer| {
     Ok(tokenizer.peek(1)? != Token::Byte(b' '))
-  })?.to_string();
-  
+  })?
+  .to_string();
 
-  let mut js_tokenizer = JSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+  let mut js_tokenizer =
+    JSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
   let value = parse_js_with_tokenizer(&mut js_tokenizer, "".to_string(), |token| {
     token != JSToken::CurlyClose
   })?;
@@ -98,7 +98,6 @@ fn parse_declaration_property<'a, 'b>(
   Ok(ast::AnnotationProperty::Declaration(ast::Declaration {
     name,
     value,
-    location: base_ast::Location::new(start, context.tokenizer.utf16_pos)
+    location: base_ast::Location::new(start, context.tokenizer.utf16_pos),
   }))
-
 }

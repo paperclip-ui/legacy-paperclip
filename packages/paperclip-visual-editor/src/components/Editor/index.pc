@@ -23,10 +23,6 @@ TODOS:
   {children}
 </div>
 
-<!--
-  @frame 
--->
-
 <Container>
   <LeftSidebar.Preview />
   <Center.Preview />

@@ -2,12 +2,12 @@ use super::super::ast;
 use super::cache::Cache;
 use super::export::{ComponentExport, Exports, Property};
 use super::virt;
+use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
-use crate::annotation::ast as annotation_ast;
 use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
@@ -87,6 +87,7 @@ pub fn evaluate<'a>(
         RenderStrategy::Auto,
         false,
         0,
+        &None,
         None,
       )?,
       &context,
@@ -379,6 +380,7 @@ pub fn evaluate_instance_node<'a>(
   render_strategy: RenderStrategy,
   imported: bool,
   depth: u32,
+  annotations: &Option<js_virt::JsObject>,
   instance_source: Option<ExprSource>,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   context
@@ -386,7 +388,7 @@ pub fn evaluate_instance_node<'a>(
     .push((context.uri.to_string(), render_strategy.clone()));
   let target_option = get_instance_target_node(node_expr, &render_strategy, imported);
   if let Some(target) = target_option {
-    evaluate_node(target, true, depth, instance_source, &None, context)
+    evaluate_node(target, true, depth, instance_source, annotations, context)
   } else {
     Ok(None)
   }
@@ -442,7 +444,9 @@ pub fn evaluate_node<'a>(
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   match &node_expr {
-    ast::Node::Element(el) => evaluate_element(&el, is_root, depth, instance_source, annotations, context),
+    ast::Node::Element(el) => {
+      evaluate_element(&el, is_root, depth, instance_source, annotations, context)
+    }
     ast::Node::StyleElement(el) => {
       return evaluate_style_element(&el, context);
     }
@@ -459,7 +463,6 @@ pub fn evaluate_node<'a>(
     ast::Node::Comment(el) => Ok(None),
   }
 }
-
 
 pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> String {
   let buff = format!("{}{}", context.scope, element.id);
@@ -505,7 +508,7 @@ fn evaluate_element<'a>(
       let source = instance_or_element_source(element, context.uri, instance_source);
 
       if context.import_ids.contains(&ast::get_tag_name(&element)) {
-        let result = evaluate_imported_component(element, source, depth, context);
+        let result = evaluate_imported_component(element, source, depth, annotations, context);
 
         if Ok(None) == result {
           return Err(RuntimeError::new(
@@ -517,7 +520,7 @@ fn evaluate_element<'a>(
 
         result
       } else if context.part_ids.contains(&element.tag_name) {
-        evaluate_part_instance_element(element, source, depth, context)
+        evaluate_part_instance_element(element, source, depth, annotations, context)
       } else {
         // fragments should be preserved if in multi frame mode if root
         if element.tag_name == "fragment" && (context.mode != &EngineMode::MultiFrame || depth > 1)
@@ -594,6 +597,7 @@ pub fn evaluate_imported_component<'a>(
   element: &ast::Element,
   instance_source: Option<ExprSource>,
   depth: u32,
+  annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
@@ -613,6 +617,7 @@ pub fn evaluate_imported_component<'a>(
     true,
     depth,
     instance_source,
+    annotations,
     dep_uri,
     context,
   )
@@ -658,6 +663,7 @@ fn evaluate_part_instance_element<'a>(
   element: &ast::Element,
   instance_source: Option<ExprSource>,
   depth: u32,
+  annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
@@ -669,6 +675,7 @@ fn evaluate_part_instance_element<'a>(
       false,
       depth,
       instance_source,
+      annotations,
       context.uri,
       context,
     )
@@ -892,6 +899,7 @@ fn evaluate_component_instance<'a>(
   imported: bool,
   depth: u32,
   instance_source: Option<ExprSource>,
+  annotations: &Option<js_virt::JsObject>,
   dep_uri: &String,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -931,6 +939,7 @@ fn evaluate_component_instance<'a>(
       render_strategy,
       imported,
       depth,
+      annotations,
       Some(source),
     )
   } else {
@@ -1194,12 +1203,11 @@ fn evaluate_comment<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsObject, RuntimeError> {
-
   let mut data = js_virt::JsObject::new(ExprSource::new(
     context.uri.clone(),
     comment.location.clone(),
   ));
-  
+
   for property in &comment.properties {
     match property {
       annotation_ast::AnnotationProperty::Declaration(decl) => {

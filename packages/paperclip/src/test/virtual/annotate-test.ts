@@ -1,4 +1,3 @@
-import { VirtJsObject, VirtualElement, VirtualFragment } from "paperclip-utils";
 import { createMockEngine } from "../utils";
 import { expect } from "chai";
 
@@ -15,6 +14,8 @@ describe(__filename + "#", () => {
           okay
         -->
 
+
+
         something
       `
     };
@@ -25,27 +26,52 @@ describe(__filename + "#", () => {
     ).to.eql("some description");
   });
 
-  xit("can parse an object", async () => {
+  it(`Can add metadata to an instance`, async () => {
     const graph = {
       "/entry.pc": `
+        <span component as="Test">
+          Hello
+        </span>
+
         <!--
-          @frame {width: 100, height: 100}
+          @desc "abc"
         -->
 
-        <div />
+        <Test />
       `
     };
+
+    const engine = await createMockEngine(graph);
+    const result = engine.run("/entry.pc");
+
+    expect(
+      (result as any).preview.children[0].annotations.values.desc.value
+    ).to.eql("abc");
   });
 
-  xit("can parse an array", async () => {
+  it(`Can add metadata to an imported instance`, async () => {
     const graph = {
       "/entry.pc": `
+        <import src="/module.pc" as="mod" />
+
         <!--
-          @tags ["a", "b", "c"]
+          @desc "abc"
         -->
 
-        <div />
+        <mod.Test />
+      `,
+      "/module.pc": `
+        <span export component as="Test">
+          Hello
+        </span>
       `
     };
+
+    const engine = await createMockEngine(graph);
+    const result = engine.run("/entry.pc");
+
+    expect(
+      (result as any).preview.children[0].annotations.values.desc.value
+    ).to.eql("abc");
   });
 });

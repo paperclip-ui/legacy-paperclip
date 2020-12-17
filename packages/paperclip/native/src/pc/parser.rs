@@ -165,13 +165,17 @@ pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Nod
   let start = tokenizer.get_pos();
 
   tokenizer.next()?; // eat HTML comment open
-  let mut annotation_tokenizer = AnnotationTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
-
+  let mut annotation_tokenizer =
+    AnnotationTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
 
   let annotation = parse_annotation_with_tokenizer(
     &mut annotation_tokenizer,
     |tokenizer| -> Result<bool, ParseError> {
-      Ok(tokenizer.peek(1)? == AnnotationToken::Byte(b'-') && tokenizer.peek(2)? == AnnotationToken::Byte(b'-') && tokenizer.peek(3)? == AnnotationToken::Byte(b'>'))
+      Ok(
+        tokenizer.peek(1)? == AnnotationToken::Byte(b'-')
+          && tokenizer.peek(2)? == AnnotationToken::Byte(b'-')
+          && tokenizer.peek(3)? == AnnotationToken::Byte(b'>'),
+      )
     },
   )?;
 
