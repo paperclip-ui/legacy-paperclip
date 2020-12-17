@@ -1,6 +1,8 @@
 use super::ast;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast as base_ast;
+use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
+use crate::js::tokenizer::{Tokenizer as JSTokenizer, Token as JSToken};
 use crate::base::parser::{get_buffer, ParseError};
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
@@ -28,6 +30,7 @@ pub fn parse_with_tokenizer<'a>(
 fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annotation, ParseError> {
   let start = context.tokenizer.utf16_pos;
   let mut properties: Vec<ast::AnnotationProperty> = vec![];
+
   while !context.ended()? {
     properties.push(parse_annotation_property(context)?);
   }
@@ -42,7 +45,7 @@ fn parse_annotation_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
   context.tokenizer.eat_whitespace();
-  match context.tokenizer.peek(0)? {
+  match context.tokenizer.peek(1)? {
     Token::Word(_) | Token::Byte(_) | Token::Cluster(_) => parse_text_annotation(context),
     Token::At => parse_declaration_property(context),
   }
@@ -51,11 +54,51 @@ fn parse_annotation_property<'a, 'b>(
 fn parse_text_annotation<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
-  Err(ParseError::unexpected_token(0))
+  let start = context.tokenizer.utf16_pos;
+
+  let start = context.tokenizer.get_pos();
+  let start_u8 = context.tokenizer.get_pos().u8_pos;
+
+  while !context.ended()? {
+    let token = context.tokenizer.next()?;
+    if token == Token::Byte(b'\n') {
+      break;
+    }
+  }
+  let end = context.tokenizer.get_pos();
+  let end_u8 = context.tokenizer.get_pos().u8_pos;
+
+  let buffer = std::str::from_utf8(&context.tokenizer.source[start_u8..end_u8]).unwrap();
+
+  Ok(ast::AnnotationProperty::Text(ast::Text {
+    value: buffer.to_string(),
+    location: base_ast::Location::new(start.u16_pos, end.u8_pos)
+  }))
 }
 
 fn parse_declaration_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
-  Err(ParseError::unexpected_token(0))
+
+  let start = context.tokenizer.utf16_pos;
+
+  context.tokenizer.next_expect(Token::At)?;
+  let name = get_buffer(context.tokenizer, |tokenizer| {
+    Ok(tokenizer.peek(1)? != Token::Byte(b' '))
+  })?.to_string();
+  
+
+  let mut js_tokenizer = JSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+  let value = parse_js_with_tokenizer(&mut js_tokenizer, "".to_string(), |token| {
+    token != JSToken::CurlyClose
+  })?;
+
+  context.tokenizer.set_pos(&js_tokenizer.get_pos());
+
+  Ok(ast::AnnotationProperty::Declaration(ast::Declaration {
+    name,
+    value,
+    location: base_ast::Location::new(start, context.tokenizer.utf16_pos)
+  }))
+
 }

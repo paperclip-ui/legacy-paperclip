@@ -1269,7 +1269,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { display:block; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
+      `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { color:red; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
   });
 });

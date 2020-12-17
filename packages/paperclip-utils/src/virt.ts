@@ -1,6 +1,6 @@
 import { PCExports } from "./exports";
+import { VirtJsObject } from "./js-virt";
 import { Mutation } from "./virt-mtuation";
-import { SourceLocation } from "./base-ast";
 
 export enum VirtualNodeKind {
   Element = "Element",
@@ -47,6 +47,7 @@ export type VirtualStyleElement = {
 } & VirtualBaseNode<VirtualNodeKind.StyleElement>;
 
 export type VirtualElement = {
+  annotations?: VirtJsObject;
   tagName: string;
   attributes: {
     [identifier: string]: string | null;
@@ -55,6 +56,7 @@ export type VirtualElement = {
 } & VirtualBaseNode<VirtualNodeKind.Element>;
 
 export type VirtualText = {
+  annotations?: VirtJsObject;
   value: string;
 } & VirtualBaseNode<VirtualNodeKind.Text>;
 

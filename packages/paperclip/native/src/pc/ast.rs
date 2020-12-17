@@ -35,10 +35,9 @@ pub struct ValueObject {
 #[serde(tag = "kind")]
 pub enum Node {
   Text(ValueObject),
-  Comment(ValueObject),
+  Comment(annotation_ast::Annotation),
   Element(Element),
   Fragment(Fragment),
-  Annotation(annotation_ast::Annotation),
   StyleElement(StyleElement),
   Slot(Slot),
 }
@@ -51,7 +50,6 @@ impl Node {
       Node::Element(value) => &value.location,
       Node::Fragment(value) => &value.location,
       Node::StyleElement(value) => &value.location,
-      Node::Annotation(value) => &value.location,
       Node::Slot(value) => &value.location,
     }
   }
@@ -84,10 +82,9 @@ impl fmt::Display for Node {
     match self {
       Node::Text(text) => write!(f, "{}", &text.value),
       Node::Slot(slot) => write!(f, "{{{}}}", &slot.script.to_string()),
-      Node::Comment(comment) => write!(f, "<!--{}-->", &comment.value),
+      Node::Comment(comment) => write!(f, "<!--[Annotation]-->"),
       Node::Fragment(node) => write!(f, "{}", node.to_string()),
       Node::Element(element) => write!(f, "{}", element.to_string()),
-      Node::Annotation(element) => write!(f, ""),
       Node::StyleElement(element) => write!(f, "{}", element.to_string()),
     }
   }

@@ -7,6 +7,7 @@ use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
+use crate::annotation::ast as annotation_ast;
 use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
@@ -385,7 +386,7 @@ pub fn evaluate_instance_node<'a>(
     .push((context.uri.to_string(), render_strategy.clone()));
   let target_option = get_instance_target_node(node_expr, &render_strategy, imported);
   if let Some(target) = target_option {
-    evaluate_node(target, true, depth, instance_source, context)
+    evaluate_node(target, true, depth, instance_source, &None, context)
   } else {
     Ok(None)
   }
@@ -437,21 +438,16 @@ pub fn evaluate_node<'a>(
   is_root: bool,
   depth: u32,
   instance_source: Option<ExprSource>,
+  annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   match &node_expr {
-    ast::Node::Element(el) => evaluate_element(&el, is_root, depth, instance_source, context),
+    ast::Node::Element(el) => evaluate_element(&el, is_root, depth, instance_source, annotations, context),
     ast::Node::StyleElement(el) => {
-      // if depth != 1 {
-      //   return Err(RuntimeError::new(
-      //     "Style blocks needs to be defined at the root.".to_string(),
-      //     context.uri,
-      //     &el.location,
-      //   ));
-      // }
       return evaluate_style_element(&el, context);
     }
     ast::Node::Text(text) => Ok(Some(virt::Node::Text(virt::Text {
+      annotations: annotations.clone(),
       source: ExprSource {
         uri: context.uri.to_string(),
         location: text.location.clone(),
@@ -459,11 +455,11 @@ pub fn evaluate_node<'a>(
       value: text.value.to_string(),
     }))),
     ast::Node::Slot(slot) => evaluate_slot(&slot, depth, context),
-    ast::Node::Annotation(slot) => Err(RuntimeError::unknown(context.uri)),
     ast::Node::Fragment(el) => evaluate_fragment(&el, depth, context),
-    ast::Node::Comment(_el) => Ok(None),
+    ast::Node::Comment(el) => Ok(None),
   }
 }
+
 
 pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> String {
   let buff = format!("{}{}", context.scope, element.id);
@@ -475,6 +471,7 @@ fn evaluate_element<'a>(
   is_root: bool,
   depth: u32,
   instance_source: Option<ExprSource>,
+  annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   match element.tag_name.as_str() {
@@ -527,7 +524,7 @@ fn evaluate_element<'a>(
         {
           evaluate_children_as_fragment(&element.children, depth, &element.location, context)
         } else {
-          evaluate_native_element(element, is_root, depth, source, context)
+          evaluate_native_element(element, is_root, depth, source, annotations, context)
         }
       }
     }
@@ -567,6 +564,7 @@ fn evaluate_slot<'a>(
         children.push(child);
       } else {
         children.push(virt::Node::Text(virt::Text {
+          annotations: None,
           source: item.get_source().clone(),
           value: item.to_string(),
         }))
@@ -582,6 +580,7 @@ fn evaluate_slot<'a>(
   }
 
   Ok(Some(virt::Node::Text(virt::Text {
+    annotations: None,
     source: js_value.get_source().clone(),
     value: if js_value.truthy() {
       js_value.to_string()
@@ -944,6 +943,7 @@ fn evaluate_native_element<'a>(
   is_root: bool,
   depth: u32,
   instance_source: Option<ExprSource>,
+  annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
@@ -1104,6 +1104,7 @@ fn evaluate_native_element<'a>(
   }
 
   Ok(Some(virt::Node::Element(virt::Element {
+    annotations: annotations.clone(),
     source: if let Some(source) = &instance_source {
       source.clone()
     } else {
@@ -1154,16 +1155,21 @@ fn evaluate_children<'a>(
   let mut children: Vec<virt::Node> = vec![];
 
   let mut contains_style = false;
+  let mut metadata: Option<js_virt::JsObject> = None;
 
   for child_expr in children_expr {
     match child_expr {
       ast::Node::StyleElement(_) => {
         contains_style = true;
       }
+      ast::Node::Comment(comment) => {
+        metadata = Some(evaluate_comment(comment, depth, context)?);
+        continue;
+      }
       _ => {}
     }
 
-    match evaluate_node(child_expr, false, depth + 1, None, context)? {
+    match evaluate_node(child_expr, false, depth + 1, None, &metadata, context)? {
       Some(c) => match c {
         virt::Node::Fragment(mut fragment) => {
           for child in fragment.children.drain(0..) {
@@ -1176,9 +1182,37 @@ fn evaluate_children<'a>(
       },
       None => {}
     }
+
+    metadata = None;
   }
 
   Ok((children, contains_style))
+}
+
+fn evaluate_comment<'a>(
+  comment: &annotation_ast::Annotation,
+  depth: u32,
+  context: &'a mut Context,
+) -> Result<js_virt::JsObject, RuntimeError> {
+
+  let mut data = js_virt::JsObject::new(ExprSource::new(
+    context.uri.clone(),
+    comment.location.clone(),
+  ));
+  
+  for property in &comment.properties {
+    match property {
+      annotation_ast::AnnotationProperty::Declaration(decl) => {
+        let value = evaluate_js(&decl.value, depth + 1, context)?;
+        data.values.insert(decl.name.to_string(), value);
+      }
+      _ => {
+        // ignore text
+      }
+    }
+  }
+
+  Ok(data)
 }
 
 fn evaluate_fragment<'a>(
