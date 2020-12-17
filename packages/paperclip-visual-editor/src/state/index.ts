@@ -1,6 +1,6 @@
 import produce from "immer";
 import { isEqual } from "lodash";
-import { memoize } from "../utils";
+import { memoize } from "paperclip-utils";
 import {
   VirtualNode,
   EngineErrorEvent,
@@ -53,7 +53,7 @@ export type AppState = {
   currentFileUri: string;
   currentEngineEvents: EngineDelegateEvent[];
   allLoadedPCFileData: Record<string, LoadedData>;
-  rendererElement?: any;
+  // rendererElement?: any;
   selectedNodePath: string;
   hoveringNodePath?: string;
   projectDirectory?: Directory;

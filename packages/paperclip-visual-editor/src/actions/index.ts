@@ -8,7 +8,7 @@ import {
 import { Directory, FSItemKind, Point, Size } from "../state";
 
 export enum ActionType {
-  RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
+  // RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
   RENDERER_CHANGED = "RENDERER_CHANGED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
   ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
@@ -33,10 +33,10 @@ export enum ActionType {
   FILE_OPENED = "FILE_OPENED"
 }
 
-export type RendererInitialized = BaseAction<
-  ActionType.RENDERER_INITIALIZED,
-  { element: HTMLElement }
->;
+// export type RendererInitialized = BaseAction<
+//   ActionType.RENDERER_INITIALIZED,
+//   { element: HTMLElement }
+// >;
 
 export type EngineDelegateChanged = BaseAction<
   ActionType.ENGINE_DELEGATE_CHANGED,
@@ -125,9 +125,9 @@ export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
 );
 
-export const rendererInitialized = actionCreator<RendererInitialized>(
-  ActionType.RENDERER_INITIALIZED
-);
+// export const rendererInitialized = actionCreator<RendererInitialized>(
+//   ActionType.RENDERER_INITIALIZED
+// );
 export const rectsCaptured = actionCreator<RectsCaptured>(
   ActionType.RECTS_CAPTURED
 );
@@ -179,7 +179,7 @@ export const fsItemClicked = actionCreator<FSItemClicked>(
 );
 
 export type Action =
-  | RendererInitialized
+  // | RendererInitialized
   | RectsCaptured
   | CanvasElementClicked
   | RendererChanged

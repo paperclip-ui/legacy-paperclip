@@ -26,11 +26,11 @@ const MAX_ZOOM = 6400 / 100;
 
 export default (state: AppState, action: Action) => {
   switch (action.type) {
-    case ActionType.RENDERER_INITIALIZED: {
-      return produce(state, newState => {
-        newState.rendererElement = action.payload.element as any;
-      });
-    }
+    // case ActionType.RENDERER_INITIALIZED: {
+    //   return produce(state, newState => {
+    //     newState.rendererElement = action.payload.element as any;
+    //   });
+    // }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       return produce(state, newState => {
         newState.currentEngineEvents.push(action.payload);
@@ -42,11 +42,6 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.CURRENT_FILE_INITIALIZED: {
       return produce(state, newState => {
-        console.log(
-          "CURRENT_FILE_INITIALIZED",
-          state.currentFileUri,
-          action.payload
-        );
         newState.allLoadedPCFileData[state.currentFileUri] = action.payload;
       });
     }

@@ -5,11 +5,8 @@ import * as Url from "url";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
-  rendererInitialized,
-  rectsCaptured,
   ActionType,
   CanvasElementClicked,
-  rendererChanged,
   ErrorBannerClicked,
   engineErrored,
   globalEscapeKeyPressed,
@@ -92,55 +89,54 @@ function handleIPC(onMessage) {
 }
 
 function* handleRenderer() {
-  const renderer = new Renderer(
-    typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL,
-    getTargetUrl()
-  );
+  // const renderer = new Renderer(
+  //   typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL,
+  //   getTargetUrl()
+  // );
 
   let _client: any;
 
   const chan = eventChannel(emit => {
-    let timer: any;
+    // let timer: any;
 
-    const collectRects = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        const scrollingElement =
-          renderer.frame.contentDocument.scrollingElement;
-        const scrollLeft = scrollingElement.scrollLeft;
-        const scrollTop = scrollingElement.scrollTop;
-        scrollingElement.scrollTop = 0;
-        scrollingElement.scrollLeft = 0;
+    // const collectRects = () => {
+    //   clearTimeout(timer);
+    //   timer = setTimeout(() => {
+    //     const scrollingElement =
+    //       renderer.frame.contentDocument.scrollingElement;
+    //     const scrollLeft = scrollingElement.scrollLeft;
+    //     const scrollTop = scrollingElement.scrollTop;
+    //     scrollingElement.scrollTop = 0;
+    //     scrollingElement.scrollLeft = 0;
 
-        emit(
-          rectsCaptured({
-            rects: renderer.getRects(),
-            frameSize: renderer.frame.getBoundingClientRect(),
-            scrollSize: {
-              width: scrollingElement.scrollWidth,
-              height: scrollingElement.scrollHeight
-            }
-          })
-        );
+    //     emit(
+    //       rectsCaptured({
+    //         rects: renderer.getRects(),
+    //         frameSize: renderer.frame.getBoundingClientRect(),
+    //         scrollSize: {
+    //           width: scrollingElement.scrollWidth,
+    //           height: scrollingElement.scrollHeight
+    //         }
+    //       })
+    //     );
 
-        scrollingElement.scrollLeft = scrollLeft;
-        scrollingElement.scrollTop = scrollTop;
-      }, 100);
-    };
+    //     scrollingElement.scrollLeft = scrollLeft;
+    //     scrollingElement.scrollTop = scrollTop;
+    //   }, 100);
+    // };
 
-    renderer.frame.addEventListener("load", () => {
-      renderer.frame.contentWindow.addEventListener("resize", collectRects);
-    });
+    // renderer.frame.addEventListener("load", () => {
+    //   renderer.frame.contentWindow.addEventListener("resize", collectRects);
+    // });
 
-    const handleRenderChange = () => {
-      emit(rendererChanged({ virtualRoot: renderer.virtualRootNode }));
+    // const handleRenderChange = () => {
+    //   emit(rendererChanged({ virtualRoot: renderer.virtualRootNode }));
 
-      // we want to capture rects on _every_ change
-      collectRects();
-    };
+    //   // we want to capture rects on _every_ change
+    //   collectRects();
+    // };
 
     const onMessage = ({ type, payload }) => {
-      console.log("onMessage", type, payload);
       switch (type) {
         case "ENGINE_EVENT": {
           const engineEvent = payload;
@@ -151,13 +147,13 @@ function* handleRenderer() {
           // DEPRECATED
           // renderer.handleEngineDelegateEvent(payload);
           emit(engineDelegateChanged(engineEvent));
-          handleRenderChange();
+          // handleRenderChange();
           break;
         }
         case "INIT": {
           // renderer.initialize(payload);
           emit(currentFileInitialized(payload));
-          handleRenderChange();
+          // handleRenderChange();
           break;
         }
         case "ERROR": {
@@ -195,7 +191,7 @@ function* handleRenderer() {
       action.type === ActionType.FS_ITEM_CLICKED &&
       isPaperclipFile(action.payload.url)
     ) {
-      renderer.reset(action.payload.url);
+      // renderer.reset(action.payload.url);
       yield put(fileOpened({ uri: getTargetUrl() }));
     }
     if (_client) {
@@ -203,8 +199,8 @@ function* handleRenderer() {
     }
   });
 
-  yield put(rendererInitialized({ element: renderer.frame }));
-  yield fork(handleInteractionsForRenderer(renderer));
+  // yield put(rendererInitialized({ element: renderer.frame }));
+  // yield fork(handleInteractionsForRenderer(renderer));
 
   parent.postMessage({
     type: "ready"

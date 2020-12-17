@@ -3,6 +3,15 @@ import { Frame, FramesRenderer } from "paperclip-web-renderer";
 import { memo, useEffect, useMemo } from "react";
 import { engineDelegateEventsHandled } from "../../../../../actions";
 import { useAppStore } from "../../../../../hooks/useAppStore";
+import {
+  computeVirtJSValue,
+  computeVirtJSObject,
+  VirtualElement,
+  VirtualNode,
+  VirtualText,
+  NodeAnnotations
+} from "paperclip-utils";
+import * as styles from "./index.pc";
 
 export const Frames = memo(() => {
   const { state, dispatch } = useAppStore();
@@ -25,20 +34,31 @@ export const Frames = memo(() => {
   }, [renderer, state.currentEngineEvents]);
 
   return (
-    <div style={{ background: "grey" }}>
+    <styles.FramesContainer>
       {renderer.immutableFrames.map((frame, i) => {
-        return <Frame key={i} frame={frame} />;
+        return (
+          <Frame
+            key={i}
+            frame={frame}
+            preview={renderer.getFrameVirtualNode(frame)}
+          />
+        );
       })}
-    </div>
+    </styles.FramesContainer>
   );
 });
 
 type FrameProps = {
   frame: Frame;
+  preview: VirtualText | VirtualElement;
 };
 
-const Frame = memo(({ frame }: FrameProps) => {
+const Frame = memo(({ frame, preview }: FrameProps) => {
   const frameRef = useRef<HTMLDivElement>();
+
+  const annotations: NodeAnnotations =
+    (preview.annotations && computeVirtJSObject(preview.annotations)) ||
+    ({} as any);
 
   useEffect(() => {
     if (frameRef.current) {
@@ -80,5 +100,27 @@ const Frame = memo(({ frame }: FrameProps) => {
     };
   }, [frameRef, frame]);
 
-  return <div ref={frameRef}></div>;
+  const frameStyle = useMemo(() => {
+    if (annotations.frame) {
+      return {
+        width: annotations.frame.width,
+        height: annotations.frame.height,
+        left: annotations.frame.x,
+        top: annotations.frame.y,
+        position: "absolute"
+      };
+    } else {
+      // TODO - need to store this somewhere else
+      return {
+        width: 400,
+        height: 300
+      };
+    }
+  }, [annotations.frame]) as any;
+
+  return (
+    <styles.Frame style={frameStyle}>
+      <styles.FrameBody ref={frameRef} />
+    </styles.Frame>
+  );
 });

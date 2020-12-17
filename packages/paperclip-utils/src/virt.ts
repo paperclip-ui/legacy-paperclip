@@ -9,6 +9,18 @@ export enum VirtualNodeKind {
   StyleElement = "StyleElement"
 }
 
+export type FrameAnnotation = {
+  width?: number;
+  height?: number;
+  x?: number;
+  y?: number;
+  title?: string;
+};
+
+export type NodeAnnotations = {
+  frame: FrameAnnotation;
+};
+
 export type EvaluateData = {
   allDependencies: string[];
   sheet: any;

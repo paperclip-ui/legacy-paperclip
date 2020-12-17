@@ -114,7 +114,6 @@ export const updateAllLoadedData = (
   allData: Record<string, LoadedData>,
   event: EngineDelegateEvent
 ) => {
-  console.log(event);
   if (event.kind === EngineDelegateEventKind.Evaluated) {
     return {
       ...allData,

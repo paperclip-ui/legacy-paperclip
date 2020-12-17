@@ -4,10 +4,13 @@
     font-size: 24px;
   }
 </style>
-<span>A frame</span>
-<!-- 
-  a comment
+<!--
+  @frame { width: 100 }
 -->
+
+<span>A frame</span>
+
+
 <button export component as="Button" className:children="has-children">
   <style>
     border: none;
@@ -25,6 +28,10 @@
   </span>
 </button>
 
+<!--
+  @frame { width: 300, height: 100, x: 100 }
+-->
+
 <Button>
-  Children
+  Something else
 </Button>

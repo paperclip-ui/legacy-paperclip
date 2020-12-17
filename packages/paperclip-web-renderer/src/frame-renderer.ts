@@ -7,7 +7,12 @@ import {
   EngineDelegateEventKind,
   SheetInfo,
   LoadedData,
-  VirtualNodeKind
+  VirtualNodeKind,
+  VirtualNode,
+  VirtualText,
+  VirtualElement,
+  patchVirtNode,
+  VirtualFragment
 } from "paperclip-utils";
 import { EventEmitter } from "events";
 import { arraySplice, traverseNativeNode } from "./utils";
@@ -149,6 +154,7 @@ export class FramesRenderer {
   private _em: EventEmitter;
   private _dependencies: string[] = [];
   private _framesProxy: FramesProxy;
+  private _preview: VirtualNode;
 
   constructor(
     private _targetUri: string,
@@ -163,6 +169,15 @@ export class FramesRenderer {
     return this._targetUri;
   }
 
+  getFrameVirtualNode(frame: Frame): VirtualElement | VirtualText {
+    const children =
+      this._preview.kind === VirtualNodeKind.Fragment
+        ? this._preview.children
+        : [this._preview];
+
+    return children[this._framesProxy.immutableFrames.indexOf(frame)] as any;
+  }
+
   get immutableFrames(): Frame[] {
     return this._framesProxy.immutableFrames;
   }
@@ -170,6 +185,7 @@ export class FramesRenderer {
   public initialize({ sheet, importedSheets, preview }: LoadedData) {
     const children =
       preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
+    this._preview = preview;
 
     this._framesProxy = new FramesProxy(this._domFactory);
     this._dependencies = importedSheets.map(info => info.uri);
@@ -237,6 +253,8 @@ export class FramesRenderer {
           if (event.data.sheet) {
             this._framesProxy.setMainStyle(event.data.sheet);
           }
+
+          this._preview = patchVirtNode(this._preview, event.data.mutations);
         }
         break;
       }

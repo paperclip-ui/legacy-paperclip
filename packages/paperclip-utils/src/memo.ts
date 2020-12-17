@@ -1,4 +1,4 @@
-import LRU from "lru-cache";
+import * as LRU from "lru-cache";
 
 const DEFAULT_LRU_MAX = 10000;
 
