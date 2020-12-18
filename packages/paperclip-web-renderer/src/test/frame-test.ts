@@ -153,4 +153,26 @@ describe(__filename + "#", () => {
       `<div></div><div><style></style></div><div><fragment>a<span>b</span></fragment></div>`
     );
   });
+
+  it(`can remove & add an element`, async () => {
+    const graph = {
+      "/entry.pc": `<span />b`
+    };
+    const renderer = createMockFramesRenderer("/entry.pc");
+    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+    await engine.open("/entry.pc");
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+      `<div></div><div><style></style></div><div><span></span></div>`
+    );
+    engine.updateVirtualFileContent("/entry.pc", "b");
+
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+      `<div></div><div><style></style></div><div>b</div>`
+    );
+    engine.updateVirtualFileContent("/entry.pc", "<span />b");
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+      `<div></div><div><style></style></div><div><span></span></div>`
+    );
+  });
 });

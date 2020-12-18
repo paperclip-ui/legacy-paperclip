@@ -97,7 +97,6 @@ export class EngineDelegate {
   }
 
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
-    console.log("EngineDelegate::_onEngineDelegateEvent", event);
     if (event.kind === EngineDelegateEventKind.Evaluated) {
       this._rendered = updateAllLoadedData(this._rendered, event);
       this._dispatch({
@@ -157,7 +156,6 @@ export class EngineDelegate {
     return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }
   updateVirtualFileContent(uri: string, content: string) {
-    console.log("EngineDelegate::updateVirtualFileContent", uri);
     return this._tryCatch(() => {
       const ret = mapResult(
         this._native.update_virtual_file_content(uri, content)
@@ -171,7 +169,6 @@ export class EngineDelegate {
   }
 
   open(uri: string): LoadedData {
-    console.log("EngineDelegate::open", uri);
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
       throw result.error;

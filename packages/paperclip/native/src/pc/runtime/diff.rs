@@ -1,7 +1,6 @@
 use super::mutation::{
-  Action, DeleteChild, InsertChild, Mutation, RemoveAttribute, ReplaceNode, SetAttribute, SetText,
-  SetAnnotations,
-  SourceChanged, UpdateSheet,
+  Action, DeleteChild, InsertChild, Mutation, RemoveAttribute, ReplaceNode, SetAnnotations,
+  SetAttribute, SetText, SourceChanged, UpdateSheet,
 };
 use super::virt::{Element, Fragment, Node, StyleElement, Text};
 use crate::css::runtime::diff::diff as diff_css;
@@ -60,7 +59,6 @@ fn diff_node<'a>(a: &Node, b: &Node, context: &mut Context<'a>) {
 }
 
 fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
-
   if (a.annotations != b.annotations) {
     context.mutations.push(Mutation::new(
       context.node_path.clone(),

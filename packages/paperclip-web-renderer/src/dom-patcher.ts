@@ -21,7 +21,7 @@ export const patchNativeNode = (
   protocol: string | null
 ) => {
   for (const mutation of mutations) {
-    const target = getTarget(mount, mutation);
+    const target = getTargetFromPath(mount, mutation.nodePath);
     const action = mutation.action;
     switch (action.kind) {
       case ActionKind.DeleteChild: {
@@ -44,7 +44,11 @@ export const patchNativeNode = (
         break;
       }
       case ActionKind.ReplaceNode: {
-        const parent = (target as ChildNode).parentNode;
+        // Need to use this method instead of parentNode since parent may not be DOM element (FramesProxy)
+        const parent = getTargetFromPath(
+          mount,
+          mutation.nodePath.slice(0, mutation.nodePath.length - 1)
+        );
         parent.insertBefore(
           createNativeNode(
             action.replacement,
@@ -82,8 +86,5 @@ export const patchNativeNode = (
   }
 };
 
-const getTarget = (mount: Patchable, mutation: Mutation) =>
-  mutation.nodePath.reduce(
-    (current: Patchable, i) => current.childNodes[i],
-    mount
-  );
+const getTargetFromPath = (mount: Patchable, nodePath: number[]) =>
+  nodePath.reduce((current: Patchable, i) => current.childNodes[i], mount);

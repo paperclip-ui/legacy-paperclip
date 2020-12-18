@@ -5,42 +5,22 @@
   }
 </style>
 
-<!--
-  @frame { width: 20, height: 50, y: 400 }
--->
-d
 
-<!--
-  @frame { width: 100, x: 300, height: 200 }
+<!-- 
+  @frame { width: 100, height: 100 }
 -->
 
-<span>A frame</span>
+<span component as="App">blarg</span>
 
-<!--
-  @frame { x: 50, y: 200, width: 100, height: 200}
+<!-- 
+  @frame { title: "Mobile", width: 480, height: 200, x: 100, y: 200}
+  @frame { title: "Desktop", width: 480, height: 200, x: 100, y: 200}
+-->
+<App />
+
+
+<!-- 
+  @frame { width: 200, height: 200, x: 100, y: 400}
 -->
 
-<button export component as="Button" className:children="has-children">
-  <style>
-    border: none;
-    padding: 24px;
-    border-radius: 4px;
-  </style>
-  {children}
-  <span>
-    <style>
-      :within(.has-children) {
-        display: none;
-      }
-    </style>
-    label placeholder
-  </span>
-</button>
-
-<!--
-  @frame { width: 300, height: 100, x: 100, y: 400 }
--->
-
-<Button>
-  Something else
-</Button>
+<App />

@@ -48,7 +48,7 @@ pub struct SetText {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SetAnnotations {
-  pub value: Option<js_virt::JsObject>
+  pub value: Option<js_virt::JsObject>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
