@@ -1,3 +1,4 @@
+import { VirtJsObject } from "./js-virt";
 import { VirtualNode } from "./virt";
 
 export enum ActionKind {
@@ -5,6 +6,7 @@ export enum ActionKind {
   InsertChild = "InsertChild",
   DeleteChild = "DeleteChild",
   SetAttribute = "SetAttribute",
+  SetAnnotations = "SetAnnotations",
   SourceChanged = "SourceChanged",
   SourceUriChanged = "SourceUriChanged",
   SetText = "SetText",
@@ -29,6 +31,9 @@ export type SetAttribute = {
   name: string;
   value?: string;
 } & BaseAction<ActionKind.SetAttribute>;
+export type SetAnnotations = {
+  value?: VirtJsObject;
+} & BaseAction<ActionKind.SetAnnotations>;
 export type RemoveAttribute = {
   name: string;
 } & BaseAction<ActionKind.RemoveAttribute>;
@@ -49,6 +54,7 @@ export type Action =
   | DeleteChild
   | SetAttribute
   | SourceChanged
+  | SetAnnotations
   | SourceUriChanged
   | SetText
   | RemoveAttribute;

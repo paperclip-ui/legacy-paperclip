@@ -74,4 +74,37 @@ describe(__filename + "#", () => {
       (result as any).preview.children[0].annotations.values.desc.value
     ).to.eql("abc");
   });
+
+  it(`properly updates annotations`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <!--
+          @frame "a"
+        -->
+        hello
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.run("/entry.pc");
+
+    expect(
+      (result as any).preview.children[0].annotations.values.frame.value
+    ).to.eql("a");
+
+    engine.updateVirtualFileContent(
+      "/entry.pc",
+      `
+    <!--
+      @frame "b"
+    -->
+    hello
+  `
+    );
+
+    const result2 = await engine.run("/entry.pc");
+    expect(
+      (result2 as any).preview.children[0].annotations.values.frame.value
+    ).to.eql("b");
+  });
 });

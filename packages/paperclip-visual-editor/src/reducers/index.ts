@@ -38,6 +38,8 @@ export default (state: AppState, action: Action) => {
           newState.allLoadedPCFileData,
           action.payload
         );
+
+        newState.currentError = undefined;
       });
     }
     case ActionType.CURRENT_FILE_INITIALIZED: {

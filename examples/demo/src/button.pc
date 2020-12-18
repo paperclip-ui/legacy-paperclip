@@ -4,12 +4,21 @@
     font-size: 24px;
   }
 </style>
+
 <!--
-  @frame { width: 100 }
+  @frame { width: 20, height: 50, y: 400 }
+-->
+d
+
+<!--
+  @frame { width: 100, x: 300, height: 200 }
 -->
 
 <span>A frame</span>
 
+<!--
+  @frame { x: 50, y: 200, width: 100, height: 200}
+-->
 
 <button export component as="Button" className:children="has-children">
   <style>
@@ -29,7 +38,7 @@
 </button>
 
 <!--
-  @frame { width: 300, height: 100, x: 100 }
+  @frame { width: 300, height: 100, x: 100, y: 400 }
 -->
 
 <Button>

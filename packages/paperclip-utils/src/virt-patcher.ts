@@ -4,11 +4,9 @@ import {
   VirtualElement,
   VirtualText,
   VirtualNodeKind,
-  EvaluateData,
   LoadedData,
   SheetInfo
 } from "./virt";
-import { getChildren } from "./ast";
 import {
   DiffedEvent,
   EngineDelegateEvent,
@@ -57,6 +55,12 @@ export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
           ...target,
           attributes
         } as VirtualElement;
+        break;
+      }
+      case ActionKind.SetAnnotations: {
+        target = { ...target, annotations: action.value } as
+          | VirtualElement
+          | VirtualText;
         break;
       }
       case ActionKind.SetText: {
