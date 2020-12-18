@@ -29,7 +29,6 @@ export const Tools = () => {
   };
 
   const onMouseLeave = () => setMousePoint(null);
-  const { panning } = canvas;
   const selectedBox = selectedNodePath && boxes[selectedNodePath];
 
   if (!toolsLayerEnabled) {

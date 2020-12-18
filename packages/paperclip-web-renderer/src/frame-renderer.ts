@@ -12,20 +12,24 @@ import {
   VirtualText,
   VirtualElement,
   patchVirtNode,
-  VirtualFragment
+  VirtualFragment,
+  memoize,
+  computeVirtJSObject,
+  NodeAnnotations
 } from "paperclip-utils";
 import { EventEmitter } from "events";
 import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
-export type Frame = {
-  bounds: {
-    width: number;
-    height: number;
-    left: number;
-    top: number;
-  };
 
+type Box = {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+};
+
+export type Frame = {
   // URI of the PC file associated with this frame
   sourceUri: string;
 
@@ -140,8 +144,7 @@ class FramesProxy implements Patchable {
       _importedStylesContainer,
       _mainStylesContainer,
       _mount,
-      sourceUri: null,
-      bounds: null
+      sourceUri: null
     });
   }
 }
@@ -261,14 +264,24 @@ export class FramesRenderer {
     }
   };
 
-  public getRects(): Record<string, ClientRect> {
-    const rects: Record<string, ClientRect> = {};
-    for (const frame of this.immutableFrames) {
+  public getRects(): Record<string, Box> {
+    const rects: Record<string, Box> = {};
+    for (let i = 0, { length } = this.immutableFrames; i < length; i++) {
+      const frame = this.immutableFrames[i];
+      const frameNode = this.getFrameVirtualNode(frame);
+      const bounds = getFrameBounds(frameNode);
       traverseNativeNode(frame.stage, (node, path) => {
         if (node.nodeType === 1) {
-          const pathStr = path.join(".");
+          const pathStr = i + "." + path.join(".");
           if (pathStr) {
-            rects[pathStr] = (node as Element).getBoundingClientRect();
+            const clientRect = (node as Element).getBoundingClientRect();
+
+            rects[pathStr] = {
+              width: clientRect.width,
+              height: clientRect.height,
+              x: clientRect.left + bounds.x,
+              y: clientRect.top + bounds.y
+            };
           }
         }
       });
@@ -276,6 +289,18 @@ export class FramesRenderer {
     return rects;
   }
 }
+
+export const getFrameBounds = memoize((node: VirtualElement | VirtualText) => {
+  const annotations: NodeAnnotations =
+    (node.annotations && computeVirtJSObject(node.annotations)) || {};
+  return {
+    width: 1024,
+    height: 768,
+    x: 0,
+    y: 0,
+    ...(annotations.frame || {})
+  };
+});
 
 const removeAllChildren = (node: HTMLElement) => {
   while (node.childNodes.length) {

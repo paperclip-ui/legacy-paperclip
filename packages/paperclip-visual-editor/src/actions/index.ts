@@ -5,7 +5,7 @@ import {
   EngineDelegateEvent,
   LoadedData
 } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
-import { Directory, FSItemKind, Point, Size } from "../state";
+import { Box, Directory, FSItemKind, Point, Size } from "../state";
 
 export enum ActionType {
   // RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
@@ -102,7 +102,7 @@ export type FSItemClicked = BaseAction<
 
 export type RectsCaptured = BaseAction<
   ActionType.RECTS_CAPTURED,
-  Record<string, ClientRect>
+  Record<string, Box>
 >;
 
 export type KeyComboPressed<TType extends ActionType> = BaseAction<TType, null>;

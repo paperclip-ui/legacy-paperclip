@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from "react";
-import { Frame, FramesRenderer } from "paperclip-web-renderer";
+import { Frame, FramesRenderer, getFrameBounds } from "paperclip-web-renderer";
 import { memo, useEffect, useMemo } from "react";
 import {
   engineDelegateEventsHandled,
@@ -124,22 +124,15 @@ const Frame = memo(({ frame, preview }: FrameProps) => {
   }, [frameRef, frame]);
 
   const frameStyle = useMemo(() => {
-    if (annotations.frame) {
-      return {
-        width: annotations.frame.width,
-        height: annotations.frame.height,
-        left: annotations.frame.x,
-        top: annotations.frame.y,
-        position: "absolute"
-      };
-    } else {
-      // TODO - need to store this somewhere else
-      return {
-        width: 400,
-        height: 300
-      };
-    }
-  }, [annotations.frame]) as any;
+    const bounds = getFrameBounds(preview);
+    return {
+      width: bounds.width,
+      height: bounds.height,
+      left: bounds.x,
+      top: bounds.y,
+      position: "absolute"
+    };
+  }, [preview.annotations]) as any;
 
   return (
     <styles.Frame style={frameStyle}>

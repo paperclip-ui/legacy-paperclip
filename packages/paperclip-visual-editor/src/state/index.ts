@@ -98,12 +98,12 @@ export const resetCanvas = (canvas: Canvas) => ({
 
 export const mergeBoxesFromClientRects = (
   boxes: Record<string, Box>,
-  rects: Record<string, ClientRect>
+  rects: Record<string, Box>
 ) => {
   const newBoxes = {};
   for (const nodePath in rects) {
-    const { left, top, width, height } = rects[nodePath];
-    const newBox = { x: left, y: top, width, height };
+    const { x, y, width, height } = rects[nodePath];
+    const newBox = { x, y, width, height };
     const existingBox = boxes[nodePath];
     newBoxes[nodePath] = isEqual(existingBox, newBox) ? existingBox : newBox;
   }
@@ -123,6 +123,7 @@ export const findBoxNodeInfo = memoize(
   (point: Point, boxes: Record<string, Box>): BoxNodeInfo | null => {
     let bestIntersetingBox;
     let bestIntersetingNodePath;
+    console.log(boxes, point);
     for (const nodePath in boxes) {
       const box = boxes[nodePath];
       if (boxIntersectsPoint(box, point)) {

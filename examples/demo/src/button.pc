@@ -7,19 +7,13 @@
 
 
 <!-- 
-  @frame { width: 100, height: 100 }
+  @frame { width: 100, height: 100, x: 100, y: 100 }
 -->
 
-<span component as="App">blarg</span>
+<div>somedthing</div>
 
 <!-- 
-  @frame { title: "Mobile", width: 480, height: 200, x: 100, y: 200}
--->
-<App />
-
-
-<!-- 
-  @frame { width: 200, height: 200, x: 100, y: 500}
+  @frame { width: 100, height: 100, x: 100, y: 300 }
 -->
 
-<App />
+<div>somethfsdfsdfing</div>
