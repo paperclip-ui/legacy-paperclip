@@ -21,7 +21,7 @@ import {
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const PAN_Y_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
-const MIN_ZOOM = 1;
+const MIN_ZOOM = 0.02;
 const MAX_ZOOM = 6400 / 100;
 
 export default (state: AppState, action: Action) => {
@@ -59,11 +59,10 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.RECTS_CAPTURED: {
       return produce(state, newState => {
-        const { rects, frameSize, scrollSize } = action.payload;
-        newState.currentError = null;
-        newState.boxes = mergeBoxesFromClientRects(newState.boxes, rects);
-        newState.frameSize = frameSize;
-        newState.scrollSize = scrollSize;
+        newState.boxes = mergeBoxesFromClientRects(
+          newState.boxes,
+          action.payload
+        );
       });
     }
     case ActionType.ENGINE_ERRORED: {
@@ -180,21 +179,21 @@ export default (state: AppState, action: Action) => {
 
         // end of iframe bounds. Onto scrolling now. Note that this should only
         // work for full screen mode
-        if (
-          !metaKey &&
-          isEqual(newState.canvas.transform, state.canvas.transform)
-        ) {
-          newState.canvas.scrollPosition.x = clamp(
-            newState.canvas.scrollPosition.x + delta2X,
-            0,
-            newState.scrollSize.width - newState.frameSize.width
-          );
-          newState.canvas.scrollPosition.y = clamp(
-            newState.canvas.scrollPosition.y + delta2Y,
-            0,
-            newState.scrollSize.height - newState.frameSize.height
-          );
-        }
+        // if (
+        //   !metaKey &&
+        //   isEqual(newState.canvas.transform, state.canvas.transform)
+        // ) {
+        //   newState.canvas.scrollPosition.x = clamp(
+        //     newState.canvas.scrollPosition.x + delta2X,
+        //     0,
+        //     newState.scrollSize.width - newState.frameSize.width
+        //   );
+        //   newState.canvas.scrollPosition.y = clamp(
+        //     newState.canvas.scrollPosition.y + delta2Y,
+        //     0,
+        //     newState.scrollSize.height - newState.frameSize.height
+        //   );
+        // }
       });
     }
     case ActionType.CANVAS_MOUSE_MOVED: {
@@ -236,18 +235,19 @@ const normalizeZoom = zoom => {
 };
 
 const clampCanvasTransform = (canvas: Canvas, rects: Record<string, Box>) => {
-  return produce(canvas, newCanvas => {
-    newCanvas.transform.x = clamp(
-      newCanvas.transform.x,
-      -(canvas.size.width * newCanvas.transform.z - canvas.size.width),
-      0
-    );
-    newCanvas.transform.y = clamp(
-      newCanvas.transform.y,
-      -(canvas.size.height * newCanvas.transform.z - canvas.size.height),
-      0
-    );
-  });
+  return canvas;
+  // return produce(canvas, newCanvas => {
+  //   newCanvas.transform.x = clamp(
+  //     newCanvas.transform.x,
+  //     -(canvas.size.width * newCanvas.transform.z - canvas.size.width),
+  //     0
+  //   );
+  //   newCanvas.transform.y = clamp(
+  //     newCanvas.transform.y,
+  //     -(canvas.size.height * newCanvas.transform.z - canvas.size.height),
+  //     0
+  //   );
+  // });
 };
 
 const setCanvasZoom = (

@@ -1,7 +1,10 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { Frame, FramesRenderer } from "paperclip-web-renderer";
 import { memo, useEffect, useMemo } from "react";
-import { engineDelegateEventsHandled } from "../../../../../actions";
+import {
+  engineDelegateEventsHandled,
+  rectsCaptured
+} from "../../../../../actions";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import {
   computeVirtJSValue,
@@ -12,26 +15,10 @@ import {
   NodeAnnotations
 } from "paperclip-utils";
 import * as styles from "./index.pc";
+import { render } from "react-dom";
 
 export const Frames = memo(() => {
-  const { state, dispatch } = useAppStore();
-
-  const frameData = state.allLoadedPCFileData[state.currentFileUri];
-
-  const renderer = useMemo(() => {
-    const renderer = new FramesRenderer(state.currentFileUri, "file://");
-    if (frameData) {
-      renderer.initialize(frameData);
-    }
-    return renderer;
-  }, [state.currentFileUri, !!frameData]);
-
-  useEffect(() => {
-    if (state.currentEngineEvents.length) {
-      state.currentEngineEvents.forEach(renderer.handleEngineDelegateEvent);
-      dispatch(engineDelegateEventsHandled(undefined));
-    }
-  }, [renderer, state.currentEngineEvents]);
+  const { renderer } = useFrames();
 
   return (
     <styles.FramesContainer>
@@ -47,6 +34,42 @@ export const Frames = memo(() => {
     </styles.FramesContainer>
   );
 });
+
+const useFrames = () => {
+  const { state, dispatch } = useAppStore();
+
+  const frameData = state.allLoadedPCFileData[state.currentFileUri];
+
+  const renderer = useMemo(() => {
+    const renderer = new FramesRenderer(state.currentFileUri, "file://");
+    if (frameData) {
+      renderer.initialize(frameData);
+    }
+    return renderer;
+  }, [state.currentFileUri, !!frameData]);
+
+  const collectRects = useMemo(() => {
+    let timer;
+
+    return () => {
+      // time for repaint
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        dispatch(rectsCaptured(renderer.getRects()));
+      }, 100);
+    };
+  }, [renderer]);
+
+  useEffect(() => {
+    if (state.currentEngineEvents.length) {
+      state.currentEngineEvents.forEach(renderer.handleEngineDelegateEvent);
+      collectRects();
+      dispatch(engineDelegateEventsHandled(undefined));
+    }
+  }, [collectRects, renderer, state.currentEngineEvents]);
+
+  return { renderer };
+};
 
 type FrameProps = {
   frame: Frame;
@@ -120,6 +143,9 @@ const Frame = memo(({ frame, preview }: FrameProps) => {
 
   return (
     <styles.Frame style={frameStyle}>
+      <styles.FrameTitle>
+        {annotations.frame?.title || "Untitled"}
+      </styles.FrameTitle>
       <styles.FrameBody ref={frameRef} />
     </styles.Frame>
   );

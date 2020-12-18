@@ -14,13 +14,12 @@
 
 <!-- 
   @frame { title: "Mobile", width: 480, height: 200, x: 100, y: 200}
-  @frame { title: "Desktop", width: 480, height: 200, x: 100, y: 200}
 -->
 <App />
 
 
 <!-- 
-  @frame { width: 200, height: 200, x: 100, y: 400}
+  @frame { width: 200, height: 200, x: 100, y: 500}
 -->
 
 <App />

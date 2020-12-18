@@ -102,11 +102,7 @@ export type FSItemClicked = BaseAction<
 
 export type RectsCaptured = BaseAction<
   ActionType.RECTS_CAPTURED,
-  {
-    rects: Record<string, ClientRect>;
-    frameSize: Size;
-    scrollSize: Size;
-  }
+  Record<string, ClientRect>
 >;
 
 export type KeyComboPressed<TType extends ActionType> = BaseAction<TType, null>;
