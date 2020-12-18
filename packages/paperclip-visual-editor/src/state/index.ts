@@ -123,7 +123,6 @@ export const findBoxNodeInfo = memoize(
   (point: Point, boxes: Record<string, Box>): BoxNodeInfo | null => {
     let bestIntersetingBox;
     let bestIntersetingNodePath;
-    console.log(boxes, point);
     for (const nodePath in boxes) {
       const box = boxes[nodePath];
       if (boxIntersectsPoint(box, point)) {

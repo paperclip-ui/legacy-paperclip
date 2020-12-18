@@ -7,6 +7,7 @@ import { Selectable } from "./Selectable";
 import { getScaledPoint } from "../../../../../state";
 import { Pixels } from "./Pixels";
 import { Distance } from "./Distance";
+import { Frames } from "./Frames";
 
 export const Tools = () => {
   const {
@@ -56,6 +57,7 @@ export const Tools = () => {
         canvasTransform={canvas.transform}
         intersectingRect={hoveringNodeInfo}
       />
+      <Frames />
       {selectedBox && (
         <Selectable
           dispatch={dispatch}

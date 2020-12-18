@@ -13,7 +13,7 @@
 <div>somedthing</div>
 
 <!-- 
-  @frame { width: 100, height: 100, x: 100, y: 300 }
+  @frame { width: 500, height: 100, x: 100, y: 300 }
 -->
 
-<div>somethfsdfsdfing</div>
+<div>somedesfsdfsng</div>

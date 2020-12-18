@@ -21,7 +21,7 @@ export const Frames = memo(() => {
   const { renderer } = useFrames();
 
   return (
-    <styles.FramesContainer>
+    <>
       {renderer.immutableFrames.map((frame, i) => {
         return (
           <Frame
@@ -31,7 +31,7 @@ export const Frames = memo(() => {
           />
         );
       })}
-    </styles.FramesContainer>
+    </>
   );
 });
 
@@ -134,12 +134,5 @@ const Frame = memo(({ frame, preview }: FrameProps) => {
     };
   }, [preview.annotations]) as any;
 
-  return (
-    <styles.Frame style={frameStyle}>
-      <styles.FrameTitle>
-        {annotations.frame?.title || "Untitled"}
-      </styles.FrameTitle>
-      <styles.FrameBody ref={frameRef} />
-    </styles.Frame>
-  );
+  return <styles.Frame style={frameStyle} ref={frameRef} />;
 });
