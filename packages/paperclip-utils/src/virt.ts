@@ -18,7 +18,7 @@ export type FrameAnnotation = {
 };
 
 export type NodeAnnotations = {
-  frame: FrameAnnotation;
+  frame?: FrameAnnotation;
 };
 
 export type EvaluateData = {
@@ -81,3 +81,5 @@ export type VirtualNode =
   | VirtualText
   | VirtualFragment
   | VirtualStyleElement;
+
+export type VirtualFrame = VirtualElement | VirtualText;

@@ -3,7 +3,7 @@
 <style>
   .canvas, .inner {
     position: absolute;
-    background: transparent;
+    background: rgb(231, 231, 231);
     top: 0px;
     left: 0px;
   }
@@ -17,4 +17,6 @@
 <div export component as="Inner" {style?} className="inner $theme.full-wh">
   {children}
 </div>
+
+<Canvas />
 

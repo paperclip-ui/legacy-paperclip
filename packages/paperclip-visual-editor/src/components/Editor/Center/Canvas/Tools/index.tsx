@@ -8,6 +8,7 @@ import { getScaledPoint } from "../../../../../state";
 import { Pixels } from "./Pixels";
 import { Distance } from "./Distance";
 import { Frames } from "./Frames";
+import { VirtualNodeKind } from "paperclip-utils";
 
 export const Tools = () => {
   const {
@@ -17,7 +18,9 @@ export const Tools = () => {
       toolsLayerEnabled,
       selectedNodePath,
       hoveringNodePath,
-      metaKeyDown
+      currentFileUri,
+      metaKeyDown,
+      allLoadedPCFileData
     },
     dispatch
   } = useAppStore();
@@ -43,6 +46,16 @@ export const Tools = () => {
       boxes
     );
 
+  const virtualNode = allLoadedPCFileData[currentFileUri];
+
+  if (!virtualNode) {
+    return null;
+  }
+
+  const frames = (virtualNode.preview.kind === VirtualNodeKind.Fragment
+    ? virtualNode.preview.children
+    : [virtualNode.preview]) as Array<VirtualElement | VirtualText>;
+
   return (
     <styles.Tools
       ref={toolsRef}
@@ -57,7 +70,7 @@ export const Tools = () => {
         canvasTransform={canvas.transform}
         intersectingRect={hoveringNodeInfo}
       />
-      <Frames />
+      <Frames frames={frames} canvasTransform={canvas.transform} />
       {selectedBox && (
         <Selectable
           dispatch={dispatch}

@@ -7,13 +7,20 @@
 
 
 <!-- 
-  @frame { width: 100, height: 100, x: 100, y: 100 }
+  @frame { title: "something like this should be resized accordingly", width: 100, height: 100, x: 100, y: 100 }
 -->
 
-<div>somedthing</div>
+<div>something</div>
 
 <!-- 
-  @frame { width: 500, height: 100, x: 100, y: 300 }
+  @frame { width: 1024, height: 768, x: 100, y: 300 }
 -->
 
-<div>somedesfsdfsng</div>
+<div>somethat</div>
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 100, y: 1500 }
+-->
+
+fsdfsdfsd
