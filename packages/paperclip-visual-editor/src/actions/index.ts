@@ -30,13 +30,32 @@ export enum ActionType {
   ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
   CURRENT_FILE_INITIALIZED = "CURRENT_FILE_INITIALIZED",
   ENGINE_DELEGATE_EVENTS_HANDLED = "ENGINE_DELEGATE_EVENTS_HANDLED",
-  FILE_OPENED = "FILE_OPENED"
+  FRAME_TITLE_CLICKED = "FRAME_TITLE_CLICKED",
+  FILE_OPENED = "FILE_OPENED",
+  RESIZER_PATH_MOUSE_MOVED = "RESIZER_PATH_MOUSE_MOVED",
+  RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING"
 }
 
 // export type RendererInitialized = BaseAction<
 //   ActionType.RENDERER_INITIALIZED,
 //   { element: HTMLElement }
 // >;
+
+export type WrappedEvent<T, TType extends ActionType> = {
+  sourceEvent: T;
+} & BaseAction<TType>;
+
+export type ResizerPathMoved = {
+  originalBounds: Box;
+  newBounds: Box;
+  anchor: Point;
+} & WrappedEvent<MouseEvent, ActionType.RESIZER_PATH_MOUSE_MOVED>;
+
+export type ResizerPathStoppedMoving = {
+  originalBounds: Box;
+  newBounds: Box;
+  anchor: Point;
+} & WrappedEvent<MouseEvent, ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING>;
 
 export type EngineDelegateChanged = BaseAction<
   ActionType.ENGINE_DELEGATE_CHANGED,
@@ -45,6 +64,11 @@ export type EngineDelegateChanged = BaseAction<
 export type CurrentFileInitialized = BaseAction<
   ActionType.CURRENT_FILE_INITIALIZED,
   LoadedData
+>;
+
+export type FrameTitleClicked = BaseAction<
+  ActionType.FRAME_TITLE_CLICKED,
+  { frameIndex: number }
 >;
 
 export type EngineDelegateEventsHandled = BaseAction<
@@ -113,6 +137,9 @@ export const engineDelegateChanged = actionCreator<EngineDelegateChanged>(
 export const currentFileInitialized = actionCreator<CurrentFileInitialized>(
   ActionType.CURRENT_FILE_INITIALIZED
 );
+export const frameTitleClicked = actionCreator<FrameTitleClicked>(
+  ActionType.FRAME_TITLE_CLICKED
+);
 export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
 >(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
@@ -124,6 +151,13 @@ export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
 // export const rendererInitialized = actionCreator<RendererInitialized>(
 //   ActionType.RENDERER_INITIALIZED
 // );
+
+export const resizerPathMoved = actionCreator<ResizerPathMoved>(
+  ActionType.RESIZER_PATH_MOUSE_MOVED
+);
+export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
+  ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
+);
 export const rectsCaptured = actionCreator<RectsCaptured>(
   ActionType.RECTS_CAPTURED
 );
@@ -188,6 +222,7 @@ export type Action =
   | CurrentFileInitialized
   | FileOpened
   | ZoomInButtonClicked
+  | FrameTitleClicked
   | EngineDelegateChanged
   | PainButtonClicked
   | EngineDelegateEventsHandled

@@ -31,6 +31,11 @@ export default (state: AppState, action: Action) => {
     //     newState.rendererElement = action.payload.element as any;
     //   });
     // }
+    case ActionType.FRAME_TITLE_CLICKED: {
+      return produce(state, newState => {
+        newState.selectedNodePath = String(action.payload.frameIndex);
+      });
+    }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       return produce(state, newState => {
         newState.currentEngineEvents.push(action.payload);
@@ -103,6 +108,7 @@ export default (state: AppState, action: Action) => {
     case ActionType.CANVAS_ELEMENT_CLICKED: {
       // Don't do this until deselecting can be handled properly
       return produce(state, newState => {
+        console.log("CLICK");
         // allow toggle selecting elements - necessary since escape key doesn't work.
         newState.selectedNodePath =
           newState.selectedNodePath === action.payload.nodePath

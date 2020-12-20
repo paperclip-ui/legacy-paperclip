@@ -67,6 +67,7 @@ export type AppState = {
 };
 
 export const INITIAL_STATE: AppState = {
+  selectedFrameIndex: null,
   toolsLayerEnabled: true,
   currentFileUri: null,
   currentEngineEvents: [],

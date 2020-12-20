@@ -1,49 +1,100 @@
 <import src="components/Theme/index.pc" as="theme" />
 
-<style>
-  .overlay {
+
+<svg export component as="Knob" {className?} style="--x: {x}; --y: {y}" data-id="knob-{x}-{y}">
+  <style>
+    width: var(--knob-size);
+    height: var(--knob-size);
+    position: absolute;
+    left: calc(100% * var(--x)/100);
+    top: calc(100% * var(--y)/100);
+    transform: translateY(-50%) translateX(-50%);
+    
+  </style>
+  <rect>
+    <style>
+      width: var(--knob-size);
+      height: var(--knob-size);
+      fill: var(--background);
+      :within([data-id="knob-0-50"], [data-id="knob-100-50"]) {
+        cursor: ew-resize;
+      }
+      :within([data-id="knob-50-100"], [data-id="knob-50-0"]) {
+        cursor: ns-resize;
+      }
+      :within([data-id="knob-0-100"], [data-id="knob-100-0"]) {
+        cursor: nesw-resize;
+      }
+      :within([data-id="knob-0-0"], [data-id="knob-100-100"]) {
+        cursor: nwse-resize;
+      }
+    </style>
+  </rect>
+</svg>
+
+<div export component as="Overlay" {style?} {onClick} className:knobs="has-knobs" className="overlay">
+  <style>
     --background: var(--vscode-button-hoverBackground, rgb(0, 132, 255));
     --foreground: var(--vscode-button-foreground, white);
+    --knob-size: 7px;
     --zoom: 1;
     cursor: pointer;
     width: 100%;
     height: 100%;
     position: absolute;
-    box-shadow: 0px 0px 0px calc(3px / var(--zoom)) var(--background);
-    .size {
+    box-shadow: inset 0px 0px 0px calc(1px / var(--zoom)) var(--background);
+  </style>
+  {knobs?}
+  <div>
+    <style>
       color: var(--foreground);
       font-size: 0.8em;
       background: var(--background);
       position: absolute;
-      top: calc(100% + 3px);
+      top: calc(100% + 0px);
       padding: 4px 8px;
-      left: -3px;
-
-    }
-  }
-
-  .preview-box {
-    background: orange;
-    display: inline-block;
-    width: 100px;
-    height: 100px;
-    position: absolute;
-  }
-</style>
-
-<div export component as="Overlay" {style?} {onClick} className="overlay">
-  <div className="size">
+      left: 0px;
+      :within(.has-knobs) {
+        display: none;
+      }
+    </style>
     {size}
   </div>
 </div>
 
 <div component as="PreviewBox" {style?} className="preview-box">
+  <style>
+    background: orange;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+  </style>
   {children}
 </div>
 
 <div className="$theme.font-default">
   <PreviewBox style="left: 100px; top: 100px;" />
   <PreviewBox style="left: 100px; top: 300px;">
+    <Overlay size="100x10" knobs={<fragment>
+
+    <Knob x={0} y={0} />
+    <Knob x={50} y={0}  />
+    <Knob x={100} y={0}  />
+    <Knob x={100} y={50} />
+    <Knob x={100} y={100} />
+    <Knob x={50} y={100} />
+    <Knob x={0} y={100} />
+    <Knob x={0} y={50} />
+  
+    </fragment>} />
+  </PreviewBox>
+</div>
+
+
+<div className="$theme.font-default">
+  <PreviewBox style="left: 100px; top: 100px;" />
+  <PreviewBox style="left: 300px; top: 300px;">
     <Overlay size="100x10" />
   </PreviewBox>
 </div>

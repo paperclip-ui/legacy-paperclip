@@ -285,6 +285,9 @@ export class FramesRenderer {
           }
         }
       });
+
+      // include frame sizes too
+      rects[i] = bounds;
     }
     return rects;
   }

@@ -8,7 +8,7 @@ import { getScaledPoint } from "../../../../../state";
 import { Pixels } from "./Pixels";
 import { Distance } from "./Distance";
 import { Frames } from "./Frames";
-import { VirtualNodeKind } from "paperclip-utils";
+import { VirtualElement, VirtualFrame, VirtualNodeKind } from "paperclip-utils";
 
 export const Tools = () => {
   const {
@@ -54,7 +54,7 @@ export const Tools = () => {
 
   const frames = (virtualNode.preview.kind === VirtualNodeKind.Fragment
     ? virtualNode.preview.children
-    : [virtualNode.preview]) as Array<VirtualElement | VirtualText>;
+    : [virtualNode.preview]) as Array<VirtualFrame>;
 
   return (
     <styles.Tools
@@ -64,19 +64,25 @@ export const Tools = () => {
     >
       <Pixels canvas={canvas} />
 
+      <Frames
+        frames={frames}
+        dispatch={dispatch}
+        canvasTransform={canvas.transform}
+      />
+
       <Selectable
         dispatch={dispatch}
         canvasScroll={canvas.scrollPosition}
         canvasTransform={canvas.transform}
         intersectingRect={hoveringNodeInfo}
       />
-      <Frames frames={frames} canvasTransform={canvas.transform} />
       {selectedBox && (
         <Selectable
           dispatch={dispatch}
           canvasScroll={canvas.scrollPosition}
           canvasTransform={canvas.transform}
           intersectingRect={{ nodePath: selectedNodePath, box: selectedBox }}
+          showKnobs
         />
       )}
       {metaKeyDown && selectedBox && hoveringNodeInfo && (

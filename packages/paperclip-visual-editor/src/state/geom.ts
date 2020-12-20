@@ -85,3 +85,16 @@ export const addPoint = (point: Point, minus: Point) => {
     y: point.y + minus.y
   };
 };
+
+export const mapBox = (
+  bounds: Box,
+  map: (value: number, key?: string) => number
+): Box => ({
+  ...bounds,
+  x: map(bounds.x, "left"),
+  y: map(bounds.y, "right"),
+  width: map(bounds.width, "width"),
+  height: map(bounds.height, "height")
+});
+
+export const roundBox = (bounds: Box) => mapBox(bounds, v => Math.round(v));
