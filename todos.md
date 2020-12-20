@@ -9,6 +9,7 @@
   - zoom level depending on calculated frame sizes
   - Update percy tests
   - ensure that meta click still works
+  - ability to copy & paste frames
 
 - birds eye view
   - renderer for all PC files
@@ -18,6 +19,5 @@
 
 ### Immediate
 
-- show resizers when title is selected
-- allow frames to be resized & moved
 - write frame resizes back to PC documents on resize stop
+- ability to change title

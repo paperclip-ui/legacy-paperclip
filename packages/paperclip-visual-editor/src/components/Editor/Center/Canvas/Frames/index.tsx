@@ -1,5 +1,10 @@
 import React, { useCallback, useRef } from "react";
-import { Frame, FramesRenderer, getFrameBounds } from "paperclip-web-renderer";
+import {
+  Frame,
+  FramesRenderer,
+  getFrameBounds,
+  getFrameVirtualNode
+} from "paperclip-web-renderer";
 import { memo, useEffect, useMemo } from "react";
 import {
   engineDelegateEventsHandled,
@@ -18,7 +23,7 @@ import * as styles from "./index.pc";
 import { render } from "react-dom";
 
 export const Frames = memo(() => {
-  const { renderer } = useFrames();
+  const { renderer, preview } = useFrames();
 
   return (
     <>
@@ -27,7 +32,11 @@ export const Frames = memo(() => {
           <Frame
             key={i}
             frame={frame}
-            preview={renderer.getFrameVirtualNode(frame)}
+            preview={getFrameVirtualNode(
+              frame,
+              renderer.immutableFrames,
+              preview
+            )}
           />
         );
       })}
@@ -50,15 +59,26 @@ const useFrames = () => {
 
   const collectRects = useMemo(() => {
     let timer;
+    let running;
 
     return () => {
-      // time for repaint
-      clearTimeout(timer);
+      if (running) {
+        return;
+      }
+      running = true;
       timer = setTimeout(() => {
+        running = false;
         dispatch(rectsCaptured(renderer.getRects()));
-      }, 100);
+      }, 10);
     };
   }, [renderer]);
+
+  useEffect(() => {
+    if (renderer && frameData?.preview) {
+      renderer.setPreview(frameData.preview);
+      collectRects();
+    }
+  }, [renderer, frameData]);
 
   useEffect(() => {
     if (state.currentEngineEvents.length) {
@@ -68,7 +88,7 @@ const useFrames = () => {
     }
   }, [collectRects, renderer, state.currentEngineEvents]);
 
-  return { renderer };
+  return { renderer, preview: frameData?.preview };
 };
 
 type FrameProps = {

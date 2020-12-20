@@ -1,5 +1,6 @@
 import { StringDecoder } from "string_decoder";
 import { memoize } from "./memo";
+import { VirtualNodeKind } from "./virt";
 
 export enum VirtJsObjectKind {
   JsObject = "JsObject",
@@ -37,6 +38,34 @@ export const computeVirtJSObject = memoize((obj: VirtJsObject) => {
     values[key] = computeVirtJSValue(obj.values[key]);
   }
   return values;
+});
+
+export const toVirtJsValue = memoize((value: any) => {
+  if (Array.isArray(value)) {
+    return {
+      kind: VirtJsObjectKind.JsArray,
+      values: value.map(toVirtJsValue)
+    };
+  } else if (value && typeof value === "object") {
+    const values = {};
+    for (const k in value) {
+      values[k] = toVirtJsValue(value[k]);
+    }
+    return {
+      kind: VirtJsObjectKind.JsObject,
+      values
+    };
+  } else if (typeof value === "number") {
+    return {
+      kind: VirtJsObjectKind.JsNumber,
+      value
+    };
+  } else if (typeof value === "string") {
+    return {
+      kind: VirtJsObjectKind.JsString,
+      value
+    };
+  }
 });
 
 export const computeVirtJSValue = memoize((obj: VirtJsValue) => {

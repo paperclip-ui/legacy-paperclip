@@ -1,8 +1,22 @@
-import React from "react";
-import { BoxNodeInfo, Transform, Point, Box } from "../../../../../../state";
+import React, { useCallback } from "react";
+import {
+  BoxNodeInfo,
+  Transform,
+  Point,
+  Box,
+  roundBox
+} from "../../../../../../state";
 import * as styles from "./index.pc";
 import { Dispatch } from "redux";
-import { Action, canvasElementClicked } from "../../../../../../actions";
+import {
+  Action,
+  canvasElementClicked,
+  resizerMoved,
+  resizerPathMoved,
+  resizerPathStoppedMoving,
+  resizerStoppedMoving
+} from "../../../../../../actions";
+import { startDOMDrag } from "../../../../../../utils";
 
 type Props = {
   canvasScroll: Point;
@@ -60,10 +74,94 @@ export const Selectable = React.memo(
       ];
     }
 
+    intersectingRect.box;
+
+    const onKnobMouseDown = useCallback(
+      (event: React.MouseEvent<any>, point: Point) => {
+        event.stopPropagation();
+        const bounds = intersectingRect.box;
+        const zoom = canvasTransform.z;
+
+        const wrapActionCreator = createAction => (event, info) => {
+          const delta = {
+            x: info.delta.x / zoom,
+            y: info.delta.y / zoom
+          };
+          dispatch(
+            createAction({
+              originalBounds: roundBox(bounds),
+              newBounds: roundBox({
+                x: point.x === 0 ? bounds.x + delta.x : bounds.x,
+                y: point.y === 0 ? bounds.y + delta.y : bounds.y,
+                width:
+                  point.x === 100
+                    ? bounds.width + delta.x
+                    : point.x == 50
+                    ? bounds.width
+                    : bounds.width - delta.x,
+                height:
+                  point.y === 100
+                    ? bounds.height + delta.y
+                    : point.y === 50
+                    ? bounds.height
+                    : bounds.height - delta.y
+              }),
+              anchor: point,
+              sourceEvent: event
+            })
+          );
+        };
+
+        startDOMDrag(
+          event,
+          null,
+          wrapActionCreator(resizerPathMoved),
+          wrapActionCreator(resizerPathStoppedMoving)
+        );
+      },
+      [intersectingRect, canvasTransform]
+    );
+
+    const onMouseDown = useCallback(
+      event => {
+        if (knobs) {
+          const bounds = intersectingRect.box;
+          const zoom = canvasTransform.z;
+
+          const wrapActionCreator = createAction => (event, info) => {
+            const delta = {
+              x: info.delta.x / zoom,
+              y: info.delta.y / zoom
+            };
+            dispatch(
+              createAction({
+                originalBounds: roundBox(bounds),
+                newBounds: roundBox({
+                  ...bounds,
+                  x: bounds.x + delta.x,
+                  y: bounds.y + delta.y
+                }),
+                sourceEvent: event
+              })
+            );
+          };
+
+          startDOMDrag(
+            event,
+            null,
+            wrapActionCreator(resizerMoved),
+            wrapActionCreator(resizerStoppedMoving)
+          );
+        }
+      },
+      [knobs, intersectingRect, canvasTransform]
+    );
+
     return (
       <>
         <styles.Overlay
           onClick={onClick}
+          onMouseDown={onMouseDown}
           size={`${Math.round(intersectingRect.box.width)}x${Math.round(
             intersectingRect.box.height
           )}`}
@@ -71,7 +169,16 @@ export const Selectable = React.memo(
             knobs && (
               <>
                 {knobs.map(({ x, y }) => {
-                  return <styles.Knob key={`${x}-${y}`} x={x} y={y} />;
+                  return (
+                    <styles.Knob
+                      onMouseDown={event => {
+                        onKnobMouseDown(event, { x, y });
+                      }}
+                      key={`${x}-${y}`}
+                      x={x}
+                      y={y}
+                    />
+                  );
                 })}
               </>
             )

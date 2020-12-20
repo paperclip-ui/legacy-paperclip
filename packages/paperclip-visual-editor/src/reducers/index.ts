@@ -15,7 +15,11 @@ import { clamp, isEqual } from "lodash";
 import {
   EngineDelegateEventKind,
   patchVirtNode,
-  updateAllLoadedData
+  updateAllLoadedData,
+  VirtualFrame,
+  toVirtJsValue,
+  VirtualNodeKind,
+  computeVirtJSObject
 } from "paperclip-utils";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
@@ -108,12 +112,8 @@ export default (state: AppState, action: Action) => {
     case ActionType.CANVAS_ELEMENT_CLICKED: {
       // Don't do this until deselecting can be handled properly
       return produce(state, newState => {
-        console.log("CLICK");
         // allow toggle selecting elements - necessary since escape key doesn't work.
-        newState.selectedNodePath =
-          newState.selectedNodePath === action.payload.nodePath
-            ? null
-            : action.payload.nodePath;
+        newState.selectedNodePath = action.payload.nodePath;
       });
     }
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {
@@ -142,6 +142,38 @@ export default (state: AppState, action: Action) => {
     case ActionType.CANVAS_PAN_END: {
       return produce(state, newState => {
         newState.canvas.panning = false;
+      });
+    }
+    case ActionType.RESIZER_MOVED:
+    case ActionType.RESIZER_PATH_MOUSE_MOVED: {
+      return produce(state, newState => {
+        const preview =
+          newState.allLoadedPCFileData[newState.currentFileUri].preview;
+        const frames =
+          preview.kind == VirtualNodeKind.Fragment
+            ? preview.children
+            : [preview];
+        const frameIndex = Number(newState.selectedNodePath);
+        const frame = frames[frameIndex] as VirtualFrame;
+
+        if (!frame) {
+          console.warn(`Trying to resize non-frame`);
+          return;
+        }
+
+        const annotations =
+          (frame.annotations && computeVirtJSObject(frame.annotations)) ||
+          ({} as any);
+
+        frame.annotations = toVirtJsValue({
+          ...annotations,
+          frame: {
+            ...(annotations.frame || {}),
+            ...action.payload.newBounds
+          }
+        });
+
+        console.log(frame, frame.annotations);
       });
     }
     case ActionType.CANVAS_PANNED: {

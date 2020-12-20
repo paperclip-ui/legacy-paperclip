@@ -1,7 +1,7 @@
 <import src="components/Theme/index.pc" as="theme" />
 
 
-<svg export component as="Knob" {className?} style="--x: {x}; --y: {y}" data-id="knob-{x}-{y}">
+<svg export component as="Knob" {onMouseDown} {className?} style="--x: {x}; --y: {y}" data-id="knob-{x}-{y}">
   <style>
     width: var(--knob-size);
     height: var(--knob-size);
@@ -32,7 +32,7 @@
   </rect>
 </svg>
 
-<div export component as="Overlay" {style?} {onClick} className:knobs="has-knobs" className="overlay">
+<div export component as="Overlay" {onMouseDown?} {style?} {onClick} className:knobs="has-knobs" className="overlay">
   <style>
     --background: var(--vscode-button-hoverBackground, rgb(0, 132, 255));
     --foreground: var(--vscode-button-foreground, white);

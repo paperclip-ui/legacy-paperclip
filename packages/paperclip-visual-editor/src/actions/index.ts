@@ -33,6 +33,8 @@ export enum ActionType {
   FRAME_TITLE_CLICKED = "FRAME_TITLE_CLICKED",
   FILE_OPENED = "FILE_OPENED",
   RESIZER_PATH_MOUSE_MOVED = "RESIZER_PATH_MOUSE_MOVED",
+  RESIZER_MOVED = "RESIZER_MOVED",
+  RESIZER_STOPPED_MOVING = "RESIZER_STOPPED_MOVING",
   RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING"
 }
 
@@ -41,21 +43,46 @@ export enum ActionType {
 //   { element: HTMLElement }
 // >;
 
-export type WrappedEvent<T, TType extends ActionType> = {
+export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
   sourceEvent: T;
-} & BaseAction<TType>;
+} & BaseAction<TType, TPayload>;
 
-export type ResizerPathMoved = {
-  originalBounds: Box;
-  newBounds: Box;
-  anchor: Point;
-} & WrappedEvent<MouseEvent, ActionType.RESIZER_PATH_MOUSE_MOVED>;
+export type ResizerMoved = WrappedEvent<
+  MouseEvent,
+  ActionType.RESIZER_MOVED,
+  {
+    originalBounds: Box;
+    newBounds: Box;
+    anchor: Point;
+  }
+>;
+export type ResizerStoppedMoving = WrappedEvent<
+  MouseEvent,
+  ActionType.RESIZER_STOPPED_MOVING,
+  {
+    originalBounds: Box;
+    newBounds: Box;
+    anchor: Point;
+  }
+>;
 
-export type ResizerPathStoppedMoving = {
-  originalBounds: Box;
-  newBounds: Box;
-  anchor: Point;
-} & WrappedEvent<MouseEvent, ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING>;
+export type ResizerPathMoved = WrappedEvent<
+  MouseEvent,
+  ActionType.RESIZER_PATH_MOUSE_MOVED,
+  {
+    originalBounds: Box;
+    newBounds: Box;
+  }
+>;
+
+export type ResizerPathStoppedMoving = WrappedEvent<
+  MouseEvent,
+  ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
+  {
+    originalBounds: Box;
+    newBounds: Box;
+  }
+>;
 
 export type EngineDelegateChanged = BaseAction<
   ActionType.ENGINE_DELEGATE_CHANGED,
@@ -158,6 +185,12 @@ export const resizerPathMoved = actionCreator<ResizerPathMoved>(
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
   ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
 );
+export const resizerMoved = actionCreator<ResizerMoved>(
+  ActionType.RESIZER_MOVED
+);
+export const resizerStoppedMoving = actionCreator<ResizerStoppedMoving>(
+  ActionType.RESIZER_STOPPED_MOVING
+);
 export const rectsCaptured = actionCreator<RectsCaptured>(
   ActionType.RECTS_CAPTURED
 );
@@ -212,6 +245,10 @@ export type Action =
   // | RendererInitialized
   | RectsCaptured
   | CanvasElementClicked
+  | ResizerPathMoved
+  | ResizerPathStoppedMoving
+  | ResizerStoppedMoving
+  | ResizerMoved
   | RendererChanged
   | CanvasPanned
   | CanvasPanStart

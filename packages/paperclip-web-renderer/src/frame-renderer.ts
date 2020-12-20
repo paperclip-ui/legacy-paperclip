@@ -15,7 +15,8 @@ import {
   VirtualFragment,
   memoize,
   computeVirtJSObject,
-  NodeAnnotations
+  NodeAnnotations,
+  VirtualFrame
 } from "paperclip-utils";
 import { EventEmitter } from "events";
 import { arraySplice, traverseNativeNode } from "./utils";
@@ -168,17 +169,12 @@ export class FramesRenderer {
     this._em = new EventEmitter();
   }
 
-  get targetUri(): string {
-    return this._targetUri;
+  setPreview(preview: VirtualNode) {
+    this._preview = preview;
   }
 
-  getFrameVirtualNode(frame: Frame): VirtualElement | VirtualText {
-    const children =
-      this._preview.kind === VirtualNodeKind.Fragment
-        ? this._preview.children
-        : [this._preview];
-
-    return children[this._framesProxy.immutableFrames.indexOf(frame)] as any;
+  get targetUri(): string {
+    return this._targetUri;
   }
 
   get immutableFrames(): Frame[] {
@@ -268,7 +264,11 @@ export class FramesRenderer {
     const rects: Record<string, Box> = {};
     for (let i = 0, { length } = this.immutableFrames; i < length; i++) {
       const frame = this.immutableFrames[i];
-      const frameNode = this.getFrameVirtualNode(frame);
+      const frameNode = getFrameVirtualNode(
+        frame,
+        this._framesProxy.immutableFrames,
+        this._preview
+      );
       const bounds = getFrameBounds(frameNode);
       traverseNativeNode(frame.stage, (node, path) => {
         if (node.nodeType === 1) {
@@ -292,6 +292,17 @@ export class FramesRenderer {
     return rects;
   }
 }
+
+export const getFrameVirtualNode = (
+  frame: Frame,
+  frames: Frame[],
+  preview: VirtualNode
+): VirtualFrame => {
+  const children =
+    preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
+
+  return children[frames.indexOf(frame)] as any;
+};
 
 export const getFrameBounds = memoize((node: VirtualElement | VirtualText) => {
   const annotations: NodeAnnotations =
