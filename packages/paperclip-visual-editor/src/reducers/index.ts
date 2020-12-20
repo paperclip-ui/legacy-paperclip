@@ -7,7 +7,8 @@ import {
   Box,
   resetCanvas,
   getFSItem,
-  Directory
+  Directory,
+  getSelectedFrame
 } from "../state";
 import { produce } from "immer";
 import { Action, ActionType } from "../actions";
@@ -147,14 +148,7 @@ export default (state: AppState, action: Action) => {
     case ActionType.RESIZER_MOVED:
     case ActionType.RESIZER_PATH_MOUSE_MOVED: {
       return produce(state, newState => {
-        const preview =
-          newState.allLoadedPCFileData[newState.currentFileUri].preview;
-        const frames =
-          preview.kind == VirtualNodeKind.Fragment
-            ? preview.children
-            : [preview];
-        const frameIndex = Number(newState.selectedNodePath);
-        const frame = frames[frameIndex] as VirtualFrame;
+        const frame = getSelectedFrame(newState);
 
         if (!frame) {
           console.warn(`Trying to resize non-frame`);
@@ -165,15 +159,13 @@ export default (state: AppState, action: Action) => {
           (frame.annotations && computeVirtJSObject(frame.annotations)) ||
           ({} as any);
 
-        frame.annotations = toVirtJsValue({
+        frame.annotations.values = toVirtJsValue({
           ...annotations,
           frame: {
             ...(annotations.frame || {}),
             ...action.payload.newBounds
           }
-        });
-
-        console.log(frame, frame.annotations);
+        }).values;
       });
     }
     case ActionType.CANVAS_PANNED: {

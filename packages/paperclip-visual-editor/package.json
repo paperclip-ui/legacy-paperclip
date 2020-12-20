@@ -17,6 +17,7 @@
     "lodash": "^4.17.20",
     "mousetrap": "^1.6.5",
     "paperclip": "^15.1.1",
+    "paperclip-source-writer": "^1.0.0",
     "paperclip-utils": "^15.0.21",
     "paperclip-web-renderer": "^15.1.1",
     "react": "^16.13.1",

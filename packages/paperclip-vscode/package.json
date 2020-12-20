@@ -146,6 +146,7 @@
     "p-limit": "^3.0.2",
     "paperclip": "^15.1.1",
     "paperclip-autocomplete": "^15.0.21",
+    "paperclip-source-writer": "^1.0.0",
     "paperclip-utils": "^15.0.21",
     "paperclip-visual-editor": "^15.1.1",
     "paperclip-web-renderer": "^15.1.1",

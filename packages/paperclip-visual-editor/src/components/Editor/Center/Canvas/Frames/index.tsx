@@ -97,6 +97,9 @@ type FrameProps = {
 };
 
 const Frame = memo(({ frame, preview }: FrameProps) => {
+  if (!preview) {
+    return null;
+  }
   const frameRef = useRef<HTMLDivElement>();
 
   const annotations: NodeAnnotations =

@@ -1,6 +1,6 @@
 import * as Mousetrap from "mousetrap";
 import SockJSClient from "sockjs-client";
-import { isPaperclipFile } from "paperclip-utils";
+import { computeVirtJSObject, isPaperclipFile } from "paperclip-utils";
 import * as Url from "url";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
@@ -15,11 +15,14 @@ import {
   Action,
   engineDelegateChanged,
   fileOpened,
-  currentFileInitialized
+  currentFileInitialized,
+  pcVirtObjectEdited
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
-import { AppState } from "../state";
+import { AppState, getSelectedFrame } from "../state";
 import { getVirtTarget } from "paperclip-utils";
+import { handleCanvas } from "./canvas";
+import { PCMutationActionKind } from "paperclip-source-writer";
 
 declare const vscode;
 declare const TARGET_URI;
@@ -34,6 +37,7 @@ export default function* mainSaga() {
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
   yield fork(handleKeyCommands);
   yield put(fileOpened({ uri: getTargetUrl() }));
+  yield fork(handleCanvas);
 }
 
 const parent = typeof vscode != "undefined" ? vscode : window;
@@ -89,53 +93,9 @@ function handleIPC(onMessage) {
 }
 
 function* handleRenderer() {
-  // const renderer = new Renderer(
-  //   typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL,
-  //   getTargetUrl()
-  // );
-
   let _client: any;
 
   const chan = eventChannel(emit => {
-    // let timer: any;
-
-    // const collectRects = () => {
-    //   clearTimeout(timer);
-    //   timer = setTimeout(() => {
-    //     const scrollingElement =
-    //       renderer.frame.contentDocument.scrollingElement;
-    //     const scrollLeft = scrollingElement.scrollLeft;
-    //     const scrollTop = scrollingElement.scrollTop;
-    //     scrollingElement.scrollTop = 0;
-    //     scrollingElement.scrollLeft = 0;
-
-    //     emit(
-    //       rectsCaptured({
-    //         rects: renderer.getRects(),
-    //         frameSize: renderer.frame.getBoundingClientRect(),
-    //         scrollSize: {
-    //           width: scrollingElement.scrollWidth,
-    //           height: scrollingElement.scrollHeight
-    //         }
-    //       })
-    //     );
-
-    //     scrollingElement.scrollLeft = scrollLeft;
-    //     scrollingElement.scrollTop = scrollTop;
-    //   }, 100);
-    // };
-
-    // renderer.frame.addEventListener("load", () => {
-    //   renderer.frame.contentWindow.addEventListener("resize", collectRects);
-    // });
-
-    // const handleRenderChange = () => {
-    //   emit(rendererChanged({ virtualRoot: renderer.virtualRootNode }));
-
-    //   // we want to capture rects on _every_ change
-    //   collectRects();
-    // };
-
     const onMessage = ({ type, payload }) => {
       switch (type) {
         case "ENGINE_EVENT": {
@@ -144,20 +104,14 @@ function* handleRenderer() {
             return emit(engineErrored(engineEvent));
           }
 
-          // DEPRECATED
-          // renderer.handleEngineDelegateEvent(payload);
           emit(engineDelegateChanged(engineEvent));
-          // handleRenderChange();
           break;
         }
         case "INIT": {
-          // renderer.initialize(payload);
           emit(currentFileInitialized(payload));
-          // handleRenderChange();
           break;
         }
         case "ERROR": {
-          // renderer.handleError(JSON.parse(payload));
           emit(engineErrored(payload));
           break;
         }
@@ -179,6 +133,9 @@ function* handleRenderer() {
     };
   });
 
+  const sendMessage = message =>
+    _client ? _client.send(message) : parent.postMessage(message);
+
   yield fork(function*() {
     while (1) {
       const action = yield take(chan);
@@ -194,15 +151,34 @@ function* handleRenderer() {
       // renderer.reset(action.payload.url);
       yield put(fileOpened({ uri: getTargetUrl() }));
     }
-    if (_client) {
-      _client.send(action);
-    }
+    sendMessage(action);
   });
 
-  // yield put(rendererInitialized({ element: renderer.frame }));
-  // yield fork(handleInteractionsForRenderer(renderer));
+  yield takeEvery(
+    [
+      ActionType.RESIZER_STOPPED_MOVING,
+      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
+    ],
+    function*(action: Action) {
+      const state: AppState = yield select();
 
-  parent.postMessage({
+      sendMessage(
+        pcVirtObjectEdited({
+          mutation: {
+            source: getSelectedFrame(state).annotations.source,
+            action: {
+              kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
+              annotations: computeVirtJSObject(
+                getSelectedFrame(state).annotations
+              )
+            }
+          }
+        })
+      );
+    }
+  );
+
+  sendMessage({
     type: "ready"
   });
 }

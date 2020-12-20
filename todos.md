@@ -19,5 +19,5 @@
 
 ### Immediate
 
-- write frame resizes back to PC documents on resize stop
+- JS parser should handle negative values
 - ability to change title

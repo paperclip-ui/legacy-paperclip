@@ -1,6 +1,6 @@
 import produce from "immer";
 import { isEqual } from "lodash";
-import { memoize } from "paperclip-utils";
+import { memoize, VirtualFrame, VirtualNodeKind } from "paperclip-utils";
 import {
   VirtualNode,
   EngineErrorEvent,
@@ -184,6 +184,16 @@ export const getFSItem = (absolutePath: string, current: FSItem) => {
   }
 
   return null;
+};
+
+export const getSelectedFrame = (state: AppState) => {
+  const preview = state.allLoadedPCFileData[state.currentFileUri].preview;
+  const frames =
+    preview.kind == VirtualNodeKind.Fragment ? preview.children : [preview];
+  const frameIndex = Number(state.selectedNodePath);
+  const frame = frames[frameIndex] as VirtualFrame;
+
+  return frame;
 };
 
 export * from "./geom";

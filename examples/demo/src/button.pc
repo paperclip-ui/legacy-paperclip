@@ -5,22 +5,21 @@
   }
 </style>
 
-
-<!-- 
-  @frame { title: "something like this should be resized accordingly", width: 100, height: 100, x: 100, y: 100 }
+<!--
+  @frame { title: "Mobile", width: 237, height: 490, x: 113, y: 491 }
 -->
 
-<div>something</div>
-
-<!-- 
-  @frame { width: 1024, height: 768, x: 100, y: 300 }
--->
-
-<div>somethat</div>
+<span>This should workfdsfdsfdsfs</span>
 
 
 <!--
-  @frame { width: 1024, height: 768, x: 100, y: 1500 }
+  @frame { title: "Desktop", width: 1007, height: 523, x: 406, y: 484 }
 -->
 
-This should work
+<span>This should workfdsfdfdfsd</span>
+
+<!--
+  @frame { title: "Desktop XL", width: 1461, height: 984, x: 1474, y: 475 }
+-->
+
+<span>This should workfdsfdfdfsd</span>

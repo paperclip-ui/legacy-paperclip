@@ -1,9 +1,11 @@
 import { BaseAction, actionCreator } from "./base";
+import { PCMutation } from "paperclip-source-writer";
 import {
   VirtualNode,
   EngineErrorEvent,
   EngineDelegateEvent,
-  LoadedData
+  LoadedData,
+  VirtJsObject
 } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
 import { Box, Directory, FSItemKind, Point, Size } from "../state";
 
@@ -35,7 +37,8 @@ export enum ActionType {
   RESIZER_PATH_MOUSE_MOVED = "RESIZER_PATH_MOUSE_MOVED",
   RESIZER_MOVED = "RESIZER_MOVED",
   RESIZER_STOPPED_MOVING = "RESIZER_STOPPED_MOVING",
-  RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING"
+  RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING",
+  PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED"
 }
 
 // export type RendererInitialized = BaseAction<
@@ -81,6 +84,13 @@ export type ResizerPathStoppedMoving = WrappedEvent<
   {
     originalBounds: Box;
     newBounds: Box;
+  }
+>;
+
+export type PCVirtObjectEdited = BaseAction<
+  ActionType.PC_VIRT_OBJECT_EDITED,
+  {
+    mutation: PCMutation;
   }
 >;
 
@@ -158,6 +168,9 @@ export type RectsCaptured = BaseAction<
 
 export type KeyComboPressed<TType extends ActionType> = BaseAction<TType, null>;
 
+export const pcVirtObjectEdited = actionCreator<PCVirtObjectEdited>(
+  ActionType.PC_VIRT_OBJECT_EDITED
+);
 export const engineDelegateChanged = actionCreator<EngineDelegateChanged>(
   ActionType.ENGINE_DELEGATE_CHANGED
 );

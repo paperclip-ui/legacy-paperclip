@@ -4,6 +4,7 @@ import {
   EngineErrorEvent,
   stripFileProtocol
 } from "paperclip-utils";
+import { PCMutation } from "paperclip-source-writer";
 import * as fs from "fs";
 import {
   Uri,
@@ -47,7 +48,8 @@ type LivePreviewState = {
 
 export const activate = (
   client: LanguageClient,
-  context: ExtensionContext
+  context: ExtensionContext,
+  onPCMutation: (mutation: PCMutation) => void
 ): void => {
   const { extensionPath } = context;
 
@@ -94,11 +96,13 @@ export const activate = (
 
   const registerLivePreview = (preview: LivePreview) => {
     _previews.push(preview);
+    const disposeEditListener = preview.onVirtObjectEdited(onPCMutation);
     const disposeListener = preview.onDidDispose(() => {
       const index = _previews.indexOf(preview);
       if (index !== -1) {
         _previews.splice(index, 1);
         disposeListener();
+        disposeEditListener();
       }
     });
   };
@@ -313,16 +317,23 @@ class LivePreview {
       this._em.removeListener("didDispose", listener);
     };
   }
+  public onVirtObjectEdited(listener: (mutation: PCMutation) => void) {
+    this._em.on("virtObjectEdited", listener);
+    return () => {
+      this._em.removeListener("virtObjectEdited", listener);
+    };
+  }
+
   private _onPreviewMessage = event => {
     // debug what's going on
-    if (event.type === "HTML") {
-      console.log(event.content);
-    } else if (event.type === "metaElementClicked") {
+    if (event.type === "metaElementClicked") {
       this._handleElementMetaClicked(event);
     } else if (event.type === "errorBannerClicked") {
       this._handleErrorBannerClicked(event);
     } else if (event.type === "ready") {
       this._previewReady();
+    } else if (event.type === "PC_VIRT_OBJECT_EDITED") {
+      this._em.emit("virtObjectEdited", event.payload.mutation);
     }
   };
   private async _handleErrorBannerClicked({
@@ -369,7 +380,6 @@ class LivePreview {
   public async $$handleLoaded({ uri, data }: LoadedParams) {
     if (uri === this._targetUri) {
       await this._readyPromise;
-      console.log("$$handleLoaded");
       this.panel.webview.postMessage({
         type: "INIT",
         payload: JSON.stringify(data)
@@ -379,13 +389,11 @@ class LivePreview {
   }
   public async $$handleEngineDelegateEvent(event: EngineDelegateEvent) {
     await this._initPromise;
-    console.log("$$handleEngineDelegateEvent", event);
     if (
       this._needsReloading &&
       (event.kind === EngineDelegateEventKind.Evaluated ||
         event.kind === EngineDelegateEventKind.Diffed)
     ) {
-      console.log("_RENDER");
       this._render();
     }
 

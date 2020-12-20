@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",
+    "target": "es5",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "declaration": true
+  },
+  "exclude": [
+    "**/*.d.ts",
+    "esm",
+    "native",
+    "lib",
+    "node_modules",
+    "*-test",
+    "index.d.ts",
+    "test",
+    "examples"
+  ],
+  "filesGlob": ["./src/**/*.ts"]
+}

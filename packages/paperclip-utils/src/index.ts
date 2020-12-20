@@ -19,3 +19,4 @@ export * from "./exports";
 export * from "./utils";
 export * from "./source-watcher";
 export * from "./memo";
+export * from "./base-virt";

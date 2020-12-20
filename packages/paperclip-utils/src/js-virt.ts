@@ -1,6 +1,5 @@
-import { StringDecoder } from "string_decoder";
+import { ExprSource } from "./base-virt";
 import { memoize } from "./memo";
-import { VirtualNodeKind } from "./virt";
 
 export enum VirtJsObjectKind {
   JsObject = "JsObject",
@@ -15,6 +14,7 @@ type BaseVirtJsObject<TKind extends VirtJsObjectKind> = {
 
 export type VirtJsObject = {
   values: Record<string, VirtJsValue>;
+  source: ExprSource;
 } & BaseVirtJsObject<VirtJsObjectKind.JsObject>;
 export type VirtJsArray = {
   values: VirtJsValue[];
