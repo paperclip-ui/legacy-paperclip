@@ -59,7 +59,6 @@ export type AppState = {
   projectDirectory?: Directory;
   metaKeyDown?: boolean;
   canvas: Canvas;
-  virtualRootNode?: VirtualNode;
   scrollSize?: Size;
   frameSize?: Size;
   boxes: Record<string, Box>;

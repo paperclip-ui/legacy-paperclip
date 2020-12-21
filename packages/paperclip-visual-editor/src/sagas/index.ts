@@ -178,6 +178,10 @@ function* handleRenderer() {
     }
   );
 
+  yield takeEvery([ActionType.META_CLICKED], function(action: Action) {
+    sendMessage(action);
+  });
+
   sendMessage({
     type: "ready"
   });
@@ -205,7 +209,11 @@ function* handleCanvasElementClicked(action: CanvasElementClicked) {
   const state: AppState = yield select();
 
   const nodePathParts = action.payload.nodePath.split(".").map(Number);
-  const virtualNode = getVirtTarget(state.virtualRootNode, nodePathParts);
+  console.log(state.allLoadedPCFileData[state.currentFileUri], nodePathParts);
+  const virtualNode = getVirtTarget(
+    state.allLoadedPCFileData[state.currentFileUri].preview,
+    nodePathParts
+  );
 
   parent.postMessage(
     {

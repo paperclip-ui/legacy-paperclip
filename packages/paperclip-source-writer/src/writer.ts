@@ -24,9 +24,6 @@ const ANNOTATION_KEYS = ["title", "width", "height", "x", "y"];
 export class PCSourceWriter {
   constructor(private _options: PCSourceWriterOptions) {}
   async getContentChanges({ source, action }: PCMutation) {
-    const content = await this._options.getContent(source.uri);
-    console.log(source, action);
-
     const changes: ContentChange[] = [];
 
     switch (action.kind) {

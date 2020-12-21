@@ -55,10 +55,9 @@ const useFrames = () => {
       renderer.initialize(frameData);
     }
     return renderer;
-  }, [state.currentFileUri, !!frameData]);
+  }, [dispatch, state.currentFileUri, !!frameData]);
 
   const collectRects = useMemo(() => {
-    let timer;
     let running;
 
     return () => {
@@ -66,10 +65,12 @@ const useFrames = () => {
         return;
       }
       running = true;
-      timer = setTimeout(() => {
+
+      // needs slight delay to capture
+      setTimeout(() => {
         running = false;
         dispatch(rectsCaptured(renderer.getRects()));
-      }, 10);
+      }, 100);
     };
   }, [renderer]);
 

@@ -1,6 +1,7 @@
 import {
   createNativeNode,
-  createNativeStyleFromSheet
+  createNativeStyleFromSheet,
+  getNativeNodePath
 } from "./native-renderer";
 import {
   EngineDelegateEvent,
@@ -16,7 +17,8 @@ import {
   memoize,
   computeVirtJSObject,
   NodeAnnotations,
-  VirtualFrame
+  VirtualFrame,
+  getVirtTarget
 } from "paperclip-utils";
 import { EventEmitter } from "events";
 import { arraySplice, traverseNativeNode } from "./utils";
@@ -50,12 +52,16 @@ class FramesProxy implements Patchable {
   readonly namespaceURI = null;
 
   constructor(
+    private _preview: VirtualNode,
     private _domFactory: DOMFactory = document,
     private _protocol: string = null
   ) {
     this._frames = [];
     this._childNodes = [];
     this._importedStyles = [];
+  }
+  setPreview(preview: VirtualNode) {
+    this._preview = preview;
   }
   get immutableFrames() {
     return this._frames;
@@ -148,6 +154,18 @@ class FramesProxy implements Patchable {
       sourceUri: null
     });
   }
+
+  // private _onStageMouseDown = (event: MouseEvent) => {
+  //   event.preventDefault();
+  //   event.stopImmediatePropagation();
+  //   const element = event.target as Element;
+  //   const frame = this._frames.find(frame => frame.stage === event.target);
+  //   if (element.nodeType !== 1 || !event.metaKey) return;
+  //   const nodePath = getNativeNodePath(frame._mount, element);
+  //   console.log(this._preview);
+  //   const virtNode = getVirtTarget(this._preview, nodePath);
+  //   if (!virtNode) return;
+  // };
 }
 
 /**
@@ -155,7 +173,6 @@ class FramesProxy implements Patchable {
  */
 
 export class FramesRenderer {
-  private _em: EventEmitter;
   private _dependencies: string[] = [];
   private _framesProxy: FramesProxy;
   private _preview: VirtualNode;
@@ -165,12 +182,16 @@ export class FramesRenderer {
     readonly protocol: string,
     private _domFactory: DOMFactory = document
   ) {
-    this._framesProxy = new FramesProxy(_domFactory);
-    this._em = new EventEmitter();
+    this._framesProxy = new FramesProxy(this._preview, _domFactory);
   }
 
   setPreview(preview: VirtualNode) {
     this._preview = preview;
+    this._framesProxy.setPreview(preview);
+  }
+
+  getPreview() {
+    return this._preview;
   }
 
   get targetUri(): string {
@@ -186,7 +207,7 @@ export class FramesRenderer {
       preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
     this._preview = preview;
 
-    this._framesProxy = new FramesProxy(this._domFactory);
+    this._framesProxy = new FramesProxy(this._preview, this._domFactory);
     this._dependencies = importedSheets.map(info => info.uri);
     this._framesProxy.setMainStyle(sheet);
 
@@ -270,7 +291,7 @@ export class FramesRenderer {
         this._preview
       );
       const bounds = getFrameBounds(frameNode);
-      traverseNativeNode(frame.stage, (node, path) => {
+      traverseNativeNode(frame._mount, (node, path) => {
         if (node.nodeType === 1) {
           const pathStr = i + "." + path.join(".");
           if (pathStr) {

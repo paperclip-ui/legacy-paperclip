@@ -35,6 +35,7 @@ fn parse_statement<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Stateme
     Token::LessThan => parse_node(context),
     Token::DoubleQuote | Token::SingleQuote => parse_string(context),
     Token::Number(_) => parse_number(context),
+    Token::Minus => parse_negative_number(context),
     Token::SquareOpen => parse_array(context),
     Token::CurlyOpen => parse_object(context),
     _ => parse_word(context),
@@ -56,8 +57,28 @@ fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, P
 }
 
 fn parse_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
-  let mut buffer = String::new();
   let start = context.tokenizer.utf16_pos;
+  let buffer = get_number_buffer(context)?;
+
+  Ok(ast::Statement::Number(ast::Number {
+    value: buffer,
+    location: Location::new(start, context.tokenizer.utf16_pos),
+  }))
+}
+
+fn parse_negative_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+  let start = context.tokenizer.utf16_pos;
+  context.tokenizer.next_expect(Token::Minus)?;
+  let num_buffer = get_number_buffer(context)?;
+
+  Ok(ast::Statement::Number(ast::Number {
+    value: format!("-{}", num_buffer),
+    location: Location::new(start, context.tokenizer.utf16_pos),
+  }))
+}
+
+fn get_number_buffer<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
+  let mut buffer = String::new();
 
   while !context.tokenizer.is_eof() {
     match context.tokenizer.peek(1)? {
@@ -71,10 +92,7 @@ fn parse_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement,
     }
   }
 
-  Ok(ast::Statement::Number(ast::Number {
-    value: buffer,
-    location: Location::new(start, context.tokenizer.utf16_pos),
-  }))
+  Ok(buffer)
 }
 
 fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {

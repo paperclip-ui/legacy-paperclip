@@ -28,6 +28,7 @@ const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const PAN_Y_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const MIN_ZOOM = 0.02;
 const MAX_ZOOM = 6400 / 100;
+const MAX_CANVAS_SIZE = 2000;
 
 export default (state: AppState, action: Action) => {
   switch (action.type) {
@@ -251,11 +252,6 @@ export default (state: AppState, action: Action) => {
         newState.canvas.size = action.payload;
       });
     }
-    case ActionType.RENDERER_CHANGED: {
-      return produce(state, newState => {
-        newState.virtualRootNode = action.payload.virtualRoot;
-      });
-    }
   }
   return state;
 };
@@ -265,19 +261,18 @@ const normalizeZoom = zoom => {
 };
 
 const clampCanvasTransform = (canvas: Canvas, rects: Record<string, Box>) => {
-  return canvas;
-  // return produce(canvas, newCanvas => {
-  //   newCanvas.transform.x = clamp(
-  //     newCanvas.transform.x,
-  //     -(canvas.size.width * newCanvas.transform.z - canvas.size.width),
-  //     0
-  //   );
-  //   newCanvas.transform.y = clamp(
-  //     newCanvas.transform.y,
-  //     -(canvas.size.height * newCanvas.transform.z - canvas.size.height),
-  //     0
-  //   );
-  // });
+  return produce(canvas, newCanvas => {
+    const w = (canvas.size.width / MIN_ZOOM) * canvas.transform.z;
+    const h = (canvas.size.height / MIN_ZOOM) * canvas.transform.z;
+
+    console.log(canvas.size.width, w, h);
+
+    newCanvas.transform.x = clamp(newCanvas.transform.x, -w, w);
+
+    newCanvas.transform.y = clamp(newCanvas.transform.y, -h, w);
+
+    console.log(JSON.stringify(newCanvas.transform));
+  });
 };
 
 const setCanvasZoom = (

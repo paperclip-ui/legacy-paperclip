@@ -5,7 +5,8 @@ import {
   EngineErrorEvent,
   EngineDelegateEvent,
   LoadedData,
-  VirtJsObject
+  VirtJsObject,
+  ExprSource
 } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
 import { Box, Directory, FSItemKind, Point, Size } from "../state";
 
@@ -38,6 +39,7 @@ export enum ActionType {
   RESIZER_MOVED = "RESIZER_MOVED",
   RESIZER_STOPPED_MOVING = "RESIZER_STOPPED_MOVING",
   RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING",
+  META_CLICKED = "META_CLICKED",
   PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED"
 }
 
@@ -66,6 +68,12 @@ export type ResizerStoppedMoving = WrappedEvent<
     originalBounds: Box;
     newBounds: Box;
     anchor: Point;
+  }
+>;
+export type MetaClicked = BaseAction<
+  ActionType.META_CLICKED,
+  {
+    source: ExprSource;
   }
 >;
 
@@ -260,6 +268,7 @@ export type Action =
   | CanvasElementClicked
   | ResizerPathMoved
   | ResizerPathStoppedMoving
+  | MetaClicked
   | ResizerStoppedMoving
   | ResizerMoved
   | RendererChanged

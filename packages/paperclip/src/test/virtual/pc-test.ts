@@ -212,6 +212,16 @@ describe(__filename + "#", () => {
         `<div class="a" data-pc-80f4925f>b</div>`
       );
     });
+    it(`Can render a slot with a negative number`, async () => {
+      const graph = {
+        "/entry.pc": `<span>{-1}</span>`
+      };
+      const engine = await createMockEngine(graph);
+      const { preview } = await engine.run("/entry.pc");
+      expect(cleanHTML(stringifyVirtualNode(preview))).to.eql(
+        "<span data-pc-80f4925f>-1</span>"
+      );
+    });
     xit("Displays an error if text binding is defined outside of component", async () => {
       const graph = {
         "/entry.pc": `
