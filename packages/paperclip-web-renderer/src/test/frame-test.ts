@@ -175,4 +175,25 @@ describe(__filename + "#", () => {
       `<div></div><div><style></style></div><div><span></span></div>`
     );
   });
+
+  it(`Adds styles from imported module to new frame`, async () => {
+    const graph = {
+      "/entry.pc": `<import src="/mod.pc" />a`,
+      "/mod.pc": `<style>a { color: blue }</style>`
+    };
+    const renderer = createMockFramesRenderer("/entry.pc");
+    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+    await engine.open("/entry.pc");
+    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+      `<div><style>a[data-pc-c938aea3] { color:blue ; }</style></div><div><style></style></div><div>a</div>`
+    );
+    engine.updateVirtualFileContent(
+      "/entry.pc",
+      `<import src="/mod.pc" /><span /><!-- @frame { } --><div />`
+    );
+    expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
+      `<div><style>a[data-pc-c938aea3] { color:blue ; }</style></div><div><style></style></div><div><div></div></div>`
+    );
+  });
 });

@@ -46,7 +46,7 @@ connection.onInitialize((params: InitializeParams) => {
 });
 
 const init = async (connection: Connection) => {
-  // Paperclip engine for parsing & evaluating documents
+  // PaperclicreateEngineDelegatep engine for parsing & evaluating documents
   const engine = await createEngineDelegate(
     { mode: EngineMode.MultiFrame },
     () => {

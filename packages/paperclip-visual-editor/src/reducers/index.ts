@@ -45,6 +45,7 @@ export default (state: AppState, action: Action) => {
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       return produce(state, newState => {
         newState.currentEngineEvents.push(action.payload);
+
         newState.allLoadedPCFileData = updateAllLoadedData(
           newState.allLoadedPCFileData,
           action.payload
@@ -265,13 +266,9 @@ const clampCanvasTransform = (canvas: Canvas, rects: Record<string, Box>) => {
     const w = (canvas.size.width / MIN_ZOOM) * canvas.transform.z;
     const h = (canvas.size.height / MIN_ZOOM) * canvas.transform.z;
 
-    console.log(canvas.size.width, w, h);
-
     newCanvas.transform.x = clamp(newCanvas.transform.x, -w, w);
 
     newCanvas.transform.y = clamp(newCanvas.transform.y, -h, w);
-
-    console.log(JSON.stringify(newCanvas.transform));
   });
 };
 

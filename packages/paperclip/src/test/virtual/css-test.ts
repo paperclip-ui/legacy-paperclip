@@ -625,7 +625,6 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
 
-    // console.log(JSON.stringify(engine.parseFile("/entry.pc"), null, 2));
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
       "<style>[class]._80f4925f_parent [class]._80f4925f_child:first-child { color:blue ; }</style>"

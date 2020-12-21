@@ -1,0 +1,12 @@
+<style>
+  :global(span) {
+    color: orange;
+  }
+</style>
+
+<div export component as="Test">
+  <style>
+    font-size: 42px;
+  </style>
+  {children}
+</div>

@@ -1,3 +1,4 @@
+<import src="./mod.pc" as="mod" />
 <style>
   * {
     font-family: sans-serif;
@@ -15,4 +16,13 @@
 <!--
   @frame { width: 275, height: 229, x: 52, y: 159 }
 -->
-<span>something</span>
+<span>somethddding</span>
+
+<!--
+  @frame { width: 752, height: 454, x: 374, y: 1040 }
+-->
+<div><span>ssdsfsd</span>
+  <mod.Test>
+    Okaydddddddd
+  </mod.Test>
+</div>

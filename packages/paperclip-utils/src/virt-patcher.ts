@@ -156,10 +156,13 @@ const getImportedSheets = (
 
   for (const depUri of allDependencies) {
     const data = allData[depUri];
-    if (!data) {
-      console.error(`data not loaded, this shouldn't happen 😬.`);
-    } else {
+    if (data) {
       deps.push({ uri: depUri, sheet: data.sheet });
+
+      // scenario won't happen for renderer since renderers are only
+      // concerned about the file that's currently opened -- ignore for now. Might
+    } else {
+      // console.error(`data not loaded, this shouldn't happen 😬.`);
     }
   }
 

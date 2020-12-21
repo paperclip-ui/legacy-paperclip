@@ -48,6 +48,7 @@ class FramesProxy implements Patchable {
   private _childNodes: ChildNode[];
   private _mainStyle: any;
   private _mainNativeStyle: HTMLStyleElement;
+  private _importedNativeStyles: HTMLStyleElement[];
   private _importedStyles: SheetInfo[];
   readonly namespaceURI = null;
 
@@ -59,6 +60,7 @@ class FramesProxy implements Patchable {
     this._frames = [];
     this._childNodes = [];
     this._importedStyles = [];
+    this._importedNativeStyles = [];
   }
   setPreview(preview: VirtualNode) {
     this._preview = preview;
@@ -93,6 +95,7 @@ class FramesProxy implements Patchable {
       if (removeStyleUris.includes(style.uri)) {
         rmIndices.unshift(i);
         this._importedStyles.splice(i, 1);
+        this._importedNativeStyles.splice(i, 1);
       }
     }
 
@@ -105,6 +108,7 @@ class FramesProxy implements Patchable {
         this._domFactory,
         this._protocol
       );
+      this._importedNativeStyles.push(nativeSheet);
       for (const frame of this._frames) {
         frame._importedStylesContainer.appendChild(nativeSheet.cloneNode(true));
       }
@@ -133,6 +137,10 @@ class FramesProxy implements Patchable {
   }
   insert(child: Node, index: number) {
     const _importedStylesContainer = this._domFactory.createElement("div");
+
+    for (const style of this._importedNativeStyles) {
+      _importedStylesContainer.appendChild(style.cloneNode(true));
+    }
     const _mainStylesContainer = this._domFactory.createElement("div");
     if (this._mainNativeStyle) {
       _mainStylesContainer.appendChild(this._mainNativeStyle.cloneNode(true));
