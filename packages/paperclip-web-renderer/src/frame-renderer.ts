@@ -154,18 +154,6 @@ class FramesProxy implements Patchable {
       sourceUri: null
     });
   }
-
-  // private _onStageMouseDown = (event: MouseEvent) => {
-  //   event.preventDefault();
-  //   event.stopImmediatePropagation();
-  //   const element = event.target as Element;
-  //   const frame = this._frames.find(frame => frame.stage === event.target);
-  //   if (element.nodeType !== 1 || !event.metaKey) return;
-  //   const nodePath = getNativeNodePath(frame._mount, element);
-  //   console.log(this._preview);
-  //   const virtNode = getVirtTarget(this._preview, nodePath);
-  //   if (!virtNode) return;
-  // };
 }
 
 /**

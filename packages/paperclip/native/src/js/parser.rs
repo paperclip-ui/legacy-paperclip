@@ -66,7 +66,9 @@ fn parse_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement,
   }))
 }
 
-fn parse_negative_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_negative_number<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+) -> Result<ast::Statement, ParseError> {
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::Minus)?;
   let num_buffer = get_number_buffer(context)?;

@@ -12,27 +12,7 @@
 <span>
   Button
 </span>
-
 <!--
-  @frame { title: "Mobile", width: 1374, height: 1014, x: 482, y: 2205 }
+  @frame { width: 275, height: 229, x: 52, y: 159 }
 -->
-
-<span>
-  Something
-</span>
-
-<!--
-  @frame { title: "Mobile", width: 237, height: 490, x:0, y:0 }
--->
-
-<span>
-  Button
-</span>
-
-<!--
-  @frame { title: "Mobile", width: 1507, height: 1244, x: 461, y: 684 }
--->
-
-<span>
-  Button
-</span>
+<span>something</span>
