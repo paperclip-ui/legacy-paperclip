@@ -54,6 +54,9 @@ const Frame = memo(
   ({ frame, frameIndex, canvasTransform, dispatch }: FrameProps) => {
     const annotations: NodeAnnotations =
       (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
+    if (annotations.frame?.visible === false) {
+      return null;
+    }
     const frameBounds = getFrameBounds(frame as any);
     const [editing, setEditing] = useState(false);
 

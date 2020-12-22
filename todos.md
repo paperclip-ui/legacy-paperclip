@@ -8,7 +8,6 @@
 
 ### Immediate
 
-- ability to change frame title
 - ability to copy & paste frames
 - ability to delete frames
 - update percy scanner

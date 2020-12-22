@@ -7,7 +7,7 @@
 </style>
 
 <!--
-  @frame { title: "Desktop / Mobile", width: 674, height: 439, x: 326, y: 671 }
+  @frame { title: "Desktop / Mobile", width: 674, height: 439, x: 326, y: 671, visible: false }
 -->
 
 
@@ -26,7 +26,7 @@
 <span>Something</span>
 
 <!--
-  @frame { title: "another title", width: 399, height: 416, x: -925, y: -1407 }
+  @frame { title: "another title", width: 399, height: 416, x: -1008, y: -1442 }
 -->
 
 <span>

@@ -101,11 +101,17 @@ const Frame = memo(({ frame, preview }: FrameProps) => {
   if (!preview) {
     return null;
   }
-  const frameRef = useRef<HTMLDivElement>();
 
   const annotations: NodeAnnotations =
     (preview.annotations && computeVirtJSObject(preview.annotations)) ||
     ({} as any);
+
+  // ability to hide
+  if (annotations.frame?.visible === false) {
+    return null;
+  }
+
+  const frameRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
     if (frameRef.current) {
