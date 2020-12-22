@@ -1,15 +1,35 @@
 import produce from "immer";
 import { isEqual } from "lodash";
-import { memoize, VirtualFrame, VirtualNodeKind } from "paperclip-utils";
+import {
+  computeVirtJSObject,
+  memoize,
+  NodeAnnotations,
+  VirtualFrame,
+  VirtualNodeKind
+} from "paperclip-utils";
 import {
   VirtualNode,
   EngineErrorEvent,
   EngineDelegateEvent,
   LoadedData
 } from "paperclip-utils";
-import { Transform, Box, Point, Size } from "./geom";
+import {
+  Transform,
+  Box,
+  Point,
+  Size,
+  mergeBoxes,
+  centerTransformZoom
+} from "./geom";
 import * as os from "os";
 import { Frame } from "paperclip-web-renderer";
+
+export const DEFAULT_FRAME_BOX = {
+  width: 1024,
+  height: 768,
+  x: 0,
+  y: 0
+};
 
 export type Canvas = {
   showTools: boolean;
@@ -48,6 +68,7 @@ export type Directory = {
 export type FSItem = File | Directory;
 
 export type AppState = {
+  centeredInitial: boolean;
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
   currentFileUri: string;
@@ -66,6 +87,7 @@ export type AppState = {
 };
 
 export const INITIAL_STATE: AppState = {
+  centeredInitial: false,
   toolsLayerEnabled: true,
   currentFileUri: null,
   currentEngineEvents: [],
@@ -196,3 +218,110 @@ export const getSelectedFrame = (state: AppState) => {
 };
 
 export * from "./geom";
+
+export const getPreviewChildren = (frame: VirtualNode) => {
+  return frame.kind === VirtualNodeKind.Fragment ? frame.children : [frame];
+};
+
+const getAllFrameBounds = (state: AppState) => {
+  const currentPreview =
+    state.allLoadedPCFileData[state.currentFileUri].preview;
+  const frameBoxes = getPreviewChildren(currentPreview).map(
+    (frame: VirtualFrame) => {
+      const box =
+        (frame.annotations &&
+          (computeVirtJSObject(frame.annotations) as NodeAnnotations).frame) ||
+        DEFAULT_FRAME_BOX;
+      return box as Box;
+    }
+  );
+
+  return mergeBoxes(frameBoxes);
+};
+
+const INITIAL_ZOOM_PADDING = 50;
+
+/**
+ * Called when file is data -- few conditions need to be met though:
+ * canvas is loaded
+ * file data is loaded
+ */
+
+export const maybeCenterCanvas = (state: AppState) => {
+  if (
+    !state.centeredInitial &&
+    state.allLoadedPCFileData[state.currentFileUri] &&
+    state.canvas.size?.width &&
+    state.canvas.size?.height
+  ) {
+    console.log("CENTERED");
+    state = produce(state, newState => {
+      newState.centeredInitial = true;
+    });
+
+    state = centerEditorCanvas(state);
+
+    return state;
+  }
+  return state;
+};
+
+// https://github.com/crcn/tandem/blob/10.0.0/packages/front-end/src/state/index.ts#L1304
+export const centerEditorCanvas = (
+  state: AppState,
+  innerBounds?: Box,
+  zoomOrZoomToFit: boolean | number = true
+) => {
+  if (!innerBounds) {
+    innerBounds = getAllFrameBounds(state);
+  }
+
+  // no windows loaded
+  if (
+    innerBounds.x + innerBounds.y + innerBounds.width + innerBounds.height ===
+    0
+  ) {
+    console.warn(` Cannot center when bounds has no size`);
+    return state;
+  }
+
+  const {
+    canvas: {
+      transform,
+      size: { width, height }
+    }
+  } = state;
+
+  const centered = {
+    x: -innerBounds.x + width / 2 - innerBounds.width / 2,
+    y: -innerBounds.y + height / 2 - innerBounds.height / 2
+  };
+
+  const scale =
+    typeof zoomOrZoomToFit === "boolean"
+      ? Math.min(
+          (width - INITIAL_ZOOM_PADDING) / innerBounds.width,
+          (height - INITIAL_ZOOM_PADDING) / innerBounds.height
+        )
+      : typeof zoomOrZoomToFit === "number"
+      ? zoomOrZoomToFit
+      : transform.z;
+
+  state = produce(state, newState => {
+    newState.canvas.transform = centerTransformZoom(
+      {
+        ...centered,
+        z: 1
+      },
+      {
+        x: 0,
+        y: 0,
+        width,
+        height
+      },
+      Math.min(scale, 1)
+    );
+  });
+
+  return state;
+};

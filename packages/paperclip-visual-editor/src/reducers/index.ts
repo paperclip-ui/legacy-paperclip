@@ -8,7 +8,12 @@ import {
   resetCanvas,
   getFSItem,
   Directory,
-  getSelectedFrame
+  getSelectedFrame,
+  getPreviewChildren,
+  DEFAULT_FRAME_BOX,
+  mergeBoxes,
+  centerEditorCanvas,
+  maybeCenterCanvas
 } from "../state";
 import { produce } from "immer";
 import { Action, ActionType } from "../actions";
@@ -21,7 +26,8 @@ import {
   toVirtJsValue,
   VirtualNodeKind,
   computeVirtJSObject,
-  VirtJsObjectKind
+  VirtJsObjectKind,
+  NodeAnnotations
 } from "paperclip-utils";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
@@ -44,7 +50,7 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
-      return produce(state, newState => {
+      state = produce(state, newState => {
         newState.currentEngineEvents.push(action.payload);
 
         newState.allLoadedPCFileData = updateAllLoadedData(
@@ -54,11 +60,17 @@ export default (state: AppState, action: Action) => {
 
         newState.currentError = undefined;
       });
+
+      state = maybeCenterCanvas(state);
+
+      return state;
     }
     case ActionType.CURRENT_FILE_INITIALIZED: {
-      return produce(state, newState => {
+      state = produce(state, newState => {
         newState.allLoadedPCFileData[state.currentFileUri] = action.payload;
       });
+      state = maybeCenterCanvas(state);
+      return state;
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
       return produce(state, newState => {
@@ -260,9 +272,13 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.CANVAS_RESIZED: {
-      return produce(state, newState => {
+      state = produce(state, newState => {
         newState.canvas.size = action.payload;
       });
+
+      state = maybeCenterCanvas(state);
+
+      return state;
     }
   }
   return state;
