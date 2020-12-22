@@ -272,6 +272,9 @@ class LivePreview {
     return this._targetUri;
   }
   setTargetUri(value: string) {
+    if (this._targetUri === value) {
+      return;
+    }
     this.panel.title = `⚡️ ${
       this.sticky ? "sticky preview" : path.basename(value)
     }`;

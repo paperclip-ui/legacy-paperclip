@@ -52,6 +52,7 @@ export default (state: AppState, action: Action) => {
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       state = produce(state, newState => {
         newState.currentEngineEvents.push(action.payload);
+        console.log(action.payload);
 
         newState.allLoadedPCFileData = updateAllLoadedData(
           newState.allLoadedPCFileData,
@@ -170,27 +171,31 @@ export default (state: AppState, action: Action) => {
           return;
         }
 
-        const annotations =
-          (frame.annotations && computeVirtJSObject(frame.annotations)) ||
-          ({} as any);
+        Object.assign(
+          frame,
+          updateAnnotations(frame, {
+            frame: action.payload.newBounds
+          })
+        );
+      });
+    }
+    case ActionType.FRAME_TITLE_CHANGED: {
+      return produce(state, newState => {
+        const frame = getSelectedFrame(newState);
 
-        if (!frame.annotations) {
-          frame.annotations = {
-            kind: VirtJsObjectKind.JsObject,
-            values: {},
-
-            // null to indicate insertion
-            source: null
-          };
+        if (!frame) {
+          console.warn(`Trying to resize non-frame`);
+          return;
         }
 
-        frame.annotations.values = toVirtJsValue({
-          ...annotations,
-          frame: {
-            ...(annotations.frame || {}),
-            ...action.payload.newBounds
-          }
-        }).values;
+        Object.assign(
+          frame,
+          updateAnnotations(frame, {
+            frame: {
+              title: action.payload.value
+            }
+          })
+        );
       });
     }
     case ActionType.CANVAS_PANNED: {
@@ -316,4 +321,35 @@ const setCanvasZoom = (
     }),
     rects
   );
+};
+
+const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
+  const annotations =
+    (frame.annotations && computeVirtJSObject(frame.annotations)) ||
+    ({} as any);
+
+  if (!frame.annotations) {
+    frame.annotations = {
+      kind: VirtJsObjectKind.JsObject,
+      values: {},
+
+      // null to indicate insertion
+      source: null
+    };
+  }
+
+  let mergedAnnotations = {};
+
+  for (const key in newAnnotations) {
+    mergedAnnotations = {
+      ...mergedAnnotations,
+      [key]: {
+        ...(annotations[key] || {}),
+        ...newAnnotations[key]
+      }
+    };
+  }
+
+  frame.annotations.values = toVirtJsValue(mergedAnnotations).values;
+  return frame;
 };

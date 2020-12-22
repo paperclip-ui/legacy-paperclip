@@ -7,9 +7,13 @@ import {
   VirtualText
 } from "paperclip-utils";
 import { getFrameBounds } from "paperclip-web-renderer";
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Dispatch } from "redux";
-import { Action, frameTitleClicked } from "../../../../../../actions";
+import {
+  Action,
+  frameTitleChanged,
+  frameTitleClicked
+} from "../../../../../../actions";
 import { Transform } from "../../../../../../state";
 import * as styles from "./index.pc";
 
@@ -51,10 +55,43 @@ const Frame = memo(
     const annotations: NodeAnnotations =
       (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
     const frameBounds = getFrameBounds(frame as any);
+    const [editing, setEditing] = useState(false);
 
     const onClick = useCallback(() => {
       dispatch(frameTitleClicked({ frameIndex }));
     }, []);
+    const inputRef = useRef<HTMLInputElement>();
+
+    const onDoubleClick = useCallback(() => {
+      setEditing(true);
+      setTimeout(() => {
+        inputRef.current.select();
+      }, 50);
+    }, [inputRef, setEditing]);
+
+    const onChanged = useCallback(() => {
+      if (!editing) {
+        return;
+      }
+
+      setEditing(false);
+      dispatch(
+        frameTitleChanged({ frameIndex, value: inputRef.current.value })
+      );
+    }, [editing, inputRef, frameIndex, setEditing]);
+    const onBlur = onChanged;
+    useEffect(() => {
+      inputRef.current.value = annotations.frame?.title || "";
+    }, [inputRef, annotations.frame?.title]);
+
+    const onKeyPress = useCallback(
+      (event: React.KeyboardEvent<any>) => {
+        if (event.key === "Enter") {
+          onChanged();
+        }
+      },
+      [onChanged]
+    );
 
     return (
       <styles.Frame
@@ -70,9 +107,15 @@ const Frame = memo(
           transformOrigin: "top left"
         }}
       >
-        <styles.FrameTitle onClick={onClick}>
-          {annotations.frame?.title || "Untitled"}
-        </styles.FrameTitle>
+        <styles.FrameTitle
+          editing={editing}
+          onBlur={onBlur}
+          onKeyPress={onKeyPress}
+          onDoubleClick={onDoubleClick}
+          inputRef={inputRef}
+          onClick={onClick}
+          value={annotations.frame?.title || "Untitled"}
+        />
       </styles.Frame>
     );
   }

@@ -7,26 +7,26 @@
 </style>
 
 <!--
-  @frame { width: 674, height: 439, x: 167, y: 341 }
+  @frame { title: "Desktop / Mobile", width: 674, height: 439, x: 326, y: 671 }
 -->
 
 
 <span>Something</span>
 
 <!--
-  @frame { width: 1049, height: 893, x: -1464, y: 784 }
+  @frame { title: "Mobile", width: 1049, height: 893, x: -1402, y: 490 }
 -->
 
 <span>Something</span>
 
 <!--
-  @frame { width: 1396, height: 1127, x: 707, y: -2152 }
+  @frame { title: "title change", width: 1396, height: 1127, x: 231, y: -1521 }
 -->
 
 <span>Something</span>
 
 <!--
-  @frame { width: 399, height: 416, x: -654, y: -228 }
+  @frame { title: "another title", width: 399, height: 416, x: -925, y: -1407 }
 -->
 
 <span>

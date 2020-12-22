@@ -157,10 +157,12 @@ function* handleRenderer() {
   yield takeEvery(
     [
       ActionType.RESIZER_STOPPED_MOVING,
-      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
+      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
+      ActionType.FRAME_TITLE_CHANGED
     ],
     function*(action: Action) {
       const state: AppState = yield select();
+      console.log(getSelectedFrame(state).annotations.source);
 
       sendMessage(
         pcVirtObjectEdited({

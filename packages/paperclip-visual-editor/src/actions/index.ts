@@ -40,7 +40,8 @@ export enum ActionType {
   RESIZER_STOPPED_MOVING = "RESIZER_STOPPED_MOVING",
   RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING",
   META_CLICKED = "META_CLICKED",
-  PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED"
+  PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED",
+  FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED"
 }
 
 // export type RendererInitialized = BaseAction<
@@ -109,6 +110,14 @@ export type EngineDelegateChanged = BaseAction<
 export type CurrentFileInitialized = BaseAction<
   ActionType.CURRENT_FILE_INITIALIZED,
   LoadedData
+>;
+
+export type FrameTitleChanged = BaseAction<
+  ActionType.FRAME_TITLE_CHANGED,
+  {
+    frameIndex: number;
+    value: string;
+  }
 >;
 
 export type FrameTitleClicked = BaseAction<
@@ -187,6 +196,9 @@ export const currentFileInitialized = actionCreator<CurrentFileInitialized>(
 );
 export const frameTitleClicked = actionCreator<FrameTitleClicked>(
   ActionType.FRAME_TITLE_CLICKED
+);
+export const frameTitleChanged = actionCreator<FrameTitleChanged>(
+  ActionType.FRAME_TITLE_CHANGED
 );
 export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
@@ -268,6 +280,7 @@ export type Action =
   | CanvasElementClicked
   | ResizerPathMoved
   | ResizerPathStoppedMoving
+  | FrameTitleChanged
   | MetaClicked
   | ResizerStoppedMoving
   | ResizerMoved

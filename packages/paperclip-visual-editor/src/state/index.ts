@@ -254,7 +254,6 @@ export const maybeCenterCanvas = (state: AppState) => {
     state.canvas.size?.width &&
     state.canvas.size?.height
   ) {
-    console.log("CENTERED");
     state = produce(state, newState => {
       newState.centeredInitial = true;
     });
