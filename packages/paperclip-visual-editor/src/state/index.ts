@@ -229,8 +229,9 @@ const getAllFrameBounds = (state: AppState) => {
   const frameBoxes = getPreviewChildren(currentPreview)
     .map((frame: VirtualFrame) => {
       const annotations =
-        frame.annotations &&
-        (computeVirtJSObject(frame.annotations) as NodeAnnotations);
+        (frame.annotations &&
+          (computeVirtJSObject(frame.annotations) as NodeAnnotations)) ||
+        {};
       const box = annotations.frame || DEFAULT_FRAME_BOX;
       if (annotations.frame?.visible === false) {
         return null;
