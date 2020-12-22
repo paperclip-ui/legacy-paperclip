@@ -31,6 +31,7 @@ export class PCSourceWriter {
   async getContentChanges({ nodeSource, action }: PCMutation) {
     const changes: ContentChange[] = [];
 
+    console.log("OOKO", action.kind);
     switch (action.kind) {
       case PCMutationActionKind.ANNOTATIONS_CHANGED: {
         changes.push(
@@ -42,10 +43,23 @@ export class PCSourceWriter {
         );
         break;
       }
+      case PCMutationActionKind.EXPRESSION_DELETED: {
+        changes.push(this._getExpressionDeletedChanged(nodeSource));
+        break;
+      }
     }
 
     return changes;
   }
+
+  private _getExpressionDeletedChanged(nodeSource: ExprSource): ContentChange {
+    return {
+      start: nodeSource.location.start,
+      end: nodeSource.location.end,
+      value: ""
+    };
+  }
+
   private _getAnnotationChange(
     nodeSource: ExprSource,
     annotationsSource: ExprSource | null,

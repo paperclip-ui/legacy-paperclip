@@ -8,10 +8,27 @@
 
 ### Immediate
 
-- preview not updating if module changes
 - ability to copy & paste frames
 - ability to delete frames
-- update percy scanner
+- writer
+  - need to et AST & find assoc expression with nodeSource
+  - change nodeSource -> exprSource
+- fix incorrect writer pos (web app not getting updated?)
+
+- preview not updating if module changes
+- Empty state
+- Update docs
+  - include percy docs
+    - ability to set title template
+    - ability to skip hidden frames
+  - reflect annotations
+  - how to use frames
+
+### Clean up
+
+- remove old renderer
+- remove old engine.ts
+  - swap createEngine with createEngineDelegatee
 
 ### problems
 
@@ -24,3 +41,4 @@
 - multi-select windows
 - ability to hide frames
 - ability to expand frames
+- different title color or icon for components

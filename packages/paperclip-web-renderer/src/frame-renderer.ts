@@ -178,7 +178,11 @@ export class FramesRenderer {
     readonly protocol: string,
     private _domFactory: DOMFactory = document
   ) {
-    this._framesProxy = new FramesProxy(this._preview, _domFactory);
+    this._framesProxy = new FramesProxy(
+      this._preview,
+      _domFactory,
+      this.protocol
+    );
   }
 
   setPreview(preview: VirtualNode) {
@@ -203,7 +207,11 @@ export class FramesRenderer {
       preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
     this._preview = preview;
 
-    this._framesProxy = new FramesProxy(this._preview, this._domFactory);
+    this._framesProxy = new FramesProxy(
+      this._preview,
+      this._domFactory,
+      this.protocol
+    );
     this._dependencies = importedSheets.map(info => info.uri);
     this._framesProxy.setMainStyle(sheet);
 

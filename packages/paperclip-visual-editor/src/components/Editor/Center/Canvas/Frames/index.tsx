@@ -22,6 +22,8 @@ import {
 import * as styles from "./index.pc";
 import { render } from "react-dom";
 
+declare const PROTOCOL: string;
+
 export const Frames = memo(() => {
   const { renderer, preview } = useFrames();
 
@@ -50,7 +52,11 @@ const useFrames = () => {
   const frameData = state.allLoadedPCFileData[state.currentFileUri];
 
   const renderer = useMemo(() => {
-    const renderer = new FramesRenderer(state.currentFileUri, "file://");
+    console.log(PROTOCOL);
+    const renderer = new FramesRenderer(
+      state.currentFileUri,
+      typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL
+    );
     if (frameData) {
       renderer.initialize(frameData);
     }

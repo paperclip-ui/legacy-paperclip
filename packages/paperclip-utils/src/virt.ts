@@ -15,6 +15,7 @@ export type FrameAnnotation = {
   x?: number;
   y?: number;
   title?: string;
+  visible?: boolean;
 };
 
 export type NodeAnnotations = {

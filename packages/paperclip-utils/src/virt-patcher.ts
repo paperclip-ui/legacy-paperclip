@@ -129,6 +129,12 @@ export const updateAllLoadedData = (
   } else if (event.kind === EngineDelegateEventKind.Diffed) {
     const existingData = allData[event.uri];
 
+    // this will happen if client renderer loads data, but imported
+    // resource has changed
+    if (!existingData) {
+      return allData;
+    }
+
     return {
       ...allData,
       [event.uri]: {

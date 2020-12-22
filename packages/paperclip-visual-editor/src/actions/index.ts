@@ -29,6 +29,7 @@ export enum ActionType {
   RECTS_CAPTURED = "RECTS_CAPTURED",
   GLOBAL_ESCAPE_KEY_PRESSED = "GLOBAL_ESCAPE_KEY_PRESSED",
   GLOBAL_META_KEY_DOWN = "GLOBAL_META_KEY_DOWN",
+  GLOBAL_BACKSPACE_KEY_PRESSED = "GLOBAL_BACKSPACE_KEY_PRESSED",
   GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP",
   ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
   CURRENT_FILE_INITIALIZED = "CURRENT_FILE_INITIALIZED",
@@ -263,9 +264,15 @@ export const paintButtonClicked = actionCreator<PainButtonClicked>(
 export const globalEscapeKeyPressed = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
 >(ActionType.GLOBAL_ESCAPE_KEY_PRESSED);
+
+export const globalBackspaceKeyPressed = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
+>(ActionType.GLOBAL_BACKSPACE_KEY_PRESSED);
+
 export const globalMetaKeyDown = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
 >(ActionType.GLOBAL_META_KEY_DOWN);
+
 export const globalMetaKeyUp = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
 >(ActionType.GLOBAL_META_KEY_UP);
@@ -301,6 +308,7 @@ export type Action =
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
   | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
+  | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
   | EngineErrored
   | ZoomOutButtonClicked
   | DirLoaded

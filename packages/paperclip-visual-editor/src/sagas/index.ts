@@ -10,6 +10,7 @@ import {
   ErrorBannerClicked,
   engineErrored,
   globalEscapeKeyPressed,
+  globalBackspaceKeyPressed,
   globalMetaKeyDown,
   globalMetaKeyUp,
   Action,
@@ -38,6 +39,7 @@ export default function* mainSaga() {
   yield fork(handleKeyCommands);
   yield put(fileOpened({ uri: getTargetUrl() }));
   yield fork(handleCanvas);
+  yield fork(handleClipboard);
 }
 
 const parent = typeof vscode != "undefined" ? vscode : window;
@@ -162,8 +164,6 @@ function* handleRenderer() {
     ],
     function*(action: Action) {
       const state: AppState = yield select();
-      console.log(getSelectedFrame(state).annotations.source);
-
       sendMessage(
         pcVirtObjectEdited({
           mutation: {
@@ -180,6 +180,21 @@ function* handleRenderer() {
       );
     }
   );
+
+  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
+    const state: AppState = yield select();
+    const frame = getSelectedFrame(state);
+    sendMessage(
+      pcVirtObjectEdited({
+        mutation: {
+          nodeSource: frame.source,
+          action: {
+            kind: PCMutationActionKind.EXPRESSION_DELETED
+          }
+        }
+      })
+    );
+  });
 
   yield takeEvery([ActionType.META_CLICKED], function(action: Action) {
     sendMessage(action);
@@ -245,6 +260,9 @@ function* handleKeyCommands() {
     Mousetrap.bind("meta", () => {
       emit(globalMetaKeyDown(null));
     });
+    Mousetrap.bind("backspace", () => {
+      emit(globalBackspaceKeyPressed(null));
+    });
     Mousetrap.bind(
       "meta",
       () => {
@@ -260,4 +278,21 @@ function* handleKeyCommands() {
   while (1) {
     yield put(yield take(chan));
   }
+}
+
+function* handleClipboard() {
+  yield fork(handleCopy);
+}
+function* handleCopy() {
+  const ev = eventChannel(emit => {
+    window.document.addEventListener("copy", emit);
+    return () => {
+      window.document.removeEventListener("copy", emit);
+    };
+  });
+
+  yield takeEvery(ev, function*(event: React.ClipboardEvent<any>) {
+    const state: AppState = yield select();
+    console.log("HANDLE COPY");
+  });
 }

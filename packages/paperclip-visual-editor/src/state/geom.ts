@@ -99,8 +99,12 @@ export const mapBox = (
 
 export const roundBox = (bounds: Box) => mapBox(bounds, v => Math.round(v));
 
-export const mergeBoxes = (boxes: Box[]) =>
-  boxes.reduce(
+export const mergeBoxes = (boxes: Box[]) => {
+  if (boxes.length === 1) {
+    return boxes[0];
+  }
+
+  return boxes.reduce(
     (entire, box) => {
       const left = entire.x;
       const right = entire.x + entire.width;
@@ -131,3 +135,4 @@ export const mergeBoxes = (boxes: Box[]) =>
       y: 0
     }
   );
+};
