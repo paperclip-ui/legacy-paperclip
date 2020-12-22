@@ -388,7 +388,6 @@ class LivePreview {
     }
   }
   public async $$handleEngineDelegateEvent(event: EngineDelegateEvent) {
-    console.log("DEL", event, this._needsReloading);
     await this._initPromise;
     if (
       this._needsReloading &&

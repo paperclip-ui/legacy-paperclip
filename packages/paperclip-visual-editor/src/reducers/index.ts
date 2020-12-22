@@ -20,7 +20,8 @@ import {
   VirtualFrame,
   toVirtJsValue,
   VirtualNodeKind,
-  computeVirtJSObject
+  computeVirtJSObject,
+  VirtJsObjectKind
 } from "paperclip-utils";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
@@ -160,6 +161,16 @@ export default (state: AppState, action: Action) => {
         const annotations =
           (frame.annotations && computeVirtJSObject(frame.annotations)) ||
           ({} as any);
+
+        if (!frame.annotations) {
+          frame.annotations = {
+            kind: VirtJsObjectKind.JsObject,
+            values: {},
+
+            // null to indicate insertion
+            source: null
+          };
+        }
 
         frame.annotations.values = toVirtJsValue({
           ...annotations,

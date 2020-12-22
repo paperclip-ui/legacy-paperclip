@@ -165,9 +165,10 @@ function* handleRenderer() {
       sendMessage(
         pcVirtObjectEdited({
           mutation: {
-            source: getSelectedFrame(state).annotations.source,
+            nodeSource: getSelectedFrame(state).source,
             action: {
               kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
+              annotationsSource: getSelectedFrame(state).annotations.source,
               annotations: computeVirtJSObject(
                 getSelectedFrame(state).annotations
               )

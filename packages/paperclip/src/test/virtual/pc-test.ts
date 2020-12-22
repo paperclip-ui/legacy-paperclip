@@ -1517,4 +1517,33 @@ describe(__filename + "#", () => {
       "<style>[class]._80f4925f_a[class].b[class].c { color:blue; }</style>"
     );
   });
+
+  it(`last node is removed if it's whitespace`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <span></span>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+    expect(result.preview.children[0].kind).to.eql("Element");
+    expect(result.preview.children.length).to.eql(1);
+  });
+
+  it(`last node is preserved if it has annotations`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <span></span>
+      <!--
+        @frame {}
+      -->
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+    expect(result.preview.children.length).to.eql(2);
+    expect(result.preview.children[1].value).to.eql("\n      ");
+  });
 });

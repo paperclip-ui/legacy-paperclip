@@ -80,7 +80,7 @@ pub fn evaluate<'a>(
     )));
     let mut context = create_context(node_expr, uri, graph, vfs, &data, None, import_graph, mode);
 
-    let preview = wrap_as_fragment(
+    let mut preview = wrap_as_fragment(
       evaluate_instance_node(
         node_expr,
         &mut context,
@@ -1193,6 +1193,18 @@ fn evaluate_children<'a>(
     }
 
     metadata = None;
+  }
+  
+  if depth == 0 {
+    if let Some(last_child) = children.last() {
+      if let virt::Node::Text(text_node) = last_child {
+
+        // remove last child if empty string
+        if text_node.value.trim() == "" && text_node.annotations == None {
+          children.pop();
+        }
+      }
+    }
   }
 
   Ok((children, contains_style))

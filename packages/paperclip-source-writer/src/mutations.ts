@@ -10,11 +10,12 @@ type BaseAction<TKind extends PCMutationActionKind> = {
 
 export type AnnotationsChanged = {
   annotations?: Record<string, any>;
+  annotationsSource?: ExprSource;
 } & BaseAction<PCMutationActionKind.ANNOTATIONS_CHANGED>;
 
 export type PCMutationAction = AnnotationsChanged;
 
 export type PCMutation = {
-  source: ExprSource;
+  nodeSource: ExprSource;
   action: PCMutationAction;
 };

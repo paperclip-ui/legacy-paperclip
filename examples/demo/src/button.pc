@@ -7,22 +7,14 @@
 </style>
 
 <!--
-  @frame { title: "Mobile", width: 900, height: 560, x: 440, y: 7 }
+  @frame { width: 674, height: 439, x: 902, y: -39 }
 -->
 
-<span>
-  Button
-</span>
-<!--
-  @frame { width: 275, height: 229, x: 52, y: 159 }
--->
-<span>somethddding</span>
+
+<span>Something</span>
 
 <!--
-  @frame { width: 752, height: 454, x: 374, y: 1040 }
+  @frame { width: 399, height: 416, x: 233, y: 19 }
 -->
-<div><span>ssdsfsd</span>
-  <mod.Test>
-    Okaydddddddd
-  </mod.Test>
-</div>
+
+<span>Something</span>

@@ -8,12 +8,11 @@
 
 ### Immediate
 
-- ensure frames can be changed if comments don't exist (add tests)
+- ensure frames can be changed if comments don't exist (add tests for writer)
+- trim whitespace at end of document
 - ability to copy & paste frames
 - ability to delete frames
 - update percy scanner
-- trim whitespace at end of document
-- select elements based on text position
 - z index for title needs to be 1024
 
 ### problems

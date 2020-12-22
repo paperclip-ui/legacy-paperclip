@@ -11,8 +11,6 @@ function* handleDND() {
       ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
       ActionType.RESIZER_STOPPED_MOVING
     ],
-    function*() {
-      console.log("DONE");
-    }
+    function*() {}
   );
 }

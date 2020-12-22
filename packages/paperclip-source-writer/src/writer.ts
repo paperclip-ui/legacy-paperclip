@@ -6,7 +6,12 @@ import {
   PCMutationAction,
   PCMutationActionKind
 } from "./mutations";
-import { ExprSource, SourceLocation, VirtJsObject } from "paperclip-utils";
+import {
+  ExprSource,
+  SourceLocation,
+  VirtJsObject,
+  Node
+} from "paperclip-utils";
 
 type ContentChangedHandler = (uri: string, content: string) => void;
 type PCSourceWriterOptions = {
@@ -23,12 +28,18 @@ const ANNOTATION_KEYS = ["title", "width", "height", "x", "y"];
 
 export class PCSourceWriter {
   constructor(private _options: PCSourceWriterOptions) {}
-  async getContentChanges({ source, action }: PCMutation) {
+  async getContentChanges({ nodeSource, action }: PCMutation) {
     const changes: ContentChange[] = [];
 
     switch (action.kind) {
       case PCMutationActionKind.ANNOTATIONS_CHANGED: {
-        changes.push(this._getAnnotationChange(source, action.annotations));
+        changes.push(
+          this._getAnnotationChange(
+            nodeSource,
+            action.annotationsSource,
+            action.annotations
+          )
+        );
         break;
       }
     }
@@ -36,10 +47,11 @@ export class PCSourceWriter {
     return changes;
   }
   private _getAnnotationChange(
-    source: ExprSource,
+    nodeSource: ExprSource,
+    annotationsSource: ExprSource | null,
     annotations: Object | null
   ): ContentChange {
-    const buffer = [""];
+    const buffer = ["\n"];
 
     for (const key in annotations) {
       const chunk = [`  @${key} `];
@@ -65,15 +77,22 @@ export class PCSourceWriter {
         chunk.push(items.join(", "), " }");
       }
 
-      buffer.push(chunk.join(""));
+      buffer.push(chunk.join(""), "\n");
     }
 
-    buffer.push("");
+    if (!annotationsSource) {
+      buffer.unshift("\n\n<!--");
+      buffer.push("-->\n");
+    }
 
     return {
-      start: source.location.start,
-      end: source.location.end,
-      value: buffer.join("\n")
+      start: annotationsSource
+        ? annotationsSource.location.start
+        : nodeSource.location.start,
+      end: annotationsSource
+        ? annotationsSource.location.end
+        : nodeSource.location.start,
+      value: buffer.join("")
     };
   }
 }
