@@ -22,7 +22,7 @@ export type FramesProps = {
 export const Frames = memo(
   ({ frames, dispatch, canvasTransform }: FramesProps) => {
     return (
-      <styles.FramesContainer>
+      <>
         {frames.map((frame, i) => {
           return (
             <Frame
@@ -34,7 +34,7 @@ export const Frames = memo(
             />
           );
         })}
-      </styles.FramesContainer>
+      </>
     );
   }
 );
@@ -62,6 +62,7 @@ const Frame = memo(
           left: 0,
           top: 0,
           width: frameBounds.width * canvasTransform.z,
+          height: "auto",
           transform: `translateX(${canvasTransform.x +
             frameBounds.x *
               canvasTransform.z}px) translateY(${canvasTransform.y +

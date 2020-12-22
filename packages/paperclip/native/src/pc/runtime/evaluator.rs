@@ -1194,11 +1194,10 @@ fn evaluate_children<'a>(
 
     metadata = None;
   }
-  
+
   if depth == 0 {
     if let Some(last_child) = children.last() {
       if let virt::Node::Text(text_node) = last_child {
-
         // remove last child if empty string
         if text_node.value.trim() == "" && text_node.annotations == None {
           children.pop();

@@ -64,12 +64,6 @@ export const Tools = () => {
     >
       <Pixels canvas={canvas} />
 
-      <Frames
-        frames={frames}
-        dispatch={dispatch}
-        canvasTransform={canvas.transform}
-      />
-
       <Selectable
         dispatch={dispatch}
         canvasScroll={canvas.scrollPosition}
@@ -85,6 +79,11 @@ export const Tools = () => {
           showKnobs
         />
       )}
+      <Frames
+        frames={frames}
+        dispatch={dispatch}
+        canvasTransform={canvas.transform}
+      />
       {metaKeyDown && selectedBox && hoveringNodeInfo && (
         <Distance
           canvasScroll={canvas.scrollPosition}

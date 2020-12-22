@@ -22,7 +22,7 @@
   {children}
 </div>
 
-<div export component as="FrameTitle" {onClick}>
+<div export component as="FrameTitle" {style?} {onClick}>
   <span>
     <style>
       position: absolute;
@@ -31,7 +31,7 @@
       left: 0px;
       color: grey;
       text-shadow: 1px 1px white;
-      z-index: 1024;
+      z-index: 999999999;
       cursor: default;
       white-space: nowrap;
       overflow: hidden;
