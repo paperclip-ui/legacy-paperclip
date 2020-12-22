@@ -8,13 +8,13 @@
 
 ### Immediate
 
+- preview not updating if module changes
 - ability to copy & paste frames
 - ability to delete frames
 - update percy scanner
 
 ### problems
 
-- frames in the way
 - URI protocol not working - need to update frame renderer
 
 ### Maybe

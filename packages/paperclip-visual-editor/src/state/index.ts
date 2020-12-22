@@ -226,15 +226,18 @@ export const getPreviewChildren = (frame: VirtualNode) => {
 const getAllFrameBounds = (state: AppState) => {
   const currentPreview =
     state.allLoadedPCFileData[state.currentFileUri].preview;
-  const frameBoxes = getPreviewChildren(currentPreview).map(
-    (frame: VirtualFrame) => {
-      const box =
-        (frame.annotations &&
-          (computeVirtJSObject(frame.annotations) as NodeAnnotations).frame) ||
-        DEFAULT_FRAME_BOX;
+  const frameBoxes = getPreviewChildren(currentPreview)
+    .map((frame: VirtualFrame) => {
+      const annotations =
+        frame.annotations &&
+        (computeVirtJSObject(frame.annotations) as NodeAnnotations);
+      const box = annotations.frame || DEFAULT_FRAME_BOX;
+      if (annotations.frame?.visible === false) {
+        return null;
+      }
       return box as Box;
-    }
-  );
+    })
+    .filter(Boolean);
 
   return mergeBoxes(frameBoxes);
 };

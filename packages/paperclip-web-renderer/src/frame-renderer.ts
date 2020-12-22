@@ -286,6 +286,12 @@ export class FramesRenderer {
         this._framesProxy.immutableFrames,
         this._preview
       );
+      const annotations: NodeAnnotations =
+        (frameNode.annotations && computeVirtJSObject(frameNode.annotations)) ||
+        {};
+      if (annotations.frame?.visible === false) {
+        continue;
+      }
       const bounds = getFrameBounds(frameNode);
       traverseNativeNode(frame._mount, (node, path) => {
         if (node.nodeType === 1) {
