@@ -9,11 +9,9 @@
 ### Immediate
 
 - center canvas based on size
-- ensure frames can be changed if comments don't exist (add tests for writer)
 - ability to copy & paste frames
 - ability to delete frames
 - update percy scanner
-- z index for title needs to be 1024
 
 ### problems
 
