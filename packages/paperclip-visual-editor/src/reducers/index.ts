@@ -8,26 +8,21 @@ import {
   resetCanvas,
   getFSItem,
   Directory,
-  getSelectedFrame,
-  getPreviewChildren,
-  DEFAULT_FRAME_BOX,
-  mergeBoxes,
-  centerEditorCanvas,
-  maybeCenterCanvas
+  maybeCenterCanvas,
+  getNodeInfoAtPoint,
+  getSelectedFrames,
+  getFrameFromIndex,
+  mergeBoxes
 } from "../state";
 import { produce } from "immer";
 import { Action, ActionType } from "../actions";
-import { clamp, isEqual } from "lodash";
+import { clamp } from "lodash";
 import {
-  EngineDelegateEventKind,
-  patchVirtNode,
   updateAllLoadedData,
   VirtualFrame,
   toVirtJsValue,
-  VirtualNodeKind,
   computeVirtJSObject,
-  VirtJsObjectKind,
-  NodeAnnotations
+  VirtJsObjectKind
 } from "paperclip-utils";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
@@ -35,19 +30,15 @@ const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const PAN_Y_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const MIN_ZOOM = 0.02;
 const MAX_ZOOM = 6400 / 100;
-const MAX_CANVAS_SIZE = 2000;
 
 export default (state: AppState, action: Action) => {
   switch (action.type) {
-    // case ActionType.RENDERER_INITIALIZED: {
-    //   return produce(state, newState => {
-    //     newState.rendererElement = action.payload.element as any;
-    //   });
-    // }
     case ActionType.FRAME_TITLE_CLICKED: {
-      return produce(state, newState => {
-        newState.selectedNodePath = String(action.payload.frameIndex);
-      });
+      return selectNode(
+        String(action.payload.frameIndex),
+        action.payload.shiftKey,
+        state
+      );
     }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       state = produce(state, newState => {
@@ -104,14 +95,14 @@ export default (state: AppState, action: Action) => {
     case ActionType.PAINT_BUTTON_CLICKED: {
       return produce(state, newState => {
         newState.toolsLayerEnabled = !newState.toolsLayerEnabled;
-        newState.selectedNodePath = null;
+        newState.selectedNodePaths = [];
         newState.canvas = resetCanvas(newState.canvas);
       });
     }
     case ActionType.GLOBAL_ESCAPE_KEY_PRESSED: {
       // Don't do this until deselecting can be handled properly
       return produce(state, newState => {
-        newState.selectedNodePath = null;
+        newState.selectedNodePaths = [];
       });
     }
     case ActionType.GLOBAL_META_KEY_DOWN: {
@@ -126,12 +117,17 @@ export default (state: AppState, action: Action) => {
         newState.metaKeyDown = false;
       });
     }
-    case ActionType.CANVAS_ELEMENT_CLICKED: {
+    case ActionType.CANVAS_MOUSE_UP: {
+      if (state.resizerMoving) {
+        return state;
+      }
       // Don't do this until deselecting can be handled properly
-      return produce(state, newState => {
-        // allow toggle selecting elements - necessary since escape key doesn't work.
-        newState.selectedNodePath = action.payload.nodePath;
-      });
+      const nodePath = getNodeInfoAtPoint(
+        state.canvas.mousePosition,
+        state.canvas.transform,
+        state.boxes
+      )?.nodePath;
+      return selectNode(nodePath, action.payload.shiftKey, state);
     }
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {
       return produce(state, newState => {
@@ -161,27 +157,43 @@ export default (state: AppState, action: Action) => {
         newState.canvas.panning = false;
       });
     }
+    case ActionType.RESIZER_STOPPED_MOVING:
+    case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING: {
+      return produce(state, newState => {
+        newState.resizerMoving = false;
+      });
+    }
     case ActionType.RESIZER_MOVED:
     case ActionType.RESIZER_PATH_MOUSE_MOVED: {
       return produce(state, newState => {
-        const frame = getSelectedFrame(newState);
+        newState.resizerMoving = true;
+        const frames = getSelectedFrames(newState);
 
-        if (!frame) {
+        if (!frames.length) {
           console.warn(`Trying to resize non-frame`);
           return;
         }
 
-        Object.assign(
-          frame,
-          updateAnnotations(frame, {
-            frame: action.payload.newBounds
-          })
-        );
+        const oldBox = mergeBoxes(frames.map((frame, i) => newState.boxes[i]));
+
+        for (let i = 0, { length } = frames; i < length; i++) {
+          const frame = frames[i];
+          Object.assign(
+            frame,
+            updateAnnotations(frame, {
+              frame: updateBox(
+                newState.boxes[i],
+                oldBox,
+                action.payload.newBounds
+              )
+            })
+          );
+        }
       });
     }
     case ActionType.FRAME_TITLE_CHANGED: {
       return produce(state, newState => {
-        const frame = getSelectedFrame(newState);
+        const frame = getFrameFromIndex(action.payload.frameIndex, newState);
 
         if (!frame) {
           console.warn(`Trying to resize non-frame`);
@@ -197,6 +209,8 @@ export default (state: AppState, action: Action) => {
           })
         );
       });
+
+      return state;
     }
     case ActionType.CANVAS_PANNED: {
       const {
@@ -236,24 +250,6 @@ export default (state: AppState, action: Action) => {
           newState.canvas,
           clampCanvasTransform(newState.canvas, newState.boxes)
         );
-
-        // end of iframe bounds. Onto scrolling now. Note that this should only
-        // work for full screen mode
-        // if (
-        //   !metaKey &&
-        //   isEqual(newState.canvas.transform, state.canvas.transform)
-        // ) {
-        //   newState.canvas.scrollPosition.x = clamp(
-        //     newState.canvas.scrollPosition.x + delta2X,
-        //     0,
-        //     newState.scrollSize.width - newState.frameSize.width
-        //   );
-        //   newState.canvas.scrollPosition.y = clamp(
-        //     newState.canvas.scrollPosition.y + delta2Y,
-        //     0,
-        //     newState.scrollSize.height - newState.frameSize.height
-        //   );
-        // }
       });
     }
     case ActionType.CANVAS_MOUSE_MOVED: {
@@ -352,4 +348,34 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
 
   frame.annotations.values = toVirtJsValue(mergedAnnotations).values;
   return frame;
+};
+
+const selectNode = (nodePath: string, shiftKey: boolean, state: AppState) => {
+  return produce(state, newState => {
+    if (nodePath == null) {
+      newState.selectedNodePaths = [];
+      return;
+    }
+    if (shiftKey) {
+      // allow toggle selecting elements - necessary since escape key doesn't work.
+      newState.selectedNodePaths.push(nodePath);
+    } else {
+      newState.selectedNodePaths = [nodePath];
+    }
+
+    console.log(newState.selectedNodePaths);
+  });
+};
+
+const updateBox = (box: Box, oldBox: Box, newBox: Box) => {
+  const x = box.x + newBox.x - oldBox.x;
+  const y = box.y + newBox.y - oldBox.y;
+  const width = box.width + newBox.width - oldBox.width;
+  const height = box.height + newBox.height - oldBox.height;
+  return {
+    x,
+    y,
+    width,
+    height
+  };
 };

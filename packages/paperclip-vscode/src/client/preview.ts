@@ -50,7 +50,7 @@ type LivePreviewState = {
 export const activate = (
   client: LanguageClient,
   context: ExtensionContext,
-  onPCMutation: (mutation: PCMutation) => void
+  onPCMutations: (mutation: PCMutation[]) => void
 ): void => {
   const { extensionPath } = context;
 
@@ -111,7 +111,7 @@ export const activate = (
   const registerLivePreview = (preview: LivePreview) => {
     _previews.push(preview);
     const listeners = [
-      preview.onVirtObjectEdited(onPCMutation),
+      preview.onVirtObjectEdited(onPCMutations),
       preview.onUndo(async () => {
         execCommand(preview, "undo");
       }),
@@ -346,7 +346,7 @@ class LivePreview {
       this._em.removeListener("didDispose", listener);
     };
   }
-  public onVirtObjectEdited(listener: (mutation: PCMutation) => void) {
+  public onVirtObjectEdited(listener: (mutations: PCMutation[]) => void) {
     this._em.on("virtObjectEdited", listener);
     return () => {
       this._em.removeListener("virtObjectEdited", listener);
@@ -374,7 +374,7 @@ class LivePreview {
     } else if (event.type === "ready") {
       this._previewReady();
     } else if (event.type === "PC_VIRT_OBJECT_EDITED") {
-      this._em.emit("virtObjectEdited", event.payload.mutation);
+      this._em.emit("virtObjectEdited", event.payload.mutations);
     } else if (event.type === "GLOBAL_Z_KEY_DOWN") {
       this._em.emit("undo");
     } else if (event.type === "GLOBAL_Y_KEY_DOWN") {

@@ -82,22 +82,14 @@ export const Canvas = React.memo(() => {
     };
   }, [canvasRef]);
 
-  const onMouseMove = (event: React.MouseEvent<any>) => {
-    dispatch(
-      canvasMouseMoved({
-        x: event.pageX,
-        y: event.pageY
-      })
-    );
-  };
-
   return (
-    <styles.Canvas ref={canvasRef} onWheel={onWheel} onMouseMove={onMouseMove}>
+    <styles.Canvas ref={canvasRef} onWheel={onWheel}>
       <Tools />
       <styles.Inner
         style={{
           transform: `translateX(${transform.x}px) translateY(${transform.y}px) scale(${transform.z}) translateZ(0)`,
-          transformOrigin: "top left"
+          transformOrigin: "top left",
+          willChange: "transform"
         }}
       >
         {/* <Preview /> */}

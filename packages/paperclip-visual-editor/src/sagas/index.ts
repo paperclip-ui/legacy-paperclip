@@ -6,7 +6,6 @@ import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
   ActionType,
-  CanvasElementClicked,
   ErrorBannerClicked,
   engineErrored,
   globalEscapeKeyPressed,
@@ -19,10 +18,11 @@ import {
   engineDelegateChanged,
   fileOpened,
   currentFileInitialized,
-  pcVirtObjectEdited
+  pcVirtObjectEdited,
+  CanvasMouseUp
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
-import { AppState, getSelectedFrame } from "../state";
+import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
@@ -33,10 +33,7 @@ declare const PROTOCOL;
 
 export default function* mainSaga() {
   yield fork(handleRenderer);
-  yield takeEvery(
-    ActionType.CANVAS_ELEMENT_CLICKED,
-    handleCanvasElementClicked
-  );
+  yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
   yield fork(handleKeyCommands);
   yield put(fileOpened({ uri: getTargetUrl() }));
@@ -101,7 +98,6 @@ function* handleRenderer() {
 
   const chan = eventChannel(emit => {
     const onMessage = ({ type, payload }) => {
-      console.log("MSG", type);
       switch (type) {
         case "ENGINE_EVENT": {
           const engineEvent = payload;
@@ -171,18 +167,19 @@ function* handleRenderer() {
     ],
     function*(action: Action) {
       const state: AppState = yield select();
+      console.log(getSelectedFrames(state));
       sendMessage(
         pcVirtObjectEdited({
-          mutation: {
-            exprSource: getSelectedFrame(state).source,
-            action: {
-              kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
-              annotationsSource: getSelectedFrame(state).annotations.source,
-              annotations: computeVirtJSObject(
-                getSelectedFrame(state).annotations
-              )
-            }
-          }
+          mutations: getSelectedFrames(state).map(frame => {
+            return {
+              exprSource: frame.source,
+              action: {
+                kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
+                annotationsSource: frame.annotations.source,
+                annotations: computeVirtJSObject(frame.annotations)
+              }
+            };
+          })
         })
       );
     }
@@ -190,15 +187,16 @@ function* handleRenderer() {
 
   yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
     const state: AppState = yield select();
-    const frame = getSelectedFrame(state);
     sendMessage(
       pcVirtObjectEdited({
-        mutation: {
-          exprSource: frame.source,
-          action: {
-            kind: PCMutationActionKind.EXPRESSION_DELETED
-          }
-        }
+        mutations: getSelectedFrames(state).map(frame => {
+          return {
+            exprSource: frame.source,
+            action: {
+              kind: PCMutationActionKind.EXPRESSION_DELETED
+            }
+          };
+        })
       })
     );
   });
@@ -233,14 +231,20 @@ const handleInteractionsForRenderer = (renderer: Renderer) =>
     );
   };
 
-function* handleCanvasElementClicked(action: CanvasElementClicked) {
+function* handleCanvasMouseUp(action: CanvasMouseUp) {
   if (!action.payload.metaKey) {
     return;
   }
 
   const state: AppState = yield select();
 
-  const nodePathParts = action.payload.nodePath.split(".").map(Number);
+  const nodePathParts = getNodeInfoAtPoint(
+    state.canvas.mousePosition,
+    state.canvas.transform,
+    state.boxes
+  )
+    .nodePath.split(".")
+    .map(Number);
   console.log(state.allLoadedPCFileData[state.currentFileUri], nodePathParts);
   const virtualNode = getVirtTarget(
     state.allLoadedPCFileData[state.currentFileUri].preview,

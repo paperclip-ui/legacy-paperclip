@@ -24,6 +24,7 @@ type PCSourceWriterOptions = {
 };
 
 export type ContentChange = {
+  uri: string;
   start: number;
   end: number;
   value: string;
@@ -34,31 +35,45 @@ const ANNOTATION_KEYS = ["title", "width", "height", "x", "y"];
 export class PCSourceWriter {
   private _engine: EngineDelegate;
   constructor(private _options: PCSourceWriterOptions) {}
-  async getContentChanges({ exprSource, action }: PCMutation) {
+  async getContentChanges(
+    mutations: PCMutation[]
+  ): Promise<Record<string, ContentChange[]>> {
     const changes: ContentChange[] = [];
-    const engine = await this._loadEngine();
-    const ast = engine.parseContent(
-      await this._options.getContent(exprSource.uri)
-    );
 
-    switch (action.kind) {
-      case PCMutationActionKind.ANNOTATIONS_CHANGED: {
-        changes.push(
-          this._getAnnotationChange(
-            exprSource,
-            action.annotationsSource,
-            action.annotations
-          )
-        );
-        break;
-      }
-      case PCMutationActionKind.EXPRESSION_DELETED: {
-        changes.push(...this._getExpressionDeletedChanged(exprSource, ast));
-        break;
+    const engine = await this._loadEngine();
+    for (const { exprSource, action } of mutations) {
+      const ast = engine.parseContent(
+        await this._options.getContent(exprSource.uri)
+      );
+
+      switch (action.kind) {
+        case PCMutationActionKind.ANNOTATIONS_CHANGED: {
+          changes.push(
+            this._getAnnotationChange(
+              exprSource,
+              action.annotationsSource,
+              action.annotations
+            )
+          );
+          break;
+        }
+        case PCMutationActionKind.EXPRESSION_DELETED: {
+          changes.push(...this._getExpressionDeletedChanged(exprSource, ast));
+          break;
+        }
       }
     }
 
-    return changes;
+    const changesByUri = {};
+
+    for (const change of changes) {
+      if (!changesByUri[change.uri]) {
+        changesByUri[change.uri] = [];
+      }
+      changesByUri[change.uri].push(change);
+    }
+
+    return changesByUri;
   }
 
   private async _loadEngine() {
@@ -84,6 +99,7 @@ export class PCSourceWriter {
     // if before child is a comment, then assume it's an annotation
     if (beforeChild && beforeChild.kind === NodeKind.Comment) {
       changes.push({
+        uri: exprSource.uri,
         start: beforeChild.location.start,
         end: beforeChild.location.end,
         value: ""
@@ -91,6 +107,7 @@ export class PCSourceWriter {
     }
 
     changes.push({
+      uri: exprSource.uri,
       start: exprSource.location.start,
       end: exprSource.location.end,
       value: ""
@@ -142,6 +159,7 @@ export class PCSourceWriter {
     }
 
     return {
+      uri: exprSource.uri,
       start: annotationsSource
         ? annotationsSource.location.start
         : exprSource.location.start,

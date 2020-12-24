@@ -5,7 +5,6 @@ import {
   EngineErrorEvent,
   EngineDelegateEvent,
   LoadedData,
-  VirtJsObject,
   ExprSource
 } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
 import { Box, Directory, FSItemKind, Point, Size } from "../state";
@@ -15,7 +14,8 @@ export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
   ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
-  CANVAS_ELEMENT_CLICKED = "CANVAS_ELEMENT_CLICKED",
+  CANVAS_MOUSE_LEAVE = "CANVAS_MOUSE_LEAVE",
+  CANVAS_MOUSE_UP = "CANVAS_MOUSE_UP",
   ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
   PAINT_BUTTON_CLICKED = "PAINT_BUTTON_CLICKED",
@@ -102,7 +102,7 @@ export type ResizerPathStoppedMoving = WrappedEvent<
 export type PCVirtObjectEdited = BaseAction<
   ActionType.PC_VIRT_OBJECT_EDITED,
   {
-    mutation: PCMutation;
+    mutations: PCMutation[];
   }
 >;
 
@@ -125,7 +125,7 @@ export type FrameTitleChanged = BaseAction<
 
 export type FrameTitleClicked = BaseAction<
   ActionType.FRAME_TITLE_CLICKED,
-  { frameIndex: number }
+  { frameIndex: number; shiftKey: boolean }
 >;
 
 export type EngineDelegateEventsHandled = BaseAction<
@@ -138,9 +138,14 @@ export type RendererChanged = BaseAction<
   { virtualRoot: VirtualNode }
 >;
 
-export type CanvasElementClicked = BaseAction<
-  ActionType.CANVAS_ELEMENT_CLICKED,
-  { metaKey: boolean; nodePath: string }
+export type CanvasMouseUp = BaseAction<
+  ActionType.CANVAS_MOUSE_UP,
+  { metaKey: boolean; shiftKey: boolean }
+>;
+
+export type CanvasMouseLeave = BaseAction<
+  ActionType.CANVAS_MOUSE_LEAVE,
+  { mousePosition: Point }
 >;
 
 export type CanvasPanned = BaseAction<
@@ -230,8 +235,11 @@ export const resizerStoppedMoving = actionCreator<ResizerStoppedMoving>(
 export const rectsCaptured = actionCreator<RectsCaptured>(
   ActionType.RECTS_CAPTURED
 );
-export const canvasElementClicked = actionCreator<CanvasElementClicked>(
-  ActionType.CANVAS_ELEMENT_CLICKED
+export const canvasMouseUp = actionCreator<CanvasMouseUp>(
+  ActionType.CANVAS_MOUSE_UP
+);
+export const canvasMouseLeave = actionCreator<CanvasMouseLeave>(
+  ActionType.CANVAS_MOUSE_LEAVE
 );
 export const canvasPanned = actionCreator<CanvasPanned>(
   ActionType.CANVAS_PANNED
@@ -294,7 +302,7 @@ export const fsItemClicked = actionCreator<FSItemClicked>(
 export type Action =
   // | RendererInitialized
   | RectsCaptured
-  | CanvasElementClicked
+  | CanvasMouseUp
   | ResizerPathMoved
   | ResizerPathStoppedMoving
   | FrameTitleChanged
@@ -304,6 +312,7 @@ export type Action =
   | RendererChanged
   | CanvasPanned
   | CanvasPanStart
+  | CanvasMouseLeave
   | CanvasPanEnd
   | CanvasResized
   | CanvasMouseMoved

@@ -1,5 +1,10 @@
-import React, { useState, useRef } from "react";
-import { Point, findBoxNodeInfo } from "../../../../../state";
+import React, { useState, useRef, useCallback } from "react";
+import {
+  Point,
+  findBoxNodeInfo,
+  mergeBoxes,
+  getNodeInfoAtPoint
+} from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
 import * as styles from "./index.pc";
@@ -8,7 +13,12 @@ import { getScaledPoint } from "../../../../../state";
 import { Pixels } from "./Pixels";
 import { Distance } from "./Distance";
 import { Frames } from "./Frames";
-import { VirtualElement, VirtualFrame, VirtualNodeKind } from "paperclip-utils";
+import { VirtualFrame, VirtualNodeKind } from "paperclip-utils";
+import {
+  canvasMouseUp,
+  canvasMouseLeave,
+  canvasMouseMoved
+} from "../../../../../actions";
 
 export const Tools = () => {
   const {
@@ -16,35 +26,55 @@ export const Tools = () => {
       boxes,
       canvas,
       toolsLayerEnabled,
-      selectedNodePath,
-      hoveringNodePath,
+      selectedNodePaths,
       currentFileUri,
       metaKeyDown,
       allLoadedPCFileData
     },
     dispatch
   } = useAppStore();
-  const [mousePoint, setMousePoint] = useState<Point>(null);
   const toolsRef = useRef<HTMLDivElement>();
 
-  const onMouseMove = (event: React.MouseEvent<any>) => {
-    // need to subtract topbar
-    setMousePoint({ x: event.pageX, y: event.pageY - 22 });
-  };
+  const onMouseMove = useCallback(
+    (event: React.MouseEvent<any>) => {
+      // offset toolbars
+      const rect: ClientRect = (event.currentTarget as any).getBoundingClientRect();
+      dispatch(
+        canvasMouseMoved({
+          x: event.pageX - rect.left,
+          y: event.pageY - rect.top
+        })
+      );
+    },
+    [dispatch]
+  );
 
-  const onMouseLeave = () => setMousePoint(null);
-  const selectedBox = selectedNodePath && boxes[selectedNodePath];
+  const onMouseUp = useCallback(
+    (event: React.MouseEvent<any>) => {
+      dispatch(
+        canvasMouseUp({
+          metaKey: event.metaKey,
+          shiftKey: event.shiftKey
+        })
+      );
+    },
+    [dispatch]
+  );
+
+  const onMouseLeave = (event: React.MouseEvent<any>) => {
+    dispatch(canvasMouseLeave(null));
+  };
+  const selectedBox =
+    selectedNodePaths.length &&
+    mergeBoxes(selectedNodePaths.map(path => boxes[path]));
 
   if (!toolsLayerEnabled) {
     return null;
   }
 
-  const hoveringNodeInfo =
-    mousePoint &&
-    findBoxNodeInfo(
-      getScaledPoint(mousePoint, canvas.transform, canvas.scrollPosition),
-      boxes
-    );
+  const hoveringBox =
+    canvas.mousePosition &&
+    getNodeInfoAtPoint(canvas.mousePosition, canvas.transform, boxes)?.box;
 
   const virtualNode = allLoadedPCFileData[currentFileUri];
 
@@ -59,6 +89,7 @@ export const Tools = () => {
   return (
     <styles.Tools
       ref={toolsRef}
+      onMouseUp={onMouseUp}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >
@@ -68,30 +99,32 @@ export const Tools = () => {
         dispatch={dispatch}
         canvasScroll={canvas.scrollPosition}
         canvasTransform={canvas.transform}
-        intersectingRect={hoveringNodeInfo}
+        box={hoveringBox}
       />
-      {selectedBox && (
+      {selectedBox ? (
         <Selectable
           dispatch={dispatch}
           canvasScroll={canvas.scrollPosition}
           canvasTransform={canvas.transform}
-          intersectingRect={{ nodePath: selectedNodePath, box: selectedBox }}
-          showKnobs
+          box={selectedBox}
+          showKnobs={selectedNodePaths.every(
+            nodePath => !nodePath.includes(".")
+          )}
         />
-      )}
+      ) : null}
       <Frames
         frames={frames}
         dispatch={dispatch}
         canvasTransform={canvas.transform}
       />
-      {metaKeyDown && selectedBox && hoveringNodeInfo && (
+      {metaKeyDown && selectedBox && hoveringBox ? (
         <Distance
           canvasScroll={canvas.scrollPosition}
           canvasTransform={canvas.transform}
-          from={{ nodePath: selectedNodePath, box: selectedBox }}
-          to={hoveringNodeInfo}
+          from={selectedBox}
+          to={hoveringBox}
         />
-      )}
+      ) : null}
     </styles.Tools>
   );
 };

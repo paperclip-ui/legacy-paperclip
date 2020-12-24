@@ -2,6 +2,8 @@
 
 <div export component as="Tools" 
   className="tools" 
+  {onClick?}
+  {onMouseUp?}
   {onMouseMove?}
   {onMouseLeave?}
   {onWheel?}

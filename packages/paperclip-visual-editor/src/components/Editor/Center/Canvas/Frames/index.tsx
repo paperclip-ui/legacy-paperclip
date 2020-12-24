@@ -52,7 +52,6 @@ const useFrames = () => {
   const frameData = state.allLoadedPCFileData[state.currentFileUri];
 
   const renderer = useMemo(() => {
-    console.log(PROTOCOL);
     const renderer = new FramesRenderer(
       state.currentFileUri,
       typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL
@@ -76,7 +75,7 @@ const useFrames = () => {
       setTimeout(() => {
         running = false;
         dispatch(rectsCaptured(renderer.getRects()));
-      }, 10);
+      }, 5);
     };
   }, [renderer]);
 

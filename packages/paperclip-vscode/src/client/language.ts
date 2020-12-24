@@ -25,7 +25,7 @@ export const activate = (context: ExtensionContext) => {
       );
     });
     const mut = activateMutationHandler();
-    activatePreview(client, context, mut.handleMutation);
+    activatePreview(client, context, mut.handleMutations);
   };
 
   init();

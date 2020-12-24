@@ -4,13 +4,14 @@ import {
   Transform,
   Point,
   Box,
-  roundBox
+  roundBox,
+  getScaledPoint
 } from "../../../../../../state";
 import * as styles from "./index.pc";
 import { Dispatch } from "redux";
 import {
   Action,
-  canvasElementClicked,
+  canvasMouseUp,
   resizerMoved,
   resizerPathMoved,
   resizerPathStoppedMoving,
@@ -20,7 +21,7 @@ import { startDOMDrag } from "../../../../../../utils";
 
 type Props = {
   canvasScroll: Point;
-  intersectingRect: BoxNodeInfo;
+  box: Box;
   canvasTransform: Transform;
   dispatch: Dispatch<Action>;
   showKnobs?: boolean;
@@ -29,39 +30,19 @@ type Props = {
 // https://github.com/crcn/tandem/blob/10.0.0/packages/front-end/src/components/root/workspace/editors/paperclip/stage/canvas/tools-layer/selection/resizer.tsx
 
 export const Selectable = React.memo(
-  ({
-    intersectingRect,
-    canvasTransform,
-    canvasScroll,
-    showKnobs,
-    dispatch
-  }: Props) => {
-    if (!intersectingRect) {
+  ({ box, canvasTransform, canvasScroll, showKnobs, dispatch }: Props) => {
+    if (!box) {
       return null;
     }
-    const onClick = (event: React.MouseEvent<any>) => {
-      dispatch(
-        canvasElementClicked({
-          metaKey: event.metaKey,
-          nodePath: intersectingRect.nodePath
-        })
-      );
-    };
 
     const left =
-      (intersectingRect.box.x - canvasScroll.x) * canvasTransform.z +
-      canvasTransform.x;
+      (box.x - canvasScroll.x) * canvasTransform.z + canvasTransform.x;
     const top =
-      (intersectingRect.box.y - canvasScroll.y) * canvasTransform.z +
-      canvasTransform.y;
+      (box.y - canvasScroll.y) * canvasTransform.z + canvasTransform.y;
 
     let knobs: Point[] | null = null;
 
-    if (
-      showKnobs &&
-      intersectingRect &&
-      intersectingRect.nodePath.split(".").length === 1
-    ) {
+    if (showKnobs && box) {
       knobs = [
         { x: 0, y: 0 },
         { x: 50, y: 0 },
@@ -74,12 +55,10 @@ export const Selectable = React.memo(
       ];
     }
 
-    intersectingRect.box;
-
     const onKnobMouseDown = useCallback(
       (event: React.MouseEvent<any>, point: Point) => {
         event.stopPropagation();
-        const bounds = intersectingRect.box;
+        const bounds = box;
         const zoom = canvasTransform.z;
 
         const wrapActionCreator = createAction => (event, info) => {
@@ -87,6 +66,11 @@ export const Selectable = React.memo(
             x: info.delta.x / zoom,
             y: info.delta.y / zoom
           };
+
+          // prevent parent containers from event like mouse click
+          // which would deselect multi-selected elements
+          event.stopPropagation();
+
           dispatch(
             createAction({
               originalBounds: roundBox(bounds),
@@ -119,13 +103,13 @@ export const Selectable = React.memo(
           wrapActionCreator(resizerPathStoppedMoving)
         );
       },
-      [intersectingRect, canvasTransform]
+      [box, canvasTransform]
     );
 
     const onMouseDown = useCallback(
       event => {
         if (knobs) {
-          const bounds = intersectingRect.box;
+          const bounds = box;
           const zoom = canvasTransform.z;
 
           const wrapActionCreator = createAction => (event, info) => {
@@ -133,6 +117,7 @@ export const Selectable = React.memo(
               x: info.delta.x / zoom,
               y: info.delta.y / zoom
             };
+            event.stopPropagation();
             dispatch(
               createAction({
                 originalBounds: roundBox(bounds),
@@ -154,17 +139,14 @@ export const Selectable = React.memo(
           );
         }
       },
-      [knobs, intersectingRect, canvasTransform]
+      [knobs, box, canvasTransform]
     );
 
     return (
       <>
         <styles.Overlay
-          onClick={onClick}
           onMouseDown={onMouseDown}
-          size={`${Math.round(intersectingRect.box.width)}x${Math.round(
-            intersectingRect.box.height
-          )}`}
+          size={`${Math.round(box.width)}x${Math.round(box.height)}`}
           knobs={
             knobs && (
               <>
@@ -186,8 +168,8 @@ export const Selectable = React.memo(
           style={{
             "--zoom": 1,
             transform: `translateX(${left}px) translateY(${top}px)`,
-            width: intersectingRect.box.width * canvasTransform.z,
-            height: intersectingRect.box.height * canvasTransform.z,
+            width: box.width * canvasTransform.z,
+            height: box.height * canvasTransform.z,
             transformOrigin: `top left`
           }}
         />

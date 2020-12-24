@@ -60,8 +60,13 @@ const Frame = memo(
     const frameBounds = getFrameBounds(frame as any);
     const [editing, setEditing] = useState(false);
 
-    const onClick = useCallback(() => {
-      dispatch(frameTitleClicked({ frameIndex }));
+    const onClick = useCallback((event: React.MouseEvent<any>) => {
+      dispatch(
+        frameTitleClicked({ frameIndex: frameIndex, shiftKey: event.shiftKey })
+      );
+
+      // prevent canvas click event
+      event.stopPropagation();
     }, []);
     const inputRef = useRef<HTMLInputElement>();
 

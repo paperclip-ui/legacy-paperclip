@@ -9,7 +9,7 @@
   }
 </style>
 
-<div export component as="Canvas" {style?} {onMouseMove} {onWheel} className="canvas $theme.full-wh">
+<div export component as="Canvas" {style?} {onMouseMove?} {onWheel?} className="canvas $theme.full-wh">
   {children}
 </div>
 

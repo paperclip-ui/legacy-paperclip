@@ -32,7 +32,7 @@
   </rect>
 </svg>
 
-<div export component as="Overlay" {onMouseDown?} {style?} {onClick} className:knobs="has-knobs" className="overlay">
+<div export component as="Overlay" {onMouseDown?} {style?} {onClick?}  className:knobs="has-knobs" className="overlay">
   <style>
     --background: var(--vscode-button-hoverBackground, rgb(0, 132, 255));
     --foreground: var(--vscode-button-foreground, white);

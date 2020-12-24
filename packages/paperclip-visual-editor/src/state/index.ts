@@ -19,7 +19,8 @@ import {
   Point,
   Size,
   mergeBoxes,
-  centerTransformZoom
+  centerTransformZoom,
+  getScaledPoint
 } from "./geom";
 import * as os from "os";
 import { Frame } from "paperclip-web-renderer";
@@ -37,7 +38,7 @@ export type Canvas = {
   transform: Transform;
   size: Size;
   scrollPosition: Point;
-  mousePosition: Point;
+  mousePosition?: Point;
 };
 
 export type BoxNodeInfo = {
@@ -71,12 +72,12 @@ export type AppState = {
   centeredInitial: boolean;
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
+  resizerMoving?: boolean;
   currentFileUri: string;
   currentEngineEvents: EngineDelegateEvent[];
   allLoadedPCFileData: Record<string, LoadedData>;
   // rendererElement?: any;
-  selectedNodePath: string;
-  hoveringNodePath?: string;
+  selectedNodePaths: string[];
   projectDirectory?: Directory;
   metaKeyDown?: boolean;
   canvas: Canvas;
@@ -94,13 +95,13 @@ export const INITIAL_STATE: AppState = {
   allLoadedPCFileData: {},
   boxes: {},
   zoomLevel: 1,
-  selectedNodePath: null,
+  selectedNodePaths: [],
   canvas: {
     panning: false,
     showTools: true,
     scrollPosition: { x: 0, y: 0 },
     size: { width: 0, height: 0 },
-    mousePosition: { x: 0, y: 0 },
+    mousePosition: null,
     transform: {
       x: 0,
       y: 0,
@@ -207,14 +208,31 @@ export const getFSItem = (absolutePath: string, current: FSItem) => {
   return null;
 };
 
-export const getSelectedFrame = (state: AppState) => {
+export const getSelectedFrames = (state: AppState): VirtualFrame[] => {
+  return state.selectedNodePaths
+    .map(nodePath => {
+      const frameIndex = Number(nodePath);
+      return getFrameFromIndex(frameIndex, state);
+    })
+    .filter(Boolean);
+};
+
+export const getFrameFromIndex = (
+  frameIndex: number,
+  state: AppState
+): VirtualFrame => {
   const preview = state.allLoadedPCFileData[state.currentFileUri].preview;
   const frames =
     preview.kind == VirtualNodeKind.Fragment ? preview.children : [preview];
-  const frameIndex = Number(state.selectedNodePath);
-  const frame = frames[frameIndex] as VirtualFrame;
+  return frames[frameIndex] as VirtualFrame;
+};
 
-  return frame;
+export const getNodeInfoAtPoint = (
+  point: Point,
+  transform: Transform,
+  boxes: Record<string, Box>
+) => {
+  return findBoxNodeInfo(getScaledPoint(point, transform), boxes);
 };
 
 export * from "./geom";

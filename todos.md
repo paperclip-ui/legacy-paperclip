@@ -8,10 +8,11 @@
 
 ### Immediate
 
-- ability to copy & paste frames
 - multi-select frames
+- ability to copy & paste frames
 - Empty state
 - expand frames to full screen
+
 - Update docs
   - include percy docs
     - ability to set title template
@@ -21,7 +22,6 @@
 - frame settings
   - preset sizes
 - nightly VSCode token  
-- hook undo / redo commands in preview
 
 ### Clean up
 

@@ -14,8 +14,8 @@ import { clamp } from "lodash";
 type Props = {
   canvasScroll: Point;
   canvasTransform: Transform;
-  from: BoxNodeInfo;
-  to: BoxNodeInfo;
+  from: Box;
+  to: Box;
 };
 
 const right = (box: Box) => box.x + box.width;
@@ -30,17 +30,17 @@ export const Distance = ({
   const sticks = [];
 
   // west edge
-  // const se = to.box.y > from.box.x ? right(to.box) : to.box.x;
-  const ne = bottom(to.box) < from.box.y ? bottom(to.box) : to.box.y;
-  const ee = to.box.x > right(from.box) ? to.box.x : right(to.box);
-  const se = to.box.y > bottom(from.box) ? to.box.y : bottom(to.box);
-  const we = right(to.box) < from.box.x ? right(to.box) : to.box.x;
+  // const se = to.y > from.x ? right(to) : to.x;
+  const ne = bottom(to) < from.y ? bottom(to) : to.y;
+  const ee = to.x > right(from) ? to.x : right(to);
+  const se = to.y > bottom(from) ? to.y : bottom(to);
+  const we = right(to) < from.x ? right(to) : to.x;
 
-  if (ne < from.box.y) {
-    const distance = from.box.y - ne;
-    const left = from.box.x + from.box.width / 2;
-    const isLeft = right(to.box) < left;
-    const isRight = to.box.x > left;
+  if (ne < from.y) {
+    const distance = from.y - ne;
+    const left = from.x + from.width / 2;
+    const isLeft = right(to) < left;
+    const isRight = to.x > left;
     sticks.push(
       <styles.MeasuringStick
         key="north"
@@ -60,8 +60,8 @@ export const Distance = ({
         <styles.Guide
           key="north-west-guide"
           style={{
-            left: right(to.box) * canvasTransform.z,
-            width: (left - right(to.box)) * canvasTransform.z,
+            left: right(to) * canvasTransform.z,
+            width: (left - right(to)) * canvasTransform.z,
             top: ne * canvasTransform.z
           }}
         />
@@ -73,7 +73,7 @@ export const Distance = ({
           key="north-east-guide"
           style={{
             left: left * canvasTransform.z,
-            width: (to.box.x - left) * canvasTransform.z,
+            width: (to.x - left) * canvasTransform.z,
             top: ne * canvasTransform.z
           }}
         />
@@ -81,12 +81,12 @@ export const Distance = ({
     }
   }
 
-  if (ee > right(from.box)) {
-    const distance = ee - right(from.box);
-    const left = right(from.box);
-    const top = from.box.y + from.box.height / 2;
-    const isAbove = bottom(to.box) < top;
-    const isBelow = to.box.y > top;
+  if (ee > right(from)) {
+    const distance = ee - right(from);
+    const left = right(from);
+    const top = from.y + from.height / 2;
+    const isAbove = bottom(to) < top;
+    const isBelow = to.y > top;
     sticks.push(
       <styles.MeasuringStick
         key="east"
@@ -107,8 +107,8 @@ export const Distance = ({
           key="east-north-guide"
           style={{
             left: (left + distance) * canvasTransform.z,
-            height: (top - bottom(to.box)) * canvasTransform.z,
-            top: bottom(to.box) * canvasTransform.z
+            height: (top - bottom(to)) * canvasTransform.z,
+            top: bottom(to) * canvasTransform.z
           }}
         />
       );
@@ -120,7 +120,7 @@ export const Distance = ({
           key="east-south-guide"
           style={{
             left: (left + distance) * canvasTransform.z,
-            height: (to.box.y - top) * canvasTransform.z,
+            height: (to.y - top) * canvasTransform.z,
             top: top * canvasTransform.z
           }}
         />
@@ -128,11 +128,11 @@ export const Distance = ({
     }
   }
 
-  if (we < from.box.x) {
-    const distance = from.box.x - we;
-    const top = from.box.y + from.box.height / 2;
-    const isBelow = to.box.y > top;
-    const isAbove = bottom(to.box) < top;
+  if (we < from.x) {
+    const distance = from.x - we;
+    const top = from.y + from.height / 2;
+    const isBelow = to.y > top;
+    const isAbove = bottom(to) < top;
     const left = we;
     sticks.push(
       <styles.MeasuringStick
@@ -154,9 +154,7 @@ export const Distance = ({
           key="west-south-guide"
           style={{
             left: left * canvasTransform.z,
-            height:
-              (to.box.y - bottom(from.box) + from.box.height / 2) *
-              canvasTransform.z,
+            height: (to.y - bottom(from) + from.height / 2) * canvasTransform.z,
             top: top * canvasTransform.z
           }}
         />
@@ -169,19 +167,19 @@ export const Distance = ({
           key="west-north-guide"
           style={{
             left: left * canvasTransform.z,
-            height: (top - bottom(to.box)) * canvasTransform.z,
-            top: bottom(to.box) * canvasTransform.z
+            height: (top - bottom(to)) * canvasTransform.z,
+            top: bottom(to) * canvasTransform.z
           }}
         />
       );
     }
   }
 
-  if (se > bottom(from.box)) {
-    const distance = se - bottom(from.box);
-    const left = from.box.x + from.box.width / 2;
-    const isLeft = right(to.box) < left;
-    const isRight = to.box.x > left;
+  if (se > bottom(from)) {
+    const distance = se - bottom(from);
+    const left = from.x + from.width / 2;
+    const isLeft = right(to) < left;
+    const isRight = to.x > left;
 
     sticks.push(
       <styles.MeasuringStick
@@ -190,7 +188,7 @@ export const Distance = ({
         flipLabel={!isLeft}
         distance={Math.round(distance)}
         style={{
-          top: bottom(from.box) * canvasTransform.z + 3,
+          top: bottom(from) * canvasTransform.z + 3,
           height: distance * canvasTransform.z - 3,
           left: left * canvasTransform.z
         }}
@@ -202,9 +200,9 @@ export const Distance = ({
         <styles.Guide
           key="south-west-guide"
           style={{
-            left: right(to.box) * canvasTransform.z,
-            width: (left - right(to.box)) * canvasTransform.z,
-            top: (bottom(from.box) + distance) * canvasTransform.z
+            left: right(to) * canvasTransform.z,
+            width: (left - right(to)) * canvasTransform.z,
+            top: (bottom(from) + distance) * canvasTransform.z
           }}
         />
       );
@@ -215,8 +213,8 @@ export const Distance = ({
           key="south-east-guide"
           style={{
             left: left * canvasTransform.z,
-            width: (to.box.x - left) * canvasTransform.z,
-            top: (bottom(from.box) + distance) * canvasTransform.z
+            width: (to.x - left) * canvasTransform.z,
+            top: (bottom(from) + distance) * canvasTransform.z
           }}
         />
       );
@@ -235,11 +233,10 @@ export const Distance = ({
       {sticks}
       <styles.ToOutline
         style={{
-          transform: `translateX(${to.box.x *
-            canvasTransform.z}px) translateY(${to.box.y *
-            canvasTransform.z}px)`,
-          width: to.box.width * canvasTransform.z,
-          height: to.box.height * canvasTransform.z,
+          transform: `translateX(${to.x *
+            canvasTransform.z}px) translateY(${to.y * canvasTransform.z}px)`,
+          width: to.width * canvasTransform.z,
+          height: to.height * canvasTransform.z,
           transformOrigin: `top left`
         }}
       />
