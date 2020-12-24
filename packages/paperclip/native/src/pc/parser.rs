@@ -185,7 +185,7 @@ pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Nod
 
   Ok(pc_ast::Node::Comment(pc_ast::Comment {
     location: Location::new(start.u16_pos, tokenizer.utf16_pos),
-    annotation
+    annotation,
   }))
 }
 

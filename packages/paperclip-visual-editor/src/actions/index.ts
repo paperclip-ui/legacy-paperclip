@@ -29,6 +29,8 @@ export enum ActionType {
   RECTS_CAPTURED = "RECTS_CAPTURED",
   GLOBAL_ESCAPE_KEY_PRESSED = "GLOBAL_ESCAPE_KEY_PRESSED",
   GLOBAL_META_KEY_DOWN = "GLOBAL_META_KEY_DOWN",
+  GLOBAL_Z_KEY_DOWN = "GLOBAL_Z_KEY_DOWN",
+  GLOBAL_Y_KEY_DOWN = "GLOBAL_Y_KEY_DOWN",
   GLOBAL_BACKSPACE_KEY_PRESSED = "GLOBAL_BACKSPACE_KEY_PRESSED",
   GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP",
   ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
@@ -273,6 +275,14 @@ export const globalMetaKeyDown = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
 >(ActionType.GLOBAL_META_KEY_DOWN);
 
+export const globalZKeyDown = actionCreator<KeyComboPressed<ActionType>>(
+  ActionType.GLOBAL_Z_KEY_DOWN
+);
+
+export const globalYKeyDown = actionCreator<KeyComboPressed<ActionType>>(
+  ActionType.GLOBAL_Y_KEY_DOWN
+);
+
 export const globalMetaKeyUp = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
 >(ActionType.GLOBAL_META_KEY_UP);
@@ -309,6 +319,8 @@ export type Action =
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
   | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
   | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
+  | KeyComboPressed<ActionType.GLOBAL_Y_KEY_DOWN>
+  | KeyComboPressed<ActionType.GLOBAL_Z_KEY_DOWN>
   | EngineErrored
   | ZoomOutButtonClicked
   | DirLoaded

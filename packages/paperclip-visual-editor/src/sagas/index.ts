@@ -12,6 +12,8 @@ import {
   globalEscapeKeyPressed,
   globalBackspaceKeyPressed,
   globalMetaKeyDown,
+  globalZKeyDown,
+  globalYKeyDown,
   globalMetaKeyUp,
   Action,
   engineDelegateChanged,
@@ -83,13 +85,13 @@ function handleSock(onMessage, onClient) {
 
 function handleIPC(onMessage) {
   window.onmessage = ({ data: { type, payload } }: MessageEvent) => {
-    if (!type || !payload) {
+    if (!type) {
       return;
     }
 
     onMessage({
       type,
-      payload: JSON.parse(payload)
+      payload: (payload && JSON.parse(payload)) || {}
     });
   };
 }
@@ -99,6 +101,7 @@ function* handleRenderer() {
 
   const chan = eventChannel(emit => {
     const onMessage = ({ type, payload }) => {
+      console.log("MSG", type);
       switch (type) {
         case "ENGINE_EVENT": {
           const engineEvent = payload;
@@ -143,6 +146,10 @@ function* handleRenderer() {
       const action = yield take(chan);
       yield put(action);
     }
+  });
+  yield takeEvery(["FOCUS"], function() {
+    console.log("FOC");
+    window.focus();
   });
 
   yield takeEvery([ActionType.FS_ITEM_CLICKED], function*(action: Action) {
@@ -196,9 +203,16 @@ function* handleRenderer() {
     );
   });
 
-  yield takeEvery([ActionType.META_CLICKED], function(action: Action) {
-    sendMessage(action);
-  });
+  yield takeEvery(
+    [
+      ActionType.META_CLICKED,
+      ActionType.GLOBAL_Z_KEY_DOWN,
+      ActionType.GLOBAL_Y_KEY_DOWN
+    ],
+    function(action: Action) {
+      sendMessage(action);
+    }
+  );
 
   sendMessage({
     type: "ready"
@@ -260,6 +274,16 @@ function* handleKeyCommands() {
     Mousetrap.bind("meta", () => {
       emit(globalMetaKeyDown(null));
     });
+    Mousetrap.bind("meta+z", () => {
+      console.log("FOCC");
+      emit(globalZKeyDown(null));
+    });
+    Mousetrap.bind("meta+y", () => {
+      emit(globalYKeyDown(null));
+    });
+    Mousetrap.bind("meta+shift+z", () => {
+      emit(globalYKeyDown(null));
+    });
     Mousetrap.bind("backspace", () => {
       emit(globalBackspaceKeyPressed(null));
     });
@@ -291,8 +315,9 @@ function* handleCopy() {
     };
   });
 
-  yield takeEvery(ev, function*(event: React.ClipboardEvent<any>) {
+  yield takeEvery(ev, function*(event: ClipboardEvent) {
     const state: AppState = yield select();
-    console.log("HANDLE COPY");
+    event.clipboardData.setData("text/plain", "hello world!!");
+    event.preventDefault();
   });
 }

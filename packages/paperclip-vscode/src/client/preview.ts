@@ -29,6 +29,7 @@ import {
   LoadedParams,
   ErrorLoadingParams
 } from "../common/notifications";
+import { fileURLToPath } from "url";
 
 const VIEW_TYPE = "paperclip-preview";
 
@@ -94,17 +95,39 @@ export const activate = (
     );
   };
 
+  const execCommand = async (preview: LivePreview, command: string) => {
+    const uri = preview.getTargetUri();
+    const sourceEditor = window.visibleTextEditors.find(
+      editor => String(editor.document.uri) === uri
+    );
+    await window.showTextDocument(
+      sourceEditor.document,
+      sourceEditor.viewColumn,
+      false
+    );
+    await commands.executeCommand(command);
+  };
+
   const registerLivePreview = (preview: LivePreview) => {
     _previews.push(preview);
-    const disposeEditListener = preview.onVirtObjectEdited(onPCMutation);
-    const disposeListener = preview.onDidDispose(() => {
-      const index = _previews.indexOf(preview);
-      if (index !== -1) {
-        _previews.splice(index, 1);
-        disposeListener();
-        disposeEditListener();
-      }
-    });
+    const listeners = [
+      preview.onVirtObjectEdited(onPCMutation),
+      preview.onUndo(async () => {
+        execCommand(preview, "undo");
+      }),
+      preview.onRedo(async () => {
+        execCommand(preview, "redo");
+      }),
+      preview.onDidDispose(() => {
+        const index = _previews.indexOf(preview);
+        if (index !== -1) {
+          _previews.splice(index, 1);
+          for (const listener of listeners) {
+            listener();
+          }
+        }
+      })
+    ];
   };
 
   const getStickyWindow = () => {
@@ -268,6 +291,9 @@ class LivePreview {
     });
     this.panel.webview.onDidReceiveMessage(this._onPreviewMessage);
   }
+  focus() {
+    this.panel.reveal(this.panel.viewColumn, false);
+  }
   getTargetUri() {
     return this._targetUri;
   }
@@ -326,8 +352,20 @@ class LivePreview {
       this._em.removeListener("virtObjectEdited", listener);
     };
   }
+  public onUndo(listener: () => void) {
+    this._em.on("undo", listener);
+    return () => {
+      this._em.removeListener("undo", listener);
+    };
+  }
+  public onRedo(listener: () => void) {
+    this._em.on("redo", listener);
+    return () => {
+      this._em.removeListener("redo", listener);
+    };
+  }
 
-  private _onPreviewMessage = event => {
+  private _onPreviewMessage = async event => {
     // debug what's going on
     if (event.type === "metaElementClicked") {
       this._handleElementMetaClicked(event);
@@ -337,6 +375,10 @@ class LivePreview {
       this._previewReady();
     } else if (event.type === "PC_VIRT_OBJECT_EDITED") {
       this._em.emit("virtObjectEdited", event.payload.mutation);
+    } else if (event.type === "GLOBAL_Z_KEY_DOWN") {
+      this._em.emit("undo");
+    } else if (event.type === "GLOBAL_Y_KEY_DOWN") {
+      this._em.emit("redo");
     }
   };
   private async _handleErrorBannerClicked({

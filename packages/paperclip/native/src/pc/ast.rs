@@ -28,7 +28,7 @@ pub struct Element {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Comment {
   pub location: Location,
-  pub annotation: annotation_ast::Annotation
+  pub annotation: annotation_ast::Annotation,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
