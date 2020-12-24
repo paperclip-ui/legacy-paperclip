@@ -26,6 +26,12 @@ pub struct Element {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Comment {
+  pub location: Location,
+  pub annotation: annotation_ast::Annotation
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ValueObject {
   pub location: Location,
   pub value: String,
@@ -35,7 +41,7 @@ pub struct ValueObject {
 #[serde(tag = "kind")]
 pub enum Node {
   Text(ValueObject),
-  Comment(annotation_ast::Annotation),
+  Comment(Comment),
   Element(Element),
   Fragment(Fragment),
   StyleElement(StyleElement),

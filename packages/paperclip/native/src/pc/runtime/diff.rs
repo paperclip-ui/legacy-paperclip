@@ -144,6 +144,16 @@ fn diff_text<'a>(a: &Text, b: &Text, context: &mut Context<'a>) {
     ));
   }
 
+  if a.source != b.source {
+    context.mutations.push(Mutation::new(
+      context.node_path.clone(),
+      Action::SourceChanged(SourceChanged {
+        property_name: "source".to_string(),
+        new_source: b.source.clone(),
+      }),
+    ));
+  }
+
   if a.value != b.value {
     context.mutations.push(Mutation::new(
       context.node_path.clone(),

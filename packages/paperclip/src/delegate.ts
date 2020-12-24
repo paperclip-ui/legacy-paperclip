@@ -228,6 +228,17 @@ export const createEngineDelegate = createNativeEngine => async (
   );
 };
 
+export const createEngineDelegateSync = createNativeEngine => (
+  options: EngineOptions,
+  onCrash: any
+) => {
+  const { readFile, fileExists, resolveFile, mode } = getIOOptions(options);
+  return new EngineDelegate(
+    createNativeEngine(readFile, fileExists, resolveFile, mode),
+    onCrash
+  );
+};
+
 const existsSyncCaseSensitive = (uri: URL) => {
   const pathname = url.fileURLToPath(uri as any);
   const dir = path.dirname(pathname);

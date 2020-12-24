@@ -68,8 +68,8 @@ export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
         break;
       }
       case ActionKind.SourceChanged: {
-        const element = target as VirtualElement;
-        // target = {...element, a: element.attributes}
+        target = { ...target, source: action.newSource };
+        break;
       }
     }
 

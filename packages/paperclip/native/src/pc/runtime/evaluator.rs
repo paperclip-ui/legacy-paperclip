@@ -1210,7 +1210,7 @@ fn evaluate_children<'a>(
 }
 
 fn evaluate_comment<'a>(
-  comment: &annotation_ast::Annotation,
+  comment: &ast::Comment,
   depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsObject, RuntimeError> {
@@ -1219,7 +1219,7 @@ fn evaluate_comment<'a>(
     comment.location.clone(),
   ));
 
-  for property in &comment.properties {
+  for property in &comment.annotation.properties {
     match property {
       annotation_ast::AnnotationProperty::Declaration(decl) => {
         let value = evaluate_js(&decl.value, depth + 1, context)?;

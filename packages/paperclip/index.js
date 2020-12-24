@@ -3,6 +3,7 @@ const {
   createEngine,
   createEngineSync,
   createEngineDelegate,
+  createEngineDelegateSync,
   ...rest
 } = require("./lib");
 
@@ -14,5 +15,6 @@ module.exports = {
   createEngine: createEngine(creator),
   createEngineSync: createEngineSync(creator),
   createEngineDelegate: createEngineDelegate(creator),
+  createEngineDelegateSync: createEngineDelegateSync(creator),
   ...rest
 };

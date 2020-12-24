@@ -182,7 +182,11 @@ pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Nod
   tokenizer.set_pos(&annotation_tokenizer.get_pos());
 
   tokenizer.next()?; // eat -->
-  Ok(pc_ast::Node::Comment(annotation))
+
+  Ok(pc_ast::Node::Comment(pc_ast::Comment {
+    location: Location::new(start.u16_pos, tokenizer.utf16_pos),
+    annotation
+  }))
 }
 
 pub fn parse_tag<'a>(

@@ -6,31 +6,7 @@
   }
 </style>
 
-
 <!--
-  @frame { title: "fsdfs", width: 399, height: 416, x: 1436, y: 106 }
+  @frame { title: "title", width: 1024, height: 768, x: 46, y: -726 }
 -->
-
-<span>
-  <mod.Test>
-    fdfsfdsfs
-  </mod.Test>
-</span>
-
-
-
-
-
-<!--
-  @frame { width: 1024, height: 768, x: 60, y: 570 }
--->
-<span>
-  <mod.Test>
-    fdfsfdsfs
-  </mod.Test>
-</span>
-
-
-<!--
-  @frame { title: "fdf", width: 1024, height: 768, x: -46, y: -241 }
--->
+something

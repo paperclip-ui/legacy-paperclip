@@ -6,5 +6,6 @@ export {
   createEngineDelegate,
   EngineDelegate,
   EngineMode,
-  keepEngineInSyncWithFileSystem2
+  keepEngineInSyncWithFileSystem2,
+  createEngineDelegateSync
 } from "./delegate";

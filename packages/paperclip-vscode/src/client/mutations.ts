@@ -25,7 +25,7 @@ export function activate() {
   });
 
   const handleMutation = async (mutation: PCMutation) => {
-    const filePath = url.fileURLToPath(mutation.nodeSource.uri);
+    const filePath = url.fileURLToPath(mutation.exprSource.uri);
     const doc = await vscode.workspace.openTextDocument(filePath);
     const changes = await writer.getContentChanges(mutation);
     const tedits = changes.map(change => {
@@ -38,7 +38,7 @@ export function activate() {
       );
     });
     const wsEdit = new vscode.WorkspaceEdit();
-    wsEdit.set(vscode.Uri.parse(mutation.nodeSource.uri), tedits);
+    wsEdit.set(vscode.Uri.parse(mutation.exprSource.uri), tedits);
     await vscode.workspace.applyEdit(wsEdit);
   };
   return {

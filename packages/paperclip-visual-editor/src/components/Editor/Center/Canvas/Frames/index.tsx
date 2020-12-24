@@ -76,7 +76,7 @@ const useFrames = () => {
       setTimeout(() => {
         running = false;
         dispatch(rectsCaptured(renderer.getRects()));
-      }, 100);
+      }, 10);
     };
   }, [renderer]);
 

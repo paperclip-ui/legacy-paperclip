@@ -23,7 +23,7 @@ import { Renderer } from "paperclip-web-renderer";
 import { AppState, getSelectedFrame } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
-import { PCMutationActionKind } from "paperclip-source-writer";
+import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 
 declare const vscode;
 declare const TARGET_URI;
@@ -167,7 +167,7 @@ function* handleRenderer() {
       sendMessage(
         pcVirtObjectEdited({
           mutation: {
-            nodeSource: getSelectedFrame(state).source,
+            exprSource: getSelectedFrame(state).source,
             action: {
               kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
               annotationsSource: getSelectedFrame(state).annotations.source,
@@ -187,7 +187,7 @@ function* handleRenderer() {
     sendMessage(
       pcVirtObjectEdited({
         mutation: {
-          nodeSource: frame.source,
+          exprSource: frame.source,
           action: {
             kind: PCMutationActionKind.EXPRESSION_DELETED
           }

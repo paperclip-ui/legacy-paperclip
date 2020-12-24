@@ -18,7 +18,7 @@ import {
   ChangeKind
 } from "paperclip-utils";
 import { noop } from "./utils";
-import { EngineMode } from "./delegate";
+import { EngineDelegate, EngineMode } from "./delegate";
 
 export type FileContent = {
   [identifier: string]: string;

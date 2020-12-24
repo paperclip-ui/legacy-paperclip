@@ -8,8 +8,9 @@
 
 ### Immediate
 
-- ability to copy & paste frames
 - ability to delete frames
+- reserve WS in AST
+- ability to copy & paste frames
 - writer
   - need to et AST & find assoc expression with nodeSource
   - change nodeSource -> exprSource

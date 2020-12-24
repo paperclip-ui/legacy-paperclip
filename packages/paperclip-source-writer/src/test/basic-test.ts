@@ -22,7 +22,7 @@ describe(__filename + "#", () => {
     });
 
     const changes = writer.getContentChanges({
-      nodeSource: null,
+      exprSource: null,
       action: {
         kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
         annotations: {

@@ -2,7 +2,7 @@ import { createEngine, createEngineDelegate } from "paperclip";
 import { EngineMode } from "paperclip/src";
 import * as path from "path";
 
-export const mockDOMFactory: DOMFactory = {
+export const mockDOMFactory: any = {
   createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
   createElementNS: tagName => (new MockElement(tagName) as any) as HTMLElement,
   createDocumentFragment: () => (new MockFragment() as any) as DocumentFragment,

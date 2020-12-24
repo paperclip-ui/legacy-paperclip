@@ -36,7 +36,7 @@ pub struct SourceChanged {
   #[serde(rename = "propertyName")]
   pub property_name: String,
 
-  #[serde(rename = "newLocation")]
+  #[serde(rename = "newSouroce")]
   pub new_source: ExprSource,
 }
 

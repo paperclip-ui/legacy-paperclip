@@ -21,6 +21,6 @@ export type ExpressionDeleted = {} & BaseAction<
 export type PCMutationAction = AnnotationsChanged | ExpressionDeleted;
 
 export type PCMutation = {
-  nodeSource: ExprSource;
+  exprSource: ExprSource;
   action: PCMutationAction;
 };

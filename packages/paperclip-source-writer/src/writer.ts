@@ -1,4 +1,4 @@
-import { EngineDelegate } from "paperclip";
+import { EngineDelegate, createEngineDelegate } from "paperclip";
 import { EventEmitter } from "events";
 import {
   AnnotationsChanged,
@@ -10,7 +10,12 @@ import {
   ExprSource,
   SourceLocation,
   VirtJsObject,
-  Node
+  NodeKind,
+  Node,
+  traverseExpression,
+  Expression,
+  Fragment,
+  getParentNode
 } from "paperclip-utils";
 
 type ContentChangedHandler = (uri: string, content: string) => void;
@@ -27,16 +32,20 @@ export type ContentChange = {
 const ANNOTATION_KEYS = ["title", "width", "height", "x", "y"];
 
 export class PCSourceWriter {
+  private _engine: EngineDelegate;
   constructor(private _options: PCSourceWriterOptions) {}
-  async getContentChanges({ nodeSource, action }: PCMutation) {
+  async getContentChanges({ exprSource, action }: PCMutation) {
     const changes: ContentChange[] = [];
+    const engine = await this._loadEngine();
+    const ast = engine.parseContent(
+      await this._options.getContent(exprSource.uri)
+    );
 
-    console.log("OOKO", action.kind);
     switch (action.kind) {
       case PCMutationActionKind.ANNOTATIONS_CHANGED: {
         changes.push(
           this._getAnnotationChange(
-            nodeSource,
+            exprSource,
             action.annotationsSource,
             action.annotations
           )
@@ -44,7 +53,7 @@ export class PCSourceWriter {
         break;
       }
       case PCMutationActionKind.EXPRESSION_DELETED: {
-        changes.push(this._getExpressionDeletedChanged(nodeSource));
+        changes.push(...this._getExpressionDeletedChanged(exprSource, ast));
         break;
       }
     }
@@ -52,20 +61,50 @@ export class PCSourceWriter {
     return changes;
   }
 
-  private _getExpressionDeletedChanged(nodeSource: ExprSource): ContentChange {
-    return {
-      start: nodeSource.location.start,
-      end: nodeSource.location.end,
+  private async _loadEngine() {
+    if (this._engine) {
+      return this._engine;
+    }
+
+    return (this._engine = await createEngineDelegate());
+  }
+
+  private _getExpressionDeletedChanged(
+    exprSource: ExprSource,
+    ast: Node
+  ): ContentChange[] {
+    const node = getAssocNode(exprSource, ast);
+    const parent = getParentNode(node, ast);
+    const childIndex = parent.children.findIndex(child => child === node);
+
+    const changes = [];
+
+    const beforeChild = childIndex > 0 ? parent.children[childIndex - 1] : null;
+
+    // if before child is a comment, then assume it's an annotation
+    if (beforeChild && beforeChild.kind === NodeKind.Comment) {
+      changes.push({
+        start: beforeChild.location.start,
+        end: beforeChild.location.end,
+        value: ""
+      });
+    }
+
+    changes.push({
+      start: exprSource.location.start,
+      end: exprSource.location.end,
       value: ""
-    };
+    });
+
+    return changes;
   }
 
   private _getAnnotationChange(
-    nodeSource: ExprSource,
+    exprSource: ExprSource,
     annotationsSource: ExprSource | null,
     annotations: Object | null
   ): ContentChange {
-    const buffer = ["\n"];
+    const buffer = ["<!--\n"];
 
     for (const key in annotations) {
       const chunk = [`  @${key} `];
@@ -94,19 +133,44 @@ export class PCSourceWriter {
       buffer.push(chunk.join(""), "\n");
     }
 
+    buffer.push("-->");
+
+    // insertion - give it some padding
     if (!annotationsSource) {
-      buffer.unshift("\n\n<!--");
-      buffer.push("-->\n");
+      buffer.unshift("\n");
+      buffer.push("\n");
     }
 
     return {
       start: annotationsSource
         ? annotationsSource.location.start
-        : nodeSource.location.start,
+        : exprSource.location.start,
       end: annotationsSource
         ? annotationsSource.location.end
-        : nodeSource.location.start,
+        : exprSource.location.start,
       value: buffer.join("")
     };
   }
 }
+
+const getAssocNode = (exprSource: ExprSource, root: Node): Node => {
+  let foundExpr: Expression;
+  traverseExpression(root, node => {
+    if (
+      node.location.start === exprSource.location.start &&
+      node.location.end === exprSource.location.end
+    ) {
+      foundExpr = node;
+      return false;
+    }
+  });
+
+  // should NOT happen
+  if (!foundExpr) {
+    console.error(
+      `[PCSourceWriter] Cannot find associated node, content is likely out of sync with visual editor.`
+    );
+  }
+
+  return foundExpr as Node;
+};
