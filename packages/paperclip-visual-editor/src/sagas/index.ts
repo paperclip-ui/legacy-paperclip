@@ -19,13 +19,16 @@ import {
   fileOpened,
   currentFileInitialized,
   pcVirtObjectEdited,
-  CanvasMouseUp
+  CanvasMouseUp,
+  pasted,
+  globalBackspaceKeySent
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
+import { utimes } from "fs";
 
 declare const vscode;
 declare const TARGET_URI;
@@ -144,7 +147,6 @@ function* handleRenderer() {
     }
   });
   yield takeEvery(["FOCUS"], function() {
-    console.log("FOC");
     window.focus();
   });
 
@@ -167,7 +169,6 @@ function* handleRenderer() {
     ],
     function*(action: Action) {
       const state: AppState = yield select();
-      console.log(getSelectedFrames(state));
       sendMessage(
         pcVirtObjectEdited({
           mutations: getSelectedFrames(state).map(frame => {
@@ -199,13 +200,16 @@ function* handleRenderer() {
         })
       })
     );
+
+    yield put(globalBackspaceKeySent(null));
   });
 
   yield takeEvery(
     [
       ActionType.META_CLICKED,
       ActionType.GLOBAL_Z_KEY_DOWN,
-      ActionType.GLOBAL_Y_KEY_DOWN
+      ActionType.GLOBAL_Y_KEY_DOWN,
+      ActionType.PASTED
     ],
     function(action: Action) {
       sendMessage(action);
@@ -279,7 +283,6 @@ function* handleKeyCommands() {
       emit(globalMetaKeyDown(null));
     });
     Mousetrap.bind("meta+z", () => {
-      console.log("FOCC");
       emit(globalZKeyDown(null));
     });
     Mousetrap.bind("meta+y", () => {
@@ -310,6 +313,7 @@ function* handleKeyCommands() {
 
 function* handleClipboard() {
   yield fork(handleCopy);
+  yield fork(handlePaste);
 }
 function* handleCopy() {
   const ev = eventChannel(emit => {
@@ -321,7 +325,57 @@ function* handleCopy() {
 
   yield takeEvery(ev, function*(event: ClipboardEvent) {
     const state: AppState = yield select();
-    event.clipboardData.setData("text/plain", "hello world!!");
+    const frames = getSelectedFrames(state);
+
+    if (!frames.length) {
+      return;
+    }
+
+    const buffer = ["\n\n"];
+
+    for (const frame of frames) {
+      if (!state.documentContent[frame.source.uri]) {
+        console.warn(`document content doesn't exist`);
+        return;
+      }
+
+      const start =
+        frame.annotations?.source.location.start || frame.source.location.start;
+      const end = frame.source.location.end;
+
+      buffer.push(
+        state.documentContent[frame.source.uri].slice(start, end),
+        "\n"
+      );
+    }
+
+    event.clipboardData.setData("text/plain", buffer.join("\n"));
     event.preventDefault();
+  });
+}
+
+function* handlePaste() {
+  const ev = eventChannel(emit => {
+    window.document.addEventListener("paste", emit);
+    return () => {
+      window.document.removeEventListener("paste", emit);
+    };
+  });
+
+  yield takeEvery(ev, function*(event: ClipboardEvent) {
+    const content = event.clipboardData.getData("text/plain");
+    event.preventDefault();
+    if (content) {
+      yield put(
+        pasted({
+          clipboardData: [
+            {
+              type: "text/plain",
+              content
+            }
+          ]
+        })
+      );
+    }
   });
 }

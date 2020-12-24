@@ -19,6 +19,7 @@ import {
   canvasMouseLeave,
   canvasMouseMoved
 } from "../../../../../actions";
+import { Empty } from "./Empty";
 
 export const Tools = () => {
   const {
@@ -86,6 +87,8 @@ export const Tools = () => {
     ? virtualNode.preview.children
     : [virtualNode.preview]) as Array<VirtualFrame>;
 
+  const showEmpty = frames.length === 0;
+
   return (
     <styles.Tools
       ref={toolsRef}
@@ -93,6 +96,8 @@ export const Tools = () => {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >
+      <Empty show={showEmpty} />
+
       <Pixels canvas={canvas} />
 
       <Selectable

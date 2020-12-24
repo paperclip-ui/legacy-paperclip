@@ -43,8 +43,6 @@ export default (state: AppState, action: Action) => {
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       state = produce(state, newState => {
         newState.currentEngineEvents.push(action.payload);
-        console.log(action.payload);
-
         newState.allLoadedPCFileData = updateAllLoadedData(
           newState.allLoadedPCFileData,
           action.payload
@@ -99,6 +97,7 @@ export default (state: AppState, action: Action) => {
         newState.canvas = resetCanvas(newState.canvas);
       });
     }
+    case ActionType.GLOBAL_BACKSPACE_KEY_SENT:
     case ActionType.GLOBAL_ESCAPE_KEY_PRESSED: {
       // Don't do this until deselecting can be handled properly
       return produce(state, newState => {
@@ -128,6 +127,11 @@ export default (state: AppState, action: Action) => {
         state.boxes
       )?.nodePath;
       return selectNode(nodePath, action.payload.shiftKey, state);
+    }
+    case ActionType.DOCUMENT_CONTENT_CHANGED: {
+      return produce(state, newState => {
+        newState.documentContent[action.payload.uri] = action.payload.content;
+      });
     }
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {
       return produce(state, newState => {
@@ -174,15 +178,18 @@ export default (state: AppState, action: Action) => {
           return;
         }
 
-        const oldBox = mergeBoxes(frames.map((frame, i) => newState.boxes[i]));
+        const oldBox = mergeBoxes(
+          state.selectedNodePaths.map(nodePath => newState.boxes[nodePath])
+        );
 
-        for (let i = 0, { length } = frames; i < length; i++) {
+        for (let i = 0, { length } = state.selectedNodePaths; i < length; i++) {
           const frame = frames[i];
+          const nodePath = state.selectedNodePaths[i];
           Object.assign(
             frame,
             updateAnnotations(frame, {
               frame: updateBox(
-                newState.boxes[i],
+                newState.boxes[nodePath],
                 oldBox,
                 action.payload.newBounds
               )
@@ -362,8 +369,6 @@ const selectNode = (nodePath: string, shiftKey: boolean, state: AppState) => {
     } else {
       newState.selectedNodePaths = [nodePath];
     }
-
-    console.log(newState.selectedNodePaths);
   });
 };
 

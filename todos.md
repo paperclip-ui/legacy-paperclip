@@ -8,10 +8,9 @@
 
 ### Immediate
 
-- multi-select frames
-- ability to copy & paste frames
-- Empty state
 - expand frames to full screen
+- update drop icon
+  - remove hover state
 
 - Update docs
   - include percy docs

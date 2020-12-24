@@ -11,12 +11,17 @@ import {
   window,
   commands,
   TextEditor,
+  Range,
   WebviewPanel,
   ExtensionContext,
   ViewColumn,
   workspace,
   Selection,
-  env
+  env,
+  TextDocument,
+  TextDocumentChangeEvent,
+  TextEdit,
+  WorkspaceEdit
 } from "vscode";
 import { isPaperclipFile } from "./utils";
 import * as path from "path";
@@ -95,17 +100,38 @@ export const activate = (
     );
   };
 
-  const execCommand = async (preview: LivePreview, command: string) => {
+  const showPreviewEditor = async (preview: LivePreview) => {
     const uri = preview.getTargetUri();
     const sourceEditor = window.visibleTextEditors.find(
       editor => String(editor.document.uri) === uri
     );
-    await window.showTextDocument(
+    return await window.showTextDocument(
       sourceEditor.document,
       sourceEditor.viewColumn,
       false
     );
+  };
+
+  const execCommand = async (preview: LivePreview, command: string) => {
+    await showPreviewEditor(preview);
     await commands.executeCommand(command);
+  };
+
+  const onPasted = async (preview: LivePreview, { clipboardData }) => {
+    const editor = await showPreviewEditor(preview);
+
+    const start = editor.document.positionAt(editor.document.getText().length);
+    const plainText = clipboardData.find(data => data.type === "text/plain");
+
+    if (!plainText) {
+      return;
+    }
+
+    const tedit = new TextEdit(new Range(start, start), plainText.content);
+
+    const wsEdit = new WorkspaceEdit();
+    wsEdit.set(Uri.parse(preview.getTargetUri()), [tedit]);
+    await workspace.applyEdit(wsEdit);
   };
 
   const registerLivePreview = (preview: LivePreview) => {
@@ -118,6 +144,7 @@ export const activate = (
       preview.onRedo(async () => {
         execCommand(preview, "redo");
       }),
+      preview.onPasted(payload => onPasted(preview, payload)),
       preview.onDidDispose(() => {
         const index = _previews.indexOf(preview);
         if (index !== -1) {
@@ -177,6 +204,18 @@ export const activate = (
     }
   };
 
+  const onTextDocumentChange = async ({
+    document
+  }: TextDocumentChangeEvent) => {
+    updatePreviewTextDocuments(document);
+  };
+
+  const updatePreviewTextDocuments = async (document: TextDocument) => {
+    for (const preview of _previews) {
+      preview.updateDocumentContent(String(document.uri), document.getText());
+    }
+  };
+
   window.registerWebviewPanelSerializer(VIEW_TYPE, {
     async deserializeWebviewPanel(
       panel: WebviewPanel,
@@ -197,8 +236,11 @@ export const activate = (
 
   setTimeout(() => {
     window.onDidChangeActiveTextEditor(onTextEditorChange);
+    workspace.onDidChangeTextDocument(onTextDocumentChange);
+    workspace.onDidOpenTextDocument(updatePreviewTextDocuments);
     if (window.activeTextEditor) {
       onTextEditorChange(window.activeTextEditor);
+      updatePreviewTextDocuments(window.activeTextEditor.document);
     }
   }, 500);
 
@@ -294,6 +336,12 @@ class LivePreview {
   focus() {
     this.panel.reveal(this.panel.viewColumn, false);
   }
+  updateDocumentContent(uri: string, content: string) {
+    this.panel.webview.postMessage({
+      type: "DOCUMENT_CONTENT_CHANGED",
+      payload: JSON.stringify({ uri, content })
+    });
+  }
   getTargetUri() {
     return this._targetUri;
   }
@@ -358,6 +406,16 @@ class LivePreview {
       this._em.removeListener("undo", listener);
     };
   }
+  public onPasted(
+    listener: (payload: {
+      clipboardData: Array<{ type: string; content: string }>;
+    }) => void
+  ) {
+    this._em.on("PASTED", listener);
+    return () => {
+      this._em.removeListener("PASTED", listener);
+    };
+  }
   public onRedo(listener: () => void) {
     this._em.on("redo", listener);
     return () => {
@@ -379,6 +437,8 @@ class LivePreview {
       this._em.emit("undo");
     } else if (event.type === "GLOBAL_Y_KEY_DOWN") {
       this._em.emit("redo");
+    } else {
+      this._em.emit(event.type, event.payload);
     }
   };
   private async _handleErrorBannerClicked({

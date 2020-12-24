@@ -21,11 +21,9 @@ export const parsers: Record<string, Parser> = {
       return text;
     },
     locStart(node) {
-      console.log(node);
       return node.start;
     },
     locEnd(node) {
-      console.log("END");
       return node.end;
     },
     astFormat: "paperclip-ast"

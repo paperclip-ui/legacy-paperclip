@@ -14,9 +14,11 @@ export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
   ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
+  DOCUMENT_CONTENT_CHANGED = "DOCUMENT_CONTENT_CHANGED",
   CANVAS_MOUSE_LEAVE = "CANVAS_MOUSE_LEAVE",
   CANVAS_MOUSE_UP = "CANVAS_MOUSE_UP",
   ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
+  PASTED = "PASTED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
   PAINT_BUTTON_CLICKED = "PAINT_BUTTON_CLICKED",
   CANVAS_RESIZED = "CANVAS_RESIZED",
@@ -32,6 +34,7 @@ export enum ActionType {
   GLOBAL_Z_KEY_DOWN = "GLOBAL_Z_KEY_DOWN",
   GLOBAL_Y_KEY_DOWN = "GLOBAL_Y_KEY_DOWN",
   GLOBAL_BACKSPACE_KEY_PRESSED = "GLOBAL_BACKSPACE_KEY_PRESSED",
+  GLOBAL_BACKSPACE_KEY_SENT = "GLOBAL_BACKSPACE_KEY_SENT",
   GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP",
   ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
   CURRENT_FILE_INITIALIZED = "CURRENT_FILE_INITIALIZED",
@@ -81,6 +84,14 @@ export type MetaClicked = BaseAction<
   }
 >;
 
+export type DocumentContentChanged = BaseAction<
+  ActionType.DOCUMENT_CONTENT_CHANGED,
+  {
+    uri: string;
+    content: string;
+  }
+>;
+
 export type ResizerPathMoved = WrappedEvent<
   MouseEvent,
   ActionType.RESIZER_PATH_MOUSE_MOVED,
@@ -120,6 +131,16 @@ export type FrameTitleChanged = BaseAction<
   {
     frameIndex: number;
     value: string;
+  }
+>;
+
+export type Pasted = BaseAction<
+  ActionType.PASTED,
+  {
+    clipboardData: Array<{
+      type: string;
+      content: string;
+    }>;
   }
 >;
 
@@ -279,6 +300,10 @@ export const globalBackspaceKeyPressed = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
 >(ActionType.GLOBAL_BACKSPACE_KEY_PRESSED);
 
+export const globalBackspaceKeySent = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_SENT>
+>(ActionType.GLOBAL_BACKSPACE_KEY_SENT);
+
 export const globalMetaKeyDown = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
 >(ActionType.GLOBAL_META_KEY_DOWN);
@@ -298,6 +323,7 @@ export const dirLoaded = actionCreator<DirLoaded>(ActionType.DIR_LOADED);
 export const fsItemClicked = actionCreator<FSItemClicked>(
   ActionType.FS_ITEM_CLICKED
 );
+export const pasted = actionCreator<Pasted>(ActionType.PASTED);
 
 export type Action =
   // | RendererInitialized
@@ -305,6 +331,8 @@ export type Action =
   | CanvasMouseUp
   | ResizerPathMoved
   | ResizerPathStoppedMoving
+  | DocumentContentChanged
+  | Pasted
   | FrameTitleChanged
   | MetaClicked
   | ResizerStoppedMoving
@@ -328,6 +356,7 @@ export type Action =
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
   | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
   | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
+  | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_SENT>
   | KeyComboPressed<ActionType.GLOBAL_Y_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_Z_KEY_DOWN>
   | EngineErrored

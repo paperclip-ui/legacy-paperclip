@@ -74,6 +74,7 @@ export type AppState = {
   currentError?: EngineErrorEvent;
   resizerMoving?: boolean;
   currentFileUri: string;
+  documentContent: Record<string, string>;
   currentEngineEvents: EngineDelegateEvent[];
   allLoadedPCFileData: Record<string, LoadedData>;
   // rendererElement?: any;
@@ -90,6 +91,7 @@ export type AppState = {
 export const INITIAL_STATE: AppState = {
   centeredInitial: false,
   toolsLayerEnabled: true,
+  documentContent: {},
   currentFileUri: null,
   currentEngineEvents: [],
   allLoadedPCFileData: {},
