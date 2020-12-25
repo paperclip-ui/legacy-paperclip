@@ -1388,3 +1388,11 @@ You can also define components from them:
   <Items />
 </ul>
 ```
+
+## Annotations
+
+Annotations allow you to specify additional information about your elements
+
+#### @frame
+
+The `@frame` annotation allows to you to specify frame dimensions for the 

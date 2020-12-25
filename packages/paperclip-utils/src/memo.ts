@@ -5,7 +5,7 @@ const DEFAULT_LRU_MAX = 10000;
 // need this for default arguments
 const getArgumentCount = (fn: (...args: any[]) => any) => {
   const str = fn.toString();
-  const params = str.match(/\(.*?\)|\w+\s*\=\>/)[0];
+  const params = str.match(/\(.*?\)|\w+\s*=>/)[0];
   const args = params
     .replace(/[=>()]/g, "")
     .split(/\s*,\s*/)
