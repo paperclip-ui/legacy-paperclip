@@ -260,7 +260,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(renderer.mount.innerHTML.replace(/\n/g, "")).to.eql(
-      `<div><style>a[data-pc-61a60758] { color:a; }</style><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-cbafcfd3] { color:c; }</style><style>a[data-pc-5678f76a] { color:d; }</style></div><div><style></style></div><div>      </div><div></div><div></div>`
+      `<div><style>a[data-pc-61a60758] { color:a; }</style><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-cbafcfd3] { color:c; }</style><style>a[data-pc-5678f76a] { color:d; }</style></div><div><style></style></div><div></div><div></div><div></div>`
     );
 
     await engine.updateVirtualFileContent(
@@ -272,7 +272,7 @@ describe(__filename + "#", () => {
     );
 
     expect(renderer.mount.innerHTML.replace(/\n/g, "")).to.eql(
-      `<div><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-5678f76a] { color:d; }</style></div><div><style></style></div><div>     </div><div></div><div></div>`
+      `<div><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-5678f76a] { color:d; }</style></div><div><style></style></div><div></div><div></div><div></div>`
     );
   });
 
@@ -357,7 +357,7 @@ describe(__filename + "#", () => {
     expect(
       renderer.mount.innerHTML.replace("\n", "").replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><img src="blah:///file.jpg"></img>      </div><div></div><div></div>`
+      `<div></div><div><style></style></div><div><img src="blah:///file.jpg"></img></div><div></div><div></div>`
     );
 
     engine.updateVirtualFileContent(
@@ -370,7 +370,7 @@ describe(__filename + "#", () => {
     expect(
       renderer.mount.innerHTML.replace("\n", "").replace(/\\/g, "/Z/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><img src="blah:///something-else.jpg"></img>    </div><div></div><div></div>`
+      `<div></div><div><style></style></div><div><img src="blah:///something-else.jpg"></img></div><div></div><div></div>`
     );
   });
 });
