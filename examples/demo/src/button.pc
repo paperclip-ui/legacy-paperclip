@@ -7,56 +7,10 @@
 </style>
 
 
-<!--
-  @frame { title: "Title this", width: 2371, height: 1116, x: -978, y: -392 }
--->
-<div>
-  Somethingfds
-</div>
 
 
-<!--
-  @frame { title: "Mobile View", width: 1188, height: 1116, x: -1314, y: 1385 }
--->
-<div>
-  Somethingfds
-</div>
 
 
-<!--
-  @frame { title: "Title this", width: 1188, height: 1116, x: -3165, y: 1418 }
--->
-<div>
-  Somethingfds
-</div>
-
-<!--
-  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
--->
-<div>
-  Somethingfds
-</div>
-
-<!--
-  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
--->
-<div>
-  Somethingfds
-</div>
-
-<!--
-  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
--->
-<div>
-  Somethingfds
-</div>
-
-<!--
-  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
--->
-<div>
-  Somethingfds
-</div>
 
 
 
@@ -90,7 +44,7 @@
 
 
 <!--
-  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+  @frame { visible: false, title: "Title this", width: 1188, height: 1116, x: -2263, y: -183 }
 -->
 <div>
   Somethingfds

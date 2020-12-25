@@ -1398,7 +1398,7 @@ for documentation & other visual helpers when developing your UIs.
 
 The `@frame` annotation allows to you to specify preview frame dimensions for your element. For example:
 
-![alt frames screenshot](./assets/frames-annotations.png)
+![alt frames screenshot](assets/frames-annotations.png)
 
 `x/y/width/height` dimensions can be specified visually in the preview window. 
 

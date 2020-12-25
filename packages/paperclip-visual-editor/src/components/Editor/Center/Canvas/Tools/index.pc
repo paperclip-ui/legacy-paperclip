@@ -1,5 +1,9 @@
 <import src="components/Theme/index.pc" as="theme" />
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -91, y: 84 }
+-->
 <div export component as="Tools" 
   className="tools" 
   {onClick?}
@@ -19,6 +23,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false, title: "Title me this", width: 798, height: 586, x: 28, y: -178 }
+-->
 <Tools>
-  
+  This is a tool
 </Tools>
