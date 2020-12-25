@@ -47,13 +47,10 @@ export enum ActionType {
   RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING",
   META_CLICKED = "META_CLICKED",
   PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED",
-  FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED"
+  FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
+  EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
+  COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED"
 }
-
-// export type RendererInitialized = BaseAction<
-//   ActionType.RENDERER_INITIALIZED,
-//   { element: HTMLElement }
-// >;
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
   sourceEvent: T;
@@ -82,6 +79,17 @@ export type MetaClicked = BaseAction<
   {
     source: ExprSource;
   }
+>;
+
+export type ExpandFrameButtonClicked = BaseAction<
+  ActionType.EXPAND_FRAME_BUTTON_CLICKED,
+  {
+    frameIndex: number;
+  }
+>;
+
+export type CollapseFrameButtonClicked = BaseAction<
+  ActionType.COLLAPSE_FRAME_BUTTON_CLICKED
 >;
 
 export type DocumentContentChanged = BaseAction<
@@ -237,10 +245,12 @@ export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
 );
 
-// export const rendererInitialized = actionCreator<RendererInitialized>(
-//   ActionType.RENDERER_INITIALIZED
-// );
-
+export const expandFrameButtonClicked = actionCreator<ExpandFrameButtonClicked>(
+  ActionType.EXPAND_FRAME_BUTTON_CLICKED
+);
+export const collapseFrameButtonClicked = actionCreator<
+  CollapseFrameButtonClicked
+>(ActionType.COLLAPSE_FRAME_BUTTON_CLICKED);
 export const resizerPathMoved = actionCreator<ResizerPathMoved>(
   ActionType.RESIZER_PATH_MOUSE_MOVED
 );
@@ -347,6 +357,8 @@ export type Action =
   | ErrorBannerClicked
   | CurrentFileInitialized
   | FileOpened
+  | CollapseFrameButtonClicked
+  | ExpandFrameButtonClicked
   | ZoomInButtonClicked
   | FrameTitleClicked
   | EngineDelegateChanged

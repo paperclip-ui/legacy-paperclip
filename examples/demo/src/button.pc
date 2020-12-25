@@ -7,6 +7,74 @@
 </style>
 
 
+<!--
+  @frame { title: "Title this", width: 2371, height: 1116, x: -978, y: -392 }
+-->
+<div>
+  Somethingfds
+</div>
+
+
+<!--
+  @frame { title: "Mobile View", width: 1188, height: 1116, x: -1314, y: 1385 }
+-->
+<div>
+  Somethingfds
+</div>
+
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -3165, y: 1418 }
+-->
+<div>
+  Somethingfds
+</div>
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+-->
+<div>
+  Somethingfds
+</div>
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+-->
+<div>
+  Somethingfds
+</div>
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+-->
+<div>
+  Somethingfds
+</div>
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+-->
+<div>
+  Somethingfds
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -22,52 +90,9 @@
 
 
 <!--
-  @frame { title: "Title this", width: 2371, height: 1116, x: 284, y: -953 }
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
 -->
 <div>
   Somethingfds
 </div>
-
-
-
-
-<!--
-  @frame { title: "Title this", width: 2371, height: 1116, x: -2641, y: -375 }
--->
-<div>
-  Somethingfds
-</div>
-
-
-
-<!--
-  @frame { title: "B", width: 1375, height: 761, x: -4690, y: -4594 }
--->
-<div>
-  Somethingfds
-</div>
-
-
-<!--
-  @frame { title: "A", width: 4327, height: 1607, x: -3561, y: -3334 }
--->
-<div>
-  Somethingfds
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

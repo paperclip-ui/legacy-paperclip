@@ -24,7 +24,11 @@ import { render } from "react-dom";
 
 declare const PROTOCOL: string;
 
-export const Frames = memo(() => {
+type FramesProps = {
+  expandedFrameIndex?: number;
+};
+
+export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   const { renderer, preview } = useFrames();
 
   return (
@@ -33,6 +37,7 @@ export const Frames = memo(() => {
         return (
           <Frame
             key={i}
+            expanded={expandedFrameIndex === i}
             frame={frame}
             preview={getFrameVirtualNode(
               frame,
@@ -84,7 +89,7 @@ const useFrames = () => {
       renderer.setPreview(frameData.preview);
       collectRects();
     }
-  }, [renderer, frameData]);
+  }, [renderer, frameData, state.expandedFrameInfo, state.canvas.size]);
 
   useEffect(() => {
     if (state.currentEngineEvents.length) {
@@ -99,10 +104,11 @@ const useFrames = () => {
 
 type FrameProps = {
   frame: Frame;
+  expanded: boolean;
   preview: VirtualText | VirtualElement;
 };
 
-const Frame = memo(({ frame, preview }: FrameProps) => {
+const Frame = memo(({ frame, preview, expanded }: FrameProps) => {
   if (!preview) {
     return null;
   }
@@ -160,6 +166,20 @@ const Frame = memo(({ frame, preview }: FrameProps) => {
 
   const frameStyle = useMemo(() => {
     const bounds = getFrameBounds(preview);
+
+    if (expanded) {
+      return {
+        width: `100%`,
+        height: `100%`,
+
+        // necessary since client rects include frame position
+        left: bounds.x,
+        top: bounds.y,
+        zIndex: 1,
+        position: "absolute"
+      };
+    }
+
     return {
       width: bounds.width,
       height: bounds.height,
@@ -167,7 +187,7 @@ const Frame = memo(({ frame, preview }: FrameProps) => {
       top: bounds.y,
       position: "absolute"
     };
-  }, [preview.annotations]) as any;
+  }, [preview.annotations, expanded]) as any;
 
   return <styles.Frame style={frameStyle} ref={frameRef} />;
 });

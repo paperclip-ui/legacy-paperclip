@@ -11,14 +11,15 @@ import {
   canvasResized,
   canvasMouseMoved
 } from "../../../../actions";
+import { getFrameFromIndex } from "../../../../state";
+import { getFrameBounds } from "paperclip-web-renderer";
 
 export const Canvas = React.memo(() => {
+  const { state, dispatch } = useAppStore();
   const {
-    state: {
-      canvas: { transform }
-    },
-    dispatch
-  } = useAppStore();
+    canvas: { transform },
+    expandedFrameInfo
+  } = state;
 
   const [canvasPanTimer, setCanvasPanTimer] = useState<any>(0);
 
@@ -84,7 +85,6 @@ export const Canvas = React.memo(() => {
 
   return (
     <styles.Canvas ref={canvasRef} onWheel={onWheel}>
-      <Tools />
       <styles.Inner
         style={{
           transform: `translateX(${transform.x}px) translateY(${transform.y}px) scale(${transform.z}) translateZ(0)`,
@@ -92,9 +92,9 @@ export const Canvas = React.memo(() => {
           willChange: "transform"
         }}
       >
-        {/* <Preview /> */}
-        <Frames />
+        <Frames expandedFrameIndex={expandedFrameInfo?.frameIndex} />
       </styles.Inner>
+      <Tools />
     </styles.Canvas>
   );
 });

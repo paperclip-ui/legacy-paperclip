@@ -24,6 +24,8 @@ import {
   computeVirtJSObject,
   VirtJsObjectKind
 } from "paperclip-utils";
+import { actionCreator } from "../actions/base";
+import { getFrameBounds } from "paperclip-web-renderer";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -54,6 +56,28 @@ export default (state: AppState, action: Action) => {
       state = maybeCenterCanvas(state);
 
       return state;
+    }
+    case ActionType.EXPAND_FRAME_BUTTON_CLICKED: {
+      return produce(state, newState => {
+        newState.expandedFrameInfo = {
+          frameIndex: action.payload.frameIndex,
+          previousCanvasTransform: state.canvas.transform
+        };
+
+        const frame = getFrameFromIndex(action.payload.frameIndex, state);
+        const frameBounds = getFrameBounds(frame);
+
+        newState.canvas.transform.x = -frameBounds.x;
+        newState.canvas.transform.y = -frameBounds.y;
+        newState.canvas.transform.z = 1;
+      });
+    }
+    case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
+      return produce(state, newState => {
+        const transform = newState.expandedFrameInfo.previousCanvasTransform;
+        newState.expandedFrameInfo = null;
+        newState.canvas.transform = transform;
+      });
     }
     case ActionType.CURRENT_FILE_INITIALIZED: {
       state = produce(state, newState => {
@@ -94,7 +118,6 @@ export default (state: AppState, action: Action) => {
       return produce(state, newState => {
         newState.toolsLayerEnabled = !newState.toolsLayerEnabled;
         newState.selectedNodePaths = [];
-        newState.canvas = resetCanvas(newState.canvas);
       });
     }
     case ActionType.GLOBAL_BACKSPACE_KEY_SENT:
@@ -124,7 +147,8 @@ export default (state: AppState, action: Action) => {
       const nodePath = getNodeInfoAtPoint(
         state.canvas.mousePosition,
         state.canvas.transform,
-        state.boxes
+        state.boxes,
+        state.expandedFrameInfo?.frameIndex
       )?.nodePath;
       return selectNode(nodePath, action.payload.shiftKey, state);
     }
@@ -220,6 +244,11 @@ export default (state: AppState, action: Action) => {
       return state;
     }
     case ActionType.CANVAS_PANNED: {
+      // do not allow panning when expanded
+      if (state.expandedFrameInfo) {
+        return state;
+      }
+
       const {
         delta: { x: deltaX, y: deltaY },
         metaKey,

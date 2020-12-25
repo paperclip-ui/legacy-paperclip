@@ -221,20 +221,6 @@ function* handleRenderer() {
   });
 }
 
-const handleInteractionsForRenderer = (renderer: Renderer) =>
-  function*() {
-    function* syncScrollbarVisibilityState() {
-      const state: AppState = yield select();
-      renderer.hideScrollbars = state.toolsLayerEnabled;
-    }
-
-    yield call(syncScrollbarVisibilityState);
-    yield takeEvery(
-      ActionType.PAINT_BUTTON_CLICKED,
-      syncScrollbarVisibilityState
-    );
-  };
-
 function* handleCanvasMouseUp(action: CanvasMouseUp) {
   if (!action.payload.metaKey) {
     return;
@@ -242,13 +228,19 @@ function* handleCanvasMouseUp(action: CanvasMouseUp) {
 
   const state: AppState = yield select();
 
-  const nodePathParts = getNodeInfoAtPoint(
+  const nodeInfo = getNodeInfoAtPoint(
     state.canvas.mousePosition,
     state.canvas.transform,
-    state.boxes
-  )
-    .nodePath.split(".")
-    .map(Number);
+    state.boxes,
+    state.expandedFrameInfo?.frameIndex
+  );
+
+  // maybe offscreen
+  if (!nodeInfo) {
+    return;
+  }
+
+  const nodePathParts = nodeInfo.nodePath.split(".").map(Number);
   console.log(state.allLoadedPCFileData[state.currentFileUri], nodePathParts);
   const virtualNode = getVirtTarget(
     state.allLoadedPCFileData[state.currentFileUri].preview,

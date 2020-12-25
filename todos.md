@@ -8,19 +8,12 @@
 
 ### Immediate
 
-- expand frames to full screen
-- update drop icon
-  - remove hover state
-
 - Update docs
   - include percy docs
     - ability to set title template
     - ability to skip hidden frames
   - reflect annotations
   - how to use frames
-- frame settings
-  - preset sizes
-- nightly VSCode token  
 
 ### Clean up
 

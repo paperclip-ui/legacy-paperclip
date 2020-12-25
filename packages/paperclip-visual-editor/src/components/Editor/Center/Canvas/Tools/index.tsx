@@ -26,15 +26,16 @@ export const Tools = () => {
     state: {
       boxes,
       canvas,
-      toolsLayerEnabled,
       selectedNodePaths,
       currentFileUri,
       metaKeyDown,
-      allLoadedPCFileData
+      allLoadedPCFileData,
+      expandedFrameInfo
     },
     dispatch
   } = useAppStore();
   const toolsRef = useRef<HTMLDivElement>();
+  const toolsLayerEnabled = !expandedFrameInfo;
 
   const onMouseMove = useCallback(
     (event: React.MouseEvent<any>) => {
@@ -69,17 +70,18 @@ export const Tools = () => {
     selectedNodePaths.length &&
     mergeBoxes(selectedNodePaths.map(path => boxes[path]));
 
-  if (!toolsLayerEnabled) {
-    return null;
-  }
-
   const hoveringBox =
     canvas.mousePosition &&
-    getNodeInfoAtPoint(canvas.mousePosition, canvas.transform, boxes)?.box;
+    getNodeInfoAtPoint(
+      canvas.mousePosition,
+      canvas.transform,
+      boxes,
+      expandedFrameInfo?.frameIndex
+    )?.box;
 
   const virtualNode = allLoadedPCFileData[currentFileUri];
 
-  if (!virtualNode) {
+  if (!virtualNode || !toolsLayerEnabled) {
     return null;
   }
 

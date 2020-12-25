@@ -11,6 +11,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Dispatch } from "redux";
 import {
   Action,
+  expandFrameButtonClicked,
   frameTitleChanged,
   frameTitleClicked
 } from "../../../../../../actions";
@@ -101,6 +102,10 @@ const Frame = memo(
       [onChanged]
     );
 
+    const onExpandButtonClick = useCallback(() => {
+      dispatch(expandFrameButtonClicked({ frameIndex }));
+    }, [dispatch, frameIndex]);
+
     return (
       <styles.Frame
         style={{
@@ -120,8 +125,9 @@ const Frame = memo(
           onBlur={onBlur}
           onKeyPress={onKeyPress}
           onDoubleClick={onDoubleClick}
+          onExpandButtonClick={onExpandButtonClick}
           inputRef={inputRef}
-          onClick={onClick}
+          onMouseUp={onClick}
           value={annotations.frame?.title || "Untitled"}
         />
       </styles.Frame>

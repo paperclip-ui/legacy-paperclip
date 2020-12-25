@@ -1,5 +1,5 @@
 import produce from "immer";
-import { isEqual } from "lodash";
+import { isEqual, pick, pickBy } from "lodash";
 import {
   computeVirtJSObject,
   memoize,
@@ -68,10 +68,16 @@ export type Directory = {
 
 export type FSItem = File | Directory;
 
+type ExpandedFrameInfo = {
+  frameIndex: number;
+  previousCanvasTransform: Transform;
+};
+
 export type AppState = {
   centeredInitial: boolean;
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
+  expandedFrameInfo?: ExpandedFrameInfo;
   resizerMoving?: boolean;
   currentFileUri: string;
   documentContent: Record<string, string>;
@@ -232,10 +238,23 @@ export const getFrameFromIndex = (
 export const getNodeInfoAtPoint = (
   point: Point,
   transform: Transform,
-  boxes: Record<string, Box>
+  boxes: Record<string, Box>,
+  expandedFrameIndex?: number
 ) => {
-  return findBoxNodeInfo(getScaledPoint(point, transform), boxes);
+  return findBoxNodeInfo(
+    getScaledPoint(point, transform),
+    expandedFrameIndex ? getFrameBoxes(boxes, expandedFrameIndex) : boxes
+  );
 };
+
+export const getFrameBoxes = memoize(
+  (boxes: Record<string, Box>, frameIndex: number) => {
+    const v = pickBy(boxes, (value: Box, key: string) => {
+      return key.indexOf(String(frameIndex)) === 0;
+    });
+    return v;
+  }
+);
 
 export * from "./geom";
 
