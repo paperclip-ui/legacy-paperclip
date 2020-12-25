@@ -1,5 +1,6 @@
 use crate::base::ast::ExprSource;
 use crate::css::runtime::virt as css_virt;
+use crate::js::runtime::virt as js_virt;
 use serde::Serialize;
 use std::collections::BTreeMap;
 use std::fmt;
@@ -23,6 +24,7 @@ impl fmt::Display for Fragment {
 pub struct Element {
   #[serde(rename = "source")]
   pub source: ExprSource,
+  pub annotations: Option<js_virt::JsObject>,
 
   #[serde(rename = "tagName")]
   pub tag_name: String,
@@ -69,6 +71,7 @@ impl fmt::Display for Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
+  pub annotations: Option<js_virt::JsObject>,
   pub source: ExprSource,
   pub value: String,
 }

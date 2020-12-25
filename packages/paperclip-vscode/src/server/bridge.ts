@@ -16,8 +16,8 @@ import {
 } from "vscode-languageserver";
 import {
   Engine,
-  EngineEvent,
-  EngineEventKind,
+  EngineDelegateEvent,
+  EngineDelegateEventKind,
   EngineErrorEvent,
   EngineErrorKind,
   ChangedSheetsEvent,
@@ -44,7 +44,7 @@ import {
   Diagnostic
 } from "vscode-languageserver";
 import {
-  EngineEventNotification,
+  EngineDelegateEventNotification,
   NotificationType,
   LoadParams,
   ErrorLoading,
@@ -56,6 +56,7 @@ import {
 } from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
 import { stripFileProtocol } from "paperclip";
+import { EngineDelegate } from "paperclip/src";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
@@ -71,11 +72,11 @@ export class VSCServiceBridge {
   private _documents: KeyValue<TextDocument> = {};
 
   constructor(
-    private _engine: Engine,
+    private _engine: EngineDelegate,
     private _service: LanguageServices,
     readonly connection: Connection
   ) {
-    _engine.onEvent(this._onEngineEvent);
+    _engine.onEvent(this._onEngineDelegateEvent);
     connection.onRequest(
       ColorPresentationRequest.type,
       this._onColorPresentationRequest
@@ -97,7 +98,7 @@ export class VSCServiceBridge {
       NotificationType.LOAD,
       async ({ uri }: LoadParams) => {
         try {
-          const data = await _engine.run(uri);
+          const data = await _engine.open(uri);
           connection.sendNotification(...new Loaded({ uri, data }).getArgs());
         } catch (e) {
           console.warn(e);
@@ -321,15 +322,15 @@ export class VSCServiceBridge {
     }
   }, PERSIST_ENGINE_THROTTLE_MS);
 
-  private _onEngineEvent = (event: EngineEvent) => {
+  private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
     switch (event.kind) {
-      case EngineEventKind.Error: {
+      case EngineDelegateEventKind.Error: {
         return this._onEngineErrorEvent(event);
       }
-      case EngineEventKind.Loaded:
-      case EngineEventKind.Diffed:
-      case EngineEventKind.ChangedSheets:
-      case EngineEventKind.Evaluated: {
+      case EngineDelegateEventKind.Loaded:
+      case EngineDelegateEventKind.Diffed:
+      case EngineDelegateEventKind.ChangedSheets:
+      case EngineDelegateEventKind.Evaluated: {
         return this._onEngineEvaluatedEvent(event);
       }
     }
@@ -345,14 +346,14 @@ export class VSCServiceBridge {
     });
 
     this.connection.sendNotification(
-      ...new EngineEventNotification(event).getArgs()
+      ...new EngineDelegateEventNotification(event).getArgs()
     );
   }
 
   private _onEngineErrorEvent(event: EngineErrorEvent) {
     try {
       this.connection.sendNotification(
-        ...new EngineEventNotification(event).getArgs()
+        ...new EngineDelegateEventNotification(event).getArgs()
       );
 
       switch (event.errorKind) {

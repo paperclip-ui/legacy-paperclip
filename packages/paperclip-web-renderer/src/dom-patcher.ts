@@ -6,14 +6,22 @@ import { ATTR_ALIASES } from "./utils";
 
 const entities = new Html5Entities();
 
+export interface Patchable {
+  childNodes: ChildNode[] | NodeListOf<ChildNode>;
+  appendChild(child: Node);
+  removeChild(child: Node);
+  insertBefore(child: Node, before: Node);
+  namespaceURI: string;
+}
+
 export const patchNativeNode = (
-  mount: HTMLElement,
+  mount: Patchable,
   mutations: Mutation[],
   factory: DOMFactory,
   protocol: string | null
 ) => {
   for (const mutation of mutations) {
-    const target = getTarget(mount, mutation);
+    const target = getTargetFromPath(mount, mutation.nodePath);
     const action = mutation.action;
     switch (action.kind) {
       case ActionKind.DeleteChild: {
@@ -36,7 +44,11 @@ export const patchNativeNode = (
         break;
       }
       case ActionKind.ReplaceNode: {
-        const parent = target.parentNode;
+        // Need to use this method instead of parentNode since parent may not be DOM element (FramesProxy)
+        const parent = getTargetFromPath(
+          mount,
+          mutation.nodePath.slice(0, mutation.nodePath.length - 1)
+        );
         parent.insertBefore(
           createNativeNode(
             action.replacement,
@@ -44,10 +56,10 @@ export const patchNativeNode = (
             protocol,
             parent.namespaceURI
           ),
-          target
+          target as ChildNode
         );
 
-        target.remove();
+        parent.removeChild(target as ChildNode);
         break;
       }
       case ActionKind.RemoveAttribute: {
@@ -74,8 +86,5 @@ export const patchNativeNode = (
   }
 };
 
-const getTarget = (mount: HTMLElement, mutation: Mutation) =>
-  mutation.nodePath.reduce(
-    (current: HTMLElement, i) => current.childNodes[i],
-    mount
-  );
+const getTargetFromPath = (mount: Patchable, nodePath: number[]) =>
+  nodePath.reduce((current: Patchable, i) => current.childNodes[i], mount);

@@ -17,11 +17,14 @@ import {
   AS_ATTR_NAME,
   PREVIEW_ATTR_NAME
 } from "./constants";
+import { memoize } from "./memo";
+import { VirtualElement, VirtualFragment } from "./virt";
 
 export enum NodeKind {
   Fragment = "Fragment",
   Text = "Text",
   Annotation = "Annotation",
+  Comment = "Comment",
   Element = "Element",
   StyleElement = "StyleElement",
   Slot = "Slot"
@@ -41,6 +44,12 @@ export type Annotation = {
   properties: AnnotationProperty[];
   location: SourceLocation;
 } & BaseNode<NodeKind.Annotation>;
+
+export declare type Comment = {
+  value: string;
+  properties: any;
+  location: SourceLocation;
+} & BaseNode<NodeKind.Comment>;
 
 export enum AnnotationPropertyKind {
   Text = "Text",
@@ -195,7 +204,14 @@ export type Slot = {
   location: SourceLocation;
 } & BaseNode<NodeKind.Slot>;
 
-export type Node = Text | Element | StyleElement | Fragment | Slot | Annotation;
+export type Node =
+  | Text
+  | Element
+  | StyleElement
+  | Fragment
+  | Slot
+  | Annotation
+  | Comment;
 export type Expression = Node | Attribute | AttributeValue | StyleExpression;
 
 const a: AttributeValue = null;
@@ -355,26 +371,47 @@ export const getLogicElement = (ast: Node): Element | null => {
 export const hasAttribute = (name: string, element: Element) =>
   getAttribute(name, element) != null;
 
-export const flattenNodes = (node: Node, _allNodes: Node[] = []): Node[] => {
-  _allNodes.push(node);
-  if (node.kind === NodeKind.Element) {
-    for (const attr of node.attributes) {
-      if (attr.kind === AttributeKind.KeyValueAttribute && attr.value) {
-        if (attr.value.attrValueKind === AttributeValueKind.Slot) {
-          if (attr.value.script.jsKind === StatementKind.Node) {
-            flattenNodes(attr.value.script, _allNodes);
-          }
-        }
-      }
-    }
-  }
+// https://github.com/crcn/tandem/blob/10.0.0/packages/common/src/state/tree.ts#L137
+export const flattenTreeNode = memoize((current: Node): Node[] => {
+  const treeNodeMap = getTreeNodeMap(current);
+  return Object.values(treeNodeMap) as Node[];
+});
 
-  for (const child of getChildren(node)) {
-    flattenNodes(child, _allNodes);
+export const getNodePath = memoize((node: Node, root: Node) => {
+  const map = getTreeNodeMap(root);
+  for (const path in map) {
+    const c = map[path];
+    if (c === node) return path;
   }
+});
 
-  return _allNodes;
+// TODO
+export const getParentNode = (node: Node, root: Node) => {
+  const nodePath = getNodePath(node, root).split(".");
+  nodePath.pop();
+  const map = getTreeNodeMap(root);
+  return map[nodePath.join(".")] as Fragment | Element;
 };
+
+export const getTreeNodeMap = memoize(
+  (current: Node, path = "0"): Record<string, Node> => {
+    const map = {
+      [path]: current
+    };
+    if (
+      current.kind === NodeKind.Fragment ||
+      current.kind === NodeKind.Element
+    ) {
+      Object.assign(
+        map,
+        ...current.children.map((child, i) =>
+          getTreeNodeMap(child, path + "." + i)
+        )
+      );
+    }
+    return map;
+  }
+);
 
 export const isComponentInstance = (
   node: Node,

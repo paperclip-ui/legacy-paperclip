@@ -1,0 +1,15 @@
+<style>
+  :global(span) {
+    color: orange;
+  }
+</style>
+
+<!--
+  @frame { width: 856, height: 648, x: 88, y: -91 }
+-->
+<div export component as="Test">
+  <style>
+    font-size: 42px;
+  </style>
+  {children}
+</div>

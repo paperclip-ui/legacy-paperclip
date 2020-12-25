@@ -1,35 +1,98 @@
+<import src="./mod.pc" as="mod" />
 <style>
-  @mixin desktop {
-    @media screen and (max-width: 400px) {
-      @content;
-    }
-  }
-
-  @mixin test {
-    color: rgb(255, 170, 11);
-  }
-
-  .test {
+  * {
     font-family: sans-serif;
-    color: blue;
-    
+    font-size: 24px;
   }
 </style>
 
-<div component as="Test">
-  <style>
-    color: rgb(211, 30, 30);
-    font-family: sans-serif;
-    font-size: 32px;
-    :within(.variant) {
-      color: blue;
-    }
-  </style>
-  Button
+
+<!--
+  @frame { title: "Title this", width: 2371, height: 1116, x: -978, y: -392 }
+-->
+<div>
+  Somethingfds
 </div>
 
 
-<Test />
-<div className="variant">
-  <Test />
+<!--
+  @frame { title: "Mobile View", width: 1188, height: 1116, x: -1314, y: 1385 }
+-->
+<div>
+  Somethingfds
 </div>
+
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -3165, y: 1418 }
+-->
+<div>
+  Somethingfds
+</div>
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+-->
+<div>
+  Somethingfds
+</div>
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+-->
+<div>
+  Somethingfds
+</div>
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+-->
+<div>
+  Somethingfds
+</div>
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+-->
+<div>
+  Somethingfds
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+  @frame { title: "Title this", width: 1188, height: 1116, x: -2641, y: -375 }
+-->
+<div>
+  Somethingfds
+</div>
+

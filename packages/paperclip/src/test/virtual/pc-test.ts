@@ -6,7 +6,7 @@ import {
   stringifyLoadResult,
   noop
 } from "../utils";
-import { EngineEventKind, stringifyVirtualNode } from "paperclip-utils";
+import { EngineDelegateEventKind, stringifyVirtualNode } from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
@@ -210,6 +210,16 @@ describe(__filename + "#", () => {
 
       expect(cleanHTML(buffer)).to.eql(
         `<div class="a" data-pc-80f4925f>b</div>`
+      );
+    });
+    it(`Can render a slot with a negative number`, async () => {
+      const graph = {
+        "/entry.pc": `<span>{-1}</span>`
+      };
+      const engine = await createMockEngine(graph);
+      const { preview } = await engine.run("/entry.pc");
+      expect(cleanHTML(stringifyVirtualNode(preview))).to.eql(
+        "<span data-pc-80f4925f>-1</span>"
       );
     });
     xit("Displays an error if text binding is defined outside of component", async () => {
@@ -1404,10 +1414,10 @@ describe(__filename + "#", () => {
     await engine.updateVirtualFileContent("/entry.pc", "b");
     await engine.updateVirtualFileContent("/entry.pc", "c");
     expect(events.map(event => event.kind)).to.eql([
-      EngineEventKind.Loaded,
-      EngineEventKind.Evaluated,
-      EngineEventKind.Diffed,
-      EngineEventKind.Diffed
+      EngineDelegateEventKind.Loaded,
+      EngineDelegateEventKind.Evaluated,
+      EngineDelegateEventKind.Diffed,
+      EngineDelegateEventKind.Diffed
     ]);
   });
 
@@ -1506,5 +1516,34 @@ describe(__filename + "#", () => {
     expect(stringifyLoadResult(result)).to.eql(
       "<style>[class]._80f4925f_a[class].b[class].c { color:blue; }</style>"
     );
+  });
+
+  it(`last node is removed if it's whitespace`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <span></span>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+    expect(result.preview.children[0].kind).to.eql("Element");
+    expect(result.preview.children.length).to.eql(1);
+  });
+
+  it(`last node is preserved if it has annotations`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <span></span>
+      <!--
+        @frame {}
+      -->
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+    expect(result.preview.children.length).to.eql(2);
+    expect(result.preview.children[1].value).to.eql("\n      ");
   });
 });

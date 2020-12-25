@@ -22,7 +22,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
 
     const renderer = createMockRenderer("/entry.pc");
-    engine.onEvent(renderer.handleEngineEvent);
+    engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.run("/entry.pc");
 
     for (let i = 30; i--; ) {
@@ -33,7 +33,7 @@ describe(__filename + "#", () => {
 
       try {
         const baselineRenderer = createMockRenderer("/entry.pc");
-        baselineEngine.onEvent(baselineRenderer.handleEngineEvent);
+        baselineEngine.onEvent(baselineRenderer.handleEngineDelegateEvent);
         await baselineEngine.run("/entry.pc");
 
         await engine.updateVirtualFileContent("/entry.pc", randomDocument);

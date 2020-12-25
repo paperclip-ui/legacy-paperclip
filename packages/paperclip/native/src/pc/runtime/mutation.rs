@@ -2,6 +2,7 @@ use super::virt::Node;
 use crate::base::ast::ExprSource;
 use crate::base::ast::Location;
 use crate::css::runtime::mutation as css_mutation;
+use crate::js::runtime::virt as js_virt;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -20,7 +21,7 @@ pub struct SourceChanged {
   #[serde(rename = "propertyName")]
   pub property_name: String,
 
-  #[serde(rename = "newLocation")]
+  #[serde(rename = "newSource")]
   pub new_source: ExprSource,
 }
 
@@ -46,6 +47,11 @@ pub struct SetText {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct SetAnnotations {
+  pub value: Option<js_virt::JsObject>,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ReplaceNode {
   pub replacement: Node,
 }
@@ -59,6 +65,7 @@ pub enum Action {
   SetAttribute(SetAttribute),
   SourceChanged(SourceChanged),
   SetText(SetText),
+  SetAnnotations(SetAnnotations),
   RemoveAttribute(RemoveAttribute),
   UpdateSheet(UpdateSheet),
 }

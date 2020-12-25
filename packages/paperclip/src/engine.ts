@@ -4,9 +4,9 @@ import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
 import {
-  EngineEvent,
+  EngineDelegateEvent,
   patchVirtNode,
-  EngineEventKind,
+  EngineDelegateEventKind,
   resolveImportUri,
   DependencyContent,
   SheetInfo,
@@ -18,6 +18,7 @@ import {
   ChangeKind
 } from "paperclip-utils";
 import { noop } from "./utils";
+import { EngineMode } from "./delegate";
 
 export type FileContent = {
   [identifier: string]: string;
@@ -31,6 +32,7 @@ export type EngineIO = {
 
 export type EngineOptions = {
   io?: EngineIO;
+  mode?: EngineMode;
 };
 
 const mapResult = result => {
@@ -44,15 +46,17 @@ const mapResult = result => {
   }
 };
 
-export type EngineEventListener = (event: EngineEvent) => void;
+export type EngineDelegateEventListener = (event: EngineDelegateEvent) => void;
 
 export type LoadResult = {
   importedSheets: SheetInfo[];
   sheet: any;
   preview: VirtualNode;
 };
+
+// DEPRECATED
 export class Engine {
-  private _listeners: EngineEventListener[] = [];
+  private _listeners: EngineDelegateEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
   private _io: EngineIO;
 
@@ -60,7 +64,7 @@ export class Engine {
     // only one native listener to for buffer performance
     this._native.add_listener(this._dispatch);
 
-    this.onEvent(this._onEngineEvent);
+    this.onEvent(this._onEngineDelegateEvent);
     return this;
   }
 
@@ -68,7 +72,7 @@ export class Engine {
     return this._native.get_graph_uris();
   }
 
-  onEvent(listener: EngineEventListener) {
+  onEvent(listener: EngineDelegateEventListener) {
     if (listener == null) {
       throw new Error(`listener cannot be undefined`);
     }
@@ -81,19 +85,19 @@ export class Engine {
     };
   }
 
-  private _onEngineEvent = (event: EngineEvent) => {
-    if (event.kind === EngineEventKind.Evaluated) {
+  private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
+    if (event.kind === EngineDelegateEventKind.Evaluated) {
       const data: LoadedData = (this._rendered[event.uri] = {
         ...event.data,
         importedSheets: this.getImportedSheets(event)
       });
 
       this._dispatch({
-        kind: EngineEventKind.Loaded,
+        kind: EngineDelegateEventKind.Loaded,
         uri: event.uri,
         data
       });
-    } else if (event.kind === EngineEventKind.Diffed) {
+    } else if (event.kind === EngineDelegateEventKind.Diffed) {
       const existingData = this._rendered[event.uri];
 
       const newData = (this._rendered[event.uri] = {
@@ -133,7 +137,7 @@ export class Engine {
       if (addedSheets.length || removedSheetUris.length) {
         this._dispatch({
           uri: event.uri,
-          kind: EngineEventKind.ChangedSheets,
+          kind: EngineDelegateEventKind.ChangedSheets,
           data: {
             newSheets: addedSheets,
             removedSheetUris: removedSheetUris,
@@ -165,24 +169,6 @@ export class Engine {
     return this._rendered[uri];
   }
 
-  private _waitForLoadedData(uri: string): Promise<LoadedData> {
-    if (this._rendered[uri]) {
-      return Promise.resolve(this._rendered[uri]);
-    }
-
-    return this._waitForLoadedData2(uri);
-  }
-
-  private _waitForLoadedData2(uri: string): Promise<LoadedData> {
-    return new Promise<LoadedData>(resolve => {
-      const dispose = this.onEvent(event => {
-        if (event.uri === uri && event.kind === EngineEventKind.Loaded) {
-          dispose();
-          resolve(event.data);
-        }
-      });
-    });
-  }
   getImportedSheets({
     data: { allDependencies }
   }: EvaluatedEvent | DiffedEvent) {
@@ -218,7 +204,7 @@ export class Engine {
       return null;
     }
   };
-  private _dispatch = (event: EngineEvent) => {
+  private _dispatch = (event: EngineDelegateEvent) => {
     // try-catch since engine will throw opaque error.
     for (const listener of this._listeners) {
       listener(event);
@@ -244,9 +230,11 @@ const getIOOptions = (options: EngineOptions = {}) =>
           return false;
         }
       },
-      resolveFile: resolveImportUri(fs)
+      resolveFile: resolveImportUri(fs),
+      mode: options.mode
     },
-    options.io
+    options.io,
+    { mode: options.mode }
   );
 
 export const createEngine = createNativeEngine => async (
@@ -264,9 +252,9 @@ export const createEngineSync = createNativeEngine => (
   options: EngineOptions,
   onCrash: any
 ) => {
-  const { readFile, fileExists, resolveFile } = getIOOptions(options);
+  const { readFile, fileExists, resolveFile, mode } = getIOOptions(options);
   return new Engine(
-    createNativeEngine(readFile, fileExists, resolveFile),
+    createNativeEngine(readFile, fileExists, resolveFile, mode),
     onCrash
   );
 };

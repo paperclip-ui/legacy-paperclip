@@ -1388,3 +1388,25 @@ You can also define components from them:
   <Items />
 </ul>
 ```
+
+## Annotations
+
+Annotations allow you to specify additional metadata about your elements -- this is used particularly
+for documentation & other visual helpers when developing your UIs.
+
+### @frame
+
+The `@frame` annotation allows to you to specify preview frame dimensions for your element. For example:
+
+![alt frames screenshot](./assets/frames-annotations.png)
+
+`x/y/width/height` dimensions can be specified visually in the preview window. 
+
+To hide frames from rendering, you can specify `visible: false` like so:
+
+```html
+<!-- 
+  @frame { visible: false }
+-->
+This frame isn't visible in the preview
+```

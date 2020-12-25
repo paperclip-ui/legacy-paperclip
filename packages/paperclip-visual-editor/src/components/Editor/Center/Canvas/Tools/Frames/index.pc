@@ -1,0 +1,113 @@
+<import src="components/Theme/index.pc" as="theme" />
+<import src="components/Theme/open-sans/font-face.pc" as="" />
+
+<div export component as="FramesContainer" {style?} className="$theme.font-default">
+  <style>
+    width: 100%;
+    height: 100%;
+    position: relative;
+  </style>
+  {children}
+</div>
+
+
+<div export component as="Frame" {style?} {className?}>
+
+  <!-- default dimensions -->
+  <style>
+    position: absolute;
+  </style>
+  {children}
+</div>
+
+<div export component as="FrameTitle" {onDoubleClick} {style?} {onClick?} {onMouseUp?} className:editing="editing">
+  <style>
+      transform: translateY(calc(-100% - 6px));
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      text-shadow: 1px 1px white;
+      color: grey;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      :self(:hover) {
+        .expand-button {
+          visibility: visible;
+        }
+      }
+  </style>
+  <span>
+    <style>
+      cursor: default;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      :within(.editing) {
+        display: none;
+      }
+    </style>
+    {value}
+  </span>
+  <input type="text" {onBlur?} ref={inputRef} autofocus={editing} defaultValue={value} {onKeyPress?}>
+    <style>
+      border: none;
+      display: none;
+      color: inherit;
+      background: transparent;
+      width: 100%;
+      outline: none;
+      :within(.editing) {
+        display: block;
+      }
+    </style>
+  </input>
+  <i className="expand-button" onClick={onExpandButtonClick}>
+    <style>
+      --size: 8px;
+      flex-shrink: 0;
+      cursor: pointer;
+      background: rgb(90, 90, 90);
+      width: var(--size);
+      height: var(--size);
+      display: block;
+      mask-image: url(./expand.svg);
+      mask-size: var(--size);
+      visibility: hidden;
+    </style>
+  </i>
+</div>
+
+
+<FramesContainer>
+  <Frame>
+    <style>
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 400px;
+      transform: translate(-50%, -50%);
+      background: rgb(229, 255, 0);
+    </style>
+    <FrameTitle value="Some titlfdsfdsfsd fsdfsd fsd fsd fsd " />
+    <FrameBody />
+  </Frame>
+</FramesContainer>
+
+<FramesContainer>
+  <Frame>
+    <style>
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 400px;
+      transform: translate(-50%, -50%);
+      background: rgb(229, 255, 0);
+    </style>
+    <FrameTitle editing value="Some title">Some titlfdsfsdfsffsfsdfdsfdsfds fds fdsf dsfsde</FrameTitle>
+    <FrameBody />
+  </Frame>
+</FramesContainer>

@@ -68,7 +68,6 @@ export const startServer = async ({
       if (event.uri !== targetUri) {
         return;
       }
-      console.log("EV");
 
       emit({
         type: "ENGINE_EVENT",

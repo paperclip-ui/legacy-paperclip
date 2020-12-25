@@ -10,6 +10,7 @@ import {
 } from "vscode-languageclient";
 import { activate as activatePreview } from "./preview";
 import { NotificationType } from "../common/notifications";
+import { activate as activateMutationHandler } from "./mutations";
 
 let client: LanguageClient;
 
@@ -23,7 +24,8 @@ export const activate = (context: ExtensionContext) => {
         "Paperclip crashed - you'll need to reload this window."
       );
     });
-    activatePreview(client, context);
+    const mut = activateMutationHandler();
+    activatePreview(client, context, mut.handleMutations);
   };
 
   init();

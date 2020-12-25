@@ -1,17 +1,24 @@
 import { BaseAction, actionCreator } from "./base";
+import { PCMutation } from "paperclip-source-writer";
 import {
   VirtualNode,
-  EngineErrorEvent
+  EngineErrorEvent,
+  EngineDelegateEvent,
+  LoadedData,
+  ExprSource
 } from "../../../paperclip-web-renderer/node_modules/paperclip-utils";
-import { Directory, File, FSItem, FSItemKind, Point, Size } from "../state";
+import { Box, Directory, FSItemKind, Point, Size } from "../state";
 
 export enum ActionType {
-  RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
+  // RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
   RENDERER_CHANGED = "RENDERER_CHANGED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
   ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
-  CANVAS_ELEMENT_CLICKED = "CANVAS_ELEMENT_CLICKED",
+  DOCUMENT_CONTENT_CHANGED = "DOCUMENT_CONTENT_CHANGED",
+  CANVAS_MOUSE_LEAVE = "CANVAS_MOUSE_LEAVE",
+  CANVAS_MOUSE_UP = "CANVAS_MOUSE_UP",
   ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
+  PASTED = "PASTED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
   PAINT_BUTTON_CLICKED = "PAINT_BUTTON_CLICKED",
   CANVAS_RESIZED = "CANVAS_RESIZED",
@@ -24,22 +31,150 @@ export enum ActionType {
   RECTS_CAPTURED = "RECTS_CAPTURED",
   GLOBAL_ESCAPE_KEY_PRESSED = "GLOBAL_ESCAPE_KEY_PRESSED",
   GLOBAL_META_KEY_DOWN = "GLOBAL_META_KEY_DOWN",
-  GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP"
+  GLOBAL_Z_KEY_DOWN = "GLOBAL_Z_KEY_DOWN",
+  GLOBAL_Y_KEY_DOWN = "GLOBAL_Y_KEY_DOWN",
+  GLOBAL_BACKSPACE_KEY_PRESSED = "GLOBAL_BACKSPACE_KEY_PRESSED",
+  GLOBAL_BACKSPACE_KEY_SENT = "GLOBAL_BACKSPACE_KEY_SENT",
+  GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP",
+  ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
+  CURRENT_FILE_INITIALIZED = "CURRENT_FILE_INITIALIZED",
+  ENGINE_DELEGATE_EVENTS_HANDLED = "ENGINE_DELEGATE_EVENTS_HANDLED",
+  FRAME_TITLE_CLICKED = "FRAME_TITLE_CLICKED",
+  FILE_OPENED = "FILE_OPENED",
+  RESIZER_PATH_MOUSE_MOVED = "RESIZER_PATH_MOUSE_MOVED",
+  RESIZER_MOVED = "RESIZER_MOVED",
+  RESIZER_STOPPED_MOVING = "RESIZER_STOPPED_MOVING",
+  RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING",
+  META_CLICKED = "META_CLICKED",
+  PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED",
+  FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
+  EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
+  COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED"
 }
 
-export type RendererInitialized = BaseAction<
-  ActionType.RENDERER_INITIALIZED,
-  { element: HTMLElement }
+export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
+  sourceEvent: T;
+} & BaseAction<TType, TPayload>;
+
+export type ResizerMoved = WrappedEvent<
+  MouseEvent,
+  ActionType.RESIZER_MOVED,
+  {
+    originalBounds: Box;
+    newBounds: Box;
+    anchor: Point;
+  }
 >;
+export type ResizerStoppedMoving = WrappedEvent<
+  MouseEvent,
+  ActionType.RESIZER_STOPPED_MOVING,
+  {
+    originalBounds: Box;
+    newBounds: Box;
+    anchor: Point;
+  }
+>;
+export type MetaClicked = BaseAction<
+  ActionType.META_CLICKED,
+  {
+    source: ExprSource;
+  }
+>;
+
+export type ExpandFrameButtonClicked = BaseAction<
+  ActionType.EXPAND_FRAME_BUTTON_CLICKED,
+  {
+    frameIndex: number;
+  }
+>;
+
+export type CollapseFrameButtonClicked = BaseAction<
+  ActionType.COLLAPSE_FRAME_BUTTON_CLICKED
+>;
+
+export type DocumentContentChanged = BaseAction<
+  ActionType.DOCUMENT_CONTENT_CHANGED,
+  {
+    uri: string;
+    content: string;
+  }
+>;
+
+export type ResizerPathMoved = WrappedEvent<
+  MouseEvent,
+  ActionType.RESIZER_PATH_MOUSE_MOVED,
+  {
+    originalBounds: Box;
+    newBounds: Box;
+  }
+>;
+
+export type ResizerPathStoppedMoving = WrappedEvent<
+  MouseEvent,
+  ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
+  {
+    originalBounds: Box;
+    newBounds: Box;
+  }
+>;
+
+export type PCVirtObjectEdited = BaseAction<
+  ActionType.PC_VIRT_OBJECT_EDITED,
+  {
+    mutations: PCMutation[];
+  }
+>;
+
+export type EngineDelegateChanged = BaseAction<
+  ActionType.ENGINE_DELEGATE_CHANGED,
+  EngineDelegateEvent
+>;
+export type CurrentFileInitialized = BaseAction<
+  ActionType.CURRENT_FILE_INITIALIZED,
+  LoadedData
+>;
+
+export type FrameTitleChanged = BaseAction<
+  ActionType.FRAME_TITLE_CHANGED,
+  {
+    frameIndex: number;
+    value: string;
+  }
+>;
+
+export type Pasted = BaseAction<
+  ActionType.PASTED,
+  {
+    clipboardData: Array<{
+      type: string;
+      content: string;
+    }>;
+  }
+>;
+
+export type FrameTitleClicked = BaseAction<
+  ActionType.FRAME_TITLE_CLICKED,
+  { frameIndex: number; shiftKey: boolean }
+>;
+
+export type EngineDelegateEventsHandled = BaseAction<
+  ActionType.ENGINE_DELEGATE_EVENTS_HANDLED
+>;
+export type FileOpened = BaseAction<ActionType.FILE_OPENED, { uri: string }>;
 
 export type RendererChanged = BaseAction<
   ActionType.RENDERER_CHANGED,
   { virtualRoot: VirtualNode }
 >;
 
-export type CanvasElementClicked = BaseAction<
-  ActionType.CANVAS_ELEMENT_CLICKED,
-  { metaKey: boolean; nodePath: string }
+export type CanvasMouseUp = BaseAction<
+  ActionType.CANVAS_MOUSE_UP,
+  { metaKey: boolean; shiftKey: boolean }
+>;
+
+export type CanvasMouseLeave = BaseAction<
+  ActionType.CANVAS_MOUSE_LEAVE,
+  { mousePosition: Point }
 >;
 
 export type CanvasPanned = BaseAction<
@@ -82,27 +217,60 @@ export type FSItemClicked = BaseAction<
 
 export type RectsCaptured = BaseAction<
   ActionType.RECTS_CAPTURED,
-  {
-    rects: Record<string, ClientRect>;
-    frameSize: Size;
-    scrollSize: Size;
-  }
+  Record<string, Box>
 >;
 
 export type KeyComboPressed<TType extends ActionType> = BaseAction<TType, null>;
 
+export const pcVirtObjectEdited = actionCreator<PCVirtObjectEdited>(
+  ActionType.PC_VIRT_OBJECT_EDITED
+);
+export const engineDelegateChanged = actionCreator<EngineDelegateChanged>(
+  ActionType.ENGINE_DELEGATE_CHANGED
+);
+export const currentFileInitialized = actionCreator<CurrentFileInitialized>(
+  ActionType.CURRENT_FILE_INITIALIZED
+);
+export const frameTitleClicked = actionCreator<FrameTitleClicked>(
+  ActionType.FRAME_TITLE_CLICKED
+);
+export const frameTitleChanged = actionCreator<FrameTitleChanged>(
+  ActionType.FRAME_TITLE_CHANGED
+);
+export const engineDelegateEventsHandled = actionCreator<
+  EngineDelegateEventsHandled
+>(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
+export const fileOpened = actionCreator<FileOpened>(ActionType.FILE_OPENED);
 export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
 );
 
-export const rendererInitialized = actionCreator<RendererInitialized>(
-  ActionType.RENDERER_INITIALIZED
+export const expandFrameButtonClicked = actionCreator<ExpandFrameButtonClicked>(
+  ActionType.EXPAND_FRAME_BUTTON_CLICKED
+);
+export const collapseFrameButtonClicked = actionCreator<
+  CollapseFrameButtonClicked
+>(ActionType.COLLAPSE_FRAME_BUTTON_CLICKED);
+export const resizerPathMoved = actionCreator<ResizerPathMoved>(
+  ActionType.RESIZER_PATH_MOUSE_MOVED
+);
+export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
+  ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
+);
+export const resizerMoved = actionCreator<ResizerMoved>(
+  ActionType.RESIZER_MOVED
+);
+export const resizerStoppedMoving = actionCreator<ResizerStoppedMoving>(
+  ActionType.RESIZER_STOPPED_MOVING
 );
 export const rectsCaptured = actionCreator<RectsCaptured>(
   ActionType.RECTS_CAPTURED
 );
-export const canvasElementClicked = actionCreator<CanvasElementClicked>(
-  ActionType.CANVAS_ELEMENT_CLICKED
+export const canvasMouseUp = actionCreator<CanvasMouseUp>(
+  ActionType.CANVAS_MOUSE_UP
+);
+export const canvasMouseLeave = actionCreator<CanvasMouseLeave>(
+  ActionType.CANVAS_MOUSE_LEAVE
 );
 export const canvasPanned = actionCreator<CanvasPanned>(
   ActionType.CANVAS_PANNED
@@ -137,9 +305,27 @@ export const paintButtonClicked = actionCreator<PainButtonClicked>(
 export const globalEscapeKeyPressed = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
 >(ActionType.GLOBAL_ESCAPE_KEY_PRESSED);
+
+export const globalBackspaceKeyPressed = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
+>(ActionType.GLOBAL_BACKSPACE_KEY_PRESSED);
+
+export const globalBackspaceKeySent = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_SENT>
+>(ActionType.GLOBAL_BACKSPACE_KEY_SENT);
+
 export const globalMetaKeyDown = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
 >(ActionType.GLOBAL_META_KEY_DOWN);
+
+export const globalZKeyDown = actionCreator<KeyComboPressed<ActionType>>(
+  ActionType.GLOBAL_Z_KEY_DOWN
+);
+
+export const globalYKeyDown = actionCreator<KeyComboPressed<ActionType>>(
+  ActionType.GLOBAL_Y_KEY_DOWN
+);
+
 export const globalMetaKeyUp = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
 >(ActionType.GLOBAL_META_KEY_UP);
@@ -147,23 +333,44 @@ export const dirLoaded = actionCreator<DirLoaded>(ActionType.DIR_LOADED);
 export const fsItemClicked = actionCreator<FSItemClicked>(
   ActionType.FS_ITEM_CLICKED
 );
+export const pasted = actionCreator<Pasted>(ActionType.PASTED);
 
 export type Action =
-  | RendererInitialized
+  // | RendererInitialized
   | RectsCaptured
-  | CanvasElementClicked
+  | CanvasMouseUp
+  | ResizerPathMoved
+  | ResizerPathStoppedMoving
+  | DocumentContentChanged
+  | Pasted
+  | FrameTitleChanged
+  | MetaClicked
+  | ResizerStoppedMoving
+  | ResizerMoved
   | RendererChanged
   | CanvasPanned
   | CanvasPanStart
+  | CanvasMouseLeave
   | CanvasPanEnd
   | CanvasResized
   | CanvasMouseMoved
   | ErrorBannerClicked
+  | CurrentFileInitialized
+  | FileOpened
+  | CollapseFrameButtonClicked
+  | ExpandFrameButtonClicked
   | ZoomInButtonClicked
+  | FrameTitleClicked
+  | EngineDelegateChanged
   | PainButtonClicked
+  | EngineDelegateEventsHandled
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
   | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
+  | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
+  | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_SENT>
+  | KeyComboPressed<ActionType.GLOBAL_Y_KEY_DOWN>
+  | KeyComboPressed<ActionType.GLOBAL_Z_KEY_DOWN>
   | EngineErrored
   | ZoomOutButtonClicked
   | DirLoaded

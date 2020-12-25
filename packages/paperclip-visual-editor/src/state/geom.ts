@@ -85,3 +85,46 @@ export const addPoint = (point: Point, minus: Point) => {
     y: point.y + minus.y
   };
 };
+
+export const mapBox = (
+  bounds: Box,
+  map: (value: number, key?: string) => number
+): Box => ({
+  ...bounds,
+  x: map(bounds.x, "left"),
+  y: map(bounds.y, "right"),
+  width: map(bounds.width, "width"),
+  height: map(bounds.height, "height")
+});
+
+export const roundBox = (bounds: Box) => mapBox(bounds, v => Math.round(v));
+
+export const mergeBoxes = (boxes: Box[]) => {
+  if (boxes.length === 1) {
+    return boxes[0];
+  }
+
+  return boxes.slice(1).reduce((entire, box) => {
+    const left = entire.x;
+    const right = entire.x + entire.width;
+    const top = entire.y;
+    const bottom = entire.y + entire.height;
+
+    const left2 = box.x;
+    const right2 = box.x + box.width;
+    const top2 = box.y;
+    const bottom2 = box.y + box.height;
+
+    const left3 = Math.min(left, left2);
+    const right3 = Math.max(right, right2);
+    const top3 = Math.min(top, top2);
+    const bottom3 = Math.max(bottom, bottom2);
+
+    return {
+      x: left3,
+      y: top3,
+      width: right3 - left3,
+      height: bottom3 - top3
+    };
+  }, boxes[0]);
+};

@@ -3,17 +3,9 @@
 
 import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
-import { Mutation } from "./virt-mtuation";
-import {
-  VirtualNode,
-  EvaluateData,
-  DiffedData,
-  LoadedData,
-  SheetInfo
-} from "./virt";
-import { PCExports } from "./exports";
+import { EvaluateData, DiffedData, LoadedData, SheetInfo } from "./virt";
 
-export enum EngineEventKind {
+export enum EngineDelegateEventKind {
   Loading = "Loading",
   Loaded = "Loaded",
   Updating = "Updating",
@@ -33,24 +25,24 @@ export enum ParseErrorKind {
   EndOfFile = "EndOfFile"
 }
 
-type BaseEngineEvent<KKind extends EngineEventKind> = {
+type BaseEngineDelegateEvent<KKind extends EngineDelegateEventKind> = {
   kind: KKind;
 };
 
 export type EvaluatedEvent = {
   uri: string;
   data: EvaluateData;
-} & BaseEngineEvent<EngineEventKind.Evaluated>;
+} & BaseEngineDelegateEvent<EngineDelegateEventKind.Evaluated>;
 
 export type DiffedEvent = {
   uri: string;
   data: DiffedData;
-} & BaseEngineEvent<EngineEventKind.Diffed>;
+} & BaseEngineDelegateEvent<EngineDelegateEventKind.Diffed>;
 
 export type NodeParsedEvent = {
   uri: string;
   node?: Node;
-} & BaseEngineEvent<EngineEventKind.NodeParsed>;
+} & BaseEngineDelegateEvent<EngineDelegateEventKind.NodeParsed>;
 
 export type ChangedSheetsData = {
   newSheets: SheetInfo[];
@@ -61,12 +53,12 @@ export type ChangedSheetsData = {
 export type ChangedSheetsEvent = {
   uri: string;
   data: ChangedSheetsData;
-} & BaseEngineEvent<EngineEventKind.ChangedSheets>;
+} & BaseEngineDelegateEvent<EngineDelegateEventKind.ChangedSheets>;
 
 export type BaseEngineErrorEvent<TErrorType extends EngineErrorKind> = {
   uri: string;
   errorKind: TErrorType;
-} & BaseEngineEvent<EngineEventKind.Error>;
+} & BaseEngineDelegateEvent<EngineDelegateEventKind.Error>;
 
 export enum GraphErrorInfoType {
   Syntax = "Syntax",
@@ -106,10 +98,10 @@ export type RuntimeErrorEvent = {
 export type LoadedEvent = {
   uri: string;
   data: LoadedData;
-} & BaseEngineEvent<EngineEventKind.Loaded>;
+} & BaseEngineDelegateEvent<EngineDelegateEventKind.Loaded>;
 
 export type EngineErrorEvent = GraphErrorEvent | RuntimeErrorEvent;
-export type EngineEvent =
+export type EngineDelegateEvent =
   | EvaluatedEvent
   | EngineErrorEvent
   | ChangedSheetsEvent

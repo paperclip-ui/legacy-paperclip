@@ -1,6 +1,6 @@
 use super::mutation::{
-  Action, DeleteChild, InsertChild, Mutation, RemoveAttribute, ReplaceNode, SetAttribute, SetText,
-  SourceChanged, UpdateSheet,
+  Action, DeleteChild, InsertChild, Mutation, RemoveAttribute, ReplaceNode, SetAnnotations,
+  SetAttribute, SetText, SourceChanged, UpdateSheet,
 };
 use super::virt::{Element, Fragment, Node, StyleElement, Text};
 use crate::css::runtime::diff::diff as diff_css;
@@ -59,6 +59,15 @@ fn diff_node<'a>(a: &Node, b: &Node, context: &mut Context<'a>) {
 }
 
 fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
+  if (a.annotations != b.annotations) {
+    context.mutations.push(Mutation::new(
+      context.node_path.clone(),
+      Action::SetAnnotations(SetAnnotations {
+        value: b.annotations.clone(),
+      }),
+    ));
+  }
+
   if a.tag_name != b.tag_name {
     context.mutations.push(Mutation::new(
       context.node_path.clone(),
@@ -126,6 +135,25 @@ fn diff_fragment<'a>(a: &Fragment, b: &Fragment, context: &mut Context<'a>) {
 }
 
 fn diff_text<'a>(a: &Text, b: &Text, context: &mut Context<'a>) {
+  if (a.annotations != b.annotations) {
+    context.mutations.push(Mutation::new(
+      context.node_path.clone(),
+      Action::SetAnnotations(SetAnnotations {
+        value: b.annotations.clone(),
+      }),
+    ));
+  }
+
+  if a.source != b.source {
+    context.mutations.push(Mutation::new(
+      context.node_path.clone(),
+      Action::SourceChanged(SourceChanged {
+        property_name: "source".to_string(),
+        new_source: b.source.clone(),
+      }),
+    ));
+  }
+
   if a.value != b.value {
     context.mutations.push(Mutation::new(
       context.node_path.clone(),

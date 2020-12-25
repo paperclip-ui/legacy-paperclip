@@ -2,7 +2,7 @@ import * as path from "path";
 import { Engine, createEngine, LoadResult, EngineIO } from "../../";
 import {
   EngineErrorEvent,
-  EngineEventKind,
+  EngineDelegateEventKind,
   stringifyVirtualNode,
   stringifyCSSSheet,
   LoadedEvent
@@ -42,7 +42,7 @@ export const waitForError = (
 ) => {
   return new Promise<any>(resolve => {
     engine.onEvent(event => {
-      if (event.kind === EngineEventKind.Error && test(event)) {
+      if (event.kind === EngineDelegateEventKind.Error && test(event)) {
         resolve(event);
       }
     });
@@ -55,7 +55,7 @@ export const waitForRender = (
 ) => {
   return new Promise<any>(resolve => {
     engine.onEvent(event => {
-      if (event.kind === EngineEventKind.Loaded && test(event)) {
+      if (event.kind === EngineDelegateEventKind.Loaded && test(event)) {
         resolve(event);
       }
     });

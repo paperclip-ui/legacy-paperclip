@@ -1,21 +1,27 @@
 import {
-  EngineEvent,
-  EngineEventKind,
+  EngineDelegateEvent,
+  EngineDelegateEventKind,
   EngineErrorEvent,
   stripFileProtocol
 } from "paperclip-utils";
+import { PCMutation } from "paperclip-source-writer";
 import * as fs from "fs";
 import {
   Uri,
   window,
   commands,
   TextEditor,
+  Range,
   WebviewPanel,
   ExtensionContext,
   ViewColumn,
   workspace,
   Selection,
-  env
+  env,
+  TextDocument,
+  TextDocumentChangeEvent,
+  TextEdit,
+  WorkspaceEdit
 } from "vscode";
 import { isPaperclipFile } from "./utils";
 import * as path from "path";
@@ -28,6 +34,7 @@ import {
   LoadedParams,
   ErrorLoadingParams
 } from "../common/notifications";
+import { fileURLToPath } from "url";
 
 const VIEW_TYPE = "paperclip-preview";
 
@@ -47,7 +54,8 @@ type LivePreviewState = {
 
 export const activate = (
   client: LanguageClient,
-  context: ExtensionContext
+  context: ExtensionContext,
+  onPCMutations: (mutation: PCMutation[]) => void
 ): void => {
   const { extensionPath } = context;
 
@@ -92,15 +100,61 @@ export const activate = (
     );
   };
 
+  const showPreviewEditor = async (preview: LivePreview) => {
+    const uri = preview.getTargetUri();
+    const sourceEditor = window.visibleTextEditors.find(
+      editor => String(editor.document.uri) === uri
+    );
+    return await window.showTextDocument(
+      sourceEditor.document,
+      sourceEditor.viewColumn,
+      false
+    );
+  };
+
+  const execCommand = async (preview: LivePreview, command: string) => {
+    await showPreviewEditor(preview);
+    await commands.executeCommand(command);
+  };
+
+  const onPasted = async (preview: LivePreview, { clipboardData }) => {
+    const editor = await showPreviewEditor(preview);
+
+    const start = editor.document.positionAt(editor.document.getText().length);
+    const plainText = clipboardData.find(data => data.type === "text/plain");
+
+    if (!plainText) {
+      return;
+    }
+
+    const tedit = new TextEdit(new Range(start, start), plainText.content);
+
+    const wsEdit = new WorkspaceEdit();
+    wsEdit.set(Uri.parse(preview.getTargetUri()), [tedit]);
+    await workspace.applyEdit(wsEdit);
+  };
+
   const registerLivePreview = (preview: LivePreview) => {
     _previews.push(preview);
-    const disposeListener = preview.onDidDispose(() => {
-      const index = _previews.indexOf(preview);
-      if (index !== -1) {
-        _previews.splice(index, 1);
-        disposeListener();
-      }
-    });
+    const listeners = [
+      preview.onVirtObjectEdited(onPCMutations),
+      preview.onUndo(async () => {
+        execCommand(preview, "undo");
+      }),
+      preview.onRedo(async () => {
+        execCommand(preview, "redo");
+      }),
+      preview.onPasted(payload => onPasted(preview, payload)),
+      preview.onDidDispose(() => {
+        const index = _previews.indexOf(preview);
+        if (index !== -1) {
+          _previews.splice(index, 1);
+          for (const listener of listeners) {
+            listener();
+          }
+        }
+      })
+    ];
   };
 
   const getStickyWindow = () => {
@@ -150,6 +204,18 @@ export const activate = (
     }
   };
 
+  const onTextDocumentChange = async ({
+    document
+  }: TextDocumentChangeEvent) => {
+    updatePreviewTextDocuments(document);
+  };
+
+  const updatePreviewTextDocuments = async (document: TextDocument) => {
+    for (const preview of _previews) {
+      preview.updateDocumentContent(String(document.uri), document.getText());
+    }
+  };
+
   window.registerWebviewPanelSerializer(VIEW_TYPE, {
     async deserializeWebviewPanel(
       panel: WebviewPanel,
@@ -170,8 +236,11 @@ export const activate = (
 
   setTimeout(() => {
     window.onDidChangeActiveTextEditor(onTextEditorChange);
+    workspace.onDidChangeTextDocument(onTextDocumentChange);
+    workspace.onDidOpenTextDocument(updatePreviewTextDocuments);
     if (window.activeTextEditor) {
       onTextEditorChange(window.activeTextEditor);
+      updatePreviewTextDocuments(window.activeTextEditor.document);
     }
   }, 500);
 
@@ -203,7 +272,7 @@ export const activate = (
   // There can only be one listener, so do that & handle across all previews
   client.onNotification(NotificationType.ENGINE_EVENT, event => {
     _previews.forEach(preview => {
-      preview.$$handleEngineEvent(event);
+      preview.$$handleEngineDelegateEvent(event);
     });
   });
 
@@ -227,7 +296,9 @@ class LivePreview {
   private _dependencies: string[] = [];
   private _needsReloading: boolean;
   private _previewReady: () => void;
+  private _previewInitialized: () => void;
   private _readyPromise: Promise<any>;
+  private _initPromise: Promise<any>;
   private _targetUri: string;
 
   constructor(
@@ -262,10 +333,22 @@ class LivePreview {
     });
     this.panel.webview.onDidReceiveMessage(this._onPreviewMessage);
   }
+  focus() {
+    this.panel.reveal(this.panel.viewColumn, false);
+  }
+  updateDocumentContent(uri: string, content: string) {
+    this.panel.webview.postMessage({
+      type: "DOCUMENT_CONTENT_CHANGED",
+      payload: JSON.stringify({ uri, content })
+    });
+  }
   getTargetUri() {
     return this._targetUri;
   }
   setTargetUri(value: string) {
+    if (this._targetUri === value) {
+      return;
+    }
     this.panel.title = `⚡️ ${
       this.sticky ? "sticky preview" : path.basename(value)
     }`;
@@ -281,7 +364,12 @@ class LivePreview {
   }
   private _createReadyPromise() {
     this._readyPromise = new Promise(resolve => {
-      this._previewReady = resolve;
+      this._previewReady = resolve as any;
+    });
+  }
+  private _createInitPromise() {
+    this._initPromise = new Promise(resolve => {
+      this._previewInitialized = resolve as any;
     });
   }
   private _render() {
@@ -291,6 +379,7 @@ class LivePreview {
     this.panel.webview.html = "";
     this.panel.webview.html = this._getHTML();
     this._createReadyPromise();
+    this._createInitPromise();
 
     this._client.sendNotification(
       ...new Load({ uri: this._targetUri }).getArgs()
@@ -305,16 +394,51 @@ class LivePreview {
       this._em.removeListener("didDispose", listener);
     };
   }
-  private _onPreviewMessage = event => {
+  public onVirtObjectEdited(listener: (mutations: PCMutation[]) => void) {
+    this._em.on("virtObjectEdited", listener);
+    return () => {
+      this._em.removeListener("virtObjectEdited", listener);
+    };
+  }
+  public onUndo(listener: () => void) {
+    this._em.on("undo", listener);
+    return () => {
+      this._em.removeListener("undo", listener);
+    };
+  }
+  public onPasted(
+    listener: (payload: {
+      clipboardData: Array<{ type: string; content: string }>;
+    }) => void
+  ) {
+    this._em.on("PASTED", listener);
+    return () => {
+      this._em.removeListener("PASTED", listener);
+    };
+  }
+  public onRedo(listener: () => void) {
+    this._em.on("redo", listener);
+    return () => {
+      this._em.removeListener("redo", listener);
+    };
+  }
+
+  private _onPreviewMessage = async event => {
     // debug what's going on
-    if (event.type === "HTML") {
-      console.log(event.content);
-    } else if (event.type === "metaElementClicked") {
+    if (event.type === "metaElementClicked") {
       this._handleElementMetaClicked(event);
     } else if (event.type === "errorBannerClicked") {
       this._handleErrorBannerClicked(event);
     } else if (event.type === "ready") {
       this._previewReady();
+    } else if (event.type === "PC_VIRT_OBJECT_EDITED") {
+      this._em.emit("virtObjectEdited", event.payload.mutations);
+    } else if (event.type === "GLOBAL_Z_KEY_DOWN") {
+      this._em.emit("undo");
+    } else if (event.type === "GLOBAL_Y_KEY_DOWN") {
+      this._em.emit("redo");
+    } else {
+      this._em.emit(event.type, event.payload);
     }
   };
   private async _handleErrorBannerClicked({
@@ -365,19 +489,21 @@ class LivePreview {
         type: "INIT",
         payload: JSON.stringify(data)
       });
+      this._previewInitialized();
     }
   }
-  public $$handleEngineEvent(event: EngineEvent) {
+  public async $$handleEngineDelegateEvent(event: EngineDelegateEvent) {
+    await this._initPromise;
     if (
       this._needsReloading &&
-      (event.kind === EngineEventKind.Evaluated ||
-        event.kind === EngineEventKind.Diffed)
+      (event.kind === EngineDelegateEventKind.Evaluated ||
+        event.kind === EngineDelegateEventKind.Diffed)
     ) {
       this._render();
     }
 
     // all error events get passed to preview.
-    if (event.kind !== EngineEventKind.Error) {
+    if (event.kind !== EngineDelegateEventKind.Error) {
       if (
         event.uri !== this._targetUri &&
         !this._dependencies.includes(event.uri)
@@ -387,10 +513,10 @@ class LivePreview {
 
       if (
         event.uri == this._targetUri &&
-        (event.kind === EngineEventKind.Evaluated ||
-          event.kind === EngineEventKind.Loaded ||
-          event.kind === EngineEventKind.Diffed ||
-          event.kind === EngineEventKind.ChangedSheets)
+        (event.kind === EngineDelegateEventKind.Evaluated ||
+          event.kind === EngineDelegateEventKind.Loaded ||
+          event.kind === EngineDelegateEventKind.Diffed ||
+          event.kind === EngineDelegateEventKind.ChangedSheets)
       ) {
         this._dependencies = event.data.allDependencies;
       }

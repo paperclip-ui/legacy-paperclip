@@ -1,5 +1,5 @@
 import { Html5Entities } from "html-entities";
-import { stringifyCSSSheet, stringifyVirtualNode } from "paperclip-utils";
+import { stringifyCSSSheet } from "paperclip-utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
 
@@ -60,7 +60,7 @@ export const createNativeStyleFromSheet = (
   // return factory.createTextNode(stringifyCSSSheet(sheet, protocol)) as any;
   const nativeElement = factory.createElement("style");
   nativeElement.textContent = stringifyCSSSheet(sheet, { protocol });
-  return nativeElement;
+  return nativeElement as HTMLStyleElement;
 };
 
 const createNativeTextNode = (node, factory: DOMFactory) => {

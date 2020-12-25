@@ -33,7 +33,7 @@ fn evaluate_node<'a>(
   depth: u32,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  let node_option = evaluate_pc_node(node, false, depth, None, context)?;
+  let node_option = evaluate_pc_node(node, false, depth, None, &None, context)?;
   if let Some(node) = node_option {
     Ok(virt::JsValue::JsNode(node))
   } else {

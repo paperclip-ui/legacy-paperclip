@@ -1,6 +1,6 @@
 import { PCExports } from "./exports";
+import { VirtJsObject } from "./js-virt";
 import { Mutation } from "./virt-mtuation";
-import { SourceLocation } from "./base-ast";
 
 export enum VirtualNodeKind {
   Element = "Element",
@@ -8,6 +8,19 @@ export enum VirtualNodeKind {
   Fragment = "Fragment",
   StyleElement = "StyleElement"
 }
+
+export type FrameAnnotation = {
+  width?: number;
+  height?: number;
+  x?: number;
+  y?: number;
+  title?: string;
+  visible?: boolean;
+};
+
+export type NodeAnnotations = {
+  frame?: FrameAnnotation;
+};
 
 export type EvaluateData = {
   allDependencies: string[];
@@ -47,6 +60,7 @@ export type VirtualStyleElement = {
 } & VirtualBaseNode<VirtualNodeKind.StyleElement>;
 
 export type VirtualElement = {
+  annotations?: VirtJsObject;
   tagName: string;
   attributes: {
     [identifier: string]: string | null;
@@ -55,6 +69,7 @@ export type VirtualElement = {
 } & VirtualBaseNode<VirtualNodeKind.Element>;
 
 export type VirtualText = {
+  annotations?: VirtJsObject;
   value: string;
 } & VirtualBaseNode<VirtualNodeKind.Text>;
 
@@ -67,3 +82,5 @@ export type VirtualNode =
   | VirtualText
   | VirtualFragment
   | VirtualStyleElement;
+
+export type VirtualFrame = VirtualElement | VirtualText;

@@ -3,9 +3,16 @@ import {
   VirtualNode,
   VirtualElement,
   VirtualText,
-  VirtualNodeKind
+  VirtualNodeKind,
+  LoadedData,
+  SheetInfo
 } from "./virt";
-import { getChildren } from "./ast";
+import {
+  DiffedEvent,
+  EngineDelegateEvent,
+  EngineDelegateEventKind,
+  EvaluatedEvent
+} from "./events";
 
 export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
   for (const mutation of mutations) {
@@ -50,13 +57,19 @@ export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
         } as VirtualElement;
         break;
       }
+      case ActionKind.SetAnnotations: {
+        target = { ...target, annotations: action.value } as
+          | VirtualElement
+          | VirtualText;
+        break;
+      }
       case ActionKind.SetText: {
         target = { ...target, value: action.value } as VirtualText;
         break;
       }
       case ActionKind.SourceChanged: {
-        const element = target as VirtualElement;
-        // target = {...element, a: element.attributes}
+        target = { ...target, source: action.newSource };
+        break;
       }
     }
 
@@ -99,4 +112,65 @@ const updateNode = (
       ...ancestor.children.slice(nodePath[depth] + 1)
     ]
   };
+};
+
+export const updateAllLoadedData = (
+  allData: Record<string, LoadedData>,
+  event: EngineDelegateEvent
+) => {
+  if (event.kind === EngineDelegateEventKind.Evaluated) {
+    return {
+      ...allData,
+      [event.uri]: {
+        ...event.data,
+        importedSheets: getImportedSheets(allData, event)
+      }
+    };
+  } else if (event.kind === EngineDelegateEventKind.Diffed) {
+    const existingData = allData[event.uri];
+
+    // this will happen if client renderer loads data, but imported
+    // resource has changed
+    if (!existingData) {
+      return allData;
+    }
+
+    return {
+      ...allData,
+      [event.uri]: {
+        ...existingData,
+        imports: event.data.imports,
+        exports: event.data.exports,
+        importedSheets: getImportedSheets(allData, event),
+        allDependencies: event.data.allDependencies,
+        sheet: event.data.sheet || existingData.sheet,
+        preview: patchVirtNode(existingData.preview, event.data.mutations)
+      }
+    };
+  }
+
+  return allData;
+};
+
+const getImportedSheets = (
+  allData: Record<string, LoadedData>,
+  { data: { allDependencies } }: EvaluatedEvent | DiffedEvent
+) => {
+  // ick, wworks for now.
+
+  const deps: SheetInfo[] = [];
+
+  for (const depUri of allDependencies) {
+    const data = allData[depUri];
+    if (data) {
+      deps.push({ uri: depUri, sheet: data.sheet });
+
+      // scenario won't happen for renderer since renderers are only
+      // concerned about the file that's currently opened -- ignore for now. Might
+    } else {
+      // console.error(`data not loaded, this shouldn't happen 😬.`);
+    }
+  }
+
+  return deps;
 };

@@ -91,7 +91,10 @@ impl<'a> Tokenizer<'a> {
     let c = self.curr_byte()?;
 
     match c {
-      b'@' => Ok(Token::At),
+      b'@' => {
+        self.forward(1);
+        Ok(Token::At)
+      }
       b'a'..=b'z' | b'A'..=b'Z' => {
         Ok(Token::Word(self.search(|c| -> bool {
           matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9')

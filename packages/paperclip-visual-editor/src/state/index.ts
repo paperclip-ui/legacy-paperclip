@@ -1,9 +1,36 @@
 import produce from "immer";
-import { isEqual } from "lodash";
-import { memoize } from "../utils";
-import { VirtualNode, EngineErrorEvent } from "paperclip-utils";
-import { Transform, Box, Point, Size } from "./geom";
+import { isEqual, pick, pickBy } from "lodash";
+import {
+  computeVirtJSObject,
+  memoize,
+  NodeAnnotations,
+  VirtualFrame,
+  VirtualNodeKind
+} from "paperclip-utils";
+import {
+  VirtualNode,
+  EngineErrorEvent,
+  EngineDelegateEvent,
+  LoadedData
+} from "paperclip-utils";
+import {
+  Transform,
+  Box,
+  Point,
+  Size,
+  mergeBoxes,
+  centerTransformZoom,
+  getScaledPoint
+} from "./geom";
 import * as os from "os";
+import { Frame } from "paperclip-web-renderer";
+
+export const DEFAULT_FRAME_BOX = {
+  width: 1024,
+  height: 768,
+  x: 0,
+  y: 0
+};
 
 export type Canvas = {
   showTools: boolean;
@@ -11,7 +38,7 @@ export type Canvas = {
   transform: Transform;
   size: Size;
   scrollPosition: Point;
-  mousePosition: Point;
+  mousePosition?: Point;
 };
 
 export type BoxNodeInfo = {
@@ -41,16 +68,26 @@ export type Directory = {
 
 export type FSItem = File | Directory;
 
+type ExpandedFrameInfo = {
+  frameIndex: number;
+  previousCanvasTransform: Transform;
+};
+
 export type AppState = {
+  centeredInitial: boolean;
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
-  rendererElement?: any;
-  selectedNodePath: string;
-  hoveringNodePath?: string;
+  expandedFrameInfo?: ExpandedFrameInfo;
+  resizerMoving?: boolean;
+  currentFileUri: string;
+  documentContent: Record<string, string>;
+  currentEngineEvents: EngineDelegateEvent[];
+  allLoadedPCFileData: Record<string, LoadedData>;
+  // rendererElement?: any;
+  selectedNodePaths: string[];
   projectDirectory?: Directory;
   metaKeyDown?: boolean;
   canvas: Canvas;
-  virtualRootNode?: VirtualNode;
   scrollSize?: Size;
   frameSize?: Size;
   boxes: Record<string, Box>;
@@ -58,16 +95,21 @@ export type AppState = {
 };
 
 export const INITIAL_STATE: AppState = {
+  centeredInitial: false,
   toolsLayerEnabled: true,
+  documentContent: {},
+  currentFileUri: null,
+  currentEngineEvents: [],
+  allLoadedPCFileData: {},
   boxes: {},
   zoomLevel: 1,
-  selectedNodePath: null,
+  selectedNodePaths: [],
   canvas: {
     panning: false,
     showTools: true,
     scrollPosition: { x: 0, y: 0 },
     size: { width: 0, height: 0 },
-    mousePosition: { x: 0, y: 0 },
+    mousePosition: null,
     transform: {
       x: 0,
       y: 0,
@@ -86,12 +128,12 @@ export const resetCanvas = (canvas: Canvas) => ({
 
 export const mergeBoxesFromClientRects = (
   boxes: Record<string, Box>,
-  rects: Record<string, ClientRect>
+  rects: Record<string, Box>
 ) => {
   const newBoxes = {};
   for (const nodePath in rects) {
-    const { left, top, width, height } = rects[nodePath];
-    const newBox = { x: left, y: top, width, height };
+    const { x, y, width, height } = rects[nodePath];
+    const newBox = { x, y, width, height };
     const existingBox = boxes[nodePath];
     newBoxes[nodePath] = isEqual(existingBox, newBox) ? existingBox : newBox;
   }
@@ -174,4 +216,154 @@ export const getFSItem = (absolutePath: string, current: FSItem) => {
   return null;
 };
 
+export const getSelectedFrames = (state: AppState): VirtualFrame[] => {
+  return state.selectedNodePaths
+    .map(nodePath => {
+      const frameIndex = Number(nodePath);
+      return getFrameFromIndex(frameIndex, state);
+    })
+    .filter(Boolean);
+};
+
+export const getFrameFromIndex = (
+  frameIndex: number,
+  state: AppState
+): VirtualFrame => {
+  const preview = state.allLoadedPCFileData[state.currentFileUri].preview;
+  const frames =
+    preview.kind == VirtualNodeKind.Fragment ? preview.children : [preview];
+  return frames[frameIndex] as VirtualFrame;
+};
+
+export const getNodeInfoAtPoint = (
+  point: Point,
+  transform: Transform,
+  boxes: Record<string, Box>,
+  expandedFrameIndex?: number
+) => {
+  return findBoxNodeInfo(
+    getScaledPoint(point, transform),
+    expandedFrameIndex ? getFrameBoxes(boxes, expandedFrameIndex) : boxes
+  );
+};
+
+export const getFrameBoxes = memoize(
+  (boxes: Record<string, Box>, frameIndex: number) => {
+    const v = pickBy(boxes, (value: Box, key: string) => {
+      return key.indexOf(String(frameIndex)) === 0;
+    });
+    return v;
+  }
+);
+
 export * from "./geom";
+
+export const getPreviewChildren = (frame: VirtualNode) => {
+  return frame.kind === VirtualNodeKind.Fragment ? frame.children : [frame];
+};
+
+const getAllFrameBounds = (state: AppState) => {
+  const currentPreview =
+    state.allLoadedPCFileData[state.currentFileUri].preview;
+  const frameBoxes = getPreviewChildren(currentPreview)
+    .map((frame: VirtualFrame) => {
+      const annotations =
+        (frame.annotations &&
+          (computeVirtJSObject(frame.annotations) as NodeAnnotations)) ||
+        {};
+      const box = annotations.frame || DEFAULT_FRAME_BOX;
+      if (annotations.frame?.visible === false) {
+        return null;
+      }
+      return box as Box;
+    })
+    .filter(Boolean);
+
+  return mergeBoxes(frameBoxes);
+};
+
+const INITIAL_ZOOM_PADDING = 50;
+
+/**
+ * Called when file is data -- few conditions need to be met though:
+ * canvas is loaded
+ * file data is loaded
+ */
+
+export const maybeCenterCanvas = (state: AppState) => {
+  if (
+    !state.centeredInitial &&
+    state.allLoadedPCFileData[state.currentFileUri] &&
+    state.canvas.size?.width &&
+    state.canvas.size?.height
+  ) {
+    state = produce(state, newState => {
+      newState.centeredInitial = true;
+    });
+
+    state = centerEditorCanvas(state);
+
+    return state;
+  }
+  return state;
+};
+
+// https://github.com/crcn/tandem/blob/10.0.0/packages/front-end/src/state/index.ts#L1304
+export const centerEditorCanvas = (
+  state: AppState,
+  innerBounds?: Box,
+  zoomOrZoomToFit: boolean | number = true
+) => {
+  if (!innerBounds) {
+    innerBounds = getAllFrameBounds(state);
+  }
+
+  // no windows loaded
+  if (
+    innerBounds.x + innerBounds.y + innerBounds.width + innerBounds.height ===
+    0
+  ) {
+    console.warn(` Cannot center when bounds has no size`);
+    return state;
+  }
+
+  const {
+    canvas: {
+      transform,
+      size: { width, height }
+    }
+  } = state;
+
+  const centered = {
+    x: -innerBounds.x + width / 2 - innerBounds.width / 2,
+    y: -innerBounds.y + height / 2 - innerBounds.height / 2
+  };
+
+  const scale =
+    typeof zoomOrZoomToFit === "boolean"
+      ? Math.min(
+          (width - INITIAL_ZOOM_PADDING) / innerBounds.width,
+          (height - INITIAL_ZOOM_PADDING) / innerBounds.height
+        )
+      : typeof zoomOrZoomToFit === "number"
+      ? zoomOrZoomToFit
+      : transform.z;
+
+  state = produce(state, newState => {
+    newState.canvas.transform = centerTransformZoom(
+      {
+        ...centered,
+        z: 1
+      },
+      {
+        x: 0,
+        y: 0,
+        width,
+        height
+      },
+      Math.min(scale, 1)
+    );
+  });
+
+  return state;
+};

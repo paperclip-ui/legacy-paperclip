@@ -7,7 +7,7 @@ import { VirtualFragment, stringifyVirtualNode } from "paperclip";
 export class PCDocument {
   styleSheets = [];
   documentElement;
-  constructor(readonly URL: string, readonly root: VirtualFragment) {
+  constructor(readonly root: VirtualFragment) {
     this.documentElement = this;
   }
   get outerHTML() {

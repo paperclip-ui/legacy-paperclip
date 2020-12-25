@@ -1,25 +1,34 @@
 import * as Mousetrap from "mousetrap";
 import SockJSClient from "sockjs-client";
-import { isPaperclipFile } from "paperclip-utils";
+import { computeVirtJSObject, isPaperclipFile } from "paperclip-utils";
 import * as Url from "url";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
-  rendererInitialized,
-  rectsCaptured,
   ActionType,
-  CanvasElementClicked,
-  rendererChanged,
   ErrorBannerClicked,
   engineErrored,
   globalEscapeKeyPressed,
+  globalBackspaceKeyPressed,
   globalMetaKeyDown,
+  globalZKeyDown,
+  globalYKeyDown,
   globalMetaKeyUp,
-  Action
+  Action,
+  engineDelegateChanged,
+  fileOpened,
+  currentFileInitialized,
+  pcVirtObjectEdited,
+  CanvasMouseUp,
+  pasted,
+  globalBackspaceKeySent
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
-import { AppState } from "../state";
+import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
 import { getVirtTarget } from "paperclip-utils";
+import { handleCanvas } from "./canvas";
+import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
+import { utimes } from "fs";
 
 declare const vscode;
 declare const TARGET_URI;
@@ -27,12 +36,12 @@ declare const PROTOCOL;
 
 export default function* mainSaga() {
   yield fork(handleRenderer);
-  yield takeEvery(
-    ActionType.CANVAS_ELEMENT_CLICKED,
-    handleCanvasElementClicked
-  );
+  yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
   yield fork(handleKeyCommands);
+  yield put(fileOpened({ uri: getTargetUrl() }));
+  yield fork(handleCanvas);
+  yield fork(handleClipboard);
 }
 
 const parent = typeof vscode != "undefined" ? vscode : window;
@@ -76,65 +85,21 @@ function handleSock(onMessage, onClient) {
 
 function handleIPC(onMessage) {
   window.onmessage = ({ data: { type, payload } }: MessageEvent) => {
-    if (!type || !payload) {
+    if (!type) {
       return;
     }
 
     onMessage({
       type,
-      payload: JSON.parse(payload)
+      payload: (payload && JSON.parse(payload)) || {}
     });
   };
 }
 
 function* handleRenderer() {
-  const renderer = new Renderer(
-    typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL,
-    getTargetUrl()
-  );
-
   let _client: any;
 
   const chan = eventChannel(emit => {
-    let timer: any;
-
-    const collectRects = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        const scrollingElement =
-          renderer.frame.contentDocument.scrollingElement;
-        const scrollLeft = scrollingElement.scrollLeft;
-        const scrollTop = scrollingElement.scrollTop;
-        scrollingElement.scrollTop = 0;
-        scrollingElement.scrollLeft = 0;
-
-        emit(
-          rectsCaptured({
-            rects: renderer.getRects(),
-            frameSize: renderer.frame.getBoundingClientRect(),
-            scrollSize: {
-              width: scrollingElement.scrollWidth,
-              height: scrollingElement.scrollHeight
-            }
-          })
-        );
-
-        scrollingElement.scrollLeft = scrollLeft;
-        scrollingElement.scrollTop = scrollTop;
-      }, 100);
-    };
-
-    renderer.frame.addEventListener("load", () => {
-      renderer.frame.contentWindow.addEventListener("resize", collectRects);
-    });
-
-    const handleRenderChange = () => {
-      emit(rendererChanged({ virtualRoot: renderer.virtualRootNode }));
-
-      // we want to capture rects on _every_ change
-      collectRects();
-    };
-
     const onMessage = ({ type, payload }) => {
       switch (type) {
         case "ENGINE_EVENT": {
@@ -142,17 +107,15 @@ function* handleRenderer() {
           if (engineEvent.kind === "Error") {
             return emit(engineErrored(engineEvent));
           }
-          renderer.handleEngineEvent(payload);
-          handleRenderChange();
+
+          emit(engineDelegateChanged(engineEvent));
           break;
         }
         case "INIT": {
-          renderer.initialize(payload);
-          handleRenderChange();
+          emit(currentFileInitialized(payload));
           break;
         }
         case "ERROR": {
-          // renderer.handleError(JSON.parse(payload));
           emit(engineErrored(payload));
           break;
         }
@@ -174,56 +137,115 @@ function* handleRenderer() {
     };
   });
 
+  const sendMessage = message =>
+    _client ? _client.send(message) : parent.postMessage(message);
+
   yield fork(function*() {
     while (1) {
       const action = yield take(chan);
       yield put(action);
     }
   });
+  yield takeEvery(["FOCUS"], function() {
+    window.focus();
+  });
 
-  yield takeEvery([ActionType.FS_ITEM_CLICKED], (action: Action) => {
+  yield takeEvery([ActionType.FS_ITEM_CLICKED], function*(action: Action) {
     if (
       action.type === ActionType.FS_ITEM_CLICKED &&
       isPaperclipFile(action.payload.url)
     ) {
-      renderer.reset(action.payload.url);
+      // renderer.reset(action.payload.url);
+      yield put(fileOpened({ uri: getTargetUrl() }));
     }
-    if (_client) {
-      _client.send(action);
-    }
+    sendMessage(action);
   });
 
-  yield put(rendererInitialized({ element: renderer.frame }));
-  yield fork(handleInteractionsForRenderer(renderer));
+  yield takeEvery(
+    [
+      ActionType.RESIZER_STOPPED_MOVING,
+      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
+      ActionType.FRAME_TITLE_CHANGED
+    ],
+    function*(action: Action) {
+      const state: AppState = yield select();
+      sendMessage(
+        pcVirtObjectEdited({
+          mutations: getSelectedFrames(state).map(frame => {
+            return {
+              exprSource: frame.source,
+              action: {
+                kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
+                annotationsSource: frame.annotations.source,
+                annotations: computeVirtJSObject(frame.annotations)
+              }
+            };
+          })
+        })
+      );
+    }
+  );
 
-  parent.postMessage({
+  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
+    const state: AppState = yield select();
+    sendMessage(
+      pcVirtObjectEdited({
+        mutations: getSelectedFrames(state).map(frame => {
+          return {
+            exprSource: frame.source,
+            action: {
+              kind: PCMutationActionKind.EXPRESSION_DELETED
+            }
+          };
+        })
+      })
+    );
+
+    yield put(globalBackspaceKeySent(null));
+  });
+
+  yield takeEvery(
+    [
+      ActionType.META_CLICKED,
+      ActionType.GLOBAL_Z_KEY_DOWN,
+      ActionType.GLOBAL_Y_KEY_DOWN,
+      ActionType.PASTED
+    ],
+    function(action: Action) {
+      sendMessage(action);
+    }
+  );
+
+  sendMessage({
     type: "ready"
   });
 }
 
-const handleInteractionsForRenderer = (renderer: Renderer) =>
-  function*() {
-    function* syncScrollbarVisibilityState() {
-      const state: AppState = yield select();
-      renderer.hideScrollbars = state.toolsLayerEnabled;
-    }
-
-    yield call(syncScrollbarVisibilityState);
-    yield takeEvery(
-      ActionType.PAINT_BUTTON_CLICKED,
-      syncScrollbarVisibilityState
-    );
-  };
-
-function* handleCanvasElementClicked(action: CanvasElementClicked) {
+function* handleCanvasMouseUp(action: CanvasMouseUp) {
   if (!action.payload.metaKey) {
     return;
   }
 
   const state: AppState = yield select();
 
-  const nodePathParts = action.payload.nodePath.split(".").map(Number);
-  const virtualNode = getVirtTarget(state.virtualRootNode, nodePathParts);
+  const nodeInfo = getNodeInfoAtPoint(
+    state.canvas.mousePosition,
+    state.canvas.transform,
+    state.boxes,
+    state.expandedFrameInfo?.frameIndex
+  );
+
+  // maybe offscreen
+  if (!nodeInfo) {
+    return;
+  }
+
+  const nodePathParts = nodeInfo.nodePath.split(".").map(Number);
+  console.log(state.allLoadedPCFileData[state.currentFileUri], nodePathParts);
+  const virtualNode = getVirtTarget(
+    state.allLoadedPCFileData[state.currentFileUri].preview,
+    nodePathParts
+  );
 
   parent.postMessage(
     {
@@ -252,6 +274,18 @@ function* handleKeyCommands() {
     Mousetrap.bind("meta", () => {
       emit(globalMetaKeyDown(null));
     });
+    Mousetrap.bind("meta+z", () => {
+      emit(globalZKeyDown(null));
+    });
+    Mousetrap.bind("meta+y", () => {
+      emit(globalYKeyDown(null));
+    });
+    Mousetrap.bind("meta+shift+z", () => {
+      emit(globalYKeyDown(null));
+    });
+    Mousetrap.bind("backspace", () => {
+      emit(globalBackspaceKeyPressed(null));
+    });
     Mousetrap.bind(
       "meta",
       () => {
@@ -267,4 +301,73 @@ function* handleKeyCommands() {
   while (1) {
     yield put(yield take(chan));
   }
+}
+
+function* handleClipboard() {
+  yield fork(handleCopy);
+  yield fork(handlePaste);
+}
+function* handleCopy() {
+  const ev = eventChannel(emit => {
+    window.document.addEventListener("copy", emit);
+    return () => {
+      window.document.removeEventListener("copy", emit);
+    };
+  });
+
+  yield takeEvery(ev, function*(event: ClipboardEvent) {
+    const state: AppState = yield select();
+    const frames = getSelectedFrames(state);
+
+    if (!frames.length) {
+      return;
+    }
+
+    const buffer = ["\n\n"];
+
+    for (const frame of frames) {
+      if (!state.documentContent[frame.source.uri]) {
+        console.warn(`document content doesn't exist`);
+        return;
+      }
+
+      const start =
+        frame.annotations?.source.location.start || frame.source.location.start;
+      const end = frame.source.location.end;
+
+      buffer.push(
+        state.documentContent[frame.source.uri].slice(start, end),
+        "\n"
+      );
+    }
+
+    event.clipboardData.setData("text/plain", buffer.join("\n"));
+    event.preventDefault();
+  });
+}
+
+function* handlePaste() {
+  const ev = eventChannel(emit => {
+    window.document.addEventListener("paste", emit);
+    return () => {
+      window.document.removeEventListener("paste", emit);
+    };
+  });
+
+  yield takeEvery(ev, function*(event: ClipboardEvent) {
+    const content = event.clipboardData.getData("text/plain");
+    event.preventDefault();
+    if (content) {
+      yield put(
+        pasted({
+          clipboardData: [
+            {
+              type: "text/plain",
+              content
+            }
+          ]
+        })
+      );
+    }
+  });
 }

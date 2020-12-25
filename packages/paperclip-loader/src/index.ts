@@ -75,7 +75,7 @@ async function pcLoader(
     }
 
     return callback(
-      new Error("Could not compile. See further up for details.")
+      new Error("Could not compile Paperclip file. See further up for details.")
     );
   }
 

@@ -1,6 +1,8 @@
 import { DOMFactory, Renderer } from "../renderer";
-import { createEngine } from "paperclip";
+import { createEngine, createEngineDelegate } from "paperclip";
 import * as path from "path";
+import { FramesRenderer } from "../frame-renderer";
+import { EngineMode } from "paperclip";
 
 export const mockDOMFactory: DOMFactory = {
   createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
@@ -20,6 +22,7 @@ abstract class BaseNode {
   get innerHTML() {
     return this.getInnerHTML();
   }
+  abstract cloneNode();
   abstract getInnerHTML();
   abstract toString();
 }
@@ -73,6 +76,18 @@ class MockElement extends ParentNode {
     this.attributes[name] = value;
   }
 
+  cloneNode() {
+    const el = new MockElement(this.tagName);
+    for (const key in this.attributes) {
+      el.setAttribute(key, el.attributes[key]);
+    }
+    el.textContent = this.textContent;
+    for (const child of this.childNodes) {
+      el.appendChild(child.cloneNode());
+    }
+    return el;
+  }
+
   // eslint-disable-next-line
   addEventListener() {}
   removeAttribute(name: string) {
@@ -98,6 +113,13 @@ class MockElement extends ParentNode {
 }
 
 class MockFragment extends ParentNode {
+  cloneNode() {
+    const clone = new MockFragment();
+    for (const child of this.childNodes) {
+      clone.appendChild(child.cloneNode());
+    }
+    return clone;
+  }
   toString() {
     return "";
   }
@@ -106,6 +128,9 @@ class MockFragment extends ParentNode {
 class MockTextNode extends BaseNode {
   constructor(public nodeValue: string) {
     super();
+  }
+  cloneNode() {
+    return new MockTextNode(this.nodeValue);
   }
   getInnerHTML() {
     return this.toString();
@@ -141,5 +166,36 @@ export const createMockEngine = (graph: Graph) =>
     }
   });
 
+export const createMockEngineDelegate = (
+  graph: Graph,
+  mode: EngineMode = EngineMode.SingleFrame
+) =>
+  createEngineDelegate({
+    io: {
+      readFile: uri =>
+        graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],
+      fileExists: uri =>
+        Boolean(
+          graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
+        ),
+      resolveFile: (from, to) => {
+        const prefix = from.indexOf("file:") === 0 ? "file://" : "";
+
+        return (
+          prefix +
+          path
+            .join(path.dirname(from.replace("file://", "")), to)
+            .replace(/\\+/g, "/")
+        );
+      }
+    },
+    mode
+  });
+
 export const createMockRenderer = (uri: string, protocol = "") =>
   new Renderer(protocol, uri, mockDOMFactory);
+
+export const createMockFramesRenderer = (uri = "", protocol = "") =>
+  new FramesRenderer(uri, protocol, mockDOMFactory);
+
+export const trimWS = (str: string) => str.replace(/[\s\r\n\t]+/g, " ");

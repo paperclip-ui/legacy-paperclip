@@ -8,6 +8,7 @@ use std::fmt;
 
 #[allow(dead_code)]
 #[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "kind")]
 pub enum JsValue {
   JsObject(JsObject),
   JsArray(JsArray),

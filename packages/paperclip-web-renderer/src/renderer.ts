@@ -4,8 +4,8 @@ import {
   createNativeStyleFromSheet
 } from "./native-renderer";
 import {
-  EngineEvent,
-  EngineEventKind,
+  EngineDelegateEvent,
+  EngineDelegateEventKind,
   getVirtTarget,
   patchVirtNode,
   EngineErrorEvent,
@@ -29,6 +29,10 @@ enum RenderEventTypes {
   META_CLICK = "META_CLICK",
   ERROR_BANNER_CLICK = "ERROR_BANNER_CLICK"
 }
+
+/**
+ * DEPRECATED. Use frame-renderer + DIV frame creator
+ */
 
 export class Renderer {
   private _em: EventEmitter;
@@ -276,14 +280,14 @@ export class Renderer {
     this._em.emit(RenderEventTypes.ERROR_BANNER_CLICK, error);
   };
 
-  handleEngineEvent = (event: EngineEvent) => {
+  handleEngineDelegateEvent = (event: EngineDelegateEvent) => {
     this._clearErrors();
     switch (event.kind) {
-      case EngineEventKind.Error: {
+      case EngineDelegateEventKind.Error: {
         this.handleError(event);
         break;
       }
-      case EngineEventKind.ChangedSheets: {
+      case EngineDelegateEventKind.ChangedSheets: {
         if (event.uri === this.targetUri) {
           this._dependencies = event.data.allDependencies;
           this._addSheets(event.data.newSheets);
@@ -291,14 +295,14 @@ export class Renderer {
         }
         break;
       }
-      case EngineEventKind.Loaded: {
+      case EngineDelegateEventKind.Loaded: {
         if (event.uri === this.targetUri) {
           this._dependencies = event.data.allDependencies;
           this.initialize(event.data);
         }
         break;
       }
-      case EngineEventKind.Evaluated: {
+      case EngineDelegateEventKind.Evaluated: {
         if (event.uri === this.targetUri) {
           this._dependencies = event.data.allDependencies;
         } else if (this._dependencies.includes(event.uri)) {
@@ -318,7 +322,7 @@ export class Renderer {
         }
         break;
       }
-      case EngineEventKind.Diffed: {
+      case EngineDelegateEventKind.Diffed: {
         if (event.uri === this.targetUri) {
           patchNativeNode(
             this._stage,

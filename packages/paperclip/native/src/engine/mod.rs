@@ -7,7 +7,7 @@ use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
-use crate::pc::runtime::evaluator::evaluate as evaluate_pc;
+use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
@@ -68,7 +68,7 @@ pub enum EngineError {
 
 #[derive(Debug, PartialEq, Serialize)]
 #[serde(tag = "kind")]
-pub enum EngineEvent<'a> {
+pub enum EngineDelegateEvent<'a> {
   Evaluated(EvaluatedEvent<'a>),
   Diffed(DiffedEvent<'a>),
   NodeParsed(NodeParsedEvent),
@@ -79,14 +79,15 @@ pub struct EvalOptions {
   part: Option<String>,
 }
 
-type EngineEventListener = dyn Fn(&EngineEvent);
+type EngineDelegateEventListener = dyn Fn(&EngineDelegateEvent);
 
 pub struct Engine {
-  listeners: Vec<Box<EngineEventListener>>,
+  listeners: Vec<Box<EngineDelegateEventListener>>,
   pub vfs: VirtualFileSystem,
   pub evaluated_data: HashMap<String, EvaluateData>,
   pub import_graph: HashMap<String, BTreeMap<String, pc_export::Exports>>,
   pub dependency_graph: DependencyGraph,
+  pub mode: EngineMode,
 }
 
 impl Engine {
@@ -94,6 +95,7 @@ impl Engine {
     read_file: Box<FileReaderFn>,
     file_exists: Box<FileExistsFn>,
     resolve_file: Box<FileResolverFn>,
+    mode: EngineMode,
   ) -> Engine {
     Engine {
       listeners: vec![],
@@ -101,6 +103,7 @@ impl Engine {
       import_graph: HashMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
       dependency_graph: DependencyGraph::new(),
+      mode,
     }
   }
 
@@ -113,11 +116,11 @@ impl Engine {
     Ok(())
   }
 
-  pub fn add_listener(&mut self, listener: Box<EngineEventListener>) {
+  pub fn add_listener(&mut self, listener: Box<EngineDelegateEventListener>) {
     self.listeners.push(listener);
   }
 
-  fn dispatch(&self, event: EngineEvent) {
+  fn dispatch(&self, event: EngineDelegateEvent) {
     for listener in &self.listeners {
       (listener)(&event);
     }
@@ -153,7 +156,9 @@ impl Engine {
       }
       Err(error) => {
         self.evaluated_data.remove(uri);
-        self.dispatch(EngineEvent::Error(EngineError::Graph(error.clone())));
+        self.dispatch(EngineDelegateEvent::Error(EngineError::Graph(
+          error.clone(),
+        )));
         Err(EngineError::Graph(error))
       }
     }
@@ -198,7 +203,9 @@ impl Engine {
         uri,
         &ast::Location { start: 0, end: 1 },
       );
-      self.dispatch(EngineEvent::Error(EngineError::Runtime(err.clone())));
+      self.dispatch(EngineDelegateEvent::Error(EngineError::Runtime(
+        err.clone(),
+      )));
       return Err(err);
     }
 
@@ -241,7 +248,13 @@ impl Engine {
 
     self.import_graph.insert(uri.to_string(), imports.clone());
 
-    let node_result = evaluate_pc(uri, &self.dependency_graph, &self.vfs, &self.import_graph);
+    let node_result = evaluate_pc(
+      uri,
+      &self.dependency_graph,
+      &self.vfs,
+      &self.import_graph,
+      &self.mode,
+    );
 
     match node_result {
       Ok(node_option) => {
@@ -270,7 +283,7 @@ impl Engine {
 
             // let info = self.virt_nodes.get(uri).unwrap();
 
-            self.dispatch(EngineEvent::Diffed(DiffedEvent {
+            self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
               uri: uri.clone(),
               data: DiffedData {
                 sheet,
@@ -283,7 +296,7 @@ impl Engine {
             }));
           } else {
             // let info = self.virt_nodes.get(uri).unwrap();
-            self.dispatch(EngineEvent::Evaluated(EvaluatedEvent {
+            self.dispatch(EngineDelegateEvent::Evaluated(EvaluatedEvent {
               uri: uri.clone(),
               data: &data,
             }));
@@ -297,7 +310,7 @@ impl Engine {
       Err(err) => {
         // self.evaluated_data.remove(uri);
         let e = EngineError::Runtime(err.clone());
-        self.dispatch(EngineEvent::Error(e));
+        self.dispatch(EngineDelegateEvent::Error(e));
         Err(err)
       }
     }
@@ -316,6 +329,7 @@ mod tests {
       Box::new(|_| "".to_string()),
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
+      EngineMode::SingleFrame,
     );
 
     let result = block_on(engine.parse_content(&"{'a'}".to_string())).unwrap();

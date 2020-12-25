@@ -1,4 +1,5 @@
 import { Engine } from "paperclip";
+import { EngineDelegate } from "paperclip/src";
 import { BaseLanguageService } from "./base";
 import { PCHTMLLanguageService } from "./html";
 
@@ -13,7 +14,7 @@ export class LanguageServices {
   }
 }
 
-export const createServices = (engine: Engine) => {
+export const createServices = (engine: EngineDelegate) => {
   return new LanguageServices([
     // new PCCSSLanguageService(engine),
     // new PCJSLanguageService(engine),
