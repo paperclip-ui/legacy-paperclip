@@ -1,7 +1,7 @@
 {
   "name": "button-test",
   "description": "",
-  "version": "16.0.0",
+  "version": "16.0.1",
   "private": true,
   "scripts": {
     "build": "paperclip build --definition --write && webpack",

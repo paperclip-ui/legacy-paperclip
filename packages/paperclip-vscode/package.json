@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "16.0.0",
+  "version": "16.0.1",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "keywords": [
@@ -148,7 +148,7 @@
     "paperclip-autocomplete": "^16.0.0",
     "paperclip-source-writer": "^16.0.0",
     "paperclip-utils": "^16.0.0",
-    "paperclip-visual-editor": "^16.0.0",
+    "paperclip-visual-editor": "^16.0.1",
     "paperclip-web-renderer": "^16.0.0",
     "vscode-languageclient": "^6.0.1",
     "vscode-languageserver": "^6.0.1",
