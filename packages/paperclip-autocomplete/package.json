@@ -1,6 +1,6 @@
 {
   "name": "paperclip-autocomplete",
-  "version": "15.0.21",
+  "version": "16.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
