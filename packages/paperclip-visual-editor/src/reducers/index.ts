@@ -22,7 +22,8 @@ import {
   VirtualFrame,
   toVirtJsValue,
   computeVirtJSObject,
-  VirtJsObjectKind
+  VirtJsObjectKind,
+  NodeAnnotations
 } from "paperclip-utils";
 import { actionCreator } from "../actions/base";
 import { getFrameBounds } from "paperclip-web-renderer";
@@ -217,6 +218,29 @@ export default (state: AppState, action: Action) => {
                 oldBox,
                 action.payload.newBounds
               )
+            })
+          );
+        }
+      });
+    }
+    case ActionType.GLOBAL_H_KEY_DOWN: {
+      return produce(state, newState => {
+        const frames = getSelectedFrames(newState);
+
+        for (
+          let i = 0, { length } = newState.selectedNodePaths;
+          i < length;
+          i++
+        ) {
+          const frame = frames[i];
+          const annotations: NodeAnnotations =
+            (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
+          Object.assign(
+            frame,
+            updateAnnotations(frame, {
+              frame: {
+                visible: !(annotations.frame?.visible !== false)
+              }
             })
           );
         }

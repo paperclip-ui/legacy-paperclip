@@ -72,7 +72,8 @@ export const toVirtJsValue = memoize((value: any) => {
     };
   } else if (typeof value === "boolean") {
     return {
-      kind: VirtJsObjectKind.JsObject
+      kind: VirtJsObjectKind.JsBoolean,
+      value
     };
   }
 });

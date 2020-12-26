@@ -22,7 +22,8 @@ import {
   CanvasMouseUp,
   pasted,
   globalBackspaceKeySent,
-  globalSaveKeyPress
+  globalSaveKeyPress,
+  globalHKeyDown
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
@@ -166,7 +167,8 @@ function* handleRenderer() {
     [
       ActionType.RESIZER_STOPPED_MOVING,
       ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
-      ActionType.FRAME_TITLE_CHANGED
+      ActionType.FRAME_TITLE_CHANGED,
+      ActionType.GLOBAL_H_KEY_DOWN
     ],
     function*(action: Action) {
       const state: AppState = yield select();
@@ -281,6 +283,9 @@ function* handleKeyCommands() {
     });
     Mousetrap.bind("meta+y", () => {
       emit(globalYKeyDown(null));
+    });
+    Mousetrap.bind("meta+h", () => {
+      emit(globalHKeyDown(null));
     });
     Mousetrap.bind("meta+s", () => {
       emit(globalSaveKeyPress(null));
