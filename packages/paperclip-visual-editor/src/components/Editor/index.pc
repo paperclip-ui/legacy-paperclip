@@ -13,7 +13,11 @@ TODOS:
 <import src="./LeftSidebar/index.pc" as="LeftSidebar" />
 <import src="./RightSidebar/index.pc" as="RightSidebar" />
 
-<div export component as="Container" className="editor $theme.font-default $theme.full-wh">
+
+<!--
+  @frame { visible: false, title: "Container", width: 1024, height: 768, x: -3, y: -73 }
+-->
+<div export component as="Container" className="editor $theme.font-default $theme.full-wh {className?}">
   <style>
     width: 100vw;
     height: 100vh;
@@ -23,12 +27,43 @@ TODOS:
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false, title: "Editor", width: 1114, height: 711, x: 0, y: 901 }
+-->
 <Container>
   <LeftSidebar.Preview />
   <Center.Preview />
 </Container>
 
-
+<!--
+  @frame { title: "Grid View / Large", width: 1322, height: 726, x: 2345, y: -86 }
+-->
 <Container>
   <Center.ArialPreview2 />
 </Container>
+
+
+<!--
+  @frame { title: "Grid View / Large", width: 999, height: 737, x: 1219, y: -93 }
+-->
+<Container>
+  <Center.ArialPreview2 />
+</Container>
+
+<!--
+  @frame { title: "Grid View / Small", width: 377, height: 737, x: -43, y: -114 }
+-->
+<Container>
+  <Center.ArialPreview2 />
+</Container>
+
+
+
+<!--
+  @frame { title: "Grid View / Medium", width: 686, height: 737, x: 441, y: -107 }
+-->
+<Container>
+  <Center.ArialPreview2 />
+</Container>
+

@@ -25,8 +25,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
  *
  */
 
+const mode =
+  process.env.NODE_ENV === "production" ? "production" : "development";
+
 module.exports = {
-  mode: "development",
+  mode,
   entry: "./src/browser.ts",
 
   output: {

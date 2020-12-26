@@ -33,6 +33,8 @@ export enum ActionType {
   GLOBAL_META_KEY_DOWN = "GLOBAL_META_KEY_DOWN",
   GLOBAL_Z_KEY_DOWN = "GLOBAL_Z_KEY_DOWN",
   GLOBAL_Y_KEY_DOWN = "GLOBAL_Y_KEY_DOWN",
+  GLOBAL_H_KEY_DOWN = "GLOBAL_H_KEY_DOWN",
+  GLOBAL_SAVE_KEY_DOWN = "GLOBAL_SAVE_KEY_DOWN",
   GLOBAL_BACKSPACE_KEY_PRESSED = "GLOBAL_BACKSPACE_KEY_PRESSED",
   GLOBAL_BACKSPACE_KEY_SENT = "GLOBAL_BACKSPACE_KEY_SENT",
   GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP",
@@ -326,6 +328,14 @@ export const globalYKeyDown = actionCreator<KeyComboPressed<ActionType>>(
   ActionType.GLOBAL_Y_KEY_DOWN
 );
 
+export const globalHKeyDown = actionCreator<KeyComboPressed<ActionType>>(
+  ActionType.GLOBAL_H_KEY_DOWN
+);
+
+export const globalSaveKeyPress = actionCreator<KeyComboPressed<ActionType>>(
+  ActionType.GLOBAL_SAVE_KEY_DOWN
+);
+
 export const globalMetaKeyUp = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
 >(ActionType.GLOBAL_META_KEY_UP);
@@ -366,11 +376,13 @@ export type Action =
   | EngineDelegateEventsHandled
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
+  | KeyComboPressed<ActionType.GLOBAL_SAVE_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
   | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_PRESSED>
   | KeyComboPressed<ActionType.GLOBAL_BACKSPACE_KEY_SENT>
   | KeyComboPressed<ActionType.GLOBAL_Y_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_Z_KEY_DOWN>
+  | KeyComboPressed<ActionType.GLOBAL_H_KEY_DOWN>
   | EngineErrored
   | ZoomOutButtonClicked
   | DirLoaded

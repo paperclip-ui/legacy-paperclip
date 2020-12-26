@@ -1271,4 +1271,28 @@ describe(__filename + "#", () => {
       `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { color:red; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
   });
+
+  it(`Can include @media in scoped style`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div className="variant">
+        <style>
+          :self {
+              
+            @media screen and (min-width: 100px) {
+              color: red;
+            }
+          }
+        </style>
+      </div>
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+    );
+  });
 });
