@@ -29,7 +29,7 @@ TODOS:
 
 
 <!--
-  @frame { title: "Editor", width: 1114, height: 711, x: 0, y: 901 }
+  @frame { visible: false, title: "Editor", width: 1114, height: 711, x: 0, y: 901 }
 -->
 <Container>
   <LeftSidebar.Preview />
@@ -37,7 +37,7 @@ TODOS:
 </Container>
 
 <!--
-  @frame { title: "Grid View / Large", width: 1322, height: 726, x: 2407, y: -284 }
+  @frame { title: "Grid View / Large", width: 1322, height: 726, x: 2345, y: -86 }
 -->
 <Container>
   <Center.ArialPreview2 />
@@ -45,19 +45,14 @@ TODOS:
 
 
 <!--
-  @frame { title: "Grid View / Large", width: 999, height: 737, x: 1281, y: -291 }
+  @frame { title: "Grid View / Large", width: 999, height: 737, x: 1219, y: -93 }
 -->
 <Container>
   <Center.ArialPreview2 />
 </Container>
 
-
-
-
-
-
 <!--
-  @frame { title: "Grid View / Small", width: 377, height: 737, x: 19, y: -312 }
+  @frame { title: "Grid View / Small", width: 377, height: 737, x: -43, y: -114 }
 -->
 <Container>
   <Center.ArialPreview2 />
@@ -66,7 +61,7 @@ TODOS:
 
 
 <!--
-  @frame { title: "Grid View / Medium", width: 686, height: 737, x: 503, y: -305 }
+  @frame { title: "Grid View / Medium", width: 686, height: 737, x: 441, y: -107 }
 -->
 <Container>
   <Center.ArialPreview2 />
