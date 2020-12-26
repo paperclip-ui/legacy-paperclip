@@ -1,6 +1,23 @@
 <import src="component.pc" as="component" />
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 26, y: -12 }
+-->
 <export component as="default">
   something
 </export>
+
+<!--
+  @frame { width: 1024, height: 768, x: 336, y: -142 }
+-->
 <default />
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 39, y: 776 }
+-->
+<div>
+  <span>okay</span>
+</div>
+
