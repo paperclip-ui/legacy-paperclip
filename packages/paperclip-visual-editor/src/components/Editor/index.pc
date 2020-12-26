@@ -52,7 +52,7 @@ TODOS:
 </Container>
 
 <!--
-  @frame { title: "Grid View / Small", width: 377, height: 737, x: -43, y: -114 }
+  @frame { title: "Grid View / Small", width: 377, height: 737, x: -43, y: -116 }
 -->
 <Container>
   <Center.ArialPreview2 />

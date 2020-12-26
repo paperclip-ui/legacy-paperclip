@@ -24,6 +24,10 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 1137, y: -26 }
+-->
 <div export component as="default" class="app-container">
   <style>
     background: rgb(255, 255, 255);
@@ -131,6 +135,7 @@
                 height: 34px;
                 font-size: 0;
                 position: absolute;
+                display: none;
                 top: -52px;
                 left: -13px;
                 -webkit-transform: rotate(90deg);
@@ -187,6 +192,10 @@
 </div>
 
 
+
+<!--
+  @frame { title: "Preview / Narrow", width: 668, height: 768, x: 1100, y: -91 }
+-->
 <default 
   items={<fragment>
     <ListItem.DefaultPreview label="walk dog" completed />
@@ -195,3 +204,16 @@
   </fragment>} 
   controls={<Controls.DefaultPreview />} 
 />
+
+<!--
+  @frame { title: "Preview / Wide", width: 1476, height: 768, x: -509, y: -76 }
+-->
+<default 
+  items={<fragment>
+    <ListItem.DefaultPreview label="walk dog" completed />
+    <ListItem.DefaultPreview label="clean car" />
+    <ListItem.EditingPreview />
+  </fragment>} 
+  controls={<Controls.DefaultPreview />} 
+/>
+

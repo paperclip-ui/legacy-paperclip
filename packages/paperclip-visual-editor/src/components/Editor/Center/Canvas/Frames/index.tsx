@@ -95,7 +95,9 @@ const useFrames = () => {
     if (state.currentEngineEvents.length) {
       state.currentEngineEvents.forEach(renderer.handleEngineDelegateEvent);
       collectRects();
-      dispatch(engineDelegateEventsHandled(undefined));
+      dispatch(
+        engineDelegateEventsHandled({ count: state.currentEngineEvents.length })
+      );
     }
   }, [collectRects, renderer, state.currentEngineEvents]);
 

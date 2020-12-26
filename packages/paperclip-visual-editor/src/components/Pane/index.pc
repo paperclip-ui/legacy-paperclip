@@ -1,5 +1,9 @@
 <import src="components/Theme/index.pc" as="theme" />
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 762, y: 67 }
+-->
 <div export component as="default" 
   className="pane"
   className:primary="primary">
@@ -36,12 +40,20 @@
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 411, y: 344 }
+-->
 <div export component as="Preview">
   <default title="Pane">
     content
   </default>
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 499, y: -135 }
+-->
 <div export component as="Content">
   <style>
     padding: 10px;
@@ -49,6 +61,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { title: "Pane", width: 667, height: 768, x: -154, y: 73 }
+-->
 <div className="$theme.background-1 $theme.font-default">
   <Preview />
 </div>
