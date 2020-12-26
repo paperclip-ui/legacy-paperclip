@@ -160,7 +160,8 @@ export type FrameTitleClicked = BaseAction<
 >;
 
 export type EngineDelegateEventsHandled = BaseAction<
-  ActionType.ENGINE_DELEGATE_EVENTS_HANDLED
+  ActionType.ENGINE_DELEGATE_EVENTS_HANDLED,
+  { count: number }
 >;
 export type FileOpened = BaseAction<ActionType.FILE_OPENED, { uri: string }>;
 

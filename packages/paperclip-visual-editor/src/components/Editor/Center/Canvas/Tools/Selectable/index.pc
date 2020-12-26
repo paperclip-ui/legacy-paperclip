@@ -111,7 +111,7 @@
 
 
 <!--
-  @frame { title: "Without Knobs", width: 228, height: 203, x: 439, y: 1115 }
+  @frame { title: "Without Knobs", width: 248, height: 247, x: 501, y: 1152 }
 -->
 <div className="$theme.font-default">
   <PreviewBox style="left: 20px; top: 20px;">
@@ -120,7 +120,7 @@
 </div>
 
 <!--
-  @frame { title: "With Knobs", width: 332, height: 273, x: 727, y: 1073 }
+  @frame { title: "With Knobs", width: 332, height: 273, x: 788, y: 1126 }
 -->
 <div className="$theme.font-default">
   <PreviewBox style="left: 50px; top: 50px;">

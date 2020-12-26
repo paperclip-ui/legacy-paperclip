@@ -89,7 +89,7 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
       return produce(state, newState => {
-        newState.currentEngineEvents = [];
+        newState.currentEngineEvents.splice(0, action.payload.count);
       });
     }
     case ActionType.FILE_OPENED: {
