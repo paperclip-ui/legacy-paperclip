@@ -82,7 +82,10 @@ export const getVirtTarget = (
   mount: VirtualNode,
   nodePath: number[]
 ): VirtualNode =>
-  nodePath.reduce((current: VirtualElement, i) => current.children[i], mount);
+  nodePath.reduce((current: VirtualElement, i) => {
+    const c = current.children[i];
+    return c;
+  }, mount);
 
 const updateNode = (
   ancestor: VirtualNode,

@@ -21,7 +21,8 @@ import {
   pcVirtObjectEdited,
   CanvasMouseUp,
   pasted,
-  globalBackspaceKeySent
+  globalBackspaceKeySent,
+  globalSaveKeyPress
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
@@ -209,6 +210,7 @@ function* handleRenderer() {
       ActionType.META_CLICKED,
       ActionType.GLOBAL_Z_KEY_DOWN,
       ActionType.GLOBAL_Y_KEY_DOWN,
+      ActionType.GLOBAL_SAVE_KEY_DOWN,
       ActionType.PASTED
     ],
     function(action: Action) {
@@ -241,7 +243,7 @@ function* handleCanvasMouseUp(action: CanvasMouseUp) {
   }
 
   const nodePathParts = nodeInfo.nodePath.split(".").map(Number);
-  console.log(state.allLoadedPCFileData[state.currentFileUri], nodePathParts);
+
   const virtualNode = getVirtTarget(
     state.allLoadedPCFileData[state.currentFileUri].preview,
     nodePathParts
@@ -279,6 +281,9 @@ function* handleKeyCommands() {
     });
     Mousetrap.bind("meta+y", () => {
       emit(globalYKeyDown(null));
+    });
+    Mousetrap.bind("meta+s", () => {
+      emit(globalSaveKeyPress(null));
     });
     Mousetrap.bind("meta+shift+z", () => {
       emit(globalYKeyDown(null));
@@ -323,7 +328,7 @@ function* handleCopy() {
       return;
     }
 
-    const buffer = ["\n\n"];
+    const buffer = ["\n"];
 
     for (const frame of frames) {
       if (!state.documentContent[frame.source.uri]) {

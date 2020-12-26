@@ -105,11 +105,17 @@ export const activate = (
     const sourceEditor = window.visibleTextEditors.find(
       editor => String(editor.document.uri) === uri
     );
-    return await window.showTextDocument(
-      sourceEditor.document,
-      sourceEditor.viewColumn,
-      false
-    );
+
+    if (sourceEditor) {
+      return await window.showTextDocument(
+        sourceEditor.document,
+        sourceEditor.viewColumn,
+        false
+      );
+    } else {
+      const doc = await workspace.openTextDocument(Uri.parse(uri));
+      return await window.showTextDocument(doc, ViewColumn.One, false);
+    }
   };
 
   const execCommand = async (preview: LivePreview, command: string) => {
@@ -145,6 +151,12 @@ export const activate = (
         execCommand(preview, "redo");
       }),
       preview.onPasted(payload => onPasted(preview, payload)),
+
+      preview.onSaveRequest(async () => {
+        const editor = await showPreviewEditor(preview);
+        editor.document.save();
+      }),
+
       preview.onDidDispose(() => {
         const index = _previews.indexOf(preview);
         if (index !== -1) {
@@ -414,6 +426,12 @@ class LivePreview {
     this._em.on("PASTED", listener);
     return () => {
       this._em.removeListener("PASTED", listener);
+    };
+  }
+  public onSaveRequest(listener: () => void) {
+    this._em.on("GLOBAL_SAVE_KEY_DOWN", listener);
+    return () => {
+      this._em.removeListener("GLOBAL_SAVE_KEY_DOWN", listener);
     };
   }
   public onRedo(listener: () => void) {

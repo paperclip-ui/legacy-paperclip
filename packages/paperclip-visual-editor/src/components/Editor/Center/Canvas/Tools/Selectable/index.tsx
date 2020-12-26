@@ -146,7 +146,7 @@ export const Selectable = React.memo(
       <>
         <styles.Overlay
           onMouseDown={onMouseDown}
-          size={`${Math.round(box.width)}x${Math.round(box.height)}`}
+          size={`${Math.round(box.width)} x ${Math.round(box.height)}`}
           knobs={
             knobs && (
               <>

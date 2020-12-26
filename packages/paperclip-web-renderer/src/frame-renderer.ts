@@ -102,7 +102,7 @@ class FramesProxy implements Patchable {
     // finally append
     this._importedStyles.push(...newStyles);
 
-    for (const { sheet } of newStyles) {
+    for (const { sheet, uri } of newStyles) {
       const nativeSheet = createNativeStyleFromSheet(
         sheet,
         this._domFactory,
@@ -257,7 +257,7 @@ export class FramesRenderer {
         } else if (this._dependencies.includes(event.uri)) {
           // Replace
           this._framesProxy.updateImportedStyles(
-            [event.data.sheet],
+            [{ uri: event.uri, sheet: event.data.sheet }],
             [event.uri]
           );
         }
@@ -279,6 +279,11 @@ export class FramesRenderer {
           }
 
           this._preview = patchVirtNode(this._preview, event.data.mutations);
+        } else if (event.data.sheet) {
+          this._framesProxy.updateImportedStyles(
+            [{ uri: event.uri, sheet: event.data.sheet }],
+            [event.uri]
+          );
         }
         break;
       }
@@ -301,7 +306,9 @@ export class FramesRenderer {
         continue;
       }
       const bounds = getFrameBounds(frameNode);
-      traverseNativeNode(frame._mount, (node, path) => {
+
+      // mount child node _is_ the frame -- can only ever be one child
+      traverseNativeNode(frame._mount.childNodes[0], (node, path) => {
         if (node.nodeType === 1) {
           const pathStr = i + "." + path.join(".");
           if (pathStr) {

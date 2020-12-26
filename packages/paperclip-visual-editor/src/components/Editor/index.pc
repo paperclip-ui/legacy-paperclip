@@ -17,7 +17,7 @@ TODOS:
 <!--
   @frame { visible: false, title: "Container", width: 1024, height: 768, x: -3, y: -73 }
 -->
-<div export component as="Container" className="editor $theme.font-default $theme.full-wh">
+<div export component as="Container" className="editor $theme.font-default $theme.full-wh {className?}">
   <style>
     width: 100vw;
     height: 100vh;
@@ -36,11 +36,39 @@ TODOS:
   <Center.Preview />
 </Container>
 
-
-
 <!--
-  @frame { title: "Grid View", width: 902, height: 737, x: -22, y: -65 }
+  @frame { title: "Grid View / Large", width: 1322, height: 726, x: 2407, y: -284 }
 -->
 <Container>
   <Center.ArialPreview2 />
 </Container>
+
+
+<!--
+  @frame { title: "Grid View / Large", width: 999, height: 737, x: 1281, y: -291 }
+-->
+<Container>
+  <Center.ArialPreview2 />
+</Container>
+
+
+
+
+
+
+<!--
+  @frame { title: "Grid View / Small", width: 377, height: 737, x: 19, y: -312 }
+-->
+<Container>
+  <Center.ArialPreview2 />
+</Container>
+
+
+
+<!--
+  @frame { title: "Grid View / Medium", width: 686, height: 737, x: 503, y: -305 }
+-->
+<Container>
+  <Center.ArialPreview2 />
+</Container>
+

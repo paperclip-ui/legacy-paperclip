@@ -244,12 +244,24 @@ fn evaluate_condition_rule(
       selector_text = get_element_scope_selector(context, &None, false);
     }
 
+    let self_selector_text = selector_text.clone();
+
     let self_selector_text = if context.element_scope != None && parent_selector_text != "" {
-      format!(
-        "{} {}",
-        get_element_scope_selector(context, &None, false),
-        selector_text
-      )
+
+      // cover :self { @media } -- just do a check to see if immediate parent is :self scope
+      if parent_selector_text == &get_element_scope_selector(context, &None, true) {
+        parent_selector_text.clone()
+      } else {
+
+        // don't provide extra specificity for nested children
+        let element_scope = get_element_scope_selector(context, &None, false);
+      
+        format!(
+          "{} {}",
+          element_scope,
+          selector_text
+        )
+      }
     } else {
       selector_text.clone()
     };

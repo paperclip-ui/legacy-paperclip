@@ -7,12 +7,12 @@
       --pos: 2n;
       display: inline-block;
       width: 25%;
+      /* display: none; */
       box-sizing: border-box;
       height: 200px;
       padding: 16px;
       border-right: 1px solid var(--border-color-1);
       border-bottom: 1px solid var(--border-color-1);
-
 
       @include theme.desktop-xl {
         width: 20%;
