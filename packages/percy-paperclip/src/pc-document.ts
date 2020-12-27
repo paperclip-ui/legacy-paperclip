@@ -7,8 +7,12 @@ import { VirtualFragment, stringifyVirtualNode } from "paperclip";
 export class PCDocument {
   styleSheets = [];
   documentElement;
+  URL;
   constructor(readonly root: VirtualFragment) {
     this.documentElement = this;
+
+    // surpress percy warn
+    this.URL = "http://127.0.0.1/";
   }
   get outerHTML() {
     // Need to embed local assets, otherwise they'll show up as broken images.
