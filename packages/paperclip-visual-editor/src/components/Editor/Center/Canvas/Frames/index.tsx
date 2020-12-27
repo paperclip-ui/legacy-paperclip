@@ -92,6 +92,7 @@ const useFrames = () => {
   }, [renderer, frameData, state.expandedFrameInfo, state.canvas.size]);
 
   useEffect(() => {
+    console.log(state.currentEngineEvents);
     if (state.currentEngineEvents.length) {
       state.currentEngineEvents.forEach(renderer.handleEngineDelegateEvent);
       collectRects();

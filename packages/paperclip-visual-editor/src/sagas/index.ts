@@ -105,6 +105,7 @@ function* handleRenderer() {
     const onMessage = ({ type, payload }) => {
       switch (type) {
         case "ENGINE_EVENT": {
+          console.log("ENGINE EVENT", payload);
           const engineEvent = payload;
           if (engineEvent.kind === "Error") {
             return emit(engineErrored(engineEvent));
@@ -157,8 +158,7 @@ function* handleRenderer() {
       action.type === ActionType.FS_ITEM_CLICKED &&
       isPaperclipFile(action.payload.url)
     ) {
-      // renderer.reset(action.payload.url);
-      yield put(fileOpened({ uri: getTargetUrl() }));
+      yield put(fileOpened({ uri: action.payload.url }));
     }
     sendMessage(action);
   });

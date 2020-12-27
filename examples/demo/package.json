@@ -24,6 +24,7 @@
     "paperclip-cli": "^16.0.3",
     "paperclip-compiler-react": "^16.0.3",
     "paperclip-loader": "^16.0.3",
+    "paperclip-visual-editor": "^16.0.3",
     "percy": "^0.27.2",
     "percy-paperclip": "^16.0.5",
     "style-loader": "^1.2.1",

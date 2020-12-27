@@ -4,7 +4,7 @@ import * as chokidar from "chokidar";
 import http from "http";
 import sockjs from "sockjs";
 import getPort from "get-port";
-import { Engine } from "paperclip";
+import { Engine, EngineDelegate } from "paperclip";
 import * as URL from "url";
 import { basename } from "path";
 import { ActionType, FSItemClicked } from "./actions";
@@ -12,7 +12,7 @@ import { FSItemKind } from "./state";
 import { url } from "inspector";
 
 export type ServerOptions = {
-  engine: Engine;
+  engine: EngineDelegate;
   localResourceRoots: string[];
   port?: number;
 };
@@ -46,13 +46,13 @@ export const startServer = async ({
     });
   };
 
-  const handleOpen = uri => {
+  const openURI = uri => {
     const localPath = URL.fileURLToPath(uri);
     if (!localResourceRoots.some(root => localPath.includes(root))) {
       return;
     }
 
-    const ret = engine.run(uri);
+    const ret = engine.open(uri);
     watchEngineFiles();
     return ret;
   };
@@ -65,10 +65,6 @@ export const startServer = async ({
     };
 
     const disposeEngineListener = engine.onEvent(event => {
-      if (event.uri !== targetUri) {
-        return;
-      }
-
       emit({
         type: "ENGINE_EVENT",
         payload: event
@@ -77,6 +73,7 @@ export const startServer = async ({
 
     conn.on("data", data => {
       const message = JSON.parse(data) as any;
+      console.log("message:", data);
       switch (message.type) {
         case "OPEN":
           return onOpen(message);
@@ -86,26 +83,30 @@ export const startServer = async ({
       }
     });
 
-    const onFSItemClicked = (action: FSItemClicked) => {
+    const onFSItemClicked = async (action: FSItemClicked) => {
       if (action.payload.kind === FSItemKind.DIRECTORY) {
         loadDirectory(action.payload.absolutePath);
       } else {
         if (/\.pc$/.test(action.payload.absolutePath)) {
           targetUri = URL.pathToFileURL(action.payload.absolutePath).href;
-          engine.run(targetUri);
+          handleOpen(targetUri);
         }
       }
     };
 
-    const onOpen = message => {
-      targetUri = message.uri;
-      const result = handleOpen(message.uri);
+    const handleOpen = (uri: string) => {
+      const result = openURI(uri);
       if (result) {
         emit({
           type: "INIT",
           payload: result
         });
       }
+    };
+
+    const onOpen = message => {
+      targetUri = message.uri;
+      handleOpen(targetUri);
     };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {

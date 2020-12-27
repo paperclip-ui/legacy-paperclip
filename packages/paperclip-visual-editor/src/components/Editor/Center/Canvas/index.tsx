@@ -8,11 +8,8 @@ import {
   canvasPanEnd,
   canvasPanned,
   canvasPanStart,
-  canvasResized,
-  canvasMouseMoved
+  canvasResized
 } from "../../../../actions";
-import { getFrameFromIndex } from "../../../../state";
-import { getFrameBounds } from "paperclip-web-renderer";
 
 export const Canvas = React.memo(() => {
   const { state, dispatch } = useAppStore();
