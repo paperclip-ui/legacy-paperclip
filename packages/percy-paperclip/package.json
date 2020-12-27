@@ -1,6 +1,6 @@
 {
   "name": "percy-paperclip",
-  "version": "16.0.4",
+  "version": "16.0.5",
   "description": "",
   "main": "index.js",
   "bin": {
