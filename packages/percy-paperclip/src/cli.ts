@@ -122,7 +122,7 @@ export const run = async (
 
       agent.snapshot(snapshotName, {
         document,
-        widths: annotations.frame.width ? [annotations.frame.width] : null
+        widths: annotations.frame?.width ? [annotations.frame.width] : null
       });
     }
   }
