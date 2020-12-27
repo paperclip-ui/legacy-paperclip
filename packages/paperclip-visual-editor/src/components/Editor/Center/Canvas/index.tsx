@@ -39,8 +39,8 @@ export const Canvas = React.memo(() => {
           y: event.deltaY
         },
         mousePosition: {
-          x: event.pageX,
-          y: event.pageY
+          x: event.pageX - rect.left,
+          y: event.pageY - rect.top
         },
         metaKey: event.metaKey,
         size: {

@@ -46,7 +46,7 @@
 <Container export component as="ArialPreview2" className="light $theme.font-default">
   <Toolbar.Preview gridMode />
   <CanvasContainer>
-    <!-- <Arial.Preview /> -->
+    <Arial.Preview />
     <Arial.TEST />
   </CanvasContainer>
 </Container>

@@ -34,7 +34,6 @@ import {
   LoadedParams,
   ErrorLoadingParams
 } from "../common/notifications";
-import { fileURLToPath } from "url";
 
 const VIEW_TYPE = "paperclip-preview";
 

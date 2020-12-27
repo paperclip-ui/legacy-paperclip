@@ -4,12 +4,10 @@ import * as chokidar from "chokidar";
 import http from "http";
 import sockjs from "sockjs";
 import getPort from "get-port";
-import { Engine, EngineDelegate } from "paperclip";
+import { EngineDelegate } from "paperclip";
 import * as URL from "url";
-import { basename } from "path";
 import { ActionType, FSItemClicked } from "./actions";
 import { FSItemKind } from "./state";
-import { url } from "inspector";
 
 export type ServerOptions = {
   engine: EngineDelegate;

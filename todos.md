@@ -1,3 +1,23 @@
+** Need to wait for a few weeks to let current bugs shake out **
+
+
+#### Re-do website
+
+- make it beta only
+- UI for grid view
+
+
+#### Next
+
+- wire up vscode with dev server
+  - will need to assign IDs to preview instances
+- pop tab out of vscode (into Firefox)
+- grid view of all UIs
+- show opened files
+- ability to open text editor
+
+#### Considerations
+
 - Grid view
 - grid view frame performance? 
 - needs to be a standalone app

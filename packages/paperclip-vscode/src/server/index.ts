@@ -11,12 +11,10 @@ import {
 
 import * as fs from "fs";
 import * as url from "url";
-import { Engine } from "paperclip";
 import { createServices } from "./services";
 import { VSCServiceBridge } from "./bridge";
 import { Crash } from "../common/notifications";
 import {
-  createEngine,
   createEngineDelegate,
   keepEngineInSyncWithFileSystem2,
   PaperclipSourceWatcher,
@@ -24,6 +22,8 @@ import {
   EngineMode,
   EngineDelegate
 } from "paperclip";
+
+import { startServer } from "paperclip-visual-editor";
 
 const connection = createConnection(ProposedFeatures.all);
 
@@ -53,6 +53,9 @@ const init = async (connection: Connection) => {
       connection.sendNotification(...new Crash({}).getArgs());
     }
   );
+
+  // const visualEditorServerResult = await startServer({ engine, localResourceRoots: [] });
+  // console.log(visualEditorServerResult);
 
   watchPaperclipSources(engine);
 

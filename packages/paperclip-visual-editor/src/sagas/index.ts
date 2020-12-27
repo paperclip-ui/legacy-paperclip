@@ -41,6 +41,7 @@ export default function* mainSaga() {
   yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
   yield fork(handleKeyCommands);
+  yield fork(handleDocumentEvents);
   yield put(fileOpened({ uri: getTargetUrl() }));
   yield fork(handleCanvas);
   yield fork(handleClipboard);
@@ -379,5 +380,32 @@ function* handlePaste() {
         })
       );
     }
+  });
+}
+
+function* handleDocumentEvents() {
+  yield fork(function*() {
+    const chan = eventChannel(emit => {
+      document.addEventListener("wheel", emit, { passive: false });
+      document.addEventListener("keydown", emit);
+      return () => {
+        document.removeEventListener("wheel", emit);
+        document.removeEventListener("keydown", emit);
+      };
+    });
+
+    yield takeEvery(chan, (event: any) => {
+      if (event.type === "wheel") {
+        event.preventDefault();
+      }
+
+      if (
+        event.type === "keydown" &&
+        (event.key === "=" || event.key === "-") &&
+        event.metaKey
+      ) {
+        event.preventDefault();
+      }
+    });
   });
 }
