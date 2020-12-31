@@ -1,6 +1,5 @@
 ** Need to wait for a few weeks to let current bugs shake out **
 
-
 #### Re-do website
 
 - make it beta only

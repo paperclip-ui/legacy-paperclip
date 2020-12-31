@@ -275,7 +275,7 @@ const getAllFrameBounds = (state: AppState) => {
       if (annotations.frame?.visible === false) {
         return null;
       }
-      return box as Box;
+      return { ...DEFAULT_FRAME_BOX, ...box };
     })
     .filter(Boolean);
 

@@ -1272,13 +1272,36 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Can include @media in scoped style`, async () => {
+  it(`Can include @media in scoped :style`, async () => {
     const graph = {
       "/entry.pc": `
       <div className="variant">
         <style>
           :self {
               
+            @media screen and (min-width: 100px) {
+              color: red;
+            }
+          }
+        </style>
+      </div>
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    expect(text).to.eql(
+      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`Can include @media in scoped :style()`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div className="variant">
+        <style>
+          :self(:empty) {
             @media screen and (min-width: 100px) {
               color: red;
             }

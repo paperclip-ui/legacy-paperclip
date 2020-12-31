@@ -1,3 +1,9 @@
+/*
+
+Oh boy what a mess. To be refactored after features shake out.
+
+*/
+
 use super::super::super::pc::ast as pc_ast;
 use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::super::super::pc::runtime::export as pc_export;
@@ -238,30 +244,32 @@ fn evaluate_condition_rule(
   )?;
 
   if rule.declarations.len() > 0 {
-    let mut selector_text = parent_selector_text.to_string();
+    let mut child_selector_text = parent_selector_text.to_string();
 
+
+    // if there is no parent 
     if parent_selector_text == "" {
-      selector_text = get_element_scope_selector(context, &None, false);
+      child_selector_text = get_element_scope_selector(context, &None, false);
     }
 
-    let self_selector_text = selector_text.clone();
+    // let self_selector_text = if context.element_scope != None && parent_selector_text != "" {
+    //   // cover :self { @media } -- just do a check to see if immediate parent is :self scope
+    //   // format!("{} {}", parent_selector_text, selector_text)
+    //   selector_text.clone()
+    //   // if parent_selector_text == &get_element_scope_selector(context, &None, true) {
+    //   //   parent_selector_text.clone()
+    //   // } else {
+    //   //   // don't provide extra specificity for nested children
+    //   //   let element_scope = get_element_scope_selector(context, &None, false);
 
-    let self_selector_text = if context.element_scope != None && parent_selector_text != "" {
-      // cover :self { @media } -- just do a check to see if immediate parent is :self scope
-      if parent_selector_text == &get_element_scope_selector(context, &None, true) {
-        parent_selector_text.clone()
-      } else {
-        // don't provide extra specificity for nested children
-        let element_scope = get_element_scope_selector(context, &None, false);
-
-        format!("{} {}", element_scope, selector_text)
-      }
-    } else {
-      selector_text.clone()
-    };
+    //   //   format!("{} {}", element_scope, selector_text)
+    //   // }
+    // } else {
+    //   selector_text.clone()
+    // };
 
     let style =
-      evaluate_style_declarations(&rule.declarations, &selector_text, &mut child_context)?;
+      evaluate_style_declarations(&rule.declarations, &child_selector_text, &mut child_context)?;
     child_context
       .all_rules
       .push(virt::Rule::Style(virt::StyleRule {

@@ -1,11 +1,4 @@
-import * as vscode from "vscode";
-import {
-  openDocument,
-  clearAllText,
-  typeText,
-  timeout,
-  testCompletion
-} from "../utils";
+import { openDocument, clearAllText, typeText, testCompletion } from "../utils";
 import { FIXTURE_FILE_PATHS, FIXTURE_PCCONFIG_FILE_PATHS } from "../constants";
 
 // flakey, turn off for now

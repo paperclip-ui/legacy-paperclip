@@ -80,6 +80,8 @@ export const testCompletion = async (
     doc.positionAt(doc.getText().length)
   )) as vscode.CompletionList;
 
+  console.log(result, items);
+
   for (const expectedItem of items) {
     // some syntactic sugar -- ! tells us to omit from tests
     if (expectedItem.charAt(0) === "!") {
