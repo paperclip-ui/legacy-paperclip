@@ -246,8 +246,7 @@ fn evaluate_condition_rule(
   if rule.declarations.len() > 0 {
     let mut child_selector_text = parent_selector_text.to_string();
 
-
-    // if there is no parent 
+    // if there is no parent
     if parent_selector_text == "" {
       child_selector_text = get_element_scope_selector(context, &None, false);
     }

@@ -100,6 +100,10 @@ export const mapBox = (
 export const roundBox = (bounds: Box) => mapBox(bounds, v => Math.round(v));
 
 export const mergeBoxes = (boxes: Box[]) => {
+  if (!boxes.length) {
+    return { x: 0, y: 0, width: 0, height: 0 };
+  }
+
   if (boxes.length === 1) {
     return boxes[0];
   }
