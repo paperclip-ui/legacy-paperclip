@@ -26,3 +26,24 @@
 - PC server should emit screenshots? Maybe live? Should be performant?
 - show frames with components
 - re-use for QA?
+
+
+### CSS evaluator mini revamp
+
+---
+
+- :within(.selector)
+- :within(.selector), .selector == ._scope_id_selector [data-scope-id], [data-scope-id] .selector
+- :not(:within(.selector)) == :not(._scope_id_selector) [data-scope-id]
+- :within(:not(.selector)) == :not(._scope_id_selector) [data-scope-id]
+- :global(:within(.selector)) == .selector [data-scope-id]
+- :global(:not(:within(.selector)))
+- :self(:within(.selector)) 
+- parent { child { }}
+- :within(.selector) { &--child { }} == ._scope_id_selector [data-scope-id]--child
+- :within(.selector) { &.child { }} == ._scope_id_selector [data-scope-id][class].child
+- :within(.selector) { .child { }} == ._scope_id_selector [data-scope-id] [data-document-id][class].child
+
+---
+
+- Looking at selector writer 

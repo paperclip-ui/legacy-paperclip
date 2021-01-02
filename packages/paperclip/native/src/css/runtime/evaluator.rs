@@ -2,6 +2,27 @@
 
 Oh boy what a mess. To be refactored after features shake out.
 
+:global(.style) {
+
+}
+
+<el>  
+
+
+</el>
+
+
+global -> document -> scoped -> element
+
+<div>
+  :global(div) {
+    @media screen {
+      color: red;
+    }
+  }
+</div>
+
+
 */
 
 use super::super::super::pc::ast as pc_ast;
@@ -157,7 +178,6 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
 pub fn evaluate_style_rules<'a>(
   rules: &Vec<ast::StyleRule>,
   parent_selector_text: &String,
-  include_parent_rule: bool,
   within_selector_text: &Option<String>,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
@@ -165,7 +185,6 @@ pub fn evaluate_style_rules<'a>(
     evaluate_style_rule2(
       &rule,
       parent_selector_text,
-      include_parent_rule,
       within_selector_text,
       context,
     )?;
@@ -235,10 +254,10 @@ fn evaluate_condition_rule(
   context: &mut Context,
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = create_child_context(context);
+  
   evaluate_style_rules(
     &rule.rules,
     parent_selector_text,
-    true,
     &None,
     &mut child_context,
   )?;
@@ -248,24 +267,22 @@ fn evaluate_condition_rule(
 
     // if there is no parent
     if parent_selector_text == "" {
-      child_selector_text = get_element_scope_selector(context, &None, false);
+      child_selector_text = get_element_scope_selector(context, &None, true);
     }
 
-    // let self_selector_text = if context.element_scope != None && parent_selector_text != "" {
-    //   // cover :self { @media } -- just do a check to see if immediate parent is :self scope
-    //   // format!("{} {}", parent_selector_text, selector_text)
-    //   selector_text.clone()
-    //   // if parent_selector_text == &get_element_scope_selector(context, &None, true) {
-    //   //   parent_selector_text.clone()
-    //   // } else {
-    //   //   // don't provide extra specificity for nested children
-    //   //   let element_scope = get_element_scope_selector(context, &None, false);
+    let self_selector_text = if context.element_scope != None && parent_selector_text != "" {
+      // cover :self { @media } -- just do a check to see if immediate parent is :self scope
+      if parent_selector_text.contains(&get_element_scope_selector(context, &None, true)) {
+        parent_selector_text.clone()
+      } else {
+        // don't provide extra specificity for nested children
+        let element_scope = get_element_scope_selector(context, &None, false);
 
-    //   //   format!("{} {}", element_scope, selector_text)
-    //   // }
-    // } else {
-    //   selector_text.clone()
-    // };
+        format!("{} {}", element_scope, child_selector_text)
+      }
+    } else {
+      child_selector_text.clone()
+    };
 
     let style =
       evaluate_style_declarations(&rule.declarations, &child_selector_text, &mut child_context)?;
@@ -509,7 +526,7 @@ fn include_content<'a>(
   if let Some(inc) = &context.content {
     let inc2 = inc.clone();
 
-    evaluate_style_rules(&inc2.rules, parent_selector_text, true, &None, context)?;
+    evaluate_style_rules(&inc2.rules, parent_selector_text, &None, context)?;
     all_styles.extend(evaluate_style_declarations(
       &inc2.declarations,
       parent_selector_text,
@@ -553,7 +570,7 @@ fn evaluate_style_rule(
   parent_selector_text: &String,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
-  evaluate_style_rule2(expr, parent_selector_text, true, &None, context)?;
+  evaluate_style_rule2(expr, parent_selector_text, &None, context)?;
   Ok(())
 }
 
@@ -619,7 +636,6 @@ fn evaluate_mixin<'a, 'b>(
   evaluate_style_rules(
     &expr.rules,
     parent_selector_text,
-    true,
     &None,
     &mut child_context,
   )?;
@@ -644,7 +660,6 @@ fn evaluate_include_rule<'a>(
 fn evaluate_style_rule2(
   expr: &ast::StyleRule,
   parent_selector_text: &String,
-  include_parent_rule: bool,
   within_selector_text: &Option<String>,
   context: &mut Context,
 ) -> Result<(), RuntimeError> {
@@ -653,12 +668,7 @@ fn evaluate_style_rule2(
     true,
     parent_selector_text,
     within_selector_text,
-    include_parent_rule,
-    parent_selector_text == ""
-      && match expr.selector {
-        ast::Selector::This(_) => false,
-        _ => true,
-      },
+    true,
     true,
     context,
   );
@@ -706,7 +716,6 @@ fn evaluate_style_rule2(
         parent_selector_text,
         within_selector_text,
         true,
-        false,
         true,
         context,
       );
@@ -714,14 +723,7 @@ fn evaluate_style_rule2(
       let self_selector_text = match selector {
         ast::Selector::This(_) => selector_text2.clone(),
         ast::Selector::Within(_) => selector_text2.clone(),
-
-        _ => format!(
-          "{} {}",
-          get_element_scope_selector(context, within_selector_text, false),
-          selector_text2.clone()
-        )
-        .trim()
-        .to_string(),
+        _ => selector_text2.clone()
       };
 
       let style = evaluate_style_declarations(&expr.declarations, &selector_text2, context)?;
@@ -736,7 +738,6 @@ fn evaluate_style_rule2(
       evaluate_style_rules(
         &expr.children,
         &selector_text2,
-        true,
         within_selector_text,
         context,
       )?;
@@ -746,69 +747,64 @@ fn evaluate_style_rule2(
     let rule_len = context.all_rules.len();
 
     let self_selector_text = match &expr.selector {
-      ast::Selector::Within(selector) => {
-        // Just
-        let within_selector_text = stringify_element_selector(
-          &selector.selector,
-          true,
-          &"".to_string(),
-          &None,
-          false,
-          false,
-          true,
-          context,
-        );
+      // ast::Selector::Within(selector) => {
 
-        let el_selector = get_element_scope_selector(context, &None, false);
+      //   let within_selector_text = stringify_element_selector(
+      //     &selector.selector,
+      //     true,
+      //     &"".to_string(),
+      //     &None,
+      //     false,
+      //     true,
+      //     context,
+      //   );
 
-        // Dirty but works. :self is specified so we want to make sure that the element scope isn't present since it's
-        // already included in the parent scope
+      //   let el_selector = get_element_scope_selector(context, &None, false);
 
-        let element_scope = context.element_scope.clone();
-        context.element_scope = None;
-        evaluate_style_rules(
-          &expr.children,
-          &el_selector,
-          true,
-          &Some(within_selector_text.to_string()),
-          context,
-        )?;
+      //   evaluate_style_rules(
+      //     &expr.children,
+      //     &el_selector,
+      //     &Some(within_selector_text.to_string()),
+      //     context,
+      //   );
 
-        context.element_scope = element_scope;
-
-        selector_text.to_string()
-      }
+      //   selector_text.to_string()
+      // }
       ast::Selector::This(_) => {
         // Dirty but works. :self is specified so we want to make sure that the element scope isn't present since it's
         // already included in the parent scope
 
-        let element_scope = context.element_scope.clone();
-        context.element_scope = None;
+        // TODO  - might be unnecessary at this point
+        // context.element_scope = None;
         evaluate_style_rules(
           &expr.children,
           &child_rule_prefix,
-          true,
           within_selector_text,
           context,
         )?;
-        context.element_scope = element_scope;
-        format!("{}", selector_text.to_string()).trim().to_string()
+        // context.element_scope = element_scope;
+        selector_text.to_string()
       }
       _ => {
+        
         evaluate_style_rules(
           &expr.children,
           &child_rule_prefix,
-          true,
           within_selector_text,
           context,
         )?;
-        format!(
-          "{} {}",
-          get_element_scope_selector(context, within_selector_text, false),
-          selector_text
-        )
-        .trim()
-        .to_string()
+
+        selector_text.clone()
+
+        // let scope_selector = get_element_scope_selector(context, within_selector_text, false);
+
+        // format!(
+        //   "{} {}",
+        //   scope_selector,
+        //   selector_text
+        // )
+        // .trim()
+        // .to_string()
       }
     };
 
@@ -843,7 +839,6 @@ fn stringify_nestable_selector(
     parent_selector_text,
     &None,
     true,
-    false,
     true,
     context,
   )
@@ -876,28 +871,35 @@ fn get_element_scope_selector(
       }
     }
   } else {
-    within_text.to_string()
+    within_text.trim().to_string()
   }
 }
 
 fn stringify_element_selector(
   selector: &ast::Selector,
-  include_scope: bool,
+  include_document_scope: bool,
   parent_selector_text: &String,
   within_selector_text: &Option<String>,
   include_prefix: bool,
-  include_element_scope: bool,
   extra_specificity: bool,
   context: &mut Context,
 ) -> String {
-  let scope_selector = if include_scope {
+  let document_scope_selector = if include_document_scope {
     format!("[data-pc-{}]", context.document_scope)
   } else {
     "".to_string()
   };
 
-  let prefix = if include_prefix && parent_selector_text.len() > 0 {
-    format!("{} ", parent_selector_text)
+  let nested_prefix = if include_prefix {
+    if parent_selector_text.len() > 0 {
+      format!("{} ", parent_selector_text)
+    } else if context.element_scope != None {
+
+      // want to provide extra specificty here 
+      format!("{} ", get_element_scope_selector(context, within_selector_text, true))
+    } else {
+      "".to_string()
+    }
   } else {
     "".to_string()
   };
@@ -905,10 +907,10 @@ fn stringify_element_selector(
   let scoped_selector_text = match selector {
     ast::Selector::AllSelector => format!(
       "{}",
-      if scope_selector == "" {
-        "*".to_string()
+      if include_document_scope {
+        document_scope_selector
       } else {
-        scope_selector
+        "*".to_string()
       }
     ),
     ast::Selector::None => "".to_string(),
@@ -923,59 +925,58 @@ fn stringify_element_selector(
         "".to_string()
       };
 
-      if include_scope {
+      if include_document_scope {
         format!(
           "{}{}._{}_{}",
-          prefix, specificty_str, context.document_scope, selector.class_name
+          nested_prefix, specificty_str, context.document_scope, selector.class_name
         )
       } else {
-        format!("{}{}.{}", prefix, specificty_str, selector.class_name)
+        format!("{}{}.{}", nested_prefix, specificty_str, selector.class_name)
       }
     }
-    ast::Selector::Id(selector) => format!("{}#{}{}", prefix, selector.id, scope_selector),
+    ast::Selector::Id(selector) => format!("{}#{}{}", nested_prefix, selector.id, document_scope_selector),
     ast::Selector::Element(selector) => {
-      format!("{}{}{}", prefix, selector.tag_name, scope_selector)
+      format!("{}{}{}", nested_prefix, selector.tag_name, document_scope_selector)
     }
     ast::Selector::PseudoElement(selector) => {
       if selector.name == "root" {
         format!("{}{}", selector.separator, selector.name)
       } else {
-        if include_scope {
+        if include_document_scope {
           format!(
             "{}{}{}{}",
-            prefix, scope_selector, selector.separator, selector.name
+            nested_prefix, document_scope_selector, selector.separator, selector.name
           )
         } else {
-          format!("{}{}{}", prefix, selector.separator, selector.name)
+          format!("{}{}{}", nested_prefix, selector.separator, selector.name)
         }
       }
     }
     ast::Selector::PseudoParamElement(selector) => {
-      if include_scope {
+      if include_document_scope {
         format!(
           "{}{}:{}({})",
-          prefix, scope_selector, selector.name, selector.param
+          nested_prefix, document_scope_selector, selector.name, selector.param
         )
       } else {
-        format!("{}:{}({})", prefix, selector.name, selector.param)
+        format!("{}:{}({})", nested_prefix, selector.name, selector.param)
       }
     }
     ast::Selector::Attribute(selector) => {
-      format!("{}{}{}", prefix, selector.to_string(), scope_selector)
+      format!("{}{}{}", nested_prefix, selector.to_string(), document_scope_selector)
     }
     ast::Selector::Not(selector) => {
       // Note that we don't want extra specificty in :not selector since :not
       // doesn't support things like :not([class].class)
       return format!(
         "{}{}:not({})",
-        prefix,
-        scope_selector,
+        nested_prefix,
+        document_scope_selector,
         stringify_element_selector(
           &selector.selector,
-          include_scope,
+          include_document_scope,
           parent_selector_text,
           &None,
-          false,
           false,
           false,
           context
@@ -986,7 +987,7 @@ fn stringify_element_selector(
       let self_selector = if context.element_scope != None {
         get_element_scope_selector(context, within_selector_text, true)
       } else {
-        scope_selector
+        document_scope_selector
       };
 
       // Note that we don't want extra specificty in :not selector since :not
@@ -995,12 +996,11 @@ fn stringify_element_selector(
         "{} {}",
         stringify_element_selector(
           &selector.selector,
-          include_scope,
-          parent_selector_text,
+          true,
+          &"".to_string(),
           &None,
           false,
-          false,
-          false,
+          true,
           context
         ),
         self_selector
@@ -1012,9 +1012,8 @@ fn stringify_element_selector(
         &selector.selector,
         false,
         parent_selector_text,
-        &None,
+        within_selector_text,
         include_prefix,
-        false,
         true,
         context
       )
@@ -1023,7 +1022,7 @@ fn stringify_element_selector(
       let self_selector = if context.element_scope != None {
         get_element_scope_selector(context, within_selector_text, true)
       } else {
-        scope_selector
+        document_scope_selector
       };
 
       if let Some(selector) = &selector.selector {
@@ -1040,7 +1039,6 @@ fn stringify_element_selector(
                   false,
                   &"".to_string(),
                   &None,
-                  false,
                   false,
                   true,
                   context
@@ -1059,7 +1057,6 @@ fn stringify_element_selector(
               &self_selector,
               &None,
               false,
-              false,
               true,
               context
             )
@@ -1075,20 +1072,18 @@ fn stringify_element_selector(
       "{} {}",
       stringify_element_selector(
         &selector.parent,
-        include_scope,
+        include_document_scope,
         parent_selector_text,
         &None,
         include_prefix,
-        false,
         true,
         context
       ),
       stringify_element_selector(
         &selector.descendent,
-        include_scope,
+        include_document_scope,
         &"".to_string(),
         &None,
-        false,
         false,
         true,
         context
@@ -1100,20 +1095,18 @@ fn stringify_element_selector(
       "{} > {}",
       stringify_element_selector(
         &selector.parent,
-        include_scope,
+        include_document_scope,
         parent_selector_text,
         &None,
         include_prefix,
-        false,
         true,
         context
       ),
       stringify_element_selector(
         &selector.child,
-        include_scope,
+        include_document_scope,
         parent_selector_text,
         &None,
-        false,
         false,
         true,
         context
@@ -1123,20 +1116,18 @@ fn stringify_element_selector(
       "{} + {}",
       stringify_element_selector(
         &selector.selector,
-        include_scope,
+        include_document_scope,
         parent_selector_text,
         &None,
         include_prefix,
-        false,
         true,
         context
       ),
       stringify_element_selector(
         &selector.next_sibling_selector,
-        include_scope,
+        include_document_scope,
         parent_selector_text,
         &None,
-        false,
         false,
         true,
         context
@@ -1146,20 +1137,18 @@ fn stringify_element_selector(
       "{} ~ {}",
       stringify_element_selector(
         &selector.selector,
-        include_scope,
+        include_document_scope,
         parent_selector_text,
         &None,
         include_prefix,
-        false,
         true,
         context
       ),
       stringify_element_selector(
         &selector.sibling_selector,
-        include_scope,
+        include_document_scope,
         parent_selector_text,
         &None,
-        false,
         false,
         true,
         context
@@ -1169,13 +1158,14 @@ fn stringify_element_selector(
       let text: Vec<String> = (&selector.selectors)
         .into_iter()
         .map(|child| {
-          stringify_nestable_selector(child, include_scope, parent_selector_text, context)
+          stringify_nestable_selector(child, include_document_scope, parent_selector_text, context)
         })
         .collect();
       text.join(", ")
     }
     ast::Selector::Combo(selector) => {
       let mut contains_classname = false;
+      let mut prefix = "".to_string();
 
       let text: Vec<String> = (&selector.selectors)
         .into_iter()
@@ -1187,22 +1177,34 @@ fn stringify_element_selector(
             contains_classname = true;
             stringify_element_selector(
               &child,
-              include_scope,
+              include_document_scope,
               parent_selector_text,
               &None,
               include_prefix2,
-              false,
               true,
               context,
             )
           } else {
+
+            // cover .variant:within(.something)
+            if let &ast::Selector::Within(_within) = &child {
+              prefix = format!("{} ", stringify_element_selector(
+                &_within.selector,
+                true,
+                &"".to_string(),
+                &None,
+                false,
+                false,
+                context
+              ));
+            }
+
             stringify_element_selector(
               &child,
               false,
               parent_selector_text,
               &None,
               include_prefix2,
-              false,
               true,
               context,
             )
@@ -1214,15 +1216,25 @@ fn stringify_element_selector(
       if contains_classname {
         text.join("")
       } else {
-        format!("{}{}", text.join(""), scope_selector)
+        format!("{}{}{}", prefix, text.join(""), document_scope_selector)
       }
     }
 
+    
     ast::Selector::Prefixed(selector) => {
+
+      // if parent selector text is empty, then it's <style>&.something { color: blue; }</style>
+      let prefix = if parent_selector_text == "" {
+        get_element_scope_selector(context, within_selector_text, true)
+      } else {
+        parent_selector_text.clone()
+      };
+
+
       if let Some(postfix_selector) = &selector.postfix_selector {
         format!(
           "{}{}{}",
-          parent_selector_text,
+          prefix,
           selector.connector,
           stringify_element_selector(
             postfix_selector,
@@ -1230,13 +1242,12 @@ fn stringify_element_selector(
             parent_selector_text,
             &None,
             false,
-            false,
             true,
             context
           )
         )
       } else {
-        format!("{}{}", parent_selector_text, selector.connector)
+        format!("{}{}", prefix, selector.connector)
       }
     }
   };
