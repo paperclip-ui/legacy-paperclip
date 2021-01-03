@@ -59,7 +59,7 @@ pub struct Context<'a> {
 #[derive(Clone, PartialEq)]
 pub enum BufferScope {
   Within,
-  Target
+  Target,
 }
 
 #[derive(Clone, PartialEq)]
@@ -79,16 +79,15 @@ pub struct SelectorContext {
 
   buffer: Option<String>,
 
-  buffer_scope: BufferScope
+  buffer_scope: BufferScope,
 }
-
 
 impl SelectorContext {
   pub fn child(&self) -> SelectorContext {
     SelectorContext {
       buffer: None,
       within_scope: self.within_scope.clone(),
-      parent_is_target: false, 
+      parent_is_target: false,
       buffer_scope: BufferScope::Target,
       element_scope: self.element_scope.clone(),
       parent: if let Some(parent) = &self.parent {
@@ -927,27 +926,6 @@ fn evaluate_style_rule2(
     static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
   }
 
-  if class_name_re.is_match(selector_text.to_string().as_ref()) {
-    // url check
-    for caps in class_name_re.captures_iter(selector_text.to_string().as_str()) {
-      let scoped_class_name = caps.get(1).unwrap().as_str();
-      let class_name = scope_re.replace(scoped_class_name, "").to_string();
-
-      let existing_option = context.exports.class_names.get(&class_name);
-
-      if existing_option == None {
-        context.exports.class_names.insert(
-          class_name.to_string(),
-          ClassNameExport {
-            name: class_name.to_string(),
-            scoped_name: scoped_class_name.to_string(),
-            public: context.in_public_scope,
-          },
-        );
-      }
-    }
-  }
-
   let mut is_global_selector = false;
 
   let target_selector = if let ast::Selector::Global(selector) = &expr.selector {
@@ -973,6 +951,28 @@ fn evaluate_style_rule2(
         selector_text: selector_context.to_string(),
         style,
       }));
+    }
+    
+    // Note that this is necessary for this case: .a { &--b { color: red; }}
+    if class_name_re.is_match(selector_context.to_string().as_ref()) {
+      // url check
+      for caps in class_name_re.captures_iter(selector_context.to_string().as_str()) {
+        let scoped_class_name = caps.get(1).unwrap().as_str();
+        let class_name = scope_re.replace(scoped_class_name, "").to_string();
+
+        let existing_option = context.exports.class_names.get(&class_name);
+
+        if existing_option == None {
+          context.exports.class_names.insert(
+            class_name.to_string(),
+            ClassNameExport {
+              name: class_name.to_string(),
+              scoped_name: scoped_class_name.to_string(),
+              public: context.in_public_scope,
+            },
+          );
+        }
+      }
     }
 
     evaluate_style_rules(
@@ -1009,27 +1009,27 @@ fn evaluate_style_rule2(
         _ => selector_text2.clone(),
       };
 
-      let style = evaluate_style_declarations(
-        &expr.declarations,
-        &selector_text2,
-        context,
-        &selector_context,
-      )?;
+      // let style = evaluate_style_declarations(
+      //   &expr.declarations,
+      //   &selector_text2,
+      //   context,
+      //   &selector_context,
+      // )?;
 
-      if style.len() > 0 {
-        // context.all_rules.push(virt::Rule::Style(virt::StyleRule {
-        //   selector_text: self_selector_text,
-        //   style,
-        // }));
-      }
+      // if style.len() > 0 {
+      //   // context.all_rules.push(virt::Rule::Style(virt::StyleRule {
+      //   //   selector_text: self_selector_text,
+      //   //   style,
+      //   // }));
+      // }
 
-      evaluate_style_rules(
-        &expr.children,
-        &selector_text2,
-        within_selector_text,
-        context,
-        parent_selector_context,
-      )?;
+      // evaluate_style_rules(
+      //   &expr.children,
+      //   &selector_text2,
+      //   within_selector_text,
+      //   context,
+      //   parent_selector_context,
+      // )?;
     }
   } else {
     let child_rule_prefix = selector_text.clone();
@@ -1324,7 +1324,6 @@ fn write_element_selector(
 
       emitter.fork();
 
-
       let mut curr = emitter;
       for scope_context in scope.into_iter() {
         curr = curr.split();
@@ -1351,13 +1350,7 @@ fn write_element_selector(
       // trimming needs to happen in this case `&& {}`. Still works with `& & {}` since that's a descendent selector
       emitter.push_target(prefixed.connector.trim().to_string());
       if let Some(postfix) = &prefixed.postfix_selector {
-        write_element_selector(
-          &postfix,
-          false,
-          true,
-          context,
-          emitter,
-        );
+        write_element_selector(&postfix, false, true, context, emitter);
       }
     }
     ast::Selector::Element(element) => {
@@ -1445,7 +1438,9 @@ fn write_element_selector(
         if include_document_scope {
           emitter.push_target(format!(
             "{}{}{}",
-            get_document_scope_selector(context), selector.separator, selector.name
+            get_document_scope_selector(context),
+            selector.separator,
+            selector.name
           ));
         } else {
           emitter.push_target(format!("{}{}", selector.separator, selector.name));
@@ -1474,9 +1469,7 @@ fn write_element_selector(
       }
       emitter.push_target(format!(":{}({})", selector.name, selector.param));
     }
-    ast::Selector::None => {
-
-    }
+    ast::Selector::None => {}
     ast::Selector::Attribute(selector) => {
       emitter.push_target(selector.to_string());
       if include_document_scope {

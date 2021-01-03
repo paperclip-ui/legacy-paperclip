@@ -491,7 +491,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.run("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>a[data-pc-80f4925f] > b[data-pc-80f4925f] { color:blue; } a[data-pc-80f4925f] + c[data-pc-80f4925f] { color:black; } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f] [data-pc-80f4925f]:not(._80f4925f_div) { color:voilet; } a[data-pc-80f4925f] [data-pc-80f4925f]::active { color:green; }</style>`
+      `<style>a[data-pc-80f4925f] > b[data-pc-80f4925f] { color:blue; } a[data-pc-80f4925f] + c[data-pc-80f4925f] { color:black; } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f] [data-pc-80f4925f]:not([class].div) { color:voilet; } a[data-pc-80f4925f] [data-pc-80f4925f]::active { color:green; }</style>`
     );
   });
 
@@ -627,7 +627,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.run("/entry.pc"));
     expect(text).to.eql(
-      "<style>[class]._80f4925f_parent [class]._80f4925f_child:first-child { color:blue ; }</style>"
+      "<style>[class]._80f4925f_parent [class].child:first-child[data-pc-80f4925f] { color:blue ; }</style>"
     );
   });
 

@@ -32,6 +32,11 @@ describe(__filename + "#", () => {
       false
     ],
     [
+      `a { b, c { d { color: red; }} }`,
+      `a[data-pc-80f4925f] b[data-pc-80f4925f] d[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f] c[data-pc-80f4925f] d[data-pc-80f4925f] { color:red; }`,
+      false
+    ],
+    [
       `.c :global(.a, :global(.a1, .a2), .b) { color: red; }`,
       `[class]._80f4925f_c [class].a { color:red; } [class]._80f4925f_c [class].a1 { color:red; } [class]._80f4925f_c [class].a2 { color:red; } [class]._80f4925f_c [class].b { color:red; }`,
       false
