@@ -55,7 +55,7 @@ type ComboSelector = {
 } & BaseSelector<SelectorKind.Combo>;
 
 type DescendentSelector = {
-  parent: Selector;
+  ancestor: Selector;
   descendent: Selector;
 } & BaseSelector<SelectorKind.Descendent>;
 
@@ -333,7 +333,7 @@ export const getSelectorClassNames = (
       break;
     }
     case SelectorKind.Descendent: {
-      getSelectorClassNames(selector.parent, allClassNames);
+      getSelectorClassNames(selector.ancestor, allClassNames);
       getSelectorClassNames(selector.descendent, allClassNames);
       break;
     }
