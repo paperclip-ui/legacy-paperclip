@@ -30,6 +30,7 @@
     "paperclip-visual-editor": "^17.0.2",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
+    "paperclip-cli-minimal": "^17.0.2",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
@@ -40,7 +41,6 @@
     "eslint": "^7.4.0",
     "lodash": "^4.17.19",
     "mocha": "^8.0.1",
-    "paperclip-cli-minimal": "^17.0.2",
     "typescript": "^3.9.6"
   }
 }
