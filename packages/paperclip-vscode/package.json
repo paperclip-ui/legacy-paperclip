@@ -113,7 +113,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "node lib/test/run",
+    "xtest": "node lib/test/run",
     "lint": "eslint src",
     "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",

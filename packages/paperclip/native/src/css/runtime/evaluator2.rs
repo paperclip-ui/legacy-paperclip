@@ -232,26 +232,30 @@ impl SelectorContext {
 
 impl fmt::Display for SelectorContext {
   fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+
+    let mut buffer = String::new();
     if let Some(scope) = &self.within_scope {
-      fmt.write_str(scope);
+      buffer.push_str(scope);
     }
     if !self.scope_is_target {
       if let Some(scope) = &self.element_scope {
-        fmt.write_str(" ");
-        fmt.write_str(scope);
+        buffer.push_str(" ");
+        buffer.push_str(scope);
       }
     }
     if !self.parent_is_target {
       if let Some(parent) = &self.parent {
-        fmt.write_str(" ");
-        fmt.write_str(parent);
+        buffer.push_str(" ");
+        buffer.push_str(parent);
       }
     }
 
     if let Some(target) = &self.target {
-      fmt.write_str(" ");
-      fmt.write_str(target);
+      buffer.push_str(" ");
+      buffer.push_str(target);
     }
+
+    fmt.write_str(buffer.trim());
 
     Ok(())
   }
@@ -341,7 +345,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       evaluate_mixin_rule(mixin, context)?;
     }
     ast::Rule::Include(mixin) => {
-      evaluate_include_rule(mixin, &"".to_string(), context, &SelectorContext::nil())?;
+      evaluate_include_rule(mixin, &"".to_string(), context, &SelectorContext::from_context(context))?;
     }
     ast::Rule::Namespace(namespace) => {
       context
@@ -429,7 +433,7 @@ fn evaluate_media_rule(
     rule,
     &"".to_string(),
     context,
-    &SelectorContext::nil(),
+    &SelectorContext::from_context(context),
   )?))
 }
 
@@ -478,6 +482,7 @@ fn evaluate_condition_rule(
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = create_child_context(context);
 
+
   evaluate_style_rules(
     &rule.rules,
     parent_selector_text,
@@ -487,7 +492,16 @@ fn evaluate_condition_rule(
   )?;
 
   if rule.declarations.len() > 0 {
-    let selector_text = parent_selector_context.to_string();
+
+    let mut child_selector_context = parent_selector_context.child();
+
+    if child_selector_context.parent != None {
+      child_selector_context.append_parent_to_target();
+    } else {
+      child_selector_context.append_element_scope_to_target(false);
+    }
+
+    let selector_text = child_selector_context.to_string();
 
     // // if there is no parent
     // if parent_selector_text == "" {
