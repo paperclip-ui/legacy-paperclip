@@ -16,7 +16,7 @@
     }
   }
   
-  :root {
+  :global(:root) {
     --gap-inc: 2.2;
     --gap-2: 2px;
     --gap-3: calc(var(--gap-2) * var(--gap-inc));

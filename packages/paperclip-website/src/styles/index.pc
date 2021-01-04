@@ -383,12 +383,11 @@
     <style>
       display: flex;
     </style>
-    <icons.Icon name="grow" className="$_icon">
+    <!-- <icons.Icon name="grow" className="$_icon">
       <style>
         @include section-icon;
-        visibility: hidden;
       </style>
-    </icons.Icon>
+    </icons.Icon> -->
     <div clasName="_info">
       <div className="_title">
         <style>
