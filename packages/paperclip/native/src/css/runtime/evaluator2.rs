@@ -240,7 +240,7 @@ impl fmt::Display for SelectorContext {
         fmt.write_str(" ");
         fmt.write_str(scope);
       }
-    } 
+    }
     if !self.parent_is_target {
       if let Some(parent) = &self.parent {
         fmt.write_str(" ");
@@ -929,7 +929,6 @@ fn evaluate_style_rule2(
   context: &mut Context,
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
-
   lazy_static! {
     static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
     static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
@@ -947,10 +946,7 @@ fn evaluate_style_rule2(
   let mut emitter: SelectorEmitter = SelectorEmitter::new(parent_selector_context.child());
   write_element_selector(&expr.selector, true, true, context, &mut emitter);
 
-
   for selector_context in emitter.into_iter() {
-
-    
     // Note that this is necessary for this case: .a { &--b { color: red; }}
     if class_name_re.is_match(selector_context.to_string().as_ref()) {
       // url check
@@ -992,12 +988,14 @@ fn evaluate_style_rule2(
 
     // covers nested @include
     if style.len() > 0 {
-      context.all_rules.insert(rule_len, virt::Rule::Style(virt::StyleRule {
-        selector_text: selector_context.to_string(),
-        style,
-      }));
+      context.all_rules.insert(
+        rule_len,
+        virt::Rule::Style(virt::StyleRule {
+          selector_text: selector_context.to_string(),
+          style,
+        }),
+      );
     }
-
   }
 
   Ok(())
@@ -1217,11 +1215,9 @@ fn write_element_selector(
       }
     }
     ast::Selector::Prefixed(prefixed) => {
-
       if emitter.context.parent != None {
         emitter.append_parent_to_target();
       } else {
-
         // cover `<style>&.a { }</style>`
         emitter.append_element_scope_to_target(true);
       }

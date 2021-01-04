@@ -223,6 +223,13 @@ describe(__filename + "#", () => {
       `:self(.a) { &&& { color: red; &:checked { color: blue; }}}`,
       `[data-pc-406d2856][data-pc-406d2856][class].a[data-pc-406d2856][data-pc-406d2856][class].a[data-pc-406d2856][data-pc-406d2856][class].a { color:red; } [data-pc-406d2856][data-pc-406d2856][class].a[data-pc-406d2856][data-pc-406d2856][class].a[data-pc-406d2856][data-pc-406d2856][class].a:checked { color:blue; }`,
       true
+    ],
+
+    // https://github.com/crcn/paperclip/issues/549
+    [
+      `:self:empty { color: red; }`,
+      `[data-pc-406d2856][data-pc-406d2856]:empty[data-pc-80f4925f] { color:red; }`,
+      true
     ]
     // group, selector
   ].forEach(([input, output, scoped]) => {
