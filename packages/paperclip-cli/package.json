@@ -27,6 +27,7 @@
     "paperclip": "^17.0.1",
     "paperclip-cli-utils": "^17.0.1",
     "paperclip-utils": "^17.0.0",
+    "paperclip-visual-editor": "^17.0.1",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
     "yargs": "^15.1.0"
