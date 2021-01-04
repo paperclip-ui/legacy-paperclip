@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-html",
-  "version": "17.0.0",
+  "version": "17.0.2",
   "private": true,
   "description": "",
   "main": "index.js",
