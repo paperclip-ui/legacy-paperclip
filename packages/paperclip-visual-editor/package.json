@@ -5,8 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "yarn build:definitions && tsc && webpack",
-    "build:watch": "webpack --watch & tsc --watch & paperclip build --write --definition --watch",
-    "build:definitions": "paperclip build --write --definition"
+    "build:watch": "webpack --watch & tsc --watch & paperclip-minimal build --write --definition --watch",
+    "build:definitions": "paperclip-minimal build --write --definition"
   },
   "author": "",
   "license": "MIT",
@@ -27,10 +27,8 @@
     "sockjs": "^0.3.21",
     "sockjs-client": "^1.5.0"
   },
-  "peerDependencies": {
-    "paperclip-cli": "^17.0.1"
-  },
   "devDependencies": {
+    "paperclip-cli-minimal": "^17.0.1",
     "@types/lodash": "^4.14.159",
     "@types/node": "^14.0.27",
     "@types/react": "^16.9.46",

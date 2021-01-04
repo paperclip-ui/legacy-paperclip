@@ -24,6 +24,7 @@ export type BuildOptions = {
   dropPcExtension: boolean;
   compilerName: string;
   sourceDirectory: string;
+  verbose: boolean;
 };
 
 type CompileInfo = {
@@ -110,8 +111,9 @@ async function initBuild(
     const outUri = sourcePath.replace(srcDir, outDir);
     const outFilePath = url.fileURLToPath(outUri);
     mkdirpSync(path.dirname(outFilePath));
-
-    console.log("Writing %s", path.relative(process.cwd(), outFilePath));
+    if (options.verbose) {
+      console.log("Writing %s", path.relative(process.cwd(), outFilePath));
+    }
 
     fs.writeFileSync(new url.URL(outUri), content);
   };
