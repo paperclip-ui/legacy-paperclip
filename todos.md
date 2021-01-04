@@ -16,6 +16,11 @@
 - grid view!
   - show all UIs
 
+- key combos
+  - cmd + t = show grid
+
+- ability to hide gutter
+
 #### Considerations
 
 - Grid view

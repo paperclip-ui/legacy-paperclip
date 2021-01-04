@@ -74,11 +74,7 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
-      return produce(state, newState => {
-        const transform = newState.expandedFrameInfo.previousCanvasTransform;
-        newState.expandedFrameInfo = null;
-        newState.canvas.transform = transform;
-      });
+      return minimizeWindow(state);
     }
     case ActionType.CURRENT_FILE_INITIALIZED: {
       state = produce(state, newState => {
@@ -93,9 +89,12 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.FILE_OPENED: {
-      return produce(state, newState => {
+      state = produce(state, newState => {
         newState.currentFileUri = action.payload.uri;
+        newState.centeredInitial = false;
+        newState.expandedFrameInfo = null;
       });
+      return state;
     }
     case ActionType.RECTS_CAPTURED: {
       return produce(state, newState => {
@@ -436,4 +435,15 @@ const updateBox = (box: Box, oldBox: Box, newBox: Box) => {
     width,
     height
   };
+};
+
+const minimizeWindow = (state: AppState) => {
+  if (!state.expandedFrameInfo) {
+    return state;
+  }
+  return produce(state, newState => {
+    const transform = newState.expandedFrameInfo.previousCanvasTransform;
+    newState.expandedFrameInfo = null;
+    newState.canvas.transform = transform;
+  });
 };
