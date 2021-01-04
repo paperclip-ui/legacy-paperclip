@@ -230,6 +230,13 @@ describe(__filename + "#", () => {
       `:self:empty { color: red; }`,
       `[data-pc-406d2856][data-pc-406d2856]:empty[data-pc-80f4925f] { color:red; }`,
       true
+    ],
+
+    // https://github.com/crcn/paperclip/issues/548
+    [
+      `:self > * { color: red; }`,
+      `[data-pc-406d2856][data-pc-406d2856] > [data-pc-80f4925f] { color:red; }`,
+      true
     ]
     // group, selector
   ].forEach(([input, output, scoped]) => {
