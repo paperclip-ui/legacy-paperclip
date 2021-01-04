@@ -239,7 +239,14 @@ describe(__filename + "#", () => {
       true
     ],
     [`:root { color: red; }`, `[data-pc-80f4925f] { color:red; }`, false],
-    [`:global(:root) { color: red; }`, `:root { color:red; }`, false]
+    [`:global(:root) { color: red; }`, `:root { color:red; }`, false],
+
+    // https://github.com/crcn/paperclip/issues/573
+    [
+      `:self(.variant) { @media screen and (max-width: 400px) { color: red; }}`,
+      `@media screen and (max-width: 400px) { [data-pc-406d2856][data-pc-406d2856][class].variant { color:red; } }`,
+      true
+    ]
     // group, selector
   ].forEach(([input, output, scoped]) => {
     it(`compiles ${input} -> ${output}`, async () => {
