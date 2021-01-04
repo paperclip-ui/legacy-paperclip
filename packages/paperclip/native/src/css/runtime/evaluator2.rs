@@ -303,11 +303,8 @@ pub fn evaluate<'a>(
     // insert a rule
     if context.element_scope != None {
       let selector_context = SelectorContext::from_context(&context);
-      let mut style = evaluate_style_declarations(
-        &expr.declarations,
-        &mut context,
-        &selector_context,
-      )?;
+      let mut style =
+        evaluate_style_declarations(&expr.declarations, &mut context, &selector_context)?;
 
       // @include used
       style.extend(context.inc_declarations.clone());
@@ -343,11 +340,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       evaluate_mixin_rule(mixin, context)?;
     }
     ast::Rule::Include(mixin) => {
-      evaluate_include_rule(
-        mixin,
-        context,
-        &SelectorContext::from_context(context),
-      )?;
+      evaluate_include_rule(mixin, context, &SelectorContext::from_context(context))?;
     }
     ast::Rule::Namespace(namespace) => {
       context
@@ -366,11 +359,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       context.all_rules.push(rule);
     }
     ast::Rule::Style(rule) => {
-      evaluate_style_rule(
-        rule,
-        context,
-        &SelectorContext::from_context(context),
-      )?;
+      evaluate_style_rule(rule, context, &SelectorContext::from_context(context))?;
     }
     ast::Rule::Keyframes(rule) => {
       let rule = evaluate_keyframes_rule(rule, context)?;
@@ -551,11 +540,7 @@ fn evaluate_keyframe_rule(
   rule: &ast::KeyframeRule,
   context: &mut Context,
 ) -> Result<virt::KeyframeRule, RuntimeError> {
-  let style = evaluate_style_declarations(
-    &rule.declarations,
-    context,
-    &SelectorContext::nil(),
-  )?;
+  let style = evaluate_style_declarations(&rule.declarations, context, &SelectorContext::nil())?;
   Ok(virt::KeyframeRule {
     key: rule.key.to_string(),
     style,
@@ -739,12 +724,7 @@ fn include_content<'a>(
   if let Some(inc) = &context.content {
     let inc2 = inc.clone();
 
-    evaluate_style_rules(
-      &inc2.rules,
-      &None,
-      context,
-      &parent_selector_context,
-    )?;
+    evaluate_style_rules(&inc2.rules, &None, context, &parent_selector_context)?;
     all_styles.extend(evaluate_style_declarations(
       &inc2.declarations,
       context,
@@ -767,12 +747,7 @@ fn evaluate_style_declarations<'a>(
         evaluate_style_key_value_declaration(kv, &mut style, context)?;
       }
       ast::Declaration::Include(inc) => {
-        include_mixin(
-          inc,
-          &mut style,
-          context,
-          selector_context,
-        )?;
+        include_mixin(inc, &mut style, context, selector_context)?;
       }
       ast::Declaration::Content => {
         include_content(&mut style, context, selector_context)?;
@@ -875,13 +850,8 @@ fn evaluate_include_rule<'a>(
   selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
   let (mixin, dep_uri) = assert_get_mixin(&expr.mixin_name, context)?;
-  let (declarations, rules) = evaluate_mixin(
-    mixin,
-    dep_uri,
-    Some(expr),
-    context,
-    selector_context,
-  )?;
+  let (declarations, rules) =
+    evaluate_mixin(mixin, dep_uri, Some(expr), context, selector_context)?;
   context.all_rules.extend(rules);
   context.inc_declarations.extend(declarations);
 
@@ -943,11 +913,7 @@ fn evaluate_style_rule2(
       selector_context,
     )?;
 
-    let style = evaluate_style_declarations(
-      &expr.declarations,
-      context,
-      &selector_context,
-    )?;
+    let style = evaluate_style_declarations(&expr.declarations, context, &selector_context)?;
 
     // covers nested @include
     if style.len() > 0 {

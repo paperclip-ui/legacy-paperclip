@@ -12,6 +12,6 @@
   }
 </style>
 
-<div className='message $tw.space-y-0 $tw.bg-gray-500'>
-  Something other then that.
+<div className='message $tw.bg-gray-500'>
+  Something other then that.fsdfsdfs
 </div>
