@@ -8,8 +8,10 @@
 
 #### Next
 
-- get dev server to work again
 - wire up dev server with vscode - deprecate IPC
+  - need to figure out how to get to talk to server - hash IPC based on project pcconfig?
+    - what if mulitple configs?
+    - 
 - get vscode to check for dev server lock - use that
 - pop tab out of vscode 
 
@@ -20,6 +22,12 @@
   - cmd + t = show grid
 
 - ability to hide gutter
+
+- *need to consider file modifications
+  - make read-only until connected with text editor?
+    - maybe not considering that user might be using plain text editor
+
+- consider FS changes
 
 #### Considerations
 
