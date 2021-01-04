@@ -9,8 +9,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "lint": "eslint src",
-    "test": "mocha ./lib/test/**/*-test.js"
+    "lint": "eslint src"
   },
   "author": "",
   "license": "MIT",
