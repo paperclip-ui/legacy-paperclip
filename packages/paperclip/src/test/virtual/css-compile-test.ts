@@ -63,27 +63,27 @@ describe(__filename + "#", () => {
     ],
     [
       `:within(.a) { color: red}`,
-      `[class]._80f4925f_a [data-pc-406d2856] { color:red; }`,
+      `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856] { color:red; }`,
       true
     ],
     [
       `:self:within(.a) { color: red}`,
-      `[class]._80f4925f_a [data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
+      `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
       true
     ],
     [
       `:within(.a):self { color: red}`,
-      `[class]._80f4925f_a [data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
+      `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
       true
     ],
     [
       `:within(:global(.a, .b)):self { color: red}`,
-      `[class].a [data-pc-406d2856][data-pc-80f4925f] { color:red; } [class].b [data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
+      `[class].a [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; } [class].b [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
       true
     ],
     [
       `.a, :within(.b) { color: red}`,
-      `[data-pc-406d2856] [class]._80f4925f_a { color:red; } [class]._80f4925f_b [data-pc-406d2856] { color:red; }`,
+      `[data-pc-406d2856] [class]._80f4925f_a { color:red; } [class]._80f4925f_b [data-pc-406d2856][data-pc-406d2856] { color:red; }`,
       true
     ],
     [
@@ -113,7 +113,7 @@ describe(__filename + "#", () => {
     ],
     [
       `:within(.a) { && { color: blue; }}`,
-      `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856] { color:blue; }`,
+      `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856][data-pc-406d2856][data-pc-406d2856] { color:blue; }`,
       true
     ],
     [
@@ -198,7 +198,7 @@ describe(__filename + "#", () => {
     // needs to emit 4 selectors
     [
       `:within(a, b):within(c, d) { color: orange; }`,
-      `a[data-pc-80f4925f] [data-pc-406d2856][data-pc-80f4925f] { color:orange; } b[data-pc-80f4925f] [data-pc-406d2856][data-pc-80f4925f] { color:orange; } c[data-pc-80f4925f] [data-pc-406d2856][data-pc-80f4925f] { color:orange; } d[data-pc-80f4925f] [data-pc-406d2856][data-pc-80f4925f] { color:orange; }`,
+      `a[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:orange; } b[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:orange; } c[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:orange; } d[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:orange; }`,
       true
     ],
     [
@@ -206,13 +206,22 @@ describe(__filename + "#", () => {
       `d [data-pc-406d2856] a[class].b[class].c[data-pc-80f4925f] { color:orange; } e [data-pc-406d2856] a[class].b[class].c[data-pc-80f4925f] { color:orange; }`,
       true
     ],
+    [
+      `&.a { color: red}`,
+      `[data-pc-406d2856][data-pc-406d2856][class].a { color:red; }`,
+      true
+    ],
 
-    // :self
-    // :self()
-    // :global
     [
       `:global(a, :within(b, c, d)) { color: orange; }`,
-      `[data-pc-406d2856] a { color:orange; } b[data-pc-80f4925f] [data-pc-406d2856] { color:orange; } c[data-pc-80f4925f] [data-pc-406d2856] { color:orange; } d[data-pc-80f4925f] [data-pc-406d2856] { color:orange; }`,
+      `[data-pc-406d2856] a { color:orange; } b[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; } c[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; } d[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; }`,
+      true
+    ],
+
+    // https://github.com/crcn/paperclip/issues/547
+    [
+      `:self(.a) { &&& { color: red; &:checked { color: blue; }}}`,
+      `[data-pc-406d2856][data-pc-406d2856][class].a[data-pc-406d2856][data-pc-406d2856][class].a[data-pc-406d2856][data-pc-406d2856][class].a { color:red; } [data-pc-406d2856][data-pc-406d2856][class].a[data-pc-406d2856][data-pc-406d2856][class].a[data-pc-406d2856][data-pc-406d2856][class].a:checked { color:blue; }`,
       true
     ]
     // group, selector
