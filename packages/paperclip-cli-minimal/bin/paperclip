@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+const path = require("path");
+const {build} = require("../lib/cli");
+
+const argv = require("yargs")
+.command("build [file-pattern]", "Compiles paperclip files to target language", yargs => {
+  yargs
+  .option("watch", desc("watch for changes"))
+  .option("drop-pc-extension", desc("Drops PC extension from compiled files"))
+  .option("write", desc("Write compiled file"))
+  .option("verbose", desc("Write verbose information"))
+  .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
+  .option("definition", desc("Write typed definition type"))
+}, argv => {
+  build({
+    config: argv.config,
+    write: argv.write,
+    watch: argv.watch,
+    definition: argv.definition,
+    verbose: argv.verbose,
+    dropPcExtension: argv.dropPcExtension,
+    compilerName: argv.compiler,
+    filePatterns: argv.filePattern
+  })
+}).argv;
+
+function desc(description) {
+  return {
+    description
+  }
+}

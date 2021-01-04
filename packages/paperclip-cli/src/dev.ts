@@ -6,7 +6,7 @@ import {
   createEngineDelegate,
   PaperclipConfig
 } from "paperclip";
-import chalk from "chalk";
+import { startServer } from "paperclip-visual-editor";
 
 export type ServerOptions = {
   port?: number;
@@ -15,23 +15,6 @@ export type ServerOptions = {
 
 export const devStart = async ({ port, cwd }: ServerOptions) => {
   let module;
-
-  try {
-    module = require(require.resolve("paperclip-visual-editor", {
-      paths: [process.cwd()]
-    }));
-  } catch (e) {
-    console.error(
-      chalk.yellow(
-        `Visual editor not found, you'll need to install that: ${chalk.underline(
-          `npm install paperclip-visual-editor --save-dev`
-        )}`
-      )
-    );
-    process.exit(1);
-  }
-
-  const { startServer } = module;
 
   const config: PaperclipConfig = JSON.parse(
     fs.readFileSync(path.join(cwd, PC_CONFIG_FILE_NAME), "utf8")

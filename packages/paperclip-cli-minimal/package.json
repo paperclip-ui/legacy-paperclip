@@ -1,46 +1,35 @@
 {
-  "name": "paperclip-cli",
+  "name": "paperclip-cli-minimal",
   "version": "17.0.2",
   "description": "CLI util for Paperclip",
   "main": "lib/cli.js",
   "bin": {
-    "paperclip": "./bin/paperclip"
+    "paperclip-minimal": "./bin/paperclip"
   },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "lint": "eslint src",
-    "test": "mocha ./lib/test/**/*-test.js"
+    "lint": "eslint src"
   },
   "author": "",
   "license": "MIT",
   "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
   "dependencies": {
-    "@types/inquirer": "^6.5.0",
-    "@types/shelljs": "^0.8.8",
-    "chalk": "^4.1.0",
     "chokidar": "^3.3.1",
-    "dedent": "^0.7.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
-    "inquirer": "^7.3.0",
     "paperclip": "^17.0.2",
     "paperclip-cli-utils": "^17.0.2",
     "paperclip-utils": "^17.0.0",
-    "paperclip-visual-editor": "^17.0.2",
     "resolve": "^1.15.1",
-    "shelljs": "^0.8.4",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
-    "@types/chalk": "^2.2.0",
     "@types/fs-extra": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "eslint": "^7.4.0",
-    "lodash": "^4.17.19",
     "mocha": "^8.0.1",
-    "paperclip-cli-minimal": "^17.0.2",
     "typescript": "^3.9.6"
   }
 }
