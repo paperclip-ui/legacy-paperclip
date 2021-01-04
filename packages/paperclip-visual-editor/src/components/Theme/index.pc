@@ -3,7 +3,7 @@
 <style>
 
   // basic colors
-  :root {
+  :global(:root) {
     --color-dark-1: rgb(66, 66, 66);
     --color-dark-2: rgb(54, 54, 54);
     --color-dark-3: rgb(44, 44, 44);
@@ -15,17 +15,17 @@
   }
 
   // Spacing
-  :root {
+  :global(:root) {
   }
 
   // Etc
-  :root {
+  :global(:root) {
     --border-radius: 4px;
   }
 
 
   // atom part colors
-  :root {
+  :global(:root) {
     --font-1: var(--vscode-font-family, Open Sans);
     --background-1: var(--color-dark-2);
     --background-2: var(--color-dark-3);

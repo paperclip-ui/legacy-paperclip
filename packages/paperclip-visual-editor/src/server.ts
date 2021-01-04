@@ -112,6 +112,7 @@ export const startServer = async ({
         if (err) {
           return;
         }
+
         emit({
           type: "DIR_LOADED",
           payload: {
