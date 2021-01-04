@@ -388,11 +388,7 @@ pub fn evaluate_style_rules<'a>(
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
   for rule in rules {
-    evaluate_style_rule2(
-      &rule,
-      context,
-      parent_selector_context,
-    )?;
+    evaluate_style_rule2(&rule, context, parent_selector_context)?;
   }
   Ok(())
 }
@@ -462,11 +458,7 @@ fn evaluate_condition_rule(
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = create_child_context(context);
 
-  evaluate_style_rules(
-    &rule.rules,
-    &mut child_context,
-    &parent_selector_context,
-  )?;
+  evaluate_style_rules(&rule.rules, &mut child_context, &parent_selector_context)?;
 
   if rule.declarations.len() > 0 {
     let mut child_selector_context = parent_selector_context.child();
@@ -831,11 +823,7 @@ fn evaluate_mixin<'a, 'b>(
     parent_selector_context,
   )?;
 
-  evaluate_style_rules(
-    &expr.rules,
-    &mut child_context,
-    parent_selector_context,
-  )?;
+  evaluate_style_rules(&expr.rules, &mut child_context, parent_selector_context)?;
 
   Ok((declarations, child_context.all_rules))
 }
@@ -901,11 +889,7 @@ fn evaluate_style_rule2(
 
     let rule_len = context.all_rules.len();
 
-    evaluate_style_rules(
-      &expr.children,
-      context,
-      selector_context,
-    )?;
+    evaluate_style_rules(&expr.children, context, selector_context)?;
 
     let style = evaluate_style_declarations(&expr.declarations, context, &selector_context)?;
 
@@ -924,11 +908,7 @@ fn evaluate_style_rule2(
   Ok(())
 }
 
-fn get_element_scope_selector(
-  context: &Context,
-  extra_specificity: bool,
-) -> String {
-
+fn get_element_scope_selector(context: &Context, extra_specificity: bool) -> String {
   if let Some((scope, is_instance)) = &context.element_scope {
     if *is_instance {
       format!("[class]._{}", scope)
