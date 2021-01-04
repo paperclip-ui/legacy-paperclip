@@ -34,6 +34,10 @@
 </style>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <span export component as="Highlight" className="_highlight" 
   className:noBreak="noBreak"
   className:darker="darker"
@@ -54,6 +58,10 @@
   {children}
 </span>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Home" className="_home $typography.text-default">
   <style>
     background: rgb(245, 245, 245);
@@ -65,6 +73,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <layout.Container export component as="Header" className="$_header $_main">
   <style>
     /* background: rgb(58, 60, 65); */
@@ -95,6 +107,7 @@
           margin-bottom: 30px;
           text-align: center;
           width: 100%;
+
           margin-right: 0;
         }
       </style>
@@ -172,6 +185,10 @@
   </layout.Row>
 </layout.Container>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="CodePreview" className="_code-preview">
   <style>
     width: 100%;
@@ -182,6 +199,10 @@
   </style>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Summary" className="_summary $layout._row">
   <style>
     border-top: 1px solid rgb(226, 226, 226);
@@ -204,6 +225,10 @@
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="MainFeatures" className="_main-features $layout._row">
   <style>
     border-top: 1px solid rgb(226, 226, 226);
@@ -212,6 +237,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="MainFeatureItem" className="_item $layout._col $layout._col6">
   <style>
     @include layout.py-6;
@@ -285,6 +314,10 @@
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="VariousFeatures" className="_various-features $layout._row">
   <style>
     border-top: 1px solid rgb(255, 255, 255);
@@ -294,6 +327,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="VariousFeatureItem" className="_item $layout._col $layout._col3">
   <style>
     :self {
@@ -333,6 +370,10 @@
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="BigFeature" className="_big-feature $layout._section $layout._row">
   <style>
     border-bottom: 1px solid rgb(226, 226, 226);
@@ -342,12 +383,11 @@
     <style>
       display: flex;
     </style>
-    <icons.Icon name="grow" className="$_icon">
+    <!-- <icons.Icon name="grow" className="$_icon">
       <style>
         @include section-icon;
-        visibility: hidden;
       </style>
-    </icons.Icon>
+    </icons.Icon> -->
     <div clasName="_info">
       <div className="_title">
         <style>
@@ -402,6 +442,10 @@
   </div>
 </div>
 
+
+<!--
+  @frame { title: "Mobile", width: 463, height: 3102, x: 1589, y: -86 }
+-->
 <Home>
   <Header 
     title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
@@ -463,3 +507,69 @@
   />
 
 </Home>
+
+<!--
+  @frame { title: "Desktop", width: 1452, height: 3102, x: -94, y: -55 }
+-->
+<Home>
+  <Header 
+    title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
+    description={<fragment>With tooling for <Highlight>realtime previews</Highlight> & <Highlight>automatic visual regresion testing</Highlight>, you can build UIs in no time using the language you already know.</fragment>}
+    cta={<fragment>
+      <button.Anchor className="$typography.semi-bold" strong>Get started</button.Anchor>
+      <button.Anchor secondary className="$typography.semi-bold">Check out on GitHub</button.Anchor>
+    </fragment>}
+    preview={<img src="../../static/img/vscode-screenshot.png" />}
+  />
+
+  <Summary title="Web development is slow" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
+
+  <MainFeatures>
+    <MainFeatureItem
+      iconName="shapes"
+      title="A minimalistic UI language"
+      description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and basic component."
+      example={<CodePreview />}
+    />
+    <MainFeatureItem
+      iconName="reactjs"
+      title="Import directly into React code"
+      description="Paperclip documents compile to plain code that you can import directly into your code."
+      example={<CodePreview />}
+    />
+  </MainFeatures>
+
+  <VariousFeatures>    
+    <VariousFeatureItem 
+      iconName="chaotic-1"
+      title="Scoped styles"
+      description="Styles are only applied to the document they're in, so no more leaky CSS."
+    /> 
+    <VariousFeatureItem 
+      iconName="link"
+      title="Strongly typed"
+      description="UIs compile to strongly typed code, so worry less about breaking changes."
+    />
+    <VariousFeatureItem 
+      iconName="grow"
+      title="Incrementally adoptable"
+      description="Paperclip compliments your existing codebase, so use it as you go."
+    />
+  </VariousFeatures>
+
+  <BigFeature 
+    title="IDE integration"
+    description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster."
+    preview={<img src="./assets/realtime-editing-2.gif" />}
+    ctaText="View the extension"
+  />
+
+  <BigFeature 
+    title="Never miss a CSS Bug"
+    description="Use the visual regression tool to catch every visual state of your UI. No more broken window CSS. 🎉"
+    preview={<img src="./assets/realtime-editing-2.gif" />}
+    ctaText="View the API"
+  />
+
+</Home>
+

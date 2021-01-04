@@ -41,6 +41,7 @@ export default function* mainSaga() {
   yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
   yield fork(handleKeyCommands);
+  yield fork(handleDocumentEvents);
   yield put(fileOpened({ uri: getTargetUrl() }));
   yield fork(handleCanvas);
   yield fork(handleClipboard);
@@ -105,6 +106,7 @@ function* handleRenderer() {
     const onMessage = ({ type, payload }) => {
       switch (type) {
         case "ENGINE_EVENT": {
+          console.log("ENGINE EVENT", payload);
           const engineEvent = payload;
           if (engineEvent.kind === "Error") {
             return emit(engineErrored(engineEvent));
@@ -157,8 +159,7 @@ function* handleRenderer() {
       action.type === ActionType.FS_ITEM_CLICKED &&
       isPaperclipFile(action.payload.url)
     ) {
-      // renderer.reset(action.payload.url);
-      yield put(fileOpened({ uri: getTargetUrl() }));
+      yield put(fileOpened({ uri: action.payload.url }));
     }
     sendMessage(action);
   });
@@ -379,5 +380,32 @@ function* handlePaste() {
         })
       );
     }
+  });
+}
+
+function* handleDocumentEvents() {
+  yield fork(function*() {
+    const chan = eventChannel(emit => {
+      document.addEventListener("wheel", emit, { passive: false });
+      document.addEventListener("keydown", emit);
+      return () => {
+        document.removeEventListener("wheel", emit);
+        document.removeEventListener("keydown", emit);
+      };
+    });
+
+    yield takeEvery(chan, (event: any) => {
+      if (event.type === "wheel") {
+        event.preventDefault();
+      }
+
+      if (
+        event.type === "keydown" &&
+        (event.key === "=" || event.key === "-") &&
+        event.metaKey
+      ) {
+        event.preventDefault();
+      }
+    });
   });
 }

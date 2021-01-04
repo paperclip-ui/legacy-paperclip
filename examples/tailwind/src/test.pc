@@ -1,0 +1,7 @@
+<style>
+  @export {
+    .test {
+      font-size: 30px;
+    }
+  }
+</style>

@@ -8,11 +8,8 @@ import {
   canvasPanEnd,
   canvasPanned,
   canvasPanStart,
-  canvasResized,
-  canvasMouseMoved
+  canvasResized
 } from "../../../../actions";
-import { getFrameFromIndex } from "../../../../state";
-import { getFrameBounds } from "paperclip-web-renderer";
 
 export const Canvas = React.memo(() => {
   const { state, dispatch } = useAppStore();
@@ -42,8 +39,8 @@ export const Canvas = React.memo(() => {
           y: event.deltaY
         },
         mousePosition: {
-          x: event.pageX,
-          y: event.pageY
+          x: event.pageX - rect.left,
+          y: event.pageY - rect.top
         },
         metaKey: event.metaKey,
         size: {

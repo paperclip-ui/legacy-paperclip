@@ -4,8 +4,6 @@
     width: 1em;
     height: 1em;
     position: relative;
-    
-    /* background-position: 50% 50%; */
   }
 
   @export {

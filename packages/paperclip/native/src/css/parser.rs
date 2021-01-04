@@ -419,7 +419,7 @@ fn parse_next_pair_selector<'a, 'b>(
       let descendent_result = parse_pair_selector(context, false);
       if let Ok(descendent) = descendent_result {
         Ok(Selector::Descendent(DescendentSelector {
-          parent: Box::new(selector),
+          ancestor: Box::new(selector),
           descendent: Box::new(descendent),
           location: Location::new(start, context.tokenizer.utf16_pos),
         }))

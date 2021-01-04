@@ -8,7 +8,8 @@ use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
-use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
+// use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
+use crate::css::runtime::evaluator2::{evaluate as evaluate_css2, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
@@ -326,7 +327,7 @@ fn evaluate_node_sheet<'a>(
   };
 
   if let ast::Node::StyleElement(style_element) = &current {
-    let info = evaluate_css(
+    let info = evaluate_css2(
       &style_element.sheet,
       uri,
       &scope,

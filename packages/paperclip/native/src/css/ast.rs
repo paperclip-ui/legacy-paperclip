@@ -483,7 +483,7 @@ impl fmt::Display for ComboSelector {
 // a b {}
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct DescendentSelector {
-  pub parent: Box<Selector>,
+  pub ancestor: Box<Selector>,
   pub descendent: Box<Selector>,
   pub location: Location,
 }
@@ -493,7 +493,7 @@ impl fmt::Display for DescendentSelector {
     write!(
       f,
       "{} {}",
-      self.parent.to_string(),
+      self.ancestor.to_string(),
       self.descendent.to_string()
     )
   }

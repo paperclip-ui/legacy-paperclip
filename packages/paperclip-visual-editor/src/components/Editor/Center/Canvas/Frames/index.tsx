@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import {
   Frame,
   FramesRenderer,
@@ -29,7 +29,7 @@ type FramesProps = {
 };
 
 export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
-  const { renderer, preview } = useFrames();
+  const { renderer, preview, onFrameLoaded } = useFrames();
 
   return (
     <>
@@ -37,6 +37,7 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
         return (
           <Frame
             key={i}
+            onLoad={onFrameLoaded}
             expanded={expandedFrameIndex === i}
             frame={frame}
             preview={getFrameVirtualNode(
@@ -84,12 +85,14 @@ const useFrames = () => {
     };
   }, [renderer]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (renderer && frameData?.preview) {
       renderer.setPreview(frameData.preview);
       collectRects();
     }
   }, [renderer, frameData, state.expandedFrameInfo, state.canvas.size]);
+
+  const onFrameLoaded = collectRects;
 
   useEffect(() => {
     if (state.currentEngineEvents.length) {
@@ -101,16 +104,17 @@ const useFrames = () => {
     }
   }, [collectRects, renderer, state.currentEngineEvents]);
 
-  return { renderer, preview: frameData?.preview };
+  return { renderer, preview: frameData?.preview, onFrameLoaded };
 };
 
 type FrameProps = {
   frame: Frame;
   expanded: boolean;
   preview: VirtualText | VirtualElement;
+  onLoad: () => void;
 };
 
-const Frame = memo(({ frame, preview, expanded }: FrameProps) => {
+const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
   if (!preview) {
     return null;
   }
@@ -154,6 +158,7 @@ const Frame = memo(({ frame, preview, expanded }: FrameProps) => {
 
       iframe.onload = () => {
         iframe.contentDocument.body.appendChild(frame.stage);
+        onLoad();
       };
       frameRef.current.appendChild(iframe);
     }

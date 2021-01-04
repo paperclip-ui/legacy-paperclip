@@ -1,5 +1,5 @@
 <style>
-  :root {
+  :global(:root) {
     --color-green-neon:   rgb(117, 255, 129);
     --color-green-army:  rgb(51, 78, 26);
     --color-green-neon-light:  rgb(181, 255, 186);

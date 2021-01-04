@@ -29,7 +29,7 @@ TODOS:
 
 
 <!--
-  @frame { visible: false, title: "Editor", width: 1114, height: 711, x: 0, y: 901 }
+  @frame { title: "Editor", width: 1114, height: 711, x: 0, y: 901 }
 -->
 <Container>
   <LeftSidebar.Preview />
@@ -52,7 +52,7 @@ TODOS:
 </Container>
 
 <!--
-  @frame { title: "Grid View / Small", width: 377, height: 737, x: -43, y: -116 }
+  @frame { title: "Grid View / Small", width: 377, height: 737, x: -11, y: -272 }
 -->
 <Container>
   <Center.ArialPreview2 />
