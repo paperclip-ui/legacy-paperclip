@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli",
-  "version": "17.0.2",
+  "version": "17.0.3",
   "description": "CLI util for Paperclip",
   "main": "lib/cli.js",
   "bin": {
@@ -24,10 +24,11 @@
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "inquirer": "^7.3.0",
-    "paperclip": "^17.0.2",
-    "paperclip-cli-utils": "^17.0.2",
-    "paperclip-utils": "^17.0.0",
-    "paperclip-visual-editor": "^17.0.2",
+    "paperclip": "^17.0.3",
+    "paperclip-cli-minimal": "^17.0.3",
+    "paperclip-cli-utils": "^17.0.3",
+    "paperclip-utils": "^17.0.3",
+    "paperclip-visual-editor": "^17.0.3",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
     "yargs": "^15.1.0"
@@ -40,7 +41,6 @@
     "eslint": "^7.4.0",
     "lodash": "^4.17.19",
     "mocha": "^8.0.1",
-    "paperclip-cli-minimal": "^17.0.2",
     "typescript": "^3.9.6"
   }
 }

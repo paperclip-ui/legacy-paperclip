@@ -1,6 +1,6 @@
 {
   "name": "paperclip-source-writer",
-  "version": "17.0.2",
+  "version": "17.0.3",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "paperclip": "^17.0.2",
-    "paperclip-utils": "^17.0.0"
+    "paperclip": "^17.0.3",
+    "paperclip-utils": "^17.0.3"
   },
   "devDependencies": {
     "chai": "^4.2.0",

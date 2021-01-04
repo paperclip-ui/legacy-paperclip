@@ -54,6 +54,12 @@ const init = async (connection: Connection) => {
     }
   );
 
+  //
+  // const previewServer = await startServer({
+  //   engine,
+  //   localResourceRoots: []
+  // });
+
   // const visualEditorServerResult = await startServer({ engine, localResourceRoots: [] });
   // console.log(visualEditorServerResult);
 
@@ -82,7 +88,7 @@ const watchPaperclipSources = (
   }
 };
 
-connection.onInitialized((_params: InitializedParams) => {
+connection.onInitialized((params: InitializedParams) => {
   init(connection);
 });
 

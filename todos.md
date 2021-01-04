@@ -8,6 +8,8 @@
 
 #### Next
 
+- local resource roots need to be sent to server
+
 - wire up dev server with vscode - deprecate IPC
   - need to figure out how to get to talk to server - hash IPC based on project pcconfig?
     - what if mulitple configs?
