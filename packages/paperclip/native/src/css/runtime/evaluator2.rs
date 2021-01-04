@@ -216,7 +216,7 @@ impl SelectorContext {
     SelectorContext {
       within_scope: None,
       element_scope: if let Some((id, _)) = &context.element_scope {
-        Some(format!("[data-pc-{}]", id))
+        Some(get_element_scope_selector(context, false))
       } else {
         None
       },
@@ -314,7 +314,7 @@ pub fn evaluate<'a>(
       context.all_rules.insert(
         0,
         virt::Rule::Style(virt::StyleRule {
-          selector_text: get_element_scope_selector(&context, &None, true),
+          selector_text: get_element_scope_selector(&context, true),
           style,
         }),
       );
@@ -384,17 +384,11 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
 
 pub fn evaluate_style_rules<'a>(
   rules: &Vec<ast::StyleRule>,
-  within_selector_text: &Option<String>,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
   for rule in rules {
-    evaluate_style_rule2(
-      &rule,
-      within_selector_text,
-      context,
-      parent_selector_context,
-    )?;
+    evaluate_style_rule2(&rule, context, parent_selector_context)?;
   }
   Ok(())
 }
@@ -464,12 +458,7 @@ fn evaluate_condition_rule(
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = create_child_context(context);
 
-  evaluate_style_rules(
-    &rule.rules,
-    &None,
-    &mut child_context,
-    &parent_selector_context,
-  )?;
+  evaluate_style_rules(&rule.rules, &mut child_context, &parent_selector_context)?;
 
   if rule.declarations.len() > 0 {
     let mut child_selector_context = parent_selector_context.child();
@@ -724,7 +713,7 @@ fn include_content<'a>(
   if let Some(inc) = &context.content {
     let inc2 = inc.clone();
 
-    evaluate_style_rules(&inc2.rules, &None, context, &parent_selector_context)?;
+    evaluate_style_rules(&inc2.rules, context, &parent_selector_context)?;
     all_styles.extend(evaluate_style_declarations(
       &inc2.declarations,
       context,
@@ -768,7 +757,7 @@ fn evaluate_style_rule(
   context: &mut Context,
   selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
-  evaluate_style_rule2(expr, &None, context, selector_context)?;
+  evaluate_style_rule2(expr, context, selector_context)?;
   Ok(())
 }
 
@@ -834,12 +823,7 @@ fn evaluate_mixin<'a, 'b>(
     parent_selector_context,
   )?;
 
-  evaluate_style_rules(
-    &expr.rules,
-    &None,
-    &mut child_context,
-    parent_selector_context,
-  )?;
+  evaluate_style_rules(&expr.rules, &mut child_context, parent_selector_context)?;
 
   Ok((declarations, child_context.all_rules))
 }
@@ -860,7 +844,6 @@ fn evaluate_include_rule<'a>(
 
 fn evaluate_style_rule2(
   expr: &ast::StyleRule,
-  within_selector_text: &Option<String>,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
@@ -906,12 +889,7 @@ fn evaluate_style_rule2(
 
     let rule_len = context.all_rules.len();
 
-    evaluate_style_rules(
-      &expr.children,
-      within_selector_text,
-      context,
-      selector_context,
-    )?;
+    evaluate_style_rules(&expr.children, context, selector_context)?;
 
     let style = evaluate_style_declarations(&expr.declarations, context, &selector_context)?;
 
@@ -930,34 +908,20 @@ fn evaluate_style_rule2(
   Ok(())
 }
 
-fn get_within_scope_selector(within_selector_text: &Option<String>) -> String {
-  if let Some(text) = within_selector_text {
-    format!("{} ", text)
-  } else {
-    "".to_string()
-  }
-}
-
-fn get_element_scope_selector(
-  context: &Context,
-  within_selector_text: &Option<String>,
-  extra_specificity: bool,
-) -> String {
-  let within_text = get_within_scope_selector(within_selector_text);
-
+fn get_element_scope_selector(context: &Context, extra_specificity: bool) -> String {
   if let Some((scope, is_instance)) = &context.element_scope {
     if *is_instance {
-      format!("{}[class]._{}", within_text, scope)
+      format!("[class]._{}", scope)
     } else {
       let selector = format!("[data-pc-{}]", scope);
       if extra_specificity {
-        format!("{}{}{}", within_text, selector, selector)
+        format!("{}{}", selector, selector)
       } else {
-        format!("{}{}", within_text, selector)
+        format!("{}", selector)
       }
     }
   } else {
-    within_text.trim().to_string()
+    "".to_string()
   }
 }
 
