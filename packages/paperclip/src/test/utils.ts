@@ -1,11 +1,5 @@
 import * as path from "path";
-import {
-  Engine,
-  createEngine,
-  createEngineDelegate,
-  LoadResult,
-  EngineIO
-} from "../../";
+import { Engine, createEngine, LoadResult, EngineIO } from "../../";
 import {
   EngineErrorEvent,
   EngineDelegateEventKind,
