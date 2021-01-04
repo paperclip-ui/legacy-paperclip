@@ -237,7 +237,9 @@ describe(__filename + "#", () => {
       `:self > * { color: red; }`,
       `[data-pc-406d2856][data-pc-406d2856] > [data-pc-80f4925f] { color:red; }`,
       true
-    ]
+    ],
+    [`:root { color: red; }`, `[data-pc-80f4925f] { color:red; }`, false],
+    [`:global(:root) { color: red; }`, `:root { color:red; }`, false]
     // group, selector
   ].forEach(([input, output, scoped]) => {
     it(`compiles ${input} -> ${output}`, async () => {
