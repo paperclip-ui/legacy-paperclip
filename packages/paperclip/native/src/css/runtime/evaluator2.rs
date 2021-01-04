@@ -232,7 +232,6 @@ impl SelectorContext {
 
 impl fmt::Display for SelectorContext {
   fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-
     let mut buffer = String::new();
     if let Some(scope) = &self.within_scope {
       buffer.push_str(scope);
@@ -306,7 +305,6 @@ pub fn evaluate<'a>(
       let selector_context = SelectorContext::from_context(&context);
       let mut style = evaluate_style_declarations(
         &expr.declarations,
-        &"".to_string(),
         &mut context,
         &selector_context,
       )?;
@@ -345,7 +343,11 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       evaluate_mixin_rule(mixin, context)?;
     }
     ast::Rule::Include(mixin) => {
-      evaluate_include_rule(mixin, &"".to_string(), context, &SelectorContext::from_context(context))?;
+      evaluate_include_rule(
+        mixin,
+        context,
+        &SelectorContext::from_context(context),
+      )?;
     }
     ast::Rule::Namespace(namespace) => {
       context
@@ -366,7 +368,6 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
     ast::Rule::Style(rule) => {
       evaluate_style_rule(
         rule,
-        &"".to_string(),
         context,
         &SelectorContext::from_context(context),
       )?;
@@ -394,7 +395,6 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
 
 pub fn evaluate_style_rules<'a>(
   rules: &Vec<ast::StyleRule>,
-  parent_selector_text: &String,
   within_selector_text: &Option<String>,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
@@ -402,7 +402,6 @@ pub fn evaluate_style_rules<'a>(
   for rule in rules {
     evaluate_style_rule2(
       &rule,
-      parent_selector_text,
       within_selector_text,
       context,
       parent_selector_context,
@@ -418,7 +417,6 @@ fn evaluate_font_family_rule(
   Ok(virt::Rule::FontFace(virt::FontFaceRule {
     style: evaluate_style_declarations(
       &font_family.declarations,
-      &"".to_string(),
       context,
       &SelectorContext::nil(),
     )?,
@@ -431,7 +429,6 @@ fn evaluate_media_rule(
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Media(evaluate_condition_rule(
     rule,
-    &"".to_string(),
     context,
     &SelectorContext::from_context(context),
   )?))
@@ -443,7 +440,6 @@ fn evaluate_supports_rule(
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Supports(evaluate_condition_rule(
     rule,
-    &"".to_string(),
     context,
     &SelectorContext::nil(),
   )?))
@@ -455,7 +451,6 @@ fn evaluate_page_rule(
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Page(evaluate_condition_rule(
     rule,
-    &"".to_string(),
     context,
     &SelectorContext::nil(),
   )?))
@@ -468,7 +463,6 @@ fn evaluate_document_rule(
 ) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Document(evaluate_condition_rule(
     rule,
-    &"".to_string(),
     context,
     &SelectorContext::nil(),
   )?))
@@ -476,23 +470,19 @@ fn evaluate_document_rule(
 
 fn evaluate_condition_rule(
   rule: &ast::ConditionRule,
-  parent_selector_text: &String,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
 ) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = create_child_context(context);
 
-
   evaluate_style_rules(
     &rule.rules,
-    parent_selector_text,
     &None,
     &mut child_context,
     &parent_selector_context,
   )?;
 
   if rule.declarations.len() > 0 {
-
     let mut child_selector_context = parent_selector_context.child();
 
     if child_selector_context.parent != None {
@@ -503,28 +493,8 @@ fn evaluate_condition_rule(
 
     let selector_text = child_selector_context.to_string();
 
-    // // if there is no parent
-    // if parent_selector_text == "" {
-    //   child_selector_text = get_element_scope_selector(context, &None, true);
-    // }
-
-    // let self_selector_text = if context.element_scope != None && parent_selector_text != "" {
-    //   // cover :self { @media } -- just do a check to see if immediate parent is :self scope
-    //   if parent_selector_text.contains(&get_element_scope_selector(context, &None, true)) {
-    //     parent_selector_text.clone()
-    //   } else {
-    //     // don't provide extra specificity for nested children
-    //     let element_scope = get_element_scope_selector(context, &None, false);
-
-    //     format!("{} {}", element_scope, child_selector_text)
-    //   }
-    // } else {
-    //   child_selector_text.clone()
-    // };
-
     let style = evaluate_style_declarations(
       &rule.declarations,
-      &parent_selector_text,
       &mut child_context,
       parent_selector_context,
     )?;
@@ -581,9 +551,8 @@ fn evaluate_keyframe_rule(
   rule: &ast::KeyframeRule,
   context: &mut Context,
 ) -> Result<virt::KeyframeRule, RuntimeError> {
-  let mut style = evaluate_style_declarations(
+  let style = evaluate_style_declarations(
     &rule.declarations,
-    &"".to_string(),
     context,
     &SelectorContext::nil(),
   )?;
@@ -678,10 +647,6 @@ fn get_mixin_from_rules<'a>(
   None
 }
 
-fn get_imports<'a>(context: &'a Context) -> &'a BTreeMap<String, pc_export::Exports> {
-  context.import_graph.get(context.uri).unwrap()
-}
-
 fn create_child_context<'a>(context: &Context<'a>) -> Context<'a> {
   Context {
     document_scope: context.document_scope,
@@ -749,7 +714,6 @@ fn assert_get_mixin<'a>(
 fn include_mixin<'a>(
   inc: &ast::Include,
   style: &mut Vec<virt::CSSStyleProperty>,
-  parent_selector_text: &String,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
@@ -757,7 +721,6 @@ fn include_mixin<'a>(
   let (declarations, child_rules) = evaluate_mixin(
     mixin,
     dependency_uri,
-    parent_selector_text,
     Some(inc),
     context,
     parent_selector_context,
@@ -770,7 +733,6 @@ fn include_mixin<'a>(
 
 fn include_content<'a>(
   all_styles: &mut Vec<virt::CSSStyleProperty>,
-  parent_selector_text: &String,
   context: &mut Context<'a>,
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
@@ -779,14 +741,12 @@ fn include_content<'a>(
 
     evaluate_style_rules(
       &inc2.rules,
-      parent_selector_text,
       &None,
       context,
       &parent_selector_context,
     )?;
     all_styles.extend(evaluate_style_declarations(
       &inc2.declarations,
-      parent_selector_text,
       context,
       parent_selector_context,
     )?);
@@ -797,7 +757,6 @@ fn include_content<'a>(
 
 fn evaluate_style_declarations<'a>(
   declarations: &Vec<ast::Declaration>,
-  parent_selector_text: &String,
   context: &mut Context<'a>,
   selector_context: &SelectorContext,
 ) -> Result<Vec<virt::CSSStyleProperty>, RuntimeError> {
@@ -811,16 +770,15 @@ fn evaluate_style_declarations<'a>(
         include_mixin(
           inc,
           &mut style,
-          parent_selector_text,
           context,
           selector_context,
         )?;
       }
       ast::Declaration::Content => {
-        include_content(&mut style, parent_selector_text, context, selector_context)?;
+        include_content(&mut style, context, selector_context)?;
       }
       ast::Declaration::Media(media) => {
-        let rule = evaluate_condition_rule(media, parent_selector_text, context, selector_context)?;
+        let rule = evaluate_condition_rule(media, context, selector_context)?;
         if rule.rules.len() > 0 {
           context.all_rules.push(virt::Rule::Media(rule));
         }
@@ -832,11 +790,10 @@ fn evaluate_style_declarations<'a>(
 
 fn evaluate_style_rule(
   expr: &ast::StyleRule,
-  parent_selector_text: &String,
   context: &mut Context,
   selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
-  evaluate_style_rule2(expr, parent_selector_text, &None, context, selector_context)?;
+  evaluate_style_rule2(expr, &None, context, selector_context)?;
   Ok(())
 }
 
@@ -890,7 +847,6 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
 fn evaluate_mixin<'a, 'b>(
   expr: &ast::MixinRule,
   owner_uri: &'a String,
-  parent_selector_text: &String,
   content: Option<&'b ast::Include>,
   context: &mut Context<'a>,
   parent_selector_context: &SelectorContext,
@@ -899,14 +855,12 @@ fn evaluate_mixin<'a, 'b>(
   child_context.content = content;
   let declarations = evaluate_style_declarations(
     &expr.declarations,
-    parent_selector_text,
     &mut child_context,
     parent_selector_context,
   )?;
 
   evaluate_style_rules(
     &expr.rules,
-    parent_selector_text,
     &None,
     &mut child_context,
     parent_selector_context,
@@ -917,7 +871,6 @@ fn evaluate_mixin<'a, 'b>(
 
 fn evaluate_include_rule<'a>(
   expr: &ast::Include,
-  parent_selector_text: &String,
   context: &mut Context<'a>,
   selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
@@ -925,7 +878,6 @@ fn evaluate_include_rule<'a>(
   let (declarations, rules) = evaluate_mixin(
     mixin,
     dep_uri,
-    parent_selector_text,
     Some(expr),
     context,
     selector_context,
@@ -938,7 +890,6 @@ fn evaluate_include_rule<'a>(
 
 fn evaluate_style_rule2(
   expr: &ast::StyleRule,
-  parent_selector_text: &String,
   within_selector_text: &Option<String>,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
@@ -987,7 +938,6 @@ fn evaluate_style_rule2(
 
     evaluate_style_rules(
       &expr.children,
-      &"".to_string(),
       within_selector_text,
       context,
       selector_context,
@@ -995,7 +945,6 @@ fn evaluate_style_rule2(
 
     let style = evaluate_style_declarations(
       &expr.declarations,
-      &"".to_string(),
       context,
       &selector_context,
     )?;
