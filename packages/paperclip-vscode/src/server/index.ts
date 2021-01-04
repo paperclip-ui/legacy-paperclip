@@ -55,10 +55,10 @@ const init = async (connection: Connection) => {
   );
 
   //
-  const previewServer = await startServer({
-    engine,
-    localResourceRoots: []
-  });
+  // const previewServer = await startServer({
+  //   engine,
+  //   localResourceRoots: []
+  // });
 
   // const visualEditorServerResult = await startServer({ engine, localResourceRoots: [] });
   // console.log(visualEditorServerResult);
