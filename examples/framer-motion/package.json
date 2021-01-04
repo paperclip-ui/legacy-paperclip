@@ -1,7 +1,7 @@
 {
   "name": "framer-motion-example",
   "description": "",
-  "version": "17.0.3",
+  "version": "17.0.4",
   "private": true,
   "scripts": {
     "build": "paperclip build --definition --write && webpack",
@@ -21,9 +21,9 @@
     "css-loader": "^3.6.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
-    "paperclip-cli": "^17.0.3",
-    "paperclip-compiler-react": "^17.0.3",
-    "paperclip-loader": "^17.0.3",
+    "paperclip-cli": "^17.0.4",
+    "paperclip-compiler-react": "^17.0.4",
+    "paperclip-loader": "^17.0.4",
     "style-loader": "^1.2.1",
     "ts-loader": "^8.0.1",
     "typescript": "^3.9.7",
