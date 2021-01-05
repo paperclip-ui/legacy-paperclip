@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { withAppStore } from "../../hocs";
 import { Center } from "./Center";
 import { LeftSidebar } from "./LeftSidebar";
 import * as styles from "./index.pc";
-import { EMBEDDED } from "../../constants";
+import { useAppStore } from "../../hooks/useAppStore";
 
 export const Editor = withAppStore(() => {
+  const { state } = useAppStore();
   return (
     <styles.Container>
-      {EMBEDDED ? null : <LeftSidebar />}
+      {state.showLeftGutter ? null : <LeftSidebar />}
       <Center />
     </styles.Container>
   );

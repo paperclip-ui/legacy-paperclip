@@ -6,7 +6,7 @@ import sockjs from "sockjs";
 import getPort from "get-port";
 import { EngineDelegate } from "paperclip";
 import * as URL from "url";
-import { ActionType, FSItemClicked } from "./actions";
+import { ActionType, FileOpened, FSItemClicked } from "./actions";
 import { FSItemKind } from "./state";
 
 export type ServerOptions = {
@@ -78,17 +78,22 @@ export const startServer = async ({
         case ActionType.FS_ITEM_CLICKED: {
           return onFSItemClicked(message);
         }
+        case ActionType.FILE_OPENED: {
+          return onFileOpened(message);
+        }
       }
     });
 
     const onFSItemClicked = async (action: FSItemClicked) => {
       if (action.payload.kind === FSItemKind.DIRECTORY) {
         loadDirectory(action.payload.absolutePath);
-      } else {
-        if (/\.pc$/.test(action.payload.absolutePath)) {
-          targetUri = URL.pathToFileURL(action.payload.absolutePath).href;
-          handleOpen(targetUri);
-        }
+      }
+    };
+
+    const onFileOpened = async (action: FileOpened) => {
+      if (/\.pc$/.test(action.payload.uri)) {
+        targetUri = URL.parse(action.payload.uri).href;
+        handleOpen(targetUri);
       }
     };
 

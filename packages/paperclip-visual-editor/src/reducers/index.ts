@@ -23,7 +23,8 @@ import {
   toVirtJsValue,
   computeVirtJSObject,
   VirtJsObjectKind,
-  NodeAnnotations
+  NodeAnnotations,
+  isPaperclipFile
 } from "paperclip-utils";
 import { actionCreator } from "../actions/base";
 import { getFrameBounds } from "paperclip-web-renderer";
@@ -42,6 +43,13 @@ export default (state: AppState, action: Action) => {
         action.payload.shiftKey,
         state
       );
+    }
+    case ActionType.LOCATION_CHANGED: {
+      state = produce(state, newState => {
+        newState.currentFileUri = action.payload.query.current_file;
+        newState.showLeftGutter = !action.payload.query.within_ide;
+      });
+      return state;
     }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       state = produce(state, newState => {
@@ -88,11 +96,13 @@ export default (state: AppState, action: Action) => {
         newState.currentEngineEvents.splice(0, action.payload.count);
       });
     }
-    case ActionType.FILE_OPENED: {
+    case ActionType.FS_ITEM_CLICKED: {
       state = produce(state, newState => {
-        newState.currentFileUri = action.payload.uri;
-        newState.centeredInitial = false;
-        newState.expandedFrameInfo = null;
+        if (isPaperclipFile(action.payload.url)) {
+          newState.currentFileUri = action.payload.url;
+          newState.centeredInitial = false;
+          newState.expandedFrameInfo = null;
+        }
       });
       return state;
     }

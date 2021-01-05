@@ -8,14 +8,10 @@
 
 #### Next
 
-- local resource roots need to be sent to server
 
 - wire up dev server with vscode - deprecate IPC
-  - need to figure out how to get to talk to server - hash IPC based on project pcconfig?
-    - what if mulitple configs?
-      - this may happen if working with package module
-  - server needs to be explicitly defined, I think
-- get vscode to check for dev server lock - use that
+  - ensure that meta click works
+  - 
 - pop tab out of vscode 
 - file:// needs to work
 

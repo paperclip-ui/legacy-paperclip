@@ -32,7 +32,9 @@ import {
   Load,
   Unload,
   LoadedParams,
-  ErrorLoadingParams
+  ErrorLoadingParams,
+  DevServerInitialized,
+  DevServerInitializedParams
 } from "../common/notifications";
 
 const VIEW_TYPE = "paperclip-preview";
@@ -61,6 +63,7 @@ export const activate = (
   const _previews: LivePreview[] = [];
 
   let _showedOpenLivePreviewPrompt = false;
+  let _devServerPort: number;
 
   const openLivePreview = async (
     editor: TextEditor,
@@ -89,6 +92,7 @@ export const activate = (
 
     registerLivePreview(
       new LivePreview(
+        _devServerPort,
         client,
         panel,
         extensionPath,
@@ -234,6 +238,7 @@ export const activate = (
     ) {
       registerLivePreview(
         new LivePreview(
+          _devServerPort,
           client,
           panel,
           extensionPath,
@@ -287,6 +292,17 @@ export const activate = (
     });
   });
 
+  client.onNotification(
+    NotificationType.DEV_SERVER_INITIALIZED,
+    (event: DevServerInitializedParams) => {
+      console.log("DEV SERVER INIT", event);
+      _devServerPort = event.port;
+      _previews.forEach(preview => {
+        preview.setDevServerPort(event.port);
+      });
+    }
+  );
+
   // There can only be one listener, so do that & handle across all previews
   client.onNotification(NotificationType.ERROR_LOADING, event => {
     _previews.forEach(preview => {
@@ -313,6 +329,7 @@ class LivePreview {
   private _targetUri: string;
 
   constructor(
+    private _devServerPort: number,
     private _client: LanguageClient,
     readonly panel: WebviewPanel,
     private readonly _extensionPath: string,
@@ -509,6 +526,10 @@ class LivePreview {
       this._previewInitialized();
     }
   }
+  public async setDevServerPort(port: number) {
+    this._devServerPort = port;
+    this._render();
+  }
   public async $$handleEngineDelegateEvent(event: EngineDelegateEvent) {
     await this._initPromise;
     if (
@@ -571,6 +592,11 @@ class LivePreview {
           background: white;
           margin: 0;
         }
+        iframe {
+          width: 100%;
+          height: 100%;
+          border: none;
+        }
       </style>
     </head>
     <body>
@@ -580,7 +606,12 @@ class LivePreview {
         const vscode = acquireVsCodeApi();
         vscode.setState(${JSON.stringify(this.getState())});
       </script>
-      <script src="${scriptUri}"></script>
+      <!--script src="${scriptUri}"></script-->
+      <iframe src="http://localhost:${
+        this._devServerPort
+      }?within_ide&current_file=${encodeURIComponent(
+      this._targetUri
+    )}"></iframe>
     </body>
     </html>`;
   }

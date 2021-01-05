@@ -4,16 +4,17 @@ import {
   Connection,
   createConnection,
   ProposedFeatures,
-  InitializedParams,
   TextDocumentSyncKind,
-  InitializeParams
+  InitializeParams,
+  WorkspaceFolder,
+  InitializeResult
 } from "vscode-languageserver";
 
 import * as fs from "fs";
 import * as url from "url";
 import { createServices } from "./services";
 import { VSCServiceBridge } from "./bridge";
-import { Crash } from "../common/notifications";
+import { Crash, DevServerInitialized } from "../common/notifications";
 import {
   createEngineDelegate,
   keepEngineInSyncWithFileSystem2,
@@ -25,53 +26,69 @@ import {
 
 import { startServer } from "paperclip-visual-editor";
 
-const connection = createConnection(ProposedFeatures.all);
+class Server {
+  private _connection: Connection;
+  private _workspaceFolders: WorkspaceFolder[];
 
-connection.onInitialize((params: InitializeParams) => {
-  return {
-    capabilities: {
-      textDocumentSync: TextDocumentSyncKind.Incremental,
-      // Tell the client that the server supports code completion
-      completionProvider: {
-        resolveProvider: true,
-        triggerCharacters: [".", "<", '"', "'", "{", ":", " ", "(", ">", "$"]
-      },
-      documentLinkProvider: {
-        resolveProvider: true
-      },
-      colorProvider: true,
-      definitionProvider: true
-    }
+  start() {
+    this._connection = createConnection(ProposedFeatures.all);
+    this._connection.onInitialize(this._onConnectionInitialize);
+    this._connection.onInitialized(this._onConnectionInitialized);
+    this._connection.listen();
+  }
+
+  private _onConnectionInitialize = (
+    params: InitializeParams
+  ): InitializeResult => {
+    this._workspaceFolders = params.workspaceFolders;
+    return {
+      capabilities: {
+        textDocumentSync: TextDocumentSyncKind.Incremental,
+        // Tell the client that the server supports code completion
+        completionProvider: {
+          resolveProvider: true,
+          triggerCharacters: [".", "<", '"', "'", "{", ":", " ", "(", ">", "$"]
+        },
+        documentLinkProvider: {
+          resolveProvider: true
+        },
+        colorProvider: true,
+        definitionProvider: true
+      }
+    };
   };
-});
 
-const init = async (connection: Connection) => {
-  // PaperclicreateEngineDelegatep engine for parsing & evaluating documents
-  const engine = await createEngineDelegate(
-    { mode: EngineMode.MultiFrame },
-    () => {
-      connection.sendNotification(...new Crash({}).getArgs());
-    }
-  );
+  private _onConnectionInitialized = async () => {
+    const engine = await createEngineDelegate(
+      { mode: EngineMode.MultiFrame },
+      () => {
+        this._connection.sendNotification(...new Crash({}).getArgs());
+      }
+    );
 
-  //
-  // const previewServer = await startServer({
-  //   engine,
-  //   localResourceRoots: []
-  // });
+    watchPaperclipSources(engine);
 
-  // const visualEditorServerResult = await startServer({ engine, localResourceRoots: [] });
-  // console.log(visualEditorServerResult);
+    console.log(this._workspaceFolders);
 
-  watchPaperclipSources(engine);
+    const devServerInfo = await startServer({
+      engine,
+      localResourceRoots: this._workspaceFolders.map(({ uri }) => {
+        return url.fileURLToPath(uri);
+      })
+    });
 
-  // Language service for handling information about the document such as colors, references,
-  // etc
-  const services = createServices(engine);
+    this._connection.sendNotification(
+      ...new DevServerInitialized({ port: devServerInfo.port }).getArgs()
+    );
 
-  // Bridges language services to VSCode
-  new VSCServiceBridge(engine, services, connection);
-};
+    // Language service for handling information about the document such as colors, references,
+    // etc
+    const services = createServices(engine);
+
+    // Bridges language services to VSCode
+    new VSCServiceBridge(engine, services, this._connection);
+  };
+}
 
 const watchPaperclipSources = (
   engine: EngineDelegate,
@@ -88,8 +105,5 @@ const watchPaperclipSources = (
   }
 };
 
-connection.onInitialized((params: InitializedParams) => {
-  init(connection);
-});
-
-connection.listen();
+const server = new Server();
+server.start();

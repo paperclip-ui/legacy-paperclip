@@ -20,7 +20,8 @@ export enum NotificationType {
   ERROR_LOADING = "ERROR_LOADING",
   LOADED = "LOADED",
   UNLOAD = "UNLOAD",
-  ENGINE_EVENT = "ENGINE_EVENT"
+  ENGINE_EVENT = "ENGINE_EVENT",
+  DEV_SERVER_INITIALIZED = "DEV_SERVER_INITIALIZED"
 }
 
 export type UpdateVirtualFileContentsParams = {
@@ -44,6 +45,19 @@ export type LoadParams = {
 export class Load extends BaseNotification<NotificationType.LOAD, LoadParams> {
   constructor(params: LoadParams) {
     super(NotificationType.LOAD, params);
+  }
+}
+
+export type DevServerInitializedParams = {
+  port: number;
+};
+
+export class DevServerInitialized extends BaseNotification<
+  NotificationType.DEV_SERVER_INITIALIZED,
+  DevServerInitializedParams
+> {
+  constructor(params: DevServerInitializedParams) {
+    super(NotificationType.DEV_SERVER_INITIALIZED, params);
   }
 }
 

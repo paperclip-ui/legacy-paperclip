@@ -12,6 +12,8 @@ import { Box, Directory, FSItemKind, Point, Size } from "../state";
 export enum ActionType {
   // RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
   RENDERER_CHANGED = "RENDERER_CHANGED",
+  LOCATION_CHANGED = "LOCATION_CHANGED",
+  CLIENT_CONNECTED = "CLIENT_CONNECTED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
   ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
   DOCUMENT_CONTENT_CHANGED = "DOCUMENT_CONTENT_CHANGED",
@@ -67,6 +69,7 @@ export type ResizerMoved = WrappedEvent<
     anchor: Point;
   }
 >;
+
 export type ResizerStoppedMoving = WrappedEvent<
   MouseEvent,
   ActionType.RESIZER_STOPPED_MOVING,
@@ -80,6 +83,13 @@ export type MetaClicked = BaseAction<
   ActionType.META_CLICKED,
   {
     source: ExprSource;
+  }
+>;
+export type ClientConnected = BaseAction<ActionType.CLIENT_CONNECTED>;
+export type LocationChanged = BaseAction<
+  ActionType.LOCATION_CHANGED,
+  {
+    query: any;
   }
 >;
 
@@ -257,6 +267,9 @@ export const collapseFrameButtonClicked = actionCreator<
 export const resizerPathMoved = actionCreator<ResizerPathMoved>(
   ActionType.RESIZER_PATH_MOUSE_MOVED
 );
+export const locationChanged = actionCreator<LocationChanged>(
+  ActionType.LOCATION_CHANGED
+);
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
   ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
 );
@@ -324,6 +337,9 @@ export const globalMetaKeyDown = actionCreator<
 export const globalZKeyDown = actionCreator<KeyComboPressed<ActionType>>(
   ActionType.GLOBAL_Z_KEY_DOWN
 );
+export const clientConnected = actionCreator<ClientConnected>(
+  ActionType.CLIENT_CONNECTED
+);
 
 export const globalYKeyDown = actionCreator<KeyComboPressed<ActionType>>(
   ActionType.GLOBAL_Y_KEY_DOWN
@@ -368,9 +384,11 @@ export type Action =
   | ErrorBannerClicked
   | CurrentFileInitialized
   | FileOpened
+  | LocationChanged
   | CollapseFrameButtonClicked
   | ExpandFrameButtonClicked
   | ZoomInButtonClicked
+  | ClientConnected
   | FrameTitleClicked
   | EngineDelegateChanged
   | PainButtonClicked

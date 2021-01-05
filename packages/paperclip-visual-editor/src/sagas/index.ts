@@ -23,7 +23,10 @@ import {
   pasted,
   globalBackspaceKeySent,
   globalSaveKeyPress,
-  globalHKeyDown
+  globalHKeyDown,
+  locationChanged,
+  LocationChanged,
+  clientConnected
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
@@ -37,14 +40,15 @@ declare const TARGET_URI;
 declare const PROTOCOL;
 
 export default function* mainSaga() {
+  console.log("OKOKOKO");
   yield fork(handleRenderer);
   yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
   yield fork(handleKeyCommands);
   yield fork(handleDocumentEvents);
-  yield put(fileOpened({ uri: getTargetUrl() }));
   yield fork(handleCanvas);
   yield fork(handleClipboard);
+  yield fork(handleInit);
 }
 
 const parent = typeof vscode != "undefined" ? vscode : window;
@@ -67,10 +71,10 @@ function handleSock(onMessage, onClient) {
   );
 
   client.onopen = () => {
-    const url = getTargetUrl();
-    if (url) {
-      client.send(JSON.stringify({ type: "OPEN", uri: url }));
-    }
+    // const url = getTargetUrl();
+    // if (url) {
+    //   // client.send(JSON.stringify({ type: "OPEN", uri: url }));
+    // }
 
     onClient({
       send: message => client.send(JSON.stringify(message))
@@ -86,19 +90,6 @@ function handleSock(onMessage, onClient) {
   };
 }
 
-function handleIPC(onMessage) {
-  window.onmessage = ({ data: { type, payload } }: MessageEvent) => {
-    if (!type) {
-      return;
-    }
-
-    onMessage({
-      type,
-      payload: (payload && JSON.parse(payload)) || {}
-    });
-  };
-}
-
 function* handleRenderer() {
   let _client: any;
 
@@ -106,7 +97,6 @@ function* handleRenderer() {
     const onMessage = ({ type, payload }) => {
       switch (type) {
         case "ENGINE_EVENT": {
-          console.log("ENGINE EVENT", payload);
           const engineEvent = payload;
           if (engineEvent.kind === "Error") {
             return emit(engineErrored(engineEvent));
@@ -132,17 +122,16 @@ function* handleRenderer() {
       }
     };
 
-    handleIPC(onMessage);
     handleSock(onMessage, client => {
       _client = client;
+      emit(clientConnected(null));
     });
-    return () => {
-      window.onmessage = undefined;
-    };
+    return () => {};
   });
 
-  const sendMessage = message =>
-    _client ? _client.send(message) : parent.postMessage(message);
+  const maybeSendMessage = message => {
+    _client && _client.send(message);
+  };
 
   yield fork(function*() {
     while (1) {
@@ -154,15 +143,18 @@ function* handleRenderer() {
     window.focus();
   });
 
-  yield takeEvery([ActionType.FS_ITEM_CLICKED], function*(action: Action) {
-    if (
-      action.type === ActionType.FS_ITEM_CLICKED &&
-      isPaperclipFile(action.payload.url)
-    ) {
-      yield put(fileOpened({ uri: action.payload.url }));
+  yield takeEvery(
+    [
+      ActionType.LOCATION_CHANGED,
+      ActionType.CLIENT_CONNECTED,
+      ActionType.FS_ITEM_CLICKED
+    ],
+    function*(action: LocationChanged) {
+      const state: AppState = yield select();
+      console.log(state.currentFileUri);
+      maybeSendMessage(fileOpened({ uri: state.currentFileUri }));
     }
-    sendMessage(action);
-  });
+  );
 
   yield takeEvery(
     [
@@ -173,7 +165,7 @@ function* handleRenderer() {
     ],
     function*(action: Action) {
       const state: AppState = yield select();
-      sendMessage(
+      maybeSendMessage(
         pcVirtObjectEdited({
           mutations: getSelectedFrames(state).map(frame => {
             return {
@@ -192,7 +184,7 @@ function* handleRenderer() {
 
   yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
     const state: AppState = yield select();
-    sendMessage(
+    maybeSendMessage(
       pcVirtObjectEdited({
         mutations: getSelectedFrames(state).map(frame => {
           return {
@@ -214,16 +206,13 @@ function* handleRenderer() {
       ActionType.GLOBAL_Z_KEY_DOWN,
       ActionType.GLOBAL_Y_KEY_DOWN,
       ActionType.GLOBAL_SAVE_KEY_DOWN,
-      ActionType.PASTED
+      ActionType.PASTED,
+      ActionType.FS_ITEM_CLICKED
     ],
     function(action: Action) {
-      sendMessage(action);
+      maybeSendMessage(action);
     }
   );
-
-  sendMessage({
-    type: "ready"
-  });
 }
 
 function* handleCanvasMouseUp(action: CanvasMouseUp) {
@@ -408,4 +397,14 @@ function* handleDocumentEvents() {
       }
     });
   });
+}
+
+function* handleInit() {
+  console.log("INIT");
+  const parts = Url.parse(location.href, true);
+  yield put(
+    locationChanged({
+      query: parts.query
+    })
+  );
 }
