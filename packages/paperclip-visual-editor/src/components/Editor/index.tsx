@@ -9,7 +9,7 @@ export const Editor = withAppStore(() => {
   const { state } = useAppStore();
   return (
     <styles.Container>
-      {state.showLeftGutter ? null : <LeftSidebar />}
+      {state.showLeftGutter ? <LeftSidebar /> : null}
       <Center />
     </styles.Container>
   );

@@ -11,9 +11,9 @@
 
 - wire up dev server with vscode - deprecate IPC
   - ensure that meta click works
-  - 
+  - need to write files back to
+
 - pop tab out of vscode 
-- file:// needs to work
 
 - grid view!
   - show all UIs

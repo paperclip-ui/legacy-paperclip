@@ -89,6 +89,9 @@ export type ClientConnected = BaseAction<ActionType.CLIENT_CONNECTED>;
 export type LocationChanged = BaseAction<
   ActionType.LOCATION_CHANGED,
   {
+    protocol: string;
+    host: string;
+    pathname: string;
     query: any;
   }
 >;

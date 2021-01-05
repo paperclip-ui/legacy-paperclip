@@ -22,8 +22,6 @@ import {
 import * as styles from "./index.pc";
 import { render } from "react-dom";
 
-declare const PROTOCOL: string;
-
 type FramesProps = {
   expandedFrameIndex?: number;
 };
@@ -60,13 +58,13 @@ const useFrames = () => {
   const renderer = useMemo(() => {
     const renderer = new FramesRenderer(
       state.currentFileUri,
-      typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL
+      state.renderProtocol
     );
     if (frameData) {
       renderer.initialize(frameData);
     }
     return renderer;
-  }, [dispatch, state.currentFileUri, !!frameData]);
+  }, [dispatch, state.currentFileUri, state.renderProtocol, !!frameData]);
 
   const collectRects = useMemo(() => {
     let running;

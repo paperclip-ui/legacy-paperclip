@@ -74,6 +74,7 @@ type ExpandedFrameInfo = {
 };
 
 export type AppState = {
+  renderProtocol?: string;
   centeredInitial: boolean;
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;

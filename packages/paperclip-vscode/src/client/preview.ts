@@ -609,7 +609,7 @@ class LivePreview {
       <!--script src="${scriptUri}"></script-->
       <iframe src="http://localhost:${
         this._devServerPort
-      }?within_ide&current_file=${encodeURIComponent(
+      }?within_ide=true&current_file=${encodeURIComponent(
       this._targetUri
     )}"></iframe>
     </body>

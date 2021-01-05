@@ -48,6 +48,8 @@ export default (state: AppState, action: Action) => {
       state = produce(state, newState => {
         newState.currentFileUri = action.payload.query.current_file;
         newState.showLeftGutter = !action.payload.query.within_ide;
+        newState.renderProtocol =
+          action.payload.protocol + "//" + action.payload.host + "/file";
       });
       return state;
     }

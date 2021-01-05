@@ -2,12 +2,16 @@ import * as path from "path";
 import * as fs from "fs";
 import * as chokidar from "chokidar";
 import http from "http";
+
 import sockjs from "sockjs";
 import getPort from "get-port";
 import { EngineDelegate } from "paperclip";
 import * as URL from "url";
 import { ActionType, FileOpened, FSItemClicked } from "./actions";
 import { FSItemKind } from "./state";
+import express from "express";
+import { nextTick } from "process";
+import { normalize } from "path";
 
 export type ServerOptions = {
   engine: EngineDelegate;
@@ -154,29 +158,23 @@ export const startServer = async ({
     });
   });
 
-  const server = http.createServer(
-    serveStatic(path.join(__dirname, "..", "dist"))
-  );
+  const app = express();
+
+  const server = app.listen(port);
   io.installHandlers(server, { prefix: "/rt" });
-  server.listen(port);
+  app.use(express.static(path.join(__dirname, "..", "dist")));
+  app.use("/file/*", (req, res, next) => {
+    const filePath = normalize(req.params["0"]);
+    const found = localResourceRoots.some(root => filePath.indexOf(root) === 0);
+    if (!found) {
+      return next();
+    }
+    res.sendFile(filePath);
+  });
 
   console.info(`Listening on port %d`, port);
 
   return {
     port
   };
-};
-
-const serveStatic = (root: string) => (req, res) => {
-  const url = URL.parse(req.url);
-  const filePath = path.join(
-    root,
-    path.normalize(url.pathname === "/" ? "/index.html" : url.pathname)
-  );
-  if (!fs.existsSync(filePath)) {
-    res.writeHead(404);
-    return res.end("file not found");
-  }
-  res.writeHead(200);
-  fs.createReadStream(filePath).pipe(res);
 };

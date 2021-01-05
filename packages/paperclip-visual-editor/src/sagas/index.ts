@@ -400,10 +400,12 @@ function* handleDocumentEvents() {
 }
 
 function* handleInit() {
-  console.log("INIT");
   const parts = Url.parse(location.href, true);
   yield put(
     locationChanged({
+      protocol: parts.protocol,
+      host: parts.host,
+      pathname: parts.pathname,
       query: parts.query
     })
   );
