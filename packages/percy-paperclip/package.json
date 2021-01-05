@@ -22,7 +22,7 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
-    "@percy/agent": "^0.26.9",
+    "@percy/agent": "^0.28.6",
     "chalk": "^4.1.0",
     "glob": "^7.1.6",
     "lodash": "^4.17.19",

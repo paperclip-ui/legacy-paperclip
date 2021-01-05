@@ -1,10 +1,9 @@
-** Need to wait for a few weeks to let current bugs shake out **
+### TOMORROW
 
-#### Re-do website
-
-- make it beta only
-- UI for grid view
-
+- ensure that meta click works
+- ensure changes in preview are handled in VS Code
+- ability to pop window out of VS Code
+- IDs for each pane window
 
 #### Next
 
