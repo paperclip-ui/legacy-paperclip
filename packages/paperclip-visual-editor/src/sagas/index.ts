@@ -1,17 +1,12 @@
 import * as Mousetrap from "mousetrap";
 import SockJSClient from "sockjs-client";
-import {
-  computeVirtJSObject,
-  EngineDelegateEventKind,
-  isPaperclipFile
-} from "paperclip-utils";
+import { computeVirtJSObject } from "paperclip-utils";
 import * as Url from "url";
-import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
+import { fork, put, take, takeEvery, select } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
   ActionType,
   ErrorBannerClicked,
-  engineErrored,
   globalEscapeKeyPressed,
   globalBackspaceKeyPressed,
   globalMetaKeyDown,
@@ -19,7 +14,6 @@ import {
   globalYKeyDown,
   globalMetaKeyUp,
   Action,
-  engineDelegateChanged,
   fileOpened,
   pcVirtObjectEdited,
   CanvasMouseUp,
@@ -28,42 +22,25 @@ import {
   globalSaveKeyPress,
   globalHKeyDown,
   locationChanged,
-  LocationChanged,
   clientConnected,
   metaClicked
 } from "../actions";
-import { Renderer } from "paperclip-web-renderer";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
-import { utimes } from "fs";
 
 declare const vscode;
-declare const TARGET_URI;
-declare const PROTOCOL;
 
 export default function* mainSaga() {
   yield fork(handleRenderer);
   yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
-  yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
   yield fork(handleKeyCommands);
   yield fork(handleDocumentEvents);
   yield fork(handleCanvas);
   yield fork(handleClipboard);
   yield fork(handleInit);
 }
-
-const parent = typeof vscode != "undefined" ? vscode : window;
-
-const getTargetUrl = () => {
-  if (typeof TARGET_URI !== "undefined") {
-    return TARGET_URI;
-  }
-
-  const parts = Url.parse(location.href, true);
-  return parts.query.open;
-};
 
 function handleSock(onMessage, onClient) {
   if (!/^http/.test(location.protocol)) {
@@ -119,9 +96,8 @@ function* handleRenderer() {
       ActionType.CLIENT_CONNECTED,
       ActionType.FS_ITEM_CLICKED
     ],
-    function*(action: LocationChanged) {
+    function*() {
       const state: AppState = yield select();
-      console.log(state.currentFileUri);
       maybeSendMessage(fileOpened({ uri: state.currentFileUri }));
     }
   );
@@ -133,7 +109,7 @@ function* handleRenderer() {
       ActionType.FRAME_TITLE_CHANGED,
       ActionType.GLOBAL_H_KEY_DOWN
     ],
-    function*(action: Action) {
+    function*() {
       const state: AppState = yield select();
       maybeSendMessage(
         pcVirtObjectEdited({
@@ -215,41 +191,38 @@ function* handleCanvasMouseUp(action: CanvasMouseUp) {
   yield put(metaClicked({ source: virtualNode.source }));
 }
 
-function handleErrorBannerClicked({ payload: error }: ErrorBannerClicked) {
-  parent.postMessage(
-    {
-      type: "errorBannerClicked",
-      error
-    },
-    location.origin
-  );
-}
-
 function* handleKeyCommands() {
   const chan = eventChannel(emit => {
     Mousetrap.bind("esc", () => {
       emit(globalEscapeKeyPressed(null));
+      return false;
     });
     Mousetrap.bind("meta", () => {
       emit(globalMetaKeyDown(null));
     });
     Mousetrap.bind("meta+z", () => {
       emit(globalZKeyDown(null));
+      return false;
     });
     Mousetrap.bind("meta+y", () => {
       emit(globalYKeyDown(null));
+      return false;
     });
     Mousetrap.bind("meta+h", () => {
       emit(globalHKeyDown(null));
+      return false;
     });
     Mousetrap.bind("meta+s", () => {
       emit(globalSaveKeyPress(null));
+      return false;
     });
     Mousetrap.bind("meta+shift+z", () => {
       emit(globalYKeyDown(null));
+      return false;
     });
     Mousetrap.bind("backspace", () => {
       emit(globalBackspaceKeyPressed(null));
+      return false;
     });
     Mousetrap.bind(
       "meta",

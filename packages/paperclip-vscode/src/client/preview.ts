@@ -34,12 +34,18 @@ import {
   LoadedParams,
   ErrorLoadingParams
 } from "../common/notifications";
-import { $$ACTION_NOTIFICATION, Action, ActionType } from "../common/actions";
+import {
+  $$ACTION_NOTIFICATION,
+  Action,
+  ActionType,
+  DevServerChanged
+} from "../common/actions";
 
 const VIEW_TYPE = "paperclip-preview";
 
 const RENDERER_MODULE_NAME = "paperclip-visual-editor";
 import * as ve from "paperclip-visual-editor";
+import { InstanceChanged } from "paperclip-visual-editor";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -102,9 +108,11 @@ export const activate = (
       )
     );
   };
+  const dispatchClient = (action: ve.ExternalAction) => {
+    client.sendNotification($$ACTION_NOTIFICATION, action);
+  };
 
-  const showPreviewEditor = async (preview: LivePreview) => {
-    const uri = preview.getTargetUri();
+  const showTextDocument = async (uri: string) => {
     const sourceEditor = window.visibleTextEditors.find(
       editor => String(editor.document.uri) === uri
     );
@@ -121,44 +129,14 @@ export const activate = (
     }
   };
 
-  const execCommand = async (preview: LivePreview, command: string) => {
-    await showPreviewEditor(preview);
+  const execCommand = async (targetUri: string, command: string) => {
+    await showTextDocument(targetUri);
     await commands.executeCommand(command);
-  };
-
-  const onPasted = async (preview: LivePreview, { clipboardData }) => {
-    const editor = await showPreviewEditor(preview);
-
-    const start = editor.document.positionAt(editor.document.getText().length);
-    const plainText = clipboardData.find(data => data.type === "text/plain");
-
-    if (!plainText) {
-      return;
-    }
-
-    const tedit = new TextEdit(new Range(start, start), plainText.content);
-
-    const wsEdit = new WorkspaceEdit();
-    wsEdit.set(Uri.parse(preview.getTargetUri()), [tedit]);
-    await workspace.applyEdit(wsEdit);
   };
 
   const registerLivePreview = (preview: LivePreview) => {
     _previews.push(preview);
     const listeners = [
-      preview.onUndo(async () => {
-        execCommand(preview, "undo");
-      }),
-      preview.onRedo(async () => {
-        execCommand(preview, "redo");
-      }),
-      preview.onPasted(payload => onPasted(preview, payload)),
-
-      preview.onSaveRequest(async () => {
-        const editor = await showPreviewEditor(preview);
-        editor.document.save();
-      }),
-
       preview.onDidDispose(() => {
         const index = _previews.indexOf(preview);
         if (index !== -1) {
@@ -221,13 +199,12 @@ export const activate = (
   const onTextDocumentChange = async ({
     document
   }: TextDocumentChangeEvent) => {
-    updatePreviewTextDocuments(document);
-  };
-
-  const updatePreviewTextDocuments = async (document: TextDocument) => {
-    for (const preview of _previews) {
-      preview.updateDocumentContent(String(document.uri), document.getText());
-    }
+    dispatchClient(
+      ve.contentChanged({
+        fileUri: document.uri.toString(),
+        content: document.getText()
+      })
+    );
   };
 
   window.registerWebviewPanelSerializer(VIEW_TYPE, {
@@ -249,13 +226,21 @@ export const activate = (
     }
   });
 
+  const onDidOpenTextDocument = (document: TextDocument) => {
+    dispatchClient(
+      ve.contentChanged({
+        fileUri: document.uri.toString(),
+        content: document.getText()
+      })
+    );
+  };
+
   setTimeout(() => {
     window.onDidChangeActiveTextEditor(onTextEditorChange);
     workspace.onDidChangeTextDocument(onTextDocumentChange);
-    workspace.onDidOpenTextDocument(updatePreviewTextDocuments);
+    workspace.onDidOpenTextDocument(onDidOpenTextDocument);
     if (window.activeTextEditor) {
       onTextEditorChange(window.activeTextEditor);
-      updatePreviewTextDocuments(window.activeTextEditor.document);
     }
   }, 500);
 
@@ -301,28 +286,74 @@ export const activate = (
         break;
       }
       case ActionType.DEV_SERVER_CHANGED: {
-        switch (action.payload.type) {
-          case ve.ActionType.PC_VIRT_OBJECT_EDITED: {
-            onPCMutations(action.payload.payload.mutations);
-            break;
-          }
-          case ve.ActionType.META_CLICKED: {
-            handleMetaClicked(action.payload);
-            break;
-          }
-          case ve.ActionType.ERROR_BANNER_CLICKED: {
-            handleErrorBannerClicked(action.payload);
-            break;
+        if (action.payload.type === ve.ServerActionType.INSTANCE_CHANGED) {
+          // oh boy 🙈
+          switch (action.payload.payload.action.type) {
+            case ve.ActionType.PC_VIRT_OBJECT_EDITED: {
+              onPCMutations(action.payload.payload.action.payload.mutations);
+              break;
+            }
+            case ve.ActionType.META_CLICKED: {
+              handleMetaClicked(action.payload.payload.action);
+              break;
+            }
+            case ve.ActionType.ERROR_BANNER_CLICKED: {
+              handleErrorBannerClicked(action.payload.payload.action);
+              break;
+            }
+            case ve.ActionType.GLOBAL_Z_KEY_DOWN: {
+              handleUndo(action.payload);
+              break;
+            }
+            case ve.ActionType.GLOBAL_Y_KEY_DOWN: {
+              handleRedo(action.payload);
+              break;
+            }
+            case ve.ActionType.GLOBAL_SAVE_KEY_DOWN: {
+              handleSave(action.payload);
+              break;
+            }
+            case ve.ActionType.PASTED: {
+              handlePasted(action.payload, action.payload.payload.action);
+              break;
+            }
           }
         }
-
-        _previews.forEach(preview => {
-          preview.handleVisualEditorServerAction(action.payload);
-        });
         return;
       }
     }
   });
+
+  const handleUndo = ({ payload: { targetPCFileUri } }: ve.InstanceChanged) => {
+    execCommand(targetPCFileUri, "undo");
+  };
+  const handleRedo = ({ payload: { targetPCFileUri } }: ve.InstanceChanged) => {
+    execCommand(targetPCFileUri, "redo");
+  };
+  const handleSave = async ({
+    payload: { targetPCFileUri }
+  }: ve.InstanceChanged) => {
+    (await showTextDocument(targetPCFileUri)).document.save();
+  };
+  const handlePasted = async (
+    { payload: { targetPCFileUri } }: ve.InstanceChanged,
+    { payload: { clipboardData } }: ve.Pasted
+  ) => {
+    const editor = await showTextDocument(targetPCFileUri);
+
+    const start = editor.document.positionAt(editor.document.getText().length);
+    const plainText = clipboardData.find(data => data.type === "text/plain");
+
+    if (!plainText) {
+      return;
+    }
+
+    const tedit = new TextEdit(new Range(start, start), plainText.content);
+
+    const wsEdit = new WorkspaceEdit();
+    wsEdit.set(Uri.parse(targetPCFileUri), [tedit]);
+    await workspace.applyEdit(wsEdit);
+  };
 
   const openDoc = async (uri: string) => {
     return (
@@ -372,7 +403,6 @@ class LivePreview {
   private _em: EventEmitter;
   private _dependencies: string[] = [];
   private _needsReloading: boolean;
-  private _previewReady: () => void;
   private _previewInitialized: () => void;
   private _readyPromise: Promise<any>;
   private _initPromise: Promise<any>;
@@ -408,16 +438,9 @@ class LivePreview {
         );
       }
     });
-    this.panel.webview.onDidReceiveMessage(this._onPreviewMessage);
   }
   focus() {
     this.panel.reveal(this.panel.viewColumn, false);
-  }
-  updateDocumentContent(uri: string, content: string) {
-    this.panel.webview.postMessage({
-      type: "DOCUMENT_CONTENT_CHANGED",
-      payload: JSON.stringify({ uri, content })
-    });
   }
   getTargetUri() {
     return this._targetUri;
@@ -439,11 +462,6 @@ class LivePreview {
       closeWithFile: this.closeWithFile
     };
   }
-  private _createReadyPromise() {
-    this._readyPromise = new Promise(resolve => {
-      this._previewReady = resolve as any;
-    });
-  }
   private _createInitPromise() {
     this._initPromise = new Promise(resolve => {
       this._previewInitialized = resolve as any;
@@ -455,7 +473,6 @@ class LivePreview {
     // force reload
     this.panel.webview.html = "";
     this.panel.webview.html = this._getHTML();
-    this._createReadyPromise();
     this._createInitPromise();
 
     this._client.sendNotification(
@@ -471,45 +488,6 @@ class LivePreview {
       this._em.removeListener("didDispose", listener);
     };
   }
-  public onUndo(listener: () => void) {
-    this._em.on("undo", listener);
-    return () => {
-      this._em.removeListener("undo", listener);
-    };
-  }
-  public onPasted(
-    listener: (payload: {
-      clipboardData: Array<{ type: string; content: string }>;
-    }) => void
-  ) {
-    this._em.on("PASTED", listener);
-    return () => {
-      this._em.removeListener("PASTED", listener);
-    };
-  }
-  public onSaveRequest(listener: () => void) {
-    this._em.on("GLOBAL_SAVE_KEY_DOWN", listener);
-    return () => {
-      this._em.removeListener("GLOBAL_SAVE_KEY_DOWN", listener);
-    };
-  }
-  public onRedo(listener: () => void) {
-    this._em.on("redo", listener);
-    return () => {
-      this._em.removeListener("redo", listener);
-    };
-  }
-
-  private _onPreviewMessage = async event => {
-    // debug what's going on
-    if (event.type === "GLOBAL_Z_KEY_DOWN") {
-      this._em.emit("undo");
-    } else if (event.type === "GLOBAL_Y_KEY_DOWN") {
-      this._em.emit("redo");
-    } else {
-      this._em.emit(event.type, event.payload);
-    }
-  };
   public async $$handleErrorLoading({ uri, error }: ErrorLoadingParams) {
     if (uri === this._targetUri) {
       await this._readyPromise;

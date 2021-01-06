@@ -13,11 +13,15 @@ import {
   FileOpened,
   FSItemClicked,
   Action,
-  pcFileLoaded
+  ExternalAction,
+  pcFileLoaded,
+  instanceChanged,
+  InstanceAction
 } from "./actions";
 import { FSItemKind } from "./state";
 import express from "express";
 import { normalize } from "path";
+import { EventEmitter } from "events";
 
 export type ServerOptions = {
   engine: EngineDelegate;
@@ -37,6 +41,7 @@ export const startServer = async ({
   const io = sockjs.createServer();
 
   let _watcher: chokidar.FSWatcher;
+  const em = new EventEmitter();
 
   const watchEngineFiles = () => {
     if (_watcher) {
@@ -78,8 +83,12 @@ export const startServer = async ({
       emit(engineDelegateChanged(event));
     });
 
+    const onExternalAction = emit;
+
+    em.on("externalAction", onExternalAction);
+
     conn.on("data", data => {
-      const action: Action = JSON.parse(data) as any;
+      const action: InstanceAction = JSON.parse(data) as any;
       switch (action.type) {
         case ActionType.FS_ITEM_CLICKED: {
           return onFSItemClicked(action);
@@ -88,7 +97,7 @@ export const startServer = async ({
           return onFileOpened(action);
         }
       }
-      emitExternal(action);
+      emitExternal(instanceChanged({ targetPCFileUri: targetUri, action }));
     });
 
     const onFSItemClicked = async (action: FSItemClicked) => {
@@ -149,6 +158,7 @@ export const startServer = async ({
 
     conn.on("close", () => {
       disposeEngineListener();
+      em.off("externalAction", onExternalAction);
     });
   });
 
@@ -166,9 +176,14 @@ export const startServer = async ({
     res.sendFile(filePath);
   });
 
+  const dispatch = (action: ExternalAction) => {
+    em.emit("externalAction", action);
+  };
+
   console.info(`Listening on port %d`, port);
 
   return {
-    port
+    port,
+    dispatch
   };
 };

@@ -32,7 +32,9 @@ import {
 
 import {
   startServer,
-  Action as VsualEditorAction
+  Action as VsualEditorAction,
+  ServerAction,
+  ExternalAction
 } from "paperclip-visual-editor";
 
 class Server {
@@ -86,10 +88,17 @@ class Server {
       localResourceRoots: this._workspaceFolders.map(({ uri }) => {
         return url.fileURLToPath(uri);
       }),
-      emit: (action: VsualEditorAction) => {
+      emit: (action: ServerAction) => {
         this._dispatch(devServerChanged(action));
       }
     });
+
+    this._connection.onNotification(
+      $$ACTION_NOTIFICATION,
+      (action: ExternalAction) => {
+        devServerInfo.dispatch(action);
+      }
+    );
 
     this._dispatch(devServerInitialized({ port: devServerInfo.port }));
 

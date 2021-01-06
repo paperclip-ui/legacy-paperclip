@@ -1,5 +1,5 @@
 import { actionCreator } from "./base";
-import { Action as VisualEditorAction } from "paperclip-visual-editor";
+import * as ve from "paperclip-visual-editor";
 
 // to be used with sendNotification
 export const $$ACTION_NOTIFICATION = "$$ACTION_NOTIFICATION";
@@ -20,7 +20,7 @@ export type DevServerInitialized = BaseAction<
 >;
 export type DevServerChanged = BaseAction<
   ActionType.DEV_SERVER_CHANGED,
-  VisualEditorAction
+  ve.ServerAction
 >;
 
 export const devServerInitialized = actionCreator<DevServerInitialized>(

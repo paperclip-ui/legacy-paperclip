@@ -14,7 +14,7 @@ import {
   mergeBoxes
 } from "../state";
 import { produce } from "immer";
-import { Action, ActionType } from "../actions";
+import { Action, ActionType, ExternalActionType } from "../actions";
 import { clamp } from "lodash";
 import {
   updateAllLoadedData,
@@ -167,9 +167,10 @@ export default (state: AppState, action: Action) => {
       )?.nodePath;
       return selectNode(nodePath, action.payload.shiftKey, state);
     }
-    case ActionType.DOCUMENT_CONTENT_CHANGED: {
+    case ExternalActionType.CONTENT_CHANGED: {
       return produce(state, newState => {
-        newState.documentContent[action.payload.uri] = action.payload.content;
+        newState.documentContent[action.payload.fileUri] =
+          action.payload.content;
       });
     }
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {
