@@ -7,8 +7,18 @@
 </style>
 
 
+
+<!--
+  @frame { width: 1024, height: 768, x: 386, y: 24 }
+-->
 <div>
   <mod.TEST />
 </div>
 
-fsdfs
+
+<!--
+  @frame { width: 1024, height: 768, x: 58, y: 176 }
+-->
+<span>
+  Something like this
+</span>

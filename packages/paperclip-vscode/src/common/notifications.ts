@@ -48,19 +48,6 @@ export class Load extends BaseNotification<NotificationType.LOAD, LoadParams> {
   }
 }
 
-export type DevServerInitializedParams = {
-  port: number;
-};
-
-export class DevServerInitialized extends BaseNotification<
-  NotificationType.DEV_SERVER_INITIALIZED,
-  DevServerInitializedParams
-> {
-  constructor(params: DevServerInitializedParams) {
-    super(NotificationType.DEV_SERVER_INITIALIZED, params);
-  }
-}
-
 export type ErrorLoadingParams = {
   uri: string;
   error: EngineErrorEvent;

@@ -5,7 +5,6 @@ import {
   IS_WINDOWS,
   Canvas,
   Box,
-  resetCanvas,
   getFSItem,
   Directory,
   maybeCenterCanvas,
@@ -24,9 +23,9 @@ import {
   computeVirtJSObject,
   VirtJsObjectKind,
   NodeAnnotations,
-  isPaperclipFile
+  isPaperclipFile,
+  EngineDelegateEventKind
 } from "paperclip-utils";
-import { actionCreator } from "../actions/base";
 import { getFrameBounds } from "paperclip-web-renderer";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
@@ -55,13 +54,17 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       state = produce(state, newState => {
+        if (action.payload.kind === EngineDelegateEventKind.Error) {
+          newState.currentError = action.payload;
+        } else {
+          newState.currentError = undefined;
+        }
+
         newState.currentEngineEvents.push(action.payload);
         newState.allLoadedPCFileData = updateAllLoadedData(
           newState.allLoadedPCFileData,
           action.payload
         );
-
-        newState.currentError = undefined;
       });
 
       state = maybeCenterCanvas(state);
@@ -86,7 +89,7 @@ export default (state: AppState, action: Action) => {
     case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
       return minimizeWindow(state);
     }
-    case ActionType.CURRENT_FILE_INITIALIZED: {
+    case ActionType.PC_FILE_OPENED: {
       state = produce(state, newState => {
         newState.allLoadedPCFileData[state.currentFileUri] = action.payload;
       });

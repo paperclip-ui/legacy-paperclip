@@ -10,9 +10,9 @@ import {
 import { Box, Directory, FSItemKind, Point, Size } from "../state";
 
 export enum ActionType {
-  // RENDERER_INITIALIZED = "RENDERER_INITIALIZED",
   RENDERER_CHANGED = "RENDERER_CHANGED",
   LOCATION_CHANGED = "LOCATION_CHANGED",
+  PC_FILE_OPENED = "PC_FILE_OPENED",
   CLIENT_CONNECTED = "CLIENT_CONNECTED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
   ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
@@ -41,7 +41,6 @@ export enum ActionType {
   GLOBAL_BACKSPACE_KEY_SENT = "GLOBAL_BACKSPACE_KEY_SENT",
   GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP",
   ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
-  CURRENT_FILE_INITIALIZED = "CURRENT_FILE_INITIALIZED",
   ENGINE_DELEGATE_EVENTS_HANDLED = "ENGINE_DELEGATE_EVENTS_HANDLED",
   FRAME_TITLE_CLICKED = "FRAME_TITLE_CLICKED",
   FILE_OPENED = "FILE_OPENED",
@@ -85,6 +84,7 @@ export type MetaClicked = BaseAction<
     source: ExprSource;
   }
 >;
+export type PCFileLoaded = BaseAction<ActionType.PC_FILE_OPENED, LoadedData>;
 export type ClientConnected = BaseAction<ActionType.CLIENT_CONNECTED>;
 export type LocationChanged = BaseAction<
   ActionType.LOCATION_CHANGED,
@@ -144,11 +144,6 @@ export type EngineDelegateChanged = BaseAction<
   ActionType.ENGINE_DELEGATE_CHANGED,
   EngineDelegateEvent
 >;
-export type CurrentFileInitialized = BaseAction<
-  ActionType.CURRENT_FILE_INITIALIZED,
-  LoadedData
->;
-
 export type FrameTitleChanged = BaseAction<
   ActionType.FRAME_TITLE_CHANGED,
   {
@@ -244,9 +239,6 @@ export const pcVirtObjectEdited = actionCreator<PCVirtObjectEdited>(
 export const engineDelegateChanged = actionCreator<EngineDelegateChanged>(
   ActionType.ENGINE_DELEGATE_CHANGED
 );
-export const currentFileInitialized = actionCreator<CurrentFileInitialized>(
-  ActionType.CURRENT_FILE_INITIALIZED
-);
 export const frameTitleClicked = actionCreator<FrameTitleClicked>(
   ActionType.FRAME_TITLE_CLICKED
 );
@@ -260,7 +252,9 @@ export const fileOpened = actionCreator<FileOpened>(ActionType.FILE_OPENED);
 export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
 );
-
+export const pcFileLoaded = actionCreator<PCFileLoaded>(
+  ActionType.PC_FILE_OPENED
+);
 export const expandFrameButtonClicked = actionCreator<ExpandFrameButtonClicked>(
   ActionType.EXPAND_FRAME_BUTTON_CLICKED
 );
@@ -273,6 +267,7 @@ export const resizerPathMoved = actionCreator<ResizerPathMoved>(
 export const locationChanged = actionCreator<LocationChanged>(
   ActionType.LOCATION_CHANGED
 );
+export const metaClicked = actionCreator<MetaClicked>(ActionType.META_CLICKED);
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
   ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
 );
@@ -380,12 +375,13 @@ export type Action =
   | RendererChanged
   | CanvasPanned
   | CanvasPanStart
+  | PCVirtObjectEdited
   | CanvasMouseLeave
+  | PCFileLoaded
   | CanvasPanEnd
   | CanvasResized
   | CanvasMouseMoved
   | ErrorBannerClicked
-  | CurrentFileInitialized
   | FileOpened
   | LocationChanged
   | CollapseFrameButtonClicked

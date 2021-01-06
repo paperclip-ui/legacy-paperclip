@@ -1,28 +1,36 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as chokidar from "chokidar";
-import http from "http";
 
 import sockjs from "sockjs";
 import getPort from "get-port";
 import { EngineDelegate } from "paperclip";
 import * as URL from "url";
-import { ActionType, FileOpened, FSItemClicked } from "./actions";
+import {
+  engineDelegateChanged,
+  dirLoaded,
+  ActionType,
+  FileOpened,
+  FSItemClicked,
+  Action,
+  pcFileLoaded
+} from "./actions";
 import { FSItemKind } from "./state";
 import express from "express";
-import { nextTick } from "process";
 import { normalize } from "path";
 
 export type ServerOptions = {
   engine: EngineDelegate;
   localResourceRoots: string[];
   port?: number;
+  emit: (action: Action) => void;
 };
 
 export const startServer = async ({
   port: defaultPort,
   engine,
-  localResourceRoots
+  localResourceRoots,
+  emit: emitExternal
 }: ServerOptions) => {
   const port = await getPort({ port: defaultPort });
 
@@ -67,25 +75,20 @@ export const startServer = async ({
     };
 
     const disposeEngineListener = engine.onEvent(event => {
-      emit({
-        type: "ENGINE_EVENT",
-        payload: event
-      });
+      emit(engineDelegateChanged(event));
     });
 
     conn.on("data", data => {
-      const message = JSON.parse(data) as any;
-      console.log("message:", data);
-      switch (message.type) {
-        case "OPEN":
-          return onOpen(message);
+      const action: Action = JSON.parse(data) as any;
+      switch (action.type) {
         case ActionType.FS_ITEM_CLICKED: {
-          return onFSItemClicked(message);
+          return onFSItemClicked(action);
         }
         case ActionType.FILE_OPENED: {
-          return onFileOpened(message);
+          return onFileOpened(action);
         }
       }
+      emitExternal(action);
     });
 
     const onFSItemClicked = async (action: FSItemClicked) => {
@@ -104,16 +107,8 @@ export const startServer = async ({
     const handleOpen = (uri: string) => {
       const result = openURI(uri);
       if (result) {
-        emit({
-          type: "INIT",
-          payload: result
-        });
+        emit(pcFileLoaded(result));
       }
-    };
-
-    const onOpen = message => {
-      targetUri = message.uri;
-      handleOpen(targetUri);
     };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {
@@ -122,29 +117,28 @@ export const startServer = async ({
           return;
         }
 
-        emit({
-          type: "DIR_LOADED",
-          payload: {
+        emit(
+          dirLoaded({
             isRoot,
             item: {
               absolutePath: dirPath,
-              url: URL.pathToFileURL(dirPath),
-              kind: "directory",
+              url: URL.pathToFileURL(dirPath).toString(),
+              kind: FSItemKind.DIRECTORY,
               name: path.basename(dirPath),
               children: basenames.map(basename => {
                 const absolutePath = path.join(dirPath, basename);
                 const isDir = fs.lstatSync(absolutePath).isDirectory();
                 return {
                   absolutePath,
-                  url: URL.pathToFileURL(absolutePath),
+                  url: URL.pathToFileURL(absolutePath).toString(),
                   name: basename,
-                  kind: isDir ? "directory" : "file",
+                  kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
                   children: isDir ? [] : undefined
                 };
               })
             }
-          }
-        });
+          })
+        );
       });
     };
 

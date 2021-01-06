@@ -14,7 +14,13 @@ import * as fs from "fs";
 import * as url from "url";
 import { createServices } from "./services";
 import { VSCServiceBridge } from "./bridge";
-import { Crash, DevServerInitialized } from "../common/notifications";
+import { Crash } from "../common/notifications";
+import {
+  devServerInitialized,
+  devServerChanged,
+  Action,
+  $$ACTION_NOTIFICATION
+} from "../common/actions";
 import {
   createEngineDelegate,
   keepEngineInSyncWithFileSystem2,
@@ -24,7 +30,10 @@ import {
   EngineDelegate
 } from "paperclip";
 
-import { startServer } from "paperclip-visual-editor";
+import {
+  startServer,
+  Action as VsualEditorAction
+} from "paperclip-visual-editor";
 
 class Server {
   private _connection: Connection;
@@ -58,6 +67,10 @@ class Server {
     };
   };
 
+  private _dispatch(action: Action) {
+    this._connection.sendNotification($$ACTION_NOTIFICATION, action);
+  }
+
   private _onConnectionInitialized = async () => {
     const engine = await createEngineDelegate(
       { mode: EngineMode.MultiFrame },
@@ -68,18 +81,17 @@ class Server {
 
     watchPaperclipSources(engine);
 
-    console.log(this._workspaceFolders);
-
     const devServerInfo = await startServer({
       engine,
       localResourceRoots: this._workspaceFolders.map(({ uri }) => {
         return url.fileURLToPath(uri);
-      })
+      }),
+      emit: (action: VsualEditorAction) => {
+        this._dispatch(devServerChanged(action));
+      }
     });
 
-    this._connection.sendNotification(
-      ...new DevServerInitialized({ port: devServerInfo.port }).getArgs()
-    );
+    this._dispatch(devServerInitialized({ port: devServerInfo.port }));
 
     // Language service for handling information about the document such as colors, references,
     // etc

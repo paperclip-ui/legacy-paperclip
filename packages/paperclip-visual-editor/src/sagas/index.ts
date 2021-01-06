@@ -1,6 +1,10 @@
 import * as Mousetrap from "mousetrap";
 import SockJSClient from "sockjs-client";
-import { computeVirtJSObject, isPaperclipFile } from "paperclip-utils";
+import {
+  computeVirtJSObject,
+  EngineDelegateEventKind,
+  isPaperclipFile
+} from "paperclip-utils";
 import * as Url from "url";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
@@ -17,7 +21,6 @@ import {
   Action,
   engineDelegateChanged,
   fileOpened,
-  currentFileInitialized,
   pcVirtObjectEdited,
   CanvasMouseUp,
   pasted,
@@ -26,7 +29,8 @@ import {
   globalHKeyDown,
   locationChanged,
   LocationChanged,
-  clientConnected
+  clientConnected,
+  metaClicked
 } from "../actions";
 import { Renderer } from "paperclip-web-renderer";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
@@ -40,7 +44,6 @@ declare const TARGET_URI;
 declare const PROTOCOL;
 
 export default function* mainSaga() {
-  console.log("OKOKOKO");
   yield fork(handleRenderer);
   yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
   yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
@@ -71,11 +74,6 @@ function handleSock(onMessage, onClient) {
   );
 
   client.onopen = () => {
-    // const url = getTargetUrl();
-    // if (url) {
-    //   // client.send(JSON.stringify({ type: "OPEN", uri: url }));
-    // }
-
     onClient({
       send: message => client.send(JSON.stringify(message))
     });
@@ -94,35 +92,7 @@ function* handleRenderer() {
   let _client: any;
 
   const chan = eventChannel(emit => {
-    const onMessage = ({ type, payload }) => {
-      switch (type) {
-        case "ENGINE_EVENT": {
-          const engineEvent = payload;
-          if (engineEvent.kind === "Error") {
-            return emit(engineErrored(engineEvent));
-          }
-
-          emit(engineDelegateChanged(engineEvent));
-          break;
-        }
-        case "INIT": {
-          emit(currentFileInitialized(payload));
-          break;
-        }
-        case "ERROR": {
-          emit(engineErrored(payload));
-          break;
-        }
-
-        // handle as regular action
-        default: {
-          emit({ type, payload });
-          break;
-        }
-      }
-    };
-
-    handleSock(onMessage, client => {
+    handleSock(emit, client => {
       _client = client;
       emit(clientConnected(null));
     });
@@ -207,7 +177,8 @@ function* handleRenderer() {
       ActionType.GLOBAL_Y_KEY_DOWN,
       ActionType.GLOBAL_SAVE_KEY_DOWN,
       ActionType.PASTED,
-      ActionType.FS_ITEM_CLICKED
+      ActionType.FS_ITEM_CLICKED,
+      ActionType.ERROR_BANNER_CLICKED
     ],
     function(action: Action) {
       maybeSendMessage(action);
@@ -241,13 +212,7 @@ function* handleCanvasMouseUp(action: CanvasMouseUp) {
     nodePathParts
   );
 
-  parent.postMessage(
-    {
-      type: "metaElementClicked",
-      source: virtualNode.source
-    },
-    location.origin
-  );
+  yield put(metaClicked({ source: virtualNode.source }));
 }
 
 function handleErrorBannerClicked({ payload: error }: ErrorBannerClicked) {

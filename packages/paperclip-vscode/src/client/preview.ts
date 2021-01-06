@@ -32,14 +32,14 @@ import {
   Load,
   Unload,
   LoadedParams,
-  ErrorLoadingParams,
-  DevServerInitialized,
-  DevServerInitializedParams
+  ErrorLoadingParams
 } from "../common/notifications";
+import { $$ACTION_NOTIFICATION, Action, ActionType } from "../common/actions";
 
 const VIEW_TYPE = "paperclip-preview";
 
 const RENDERER_MODULE_NAME = "paperclip-visual-editor";
+import * as ve from "paperclip-visual-editor";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -146,7 +146,6 @@ export const activate = (
   const registerLivePreview = (preview: LivePreview) => {
     _previews.push(preview);
     const listeners = [
-      preview.onVirtObjectEdited(onPCMutations),
       preview.onUndo(async () => {
         execCommand(preview, "undo");
       }),
@@ -292,16 +291,67 @@ export const activate = (
     });
   });
 
-  client.onNotification(
-    NotificationType.DEV_SERVER_INITIALIZED,
-    (event: DevServerInitializedParams) => {
-      console.log("DEV SERVER INIT", event);
-      _devServerPort = event.port;
-      _previews.forEach(preview => {
-        preview.setDevServerPort(event.port);
-      });
+  client.onNotification($$ACTION_NOTIFICATION, (action: Action) => {
+    switch (action.type) {
+      case ActionType.DEV_SERVER_INITIALIZED: {
+        _devServerPort = action.payload.port;
+        _previews.forEach(preview => {
+          preview.setDevServerPort(_devServerPort);
+        });
+        break;
+      }
+      case ActionType.DEV_SERVER_CHANGED: {
+        switch (action.payload.type) {
+          case ve.ActionType.PC_VIRT_OBJECT_EDITED: {
+            onPCMutations(action.payload.payload.mutations);
+            break;
+          }
+          case ve.ActionType.META_CLICKED: {
+            handleMetaClicked(action.payload);
+            break;
+          }
+          case ve.ActionType.ERROR_BANNER_CLICKED: {
+            handleErrorBannerClicked(action.payload);
+            break;
+          }
+        }
+
+        _previews.forEach(preview => {
+          preview.handleVisualEditorServerAction(action.payload);
+        });
+        return;
+      }
     }
-  );
+  });
+
+  const openDoc = async (uri: string) => {
+    return (
+      workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
+      (await workspace.openTextDocument(stripFileProtocol(uri)))
+    );
+  };
+
+  const handleMetaClicked = async ({ payload: { source } }: ve.MetaClicked) => {
+    // TODO - no globals here
+    const textDocument = await openDoc(source.uri);
+
+    const editor =
+      window.visibleTextEditors.find(
+        editor => editor.document && String(editor.document.uri) === source.uri
+      ) || (await window.showTextDocument(textDocument, ViewColumn.One));
+    editor.selection = new Selection(
+      textDocument.positionAt(source.location.start),
+      textDocument.positionAt(source.location.end)
+    );
+    editor.revealRange(editor.selection);
+  };
+
+  const handleErrorBannerClicked = async ({
+    payload: error
+  }: ve.ErrorBannerClicked) => {
+    const doc = await openDoc(error.uri);
+    await window.showTextDocument(doc, ViewColumn.One);
+  };
 
   // There can only be one listener, so do that & handle across all previews
   client.onNotification(NotificationType.ERROR_LOADING, event => {
@@ -339,7 +389,6 @@ class LivePreview {
   ) {
     this._em = new EventEmitter();
     this._targetUri = targetUri;
-    this.panel.webview.onDidReceiveMessage(this._onMessage);
     this._render();
     panel.onDidDispose(this._onPanelDispose);
     let prevVisible = panel.visible;
@@ -422,12 +471,6 @@ class LivePreview {
       this._em.removeListener("didDispose", listener);
     };
   }
-  public onVirtObjectEdited(listener: (mutations: PCMutation[]) => void) {
-    this._em.on("virtObjectEdited", listener);
-    return () => {
-      this._em.removeListener("virtObjectEdited", listener);
-    };
-  }
   public onUndo(listener: () => void) {
     this._em.on("undo", listener);
     return () => {
@@ -459,52 +502,13 @@ class LivePreview {
 
   private _onPreviewMessage = async event => {
     // debug what's going on
-    if (event.type === "metaElementClicked") {
-      this._handleElementMetaClicked(event);
-    } else if (event.type === "errorBannerClicked") {
-      this._handleErrorBannerClicked(event);
-    } else if (event.type === "ready") {
-      this._previewReady();
-    } else if (event.type === "PC_VIRT_OBJECT_EDITED") {
-      this._em.emit("virtObjectEdited", event.payload.mutations);
-    } else if (event.type === "GLOBAL_Z_KEY_DOWN") {
+    if (event.type === "GLOBAL_Z_KEY_DOWN") {
       this._em.emit("undo");
     } else if (event.type === "GLOBAL_Y_KEY_DOWN") {
       this._em.emit("redo");
     } else {
       this._em.emit(event.type, event.payload);
     }
-  };
-  private async _handleErrorBannerClicked({
-    error
-  }: {
-    error: EngineErrorEvent;
-  }) {
-    const doc = await this._openDoc(error.uri);
-    await window.showTextDocument(doc, ViewColumn.One);
-  }
-  private async _handleElementMetaClicked({ source }) {
-    // TODO - no globals here
-    const textDocument = await this._openDoc(source.uri);
-
-    const editor =
-      window.visibleTextEditors.find(
-        editor => editor.document && String(editor.document.uri) === source.uri
-      ) || (await window.showTextDocument(textDocument, ViewColumn.One));
-    editor.selection = new Selection(
-      textDocument.positionAt(source.location.start),
-      textDocument.positionAt(source.location.end)
-    );
-    editor.revealRange(editor.selection);
-  }
-  private async _openDoc(uri: string) {
-    return (
-      workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
-      (await workspace.openTextDocument(stripFileProtocol(uri)))
-    );
-  }
-  private _onMessage = () => {
-    // TODO when live preview tools are available
   };
   public async $$handleErrorLoading({ uri, error }: ErrorLoadingParams) {
     if (uri === this._targetUri) {
