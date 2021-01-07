@@ -44,19 +44,12 @@ import {
   Diagnostic
 } from "vscode-languageserver";
 import {
-  EngineDelegateEventNotification,
-  NotificationType,
-  LoadParams,
-  ErrorLoading,
-  Loaded
-} from "../common/notifications";
-import {
   TextDocument,
   TextDocumentContentChangeEvent
 } from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
 import { stripFileProtocol } from "paperclip";
-import { EngineDelegate } from "paperclip/src";
+import { EngineDelegate } from "paperclip";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
@@ -93,29 +86,6 @@ export class VSCServiceBridge {
 
     connection.onRequest(DefinitionRequest.type, this._onDefinitionRequest);
     connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
-
-    connection.onNotification(
-      NotificationType.LOAD,
-      async ({ uri }: LoadParams) => {
-        try {
-          const data = await _engine.open(uri);
-          connection.sendNotification(...new Loaded({ uri, data }).getArgs());
-        } catch (e) {
-          console.warn(e);
-          connection.sendNotification(
-            ...new ErrorLoading({ uri, error: e }).getArgs()
-          );
-        }
-      }
-    );
-
-    connection.onNotification(
-      NotificationType.UNLOAD,
-      ({ uri }: LoadParams) => {
-        // TODO
-        // engine.unload(uri);
-      }
-    );
 
     connection.onDidOpenTextDocument(({ textDocument }) => {
       this._documents[textDocument.uri] = TextDocument.create(
@@ -344,18 +314,10 @@ export class VSCServiceBridge {
       uri: event.uri,
       diagnostics: []
     });
-
-    this.connection.sendNotification(
-      ...new EngineDelegateEventNotification(event).getArgs()
-    );
   }
 
   private _onEngineErrorEvent(event: EngineErrorEvent) {
     try {
-      this.connection.sendNotification(
-        ...new EngineDelegateEventNotification(event).getArgs()
-      );
-
       switch (event.errorKind) {
         case EngineErrorKind.Graph: {
           return this._handleGraphError(event);

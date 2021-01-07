@@ -14,7 +14,6 @@ import * as fs from "fs";
 import * as url from "url";
 import { createServices } from "./services";
 import { VSCServiceBridge } from "./bridge";
-import { Crash } from "../common/notifications";
 import {
   devServerInitialized,
   devServerChanged,
@@ -74,17 +73,7 @@ class Server {
   }
 
   private _onConnectionInitialized = async () => {
-    const engine = await createEngineDelegate(
-      { mode: EngineMode.MultiFrame },
-      () => {
-        this._connection.sendNotification(...new Crash({}).getArgs());
-      }
-    );
-
-    watchPaperclipSources(engine);
-
-    const devServerInfo = await startServer({
-      engine,
+    const { port, engine, dispatch } = await startServer({
       localResourceRoots: this._workspaceFolders.map(({ uri }) => {
         return url.fileURLToPath(uri);
       }),
@@ -96,11 +85,11 @@ class Server {
     this._connection.onNotification(
       $$ACTION_NOTIFICATION,
       (action: ExternalAction) => {
-        devServerInfo.dispatch(action);
+        dispatch(action);
       }
     );
 
-    this._dispatch(devServerInitialized({ port: devServerInfo.port }));
+    this._dispatch(devServerInitialized({ port }));
 
     // Language service for handling information about the document such as colors, references,
     // etc
@@ -110,21 +99,6 @@ class Server {
     new VSCServiceBridge(engine, services, this._connection);
   };
 }
-
-const watchPaperclipSources = (
-  engine: EngineDelegate,
-  cwd: string = process.cwd()
-) => {
-  // TODO - may eventually want to watch for this -- something like a config watcher?
-  const configUrl = findPCConfigUrl(fs)(cwd);
-
-  if (configUrl) {
-    const config = JSON.parse(fs.readFileSync(new url.URL(configUrl), "utf8"));
-
-    const watcher = new PaperclipSourceWatcher(config, cwd);
-    keepEngineInSyncWithFileSystem2(watcher, engine);
-  }
-};
 
 const server = new Server();
 server.start();

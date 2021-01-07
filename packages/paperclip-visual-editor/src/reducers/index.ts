@@ -129,12 +129,6 @@ export default (state: AppState, action: Action) => {
         newState.currentError = null;
       });
     }
-    case ActionType.PAINT_BUTTON_CLICKED: {
-      return produce(state, newState => {
-        newState.toolsLayerEnabled = !newState.toolsLayerEnabled;
-        newState.selectedNodePaths = [];
-      });
-    }
     case ActionType.GLOBAL_BACKSPACE_KEY_SENT:
     case ActionType.GLOBAL_ESCAPE_KEY_PRESSED: {
       // Don't do this until deselecting can be handled properly

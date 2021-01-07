@@ -6,14 +6,8 @@
   }
 </style>
 
-
-
-
-
-
-
 <!--
-  @frame { width: 1024, height: 768, x: -1508, y: 102 }
+  @frame { width: 1024, height: 768, x: -1508, y: 99 }
 -->
 <span>
   Something like that

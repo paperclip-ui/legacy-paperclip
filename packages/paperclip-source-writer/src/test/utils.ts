@@ -1,5 +1,5 @@
 import { createEngine, createEngineDelegate } from "paperclip";
-import { EngineMode } from "paperclip/src";
+import { EngineMode } from "paperclip";
 import * as path from "path";
 
 export const mockDOMFactory: any = {

@@ -28,13 +28,6 @@ import * as path from "path";
 import { EventEmitter } from "events";
 import { LanguageClient } from "vscode-languageclient";
 import {
-  NotificationType,
-  Load,
-  Unload,
-  LoadedParams,
-  ErrorLoadingParams
-} from "../common/notifications";
-import {
   $$ACTION_NOTIFICATION,
   Action,
   ActionType,
@@ -269,13 +262,6 @@ export const activate = (
     env.openExternal(Uri.parse("https://github.com/crcn/paperclip/issues"));
   });
 
-  // There can only be one listener, so do that & handle across all previews
-  client.onNotification(NotificationType.ENGINE_EVENT, event => {
-    _previews.forEach(preview => {
-      preview.$$handleEngineDelegateEvent(event);
-    });
-  });
-
   client.onNotification($$ACTION_NOTIFICATION, (action: Action) => {
     switch (action.type) {
       case ActionType.DEV_SERVER_INITIALIZED: {
@@ -286,7 +272,13 @@ export const activate = (
         break;
       }
       case ActionType.DEV_SERVER_CHANGED: {
-        if (action.payload.type === ve.ServerActionType.INSTANCE_CHANGED) {
+        if (action.payload.type === ve.ServerActionType.CRASHED) {
+          window.showWarningMessage(
+            "Paperclip crashed - you'll need to reload this window."
+          );
+        } else if (
+          action.payload.type === ve.ServerActionType.INSTANCE_CHANGED
+        ) {
           // oh boy 🙈
           switch (action.payload.payload.action.type) {
             case ve.ActionType.PC_VIRT_OBJECT_EDITED: {
@@ -383,20 +375,6 @@ export const activate = (
     const doc = await openDoc(error.uri);
     await window.showTextDocument(doc, ViewColumn.One);
   };
-
-  // There can only be one listener, so do that & handle across all previews
-  client.onNotification(NotificationType.ERROR_LOADING, event => {
-    _previews.forEach(preview => {
-      preview.$$handleErrorLoading(event);
-    });
-  });
-
-  // There can only be one listener, so do that & handle across all previews
-  client.onNotification(NotificationType.LOADED, event => {
-    _previews.forEach(preview => {
-      preview.$$handleLoaded(event);
-    });
-  });
 };
 
 class LivePreview {
@@ -430,12 +408,6 @@ class LivePreview {
       // Need to re-render when the panel becomes visible
       if (panel.visible) {
         this._render();
-
-        // panel content is disposed of, so eliminate the extra work
-      } else {
-        this._client.sendNotification(
-          ...new Unload({ uri: targetUri }).getArgs()
-        );
       }
     });
   }
@@ -462,22 +434,12 @@ class LivePreview {
       closeWithFile: this.closeWithFile
     };
   }
-  private _createInitPromise() {
-    this._initPromise = new Promise(resolve => {
-      this._previewInitialized = resolve as any;
-    });
-  }
   private _render() {
     this._needsReloading = false;
 
     // force reload
     this.panel.webview.html = "";
     this.panel.webview.html = this._getHTML();
-    this._createInitPromise();
-
-    this._client.sendNotification(
-      ...new Load({ uri: this._targetUri }).getArgs()
-    );
   }
   private _onPanelDispose = () => {
     this.dispose();
@@ -488,64 +450,9 @@ class LivePreview {
       this._em.removeListener("didDispose", listener);
     };
   }
-  public async $$handleErrorLoading({ uri, error }: ErrorLoadingParams) {
-    if (uri === this._targetUri) {
-      await this._readyPromise;
-      this._needsReloading = true;
-      this.panel.webview.postMessage({
-        type: "ERROR",
-        payload: JSON.stringify(error)
-      });
-    }
-  }
-  public async $$handleLoaded({ uri, data }: LoadedParams) {
-    if (uri === this._targetUri) {
-      await this._readyPromise;
-      this.panel.webview.postMessage({
-        type: "INIT",
-        payload: JSON.stringify(data)
-      });
-      this._previewInitialized();
-    }
-  }
   public async setDevServerPort(port: number) {
     this._devServerPort = port;
     this._render();
-  }
-  public async $$handleEngineDelegateEvent(event: EngineDelegateEvent) {
-    await this._initPromise;
-    if (
-      this._needsReloading &&
-      (event.kind === EngineDelegateEventKind.Evaluated ||
-        event.kind === EngineDelegateEventKind.Diffed)
-    ) {
-      this._render();
-    }
-
-    // all error events get passed to preview.
-    if (event.kind !== EngineDelegateEventKind.Error) {
-      if (
-        event.uri !== this._targetUri &&
-        !this._dependencies.includes(event.uri)
-      ) {
-        return;
-      }
-
-      if (
-        event.uri == this._targetUri &&
-        (event.kind === EngineDelegateEventKind.Evaluated ||
-          event.kind === EngineDelegateEventKind.Loaded ||
-          event.kind === EngineDelegateEventKind.Diffed ||
-          event.kind === EngineDelegateEventKind.ChangedSheets)
-      ) {
-        this._dependencies = event.data.allDependencies;
-      }
-    }
-
-    this.panel.webview.postMessage({
-      type: "ENGINE_EVENT",
-      payload: JSON.stringify(event)
-    });
   }
   private _getHTML() {
     const scriptPathOnDisk = Uri.file(

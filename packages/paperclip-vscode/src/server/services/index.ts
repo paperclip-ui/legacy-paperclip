@@ -1,5 +1,5 @@
 import { Engine } from "paperclip";
-import { EngineDelegate } from "paperclip/src";
+import { EngineDelegate } from "paperclip";
 import { BaseLanguageService } from "./base";
 import { PCHTMLLanguageService } from "./html";
 

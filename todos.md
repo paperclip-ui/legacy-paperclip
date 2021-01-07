@@ -1,6 +1,9 @@
 ### TOMORROW
 
-- grid view start
+- grid view start 
+  - snapshot engine
+  - command + t
+  - grid view top bar button
 
 - presense icon
 - open in browserstack button

@@ -1,11 +1,4 @@
-import * as path from "path";
-import * as fs from "fs";
-import {
-  PC_CONFIG_FILE_NAME,
-  EngineMode,
-  createEngineDelegate,
-  PaperclipConfig
-} from "paperclip";
+import { exec } from "child_process";
 import { startServer } from "paperclip-visual-editor";
 
 export type ServerOptions = {
@@ -14,19 +7,11 @@ export type ServerOptions = {
 };
 
 export const devStart = async ({ port, cwd }: ServerOptions) => {
-  const config: PaperclipConfig = JSON.parse(
-    fs.readFileSync(path.join(cwd, PC_CONFIG_FILE_NAME), "utf8")
-  ) as PaperclipConfig;
-
-  const engine = await createEngineDelegate({
-    mode: EngineMode.MultiFrame
-  });
-
-  const _serverResult = await startServer({
+  const { port: actualPort } = await startServer({
     port,
-    engine,
+    cwd: process.cwd(),
     localResourceRoots: [cwd]
   });
 
-  // exec(`open http://localhost:${serverResult.port}`);
+  exec(`open http://localhost:${actualPort}`);
 };

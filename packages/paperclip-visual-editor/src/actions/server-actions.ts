@@ -2,7 +2,8 @@ import { actionCreator } from "./base";
 import { InstanceAction } from "./instance-actions";
 
 export enum ServerActionType {
-  INSTANCE_CHANGED = "INSTANCE_CHANGED"
+  INSTANCE_CHANGED = "INSTANCE_CHANGED",
+  CRASHED = "CRASHED"
 }
 
 type BaseAction<TType extends ServerActionType, TPayload = undefined> = {
@@ -18,8 +19,11 @@ export type InstanceChanged = BaseAction<
   }
 >;
 
+export type Crashed = BaseAction<ServerActionType.CRASHED>;
+
 export const instanceChanged = actionCreator<InstanceChanged>(
   ServerActionType.INSTANCE_CHANGED
 );
+export const crashed = actionCreator<Crashed>(ServerActionType.CRASHED);
 
-export type ServerAction = InstanceChanged;
+export type ServerAction = InstanceChanged | Crashed;

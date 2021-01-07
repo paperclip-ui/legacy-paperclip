@@ -4,7 +4,12 @@ import * as chokidar from "chokidar";
 
 import sockjs from "sockjs";
 import getPort from "get-port";
-import { EngineDelegate } from "paperclip";
+import {
+  createEngineDelegate,
+  EngineDelegate,
+  keepEngineInSyncWithFileSystem2,
+  findPCConfigUrl
+} from "paperclip";
 import * as URL from "url";
 import {
   engineDelegateChanged,
@@ -17,7 +22,8 @@ import {
   PopoutWindowRequested,
   pcFileLoaded,
   instanceChanged,
-  InstanceAction
+  InstanceAction,
+  crashed
 } from "./actions";
 import { FSItemKind } from "./state";
 import express from "express";
@@ -25,20 +31,31 @@ import { normalize } from "path";
 import { EventEmitter } from "events";
 import { noop } from "lodash";
 import { exec } from "child_process";
+import { EngineMode, PaperclipSourceWatcher } from "paperclip";
 
 export type ServerOptions = {
-  engine: EngineDelegate;
   localResourceRoots: string[];
   port?: number;
   emit?: (action: Action) => void;
+  cwd?: string;
 };
 
 export const startServer = async ({
   port: defaultPort,
-  engine,
   localResourceRoots,
-  emit: emitExternal = noop
+  emit: emitExternal = noop,
+  cwd = process.cwd()
 }: ServerOptions) => {
+  const engine = await createEngineDelegate(
+    {
+      mode: EngineMode.MultiFrame
+    },
+    () => {
+      emitExternal(crashed(null));
+    }
+  );
+  watchPaperclipSources(engine, cwd);
+
   const port = await getPort({ port: defaultPort });
 
   const io = sockjs.createServer();
@@ -177,6 +194,26 @@ export const startServer = async ({
     });
   });
 
+  const dispatch = (action: ExternalAction) => {
+    em.emit("externalAction", action);
+  };
+
+  startHTTPServer(port, io, localResourceRoots);
+
+  console.info(`Listening on port %d`, port);
+
+  return {
+    port,
+    engine,
+    dispatch
+  };
+};
+
+const startHTTPServer = (
+  port: number,
+  io: sockjs.Server,
+  localResourceRoots: string[]
+) => {
   const app = express();
 
   const server = app.listen(port);
@@ -190,15 +227,19 @@ export const startServer = async ({
     }
     res.sendFile(filePath);
   });
+};
 
-  const dispatch = (action: ExternalAction) => {
-    em.emit("externalAction", action);
-  };
+const watchPaperclipSources = (
+  engine: EngineDelegate,
+  cwd: string = process.cwd()
+) => {
+  // TODO - may eventually want to watch for this -- something like a config watcher?
+  const configUrl = findPCConfigUrl(fs)(cwd);
 
-  console.info(`Listening on port %d`, port);
+  if (configUrl) {
+    const config = JSON.parse(fs.readFileSync(new URL.URL(configUrl), "utf8"));
 
-  return {
-    port,
-    dispatch
-  };
+    const watcher = new PaperclipSourceWatcher(config, cwd);
+    keepEngineInSyncWithFileSystem2(watcher, engine);
+  }
 };
