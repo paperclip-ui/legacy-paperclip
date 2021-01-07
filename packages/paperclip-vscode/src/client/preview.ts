@@ -582,13 +582,6 @@ class LivePreview {
       </style>
     </head>
     <body>
-      <script>
-        const PROTOCOL = "${scriptUri.scheme}://${scriptUri.authority}/file";
-        const TARGET_URI = "${this._targetUri}";
-        const vscode = acquireVsCodeApi();
-        vscode.setState(${JSON.stringify(this.getState())});
-      </script>
-      <!--script src="${scriptUri}"></script-->
       <iframe src="http://localhost:${
         this._devServerPort
       }?within_ide=true&current_file=${encodeURIComponent(

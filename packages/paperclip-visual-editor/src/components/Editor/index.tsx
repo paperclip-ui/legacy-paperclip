@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { withAppStore } from "../../hocs";
 import { Center } from "./Center";
 import { LeftSidebar } from "./LeftSidebar";
@@ -9,7 +9,7 @@ export const Editor = withAppStore(() => {
   const { state } = useAppStore();
   return (
     <styles.Container>
-      {state.showLeftGutter ? <LeftSidebar /> : null}
+      {state.embedded ? null : <LeftSidebar />}
       <Center />
     </styles.Container>
   );

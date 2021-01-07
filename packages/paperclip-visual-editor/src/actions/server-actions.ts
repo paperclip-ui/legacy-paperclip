@@ -5,7 +5,7 @@ export enum ServerActionType {
   INSTANCE_CHANGED = "INSTANCE_CHANGED"
 }
 
-export type BaseAction<TType extends ServerActionType, TPayload = undefined> = {
+type BaseAction<TType extends ServerActionType, TPayload = undefined> = {
   type: TType;
   payload: TPayload;
 };

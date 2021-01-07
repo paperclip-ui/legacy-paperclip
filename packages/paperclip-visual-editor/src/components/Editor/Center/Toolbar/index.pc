@@ -36,6 +36,7 @@
       @include utils.mask;
       border: none;
       padding:0;
+      outline: none;
       &.minus {
         mask-image: url(./minus.svg);
       }
@@ -178,6 +179,21 @@
   {children}
 </div>
 
+<button export component as="PopOutButton" {onClick}>
+  <style>
+    width: 10px;
+    height: 10px;
+    background: rgb(179, 179, 179);
+    margin-right: 4px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    &:active {
+      outline: none;
+    }
+  </style>
+</button>
+
 <Container export component as="Preview" {gridMode?} className:light="light">
  
   <Controls>
@@ -185,6 +201,7 @@
     <Zoom amount="100" />
   </Controls>
    <Controls right>
+    <PopOutButton />
     <CollapseButton />
   </Controls>
 </Container>

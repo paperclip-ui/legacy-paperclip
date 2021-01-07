@@ -1,16 +1,14 @@
 ### TOMORROW
 
-- ensure that meta click works
-- ensure changes in preview are handled in VS Code
-- ability to pop window out of VS Code
-- IDs for each pane window
+- grid view start
+
+- presense icon
+- open in browserstack button
+- ensure that panning works in browserstack and stuff
+- ngrok tunnel
+- push state for current_file
 
 #### Next
-
-
-- wire up dev server with vscode - deprecate IPC
-  - ensure that meta click works
-  - need to write files back to
 
 - pop tab out of vscode 
 
@@ -27,6 +25,7 @@
     - maybe not considering that user might be using plain text editor
 
 - consider FS changes
+- popout button should automatically create ngrok tunnel - should be share button
 
 #### Considerations
 

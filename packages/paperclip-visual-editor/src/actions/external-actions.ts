@@ -4,10 +4,7 @@ export enum ExternalActionType {
   CONTENT_CHANGED = "CONTENT_CHANGED"
 }
 
-export type BaseAction<
-  TType extends ExternalActionType,
-  TPayload = undefined
-> = {
+type BaseAction<TType extends ExternalActionType, TPayload = undefined> = {
   type: TType;
   payload: TPayload;
 };

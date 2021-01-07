@@ -14,6 +14,7 @@ import {
   FSItemClicked,
   Action,
   ExternalAction,
+  PopoutWindowRequested,
   pcFileLoaded,
   instanceChanged,
   InstanceAction
@@ -22,19 +23,21 @@ import { FSItemKind } from "./state";
 import express from "express";
 import { normalize } from "path";
 import { EventEmitter } from "events";
+import { noop } from "lodash";
+import { exec } from "child_process";
 
 export type ServerOptions = {
   engine: EngineDelegate;
   localResourceRoots: string[];
   port?: number;
-  emit: (action: Action) => void;
+  emit?: (action: Action) => void;
 };
 
 export const startServer = async ({
   port: defaultPort,
   engine,
   localResourceRoots,
-  emit: emitExternal
+  emit: emitExternal = noop
 }: ServerOptions) => {
   const port = await getPort({ port: defaultPort });
 
@@ -96,6 +99,10 @@ export const startServer = async ({
         case ActionType.FILE_OPENED: {
           return onFileOpened(action);
         }
+        case ActionType.POPOUT_WINDOW_REQUESTED: {
+          onPopoutWindowRequested(action);
+          break;
+        }
       }
       emitExternal(instanceChanged({ targetPCFileUri: targetUri, action }));
     });
@@ -118,6 +125,14 @@ export const startServer = async ({
       if (result) {
         emit(pcFileLoaded(result));
       }
+    };
+
+    const onPopoutWindowRequested = ({
+      payload: { uri }
+    }: PopoutWindowRequested) => {
+      exec(
+        `open http://localhost:${port}/?current_file=${encodeURIComponent(uri)}`
+      );
     };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {

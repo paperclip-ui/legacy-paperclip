@@ -154,7 +154,8 @@ function* handleRenderer() {
       ActionType.GLOBAL_SAVE_KEY_DOWN,
       ActionType.PASTED,
       ActionType.FS_ITEM_CLICKED,
-      ActionType.ERROR_BANNER_CLICKED
+      ActionType.ERROR_BANNER_CLICKED,
+      ActionType.POPOUT_WINDOW_REQUESTED
     ],
     function(action: Action) {
       maybeSendMessage(action);

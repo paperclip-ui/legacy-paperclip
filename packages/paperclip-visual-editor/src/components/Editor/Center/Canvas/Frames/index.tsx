@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import {
   Frame,
   FramesRenderer,

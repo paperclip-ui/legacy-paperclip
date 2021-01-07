@@ -81,7 +81,7 @@ export type AppState = {
   expandedFrameInfo?: ExpandedFrameInfo;
   resizerMoving?: boolean;
   currentFileUri: string;
-  showLeftGutter?: boolean;
+  embedded?: boolean;
   documentContent: Record<string, string>;
   currentEngineEvents: EngineDelegateEvent[];
   allLoadedPCFileData: Record<string, LoadedData>;

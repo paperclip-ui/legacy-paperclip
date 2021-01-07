@@ -4,13 +4,13 @@ import { useAppStore } from "../../../../hooks/useAppStore";
 import {
   zoomInButtonClicked,
   zoomOutButtonClicked,
-  paintButtonClicked,
+  popoutButtonClicked,
   collapseFrameButtonClicked
 } from "../../../../actions";
 
 export const Toolbar = () => {
   const {
-    state: { canvas, toolsLayerEnabled, expandedFrameInfo },
+    state: { canvas, embedded, expandedFrameInfo },
     dispatch
   } = useAppStore();
   const onMinusClick = () => {
@@ -19,8 +19,8 @@ export const Toolbar = () => {
   const onPlusClick = () => {
     dispatch(zoomInButtonClicked(null));
   };
-  const onPainToolClick = () => {
-    dispatch(paintButtonClicked(null));
+  const onPopOutButtonClicked = () => {
+    dispatch(popoutButtonClicked(null));
   };
   const onCollapseButtonClick = () => {
     dispatch(collapseFrameButtonClicked(null));
@@ -40,11 +40,15 @@ export const Toolbar = () => {
           />
         )}
       </styles.Controls>
-      {expandedFrameInfo && (
-        <styles.Controls>
+
+      <styles.Controls>
+        {embedded ? (
+          <styles.PopOutButton onClick={onPopOutButtonClicked} />
+        ) : null}
+        {expandedFrameInfo ? (
           <styles.CollapseButton active onClick={onCollapseButtonClick} />
-        </styles.Controls>
-      )}
+        ) : null}
+      </styles.Controls>
     </styles.Container>
   );
 };

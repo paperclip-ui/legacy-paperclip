@@ -5,7 +5,8 @@ import {
   EngineErrorEvent,
   EngineDelegateEvent,
   LoadedData,
-  ExprSource
+  ExprSource,
+  Action
 } from "paperclip-web-renderer/node_modules/paperclip-utils";
 import { Box, Directory, FSItemKind, Point, Size } from "../state";
 
@@ -19,9 +20,10 @@ export enum ActionType {
   CANVAS_MOUSE_LEAVE = "CANVAS_MOUSE_LEAVE",
   CANVAS_MOUSE_UP = "CANVAS_MOUSE_UP",
   ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
+  POPOUT_BUTTON_CLICKED = "POPOUT_BUTTON_CLICKED",
+  POPOUT_WINDOW_REQUESTED = "POPOUT_WINDOW_REQUESTED",
   PASTED = "PASTED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
-  PAINT_BUTTON_CLICKED = "PAINT_BUTTON_CLICKED",
   CANVAS_RESIZED = "CANVAS_RESIZED",
   CANVAS_MOUSE_MOVED = "CANVAS_MOUSE_MOVED",
   DIR_LOADED = "DIR_LOADED",
@@ -116,6 +118,14 @@ export type ResizerPathMoved = WrappedEvent<
   }
 >;
 
+export type PopoutButtonClicked = BaseAction<ActionType.POPOUT_BUTTON_CLICKED>;
+export type PopoutWindowRequested = BaseAction<
+  ActionType.POPOUT_WINDOW_REQUESTED,
+  {
+    uri: string;
+  }
+>;
+
 export type ResizerPathStoppedMoving = WrappedEvent<
   MouseEvent,
   ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
@@ -201,7 +211,6 @@ export type ZoomInButtonClicked = BaseAction<ActionType.ZOOM_IN_BUTTON_CLICKED>;
 export type ZoomOutButtonClicked = BaseAction<
   ActionType.ZOOM_OUT_BUTTON_CLICKED
 >;
-export type PainButtonClicked = BaseAction<ActionType.PAINT_BUTTON_CLICKED>;
 export type DirLoaded = BaseAction<
   ActionType.DIR_LOADED,
   {
@@ -305,8 +314,8 @@ export const zoomInButtonClicked = actionCreator<ZoomInButtonClicked>(
 export const zoomOutButtonClicked = actionCreator<ZoomOutButtonClicked>(
   ActionType.ZOOM_OUT_BUTTON_CLICKED
 );
-export const paintButtonClicked = actionCreator<PainButtonClicked>(
-  ActionType.PAINT_BUTTON_CLICKED
+export const popoutWindowRequested = actionCreator<PopoutWindowRequested>(
+  ActionType.POPOUT_WINDOW_REQUESTED
 );
 export const globalEscapeKeyPressed = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>
@@ -326,6 +335,9 @@ export const globalMetaKeyDown = actionCreator<
 
 export const globalZKeyDown = actionCreator<KeyComboPressed<ActionType>>(
   ActionType.GLOBAL_Z_KEY_DOWN
+);
+export const popoutButtonClicked = actionCreator<PopoutButtonClicked>(
+  ActionType.POPOUT_BUTTON_CLICKED
 );
 export const clientConnected = actionCreator<ClientConnected>(
   ActionType.CLIENT_CONNECTED
@@ -370,18 +382,19 @@ export type InstanceAction =
   | CanvasMouseLeave
   | PCFileLoaded
   | CanvasPanEnd
+  | PopoutWindowRequested
   | CanvasResized
   | CanvasMouseMoved
   | ErrorBannerClicked
   | FileOpened
   | LocationChanged
+  | PopoutButtonClicked
   | CollapseFrameButtonClicked
   | ExpandFrameButtonClicked
   | ZoomInButtonClicked
   | ClientConnected
   | FrameTitleClicked
   | EngineDelegateChanged
-  | PainButtonClicked
   | EngineDelegateEventsHandled
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
