@@ -107,7 +107,7 @@
     height: 100%;
 
     i {
-      --size: 0.9em;
+      --size: 0.8em;
       position: relative;
       top: 1px;
       /* mask-size: 0.93em; */
@@ -206,7 +206,7 @@
     i {
       --size: 9px;
       position: relative;
-      top: 1px;
+      top: 2px;
       mask-size: var(--size);
       cursor: pointer;
       mask-image: url(./minimize-3.svg);
@@ -275,8 +275,8 @@
 -->
 <button export component as="PopOutButton"  className="$icons.icon" {onClick}>
   <style>
-    --size: 11px;
-    top: -1px;
+    --size: 13px;
+
     position: relative;
 
     margin-right: 4px;

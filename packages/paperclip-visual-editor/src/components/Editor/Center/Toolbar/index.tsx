@@ -89,7 +89,9 @@ export const Toolbar = () => {
         />
       </styles.Controls>
 
-      <styles.Title>{relativePath}</styles.Title>
+      {(!embedded && <styles.Title>{relativePath}</styles.Title>) || (
+        <styles.Spacer />
+      )}
 
       <styles.Controls>
         {embedded ? (
