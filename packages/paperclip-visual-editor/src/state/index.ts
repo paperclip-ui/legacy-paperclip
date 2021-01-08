@@ -104,6 +104,7 @@ export type AppState = {
 };
 
 export const INITIAL_STATE: AppState = {
+  readonly: false,
   centeredInitial: false,
   mountedRendererIds: [],
   toolsLayerEnabled: true,
