@@ -27,11 +27,12 @@ import {
 } from "./actions";
 import { FSItemKind } from "./state";
 import express from "express";
-import { normalize } from "path";
+import { normalize, relative } from "path";
 import { EventEmitter } from "events";
 import { noop } from "lodash";
 import { exec } from "child_process";
 import { EngineMode, PaperclipSourceWatcher } from "paperclip";
+import { isPaperclipFile, PaperclipConfig } from "paperclip";
 
 export type ServerOptions = {
   localResourceRoots: string[];
@@ -63,24 +64,6 @@ export const startServer = async ({
   let _watcher: chokidar.FSWatcher;
   const em = new EventEmitter();
 
-  const watchEngineFiles = () => {
-    if (_watcher) {
-      _watcher.close();
-    }
-    _watcher = chokidar.watch(
-      engine.getGraphUris().map(uri => URL.fileURLToPath(uri)),
-      {
-        ignoreInitial: true
-      }
-    );
-    _watcher.on("change", filePath => {
-      engine.updateVirtualFileContent(
-        URL.pathToFileURL(filePath).href,
-        fs.readFileSync(filePath, "utf8")
-      );
-    });
-  };
-
   const openURI = uri => {
     const localPath = URL.fileURLToPath(uri);
     if (!localResourceRoots.some(root => localPath.includes(root))) {
@@ -88,7 +71,6 @@ export const startServer = async ({
     }
 
     const ret = engine.open(uri);
-    watchEngineFiles();
     return ret;
   };
 
@@ -233,13 +215,25 @@ const watchPaperclipSources = (
   engine: EngineDelegate,
   cwd: string = process.cwd()
 ) => {
-  // TODO - may eventually want to watch for this -- something like a config watcher?
-  const configUrl = findPCConfigUrl(fs)(cwd);
+  // want to load all PC files within the CWD workspace -- disregard PC configs
 
-  if (configUrl) {
-    const config = JSON.parse(fs.readFileSync(new URL.URL(configUrl), "utf8"));
+  const watcher = chokidar.watch(
+    "**/*.pc",
 
-    const watcher = new PaperclipSourceWatcher(config, cwd);
-    keepEngineInSyncWithFileSystem2(watcher, engine);
-  }
+    // TODO - ignored - fetch .gitignored
+    { cwd: cwd, ignored: ["**/node_modules/**", "node_modules"] }
+  );
+
+  watcher.on("all", (eventName, relativePath) => {
+    if (!isPaperclipFile(relativePath)) {
+      return;
+    }
+    const uri = URL.pathToFileURL(path.join(cwd, relativePath));
+
+    if (eventName === "change") {
+      engine.updateVirtualFileContent(uri.href, fs.readFileSync(uri, "utf8"));
+    } else if (eventName === "add") {
+      engine.open(uri.href);
+    }
+  });
 };

@@ -250,7 +250,9 @@ export const keepEngineInSyncWithFileSystem2 = (
   watcher: PaperclipSourceWatcher,
   engine: EngineDelegate
 ) => {
+  console.log("CH");
   return watcher.onChange((kind, uri) => {
+    console.log(kind);
     if (kind === ChangeKind.Changed) {
       engine.updateVirtualFileContent(
         uri,

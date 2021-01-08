@@ -21,15 +21,6 @@ import {
   $$ACTION_NOTIFICATION
 } from "../common/actions";
 import {
-  createEngineDelegate,
-  keepEngineInSyncWithFileSystem2,
-  PaperclipSourceWatcher,
-  findPCConfigUrl,
-  EngineMode,
-  EngineDelegate
-} from "paperclip";
-
-import {
   startServer,
   Action as VsualEditorAction,
   ServerAction,

@@ -1,5 +1,8 @@
 ### TOMORROW
 
+
+- what about node_modules? For thi
+
 - grid view start 
   - snapshot engine
   - command + t
