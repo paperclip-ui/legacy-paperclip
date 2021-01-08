@@ -35,6 +35,7 @@ import { noop } from "lodash";
 import { exec } from "child_process";
 import { EngineMode, PaperclipSourceWatcher } from "paperclip";
 import { isPaperclipFile, PaperclipConfig } from "paperclip";
+import * as ngrok from "ngrok";
 
 export type ServerOptions = {
   localResourceRoots: string[];
@@ -138,13 +139,20 @@ export const startServer = async ({
         emit(pcFileLoaded(result));
       }
     };
+    let _ngrokUrl: string;
 
-    const onPopoutWindowRequested = ({
+    const getNGrokUrl = async () => {
+      if (_ngrokUrl) {
+        return _ngrokUrl;
+      }
+      return (_ngrokUrl = await ngrok.connect(port));
+    };
+
+    const onPopoutWindowRequested = async ({
       payload: { uri }
     }: PopoutWindowRequested) => {
-      exec(
-        `open http://localhost:${port}/?current_file=${encodeURIComponent(uri)}`
-      );
+      const ngrokUrl = await getNGrokUrl();
+      exec(`open ${ngrokUrl}/?current_file=${encodeURIComponent(uri)}`);
     };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {

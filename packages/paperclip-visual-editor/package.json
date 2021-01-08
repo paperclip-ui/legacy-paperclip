@@ -17,6 +17,7 @@
     "immer": "^7.0.7",
     "lodash": "^4.17.20",
     "mousetrap": "^1.6.5",
+    "ngrok": "^3.4.0",
     "paperclip": "^17.1.0",
     "paperclip-source-writer": "^17.1.0",
     "paperclip-utils": "^17.0.3",
