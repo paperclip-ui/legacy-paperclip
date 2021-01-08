@@ -1,4 +1,4 @@
-### NEXT
+### Immediate
 
 - ngrok
   
@@ -7,11 +7,15 @@
   - /editor
   - current file
 
-- !! CSSOM Patcher
+- Website
+
 - meta+- not working
 - get working online
+- look into how storybook gets setup
 
+## Next
 
+- !! CSSOM Patcher
 
 ### Maybe
 
@@ -19,19 +23,4 @@
 - right click elements
 - *Comments - abs position
 - @deprecated comment
-
-### Problems
-
-- hard to see organizational structure - grid view is flat
-  - possibly show tree view w/ previews?
-
-
-  - frontend
-  |-- src
-    |-- components
-      |-- Inputs
-        |-- Text.pc
-          | -- Frame 1
-             | -- [ SCREEN ]
-          | -- Frame 2
-             | -- [ SCREEN ]
+- meta click title
