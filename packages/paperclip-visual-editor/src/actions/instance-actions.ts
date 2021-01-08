@@ -14,6 +14,8 @@ export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
   LOCATION_CHANGED = "LOCATION_CHANGED",
   RENDERER_MOUNTED = "RENDERER_MOUNTED",
+  ZOOM_IN_KEY_PRESSED = "ZOOM_IN_KEY_PRESSED",
+  ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
   BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
   LOADED = "LOADED",
@@ -432,6 +434,12 @@ export const getAllScreensRequested = actionCreator<GetAllScreensRequested>(
   ActionType.GET_ALL_SCREENS_REQUESTED
 );
 export const loaded = actionCreator<Loaded>(ActionType.LOADED);
+export const zoomInKeyPressed = actionCreator<
+  KeyComboPressed<ActionType.ZOOM_IN_KEY_PRESSED>
+>(ActionType.ZOOM_IN_KEY_PRESSED);
+export const zoomOutKeyPressed = actionCreator<
+  KeyComboPressed<ActionType.ZOOM_OUT_KEY_PRESSED>
+>(ActionType.ZOOM_OUT_KEY_PRESSED);
 
 export type InstanceAction =
   // | RendererInitialized
@@ -475,6 +483,8 @@ export type InstanceAction =
   | EngineDelegateChanged
   | EngineDelegateEventsHandled
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
+  | KeyComboPressed<ActionType.ZOOM_IN_KEY_PRESSED>
+  | KeyComboPressed<ActionType.ZOOM_OUT_KEY_PRESSED>
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
   | KeyComboPressed<ActionType.GLOBAL_SAVE_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_ESCAPE_KEY_PRESSED>

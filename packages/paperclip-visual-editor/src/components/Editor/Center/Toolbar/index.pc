@@ -107,7 +107,7 @@
     height: 100%;
 
     i {
-      --size: 0.8em;
+      --size: 10px;
       position: relative;
       top: 1px;
       /* mask-size: 0.93em; */
@@ -139,7 +139,7 @@
     height: 100%;
 
     i {
-      --size: 1em;
+      --size: 11px;
       position: relative;
       top: 1px;
       /* mask-size: 0.93em; */
@@ -227,6 +227,7 @@
   <style>
     padding:4px 14px;
     display: flex;
+    z-index: 1;
     align-items: center;
     :self(& > *) {
       border-left: 1px solid rgb(110, 110, 110);
@@ -308,7 +309,7 @@
   <style>
     text-transform: uppercase;
     font-size: 0.7em;
-    background: rgb(255, 255, 83);
+    background: rgb(243, 191, 19);
     border-radius: 4px;
     color: rgb(117, 104, 30);
     box-sizing: border-box;
@@ -358,6 +359,10 @@
 <Preview className="$theme.font-default" />
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Title">
 
   <style>
@@ -369,6 +374,8 @@
     opacity: 0.8;
     font-size: 0.9em;
     line-height: 18px;
+    position: absolute;
+
   </style>
     {children}
 </div>
@@ -384,6 +391,7 @@
     <SearchInput />
     <Zoom amount="100" />
   </Controls>
+  <Spacer />
   <Title>
     src/components/Editor/Center/Toolbar/index.pc
   </Title>

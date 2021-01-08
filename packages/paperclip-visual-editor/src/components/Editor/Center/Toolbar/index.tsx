@@ -89,9 +89,12 @@ export const Toolbar = () => {
         />
       </styles.Controls>
 
-      {(!embedded && <styles.Title>{relativePath}</styles.Title>) || (
-        <styles.Spacer />
+      {(!embedded || showBirdseye) && (
+        <styles.Title>
+          {showBirdseye ? "All Paperclip UIs 🎨" : relativePath}
+        </styles.Title>
       )}
+      <styles.Spacer />
 
       <styles.Controls>
         {embedded ? (

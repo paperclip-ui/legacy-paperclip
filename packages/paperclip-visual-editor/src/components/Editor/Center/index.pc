@@ -12,6 +12,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    width: 100vw;
+    height: 100vh;
   </style>
   {children}
 </div>
@@ -24,6 +26,9 @@
   <style>
     position: relative;
     overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background: blue;
   </style>
   {children}
 </div>
@@ -41,7 +46,7 @@
 
 
 <!--
-  @frame { title: "Center", width: 1024, height: 768, x: 31, y: -41 }
+  @frame { title: "Center", width: 1024, height: 768, x: 26, y: 776 }
 -->
 <Container export component as="BirdseyePreview2" className="light $theme.font-default">
   <Toolbar.Preview gridMode />
@@ -57,3 +62,14 @@
 <div className="$theme.font-default $theme.full-wh">
   <Preview />
 </div>
+
+<!--
+  @frame { title: "Center / Empty", width: 1024, height: 768, x: 29, y: -144 }
+-->
+<Container className="light $theme.font-default">
+  <Toolbar.Preview gridMode />
+  <CanvasContainer>
+    <Birdseye.PreviewEmpty />
+  </CanvasContainer>
+</Container>
+

@@ -208,13 +208,14 @@
     }
   </style>
   
-  <input ref={filterInputRef} {onKeyPress?} {onChange?} placeholder="Filter"> 
+  <input ref={filterInputRef} {onKeyPress?} {onChange?} placeholder="Filter" autofocus> 
     <style>
       margin: 0px;
-      border: 2px solid var(--border-color-1);
+      border: 1px solid var(--border-color-1);
       padding: 5px 15px;
       border-radius: 100px;
       background: transparent;
+      background: rgb(247, 247, 247);
       padding-left: 25px;
       outline: none;
       &:focus {
@@ -250,6 +251,18 @@
     flex: 1;
     height: 100%;
     overflow: scroll;
+    min-height: 100px;
+
+    &:empty:before {
+      display: block;
+      content: "No frames found";
+      font-size: 32px;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      margin-top: 20%;
+      opacity: 0.2;
+    }
   </style>
   {children}
 </div>
@@ -283,5 +296,11 @@
 
 </Container>
 
+<Container export component as="PreviewEmpty">
+  <Header>
+    <Filter />
+  </Header>
+  <Cells />
+</Container>
 
 

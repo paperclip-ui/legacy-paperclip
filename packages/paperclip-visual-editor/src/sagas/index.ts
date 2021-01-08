@@ -26,7 +26,9 @@ import {
   metaClicked,
   gridHotkeyPressed,
   getAllScreensRequested,
-  loaded
+  loaded,
+  zoomOutKeyPressed,
+  zoomInKeyPressed
 } from "../actions";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
 import { getVirtTarget } from "paperclip-utils";
@@ -249,6 +251,14 @@ function* handleKeyCommands() {
       emit(gridHotkeyPressed(null));
       return false;
     });
+    Mousetrap.bind("meta+=", () => {
+      emit(zoomInKeyPressed(null));
+      return false;
+    });
+    Mousetrap.bind("meta+minus", () => {
+      emit(zoomOutKeyPressed(null));
+      return false;
+    });
     Mousetrap.bind("meta+s", () => {
       emit(globalSaveKeyPress(null));
       return false;
@@ -372,7 +382,7 @@ function* handleDocumentEvents() {
         (event.key === "=" || event.key === "-") &&
         event.metaKey
       ) {
-        event.preventDefault();
+        // event.preventDefault();
       }
     });
   });

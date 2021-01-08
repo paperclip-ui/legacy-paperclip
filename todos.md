@@ -8,6 +8,13 @@
   - current file
 
 - !! CSSOM Patcher
+- meta+- not working
 
+
+
+### Maybe
+
+- Component is used in in X places
 - right click elements
-- if no file is open, then show grid
+- *Comments - abs position
+- @deprecated comment

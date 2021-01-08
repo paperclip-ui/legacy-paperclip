@@ -214,6 +214,7 @@ export default (state: AppState, action: Action) => {
           action.payload.content;
       });
     }
+    case ActionType.ZOOM_IN_KEY_PRESSED:
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {
       return produce(state, newState => {
         newState.canvas = setCanvasZoom(
@@ -223,6 +224,7 @@ export default (state: AppState, action: Action) => {
         );
       });
     }
+    case ActionType.ZOOM_OUT_KEY_PRESSED:
     case ActionType.ZOOM_OUT_BUTTON_CLICKED: {
       return produce(state, newState => {
         newState.canvas = setCanvasZoom(
