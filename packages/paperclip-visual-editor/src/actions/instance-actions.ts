@@ -13,6 +13,9 @@ import { Box, Directory, FSItemKind, Point, Size } from "../state";
 export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
   LOCATION_CHANGED = "LOCATION_CHANGED",
+  RENDERER_MOUNTED = "RENDERER_MOUNTED",
+  RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
+  BIRDSEYE_CELL_CLICKED = "BIRDSEYE_CELL_CLICKED",
   PC_FILE_OPENED = "PC_FILE_OPENED",
   CLIENT_CONNECTED = "CLIENT_CONNECTED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
@@ -37,6 +40,8 @@ export enum ActionType {
   GLOBAL_Z_KEY_DOWN = "GLOBAL_Z_KEY_DOWN",
   GLOBAL_Y_KEY_DOWN = "GLOBAL_Y_KEY_DOWN",
   GLOBAL_H_KEY_DOWN = "GLOBAL_H_KEY_DOWN",
+  META_T_KEY_DOWN = "META_T_KEY_DOWN",
+  GET_ALL_SCREENS_REQUESTED = "GET_ALL_SCREENS_REQUESTED",
   GLOBAL_SAVE_KEY_DOWN = "GLOBAL_SAVE_KEY_DOWN",
   GLOBAL_BACKSPACE_KEY_PRESSED = "GLOBAL_BACKSPACE_KEY_PRESSED",
   GLOBAL_BACKSPACE_KEY_SENT = "GLOBAL_BACKSPACE_KEY_SENT",
@@ -71,6 +76,21 @@ export type ResizerMoved = WrappedEvent<
   }
 >;
 
+export type RendererMounted = BaseAction<
+  ActionType.RENDERER_MOUNTED,
+  { id: string }
+>;
+export type RendererUnmounted = BaseAction<
+  ActionType.RENDERER_UNMOUNTED,
+  { id: string }
+>;
+export type BirdseyeCellClicked = BaseAction<
+  ActionType.BIRDSEYE_CELL_CLICKED,
+  {
+    frameIndex: number;
+    uri: string;
+  }
+>;
 export type ResizerStoppedMoving = WrappedEvent<
   MouseEvent,
   ActionType.RESIZER_STOPPED_MOVING,
@@ -79,6 +99,12 @@ export type ResizerStoppedMoving = WrappedEvent<
     newBounds: Box;
     anchor: Point;
   }
+>;
+
+export type MetaTKeyDown = WrappedEvent<MouseEvent, ActionType.META_T_KEY_DOWN>;
+export type GetAllScreensRequested = WrappedEvent<
+  MouseEvent,
+  ActionType.GET_ALL_SCREENS_REQUESTED
 >;
 export type MetaClicked = BaseAction<
   ActionType.META_CLICKED,
@@ -171,7 +197,7 @@ export type FrameTitleClicked = BaseAction<
 
 export type EngineDelegateEventsHandled = BaseAction<
   ActionType.ENGINE_DELEGATE_EVENTS_HANDLED,
-  { count: number }
+  { count: number; id: string }
 >;
 export type FileOpened = BaseAction<ActionType.FILE_OPENED, { uri: string }>;
 
@@ -246,6 +272,12 @@ export const frameTitleClicked = actionCreator<FrameTitleClicked>(
 export const frameTitleChanged = actionCreator<FrameTitleChanged>(
   ActionType.FRAME_TITLE_CHANGED
 );
+export const rendererMounted = actionCreator<RendererMounted>(
+  ActionType.RENDERER_MOUNTED
+);
+export const rendererUnounted = actionCreator<RendererUnmounted>(
+  ActionType.RENDERER_UNMOUNTED
+);
 export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
 >(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
@@ -258,6 +290,9 @@ export const pcFileLoaded = actionCreator<PCFileLoaded>(
 );
 export const expandFrameButtonClicked = actionCreator<ExpandFrameButtonClicked>(
   ActionType.EXPAND_FRAME_BUTTON_CLICKED
+);
+export const birdsEyeCellClicked = actionCreator<BirdseyeCellClicked>(
+  ActionType.BIRDSEYE_CELL_CLICKED
 );
 export const collapseFrameButtonClicked = actionCreator<
   CollapseFrameButtonClicked
@@ -363,6 +398,12 @@ export const fsItemClicked = actionCreator<FSItemClicked>(
   ActionType.FS_ITEM_CLICKED
 );
 export const pasted = actionCreator<Pasted>(ActionType.PASTED);
+export const metaTKeyDown = actionCreator<MetaTKeyDown>(
+  ActionType.META_T_KEY_DOWN
+);
+export const getAllScreensRequested = actionCreator<GetAllScreensRequested>(
+  ActionType.GET_ALL_SCREENS_REQUESTED
+);
 
 export type InstanceAction =
   // | RendererInitialized
@@ -371,28 +412,34 @@ export type InstanceAction =
   | ResizerPathMoved
   | ResizerPathStoppedMoving
   | Pasted
+  | RendererMounted
+  | RendererUnmounted
   | FrameTitleChanged
   | MetaClicked
   | ResizerStoppedMoving
   | ResizerMoved
+  | MetaTKeyDown
   | RendererChanged
   | CanvasPanned
   | CanvasPanStart
   | PCVirtObjectEdited
   | CanvasMouseLeave
   | PCFileLoaded
+  | GetAllScreensRequested
   | CanvasPanEnd
   | PopoutWindowRequested
   | CanvasResized
   | CanvasMouseMoved
   | ErrorBannerClicked
   | FileOpened
+  | MetaClicked
   | LocationChanged
   | PopoutButtonClicked
   | CollapseFrameButtonClicked
   | ExpandFrameButtonClicked
   | ZoomInButtonClicked
   | ClientConnected
+  | BirdseyeCellClicked
   | FrameTitleClicked
   | EngineDelegateChanged
   | EngineDelegateEventsHandled

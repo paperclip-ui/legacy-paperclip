@@ -23,14 +23,14 @@ import {
   globalHKeyDown,
   locationChanged,
   clientConnected,
-  metaClicked
+  metaClicked,
+  metaTKeyDown,
+  getAllScreensRequested
 } from "../actions";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
-
-declare const vscode;
 
 export default function* mainSaga() {
   yield fork(handleRenderer);
@@ -73,6 +73,8 @@ function* handleRenderer() {
       _client = client;
       emit(clientConnected(null));
     });
+
+    //eslint-disable-next-line
     return () => {};
   });
 
@@ -146,12 +148,20 @@ function* handleRenderer() {
     yield put(globalBackspaceKeySent(null));
   });
 
+  yield takeEvery([ActionType.META_T_KEY_DOWN], function*() {
+    const state: AppState = yield select();
+    if (state.showBirdseye) {
+      yield put(getAllScreensRequested(null));
+    }
+  });
+
   yield takeEvery(
     [
       ActionType.META_CLICKED,
       ActionType.GLOBAL_Z_KEY_DOWN,
       ActionType.GLOBAL_Y_KEY_DOWN,
       ActionType.GLOBAL_SAVE_KEY_DOWN,
+      ActionType.GET_ALL_SCREENS_REQUESTED,
       ActionType.PASTED,
       ActionType.FS_ITEM_CLICKED,
       ActionType.ERROR_BANNER_CLICKED,
@@ -211,6 +221,10 @@ function* handleKeyCommands() {
     });
     Mousetrap.bind("meta+h", () => {
       emit(globalHKeyDown(null));
+      return false;
+    });
+    Mousetrap.bind("meta+g", () => {
+      emit(metaTKeyDown(null));
       return false;
     });
     Mousetrap.bind("meta+s", () => {
@@ -323,7 +337,7 @@ function* handleDocumentEvents() {
     });
 
     yield takeEvery(chan, (event: any) => {
-      if (event.type === "wheel") {
+      if (event.type === "wheel" && event.metaKey) {
         event.preventDefault();
       }
 

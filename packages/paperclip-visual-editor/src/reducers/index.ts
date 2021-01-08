@@ -14,7 +14,12 @@ import {
   mergeBoxes
 } from "../state";
 import { produce } from "immer";
-import { Action, ActionType, ExternalActionType } from "../actions";
+import {
+  Action,
+  ActionType,
+  ExternalActionType,
+  ServerActionType
+} from "../actions";
 import { clamp } from "lodash";
 import {
   updateAllLoadedData,
@@ -46,11 +51,27 @@ export default (state: AppState, action: Action) => {
     case ActionType.LOCATION_CHANGED: {
       state = produce(state, newState => {
         newState.currentFileUri = action.payload.query.current_file;
+        newState.currentFrameIndex =
+          action.payload.query.frame && Number(action.payload.query.frame);
         newState.embedded = Boolean(action.payload.query.within_ide);
         newState.renderProtocol =
           action.payload.protocol + "//" + action.payload.host + "/file";
       });
       return state;
+    }
+    case ActionType.RENDERER_MOUNTED: {
+      return produce(state, newState => {
+        newState.mountedRendererIds.push(action.payload.id);
+      });
+    }
+    case ActionType.RENDERER_UNMOUNTED: {
+      return produce(state, newState => {
+        newState.mountedRendererIds.splice(
+          newState.mountedRendererIds.indexOf(action.payload.id),
+          1
+        );
+        newState.currentEngineEvents[action.payload.id] = undefined;
+      });
     }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       state = produce(state, newState => {
@@ -60,7 +81,12 @@ export default (state: AppState, action: Action) => {
           newState.currentError = undefined;
         }
 
-        newState.currentEngineEvents.push(action.payload);
+        for (const id of newState.mountedRendererIds) {
+          if (!newState.currentEngineEvents[id]) {
+            newState.currentEngineEvents[id] = [];
+          }
+          newState.currentEngineEvents[id].push(action.payload);
+        }
         newState.allLoadedPCFileData = updateAllLoadedData(
           newState.allLoadedPCFileData,
           action.payload
@@ -98,7 +124,10 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
       return produce(state, newState => {
-        newState.currentEngineEvents.splice(0, action.payload.count);
+        newState.currentEngineEvents[action.payload.id].splice(
+          0,
+          action.payload.count
+        );
       });
     }
     case ActionType.FS_ITEM_CLICKED: {
@@ -199,6 +228,20 @@ export default (state: AppState, action: Action) => {
     case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING: {
       return produce(state, newState => {
         newState.resizerMoving = false;
+      });
+    }
+    case ActionType.META_T_KEY_DOWN: {
+      return produce(state, newState => {
+        newState.loadingBirdseye = true;
+        newState.showBirdseye = !newState.showBirdseye;
+      });
+    }
+
+    // happens when grid view is requested
+    case ServerActionType.ALL_PC_CONTENT_LOADED: {
+      return produce(state, newState => {
+        newState.loadingBirdseye = false;
+        newState.allLoadedPCFileData = action.payload;
       });
     }
     case ActionType.RESIZER_MOVED:

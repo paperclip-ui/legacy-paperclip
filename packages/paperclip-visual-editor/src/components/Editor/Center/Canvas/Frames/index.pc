@@ -12,6 +12,7 @@
       height: 100%;
     }
   </style>
+  {children}
 </div>
 
 

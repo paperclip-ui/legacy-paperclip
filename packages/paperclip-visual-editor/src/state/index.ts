@@ -24,6 +24,7 @@ import {
 } from "./geom";
 import * as os from "os";
 import { Frame } from "paperclip-web-renderer";
+import { Box } from "../components/Tooltip/index.pc";
 
 export const DEFAULT_FRAME_BOX = {
   width: 1024,
@@ -78,12 +79,16 @@ export type AppState = {
   centeredInitial: boolean;
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
+  showBirdseye?: boolean;
+  loadingBirdseye?: boolean;
   expandedFrameInfo?: ExpandedFrameInfo;
   resizerMoving?: boolean;
   currentFileUri: string;
+  currentFrameIndex?: number;
   embedded?: boolean;
   documentContent: Record<string, string>;
-  currentEngineEvents: EngineDelegateEvent[];
+  mountedRendererIds: string[];
+  currentEngineEvents: Record<string, EngineDelegateEvent[]>;
   allLoadedPCFileData: Record<string, LoadedData>;
   // rendererElement?: any;
   selectedNodePaths: string[];
@@ -98,10 +103,11 @@ export type AppState = {
 
 export const INITIAL_STATE: AppState = {
   centeredInitial: false,
+  mountedRendererIds: [],
   toolsLayerEnabled: true,
   documentContent: {},
   currentFileUri: null,
-  currentEngineEvents: [],
+  currentEngineEvents: {},
   allLoadedPCFileData: {},
   boxes: {},
   zoomLevel: 1,
@@ -263,12 +269,10 @@ export * from "./geom";
 export const getPreviewChildren = (frame: VirtualNode) => {
   return frame.kind === VirtualNodeKind.Fragment ? frame.children : [frame];
 };
-
-const getAllFrameBounds = (state: AppState) => {
-  const currentPreview =
-    state.allLoadedPCFileData[state.currentFileUri].preview;
-  const frameBoxes = getPreviewChildren(currentPreview)
-    .map((frame: VirtualFrame) => {
+const getPreviewFrameBoxes = (preview: VirtualNode) => {
+  const currentPreview = preview;
+  const frameBoxes = getPreviewChildren(currentPreview).map(
+    (frame: VirtualFrame) => {
       const annotations =
         (frame.annotations &&
           (computeVirtJSObject(frame.annotations) as NodeAnnotations)) ||
@@ -278,10 +282,18 @@ const getAllFrameBounds = (state: AppState) => {
         return null;
       }
       return { ...DEFAULT_FRAME_BOX, ...box };
-    })
-    .filter(Boolean);
+    }
+  );
 
-  return mergeBoxes(frameBoxes);
+  return frameBoxes;
+};
+
+const getAllFrameBounds = (state: AppState) => {
+  return mergeBoxes(
+    getPreviewFrameBoxes(
+      state.allLoadedPCFileData[state.currentFileUri].preview
+    ).filter(Boolean)
+  );
 };
 
 const INITIAL_ZOOM_PADDING = 50;
@@ -303,7 +315,16 @@ export const maybeCenterCanvas = (state: AppState) => {
       newState.centeredInitial = true;
     });
 
-    state = centerEditorCanvas(state);
+    let targetBounds: Box;
+
+    if (state.currentFrameIndex != null) {
+      const frameBoxes = getPreviewFrameBoxes(
+        state.allLoadedPCFileData[state.currentFileUri].preview
+      );
+      targetBounds = frameBoxes[state.currentFrameIndex];
+    }
+
+    state = centerEditorCanvas(state, targetBounds);
 
     return state;
   }

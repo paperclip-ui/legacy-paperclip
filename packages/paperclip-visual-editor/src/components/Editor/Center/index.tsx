@@ -4,6 +4,7 @@ import { Canvas } from "./Canvas";
 import { Toolbar } from "./Toolbar";
 import { ErrorBanner } from "./ErrorBanner";
 import { useAppStore } from "../../../hooks/useAppStore";
+import { Birdseye } from "./Birdseye";
 
 export const Center = () => {
   const { state, dispatch } = useAppStore();
@@ -12,6 +13,7 @@ export const Center = () => {
       <Toolbar />
       <styles.CanvasContainer>
         <Canvas />
+        {state.showBirdseye ? <Birdseye /> : null}
       </styles.CanvasContainer>
       <ErrorBanner error={state.currentError} dispatch={dispatch} />
     </styles.Container>

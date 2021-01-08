@@ -23,7 +23,8 @@ import {
   pcFileLoaded,
   instanceChanged,
   InstanceAction,
-  crashed
+  crashed,
+  allPCContentLoaded
 } from "./actions";
 import { FSItemKind } from "./state";
 import express from "express";
@@ -102,9 +103,16 @@ export const startServer = async ({
           onPopoutWindowRequested(action);
           break;
         }
+        case ActionType.GET_ALL_SCREENS_REQUESTED: {
+          return handleGetAllScreens();
+        }
       }
       emitExternal(instanceChanged({ targetPCFileUri: targetUri, action }));
     });
+
+    const handleGetAllScreens = () => {
+      emit(allPCContentLoaded(engine.getAllLoadedData()));
+    };
 
     const onFSItemClicked = async (action: FSItemClicked) => {
       if (action.payload.kind === FSItemKind.DIRECTORY) {

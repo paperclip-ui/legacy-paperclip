@@ -1,12 +1,17 @@
 ### TOMORROW
 
-
-- what about node_modules? For thi
-
 - grid view start 
-  - snapshot engine
-  - command + t
-  - grid view top bar button
+  - click cell to focus
+  - filter cells
+  - meta click to open source
+  
+- react-router
+  - /grid
+  - /editor
+
+- !! CSSOM Patcher
+
+- remove zoom level when in birdseye view
 
 - presense icon
 - open in browserstack button
@@ -33,10 +38,11 @@
 - consider FS changes
 - popout button should automatically create ngrok tunnel - should be share button
 
+- snapshot util should spin up HTTP server
+
 #### Considerations
 
 - Grid view
-- grid view frame performance? 
 - needs to be a standalone app
 - expose RPC server for updating docs
 - allow for remote http preview

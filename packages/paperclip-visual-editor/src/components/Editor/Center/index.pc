@@ -1,7 +1,7 @@
 <import src="components/Theme/index.pc" as="theme" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
 <import src="./Canvas2/index.pc" as="Canvas" />
-<import src="./Arial/index.pc" as="Arial" />
+<import src="./Birdseye/index.pc" as="Birdseye" />
 
 
 <!--
@@ -43,11 +43,10 @@
 <!--
   @frame { title: "Center", width: 1024, height: 768, x: 31, y: -41 }
 -->
-<Container export component as="ArialPreview2" className="light $theme.font-default">
+<Container export component as="BirdseyePreview2" className="light $theme.font-default">
   <Toolbar.Preview gridMode />
   <CanvasContainer>
-    <Arial.Preview />
-    <Arial.TEST />
+    <Birdseye.Preview />
   </CanvasContainer>
 </Container>
 

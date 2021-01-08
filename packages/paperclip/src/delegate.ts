@@ -168,6 +168,10 @@ export class EngineDelegate {
     return this._rendered[uri];
   }
 
+  public getAllLoadedData(): Record<string, LoadedData> {
+    return this._rendered;
+  }
+
   open(uri: string): LoadedData {
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
@@ -250,7 +254,6 @@ export const keepEngineInSyncWithFileSystem2 = (
   watcher: PaperclipSourceWatcher,
   engine: EngineDelegate
 ) => {
-  console.log("CH");
   return watcher.onChange((kind, uri) => {
     console.log(kind);
     if (kind === ChangeKind.Changed) {
