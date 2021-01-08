@@ -19,12 +19,15 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Zoom" className="zoom">
+<div export component as="Zoom" className="zoom" className:hidden="hidden">
   <style>
     border-left: 1px solid var(--border-color);
     font-size: 0.8em;
     display: flex;
     align-items: center;
+    &.hidden {
+      visibility: hidden;
+    }
 
     span {
       user-select: none;
@@ -270,15 +273,18 @@
 <!--
   @frame { visible: false }
 -->
-<button export component as="PopOutButton" {onClick}>
+<button export component as="PopOutButton"  className="$icons.icon" {onClick}>
   <style>
-    width: 10px;
-    height: 10px;
-    background: rgb(179, 179, 179);
+    --size: 11px;
+    top: -1px;
+    position: relative;
+
     margin-right: 4px;
     border: none;
     outline: none;
+    color: currentColor;
     cursor: pointer;
+    mask-image: url("./share.svg");
     &:active {
       outline: none;
     }
@@ -321,7 +327,7 @@
 <Container export component as="Preview" {gridMode?} className:light="light" {className?}>
  
   <Controls>
-    <MagnifyButton />
+    <GridButton />
     <Zoom amount="100" />
   </Controls>
   <Spacer />
@@ -352,6 +358,20 @@
 <Preview className="$theme.font-default" />
 
 
+<div export component as="Title">
+
+  <style>
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    text-align: center;
+    opacity: 0.8;
+    font-size: 0.9em;
+    line-height: 18px;
+  </style>
+    {children}
+</div>
 
 <!--
   @frame { title: "Search Input", width: 1024, height: 48, x: 58, y: -416 }
@@ -364,7 +384,10 @@
     <SearchInput />
     <Zoom amount="100" />
   </Controls>
-  <Spacer />
+  <Title>
+    src/components/Editor/Center/Toolbar/index.pc
+  </Title>
+
     <Controls right>
       <PopOutButton />
       <CollapseButton />

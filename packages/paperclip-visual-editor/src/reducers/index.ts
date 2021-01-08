@@ -174,6 +174,7 @@ export default (state: AppState, action: Action) => {
       // Don't do this until deselecting can be handled properly
       return produce(state, newState => {
         newState.selectedNodePaths = [];
+        newState.showBirdseye = false;
       });
     }
     case ActionType.GLOBAL_META_KEY_DOWN: {

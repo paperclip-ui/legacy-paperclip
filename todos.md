@@ -1,11 +1,7 @@
 ### TOMORROW
 
-- redesign search & toolbars (too small)
-- arrow keys to select grid item
-
-- move search to header
-- sync frame changes with preview
--ngrok
+- show current file in title
+- ngrok
   
 - react-router
   - /grid
@@ -13,7 +9,6 @@
 
 - !! CSSOM Patcher
 
-- presense icon
 - open in browserstack button
 - ensure that panning works in browserstack and stuff
 - ngrok tunnel

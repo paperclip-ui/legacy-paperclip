@@ -1,5 +1,6 @@
 import React from "react";
 import * as styles from "./index.pc";
+import * as path from "path";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import {
   zoomInButtonClicked,
@@ -11,6 +12,8 @@ import {
   birdseyeTopFilterBlurred
 } from "../../../../actions";
 import { useTextInput } from "../../../TextInput";
+import { pathToFileURL } from "url";
+import { current } from "immer";
 
 export const Toolbar = () => {
   const {
@@ -18,9 +21,11 @@ export const Toolbar = () => {
       canvas,
       embedded,
       expandedFrameInfo,
+      projectDirectory,
       showBirdseye,
       readonly,
-      birdseyeFilter
+      birdseyeFilter,
+      currentFileUri
     },
     dispatch
   } = useAppStore();
@@ -50,13 +55,17 @@ export const Toolbar = () => {
   });
 
   const onFilterBlur = () => {
-    dispatch(birdseyeTopFilterBlurred(null));
+    // dispatch(birdseyeTopFilterBlurred(null));
   };
+
+  const relativePath = currentFileUri
+    ?.replace(projectDirectory?.url, "")
+    .substr(1);
 
   return (
     <styles.Container>
       <styles.Controls>
-        {showBirdseye ? (
+        {/* {showBirdseye ? (
           <styles.SearchInput
             inputRef={inputProps.ref}
             onChange={inputProps.onChange}
@@ -64,24 +73,23 @@ export const Toolbar = () => {
             onBlur={onFilterBlur}
           />
         ) : (
-          <styles.MagnifyButton onClick={onGridButtonClick} />
-        )}
-        {/* <styles.GridButton active={showBirdseye} onClick={onGridButtonClick} /> */}
+          <styles.MagnifyButton onClick={onGridButtonClick} /> 
+        )} */}
+        <styles.GridButton active={showBirdseye} onClick={onGridButtonClick} />
         {/* <styles.PaintButton
           active={toolsLayerEnabled}
           onClick={onPainToolClick}
         /> */}
 
-        {!expandedFrameInfo && !showBirdseye && (
-          <styles.Zoom
-            amount={Math.round(canvas.transform.z * 100)}
-            onMinusClick={onMinusClick}
-            onPlusClick={onPlusClick}
-          />
-        )}
+        <styles.Zoom
+          amount={Math.round(canvas.transform.z * 100)}
+          onMinusClick={onMinusClick}
+          onPlusClick={onPlusClick}
+          hidden={expandedFrameInfo || showBirdseye}
+        />
       </styles.Controls>
 
-      <styles.Spacer />
+      <styles.Title>{relativePath}</styles.Title>
 
       <styles.Controls>
         {embedded ? (
