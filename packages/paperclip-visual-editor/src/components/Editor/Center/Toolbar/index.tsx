@@ -5,12 +5,13 @@ import {
   zoomInButtonClicked,
   zoomOutButtonClicked,
   popoutButtonClicked,
-  collapseFrameButtonClicked
+  collapseFrameButtonClicked,
+  gridButtonClicked
 } from "../../../../actions";
 
 export const Toolbar = () => {
   const {
-    state: { canvas, embedded, expandedFrameInfo },
+    state: { canvas, embedded, expandedFrameInfo, showBirdseye },
     dispatch
   } = useAppStore();
   const onMinusClick = () => {
@@ -25,14 +26,19 @@ export const Toolbar = () => {
   const onCollapseButtonClick = () => {
     dispatch(collapseFrameButtonClicked(null));
   };
+  const onGridButtonClick = () => {
+    dispatch(gridButtonClicked(null));
+  };
+
   return (
     <styles.Container>
       <styles.Controls>
+        <styles.GridButton active={showBirdseye} onClick={onGridButtonClick} />
         {/* <styles.PaintButton
           active={toolsLayerEnabled}
           onClick={onPainToolClick}
         /> */}
-        {!expandedFrameInfo && (
+        {!expandedFrameInfo && !showBirdseye && (
           <styles.Zoom
             amount={Math.round(canvas.transform.z * 100)}
             onMinusClick={onMinusClick}

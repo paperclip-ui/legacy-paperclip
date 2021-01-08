@@ -16,6 +16,7 @@ export enum ActionType {
   RENDERER_MOUNTED = "RENDERER_MOUNTED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
   PC_FILE_OPENED = "PC_FILE_OPENED",
+  GRID_BUTTON_CLICKED = "GRID_BUTTON_CLICKED",
   CLIENT_CONNECTED = "CLIENT_CONNECTED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
   ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
@@ -39,7 +40,7 @@ export enum ActionType {
   GLOBAL_Z_KEY_DOWN = "GLOBAL_Z_KEY_DOWN",
   GLOBAL_Y_KEY_DOWN = "GLOBAL_Y_KEY_DOWN",
   GLOBAL_H_KEY_DOWN = "GLOBAL_H_KEY_DOWN",
-  META_T_KEY_DOWN = "META_T_KEY_DOWN",
+  GRID_HOTKEY_PRESSED = "GRID_HOTKEY_PRESSED",
   GET_ALL_SCREENS_REQUESTED = "GET_ALL_SCREENS_REQUESTED",
   GLOBAL_SAVE_KEY_DOWN = "GLOBAL_SAVE_KEY_DOWN",
   GLOBAL_BACKSPACE_KEY_PRESSED = "GLOBAL_BACKSPACE_KEY_PRESSED",
@@ -83,6 +84,8 @@ export type RendererUnmounted = BaseAction<
   ActionType.RENDERER_UNMOUNTED,
   { id: string }
 >;
+export type GridButtonClicked = BaseAction<ActionType.GRID_BUTTON_CLICKED>;
+
 export type ResizerStoppedMoving = WrappedEvent<
   MouseEvent,
   ActionType.RESIZER_STOPPED_MOVING,
@@ -93,7 +96,10 @@ export type ResizerStoppedMoving = WrappedEvent<
   }
 >;
 
-export type MetaTKeyDown = WrappedEvent<MouseEvent, ActionType.META_T_KEY_DOWN>;
+export type GridHotkeyPressed = WrappedEvent<
+  MouseEvent,
+  ActionType.GRID_HOTKEY_PRESSED
+>;
 export type GetAllScreensRequested = WrappedEvent<
   MouseEvent,
   ActionType.GET_ALL_SCREENS_REQUESTED
@@ -258,6 +264,10 @@ export const pcVirtObjectEdited = actionCreator<PCVirtObjectEdited>(
 export const engineDelegateChanged = actionCreator<EngineDelegateChanged>(
   ActionType.ENGINE_DELEGATE_CHANGED
 );
+export const gridButtonClicked = actionCreator<GridButtonClicked>(
+  ActionType.GRID_BUTTON_CLICKED
+);
+
 export const frameTitleClicked = actionCreator<FrameTitleClicked>(
   ActionType.FRAME_TITLE_CLICKED
 );
@@ -387,8 +397,8 @@ export const fsItemClicked = actionCreator<FSItemClicked>(
   ActionType.FS_ITEM_CLICKED
 );
 export const pasted = actionCreator<Pasted>(ActionType.PASTED);
-export const metaTKeyDown = actionCreator<MetaTKeyDown>(
-  ActionType.META_T_KEY_DOWN
+export const gridHotkeyPressed = actionCreator<GridHotkeyPressed>(
+  ActionType.GRID_HOTKEY_PRESSED
 );
 export const getAllScreensRequested = actionCreator<GetAllScreensRequested>(
   ActionType.GET_ALL_SCREENS_REQUESTED
@@ -407,13 +417,14 @@ export type InstanceAction =
   | MetaClicked
   | ResizerStoppedMoving
   | ResizerMoved
-  | MetaTKeyDown
+  | GridHotkeyPressed
   | RendererChanged
   | CanvasPanned
   | CanvasPanStart
   | PCVirtObjectEdited
   | CanvasMouseLeave
   | PCFileLoaded
+  | GridButtonClicked
   | GetAllScreensRequested
   | CanvasPanEnd
   | PopoutWindowRequested
@@ -428,7 +439,6 @@ export type InstanceAction =
   | ExpandFrameButtonClicked
   | ZoomInButtonClicked
   | ClientConnected
-  | BirdseyeCellClicked
   | FrameTitleClicked
   | EngineDelegateChanged
   | EngineDelegateEventsHandled

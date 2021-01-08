@@ -230,10 +230,13 @@ export default (state: AppState, action: Action) => {
         newState.resizerMoving = false;
       });
     }
-    case ActionType.META_T_KEY_DOWN: {
+    case ActionType.GRID_BUTTON_CLICKED:
+    case ActionType.GRID_HOTKEY_PRESSED: {
       return produce(state, newState => {
-        newState.loadingBirdseye = true;
         newState.showBirdseye = !newState.showBirdseye;
+        if (newState.showBirdseye) {
+          newState.loadingBirdseye = true;
+        }
       });
     }
 

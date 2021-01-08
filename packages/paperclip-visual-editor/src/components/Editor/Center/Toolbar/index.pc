@@ -197,7 +197,7 @@
 <Container export component as="Preview" {gridMode?} className:light="light">
  
   <Controls>
-    <PaintButton />
+    <GridButton />
     <Zoom amount="100" />
   </Controls>
    <Controls right>

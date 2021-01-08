@@ -24,7 +24,7 @@ import {
   locationChanged,
   clientConnected,
   metaClicked,
-  metaTKeyDown,
+  gridHotkeyPressed,
   getAllScreensRequested
 } from "../actions";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
@@ -148,12 +148,15 @@ function* handleRenderer() {
     yield put(globalBackspaceKeySent(null));
   });
 
-  yield takeEvery([ActionType.META_T_KEY_DOWN], function*() {
-    const state: AppState = yield select();
-    if (state.showBirdseye) {
-      yield put(getAllScreensRequested(null));
+  yield takeEvery(
+    [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
+    function*() {
+      const state: AppState = yield select();
+      if (state.showBirdseye) {
+        yield put(getAllScreensRequested(null));
+      }
     }
-  });
+  );
 
   yield takeEvery(
     [
@@ -224,7 +227,7 @@ function* handleKeyCommands() {
       return false;
     });
     Mousetrap.bind("meta+g", () => {
-      emit(metaTKeyDown(null));
+      emit(gridHotkeyPressed(null));
       return false;
     });
     Mousetrap.bind("meta+s", () => {
