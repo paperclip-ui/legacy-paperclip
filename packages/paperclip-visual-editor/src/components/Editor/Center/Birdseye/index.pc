@@ -186,6 +186,46 @@
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
+
+<div export component as="Filter">
+  <style>
+    position: relative;
+    display: inline-block;
+
+    :self(:before) {
+      position: absolute;
+      top: 50%;
+      color: rgb(126, 126, 126);
+      left: 22px;
+      transform: translate(-100%, -50%);
+      --size: 15px;
+      @include utils.mask;
+      mask-image: url(./magnify.svg);
+    }
+  </style>
+  
+  <input ref={filterInputRef} {onKeyPress?} {onChange?} placeholder="Filter"> 
+    <style>
+      margin: 0px;
+      border: 2px solid var(--border-color-1);
+      padding: 5px 15px;
+      border-radius: 100px;
+      background: transparent;
+      padding-left: 25px;
+      outline: none;
+      &:focus {
+        border-color: var(--background-selected-1);
+      }
+    </style>
+  </input>
+
+</div>
+
+
 <!--
   @frame { visible: false }
 -->
@@ -195,34 +235,7 @@
     border-bottom: 1px solid var(--border-color-1);
   </style>
   <!-- filter container -->
-  <div>
-    <style>
-      position: relative;
-      border: 2px solid var(--border-color-1);
-      display: inline-block;
-      border-radius: 100px;
-
-      :self(:before) {
-        position: absolute;
-        top: 50%;
-        color: rgb(126, 126, 126);
-        left: 22px;
-        transform: translate(-100%, -50%);
-        --size: 15px;
-        @include utils.mask;
-        mask-image: url(./magnify.svg);
-      }
-    </style>
-    <input placeholder="Filter"> 
-      <style>
-        margin: 0px;
-        border: none;
-        padding: 5px 15px;
-        background: transparent;
-        padding-left: 25px;
-      </style>
-    </input>
-  </div>
+  {children}
 </div>
 
 
@@ -247,7 +260,9 @@
 <Container export component as="Preview">
 
   <!-- header -->
-  <Header />
+  <Header>
+    <Filter />
+  </Header>
   
 
   <!-- Cells -->

@@ -26,38 +26,74 @@ import {
 } from "paperclip-utils";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useFrames } from "../Canvas/Frames";
-import { birdsEyeCellClicked } from "../../../../actions";
+import { useTextInput } from "../../../TextInput";
 
 export const Birdseye = memo(() => {
   const { state, dispatch } = useAppStore();
+  const [filter, setFilter] = useState<string>();
 
+  let content;
+
+  if (state.loadingBirdseye) {
+    content = <>Loading</>;
+  } else {
+    content = (
+      <>
+        <Header filter={filter} onFilter={setFilter} />
+        <styles.Cells>
+          {Object.keys(state.allLoadedPCFileData).map(uri => {
+            return (
+              <PCFileCells
+                filter={filter}
+                key={uri}
+                dispatch={dispatch}
+                projectPath={state.projectDirectory.absolutePath}
+                renderProtocol={state.renderProtocol}
+                uri={uri}
+              />
+            );
+          })}
+        </styles.Cells>
+      </>
+    );
+  }
+
+  return <styles.Container>{content}</styles.Container>;
+});
+
+type HeaderProps = {
+  filter: string;
+  onFilter: (value: string) => void;
+};
+
+const Header = memo(({ filter, onFilter }: HeaderProps) => {
+  const { inputProps: filterInputProps } = useTextInput({
+    value: filter,
+    onValueChange: onFilter
+  });
   return (
-    <styles.Container>
-      {/* <styles.Header /> */}
-      <styles.Cells>
-        {Object.keys(state.allLoadedPCFileData).map(uri => {
-          return (
-            <PCFileCells
-              key={uri}
-              dispatch={dispatch}
-              projectPath={state.projectDirectory.absolutePath}
-              renderProtocol={state.renderProtocol}
-              uri={uri}
-            />
-          );
-        })}
-      </styles.Cells>
-    </styles.Container>
+    <styles.Header>
+      <styles.Filter
+        filterInputRef={filterInputProps.ref}
+        onChange={filterInputProps.onChange}
+      />
+    </styles.Header>
   );
 });
 
 type PCFileCellsProps = {
+  filter?: string;
   uri: string;
   renderProtocol: string;
   projectPath: string;
   dispatch: any;
 };
-const PCFileCells = ({ uri, projectPath, dispatch }: PCFileCellsProps) => {
+const PCFileCells = ({
+  filter,
+  uri,
+  projectPath,
+  dispatch
+}: PCFileCellsProps) => {
   const filePath = fileURLToPath(uri);
   const { renderer } = useFrames({
     fileUri: uri,
@@ -72,6 +108,7 @@ const PCFileCells = ({ uri, projectPath, dispatch }: PCFileCellsProps) => {
           <Cell
             uri={uri}
             index={i}
+            filter={filter}
             key={filePath + "-" + i}
             dispatch={dispatch}
             frame={frame}
@@ -90,6 +127,7 @@ const fileURLToPath = (uri: string) => {
 };
 
 type CellProps = {
+  filter?: string;
   uri: string;
   index: number;
   frame: Frame;
@@ -101,17 +139,18 @@ type CellProps = {
 const Cell = ({
   uri,
   index,
+  filter,
   frame,
   node,
   relativePath,
   dispatch
 }: CellProps) => {
-  const { mountRef, label, frameBox, scale, onClick, visible } = useCell(
+  const { mountRef, label, frameBox, scale, onClick, visible } = useCell({
     uri,
-    index,
-    node,
-    dispatch
-  );
+    filter,
+    frameIndex: index,
+    node
+  });
 
   if (!visible) {
     return null;
@@ -138,12 +177,14 @@ const Cell = ({
   );
 };
 
-const useCell = (
-  uri: string,
-  frameIndex: number,
-  node: VirtualFrame,
-  _dispatch: any
-) => {
+type UseCellProps = {
+  filter?: string;
+  uri: string;
+  frameIndex: number;
+  node: VirtualFrame;
+};
+
+const useCell = ({ filter, uri, frameIndex, node }: UseCellProps) => {
   const annotations: NodeAnnotations = node.annotations
     ? computeVirtJSObject(node.annotations)
     : {};
@@ -207,6 +248,20 @@ const useCell = (
     }
 
     label = annotations.frame.title || label;
+  }
+
+  const tags = annotations.tags || [];
+
+  if (visible && filter) {
+    // invisible until filter found
+    visible = false;
+    const filterable: string[] = [label, ...tags];
+    for (const filterableItem of filterable) {
+      if (filterableItem.toLowerCase().indexOf(filter.toLowerCase()) !== -1) {
+        visible = true;
+        break;
+      }
+    }
   }
 
   return {

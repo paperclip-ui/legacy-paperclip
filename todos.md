@@ -1,9 +1,4 @@
 ### TOMORROW
-
-- grid view start 
-  - click cell to focus
-  - filter cells
-  - meta click to open source
   
 - react-router
   - /grid

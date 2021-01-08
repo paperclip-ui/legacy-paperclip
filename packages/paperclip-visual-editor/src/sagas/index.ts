@@ -237,7 +237,6 @@ function* handleKeyCommands() {
     });
     Mousetrap.bind("backspace", () => {
       emit(globalBackspaceKeyPressed(null));
-      return false;
     });
     Mousetrap.bind(
       "meta",

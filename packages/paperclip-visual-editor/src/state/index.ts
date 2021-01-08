@@ -24,7 +24,6 @@ import {
 } from "./geom";
 import * as os from "os";
 import { Frame } from "paperclip-web-renderer";
-import { Box } from "../components/Tooltip/index.pc";
 
 export const DEFAULT_FRAME_BOX = {
   width: 1024,

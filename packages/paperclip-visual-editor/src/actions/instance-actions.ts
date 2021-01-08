@@ -15,7 +15,6 @@ export enum ActionType {
   LOCATION_CHANGED = "LOCATION_CHANGED",
   RENDERER_MOUNTED = "RENDERER_MOUNTED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
-  BIRDSEYE_CELL_CLICKED = "BIRDSEYE_CELL_CLICKED",
   PC_FILE_OPENED = "PC_FILE_OPENED",
   CLIENT_CONNECTED = "CLIENT_CONNECTED",
   ENGINE_ERRORED = "ENGINE_ERRORED",
@@ -83,13 +82,6 @@ export type RendererMounted = BaseAction<
 export type RendererUnmounted = BaseAction<
   ActionType.RENDERER_UNMOUNTED,
   { id: string }
->;
-export type BirdseyeCellClicked = BaseAction<
-  ActionType.BIRDSEYE_CELL_CLICKED,
-  {
-    frameIndex: number;
-    uri: string;
-  }
 >;
 export type ResizerStoppedMoving = WrappedEvent<
   MouseEvent,
@@ -290,9 +282,6 @@ export const pcFileLoaded = actionCreator<PCFileLoaded>(
 );
 export const expandFrameButtonClicked = actionCreator<ExpandFrameButtonClicked>(
   ActionType.EXPAND_FRAME_BUTTON_CLICKED
-);
-export const birdsEyeCellClicked = actionCreator<BirdseyeCellClicked>(
-  ActionType.BIRDSEYE_CELL_CLICKED
 );
 export const collapseFrameButtonClicked = actionCreator<
   CollapseFrameButtonClicked
