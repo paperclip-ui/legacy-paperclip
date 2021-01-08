@@ -12,7 +12,7 @@ import { render } from "react-dom";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import { FrameContainer } from "../../../FrameContainer";
 import * as styles from "./index.pc";
-import { throttle } from "lodash";
+import { throttle, toUpper } from "lodash";
 import * as url from "url";
 import * as qs from "querystring";
 
@@ -263,14 +263,18 @@ const useCell = ({
 
   if (visible && filter) {
     // invisible until filter found
-    visible = false;
     const filterable: string[] = [label, relativePath, ...tags];
-    for (const filterableItem of filterable) {
-      if (filterableItem.toLowerCase().indexOf(filter.toLowerCase()) !== -1) {
-        visible = true;
-        break;
-      }
-    }
+    visible = filter
+      .toLowerCase()
+      .trim()
+      .split(" ")
+      .every(filterPart => {
+        for (const filterableItem of filterable) {
+          if (filterableItem.toLowerCase().indexOf(filterPart) !== -1) {
+            return true;
+          }
+        }
+      });
   }
 
   return {
