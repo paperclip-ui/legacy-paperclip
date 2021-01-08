@@ -339,8 +339,6 @@
     <ReadOnlyBadge />
 </Container>
 
-
-  
   
 <!--
   @frame { visible: false }

@@ -261,10 +261,12 @@ const useCell = ({
   }
 
   const tags = annotations.tags || [];
+  console.log(visible, tags);
 
   if (visible && filter) {
     // invisible until filter found
     const filterable: string[] = [label, relativePath, ...tags];
+
     visible = filter
       .toLowerCase()
       .trim()

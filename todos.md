@@ -9,6 +9,7 @@
 
 - !! CSSOM Patcher
 - meta+- not working
+- get working online
 
 
 
@@ -18,3 +19,19 @@
 - right click elements
 - *Comments - abs position
 - @deprecated comment
+
+### Problems
+
+- hard to see organizational structure - grid view is flat
+  - possibly show tree view w/ previews?
+
+
+  - frontend
+  |-- src
+    |-- components
+      |-- Inputs
+        |-- Text.pc
+          | -- Frame 1
+             | -- [ SCREEN ]
+          | -- Frame 2
+             | -- [ SCREEN ]
