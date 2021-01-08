@@ -74,6 +74,9 @@ type ExpandedFrameInfo = {
 };
 
 export type AppState = {
+  id?: string;
+  readonly: boolean;
+  birdseyeFilter?: string;
   renderProtocol?: string;
   centeredInitial: boolean;
   toolsLayerEnabled: boolean;

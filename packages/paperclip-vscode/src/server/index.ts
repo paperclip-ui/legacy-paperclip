@@ -68,6 +68,7 @@ class Server {
       localResourceRoots: this._workspaceFolders.map(({ uri }) => {
         return url.fileURLToPath(uri);
       }),
+      readonly: false,
       emit: (action: ServerAction) => {
         this._dispatch(devServerChanged(action));
       }

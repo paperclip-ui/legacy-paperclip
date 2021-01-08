@@ -48,9 +48,20 @@ export default (state: AppState, action: Action) => {
         state
       );
     }
+    case ActionType.BIRDSEYE_FILTER_CHANGED: {
+      return produce(state, newState => {
+        newState.birdseyeFilter = action.payload.value;
+      });
+    }
+    case ServerActionType.INIT_PARAM_DEFINED: {
+      return produce(state, newState => {
+        newState.readonly = action.payload.readonly;
+      });
+    }
     case ActionType.LOCATION_CHANGED: {
       state = produce(state, newState => {
         newState.currentFileUri = action.payload.query.current_file;
+        newState.id = action.payload.query.id;
         newState.currentFrameIndex =
           action.payload.query.frame && Number(action.payload.query.frame);
         newState.embedded = Boolean(action.payload.query.within_ide);
@@ -230,6 +241,7 @@ export default (state: AppState, action: Action) => {
         newState.resizerMoving = false;
       });
     }
+    case ActionType.BIRDSEYE_TOP_FILTER_BLURRED:
     case ActionType.GRID_BUTTON_CLICKED:
     case ActionType.GRID_HOTKEY_PRESSED: {
       return produce(state, newState => {

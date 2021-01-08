@@ -31,7 +31,9 @@ import { relative } from "path";
 
 export const Birdseye = memo(() => {
   const { state, dispatch } = useAppStore();
-  const [filter, setFilter] = useState<string>();
+  // const [filter, setFilter] = useState<string>();
+
+  const filter = state.birdseyeFilter;
 
   let content;
 
@@ -40,7 +42,7 @@ export const Birdseye = memo(() => {
   } else {
     content = (
       <>
-        <Header filter={filter} onFilter={setFilter} />
+        {/* <Header filter={filter} onFilter={} /> */}
         <styles.Cells>
           {Object.keys(state.allLoadedPCFileData).map(uri => {
             return (
@@ -162,7 +164,7 @@ const Cell = ({
     <styles.Cell
       mountRef={mountRef}
       label={label}
-      onClick={onClick}
+      onMouseDown={onClick}
       dir={relativePath}
       controls={null}
     >

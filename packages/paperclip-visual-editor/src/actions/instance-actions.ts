@@ -14,6 +14,9 @@ export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
   LOCATION_CHANGED = "LOCATION_CHANGED",
   RENDERER_MOUNTED = "RENDERER_MOUNTED",
+  BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
+  BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
+  LOADED = "LOADED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
   PC_FILE_OPENED = "PC_FILE_OPENED",
   GRID_BUTTON_CLICKED = "GRID_BUTTON_CLICKED",
@@ -110,6 +113,17 @@ export type MetaClicked = BaseAction<
     source: ExprSource;
   }
 >;
+export type BirdseyeFilterChanged = BaseAction<
+  ActionType.BIRDSEYE_FILTER_CHANGED,
+  {
+    value: string;
+  }
+>;
+
+export type BirdseyeTopFilterBlurred = BaseAction<
+  ActionType.BIRDSEYE_TOP_FILTER_BLURRED
+>;
+
 export type PCFileLoaded = BaseAction<ActionType.PC_FILE_OPENED, LoadedData>;
 export type ClientConnected = BaseAction<ActionType.CLIENT_CONNECTED>;
 export type LocationChanged = BaseAction<
@@ -139,6 +153,14 @@ export type ResizerPathMoved = WrappedEvent<
   {
     originalBounds: Box;
     newBounds: Box;
+  }
+>;
+
+export type Loaded = BaseAction<
+  ActionType.LOADED,
+  {
+    windowId: string;
+    currentFileUri: string;
   }
 >;
 
@@ -280,6 +302,9 @@ export const rendererMounted = actionCreator<RendererMounted>(
 export const rendererUnounted = actionCreator<RendererUnmounted>(
   ActionType.RENDERER_UNMOUNTED
 );
+export const birdseyeFilterChanged = actionCreator<BirdseyeFilterChanged>(
+  ActionType.BIRDSEYE_FILTER_CHANGED
+);
 export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
 >(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
@@ -305,6 +330,9 @@ export const locationChanged = actionCreator<LocationChanged>(
 export const metaClicked = actionCreator<MetaClicked>(ActionType.META_CLICKED);
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
   ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
+);
+export const birdseyeTopFilterBlurred = actionCreator<BirdseyeTopFilterBlurred>(
+  ActionType.BIRDSEYE_TOP_FILTER_BLURRED
 );
 export const resizerMoved = actionCreator<ResizerMoved>(
   ActionType.RESIZER_MOVED
@@ -403,19 +431,23 @@ export const gridHotkeyPressed = actionCreator<GridHotkeyPressed>(
 export const getAllScreensRequested = actionCreator<GetAllScreensRequested>(
   ActionType.GET_ALL_SCREENS_REQUESTED
 );
+export const loaded = actionCreator<Loaded>(ActionType.LOADED);
 
 export type InstanceAction =
   // | RendererInitialized
   | RectsCaptured
   | CanvasMouseUp
+  | Loaded
   | ResizerPathMoved
   | ResizerPathStoppedMoving
   | Pasted
   | RendererMounted
   | RendererUnmounted
+  | BirdseyeFilterChanged
   | FrameTitleChanged
   | MetaClicked
   | ResizerStoppedMoving
+  | BirdseyeTopFilterBlurred
   | ResizerMoved
   | GridHotkeyPressed
   | RendererChanged

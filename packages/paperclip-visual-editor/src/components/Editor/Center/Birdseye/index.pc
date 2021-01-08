@@ -4,7 +4,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 329, y: 77 }
 -->
-<div export component as="Cell" className:warn="warn" className:hover="hover" {onClick}>
+<div export component as="Cell" className:warn="warn" className:hover="hover" {onClick?} {onMouseDown?}>
   <style>
     :self {
       --pos: 2n;

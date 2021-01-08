@@ -1,12 +1,17 @@
 ### TOMORROW
+
+- redesign search & toolbars (too small)
+- arrow keys to select grid item
+
+- move search to header
+- sync frame changes with preview
+-ngrok
   
 - react-router
   - /grid
   - /editor
 
 - !! CSSOM Patcher
-
-- remove zoom level when in birdseye view
 
 - presense icon
 - open in browserstack button
@@ -16,15 +21,6 @@
 
 #### Next
 
-- pop tab out of vscode 
-
-- grid view!
-  - show all UIs
-
-- key combos
-  - cmd + t = show grid
-
-- ability to hide gutter
 
 - *need to consider file modifications
   - make read-only until connected with text editor?

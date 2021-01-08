@@ -24,7 +24,8 @@ import {
   instanceChanged,
   InstanceAction,
   crashed,
-  allPCContentLoaded
+  allPCContentLoaded,
+  initParamsDefined
 } from "./actions";
 import { FSItemKind } from "./state";
 import express from "express";
@@ -40,13 +41,15 @@ export type ServerOptions = {
   port?: number;
   emit?: (action: Action) => void;
   cwd?: string;
+  readonly?: boolean;
 };
 
 export const startServer = async ({
   port: defaultPort,
   localResourceRoots,
   emit: emitExternal = noop,
-  cwd = process.cwd()
+  cwd = process.cwd(),
+  readonly
 }: ServerOptions) => {
   const engine = await createEngineDelegate(
     {
@@ -81,6 +84,8 @@ export const startServer = async ({
     const emit = message => {
       conn.write(JSON.stringify(message));
     };
+
+    emit(initParamsDefined({ readonly }));
 
     const disposeEngineListener = engine.onEvent(event => {
       emit(engineDelegateChanged(event));

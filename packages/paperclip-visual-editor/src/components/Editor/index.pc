@@ -53,7 +53,7 @@ TODOS:
 </Container>
 
 <!--
-  @frame { title: "Grid View / Small", width: 377, height: 737, x: -11, y: -272 }
+  @frame { title: "Grid View / Small", width: 377, height: 737, x: -16, y: -145 }
 -->
 <Container>
   <Center.BirdseyePreview2 />

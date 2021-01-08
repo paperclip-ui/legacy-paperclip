@@ -15,6 +15,10 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Zoom" className="zoom">
   <style>
     border-left: 1px solid var(--border-color);
@@ -50,6 +54,10 @@
   <span>{amount}%</span>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <button export component as="PaintButton" {onClick?} 
   className="brush">
   <style>
@@ -78,6 +86,10 @@
   <i className="$icons.icon" className:active="active" />
 </button>
 
+
+<!--
+  @frame { visible: false }
+-->
 <button export component as="GridButton" {onClick?} 
   className="grid">
   <style>
@@ -107,6 +119,75 @@
   <i className="$icons.icon" className:active="active" />
 </button>
 
+<!--
+  @frame { visible: false }
+-->
+<button export component as="MagnifyButton" {onClick?} 
+  className="grid">
+  <style>
+    border: none;
+    color: inherit;
+    outline: none;
+    padding: 0;
+
+    background: transparent;
+    display: flex;
+
+    height: 100%;
+
+    i {
+      --size: 1em;
+      position: relative;
+      top: 1px;
+      /* mask-size: 0.93em; */
+      cursor: pointer;
+      mask-image: url(./magnify.svg);
+      display: inline-block;
+      &.active {
+        color: var(--topbar-background-active-1); 
+      }
+    }
+  </style>
+  <i className="$icons.icon" className:active="active" />
+</button>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="SearchInput">
+  <style>
+    position: relative;
+    &:before {
+      position: absolute;
+      top: 50%;
+      color: var(--background-active-1);
+      left: 22px;
+      transform: translate(-100%, -50%);
+      --size: 1em;
+      @include utils.mask;
+      mask-image: url(./magnify.svg);
+    }
+  </style>
+  <input type="text" ref={inputRef} {onChange} {onBlur?} {defaultValue?}>
+    <style>
+      background: transparent;
+      border: 1px solid  var(--background-active-1);
+      border-radius: 2px;
+      box-sizing: border-box;
+      padding: 2px 8px;
+      padding-left: 16px;
+      color:  var(--background-selected-1);
+      outline: none;
+      width: 100px;
+      font-size: 0.8em;
+    </style>
+  </input>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
 <button export component as="CollapseButton" {onClick} className:active="active">
   <style>
     border: none;
@@ -135,7 +216,11 @@
   <i className="$icons.icon" className:active="active" />
 </button>
 
-<div export component as="Controls" className:right="right" className="controls">
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Controls" className="controls">
   <style>
     padding:4px 14px;
     display: flex;
@@ -147,17 +232,18 @@
 
       &:first-child {
         border-left: none;
-        padding-left: 0px;
+        margin-left: 0px;
 
       }
-    }
-    :self(.right) {
-      float: right;
     }
   </style>
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Container" className="toolbar {className?}" className:gridMode="grid-mode">
   <style>
     --border-color: var(--vscode-editorGroup-border, #777);
@@ -169,7 +255,8 @@
     flex-shrink: 0;
     flex-grow: 0;
     display: flex;
-    justify-content: space-between;
+    box-sizing: border-box;
+
     :self(.grid-mode) { 
       > :last-child {
         visibility: hidden;
@@ -179,6 +266,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <button export component as="PopOutButton" {onClick}>
   <style>
     width: 10px;
@@ -194,19 +285,98 @@
   </style>
 </button>
 
-<Container export component as="Preview" {gridMode?} className:light="light">
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ReadOnlyBadge">
+  <style>
+    display: flex;
+    align-content: center;
+    align-items: center;
+    margin-right: 4px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  </style>
+<div>
+  <style>
+    text-transform: uppercase;
+    font-size: 0.7em;
+    background: rgb(255, 255, 83);
+    border-radius: 4px;
+    color: rgb(117, 104, 30);
+    box-sizing: border-box;
+    flex-shrink: 0;
+    padding: 2px 10px;
+    font-weight: 600;
+  </style>
+    Read-only
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Container export component as="Preview" {gridMode?} className:light="light" {className?}>
  
   <Controls>
-    <GridButton />
+    <MagnifyButton />
     <Zoom amount="100" />
   </Controls>
-   <Controls right>
-    <PopOutButton />
-    <CollapseButton />
-  </Controls>
+  <Spacer />
+    <Controls right>
+      <PopOutButton />
+      <CollapseButton />
+    </Controls>
+    <ReadOnlyBadge />
 </Container>
 
-<div className="$theme.font-default">
-  <Preview />
-</div>
+
+  
+  
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Spacer">
+    <style>
+      width: 100%;
+    </style>
+  </div>
+
+
+<!--
+  @frame { title: "Preview 1", width: 1024, height: 48, x: 68, y: -182 }
+-->
+
+<Preview className="$theme.font-default" />
+
+
+
+<!--
+  @frame { title: "Search Input", width: 1024, height: 48, x: 58, y: -416 }
+-->
+
+
+<Container className="light $theme.font-default">
+ 
+  <Controls>
+    <SearchInput />
+    <Zoom amount="100" />
+  </Controls>
+  <Spacer />
+    <Controls right>
+      <PopOutButton />
+      <CollapseButton />
+    </Controls>
+    <ReadOnlyBadge />
+</Container>
+
+
+
+<!--
+  @frame { title: "Preview 1", width: 1024, height: 48, x: 66, y: -294 }
+-->
+
+<Preview className="$theme.font-default" light />
 

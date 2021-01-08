@@ -6,14 +6,25 @@ import {
   zoomOutButtonClicked,
   popoutButtonClicked,
   collapseFrameButtonClicked,
-  gridButtonClicked
+  gridButtonClicked,
+  birdseyeFilterChanged,
+  birdseyeTopFilterBlurred
 } from "../../../../actions";
+import { useTextInput } from "../../../TextInput";
 
 export const Toolbar = () => {
   const {
-    state: { canvas, embedded, expandedFrameInfo, showBirdseye },
+    state: {
+      canvas,
+      embedded,
+      expandedFrameInfo,
+      showBirdseye,
+      readonly,
+      birdseyeFilter
+    },
     dispatch
   } = useAppStore();
+
   const onMinusClick = () => {
     dispatch(zoomOutButtonClicked(null));
   };
@@ -30,14 +41,37 @@ export const Toolbar = () => {
     dispatch(gridButtonClicked(null));
   };
 
+  const { inputProps } = useTextInput({
+    value: birdseyeFilter,
+    focus: true,
+    onValueChange: (value: string) => {
+      dispatch(birdseyeFilterChanged({ value }));
+    }
+  });
+
+  const onFilterBlur = () => {
+    dispatch(birdseyeTopFilterBlurred(null));
+  };
+
   return (
     <styles.Container>
       <styles.Controls>
-        <styles.GridButton active={showBirdseye} onClick={onGridButtonClick} />
+        {showBirdseye ? (
+          <styles.SearchInput
+            inputRef={inputProps.ref}
+            onChange={inputProps.onChange}
+            defaultValue={inputProps.value}
+            onBlur={onFilterBlur}
+          />
+        ) : (
+          <styles.MagnifyButton onClick={onGridButtonClick} />
+        )}
+        {/* <styles.GridButton active={showBirdseye} onClick={onGridButtonClick} /> */}
         {/* <styles.PaintButton
           active={toolsLayerEnabled}
           onClick={onPainToolClick}
         /> */}
+
         {!expandedFrameInfo && !showBirdseye && (
           <styles.Zoom
             amount={Math.round(canvas.transform.z * 100)}
@@ -47,6 +81,8 @@ export const Toolbar = () => {
         )}
       </styles.Controls>
 
+      <styles.Spacer />
+
       <styles.Controls>
         {embedded ? (
           <styles.PopOutButton onClick={onPopOutButtonClicked} />
@@ -55,6 +91,7 @@ export const Toolbar = () => {
           <styles.CollapseButton active onClick={onCollapseButtonClick} />
         ) : null}
       </styles.Controls>
+      {readonly && <styles.ReadOnlyBadge />}
     </styles.Container>
   );
 };

@@ -80,12 +80,7 @@ export const activate = (
       sticky ? "sticky preview" : `⚡️ ${path.basename(paperclipUri)}`,
       ViewColumn.Beside,
       {
-        enableScripts: true,
-        localResourceRoots: [
-          Uri.file(extensionPath),
-          Uri.file(workspace.rootPath),
-          Uri.file(resolveSync(RENDERER_MODULE_NAME, extensionPath))
-        ]
+        enableScripts: true
       }
     );
 
@@ -297,6 +292,10 @@ export const activate = (
               handleUndo(action.payload);
               break;
             }
+            case ve.ActionType.LOADED: {
+              handleLoaded(action.payload.payload.action);
+              break;
+            }
             case ve.ActionType.GLOBAL_Y_KEY_DOWN: {
               handleRedo(action.payload);
               break;
@@ -316,6 +315,16 @@ export const activate = (
     }
   });
 
+  const handleLoaded = ({
+    payload: { windowId, currentFileUri }
+  }: ve.Loaded) => {
+    _previews.forEach(preview => {
+      if (preview.id === windowId) {
+        // do not re-render since window will have already rendered to proper page
+        preview.setTargetUri(currentFileUri, false);
+      }
+    });
+  };
   const handleUndo = ({ payload: { targetPCFileUri } }: ve.InstanceChanged) => {
     execCommand(targetPCFileUri, "undo");
   };
@@ -385,6 +394,7 @@ class LivePreview {
   private _readyPromise: Promise<any>;
   private _initPromise: Promise<any>;
   private _targetUri: string;
+  public readonly id: string;
 
   constructor(
     private _devServerPort: number,
@@ -395,6 +405,7 @@ class LivePreview {
     readonly sticky: boolean,
     readonly closeWithFile: boolean
   ) {
+    this.id = `${Date.now()}.${Math.random()}`;
     this._em = new EventEmitter();
     this._targetUri = targetUri;
     this._render();
@@ -417,7 +428,7 @@ class LivePreview {
   getTargetUri() {
     return this._targetUri;
   }
-  setTargetUri(value: string) {
+  setTargetUri(value: string, rerender = true) {
     if (this._targetUri === value) {
       return;
     }
@@ -425,7 +436,10 @@ class LivePreview {
       this.sticky ? "sticky preview" : path.basename(value)
     }`;
     this._targetUri = value;
-    this._render();
+
+    if (rerender) {
+      this._render();
+    }
   }
   getState(): LivePreviewState {
     return {
@@ -455,16 +469,6 @@ class LivePreview {
     this._render();
   }
   private _getHTML() {
-    const scriptPathOnDisk = Uri.file(
-      path.join(
-        resolveSync(RENDERER_MODULE_NAME, this._extensionPath),
-        "dist",
-        "browser.js"
-      )
-    );
-
-    const scriptUri = this.panel.webview.asWebviewUri(scriptPathOnDisk);
-
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -493,7 +497,14 @@ class LivePreview {
         this._devServerPort
       }?within_ide=true&current_file=${encodeURIComponent(
       this._targetUri
-    )}"></iframe>
+    )}&id=${this.id}"></iframe>
+
+    <style>
+        const aa = document.querySelector("iframe");
+        aa.onload = () => {
+          document.body.innerHTML = "OK";
+        }
+    </style>
     </body>
     </html>`;
   }
@@ -505,19 +516,4 @@ class LivePreview {
       console.warn(e);
     }
   }
-}
-
-function resolveSync(moduleName: string, fromDir: string) {
-  let cdir = fromDir;
-  do {
-    const possiblePath = path.join(cdir, "node_modules", moduleName);
-
-    if (fs.existsSync(possiblePath)) {
-      return possiblePath;
-    }
-
-    cdir = path.dirname(cdir);
-  } while (cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir));
-
-  throw new Error(`Could not resolve ${moduleName} in ${fromDir}`);
 }

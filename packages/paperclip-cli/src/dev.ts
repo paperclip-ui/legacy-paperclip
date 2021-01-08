@@ -10,7 +10,8 @@ export const devStart = async ({ port, cwd }: ServerOptions) => {
   const { port: actualPort } = await startServer({
     port,
     cwd: process.cwd(),
-    localResourceRoots: [cwd]
+    localResourceRoots: [cwd],
+    readonly: true
   });
 
   exec(`open http://localhost:${actualPort}`);

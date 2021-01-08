@@ -25,7 +25,8 @@ import {
   clientConnected,
   metaClicked,
   gridHotkeyPressed,
-  getAllScreensRequested
+  getAllScreensRequested,
+  loaded
 } from "../actions";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
 import { getVirtTarget } from "paperclip-utils";
@@ -35,11 +36,16 @@ import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 export default function* mainSaga() {
   yield fork(handleRenderer);
   yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
+
+  // wait for client to be loaded to initialize anything so that
+  // events properly get sent (like LOCATION_CHANGED)
+  yield take(ActionType.CLIENT_CONNECTED);
   yield fork(handleKeyCommands);
   yield fork(handleDocumentEvents);
   yield fork(handleCanvas);
   yield fork(handleClipboard);
   yield fork(handleInit);
+  yield fork(handleLoaded);
 }
 
 function handleSock(onMessage, onClient) {
@@ -132,6 +138,11 @@ function* handleRenderer() {
 
   yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
     const state: AppState = yield select();
+
+    if (state.readonly) {
+      return;
+    }
+
     maybeSendMessage(
       pcVirtObjectEdited({
         mutations: getSelectedFrames(state).map(frame => {
@@ -168,7 +179,8 @@ function* handleRenderer() {
       ActionType.PASTED,
       ActionType.FS_ITEM_CLICKED,
       ActionType.ERROR_BANNER_CLICKED,
-      ActionType.POPOUT_WINDOW_REQUESTED
+      ActionType.POPOUT_WINDOW_REQUESTED,
+      ActionType.LOADED
     ],
     function(action: Action) {
       maybeSendMessage(action);
@@ -240,6 +252,7 @@ function* handleKeyCommands() {
     });
     Mousetrap.bind("backspace", () => {
       emit(globalBackspaceKeyPressed(null));
+      return false;
     });
     Mousetrap.bind(
       "meta",
@@ -310,6 +323,10 @@ function* handlePaste() {
   });
 
   yield takeEvery(ev, function*(event: ClipboardEvent) {
+    const state: AppState = yield select();
+    if (state.readonly) {
+      return;
+    }
     const content = event.clipboardData.getData("text/plain");
     event.preventDefault();
     if (content) {
@@ -364,4 +381,13 @@ function* handleInit() {
       query: parts.query
     })
   );
+}
+
+function* handleLoaded() {
+  yield takeEvery(ActionType.LOCATION_CHANGED, function*() {
+    const state: AppState = yield select();
+    yield put(
+      loaded({ windowId: state.id, currentFileUri: state.currentFileUri })
+    );
+  });
 }
