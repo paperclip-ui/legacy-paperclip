@@ -169,6 +169,13 @@ function* handleRenderer() {
     }
   );
 
+  yield takeEvery([ActionType.LOCATION_CHANGED], function*() {
+    const state: AppState = yield select();
+    if (!state.currentFileUri) {
+      yield put(getAllScreensRequested(null));
+    }
+  });
+
   yield takeEvery(
     [
       ActionType.META_CLICKED,

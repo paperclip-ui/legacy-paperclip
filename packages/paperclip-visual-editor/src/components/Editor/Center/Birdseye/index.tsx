@@ -28,17 +28,16 @@ import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useFrames } from "../Canvas/Frames";
 import { useTextInput } from "../../../TextInput";
 import { relative } from "path";
+import Spinner from "../../../Spinner/index.pc";
 
 export const Birdseye = memo(() => {
   const { state, dispatch } = useAppStore();
   const [filter, setFilter] = useState<string>();
 
-  // const filter = state.birdseyeFilter;
-
   let content;
 
   if (state.loadingBirdseye) {
-    content = <>Loading</>;
+    content = <Spinner />;
   } else {
     content = (
       <>

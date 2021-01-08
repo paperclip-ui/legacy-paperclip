@@ -70,6 +70,12 @@ export default (state: AppState, action: Action) => {
       });
       return state;
     }
+    case ActionType.GET_ALL_SCREENS_REQUESTED: {
+      return produce(state, newState => {
+        newState.showBirdseye = true;
+        newState.loadingBirdseye = true;
+      });
+    }
     case ActionType.RENDERER_MOUNTED: {
       return produce(state, newState => {
         newState.mountedRendererIds.push(action.payload.id);

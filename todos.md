@@ -10,3 +10,4 @@
 - !! CSSOM Patcher
 
 - right click elements
+- if no file is open, then show grid
