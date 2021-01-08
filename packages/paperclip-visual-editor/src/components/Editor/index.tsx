@@ -8,7 +8,7 @@ import { useAppStore } from "../../hooks/useAppStore";
 export const Editor = withAppStore(() => {
   const { state } = useAppStore();
   return (
-    <styles.Container>
+    <styles.Container className="light">
       {state.embedded ? null : <LeftSidebar />}
       <Center />
     </styles.Container>

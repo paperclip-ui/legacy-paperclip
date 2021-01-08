@@ -27,6 +27,7 @@ import {
 import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useFrames } from "../Canvas/Frames";
 import { useTextInput } from "../../../TextInput";
+import { relative } from "path";
 
 export const Birdseye = memo(() => {
   const { state, dispatch } = useAppStore();
@@ -147,6 +148,7 @@ const Cell = ({
 }: CellProps) => {
   const { mountRef, label, frameBox, scale, onClick, visible } = useCell({
     uri,
+    relativePath,
     filter,
     frameIndex: index,
     node
@@ -179,12 +181,19 @@ const Cell = ({
 
 type UseCellProps = {
   filter?: string;
+  relativePath: string;
   uri: string;
   frameIndex: number;
   node: VirtualFrame;
 };
 
-const useCell = ({ filter, uri, frameIndex, node }: UseCellProps) => {
+const useCell = ({
+  filter,
+  uri,
+  frameIndex,
+  relativePath,
+  node
+}: UseCellProps) => {
   const annotations: NodeAnnotations = node.annotations
     ? computeVirtJSObject(node.annotations)
     : {};
@@ -255,7 +264,7 @@ const useCell = ({ filter, uri, frameIndex, node }: UseCellProps) => {
   if (visible && filter) {
     // invisible until filter found
     visible = false;
-    const filterable: string[] = [label, ...tags];
+    const filterable: string[] = [label, relativePath, ...tags];
     for (const filterableItem of filterable) {
       if (filterableItem.toLowerCase().indexOf(filter.toLowerCase()) !== -1) {
         visible = true;
