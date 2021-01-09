@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "17.1.4",
+  "version": "17.1.7",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "keywords": [
