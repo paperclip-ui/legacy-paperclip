@@ -22,7 +22,11 @@ module.exports = {
   },
   devtool: false,
 
-  plugins: [new HtmlWebpackPlugin()],
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: "Paperclip"
+    })
+  ],
   externals: {
     chokidar: "{}"
   },

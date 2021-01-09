@@ -1,1 +1,5 @@
+
+<!--
+  @frame { width: 929, height: 720, x: 105, y: 2 }
+-->
 <div export component as="default">a</div>
