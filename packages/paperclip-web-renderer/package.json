@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha ./lib/test --timeout=5000",
-    "build": "tsc && webpack",
+    "build": "tsc",
     "lint": "eslint src",
     "build:watch": "tsc --watch & webpack --watch",
     "start": "webpack-dev-server",
