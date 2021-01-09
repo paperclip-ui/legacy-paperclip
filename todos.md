@@ -1,5 +1,7 @@
 ### Immediate
   
+- paperclip - cannot embed ngrok
+- workspaceFolder undefined
 
 - Website
   - vscode extension should be in private

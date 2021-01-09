@@ -1,14 +1,37 @@
 import { ExtensionContext, workspace, window } from "vscode";
 import * as fs from "fs";
+import * as path from "path";
 import * as findUp from "find-up";
 import { activate as activateLanguageClient } from "./language";
+import { spawn } from "child_process";
 
 // eslint-disable-next-line
 const selfPkg = require("../../package");
 
-export const activate = (context: ExtensionContext) => {
+export const activate = async (context: ExtensionContext) => {
+  await installDeps();
   activateLanguageClient(context);
   checkVersionMatch(context);
+};
+
+const installDeps = async () => {
+  const proc = spawn(`node`, [
+    path.join(
+      __dirname,
+      "..",
+      "..",
+      "node_modules",
+      "paperclip-visual-editor",
+      "node_modules",
+      "ngrok",
+      "postinstall.js"
+    )
+  ]);
+  proc.stdout.pipe(process.stdout);
+  proc.stderr.pipe(process.stderr);
+  return new Promise(resolve => {
+    proc.on("close", resolve);
+  });
 };
 
 export function deactivate(): Thenable<void> {
