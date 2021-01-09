@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "17.1.2",
+  "version": "17.1.4",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "keywords": [
@@ -128,7 +128,7 @@
     "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",
     "rm-ngrok": "rm -rf node_modules/ngrok/bin",
-    "publish:marketplace": "rm -rf node_modules && npm install && npm run rm-ngrok && sce package && vsce publish -p $VSCE_TOKEN"
+    "publish:marketplace": "rm -rf node_modules && npm install && npm run rm-ngrok && vsce package && vsce publish -p $VSCE_TOKEN"
   },
   "author": "",
   "license": "MIT",
