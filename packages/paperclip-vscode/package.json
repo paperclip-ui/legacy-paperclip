@@ -127,7 +127,8 @@
     "lint": "eslint src",
     "build:watch": "npm run build -- --watch",
     "prepublishOnly": "npm run build",
-    "publish:marketplace": "rm -rf node_modules && npm install && vsce package && vsce publish -p $VSCE_TOKEN"
+    "rm-ngrok": "rm -rf node_modules/ngrok/bin",
+    "publish:marketplace": "rm -rf node_modules && npm install && npm run rm-ngrok && sce package && vsce publish -p $VSCE_TOKEN"
   },
   "author": "",
   "license": "MIT",
