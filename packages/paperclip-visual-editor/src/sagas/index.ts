@@ -165,7 +165,7 @@ function* handleRenderer() {
     [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
     function*() {
       const state: AppState = yield select();
-      if (state.showBirdseye) {
+      if (state.showBirdseye && !state.loadedBirdseyeInitially) {
         yield put(getAllScreensRequested(null));
       }
     }
@@ -173,7 +173,7 @@ function* handleRenderer() {
 
   yield takeEvery([ActionType.LOCATION_CHANGED], function*() {
     const state: AppState = yield select();
-    if (!state.currentFileUri) {
+    if (!state.currentFileUri && !state.loadedBirdseyeInitially) {
       yield put(getAllScreensRequested(null));
     }
   });

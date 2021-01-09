@@ -25,7 +25,9 @@ import {
   InstanceAction,
   crashed,
   allPCContentLoaded,
-  initParamsDefined
+  initParamsDefined,
+  ExternalActionType,
+  ConfigChanged
 } from "./actions";
 import { FSItemKind } from "./state";
 import express from "express";
@@ -40,6 +42,7 @@ import * as ngrok from "ngrok";
 export type ServerOptions = {
   localResourceRoots: string[];
   port?: number;
+  publicSharing: boolean;
   emit?: (action: Action) => void;
   cwd?: string;
   readonly?: boolean;
@@ -49,6 +52,7 @@ export const startServer = async ({
   port: defaultPort,
   localResourceRoots,
   emit: emitExternal = noop,
+  publicSharing = true,
   cwd = process.cwd(),
   readonly
 }: ServerOptions) => {
@@ -77,6 +81,19 @@ export const startServer = async ({
 
     const ret = engine.open(uri);
     return ret;
+  };
+
+  let _shareHost: string;
+
+  const getShareHost = async () => {
+    if (_shareHost) {
+      return _shareHost;
+    }
+    if (publicSharing) {
+      return (_shareHost = await ngrok.connect(port));
+    } else {
+      return `http://localhost:${port}`;
+    }
   };
 
   io.on("connection", conn => {
@@ -139,20 +156,12 @@ export const startServer = async ({
         emit(pcFileLoaded(result));
       }
     };
-    let _ngrokUrl: string;
-
-    const getNGrokUrl = async () => {
-      if (_ngrokUrl) {
-        return _ngrokUrl;
-      }
-      return (_ngrokUrl = await ngrok.connect(port));
-    };
 
     const onPopoutWindowRequested = async ({
       payload: { uri }
     }: PopoutWindowRequested) => {
-      const ngrokUrl = await getNGrokUrl();
-      exec(`open ${ngrokUrl}/?current_file=${encodeURIComponent(uri)}`);
+      const shareHost = await getShareHost();
+      exec(`open ${shareHost}/?current_file=${encodeURIComponent(uri)}`);
     };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {
@@ -199,6 +208,23 @@ export const startServer = async ({
 
   const dispatch = (action: ExternalAction) => {
     em.emit("externalAction", action);
+
+    switch (action.type) {
+      case ExternalActionType.CONFIG_CHANGED: {
+        handleConfigChanged(action);
+        break;
+      }
+    }
+  };
+
+  const handleConfigChanged = ({ payload }: ConfigChanged) => {
+    if (payload.publicSharing != null) {
+      if (publicSharing && _shareHost && !payload.publicSharing) {
+        ngrok.disconnect(_shareHost);
+        _shareHost = undefined;
+      }
+      publicSharing = payload.publicSharing;
+    }
   };
 
   startHTTPServer(port, io, localResourceRoots);

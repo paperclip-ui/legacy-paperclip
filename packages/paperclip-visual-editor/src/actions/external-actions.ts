@@ -1,7 +1,8 @@
 import { actionCreator } from "./base";
 
 export enum ExternalActionType {
-  CONTENT_CHANGED = "CONTENT_CHANGED"
+  CONTENT_CHANGED = "CONTENT_CHANGED",
+  CONFIG_CHANGED = "CONFIG_CHANGED"
 }
 
 type BaseAction<TType extends ExternalActionType, TPayload = undefined> = {
@@ -17,8 +18,18 @@ export type ContentChanged = BaseAction<
   }
 >;
 
+export type ConfigChanged = BaseAction<
+  ExternalActionType.CONFIG_CHANGED,
+  {
+    publicSharing?: boolean;
+  }
+>;
+
 export const contentChanged = actionCreator<ContentChanged>(
   ExternalActionType.CONTENT_CHANGED
 );
+export const configChanged = actionCreator<ConfigChanged>(
+  ExternalActionType.CONFIG_CHANGED
+);
 
-export type ExternalAction = ContentChanged;
+export type ExternalAction = ContentChanged | ConfigChanged;

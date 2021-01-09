@@ -31,7 +31,20 @@
     "Programming Languages"
   ],
   "contributes": {
-    "configuration": [],
+    "configuration": {
+      "title": "Paperclip",
+      "properties": {
+        "paperclip.sharing": {
+          "type": "string",
+          "description": "Controls whether the share button exposes your workspace publicly or privately",
+          "default": "public",
+          "enum": [
+            "private",
+            "public"
+          ]
+        }
+      }
+    },
     "commands": [
       {
         "command": "paperclip.openPreview",

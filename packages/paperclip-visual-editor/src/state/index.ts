@@ -82,6 +82,7 @@ export type AppState = {
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
   showBirdseye?: boolean;
+  loadedBirdseyeInitially?: boolean;
   loadingBirdseye?: boolean;
   expandedFrameInfo?: ExpandedFrameInfo;
   resizerMoving?: boolean;

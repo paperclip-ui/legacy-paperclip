@@ -255,7 +255,7 @@ export default (state: AppState, action: Action) => {
     case ActionType.GRID_HOTKEY_PRESSED: {
       return produce(state, newState => {
         newState.showBirdseye = !newState.showBirdseye;
-        if (newState.showBirdseye) {
+        if (newState.showBirdseye && !newState.loadedBirdseyeInitially) {
           newState.loadingBirdseye = true;
         }
       });
@@ -265,6 +265,7 @@ export default (state: AppState, action: Action) => {
     case ServerActionType.ALL_PC_CONTENT_LOADED: {
       return produce(state, newState => {
         newState.loadingBirdseye = false;
+        newState.loadedBirdseyeInitially = true;
         newState.allLoadedPCFileData = action.payload;
       });
     }

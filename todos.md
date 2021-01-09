@@ -1,8 +1,4 @@
 ### Immediate
-
-- ngrok
-  - ability to turn off
-  - ability to specify credentials
   
 - react-router push state
   - /grid

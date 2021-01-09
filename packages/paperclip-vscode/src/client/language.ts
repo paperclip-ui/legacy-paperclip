@@ -34,6 +34,7 @@ const createClient = (context: ExtensionContext) => {
   const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
   const serverOptions: ServerOptions = {
     run: { module: serverPath, transport: TransportKind.ipc },
+
     debug: {
       module: serverPath,
       transport: TransportKind.ipc,
@@ -46,6 +47,7 @@ const createClient = (context: ExtensionContext) => {
     // Register the server for plain text documents
     documentSelector: [{ scheme: "file", language: "paperclip" }],
     synchronize: {
+      configurationSection: ["paperclip"],
       // Notify the server about file changes to '.clientrc files contained in the workspace
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc")
     }

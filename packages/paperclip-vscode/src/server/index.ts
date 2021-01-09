@@ -24,24 +24,38 @@ import {
   startServer,
   Action as VsualEditorAction,
   ServerAction,
-  ExternalAction
+  ExternalAction,
+  configChanged
 } from "paperclip-visual-editor";
-
 class Server {
   private _connection: Connection;
   private _workspaceFolders: WorkspaceFolder[];
+  private _dispatchDevServer: (action: any) => any;
+  constructor(readonly config: any) {
+    console.log(config);
+  }
 
   start() {
     this._connection = createConnection(ProposedFeatures.all);
     this._connection.onInitialize(this._onConnectionInitialize);
     this._connection.onInitialized(this._onConnectionInitialized);
+    this._connection.onDidChangeConfiguration(this._onDidChangeConfiguration);
     this._connection.listen();
   }
+
+  private _onDidChangeConfiguration = ({ settings: { paperclip } }) => {
+    this._dispatchDevServer(
+      configChanged({
+        publicSharing: paperclip.sharing === "public"
+      })
+    );
+  };
 
   private _onConnectionInitialize = (
     params: InitializeParams
   ): InitializeResult => {
     this._workspaceFolders = params.workspaceFolders;
+
     return {
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Incremental,
@@ -63,16 +77,19 @@ class Server {
     this._connection.sendNotification($$ACTION_NOTIFICATION, action);
   }
 
-  private _onConnectionInitialized = async () => {
+  private _onConnectionInitialized = async cd => {
     const { port, engine, dispatch } = await startServer({
       localResourceRoots: this._workspaceFolders.map(({ uri }) => {
         return url.fileURLToPath(uri);
       }),
       readonly: false,
+      publicSharing: this.config.sharing === "public",
       emit: (action: ServerAction) => {
         this._dispatch(devServerChanged(action));
       }
     });
+
+    this._dispatchDevServer = dispatch;
 
     this._connection.onNotification(
       $$ACTION_NOTIFICATION,
@@ -92,5 +109,5 @@ class Server {
   };
 }
 
-const server = new Server();
+const server = new Server({});
 server.start();
