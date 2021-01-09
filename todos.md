@@ -1,16 +1,10 @@
 ### Immediate
   
 
-- browserstack
-  - share button should show dropdown of options to choose from for testing
-
 - Website
   - vscode extension should be in private
   - beta mode
 
-- meta+- not working
-- get working online
-- look into how storybook gets setup
 
 ## Next
 
