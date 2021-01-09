@@ -78,6 +78,7 @@ export type AppState = {
   readonly: boolean;
   birdseyeFilter?: string;
   renderProtocol?: string;
+  availableBrowsers?: AvailableBrowser[];
   centeredInitial: boolean;
   toolsLayerEnabled: boolean;
   currentError?: EngineErrorEvent;
@@ -104,6 +105,25 @@ export type AppState = {
   zoomLevel: number;
 };
 
+export enum EnvOptionKind {
+  Public = "Public",
+  Private = "Private",
+  Browserstack = "Browserstack"
+}
+
+export type EnvOption = {
+  kind: EnvOptionKind;
+  launchOptions: any;
+};
+
+export type AvailableBrowser = {
+  os: string;
+  osVersion: string;
+  browser: string;
+  device: string;
+  browserVersion: string;
+};
+
 export const INITIAL_STATE: AppState = {
   readonly: false,
   centeredInitial: false,
@@ -111,6 +131,7 @@ export const INITIAL_STATE: AppState = {
   toolsLayerEnabled: true,
   documentContent: {},
   currentFileUri: null,
+  availableBrowsers: [],
   currentEngineEvents: {},
   allLoadedPCFileData: {},
   boxes: {},

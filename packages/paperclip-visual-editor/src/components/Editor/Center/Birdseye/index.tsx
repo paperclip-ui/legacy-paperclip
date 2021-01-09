@@ -50,7 +50,7 @@ export const Birdseye = memo(() => {
                 filter={filter}
                 key={uri}
                 dispatch={dispatch}
-                projectPath={state.projectDirectory.absolutePath}
+                projectPath={state.projectDirectory?.absolutePath}
                 renderProtocol={state.renderProtocol}
                 uri={uri}
               />

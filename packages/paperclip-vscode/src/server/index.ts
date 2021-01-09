@@ -41,10 +41,13 @@ class Server {
     this._connection.listen();
   }
 
-  private _onDidChangeConfiguration = ({ settings: { paperclip } }) => {
+  private _onDidChangeConfiguration = ({ settings: { credentials } }) => {
     this._dispatchDevServer(
       configChanged({
-        publicSharing: paperclip.sharing === "public"
+        browserstackCredentials: {
+          username: credentials.browserstackUsername,
+          password: credentials.browserstackPassword
+        }
       })
     );
   };
@@ -81,7 +84,7 @@ class Server {
         return url.fileURLToPath(uri);
       }),
       readonly: false,
-      publicSharing: this.config.sharing === "public",
+      openInitial: false,
       emit: (action: ServerAction) => {
         this._dispatch(devServerChanged(action));
       }

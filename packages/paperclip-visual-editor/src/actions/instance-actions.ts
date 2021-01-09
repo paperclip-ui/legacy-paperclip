@@ -8,7 +8,7 @@ import {
   ExprSource,
   Action
 } from "paperclip-web-renderer/node_modules/paperclip-utils";
-import { Box, Directory, FSItemKind, Point, Size } from "../state";
+import { Box, Directory, EnvOption, FSItemKind, Point, Size } from "../state";
 
 export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
@@ -17,6 +17,7 @@ export enum ActionType {
   ZOOM_IN_KEY_PRESSED = "ZOOM_IN_KEY_PRESSED",
   ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
+  ENV_OPTION_CLICKED = "ENV_OPTION_CLICKED",
   BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
   LOADED = "LOADED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
@@ -34,6 +35,7 @@ export enum ActionType {
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
   CANVAS_RESIZED = "CANVAS_RESIZED",
   CANVAS_MOUSE_MOVED = "CANVAS_MOUSE_MOVED",
+  TITLE_DOUBLE_CLICKED = "TITLE_DOUBLE_CLICKED",
   DIR_LOADED = "DIR_LOADED",
   FS_ITEM_CLICKED = "FS_ITEM_CLICKED",
   CANVAS_PAN_START = "CANVAS_PAN_START",
@@ -109,6 +111,13 @@ export type GetAllScreensRequested = WrappedEvent<
   MouseEvent,
   ActionType.GET_ALL_SCREENS_REQUESTED
 >;
+export type EnvOptionClicked = BaseAction<
+  ActionType.ENV_OPTION_CLICKED,
+  {
+    option: EnvOption;
+    path: string;
+  }
+>;
 export type MetaClicked = BaseAction<
   ActionType.META_CLICKED,
   {
@@ -120,6 +129,11 @@ export type BirdseyeFilterChanged = BaseAction<
   {
     value: string;
   }
+>;
+
+export type TitleDoubleClicked = BaseAction<
+  ActionType.TITLE_DOUBLE_CLICKED,
+  { uri: string }
 >;
 
 export type BirdseyeTopFilterBlurred = BaseAction<
@@ -298,6 +312,9 @@ export const frameTitleClicked = actionCreator<FrameTitleClicked>(
 export const frameTitleChanged = actionCreator<FrameTitleChanged>(
   ActionType.FRAME_TITLE_CHANGED
 );
+export const titleDoubleClicked = actionCreator<TitleDoubleClicked>(
+  ActionType.TITLE_DOUBLE_CLICKED
+);
 export const rendererMounted = actionCreator<RendererMounted>(
   ActionType.RENDERER_MOUNTED
 );
@@ -328,6 +345,9 @@ export const resizerPathMoved = actionCreator<ResizerPathMoved>(
 );
 export const locationChanged = actionCreator<LocationChanged>(
   ActionType.LOCATION_CHANGED
+);
+export const envOptionClicked = actionCreator<EnvOptionClicked>(
+  ActionType.ENV_OPTION_CLICKED
 );
 export const metaClicked = actionCreator<MetaClicked>(ActionType.META_CLICKED);
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
@@ -474,11 +494,13 @@ export type InstanceAction =
   | FileOpened
   | MetaClicked
   | LocationChanged
+  | TitleDoubleClicked
   | PopoutButtonClicked
   | CollapseFrameButtonClicked
   | ExpandFrameButtonClicked
   | ZoomInButtonClicked
   | ClientConnected
+  | EnvOptionClicked
   | FrameTitleClicked
   | EngineDelegateChanged
   | EngineDelegateEventsHandled

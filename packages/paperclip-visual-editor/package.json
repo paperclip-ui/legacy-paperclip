@@ -12,6 +12,8 @@
   "license": "MIT",
   "gitHead": "2ea51225cf122f65f101634b60276a70e667c8d4",
   "dependencies": {
+    "browserstack": "^1.6.1",
+    "browserstack-local": "^1.4.8",
     "express": "^4.17.1",
     "get-port": "^5.1.1",
     "history": "^4.9.0",

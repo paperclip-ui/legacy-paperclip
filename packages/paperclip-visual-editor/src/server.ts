@@ -27,9 +27,18 @@ import {
   allPCContentLoaded,
   initParamsDefined,
   ExternalActionType,
-  ConfigChanged
+  ConfigChanged,
+  EnvOptionClicked,
+  browserstackBrowsersLoaded,
+  ServerAction,
+  TitleDoubleClicked
 } from "./actions";
-import { FSItemKind } from "./state";
+import {
+  AvailableBrowser,
+  EnvOption,
+  EnvOptionKind,
+  FSItemKind
+} from "./state";
 import express from "express";
 import { normalize, relative } from "path";
 import { EventEmitter } from "events";
@@ -38,22 +47,33 @@ import { exec } from "child_process";
 import { EngineMode, PaperclipSourceWatcher } from "paperclip";
 import { isPaperclipFile, PaperclipConfig } from "paperclip";
 import * as ngrok from "ngrok";
+import * as qs from "querystring";
+import * as bs from "browserstack";
+
+type BrowserstackCredentials = {
+  username: string;
+  password: string;
+};
 
 export type ServerOptions = {
   localResourceRoots: string[];
   port?: number;
-  publicSharing: boolean;
   emit?: (action: Action) => void;
   cwd?: string;
   readonly?: boolean;
+  openInitial: boolean;
+  credentials?: {
+    browserstack?: BrowserstackCredentials;
+  };
 };
 
 export const startServer = async ({
   port: defaultPort,
   localResourceRoots,
   emit: emitExternal = noop,
-  publicSharing = true,
   cwd = process.cwd(),
+  credentials = {},
+  openInitial,
   readonly
 }: ServerOptions) => {
   const engine = await createEngineDelegate(
@@ -84,17 +104,7 @@ export const startServer = async ({
   };
 
   let _shareHost: string;
-
-  const getShareHost = async () => {
-    if (_shareHost) {
-      return _shareHost;
-    }
-    if (publicSharing) {
-      return (_shareHost = await ngrok.connect(port));
-    } else {
-      return `http://localhost:${port}`;
-    }
-  };
+  let _browsers: any[];
 
   io.on("connection", conn => {
     let targetUri;
@@ -103,7 +113,7 @@ export const startServer = async ({
       conn.write(JSON.stringify(message));
     };
 
-    emit(initParamsDefined({ readonly }));
+    emit(initParamsDefined({ readonly, availableBrowsers: _browsers }));
 
     const disposeEngineListener = engine.onEvent(event => {
       emit(engineDelegateChanged(event));
@@ -122,19 +132,66 @@ export const startServer = async ({
         case ActionType.FILE_OPENED: {
           return onFileOpened(action);
         }
-        case ActionType.POPOUT_WINDOW_REQUESTED: {
-          onPopoutWindowRequested(action);
-          break;
-        }
         case ActionType.GET_ALL_SCREENS_REQUESTED: {
           return handleGetAllScreens();
+        }
+        case ActionType.ENV_OPTION_CLICKED: {
+          return handleEnvOptionClicked(action);
+        }
+        case ActionType.TITLE_DOUBLE_CLICKED: {
+          return handleTitleDoubleClicked(action);
         }
       }
       emitExternal(instanceChanged({ targetPCFileUri: targetUri, action }));
     });
 
+    const handleTitleDoubleClicked = (action: TitleDoubleClicked) => {
+      console.log("title double clicked: ", action.payload.uri);
+      if (action.payload.uri) {
+        exec(`open "${URL.fileURLToPath(action.payload.uri)}"`);
+      }
+    };
+
     const handleGetAllScreens = () => {
       emit(allPCContentLoaded(engine.getAllLoadedData()));
+    };
+
+    let _ngrokUrl;
+
+    const handleEnvOptionClicked = async ({
+      payload: { option, path }
+    }: EnvOptionClicked) => {
+      let host = `http://localhost:${port}`;
+
+      if (option.kind !== EnvOptionKind.Private) {
+        host = _ngrokUrl || (_ngrokUrl = await ngrok.connect(port));
+      }
+
+      let url = host + path;
+
+      if (option.kind === EnvOptionKind.Browserstack) {
+        url = getBrowserstackUrl(url, option);
+      }
+
+      console.log(`opening ${url}`);
+      exec(`open "${url}"`);
+    };
+
+    const getBrowserstackUrl = (url: string, option: EnvOption) => {
+      const launchOptions: AvailableBrowser = option.launchOptions;
+
+      const query = {
+        browser: launchOptions.browser,
+        browser_version: launchOptions.browserVersion,
+        scale_to_fit: true,
+        os: launchOptions.os,
+        os_version: launchOptions.osVersion,
+        start: true,
+        local: true,
+        url
+      };
+
+      return `https://live.browserstack.com/dashboard#${qs.stringify(query)}`;
     };
 
     const onFSItemClicked = async (action: FSItemClicked) => {
@@ -157,12 +214,12 @@ export const startServer = async ({
       }
     };
 
-    const onPopoutWindowRequested = async ({
-      payload: { uri }
-    }: PopoutWindowRequested) => {
-      const shareHost = await getShareHost();
-      exec(`open ${shareHost}/canvas?current_file=${encodeURIComponent(uri)}`);
-    };
+    // const onPopoutWindowRequested = async ({
+    //   payload: { uri }
+    // }: PopoutWindowRequested) => {
+    //   const shareHost = await getShareHost();
+    //   exec(`open ${shareHost}/canvas?current_file=${encodeURIComponent(uri)}`);
+    // };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {
       fs.readdir(dirPath, (err, basenames) => {
@@ -206,30 +263,60 @@ export const startServer = async ({
     });
   });
 
-  const dispatch = (action: ExternalAction) => {
+  const dispatch = (action: ExternalAction | ServerAction) => {
     em.emit("externalAction", action);
-
-    switch (action.type) {
-      case ExternalActionType.CONFIG_CHANGED: {
-        handleConfigChanged(action);
-        break;
-      }
+    if (action.type == ExternalActionType.CONFIG_CHANGED) {
+      handleConfigChanged(action);
     }
   };
 
+  let _bsClient;
+
   const handleConfigChanged = ({ payload }: ConfigChanged) => {
-    if (payload.publicSharing != null) {
-      if (publicSharing && _shareHost && !payload.publicSharing) {
-        ngrok.disconnect(_shareHost);
-        _shareHost = undefined;
-      }
-      publicSharing = payload.publicSharing;
+    maybeInitBrowserstack(payload.browserstackCredentials);
+  };
+
+  const maybeInitBrowserstack = (credentials: any) => {
+    if (!credentials || !credentials.username) {
+      return;
     }
+    _bsClient = bs.createClient(credentials);
+    console.log("Getting all browserstack browsers");
+    _bsClient.getBrowsers((err, result) => {
+      if (err) {
+        return console.error(`can't load browsers: `, err);
+      }
+
+      const used = {};
+
+      _browsers = result
+        ?.map(browser => ({
+          ...browser,
+          osVersion: browser.os_version,
+          browserVersion: browser.browser_version
+        }))
+        .sort((a, b) => {
+          if (a.browser !== b.browser) {
+            return a.browser > b.browser ? 1 : -1;
+          } else if (a.browserVersion !== b.browserVersion) {
+            return a.browserVersion > b.browserVersion ? -1 : 1;
+          }
+        });
+
+      console.log("loaded %d browsers", _browsers.length);
+
+      dispatch(browserstackBrowsersLoaded(_browsers));
+    });
   };
 
   startHTTPServer(port, io, localResourceRoots);
+  maybeInitBrowserstack(credentials?.browserstack);
 
   console.info(`Listening on port %d`, port);
+
+  if (openInitial) {
+    exec(`open http://localhost:${port}/all`);
+  }
 
   return {
     port,

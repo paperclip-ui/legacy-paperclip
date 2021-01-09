@@ -47,7 +47,7 @@ const createClient = (context: ExtensionContext) => {
     // Register the server for plain text documents
     documentSelector: [{ scheme: "file", language: "paperclip" }],
     synchronize: {
-      configurationSection: ["paperclip"],
+      configurationSection: ["paperclip", "credentials"],
       // Notify the server about file changes to '.clientrc files contained in the workspace
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc")
     }

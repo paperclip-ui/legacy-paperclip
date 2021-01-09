@@ -34,14 +34,11 @@
     "configuration": {
       "title": "Paperclip",
       "properties": {
-        "paperclip.sharing": {
-          "type": "string",
-          "description": "Controls whether the share button exposes your workspace publicly or privately",
-          "default": "public",
-          "enum": [
-            "private",
-            "public"
-          ]
+        "credentials.browserstackUsername": {
+          "type": "string"
+        },
+        "credentials.browserstackPassword": {
+          "type": "string"
         }
       }
     },
@@ -150,6 +147,8 @@
   "dependencies": {
     "@types/react": "^16.9.20",
     "axios": "^0.19.2",
+    "browserstack": "^1.6.1",
+    "browserstack-local": "^1.4.8",
     "cheerio": "^1.0.0-rc.3",
     "color": "^3.1.2",
     "find-up": "^4.1.0",

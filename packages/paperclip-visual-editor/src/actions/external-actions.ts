@@ -21,7 +21,10 @@ export type ContentChanged = BaseAction<
 export type ConfigChanged = BaseAction<
   ExternalActionType.CONFIG_CHANGED,
   {
-    publicSharing?: boolean;
+    browserstackCredentials: {
+      username: string;
+      password: string;
+    };
   }
 >;
 

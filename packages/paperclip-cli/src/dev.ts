@@ -11,8 +11,13 @@ export const devStart = async ({ port, cwd }: ServerOptions) => {
     port,
     cwd: process.cwd(),
     localResourceRoots: [cwd],
-    readonly: true
+    readonly: true,
+    openInitial: true,
+    credentials: {
+      browserstack: {
+        username: process.env.BROWSERSTACK_USERNAME,
+        password: process.env.BROWSERSTACK_PASSWORD
+      }
+    }
   });
-
-  exec(`open http://localhost:${actualPort}`);
 };

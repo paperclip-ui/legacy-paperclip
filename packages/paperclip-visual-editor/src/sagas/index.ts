@@ -192,6 +192,8 @@ function* handleRenderer() {
       ActionType.GET_ALL_SCREENS_REQUESTED,
       ActionType.PASTED,
       ActionType.FS_ITEM_CLICKED,
+      ActionType.TITLE_DOUBLE_CLICKED,
+      ActionType.ENV_OPTION_CLICKED,
       ActionType.ERROR_BANNER_CLICKED,
       ActionType.POPOUT_WINDOW_REQUESTED,
       ActionType.LOADED

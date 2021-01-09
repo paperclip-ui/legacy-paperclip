@@ -56,6 +56,12 @@ export default (state: AppState, action: Action) => {
     case ServerActionType.INIT_PARAM_DEFINED: {
       return produce(state, newState => {
         newState.readonly = action.payload.readonly;
+        newState.availableBrowsers = action.payload.availableBrowsers;
+      });
+    }
+    case ServerActionType.BROWSERSTACK_BROWSERS_LOADED: {
+      return produce(state, newState => {
+        newState.availableBrowsers = action.payload;
       });
     }
     case ActionType.LOCATION_CHANGED: {

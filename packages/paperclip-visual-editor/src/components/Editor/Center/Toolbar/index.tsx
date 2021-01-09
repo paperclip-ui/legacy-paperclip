@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as styles from "./index.pc";
 import * as path from "path";
 import { useAppStore } from "../../../../hooks/useAppStore";
@@ -9,12 +9,14 @@ import {
   collapseFrameButtonClicked,
   gridButtonClicked,
   birdseyeFilterChanged,
-  birdseyeTopFilterBlurred
+  birdseyeTopFilterBlurred,
+  titleDoubleClicked
 } from "../../../../actions";
 import { useTextInput } from "../../../TextInput";
 import { pathToFileURL } from "url";
 import { current } from "immer";
 import { useHistory } from "react-router";
+import { EnvironmentPopup } from "./EnvironmentPopup";
 
 export const Toolbar = () => {
   const {
@@ -29,6 +31,7 @@ export const Toolbar = () => {
     },
     dispatch
   } = useAppStore();
+  const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
   const history = useHistory();
   const showBirdseye = history.location.pathname.indexOf("/all") === 0;
 
@@ -39,7 +42,7 @@ export const Toolbar = () => {
     dispatch(zoomInButtonClicked(null));
   };
   const onPopOutButtonClicked = () => {
-    dispatch(popoutButtonClicked(null));
+    setShowEnvironmentPopup(true);
   };
   const onCollapseButtonClick = () => {
     dispatch(collapseFrameButtonClicked(null));
@@ -65,14 +68,24 @@ export const Toolbar = () => {
     // dispatch(birdseyeTopFilterBlurred(null));
   };
 
+  const onEnvironmentPopupBlur = () => {
+    setShowEnvironmentPopup(false);
+  };
+
   const relativePath = currentFileUri
     ?.replace(projectDirectory?.url, "")
     .substr(1);
 
+  const onDoubleClick = () => {
+    console.log("DOUBLE");
+    dispatch(titleDoubleClicked({ uri: currentFileUri }));
+  };
+
   return (
-    <styles.Container>
-      <styles.Controls>
-        {/* {showBirdseye ? (
+    <>
+      <styles.Container onDoubleClick={onDoubleClick}>
+        <styles.Controls>
+          {/* {showBirdseye ? (
           <styles.SearchInput
             inputRef={inputProps.ref}
             onChange={inputProps.onChange}
@@ -82,36 +95,41 @@ export const Toolbar = () => {
         ) : (
           <styles.MagnifyButton onClick={onGridButtonClick} /> 
         )} */}
-        <styles.GridButton active={showBirdseye} onClick={onGridButtonClick} />
-        {/* <styles.PaintButton
+          <styles.GridButton
+            active={showBirdseye}
+            onClick={onGridButtonClick}
+          />
+          {/* <styles.PaintButton
           active={toolsLayerEnabled}
           onClick={onPainToolClick}
         /> */}
 
-        <styles.Zoom
-          amount={Math.round(canvas.transform.z * 100)}
-          onMinusClick={onMinusClick}
-          onPlusClick={onPlusClick}
-          hidden={expandedFrameInfo || showBirdseye}
-        />
-      </styles.Controls>
+          <styles.Zoom
+            amount={Math.round(canvas.transform.z * 100)}
+            onMinusClick={onMinusClick}
+            onPlusClick={onPlusClick}
+            hidden={expandedFrameInfo || showBirdseye}
+          />
+        </styles.Controls>
 
-      {(!embedded || showBirdseye) && (
-        <styles.Title>
-          {showBirdseye ? "All Paperclip UIs 🎨" : relativePath}
-        </styles.Title>
-      )}
-      <styles.Spacer />
+        {(!embedded || showBirdseye) && (
+          <styles.Title>
+            {showBirdseye ? "All Paperclip UIs 🎨" : relativePath}
+          </styles.Title>
+        )}
+        <styles.Spacer />
 
-      <styles.Controls>
-        {embedded ? (
+        <styles.Controls>
           <styles.PopOutButton onClick={onPopOutButtonClicked} />
-        ) : null}
-        {expandedFrameInfo ? (
-          <styles.CollapseButton active onClick={onCollapseButtonClick} />
-        ) : null}
-      </styles.Controls>
-      {readonly && <styles.ReadOnlyBadge />}
-    </styles.Container>
+          {expandedFrameInfo ? (
+            <styles.CollapseButton active onClick={onCollapseButtonClick} />
+          ) : null}
+        </styles.Controls>
+        {readonly && <styles.ReadOnlyBadge />}
+      </styles.Container>
+      {showEnvironmentPopup && (
+        <EnvironmentPopup onBlur={onEnvironmentPopupBlur} />
+      )}
+    </>
   );
 };
