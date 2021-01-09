@@ -5,6 +5,7 @@ import { Toolbar } from "./Toolbar";
 import { ErrorBanner } from "./ErrorBanner";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Birdseye } from "./Birdseye";
+import { Route } from "react-router";
 
 export const Center = () => {
   const { state, dispatch } = useAppStore();
@@ -12,8 +13,12 @@ export const Center = () => {
     <styles.Container>
       <Toolbar />
       <styles.CanvasContainer>
-        <Canvas />
-        {state.showBirdseye ? <Birdseye /> : null}
+        <Route path="/canvas">
+          <Canvas />
+        </Route>
+        <Route path="/all">
+          <Birdseye />
+        </Route>
       </styles.CanvasContainer>
       <ErrorBanner error={state.currentError} dispatch={dispatch} />
     </styles.Container>

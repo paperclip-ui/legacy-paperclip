@@ -1,11 +1,12 @@
 ### Immediate
   
-- react-router push state
-  - /grid
-  - /editor
-  - current file
+
+- browserstack
+  - share button should show dropdown of options to choose from for testing
 
 - Website
+  - vscode extension should be in private
+  - beta mode
 
 - meta+- not working
 - get working online

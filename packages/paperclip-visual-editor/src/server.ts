@@ -161,7 +161,7 @@ export const startServer = async ({
       payload: { uri }
     }: PopoutWindowRequested) => {
       const shareHost = await getShareHost();
-      exec(`open ${shareHost}/?current_file=${encodeURIComponent(uri)}`);
+      exec(`open ${shareHost}/canvas?current_file=${encodeURIComponent(uri)}`);
     };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {
@@ -247,7 +247,11 @@ const startHTTPServer = (
 
   const server = app.listen(port);
   io.installHandlers(server, { prefix: "/rt" });
-  app.use(express.static(path.join(__dirname, "..", "dist")));
+
+  const distHandler = express.static(path.join(__dirname, "..", "dist"));
+  app.use(distHandler);
+  app.use("/canvas", distHandler);
+  app.use("/all", distHandler);
   app.use("/file/*", (req, res, next) => {
     const filePath = normalize(req.params["0"]);
     const found = localResourceRoots.some(root => filePath.indexOf(root) === 0);

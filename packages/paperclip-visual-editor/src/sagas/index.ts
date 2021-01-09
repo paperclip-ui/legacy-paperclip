@@ -34,6 +34,7 @@ import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
+import history from "../dom-history";
 
 export default function* mainSaga() {
   yield fork(handleRenderer);
@@ -46,8 +47,9 @@ export default function* mainSaga() {
   yield fork(handleDocumentEvents);
   yield fork(handleCanvas);
   yield fork(handleClipboard);
-  yield fork(handleInit);
+  yield fork(handleLocationChanged);
   yield fork(handleLoaded);
+  yield fork(handleLocation);
 }
 
 function handleSock(onMessage, onClient) {
@@ -173,7 +175,10 @@ function* handleRenderer() {
 
   yield takeEvery([ActionType.LOCATION_CHANGED], function*() {
     const state: AppState = yield select();
-    if (!state.currentFileUri && !state.loadedBirdseyeInitially) {
+    if (
+      (!state.currentFileUri || location.pathname.indexOf("/all") === 0) &&
+      !state.loadedBirdseyeInitially
+    ) {
       yield put(getAllScreensRequested(null));
     }
   });
@@ -388,7 +393,7 @@ function* handleDocumentEvents() {
   });
 }
 
-function* handleInit() {
+function* handleLocationChanged() {
   const parts = Url.parse(location.href, true);
   yield put(
     locationChanged({
@@ -407,4 +412,12 @@ function* handleLoaded() {
       loaded({ windowId: state.id, currentFileUri: state.currentFileUri })
     );
   });
+}
+
+function* handleLocation() {
+  const chan = eventChannel(emit => {
+    return history.listen(emit);
+  });
+
+  yield takeEvery(chan, handleLocationChanged);
 }

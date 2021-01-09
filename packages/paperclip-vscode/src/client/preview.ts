@@ -27,18 +27,11 @@ import { isPaperclipFile } from "./utils";
 import * as path from "path";
 import { EventEmitter } from "events";
 import { LanguageClient } from "vscode-languageclient";
-import {
-  $$ACTION_NOTIFICATION,
-  Action,
-  ActionType,
-  DevServerChanged
-} from "../common/actions";
+import { $$ACTION_NOTIFICATION, Action, ActionType } from "../common/actions";
 
 const VIEW_TYPE = "paperclip-preview";
 
-const RENDERER_MODULE_NAME = "paperclip-visual-editor";
 import * as ve from "paperclip-visual-editor";
-import { InstanceChanged } from "paperclip-visual-editor";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -49,7 +42,6 @@ enum OpenLivePreviewOptions {
 type LivePreviewState = {
   targetUri: string;
   sticky: boolean;
-  closeWithFile: boolean;
 };
 
 export const activate = (
@@ -57,18 +49,12 @@ export const activate = (
   context: ExtensionContext,
   onPCMutations: (mutation: PCMutation[]) => void
 ): void => {
-  const { extensionPath } = context;
-
   const _previews: LivePreview[] = [];
 
   let _showedOpenLivePreviewPrompt = false;
   let _devServerPort: number;
 
-  const openLivePreview = async (
-    editor: TextEditor,
-    sticky: boolean,
-    closeWithFile: boolean
-  ) => {
+  const openLivePreview = async (editor: TextEditor, sticky: boolean) => {
     const paperclipUri = String(editor.document.uri);
 
     // NOTE - don't get in the way of opening the live preview since
@@ -85,15 +71,7 @@ export const activate = (
     );
 
     registerLivePreview(
-      new LivePreview(
-        _devServerPort,
-        client,
-        panel,
-        extensionPath,
-        paperclipUri,
-        sticky,
-        closeWithFile
-      )
+      new LivePreview(_devServerPort, panel, paperclipUri, sticky)
     );
   };
   const dispatchClient = (action: ve.ExternalAction) => {
@@ -161,9 +139,9 @@ export const activate = (
     );
 
     if (option === OpenLivePreviewOptions.Yes) {
-      openLivePreview(editor, false, false);
+      openLivePreview(editor, false);
     } else if (option === OpenLivePreviewOptions.Always) {
-      openLivePreview(editor, true, false);
+      openLivePreview(editor, true);
     }
 
     return true;
@@ -198,18 +176,10 @@ export const activate = (
   window.registerWebviewPanelSerializer(VIEW_TYPE, {
     async deserializeWebviewPanel(
       panel: WebviewPanel,
-      { targetUri, sticky, closeWithFile }: LivePreviewState
+      { targetUri, sticky }: LivePreviewState
     ) {
       registerLivePreview(
-        new LivePreview(
-          _devServerPort,
-          client,
-          panel,
-          extensionPath,
-          targetUri,
-          sticky,
-          closeWithFile
-        )
+        new LivePreview(_devServerPort, panel, targetUri, sticky)
       );
     }
   });
@@ -235,7 +205,7 @@ export const activate = (
   const handlePreviewCommand = (sticky: boolean) => () => {
     if (window.activeTextEditor) {
       if (isPaperclipFile(String(window.activeTextEditor.document.uri))) {
-        openLivePreview(window.activeTextEditor, sticky, false);
+        openLivePreview(window.activeTextEditor, sticky);
       } else {
         window.showErrorMessage(
           `Only Paperclip (.pc) are supported in Live Preview`
@@ -388,22 +358,14 @@ export const activate = (
 
 class LivePreview {
   private _em: EventEmitter;
-  private _dependencies: string[] = [];
-  private _needsReloading: boolean;
-  private _previewInitialized: () => void;
-  private _readyPromise: Promise<any>;
-  private _initPromise: Promise<any>;
   private _targetUri: string;
   public readonly id: string;
 
   constructor(
     private _devServerPort: number,
-    private _client: LanguageClient,
     readonly panel: WebviewPanel,
-    private readonly _extensionPath: string,
     targetUri: string,
-    readonly sticky: boolean,
-    readonly closeWithFile: boolean
+    readonly sticky: boolean
   ) {
     this.id = `${Date.now()}.${Math.random()}`;
     this._em = new EventEmitter();
@@ -444,13 +406,10 @@ class LivePreview {
   getState(): LivePreviewState {
     return {
       targetUri: this._targetUri,
-      sticky: this.sticky,
-      closeWithFile: this.closeWithFile
+      sticky: this.sticky
     };
   }
   private _render() {
-    this._needsReloading = false;
-
     // force reload
     this.panel.webview.html = "";
     this.panel.webview.html = this._getHTML();
@@ -495,16 +454,9 @@ class LivePreview {
     <body>
       <iframe src="http://localhost:${
         this._devServerPort
-      }?within_ide=true&current_file=${encodeURIComponent(
+      }/canvas?within_ide=true&current_file=${encodeURIComponent(
       this._targetUri
     )}&id=${this.id}"></iframe>
-
-    <style>
-        const aa = document.querySelector("iframe");
-        aa.onload = () => {
-          document.body.innerHTML = "OK";
-        }
-    </style>
     </body>
     </html>`;
   }

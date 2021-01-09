@@ -14,6 +14,7 @@ import {
 import { useTextInput } from "../../../TextInput";
 import { pathToFileURL } from "url";
 import { current } from "immer";
+import { useHistory } from "react-router";
 
 export const Toolbar = () => {
   const {
@@ -22,13 +23,14 @@ export const Toolbar = () => {
       embedded,
       expandedFrameInfo,
       projectDirectory,
-      showBirdseye,
       readonly,
       birdseyeFilter,
       currentFileUri
     },
     dispatch
   } = useAppStore();
+  const history = useHistory();
+  const showBirdseye = history.location.pathname.indexOf("/all") === 0;
 
   const onMinusClick = () => {
     dispatch(zoomOutButtonClicked(null));
@@ -43,7 +45,12 @@ export const Toolbar = () => {
     dispatch(collapseFrameButtonClicked(null));
   };
   const onGridButtonClick = () => {
-    dispatch(gridButtonClicked(null));
+    if (showBirdseye) {
+      history.push("/canvas" + history.location.search);
+    } else {
+      history.push("/all" + history.location.search);
+    }
+    // dispatch(gridButtonClicked(null));
   };
 
   const { inputProps } = useTextInput({

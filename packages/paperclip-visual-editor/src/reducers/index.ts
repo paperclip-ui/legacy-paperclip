@@ -67,6 +67,7 @@ export default (state: AppState, action: Action) => {
         newState.embedded = Boolean(action.payload.query.within_ide);
         newState.renderProtocol =
           action.payload.protocol + "//" + action.payload.host + "/file";
+        newState.centeredInitial = false;
       });
       return state;
     }

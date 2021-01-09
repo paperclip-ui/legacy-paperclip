@@ -31,9 +31,7 @@ class Server {
   private _connection: Connection;
   private _workspaceFolders: WorkspaceFolder[];
   private _dispatchDevServer: (action: any) => any;
-  constructor(readonly config: any) {
-    console.log(config);
-  }
+  constructor(readonly config: any) {}
 
   start() {
     this._connection = createConnection(ProposedFeatures.all);
