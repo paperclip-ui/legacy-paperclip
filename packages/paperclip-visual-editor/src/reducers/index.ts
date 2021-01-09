@@ -5,7 +5,6 @@ import {
   IS_WINDOWS,
   Canvas,
   Box,
-  resetCanvas,
   getFSItem,
   Directory,
   maybeCenterCanvas,
@@ -15,7 +14,12 @@ import {
   mergeBoxes
 } from "../state";
 import { produce } from "immer";
-import { Action, ActionType } from "../actions";
+import {
+  Action,
+  ActionType,
+  ExternalActionType,
+  ServerActionType
+} from "../actions";
 import { clamp } from "lodash";
 import {
   updateAllLoadedData,
@@ -23,9 +27,10 @@ import {
   toVirtJsValue,
   computeVirtJSObject,
   VirtJsObjectKind,
-  NodeAnnotations
+  NodeAnnotations,
+  isPaperclipFile,
+  EngineDelegateEventKind
 } from "paperclip-utils";
-import { actionCreator } from "../actions/base";
 import { getFrameBounds } from "paperclip-web-renderer";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
@@ -43,15 +48,73 @@ export default (state: AppState, action: Action) => {
         state
       );
     }
+    case ActionType.BIRDSEYE_FILTER_CHANGED: {
+      return produce(state, newState => {
+        newState.birdseyeFilter = action.payload.value;
+      });
+    }
+    case ServerActionType.INIT_PARAM_DEFINED: {
+      return produce(state, newState => {
+        newState.readonly = action.payload.readonly;
+        newState.availableBrowsers = action.payload.availableBrowsers;
+      });
+    }
+    case ServerActionType.BROWSERSTACK_BROWSERS_LOADED: {
+      return produce(state, newState => {
+        newState.availableBrowsers = action.payload;
+      });
+    }
+    case ActionType.LOCATION_CHANGED: {
+      state = produce(state, newState => {
+        newState.currentFileUri = action.payload.query.current_file;
+        newState.id = action.payload.query.id;
+        newState.currentFrameIndex =
+          action.payload.query.frame && Number(action.payload.query.frame);
+        newState.embedded = Boolean(action.payload.query.within_ide);
+        newState.renderProtocol =
+          action.payload.protocol + "//" + action.payload.host + "/file";
+        newState.centeredInitial = false;
+      });
+      return state;
+    }
+    case ActionType.GET_ALL_SCREENS_REQUESTED: {
+      return produce(state, newState => {
+        newState.showBirdseye = true;
+        newState.loadingBirdseye = true;
+      });
+    }
+    case ActionType.RENDERER_MOUNTED: {
+      return produce(state, newState => {
+        newState.mountedRendererIds.push(action.payload.id);
+      });
+    }
+    case ActionType.RENDERER_UNMOUNTED: {
+      return produce(state, newState => {
+        newState.mountedRendererIds.splice(
+          newState.mountedRendererIds.indexOf(action.payload.id),
+          1
+        );
+        newState.currentEngineEvents[action.payload.id] = undefined;
+      });
+    }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       state = produce(state, newState => {
-        newState.currentEngineEvents.push(action.payload);
+        if (action.payload.kind === EngineDelegateEventKind.Error) {
+          newState.currentError = action.payload;
+        } else {
+          newState.currentError = undefined;
+        }
+
+        for (const id of newState.mountedRendererIds) {
+          if (!newState.currentEngineEvents[id]) {
+            newState.currentEngineEvents[id] = [];
+          }
+          newState.currentEngineEvents[id].push(action.payload);
+        }
         newState.allLoadedPCFileData = updateAllLoadedData(
           newState.allLoadedPCFileData,
           action.payload
         );
-
-        newState.currentError = undefined;
       });
 
       state = maybeCenterCanvas(state);
@@ -76,7 +139,7 @@ export default (state: AppState, action: Action) => {
     case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
       return minimizeWindow(state);
     }
-    case ActionType.CURRENT_FILE_INITIALIZED: {
+    case ActionType.PC_FILE_OPENED: {
       state = produce(state, newState => {
         newState.allLoadedPCFileData[state.currentFileUri] = action.payload;
       });
@@ -85,14 +148,19 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
       return produce(state, newState => {
-        newState.currentEngineEvents.splice(0, action.payload.count);
+        newState.currentEngineEvents[action.payload.id].splice(
+          0,
+          action.payload.count
+        );
       });
     }
-    case ActionType.FILE_OPENED: {
+    case ActionType.FS_ITEM_CLICKED: {
       state = produce(state, newState => {
-        newState.currentFileUri = action.payload.uri;
-        newState.centeredInitial = false;
-        newState.expandedFrameInfo = null;
+        if (isPaperclipFile(action.payload.url)) {
+          newState.currentFileUri = action.payload.url;
+          newState.centeredInitial = false;
+          newState.expandedFrameInfo = null;
+        }
       });
       return state;
     }
@@ -114,17 +182,12 @@ export default (state: AppState, action: Action) => {
         newState.currentError = null;
       });
     }
-    case ActionType.PAINT_BUTTON_CLICKED: {
-      return produce(state, newState => {
-        newState.toolsLayerEnabled = !newState.toolsLayerEnabled;
-        newState.selectedNodePaths = [];
-      });
-    }
     case ActionType.GLOBAL_BACKSPACE_KEY_SENT:
     case ActionType.GLOBAL_ESCAPE_KEY_PRESSED: {
       // Don't do this until deselecting can be handled properly
       return produce(state, newState => {
         newState.selectedNodePaths = [];
+        newState.showBirdseye = false;
       });
     }
     case ActionType.GLOBAL_META_KEY_DOWN: {
@@ -152,11 +215,13 @@ export default (state: AppState, action: Action) => {
       )?.nodePath;
       return selectNode(nodePath, action.payload.shiftKey, state);
     }
-    case ActionType.DOCUMENT_CONTENT_CHANGED: {
+    case ExternalActionType.CONTENT_CHANGED: {
       return produce(state, newState => {
-        newState.documentContent[action.payload.uri] = action.payload.content;
+        newState.documentContent[action.payload.fileUri] =
+          action.payload.content;
       });
     }
+    case ActionType.ZOOM_IN_KEY_PRESSED:
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {
       return produce(state, newState => {
         newState.canvas = setCanvasZoom(
@@ -166,6 +231,7 @@ export default (state: AppState, action: Action) => {
         );
       });
     }
+    case ActionType.ZOOM_OUT_KEY_PRESSED:
     case ActionType.ZOOM_OUT_BUTTON_CLICKED: {
       return produce(state, newState => {
         newState.canvas = setCanvasZoom(
@@ -189,6 +255,25 @@ export default (state: AppState, action: Action) => {
     case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING: {
       return produce(state, newState => {
         newState.resizerMoving = false;
+      });
+    }
+    case ActionType.BIRDSEYE_TOP_FILTER_BLURRED:
+    case ActionType.GRID_BUTTON_CLICKED:
+    case ActionType.GRID_HOTKEY_PRESSED: {
+      return produce(state, newState => {
+        newState.showBirdseye = !newState.showBirdseye;
+        if (newState.showBirdseye && !newState.loadedBirdseyeInitially) {
+          newState.loadingBirdseye = true;
+        }
+      });
+    }
+
+    // happens when grid view is requested
+    case ServerActionType.ALL_PC_CONTENT_LOADED: {
+      return produce(state, newState => {
+        newState.loadingBirdseye = false;
+        newState.loadedBirdseyeInitially = true;
+        newState.allLoadedPCFileData = action.payload;
       });
     }
     case ActionType.RESIZER_MOVED:

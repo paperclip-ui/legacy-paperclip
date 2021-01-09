@@ -35,7 +35,8 @@ export const Tools = () => {
       currentFileUri,
       metaKeyDown,
       allLoadedPCFileData,
-      expandedFrameInfo
+      expandedFrameInfo,
+      readonly
     },
     dispatch
   } = useAppStore();
@@ -126,15 +127,17 @@ export const Tools = () => {
           canvasScroll={canvas.scrollPosition}
           canvasTransform={canvas.transform}
           box={selectedBox}
-          showKnobs={selectedNodePaths.every(
-            nodePath => !nodePath.includes(".")
-          )}
+          showKnobs={
+            selectedNodePaths.every(nodePath => !nodePath.includes(".")) &&
+            !readonly
+          }
         />
       ) : null}
       <Frames
         frames={frames}
         dispatch={dispatch}
         canvasTransform={canvas.transform}
+        readonly={readonly}
       />
       {metaKeyDown && selectedBox && hoveringBox ? (
         <Distance

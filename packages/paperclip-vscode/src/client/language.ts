@@ -1,6 +1,6 @@
 // https://code.visualstudio.com/api/language-extensions/language-server-extension-guide
 
-import { workspace, ExtensionContext, window } from "vscode";
+import { workspace, ExtensionContext, window, Extension } from "vscode";
 import * as path from "path";
 import {
   LanguageClient,
@@ -9,7 +9,6 @@ import {
   LanguageClientOptions
 } from "vscode-languageclient";
 import { activate as activatePreview } from "./preview";
-import { NotificationType } from "../common/notifications";
 import { activate as activateMutationHandler } from "./mutations";
 
 let client: LanguageClient;
@@ -19,11 +18,6 @@ export const activate = (context: ExtensionContext) => {
 
   const init = async () => {
     await client.onReady();
-    client.onNotification(NotificationType.CRASH, () => {
-      window.showWarningMessage(
-        "Paperclip crashed - you'll need to reload this window."
-      );
-    });
     const mut = activateMutationHandler();
     activatePreview(client, context, mut.handleMutations);
   };
@@ -40,6 +34,7 @@ const createClient = (context: ExtensionContext) => {
   const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
   const serverOptions: ServerOptions = {
     run: { module: serverPath, transport: TransportKind.ipc },
+
     debug: {
       module: serverPath,
       transport: TransportKind.ipc,
@@ -52,6 +47,7 @@ const createClient = (context: ExtensionContext) => {
     // Register the server for plain text documents
     documentSelector: [{ scheme: "file", language: "paperclip" }],
     synchronize: {
+      configurationSection: ["paperclip", "credentials"],
       // Notify the server about file changes to '.clientrc files contained in the workspace
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc")
     }

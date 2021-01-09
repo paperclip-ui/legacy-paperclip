@@ -6,18 +6,16 @@
   }
 </style>
 
+<!--
+  @frame { width: 1024, height: 768, x: -1508, y: 99 }
+-->
+<span>
+  Something like that
+</span>
+<!--
+  @frame { width: 1024, height: 768, x: -114, y: 249 }
+-->
+<span>
+  Something like this
+</span>
 
-
-
-
-
-
-
-
-
-
-
-
-<div>
-  <mod.TEST />
-</div>

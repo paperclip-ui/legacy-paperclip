@@ -13,7 +13,7 @@ import * as path from "path";
 import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import * as VirtualModules from "webpack-virtual-modules";
-import { LoadedData } from "paperclip/src";
+import { LoadedData } from "paperclip";
 
 let _engine: Engine;
 

@@ -7,7 +7,7 @@ import defaultReducer from "../../reducers";
 import defaultSaga from "../../sagas";
 import { INITIAL_STATE } from "../../state";
 
-export const withAppStore = (render: React.FC) => {
+export const withAppStore = (Child: React.FC) => {
   const sagaMiddleware = createSagaMiddleware();
   const store = createStore(
     defaultReducer,
@@ -27,7 +27,7 @@ export const withAppStore = (render: React.FC) => {
 
     return (
       <AppStoreContext.Provider value={{ dispatch: store.dispatch, state }}>
-        {render(props)}
+        <Child {...props} />
       </AppStoreContext.Provider>
     );
   };

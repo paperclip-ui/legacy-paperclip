@@ -22,10 +22,11 @@ export type FramesProps = {
   frames: VirtualFrame[];
   dispatch: Dispatch<any>;
   canvasTransform: Transform;
+  readonly: boolean;
 };
 
 export const Frames = memo(
-  ({ frames, dispatch, canvasTransform }: FramesProps) => {
+  ({ frames, dispatch, canvasTransform, readonly }: FramesProps) => {
     return (
       <>
         {frames.map((frame, i) => {
@@ -36,6 +37,7 @@ export const Frames = memo(
               dispatch={dispatch}
               frame={frame}
               canvasTransform={canvasTransform}
+              readonly={readonly}
             />
           );
         })}
@@ -49,10 +51,11 @@ type FrameProps = {
   frameIndex: number;
   canvasTransform: Transform;
   dispatch: Dispatch<any>;
+  readonly: boolean;
 };
 
 const Frame = memo(
-  ({ frame, frameIndex, canvasTransform, dispatch }: FrameProps) => {
+  ({ frame, frameIndex, canvasTransform, readonly, dispatch }: FrameProps) => {
     const annotations: NodeAnnotations =
       (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
     if (annotations.frame?.visible === false) {
@@ -72,11 +75,14 @@ const Frame = memo(
     const inputRef = useRef<HTMLInputElement>();
 
     const onDoubleClick = useCallback(() => {
+      if (readonly) {
+        return;
+      }
       setEditing(true);
       setTimeout(() => {
         inputRef.current.select();
       }, 50);
-    }, [inputRef, setEditing]);
+    }, [inputRef, readonly, setEditing]);
 
     const onChanged = useCallback(() => {
       if (!editing) {

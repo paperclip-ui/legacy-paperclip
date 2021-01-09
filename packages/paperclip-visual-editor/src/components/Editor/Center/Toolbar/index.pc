@@ -15,12 +15,19 @@
   }
 </style>
 
-<div export component as="Zoom" className="zoom">
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Zoom" className="zoom" className:hidden="hidden">
   <style>
     border-left: 1px solid var(--border-color);
     font-size: 0.8em;
     display: flex;
     align-items: center;
+    &.hidden {
+      visibility: hidden;
+    }
 
     span {
       user-select: none;
@@ -36,6 +43,7 @@
       @include utils.mask;
       border: none;
       padding:0;
+      outline: none;
       &.minus {
         mask-image: url(./minus.svg);
       }
@@ -49,6 +57,10 @@
   <span>{amount}%</span>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <button export component as="PaintButton" {onClick?} 
   className="brush">
   <style>
@@ -77,6 +89,10 @@
   <i className="$icons.icon" className:active="active" />
 </button>
 
+
+<!--
+  @frame { visible: false }
+-->
 <button export component as="GridButton" {onClick?} 
   className="grid">
   <style>
@@ -91,7 +107,7 @@
     height: 100%;
 
     i {
-      --size: 0.9em;
+      --size: 10px;
       position: relative;
       top: 1px;
       /* mask-size: 0.93em; */
@@ -106,6 +122,75 @@
   <i className="$icons.icon" className:active="active" />
 </button>
 
+<!--
+  @frame { visible: false }
+-->
+<button export component as="MagnifyButton" {onClick?} 
+  className="grid">
+  <style>
+    border: none;
+    color: inherit;
+    outline: none;
+    padding: 0;
+
+    background: transparent;
+    display: flex;
+
+    height: 100%;
+
+    i {
+      --size: 11px;
+      position: relative;
+      top: 1px;
+      /* mask-size: 0.93em; */
+      cursor: pointer;
+      mask-image: url(./magnify.svg);
+      display: inline-block;
+      &.active {
+        color: var(--topbar-background-active-1); 
+      }
+    }
+  </style>
+  <i className="$icons.icon" className:active="active" />
+</button>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="SearchInput">
+  <style>
+    position: relative;
+    &:before {
+      position: absolute;
+      top: 50%;
+      color: var(--background-active-1);
+      left: 22px;
+      transform: translate(-100%, -50%);
+      --size: 1em;
+      @include utils.mask;
+      mask-image: url(./magnify.svg);
+    }
+  </style>
+  <input type="text" ref={inputRef} {onChange} {onBlur?} {defaultValue?}>
+    <style>
+      background: transparent;
+      border: 1px solid  var(--background-active-1);
+      border-radius: 2px;
+      box-sizing: border-box;
+      padding: 2px 8px;
+      padding-left: 16px;
+      color:  var(--background-selected-1);
+      outline: none;
+      width: 100px;
+      font-size: 0.8em;
+    </style>
+  </input>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
 <button export component as="CollapseButton" {onClick} className:active="active">
   <style>
     border: none;
@@ -121,7 +206,7 @@
     i {
       --size: 9px;
       position: relative;
-      top: 1px;
+      top: 2px;
       mask-size: var(--size);
       cursor: pointer;
       mask-image: url(./minimize-3.svg);
@@ -134,10 +219,15 @@
   <i className="$icons.icon" className:active="active" />
 </button>
 
-<div export component as="Controls" className:right="right" className="controls">
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Controls" className="controls">
   <style>
     padding:4px 14px;
     display: flex;
+    z-index: 1;
     align-items: center;
     :self(& > *) {
       border-left: 1px solid rgb(110, 110, 110);
@@ -146,18 +236,19 @@
 
       &:first-child {
         border-left: none;
-        padding-left: 0px;
+        margin-left: 0px;
 
       }
-    }
-    :self(.right) {
-      float: right;
     }
   </style>
   {children}
 </div>
 
-<div export component as="Container" className="toolbar {className?}" className:gridMode="grid-mode">
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" className="toolbar {className?}" {onDoubleClick?} className:gridMode="grid-mode">
   <style>
     --border-color: var(--vscode-editorGroup-border, #777);
     /* --active-background: var(--vscode-activityBar-foreground, var(--active-background)); */
@@ -168,7 +259,8 @@
     flex-shrink: 0;
     flex-grow: 0;
     display: flex;
-    justify-content: space-between;
+    box-sizing: border-box;
+
     :self(.grid-mode) { 
       > :last-child {
         visibility: hidden;
@@ -178,18 +270,360 @@
   {children}
 </div>
 
-<Container export component as="Preview" {gridMode?} className:light="light">
+
+<!--
+  @frame { visible: false }
+-->
+<button export component as="PopOutButton"  className="$icons.icon" {onClick}>
+  <style>
+    --size: 13px;
+
+    position: relative;
+
+    margin-right: 4px;
+    border: none;
+    outline: none;
+    color: currentColor;
+    cursor: pointer;
+    mask-image: url("./share.svg");
+    &:active {
+      outline: none;
+    }
+  </style>
+</button>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ReadOnlyBadge">
+  <style>
+    display: flex;
+    align-content: center;
+    align-items: center;
+    margin-right: 4px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  </style>
+<div>
+  <style>
+    text-transform: uppercase;
+    font-size: 0.7em;
+    background: rgb(243, 191, 19);
+    border-radius: 4px;
+    color: rgb(117, 104, 30);
+    box-sizing: border-box;
+    flex-shrink: 0;
+    padding: 2px 10px;
+    font-weight: 600;
+  </style>
+    Read-only
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Container export component as="Preview" {gridMode?} className:light="light" {className?}>
  
   <Controls>
-    <PaintButton />
+    <GridButton />
     <Zoom amount="100" />
   </Controls>
-   <Controls right>
-    <CollapseButton />
-  </Controls>
+  <Spacer />
+    <Controls right>
+      <PopOutButton />
+      <CollapseButton />
+    </Controls>
+    <ReadOnlyBadge />
 </Container>
 
-<div className="$theme.font-default">
-  <Preview />
+  
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Spacer">
+    <style>
+      width: 100%;
+    </style>
+  </div>
+
+
+<!--
+  @frame { title: "Dark", width: 1024, height: 48, x: 68, y: -182 }
+-->
+
+<Preview className="$theme.font-default" />
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Title">
+
+  <style>
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    text-align: center;
+    opacity: 0.8;
+    font-size: 0.9em;
+    line-height: 18px;
+    position: absolute;
+
+  </style>
+    {children}
 </div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 188, y: 251 }
+-->
+<li export component as="EnvironmentOption" 
+  data-kind={kind}
+  className:ngrok="ngrok" 
+  className:chrome="chrome" 
+  className:ie="ie" 
+  className:edge="edge" 
+  className:safari="safari" 
+  className:firefox="firefox" 
+  className:localhost="localhost"
+  className:hover="hover"
+  className:os="has_os"
+  {onClick?}
+  >
+  <style>
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      &:hover, &.hover {
+        background: var(--background-active-1);
+        color: white;
+      }
+  </style>
+  <i>
+    <style>
+      mask-image: url('./browser2.svg');
+      background: currentColor;
+      flex-shrink: 0;
+      --size: 1em;
+      mask-size: var(--size);
+      width: var(--size);
+      height: var(--size);
+      display: inline-block;
+      margin-right: 8px;
+      :within([data-kind="ngrok"]) {
+        mask-image: url('./world.svg');
+      }
+      :within([data-kind="localhost"]) {
+        mask-image: url('./home.svg');
+      }
+      :within([data-kind="chrome"]) {
+        mask-image: url('./chrome.svg');
+      }
+      :within([data-kind="safari"]) {
+        mask-image: url('./safari2.svg');
+      }
+      :within([data-kind="firefox"]) {
+        mask-image: url('./firefox.svg');
+      }
+      :within([data-kind="ie"]) {
+        mask-image: url('./ie.svg');
+      }
+      :within([data-kind="ie"]) {
+        mask-image: url('./ie.svg');
+      }
+    </style>
+  </i>
+  <span>
+    <style>
+    width: 100%;
+    margin-right: 20px;
+    </style>
+    {children}
+  </span>
+  <span>
+    <style>
+      opacity: 0.5;
+      float: right;
+      display: block;
+      margin-right: 8px;
+      white-space: nowrap;
+    </style>
+    {version}
+  </span>
+  
+  <span>
+    <style>
+      /* border-left: 1px solid red; */
+      opacity: 0.5;
+      float: right;
+      display: block;
+      margin-right: 8px;
+      white-space: nowrap;
+      display: none;
+      &:within(.has_os) {
+        display: block;
+      }
+
+    </style>
+    &dash; {os}&nbsp;{osVersion}
+  </span>
+</li>
+
+
+<!--
+  @frame { visible: false, title: "Environment Popup", width: 237, height: 321, x: 1252, y: -78 }
+-->
+
+
+<div export component as="EnvironmentPopup" className="light $theme.font-default" className:visible="visible">
+  <style>
+    position: fixed;
+    background: rgb(223, 223, 223);
+    color: var(--vscode-activityBar-inactiveForeground, var(--color-negate-1));
+    right: 8px;
+    z-index: 9999999;
+    width: 350px;
+
+    opacity: 0;
+    transition: 0.25s;
+    top: 20px;
+    /* box-shadow: 0px 2px 2px 2px rgb(233, 233, 233); */
+    &.visible {
+      opacity: 1;
+      top: 28px;
+    }
+  </style>
+
+  <!-- Header -->
+  <div>
+    <style>
+      padding: 8px;
+      padding-bottom: 0px;
+    </style>
+
+    <!-- Title -->
+    <div>
+      <style>
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        font-size: 0.8em;
+        user-select: none;
+      </style>
+      Open Environment
+    </div>
+    <input placeholder="Filter..." ref={filterInputRef} defaultValue={filterValue} onChange={onFilterChange} onBlur={onFilterBlur} autofocus>
+      <style>
+        margin: 0px;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid var(--border-color-1);
+        padding: 5px 15px;
+        border-radius: 100px;
+        background: transparent;
+        background: rgb(247, 247, 247);
+        outline: none;
+        &:focus {
+          border-color: var(--background-selected-1);
+        }
+      </style>
+    </input>
+  </div>
+  <div>
+    <style>
+      padding-top: 8px;
+      padding-bottom: 8px;
+    </style>
+    <ul>
+      <style>
+        list-style-type: none;
+        margin: 0px;
+        padding: 0px;
+        max-height: 150px;
+        overflow: scroll;
+      </style>
+      {options}
+    </ul>
+  </div>
+</div>
+
+
+<!--
+  @frame { width: 603, height: 504, x: 1576, y: -266 }
+-->
+
+<EnvironmentPopup export component as="EnvironmentPopupPreview" visible options={<fragment>
+  <EnvironmentOption kind="ngrok">Public</EnvironmentOption>
+    <EnvironmentOption kind="localhost">Localhost</EnvironmentOption>
+    <EnvironmentOption kind="chrome" version="88.0 beta" os="Windows">Chrome</EnvironmentOption>
+    <EnvironmentOption hover kind="safari" version="7">Safari</EnvironmentOption>
+    <EnvironmentOption kind="firefox" version="v10">Firefox</EnvironmentOption>
+    <EnvironmentOption kind="ie" version="v10.1">Internet Explorer</EnvironmentOption>
+    <EnvironmentOption kind="edge" version="v10.1">Edge</EnvironmentOption>
+    <EnvironmentOption version="v10.1">Opera</EnvironmentOption>
+</fragment>} />
+
+
+<!--
+  @frame { width: 1024, height: 448, x: 66, y: -22 }
+-->
+<Container className="light $theme.font-default">
+ 
+  <Controls>
+    <GridButton />
+    <Zoom amount="100" />
+  </Controls>
+  <Spacer />
+  <Title>
+    src/components/Editor/Center/Toolbar/index.pc
+  </Title>
+
+    <Controls right>
+      <div>
+        <style>
+          position: relative;
+        </style>
+        <PopOutButton />
+        <EnvironmentPopupPreview />
+      </div>
+      <CollapseButton />
+    </Controls>
+    <ReadOnlyBadge />
+</Container>
+
+
+<!--
+  @frame { title: "Light", width: 1024, height: 48, x: 66, y: -294 }
+-->
+
+<Preview className="$theme.font-default" light />
+
+<!--
+  @frame { title: "Search Input", width: 1024, height: 48, x: 58, y: -416 }
+-->
+
+
+<Container className="light $theme.font-default">
+ 
+  <Controls>
+    <SearchInput />
+    <Zoom amount="100" />
+  </Controls>
+  <Spacer />
+  <Title>
+    src/components/Editor/Center/Toolbar/index.pc
+  </Title>
+
+    <Controls right>
+      <PopOutButton />
+      <CollapseButton />
+    </Controls>
+    <ReadOnlyBadge />
+</Container>
 

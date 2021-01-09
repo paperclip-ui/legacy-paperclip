@@ -1,13 +1,12 @@
 import * as Mousetrap from "mousetrap";
 import SockJSClient from "sockjs-client";
-import { computeVirtJSObject, isPaperclipFile } from "paperclip-utils";
+import { computeVirtJSObject } from "paperclip-utils";
 import * as Url from "url";
-import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
+import { fork, put, take, takeEvery, select } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import {
   ActionType,
   ErrorBannerClicked,
-  engineErrored,
   globalEscapeKeyPressed,
   globalBackspaceKeyPressed,
   globalMetaKeyDown,
@@ -15,48 +14,43 @@ import {
   globalYKeyDown,
   globalMetaKeyUp,
   Action,
-  engineDelegateChanged,
   fileOpened,
-  currentFileInitialized,
   pcVirtObjectEdited,
   CanvasMouseUp,
   pasted,
   globalBackspaceKeySent,
   globalSaveKeyPress,
-  globalHKeyDown
+  globalHKeyDown,
+  locationChanged,
+  clientConnected,
+  metaClicked,
+  gridHotkeyPressed,
+  getAllScreensRequested,
+  loaded,
+  zoomOutKeyPressed,
+  zoomInKeyPressed
 } from "../actions";
-import { Renderer } from "paperclip-web-renderer";
 import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
-import { utimes } from "fs";
-
-declare const vscode;
-declare const TARGET_URI;
-declare const PROTOCOL;
+import history from "../dom-history";
 
 export default function* mainSaga() {
   yield fork(handleRenderer);
   yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
-  yield takeEvery(ActionType.ERROR_BANNER_CLICKED, handleErrorBannerClicked);
+
+  // wait for client to be loaded to initialize anything so that
+  // events properly get sent (like LOCATION_CHANGED)
+  yield take(ActionType.CLIENT_CONNECTED);
   yield fork(handleKeyCommands);
   yield fork(handleDocumentEvents);
-  yield put(fileOpened({ uri: getTargetUrl() }));
   yield fork(handleCanvas);
   yield fork(handleClipboard);
+  yield fork(handleLocationChanged);
+  yield fork(handleLoaded);
+  yield fork(handleLocation);
 }
-
-const parent = typeof vscode != "undefined" ? vscode : window;
-
-const getTargetUrl = () => {
-  if (typeof TARGET_URI !== "undefined") {
-    return TARGET_URI;
-  }
-
-  const parts = Url.parse(location.href, true);
-  return parts.query.open;
-};
 
 function handleSock(onMessage, onClient) {
   if (!/^http/.test(location.protocol)) {
@@ -67,11 +61,6 @@ function handleSock(onMessage, onClient) {
   );
 
   client.onopen = () => {
-    const url = getTargetUrl();
-    if (url) {
-      client.send(JSON.stringify({ type: "OPEN", uri: url }));
-    }
-
     onClient({
       send: message => client.send(JSON.stringify(message))
     });
@@ -86,63 +75,22 @@ function handleSock(onMessage, onClient) {
   };
 }
 
-function handleIPC(onMessage) {
-  window.onmessage = ({ data: { type, payload } }: MessageEvent) => {
-    if (!type) {
-      return;
-    }
-
-    onMessage({
-      type,
-      payload: (payload && JSON.parse(payload)) || {}
-    });
-  };
-}
-
 function* handleRenderer() {
   let _client: any;
 
   const chan = eventChannel(emit => {
-    const onMessage = ({ type, payload }) => {
-      switch (type) {
-        case "ENGINE_EVENT": {
-          console.log("ENGINE EVENT", payload);
-          const engineEvent = payload;
-          if (engineEvent.kind === "Error") {
-            return emit(engineErrored(engineEvent));
-          }
-
-          emit(engineDelegateChanged(engineEvent));
-          break;
-        }
-        case "INIT": {
-          emit(currentFileInitialized(payload));
-          break;
-        }
-        case "ERROR": {
-          emit(engineErrored(payload));
-          break;
-        }
-
-        // handle as regular action
-        default: {
-          emit({ type, payload });
-          break;
-        }
-      }
-    };
-
-    handleIPC(onMessage);
-    handleSock(onMessage, client => {
+    handleSock(emit, client => {
       _client = client;
+      emit(clientConnected(null));
     });
-    return () => {
-      window.onmessage = undefined;
-    };
+
+    //eslint-disable-next-line
+    return () => {};
   });
 
-  const sendMessage = message =>
-    _client ? _client.send(message) : parent.postMessage(message);
+  const maybeSendMessage = message => {
+    _client && _client.send(message);
+  };
 
   yield fork(function*() {
     while (1) {
@@ -154,15 +102,17 @@ function* handleRenderer() {
     window.focus();
   });
 
-  yield takeEvery([ActionType.FS_ITEM_CLICKED], function*(action: Action) {
-    if (
-      action.type === ActionType.FS_ITEM_CLICKED &&
-      isPaperclipFile(action.payload.url)
-    ) {
-      yield put(fileOpened({ uri: action.payload.url }));
+  yield takeEvery(
+    [
+      ActionType.LOCATION_CHANGED,
+      ActionType.CLIENT_CONNECTED,
+      ActionType.FS_ITEM_CLICKED
+    ],
+    function*() {
+      const state: AppState = yield select();
+      maybeSendMessage(fileOpened({ uri: state.currentFileUri }));
     }
-    sendMessage(action);
-  });
+  );
 
   yield takeEvery(
     [
@@ -171,9 +121,9 @@ function* handleRenderer() {
       ActionType.FRAME_TITLE_CHANGED,
       ActionType.GLOBAL_H_KEY_DOWN
     ],
-    function*(action: Action) {
+    function*() {
       const state: AppState = yield select();
-      sendMessage(
+      maybeSendMessage(
         pcVirtObjectEdited({
           mutations: getSelectedFrames(state).map(frame => {
             return {
@@ -192,7 +142,12 @@ function* handleRenderer() {
 
   yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
     const state: AppState = yield select();
-    sendMessage(
+
+    if (state.readonly) {
+      return;
+    }
+
+    maybeSendMessage(
       pcVirtObjectEdited({
         mutations: getSelectedFrames(state).map(frame => {
           return {
@@ -209,21 +164,44 @@ function* handleRenderer() {
   });
 
   yield takeEvery(
+    [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
+    function*() {
+      const state: AppState = yield select();
+      if (state.showBirdseye && !state.loadedBirdseyeInitially) {
+        yield put(getAllScreensRequested(null));
+      }
+    }
+  );
+
+  yield takeEvery([ActionType.LOCATION_CHANGED], function*() {
+    const state: AppState = yield select();
+    if (
+      (!state.currentFileUri || location.pathname.indexOf("/all") === 0) &&
+      !state.loadedBirdseyeInitially
+    ) {
+      yield put(getAllScreensRequested(null));
+    }
+  });
+
+  yield takeEvery(
     [
       ActionType.META_CLICKED,
       ActionType.GLOBAL_Z_KEY_DOWN,
       ActionType.GLOBAL_Y_KEY_DOWN,
       ActionType.GLOBAL_SAVE_KEY_DOWN,
-      ActionType.PASTED
+      ActionType.GET_ALL_SCREENS_REQUESTED,
+      ActionType.PASTED,
+      ActionType.FS_ITEM_CLICKED,
+      ActionType.TITLE_DOUBLE_CLICKED,
+      ActionType.ENV_OPTION_CLICKED,
+      ActionType.ERROR_BANNER_CLICKED,
+      ActionType.POPOUT_WINDOW_REQUESTED,
+      ActionType.LOADED
     ],
     function(action: Action) {
-      sendMessage(action);
+      maybeSendMessage(action);
     }
   );
-
-  sendMessage({
-    type: "ready"
-  });
 }
 
 function* handleCanvasMouseUp(action: CanvasMouseUp) {
@@ -252,50 +230,53 @@ function* handleCanvasMouseUp(action: CanvasMouseUp) {
     nodePathParts
   );
 
-  parent.postMessage(
-    {
-      type: "metaElementClicked",
-      source: virtualNode.source
-    },
-    location.origin
-  );
-}
-
-function handleErrorBannerClicked({ payload: error }: ErrorBannerClicked) {
-  parent.postMessage(
-    {
-      type: "errorBannerClicked",
-      error
-    },
-    location.origin
-  );
+  yield put(metaClicked({ source: virtualNode.source }));
 }
 
 function* handleKeyCommands() {
   const chan = eventChannel(emit => {
     Mousetrap.bind("esc", () => {
       emit(globalEscapeKeyPressed(null));
+      return false;
     });
     Mousetrap.bind("meta", () => {
       emit(globalMetaKeyDown(null));
     });
     Mousetrap.bind("meta+z", () => {
       emit(globalZKeyDown(null));
+      return false;
     });
     Mousetrap.bind("meta+y", () => {
       emit(globalYKeyDown(null));
+      return false;
     });
     Mousetrap.bind("meta+h", () => {
       emit(globalHKeyDown(null));
+      return false;
+    });
+    Mousetrap.bind("meta+g", () => {
+      emit(gridHotkeyPressed(null));
+      return false;
+    });
+    Mousetrap.bind("meta+=", () => {
+      emit(zoomInKeyPressed(null));
+      return false;
+    });
+    Mousetrap.bind("meta+minus", () => {
+      emit(zoomOutKeyPressed(null));
+      return false;
     });
     Mousetrap.bind("meta+s", () => {
       emit(globalSaveKeyPress(null));
+      return false;
     });
     Mousetrap.bind("meta+shift+z", () => {
       emit(globalYKeyDown(null));
+      return false;
     });
     Mousetrap.bind("backspace", () => {
       emit(globalBackspaceKeyPressed(null));
+      return false;
     });
     Mousetrap.bind(
       "meta",
@@ -366,6 +347,10 @@ function* handlePaste() {
   });
 
   yield takeEvery(ev, function*(event: ClipboardEvent) {
+    const state: AppState = yield select();
+    if (state.readonly) {
+      return;
+    }
     const content = event.clipboardData.getData("text/plain");
     event.preventDefault();
     if (content) {
@@ -395,7 +380,7 @@ function* handleDocumentEvents() {
     });
 
     yield takeEvery(chan, (event: any) => {
-      if (event.type === "wheel") {
+      if (event.type === "wheel" && event.metaKey) {
         event.preventDefault();
       }
 
@@ -404,8 +389,37 @@ function* handleDocumentEvents() {
         (event.key === "=" || event.key === "-") &&
         event.metaKey
       ) {
-        event.preventDefault();
+        // event.preventDefault();
       }
     });
   });
+}
+
+function* handleLocationChanged() {
+  const parts = Url.parse(location.href, true);
+  yield put(
+    locationChanged({
+      protocol: parts.protocol,
+      host: parts.host,
+      pathname: parts.pathname,
+      query: parts.query
+    })
+  );
+}
+
+function* handleLoaded() {
+  yield takeEvery(ActionType.LOCATION_CHANGED, function*() {
+    const state: AppState = yield select();
+    yield put(
+      loaded({ windowId: state.id, currentFileUri: state.currentFileUri })
+    );
+  });
+}
+
+function* handleLocation() {
+  const chan = eventChannel(emit => {
+    return history.listen(emit);
+  });
+
+  yield takeEvery(chan, handleLocationChanged);
 }

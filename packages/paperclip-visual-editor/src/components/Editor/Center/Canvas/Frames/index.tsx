@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import {
   Frame,
   FramesRenderer,
@@ -8,7 +8,9 @@ import {
 import { memo, useEffect, useMemo } from "react";
 import {
   engineDelegateEventsHandled,
-  rectsCaptured
+  rectsCaptured,
+  rendererMounted,
+  rendererUnounted
 } from "../../../../../actions";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import {
@@ -21,15 +23,18 @@ import {
 } from "paperclip-utils";
 import * as styles from "./index.pc";
 import { render } from "react-dom";
-
-declare const PROTOCOL: string;
+import { FrameContainer } from "../../../../FrameContainer";
 
 type FramesProps = {
   expandedFrameIndex?: number;
 };
 
 export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
-  const { renderer, preview, onFrameLoaded } = useFrames();
+  const { state } = useAppStore();
+  const { renderer, preview, onFrameLoaded } = useFrames({
+    fileUri: state.currentFileUri,
+    shouldCollectRects: true
+  });
 
   return (
     <>
@@ -52,23 +57,42 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   );
 });
 
-const useFrames = () => {
-  const { state, dispatch } = useAppStore();
+type UseFramesProps = {
+  fileUri: string;
+  shouldCollectRects: boolean;
+};
 
-  const frameData = state.allLoadedPCFileData[state.currentFileUri];
+export const useFrames = ({
+  fileUri,
+  shouldCollectRects = true
+}: UseFramesProps) => {
+  const { state, dispatch } = useAppStore();
+  const [id, setId] = useState<string>();
+
+  const frameData = state.allLoadedPCFileData[fileUri];
 
   const renderer = useMemo(() => {
-    const renderer = new FramesRenderer(
-      state.currentFileUri,
-      typeof PROTOCOL === "undefined" ? "http://" : PROTOCOL
-    );
+    const id = String(`${Date.now()}.${Math.random()}`);
+    setId(id);
+    const renderer = new FramesRenderer(fileUri, state.renderProtocol);
     if (frameData) {
       renderer.initialize(frameData);
     }
     return renderer;
-  }, [dispatch, state.currentFileUri, !!frameData]);
+  }, [dispatch, fileUri, state.renderProtocol, !!frameData]);
+
+  useEffect(() => {
+    dispatch(rendererMounted({ id }));
+    return () => {
+      dispatch(rendererUnounted({ id }));
+    };
+  }, [id]);
 
   const collectRects = useMemo(() => {
+    if (!shouldCollectRects) {
+      //eslint-disable-next-line
+      return () => {};
+    }
     let running;
 
     return () => {
@@ -83,7 +107,7 @@ const useFrames = () => {
         dispatch(rectsCaptured(renderer.getRects()));
       }, 5);
     };
-  }, [renderer]);
+  }, [renderer, shouldCollectRects]);
 
   useLayoutEffect(() => {
     if (renderer && frameData?.preview) {
@@ -95,14 +119,19 @@ const useFrames = () => {
   const onFrameLoaded = collectRects;
 
   useEffect(() => {
-    if (state.currentEngineEvents.length) {
-      state.currentEngineEvents.forEach(renderer.handleEngineDelegateEvent);
+    if (state.currentEngineEvents[id]?.length) {
+      state.currentEngineEvents[id]?.forEach(
+        renderer.handleEngineDelegateEvent
+      );
       collectRects();
       dispatch(
-        engineDelegateEventsHandled({ count: state.currentEngineEvents.length })
+        engineDelegateEventsHandled({
+          id,
+          count: state.currentEngineEvents[id].length
+        })
       );
     }
-  }, [collectRects, renderer, state.currentEngineEvents]);
+  }, [id, collectRects, renderer, state.currentEngineEvents]);
 
   return { renderer, preview: frameData?.preview, onFrameLoaded };
 };
@@ -127,49 +156,6 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
   if (annotations.frame?.visible === false) {
     return null;
   }
-
-  const frameRef = useRef<HTMLDivElement>();
-
-  useEffect(() => {
-    if (frameRef.current) {
-      const iframe = document.createElement("iframe");
-      // addresses https://github.com/crcn/paperclip/issues/310
-      Object.assign(iframe.style, {
-        border: "none",
-        background: "white"
-      });
-      iframe.srcdoc = `
-      <!doctype html>
-      <html>
-        <head>
-          <style>
-            html, body {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              height: 100%;
-            }
-          </style>
-        </head>
-        <body>
-        </body>
-      </html>
-    `;
-
-      iframe.onload = () => {
-        iframe.contentDocument.body.appendChild(frame.stage);
-        onLoad();
-      };
-      frameRef.current.appendChild(iframe);
-    }
-
-    return () => {
-      // remove iframe
-      if (frameRef.current && frameRef.current.childElementCount) {
-        frameRef.current.removeChild(frameRef.current.childNodes[0]);
-      }
-    };
-  }, [frameRef, frame]);
 
   const frameStyle = useMemo(() => {
     const bounds = getFrameBounds(preview);
@@ -196,5 +182,9 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
     };
   }, [preview.annotations, expanded]) as any;
 
-  return <styles.Frame style={frameStyle} ref={frameRef} />;
+  return (
+    <styles.Frame style={frameStyle}>
+      <FrameContainer frame={frame} onLoad={onLoad} />
+    </styles.Frame>
+  );
 });

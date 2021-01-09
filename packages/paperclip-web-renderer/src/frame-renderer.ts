@@ -229,7 +229,6 @@ export class FramesRenderer {
   }
 
   /**
-   * delegate.onEvent(renderer.handleEngineDelegateEvent);
    */
 
   public handleEngineDelegateEvent = (event: EngineDelegateEvent): void => {

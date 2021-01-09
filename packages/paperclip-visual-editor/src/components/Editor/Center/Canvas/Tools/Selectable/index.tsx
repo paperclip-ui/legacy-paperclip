@@ -11,7 +11,6 @@ import * as styles from "./index.pc";
 import { Dispatch } from "redux";
 import {
   Action,
-  canvasMouseUp,
   resizerMoved,
   resizerPathMoved,
   resizerPathStoppedMoving,

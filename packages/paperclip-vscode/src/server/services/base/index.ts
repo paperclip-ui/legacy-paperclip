@@ -1,7 +1,7 @@
 import { Engine, EngineDelegateEvent, SourceLocation } from "paperclip";
 import { CompletionItem } from "vscode-languageclient";
 import { LoadedData } from "paperclip";
-import { EngineDelegate } from "paperclip/src";
+import { EngineDelegate } from "paperclip";
 
 export type ColorInfo = {
   color: string;
