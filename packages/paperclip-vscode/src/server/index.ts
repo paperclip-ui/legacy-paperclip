@@ -55,7 +55,7 @@ class Server {
   private _onConnectionInitialize = (
     params: InitializeParams
   ): InitializeResult => {
-    this._workspaceFolders = params.workspaceFolders;
+    this._workspaceFolders = params.workspaceFolders || [];
 
     return {
       capabilities: {

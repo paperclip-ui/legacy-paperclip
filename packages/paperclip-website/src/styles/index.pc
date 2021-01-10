@@ -11,6 +11,9 @@
 
                     -->
 <style>
+  :root {
+    --row-max-width: 1800px;
+  }
   @export {
     ._emoji {}
   }
@@ -84,11 +87,11 @@
     /* background: rgb(68, 70, 77); */
     /* color: white; */
 
-    padding-top: 70px;
+    padding-top: 140px;
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
-    height: 600px;
+    height: 900px;
   </style>
   <style>
 
@@ -96,20 +99,13 @@
   <layout.Row>
     <div className="_blurb">
       <style>
-        :self {
-          margin-top: 100px;
-          width: 50%;
-          flex-shrink:0;
-          margin-right: 30px;
-        }
-        @include mobile {
-          margin-top: 0;
-          margin-bottom: 30px;
-          text-align: center;
           width: 100%;
+          width: 600px;
+          margin: 0px auto;
 
-          margin-right: 0;
-        }
+          flex-shrink:0;
+          text-align: center;
+          margin-bottom: 60px;
       </style>
       <div className="_title">
         <style>
@@ -117,7 +113,7 @@
 
           /* filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.164)); */
           @include typography.text-secondary;
-          font-size: 1.58em;
+          font-size: 2em;
           line-height: 1.3em;
           /* white-space: nowrap; */
           margin-bottom: var(--gap-5);
@@ -133,6 +129,7 @@
           font-weight: 500;
           letter-spacing: 0.075em;
           line-height: 1.8em;
+          font-size: 1.1em;
           /* padding-right: 20px; */
 
           ._emoji {
@@ -160,23 +157,26 @@
         {cta}
       </div>
     </div>
+    </layout.Row>
+    <layout.Row>
     <div className="_preview">
       <style>
         position: relative;
         /* left: calc(100% - 400px); */
         width: 100%;
         /* box-shadow: -4px 1px 4px 4px rgb(153, 153, 153); */
-        :global(img) {
+        :global(img, video) {
           /* border-radius: 4px; */
           /* box-shadow: -2px -2px 6px 0px rgba(0, 0, 0, 0.247); */
           /* border: 1px solid rgba(99, 99, 99, 0.404); */
-          position: absolute;
-          width: auto;
-          max-width: 1024px;
+
+          width: 100%;
+          margin: 0px auto;
           @include mobile {      
+            /* width: 140%; */
+            transform: translate(-50%);
             position: absolute;
-            width: calc(100% + 80px);
-            left: -40px;
+            left: 50%;
           }
         }
       </style>
@@ -212,6 +212,7 @@
     <div className="_title">
       <style>
         @include typography.text-secondary;
+        display: none;
         font-size: 1.2em;
         font-weight: 500;
         margin-bottom: var(--gap-4);
@@ -219,6 +220,11 @@
       {title}
     </div>
     <div className="_text">
+      <style>
+        font-size: 20px;
+        line-height: 1.6em;
+        font-weight: 400;
+      </style>
       {text}
     </div>
   </div>
@@ -374,10 +380,11 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="BigFeature" className="_big-feature $layout._section $layout._row">
+<div export component as="BigFeature" className="_big-feature $layout._section $layout._row" className:ctaText="has_cta">
   <style>
     border-bottom: 1px solid rgb(226, 226, 226);
     border-top: 1px solid rgb(255, 255, 255);
+
   </style>
   <div className="$layout._col $layout._col3">
     <style>
@@ -402,7 +409,7 @@
       </div>
       <a className="_mini-cta-link" href={ctaHref?}>
         <style>
-          display: flex;
+          display: none;
           margin-top: 10px;
           opacity: 0.5;
           align-items: center;
@@ -414,27 +421,26 @@
             font-size: 0.9em;
             margin-left: 6px;
           }
+
+          :within(.has_cta) {
+            display: flex;
+          }
         </style>
 
         {ctaText} <icons.Icon name="chevron-right" className="$_mini-cta-icon" />
       </a>
     </div>
   </div>
-  <div className="_preview">
+  <div className="_preview $layout._col $layout._col9">
     <style>
       :self {
         margin-left: 15px;
         @include mobile {
           margin-left: 0;
         }
-        :global(img) {
+        :global(img, video) {
           border-radius: 4px;
-          /* border: 1px solid rgba(255, 255, 255, 0.363); */
-          /* box-shadow: 4px 4px 4px 4px #F60; */
-          /* filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.226)); */
-          @include mobile {
-            width: 100%;
-          }
+          width: 100%;
         }
       }
     </style>
@@ -444,9 +450,9 @@
 
 
 <!--
-  @frame { title: "Mobile", width: 463, height: 3102, x: 1589, y: -86 }
+  @frame { title: "Website / Desktop", width: 1452, height: 4194, x: -94, y: -55 }
 -->
-<Home>
+<Home component as="Preview">
   <Header 
     title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
     description={<fragment>With tooling for <Highlight>realtime previews</Highlight> & <Highlight>automatic visual regresion testing</Highlight>, you can build UIs in no time using the language you already know.</fragment>}
@@ -454,7 +460,7 @@
       <button.Anchor className="$typography.semi-bold" strong>Get started</button.Anchor>
       <button.Anchor secondary className="$typography.semi-bold">Check out on GitHub</button.Anchor>
     </fragment>}
-    preview={<img src="../../static/img/vscode-screenshot.png" />}
+    preview={<video src="../../static/vid/paperclip-fast-demo.mp4" autoplay loop />}
   />
 
   <Summary title="Web development is slow" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
@@ -477,7 +483,7 @@
   <VariousFeatures>    
     <VariousFeatureItem 
       iconName="chaotic-1"
-      title="Scoped styles"
+      title="No global CSS"
       description="Styles are only applied to the document they're in, so no more leaky CSS."
     /> 
     <VariousFeatureItem 
@@ -492,84 +498,42 @@
     />
   </VariousFeatures>
 
+  <!-- <BigFeature 
+    title="Pairs well with third-party CSS"
+    description="Paperclip works with your existing"
+    preview={<video src="../../static/vid/grid-demo.mp4" autoplay loop />}
+  /> -->
+
   <BigFeature 
-    title="IDE integration"
-    description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster."
-    preview={<img src="./assets/realtime-editing-2.gif" />}
-    ctaText="View the extension"
+    title="See all of your UIs in one spot"
+    description="No more digging around for UI elements. Open the birds-eye view to see all of your application UIs, and easily find what you're looking for."
+    preview={<video src="../../static/vid/grid-demo.mp4" autoplay loop />}
   />
+  <BigFeature 
+    title="Cross-browser testing made easy"
+    description="Launch any browser directly within Paperclip and design against them in realtime."
+    preview={<video src="../../static/vid/cross-browser-testing.mp4" autoplay loop />}
+  />
+
 
   <BigFeature 
     title="Never miss a CSS Bug"
-    description="Use the visual regression tool to catch every visual state of your UI. No more broken window CSS. 🎉"
-    preview={<img src="./assets/realtime-editing-2.gif" />}
+    description="Use the visual regression tool to catch every visual state of your UI. Feel more confident about maintaining your styles."
+    preview={<video src="../../static/vid/visual-regression-testing.mp4" autoplay loop />}
     ctaText="View the API"
   />
 
 </Home>
+
+
 
 <!--
-  @frame { title: "Desktop", width: 1452, height: 3102, x: -94, y: -55 }
+  @frame { title: "Desktop / Really Big", width: 3706, height: 4689, x: 2462, y: -77 }
 -->
-<Home>
-  <Header 
-    title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
-    description={<fragment>With tooling for <Highlight>realtime previews</Highlight> & <Highlight>automatic visual regresion testing</Highlight>, you can build UIs in no time using the language you already know.</fragment>}
-    cta={<fragment>
-      <button.Anchor className="$typography.semi-bold" strong>Get started</button.Anchor>
-      <button.Anchor secondary className="$typography.semi-bold">Check out on GitHub</button.Anchor>
-    </fragment>}
-    preview={<img src="../../static/img/vscode-screenshot.png" />}
-  />
+<Preview />
 
-  <Summary title="Web development is slow" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
-
-  <MainFeatures>
-    <MainFeatureItem
-      iconName="shapes"
-      title="A minimalistic UI language"
-      description="Paperclip just covers the visuals. No logic -  just HTML, CSS, and basic component."
-      example={<CodePreview />}
-    />
-    <MainFeatureItem
-      iconName="reactjs"
-      title="Import directly into React code"
-      description="Paperclip documents compile to plain code that you can import directly into your code."
-      example={<CodePreview />}
-    />
-  </MainFeatures>
-
-  <VariousFeatures>    
-    <VariousFeatureItem 
-      iconName="chaotic-1"
-      title="Scoped styles"
-      description="Styles are only applied to the document they're in, so no more leaky CSS."
-    /> 
-    <VariousFeatureItem 
-      iconName="link"
-      title="Strongly typed"
-      description="UIs compile to strongly typed code, so worry less about breaking changes."
-    />
-    <VariousFeatureItem 
-      iconName="grow"
-      title="Incrementally adoptable"
-      description="Paperclip compliments your existing codebase, so use it as you go."
-    />
-  </VariousFeatures>
-
-  <BigFeature 
-    title="IDE integration"
-    description="Realtime previews, intellisense, and other tools make up the VS Code extension to help you build UIs faster."
-    preview={<img src="./assets/realtime-editing-2.gif" />}
-    ctaText="View the extension"
-  />
-
-  <BigFeature 
-    title="Never miss a CSS Bug"
-    description="Use the visual regression tool to catch every visual state of your UI. No more broken window CSS. 🎉"
-    preview={<img src="./assets/realtime-editing-2.gif" />}
-    ctaText="View the API"
-  />
-
-</Home>
+<!--
+  @frame { title: "Mobile", width: 816, height: 3085, x: 1531, y: -57 }
+-->
+<Preview />
 

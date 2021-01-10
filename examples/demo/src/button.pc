@@ -1,21 +1,27 @@
-<import src="./mod.pc" as="mod" />
-<style>
-  * {
-    font-family: sans-serif;
-    font-size: 24px;
-  }
-</style>
+
+
 
 <!--
-  @frame { width: 1024, height: 768, x: -1508, y: 99 }
+  @frame { visible: false }
 -->
-<span>
-  Something like that
-</span>
+<div component as="Website">
+  <div>
+    <style>
+    </style>
+  </div>
+  
+</div>
+
+
 <!--
-  @frame { width: 1024, height: 768, x: -114, y: 249 }
+  @frame { title: "Preview", width: 1024, height: 768, x: -1145, y: -28 }
 -->
-<span>
-  Something like this
-</span>
+<Website component as="Preview" data-variant={variant?}>
+  <style>
+    &[data-variant~="first"] {
+      color: red;
+    }
+  </style>
+
+</Website>
 

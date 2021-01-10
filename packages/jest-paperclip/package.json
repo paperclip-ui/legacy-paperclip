@@ -1,6 +1,6 @@
 {
   "name": "jest-paperclip",
-  "version": "17.1.0",
+  "version": "17.1.8",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "dependencies": {
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
-    "paperclip": "^17.1.0",
+    "paperclip": "^17.1.8",
     "resolve": "^1.17.0"
   },
   "devDependencies": {

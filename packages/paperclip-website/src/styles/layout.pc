@@ -32,18 +32,15 @@
   @export {
 
     @mixin col-3 {
-      flex-shrink: 0;
       width: 33.333%;
     }
 
     @mixin col-2 {
-      flex-shrink: 0;
       width: 25%;
     }
 
 
     @mixin col-6 {
-      flex-shrink: 0;
       width: 50%;
     }
 
@@ -51,6 +48,10 @@
       display: flex;
       padding-left: var(--gap-7);
       padding-right: var(--gap-7);
+      max-width: var(--row-max-width);
+      margin: 0px auto;
+      position: relative;
+      box-sizing: border-box;
     }
     ._section {
       @include py-6;
@@ -75,7 +76,6 @@
       @include col-3;
     }
     ._col9 {
-      flex-shrink: 0;
       width: 66.666%;
     }
     ._col6 {

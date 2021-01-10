@@ -555,7 +555,7 @@
 
 
 <!--
-  @frame { width: 603, height: 504, x: 1576, y: -266 }
+  @frame { width: 603, height: 504, x: 1158, y: -436 }
 -->
 
 <EnvironmentPopup export component as="EnvironmentPopupPreview" visible options={<fragment>

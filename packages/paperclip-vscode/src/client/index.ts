@@ -1,14 +1,45 @@
-import { ExtensionContext, workspace, window } from "vscode";
+import {
+  ExtensionContext,
+  workspace,
+  window,
+  StatusBarAlignment
+} from "vscode";
 import * as fs from "fs";
+import * as path from "path";
 import * as findUp from "find-up";
 import { activate as activateLanguageClient } from "./language";
+import { spawn, fork } from "child_process";
 
 // eslint-disable-next-line
 const selfPkg = require("../../package");
 
-export const activate = (context: ExtensionContext) => {
+export const activate = async (context: ExtensionContext) => {
+  await installDeps();
+  console.log("initializing");
   activateLanguageClient(context);
   checkVersionMatch(context);
+};
+
+const installDeps = async () => {
+  // const statusBar = window.createStatusBarItem(StatusBarAlignment.Left);
+  const statusBar = window.setStatusBarMessage(
+    "$(sync~spin) Warming up Paperclip..."
+  );
+
+  const ngrokDir = path.join(__dirname, "..", "..", "node_modules", "ngrok");
+
+  console.log("installing ", ngrokDir);
+
+  const proc = fork(path.join(ngrokDir, "postinstall.js"));
+
+  proc.on("error", e => {
+    console.error(e);
+  });
+  await new Promise(resolve => {
+    proc.on("exit", resolve);
+  });
+
+  statusBar.dispose();
 };
 
 export function deactivate(): Thenable<void> {

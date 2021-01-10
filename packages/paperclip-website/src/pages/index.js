@@ -9,6 +9,7 @@ import usePrismTheme from "@theme/hooks/usePrismTheme";
 import MAIN_DEMO_GRAPH from "../demos/main";
 import IMPORT_CODE_DEMO_SOURCE from "../demos/import-code";
 import PRIMITIVE_UI_EXAMPLE from "../demos/simple-pc";
+import THIRD_PART_CSS_EXAMPLE from "../demos/third-party-css";
 import CodeBlock from "@theme-init/CodeBlock";
 import * as styles from "../styles/index.pc";
 import * as buttonStyles from "../styles/button.pc";
@@ -29,7 +30,9 @@ function Home() {
     >
       <styles.Home>
         <styles.Header
-          title={<>Spend less time tweaking CSS.</>}
+          // title={<>A hybrid approach to building web applications</>}
+          // title={<>Live previews for web development</>}
+          title={<>Build web application in no time.</>}
           description={
             /* 
 
@@ -40,8 +43,13 @@ function Home() {
             - More natural than the current way of building UIs
             */
             <>
-              Paperclip is a language for UI primitives that allows you to build
-              React applications more quickly, and with fewer CSS bugs.
+              Paperclip is a template language that comes with visual tooling to
+              help you build UIs faster, bug-free, and more precicely.
+              {/* Paperclip is a template language designed to help you build UIs more quickly & safely. */}
+              {/* See what you're building, as you're typing code.  */}
+              {/* Paperclip is a template language that's optimized for visual development, so you can build UIs in record time. */}
+              {/* Design & code at the same time. Paperclip is a template language that comes with visual tooling. */}
+              {/* Realtime previews, visual regression testing, and more. Paperclip is a template language that comes with tooling to help you build UIs more quickly & safely.  */}
             </>
 
             // <>
@@ -93,18 +101,36 @@ function Home() {
               </buttonStyles.Anchor>
             </>
           }
-          preview={<img src="img/screenshot-6.png" />}
+          preview={<video src="vid/paperclip-fast-demo.mp4" autoPlay loop />}
+        />
+
+        <styles.Summary
+          title=""
+          text={
+            <>
+              {/* Paperclip is a template language specifically designed around visual development. This allows for a hybrid approach to building UIs
+          that's faster */}
+              {/* Nothing sucks more than waiting around for your browser to see CSS changes. With Paperclip there's none of that - just open up the live preview
+          window and start typing code. Watch as your changes appear in realtime.  */}
+              Web development is slow & CSS tends to become unmanageable over
+              time, especially as projects & teams become larger. Paperclip
+              helps with that by providing you with tooling to manage visual
+              changes, keep CSS scoped, and a visual editor for creating UIs in
+              realtime.
+              {/* UI development is visual, and tooling should reflect that. Paperclip */}
+            </>
+          }
         />
 
         <styles.MainFeatures>
           <styles.MainFeatureItem
             iconName="shapes"
-            title="Use familiar syntax"
+            title="Simple syntax"
             description={
               <>
-                Paperclip uses familiar syntax for creating UI primitives. See
-                your changes <strong>in realtime</strong> using the{" "}
-                <a href="/docs/">VS Code extension</a>.
+                Paperclip uses familiar syntax, so there the learning curve is
+                small. Use the <a href="/docs/">visual tooling</a>&nbsp; to see
+                your visual changes live.
               </>
             }
             example={
@@ -116,7 +142,7 @@ function Home() {
           <styles.MainFeatureItem
             iconName="reactjs"
             title="Import directly into React code"
-            description="Paperclip compiles the UIs into plan code that you can import directly in your React app. No runtimes needed."
+            description="Templates compile into plan code that you can import directly in your React app. No runtimes needed."
             example={
               <CodeBlock className="language-jsx">
                 {IMPORT_CODE_DEMO_SOURCE}
@@ -128,38 +154,45 @@ function Home() {
         <styles.VariousFeatures>
           <styles.VariousFeatureItem
             iconName="chaotic-1"
-            title="Isolated styles"
-            description="Styles are only applied to the documents they're defined in, so you don't have to worry about them leaking out."
+            title="No global CSS"
+            description="Styles are scoped to the documents they're defined in, so you don't have to worry about them leaking out."
           />
           <styles.VariousFeatureItem
             iconName="link"
-            title="TypeScript integration"
-            description="Paperclip UIs compile to strongly typed code, so you can feel more confident that UI changes won't break anything."
+            title="Live previews in VS Code"
+            description="Paperclip comes with a live preview extension in VS Code, so you never have to leave your editor to see your HTML & CSS."
           />
           <styles.VariousFeatureItem
             iconName="grow"
-            title="Pays back the more you use it"
+            title="Safer the more you use it"
             description="Every Paperclip file is automatically covered by visual regression tests, so the more you use Paperclip, the more test coverage you'll have against CSS bugs. "
           />
-          {/* <styles.VariousFeatureItem
-            iconName="grow"
-            title="Incrementally adoptable"
-            description="Paperclip compliments your existing codebase - use it as you go."
-          /> */}
         </styles.VariousFeatures>
+        {/* <styles.BigFeature
+          title="Pairs well with existing CSS"
+          description="Just import your regular CSS to keep it scoped."
+          preview={<CodeBlock className="language-html">
+          {THIRD_PART_CSS_EXAMPLE}
+        </CodeBlock>}
+        /> */}
         <styles.BigFeature
-          title="Realtime previews in VS Code"
-          description="The VS Code extension comes with realtime previews, so you can iterate faster on your UIs, and free up more time to work on other parts of your codebase that matter."
-          preview={<img src="img/button-demo.gif" />}
-          ctaText="View the extension"
-          ctaHref={"https://paperclip.dev/docs"}
+          title="See all of your UIs in one spot"
+          description="No more digging around for UI elements. Open the birds-eye view to see all of your application UIs, and easily find what you're looking for."
+          preview={<video src="vid/grid-demo.mp4" autoPlay loop />}
+        />
+        <styles.BigFeature
+          title="Cross-browser testing made easy"
+          description="Launch any browser directly within Paperclip and design against them in realtime."
+          preview={<video src="vid/cross-browser-testing.mp4" autoPlay loop />}
         />
 
         <styles.BigFeature
           title="Never miss a CSS Bug"
-          description="Use the visual regression tool to catch every UI state. No more worrying about breaking CSS changes. 🎉"
-          preview={<img src="img/snapshot.gif" />}
-          ctaText="View the API"
+          description="Every single Paperclip UI is covered with visual regression tests - hardly any setup required. Just setup the Percy integration and you're good to go."
+          preview={
+            <video src="vid/visual-regression-testing.mp4" autoPlay loop />
+          }
+          ctaText="View the docs"
           ctaHref={"https://paperclip.dev/docs/configure-percy"}
         />
       </styles.Home>
