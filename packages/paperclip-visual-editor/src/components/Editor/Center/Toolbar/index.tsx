@@ -77,7 +77,6 @@ export const Toolbar = () => {
     .substr(1);
 
   const onDoubleClick = () => {
-    console.log("DOUBLE");
     dispatch(titleDoubleClicked({ uri: currentFileUri }));
   };
 

@@ -1,13 +1,12 @@
 ### Immediate
 
-- clear todos
-- double click to enter instance
-- component name as instance title
-- Breadcrumbs
-- filter state should remain
-- **comments
-  - particularly for alexis
-
+- fix style flash
+- infinite scroll for grid view
+- infinite scroll for browser list
+- fix issue where window doesn't open  on initial load
+- expand window state should be stored in location
+- **Write
+- **Beta mode button for Paperclip
 
 ## Next
 
