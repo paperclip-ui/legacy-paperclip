@@ -1,11 +1,12 @@
 ### Immediate
-  
-- paperclip - cannot embed ngrok
-- workspaceFolder undefined
 
-- Website
-  - vscode extension should be in private
-  - beta mode
+- clear todos
+- double click to enter instance
+- component name as instance title
+- Breadcrumbs
+- filter state should remain
+- **comments
+  - particularly for alexis
 
 
 ## Next
@@ -19,3 +20,13 @@
 - *Comments - abs position
 - @deprecated comment
 - meta click title
+
+
+#### Website
+
+- Build UIs in realtime
+- A hybrid approach to visually building
+UIs that's faster, and safer.
+
+- big pieces:
+  - safety / scalability
