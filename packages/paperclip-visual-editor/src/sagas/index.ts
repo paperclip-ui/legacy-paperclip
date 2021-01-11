@@ -53,7 +53,6 @@ export default function* mainSaga() {
   yield fork(handleCanvas);
   yield fork(handleClipboard);
   yield fork(handleLocationChanged);
-  yield fork(handleLoaded);
   yield fork(handleLocation);
 }
 
@@ -200,8 +199,8 @@ function* handleRenderer() {
       ActionType.TITLE_DOUBLE_CLICKED,
       ActionType.ENV_OPTION_CLICKED,
       ActionType.ERROR_BANNER_CLICKED,
-      ActionType.POPOUT_WINDOW_REQUESTED,
-      ActionType.LOADED
+      ActionType.LOCATION_CHANGED,
+      ActionType.POPOUT_WINDOW_REQUESTED
     ],
     function(action: Action) {
       maybeSendMessage(action);
@@ -410,15 +409,6 @@ function* handleLocationChanged() {
       query: parts.query
     })
   );
-}
-
-function* handleLoaded() {
-  yield takeEvery(ActionType.LOCATION_CHANGED, function*() {
-    const state: AppState = yield select();
-    yield put(
-      loaded({ windowId: state.id, currentFileUri: state.currentFileUri })
-    );
-  });
 }
 
 function* handleLocation() {

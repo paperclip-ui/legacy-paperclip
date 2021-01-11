@@ -69,9 +69,9 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.LOCATION_CHANGED: {
       state = produce(state, newState => {
-        newState.currentFileUri = action.payload.query.current_file;
+        newState.currentFileUri = action.payload.query.currentFile;
         newState.id = action.payload.query.id;
-        newState.embedded = Boolean(action.payload.query.within_ide);
+        newState.embedded = Boolean(action.payload.query.embedded);
         newState.renderProtocol =
           action.payload.protocol + "//" + action.payload.host + "/file";
         newState.centeredInitial = false;
