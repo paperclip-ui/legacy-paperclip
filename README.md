@@ -5,28 +5,27 @@
 
 # <img src="assets/logo.png" width="230">
 
-A language for creating UIs faster, and with fewer CSS bugs.
+A template language designed for visual development.
 
 ![alt button demo](assets/button-demo.gif)
 
-### Why? 
 
-I find that a lot of time is wasted tweaking CSS because of tooling bottlenecks (slow browser refreshes, large bundle sizes, etc), where that time could be better spent on other tasks. Large projects are also problematic since CSS is notoriously difficult to test & is usually manually done. Paperclip was created to address these issues, and is centered around speed, safety, and accuracy of developing web interfaces. Here's how:
+### Features
 
-- **Realtime visual editing** - Paperclip's VS Code extension comes with a realtime preview, so you can iterate faster in your UIs, and spend less time tweaking CSS.
-- **Automatic visual regression testing** - Just run the `percy-paperclip`, and you'll get visual snapshots of every UI state defined in Paperclip, so you can worry less about breaking CSS changes.
-- **Scoped styling** - Styles are scoped to the documents that they're defined in, so you don't have to worry about them leaking out.
-- **Compiles to strongly typed React code** - Paperclip compiles to plain TypeScript code that you can import directly into your React app (other frameworks will be supported soon).
-
-### Other features
-
+- **No global CSS** - Paperclip removes global CSS in favor of scoped styles.
+- **Realtime visual editing** - Open up the paperclip dev server and see your UIs update in realtime _as you're writing code_.
+- **Visual regression testing** - All Paperclip UI files are automatically covered for visual regression testing.
+- **Browserstack integration** - launch any UI in Browserstack, directly from Paperclip.
 - **No lock-in** - You can easily move away from Paperclip if you want to. I'd even wager that it's faster to build UIs in Paperclip _first_, then translate to something else. 
+- **compiles to plain code** - Just import `*.pc` files into your app and use them like render functions.
 - **No runtime libraries** - Paperclip comes with a CLI tool and webpack loader that compiles Paperclip UIs into plain code.
 - **SASS-like syntax** - Paperclip supports some sass-like features such as mixins, & nested rules. 
 - **Rich VS Code experience** - Intellisense, color pickers, autocomplete, and more.
 - **Zeplin integration** - (Experimental) sync design tokens to your project & use them in Paperclip UIs.
+- **Birds-eye view** - see of your UIs
 
-# Resources
+<!-- Hidden until public beta -->
+<!--# Resources
 
 - Installation
   - [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
@@ -38,7 +37,7 @@ I find that a lot of time is wasted tweaking CSS because of tooling bottlenecks 
 - Example projects
   - [Paperclip website](./packages/paperclip-website)
   - [Todo MVC](./examples/react-todomvc)
-
+-->
 
 # Example
 
@@ -104,10 +103,7 @@ Here's a peek at what's planned for Paperclip:
 
 - Multiple compiler targets so that you can re-use your Paperclip UIs in different languages & frameworks
 - Extension for Atom, Sublime, and other editors
-- Remote UI preview that you can use across devices & browsers (such as BrowserStack).
 - Storybook integration
-- UI editor controls:
-  - CSS animation editor
-  - various editors for colors, box shadows, filters, etc
-- A11Y
+- More visual editing tools so that you don't have to write code. Possibly more designer-friendly tooling.
+- A11Y & other linting stools
 - Code splitting so that you don't need to include all of your CSS into one bundle
