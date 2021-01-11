@@ -204,8 +204,8 @@ function Home() {
             preview={
               <video src="vid/visual-regression-testing.mp4" autoPlay loop />
             }
-            ctaText="View the docs"
-            ctaHref={"https://paperclip.dev/docs/configure-percy"}
+            // ctaText="View the docs"
+            // ctaHref={"https://paperclip.dev/docs/configure-percy"}
           />
           <styles.Footer />
         </styles.Home>
