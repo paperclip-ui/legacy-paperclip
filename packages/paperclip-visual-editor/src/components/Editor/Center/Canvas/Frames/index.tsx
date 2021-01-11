@@ -164,6 +164,7 @@ export const useMultipleFrames = ({
 
   useEffect(() => {
     for (const fileUri in renderers) {
+      console.log("HANDLE EV");
       const renderer = renderers[fileUri];
       renderer.handleEvents(state.currentEngineEvents[renderer.id]);
     }

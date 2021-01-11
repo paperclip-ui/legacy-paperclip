@@ -1,6 +1,5 @@
 ### Immediate
 
-- fix style flash
 - infinite scroll for grid view
 - change colors for topbar - make more contrasted (dark propably)
 - fix issue where window doesn't open  on initial load
