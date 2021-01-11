@@ -1,6 +1,6 @@
 {
   "name": "paperclip-docco",
-  "version": "17.1.12",
+  "version": "17.1.15",
   "private": true,
   "description": "Paperclip documentation generator - very much a WIP",
   "main": "index.js",
