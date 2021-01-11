@@ -1,6 +1,6 @@
 {
   "name": "paperclip-visual-editor",
-  "version": "17.1.13",
+  "version": "17.1.14",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
