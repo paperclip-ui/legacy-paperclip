@@ -1,5 +1,7 @@
 ### Immediate
 
+- ensure that visual editor can run in es5 multiple browsers
+- horizontal scrolling should work
 - **Write
 - **Beta mode button for Paperclip
 

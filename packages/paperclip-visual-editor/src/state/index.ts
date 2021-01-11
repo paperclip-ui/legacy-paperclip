@@ -85,8 +85,6 @@ export type AppState = {
   showBirdseye?: boolean;
   loadedBirdseyeInitially?: boolean;
   loadingBirdseye?: boolean;
-  // expandedFrameInfo?: ExpandedFrameInfo;
-  expandedFrame: boolean;
   resizerMoving?: boolean;
   currentFileUri: string;
   locationQuery: Record<string, string>;
