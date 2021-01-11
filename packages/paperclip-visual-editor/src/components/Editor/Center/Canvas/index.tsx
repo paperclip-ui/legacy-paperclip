@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import * as styles from "./index.pc";
 import { Preview } from "./Preview";
 import { Tools } from "./Tools";
@@ -10,13 +10,48 @@ import {
   canvasPanStart,
   canvasResized
 } from "../../../../actions";
+import {
+  getActiveFrameIndex,
+  getFrameFromIndex,
+  isExpanded
+} from "../../../../state";
+import { getFrameBounds } from "paperclip-web-renderer";
 
 export const Canvas = React.memo(() => {
   const { state, dispatch } = useAppStore();
   const {
-    canvas: { transform },
-    expandedFrameInfo
+    canvas: { transform }
   } = state;
+
+  const expanded = isExpanded(state);
+
+  const actualTransform = useMemo(() => {
+    if (expanded) {
+      const frame = getFrameFromIndex(getActiveFrameIndex(state), state);
+      if (!frame) {
+        return transform;
+      }
+      const frameBounds = frame && getFrameBounds(frame);
+      return {
+        x: -frameBounds.x,
+        y: -frameBounds.y,
+        z: 1
+      };
+    } else {
+      return transform;
+    }
+
+    //       frameIndex: action.payload.frameIndex,
+    //       previousCanvasTransform: state.canvas.transform
+    //     };
+
+    //     const frame = getFrameFromIndex(action.payload.frameIndex, state);
+    //     const frameBounds = getFrameBounds(frame);
+
+    //     newState.canvas.transform.x = -frameBounds.x;
+    //     newState.canvas.transform.y = -frameBounds.y;
+    //     newState.canvas.transform.z = 1;
+  }, [transform, expanded]);
 
   const [canvasPanTimer, setCanvasPanTimer] = useState<any>(0);
 
@@ -84,12 +119,14 @@ export const Canvas = React.memo(() => {
     <styles.Canvas ref={canvasRef} onWheel={onWheel}>
       <styles.Inner
         style={{
-          transform: `translateX(${transform.x}px) translateY(${transform.y}px) scale(${transform.z}) translateZ(0)`,
+          transform: `translateX(${actualTransform.x}px) translateY(${actualTransform.y}px) scale(${actualTransform.z}) translateZ(0)`,
           transformOrigin: "top left",
           willChange: "transform"
         }}
       >
-        <Frames expandedFrameIndex={expandedFrameInfo?.frameIndex} />
+        <Frames
+          expandedFrameIndex={expanded ? getActiveFrameIndex(state) : null}
+        />
       </styles.Inner>
       <Tools />
     </styles.Canvas>

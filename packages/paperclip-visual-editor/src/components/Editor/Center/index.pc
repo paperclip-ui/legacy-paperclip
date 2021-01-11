@@ -47,8 +47,8 @@
 <!--
   @frame { title: "Center", width: 1024, height: 768, x: 26, y: 776 }
 -->
-<Container export component as="BirdseyePreview2" className="light $theme.font-default">
-  <Toolbar.Preview gridMode />
+<Container export component as="BirdseyePreview2" className:light="light" className:dark="dark" className="$theme.font-default">
+  <Toolbar.Preview gridMode {showEnvPopup} />
   <CanvasContainer>
     <Birdseye.Preview />
   </CanvasContainer>

@@ -30,7 +30,12 @@ import {
   zoomOutKeyPressed,
   zoomInKeyPressed
 } from "../actions";
-import { AppState, getNodeInfoAtPoint, getSelectedFrames } from "../state";
+import {
+  AppState,
+  getActiveFrameIndex,
+  getNodeInfoAtPoint,
+  getSelectedFrames
+} from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
@@ -215,7 +220,7 @@ function* handleCanvasMouseUp(action: CanvasMouseUp) {
     state.canvas.mousePosition,
     state.canvas.transform,
     state.boxes,
-    state.expandedFrameInfo?.frameIndex
+    getActiveFrameIndex(state)
   );
 
   // maybe offscreen

@@ -1,8 +1,16 @@
 import { memoize } from "paperclip-utils";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  memo,
+  ReactChild,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 import { envOptionClicked } from "../../../../actions";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import { EnvOption, EnvOptionKind } from "../../../../state";
+import { InfiniteScroller } from "../../../InfiniteScroller";
 import { useTextInput } from "../../../TextInput";
 import * as styles from "./index.pc";
 
@@ -13,18 +21,6 @@ type Option = {
 export type EnvironmentPopupProps = {
   onBlur: () => void;
 };
-
-const getFilterable = memoize((option: Option) => {
-  if (option.kind === EnvOptionKind.Browserstack) {
-    return [
-      option.launchOptions.browser,
-      option.launchOptions.browserVersion,
-      option.launchOptions.os,
-      option.launchOptions.osVersion
-    ];
-  }
-  return [option.label];
-});
 
 export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
   const { state, dispatch } = useAppStore();
@@ -65,7 +61,7 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
     );
   };
 
-  const filterParts = filter?.toLowerCase().split(" ");
+  const filteredOptions = filterOptions(filter, options);
 
   return (
     <styles.EnvironmentPopup
@@ -75,38 +71,64 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
       onFilterChange={inputProps.onChange}
       onFilterBlur={onFilterBlur}
       options={
-        <>
-          {options
-            .filter(option => {
-              if (!filterParts) {
-                return true;
-              }
-
-              const filterable = getFilterable(option)
-                .filter(Boolean)
-                .map(p => p.toLowerCase());
-
-              return filterParts.every(item => {
-                for (const filterableItem of filterable) {
-                  if (filterableItem.includes(item)) {
-                    return true;
-                  }
-                }
+        <InfiniteScroller
+          size={filteredOptions.length}
+          minVerticalItems={10}
+          itemHeight={22}
+        >
+          {(cursor, maxVerticalItems) => {
+            console.log(cursor, filteredOptions.length);
+            return filteredOptions
+              .slice(cursor, cursor + maxVerticalItems)
+              .map(option => {
+                return (
+                  <EnvironmentOption
+                    option={option}
+                    onOptionClick={onOptionClick}
+                  />
+                );
               });
-            })
-            .map((option, i) => {
-              return (
-                <EnvironmentOption
-                  key={i}
-                  option={option}
-                  onOptionClick={onOptionClick}
-                />
-              );
-            })}
-        </>
+          }}
+        </InfiniteScroller>
       }
     />
   );
+});
+
+const getFilterable = memoize((option: Option) => {
+  if (option.kind === EnvOptionKind.Browserstack) {
+    return [
+      option.launchOptions.browser,
+      option.launchOptions.browserVersion,
+      option.launchOptions.os,
+      stripWS(option.launchOptions.os),
+      option.launchOptions.osVersion
+    ].filter(Boolean);
+  }
+  return [option.label];
+});
+
+const stripWS = (value = "") => value.replace(/\s+/g, "");
+
+const filterOptions = memoize((filter: string, options: Option[]) => {
+  const filterParts = filter?.toLowerCase().split(" ");
+  return options.filter(option => {
+    if (!filterParts) {
+      return true;
+    }
+
+    const filterable = getFilterable(option)
+      .filter(Boolean)
+      .map(p => p.toLowerCase());
+
+    return filterParts.every(item => {
+      for (const filterableItem of filterable) {
+        if (filterableItem.includes(item)) {
+          return true;
+        }
+      }
+    });
+  });
 });
 
 type EnvironmentOptionProps = {
@@ -114,37 +136,26 @@ type EnvironmentOptionProps = {
   onOptionClick: (option: Option) => void;
 };
 
-const getOptionKey = (option: Option) => {
-  if (option.kind === EnvOptionKind.Browserstack) {
-    return (
-      option.launchOptions.browser +
-      option.launchOptions.browserVersion +
-      option.launchOptions.os +
-      option.launchOptions.osVersion
-    );
-  }
-  return option.kind;
+const EnvironmentOption = ({
+  option,
+  onOptionClick
+}: EnvironmentOptionProps) => {
+  const onClick = useCallback(() => {
+    onOptionClick(option);
+  }, [option]);
+  return (
+    <styles.EnvironmentOption
+      kind={
+        option.kind === EnvOptionKind.Browserstack
+          ? option.launchOptions.browser
+          : option.kind.toLowerCase()
+      }
+      onClick={onClick}
+      version={option.launchOptions?.browserVersion}
+      os={option.launchOptions?.os}
+      osVersion={option.launchOptions?.osVersion}
+    >
+      {option.label.toLowerCase()}
+    </styles.EnvironmentOption>
+  );
 };
-
-const EnvironmentOption = memo(
-  ({ option, onOptionClick }: EnvironmentOptionProps) => {
-    const onClick = useCallback(() => {
-      onOptionClick(option);
-    }, [option]);
-    return (
-      <styles.EnvironmentOption
-        kind={
-          option.kind === EnvOptionKind.Browserstack
-            ? option.launchOptions.browser
-            : option.kind
-        }
-        onClick={onClick}
-        version={option.launchOptions?.browserVersion}
-        os={option.launchOptions?.os}
-        osVersion={option.launchOptions?.osVersion}
-      >
-        {option.label.toLowerCase()}
-      </styles.EnvironmentOption>
-    );
-  }
-);

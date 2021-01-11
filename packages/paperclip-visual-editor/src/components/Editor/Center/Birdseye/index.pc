@@ -10,7 +10,7 @@
       --pos: 2n;
       cursor: pointer;
       display: inline-block;
-      width: 25%;
+      width: 20%;
       /* display: none; */
       box-sizing: border-box;
       height: 200px;
@@ -20,16 +20,19 @@
       &:hover, &.hover {
         background: rgb(221, 221, 221);
       }
+       &:nth-child(5n) {
+        border-right-color: transparent;
+      }
 
-      @include theme.desktop-xl {
+      /* @include theme.desktop-xl {
         width: 20%;
 
         &:nth-child(5n) {
           border-right-color: transparent;
         }
-      }
+      } */
 
-      @include theme.desktop-l {
+      /* @include theme.desktop-l {
         width: 25%;
 
         &:nth-child(4n) {
@@ -57,7 +60,7 @@
         &:nth-child(2n) {
           border-right-color: transparent;
         }
-      }
+      } */
     }
     
     /* border-color: rgb(243, 243, 243); */
@@ -280,6 +283,7 @@
 
   <!-- Cells -->
   <Cells>
+    <div>
      <Cell label="Topbar" dir="src/components/test" warn><img src="./previews/0116800ba0b4383678bf58b68c18e3ec25bf8f2a0f86e02e9eef21182e0b00c9.jpg" /></Cell>
       <Cell label="Analaytics" hover dir="src/components/test/another"><img src="./previews/1872b7970e0515d14738fc30b340ed3c9bbe5743fc6897d90d2e4b364e27d578.jpg" /></Cell>
       <Cell label="LinkAccounts"><img src="./previews/2751624e31a0079e58548e88ace6de6e4e844f67a4bd651a996a0fa1d8f49da9.jpg" /></Cell>
@@ -291,7 +295,7 @@
       <Cell label=""><img src="./previews/5f8d7fa9f7f22c7af7daa3b32ffd8a963f87e5cfc09fe49769eab00363b5250c.jpg" /></Cell>
       <Cell label="Inputs / Text"><img src="./previews/7d0f27f26875a7061dc3dd61e0129585e70e740c62c7d662cabc40ba5ad0c492.jpg" /></Cell>
       <Cell label="Inputs / Button"><img src="./previews/85b0943f9426ecaee1187137b94283cd8cd8bc8023a3d2290f2f45ba517f07af.jpg" /></Cell>
-    
+    </div>
   </Cells>
 
 </Container>

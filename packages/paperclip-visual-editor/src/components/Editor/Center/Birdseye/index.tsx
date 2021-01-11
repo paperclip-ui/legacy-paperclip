@@ -25,38 +25,97 @@ import {
   VirtualFrame
 } from "paperclip-utils";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
-import { useFrames } from "../Canvas/Frames";
+import { useFrames, useMultipleFrames } from "../Canvas/Frames";
 import { useTextInput } from "../../../TextInput";
 import { relative } from "path";
 import Spinner from "../../../Spinner/index.pc";
 import { useHistory } from "react-router";
+import { InfiniteScroller } from "../../../InfiniteScroller";
+import { birdseyeFilterChanged } from "../../../../actions";
+
+type CellFrame = {
+  filePath: string;
+  fileUri: string;
+  index: number;
+  relativePath: string;
+  node: VirtualFrame;
+} & Frame;
 
 export const Birdseye = memo(() => {
   const { state, dispatch } = useAppStore();
-  const [filter, setFilter] = useState<string>();
+  const filter = state.birdseyeFilter;
+
+  const renderers = useMultipleFrames({
+    fileData: state.allLoadedPCFileData,
+    shouldCollectRects: false
+  });
+
+  // TODO - can't memoize sinze renderer is _mutable_ but immutableFrames is not
+  const allFrames: CellFrame[] = renderers.reduce((frames, renderer) => {
+    const filePath = fileURLToPath(renderer.renderer.targetUri);
+    const relativePath = path.relative(
+      state.projectDirectory?.absolutePath,
+      filePath
+    );
+    return [
+      ...frames,
+      ...renderer.renderer.immutableFrames.map((frame, i) => ({
+        ...frame,
+        index: i,
+        relativePath,
+        filePath,
+        fileUri: renderer.renderer.targetUri,
+        node: (renderer.renderer.getPreview() as any).children[i]
+      }))
+    ];
+  }, []);
 
   let content;
+
+  const filteredCells = filterCells(allFrames, filter);
+
+  const columns = 5;
+
+  const onFilter = useCallback(
+    (value: string) => {
+      dispatch(birdseyeFilterChanged({ value }));
+    },
+    [dispatch]
+  );
 
   if (state.loadingBirdseye) {
     content = <Spinner />;
   } else {
     content = (
       <>
-        <Header filter={filter} onFilter={setFilter} />
-        <styles.Cells>
-          {Object.keys(state.allLoadedPCFileData).map(uri => {
-            return (
-              <PCFileCells
-                filter={filter}
-                key={uri}
-                dispatch={dispatch}
-                projectPath={state.projectDirectory?.absolutePath}
-                renderProtocol={state.renderProtocol}
-                uri={uri}
-              />
-            );
-          })}
-        </styles.Cells>
+        <Header filter={filter} onFilter={onFilter} />
+
+        <InfiniteScroller
+          size={Math.ceil(filteredCells.length / columns)}
+          itemHeight={200}
+          minVerticalItems={3}
+        >
+          {(cursor, maxRows) => {
+            const start = cursor * columns;
+
+            return filteredCells
+              .slice(start, start + maxRows * columns)
+              .map(frame => {
+                return (
+                  <Cell
+                    uri={frame.fileUri}
+                    index={frame.index}
+                    filter={filter}
+                    key={frame.fileUri + "-" + frame.index}
+                    dispatch={dispatch}
+                    frame={frame}
+                    relativePath={frame.relativePath}
+                    node={frame.node}
+                  />
+                );
+              });
+          }}
+        </InfiniteScroller>
       </>
     );
   }
@@ -84,46 +143,6 @@ const Header = memo(({ filter, onFilter }: HeaderProps) => {
   );
 });
 
-type PCFileCellsProps = {
-  filter?: string;
-  uri: string;
-  renderProtocol: string;
-  projectPath: string;
-  dispatch: any;
-};
-const PCFileCells = ({
-  filter,
-  uri,
-  projectPath,
-  dispatch
-}: PCFileCellsProps) => {
-  const filePath = fileURLToPath(uri);
-  const { renderer } = useFrames({
-    fileUri: uri,
-    shouldCollectRects: false
-  });
-
-  const relativePath = path.relative(projectPath, filePath);
-  return (
-    <>
-      {renderer.immutableFrames.map((frame, i) => {
-        return (
-          <Cell
-            uri={uri}
-            index={i}
-            filter={filter}
-            key={filePath + "-" + i}
-            dispatch={dispatch}
-            frame={frame}
-            relativePath={relativePath}
-            node={(renderer.getPreview() as any).children[i]}
-          />
-        );
-      })}
-    </>
-  );
-};
-
 // builtin is null, so here's a hack
 const fileURLToPath = (uri: string) => {
   return uri.replace("file://", "").replace(/\\/g, "/");
@@ -148,17 +167,13 @@ const Cell = ({
   relativePath,
   dispatch
 }: CellProps) => {
-  const { mountRef, label, frameBox, scale, onClick, visible } = useCell({
+  const { mountRef, label, frameBox, scale, onClick } = useCell({
     uri,
     relativePath,
     filter,
     frameIndex: index,
     node
   });
-
-  if (!visible) {
-    return null;
-  }
 
   return (
     <styles.Cell
@@ -208,7 +223,7 @@ const useCell = ({
   const [scale, setFrameScale] = useState<number>(1);
   const history = useHistory();
 
-  let label = "Untitled";
+  const { label, visible, tags } = getCellInfo(node);
 
   const mountRef = useRef<HTMLDivElement | undefined>();
 
@@ -251,6 +266,23 @@ const useCell = ({
     };
   }, [mountRef.current]);
 
+  return {
+    frameBox,
+    scale,
+    visible,
+    label,
+    onClick,
+    mountRef
+  };
+};
+
+const getCellInfo = (node: VirtualFrame) => {
+  const annotations: NodeAnnotations = node.annotations
+    ? computeVirtJSObject(node.annotations)
+    : {};
+
+  let label = "Untitled";
+
   let visible = true;
 
   if (annotations.frame) {
@@ -260,32 +292,39 @@ const useCell = ({
 
     label = annotations.frame.title || label;
   }
-
   const tags = annotations.tags || [];
 
-  if (visible && filter) {
-    // invisible until filter found
-    const filterable: string[] = [label, relativePath, ...tags];
+  return { label, visible, tags };
+};
 
-    visible = filter
-      .toLowerCase()
-      .trim()
-      .split(" ")
-      .every(filterPart => {
+const filterCells = (cells: CellFrame[], filter = "") => {
+  const filterParts = filter
+    .toLowerCase()
+    .trim()
+    .split(" ");
+
+  return cells.filter(cell => {
+    const info = getCellInfo(cell.node);
+
+    let visible = info.visible;
+
+    if (visible && filter) {
+      // invisible until filter found
+      const filterable: string[] = [
+        info.label,
+        cell.relativePath,
+        ...info.tags
+      ];
+
+      visible = filterParts.every(filterPart => {
         for (const filterableItem of filterable) {
           if (filterableItem.toLowerCase().indexOf(filterPart) !== -1) {
             return true;
           }
         }
       });
-  }
+    }
 
-  return {
-    frameBox,
-    scale,
-    visible,
-    label,
-    onClick,
-    mountRef
-  };
+    return visible;
+  });
 };

@@ -8,6 +8,7 @@ import {
 } from "paperclip-utils";
 import { getFrameBounds } from "paperclip-web-renderer";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useHistory } from "react-router";
 import { Dispatch } from "redux";
 import {
   Action,
@@ -17,6 +18,7 @@ import {
 } from "../../../../../../actions";
 import { Transform } from "../../../../../../state";
 import * as styles from "./index.pc";
+import * as qs from "querystring";
 
 export type FramesProps = {
   frames: VirtualFrame[];
@@ -63,15 +65,22 @@ const Frame = memo(
     }
     const frameBounds = getFrameBounds(frame as any);
     const [editing, setEditing] = useState(false);
+    const history = useHistory();
 
-    const onClick = useCallback((event: React.MouseEvent<any>) => {
-      dispatch(
-        frameTitleClicked({ frameIndex: frameIndex, shiftKey: event.shiftKey })
-      );
+    const onClick = useCallback(
+      (event: React.MouseEvent<any>) => {
+        dispatch(
+          frameTitleClicked({
+            frameIndex: frameIndex,
+            shiftKey: event.shiftKey
+          })
+        );
 
-      // prevent canvas click event
-      event.stopPropagation();
-    }, []);
+        // prevent canvas click event
+        event.stopPropagation();
+      },
+      [history.location]
+    );
     const inputRef = useRef<HTMLInputElement>();
 
     const onDoubleClick = useCallback(() => {
@@ -109,8 +118,18 @@ const Frame = memo(
     );
 
     const onExpandButtonClick = useCallback(() => {
-      dispatch(expandFrameButtonClicked({ frameIndex }));
-    }, [dispatch, frameIndex]);
+      const query = qs.parse(history.location.search.substr(1));
+      history.push(
+        history.location.pathname +
+          "?" +
+          qs.stringify({
+            ...query,
+            frame: frameIndex,
+            expanded: true
+          })
+      );
+      // dispatch(expandFrameButtonClicked({ frameIndex }));
+    }, [dispatch, frameIndex, history.location]);
 
     return (
       <styles.Frame

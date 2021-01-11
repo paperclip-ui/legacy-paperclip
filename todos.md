@@ -1,16 +1,13 @@
 ### Immediate
 
-- clear todos
-- double click to enter instance
-- component name as instance title
-- Breadcrumbs
-- filter state should remain
-- **comments
-  - particularly for alexis
-
+- ensure that visual editor can run in es5 multiple browsers
+- horizontal scrolling should work
+- **Write
+- **Beta mode button for Paperclip
 
 ## Next
 
+- filter browsers that can't run Paperclip
 - !! CSSOM Patcher
 
 ### Maybe

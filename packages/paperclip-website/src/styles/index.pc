@@ -14,6 +14,11 @@
   :root {
     --row-max-width: 1800px;
   }
+  :global(.home) {
+    :global(.navbar) { 
+      display: none;
+    }
+  }
   @export {
     ._emoji {}
   }
@@ -87,16 +92,40 @@
     /* background: rgb(68, 70, 77); */
     /* color: white; */
 
-    padding-top: 140px;
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
     height: 900px;
   </style>
-  <style>
 
-  </style>
+  <!-- navigation -->
   <layout.Row>
+    <style>
+      /* padding: var(--gap-5); */
+      padding-top: var(--gap-5);
+    </style>
+    <div>
+      <style>
+        font-size: 18px;
+        font-family: Sora;
+        color: white;
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+      </style>
+      <img src="../../static/img/logo-dark-2.svg">
+        <style>
+          margin-right: 8px;
+          height: 32px;
+        </style>
+      </img>
+      Paperclip
+    </div>
+  </layout.Row>
+  <layout.Row>
+    <style>
+    padding-top: 140px;
+    </style>
     <div className="_blurb">
       <style>
           width: 100%;
@@ -300,6 +329,7 @@
       <div className="_details">
         <style>
           margin-bottom: 2em;
+          height: 80px;
         </style>
         {description}
       </div>
@@ -384,23 +414,29 @@
   <style>
     border-bottom: 1px solid rgb(226, 226, 226);
     border-top: 1px solid rgb(255, 255, 255);
+    padding-top: 80px;
+    padding-bottom: 80px;
 
   </style>
   <div className="$layout._col $layout._col3">
     <style>
       display: flex;
     </style>
-    <!-- <icons.Icon name="grow" className="$_icon">
+
+    <!-- here just for spacing -->
+    <icons.Icon name="grow" className="$_icon">
       <style>
         @include section-icon;
+        visibility: hidden;
       </style>
-    </icons.Icon> -->
+    </icons.Icon>
     <div clasName="_info">
       <div className="_title">
         <style>
           @include typography.text-secondary;
           font-size: 1.3em;
-          margin-bottom: var(--gap-4);
+          margin-bottom: var(--gap-5);
+          font-weight: 500;
         </style>
         {title}
       </div>
@@ -457,8 +493,9 @@
     title={<fragment>Use plain HTML & CSS to build web applications in <Highlight noBreak>record time.</Highlight></fragment>}
     description={<fragment>With tooling for <Highlight>realtime previews</Highlight> & <Highlight>automatic visual regresion testing</Highlight>, you can build UIs in no time using the language you already know.</fragment>}
     cta={<fragment>
-      <button.Anchor className="$typography.semi-bold" strong>Get started</button.Anchor>
-      <button.Anchor secondary className="$typography.semi-bold">Check out on GitHub</button.Anchor>
+      <!-- <button.Anchor className="$typography.semi-bold" strong>Get started</button.Anchor>
+      <button.Anchor secondary className="$typography.semi-bold">Check out on GitHub</button.Anchor> -->
+      <button.Anchor className="$typography.semi-bold" strong>Sign up for early access</button.Anchor>
     </fragment>}
     preview={<video src="../../static/vid/paperclip-fast-demo.mp4" autoplay loop />}
   />
@@ -484,7 +521,24 @@
     <VariousFeatureItem 
       iconName="chaotic-1"
       title="No global CSS"
-      description="Styles are only applied to the document they're in, so no more leaky CSS."
+      description="CSS styles are explicitly referenced within Paperclip, so you don't have to have to worry about styles leaking out."
+    /> 
+    <VariousFeatureItem 
+      iconName="link"
+      title="Strongly typed"
+      description="UIs compile to strongly typed code, so worry less about breaking changes."
+    />
+    <VariousFeatureItem 
+      iconName="grow"
+      title="Works with your existing codebase"
+      description="Paperclip compliments your existing codebase, so use it as you go."
+    />
+  </VariousFeatures>
+  <!-- <VariousFeatures>    
+    <VariousFeatureItem 
+      iconName="brush"
+      title="Works with third-party CSS"
+      description="Just import your "
     /> 
     <VariousFeatureItem 
       iconName="link"
@@ -496,7 +550,7 @@
       title="Incrementally adoptable"
       description="Paperclip compliments your existing codebase, so use it as you go."
     />
-  </VariousFeatures>
+  </VariousFeatures> -->
 
   <!-- <BigFeature 
     title="Pairs well with third-party CSS"
@@ -523,8 +577,35 @@
     ctaText="View the API"
   />
 
+  <Footer />
+
 </Home>
 
+<div export component as="Footer">
+    <style>
+
+      background: rgb(48, 50, 56);
+      padding: 80px;
+      text-align: center;
+
+    </style>
+    <div>
+      <style>
+        width: 400px;
+        margin: 0px auto;
+      </style>
+      <div>
+        <style>
+          color: white;
+          font-size: 18px;
+          margin-bottom: 24px;
+          line-height: 1.6em;
+        </style>  
+        Paperclip is currently in closed beta, but sign up if you're interested and we'll reach out soon!
+      </div>
+      <button.Anchor className="$typography.semi-bold" strong href="https://forms.gle/FATDYcAVUdRVJvQaA">Sign up for early access</button.Anchor>
+    </div>
+  </div>
 
 
 <!--
