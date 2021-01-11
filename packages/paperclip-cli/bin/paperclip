@@ -56,10 +56,13 @@ const argv = require("yargs")
 .command("dev", "Starts the dev server", yargs => {
   yargs
   .option("port", desc("HTTP port to listen on"))
+  .option("open", desc("Open HTTP server on start"))
   .default("port", 4000)
+  .default("open", true)
 }, argv => {
   devStart({
     port: argv.port,
+    open: argv.open,
     cwd: process.cwd()
   });
 })
