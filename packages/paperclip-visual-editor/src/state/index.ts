@@ -85,10 +85,11 @@ export type AppState = {
   showBirdseye?: boolean;
   loadedBirdseyeInitially?: boolean;
   loadingBirdseye?: boolean;
-  expandedFrameInfo?: ExpandedFrameInfo;
+  // expandedFrameInfo?: ExpandedFrameInfo;
+  expandedFrame: boolean;
   resizerMoving?: boolean;
   currentFileUri: string;
-  currentFrameIndex?: number;
+  locationQuery: Record<string, string>;
   embedded?: boolean;
   documentContent: Record<string, string>;
   mountedRendererIds: string[];
@@ -126,6 +127,7 @@ export type AvailableBrowser = {
 
 export const INITIAL_STATE: AppState = {
   readonly: false,
+  locationQuery: {},
   centeredInitial: false,
   mountedRendererIds: [],
   toolsLayerEnabled: true,
@@ -149,6 +151,14 @@ export const INITIAL_STATE: AppState = {
       z: 1
     }
   }
+};
+
+export const isExpanded = (state: AppState) => {
+  return Boolean(state.locationQuery.expanded);
+};
+
+export const getActiveFrameIndex = (state: AppState) => {
+  return state.locationQuery.frame && Number(state.locationQuery.frame);
 };
 
 export const IS_WINDOWS = os.platform() === "win32";
@@ -262,7 +272,13 @@ export const getFrameFromIndex = (
   frameIndex: number,
   state: AppState
 ): VirtualFrame => {
-  const preview = state.allLoadedPCFileData[state.currentFileUri].preview;
+  if (!state.allLoadedPCFileData) {
+    return null;
+  }
+  const preview = state.allLoadedPCFileData[state.currentFileUri]?.preview;
+  if (!preview) {
+    return null;
+  }
   const frames =
     preview.kind == VirtualNodeKind.Fragment ? preview.children : [preview];
   return frames[frameIndex] as VirtualFrame;
@@ -329,24 +345,26 @@ const INITIAL_ZOOM_PADDING = 50;
  * file data is loaded
  */
 
-export const maybeCenterCanvas = (state: AppState) => {
+export const maybeCenterCanvas = (state: AppState, force?: boolean) => {
   if (
-    !state.centeredInitial &&
-    state.allLoadedPCFileData[state.currentFileUri] &&
-    state.canvas.size?.width &&
-    state.canvas.size?.height
+    force ||
+    (!state.centeredInitial &&
+      state.allLoadedPCFileData[state.currentFileUri] &&
+      state.canvas.size?.width &&
+      state.canvas.size?.height)
   ) {
     state = produce(state, newState => {
       newState.centeredInitial = true;
     });
 
     let targetBounds: Box;
+    const currentFrameIndex = getActiveFrameIndex(state);
 
-    if (state.currentFrameIndex != null) {
+    if (currentFrameIndex != null) {
       const frameBoxes = getPreviewFrameBoxes(
         state.allLoadedPCFileData[state.currentFileUri].preview
       );
-      targetBounds = frameBoxes[state.currentFrameIndex];
+      targetBounds = frameBoxes[currentFrameIndex];
     }
 
     state = centerEditorCanvas(state, targetBounds);

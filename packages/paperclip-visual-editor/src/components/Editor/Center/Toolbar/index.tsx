@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import * as styles from "./index.pc";
 import * as path from "path";
 import { useAppStore } from "../../../../hooks/useAppStore";
@@ -13,24 +13,24 @@ import {
   titleDoubleClicked
 } from "../../../../actions";
 import { useTextInput } from "../../../TextInput";
+import * as qs from "qs";
 import { pathToFileURL } from "url";
 import { current } from "immer";
 import { useHistory } from "react-router";
 import { EnvironmentPopup } from "./EnvironmentPopup";
+import { isExpanded } from "../../../../state";
 
 export const Toolbar = () => {
+  const { state, dispatch } = useAppStore();
   const {
-    state: {
-      canvas,
-      embedded,
-      expandedFrameInfo,
-      projectDirectory,
-      readonly,
-      birdseyeFilter,
-      currentFileUri
-    },
-    dispatch
-  } = useAppStore();
+    canvas,
+    embedded,
+    projectDirectory,
+    readonly,
+    birdseyeFilter,
+    currentFileUri
+  } = state;
+  const expanded = isExpanded(state);
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
   const history = useHistory();
   const showBirdseye = history.location.pathname.indexOf("/all") === 0;
@@ -44,9 +44,19 @@ export const Toolbar = () => {
   const onPopOutButtonClicked = () => {
     setShowEnvironmentPopup(true);
   };
-  const onCollapseButtonClick = () => {
-    dispatch(collapseFrameButtonClicked(null));
-  };
+  const onCollapseButtonClick = useCallback(() => {
+    const query = qs.parse(history.location.search.substr(1));
+
+    history.push(
+      history.location.pathname +
+        "?" +
+        qs.stringify({
+          ...query,
+          expanded: undefined
+        })
+    );
+  }, [history.location]);
+
   const onGridButtonClick = () => {
     if (showBirdseye) {
       history.push("/canvas" + history.location.search);
@@ -107,7 +117,7 @@ export const Toolbar = () => {
             amount={Math.round(canvas.transform.z * 100)}
             onMinusClick={onMinusClick}
             onPlusClick={onPlusClick}
-            hidden={expandedFrameInfo || showBirdseye}
+            hidden={expanded || showBirdseye}
           />
         </styles.Controls>
 
@@ -119,10 +129,10 @@ export const Toolbar = () => {
         <styles.Spacer />
 
         <styles.Controls>
-          <styles.PopOutButton onClick={onPopOutButtonClicked} />
-          {expandedFrameInfo ? (
+          {expanded ? (
             <styles.CollapseButton active onClick={onCollapseButtonClick} />
           ) : null}
+          <styles.PopOutButton onClick={onPopOutButtonClicked} />
         </styles.Controls>
         {readonly && <styles.ReadOnlyBadge />}
       </styles.Container>

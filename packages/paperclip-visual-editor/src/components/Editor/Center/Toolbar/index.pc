@@ -4,8 +4,8 @@
 
 <style>
   :root {
-    --topbar-background-active-1: var(--vscode-activityBar-foreground, var(--background-selected-1));
-    --toolbar-border-color: var(--border-color-1);
+    --topbar-background-active-1: var(--vscode-activityBar-foreground, var(--background-active-1));
+    --toolbar-border-color: var(--border-color-2);
   }
 
   :global(.light) {
@@ -204,9 +204,9 @@
     height: 100%;
 
     i {
-      --size: 9px;
+      --size: 10px;
       position: relative;
-      top: 2px;
+      top: 1px;
       mask-size: var(--size);
       cursor: pointer;
       mask-image: url(./minimize-3.svg);
@@ -274,22 +274,32 @@
 <!--
   @frame { visible: false }
 -->
-<button export component as="PopOutButton"  className="$icons.icon" {onClick}>
+<button export component as="PopOutButton" {onClick}>
   <style>
-    --size: 13px;
-
-    position: relative;
-
-    margin-right: 4px;
     border: none;
+    color: inherit;
+    padding: 0;
+    background: transparent;
+    display: flex;
+    height: 100%;
     outline: none;
-    color: currentColor;
-    cursor: pointer;
-    mask-image: url("./share.svg");
-    &:active {
-      outline: none;
+
+
+    i {
+      --size: 14px;
+      mask-size: var(--size);
+      position: relative;
+      cursor: pointer;
+      mask-image: url(./share.svg);
+      display: inline-block;
+
+      top: -1px;
+      &.active {
+        color: var(--topbar-background-active-1); 
+      }
     }
   </style>
+  <i className="$icons.icon" />
 </button>
 
 
@@ -325,19 +335,22 @@
 <!--
   @frame { visible: false }
 -->
-<Container export component as="Preview" {gridMode?} className:light="light" {className?}>
- 
-  <Controls>
-    <GridButton />
-    <Zoom amount="100" />
-  </Controls>
-  <Spacer />
+<fragment export component as="Preview" {gridMode?}>
+  <Container  className:light="light" className="$theme.font-default {className?}">
+    <Controls>
+      <GridButton />
+      <Zoom amount="100" />
+    </Controls>
+    <Spacer />
     <Controls right>
-      <PopOutButton />
       <CollapseButton />
+      <PopOutButton />
     </Controls>
     <ReadOnlyBadge />
-</Container>
+  </Container>
+
+  <EnvironmentPopupPreview visible={showEnvPopup?} />
+</fragment>
 
   
 <!--
@@ -473,10 +486,10 @@
 -->
 
 
-<div export component as="EnvironmentPopup" className="light $theme.font-default" className:visible="visible">
+<div export component as="EnvironmentPopup" className="$theme.font-default" className:visible="visible">
   <style>
     position: absolute;
-    background: rgb(223, 223, 223);
+    background: var(--background-1);
     color: var(--vscode-activityBar-inactiveForeground, var(--color-negate-1));
     right: 8px;
     z-index: 9999999;
@@ -488,6 +501,7 @@
 
     opacity: 0;
     transition: 0.25s;
+    border-radius: 2px;
     top: 20px;
     /* box-shadow: 0px 2px 2px 2px rgb(233, 233, 233); */
     &.visible {
@@ -511,6 +525,7 @@
         text-transform: uppercase;
         font-size: 0.8em;
         user-select: none;
+        color: var(--color-negate-1);
       </style>
       Open Environment
     </div>
@@ -536,10 +551,10 @@
 
 
 <!--
-  @frame { width: 603, height: 504, x: 1158, y: -436 }
+  @frame { visible: false, width: 603, height: 504, x: 1158, y: -436 }
 -->
 
-<EnvironmentPopup export component as="EnvironmentPopupPreview" visible options={
+<EnvironmentPopup component as="EnvironmentPopupPreview" {visible?} options={
   <div>
     <style>
       overflow: scroll;
@@ -562,31 +577,9 @@
 
 
 <!--
-  @frame { width: 1024, height: 448, x: 66, y: -22 }
+  @frame { title: "Env Popup Preview", width: 1024, height: 448, x: 66, y: -22 }
 -->
-<Container className="light $theme.font-default">
- 
-  <Controls>
-    <GridButton />
-    <Zoom amount="100" />
-  </Controls>
-  <Spacer />
-  <Title>
-    src/components/Editor/Center/Toolbar/index.pc
-  </Title>
-
-    <Controls right>
-      <div>
-        <style>
-          position: relative;
-        </style>
-        <PopOutButton />
-        <EnvironmentPopupPreview />
-      </div>
-      <CollapseButton />
-    </Controls>
-    <ReadOnlyBadge />
-</Container>
+<Preview light showEnvPopup />
 
 
 <!--
@@ -600,21 +593,5 @@
 -->
 
 
-<Container className="light $theme.font-default">
- 
-  <Controls>
-    <SearchInput />
-    <Zoom amount="100" />
-  </Controls>
-  <Spacer />
-  <Title>
-    src/components/Editor/Center/Toolbar/index.pc
-  </Title>
-
-    <Controls right>
-      <PopOutButton />
-      <CollapseButton />
-    </Controls>
-    <ReadOnlyBadge />
-</Container>
+<Pireview />
 

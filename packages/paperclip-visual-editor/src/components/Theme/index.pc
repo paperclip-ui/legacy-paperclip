@@ -34,6 +34,8 @@
     --border-color-1: var(--color-dark-5);
     --color-negate-1: rgb(204, 204, 204);
     --input-padding: 6px 12px;
+    --border-color-1: rgb(219, 219, 219);
+    --border-color-2: var(--color-dark-5);
 
   }
 

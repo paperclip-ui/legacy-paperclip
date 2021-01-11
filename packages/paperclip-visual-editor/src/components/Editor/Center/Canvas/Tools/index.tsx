@@ -3,7 +3,9 @@ import {
   Point,
   findBoxNodeInfo,
   mergeBoxes,
-  getNodeInfoAtPoint
+  getNodeInfoAtPoint,
+  isExpanded,
+  getActiveFrameIndex
 } from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
@@ -27,21 +29,18 @@ import {
 import { Empty } from "./Empty";
 
 export const Tools = () => {
+  const { state, dispatch } = useAppStore();
   const {
-    state: {
-      boxes,
-      canvas,
-      selectedNodePaths,
-      currentFileUri,
-      metaKeyDown,
-      allLoadedPCFileData,
-      expandedFrameInfo,
-      readonly
-    },
-    dispatch
-  } = useAppStore();
+    boxes,
+    canvas,
+    selectedNodePaths,
+    currentFileUri,
+    metaKeyDown,
+    allLoadedPCFileData,
+    readonly
+  } = state;
   const toolsRef = useRef<HTMLDivElement>();
-  const toolsLayerEnabled = !expandedFrameInfo;
+  const toolsLayerEnabled = !isExpanded(state);
 
   const onMouseMove = useCallback(
     (event: React.MouseEvent<any>) => {
@@ -82,7 +81,7 @@ export const Tools = () => {
       canvas.mousePosition,
       canvas.transform,
       boxes,
-      expandedFrameInfo?.frameIndex
+      getActiveFrameIndex(state)
     )?.box;
 
   const virtualNode = allLoadedPCFileData[currentFileUri];

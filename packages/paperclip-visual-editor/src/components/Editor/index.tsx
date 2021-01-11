@@ -11,7 +11,7 @@ export const Editor = withAppStore(() => {
   const { state } = useAppStore();
   return (
     <Router history={history}>
-      <styles.Container className="light">
+      <styles.Container className="dark">
         {/* Feels unnecessary with birdseye view - removing for now */}
         {/* {state.embedded ? null : <LeftSidebar />} */}
         <Center />

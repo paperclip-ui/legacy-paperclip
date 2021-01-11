@@ -49,14 +49,14 @@ TODOS:
   @frame { title: "Grid View / Large", width: 999, height: 737, x: 1219, y: -93 }
 -->
 <Container>
-  <Center.BirdseyePreview2 />
+  <Center.BirdseyePreview2 dark showEnvPopup />
 </Container>
 
 <!--
-  @frame { title: "Grid View / Small", width: 377, height: 737, x: -16, y: -145 }
+  @frame { title: "Grid View / Small", width: 377, height: 737, x: -18, y: -104 }
 -->
 <Container>
-  <Center.BirdseyePreview2 />
+  <Center.BirdseyePreview2 light  />
 </Container>
 
 
@@ -65,6 +65,6 @@ TODOS:
   @frame { title: "Grid View / Medium", width: 686, height: 737, x: 441, y: -107 }
 -->
 <Container>
-  <Center.BirdseyePreview2 />
+  <Center.BirdseyePreview2 light />
 </Container>
 

@@ -1,9 +1,5 @@
 ### Immediate
 
-- infinite scroll for grid view
-- change colors for topbar - make more contrasted (dark propably)
-- fix issue where window doesn't open  on initial load
-- expand window state should be stored in location
 - **Write
 - **Beta mode button for Paperclip
 

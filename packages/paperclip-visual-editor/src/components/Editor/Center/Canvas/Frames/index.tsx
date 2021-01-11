@@ -31,6 +31,7 @@ import { FrameContainer } from "../../../../FrameContainer";
 import produce from "immer";
 import { throttle } from "lodash";
 import { FramesContainer } from "../Tools/Frames/index.pc";
+import { isExpanded } from "../../../../../state";
 
 type FramesProps = {
   expandedFrameIndex?: number;
@@ -158,13 +159,12 @@ export const useMultipleFrames = ({
   }, [
     renderers,
     state.allLoadedPCFileData,
-    state.expandedFrameInfo,
+    isExpanded(state),
     state.canvas.size
   ]);
 
   useEffect(() => {
     for (const fileUri in renderers) {
-      console.log("HANDLE EV");
       const renderer = renderers[fileUri];
       renderer.handleEvents(state.currentEngineEvents[renderer.id]);
     }
@@ -213,7 +213,7 @@ export const useFrames = ({
     if (renderer && frameData?.preview) {
       renderer.updatePreview(frameData.preview);
     }
-  }, [renderer, frameData, state.expandedFrameInfo, state.canvas.size]);
+  }, [renderer, frameData, isExpanded(state), state.canvas.size]);
 
   const onFrameLoaded = useCallback(() => {
     renderer.collectRects();

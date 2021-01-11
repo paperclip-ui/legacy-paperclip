@@ -11,7 +11,10 @@ import {
   getNodeInfoAtPoint,
   getSelectedFrames,
   getFrameFromIndex,
-  mergeBoxes
+  mergeBoxes,
+  getActiveFrameIndex,
+  isExpanded,
+  centerEditorCanvas
 } from "../state";
 import { produce } from "immer";
 import {
@@ -68,12 +71,11 @@ export default (state: AppState, action: Action) => {
       state = produce(state, newState => {
         newState.currentFileUri = action.payload.query.current_file;
         newState.id = action.payload.query.id;
-        newState.currentFrameIndex =
-          action.payload.query.frame && Number(action.payload.query.frame);
         newState.embedded = Boolean(action.payload.query.within_ide);
         newState.renderProtocol =
           action.payload.protocol + "//" + action.payload.host + "/file";
         newState.centeredInitial = false;
+        newState.locationQuery = action.payload.query;
       });
       return state;
     }
@@ -121,21 +123,21 @@ export default (state: AppState, action: Action) => {
 
       return state;
     }
-    case ActionType.EXPAND_FRAME_BUTTON_CLICKED: {
-      return produce(state, newState => {
-        newState.expandedFrameInfo = {
-          frameIndex: action.payload.frameIndex,
-          previousCanvasTransform: state.canvas.transform
-        };
+    // case ActionType.EXPAND_FRAME_BUTTON_CLICKED: {
+    //   return produce(state, newState => {
+    //     newState.expandedFrameInfo = {
+    //       frameIndex: action.payload.frameIndex,
+    //       previousCanvasTransform: state.canvas.transform
+    //     };
 
-        const frame = getFrameFromIndex(action.payload.frameIndex, state);
-        const frameBounds = getFrameBounds(frame);
+    //     const frame = getFrameFromIndex(action.payload.frameIndex, state);
+    //     const frameBounds = getFrameBounds(frame);
 
-        newState.canvas.transform.x = -frameBounds.x;
-        newState.canvas.transform.y = -frameBounds.y;
-        newState.canvas.transform.z = 1;
-      });
-    }
+    //     newState.canvas.transform.x = -frameBounds.x;
+    //     newState.canvas.transform.y = -frameBounds.y;
+    //     newState.canvas.transform.z = 1;
+    //   });
+    // }
     case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
       return minimizeWindow(state);
     }
@@ -159,7 +161,6 @@ export default (state: AppState, action: Action) => {
         if (isPaperclipFile(action.payload.url)) {
           newState.currentFileUri = action.payload.url;
           newState.centeredInitial = false;
-          newState.expandedFrameInfo = null;
         }
       });
       return state;
@@ -211,7 +212,7 @@ export default (state: AppState, action: Action) => {
         state.canvas.mousePosition,
         state.canvas.transform,
         state.boxes,
-        state.expandedFrameInfo?.frameIndex
+        getActiveFrameIndex(state)
       )?.nodePath;
       return selectNode(nodePath, action.payload.shiftKey, state);
     }
@@ -353,7 +354,7 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.CANVAS_PANNED: {
       // do not allow panning when expanded
-      if (state.expandedFrameInfo) {
+      if (isExpanded(state)) {
         return state;
       }
 
@@ -523,12 +524,8 @@ const updateBox = (box: Box, oldBox: Box, newBox: Box) => {
 };
 
 const minimizeWindow = (state: AppState) => {
-  if (!state.expandedFrameInfo) {
+  if (!isExpanded(state)) {
     return state;
   }
-  return produce(state, newState => {
-    const transform = newState.expandedFrameInfo.previousCanvasTransform;
-    newState.expandedFrameInfo = null;
-    newState.canvas.transform = transform;
-  });
+  return maybeCenterCanvas(state, true);
 };
