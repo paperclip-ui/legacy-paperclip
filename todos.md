@@ -7,6 +7,7 @@
 
 ## Next
 
+- filter browsers that can't run Paperclip
 - !! CSSOM Patcher
 
 ### Maybe

@@ -31,6 +31,7 @@ import { relative } from "path";
 import Spinner from "../../../Spinner/index.pc";
 import { useHistory } from "react-router";
 import { InfiniteScroller } from "../../../InfiniteScroller";
+import { birdseyeFilterChanged } from "../../../../actions";
 
 type CellFrame = {
   filePath: string;
@@ -42,7 +43,8 @@ type CellFrame = {
 
 export const Birdseye = memo(() => {
   const { state, dispatch } = useAppStore();
-  const [filter, setFilter] = useState<string>();
+  const filter = state.birdseyeFilter;
+
   const renderers = useMultipleFrames({
     fileData: state.allLoadedPCFileData,
     shouldCollectRects: false
@@ -74,12 +76,19 @@ export const Birdseye = memo(() => {
 
   const columns = 5;
 
+  const onFilter = useCallback(
+    (value: string) => {
+      dispatch(birdseyeFilterChanged({ value }));
+    },
+    [dispatch]
+  );
+
   if (state.loadingBirdseye) {
     content = <Spinner />;
   } else {
     content = (
       <>
-        <Header filter={filter} onFilter={setFilter} />
+        <Header filter={filter} onFilter={onFilter} />
 
         <InfiniteScroller
           size={Math.ceil(filteredCells.length / columns)}

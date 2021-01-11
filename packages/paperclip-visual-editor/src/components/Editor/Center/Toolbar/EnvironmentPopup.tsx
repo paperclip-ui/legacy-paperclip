@@ -101,11 +101,14 @@ const getFilterable = memoize((option: Option) => {
       option.launchOptions.browser,
       option.launchOptions.browserVersion,
       option.launchOptions.os,
+      stripWS(option.launchOptions.os),
       option.launchOptions.osVersion
-    ];
+    ].filter(Boolean);
   }
   return [option.label];
 });
+
+const stripWS = (value = "") => value.replace(/\s+/g, "");
 
 const filterOptions = memoize((filter: string, options: Option[]) => {
   const filterParts = filter?.toLowerCase().split(" ");
