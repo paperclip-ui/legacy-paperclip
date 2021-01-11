@@ -26,7 +26,6 @@ import {
   metaClicked,
   gridHotkeyPressed,
   getAllScreensRequested,
-  loaded,
   zoomOutKeyPressed,
   zoomInKeyPressed
 } from "../actions";
