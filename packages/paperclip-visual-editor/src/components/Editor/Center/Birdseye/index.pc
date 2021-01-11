@@ -10,7 +10,7 @@
       --pos: 2n;
       cursor: pointer;
       display: inline-block;
-      width: 25%;
+      width: 20%;
       /* display: none; */
       box-sizing: border-box;
       height: 200px;
@@ -20,16 +20,19 @@
       &:hover, &.hover {
         background: rgb(221, 221, 221);
       }
+       &:nth-child(5n) {
+        border-right-color: transparent;
+      }
 
-      @include theme.desktop-xl {
+      /* @include theme.desktop-xl {
         width: 20%;
 
         &:nth-child(5n) {
           border-right-color: transparent;
         }
-      }
+      } */
 
-      @include theme.desktop-l {
+      /* @include theme.desktop-l {
         width: 25%;
 
         &:nth-child(4n) {
@@ -57,7 +60,7 @@
         &:nth-child(2n) {
           border-right-color: transparent;
         }
-      }
+      } */
     }
     
     /* border-color: rgb(243, 243, 243); */

@@ -12,12 +12,22 @@ import * as styles from "./index.pc";
 type InfiniteScrollerProps = {
   size: number;
   minVerticalItems: number;
+  tagName?: any;
   itemHeight: number;
-  children: (cursor: number, maxVerticalItems: number) => ReactChild[];
+  children: (
+    cursor: number,
+    maxVerticalItems: number
+  ) => ReactChild[] | ReactChild;
 };
 
 export const InfiniteScroller = memo(
-  ({ size, itemHeight, minVerticalItems, children }: InfiniteScrollerProps) => {
+  ({
+    size,
+    itemHeight,
+    minVerticalItems,
+    tagName,
+    children
+  }: InfiniteScrollerProps) => {
     const ref = useRef<HTMLDivElement>();
     const [actualHeight, setActualHeight] = useState<number>(0);
     const [scrollPosition, setScrollPosition] = useState<number>(0);
@@ -51,17 +61,31 @@ export const InfiniteScroller = memo(
 
     const percScroll = scrollPosition / scrollHeight;
 
-    const style = useMemo(() => {
+    const resizerStyle = useMemo(() => {
       return {
-        height: itemHeight * size
+        height: scrollHeight
       };
-    }, [size, itemHeight]);
+    }, [scrollHeight]);
 
-    const cursor = Math.round(size * percScroll);
+    const contentStyle = useMemo(() => {
+      const offset = scrollPosition % itemHeight;
+      return {
+        top: -offset,
+        position: "sticky"
+      };
+    }, [scrollPosition, itemHeight]);
+
+    const cursor = Math.floor(size * percScroll);
     const maxVerticalItems = Math.ceil(actualHeight / itemHeight);
 
     return (
-      <styles.Container ref={ref} resizerStyle={style} onScroll={onScroll}>
+      <styles.Container
+        tagName={tagName}
+        ref={ref}
+        resizerStyle={resizerStyle}
+        contentStyle={contentStyle}
+        onScroll={onScroll}
+      >
         {children(cursor, Math.max(minVerticalItems, maxVerticalItems))}
       </styles.Container>
     );

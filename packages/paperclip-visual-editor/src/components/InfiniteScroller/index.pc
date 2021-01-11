@@ -2,19 +2,19 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" {style?} {className?} {onScroll}>
+<div export component as="Container" {tagName?} {style?} {className?} {onScroll}>
   <style>
     height: 100%;
     width: 100%;
-    overflow: scroll;
+    overflow-y: scroll;
     position: relative;
   </style>
-  <div>
+  <div style={contentStyle}>
     <style>
-      position: sticky;
-      position: -webkit-sticky;
+      position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
     </style>
     {children}
   </div>

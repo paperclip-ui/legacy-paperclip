@@ -51,8 +51,8 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
   });
 
   const onFilterBlur = () => {
-    // setVisible(false);
-    // setTimeout(onBlur, 250);
+    setVisible(false);
+    setTimeout(onBlur, 250);
   };
 
   const onOptionClick = (option: Option) => {
