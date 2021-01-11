@@ -1,16 +1,19 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "17.1.10",
+  "version": "17.1.11",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
+  "preview": true,
   "keywords": [
     "React",
     "CSS",
     "HTML",
     "visual",
     "preview",
-    "realtime"
+    "realtime",
+    "live",
+    "template"
   ],
   "description": "Use plain HTML & CSS to build web UIs visually",
   "homepage": "http://paperclip.dev",
