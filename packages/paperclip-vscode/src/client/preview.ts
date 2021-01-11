@@ -6,6 +6,7 @@ import {
 } from "paperclip-utils";
 import { PCMutation } from "paperclip-source-writer";
 import * as fs from "fs";
+import * as qs from "querystring";
 import {
   Uri,
   window,
@@ -32,6 +33,7 @@ import { $$ACTION_NOTIFICATION, Action, ActionType } from "../common/actions";
 const VIEW_TYPE = "paperclip-preview";
 
 import * as ve from "paperclip-visual-editor";
+import { LocationChanged } from "paperclip-visual-editor";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -39,8 +41,19 @@ enum OpenLivePreviewOptions {
   No = "No"
 }
 
+type PreviewLocation = {
+  pathname: string;
+  query: Partial<{
+    currentFile: string;
+    embedded: boolean;
+    id: string;
+    expanded: boolean;
+    frame: number;
+  }>;
+};
+
 type LivePreviewState = {
-  targetUri: string;
+  location: PreviewLocation;
   sticky: boolean;
 };
 
@@ -71,7 +84,16 @@ export const activate = (
     );
 
     registerLivePreview(
-      new LivePreview(_devServerPort, panel, paperclipUri, sticky)
+      new LivePreview(
+        _devServerPort,
+        panel,
+        {
+          query: {
+            currentFile: paperclipUri
+          }
+        },
+        sticky
+      )
     );
   };
   const dispatchClient = (action: ve.ExternalAction) => {
@@ -176,10 +198,10 @@ export const activate = (
   window.registerWebviewPanelSerializer(VIEW_TYPE, {
     async deserializeWebviewPanel(
       panel: WebviewPanel,
-      { targetUri, sticky }: LivePreviewState
+      { location, sticky }: LivePreviewState
     ) {
       registerLivePreview(
-        new LivePreview(_devServerPort, panel, targetUri, sticky)
+        new LivePreview(_devServerPort, panel, location, sticky)
       );
     }
   });
@@ -262,10 +284,6 @@ export const activate = (
               handleUndo(action.payload);
               break;
             }
-            case ve.ActionType.LOADED: {
-              handleLoaded(action.payload.payload.action);
-              break;
-            }
             case ve.ActionType.GLOBAL_Y_KEY_DOWN: {
               handleRedo(action.payload);
               break;
@@ -278,6 +296,10 @@ export const activate = (
               handlePasted(action.payload, action.payload.payload.action);
               break;
             }
+            case ve.ActionType.LOCATION_CHANGED: {
+              handlePreviewLocationChanged(action.payload.payload.action);
+              break;
+            }
           }
         }
         return;
@@ -285,16 +307,6 @@ export const activate = (
     }
   });
 
-  const handleLoaded = ({
-    payload: { windowId, currentFileUri }
-  }: ve.Loaded) => {
-    _previews.forEach(preview => {
-      if (preview.id === windowId) {
-        // do not re-render since window will have already rendered to proper page
-        preview.setTargetUri(currentFileUri, false);
-      }
-    });
-  };
   const handleUndo = ({ payload: { targetPCFileUri } }: ve.InstanceChanged) => {
     execCommand(targetPCFileUri, "undo");
   };
@@ -324,6 +336,14 @@ export const activate = (
     const wsEdit = new WorkspaceEdit();
     wsEdit.set(Uri.parse(targetPCFileUri), [tedit]);
     await workspace.applyEdit(wsEdit);
+  };
+
+  const handlePreviewLocationChanged = (action: ve.LocationChanged) => {
+    _previews.forEach(preview => {
+      if (preview.location.query.id === action.payload.query.id) {
+        preview.handlePreviewLocationChanged(action);
+      }
+    });
   };
 
   const openDoc = async (uri: string) => {
@@ -358,18 +378,26 @@ export const activate = (
 
 class LivePreview {
   private _em: EventEmitter;
-  private _targetUri: string;
-  public readonly id: string;
+  readonly location: PreviewLocation;
 
   constructor(
     private _devServerPort: number,
     readonly panel: WebviewPanel,
-    targetUri: string,
+    location: Partial<PreviewLocation>,
     readonly sticky: boolean
   ) {
-    this.id = `${Date.now()}.${Math.random()}`;
+    const id = `${Date.now()}.${Math.random()}`;
+
+    this.location = {
+      pathname: location.pathname || "/canvas",
+      query: {
+        id,
+        embedded: true,
+        ...location.query
+      }
+    };
+
     this._em = new EventEmitter();
-    this._targetUri = targetUri;
     this._render();
     panel.onDidDispose(this._onPanelDispose);
     let prevVisible = panel.visible;
@@ -387,17 +415,14 @@ class LivePreview {
   focus() {
     this.panel.reveal(this.panel.viewColumn, false);
   }
-  getTargetUri() {
-    return this._targetUri;
-  }
   setTargetUri(value: string, rerender = true) {
-    if (this._targetUri === value) {
+    if (this.location.query.currentFile === value) {
       return;
     }
     this.panel.title = `⚡️ ${
       this.sticky ? "sticky preview" : path.basename(value)
     }`;
-    this._targetUri = value;
+    this.location.query.currentFile = value;
 
     if (rerender) {
       this._render();
@@ -405,7 +430,7 @@ class LivePreview {
   }
   getState(): LivePreviewState {
     return {
-      targetUri: this._targetUri,
+      location: this.location,
       sticky: this.sticky
     };
   }
@@ -422,6 +447,9 @@ class LivePreview {
     return () => {
       this._em.removeListener("didDispose", listener);
     };
+  }
+  public handlePreviewLocationChanged(action: LocationChanged) {
+    this.panel.webview.postMessage(action);
   }
   public async setDevServerPort(port: number) {
     this._devServerPort = port;
@@ -450,13 +478,25 @@ class LivePreview {
           border: none;
         }
       </style>
+
+      <script>
+        const vscode = acquireVsCodeApi();
+        const initialState = ${JSON.stringify(this.getState())};
+        vscode.setState(initialState);
+        window.onmessage = ({ data }) => {
+          if (data && data.type === "LOCATION_CHANGED") {
+            vscode.setState({
+              ...initialState,
+              location: data.payload
+            })
+          }
+        }
+      </script>
     </head>
     <body>
-      <iframe src="http://localhost:${
-        this._devServerPort
-      }/canvas?within_ide=true&current_file=${encodeURIComponent(
-      this._targetUri
-    )}&id=${this.id}"></iframe>
+      <iframe id="app" src="http://localhost:${this._devServerPort}${
+      this.location.pathname
+    }?${qs.stringify(this.location.query)}"></iframe>
     </body>
     </html>`;
   }

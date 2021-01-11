@@ -240,7 +240,7 @@ const useCell = ({
       "/canvas?" +
         qs.stringify({
           ...parts.query,
-          current_file: uri,
+          currentFile: uri,
           frame: frameIndex
         })
     );

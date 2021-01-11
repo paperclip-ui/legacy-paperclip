@@ -19,7 +19,6 @@ export enum ActionType {
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
   ENV_OPTION_CLICKED = "ENV_OPTION_CLICKED",
   BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
-  LOADED = "LOADED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
   PC_FILE_OPENED = "PC_FILE_OPENED",
   GRID_BUTTON_CLICKED = "GRID_BUTTON_CLICKED",
@@ -169,14 +168,6 @@ export type ResizerPathMoved = WrappedEvent<
   {
     originalBounds: Box;
     newBounds: Box;
-  }
->;
-
-export type Loaded = BaseAction<
-  ActionType.LOADED,
-  {
-    windowId: string;
-    currentFileUri: string;
   }
 >;
 
@@ -453,7 +444,6 @@ export const gridHotkeyPressed = actionCreator<GridHotkeyPressed>(
 export const getAllScreensRequested = actionCreator<GetAllScreensRequested>(
   ActionType.GET_ALL_SCREENS_REQUESTED
 );
-export const loaded = actionCreator<Loaded>(ActionType.LOADED);
 export const zoomInKeyPressed = actionCreator<
   KeyComboPressed<ActionType.ZOOM_IN_KEY_PRESSED>
 >(ActionType.ZOOM_IN_KEY_PRESSED);
@@ -465,7 +455,6 @@ export type InstanceAction =
   // | RendererInitialized
   | RectsCaptured
   | CanvasMouseUp
-  | Loaded
   | ResizerPathMoved
   | ResizerPathStoppedMoving
   | Pasted

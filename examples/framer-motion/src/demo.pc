@@ -21,5 +21,3 @@
 <Box>
   A box
 </Box>
-
-fdsfsdffs

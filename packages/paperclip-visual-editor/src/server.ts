@@ -218,7 +218,7 @@ export const startServer = async ({
     //   payload: { uri }
     // }: PopoutWindowRequested) => {
     //   const shareHost = await getShareHost();
-    //   exec(`open ${shareHost}/canvas?current_file=${encodeURIComponent(uri)}`);
+    //   exec(`open ${shareHost}/canvas?currentFile=${encodeURIComponent(uri)}`);
     // };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {
@@ -336,6 +336,17 @@ const startHTTPServer = (
   io.installHandlers(server, { prefix: "/rt" });
 
   const distHandler = express.static(path.join(__dirname, "..", "dist"));
+
+  // cors to enable iframe embed
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+  });
+
   app.use(distHandler);
   app.use("/canvas", distHandler);
   app.use("/all", distHandler);
