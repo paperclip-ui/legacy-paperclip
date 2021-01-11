@@ -1,5 +1,6 @@
 import { createMockEngine } from "../utils";
 import { expect } from "chai";
+import { computeVirtJSObject, computeVirtJSValue } from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("can parse a @desc", async () => {
@@ -106,5 +107,34 @@ describe(__filename + "#", () => {
     expect(
       (result2 as any).preview.children[0].annotations.values.frame.value
     ).to.eql("b");
+  });
+
+  it("Can have multiple annotations", async () => {
+    const graph = {
+      "/entry.pc": `
+        <!--
+        @frame { title: "Preview", width: 1024, height: 768, x: -1145, y: -28 }
+        @tags { a: "b"}
+        -->
+        <span as="Test">
+          Hello
+        </span>
+
+
+        <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = engine.run("/entry.pc");
+
+    const metadata = computeVirtJSObject(
+      (result as any).preview.children[0].annotations
+    );
+
+    expect(metadata).to.eql({
+      tags: { a: "b" },
+      frame: { x: -1145, y: -28, title: "Preview", width: 1024, height: 768 }
+    });
   });
 });

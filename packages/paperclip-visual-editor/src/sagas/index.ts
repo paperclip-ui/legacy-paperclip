@@ -129,6 +129,10 @@ function* handleRenderer() {
       maybeSendMessage(
         pcVirtObjectEdited({
           mutations: getSelectedFrames(state).map(frame => {
+            console.log(
+              frame.annotations,
+              computeVirtJSObject(frame.annotations)
+            );
             return {
               exprSource: frame.source,
               action: {

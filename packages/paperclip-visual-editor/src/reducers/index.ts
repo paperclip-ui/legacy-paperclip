@@ -469,6 +469,28 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
     (frame.annotations && computeVirtJSObject(frame.annotations)) ||
     ({} as any);
 
+  let mergedAnnotations = {
+    ...annotations
+  };
+
+  for (const key in newAnnotations) {
+    mergedAnnotations = {
+      ...mergedAnnotations,
+
+      // simple merge - cover just objects, and replace all others.
+      [key]:
+        (typeof annotations[key] === typeof newAnnotations[key] &&
+          typeof newAnnotations[key] === "object" &&
+          !Array.isArray(newAnnotations) && {
+            ...(annotations[key] || {}),
+            ...newAnnotations[key]
+          }) ||
+        newAnnotations[key]
+    };
+  }
+
+  console.log(mergedAnnotations);
+
   if (!frame.annotations) {
     frame.annotations = {
       kind: VirtJsObjectKind.JsObject,
@@ -476,18 +498,6 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
 
       // null to indicate insertion
       source: null
-    };
-  }
-
-  let mergedAnnotations = {};
-
-  for (const key in newAnnotations) {
-    mergedAnnotations = {
-      ...mergedAnnotations,
-      [key]: {
-        ...(annotations[key] || {}),
-        ...newAnnotations[key]
-      }
     };
   }
 

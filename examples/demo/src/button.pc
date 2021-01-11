@@ -14,7 +14,8 @@
 
 
 <!--
-  @frame { title: "Preview", width: 1024, height: 768, x: -1145, y: -28 }
+  @frame { title: "something", width: 1024, height: 768, x: -1145, y: -28 }
+  @tags { a: "b" }
 -->
 <Website component as="Preview" data-variant={variant?}>
   <style>
