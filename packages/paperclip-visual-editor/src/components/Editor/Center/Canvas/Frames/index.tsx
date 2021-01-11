@@ -9,7 +9,6 @@ import {
 import { memo, useEffect, useMemo } from "react";
 import {
   engineDelegateEventsHandled,
-  loaded,
   rectsCaptured,
   rendererMounted,
   rendererUnounted
