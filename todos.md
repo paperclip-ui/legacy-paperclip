@@ -2,7 +2,7 @@
 
 - fix style flash
 - infinite scroll for grid view
-- infinite scroll for browser list
+- change colors for topbar - make more contrasted (dark propably)
 - fix issue where window doesn't open  on initial load
 - expand window state should be stored in location
 - **Write

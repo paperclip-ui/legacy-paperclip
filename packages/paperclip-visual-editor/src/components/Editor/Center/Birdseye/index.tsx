@@ -25,15 +25,46 @@ import {
   VirtualFrame
 } from "paperclip-utils";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
-import { useFrames } from "../Canvas/Frames";
+import { useFrames, useMultipleFrames } from "../Canvas/Frames";
 import { useTextInput } from "../../../TextInput";
 import { relative } from "path";
 import Spinner from "../../../Spinner/index.pc";
 import { useHistory } from "react-router";
 
+type CellFrame = {
+  filePath: string;
+  fileUri: string;
+  index: number;
+  relativePath: string;
+  node: VirtualFrame;
+} & Frame;
+
 export const Birdseye = memo(() => {
   const { state, dispatch } = useAppStore();
   const [filter, setFilter] = useState<string>();
+  const renderers = useMultipleFrames({
+    fileData: state.allLoadedPCFileData,
+    shouldCollectRects: false
+  });
+  const now = Date.now();
+  const allFrames: CellFrame[] = renderers.reduce((frames, renderer) => {
+    const filePath = fileURLToPath(renderer.renderer.targetUri);
+    const relativePath = path.relative(
+      state.projectDirectory?.absolutePath,
+      filePath
+    );
+    return [
+      ...frames,
+      ...renderer.renderer.immutableFrames.map((frame, i) => ({
+        ...frame,
+        index: i,
+        relativePath,
+        filePath,
+        fileUri: renderer.renderer.targetUri,
+        node: (renderer.renderer.getPreview() as any).children[i]
+      }))
+    ];
+  }, []);
 
   let content;
 
@@ -44,15 +75,17 @@ export const Birdseye = memo(() => {
       <>
         <Header filter={filter} onFilter={setFilter} />
         <styles.Cells>
-          {Object.keys(state.allLoadedPCFileData).map(uri => {
+          {allFrames.map(frame => {
             return (
-              <PCFileCells
+              <Cell
+                uri={frame.fileUri}
+                index={frame.index}
                 filter={filter}
-                key={uri}
+                key={frame.fileUri + "-" + frame.index}
                 dispatch={dispatch}
-                projectPath={state.projectDirectory?.absolutePath}
-                renderProtocol={state.renderProtocol}
-                uri={uri}
+                frame={frame}
+                relativePath={frame.relativePath}
+                node={frame.node}
               />
             );
           })}
