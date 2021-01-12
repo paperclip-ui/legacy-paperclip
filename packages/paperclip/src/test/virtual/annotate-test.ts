@@ -1,6 +1,6 @@
 import { createMockEngine } from "../utils";
 import { expect } from "chai";
-import { computeVirtJSObject, computeVirtJSValue } from "paperclip-utils";
+import { computeVirtJSObject } from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("can parse a @desc", async () => {
