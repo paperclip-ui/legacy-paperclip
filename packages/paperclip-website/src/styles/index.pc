@@ -458,7 +458,7 @@
             margin-left: 6px;
           }
 
-          :within(.has_cta) {
+          &:within(.has_cta) {
             display: flex;
           }
         </style>

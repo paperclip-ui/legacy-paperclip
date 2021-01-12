@@ -57,7 +57,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      :within(.editing) {
+      &:within(.editing) {
         display: none;
       }
     </style>
@@ -71,7 +71,7 @@
       background: transparent;
       width: 100%;
       outline: none;
-      :within(.editing) {
+      &:within(.editing) {
         display: block;
       }
     </style>

@@ -20,16 +20,16 @@
       width: var(--knob-size);
       height: var(--knob-size);
       fill: var(--background);
-      :within([data-id="knob-0-50"], [data-id="knob-100-50"]) {
+      &:within([data-id="knob-0-50"], [data-id="knob-100-50"]) {
         cursor: ew-resize;
       }
-      :within([data-id="knob-50-100"], [data-id="knob-50-0"]) {
+      &:within([data-id="knob-50-100"], [data-id="knob-50-0"]) {
         cursor: ns-resize;
       }
-      :within([data-id="knob-0-100"], [data-id="knob-100-0"]) {
+      &:within([data-id="knob-0-100"], [data-id="knob-100-0"]) {
         cursor: nesw-resize;
       }
-      :within([data-id="knob-0-0"], [data-id="knob-100-100"]) {
+      &:within([data-id="knob-0-0"], [data-id="knob-100-100"]) {
         cursor: nwse-resize;
       }
     </style>

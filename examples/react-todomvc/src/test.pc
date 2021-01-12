@@ -1,5 +1,5 @@
 <style>
-  :within(:self) {
+  &:within(:self) {
     color: red;
   }
 </style>
