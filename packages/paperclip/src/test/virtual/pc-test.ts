@@ -1135,6 +1135,7 @@ describe(__filename + "#", () => {
     await engine.run("/b.pc");
 
     try {
+      // write a syntax error
       await engine.updateVirtualFileContent(
         "/b.pc",
         `<div export component as="default">b</div><div value">`
@@ -1142,12 +1143,13 @@ describe(__filename + "#", () => {
       // eslint-disable-next-line
     } catch (e) {}
     await engine.updateVirtualFileContent("/a.pc", `aa`);
+
+    expect(crashErr).to.eql(undefined);
     await engine.updateVirtualFileContent(
       "/b.pc",
       `<div export component as="default">bb</div>`
     );
 
-    expect(crashErr).to.eql(undefined);
     const result = await engine.run("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
@@ -1579,7 +1581,6 @@ describe(__filename + "#", () => {
     const result = (await engine.run("/entry.pc")) as any;
 
     const buffer = `${stringifyLoadResult(result)}`;
-    console.log(buffer);
     expect(buffer).to.eql(
       `<style>[data-pc-406d2856][data-pc-406d2856] { display:none; } [class]._376a18c0 { display:block; } [class]._376a18c0 [class]._80f4925f_child { color:red; } [class]._d96479ec { color:orange; }</style><span data-pc-406d2856 data-pc-80f4925f></span><span className="_80f4925f__d96479ec _d96479ec _80f4925f__376a18c0 _376a18c0" data-pc-406d2856 data-pc-80f4925f></span>`
     );

@@ -1122,7 +1122,7 @@ describe(__filename + "#", () => {
       <div>
         <style>
           color: red;
-          :within(.variant) {
+          &:within(.variant) {
             color: blue;
           }
         </style>
@@ -1147,7 +1147,7 @@ describe(__filename + "#", () => {
           <style>
             color: red;
             
-            :within(.variant) {
+            &:within(.variant) {
               &.a {
                 color: red;
               }
@@ -1176,7 +1176,7 @@ describe(__filename + "#", () => {
       <div className="variant">
         <div className="test">
           <style>
-            :within(.variant) {
+            &:within(.variant) {
               &.a, &.b {
                 color: blue;
               }
@@ -1202,7 +1202,7 @@ describe(__filename + "#", () => {
       <div className="variant">
         <div className="test">
           <style>
-            :within(:global(.variant)) {
+            &:within(:global(.variant)) {
               color: orange;
             }
           </style>
@@ -1226,7 +1226,7 @@ describe(__filename + "#", () => {
       <div className="variant">
         <div className="test">
           <style>
-            :within(.variant) {
+            &:within(.variant) {
               &:empty {
                 display: block;
               }
@@ -1351,7 +1351,7 @@ describe(__filename + "#", () => {
       "/entry.pc": `
       <div className="variant">
         <style>
-          :within(:empty) {
+          &:within(:empty) {
             @media screen and (min-width: 100px) {
               color: red;
             }

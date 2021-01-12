@@ -81,7 +81,7 @@ export const Tools = () => {
       canvas.mousePosition,
       canvas.transform,
       boxes,
-      getActiveFrameIndex(state)
+      isExpanded(state) ? getActiveFrameIndex(state) : null
     )?.box;
 
   const virtualNode = allLoadedPCFileData[currentFileUri];

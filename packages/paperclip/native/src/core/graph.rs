@@ -55,9 +55,10 @@ impl DependencyGraph {
     while dependents.len() > 0 {
       let dependent = dependents.pop().unwrap();
       for (_, dep_uri) in &dependent.dependencies {
-        let dep = self.dependencies.get(dep_uri).unwrap();
-        deps.push((dep, Some(dependent)));
-        dependents.push(dep);
+        if let Some(dep) = self.dependencies.get(dep_uri) {
+          deps.push((dep, Some(dependent)));
+          dependents.push(dep);
+        }
       }
     }
     return deps;
@@ -133,28 +134,33 @@ impl DependencyGraph {
         .or_else(|_| {
           let err: GraphError = match import {
             Some((origin_uri, relative_uri)) => {
-              let origin_dep = self.dependencies.get(&origin_uri).unwrap();
+              if let Some(origin_dep) = self.dependencies.get(&origin_uri) {
+                let location = match &origin_dep.content {
+                  DependencyContent::Node(node) => pc_ast::get_import_by_src(&relative_uri, node)
+                    .unwrap()
+                    .open_tag_location
+                    .clone(),
+                  DependencyContent::StyleSheet(_) => {
+                    // TODO once imports are working in CSS sheets
+                    Location { start: 0, end: 0 }
+                  }
+                };
 
-              let location = match &origin_dep.content {
-                DependencyContent::Node(node) => pc_ast::get_import_by_src(&relative_uri, node)
-                  .unwrap()
-                  .open_tag_location
-                  .clone(),
-                DependencyContent::StyleSheet(_) => {
-                  // TODO once imports are working in CSS sheets
-                  Location { start: 0, end: 0 }
+                let info = GraphErrorInfo::IncludeNotFound(IncludeNodeFoundError {
+                  message: "import not found".to_string(),
+                  uri: curr_uri.to_string(),
+                  location,
+                });
+
+                GraphError {
+                  uri: origin_uri.to_string(),
+                  info,
                 }
-              };
-
-              let info = GraphErrorInfo::IncludeNotFound(IncludeNodeFoundError {
-                message: "import not found".to_string(),
-                uri: curr_uri.to_string(),
-                location,
-              });
-
-              GraphError {
-                uri: origin_uri.to_string(),
-                info,
+              } else {
+                GraphError {
+                  uri: curr_uri.to_string(),
+                  info: GraphErrorInfo::NotFound,
+                }
               }
             }
             None => GraphError {

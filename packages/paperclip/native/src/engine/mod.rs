@@ -155,7 +155,10 @@ impl Engine {
         Ok(())
       }
       Err(error) => {
-        self.evaluated_data.remove(uri);
+        // Note - this was removed to prevent the engine
+        // from dispatching an Evaluated event after error which
+        // stops a flash from happening: https://github.com/crcn/paperclip/issues/604
+        // self.evaluated_data.remove(uri);
         self.dispatch(EngineDelegateEvent::Error(EngineError::Graph(
           error.clone(),
         )));
@@ -281,8 +284,6 @@ impl Engine {
               Some(data.sheet.clone())
             };
 
-            // let info = self.virt_nodes.get(uri).unwrap();
-
             self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
               uri: uri.clone(),
               data: DiffedData {
@@ -295,7 +296,6 @@ impl Engine {
               },
             }));
           } else {
-            // let info = self.virt_nodes.get(uri).unwrap();
             self.dispatch(EngineDelegateEvent::Evaluated(EvaluatedEvent {
               uri: uri.clone(),
               data: &data,

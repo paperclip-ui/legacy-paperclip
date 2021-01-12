@@ -79,6 +79,9 @@ class FrameController {
   ) {
     this.id = `${Date.now()}.${Math.random()}`;
     this.dispatch(rendererMounted({ id: this.id }));
+    if (shouldCollectRects) {
+      this, window.addEventListener("resize", this._onWindowResize);
+    }
     if (loadedData) {
       renderer.initialize(loadedData);
     }
@@ -92,6 +95,7 @@ class FrameController {
     this.collectRects();
   }
   dispose() {
+    this, window.removeEventListener("resize", this._onWindowResize);
     this.dispatch(rendererUnounted({ id: this.id }));
   }
   handleEvents = (events: EngineDelegateEvent[] = []) => {
@@ -103,6 +107,9 @@ class FrameController {
     this.dispatch(
       engineDelegateEventsHandled({ id: this.id, count: events.length })
     );
+  };
+  private _onWindowResize = () => {
+    this.collectRects();
   };
   collectRects = throttle(
     () => {
@@ -204,9 +211,11 @@ export const useFrames = ({
       shouldCollectRects,
       frameData
     );
-  }, [fileUri, state.renderProtocol, !!frameData]);
+  }, [fileUri, state.renderProtocol, shouldCollectRects, !!frameData]);
 
-  renderer.shouldCollectRects = shouldCollectRects;
+  useEffect(() => {
+    return () => renderer.dispose();
+  }, [renderer]);
 
   useLayoutEffect(() => {
     if (renderer && frameData?.preview) {

@@ -267,7 +267,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(combineFrameHTML(renderer).replace(/\n/g, "")).to.eql(
-      `<div><style>a[data-pc-61a60758] { color:a; }</style><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-cbafcfd3] { color:c; }</style><style>a[data-pc-5678f76a] { color:d; }</style></div><div><style></style></div><div>        a      </div>`
+      `<div><style>a[data-pc-61a60758] { color:a; }</style><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-cbafcfd3] { color:c; }</style><style>a[data-pc-5678f76a] { color:d; }</style></div><div><style></style></div><div> a </div>`
     );
 
     await engine.updateVirtualFileContent(
@@ -279,7 +279,7 @@ describe(__filename + "#", () => {
     );
 
     expect(combineFrameHTML(renderer).replace(/\n/g, "")).to.eql(
-      `<div><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-cbafcfd3] { color:c; }</style></div><div><style></style></div><div>a     </div>`
+      `<div><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-cbafcfd3] { color:c; }</style></div><div><style></style></div><div>a </div>`
     );
   });
 

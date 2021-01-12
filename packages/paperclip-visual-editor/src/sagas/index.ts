@@ -33,7 +33,8 @@ import {
   AppState,
   getActiveFrameIndex,
   getNodeInfoAtPoint,
-  getSelectedFrames
+  getSelectedFrames,
+  isExpanded
 } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
@@ -218,7 +219,7 @@ function* handleCanvasMouseUp(action: CanvasMouseUp) {
     state.canvas.mousePosition,
     state.canvas.transform,
     state.boxes,
-    getActiveFrameIndex(state)
+    isExpanded(state) ? getActiveFrameIndex(state) : null
   );
 
   // maybe offscreen
