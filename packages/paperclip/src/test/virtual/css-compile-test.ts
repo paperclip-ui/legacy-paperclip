@@ -62,7 +62,7 @@ describe(__filename + "#", () => {
       true
     ],
     [
-      `:within(.a) { color: red}`,
+      `&:within(.a) { color: red}`,
       `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856] { color:red; }`,
       true
     ],
@@ -71,18 +71,18 @@ describe(__filename + "#", () => {
       `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
       true
     ],
+    // [
+    //   `:within(.a):self { color: red}`,
+    //   `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
+    //   true
+    // ],
+    // [
+    //   `:within(:global(.a, .b)):self { color: red}`,
+    //   `[class].a [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; } [class].b [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
+    //   true
+    // ],
     [
-      `:within(.a):self { color: red}`,
-      `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
-      true
-    ],
-    [
-      `:within(:global(.a, .b)):self { color: red}`,
-      `[class].a [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; } [class].b [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:red; }`,
-      true
-    ],
-    [
-      `.a, :within(.b) { color: red}`,
+      `.a, &:within(.b) { color: red}`,
       `[data-pc-406d2856] [class]._80f4925f_a { color:red; } [class]._80f4925f_b [data-pc-406d2856][data-pc-406d2856] { color:red; }`,
       true
     ],
@@ -112,7 +112,7 @@ describe(__filename + "#", () => {
       false
     ],
     [
-      `:within(.a) { && { color: blue; }}`,
+      `&:within(.a) { && { color: blue; }}`,
       `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856][data-pc-406d2856][data-pc-406d2856] { color:blue; }`,
       true
     ],
@@ -197,8 +197,8 @@ describe(__filename + "#", () => {
     [`:global(#id) { color: red; }`, `#id { color:red; }`, false],
     // needs to emit 4 selectors
     [
-      `:within(a, b):within(c, d) { color: orange; }`,
-      `a[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:orange; } b[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:orange; } c[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:orange; } d[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856][data-pc-80f4925f] { color:orange; }`,
+      `&:within(a, b):within(c, d) { color: orange; }`,
+      `a[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; } b[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; } c[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; } d[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; }`,
       true
     ],
     [
@@ -213,7 +213,7 @@ describe(__filename + "#", () => {
     ],
 
     [
-      `:global(a, :within(b, c, d)) { color: orange; }`,
+      `:global(a, &:within(b, c, d)) { color: orange; }`,
       `[data-pc-406d2856] a { color:orange; } b[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; } c[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; } d[data-pc-80f4925f] [data-pc-406d2856][data-pc-406d2856] { color:orange; }`,
       true
     ],
@@ -245,6 +245,20 @@ describe(__filename + "#", () => {
     [
       `:self(.variant) { @media screen and (max-width: 400px) { color: red; }}`,
       `@media screen and (max-width: 400px) { [data-pc-406d2856][data-pc-406d2856][class].variant { color:red; } }`,
+      true
+    ],
+
+    // https://github.com/crcn/paperclip/issues/607#issuecomment-758309798
+    [
+      `div { :within(.a) { color: red }}`,
+      `[class]._80f4925f_a div[data-pc-80f4925f] [data-pc-80f4925f] { color:red ; }`,
+      false
+    ],
+
+    // https://github.com/crcn/paperclip/issues/607#issuecomment-758309798
+    [
+      `:within(.a) { color: red }`,
+      `[class]._80f4925f_a [data-pc-406d2856] [data-pc-80f4925f] { color:red ; }`,
       true
     ]
     // group, selector

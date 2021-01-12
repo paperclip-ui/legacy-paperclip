@@ -1088,14 +1088,9 @@ fn write_element_selector(
 
         // :within define
         if curr.context.empty() {
-          if curr.context.has_usable_scope() {
-            curr.append_element_scope_to_target(false);
-          } else {
-            curr.push_target(get_document_scope_selector(context));
-          }
+          curr.push_target(get_document_scope_selector(context));
         }
 
-        // curr.push_target(scope_context.to_string());
         curr.push_within(scope_context.to_string().trim().to_string());
       }
     }
