@@ -29,8 +29,6 @@ export const createNativeNode = (
   protocol: string | null,
   namespaceURI: string
 ) => {
-  // return document.createTextNode(stringifyVirtualNode(node));
-
   if (!node) {
     return factory.createTextNode("");
   }
@@ -57,14 +55,16 @@ export const createNativeStyleFromSheet = (
   factory: DOMFactory,
   protocol: string
 ) => {
-  // return factory.createTextNode(stringifyCSSSheet(sheet, protocol)) as any;
   const nativeElement = factory.createElement("style");
   nativeElement.textContent = stringifyCSSSheet(sheet, { protocol });
   return nativeElement as HTMLStyleElement;
 };
 
 const createNativeTextNode = (node, factory: DOMFactory) => {
-  return factory.createTextNode(entities.decode(node.value));
+  // fixes https://github.com/crcn/paperclip/issues/609
+  return factory.createTextNode(
+    entities.decode(node.value.replace(/[\s\r]+/g, " "))
+  );
 };
 
 const createNativeElement = (
@@ -73,8 +73,6 @@ const createNativeElement = (
   protocol: string,
   namespaceUri?: string
 ) => {
-  // return factory.createTextNode(JSON.stringify(element, null, 2));
-
   const nativeElement =
     element.tagName === "svg"
       ? document.createElementNS(XMLNS_NAMESPACE, "svg")
@@ -107,7 +105,6 @@ const createNativeElement = (
     nativeElement.onmouseup = preventDefault;
     nativeElement.onmousedown = preventDefault;
   }
-  // return document.createTextNode(nativeElement.outerHTML);
 
   return nativeElement;
 };

@@ -904,47 +904,50 @@ fn evaluate_component_instance<'a>(
   dep_uri: &String,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-  let dep = &context
-    .graph
-    .dependencies
-    .get(&dep_uri.to_string())
-    .unwrap();
-  let data = create_component_instance_data(instance_element, depth, context)?;
 
-  if let DependencyContent::Node(node) = &dep.content {
-    let mut instance_context = create_context(
-      &node,
-      dep_uri,
-      context.graph,
-      context.vfs,
-      &data,
-      Some(&context),
-      context.import_graph,
-      context.mode,
-    );
-    check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
-    // TODO: if fragment, then wrap in span. If not, then copy these attributes to root element
+  if let Some(dep) = &context
+  .graph
+  .dependencies
+  .get(&dep_uri.to_string()) {
+    let data = create_component_instance_data(instance_element, depth, context)?;
 
-    let source = if let Some(source) = instance_source {
-      source.clone()
+    if let DependencyContent::Node(node) = &dep.content {
+      let mut instance_context = create_context(
+        &node,
+        dep_uri,
+        context.graph,
+        context.vfs,
+        &data,
+        Some(&context),
+        context.import_graph,
+        context.mode,
+      );
+      check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
+      // TODO: if fragment, then wrap in span. If not, then copy these attributes to root element
+
+      let source = if let Some(source) = instance_source {
+        source.clone()
+      } else {
+        ExprSource {
+          uri: dep_uri.to_string(),
+          location: instance_element.location.clone(),
+        }
+      };
+
+      evaluate_instance_node(
+        &node,
+        &mut instance_context,
+        render_strategy,
+        imported,
+        depth,
+        annotations,
+        Some(source),
+      )
     } else {
-      ExprSource {
-        uri: dep_uri.to_string(),
-        location: instance_element.location.clone(),
-      }
-    };
-
-    evaluate_instance_node(
-      &node,
-      &mut instance_context,
-      render_strategy,
-      imported,
-      depth,
-      annotations,
-      Some(source),
-    )
+      Err(RuntimeError::unknown(context.uri))
+    }
   } else {
-    Err(RuntimeError::unknown(context.uri))
+    Err(RuntimeError::new(format!("Dependency {} not found", dep_uri), context.uri, &Location::new(0, 0)))
   }
 }
 

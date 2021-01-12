@@ -1479,29 +1479,4 @@ describe(__filename + "#", () => {
       `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
   });
-
-  // addreses :not(:within(.class)) not working
-  it(`Can define :not(:within(.a)) within instance`, async () => {
-    const graph = {
-      "/entry.pc": `
-      <div component as="Test" {className?}>
-      </div>
-
-      <Test>
-        <style>
-          &:not(.a) {
-            color: red;
-          }
-        </style>
-      </Test>
-    `
-    };
-
-    const engine = await createMockEngine(graph);
-
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
-    expect(text).to.eql(
-      `<style>:not([class]._80f4925f_a) [class]._376a18c0[class]._376a18c0 { color:red; }</style><div className="_80f4925f__376a18c0 _376a18c0" data-pc-80f4925f></div>`
-    );
-  });
 });

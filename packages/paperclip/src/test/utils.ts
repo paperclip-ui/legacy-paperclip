@@ -62,11 +62,10 @@ export const waitForRender = (
   });
 };
 
-export const stringifyLoadResult = ({
-  sheet,
-  preview,
-  importedSheets: sheets
-}: LoadResult) => {
+export const stringifyLoadResult = (
+  { sheet, preview, importedSheets: sheets }: LoadResult,
+  shouldCleanHTML = true
+) => {
   const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
     .map(sheet => {
       return stringifyCSSSheet(sheet, { protocol: "" });
@@ -75,7 +74,7 @@ export const stringifyLoadResult = ({
     .trim();
 
   const buffer = `<style>${sheetText}</style>${stringifyVirtualNode(preview)}`;
-  return cleanHTML(buffer);
+  return shouldCleanHTML ? cleanHTML(buffer) : buffer;
 };
 
 export const cleanHTML = (value: string) => {
