@@ -904,11 +904,7 @@ fn evaluate_component_instance<'a>(
   dep_uri: &String,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-
-  if let Some(dep) = &context
-  .graph
-  .dependencies
-  .get(&dep_uri.to_string()) {
+  if let Some(dep) = &context.graph.dependencies.get(&dep_uri.to_string()) {
     let data = create_component_instance_data(instance_element, depth, context)?;
 
     if let DependencyContent::Node(node) = &dep.content {
@@ -947,7 +943,11 @@ fn evaluate_component_instance<'a>(
       Err(RuntimeError::unknown(context.uri))
     }
   } else {
-    Err(RuntimeError::new(format!("Dependency {} not found", dep_uri), context.uri, &Location::new(0, 0)))
+    Err(RuntimeError::new(
+      format!("Dependency {} not found", dep_uri),
+      context.uri,
+      &Location::new(0, 0),
+    ))
   }
 }
 

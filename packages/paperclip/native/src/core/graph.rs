@@ -134,9 +134,7 @@ impl DependencyGraph {
         .or_else(|_| {
           let err: GraphError = match import {
             Some((origin_uri, relative_uri)) => {
-
               if let Some(origin_dep) = self.dependencies.get(&origin_uri) {
-
                 let location = match &origin_dep.content {
                   DependencyContent::Node(node) => pc_ast::get_import_by_src(&relative_uri, node)
                     .unwrap()
