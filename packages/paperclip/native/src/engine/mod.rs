@@ -155,7 +155,6 @@ impl Engine {
         Ok(())
       }
       Err(error) => {
-
         // Note - this was removed to prevent the engine
         // from dispatching an Evaluated event after error which
         // stops a flash from happening: https://github.com/crcn/paperclip/issues/604

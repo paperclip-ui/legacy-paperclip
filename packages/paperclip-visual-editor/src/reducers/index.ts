@@ -212,7 +212,7 @@ export default (state: AppState, action: Action) => {
         state.canvas.mousePosition,
         state.canvas.transform,
         state.boxes,
-        getActiveFrameIndex(state)
+        isExpanded(state) ? getActiveFrameIndex(state) : null
       )?.nodePath;
       return selectNode(nodePath, action.payload.shiftKey, state);
     }
