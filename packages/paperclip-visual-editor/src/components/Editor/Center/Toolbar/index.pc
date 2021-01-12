@@ -421,25 +421,25 @@
       height: var(--size);
       display: inline-block;
       margin-right: 8px;
-      :within([data-kind="public"]) {
+      &:within([data-kind="public"]) {
         mask-image: url('./world.svg');
       }
-      :within([data-kind="private"]) {
+      &:within([data-kind="private"]) {
         mask-image: url('./home.svg');
       }
-      :within([data-kind="chrome"]) {
+      &:within([data-kind="chrome"]) {
         mask-image: url('./chrome.svg');
       }
-      :within([data-kind="safari"]) {
+      &:within([data-kind="safari"]) {
         mask-image: url('./safari2.svg');
       }
-      :within([data-kind="firefox"]) {
+      &:within([data-kind="firefox"]) {
         mask-image: url('./firefox.svg');
       }
-      :within([data-kind="ie"]) {
+      &:within([data-kind="ie"]) {
         mask-image: url('./ie.svg');
       }
-      :within([data-kind="ie"]) {
+      &:within([data-kind="ie"]) {
         mask-image: url('./ie.svg');
       }
     </style>
