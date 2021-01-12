@@ -489,8 +489,6 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
     };
   }
 
-  console.log(mergedAnnotations);
-
   if (!frame.annotations) {
     frame.annotations = {
       kind: VirtJsObjectKind.JsObject,

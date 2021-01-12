@@ -18,7 +18,6 @@ export const FrameContainer = memo(
     const frameRef = useRef<HTMLDivElement>();
 
     useEffect(() => {
-      console.log("NFRAME");
       if (frameRef.current) {
         const iframe = document.createElement("iframe");
         // addresses https://github.com/crcn/paperclip/issues/310

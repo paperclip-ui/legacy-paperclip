@@ -220,6 +220,7 @@ export const useFrames = ({
 
   useEffect(() => {
     if (state.currentEngineEvents[renderer.id]?.length) {
+      console.log(state.currentEngineEvents[renderer.id]);
       renderer.handleEvents(state.currentEngineEvents[renderer.id]);
     }
   }, [renderer, state.currentEngineEvents]);

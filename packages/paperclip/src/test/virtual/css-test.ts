@@ -1489,7 +1489,7 @@ describe(__filename + "#", () => {
 
       <Test>
         <style>
-          &:not(:within(.a)) {
+          &:not(.a) {
             color: red;
           }
         </style>
