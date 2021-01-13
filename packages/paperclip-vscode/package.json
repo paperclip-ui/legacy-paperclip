@@ -125,10 +125,12 @@
     ]
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run build:syntaxes",
+    "build:syntaxes": "node lib/scripts/build",
+    "build:syntaxes:watch": "nodemon --exec \"node lib/scripts/build\" --watch ./syntaxes/paperclip-html.yaml",
     "xtest": "node lib/test/run",
     "lint": "eslint src",
-    "build:watch": "npm run build -- --watch",
+    "build:watch": "concurrently \"tsc --watch\" \"npm run build:syntaxes:watch\"",
     "prepublishOnly": "npm run build",
     "rm-ngrok": "rm -rf node_modules/ngrok/bin",
     "publish:marketplace": "rm -rf node_modules && npm install && npm run rm-ngrok && vsce package && vsce publish -p $VSCE_TOKEN"
@@ -143,10 +145,15 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "chai": "^4.2.0",
+    "concurrently": "^5.3.0",
     "eslint": "^7.4.0",
+    "js-yaml": "^4.0.0",
     "mocha": "^8.0.1",
+    "nodemon": "^2.0.7",
+    "plist": "^3.0.1",
     "typescript": "^3.9.7",
-    "vscode-test": "^1.4.0"
+    "vscode-test": "^1.4.0",
+    "vscode-textmate": "^5.2.0"
   },
   "dependencies": {
     "@types/react": "^16.9.20",
