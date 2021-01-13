@@ -164,7 +164,7 @@ fn parse_group<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression,
 
   Ok(ast::Expression::Group(ast::Group {
     location: Location::new(start, context.tokenizer.utf16_pos),
-    expression: Box::new(expression)
+    expression: Box::new(expression),
   }))
 }
 
