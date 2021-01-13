@@ -1585,4 +1585,63 @@ describe(__filename + "#", () => {
       `<style>[data-pc-406d2856][data-pc-406d2856] { display:none; } [class]._376a18c0 { display:block; } [class]._376a18c0 [class]._80f4925f_child { color:red; } [class]._d96479ec { color:orange; }</style><span data-pc-406d2856 data-pc-80f4925f></span><span className="_80f4925f__d96479ec _d96479ec _80f4925f__376a18c0 _376a18c0" data-pc-406d2856 data-pc-80f4925f></span>`
     );
   });
+
+  it(`Works with logical && and nodes`, async () => {
+    const graph = {
+      "/entry.pc": `
+      {0 && <div>A</div>}
+      {true && <div>B</div>}
+      {1 && <div>C</div>}
+      {false && <div>D</div>}
+      {false && <div>D</div> || <div>E</div>}
+      {false && <div>D</div> || false || 99 }
+      {false && <div>D</div> || false || 0 && "blah" }
+      {false || <div>F</div>}
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+
+    const buffer = `${stringifyLoadResult(result)}`;
+    expect(buffer).to.eql(
+      `<style></style>0<div data-pc-80f4925f>B</div><div data-pc-80f4925f>C</div><div data-pc-80f4925f>E</div>990<div data-pc-80f4925f>F</div>`
+    );
+  });
+
+  it(`Works with ! negation`, async () => {
+    const graph = {
+      "/entry.pc": `
+      {!false}
+      {!!false}
+      {!!!false}
+      {!!!0}
+      {!0 && <div>A</div>}
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+
+    const buffer = `${stringifyLoadResult(result)}`;
+    expect(buffer).to.eql(
+      `<style></style>truetruetrue<div data-pc-80f4925f>A</div>`
+    );
+  });
+
+  it(`Can parse groups ()`, async () => {
+    const graph = {
+      "/entry.pc": `
+      {(true || true) && <div>Something</div>}
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+
+    const buffer = `${stringifyLoadResult(result)}`;
+    expect(buffer).to.eql(
+      `<style></style><div data-pc-80f4925f>Something</div>`
+    );
+  });
 });

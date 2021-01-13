@@ -135,7 +135,7 @@ fn parse_slot<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseEr
 fn parse_slot_script<'a>(
   tokenizer: &mut Tokenizer<'a>,
   id_seed_info_option: Option<(&Vec<String>, usize)>,
-) -> Result<js_ast::Statement, ParseError> {
+) -> Result<js_ast::Expression, ParseError> {
   let start = tokenizer.utf16_pos;
   let mut js_tokenizer = JSTokenizer::new_from_bytes(&tokenizer.source, tokenizer.get_pos());
   let id_seed = if let Some((path, index)) = id_seed_info_option {

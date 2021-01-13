@@ -5,7 +5,10 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "jsKind")]
-pub enum Statement {
+pub enum Expression {
+  Conjunction(Conjunction),
+  Group(Group),
+  Not(Not),
   Reference(Reference),
   Boolean(Boolean),
   String(Str),
@@ -33,37 +36,97 @@ pub struct Boolean {
   pub location: Location,
 }
 
-impl fmt::Display for Statement {
+impl fmt::Display for Expression {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
-      Statement::Reference(reference) => write!(f, "{}", reference.to_string()),
-      Statement::Node(node) => write!(f, "{}", node.to_string()),
-      Statement::String(value) => write!(f, "\"{}\"", value.value.to_string()),
-      Statement::Boolean(value) => write!(f, "{}", value.value.to_string()),
-      Statement::Number(value) => write!(f, "{}", value.value.to_string()),
-      Statement::Array(value) => write!(f, "{}", value.to_string()),
-      Statement::Object(value) => value.fmt(f),
+      Expression::Reference(reference) => write!(f, "{}", reference.to_string()),
+      Expression::Conjunction(expr) => write!(f, "{}", expr.to_string()),
+      Expression::Group(expr) => write!(f, "{}", expr.to_string()),
+      Expression::Not(expr) => write!(f, "{}", expr.to_string()),
+      Expression::Node(node) => write!(f, "{}", node.to_string()),
+      Expression::String(value) => write!(f, "\"{}\"", value.value.to_string()),
+      Expression::Boolean(value) => write!(f, "{}", value.value.to_string()),
+      Expression::Number(value) => write!(f, "{}", value.value.to_string()),
+      Expression::Array(value) => write!(f, "{}", value.to_string()),
+      Expression::Object(value) => value.fmt(f),
     }
   }
 }
 
-impl Statement {
+impl Expression {
   pub fn get_location(&self) -> &Location {
     match self {
-      Statement::Reference(value) => &value.location,
-      Statement::Node(value) => value.get_location(),
-      Statement::String(value) => &value.location,
-      Statement::Boolean(value) => &value.location,
-      Statement::Number(value) => &value.location,
-      Statement::Array(value) => &value.location,
-      Statement::Object(value) => &value.location,
+      Expression::Reference(expr) => &expr.location,
+      Expression::Conjunction(expr) => &expr.location,
+      Expression::Group(expr) => &expr.location,
+      Expression::Not(expr) => &expr.location,
+      Expression::Node(expr) => expr.get_location(),
+      Expression::String(expr) => &expr.location,
+      Expression::Boolean(expr) => &expr.location,
+      Expression::Number(expr) => &expr.location,
+      Expression::Array(expr) => &expr.location,
+      Expression::Object(expr) => &expr.location,
     }
   }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Group {
+  pub location: Location,
+  pub expression: Box<Expression>,
+}
+
+impl fmt::Display for Group {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "({})", self.expression.to_string())
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Not {
+  pub location: Location,
+  pub expression: Box<Expression>,
+}
+
+impl fmt::Display for Not {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "!{}", self.expression.to_string())
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Conjunction {
+  pub location: Location,
+  pub left: Box<Expression>,
+  pub operator: ConjunctionOperatorKind,
+  pub right: Box<Expression>,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub enum ConjunctionOperatorKind {
+  And,
+  Or,
+}
+
+impl fmt::Display for Conjunction {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    let operator = match self.operator {
+      ConjunctionOperatorKind::And => "&&",
+      ConjunctionOperatorKind::Or => "||",
+    };
+    write!(
+      f,
+      "{}{}{}",
+      self.left.to_string(),
+      operator,
+      self.right.to_string()
+    )
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Array {
-  pub values: Vec<Statement>,
+  pub values: Vec<Expression>,
   pub location: Location,
 }
 
@@ -94,7 +157,7 @@ impl fmt::Display for Object {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Property {
   pub key: String,
-  pub value: Statement,
+  pub value: Expression,
 }
 
 impl fmt::Display for Property {
@@ -123,7 +186,7 @@ impl fmt::Display for Reference {
         .iter()
         .map(|part| { part.to_string() })
         .collect::<Vec<String>>()
-        .join(".Statement")
+        .join(".Expression")
     )
   }
 }

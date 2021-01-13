@@ -231,6 +231,54 @@ describe(__filename + "#", async () => {
           }
         }
       }
+    ],
+    [
+      `{a || b}`,
+      {
+        kind: 0,
+        fromSpread: false,
+        properties: {
+          a: {
+            optional: false,
+            value: {
+              kind: 2
+            }
+          },
+          b: {
+            optional: false,
+            value: {
+              kind: 2
+            }
+          }
+        }
+      }
+    ],
+    [
+      `{!a || b && c}`,
+      {
+        kind: 0,
+        fromSpread: false,
+        properties: {
+          a: {
+            optional: false,
+            value: {
+              kind: 2
+            }
+          },
+          b: {
+            optional: false,
+            value: {
+              kind: 2
+            }
+          },
+          c: {
+            optional: false,
+            value: {
+              kind: 2
+            }
+          }
+        }
+      }
     ]
   ];
 

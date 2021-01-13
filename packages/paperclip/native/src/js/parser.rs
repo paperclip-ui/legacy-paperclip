@@ -10,7 +10,7 @@ struct Context<'a, 'b> {
   id_seed: String,
 }
 
-pub fn _parse<'a>(source: &'a str) -> Result<ast::Statement, ParseError> {
+pub fn _parse<'a>(source: &'a str) -> Result<ast::Expression, ParseError> {
   let mut tokenizer = Tokenizer::new(source);
   parse_with_tokenizer(&mut tokenizer, "".to_string(), |_token| true)
 }
@@ -19,36 +19,80 @@ pub fn parse_with_tokenizer<'a, FUntil>(
   tokenizer: &mut Tokenizer<'a>,
   id_seed: String,
   _until: FUntil,
-) -> Result<ast::Statement, ParseError>
+) -> Result<ast::Expression, ParseError>
 where
   FUntil: Fn(Token) -> bool,
 {
   let mut context = Context { tokenizer, id_seed };
 
-  parse_statement(&mut context)
+  parse_top(&mut context)
 }
 
-fn parse_statement<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_top<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
+  parse_conjunction(context)
+}
+
+fn parse_conjunction<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   context.tokenizer.eat_whitespace();
+  let start = context.tokenizer.utf16_pos;
+  let left: ast::Expression = parse_expression(context)?;
+
+  if context.tokenizer.is_eof() {
+    return Ok(left);
+  }
+
+  let operator_option = match context.tokenizer.peek(1)? {
+    Token::LogicalAnd => Some(ast::ConjunctionOperatorKind::And),
+    Token::LogicalOr => Some(ast::ConjunctionOperatorKind::Or),
+    _ => None,
+  };
+
+  if let Some(operator) = operator_option {
+    context.tokenizer.next()?;
+    let right = parse_top(context)?;
+    Ok(ast::Expression::Conjunction(ast::Conjunction {
+      left: Box::new(left),
+      operator,
+      right: Box::new(right),
+      location: Location::new(start, context.tokenizer.utf16_pos),
+    }))
+  } else {
+    Ok(left)
+  }
+}
+
+fn parse_expression<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
+  context.tokenizer.eat_whitespace();
+
   let result = match context.tokenizer.peek(1)? {
     //  Token::Minus  - TODO - negate. Need to consider refs too
     Token::LessThan => parse_node(context),
+    Token::Bang => parse_not(context),
     Token::DoubleQuote | Token::SingleQuote => parse_string(context),
     Token::Number(_) => parse_number(context),
     Token::Minus => parse_negative_number(context),
     Token::SquareOpen => parse_array(context),
     Token::CurlyOpen => parse_object(context),
+    Token::ParenOpen => parse_group(context),
     _ => parse_word(context),
   };
 
   context.tokenizer.eat_whitespace();
   result
 }
+fn parse_not<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
+  let start = context.tokenizer.utf16_pos;
+  context.tokenizer.next()?;
+  Ok(ast::Expression::Not(ast::Not {
+    location: Location::new(start, context.tokenizer.utf16_pos),
+    expression: Box::new(parse_expression(context)?),
+  }))
+}
 
-fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   let mut pc_tokenizer =
     PCTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
-  let node = ast::Statement::Node(Box::new(parse_tag(
+  let node = ast::Expression::Node(Box::new(parse_tag(
     &mut pc_tokenizer,
     vec![context.id_seed.to_string()],
   )?));
@@ -56,11 +100,11 @@ fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, P
   Ok(node)
 }
 
-fn parse_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   let start = context.tokenizer.utf16_pos;
   let buffer = get_number_buffer(context)?;
 
-  Ok(ast::Statement::Number(ast::Number {
+  Ok(ast::Expression::Number(ast::Number {
     value: buffer,
     location: Location::new(start, context.tokenizer.utf16_pos),
   }))
@@ -68,12 +112,12 @@ fn parse_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement,
 
 fn parse_negative_number<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<ast::Statement, ParseError> {
+) -> Result<ast::Expression, ParseError> {
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::Minus)?;
   let num_buffer = get_number_buffer(context)?;
 
-  Ok(ast::Statement::Number(ast::Number {
+  Ok(ast::Expression::Number(ast::Number {
     value: format!("-{}", num_buffer),
     location: Location::new(start, context.tokenizer.utf16_pos),
   }))
@@ -97,7 +141,7 @@ fn get_number_buffer<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, Pa
   Ok(buffer)
 }
 
-fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   let start_pos = context.tokenizer.utf16_pos;
   let start = context.tokenizer.next()?;
   let value = get_buffer(context.tokenizer, |tokenizer| {
@@ -105,13 +149,26 @@ fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement,
   })?
   .to_string();
   context.tokenizer.next_expect(start)?;
-  Ok(ast::Statement::String(ast::Str {
+  Ok(ast::Expression::String(ast::Str {
     value,
     location: Location::new(start_pos, context.tokenizer.utf16_pos),
   }))
 }
 
-fn parse_array<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_group<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
+  let start = context.tokenizer.utf16_pos;
+  context.tokenizer.next()?; // eat (
+  let expression = parse_top(context)?;
+  context.tokenizer.eat_whitespace();
+  context.tokenizer.next_expect(Token::ParenClose)?; // eat )
+
+  Ok(ast::Expression::Group(ast::Group {
+    location: Location::new(start, context.tokenizer.utf16_pos),
+    expression: Box::new(expression),
+  }))
+}
+
+fn parse_array<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::SquareOpen)?;
   let mut values = vec![];
@@ -119,7 +176,7 @@ fn parse_array<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, 
   while !context.tokenizer.is_eof()
     && context.tokenizer.peek_eat_whitespace(1)? != Token::SquareClose
   {
-    values.push(parse_statement(context)?);
+    values.push(parse_top(context)?);
     if context.tokenizer.peek(1)? == Token::SquareClose {
       break;
     }
@@ -129,13 +186,13 @@ fn parse_array<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, 
   context.tokenizer.eat_whitespace();
   context.tokenizer.next_expect(Token::SquareClose)?;
 
-  Ok(ast::Statement::Array(ast::Array {
+  Ok(ast::Expression::Array(ast::Array {
     values,
     location: Location::new(start, context.tokenizer.utf16_pos),
   }))
 }
 
-fn parse_object<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_object<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   let start = context.tokenizer.utf16_pos;
 
   context.tokenizer.next_expect(Token::CurlyOpen)?;
@@ -144,13 +201,13 @@ fn parse_object<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement,
   while !context.tokenizer.is_eof()
     && context.tokenizer.peek_eat_whitespace(1)? != Token::CurlyClose
   {
-    let key = parse_statement(context)?;
+    let key = parse_top(context)?;
 
     context.tokenizer.eat_whitespace();
     let value = if context.tokenizer.peek(1)? == Token::Colon {
       let colon = context.tokenizer.next_expect(Token::Colon)?;
       context.tokenizer.eat_whitespace();
-      parse_statement(context)?
+      parse_top(context)?
     } else {
       key.clone()
     };
@@ -170,17 +227,17 @@ fn parse_object<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement,
   context.tokenizer.eat_whitespace();
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
-  Ok(ast::Statement::Object(ast::Object {
+  Ok(ast::Expression::Object(ast::Object {
     properties,
     location: Location::new(start, context.tokenizer.utf16_pos),
   }))
 }
 
-fn parse_boolean<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_boolean<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   let pos = context.tokenizer.utf16_pos;
   if let Token::Word(name) = context.tokenizer.next()? {
     if name == "true" || name == "false" {
-      return Ok(ast::Statement::Boolean(ast::Boolean {
+      return Ok(ast::Expression::Boolean(ast::Boolean {
         value: name == "true",
         location: Location::new(pos, context.tokenizer.utf16_pos),
       }));
@@ -215,7 +272,7 @@ fn parse_reference_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String,
   )
 }
 
-fn parse_reference<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_reference<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   let pos = context.tokenizer.utf16_pos;
   let part = parse_reference_part(context)?;
   let mut path = vec![part];
@@ -228,7 +285,7 @@ fn parse_reference<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Stateme
       return Err(ParseError::unexpected_token(pos));
     }
   }
-  Ok(ast::Statement::Reference(ast::Reference {
+  Ok(ast::Expression::Reference(ast::Reference {
     path,
     location: Location::new(pos, context.tokenizer.utf16_pos),
   }))
@@ -249,7 +306,7 @@ fn parse_reference_part<'a, 'b>(
   Ok(ast::ReferencePart { name, optional })
 }
 
-fn parse_word<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Statement, ParseError> {
+fn parse_word<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   let pos = context.tokenizer.utf16_pos;
   let token = context.tokenizer.peek(1)?;
   if let Token::Word(name) = token {

@@ -30,7 +30,7 @@ import {
   getAttributeStringValue,
   AttributeKind,
   resolveImportFile,
-  StatementKind,
+  JsExpressionKind,
   resolveImportUri,
   getMixins,
   ExportRule,
@@ -44,6 +44,7 @@ import { CompletionItem } from "vscode-languageclient";
 import { PCCompletionItem } from "./utils";
 import { LoadedData } from "paperclip";
 import { EngineDelegate } from "paperclip";
+import { JsExpression, Slot } from "paperclip/src";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -323,9 +324,26 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   private _handleNode(node: Node, context: HandleContext) {
     if (node.kind === NodeKind.Element) {
       this._handleElement(node, context);
+    } else if (node.kind === NodeKind.Slot) {
+      this._handleJsExpression(node.script, context);
     }
     for (const child of getChildren(node)) {
       this._handleNode(child, context);
+    }
+  }
+  private _handleJsExpression(
+    expression: JsExpression,
+    context: HandleContext
+  ) {
+    if (expression.jsKind === JsExpressionKind.Node) {
+      this._handleNode(expression, context);
+    } else if (expression.jsKind === JsExpressionKind.Not) {
+      this._handleJsExpression(expression.expression, context);
+    } else if (expression.jsKind === JsExpressionKind.Conjunction) {
+      this._handleJsExpression(expression.left, context);
+      this._handleJsExpression(expression.right, context);
+    } else if (expression.jsKind === JsExpressionKind.Group) {
+      this._handleJsExpression(expression.expression, context);
     }
   }
 
@@ -370,9 +388,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     for (const attr of element.attributes) {
       if (attr.kind === AttributeKind.KeyValueAttribute && attr.value) {
         if (attr.value.attrValueKind === AttributeValueKind.Slot) {
-          if (attr.value.script.jsKind === StatementKind.Node) {
-            this._handleNode((attr.value as any) as Node, context);
-          }
+          this._handleJsExpression(attr.value.script, context);
         } else if (
           attr.value.attrValueKind === AttributeValueKind.String &&
           attr.name === "src"

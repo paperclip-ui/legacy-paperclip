@@ -3,44 +3,18 @@ use crate::base::tokenizer::{BaseTokenizer, Position};
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
+  // &&
+  LogicalAnd,
+  LogicalOr,
+
   // <
   LessThan,
 
   // -
   Minus,
 
-  // *
-  Star,
-
-  // +
-  Plus,
-
-  // ~
-  Squiggle,
-
-  // @
-  At,
-
-  // >
-  GreaterThan,
-
-  // >>>
-  Pierce,
-
-  // />
-  SelfTagClose,
-
-  // </
-  TagClose,
-
   // !
   Bang,
-
-  // {#
-  BlockOpen,
-
-  // {/
-  BlockClose,
 
   // {
   CurlyOpen,
@@ -48,17 +22,17 @@ pub enum Token<'a> {
   // }
   CurlyClose,
 
-  // [
-  SquareOpen,
-
-  // ]
-  SquareClose,
-
   // (
   ParenOpen,
 
   // )
   ParenClose,
+
+  // [
+  SquareOpen,
+
+  // ]
+  SquareClose,
 
   // "
   DoubleQuote,
@@ -66,53 +40,17 @@ pub enum Token<'a> {
   // '
   SingleQuote,
 
-  // =
-  Equals,
-
-  // ==
-  DoubleEquals,
-
-  // ===
-  TrippleEquals,
-
-  // /
-  Backslash,
-
   //
   Whitespace,
 
-  // ...
-  Spread,
-
   // .
   Dot,
-
-  // #
-  Hash,
 
   // ,
   Comma,
 
   // :
   Colon,
-
-  // :
-  Semicolon,
-
-  // /*
-  ScriptCommentOpen,
-
-  // */
-  ScriptCommentClose,
-
-  // -->
-  HtmlCommentOpen,
-
-  // //
-  LineCommentOpen,
-
-  // -->
-  HtmlCommentClose,
 
   // div, blay
   Word(&'a str),
@@ -204,75 +142,35 @@ impl<'a> Tokenizer<'a> {
     let c = self.curr_byte()?;
 
     match c {
-      b'/' => {
-        if self.starts_with(b"//") {
+      b'&' => {
+        if self.starts_with(b"&&") {
           self.forward(2);
-          Ok(Token::LineCommentOpen)
-        } else if self.starts_with(b"/>") {
-          self.forward(2);
-          Ok(Token::SelfTagClose)
-        } else if self.starts_with(b"/*") {
-          self.forward(2);
-          Ok(Token::ScriptCommentOpen)
+          Ok(Token::LogicalAnd)
         } else {
           self.forward(1);
-          Ok(Token::Backslash)
+          Ok(Token::Byte(c))
         }
       }
-      b'>' => {
-        if self.starts_with(b">>>") {
-          self.forward(3);
-          Ok(Token::Pierce)
+      b'|' => {
+        if self.starts_with(b"||") {
+          self.forward(2);
+          Ok(Token::LogicalOr)
         } else {
           self.forward(1);
-          Ok(Token::GreaterThan)
+          Ok(Token::Byte(c))
         }
       }
       b'<' => {
-        if self.starts_with(b"</") {
-          self.forward(2);
-          Ok(Token::TagClose)
-        } else if self.starts_with(b"<!--") {
-          self.forward(4);
-          Ok(Token::HtmlCommentOpen)
-        } else {
-          self.forward(1);
-          Ok(Token::LessThan)
-        }
+        self.forward(1);
+        Ok(Token::LessThan)
       }
       b'-' => {
-        if self.starts_with(b"-->") {
-          self.forward(3);
-          Ok(Token::HtmlCommentClose)
-        } else {
-          self.forward(1);
-          Ok(Token::Minus)
-        }
-      }
-      b'*' => {
-        if self.starts_with(b"*/") {
-          self.forward(2);
-          Ok(Token::ScriptCommentClose)
-        } else {
-          self.forward(1);
-          Ok(Token::Star)
-        }
+        self.forward(1);
+        Ok(Token::Minus)
       }
       b'!' => {
         self.forward(1);
         Ok(Token::Bang)
-      }
-      b'+' => {
-        self.forward(1);
-        Ok(Token::Plus)
-      }
-      b'~' => {
-        self.forward(1);
-        Ok(Token::Squiggle)
-      }
-      b'@' => {
-        self.forward(1);
-        Ok(Token::At)
       }
       b',' => {
         self.forward(1);
@@ -282,42 +180,33 @@ impl<'a> Tokenizer<'a> {
         self.forward(1);
         Ok(Token::Colon)
       }
-      b';' => {
-        self.forward(1);
-        Ok(Token::Semicolon)
-      }
       b'.' => {
-        if self.starts_with(b"...") {
-          self.forward(3);
-          Ok(Token::Spread)
-        } else {
-          self.forward(1);
-          let is_number = |c| matches!(c, b'0'..=b'9');
+        self.forward(1);
+        let is_number = |c| matches!(c, b'0'..=b'9');
 
-          if !self.is_eof() && is_number(self.curr_byte().unwrap()) {
-            let start = self.pos - 1;
-            self.scan(is_number);
-            Ok(Token::Number(self.since(start)))
-          } else {
-            Ok(Token::Dot)
-          }
+        if !self.is_eof() && is_number(self.curr_byte().unwrap()) {
+          let start = self.pos - 1;
+          self.scan(is_number);
+          Ok(Token::Number(self.since(start)))
+        } else {
+          Ok(Token::Dot)
         }
       }
       b'{' => {
         self.forward(1);
-        if self.starts_with(b"#") {
-          self.forward(1);
-          Ok(Token::BlockOpen)
-        } else if self.starts_with(b"/") {
-          self.forward(1);
-          Ok(Token::BlockClose)
-        } else {
-          Ok(Token::CurlyOpen)
-        }
+        Ok(Token::CurlyOpen)
       }
       b'}' => {
         self.forward(1);
         Ok(Token::CurlyClose)
+      }
+      b'(' => {
+        self.forward(1);
+        Ok(Token::ParenOpen)
+      }
+      b')' => {
+        self.forward(1);
+        Ok(Token::ParenClose)
       }
       b'0'..=b'9' => {
         let start = self.pos;
@@ -338,18 +227,6 @@ impl<'a> Tokenizer<'a> {
         self.forward(1);
         Ok(Token::SquareClose)
       }
-      b'(' => {
-        self.forward(1);
-        Ok(Token::ParenOpen)
-      }
-      b')' => {
-        self.forward(1);
-        Ok(Token::ParenClose)
-      }
-      b'#' => {
-        self.forward(1);
-        Ok(Token::Hash)
-      }
       b'"' => {
         self.forward(1);
         Ok(Token::DoubleQuote)
@@ -357,18 +234,6 @@ impl<'a> Tokenizer<'a> {
       b'\'' => {
         self.forward(1);
         Ok(Token::SingleQuote)
-      }
-      b'=' => {
-        if self.starts_with(b"===") {
-          self.forward(3);
-          Ok(Token::TrippleEquals)
-        } else if self.starts_with(b"==") {
-          self.forward(2);
-          Ok(Token::DoubleEquals)
-        } else {
-          self.forward(1);
-          Ok(Token::Equals)
-        }
       }
       b'a'..=b'z' | b'A'..=b'Z' => {
         Ok(Token::Word(self.search(|c| -> bool {

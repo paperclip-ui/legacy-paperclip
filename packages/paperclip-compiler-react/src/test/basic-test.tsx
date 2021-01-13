@@ -358,6 +358,34 @@ describe(__filename + "#", () => {
       {
         Entry: `<div data-pc-6efc9302="true" data-pc-3402f12b="true"><div data-pc-b9b0d72d="true" data-pc-4aa1ff40="true">click me!</div></div>`
       }
+    ],
+    [
+      "Can render nodes with &&, !, and ||",
+      {
+        "/entry.pc": `
+          <div export component as="Entry">
+            {show && <span>A</span>}
+            {!show && <span>B</span>}
+            {false && <span>C</span>}
+            {!false && <span>D</span>}
+            {true && <span>E</span>}
+            {0 && <span>F</span>}
+            {0 && <span>G</span> || <span>H</span>}
+            {false || <span>I</span>}
+            {!!show && <span>J</span>}
+            {(1 || 2) && <span>K</span>}
+            
+          </div>
+        `
+      },
+      {
+        Entry: {
+          show: true
+        }
+      },
+      {
+        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true"><span data-pc-98ff9580="true" data-pc-3402f12b="true">A</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">D</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">E</span>0<span data-pc-98ff9580="true" data-pc-3402f12b="true">H</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">I</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">J</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">K</span></div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {

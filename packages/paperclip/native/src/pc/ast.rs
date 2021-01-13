@@ -79,7 +79,7 @@ pub struct Slot {
   // !{slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
-  pub script: js_ast::Statement,
+  pub script: js_ast::Expression,
   pub location: Location,
 }
 
@@ -104,7 +104,7 @@ pub struct AttributeStringValue {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeSlotValue {
-  pub script: js_ast::Statement,
+  pub script: js_ast::Expression,
   pub location: Location,
 }
 
@@ -143,7 +143,7 @@ impl fmt::Display for AttributeDynamicStringValue {
 pub enum AttributeDynamicStringPart {
   Literal(AttributeDynamicStringLiteral),
   ClassNamePierce(AttributeDynamicStringClassNamePierce),
-  Slot(js_ast::Statement),
+  Slot(js_ast::Expression),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -225,7 +225,7 @@ pub struct SpreadAttribute {
   // !{...slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
-  pub script: js_ast::Statement,
+  pub script: js_ast::Expression,
   pub location: Location,
 }
 
@@ -237,14 +237,14 @@ impl fmt::Display for SpreadAttribute {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ShorthandAttribute {
-  pub reference: js_ast::Statement,
+  pub reference: js_ast::Expression,
   pub location: Location,
 }
 
 impl ShorthandAttribute {
   pub fn get_name(&self) -> Result<&String, &'static str> {
     match &self.reference {
-      js_ast::Statement::Reference(reference) => {
+      js_ast::Expression::Reference(reference) => {
         if reference.path.len() == 1 {
           Ok(&reference.path[0].name)
         } else {
