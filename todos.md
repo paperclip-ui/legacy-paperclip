@@ -2,6 +2,7 @@
 
 - &&, || and !
   - wire up with react compiler (write tests)
+  - update inferred types
   - update vscode extension
 
 ## Next

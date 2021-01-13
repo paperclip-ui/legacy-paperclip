@@ -30,7 +30,11 @@ fn evaluate_expression<'a>(
   }
 }
 
-fn evaluate_conjuction<'a>(conjunction: &ast::Conjunction, depth: u32, context: &'a mut PCContext) -> Result<virt::JsValue, RuntimeError> {
+fn evaluate_conjuction<'a>(
+  conjunction: &ast::Conjunction,
+  depth: u32,
+  context: &'a mut PCContext,
+) -> Result<virt::JsValue, RuntimeError> {
   let left = evaluate_expression(&conjunction.left, depth, context)?;
 
   match conjunction.operator {
@@ -44,9 +48,7 @@ fn evaluate_conjuction<'a>(conjunction: &ast::Conjunction, depth: u32, context: 
               Ok(left)
             }
           }
-          _ => {
-            Ok(left)
-          }
+          _ => Ok(left),
         }
       } else {
         evaluate_expression(&conjunction.right, depth, context)
@@ -62,10 +64,14 @@ fn evaluate_conjuction<'a>(conjunction: &ast::Conjunction, depth: u32, context: 
   }
 }
 
-fn evaluate_not<'a>(not: &ast::Not, depth: u32, context: &'a mut PCContext) -> Result<virt::JsValue, RuntimeError> { 
+fn evaluate_not<'a>(
+  not: &ast::Not,
+  depth: u32,
+  context: &'a mut PCContext,
+) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
     source: ExprSource::new(context.uri.clone(), not.location.clone()),
-    value: !evaluate_expression(&not.expression, depth, context)?.truthy()
+    value: !evaluate_expression(&not.expression, depth, context)?.truthy(),
   }))
 }
 

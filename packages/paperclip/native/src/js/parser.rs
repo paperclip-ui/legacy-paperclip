@@ -42,15 +42,9 @@ fn parse_conjunction<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expre
   }
 
   let operator_option = match context.tokenizer.peek(1)? {
-    Token::LogicalAnd => {
-      Some(ast::ConjunctionOperatorKind::And)
-    }
-    Token::LogicalOr => {
-      Some(ast::ConjunctionOperatorKind::Or)
-    }
-    _ =>{
-      None
-    }
+    Token::LogicalAnd => Some(ast::ConjunctionOperatorKind::And),
+    Token::LogicalOr => Some(ast::ConjunctionOperatorKind::Or),
+    _ => None,
   };
 
   if let Some(operator) = operator_option {
@@ -60,7 +54,7 @@ fn parse_conjunction<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expre
       left: Box::new(left),
       operator,
       right: Box::new(right),
-      location: Location::new(start, context.tokenizer.utf16_pos)
+      location: Location::new(start, context.tokenizer.utf16_pos),
     }))
   } else {
     Ok(left)
@@ -90,7 +84,7 @@ fn parse_not<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, P
   context.tokenizer.next()?;
   Ok(ast::Expression::Not(ast::Not {
     location: Location::new(start, context.tokenizer.utf16_pos),
-    expression: Box::new(parse_expression(context)?)
+    expression: Box::new(parse_expression(context)?),
   }))
 }
 

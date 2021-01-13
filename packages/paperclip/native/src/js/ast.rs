@@ -70,16 +70,14 @@ impl Expression {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Not {
   pub location: Location,
-  pub expression: Box<Expression>
+  pub expression: Box<Expression>,
 }
-
 
 impl fmt::Display for Not {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "!{}", self.expression.to_string())
   }
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Conjunction {
@@ -92,21 +90,22 @@ pub struct Conjunction {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub enum ConjunctionOperatorKind {
   And,
-  Or
+  Or,
 }
-
 
 impl fmt::Display for Conjunction {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let operator = match self.operator {
-      ConjunctionOperatorKind::And => {
-        "&&"
-      },
-      ConjunctionOperatorKind::Or => {
-        "||"
-      }
+      ConjunctionOperatorKind::And => "&&",
+      ConjunctionOperatorKind::Or => "||",
     };
-    write!(f, "{}{}{}", self.left.to_string(), operator, self.right.to_string())
+    write!(
+      f,
+      "{}{}{}",
+      self.left.to_string(),
+      operator,
+      self.right.to_string()
+    )
   }
 }
 

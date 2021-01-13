@@ -3,8 +3,7 @@ use crate::base::tokenizer::{BaseTokenizer, Position};
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
-
-  // && 
+  // &&
   LogicalAnd,
   LogicalOr,
 
@@ -29,7 +28,6 @@ pub enum Token<'a> {
   // ]
   SquareClose,
 
-
   // "
   DoubleQuote,
 
@@ -39,7 +37,6 @@ pub enum Token<'a> {
   //
   Whitespace,
 
-
   // .
   Dot,
 
@@ -48,9 +45,6 @@ pub enum Token<'a> {
 
   // :
   Colon,
-
-
-
 
   // div, blay
   Word(&'a str),
@@ -150,7 +144,7 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           Ok(Token::Byte(c))
         }
-      },
+      }
       b'|' => {
         if self.starts_with(b"||") {
           self.forward(2);
@@ -159,7 +153,7 @@ impl<'a> Tokenizer<'a> {
           self.forward(1);
           Ok(Token::Byte(c))
         }
-      },
+      }
       b'<' => {
         self.forward(1);
         Ok(Token::LessThan)
@@ -189,7 +183,6 @@ impl<'a> Tokenizer<'a> {
           self.scan(is_number);
           Ok(Token::Number(self.since(start)))
         } else {
-          
           Ok(Token::Dot)
         }
       }

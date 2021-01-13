@@ -293,33 +293,46 @@ const inferChildren = (children: Node[], context: Context) =>
   );
 
 const inferJsExpression = (
-  statement: JsExpression,
+  expression: JsExpression,
   context: Context,
   defaultInference: Inference = ANY_INFERENCE
 ) => {
-  switch (statement.jsKind) {
+  switch (expression.jsKind) {
     case JsExpressionKind.Reference: {
       context = addContextInferenceProperty(
-        statement.path,
+        expression.path,
         defaultInference,
         context
       );
       break;
     }
     case JsExpressionKind.Node: {
-      context = inferNode(statement, false, context);
+      context = inferNode(expression, false, context);
       break;
     }
     case JsExpressionKind.Object: {
-      for (const property of statement.properties) {
+      for (const property of expression.properties) {
         context = inferJsExpression(property.value, context, defaultInference);
       }
       break;
     }
     case JsExpressionKind.Array: {
-      for (const value of statement.values) {
+      for (const value of expression.values) {
         context = inferJsExpression(value, context, defaultInference);
       }
+      break;
+    }
+    case JsExpressionKind.Conjunction: {
+      context = inferJsExpression(expression.left, context, defaultInference);
+      context = inferJsExpression(expression.right, context, defaultInference);
+      break;
+    }
+    case JsExpressionKind.Not: {
+      context = inferJsExpression(
+        expression.expression,
+        context,
+        defaultInference
+      );
       break;
     }
   }

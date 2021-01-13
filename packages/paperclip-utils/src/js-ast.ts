@@ -9,7 +9,8 @@ export enum JsExpressionKind {
   String = "String",
   Number = "Number",
   Boolean = "Boolean",
-  Conjunction = "Conjunction"
+  Conjunction = "Conjunction",
+  Not = "Not"
 }
 
 type BaseJsExpression<TKind extends JsExpressionKind> = {
@@ -24,7 +25,8 @@ export type JsObjectProperty = {
 };
 
 export enum JsConjunctionOperatorKind {
-  And = "And"
+  And = "And",
+  Or = "Or"
 }
 
 export type JsConjunction = {
@@ -53,6 +55,11 @@ export type JsBoolean = {
   location: SourceLocation;
 } & BaseJsExpression<JsExpressionKind.Boolean>;
 
+export type JsNot = {
+  expression: JsExpression;
+  location: SourceLocation;
+} & BaseJsExpression<JsExpressionKind.Not>;
+
 export type JsNumber = {
   value: number;
   location: SourceLocation;
@@ -75,4 +82,6 @@ export type JsExpression =
   | JsArray
   | JsNumber
   | JsString
-  | JsBoolean;
+  | JsBoolean
+  | JsConjunction
+  | JsNot;
