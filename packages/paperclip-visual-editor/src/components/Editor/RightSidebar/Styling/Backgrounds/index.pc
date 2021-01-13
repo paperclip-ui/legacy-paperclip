@@ -1,5 +1,9 @@
 <import src="components/Pane/index.pc" as="Pane" />
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Preview">
   <Pane title="Backgrounds" controls={
     <button>
@@ -32,6 +36,10 @@
   </Pane>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <li export component as="Item" className:selected="selected"> 
   <style>
     padding: 5px 10px;

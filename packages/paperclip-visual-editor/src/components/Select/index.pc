@@ -27,14 +27,26 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="default" className="select select--open $theme.background-2"> 
   <span className="label">{placeholder}</span>
   <i />
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <default export component as="Preview" {placeholder}>
 </default>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div className="$theme.background-1 $theme.font-default">
   <Preview />
 </div>

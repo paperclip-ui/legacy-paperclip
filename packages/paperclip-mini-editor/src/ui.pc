@@ -179,11 +179,19 @@
 </style>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Tab" className="tab" {onClick} className:selected="tab--selected">
   {children}
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="CodePane" className="code">
   <div className="tabs">  
     {tabs}
@@ -194,6 +202,10 @@
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="PreviewPane" className="Preview" {style?}>
   <div className="header">
     <span className="bolt">⚡️</span> Preview
@@ -201,6 +213,10 @@
   <iframe ref={iframeRef}></iframe>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Editor" 
   {style?} 
   className="Editor" 
@@ -208,6 +224,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { title: "Mini Editor", width: 1024, height: 768, x: 241, y: 26 }
+-->
 <Editor responsive>
   <CodePane tabs={<fragment>
     <Tab>component.pc</Tab>

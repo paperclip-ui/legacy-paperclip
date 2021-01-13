@@ -63,16 +63,32 @@
   }
 
 </style>
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Container" {style?} className="container">
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="FromOutline" {style} className="from-outline">
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="ToOutline" {style} className="to-outline">
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="MeasuringStick" {style} className="measuring-stick">
   <span className="measuring-label" 
     className:vertical="measuring-label--vertical"
@@ -81,9 +97,17 @@
     >{distance}</span>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Guide" {style} className="guide">
 </div>
 
+
+<!--
+  @frame { title: "Measurements", width: 1024, height: 768, x: 119, y: 183 }
+-->
 <div className="$theme.font-default">
   <ToOutline style="width: 100px; height: 100px;" />
   <ToOutline style="left: 200px; top: 100px; width: 100px; height: 100px;" />

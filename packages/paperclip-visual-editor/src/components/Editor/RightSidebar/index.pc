@@ -7,6 +7,10 @@
 <import src="./MoreStyles/index.pc" as="MoreStyles" />
 <import src="./Inspector/index.pc" as="Inspector" />
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="default" className="right-sidebar $theme.font-default $theme.background-1">
   <style>
     width: 250px;
@@ -16,6 +20,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Preview">
   <default>
     <Styling.Preview />
@@ -30,10 +38,18 @@
   </default>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="InspectorPreview2">
   <default>
     <Inspector.Preview />
   </default>
 </div>
 
+
+<!--
+  @frame { title: "Properties", width: 1024, height: 768, x: 312, y: 110 }
+-->
 <Preview />

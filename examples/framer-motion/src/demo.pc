@@ -14,10 +14,18 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Box" className="box">
   {children}
 </div>
 
+
+<!--
+  @frame { title: "Box", width: 1024, height: 768, x: 33, y: -86 }
+-->
 <Box>
   A box
 </Box>

@@ -9,13 +9,13 @@
 </export>
 
 <!--
-  @frame { width: 1024, height: 768, x: 336, y: -142 }
+  @frame { visible: false, width: 1024, height: 768, x: 334, y: -144 }
 -->
 <default />
 
 
 <!--
-  @frame { width: 1024, height: 768, x: 39, y: 776 }
+  @frame { visible: false, width: 1024, height: 768, x: 37, y: 776 }
 -->
 <div>
   <span>okay</span>

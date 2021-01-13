@@ -37,14 +37,26 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="ButtonGroup" className="button-group $theme.font-default $theme.background-2">
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 42, y: 31 }
+-->
 <button export component as="Button" className="button" className:selected="button--selected" className:hover="button--hover">
   {children}
 </button>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 44, y: 31 }
+-->
 <div className="preview $theme.font-default">
   <ButtonGroup>
     <Button selected>a</Button>
@@ -54,6 +66,10 @@
   </ButtonGroup>
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 64, y: 38 }
+-->
 <div className="preview $theme.font-default">
   <ButtonGroup>
     <Button>a</Button>
@@ -63,6 +79,10 @@
   </ButtonGroup>
 </div>
 
+
+<!--
+  @frame { title: "Button Group", width: 1024, height: 768, x: 0, y: 0 }
+-->
 <div className="preview $theme.font-default">
   <ButtonGroup>
     <Button>a</Button>

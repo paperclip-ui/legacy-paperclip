@@ -266,9 +266,17 @@ https://www.ibm.com/design/language/color
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="ColorBox" className="ColorBox" style="background: {value}">
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="Icon" 
   className="Icon" 
   className:folderOpen="folderOpen"
@@ -279,18 +287,34 @@ https://www.ibm.com/design/language/color
   className:isStyle="isMixin">
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="Title" className="Title" className:selected="selected">
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="Group" className="Group">
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="Subgroup" className="Subgroup" style="--depth:{depth};">
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="LeftSidebar" className="LeftSidebar">
   <div className="Header">
     Header content
@@ -337,6 +361,10 @@ https://www.ibm.com/design/language/color
   </Group>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="Color" className="Color" className:dark="dark" className:light="light" style="background: var({varName})">
   <div className="info">
     <div className="name">{varName}</div>
@@ -348,6 +376,10 @@ https://www.ibm.com/design/language/color
 </div>
 
 
+
+<!--
+  @frame { title: "Docco", width: 1024, height: 768, x: 127, y: 127 }
+-->
 <div className="Container">
   <LeftSidebar />
   <div className="Content">

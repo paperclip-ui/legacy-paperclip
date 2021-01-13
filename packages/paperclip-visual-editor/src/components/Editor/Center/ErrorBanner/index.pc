@@ -6,6 +6,10 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 142, y: 144 }
+-->
 <div export component as="ErrorBanner" {onClick} className="error-banner" style="position: fixed; cursor: pointer; bottom: 0; width: 100%; word-break: break-word; box-sizing: border-box; font-family: Helvetica; padding: 10px; background: rgb(255, 152, 152); color: rgb(138, 31, 31); line-height: 1.1em">
   <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">
     Error in {filePath}
@@ -15,5 +19,9 @@
   </div>
 </div>
 
+
+<!--
+  @frame { title: "Error Banner" }
+-->
 <ErrorBanner filePath="some file path" message="Message" />
 

@@ -119,25 +119,53 @@
 
 </style>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 79, y: 156 }
+-->
 <div export component as="C3" className="_col _col3 {className?}">
   {children}
 </div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 62, y: 125 }
+-->
 <div export component as="C6" className="_col _col6 {className?}">
   {children}
 </div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 69, y: 114 }
+-->
 <div export component as="C9" className="_col _col9 {className?}">
   {children}
 </div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 50, y: 77 }
+-->
 <div export component as="C12" className="_col _col12 {className?}">
   {children}
 </div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 48, y: 71 }
+-->
 <div export component as="Row" className="_row {className?}">
   {children}
 </div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 73, y: 104 }
+-->
 <div export component as="Container" className="_container {className?}">
   {children}
 </div>
 
+
+<!--
+  @frame { title: "Grid", width: 1024, height: 768, x: 38, y: 69 }
+-->
 <Container>
   <Row>
     <C3>

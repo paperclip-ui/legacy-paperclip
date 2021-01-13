@@ -104,9 +104,17 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 112, y: 144 }
+-->
 <div export component as="Icon" className="icon {name} {className?}" />
 
 
+
+<!--
+  @frame { title: "Icons", width: 1024, height: 768, x: 119, y: 60 }
+-->
 <div className="preview">
   <Icon name="chaotic-1" />
   <Icon name="grow" />

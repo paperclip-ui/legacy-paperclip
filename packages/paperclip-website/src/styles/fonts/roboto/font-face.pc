@@ -22,4 +22,8 @@
     font-weight: 600;
   }
 </style>
+
+<!--
+  @frame { title: "Font Family", width: 1024, height: 768, x: 0, y: 0 }
+-->
 <preview fontFamily="Roboto" text="A quick brown fox jumped over the lazy dog" />

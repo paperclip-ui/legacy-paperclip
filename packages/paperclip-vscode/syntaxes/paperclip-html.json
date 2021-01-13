@@ -12,6 +12,9 @@
     "topNodes": {
       "patterns": [
         {
+          "include": "#slots"
+        },
+        {
           "include": "#nodes"
         }
       ]
@@ -29,9 +32,6 @@
         },
         {
           "include": "#entities"
-        },
-        {
-          "include": "#slots"
         }
       ]
     },
@@ -99,58 +99,15 @@
           ]
         },
         {
-          "begin": "(?=(<)([\\w\\-\\.]+)(?=((<\\s*)|(\\s+))(?!\\?)|\\/?>))",
-          "end": "(/>)|((</)([\\w\\-\\.]+)(>))",
-          "endCaptures": {
+          "match": "(<)([\\w\\-\\.]+)(>)",
+          "captures": {
             "1": {
-              "name": "punctuation.definition.tag.end.html"
-            },
-            "3": {
               "name": "punctuation.definition.tag.begin.html"
             },
-            "4": {
+            "2": {
               "name": "entity.name.tag.html"
-            },
-            "5": {
-              "name": "punctuation.definition.tag.end.html"
             }
-          },
-          "patterns": [
-            {
-              "begin": "(<)([\\w\\-\\.]+)(?=((<\\s*)|(\\s+))(?!\\?)|\\/?>)",
-              "end": "(?=[/]?>)",
-              "beginCaptures": {
-                "1": {
-                  "name": "punctuation.definition.tag.begin.html"
-                },
-                "2": {
-                  "name": "entity.name.tag.html"
-                },
-                "3": {
-                  "name": "punctuation.definition.tag.end.html"
-                }
-              },
-              "patterns": [
-                {
-                  "include": "#attribute"
-                }
-              ]
-            },
-            {
-              "begin": "(>)",
-              "beginCaptures": {
-                "1": {
-                  "name": "punctuation.definition.tag.end.html"
-                }
-              },
-              "end": "(?=</)",
-              "patterns": [
-                {
-                  "include": "#nodes"
-                }
-              ]
-            }
-          ]
+          }
         }
       ]
     },

@@ -1,4 +1,0 @@
-<import as="test" src="./module.pc"  />
-<div className="$test.style">
-  Something
-</div>

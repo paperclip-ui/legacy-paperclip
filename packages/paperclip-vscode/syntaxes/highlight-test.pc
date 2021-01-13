@@ -1,7 +1,12 @@
-<import as="something" src="./import-test.pc" />
 
 <style>
   /* comment */
+  @mixin test {
+
+  }
+  @mixin another-test {
+
+  }
   
   @media only screen and (max-width: 300px) {
     .rule {
@@ -10,17 +15,20 @@
   }
 
   .container {
-    @include something.default-font;
     .child {
       color: rgb(162, 202, 183);
     }
   }
 
   &.inc {
-    @include test another-test;
+    @include test;
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div class="container">
   this is another test
   <div class="child">
@@ -28,4 +36,8 @@
   </div>
 </div>
 
-<something.Something />
+
+<!--
+  @frame { visible: false }
+-->
+<Something />

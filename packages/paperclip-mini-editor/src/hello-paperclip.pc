@@ -38,13 +38,17 @@ To open the live preview, type `command + shift + p`, and select
   }
 </style>
 
-<!-- Components -->
+<!--
+  @frame { visible: false, title: "", width: 1024, height: 768, x: 64, y: 89 }
+-->
 
 <div export component as="Message" className="Message">
   {children}!
 </div>
 
-<!-- Preview -->
+<!--
+  @frame { title: "Hello Paperclip", width: 1024, height: 768, x: -56, y: -156 }
+-->
 
 <Message>
   Hello Paperclip!

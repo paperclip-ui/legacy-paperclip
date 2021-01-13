@@ -104,20 +104,28 @@ input:checked {
 </style>
 
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 192, y: 123 }
+-->
 <h1>Pure CSS Accordion <sup>2.0</sup></h1>
+
+<!--
+  @frame { title: "Pure CSS Accordion", width: 1024, height: 768, x: 44, y: -6 }
+-->
 <div class="row">
   <div class="col">
     <h2>Open <b>multiple</b></h2>
     <div class="tabs">
       <div class="tab">
-        <input type="checkbox" id="chck1">
+        <input type="checkbox" id="chck1" />
         <label class="tab-label" for="chck1">Item 1</label>
         <div class="tab-content">
           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsum, reiciendis!
         </div>
       </div>
       <div class="tab">
-        <input type="checkbox" id="chck2">
+        <input type="checkbox" id="chck2" />
         <label class="tab-label" for="chck2">Item 2</label>
         <div class="tab-content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. A, in!
@@ -129,21 +137,21 @@ input:checked {
     <h2>Open <b>one</b></h2>
     <div class="tabs">
       <div class="tab">
-        <input type="radio" id="rd1" name="rd">
+        <input type="radio" id="rd1" name="rd" />
         <label class="tab-label" for="rd1">Item 1</label>
         <div class="tab-content">
           Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eos, facilis.
         </div>
       </div>
       <div class="tab">
-        <input type="radio" id="rd2" name="rd">
+        <input type="radio" id="rd2" name="rd" />
         <label class="tab-label" for="rd2">Item 2</label>
         <div class="tab-content">
           Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil, aut.
         </div>
       </div>
       <div class="tab">
-        <input type="radio" id="rd3" name="rd">
+        <input type="radio" id="rd3" name="rd" />
         <label for="rd3" class="tab-close">Close others &times;</label>
       </div>
     </div>

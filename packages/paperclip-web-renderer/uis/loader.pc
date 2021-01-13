@@ -67,6 +67,10 @@
 
 </style>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 148, y: 52 }
+-->
 <div class="container">
 
   <div class="lds-ellipsis">

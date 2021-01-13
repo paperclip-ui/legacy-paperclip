@@ -33,10 +33,18 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <a export component as="Anchor" className="_button {className?}" className:secondary="_button--secondary" className:strong="_button--strong" {href?}>
   {children}
 </a>
 
+
+<!--
+  @frame { visible: false }
+-->
 <Anchor href="#">
   hello world
 </Anchor>

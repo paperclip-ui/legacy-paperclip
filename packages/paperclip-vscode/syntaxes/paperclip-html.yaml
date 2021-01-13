@@ -1,5 +1,6 @@
 # [PackageDev] target_format: json, ext: tmLanguage.json
 # https://github.com/microsoft/vscode/blob/master/extensions/html/syntaxes/html.tmLanguage.json
+# https://github.com/microsoft/TypeScript-TmLanguage/blob/master/TypeScriptReact.YAML-tmLanguage
 # TODOS
 # HTML entities (&quote;)
 
@@ -8,15 +9,24 @@ scopeName: text.html.paperclip-html
 fileTypes: []
 uuid: 3e3ce414-c385-42ea-a2ba-451a37ca6fd1
 patterns:
-  - include: "#nodes"
+  - include: "#topNodes"
+variables:
+  tagName: ([\w\-\.]+)
+  tagOpen: (<){{tagName}}(?=((<\s*)|(\s+))(?!\?)|\/?>)
+  # tagOpen: (<){{tagName}}(?=((<\s*)|(\s+))(?!\?)|\/?>)
+  tagClose: (</){{tagName}}(>)
+  tagOpenLookahead: (?={{tagOpen}})
 repository:
+  topNodes:
+    patterns:
+      - include: "#nodes"
   nodes:
     patterns:
       - include: "#elements"
-      - include: "#slots"
       - include: "#blocks"
       - include: "#comments"
       - include: "#entities"
+      - include: "#slots"
   elements:
     patterns:
       # Void tag elements
@@ -48,23 +58,28 @@ repository:
         patterns:
           - include: "source.pcss"
 
-      # open tag name
-      - begin: (<)([\w\-\.]+)
-        beginCaptures:
-          "1": { name: punctuation.definition.tag.begin.html }
-          "2": { name: entity.name.tag.html }
-        end: (/?>)
+      - begin: "{{tagOpenLookahead}}"
+        end: "(/>)|({{tagClose}})"
         endCaptures:
           "1": { name: punctuation.definition.tag.end.html }
+          "3": { name: punctuation.definition.tag.begin.html }
+          "4": { name: entity.name.tag.html }
+          "5": { name: punctuation.definition.tag.end.html }
         patterns:
-          - include: "#attribute"
-
-      # end tag name
-      - match: (</)([\w\-\.]+)(>)
-        captures:
-          "1": { name: punctuation.definition.tag.end.html }
-          "2": { name: entity.name.tag.html }
-          "3": { name: punctuation.definition.tag.end.html }
+          - begin: "{{tagOpen}}"
+            end: (?=[/]?>)
+            beginCaptures:
+              "1": { name: punctuation.definition.tag.begin.html }
+              "2": { name: entity.name.tag.html }
+              "3": { name: punctuation.definition.tag.end.html }
+            patterns:
+              - include: "#attribute"
+          - begin: (>)
+            beginCaptures:
+              "1": { name: punctuation.definition.tag.end.html }
+            end: (?=</)
+            patterns:
+              - include: "#nodes"
 
   # HTML Attribute
   attribute:
@@ -87,7 +102,7 @@ repository:
         patterns:
           - include: "#attributes-interior"
 
-      # <div {slot} />
+      # <div {slot} />f
       - include: "#slots"
 
   attributes-interior:
@@ -123,14 +138,21 @@ repository:
     patterns:
       # {someJavascript > 5}
       # Make sure not to capture blocks
-      - begin: ({(?!#|/))
+      - begin: ({)
         beginCaptures:
           "1": { name: punctuation.definition.tag.begin.html }
         end: (})
         endCaptures:
           "1": { name: punctuation.definition.tag.end.html }
         patterns:
+          - include: "#operators"
           - include: "#nodes"
+          - include: "#dynamic-strings"
+
+  operators:
+    patterns:
+      - match: (&&|!|\|\|)
+        name: keyword.control
   blocks:
     patterns:
       # {#if}something{/}

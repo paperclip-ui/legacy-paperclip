@@ -20,12 +20,20 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Icon" 
   className="icon {className?}"
   className:dots="icon--dots"
   className:plus="icon--plus">
 </div>
 
+
+<!--
+  @frame { title: "Icons", width: 1024, height: 768, x: 167, y: 169 }
+-->
 <div>
   <Icon dots />
   <Icon plus />

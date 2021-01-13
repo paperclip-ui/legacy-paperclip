@@ -1,4 +1,8 @@
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Header" className="header"> 
   <style>
     color: white;
@@ -11,6 +15,10 @@
 </div>
 
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 100, y: 50 }
+-->
 <div export component as="Container" className="container"> 
   <style>
     --border-color: rgb(63, 63, 63);

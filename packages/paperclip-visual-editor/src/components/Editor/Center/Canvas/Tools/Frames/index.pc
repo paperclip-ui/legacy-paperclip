@@ -95,7 +95,7 @@
 
 
 <!--
-  @frame { width: 1024, height: 768, x: -844, y: 1111 }
+  @frame { title: "Frame", width: 1024, height: 768, x: -759, y: 1217 }
 -->
 <FramesContainer>
   <style>
@@ -119,7 +119,7 @@
 
 
 <!--
-  @frame { width: 1024, height: 768, x: 308, y: 1111 }
+  @frame { visible: false, width: 1024, height: 768, x: 308, y: 1111 }
 -->
 <FramesContainer>
   <style>

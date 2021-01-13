@@ -19,10 +19,18 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="Sample" className="font {className}">
   A quick brown fox jumped over the lazy dog
 </div>
 
+
+<!--
+  @frame { title: "Font Family", width: 1024, height: 768, x: 108, y: 125 }
+-->
 <div export component as="default" style="font-family: {fontFamily}">
   <Sample className="extra-light" />
   <Sample className="light" />

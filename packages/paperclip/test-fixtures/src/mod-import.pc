@@ -1,3 +1,7 @@
 <import src="module.pc" as="test" />
 
+<!--
+  @frame { title: "Test / mod-import" }
+-->
+
 <test.SecretMessage />

@@ -2,4 +2,8 @@
 <!-- bad import -- casing is wrong -->
 <import as="Module" src="./module.pc" />
 
+
+<!--
+  @frame { title: "Test / good-input" }
+-->
 <Module.SecretMessage />

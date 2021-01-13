@@ -271,7 +271,11 @@
 </div>
 
 <!--
-  @frame { title: "Preview", width: 1024, height: 768, x: 15, y: 25 }
+  @frame { visible: false, title: "grid view", width: 1024, height: 768, x: 290, y: 142 }
+-->->->
+
+<!--
+  @frame { title: "Grid" }
 -->
 <Container export component as="Preview">
 
@@ -300,6 +304,14 @@
 
 </Container>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 383, y: -135 }
+-->
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 383, y: -135 }
+-->
 <Container export component as="PreviewEmpty">
   <Header>
     <Filter />

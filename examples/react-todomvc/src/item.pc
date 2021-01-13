@@ -1,5 +1,9 @@
 <import src="styles/global.pc"  />
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
 <fragment export component as="LabelInput">
   <input {onKeyPress} {onBlur} default-value={label} type="text" class="edit" autofocus="autofocus">
     <style>
@@ -26,6 +30,10 @@
   </input>
 </fragment>
 
+
+<!--
+  @frame { visible: false }
+-->
 <fragment export component as="TodoLabel">
   <div class="view">
     <input type="checkbox" class="toggle" onChange={onCheckChange} checked={completed}>
@@ -90,6 +98,10 @@
   </div> 
 </fragment>
 
+
+<!--
+  @frame { visible: false }
+-->
 <fragment export component as="default">
   <li class="todo" class:editing="editing" class:completed="completed">
     <style>
@@ -149,20 +161,28 @@
   </li>
 </fragment>
 
-<!-- variant previews -->
+<!--
+  @frame { visible: false }
+-->
 <fragment export component as="DefaultPreview">
   <default {completed?} {editing?}>
     <TodoLabel {label} {completed} />
   </default>
 </fragment>
 
+
+<!--
+  @frame { visible: false }
+-->
 <fragment export component as="EditingPreview">
   <default {completed}>
     <LabelInput />
   </default>
 </fragment>
 
-<!-- main preview -->
+<!--
+  @frame { visible: false }
+-->
 <div class="app">
   <ul>
     <style>

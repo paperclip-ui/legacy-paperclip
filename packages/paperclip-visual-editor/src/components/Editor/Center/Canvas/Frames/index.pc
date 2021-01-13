@@ -2,6 +2,10 @@
 <import src="components/Theme/open-sans/font-face.pc" as="" />
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Frame" {style?} {className?}>
   <style>
     position: absolute;
@@ -16,6 +20,10 @@
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <Frame>
   <style>
     top: 50%;
