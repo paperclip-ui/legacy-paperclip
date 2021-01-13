@@ -7,7 +7,7 @@ import {
   LoadedData,
   ExprSource,
   Action
-} from "paperclip-web-renderer/node_modules/paperclip-utils";
+} from "paperclip-utils";
 import { Box, Directory, EnvOption, FSItemKind, Point, Size } from "../state";
 
 export enum ActionType {

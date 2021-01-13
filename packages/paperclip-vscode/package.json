@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "17.3.4",
+  "version": "17.3.5",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "preview": true,
@@ -157,7 +157,7 @@
   },
   "dependencies": {
     "@types/react": "^16.9.20",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "browserstack": "^1.6.1",
     "browserstack-local": "^1.4.8",
     "cheerio": "^1.0.0-rc.3",
