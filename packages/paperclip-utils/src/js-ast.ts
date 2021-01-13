@@ -10,7 +10,8 @@ export enum JsExpressionKind {
   Number = "Number",
   Boolean = "Boolean",
   Conjunction = "Conjunction",
-  Not = "Not"
+  Not = "Not",
+  Group = "Group"
 }
 
 type BaseJsExpression<TKind extends JsExpressionKind> = {
@@ -60,6 +61,11 @@ export type JsNot = {
   location: SourceLocation;
 } & BaseJsExpression<JsExpressionKind.Not>;
 
+export type JsGroup = {
+  expression: JsExpression;
+  location: SourceLocation;
+} & BaseJsExpression<JsExpressionKind.Group>;
+
 export type JsNumber = {
   value: number;
   location: SourceLocation;
@@ -79,6 +85,7 @@ export type JsExpression =
   | Reference
   | JsNode
   | JsObject
+  | JsGroup
   | JsArray
   | JsNumber
   | JsString

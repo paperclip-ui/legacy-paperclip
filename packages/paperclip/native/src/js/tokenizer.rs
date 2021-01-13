@@ -22,6 +22,12 @@ pub enum Token<'a> {
   // }
   CurlyClose,
 
+  // (
+  ParenOpen,
+
+  // )
+  ParenClose,
+
   // [
   SquareOpen,
 
@@ -193,6 +199,14 @@ impl<'a> Tokenizer<'a> {
       b'}' => {
         self.forward(1);
         Ok(Token::CurlyClose)
+      }
+      b'(' => {
+        self.forward(1);
+        Ok(Token::ParenOpen)
+      }
+      b')' => {
+        self.forward(1);
+        Ok(Token::ParenClose)
       }
       b'0'..=b'9' => {
         let start = self.pos;

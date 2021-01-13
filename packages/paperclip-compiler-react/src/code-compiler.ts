@@ -28,6 +28,7 @@ import {
   getRelativeFilePath,
   FRAGMENT_TAG_NAME,
   getParts,
+  JsConjunctionOperatorKind,
   findByNamespace,
   hasAttribute,
   VirtSheet,
@@ -1133,6 +1134,28 @@ const translateStatment = (
     statement.jsKind === JsExpressionKind.Boolean
   ) {
     return addBuffer(String(statement.value), context);
+  } else if (statement.jsKind === JsExpressionKind.Conjunction) {
+    context = translateStatment(statement.left, isRoot, false, context);
+    switch (statement.operator) {
+      case JsConjunctionOperatorKind.And: {
+        context = addBuffer(` && `, context);
+        break;
+      }
+      case JsConjunctionOperatorKind.Or: {
+        context = addBuffer(` || `, context);
+        break;
+      }
+    }
+
+    context = translateStatment(statement.right, isRoot, false, context);
+  } else if (statement.jsKind === JsExpressionKind.Not) {
+    context = addBuffer(`!`, context);
+
+    context = translateStatment(statement.expression, isRoot, false, context);
+  } else if (statement.jsKind === JsExpressionKind.Group) {
+    context = addBuffer("(", context);
+    context = translateStatment(statement.expression, isRoot, false, context);
+    context = addBuffer(")", context);
   }
 
   return context;

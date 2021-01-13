@@ -1628,4 +1628,20 @@ describe(__filename + "#", () => {
       `<style></style>truetruetrue<div data-pc-80f4925f>A</div>`
     );
   });
+
+  it(`Can parse groups ()`, async () => {
+    const graph = {
+      "/entry.pc": `
+      {(true || true) && <div>Something</div>}
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+
+    const buffer = `${stringifyLoadResult(result)}`;
+    expect(buffer).to.eql(
+      `<style></style><div data-pc-80f4925f>Something</div>`
+    );
+  });
 });

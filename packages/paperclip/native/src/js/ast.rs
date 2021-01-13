@@ -7,6 +7,7 @@ use std::fmt;
 #[serde(tag = "jsKind")]
 pub enum Expression {
   Conjunction(Conjunction),
+  Group(Group),
   Not(Not),
   Reference(Reference),
   Boolean(Boolean),
@@ -40,6 +41,7 @@ impl fmt::Display for Expression {
     match self {
       Expression::Reference(reference) => write!(f, "{}", reference.to_string()),
       Expression::Conjunction(expr) => write!(f, "{}", expr.to_string()),
+      Expression::Group(expr) => write!(f, "{}", expr.to_string()),
       Expression::Not(expr) => write!(f, "{}", expr.to_string()),
       Expression::Node(node) => write!(f, "{}", node.to_string()),
       Expression::String(value) => write!(f, "\"{}\"", value.value.to_string()),
@@ -56,6 +58,7 @@ impl Expression {
     match self {
       Expression::Reference(expr) => &expr.location,
       Expression::Conjunction(expr) => &expr.location,
+      Expression::Group(expr) => &expr.location,
       Expression::Not(expr) => &expr.location,
       Expression::Node(expr) => expr.get_location(),
       Expression::String(expr) => &expr.location,
@@ -64,6 +67,18 @@ impl Expression {
       Expression::Array(expr) => &expr.location,
       Expression::Object(expr) => &expr.location,
     }
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Group {
+  pub location: Location,
+  pub expression: Box<Expression>,
+}
+
+impl fmt::Display for Group {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "({})", self.expression.to_string())
   }
 }
 

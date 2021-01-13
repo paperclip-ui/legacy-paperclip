@@ -73,6 +73,7 @@ fn parse_expression<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expres
     Token::Minus => parse_negative_number(context),
     Token::SquareOpen => parse_array(context),
     Token::CurlyOpen => parse_object(context),
+    Token::ParenOpen => parse_group(context),
     _ => parse_word(context),
   };
 
@@ -151,6 +152,19 @@ fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression
   Ok(ast::Expression::String(ast::Str {
     value,
     location: Location::new(start_pos, context.tokenizer.utf16_pos),
+  }))
+}
+
+fn parse_group<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
+  let start = context.tokenizer.utf16_pos;
+  context.tokenizer.next()?; // eat (
+  let expression = parse_top(context)?;
+  context.tokenizer.eat_whitespace();
+  context.tokenizer.next_expect(Token::ParenClose)?; // eat )
+
+  Ok(ast::Expression::Group(ast::Group {
+    location: Location::new(start, context.tokenizer.utf16_pos),
+    expression: Box::new(expression)
   }))
 }
 

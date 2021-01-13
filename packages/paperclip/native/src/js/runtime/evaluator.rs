@@ -20,6 +20,7 @@ fn evaluate_expression<'a>(
   match expression {
     ast::Expression::Reference(reference) => evaluate_reference(reference, context),
     ast::Expression::Conjunction(conjunction) => evaluate_conjuction(conjunction, depth, context),
+    ast::Expression::Group(group) => evaluate_group(group, depth, context),
     ast::Expression::Not(conjunction) => evaluate_not(conjunction, depth, context),
     ast::Expression::Node(node) => evaluate_node(node, depth, context),
     ast::Expression::String(value) => evaluate_string(&value, context),
@@ -28,6 +29,13 @@ fn evaluate_expression<'a>(
     ast::Expression::Array(value) => evaluate_array(value, depth, context),
     ast::Expression::Object(value) => evaluate_object(value, depth, context),
   }
+}
+fn evaluate_group<'a>(
+  group: &ast::Group,
+  depth: u32,
+  context: &'a mut PCContext,
+) -> Result<virt::JsValue, RuntimeError> {
+  evaluate_expression(&group.expression, depth, context)
 }
 
 fn evaluate_conjuction<'a>(
