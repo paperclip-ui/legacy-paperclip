@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-html",
-  "version": "17.1.15",
+  "version": "17.3.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -19,6 +19,6 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "paperclip-utils": "^17.1.15"
+    "paperclip-utils": "^17.3.0"
   }
 }
