@@ -1,2 +1,0 @@
-<div export component as="default">b</div>
-<div value" />

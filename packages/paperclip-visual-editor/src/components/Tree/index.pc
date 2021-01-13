@@ -1,5 +1,9 @@
 <import src="styles/utils.pc" as="utils" />
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Node" className="node {className?}" style="--depth: {depth}">
   <style>
      .leaf {
@@ -72,6 +76,10 @@
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="FileIcon" data-extension={extension?}>
   <style>
 
@@ -90,6 +98,10 @@
 </i>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <i component as="FolderIcon">
   <style>
     --size: 1.4em;
@@ -99,6 +111,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Preview">
   <Node leaf="src" depth="0" icon={<FolderIcon />} hasChildren open>
     <Node leaf="components" icon={<FolderIcon />} hasChildren depth="1" alt open>

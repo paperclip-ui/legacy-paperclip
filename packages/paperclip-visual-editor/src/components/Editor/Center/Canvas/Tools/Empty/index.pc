@@ -1,5 +1,9 @@
 <import src="components/Theme/index.pc" as="theme" />
 
+
+<!--
+  @frame { title: "Empty State", width: 1024, height: 768, x: 0, y: -2 }
+-->
 <div export component as="CTA" className="$theme.font-default">
   <style>
     position: absolute;

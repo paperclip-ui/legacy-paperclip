@@ -1,6 +1,10 @@
 <import src="components/Select/index.pc" as="Select" />
 <import src="styles/utils.pc" as="utils" />
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Preview">
   
   <div>
@@ -42,6 +46,10 @@
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <ul component as="PropertyList">
   <style>
     list-style-type: none;
@@ -51,6 +59,10 @@
   {children}
 </ul>
 
+
+<!--
+  @frame { visible: false }
+-->
 <li component as="PropertyItem">
   <style>
     list-style-type: none;

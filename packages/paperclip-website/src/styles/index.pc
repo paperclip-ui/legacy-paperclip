@@ -581,6 +581,10 @@
 
 </Home>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 725, y: -252 }
+-->
 <div export component as="Footer">
     <style>
 

@@ -11,6 +11,10 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <input export component as="default" className="input"
   {placeholder?}
   {value?}

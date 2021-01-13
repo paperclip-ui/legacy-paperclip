@@ -2,6 +2,10 @@
 <import src="components/Tree/index.pc" as="Tree" />
 <import src="styles/utils.pc" as="utils" />
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="CubeIcon">
   <style>
     --size: 1.3em;
@@ -11,6 +15,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="SocketIcon">
   <style>
     --size: 1.3em;
@@ -21,6 +29,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="InsideIcon">
   <style>
     --size: 1.3em;
@@ -31,6 +43,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="PlugIcon">
   <style>
     --size: 1em;
@@ -41,6 +57,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="ShadowIcon" className:bw="bw">
   <style>
     --size: 0.8em;
@@ -54,6 +74,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="SquareIcon">
   <style>
     --size: 1.1em;
@@ -66,6 +90,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="PaintIcon">
   <style>
     --size: 1.2em;
@@ -77,6 +105,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="TextIcon">
   <style>
     --size: 0.9em;
@@ -88,6 +120,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="DiamondIcon">
   <style>
     --size: 1em;
@@ -99,6 +135,10 @@
   </style>
 </i>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="FileInfo">
   <!-- file name -->
   <span>
@@ -119,6 +159,10 @@
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <Pane export component as="SymbolsPane" title="Open" primary>
   <Tree.Node depth="0" selected open leaf={<FileInfo fileName="Button.pc" dirPath="src/components" />} controls={<span>&times</span>} icon={<Tree.FileIcon extension="pc" />} />
   <Tree.Node depth="0" open leaf="Button.pc" icon={<Tree.FileIcon extension="pc" />} />
@@ -173,4 +217,8 @@
   </Tree.Node>
 </Pane>
 
+
+<!--
+  @frame { visible: false }
+-->
 <SymbolsPane export component as="Preview" />

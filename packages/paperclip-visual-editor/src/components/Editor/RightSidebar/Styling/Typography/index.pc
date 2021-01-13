@@ -45,6 +45,10 @@ TODO:
   }
 </style>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 4, y: 52 }
+-->
 <div export component as="Preview" className="$theme.font-default">
   <Pane title="Typography" controls={<fragment><icons.Icon dots /></fragment>}>
     <Pane.Content>
@@ -87,4 +91,8 @@ TODO:
   </Pane>
 </div>
 
+
+<!--
+  @frame { title: "Typography", width: 1024, height: 768, x: 188, y: -121 }
+-->
 <Preview />

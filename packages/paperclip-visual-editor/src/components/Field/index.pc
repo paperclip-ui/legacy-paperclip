@@ -38,6 +38,10 @@
   
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="default" className="field" 
   className:col1="field--col1" 
   className:inline="field--inline" 
@@ -48,6 +52,10 @@
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div className="$theme.font-default">
   <Select />
 </div>

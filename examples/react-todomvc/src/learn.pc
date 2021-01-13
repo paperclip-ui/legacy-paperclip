@@ -122,6 +122,10 @@
 
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="default" class="learn-bar">
   <aside class="learn">
     <header>

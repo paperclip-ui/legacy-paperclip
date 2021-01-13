@@ -3,6 +3,10 @@
 <import src="components/List/index.pc" as="List" />
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="default" className="$theme.font-default $theme.background-1">
   <Pane title="More" noMore>
     <List>
@@ -13,8 +17,16 @@
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Preview">
   <default />
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <Preview />

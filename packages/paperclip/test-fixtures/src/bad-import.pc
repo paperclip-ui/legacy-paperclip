@@ -1,3 +1,8 @@
 
-<!-- bad import -- casing is wrong -->
+
+
+<!--
+  @frame { title: "Test / bad import" }
+-->
+
 <import src="./Module.pc" />

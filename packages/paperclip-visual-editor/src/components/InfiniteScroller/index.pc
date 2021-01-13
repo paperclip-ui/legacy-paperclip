@@ -21,6 +21,10 @@
   <Resizer style={resizerStyle} />
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="Resizer" {style}>
   <style>
     height: 100%;
@@ -37,7 +41,7 @@
 
 
 <!--
-  @frame { width: 472, height: 454, x: 0, y: 0 }
+  @frame { visible: false, width: 472, height: 454, x: 0, y: 0 }
 -->
 <Container>
   <style>
@@ -71,7 +75,7 @@
 </Container>
 
 <!--
-  @frame { width: 1024, height: 768, x: -42, y: 957 }
+  @frame { visible: false, width: 1024, height: 768, x: -42, y: 957 }
 -->
 <div>
   <Container resizerStyle="height: 2000px;">

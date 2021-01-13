@@ -51,6 +51,10 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
 <div export component as="Box" {style} className="box"
   className:left="box--left"
   className:right="box--right"
@@ -58,6 +62,11 @@
   className:bottom="box--bottom">
   {children}
 </div>
+
+
+<!--
+  @frame { title: "Tooltip" }
+-->
 <div className="$theme.font-default" style="position: relative; left: 100px; top: 100px"> 
   <Box bottom style="top: 100px; left: 100px;">
     some content

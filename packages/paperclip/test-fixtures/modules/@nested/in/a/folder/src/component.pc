@@ -1,9 +1,22 @@
 <import src="test.pc" as="test" />
+
+<!--
+  @frame { visible: false, title: "Test / modu le" }
+-->
+
 <div export component as="default">
   Some Module
   <test />
 </div>
+
+<!--
+  @frame { visible: false }
+-->
 something like that
 
+
+<!--
+  @frame { visible: false }
+-->
 
 <default />

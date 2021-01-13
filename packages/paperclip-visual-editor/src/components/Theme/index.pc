@@ -110,19 +110,39 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="Section" className="section">
   <h3>{title}</h3>
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div component as="Color" className="color {className?}" className:dark="color--dark" style="background: var({value});">
   var(--background-1)
 </div> 
 
+
+<!--
+  @frame { visible: false }
+-->
 <Section title="Typography">
 </Section>
+
+<!--
+  @frame { visible: false }
+-->
 <Section title="Colors">
   <Color value="--background-1" dark />
 </Section>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 58, y: 37 }
+-->
 <Section title="Spacing">
 </Section>

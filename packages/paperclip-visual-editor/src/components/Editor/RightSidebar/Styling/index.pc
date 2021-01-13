@@ -5,6 +5,10 @@
 <import src="./Backgrounds/index.pc" as="Background" />
 <import src="./Filters/index.pc" as="Filters" />
 
+
+<!--
+  @frame { title: "Properties", width: 1024, height: 768, x: 100, y: 67 }
+-->
 <div export component as="Preview">
   <Selector.Preview />
   <Typography.Preview />

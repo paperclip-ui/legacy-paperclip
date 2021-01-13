@@ -14,15 +14,27 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <ul export component as="default" className="list">
   {children}
 </ul>
+
+<!--
+  @frame { visible: false }
+-->
 <li export component as="Item" 
 className="item"
 className:alt="item--alt">
   {children}
 </li>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div className="preview $theme.font-default $theme.background-1">
   <default>
     <Item>Item</Item>

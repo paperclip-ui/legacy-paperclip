@@ -1,5 +1,9 @@
 
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 89, y: -10 }
+-->
 <div export component as="Preview"> 
   <style>
     width: 100%;

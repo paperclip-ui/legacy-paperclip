@@ -282,7 +282,15 @@
 	}
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <h2>Toggle 'em</h2>
+
+<!--
+  @frame { title: "Pure CSS Buttons", width: 1024, height: 768, x: 175, y: 81 }
+-->
 <ul class="tg-list">
   <li class="tg-list-item">
     <h4>Light</h4>

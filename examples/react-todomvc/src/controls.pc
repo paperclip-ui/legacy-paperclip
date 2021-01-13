@@ -94,10 +94,18 @@ button {
 }
 </style>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
 <li export component as="Filter">
   <a {href} class:active="active">{label}</a>
 </li>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="default">
   <footer class="footer">
     <span class="todo-count">
@@ -112,6 +120,10 @@ button {
   </footer>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="DefaultPreview">
   <default
     itemsLeftLabel={<span><strong>1</strong> item left</span>}
@@ -123,4 +135,8 @@ button {
   />
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <DefaultPreview />

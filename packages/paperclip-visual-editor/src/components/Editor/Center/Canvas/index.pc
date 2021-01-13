@@ -9,14 +9,26 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Canvas" {style?} {onMouseMove?} {onWheel?} className="canvas $theme.full-wh">
   {children}
 </div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Inner" {style?} className="inner $theme.full-wh">
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <Canvas />
 
