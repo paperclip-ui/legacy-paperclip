@@ -1,11 +1,7 @@
 import { VariableMap, ColorFormat, TypographyMap } from "./state";
 import Layer from "zeplin-extension-style-kit/elements/layer";
-import FontFace from "zeplin-extension-style-kit/elements/fontFace";
 import TextStyle from "zeplin-extension-style-kit/elements/textStyle";
-import Color from "zeplin-extension-style-kit/values/color";
-import RuleSet from "zeplin-extension-style-kit/ruleSet";
-import * as zmodel from "@zeplin/extension-model";
-import { castLayer, castColor } from "./cast";
+import { castLayer } from "./cast";
 import { generateIdentifier, pascalCase } from "./utils";
 import { camelCase, omit } from "lodash";
 
@@ -136,75 +132,6 @@ export const compileLayers = (
   buffer.push(`<import src="../tokens/colors.pc" />\n`);
   buffer.push(`<import as="typography" src="../tokens/typography.pc" />\n`);
   buffer.push(`<import src="../tokens/spacing.pc" />\n\n`);
-  buffer.push(`<style>\n`);
-
-  const textMixinMap = {};
-  // compile the styles first
-  for (const rawLayer of layers) {
-    const className = generateIdentifier(rawLayer.name);
-    buffer.push(`  .${className} {\n`);
-    const castedLayer = castLayer(rawLayer);
-    const layer = new Layer(castedLayer);
-
-    for (const decl of layer.style.declarations) {
-      if (/^(width|height)$/.test(decl.name)) {
-        continue;
-      }
-      buffer.push(
-        `    ${decl.name}: ${decl.getValue(
-          { colorFormat, densityDivisor: 1, unitlessLineHeight: false },
-          variables
-        )};\n`
-      );
-    }
-
-    let mixedTextStyle = {};
-
-    for (const textStyle of castedLayer.textStyles) {
-      Object.assign(mixedTextStyle, textStyle);
-    }
-
-    for (const mixinName in textStyles) {
-      const mixin = textStyles[mixinName];
-      const isMatch = Object.keys(mixin).every(key => {
-        const value = mixin[key];
-        return key == "name" || mixedTextStyle[key] == value;
-      });
-
-      if (isMatch) {
-        if (!textMixinMap[className]) {
-          textMixinMap[className] = [];
-        }
-        textMixinMap[className].push(mixinName);
-        mixedTextStyle = omit(mixedTextStyle, Object.keys(mixin));
-      }
-    }
-    const decls = layer.getLayerTextStyleDeclarations(mixedTextStyle);
-
-    for (const decl of decls) {
-      // Zeplin keeps d
-      if (!mixedTextStyle[camelCase(decl.name)]) {
-        continue;
-      }
-      buffer.push(
-        `    ${decl.name}: ${decl.getValue(
-          { colorFormat, densityDivisor: 1, unitlessLineHeight: false },
-          variables
-        )};\n`
-      );
-    }
-
-    buffer.push(`    &.absolute {\n`);
-    buffer.push(`      position: absolute;\n`);
-    buffer.push(`      left: ${rawLayer.rect.x}px;\n`);
-    buffer.push(`      top: ${rawLayer.rect.y}px;\n`);
-    buffer.push(`      width: ${rawLayer.rect.width}px;\n`);
-    buffer.push(`      height: ${rawLayer.rect.height}px;\n`);
-    buffer.push(`    }\n`);
-    buffer.push(`  }\n\n`);
-  }
-
-  buffer.push(`</style>\n\n`);
 
   // next, components
   buffer.push(`\n<!-- Components -->\n`);
@@ -215,16 +142,19 @@ export const compileLayers = (
     const componentName = pascalCase(rawLayer.name);
 
     const tagName = castedLayer.textStyles.length ? `span` : `div`;
+    const [style, textMixins] = compileLayerStyles(
+      rawLayer,
+      colorFormat,
+      variables,
+      textStyles
+    );
 
     buffer.push(
-      `<${tagName} export component as="${componentName}" className="${className}${
-        textMixinMap[className]
-          ? textMixinMap[className]
-              .map(mixinName => ` $typography.${mixinName}`)
-              .join("")
-          : ""
-      } {className?}" className:absolute>\n`
+      `<${tagName} export component as="${componentName}" className="${textMixins
+        .map(mixinName => ` $typography.${mixinName}`)
+        .join("")} {className?}" className:absolute="absolute">\n`
     );
+    buffer.push(style);
     buffer.push(`  {children}\n`);
     buffer.push(`</${tagName}>\n\n`);
   }
@@ -232,7 +162,7 @@ export const compileLayers = (
   // finally, preview
 
   buffer.push(`\n<!-- Preview -->\n`);
-  buffer.push(`<div className="preview">\n`);
+  buffer.push(`<div>\n`);
 
   for (const rawLayer of layers) {
     const componentName = pascalCase(rawLayer.name);
@@ -245,4 +175,73 @@ export const compileLayers = (
   buffer.push(`</div>\n`);
 
   return buffer.join("");
+};
+
+const compileLayerStyles = (
+  rawLayer: any,
+  colorFormat: ColorFormat,
+  variables: VariableMap,
+  textStyles: TypographyMap
+) => {
+  const buffer = ["  <style>\n"];
+  const textMixins = [];
+  const className = generateIdentifier(rawLayer.name);
+  const castedLayer = castLayer(rawLayer);
+  const layer = new Layer(castedLayer);
+
+  for (const decl of layer.style.declarations) {
+    if (/^(width|height)$/.test(decl.name)) {
+      continue;
+    }
+    buffer.push(
+      `    ${decl.name}: ${decl.getValue(
+        { colorFormat, densityDivisor: 1, unitlessLineHeight: false },
+        variables
+      )};\n`
+    );
+  }
+
+  let mixedTextStyle = {};
+
+  for (const textStyle of castedLayer.textStyles) {
+    Object.assign(mixedTextStyle, textStyle);
+  }
+
+  for (const mixinName in textStyles) {
+    const mixin = textStyles[mixinName];
+    const isMatch = Object.keys(mixin).every(key => {
+      const value = mixin[key];
+      return key == "name" || mixedTextStyle[key] == value;
+    });
+
+    if (isMatch) {
+      textMixins.push(mixinName);
+      mixedTextStyle = omit(mixedTextStyle, Object.keys(mixin));
+    }
+  }
+  const decls = layer.getLayerTextStyleDeclarations(mixedTextStyle);
+
+  for (const decl of decls) {
+    // Zeplin keeps d
+    if (!mixedTextStyle[camelCase(decl.name)]) {
+      continue;
+    }
+    buffer.push(
+      `    ${decl.name}: ${decl.getValue(
+        { colorFormat, densityDivisor: 1, unitlessLineHeight: false },
+        variables
+      )};\n`
+    );
+  }
+
+  buffer.push(`    &.absolute {\n`);
+  buffer.push(`      position: absolute;\n`);
+  buffer.push(`      left: ${rawLayer.rect.x}px;\n`);
+  buffer.push(`      top: ${rawLayer.rect.y}px;\n`);
+  buffer.push(`      width: ${rawLayer.rect.width}px;\n`);
+  buffer.push(`      height: ${rawLayer.rect.height}px;\n`);
+  buffer.push(`    }\n`);
+  buffer.push("  </style>\n");
+
+  return [buffer.join(""), textMixins];
 };
