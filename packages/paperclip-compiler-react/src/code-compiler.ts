@@ -10,9 +10,9 @@ import {
   getDefaultPart,
   getLogicElement,
   PropertyBoundAttribute,
-  Statement,
+  JsExpression,
   EXPORT_TAG_NAME,
-  StatementKind,
+  JsExpressionKind,
   getAttributeStringValue,
   getVisibleChildNodes,
   Slot,
@@ -1086,12 +1086,12 @@ const translateReferencePath = (
 };
 
 const translateStatment = (
-  statement: Statement,
+  statement: JsExpression,
   isRoot: boolean,
   shouldStringifyProp: boolean,
   context: TranslateContext
 ) => {
-  if (statement.jsKind === StatementKind.Reference) {
+  if (statement.jsKind === JsExpressionKind.Reference) {
     if (shouldStringifyProp) {
       context = translateStatment(statement, isRoot, false, context);
       context = addBuffer(" ? String(", context);
@@ -1106,9 +1106,9 @@ const translateStatment = (
     }
 
     return context;
-  } else if (statement.jsKind === StatementKind.Node) {
+  } else if (statement.jsKind === JsExpressionKind.Node) {
     return translateJSXNode((statement as any) as Node, isRoot, context);
-  } else if (statement.jsKind === StatementKind.Array) {
+  } else if (statement.jsKind === JsExpressionKind.Array) {
     context = addBuffer(`[\n`, context);
     context = startBlock(context);
     for (const value of statement.values) {
@@ -1117,7 +1117,7 @@ const translateStatment = (
     }
     context = endBlock(context);
     context = addBuffer(`]`, context);
-  } else if (statement.jsKind === StatementKind.Object) {
+  } else if (statement.jsKind === JsExpressionKind.Object) {
     context = addBuffer(`{\n`, context);
     context = startBlock(context);
     for (const { key, value } of statement.properties) {
@@ -1128,9 +1128,9 @@ const translateStatment = (
     context = endBlock(context);
     context = addBuffer(`}`, context);
   } else if (
-    statement.jsKind === StatementKind.Number ||
-    statement.jsKind === StatementKind.String ||
-    statement.jsKind === StatementKind.Boolean
+    statement.jsKind === JsExpressionKind.Number ||
+    statement.jsKind === JsExpressionKind.String ||
+    statement.jsKind === JsExpressionKind.Boolean
   ) {
     return addBuffer(String(statement.value), context);
   }

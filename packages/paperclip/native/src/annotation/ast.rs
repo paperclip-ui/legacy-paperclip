@@ -20,7 +20,7 @@ pub enum AnnotationProperty {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Declaration {
   pub name: String,
-  pub value: js_ast::Statement,
+  pub value: js_ast::Expression,
   pub location: base_ast::Location,
 }
 

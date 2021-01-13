@@ -1,62 +1,74 @@
 import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
 
-export enum StatementKind {
+export enum JsExpressionKind {
   Node = "Node",
   Reference = "Reference",
   Array = "Array",
   Object = "Object",
   String = "String",
   Number = "Number",
-  Boolean = "Boolean"
+  Boolean = "Boolean",
+  Conjunction = "Conjunction"
 }
 
-type BaseStatement<TKind extends StatementKind> = {
+type BaseJsExpression<TKind extends JsExpressionKind> = {
   jsKind: TKind;
 };
 
-export type JsNode = Node & BaseStatement<StatementKind.Node>;
+export type JsNode = Node & BaseJsExpression<JsExpressionKind.Node>;
 
 export type JsObjectProperty = {
   key: string;
-  value: Statement;
+  value: JsExpression;
 };
+
+export enum JsConjunctionOperatorKind {
+  And = "And"
+}
+
+export type JsConjunction = {
+  left: JsExpression;
+  right: JsExpression;
+  operator: JsConjunctionOperatorKind;
+} & BaseJsExpression<JsExpressionKind.Conjunction>;
+
 export type JsObject = {
   properties: JsObjectProperty[];
   location: SourceLocation;
-} & BaseStatement<StatementKind.Object>;
+} & BaseJsExpression<JsExpressionKind.Object>;
 
 export type JsArray = {
-  values: Statement[];
+  values: JsExpression[];
   location: SourceLocation;
-} & BaseStatement<StatementKind.Array>;
+} & BaseJsExpression<JsExpressionKind.Array>;
 
 export type JsString = {
   value: string;
   location: SourceLocation;
-} & BaseStatement<StatementKind.String>;
+} & BaseJsExpression<JsExpressionKind.String>;
 
 export type JsBoolean = {
   value: boolean;
   location: SourceLocation;
-} & BaseStatement<StatementKind.Boolean>;
+} & BaseJsExpression<JsExpressionKind.Boolean>;
 
 export type JsNumber = {
   value: number;
   location: SourceLocation;
-} & BaseStatement<StatementKind.Number>;
+} & BaseJsExpression<JsExpressionKind.Number>;
 
 export type Reference = {
   path: ReferencePart[];
   location: SourceLocation;
-} & BaseStatement<StatementKind.Reference>;
+} & BaseJsExpression<JsExpressionKind.Reference>;
 
 export type ReferencePart = {
   name: string;
   optional: boolean;
 };
 
-export type Statement =
+export type JsExpression =
   | Reference
   | JsNode
   | JsObject

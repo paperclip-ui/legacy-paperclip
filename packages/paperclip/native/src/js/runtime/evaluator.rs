@@ -6,26 +6,67 @@ use crate::pc::ast as pc_ast;
 use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext};
 
 pub fn evaluate<'a>(
-  expr: &ast::Statement,
+  expr: &ast::Expression,
   depth: u32,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  evaluate_statement(&expr, depth, context)
+  evaluate_expression(&expr, depth, context)
 }
-fn evaluate_statement<'a>(
-  statement: &ast::Statement,
+fn evaluate_expression<'a>(
+  expression: &ast::Expression,
   depth: u32,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  match statement {
-    ast::Statement::Reference(reference) => evaluate_reference(reference, context),
-    ast::Statement::Node(node) => evaluate_node(node, depth, context),
-    ast::Statement::String(value) => evaluate_string(&value, context),
-    ast::Statement::Boolean(value) => evaluate_boolean(&value, context),
-    ast::Statement::Number(value) => evaluate_number(&value, context),
-    ast::Statement::Array(value) => evaluate_array(value, depth, context),
-    ast::Statement::Object(value) => evaluate_object(value, depth, context),
+  match expression {
+    ast::Expression::Reference(reference) => evaluate_reference(reference, context),
+    ast::Expression::Conjunction(conjunction) => evaluate_conjuction(conjunction, depth, context),
+    ast::Expression::Not(conjunction) => evaluate_not(conjunction, depth, context),
+    ast::Expression::Node(node) => evaluate_node(node, depth, context),
+    ast::Expression::String(value) => evaluate_string(&value, context),
+    ast::Expression::Boolean(value) => evaluate_boolean(&value, context),
+    ast::Expression::Number(value) => evaluate_number(&value, context),
+    ast::Expression::Array(value) => evaluate_array(value, depth, context),
+    ast::Expression::Object(value) => evaluate_object(value, depth, context),
   }
+}
+
+fn evaluate_conjuction<'a>(conjunction: &ast::Conjunction, depth: u32, context: &'a mut PCContext) -> Result<virt::JsValue, RuntimeError> {
+  let left = evaluate_expression(&conjunction.left, depth, context)?;
+
+  match conjunction.operator {
+    ast::ConjunctionOperatorKind::And => {
+      if !left.truthy() {
+        match &*conjunction.right {
+          ast::Expression::Conjunction(conj_right) => {
+            if (conj_right.operator == ast::ConjunctionOperatorKind::Or) {
+              evaluate_expression(&conj_right.right, depth, context)
+            } else {
+              Ok(left)
+            }
+          }
+          _ => {
+            Ok(left)
+          }
+        }
+      } else {
+        evaluate_expression(&conjunction.right, depth, context)
+      }
+    }
+    ast::ConjunctionOperatorKind::Or => {
+      if left.truthy() {
+        Ok(left)
+      } else {
+        evaluate_expression(&conjunction.right, depth, context)
+      }
+    }
+  }
+}
+
+fn evaluate_not<'a>(not: &ast::Not, depth: u32, context: &'a mut PCContext) -> Result<virt::JsValue, RuntimeError> { 
+  Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
+    source: ExprSource::new(context.uri.clone(), not.location.clone()),
+    value: !evaluate_expression(&not.expression, depth, context)?.truthy()
+  }))
 }
 
 fn evaluate_node<'a>(
@@ -92,7 +133,7 @@ fn evaluate_array<'a>(
   for value in &ary.values {
     js_array
       .values
-      .push(evaluate_statement(&value, depth, context)?);
+      .push(evaluate_expression(&value, depth, context)?);
   }
   Ok(virt::JsValue::JsArray(js_array))
 }
@@ -107,7 +148,7 @@ fn evaluate_object<'a>(
   for property in &obj.properties {
     js_object.values.insert(
       property.key.to_string(),
-      evaluate_statement(&property.value, depth, context)?,
+      evaluate_expression(&property.value, depth, context)?,
     );
   }
   Ok(virt::JsValue::JsObject(js_object))

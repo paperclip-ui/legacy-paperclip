@@ -30,7 +30,7 @@ import {
   getAttributeStringValue,
   AttributeKind,
   resolveImportFile,
-  StatementKind,
+  JsExpressionKind,
   resolveImportUri,
   getMixins,
   ExportRule,
@@ -370,7 +370,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     for (const attr of element.attributes) {
       if (attr.kind === AttributeKind.KeyValueAttribute && attr.value) {
         if (attr.value.attrValueKind === AttributeValueKind.Slot) {
-          if (attr.value.script.jsKind === StatementKind.Node) {
+          if (attr.value.script.jsKind === JsExpressionKind.Node) {
             this._handleNode((attr.value as any) as Node, context);
           }
         } else if (

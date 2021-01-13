@@ -207,8 +207,8 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
   properties
 }
 
-fn add_script_property(script: &js_ast::Statement, properties: &mut BTreeMap<String, Property>) {
-  if let js_ast::Statement::Reference(reference) = script {
+fn add_script_property(script: &js_ast::Expression, properties: &mut BTreeMap<String, Property>) {
+  if let js_ast::Expression::Reference(reference) = script {
     let part = reference.path.get(0).unwrap();
     add_property(&part.name, part.optional, properties);
   }
@@ -363,7 +363,7 @@ fn evaluate_node_sheet<'a>(
       if let ast::Attribute::KeyValueAttribute(kv) = attribute {
         if let Some(value) = &kv.value {
           if let ast::AttributeValue::Slot(slot) = value {
-            if let js_ast::Statement::Node(node) = &slot.script {
+            if let js_ast::Expression::Node(node) = &slot.script {
               evaluate_node_sheet(uri, None, node, sheet, css_exports, context)?;
             }
           }
@@ -586,7 +586,7 @@ fn evaluate_slot<'a>(
   Ok(Some(virt::Node::Text(virt::Text {
     annotations: None,
     source: js_value.get_source().clone(),
-    value: if js_value.truthy() {
+    value: if js_value.truthy() || js_value.is_number() {
       js_value.to_string()
     } else {
       "".to_string()
@@ -1543,7 +1543,7 @@ fn evaluate_attribute_key_value_string<'a>(
 }
 
 fn evaluate_attribute_slot<'a>(
-  script: &js_ast::Statement,
+  script: &js_ast::Expression,
   depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {

@@ -24,9 +24,15 @@ impl JsValue {
     match self {
       JsValue::JsUndefined(_) => false,
       JsValue::JsBoolean(value) => value.value == true,
-      JsValue::JsNumber(value) => value.value != 0 as f64,
+      JsValue::JsNumber(value) => value.value != 0.0,
       JsValue::JsString(value) => (&value.value).len() != 0,
       _ => true,
+    }
+  }
+  pub fn is_number(&self) -> bool {
+    match self {
+      JsValue::JsNumber(value) => true,
+      _ => false,
     }
   }
   pub fn get_source(&self) -> &ExprSource {
