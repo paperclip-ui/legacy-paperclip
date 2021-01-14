@@ -366,7 +366,7 @@ export const getNodeExportFileName = (
     throw new Error(`document doesn't contain node`);
   }
 
-  `node-${getUniqueNodeName(node, document)}@${
+  return `node-${getUniqueNodeName(node, document)}@${
     settings.constraint.value
   }.${settings.format.toLowerCase()}`;
 };
