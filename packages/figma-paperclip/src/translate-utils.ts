@@ -16,6 +16,7 @@ export type TranslateContext = {
   indent: string;
   keyCount: number;
   fontPaths: string[];
+  currentFrameX: number;
 };
 
 export const createTranslateContext = (
@@ -33,7 +34,8 @@ export const createTranslateContext = (
   lineNumber: 0,
   indent,
   keyCount: 0,
-  fontPaths
+  fontPaths,
+  currentFrameX: 0
 });
 
 export const addBuffer = (buffer: string, context: TranslateContext) => ({

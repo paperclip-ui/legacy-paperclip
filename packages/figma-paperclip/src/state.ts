@@ -407,38 +407,52 @@ const getNodeName = memoize((node: Node, document: Document) => {
 
 //
 export const getUniqueNodeName = memoize((node: Node, document: Document) => {
-  let nodesThatShareName;
+  // let nodesThatShareName;
   let nodeName = getNodeName(node, document);
 
-  while (1) {
-    if (node.type === NodeType.Component) {
-      nodesThatShareName = flattenComponentNodes(document)
-        .filter(component => {
-          return getCleanedName(component.name) === nodeName;
-        })
-        .sort((a, b) => {
-          if (a.type == NodeType.Component) return -1;
-          if (b.type == NodeType.Component) return 1;
-          return 0;
-        });
-    } else {
-      nodesThatShareName = flattenComponentNodes(document)
-        .filter(child => {
-          return nodeName === getNodeName(child, document);
-        })
-        .sort((a, b) => {
-          if (a.type == NodeType.Component) return -1;
-          if (b.type == NodeType.Component) return 1;
-          return 0;
-        });
-    }
+  let nodesThatShareName = [];
 
-    if (nodesThatShareName.length < 2 || nodesThatShareName[0] == node) {
-      break;
-    }
-
-    nodeName += nodesThatShareName.indexOf(node) + 1;
+  if (node.type === NodeType.Component) {
+    nodesThatShareName = getAllComponents(document).filter(node => {
+      return getNodeName(node, document) === nodeName;
+    });
+  } else {
+    nodesThatShareName = flattenComponentNodes(document).filter(child => {
+      return nodeName === getNodeName(child, document);
+    });
   }
+
+  return nodeName + nodesThatShareName.indexOf(node);
+
+  // while (1) {
+  //   if (node.type === NodeType.Component) {
+  //     nodesThatShareName = flattenComponentNodes(document)
+  //       .filter(component => {
+  //         return getCleanedName(component.name) === nodeName;
+  //       })
+  //       .sort((a, b) => {
+  //         if (a.type == NodeType.Component) return -1;
+  //         if (b.type == NodeType.Component) return 1;
+  //         return 0;
+  //       });
+  //   } else {
+  //     nodesThatShareName = flattenComponentNodes(document)
+  //       .filter(child => {
+  //         return nodeName === getNodeName(child, document);
+  //       })
+  //       .sort((a, b) => {
+  //         if (a.type == NodeType.Component) return -1;
+  //         if (b.type == NodeType.Component) return 1;
+  //         return 0;
+  //       });
+  //   }
+
+  //   if (nodesThatShareName.length < 2 || nodesThatShareName[0] == node) {
+  //     break;
+  //   }
+
+  //   nodeName += nodesThatShareName.indexOf(node) + 1;
+  // }
 
   // const postfix =
   //   nodesThatShareName.length > 1 && nodesThatShareName[0] !== node

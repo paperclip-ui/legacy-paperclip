@@ -1662,4 +1662,33 @@ describe(__filename + "#", () => {
       `<style></style><a_2 data-pc-80f4925f></a_2><_a_2 data-pc-80f4925f></_a_2><$a data-pc-80f4925f></$a>`
     );
   });
+
+  it(`Includes style from element defined within conditional block`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div component as="Test">
+        {a && <span>
+          <style>
+            color: blue;
+          </style>
+        </span>}
+        {b}
+      </div>
+
+      <Test a b={true && <div>
+        <style>
+          color: red;
+        </style>
+      </div>}/>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+
+    const buffer = `${stringifyLoadResult(result)}`;
+    expect(buffer).to.eql(
+      `<style>[data-pc-bd4940fc][data-pc-bd4940fc] { color:blue; } [data-pc-188f471f][data-pc-188f471f] { color:red; }</style><div data-pc-80f4925f><span data-pc-80f4925f data-pc-bd4940fc></span><div data-pc-188f471f data-pc-80f4925f></div></div>`
+    );
+  });
 });

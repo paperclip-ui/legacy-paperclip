@@ -86,6 +86,7 @@ export const translateFigmaProjectToPaperclip = (
   if (compilerOptions.includePreviews !== false) {
     context = addBuffer(`<!-- PREVIEWS -->\n\n`, context);
     context = translatePreviews(entry.document, context);
+    // context = translatePreviews2(entry.document, context);
   }
   return context.buffer;
 };
@@ -203,10 +204,6 @@ const translateComponent = (node: Node, context: TranslateContext) => {
   const document = context.graph[context.entryFilePath].document;
 
   const componentName = getNodeComponentName(node, document);
-  const withAbsoluteLayoutAttr =
-    context.compilerOptions.includeAbsoluteLayout !== false
-      ? `data-with-absolute-layout={withAbsoluteLayout?}`
-      : ``;
 
   if (node.exportSettings && node.exportSettings.length) {
     context = addBuffer(
@@ -214,38 +211,43 @@ const translateComponent = (node: Node, context: TranslateContext) => {
         node,
         document,
         node.exportSettings[0]
-      )}" ${withAbsoluteLayoutAttr} className="${getNodeClassName(
-        node,
-        context
-      )} {className?}">\n\n`,
+      )}" className="${getNodeClassName(node, context)} {className?}">\n\n`,
       context
     );
+
+    context = startBlock(context);
+    context = translateInlineStyle(node, context);
+    context = endBlock(context);
+    context = addBuffer(`</img>\n\n`, context);
 
     return context;
   }
 
   if (isVectorLike(node)) {
+    context = addInvisibleFrame(context);
     context = addBuffer(
-      `<div export component as="${componentName}" ${withAbsoluteLayoutAttr} className="${getNodeClassName(
+      `<div export component as="${componentName}" className="${getNodeClassName(
         node,
         context
       )} {className?}" width="${node.size.x}" height="${node.size.y}">\n`,
       context
     );
     context = startBlock(context);
+    context = translateInlineStyle(node, context);
     context = endBlock(context);
     context = addBuffer(`</div>\n\n`, context);
   } else {
     const tagName = node.type === NodeType.Text ? `span` : `div`;
-
+    context = addInvisibleFrame(context);
     context = addBuffer(
-      `<${tagName} export component as="${componentName}" ${withAbsoluteLayoutAttr} className="${getNodeClassName(
+      `<${tagName} export component as="${componentName}" className="${getNodeClassName(
         node,
         context
       )} {className?}">\n`,
       context
     );
     context = startBlock(context);
+    context = translateInlineStyle(node, context);
     context = addBuffer(`{children}\n`, context);
     context = endBlock(context);
     context = addBuffer(`</${tagName}>\n\n`, context);
@@ -256,6 +258,68 @@ const translateComponent = (node: Node, context: TranslateContext) => {
       context = translateComponent(child, context);
     }
   }
+  return context;
+};
+
+const translateInlineStyle = (node: Node, context: TranslateContext) => {
+  const [layoutStyle, otherStyle] = splitLayoutStyle(
+    getNodeStyle(node, context)
+  );
+
+  if (!Object.keys(otherStyle).length && !Object.keys(layoutStyle).length) {
+    return context;
+  }
+
+  context = addBuffer(`<style>\n`, context);
+  context = startBlock(context);
+  context = addBuffer(`box-sizing: border-box;\n`, context);
+  for (const key in otherStyle) {
+    context = addBuffer(`${key}: ${otherStyle[key]};\n`, context);
+  }
+  if (Object.keys(layoutStyle).length) {
+    context = addBuffer(
+      `&:within(.absolute-position), &.absolute-position {\n`,
+      context
+    );
+    context = startBlock(context);
+    for (const key in layoutStyle) {
+      context = addBuffer(`${key}: ${layoutStyle[key]};\n`, context);
+    }
+    context = endBlock(context);
+    context = addBuffer(`}\n`, context);
+  }
+
+  context = endBlock(context);
+  context = addBuffer(`</style>\n`, context);
+  return context;
+};
+
+const addInvisibleFrame = (context: TranslateContext) => {
+  context = addBuffer(`<!--\n`, context);
+  context = startBlock(context);
+  context = addBuffer(`@frame { visible: false }\n`, context);
+  context = endBlock(context);
+  context = addBuffer(`-->\n`, context);
+  return context;
+};
+
+const VISIBLE_FRAME_PADDING = 20;
+
+const addVisibleFrame = (context: TranslateContext, node: any) => {
+  const start = context.currentFrameX + VISIBLE_FRAME_PADDING;
+
+  context = addBuffer(`<!--\n`, context);
+  context = startBlock(context);
+  context = addBuffer(
+    `@frame { title: ${JSON.stringify(node.name)}, x: ${Math.round(
+      node.absoluteBoundingBox.x
+    )}, y: ${Math.round(node.absoluteBoundingBox.y)}, width: ${Math.round(
+      node.absoluteBoundingBox.width
+    )}, height: ${Math.round(node.absoluteBoundingBox.height)} }\n`,
+    context
+  );
+  context = endBlock(context);
+  context = addBuffer(`-->\n`, context);
   return context;
 };
 
@@ -295,7 +359,7 @@ const getPreviewComponentName = (
     name = getImportedComponentModuleName(component, context) + "." + name;
   }
 
-  return name.replace(/^_+/g, "C_");
+  return name;
 };
 
 const translateComponentPreview = (
@@ -304,19 +368,23 @@ const translateComponentPreview = (
   context: TranslateContext
 ) => {
   // Note that previews are exported so that they can be used in other component files.
+
+  context = addInvisibleFrame(context);
   context = addBuffer(
     `<${getNodeComponentName(
       node,
       document
-    )} export component as="${getPreviewComponentName(node, context)}"${
-      context.compilerOptions.includeAbsoluteLayout !== false
-        ? " {withAbsoluteLayout}"
-        : ""
-    } {className}`,
+    )} export component as="${getPreviewComponentName(
+      node,
+      context
+    )}" {className}`,
     context
   );
 
   context = addBuffer(`>\n`, context);
+  context = startBlock(context);
+  context = translateInlineStyle(node, context);
+  context = endBlock(context);
   context = translatePreviewChildren(node, context, true);
   context = addBuffer(
     `</${getNodeComponentName(node, document)}>\n\n`,
@@ -343,13 +411,7 @@ const translatePreview = (
     );
   } else {
     context = addBuffer(
-      `<${getNodeComponentName(node, dependency.document)}${
-        context.compilerOptions.includeAbsoluteLayout !== false
-          ? inComponent
-            ? " {withAbsoluteLayout}"
-            : " withAbsoluteLayout"
-          : ""
-      }`,
+      `<${getNodeComponentName(node, dependency.document)}`,
       context
     );
 
@@ -439,7 +501,7 @@ const getPrevNode = memoize((nextNode: Node, graph: DependencyGraph) => {
     // Instances can remain, but components may be deleted - cover that case
     if (!component) {
       // console.log("NO COMPONENT??");
-      logWarn(`Found detached instance: ${instance.id}`);
+      logWarn(`Found detached instance: ${instance.name}`);
       // console.log(instance, ancestor, JSON.stringify(instanceDependency, null, 2));
       return null;
     }
@@ -487,21 +549,25 @@ const translateInstancePreview = (
 
   const instanceDependency = getNodeDependency(instance, context.graph);
 
+  if (!inComponent) {
+    context = addVisibleFrame(context, instance);
+  }
   context = addBuffer(
-    `<${getPreviewComponentName(component, context)}${
-      context.compilerOptions.includeAbsoluteLayout !== false
-        ? inComponent
-          ? " {withAbsoluteLayout}"
-          : " withAbsoluteLayout"
-        : ""
-    }`,
+    `<${getPreviewComponentName(component, context)}`,
     context
   );
+
+  const absoluteLayoutClass =
+    context.compilerOptions.includeAbsoluteLayout && !inComponent
+      ? `$absolute-position `
+      : "";
 
   // class already exists on class, so skip className
   if (instance.type === NodeType.Component) {
     context = addBuffer(
-      ` className="_${camelCase(instance.id)}_Preview_${getUniqueNodeName(
+      ` className="${absoluteLayoutClass}_${camelCase(
+        instance.id
+      )}_Preview_${getUniqueNodeName(
         instance,
         context.graph[context.entryFilePath].document
       )}"`,
@@ -509,7 +575,10 @@ const translateInstancePreview = (
     );
   } else {
     context = addBuffer(
-      ` className="${getNodeClassName(instance, context)}"`,
+      ` className="${absoluteLayoutClass}${getNodeClassName(
+        instance,
+        context
+      )}"`,
       context
     );
   }
@@ -622,16 +691,6 @@ const translateComponentStyles = (context: TranslateContext) => {
       context = addBuffer(`${key}: ${appearanceStyle[key]};\n`, context);
     }
 
-    if (context.compilerOptions.includeAbsoluteLayout && hasLayoutStyle) {
-      context = addBuffer(`&[data-with-absolute-layout] {\n`, context);
-      context = startBlock(context);
-      for (const key in layoutStyle) {
-        context = addBuffer(`${key}: ${layoutStyle[key]};\n`, context);
-      }
-      context = endBlock(context);
-      context = addBuffer(`}\n`, context);
-    }
-
     context = endBlock(context);
     context = addBuffer("}\n\n", context);
   }
@@ -663,7 +722,9 @@ const computeComponentSetStyle = (
   context: TranslateContext,
   styles: any[]
 ) => {
-  // console.log(componentSet);
+  for (const component of componentSet.children) {
+    computeNodeStyles(component, context, styles);
+  }
 };
 
 const computeComponentStyles = (context: TranslateContext) => {
@@ -682,13 +743,28 @@ const computeComponentStyles = (context: TranslateContext) => {
   return computed;
 };
 
-const computeNodeStyles = (
-  node: Node,
-  context: TranslateContext,
-  styles: any[] = []
-) => {
+const getNodeStyle = (node: Node, context: TranslateContext) => {
   const computedStyle = getCSSStyle(node, context);
   let style = computedStyle;
+
+  const name = getNodeComponentName(node, getNodeDocument(node, context.graph));
+
+  // if (node.rectangleCornerRadii && node.rectangleCornerRadii.includes(20)) {}
+  // console.log(node.rectangleCornerRadii);
+
+  if (name === "Property1Green0_Frame10") {
+    console.log("FRAMERRR", style, node);
+    const component = getOwnerComponent(
+      node,
+      getNodeDocument(node, context.graph)
+    );
+    // console.log("COMP", component);
+    const parent = getNodeParent(
+      component,
+      getNodeDocument(node, context.graph)
+    );
+    console.log("PAR", JSON.stringify(parent, null, 2));
+  }
 
   // instance present?
   if (node.id.charAt(0) === "I" || node.type === NodeType.Instance) {
@@ -722,6 +798,15 @@ const computeNodeStyles = (
       style = updatedStyle;
     }
   }
+  return style;
+};
+
+const computeNodeStyles = (
+  node: Node,
+  context: TranslateContext,
+  styles: any[] = []
+) => {
+  const style = getNodeStyle(node, context);
 
   styles.push({ node, style });
 
@@ -745,6 +830,7 @@ const translatePreviewClassNames = (
   const PADDING = 10;
   let ctop = PADDING;
 
+  return context;
   for (const component of allComponents) {
     const { x, y, width, height } = component.absoluteBoundingBox;
     context = addBuffer(
@@ -789,7 +875,7 @@ const getNodeComponentName = (node: Node, document: Document) => {
     nodeName = parentName + "_" + pascalCase(rest.join("_"));
   }
 
-  return nodeName.replace(/^_+/g, "C_");
+  return nodeName;
 };
 
 export type ComputedNestedStyleInfo = {
@@ -853,8 +939,11 @@ const getCSSStyle = (node, context: TranslateContext) => {
     Object.assign(style, getVectorStyle(node, context));
   }
 
-  if (node.cornerRadius) {
-    style["border-radius"] = node.cornerRadius + "px";
+  if (node.rectangleCornerRadii) {
+    style["border-top-left-radius"] = node.rectangleCornerRadii[0] + "px";
+    style["border-top-right-radius"] = node.rectangleCornerRadii[1] + "px";
+    style["border-bottom-left-radius"] = node.rectangleCornerRadii[2] + "px";
+    style["border-bottom-right-radius"] = node.rectangleCornerRadii[3] + "px";
   }
 
   if (node.type === NodeType.Text) {
@@ -997,39 +1086,44 @@ const getFrameStyle = (
   return style;
 };
 
-const getPositionStyle = (
-  {
-    absoluteBoundingBox,
-    relativeTransform,
-    size
-  }: Pick<
-    VectorNodeProps,
-    "relativeTransform" | "size" | "absoluteBoundingBox"
-  >,
-  context: TranslateContext
-) => {
+const getPositionStyle = (node: any, context: TranslateContext) => {
   if (context.compilerOptions.includeAbsoluteLayout === false) {
     return {};
+  }
+  const { relativeTransform, absoluteBoundingBox, size } = node;
+  const document = getNodeDocument(node, context.graph);
+  const nodePath = getNodePath(node, document);
+  const frame = nodePath
+    .map((v, i) => getNodeByPath(nodePath.slice(0, i), document))
+    .find(node => {
+      return (
+        node.type !== NodeType.Document &&
+        node.type !== NodeType.Canvas &&
+        node.type !== NodeType.ComponentSet
+      );
+    });
+
+  if (!absoluteBoundingBox) {
+    console.log("NO POS", node);
   }
 
   // relativeTransform may not be present, so we use absoluteBoundingBox as a
   // fallback.
-  const { left, top, width, height } = relativeTransform
-    ? {
-        left: relativeTransform[0][2],
-        top: relativeTransform[1][2],
-        width: size.x,
-        height: size.y
-      }
-    : {
-        left: absoluteBoundingBox.x,
-        top: absoluteBoundingBox.y,
-        width: absoluteBoundingBox.width,
-        height: absoluteBoundingBox.height
-      };
+  // const { left, top, width, height } = {
+  //   left: relativeTransform[0][2],
+  //   top: relativeTransform[1][2],
+  //   width: size.x,
+  //   height: size.y
+  // };
+
+  const { x: left, y: top, width, height } = {
+    ...absoluteBoundingBox,
+    x: absoluteBoundingBox.x - frame.absoluteBoundingBox.x,
+    y: absoluteBoundingBox.y - frame.absoluteBoundingBox.y
+  } as any;
 
   return {
-    position: "absolute",
+    position: "fixed",
     left: Math.round(left) + "px",
     top: Math.round(top) + "px",
     width: Math.round(width) + "px",
