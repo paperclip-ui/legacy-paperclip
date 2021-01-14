@@ -363,7 +363,6 @@ fn evaluate_node_sheet<'a>(
       if let ast::Attribute::KeyValueAttribute(kv) = attribute {
         if let Some(value) = &kv.value {
           if let ast::AttributeValue::Slot(slot) = value {
-
             traverse_js_expr_css(&slot.script, &mut |expr| {
               if let js_ast::Expression::Node(node) = expr {
                 evaluate_node_sheet(uri, Some(&current), &*node, sheet, css_exports, context)?;
@@ -375,7 +374,6 @@ fn evaluate_node_sheet<'a>(
       }
     }
   }
-
 
   if let ast::Node::Slot(slot) = current {
     traverse_js_expr_css(&slot.script, &mut |expr| {
@@ -389,32 +387,37 @@ fn evaluate_node_sheet<'a>(
   Ok(())
 }
 
-pub fn traverse_js_expr_css<TEach>(current: &js_ast::Expression, each: &mut TEach) -> Result<(), RuntimeError> where TEach: FnMut(&js_ast::Expression) -> Result<(), RuntimeError> {
+pub fn traverse_js_expr_css<TEach>(
+  current: &js_ast::Expression,
+  each: &mut TEach,
+) -> Result<(), RuntimeError>
+where
+  TEach: FnMut(&js_ast::Expression) -> Result<(), RuntimeError>,
+{
   each(current)?;
 
   match current {
     js_ast::Expression::Conjunction(expr) => {
       traverse_js_expr_css(&expr.left, each)?;
       traverse_js_expr_css(&expr.right, each)?;
-    },
+    }
     js_ast::Expression::Group(expr) => {
       traverse_js_expr_css(&expr.expression, each)?;
-    },
+    }
     js_ast::Expression::Not(expr) => {
       traverse_js_expr_css(&expr.expression, each)?;
-    },
+    }
     js_ast::Expression::Array(expr) => {
       for value in &expr.values {
         traverse_js_expr_css(&value, each)?;
       }
-    },
-    js_ast::Expression::Node(expr) => {
-    },
+    }
+    js_ast::Expression::Node(expr) => {}
     js_ast::Expression::Object(expr) => {
       for property in &expr.properties {
         traverse_js_expr_css(&property.value, each)?;
       }
-    },
+    }
     _ => {}
   }
   Ok(())
