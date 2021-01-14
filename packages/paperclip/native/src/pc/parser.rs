@@ -120,9 +120,11 @@ fn parse_node<'a>(
   }
 }
 
-fn parse_slot<'a>(tokenizer: &mut Tokenizer<'a>, 
-path: &Vec<String>,
-index: usize) -> Result<pc_ast::Node, ParseError> {
+fn parse_slot<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  path: &Vec<String>,
+  index: usize,
+) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.utf16_pos;
   let omit_from_compilation = parse_omit_from_compilation(tokenizer)?;
   tokenizer.next_expect(Token::CurlyOpen)?;
