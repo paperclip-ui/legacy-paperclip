@@ -1,0 +1,20 @@
+{
+  "name": "testt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "paperclip": "^15.1.1",
+    "paperclip-cli": "^15.1.1",
+    "paperclip-compiler-react": "^15.1.1"
+  },
+  "devDependencies": {
+    "figmark": "^1.0.2"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

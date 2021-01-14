@@ -1,16 +1,13 @@
 #!/usr/bin/env node
+const {Client, cli: {init, pull}, CONFIG_FILE_NAME} = require('../');
+const fs = require("fs");
+const yargs = require('yargs');
 
-const {pull} = require("../lib/cli");
 
-require("yargs")
-.command("pull <target-directory>", "Download Zeplin design tokens into target directory", yargs => {
-  yargs
-  .option("personal-access-token", { description: "Figma personal access token", required: true })
-  .option("team-id", { description: "Figma team ID", required: true })
-}, argv => {
-  pull({
-    targetDirectory: argv.targetDirectory,
-    teamId: argv.teamId,
-    personalAccessToken: argv.personalAccessToken
-  })
-}).argv;
+yargs
+.scriptName('figma-paperclip')
+.usage('$0 <cmd> [args]')
+.command(`init`, 'initialize figmark for this project', () => {},  init)
+.command(`pull [watch]`, 'Downloads designs from Figma', () => {}, pull)
+.help()
+.argv

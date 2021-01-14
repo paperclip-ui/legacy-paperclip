@@ -382,7 +382,7 @@ fn parse_tag_name<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<String, ParseErro
     get_buffer(tokenizer, |tokenizer| {
       Ok(matches!(
         tokenizer.peek(1)?,
-        Token::Word(_) | Token::Minus | Token::Dot | Token::Dollar | Token::Byte(b'_')
+        Token::Word(_) | Token::Minus | Token::Dot | Token::Dollar | Token::Byte(b'_') | Token::Number(_)
       ))
     })?
     .to_string(),

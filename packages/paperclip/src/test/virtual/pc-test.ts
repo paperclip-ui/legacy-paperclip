@@ -1644,4 +1644,22 @@ describe(__filename + "#", () => {
       `<style></style><div data-pc-80f4925f>Something</div>`
     );
   });
+
+  it(`Can have various tag names`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <a_2 />
+      <_a_2 />
+      <$a />
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.run("/entry.pc")) as any;
+
+    const buffer = `${stringifyLoadResult(result)}`;
+    expect(buffer).to.eql(
+      `<style></style><a_2 data-pc-80f4925f></a_2><_a_2 data-pc-80f4925f></_a_2><$a data-pc-80f4925f></$a>`
+    );
+  });
 });

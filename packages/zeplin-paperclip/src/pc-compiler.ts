@@ -47,16 +47,20 @@ export const compileGlobalColorVariables = (map: VariableMap) => {
   buffer.push(`  }\n`);
   buffer.push(`</style>\n`);
 
-  buffer.push(`\n<!-- preview -->\n`);
+  buffer.push(`<!--\n`);
+  buffer.push(`  @frame { title: "Colors" }\n`);
+  buffer.push(`-->\n`);
+  buffer.push("<div>\n");
   for (const name in map) {
     if (!/var\(.*?\)/.test(name)) {
       continue;
     }
     buffer.push(
-      `<div className="preview" style="color: ${name};">${name}</div>\n`
+      `  <div className="preview" style="color: ${name};">${name}</div>\n`
     );
   }
 
+  buffer.push("</div>");
   return {
     code: buffer.join("")
   };
@@ -108,12 +112,17 @@ export const compileTypography = (
   buffer.push(`  }\n`);
   buffer.push(`</style>\n`);
 
-  buffer.push(`\n<!-- previews -->\n`);
+  buffer.push(`<!--\n`);
+  buffer.push(`  @frame { title: "Typography" }\n`);
+  buffer.push(`-->\n`);
+
+  buffer.push("<div>\n");
   for (const name in map) {
     buffer.push(
       `<span className="preview ${name}">.${name}<br /><br /></span>\n`
     );
   }
+  buffer.push("</div>");
 
   // TODO - preview here
 
@@ -122,11 +131,18 @@ export const compileTypography = (
   };
 };
 
+type RootInfo = {
+  name: string;
+  width: number;
+  height: number;
+};
+
 export const compileLayers = (
   layers: any[],
   colorFormat: ColorFormat,
   variables: VariableMap,
-  textStyles: TypographyMap
+  textStyles: TypographyMap,
+  rootInfo: RootInfo
 ) => {
   const buffer = [];
   buffer.push(`<import src="../tokens/colors.pc" />\n`);
@@ -134,7 +150,7 @@ export const compileLayers = (
   buffer.push(`<import src="../tokens/spacing.pc" />\n\n`);
 
   // next, components
-  buffer.push(`\n<!-- Components -->\n`);
+  buffer.push(`\n<!-- Components -->\n\n`);
 
   for (const rawLayer of layers) {
     const castedLayer = castLayer(rawLayer);
@@ -149,6 +165,10 @@ export const compileLayers = (
       textStyles
     );
 
+    buffer.push(`<!--\n`);
+    buffer.push(`  @frame { visible: false }\n`);
+    buffer.push(`-->\n`);
+
     buffer.push(
       `<${tagName} export component as="${componentName}" className="${textMixins
         .map(mixinName => ` $typography.${mixinName}`)
@@ -161,7 +181,14 @@ export const compileLayers = (
 
   // finally, preview
 
-  buffer.push(`\n<!-- Preview -->\n`);
+  buffer.push(`\n<!-- Preview -->\n\n`);
+  buffer.push(`<!--\n`);
+  buffer.push(
+    `  @frame { title: ${JSON.stringify(rootInfo.name)}, width: ${
+      rootInfo.width
+    }, height: ${rootInfo.height} }\n`
+  );
+  buffer.push(`-->\n`);
   buffer.push(`<div>\n`);
 
   for (const rawLayer of layers) {
@@ -182,10 +209,9 @@ const compileLayerStyles = (
   colorFormat: ColorFormat,
   variables: VariableMap,
   textStyles: TypographyMap
-) => {
+): [string, string[]] => {
   const buffer = ["  <style>\n"];
   const textMixins = [];
-  const className = generateIdentifier(rawLayer.name);
   const castedLayer = castLayer(rawLayer);
   const layer = new Layer(castedLayer);
 

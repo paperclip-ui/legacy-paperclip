@@ -1,0 +1,14 @@
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: local("DM Sans Regular"), local("DMSans-Regular"),
+    url(./d26d824b66d749abd43bda91792e4c3c.gstatic.ttf) format("truetype");
+}
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 700;
+  src: local("DM Sans Bold"), local("DMSans-Bold"),
+    url(./72341a6bd0ccb47f160d08c81822bcd7.gstatic.ttf) format("truetype");
+}

@@ -1,4 +1,4 @@
-import { ZeplinClient } from "./api";
+import { Namespace, ZeplinClient } from "./api";
 import * as path from "path";
 import * as inquirer from "inquirer";
 import * as plimit from "p-limit";
@@ -24,6 +24,7 @@ export type PullOptions = {
   targetDirectory: string;
   personalAccessToken: string;
   projectId?: string;
+  styleguideId?: string;
   colorFormat?: ColorFormat;
   includeComponents?: boolean;
 };
@@ -32,9 +33,12 @@ export const pull = async ({
   personalAccessToken,
   targetDirectory,
   projectId,
+  styleguideId,
   colorFormat = DEFAULT_COLOR_FORMAT,
   includeComponents
 }: PullOptions) => {
+  const ns = styleguideId ? Namespace.Styleguides : Namespace.Projects;
+  const targetId = styleguideId || projectId;
   const cwd = process.cwd();
   const targetDirectoryPath = path.join(cwd, targetDirectory);
 
@@ -43,7 +47,7 @@ export const pull = async ({
     personalAccessToken
   });
 
-  if (!projectId) {
+  if (!projectId && !targetId) {
     projectId = await pickProjectId(client);
     prompted = true;
   }
@@ -56,10 +60,10 @@ export const pull = async ({
     spacingVars,
     components
   ] = await Promise.all([
-    limit(() => getColorVarMap(projectId, colorFormat, client)),
-    limit(() => getTypographyMap(projectId, colorFormat, client)),
-    limit(() => getSpacingVarMap(projectId, colorFormat, client)),
-    limit(() => includeComponents && client.getProjectComponents(projectId))
+    limit(() => getColorVarMap(targetId, colorFormat, client, ns)),
+    limit(() => getTypographyMap(targetId, colorFormat, client, ns)),
+    limit(() => getSpacingVarMap(targetId, colorFormat, client, ns)),
+    limit(() => includeComponents && client.getComponents(targetId, ns))
   ]);
 
   const organisms: Record<string, any> = {};
@@ -74,16 +78,14 @@ export const pull = async ({
     await Promise.all(
       components.map(component =>
         limit(async () => {
-          const info = await client.getProjectComponent(
-            projectId,
-            component.id
-          );
+          const info = await client.getComponent(targetId, component.id, ns);
           organisms[generateIdentifier(component.name).toLowerCase()] = {
             code: compileLayers(
               info.layers,
               colorFormat,
               colorVars,
-              typographyMixins
+              typographyMixins,
+              { name: component.name, width: info.width, height: info.height }
             )
           };
         })
@@ -123,9 +125,10 @@ const writeFiles = (map: any, directory: string) => {
 export const getColorVarMap = async (
   projectId: string,
   colorFormat: ColorFormat,
-  client: ZeplinClient
+  client: ZeplinClient,
+  ns = Namespace.Projects
 ): Promise<VariableMap> => {
-  return (await client.getProjectColors(projectId))
+  return (await client.getColors(projectId, ns))
     .map(castColor)
     .reduce((map, color) => {
       const kitColor = new Color(color);
@@ -139,9 +142,10 @@ export const getColorVarMap = async (
 export const getSpacingVarMap = async (
   projectId: string,
   colorFormat: ColorFormat,
-  client: ZeplinClient
+  client: ZeplinClient,
+  ns = Namespace.Projects
 ): Promise<VariableMap> => {
-  return (await client.getProjectSpacing(projectId)).reduce((map, spacing) => {
+  return (await client.getSpacing(projectId, ns)).reduce((map, spacing) => {
     const value = `var(--${generateIdentifier(spacing.name)})`;
     map[value] = `${spacing.value}px`;
     return map;
@@ -151,9 +155,10 @@ export const getSpacingVarMap = async (
 export const getTypographyMap = async (
   projectId: string,
   colorFormat: ColorFormat,
-  client: ZeplinClient
+  client: ZeplinClient,
+  ns = Namespace.Projects
 ): Promise<TypographyMap> => {
-  return (await client.getProjectTextStyles(projectId))
+  return (await client.getTextStyles(projectId, ns))
     .map(castTextStyle)
     .reduce((map, textStyle) => {
       map[generateIdentifier(textStyle.name).toLowerCase()] = textStyle;

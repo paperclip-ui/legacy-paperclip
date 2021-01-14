@@ -1,60 +1,60 @@
-import request from "axios";
-import * as querystring from "querystring";
+import * as https from "https";
+import * as qs from "querystring";
 
-export type FigmaClientOptions = {
-  personalAccessToken: string;
-};
-
-export type FigmaResponse<TMeta> = {
-  error: boolean;
-  status: number;
-  meta: TMeta;
-};
-
-export type GetTeamStylesMeta = {
-  cursor: any;
-  styles: any[];
-};
-
-export type GetStyleMeta = any;
-
-type GetFileParams = {
-  version?: string;
-  ids?: string;
-  depth?: number;
-};
-
-export class FigmaClient {
-  constructor(readonly options: FigmaClientOptions) {}
-
-  getTeamStyles(teamId: string): Promise<FigmaResponse<GetTeamStylesMeta>> {
-    return this._request(`/teams/${teamId}/styles`);
+export class FigmaApi {
+  constructor(readonly personalAccessToken: string) {}
+  getFile(fileKey: string, options: any = {}) {
+    return this._get(`/v1/files/${fileKey}`, { geometry: "paths", ...options });
   }
 
-  getStyle(styleId: string): Promise<FigmaResponse<GetStyleMeta>> {
-    return this._request(`/styles/${styleId}`);
+  getVersions(fileKey: string) {
+    return this._get(`/v1/version/${fileKey}`);
+  }
+  getTeamProjects(teamId: string) {
+    return this._get(`/v1/teams/${teamId}/projects`);
+  }
+  getProjectFiles(projectId: number) {
+    return this._get(`/v1/projects/${projectId}/files`);
+  }
+  getImage(fileKey: string, options: any) {
+    return this._get(`/v1/images/${fileKey}`, options);
+  }
+  getComponent(key: string) {
+    return this._get(`/v1/components/${key}`);
+  }
+  getImageFills(key: string) {
+    return this._get(`/v1/files/${key}/images`);
   }
 
-  getFile(styleId: string, params: GetFileParams = {}): Promise<any> {
-    return this._request(`/files/${styleId}`, params);
-  }
+  private _get(pathname: string, query: Record<string, string> = {}) {
+    const search = Object.keys(query).length ? "?" + qs.stringify(query) : "";
+    return new Promise<any>((resolve, reject) => {
+      https.get(
+        {
+          headers: {
+            "X-FIGMA-TOKEN": this.personalAccessToken
+          },
+          hostname: "api.figma.com",
+          path: pathname + search
+        },
+        res => {
+          let buffer = "";
 
-  private async _request(pathname: string, queryParams?: any) {
-    let url = `https://api.figma.com/v1${pathname}`;
-
-    if (queryParams) {
-      url += "?" + querystring.stringify(queryParams);
-    }
-
-    const headers = {
-      "X-Figma-Token": this.options.personalAccessToken
-    };
-
-    const response = await request({
-      url,
-      headers
+          res.on("data", chunk => (buffer += String(chunk)));
+          res.on("end", () => {
+            if (res.statusCode === 200) {
+              const result = JSON.parse(buffer);
+              resolve(result);
+            } else {
+              try {
+                reject(JSON.parse(buffer));
+              } catch (e) {
+                reject(buffer);
+              }
+            }
+          });
+        }
+      );
     });
-
-    return response.data;
   }
 }
