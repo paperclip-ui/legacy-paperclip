@@ -1,6 +1,6 @@
 {
   "name": "paperclip-web-renderer",
-  "version": "17.3.4",
+  "version": "17.3.7",
   "description": "My webpack project",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "html-entities": "^1.2.1",
-    "paperclip-utils": "^17.3.4"
+    "paperclip-utils": "^17.3.7"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.157",
@@ -25,7 +25,7 @@
     "eslint": "^7.4.0",
     "lodash": "^4.17.19",
     "mocha": "^7.0.1",
-    "paperclip": "^17.3.4",
+    "paperclip": "^17.3.7",
     "typescript": "^3.7.5"
   },
   "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159"

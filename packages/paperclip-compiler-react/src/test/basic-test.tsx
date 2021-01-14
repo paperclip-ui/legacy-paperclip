@@ -384,7 +384,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true"><span data-pc-98ff9580="true" data-pc-3402f12b="true">A</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">D</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">E</span>0<span data-pc-98ff9580="true" data-pc-3402f12b="true">H</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">I</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">J</span><span data-pc-98ff9580="true" data-pc-3402f12b="true">K</span></div>`
+        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true"><span data-pc-6314de75="true" data-pc-3402f12b="true">A</span><span data-pc-48398db6="true" data-pc-3402f12b="true">D</span><span data-pc-7781b71="true" data-pc-3402f12b="true">E</span>0<span data-pc-354e79f3="true" data-pc-3402f12b="true">H</span><span data-pc-2c5548b2="true" data-pc-3402f12b="true">I</span><span data-pc-abcd547d="true" data-pc-3402f12b="true">J</span><span data-pc-b2d6653c="true" data-pc-3402f12b="true">K</span></div>`
       }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {

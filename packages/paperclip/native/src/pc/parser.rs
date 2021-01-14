@@ -76,7 +76,7 @@ fn parse_node<'a>(
   })?;
 
   match token {
-    Token::CurlyOpen => parse_slot(tokenizer),
+    Token::CurlyOpen => parse_slot(tokenizer, &path, 0),
     Token::LessThan => parse_tag(tokenizer, path),
     Token::HtmlCommentOpen => parse_annotation(tokenizer),
     Token::TagClose => {
@@ -120,11 +120,15 @@ fn parse_node<'a>(
   }
 }
 
-fn parse_slot<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
+fn parse_slot<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  path: &Vec<String>,
+  index: usize,
+) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.utf16_pos;
   let omit_from_compilation = parse_omit_from_compilation(tokenizer)?;
   tokenizer.next_expect(Token::CurlyOpen)?;
-  let script = parse_slot_script(tokenizer, None)?;
+  let script = parse_slot_script(tokenizer, Some((path, index)))?;
   Ok(pc_ast::Node::Slot(pc_ast::Slot {
     omit_from_compilation,
     script,
