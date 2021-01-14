@@ -152,7 +152,7 @@ function Home() {
             <styles.MainFeatureItem
               iconName="reactjs"
               title="Import directly into your React app"
-              description="Templates compile into plan code that you can import directly in your app. No runtimes needed."
+              description="Templates compile into plain code that you can import directly in your app. No runtimes needed."
               example={
                 <CodeBlock className="language-jsx">
                   {IMPORT_CODE_DEMO_SOURCE}

@@ -24,7 +24,7 @@
   "dependencies": {
     "@types/inquirer": "^6.5.0",
     "@zeplin/extension-model": "^2.5.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "css.escape": "^1.5.1",
     "fs-extra": "^9.0.1",
     "inquirer": "^7.3.0",
