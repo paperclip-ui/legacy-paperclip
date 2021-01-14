@@ -8,11 +8,13 @@ require("yargs")
   .option("personal-access-token", { description: "Zeplin personal access token", required: true })
   .option("no-components", { description: "do not include components" })
   .option("project-id", { description: "ID of project that you'd like to sync" })
+  .option("styleguide-id", { description: "ID of styleguide that you'd like to sync" })
 }, argv => {
   pull({
     targetDirectory: argv.targetDirectory,
     personalAccessToken: argv.personalAccessToken,
     projectId: argv.projectId,
+    styleguideId: argv.styleguideId,
     includeComponents: argv.components !== false
   })
 }).argv;

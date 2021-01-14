@@ -1,0 +1,76 @@
+
+<!--
+  !! AUTO GENERATED, EDIT WITH CAUTION !!
+-->
+
+<import src="./roboto.pc" />
+
+<!-- STYLES -->
+
+<style>
+  :global(._1119_Preview_pressed) {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 130px;
+    height: 51px;
+  }
+
+  :global(._75_Preview_property1Default) {
+    position: absolute;
+    left: 10px;
+    top: 71px;
+    width: 130px;
+    height: 51px;
+  }
+
+</style>
+
+<!-- ALL LAYERS & COMPONENTS -->
+
+<div export component as="Pressed" data-with-absolute-layout={withAbsoluteLayout?} className="_1119_pressed {className?}">
+  {children}
+</div>
+
+<div export component as="Pressed_Rectangle1" data-with-absolute-layout={withAbsoluteLayout?} className="_1120_pressed_rectangle1 {className?}">
+  {children}
+</div>
+
+<span export component as="Pressed_Label" data-with-absolute-layout={withAbsoluteLayout?} className="_1121_pressed_label {className?}">
+  {children}
+</span>
+
+<div export component as="Property1Default" data-with-absolute-layout={withAbsoluteLayout?} className="_75_property1Default {className?}">
+  {children}
+</div>
+
+<div export component as="Property1Default_Rectangle1" data-with-absolute-layout={withAbsoluteLayout?} className="_72_property1Default_rectangle1 {className?}">
+  {children}
+</div>
+
+<span export component as="Property1Default_Label" data-with-absolute-layout={withAbsoluteLayout?} className="_73_property1Default_label {className?}">
+  {children}
+</span>
+
+<!-- PREVIEWS -->
+
+<Pressed export component as="_Preview_Pressed1119" {withAbsoluteLayout} {className}>
+  <Pressed_Rectangle1 {withAbsoluteLayout}>
+  </Pressed_Rectangle1>
+  <Pressed_Label {withAbsoluteLayout}>
+    {pressed_label_text}
+  </Pressed_Label>
+</Pressed>
+
+<_Preview_Pressed1119 withAbsoluteLayout className="_1119_Preview_pressed" pressed_label_text={<fragment>Button</fragment>} />
+
+<Property1Default export component as="_Preview_Property1Default75" {withAbsoluteLayout} {className}>
+  <Property1Default_Rectangle1 {withAbsoluteLayout}>
+  </Property1Default_Rectangle1>
+  <Property1Default_Label {withAbsoluteLayout}>
+    {property1Default_label_text}
+  </Property1Default_Label>
+</Property1Default>
+
+<_Preview_Property1Default75 withAbsoluteLayout className="_75_Preview_property1Default" property1Default_label_text={<fragment>Button</fragment>} />
+

@@ -5,6 +5,11 @@ export type FigmaClientOptions = {
   personalAccessToken: string;
 };
 
+export enum Namespace {
+  Projects = "projects",
+  Styleguides = "styleguides"
+}
+
 export class ZeplinClient {
   constructor(readonly options: FigmaClientOptions) {}
 
@@ -12,25 +17,37 @@ export class ZeplinClient {
     return await this._request(`/projects`);
   }
 
-  async getProjectColors(projectId: string) {
-    return await this._request(`/projects/${projectId}/colors`);
+  async getColors(nsId: string, ns = Namespace.Projects) {
+    return await this._request(`/${ns}/${nsId}/colors`);
   }
 
-  async getProjectTextStyles(projectId: string) {
-    return await this._request(`/projects/${projectId}/text_styles`);
+  async getTextStyles(nsId: string, ns = Namespace.Projects) {
+    return await this._request(`/${ns}/${nsId}/text_styles`);
   }
 
-  async getProjectSpacing(projectId: string) {
-    return await this._request(`/projects/${projectId}/spacing_tokens`);
+  async getSpacing(nsId: string, ns = Namespace.Projects) {
+    return await this._request(`/${ns}/${nsId}/spacing_tokens`);
   }
 
-  async getProjectComponents(projectId: string) {
-    return await this._request(`/projects/${projectId}/components`);
+  async getComponents(nsId: string, ns = Namespace.Projects) {
+    return await this._request(`/${ns}/${nsId}/components`);
+  }
+  async getAllComponents(nsId: string, ns = Namespace.Projects) {
+    const sections = await this.getComponents(nsId, ns);
+    console.log(sections);
+    return [];
+  }
+  async getComponentSections(nsId: string, ns = Namespace.Projects) {
+    return await this._request(`/${ns}/${nsId}/components`);
   }
 
-  async getProjectComponent(projectId: string, componentId: string) {
+  async getComponent(
+    projectId: string,
+    componentId: string,
+    ns = Namespace.Projects
+  ) {
     return await this._request(
-      `/projects/${projectId}/components/${componentId}/versions/latest`
+      `/${ns}/${projectId}/components/${componentId}/versions/latest`
     );
   }
 

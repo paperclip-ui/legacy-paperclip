@@ -1,0 +1,48 @@
+
+<!--
+  !! AUTO GENERATED, EDIT WITH CAUTION !!
+-->
+
+<import src="./roboto.css" />
+<import as="module0" src="./figmark-2.pc" />
+<import as="module1" src="./untitled.pc" />
+
+<!-- STYLES -->
+
+<style>
+  :global(._132_testB2._7124_testB2._7112_testA ._719_testA_rectangle1, ._132_testB2 ._7124_testB2 ._7112_testA ._719_testA_rectangle1) {
+    background: #c2a63f;
+  }
+
+  :global(._132_testB2._7124_testB2._7112_testA ._7110_testA_a, ._132_testB2 ._7124_testB2 ._7112_testA ._7110_testA_a) {
+    color: #6a6c00;
+  }
+
+  :global(._133_testBc2._7143_testBc2._7116_testB._7112_testA ._719_testA_rectangle1, ._133_testBc2 ._7143_testBc2 ._7116_testB ._7112_testA ._719_testA_rectangle1) {
+    background: #b081eb;
+  }
+
+  :global(._928_group1._827_group1._15_group1 ._12_group1_rectangle1, ._928_group1 ._827_group1 ._15_group1 ._12_group1_rectangle1) {
+    background: #9338ef;
+  }
+
+  :global(._928_group1._827_group1._15_group1 ._13_group1_anotherImportedButton, ._928_group1 ._827_group1 ._15_group1 ._13_group1_anotherImportedButton) {
+    color: #ffffff;
+  }
+
+</style>
+
+<!-- ALL LAYERS & COMPONENTS -->
+
+<div export component as="TestB2"  className="_132_testB2 {className?}">
+  {children}
+</div>
+
+<div export component as="TestBc2"  className="_133_testBc2 {className?}">
+  {children}
+</div>
+
+<div export component as="Group1"  className="_928_group1 {className?}">
+  {children}
+</div>
+

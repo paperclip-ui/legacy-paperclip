@@ -1,0 +1,72 @@
+
+<!--
+  !! AUTO GENERATED, EDIT WITH CAUTION !!
+-->
+
+<import src="./roboto.pc" />
+
+<!-- STYLES -->
+
+<style>
+  :global(._15_group1 ._12_group1_rectangle1, ._15_group1 ._12_group1_rectangle1) {
+    background: #c4c4c4;
+    &[data-with-absolute-layout] {
+      left: -175px;
+      top: -243px;
+      width: 195px;
+      height: 135px;
+      position: absolute;
+    }
+  }
+
+  :global(._15_group1 ._13_group1_anotherImportedButton, ._15_group1 ._13_group1_anotherImportedButton) {
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 12px;
+    text-align: left;
+    color: #000000;
+    &[data-with-absolute-layout] {
+      left: -62px;
+      top: -168px;
+      width: 130px;
+      height: 28px;
+      position: absolute;
+    }
+  }
+
+  :global(._15_Preview_group1) {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 243px;
+    height: 135px;
+  }
+
+</style>
+
+<!-- ALL LAYERS & COMPONENTS -->
+
+<div export component as="Group1" data-with-absolute-layout={withAbsoluteLayout?} className="_15_group1 {className?}">
+  {children}
+</div>
+
+<div export component as="Group1_Rectangle1" data-with-absolute-layout={withAbsoluteLayout?} className="_12_group1_rectangle1 {className?}">
+  {children}
+</div>
+
+<span export component as="Group1_AnotherImportedButton" data-with-absolute-layout={withAbsoluteLayout?} className="_13_group1_anotherImportedButton {className?}">
+  {children}
+</span>
+
+<!-- PREVIEWS -->
+
+<Group1 export component as="_Preview_Group115" {withAbsoluteLayout} {className}>
+  <Group1_Rectangle1 {withAbsoluteLayout}>
+  </Group1_Rectangle1>
+  <Group1_AnotherImportedButton {withAbsoluteLayout}>
+    {group1_anotherImportedButton_text}
+  </Group1_AnotherImportedButton>
+</Group1>
+
+<_Preview_Group115 withAbsoluteLayout className="_15_Preview_group1" group1_anotherImportedButton_text={<fragment>another imported button <br /> </fragment>} />
+

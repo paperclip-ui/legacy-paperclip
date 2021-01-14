@@ -1,0 +1,15 @@
+<import as="design" src="./design-generated/test/interface-public-copy.pc">
+
+<style>
+  .button {
+    display: inline-block;
+    padding: 10px;
+    &.disabled {
+      color: red;
+    }
+  }
+</style>
+
+<design:ButtonTextIdle className=">>>button >>>disabled">
+  button
+</design:ButtonTextIdle>

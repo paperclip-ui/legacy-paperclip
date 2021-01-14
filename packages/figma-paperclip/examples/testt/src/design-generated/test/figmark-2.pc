@@ -1,0 +1,416 @@
+
+<!--
+  !! AUTO GENERATED, EDIT WITH CAUTION !!
+-->
+
+<import src="./eagle-lake.pc" />
+<import src="./roboto.pc" />
+<import as="module0" src="./untitled.pc" />
+
+<!-- STYLES -->
+
+<style>
+  :global(._7112_testA,  ._7112_testA) {
+    border: 2px solid #000000;
+  }
+
+  :global(._7112_testA ._719_testA_rectangle1, ._7112_testA ._719_testA_rectangle1) {
+    background: #ff9696;
+    &[data-with-absolute-layout] {
+      left: 229px;
+      top: -23px;
+      width: 68px;
+      height: 35px;
+      position: absolute;
+    }
+  }
+
+  :global(._7112_testA ._7110_testA_a, ._7112_testA ._7110_testA_a) {
+    font-family: Eagle Lake;
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.240em;
+    text-align: center;
+    font-featutes-settings: "onum" on, "tnum" on;
+    color: #ff4444;
+    &[data-with-absolute-layout] {
+      left: 258px;
+      top: -14px;
+      width: 8px;
+      height: 16px;
+      position: absolute;
+    }
+  }
+
+  :global(._7124_testB2 ._7112_testA, ._7124_testB2 ._7112_testA) {
+    &[data-with-absolute-layout] {
+      left: 320px;
+      top: 35px;
+      width: 68px;
+      height: 35px;
+      position: absolute;
+    }
+  }
+
+  :global(._7124_testB2._7112_testA ._719_testA_rectangle1, ._7124_testB2 ._7112_testA ._719_testA_rectangle1) {
+    background: #c03fc2;
+    &[data-with-absolute-layout] {
+      left: 320px;
+      top: 35px;
+    }
+  }
+
+  :global(._7124_testB2._7112_testA ._7110_testA_a, ._7124_testB2 ._7112_testA ._7110_testA_a) {
+    color: #76009f;
+    &[data-with-absolute-layout] {
+      left: 342px;
+      top: 44px;
+      width: 22px;
+    }
+  }
+
+  :global(._7158_testB2C2 ._7124_testB2, ._7158_testB2C2 ._7124_testB2) {
+    &[data-with-absolute-layout] {
+      left: 367px;
+      top: 80px;
+      width: 68px;
+      height: 35px;
+      position: absolute;
+    }
+  }
+
+  :global(._7158_testB2C2._7124_testB2 ._7112_testA, ._7158_testB2C2 ._7124_testB2 ._7112_testA) {
+    &[data-with-absolute-layout] {
+      left: 367px;
+      top: 80px;
+    }
+  }
+
+  :global(._7158_testB2C2._7124_testB2._7112_testA ._719_testA_rectangle1, ._7158_testB2C2 ._7124_testB2 ._7112_testA ._719_testA_rectangle1) {
+    &[data-with-absolute-layout] {
+      left: 367px;
+      top: 80px;
+    }
+  }
+
+  :global(._7158_testB2C2._7124_testB2._7112_testA ._7110_testA_a, ._7158_testB2C2 ._7124_testB2 ._7112_testA ._7110_testA_a) {
+    &[data-with-absolute-layout] {
+      left: 374px;
+      top: 89px;
+      width: 52px;
+    }
+  }
+
+  :global(._7148_testB2C ._7124_testB2, ._7148_testB2C ._7124_testB2) {
+    &[data-with-absolute-layout] {
+      left: 279px;
+      top: 80px;
+      width: 68px;
+      height: 35px;
+      position: absolute;
+    }
+  }
+
+  :global(._7148_testB2C._7124_testB2 ._7112_testA, ._7148_testB2C ._7124_testB2 ._7112_testA) {
+    &[data-with-absolute-layout] {
+      left: 279px;
+      top: 80px;
+    }
+  }
+
+  :global(._7148_testB2C._7124_testB2._7112_testA ._719_testA_rectangle1, ._7148_testB2C ._7124_testB2 ._7112_testA ._719_testA_rectangle1) {
+    background: #b900bd;
+    &[data-with-absolute-layout] {
+      left: 279px;
+      top: 80px;
+    }
+  }
+
+  :global(._7148_testB2C._7124_testB2._7112_testA ._7110_testA_a, ._7148_testB2C ._7124_testB2 ._7112_testA ._7110_testA_a) {
+    &[data-with-absolute-layout] {
+      left: 294px;
+      top: 89px;
+      width: 37px;
+    }
+  }
+
+  :global(._7116_testB ._7112_testA, ._7116_testB ._7112_testA) {
+    border: 2px solid #bf0a0a;
+    &[data-with-absolute-layout] {
+      left: 132px;
+      top: 35px;
+      width: 68px;
+      height: 35px;
+      position: absolute;
+    }
+  }
+
+  :global(._7116_testB._7112_testA ._719_testA_rectangle1, ._7116_testB ._7112_testA ._719_testA_rectangle1) {
+    background: #9deb81;
+    &[data-with-absolute-layout] {
+      left: 132px;
+      top: 35px;
+    }
+  }
+
+  :global(._7116_testB._7112_testA ._7110_testA_a, ._7116_testB ._7112_testA ._7110_testA_a) {
+    color: #007930;
+    &[data-with-absolute-layout] {
+      left: 162px;
+      top: 44px;
+      width: 7px;
+    }
+  }
+
+  :global(._7143_testBc2 ._7116_testB, ._7143_testBc2 ._7116_testB) {
+    &[data-with-absolute-layout] {
+      left: 182px;
+      top: 80px;
+      width: 68px;
+      height: 35px;
+      position: absolute;
+    }
+  }
+
+  :global(._7143_testBc2._7116_testB ._7112_testA, ._7143_testBc2 ._7116_testB ._7112_testA) {
+    &[data-with-absolute-layout] {
+      left: 182px;
+      top: 80px;
+    }
+  }
+
+  :global(._7143_testBc2._7116_testB._7112_testA ._719_testA_rectangle1, ._7143_testBc2 ._7116_testB ._7112_testA ._719_testA_rectangle1) {
+    &[data-with-absolute-layout] {
+      left: 182px;
+      top: 80px;
+    }
+  }
+
+  :global(._7143_testBc2._7116_testB._7112_testA ._7110_testA_a, ._7143_testBc2 ._7116_testB ._7112_testA ._7110_testA_a) {
+    &[data-with-absolute-layout] {
+      left: 197px;
+      top: 89px;
+      width: 37px;
+    }
+  }
+
+  :global(._7129_testBc ._7116_testB, ._7129_testBc ._7116_testB) {
+    &[data-with-absolute-layout] {
+      left: 90px;
+      top: 80px;
+      width: 68px;
+      height: 35px;
+      position: absolute;
+    }
+  }
+
+  :global(._7129_testBc._7116_testB ._7112_testA, ._7129_testBc ._7116_testB ._7112_testA) {
+    &[data-with-absolute-layout] {
+      left: 90px;
+      top: 80px;
+    }
+  }
+
+  :global(._7129_testBc._7116_testB._7112_testA ._719_testA_rectangle1, ._7129_testBc ._7116_testB ._7112_testA ._719_testA_rectangle1) {
+    background: #3ec100;
+    &[data-with-absolute-layout] {
+      left: 90px;
+      top: 80px;
+    }
+  }
+
+  :global(._7129_testBc._7116_testB._7112_testA ._7110_testA_a, ._7129_testBc ._7116_testB ._7112_testA ._7110_testA_a) {
+    &[data-with-absolute-layout] {
+      left: 112px;
+      top: 89px;
+      width: 23px;
+    }
+  }
+
+  :global(._827_group1 ._15_group1, ._827_group1 ._15_group1) {
+    &[data-with-absolute-layout] {
+      left: 174px;
+      top: 154px;
+      width: 243px;
+      height: 135px;
+      position: absolute;
+    }
+  }
+
+  :global(._827_group1._15_group1 ._12_group1_rectangle1, ._827_group1 ._15_group1 ._12_group1_rectangle1) {
+    background: #c60e0e;
+    &[data-with-absolute-layout] {
+      left: 174px;
+      top: 154px;
+    }
+  }
+
+  :global(._827_group1._15_group1 ._13_group1_anotherImportedButton, ._827_group1 ._15_group1 ._13_group1_anotherImportedButton) {
+    &[data-with-absolute-layout] {
+      left: 287px;
+      top: 229px;
+    }
+  }
+
+  :global(._7112_Preview_testA) {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 68px;
+    height: 35px;
+  }
+
+  :global(._7124_Preview_testB2) {
+    position: absolute;
+    left: 10px;
+    top: 55px;
+    width: 68px;
+    height: 35px;
+  }
+
+  :global(._7158_Preview_testB2C2) {
+    position: absolute;
+    left: 10px;
+    top: 100px;
+    width: 68px;
+    height: 35px;
+  }
+
+  :global(._7148_Preview_testB2C) {
+    position: absolute;
+    left: 10px;
+    top: 145px;
+    width: 68px;
+    height: 35px;
+  }
+
+  :global(._7116_Preview_testB) {
+    position: absolute;
+    left: 10px;
+    top: 190px;
+    width: 68px;
+    height: 35px;
+  }
+
+  :global(._7143_Preview_testBc2) {
+    position: absolute;
+    left: 10px;
+    top: 235px;
+    width: 68px;
+    height: 35px;
+  }
+
+  :global(._7129_Preview_testBc) {
+    position: absolute;
+    left: 10px;
+    top: 280px;
+    width: 68px;
+    height: 35px;
+  }
+
+  :global(._827_Preview_group1) {
+    position: absolute;
+    left: 10px;
+    top: 325px;
+    width: 243px;
+    height: 135px;
+  }
+
+</style>
+
+<!-- ALL LAYERS & COMPONENTS -->
+
+<div export component as="TestA" data-with-absolute-layout={withAbsoluteLayout?} className="_7112_testA {className?}">
+  {children}
+</div>
+
+<div export component as="TestA_Rectangle1" data-with-absolute-layout={withAbsoluteLayout?} className="_719_testA_rectangle1 {className?}">
+  {children}
+</div>
+
+<span export component as="TestA_A" data-with-absolute-layout={withAbsoluteLayout?} className="_7110_testA_a {className?}">
+  {children}
+</span>
+
+<div export component as="TestB2" data-with-absolute-layout={withAbsoluteLayout?} className="_7124_testB2 {className?}">
+  {children}
+</div>
+
+<div export component as="TestB2C2" data-with-absolute-layout={withAbsoluteLayout?} className="_7158_testB2C2 {className?}">
+  {children}
+</div>
+
+<div export component as="TestB2C" data-with-absolute-layout={withAbsoluteLayout?} className="_7148_testB2C {className?}">
+  {children}
+</div>
+
+<div export component as="TestB" data-with-absolute-layout={withAbsoluteLayout?} className="_7116_testB {className?}">
+  {children}
+</div>
+
+<div export component as="TestBc2" data-with-absolute-layout={withAbsoluteLayout?} className="_7143_testBc2 {className?}">
+  {children}
+</div>
+
+<div export component as="TestBc" data-with-absolute-layout={withAbsoluteLayout?} className="_7129_testBc {className?}">
+  {children}
+</div>
+
+<div export component as="Group1" data-with-absolute-layout={withAbsoluteLayout?} className="_827_group1 {className?}">
+  {children}
+</div>
+
+<!-- PREVIEWS -->
+
+<TestA export component as="_Preview_TestA7112" {withAbsoluteLayout} {className}>
+  <TestA_Rectangle1 {withAbsoluteLayout}>
+  </TestA_Rectangle1>
+  <TestA_A {withAbsoluteLayout}>
+    {testA_a_text}
+  </TestA_A>
+</TestA>
+
+<_Preview_TestA7112 withAbsoluteLayout className="_7112_Preview_testA" testA_a_text={<fragment>A</fragment>} />
+
+<TestB2 export component as="_Preview_TestB27124" {withAbsoluteLayout} {className}>
+  <_Preview_TestA7112 {withAbsoluteLayout} className="_7121_testB2_testA" testA_a_text={testB2_b2_text} />
+</TestB2>
+
+<_Preview_TestB27124 withAbsoluteLayout className="_7124_Preview_testB2" testB2_b2_text={<fragment>B 2</fragment>} />
+
+<TestB2C2 export component as="_Preview_TestB2C27158" {withAbsoluteLayout} {className}>
+  <_Preview_TestB27124 {withAbsoluteLayout} className="_7154_testB2C2_testB2C2" testB2_b2_text={testB2C2_b2C2_text} />
+</TestB2C2>
+
+<_Preview_TestB2C27158 withAbsoluteLayout className="_7158_Preview_testB2C2" testB2C2_b2C2_text={<fragment>B 2 C 2</fragment>} />
+
+<TestB2C export component as="_Preview_TestB2C7148" {withAbsoluteLayout} {className}>
+  <_Preview_TestB27124 {withAbsoluteLayout} className="_7144_testB2C_testB3" testB2_b2_text={testB2C_b2C_text} />
+</TestB2C>
+
+<_Preview_TestB2C7148 withAbsoluteLayout className="_7148_Preview_testB2C" testB2C_b2C_text={<fragment>B 2 C</fragment>} />
+
+<TestB export component as="_Preview_TestB7116" {withAbsoluteLayout} {className}>
+  <_Preview_TestA7112 {withAbsoluteLayout} className="_7113_testB_testARenamedaaa" testA_a_text={testB_b_text} />
+</TestB>
+
+<_Preview_TestB7116 withAbsoluteLayout className="_7116_Preview_testB" testB_b_text={<fragment>B</fragment>} />
+
+<TestBc2 export component as="_Preview_TestBc27143" {withAbsoluteLayout} {className}>
+  <_Preview_TestB7116 {withAbsoluteLayout} className="_7139_testBc2_testB" testB_b_text={testBc2_bC2_text} />
+</TestBc2>
+
+<_Preview_TestBc27143 withAbsoluteLayout className="_7143_Preview_testBc2" testBc2_bC2_text={<fragment>B C 2</fragment>} />
+
+<TestBc export component as="_Preview_TestBc7129" {withAbsoluteLayout} {className}>
+  <_Preview_TestB7116 {withAbsoluteLayout} className="_7125_testBc_testBRenamed" testB_b_text={testBc_bC_text} />
+</TestBc>
+
+<_Preview_TestBc7129 withAbsoluteLayout className="_7129_Preview_testBc" testBc_bC_text={<fragment>B C</fragment>} />
+
+<Group1 export component as="_Preview_Group1827" {withAbsoluteLayout} {className}>
+  <module0._Preview_Group115 {withAbsoluteLayout} className="_824_group1_group1" group1_anotherImportedButton_text={group1_anotherImportedButton_text} />
+</Group1>
+
+<_Preview_Group1827 withAbsoluteLayout className="_827_Preview_group1" group1_anotherImportedButton_text={<fragment>another imported button <br /> </fragment>} />
+

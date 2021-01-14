@@ -1,0 +1,26 @@
+
+<!--
+  !! AUTO GENERATED, EDIT WITH CAUTION !!
+-->
+
+<!-- STYLES -->
+
+<style>
+  :global(._126_button) {
+    & :global(._326_background) {
+    }
+    & :global(._329_label) {
+    }
+  }
+  
+  :global(._129_rectangle1) {
+    & :global(._4017_rectangle10) {
+      background: #8db51d;
+    }
+  }
+  
+</style>
+
+
+<!-- ALL LAYERS & COMPONENTS -->
+
