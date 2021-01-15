@@ -1,0 +1,26 @@
+{
+  "name": "paperclip-playground",
+  "version": "17.3.8",
+  "description": "",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "paperclip-visual-editor": "^17.3.8",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "typescript": "^3.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.20",
+    "concurrently": "^5.3.0",
+    "paperclip-cli": "^17.3.8",
+    "paperclip-compiler-react": "^17.3.8",
+    "paperclip-loader": "^17.3.8",
+    "webpack": "^5.14.0"
+  }
+}
