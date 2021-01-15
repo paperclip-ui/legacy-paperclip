@@ -1,6 +1,6 @@
 {
   "name": "paperclip-visual-editor",
-  "version": "17.3.8",
+  "version": "17.3.9",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "paperclip": "^17.3.8",
     "paperclip-source-writer": "^17.3.8",
     "paperclip-utils": "^17.3.8",
-    "paperclip-web-renderer": "^17.3.8",
+    "paperclip-web-renderer": "^17.3.9",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-router": "^5.2.0",
