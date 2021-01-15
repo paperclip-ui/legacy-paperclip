@@ -36,14 +36,18 @@ module.exports = {
       {
         test: /\.(ts|tsx)?$/,
         loader: "ts-loader",
-        include: [path.resolve(__dirname, "src")],
-        exclude: [/node_modules/],
+        include: [
+          path.resolve(__dirname, "src"),
+          path.resolve(__dirname, ".."),
+        ],
       },
       {
         test: /\.pc$/,
         loader: "paperclip-loader",
-        include: [path.resolve(__dirname, "src")],
-        exclude: [/node_modules/],
+        include: [
+          path.resolve(__dirname, "src"),
+          path.resolve(__dirname, ".."),
+        ],
         options: {
           config: require("./paperclip.config.json"),
         },

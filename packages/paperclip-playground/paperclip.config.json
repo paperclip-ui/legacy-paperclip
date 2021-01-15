@@ -3,5 +3,6 @@
     "name": "paperclip-compiler-react",
     "module": "es6"
   },
-  "sourceDirectory": "./src"
+  "sourceDirectory": "./src",
+  "moduleDirectories": ["../../node_modules", "../..", "node_modules"]
 }
