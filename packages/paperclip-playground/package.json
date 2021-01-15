@@ -3,10 +3,7 @@
   "version": "17.3.8",
   "description": "",
   "main": "./lib/index.js",
-  "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch"
-  },
+  "scripts": {},
   "author": "",
   "license": "MIT",
   "dependencies": {

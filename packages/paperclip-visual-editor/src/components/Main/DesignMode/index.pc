@@ -1,0 +1,55 @@
+<import src="components/Theme/index.pc" as="theme" />
+<import src="./Toolbar/index.pc" as="Toolbar" />
+<import src="./Birdseye/index.pc" as="Birdseye" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" className="$theme.full-wh {className?}">
+  <style>
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="CanvasContainer" className="$theme.full-wh">
+  <style>
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -719, y: 50 }
+-->
+<Container export component as="Preview" className:light="light" className:dark="dark" className="$theme.font-default">
+  <Toolbar.Preview gridMode {showEnvPopup} />
+  {showGrid && <CanvasContainer>
+    <Birdseye.Preview />
+  </CanvasContainer>}
+  {showEmpty && <Birdseye.PreviewEmpty />}
+</Container>
+
+<!--
+  @frame { title: "Center", width: 1024, height: 768, x: -14, y: 750 }
+-->
+<Preview showEnvPopup showGrid />
+
+<!--
+  @frame { title: "Center / Empty", width: 1024, height: 768, x: 1069, y: 745 }
+-->
+<Preview showEmpty />
+
