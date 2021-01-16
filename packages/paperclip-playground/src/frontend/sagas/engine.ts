@@ -43,7 +43,12 @@ function* startEngine() {
 
   // Sync app state with worker
   yield takeEvery(
-    [ActionType.CODE_EDITOR_TEXT_CHANGED, VEActionType.REDIRECT_REQUESTED],
+    [
+      ActionType.CODE_EDITOR_TEXT_CHANGED,
+      VEActionType.REDIRECT_REQUESTED,
+      VEActionType.PC_VIRT_OBJECT_EDITED,
+      ActionType.CONTENT_CHANGES_CREATED,
+    ],
     function* (action) {
       const newState: AppState = yield select();
       const ops = compare(_state, newState);

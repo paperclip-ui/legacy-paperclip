@@ -2,7 +2,7 @@ import * as Mousetrap from "mousetrap";
 import SockJSClient from "sockjs-client";
 import { computeVirtJSObject } from "paperclip-utils";
 import * as Url from "url";
-import { fork, put, take, takeEvery, select } from "redux-saga/effects";
+import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import * as qs from "querystring";
 import {
@@ -42,6 +42,7 @@ import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
+import { utimes } from "fs";
 
 export default function* mainSaga() {
   yield fork(handleRenderer);
@@ -94,10 +95,6 @@ function* handleRenderer() {
     return () => {};
   });
 
-  const maybeSendMessage = (message) => {
-    _client && _client.send(message);
-  };
-
   yield fork(function* () {
     while (1) {
       const action = yield take(chan);
@@ -116,7 +113,7 @@ function* handleRenderer() {
     ],
     function* () {
       const state: AppState = yield select();
-      maybeSendMessage(fileOpened({ uri: state.ui.query.currentFileUri }));
+      yield put(fileOpened({ uri: state.ui.query.currentFileUri }));
     }
   );
 
@@ -129,7 +126,7 @@ function* handleRenderer() {
     ],
     function* () {
       const state: AppState = yield select();
-      maybeSendMessage(
+      yield put(
         pcVirtObjectEdited({
           mutations: getSelectedFrames(state).map((frame) => {
             return {
@@ -153,7 +150,7 @@ function* handleRenderer() {
       return;
     }
 
-    maybeSendMessage(
+    yield put(
       pcVirtObjectEdited({
         mutations: getSelectedFrames(state).map((frame) => {
           return {
@@ -204,9 +201,11 @@ function* handleRenderer() {
       ActionType.ERROR_BANNER_CLICKED,
       ActionType.LOCATION_CHANGED,
       ActionType.POPOUT_WINDOW_REQUESTED,
+      ActionType.PC_VIRT_OBJECT_EDITED,
+      ActionType.FILE_OPENED,
     ],
     function (action: Action) {
-      maybeSendMessage(action);
+      _client && _client.send(action);
     }
   );
 }
@@ -410,7 +409,6 @@ function* handleLocationChanged() {
   if (!state.syncLocationWithUI) {
     return;
   }
-  console.log("CHANGED");
   const parts = Url.parse(location.href, true);
   yield put(
     locationChanged({

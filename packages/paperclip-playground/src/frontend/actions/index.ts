@@ -1,6 +1,7 @@
 import * as ve from "paperclip-visual-editor/src/actions";
 import { AppState } from "paperclip-visual-editor/src/state";
 import { actionCreator } from "./base";
+import { ContentChange } from "paperclip-source-writer";
 
 export type BaseAction<TType extends ActionType, TPayload = undefined> = {
   type: TType;
@@ -13,6 +14,7 @@ export enum ActionType {
   CODE_EDITOR_TEXT_CHANGED = "CODE_EDITOR_TEXT_CHANGED",
   WORKER_INITIALIZED = "WORKER_INITIALIZED",
   APP_STATE_DIFFED = "APP_STATE_DIFFED",
+  CONTENT_CHANGES_CREATED = "CONTENT_CHANGES_CREATED",
 }
 
 export type EngineLoaded = BaseAction<ActionType.ENGINE_LOADED>;
@@ -30,6 +32,10 @@ export type AppStateDiffed = BaseAction<
   ActionType.APP_STATE_DIFFED,
   { ops: any[] }
 >;
+export type ContentChangesCreated = BaseAction<
+  ActionType.CONTENT_CHANGES_CREATED,
+  { changes: Record<string, ContentChange[]> }
+>;
 
 export const engineLoaded = actionCreator<EngineLoaded>(
   ActionType.ENGINE_LOADED
@@ -46,6 +52,9 @@ export const workerInitialized = actionCreator<WorkerInitialized>(
 export const appStateDiffed = actionCreator<AppStateDiffed>(
   ActionType.APP_STATE_DIFFED
 );
+export const contentChangesCreated = actionCreator<ContentChangesCreated>(
+  ActionType.CONTENT_CHANGES_CREATED
+);
 
 export type Action =
   | ve.Action
@@ -53,4 +62,5 @@ export type Action =
   | EngineCrashed
   | AppStateDiffed
   | WorkerInitialized
+  | ContentChangesCreated
   | CodeEditorTextChanged;

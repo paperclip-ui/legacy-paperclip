@@ -36,7 +36,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="AddFileButton">
+<div export component as="AddFileButton" {onClick}>
   <style>
     padding: 0px 16px;
     display: flex;

@@ -16,6 +16,7 @@
     "immer": "^8.0.0",
     "nodemon": "^2.0.7",
     "paperclip": "^17.3.8",
+    "paperclip-source-writer": "^17.3.8",
     "paperclip-visual-editor": "^17.3.9",
     "react-router": "^5.2.0",
     "redux": "^4.0.5",
