@@ -1,0 +1,28 @@
+<import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
+<import src="./Toolbar/index.pc" as="Toolbar" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" className="$Theme.font-default">
+  <style>
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgb(207, 207, 207);
+    height: 100%;
+    width: 70%;
+    overflow: hidden;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { title: "CodeMode", width: 1024, height: 768, x: 41, y: -47 }
+-->
+<Container export component as="Preview">
+  <Toolbar.Preview />
+  <div>
+    Text editor
+  </div>
+</Container>

@@ -1,6 +1,6 @@
 // import React, { useState, useEffect } from "react";
 import * as ui from "./ui.pc";
-import { createEngine, Engine } from "paperclip/browser";
+import { loadEngineDelegate } from "paperclip/browser";
 
 import SimpleEditor from "react-simple-code-editor";
 
@@ -20,32 +20,32 @@ export const createComponentClass = ({
   React,
   useState,
   useEffect,
-  useRef
+  useRef,
 }: any) => {
-  const usePaperclipEngine = initialGraph => {
-    const [engine, setEngine] = useState(null);
-    useEffect(() => {
-      createEngine({
-        io: {
-          readFile(uri) {
-            return initialGraph[uri];
-          },
-          resolveFile(from, to) {
-            return to.replace("./", "");
-          },
-          fileExists(uri) {
-            return Boolean(initialGraph[uri]);
-          }
-        }
-      }).then(v => {
-        setEngine(v);
-      });
-    }, [initialGraph]);
-    return engine;
-  };
+  // const usePaperclipEngine = initialGraph => {
+  //   const [engine, setEngine] = useState(null);
+  //   useEffect(() => {
+  //     createEngine({
+  //       io: {
+  //         readFile(uri) {
+  //           return initialGraph[uri];
+  //         },
+  //         resolveFile(from, to) {
+  //           return to.replace("./", "");
+  //         },
+  //         fileExists(uri) {
+  //           return Boolean(initialGraph[uri]);
+  //         }
+  //       }
+  //     }).then(v => {
+  //       setEngine(v);
+  //     });
+  //   }, [initialGraph]);
+  //   return engine;
+  // };
 
-  const cachedGraph = memoize(graph => graph, {
-    serializer: graph => JSON.stringify(graph)
+  const cachedGraph = memoize((graph) => graph, {
+    serializer: (graph) => JSON.stringify(graph),
   });
 
   const Editor = ({
@@ -53,7 +53,7 @@ export const createComponentClass = ({
     defaultUri,
     theme,
     previewStyle,
-    responsive = true
+    responsive = true,
   }) => {
     const initialGraph = cachedGraph(graph);
     const [currentGraph, setGraph] = useState(initialGraph);
@@ -61,12 +61,13 @@ export const createComponentClass = ({
 
     const code = currentGraph[currentUri];
 
-    const engine = usePaperclipEngine(initialGraph);
+    // const engine = usePaperclipEngine(initialGraph);
+    const engine: any = null;
 
-    const onCodeChange = code => {
+    const onCodeChange = (code) => {
       setGraph({
         ...currentGraph,
-        [currentUri]: code
+        [currentUri]: code,
       });
 
       if (engine) {
@@ -81,13 +82,13 @@ export const createComponentClass = ({
       <ui.Editor
         responsive={responsive}
         style={{
-          "--background": theme.plain?.backgroundColor
+          "--background": theme.plain?.backgroundColor,
         }}
       >
         <ui.CodePane
           tabs={
             <>
-              {Object.keys(currentGraph).map(uri => {
+              {Object.keys(currentGraph).map((uri) => {
                 return (
                   <ui.Tab
                     selected={uri === currentUri}
@@ -106,11 +107,11 @@ export const createComponentClass = ({
               width: "100%",
               minHeight: "100%",
               padding: "8px",
-              ...baseTheme
+              ...baseTheme,
             }}
             preClassName="language-html"
             onValueChange={onCodeChange}
-            highlight={code => highlight(code, "html", theme)}
+            highlight={(code) => highlight(code, "html", theme)}
           />
         </ui.CodePane>
         <Preview engine={engine} style={previewStyle} currentUri={currentUri} />
@@ -139,7 +140,7 @@ export const createComponentClass = ({
   };
 
   type PreviewProps = {
-    engine?: Engine;
+    engine?: any;
     currentUri: string;
     style: any;
   };
@@ -158,15 +159,15 @@ export const createComponentClass = ({
 
       const init = async () => {
         try {
-          renderer.initialize(await engine.run(currentUri));
-          disposeListener = engine.onEvent(event => {
+          renderer.initialize(await engine.open(currentUri));
+          disposeListener = engine.onEvent((event) => {
             renderer.handleEngineDelegateEvent(event);
           });
         } catch (e) {
           console.warn(e);
 
           // wait for something to happen, then retry
-          const dispose = engine.onEvent(event => {
+          const dispose = engine.onEvent((event) => {
             dispose();
             init();
           });

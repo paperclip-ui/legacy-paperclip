@@ -20,6 +20,10 @@ module.exports = {
     filename: "browser.js",
     path: path.resolve(__dirname, "dist"),
   },
+  experiments: {
+    asyncWebAssembly: true,
+    // asyncWebAssembly: true
+  },
   devtool: false,
 
   plugins: [new HtmlWebpackPlugin()],
@@ -30,10 +34,13 @@ module.exports = {
       url: require.resolve("url"),
       path: require.resolve("path-browserify"),
       events: require.resolve("events"),
+      react: require.resolve("react"),
+      "react-dom": require.resolve("react-dom"),
     },
   },
   externals: {
     chokidar: "{}",
+    fs: "{}",
   },
 
   module: {

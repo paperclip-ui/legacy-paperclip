@@ -2,11 +2,11 @@
 // License: https://github.com/sveltejs/svelte-loader#license
 import * as url from "url";
 import {
-  Engine,
-  createEngine,
+  EngineDelegate,
+  createEngineDelegate,
   PaperclipConfig,
   stringifyCSSSheet,
-  PC_CONFIG_FILE_NAME
+  PC_CONFIG_FILE_NAME,
 } from "paperclip";
 import { getPrettyMessage } from "paperclip-cli-utils";
 import * as path from "path";
@@ -15,18 +15,18 @@ import * as loaderUtils from "loader-utils";
 import * as VirtualModules from "webpack-virtual-modules";
 import { LoadedData } from "paperclip";
 
-let _engine: Engine;
+let _engine: EngineDelegate;
 
 type Options = {
   configFile: string;
   resourceProtocol?: string;
 };
 
-const getEngine = async (): Promise<Engine> => {
+const getEngine = async (): Promise<EngineDelegate> => {
   if (_engine) {
     return _engine;
   }
-  return (_engine = await createEngine({}));
+  return (_engine = await createEngineDelegate({}));
 };
 
 const virtualModuleInstances = new Map();
@@ -55,7 +55,7 @@ async function pcLoader(
 
   const engine = await getEngine();
   const compiler = require(resolve.sync(config.compilerOptions.name, {
-    basedir: process.cwd()
+    basedir: process.cwd(),
   }));
   let info: LoadedData;
   let ast: any;
@@ -65,7 +65,7 @@ async function pcLoader(
     await engine.updateVirtualFileContent(resourceUrl, source);
     ast = engine.parseContent(source);
 
-    info = await engine.run(resourceUrl);
+    info = await engine.open(resourceUrl);
   } catch (e) {
     // eesh 🙈
     const info =
@@ -91,7 +91,7 @@ async function pcLoader(
     {
       ast,
       classNames: exports.style.classNames,
-      sheetRelativeFilePath: `./${sheetFileName}`
+      sheetRelativeFilePath: `./${sheetFileName}`,
     },
     resourceUrl,
     config.compilerOptions
@@ -99,7 +99,7 @@ async function pcLoader(
 
   const sheetCode = stringifyCSSSheet(sheet, {
     uri: resourceUrl,
-    protocol: resourceProtocol
+    protocol: resourceProtocol,
   });
 
   // covers bug with node@10.13.0 where paths aren't stringified correctly (C:/this/path/is/bad)
@@ -112,7 +112,7 @@ async function pcLoader(
   callback(null, code);
 }
 
-module.exports = function(source: string) {
+module.exports = function (source: string) {
   if (this._compiler && !virtualModuleInstances.has(this._compiler)) {
     const modules = activatePlugin(new VirtualModules(), this._compiler);
     virtualModuleInstances.set(this._compiler, modules);
@@ -134,15 +134,15 @@ const activatePlugin = (plugin, compiler) => {
     hooks: {
       ...hooks,
       afterResolvers: makeImmediateCallbackHook(hooks.afterResolvers),
-      afterEnvironment: makeImmediateCallbackHook(hooks.afterEnvironment)
-    }
+      afterEnvironment: makeImmediateCallbackHook(hooks.afterEnvironment),
+    },
   });
   return plugin;
 };
 
-const makeImmediateCallbackHook = hook => ({
+const makeImmediateCallbackHook = (hook) => ({
   tap: (name: string, callback) => {
     hook.tap(name, callback);
     callback();
-  }
+  },
 });

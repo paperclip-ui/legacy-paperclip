@@ -5,13 +5,13 @@ import {
   memoize,
   NodeAnnotations,
   VirtualFrame,
-  VirtualNodeKind
+  VirtualNodeKind,
 } from "paperclip-utils";
 import {
   VirtualNode,
   EngineErrorEvent,
   EngineDelegateEvent,
-  LoadedData
+  LoadedData,
 } from "paperclip-utils";
 import {
   Transform,
@@ -20,7 +20,7 @@ import {
   Size,
   mergeBoxes,
   centerTransformZoom,
-  getScaledPoint
+  getScaledPoint,
 } from "./geom";
 import * as os from "os";
 import { Frame } from "paperclip-web-renderer";
@@ -29,7 +29,7 @@ export const DEFAULT_FRAME_BOX = {
   width: 1024,
   height: 768,
   x: 0,
-  y: 0
+  y: 0,
 };
 
 export type Canvas = {
@@ -48,7 +48,7 @@ export type BoxNodeInfo = {
 
 export enum FSItemKind {
   FILE = "file",
-  DIRECTORY = "directory"
+  DIRECTORY = "directory",
 }
 
 export type File = {
@@ -89,7 +89,7 @@ export type AppState = {
   currentFileUri: string;
   locationQuery: Record<string, string>;
   embedded?: boolean;
-  documentContent: Record<string, string>;
+  documentContents: Record<string, string>;
   mountedRendererIds: string[];
   currentEngineEvents: Record<string, EngineDelegateEvent[]>;
   allLoadedPCFileData: Record<string, LoadedData>;
@@ -107,7 +107,7 @@ export type AppState = {
 export enum EnvOptionKind {
   Public = "Public",
   Private = "Private",
-  Browserstack = "Browserstack"
+  Browserstack = "Browserstack",
 }
 
 export type EnvOption = {
@@ -129,7 +129,7 @@ export const INITIAL_STATE: AppState = {
   centeredInitial: false,
   mountedRendererIds: [],
   toolsLayerEnabled: true,
-  documentContent: {},
+  documentContents: {},
   currentFileUri: null,
   availableBrowsers: [],
   currentEngineEvents: {},
@@ -146,9 +146,9 @@ export const INITIAL_STATE: AppState = {
     transform: {
       x: 0,
       y: 0,
-      z: 1
-    }
-  }
+      z: 1,
+    },
+  },
 };
 
 export const isExpanded = (state: AppState) => {
@@ -164,7 +164,7 @@ export const IS_WINDOWS = os.platform() === "win32";
 export const resetCanvas = (canvas: Canvas) => ({
   ...canvas,
   scrollPosition: { x: 0, y: 0 },
-  transform: { x: 0, y: 0, z: 1 }
+  transform: { x: 0, y: 0, z: 1 },
 });
 
 export const mergeBoxesFromClientRects = (
@@ -213,7 +213,7 @@ export const findBoxNodeInfo = memoize(
 
     return {
       nodePath: bestIntersetingNodePath,
-      box: bestIntersetingBox
+      box: bestIntersetingBox,
     };
   }
 );
@@ -236,7 +236,7 @@ export const calcFrameBox = memoize((rects: Record<string, Box>) => {
     x,
     y,
     width,
-    height
+    height,
   };
 });
 
@@ -259,7 +259,7 @@ export const getFSItem = (absolutePath: string, current: FSItem) => {
 
 export const getSelectedFrames = (state: AppState): VirtualFrame[] => {
   return state.selectedNodePaths
-    .map(nodePath => {
+    .map((nodePath) => {
       const frameIndex = Number(nodePath);
       return getFrameFromIndex(frameIndex, state);
     })
@@ -351,7 +351,7 @@ export const maybeCenterCanvas = (state: AppState, force?: boolean) => {
       state.canvas.size?.width &&
       state.canvas.size?.height)
   ) {
-    state = produce(state, newState => {
+    state = produce(state, (newState) => {
       newState.centeredInitial = true;
     });
 
@@ -394,13 +394,13 @@ export const centerEditorCanvas = (
   const {
     canvas: {
       transform,
-      size: { width, height }
-    }
+      size: { width, height },
+    },
   } = state;
 
   const centered = {
     x: -innerBounds.x + width / 2 - innerBounds.width / 2,
-    y: -innerBounds.y + height / 2 - innerBounds.height / 2
+    y: -innerBounds.y + height / 2 - innerBounds.height / 2,
   };
 
   const scale =
@@ -413,17 +413,17 @@ export const centerEditorCanvas = (
       ? zoomOrZoomToFit
       : transform.z;
 
-  state = produce(state, newState => {
+  state = produce(state, (newState) => {
     newState.canvas.transform = centerTransformZoom(
       {
         ...centered,
-        z: 1
+        z: 1,
       },
       {
         x: 0,
         y: 0,
         width,
-        height
+        height,
       },
       Math.min(scale, 1)
     );

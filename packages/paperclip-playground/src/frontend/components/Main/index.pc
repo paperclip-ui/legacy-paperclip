@@ -1,0 +1,36 @@
+<import src="paperclip-visual-editor/src/components/Main/index.pc" as="Main" />
+<import src="./CodeMode/index.pc" as="CodeMode" />
+<style>
+  :global(html, body) {
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container">
+  <style>
+    display: flex;
+    height: 100vh;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Container export component as="Preview">
+  <CodeMode.Preview />
+  <Main.Preview dark designMode showGrid />
+</Container>
+
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 525, y: 61 }
+-->
+<Preview />

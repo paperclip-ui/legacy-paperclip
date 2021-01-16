@@ -10,31 +10,31 @@ describe(__filename + "#", () => {
       minWidth: 2,
       maxWidth: 6,
       minDepth: 1,
-      maxDepth: 4
+      maxDepth: 4,
     };
 
     let currentDocumentSource = generateRandomPaperclipDocument(randOptions);
 
     const graph = {
-      "/entry.pc": currentDocumentSource
+      "/entry.pc": currentDocumentSource,
     };
 
     const engine = await createMockEngine(graph);
 
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
 
     for (let i = 30; i--; ) {
       const randomDocument = generateRandomPaperclipDocument(randOptions);
       const baselineEngine = await createMockEngine({
-        "/entry.pc": randomDocument
+        "/entry.pc": randomDocument,
       });
 
       try {
         const baselineRenderer = createMockRenderer("/entry.pc");
         baselineEngine.onEvent(baselineRenderer.handleEngineDelegateEvent);
-        await baselineEngine.run("/entry.pc");
+        await baselineEngine.open("/entry.pc");
 
         await engine.updateVirtualFileContent("/entry.pc", randomDocument);
 

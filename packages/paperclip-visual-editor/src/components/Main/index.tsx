@@ -7,7 +7,7 @@ import { useAppStore } from "../../hooks/useAppStore";
 import { Router } from "react-router";
 import history from "../../dom-history";
 
-export const Editor = withAppStore(() => {
+export const MainBase = withAppStore(() => {
   const { state } = useAppStore();
   return (
     <Router history={history}>
@@ -19,3 +19,5 @@ export const Editor = withAppStore(() => {
     </Router>
   );
 });
+
+export const Main = withAppStore(MainBase);

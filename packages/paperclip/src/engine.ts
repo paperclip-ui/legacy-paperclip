@@ -15,7 +15,7 @@ import {
   LoadedData,
   DiffedEvent,
   PaperclipSourceWatcher,
-  ChangeKind
+  ChangeKind,
 } from "paperclip-utils";
 import { noop } from "./utils";
 import { EngineMode } from "./delegate";
@@ -35,7 +35,7 @@ export type EngineOptions = {
   mode?: EngineMode;
 };
 
-const mapResult = result => {
+const mapResult = (result) => {
   if (!result) {
     return result;
   }
@@ -89,13 +89,13 @@ export class Engine {
     if (event.kind === EngineDelegateEventKind.Evaluated) {
       const data: LoadedData = (this._rendered[event.uri] = {
         ...event.data,
-        importedSheets: this.getImportedSheets(event)
+        importedSheets: this.getImportedSheets(event),
       });
 
       this._dispatch({
         kind: EngineDelegateEventKind.Loaded,
         uri: event.uri,
-        data
+        data,
       });
     } else if (event.kind === EngineDelegateEventKind.Diffed) {
       const existingData = this._rendered[event.uri];
@@ -107,7 +107,7 @@ export class Engine {
         importedSheets: this.getImportedSheets(event),
         allDependencies: event.data.allDependencies,
         sheet: event.data.sheet || existingData.sheet,
-        preview: patchVirtNode(existingData.preview, event.data.mutations)
+        preview: patchVirtNode(existingData.preview, event.data.mutations),
       });
 
       const removedSheetUris = [];
@@ -129,7 +129,7 @@ export class Engine {
         ) {
           addedSheets.push({
             uri: depUri,
-            sheet: this._rendered[depUri].sheet
+            sheet: this._rendered[depUri].sheet,
           });
         }
       }
@@ -141,8 +141,8 @@ export class Engine {
           data: {
             newSheets: addedSheets,
             removedSheetUris: removedSheetUris,
-            allDependencies: event.data.allDependencies
-          }
+            allDependencies: event.data.allDependencies,
+          },
         });
       }
     }
@@ -170,7 +170,7 @@ export class Engine {
   }
 
   getImportedSheets({
-    data: { allDependencies }
+    data: { allDependencies },
   }: EvaluatedEvent | DiffedEvent) {
     // ick, wworks for now.
 
@@ -215,10 +215,10 @@ export class Engine {
 const getIOOptions = (options: EngineOptions = {}) =>
   Object.assign(
     {
-      readFile: uri => {
+      readFile: (uri) => {
         return fs.readFileSync(new URL(uri) as any, "utf8");
       },
-      fileExists: uri => {
+      fileExists: (uri) => {
         try {
           const url = new URL(uri) as any;
 
@@ -231,33 +231,11 @@ const getIOOptions = (options: EngineOptions = {}) =>
         }
       },
       resolveFile: resolveImportUri(fs),
-      mode: options.mode
+      mode: options.mode,
     },
     options.io,
     { mode: options.mode }
   );
-
-export const createEngine = createNativeEngine => async (
-  options: EngineOptions,
-  onCrash: any
-) => {
-  const { readFile, fileExists, resolveFile } = getIOOptions(options);
-  return new Engine(
-    await createNativeEngine(readFile, fileExists, resolveFile),
-    onCrash
-  );
-};
-
-export const createEngineSync = createNativeEngine => (
-  options: EngineOptions,
-  onCrash: any
-) => {
-  const { readFile, fileExists, resolveFile, mode } = getIOOptions(options);
-  return new Engine(
-    createNativeEngine(readFile, fileExists, resolveFile, mode),
-    onCrash
-  );
-};
 
 const existsSyncCaseSensitive = (uri: URL) => {
   const pathname = url.fileURLToPath(uri as any);

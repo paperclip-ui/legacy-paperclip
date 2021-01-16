@@ -1,0 +1,79 @@
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Tab" className:active="active" className:hover="hover">
+  <style>
+    padding: 0px 16px;
+    border-right: 1px solid rgb(190, 190, 190);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    &.active {
+      background: rgb(179, 179, 179);
+    }
+    &:hover, &.hover {
+      .remove-button {
+        visibility: visible;
+      }
+    }
+  </style>
+  {children}
+  <button onClick={onRemoveButtonClick} className="remove-button">
+    <style>
+      visibility: hidden;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: inherit;
+    </style>
+    &times;
+  </button>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="AddFileButton">
+  <style>
+    padding: 0px 16px;
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    cursor: pointer;
+  </style>
+  &plus;
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Topbar">
+  <style>
+    background: rgb(212, 212, 212);
+    border-bottom: 1px solid rgb(190, 190, 190);
+    height: 30px;
+    display: flex;
+    align-items: stretch;
+  </style>
+  {children}
+</div>
+
+<Topbar export component as="Preview">
+    <Tab>
+      file.pc
+    </Tab>
+    <Tab active>
+      file2.pc
+    </Tab>
+    <Tab hover>
+      file2.pc
+    </Tab>
+    <Tab>
+      file3.pc
+    </Tab>
+    <AddFileButton />
+  </Topbar>

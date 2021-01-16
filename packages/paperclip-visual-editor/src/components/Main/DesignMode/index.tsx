@@ -6,6 +6,7 @@ import { ErrorBanner } from "./ErrorBanner";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Birdseye } from "./Birdseye";
 import { Route } from "react-router";
+import { withAppStore } from "../../../hocs";
 
 export const DesignMode = () => {
   const { state, dispatch } = useAppStore();

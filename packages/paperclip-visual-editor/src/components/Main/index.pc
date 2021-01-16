@@ -12,7 +12,6 @@ TODOS:
 <import src="./DesignMode/index.pc" as="DesignMode" />
 <import src="./LeftSidebar/index.pc" as="LeftSidebar" />
 <import src="./RightSidebar/index.pc" as="RightSidebar" />
-<import src="./CodeMode/index.pc" as="CodeMode" />
 
 
 <!--
@@ -34,7 +33,6 @@ TODOS:
 -->
 <Container export component as="Preview" className:light="light" className:dark="dark" className="$theme.font-default">
   {showLeftSidebar? && <LeftSidebar.Preview />}
-  {codeMode? && <CodeMode.Preview {dark?} {showEnvPopup?} {showGrid?} />}
   {designMode? && <DesignMode.Preview {dark?} {showEnvPopup?} {showGrid?} />}
 </Container>
 

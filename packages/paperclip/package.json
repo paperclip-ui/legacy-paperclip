@@ -3,7 +3,6 @@
   "version": "17.3.8",
   "description": "- real-time editing. Biggest priority is to have a bundler that  - Interoperability. Paperclip should work with any web framework.  - Type safety.  - Visually editable.",
   "main": "./index.js",
-  "browser": "./browser.js",
   "typings": "index.d.ts",
   "scripts": {
     "test": "npm run test:node && cd native && cargo test",
@@ -15,7 +14,9 @@
     "build:node": "tsc",
     "build:native": "cd native && cargo build --release",
     "build:browser": "npm run build:esm && npm run build:wasm:web",
-    "build:esm": "tsc --build tsconfig.esm.json",
+    "build:esm": "tsc build tsconfig.esm.json",
+    "build:wasm:bundler": "cd native && wasm-pack build --release --target bundler --out-dir bundler",
+    "build:wasm:browser": "cd native && wasm-pack build --release --target browser --out-dir browser",
     "build:wasm:web": "cd native && wasm-pack build --release --target web --out-dir web &&  cat web/paperclip.js | sed 's/import.meta.url/_NOOP_/g' > web/paperclip-no-import-meta.js && cd .. && mkdir -p dist && cp native/web/paperclip_bg.wasm dist/paperclip_bg.wasm",
     "build:wasm:node": "cd native && wasm-pack build --release --target nodejs --out-dir node"
   },
@@ -27,7 +28,8 @@
     "crc32": "^0.2.2",
     "mocha": "^7.0.1",
     "paperclip-utils": "^17.3.8",
-    "typescript": "^3.8.2"
+    "typescript": "^3.8.2",
+    "url": "^0.11.0"
   },
   "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
   "devDependencies": {

@@ -1,23 +1,22 @@
-// if (typeof TextDecoder === "undefined") {
-//   // eslint-disable-next-line
-//   global.TextDecoder = require('util').TextDecoder;
-// }
+import { EngineDelegate, EngineMode } from "./esm";
 
-import {
-  createEngine as createEngine2,
-  createEngineDelegate as createEngineDelegate2
-} from "./esm";
-import init, { NativeEngine } from "./native/web/paperclip-no-import-meta.js";
+export const loadEngineDelegate = async (options, onCrash) => {
+  // need this here since webpack tree shakes it out
+  await import("./native/browser/paperclip_bg.wasm");
 
-// eslint-disable-next-line
-const initp = init("/paperclip_bg.wasm").catch(() => {});
+  const { NativeEngine } = await import("./native/browser/paperclip_bg");
+  const { readFile, fileExists, resolveFile } = options.io;
 
-export const createEngine = createEngine2(async (...args) => {
-  await initp;
-  return NativeEngine.new(...args);
-});
-
-export const createEngineDelegate = createEngineDelegate2(async (...args) => {
-  await initp;
-  return NativeEngine.new(...args);
-});
+  return new EngineDelegate(
+    NativeEngine.new(
+      readFile,
+      fileExists,
+      resolveFile,
+      options.mode || EngineMode.MultiFrame
+    ),
+    onCrash ||
+      function (e) {
+        console.error(e);
+      }
+  );
+};

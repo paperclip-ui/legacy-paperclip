@@ -1,11 +1,11 @@
 import React from "react";
 import * as ReactDOM from "react-dom";
-import { Editor } from "./components/Main";
+import { Main } from "./components/Main";
 
 const mount = document.createElement("div");
 Object.assign(mount.style, { width: "100%", height: "100%" });
 
-ReactDOM.render(<Editor />, mount);
+ReactDOM.render(<Main />, mount);
 
 Array.from(document.head.querySelectorAll("style")).forEach((style) => {
   // Clear VS Code styles.
