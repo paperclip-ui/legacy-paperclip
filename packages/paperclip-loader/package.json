@@ -20,7 +20,7 @@
     "paperclip-cli-utils": "^17.3.8",
     "resolve": "^1.15.1",
     "typescript": "^3.8.3",
-    "webpack-virtual-modules": "0.2.1"
+    "webpack-virtual-modules": "^0.4.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.6.1",

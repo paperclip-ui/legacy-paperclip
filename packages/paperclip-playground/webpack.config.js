@@ -22,11 +22,16 @@ module.exports = {
   },
   devtool: false,
 
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: "Paperclip",
-    }),
-  ],
+  plugins: [new HtmlWebpackPlugin()],
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      os: "os-browserify/browser",
+      url: require.resolve("url"),
+      path: require.resolve("path-browserify"),
+      events: require.resolve("events"),
+    },
+  },
   externals: {
     chokidar: "{}",
   },
@@ -68,9 +73,5 @@ module.exports = {
         ],
       },
     ],
-  },
-
-  resolve: {
-    extensions: [".tsx", ".ts", ".js"],
   },
 };

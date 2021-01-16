@@ -13,6 +13,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "events": "^3.2.0",
     "html-entities": "^1.2.1",
     "paperclip-utils": "^17.3.8"
   },
