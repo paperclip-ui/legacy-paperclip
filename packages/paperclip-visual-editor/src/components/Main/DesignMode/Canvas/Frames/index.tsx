@@ -280,7 +280,7 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
 
   return (
     <styles.Frame style={frameStyle}>
-      <FrameContainer frame={frame} onLoad={onLoad} />
+      <FrameContainer frame={frame} fullscreen={expanded} onLoad={onLoad} />
     </styles.Frame>
   );
 });

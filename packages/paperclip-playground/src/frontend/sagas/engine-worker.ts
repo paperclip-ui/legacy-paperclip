@@ -16,13 +16,17 @@ import { AppState } from "paperclip-visual-editor/src/state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
 import { EngineDelegateEvent } from "paperclip/src";
-import { engineDelegateChanged } from "paperclip-visual-editor/src/actions";
+import {
+  engineDelegateChanged,
+  RedirectRequested,
+} from "paperclip-visual-editor/src/actions";
 import { PCSourceWriter } from "paperclip-source-writer";
 
 const init = async () => {
   let _appState: AppState;
   let _engine: EngineDelegate;
   let _writer: PCSourceWriter;
+  let _currentUri: string;
 
   const dispatch = (action: Action) => {
     (self as any).postMessage(action);
@@ -51,7 +55,12 @@ const init = async () => {
   };
 
   const tryOpeningCurrentFile = () => {
-    if (_appState.ui.query.currentFileUri && _engine) {
+    if (
+      _appState.ui.query.currentFileUri &&
+      _engine &&
+      (!_currentUri || _currentUri !== _appState.ui.query.currentFileUri)
+    ) {
+      _currentUri = _appState.ui.query.currentFileUri;
       _engine.open(_appState.ui.query.currentFileUri);
     }
   };
@@ -83,6 +92,11 @@ const init = async () => {
     }
   };
 
+  const handleRedirect = (action: RedirectRequested) => {
+    console.log(_appState.ui);
+    tryOpeningCurrentFile();
+  };
+
   self.onmessage = ({ data: action }: MessageEvent) => {
     switch (action.type) {
       case ActionType.WORKER_INITIALIZED:
@@ -91,6 +105,8 @@ const init = async () => {
         return handleAppStateDiffed(action);
       case ActionType.CODE_EDITOR_TEXT_CHANGED:
         return handleCodeChange(action);
+      case vea.ActionType.REDIRECT_REQUESTED:
+        return handleRedirect(action);
       case vea.ActionType.PC_VIRT_OBJECT_EDITED:
         return handleVirtObjectEdited(action);
       case ActionType.CONTENT_CHANGES_CREATED:

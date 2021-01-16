@@ -26,7 +26,11 @@ module.exports = {
   },
   devtool: false,
 
-  plugins: [new HtmlWebpackPlugin()],
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: "Paperclip Playground",
+    }),
+  ],
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     alias: {

@@ -1,9 +1,9 @@
 ### Immediate
 
-- get canvas to work
-- remove share option
-- capture save
-- capture zooming in and out
+- UI
+  - pages (just like figma)
+  
+- ability to change frames from grid
 - capture key bindings
 
 

@@ -10,11 +10,12 @@ type FramesProps = {
 type FrameContainerProps = {
   style?: any;
   frame: Frame;
+  fullscreen: boolean;
   onLoad?: () => void;
 };
 
 export const FrameContainer = memo(
-  ({ frame, style = {}, onLoad = noop }: FrameContainerProps) => {
+  ({ frame, style = {}, fullscreen, onLoad = noop }: FrameContainerProps) => {
     const frameRef = useRef<HTMLDivElement>();
 
     useEffect(() => {
@@ -25,7 +26,7 @@ export const FrameContainer = memo(
           border: "none",
           background: "white",
           width: "100%",
-          height: "100%"
+          height: "100%",
         });
         iframe.srcdoc = `
       <!doctype html>
@@ -37,6 +38,7 @@ export const FrameContainer = memo(
               padding: 0;
               width: 100%;
               height: 100%;
+              overflow: hidden;
             }
           </style>
         </head>
@@ -48,6 +50,7 @@ export const FrameContainer = memo(
         iframe.onload = () => {
           iframe.contentDocument.body.appendChild(frame.stage);
           onLoad();
+          syncOverflow();
         };
         frameRef.current.appendChild(iframe);
       }
@@ -59,6 +62,17 @@ export const FrameContainer = memo(
         }
       };
     }, [frameRef, frame.stage]);
+
+    const syncOverflow = () => {
+      const doc = (frameRef.current.children[0] as HTMLIFrameElement)
+        ?.contentDocument;
+      if (doc) {
+        const overflow = fullscreen ? "scroll" : "hidden";
+        doc.body.style.overflow = overflow;
+      }
+    };
+
+    useEffect(syncOverflow, [fullscreen]);
 
     return (
       <div style={{ width: "100%", height: "100%", ...style }} ref={frameRef} />

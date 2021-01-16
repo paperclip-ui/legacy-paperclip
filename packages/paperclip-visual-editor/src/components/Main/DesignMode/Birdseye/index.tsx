@@ -182,6 +182,7 @@ const Cell = ({
       controls={null}
     >
       <FrameContainer
+        fullscreen={false}
         style={{
           width: frameBox.width,
           height: frameBox.height,
@@ -239,7 +240,7 @@ const useCell = ({
         pathname: "/canvas",
         query: {
           ...parts.query,
-          currentFile: uri,
+          currentFileUri: uri,
           frame: frameIndex,
         },
       })
