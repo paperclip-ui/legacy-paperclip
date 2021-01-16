@@ -6,7 +6,14 @@ export type AppState = {
 
 export const INITIAL_STATE: AppState = {
   ...ve.INITIAL_STATE,
+  ui: {
+    pathname: "/canvas",
+    query: {
+      currentFileUri: "file:///entry.pc",
+    },
+  },
   openFileUris: ["file:///entry.pc"],
+  syncLocationWithUI: false,
   documentContents: {
     "file:///entry.pc": `Hello World`,
   },

@@ -14,7 +14,6 @@ import {
   mergeBoxes,
   getActiveFrameIndex,
   isExpanded,
-  centerEditorCanvas,
 } from "../state";
 import { produce } from "immer";
 import {
@@ -67,15 +66,11 @@ export default (state: AppState, action: Action) => {
         newState.availableBrowsers = action.payload;
       });
     }
-    case ActionType.LOCATION_CHANGED: {
+    case ActionType.LOCATION_CHANGED:
+    case ActionType.REDIRECT_REQUESTED: {
       state = produce(state, (newState) => {
-        newState.currentFileUri = action.payload.query.currentFile;
-        newState.id = action.payload.query.id;
-        newState.embedded = Boolean(action.payload.query.embedded);
-        newState.renderProtocol =
-          action.payload.protocol + "//" + action.payload.host + "/file";
+        Object.assign(newState.ui, action.payload);
         newState.centeredInitial = false;
-        newState.locationQuery = action.payload.query;
       });
       return state;
     }
@@ -143,7 +138,8 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.PC_FILE_OPENED: {
       state = produce(state, (newState) => {
-        newState.allLoadedPCFileData[state.currentFileUri] = action.payload;
+        newState.allLoadedPCFileData[state.ui.query.currentFileUri] =
+          action.payload;
       });
       state = maybeCenterCanvas(state);
       return state;
@@ -159,7 +155,6 @@ export default (state: AppState, action: Action) => {
     case ActionType.FS_ITEM_CLICKED: {
       state = produce(state, (newState) => {
         if (isPaperclipFile(action.payload.url)) {
-          newState.currentFileUri = action.payload.url;
           newState.centeredInitial = false;
         }
       });

@@ -4,6 +4,7 @@ import { computeVirtJSObject } from "paperclip-utils";
 import * as Url from "url";
 import { fork, put, take, takeEvery, select } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
+import * as qs from "querystring";
 import {
   ActionType,
   ErrorBannerClicked,
@@ -28,6 +29,7 @@ import {
   getAllScreensRequested,
   zoomOutKeyPressed,
   zoomInKeyPressed,
+  RedirectRequested,
 } from "../actions";
 import {
   AppState,
@@ -114,7 +116,7 @@ function* handleRenderer() {
     ],
     function* () {
       const state: AppState = yield select();
-      maybeSendMessage(fileOpened({ uri: state.currentFileUri }));
+      maybeSendMessage(fileOpened({ uri: state.ui.query.currentFileUri }));
     }
   );
 
@@ -180,7 +182,8 @@ function* handleRenderer() {
   yield takeEvery([ActionType.LOCATION_CHANGED], function* () {
     const state: AppState = yield select();
     if (
-      (!state.currentFileUri || location.pathname.indexOf("/all") === 0) &&
+      (!state.ui.query.currentFileUri ||
+        location.pathname.indexOf("/all") === 0) &&
       !state.loadedBirdseyeInitially
     ) {
       yield put(getAllScreensRequested(null));
@@ -230,7 +233,7 @@ function* handleCanvasMouseUp(action: CanvasMouseUp) {
   const nodePathParts = nodeInfo.nodePath.split(".").map(Number);
 
   const virtualNode = getVirtTarget(
-    state.allLoadedPCFileData[state.currentFileUri].preview,
+    state.allLoadedPCFileData[state.ui.query.currentFileUri].preview,
     nodePathParts
   );
 
@@ -266,7 +269,7 @@ function* handleKeyCommands() {
       emit(zoomInKeyPressed(null));
       return false;
     });
-    Mousetrap.bind("meta+minus", () => {
+    Mousetrap.bind("meta+-", () => {
       emit(zoomOutKeyPressed(null));
       return false;
     });
@@ -289,6 +292,9 @@ function* handleKeyCommands() {
       },
       "keyup"
     );
+
+    // https://github.com/ccampbell/mousetrap/pull/215
+    Mousetrap.addKeycodes({ 173: "-" });
 
     // eslint-disable-next-line
     return () => {};
@@ -384,6 +390,7 @@ function* handleDocumentEvents() {
     });
 
     yield takeEvery(chan, (event: any) => {
+      console.log("WHEEEE");
       if (event.type === "wheel" && event.metaKey) {
         event.preventDefault();
       }
@@ -400,6 +407,11 @@ function* handleDocumentEvents() {
 }
 
 function* handleLocationChanged() {
+  const state: AppState = yield select();
+  if (!state.syncLocationWithUI) {
+    return;
+  }
+  console.log("CHANGED");
   const parts = Url.parse(location.href, true);
   yield put(
     locationChanged({
@@ -412,9 +424,18 @@ function* handleLocationChanged() {
 }
 
 function* handleLocation() {
+  const state: AppState = yield select();
+  if (!state.syncLocationWithUI) {
+    return;
+  }
   const chan = eventChannel((emit) => {
     return history.listen(emit);
   });
 
   yield takeEvery(chan, handleLocationChanged);
+  yield takeEvery(ActionType.REDIRECT_REQUESTED, function (
+    action: RedirectRequested
+  ) {
+    history.push(state.ui.pathname + "?" + qs.stringify(state.ui.query));
+  });
 }

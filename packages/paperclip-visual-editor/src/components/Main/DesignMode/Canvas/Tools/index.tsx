@@ -34,7 +34,9 @@ export const Tools = () => {
     boxes,
     canvas,
     selectedNodePaths,
-    currentFileUri,
+    ui: {
+      query: { currentFileUri },
+    },
     metaKeyDown,
     allLoadedPCFileData,
     readonly,
@@ -135,6 +137,7 @@ export const Tools = () => {
       <Frames
         frames={frames}
         dispatch={dispatch}
+        ui={state.ui}
         canvasTransform={canvas.transform}
         readonly={readonly}
       />

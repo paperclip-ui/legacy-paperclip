@@ -5,13 +5,14 @@
   "main": "./lib/index.js",
   "scripts": {
     "build": "paperclip build --definition --write && webpack",
-    "build:watch": "concurrently \"webpack --watch\" \"paperclip --definition --write --watch\"",
-    "start": "concurrently \"webpack serve\" \"paperclip --definition --write --watch\""
+    "build:watch": "concurrently \"webpack --watch\" \"paperclip build --definition --write --watch\"",
+    "start": "concurrently \"webpack serve\" \"paperclip build --definition --write --watch\""
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@monaco-editor/react": "^3.8.3",
+    "immer": "^8.0.0",
     "nodemon": "^2.0.7",
     "paperclip": "^17.3.8",
     "paperclip-visual-editor": "^17.3.9",

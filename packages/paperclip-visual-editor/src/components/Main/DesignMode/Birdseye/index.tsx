@@ -29,9 +29,8 @@ import { useFrames, useMultipleFrames } from "../Canvas/Frames";
 import { useTextInput } from "../../../TextInput";
 import { relative } from "path";
 import Spinner from "../../../Spinner/index.pc";
-import { useHistory } from "react-router";
 import { InfiniteScroller } from "../../../InfiniteScroller";
-import { birdseyeFilterChanged } from "../../../../actions";
+import { birdseyeFilterChanged, redirectRequest } from "../../../../actions";
 
 type CellFrame = {
   filePath: string;
@@ -218,10 +217,10 @@ const useCell = ({
     () => ({ ...DEFAULT_FRAME_BOX, ...annotations.frame }),
     [annotations]
   );
+  const { dispatch } = useAppStore();
 
   const [mountBounds, setMountBounds] = useState<ClientRect | undefined>();
   const [scale, setFrameScale] = useState<number>(1);
-  const history = useHistory();
 
   const { label, visible, tags } = getCellInfo(node);
 
@@ -236,13 +235,15 @@ const useCell = ({
 
   const onClick = useCallback(() => {
     const parts = url.parse(location.href, true);
-    history.push(
-      "/canvas?" +
-        qs.stringify({
+    dispatch(
+      redirectRequest({
+        pathname: "/canvas",
+        query: {
           ...parts.query,
           currentFile: uri,
           frame: frameIndex,
-        })
+        },
+      })
     );
   }, [frameIndex, uri]);
 

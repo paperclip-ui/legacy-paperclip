@@ -1,6 +1,11 @@
 ### Immediate
 
-- remove browser
+- get canvas to work
+- remove share option
+- web workers
+- capture save
+- capture zooming in and out
+- capture key bindings
 
 
 - Milestone - get playground working
@@ -16,6 +21,7 @@
 - Milestone - update docs to use playground
 - Milestone - deploy to server
 - Milestone - redesign
+
 
 
 

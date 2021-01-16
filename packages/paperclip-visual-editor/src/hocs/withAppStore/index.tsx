@@ -8,25 +8,36 @@ import defaultSaga from "../../sagas";
 import { INITIAL_STATE } from "../../state";
 
 export const withAppStore = (Child: React.FC) => {
-  const sagaMiddleware = createSagaMiddleware();
-  const store = createStore(
-    defaultReducer,
-    INITIAL_STATE,
-    applyMiddleware(sagaMiddleware)
-  );
-  sagaMiddleware.run(defaultSaga);
+  let _inited = false;
+  let _store;
 
-  return props => {
-    const [state, setState] = useState(store.getState());
+  const init = () => {
+    if (_inited) {
+      return;
+    }
+
+    _inited = true;
+    const sagaMiddleware = createSagaMiddleware();
+    _store = createStore(
+      defaultReducer,
+      INITIAL_STATE,
+      applyMiddleware(sagaMiddleware)
+    );
+    sagaMiddleware.run(defaultSaga);
+  };
+
+  return (props) => {
+    init();
+    const [state, setState] = useState(_store.getState());
 
     useEffect(() => {
-      return store.subscribe(() => {
-        setState(store.getState());
+      return _store.subscribe(() => {
+        setState(_store.getState());
       });
     }, []);
 
     return (
-      <AppStoreContext.Provider value={{ dispatch: store.dispatch, state }}>
+      <AppStoreContext.Provider value={{ dispatch: _store.dispatch, state }}>
         <Child {...props} />
       </AppStoreContext.Provider>
     );

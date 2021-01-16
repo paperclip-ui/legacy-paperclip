@@ -11,29 +11,22 @@ import {
   birdseyeFilterChanged,
   birdseyeTopFilterBlurred,
   titleDoubleClicked,
+  redirectRequest,
 } from "../../../../actions";
 import { useTextInput } from "../../../TextInput";
 import * as qs from "qs";
 import { pathToFileURL } from "url";
 import { current } from "immer";
-import { useHistory } from "react-router";
 import { EnvironmentPopup } from "./EnvironmentPopup";
 import { isExpanded } from "../../../../state";
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
-  const {
-    canvas,
-    embedded,
-    projectDirectory,
-    readonly,
-    birdseyeFilter,
-    currentFileUri,
-  } = state;
+  const { canvas, projectDirectory, readonly, birdseyeFilter } = state;
   const expanded = isExpanded(state);
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
-  const history = useHistory();
-  const showBirdseye = history.location.pathname.indexOf("/all") === 0;
+  const showBirdseye = state.ui.pathname === "/all";
+  const { embedded, currentFileUri } = state.ui.query;
 
   const onMinusClick = () => {
     dispatch(zoomOutButtonClicked(null));
@@ -45,23 +38,21 @@ export const Toolbar = () => {
     setShowEnvironmentPopup(true);
   };
   const onCollapseButtonClick = useCallback(() => {
-    const query = qs.parse(history.location.search.substr(1));
-
-    history.push(
-      history.location.pathname +
-        "?" +
-        qs.stringify({
-          ...query,
+    dispatch(
+      redirectRequest({
+        query: {
+          ...state.ui.query,
           expanded: undefined,
-        })
+        },
+      })
     );
-  }, [history.location]);
+  }, [state.ui]);
 
   const onGridButtonClick = () => {
     if (showBirdseye) {
-      history.push("/canvas" + history.location.search);
+      dispatch(redirectRequest({ pathname: "/canvas" }));
     } else {
-      history.push("/all" + history.location.search);
+      dispatch(redirectRequest({ pathname: "/all" }));
     }
     // dispatch(gridButtonClicked(null));
   };

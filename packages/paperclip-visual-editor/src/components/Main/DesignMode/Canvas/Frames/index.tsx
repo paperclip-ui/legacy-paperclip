@@ -1,10 +1,9 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useState } from "react";
 import {
   Frame,
   FramesRenderer,
   getFrameBounds,
   getFrameVirtualNode,
-  Renderer,
 } from "paperclip-web-renderer";
 import { memo, useEffect, useMemo } from "react";
 import {
@@ -15,7 +14,6 @@ import {
 } from "../../../../../actions";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import {
-  computeVirtJSValue,
   computeVirtJSObject,
   VirtualElement,
   VirtualNode,
@@ -27,9 +25,7 @@ import {
 import * as styles from "./index.pc";
 import { render } from "react-dom";
 import { FrameContainer } from "../../../../FrameContainer";
-import produce from "immer";
 import { throttle } from "lodash";
-import { FramesContainer } from "../Tools/Frames/index.pc";
 import { isExpanded } from "../../../../../state";
 
 type FramesProps = {
@@ -39,7 +35,7 @@ type FramesProps = {
 export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   const { state } = useAppStore();
   const { renderer, preview, onFrameLoaded } = useFrames({
-    fileUri: state.currentFileUri,
+    fileUri: state.ui.query.currentFileUri,
     shouldCollectRects: true,
   });
 
@@ -87,10 +83,6 @@ class FrameController {
     }
   }
   updatePreview(preview: VirtualNode) {
-    // if (this.renderer.getPreview() === preview) {
-    //   return;
-    // }
-
     this.renderer.setPreview(preview);
     this.collectRects();
   }

@@ -6,7 +6,7 @@ import {
   EngineDelegateEvent,
   LoadedData,
   ExprSource,
-  Action
+  Action,
 } from "paperclip-utils";
 import { Box, Directory, EnvOption, FSItemKind, Point, Size } from "../state";
 
@@ -14,6 +14,7 @@ export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
   LOCATION_CHANGED = "LOCATION_CHANGED",
   RENDERER_MOUNTED = "RENDERER_MOUNTED",
+  REDIRECT_REQUESTED = "REDIRECT_REQUESTED",
   ZOOM_IN_KEY_PRESSED = "ZOOM_IN_KEY_PRESSED",
   ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
@@ -65,7 +66,7 @@ export enum ActionType {
   FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
   EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
   COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED",
-  VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED"
+  VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED",
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -148,6 +149,13 @@ export type LocationChanged = BaseAction<
     host: string;
     pathname: string;
     query: any;
+  }
+>;
+export type RedirectRequested = BaseAction<
+  ActionType.REDIRECT_REQUESTED,
+  {
+    pathname?: string;
+    query?: any;
   }
 >;
 
@@ -315,6 +323,9 @@ export const rendererUnounted = actionCreator<RendererUnmounted>(
 export const birdseyeFilterChanged = actionCreator<BirdseyeFilterChanged>(
   ActionType.BIRDSEYE_FILTER_CHANGED
 );
+export const redirectRequest = actionCreator<RedirectRequested>(
+  ActionType.REDIRECT_REQUESTED
+);
 export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
 >(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
@@ -459,6 +470,7 @@ export type InstanceAction =
   | ResizerPathStoppedMoving
   | Pasted
   | RendererMounted
+  | RedirectRequested
   | RendererUnmounted
   | BirdseyeFilterChanged
   | FrameTitleChanged

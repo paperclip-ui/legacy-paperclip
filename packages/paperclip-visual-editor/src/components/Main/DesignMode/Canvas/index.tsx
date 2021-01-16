@@ -16,6 +16,7 @@ import {
   isExpanded,
 } from "../../../../state";
 import { getFrameBounds } from "paperclip-web-renderer";
+import { request } from "express";
 
 export const Canvas = React.memo(() => {
   const { state, dispatch } = useAppStore();
@@ -40,17 +41,6 @@ export const Canvas = React.memo(() => {
     } else {
       return transform;
     }
-
-    //       frameIndex: action.payload.frameIndex,
-    //       previousCanvasTransform: state.canvas.transform
-    //     };
-
-    //     const frame = getFrameFromIndex(action.payload.frameIndex, state);
-    //     const frameBounds = getFrameBounds(frame);
-
-    //     newState.canvas.transform.x = -frameBounds.x;
-    //     newState.canvas.transform.y = -frameBounds.y;
-    //     newState.canvas.transform.z = 1;
   }, [transform, expanded]);
 
   const [canvasPanTimer, setCanvasPanTimer] = useState<any>(0);
@@ -108,7 +98,7 @@ export const Canvas = React.memo(() => {
 
     window.addEventListener("resize", onResize);
 
-    setImmediate(onResize);
+    requestAnimationFrame(onResize);
 
     return () => {
       window.removeEventListener("resize", onResize);

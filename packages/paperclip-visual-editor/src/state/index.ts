@@ -73,11 +73,24 @@ type ExpandedFrameInfo = {
   previousCanvasTransform: Transform;
 };
 
+export type UIState = {
+  pathname: string;
+  query: Partial<{
+    currentFileUri: string;
+    embedded: boolean;
+    id: string;
+    expanded: boolean;
+    frame: number;
+  }>;
+};
+
 export type AppState = {
   id?: string;
+  syncLocationWithUI?: boolean;
+  ui: UIState;
   readonly: boolean;
   birdseyeFilter?: string;
-  renderProtocol?: string;
+  renderProtocol: string;
   availableBrowsers?: AvailableBrowser[];
   centeredInitial: boolean;
   toolsLayerEnabled: boolean;
@@ -86,9 +99,6 @@ export type AppState = {
   loadedBirdseyeInitially?: boolean;
   loadingBirdseye?: boolean;
   resizerMoving?: boolean;
-  currentFileUri: string;
-  locationQuery: Record<string, string>;
-  embedded?: boolean;
   documentContents: Record<string, string>;
   mountedRendererIds: string[];
   currentEngineEvents: Record<string, EngineDelegateEvent[]>;
@@ -125,12 +135,17 @@ export type AvailableBrowser = {
 
 export const INITIAL_STATE: AppState = {
   readonly: false,
-  locationQuery: {},
+  syncLocationWithUI: true,
+  ui: {
+    pathname: "",
+    query: {},
+  },
   centeredInitial: false,
   mountedRendererIds: [],
   toolsLayerEnabled: true,
   documentContents: {},
-  currentFileUri: null,
+  renderProtocol:
+    window.location.protocol + "//" + window.location.host + "/file",
   availableBrowsers: [],
   currentEngineEvents: {},
   allLoadedPCFileData: {},
@@ -152,11 +167,11 @@ export const INITIAL_STATE: AppState = {
 };
 
 export const isExpanded = (state: AppState) => {
-  return Boolean(state.locationQuery.expanded);
+  return Boolean(state.ui.query.expanded);
 };
 
 export const getActiveFrameIndex = (state: AppState) => {
-  return state.locationQuery.frame && Number(state.locationQuery.frame);
+  return state.ui.query.frame && Number(state.ui.query.frame);
 };
 
 export const IS_WINDOWS = os.platform() === "win32";
@@ -273,7 +288,8 @@ export const getFrameFromIndex = (
   if (!state.allLoadedPCFileData) {
     return null;
   }
-  const preview = state.allLoadedPCFileData[state.currentFileUri]?.preview;
+  const preview =
+    state.allLoadedPCFileData[state.ui.query.currentFileUri]?.preview;
   if (!preview) {
     return null;
   }
@@ -330,7 +346,7 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
 const getAllFrameBounds = (state: AppState) => {
   return mergeBoxes(
     getPreviewFrameBoxes(
-      state.allLoadedPCFileData[state.currentFileUri].preview
+      state.allLoadedPCFileData[state.ui.query.currentFileUri].preview
     ).filter(Boolean)
   );
 };
@@ -347,7 +363,7 @@ export const maybeCenterCanvas = (state: AppState, force?: boolean) => {
   if (
     force ||
     (!state.centeredInitial &&
-      state.allLoadedPCFileData[state.currentFileUri] &&
+      state.allLoadedPCFileData[state.ui.query.currentFileUri] &&
       state.canvas.size?.width &&
       state.canvas.size?.height)
   ) {
@@ -360,7 +376,7 @@ export const maybeCenterCanvas = (state: AppState, force?: boolean) => {
 
     if (currentFrameIndex != null) {
       const frameBoxes = getPreviewFrameBoxes(
-        state.allLoadedPCFileData[state.currentFileUri].preview
+        state.allLoadedPCFileData[state.ui.query.currentFileUri].preview
       );
       targetBounds = frameBoxes[currentFrameIndex];
     }

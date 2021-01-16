@@ -15,8 +15,9 @@ import {
   expandFrameButtonClicked,
   frameTitleChanged,
   frameTitleClicked,
+  redirectRequest,
 } from "../../../../../../actions";
-import { Transform } from "../../../../../../state";
+import { Transform, UIState } from "../../../../../../state";
 import * as styles from "./index.pc";
 import * as qs from "querystring";
 
@@ -25,10 +26,11 @@ export type FramesProps = {
   dispatch: Dispatch<any>;
   canvasTransform: Transform;
   readonly: boolean;
+  ui: UIState;
 };
 
 export const Frames = memo(
-  ({ frames, dispatch, canvasTransform, readonly }: FramesProps) => {
+  ({ frames, dispatch, canvasTransform, ui, readonly }: FramesProps) => {
     return (
       <>
         {frames.map((frame, i) => {
@@ -36,6 +38,7 @@ export const Frames = memo(
             <Frame
               key={i}
               frameIndex={i}
+              ui={ui}
               dispatch={dispatch}
               frame={frame}
               canvasTransform={canvasTransform}
@@ -54,10 +57,18 @@ type FrameProps = {
   canvasTransform: Transform;
   dispatch: Dispatch<any>;
   readonly: boolean;
+  ui: UIState;
 };
 
 const Frame = memo(
-  ({ frame, frameIndex, canvasTransform, readonly, dispatch }: FrameProps) => {
+  ({
+    frame,
+    frameIndex,
+    canvasTransform,
+    readonly,
+    ui,
+    dispatch,
+  }: FrameProps) => {
     const annotations: NodeAnnotations =
       (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
     if (annotations.frame?.visible === false) {
@@ -65,7 +76,6 @@ const Frame = memo(
     }
     const frameBounds = getFrameBounds(frame as any);
     const [editing, setEditing] = useState(false);
-    const history = useHistory();
 
     const onClick = useCallback(
       (event: React.MouseEvent<any>) => {
@@ -79,7 +89,7 @@ const Frame = memo(
         // prevent canvas click event
         event.stopPropagation();
       },
-      [history.location]
+      [dispatch]
     );
     const inputRef = useRef<HTMLInputElement>();
 
@@ -118,18 +128,16 @@ const Frame = memo(
     );
 
     const onExpandButtonClick = useCallback(() => {
-      const query = qs.parse(history.location.search.substr(1));
-      history.push(
-        history.location.pathname +
-          "?" +
-          qs.stringify({
-            ...query,
+      dispatch(
+        redirectRequest({
+          query: {
+            ...ui.query,
             frame: frameIndex,
             expanded: true,
-          })
+          },
+        })
       );
-      // dispatch(expandFrameButtonClicked({ frameIndex }));
-    }, [dispatch, frameIndex, history.location]);
+    }, [dispatch, frameIndex, ui.query]);
 
     return (
       <styles.Frame
