@@ -6,6 +6,7 @@ export type AppState = {
 
 export const INITIAL_STATE: AppState = {
   ...ve.INITIAL_STATE,
+  sharable: false,
   ui: {
     pathname: "/canvas",
     query: {
@@ -16,5 +17,12 @@ export const INITIAL_STATE: AppState = {
   syncLocationWithUI: false,
   documentContents: {
     "file:///entry.pc": `Hello World`,
+  },
+  projectDirectory: {
+    name: "/",
+    kind: ve.FSItemKind.DIRECTORY,
+    absolutePath: "/",
+    url: "file://",
+    children: [],
   },
 };

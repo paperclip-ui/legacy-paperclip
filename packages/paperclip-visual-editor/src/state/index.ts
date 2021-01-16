@@ -89,6 +89,7 @@ export type AppState = {
   syncLocationWithUI?: boolean;
   ui: UIState;
   readonly: boolean;
+  sharable: boolean;
   birdseyeFilter?: string;
   renderProtocol: string;
   availableBrowsers?: AvailableBrowser[];
@@ -136,6 +137,7 @@ export type AvailableBrowser = {
 export const INITIAL_STATE: AppState = {
   readonly: false,
   syncLocationWithUI: true,
+  sharable: true,
   ui: {
     pathname: "",
     query: {},

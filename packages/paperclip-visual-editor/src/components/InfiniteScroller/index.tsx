@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from "react";
 import * as styles from "./index.pc";
 
@@ -26,7 +26,7 @@ export const InfiniteScroller = memo(
     itemHeight,
     minVerticalItems,
     tagName,
-    children
+    children,
   }: InfiniteScrollerProps) => {
     const ref = useRef<HTMLDivElement>();
     const [actualHeight, setActualHeight] = useState<number>(0);
@@ -63,20 +63,22 @@ export const InfiniteScroller = memo(
 
     const resizerStyle = useMemo(() => {
       return {
-        height: scrollHeight
+        height: scrollHeight,
       };
     }, [scrollHeight]);
 
     const contentStyle = useMemo(() => {
       const offset = scrollPosition % itemHeight;
       return {
-        top: -offset,
-        position: "sticky"
+        top: scrollPosition - offset,
+        position: "absolute",
       };
     }, [scrollPosition, itemHeight]);
 
     const cursor = Math.floor(size * percScroll);
-    const maxVerticalItems = Math.ceil(actualHeight / itemHeight);
+
+    // +1 so that we don't see empty cells as we scroll
+    const maxVerticalItems = Math.ceil(actualHeight / itemHeight) + 1;
 
     return (
       <styles.Container

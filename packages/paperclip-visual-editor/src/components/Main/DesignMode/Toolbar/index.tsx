@@ -5,24 +5,24 @@ import { useAppStore } from "../../../../hooks/useAppStore";
 import {
   zoomInButtonClicked,
   zoomOutButtonClicked,
-  popoutButtonClicked,
-  collapseFrameButtonClicked,
-  gridButtonClicked,
   birdseyeFilterChanged,
-  birdseyeTopFilterBlurred,
   titleDoubleClicked,
   redirectRequest,
 } from "../../../../actions";
 import { useTextInput } from "../../../TextInput";
 import * as qs from "qs";
-import { pathToFileURL } from "url";
-import { current } from "immer";
 import { EnvironmentPopup } from "./EnvironmentPopup";
 import { isExpanded } from "../../../../state";
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
-  const { canvas, projectDirectory, readonly, birdseyeFilter } = state;
+  const {
+    canvas,
+    projectDirectory,
+    sharable,
+    readonly,
+    birdseyeFilter,
+  } = state;
   const expanded = isExpanded(state);
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
   const showBirdseye = state.ui.pathname === "/all";
@@ -123,7 +123,7 @@ export const Toolbar = () => {
           {expanded ? (
             <styles.CollapseButton active onClick={onCollapseButtonClick} />
           ) : null}
-          <styles.PopOutButton onClick={onPopOutButtonClicked} />
+          {sharable && <styles.PopOutButton onClick={onPopOutButtonClicked} />}
         </styles.Controls>
         {readonly && <styles.ReadOnlyBadge />}
       </styles.Container>

@@ -2,7 +2,6 @@
 
 - get canvas to work
 - remove share option
-- web workers
 - capture save
 - capture zooming in and out
 - capture key bindings

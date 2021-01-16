@@ -390,7 +390,6 @@ function* handleDocumentEvents() {
     });
 
     yield takeEvery(chan, (event: any) => {
-      console.log("WHEEEE");
       if (event.type === "wheel" && event.metaKey) {
         event.preventDefault();
       }

@@ -4,7 +4,7 @@
     "outDir": "lib",
     "target": "es5",
     "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "esnext",
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true

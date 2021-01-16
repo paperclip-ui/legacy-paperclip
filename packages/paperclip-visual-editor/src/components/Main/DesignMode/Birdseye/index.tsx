@@ -27,7 +27,6 @@ import {
 import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useFrames, useMultipleFrames } from "../Canvas/Frames";
 import { useTextInput } from "../../../TextInput";
-import { relative } from "path";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";
 import { birdseyeFilterChanged, redirectRequest } from "../../../../actions";

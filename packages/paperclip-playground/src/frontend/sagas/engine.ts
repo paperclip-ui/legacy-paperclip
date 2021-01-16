@@ -2,19 +2,23 @@ import { eventChannel } from "redux-saga";
 import { fork, put, select, take, takeEvery } from "redux-saga/effects";
 import { loadEngineDelegate } from "paperclip/browser";
 import { AppState } from "paperclip-visual-editor/src/state";
-import { EngineDelegate } from "paperclip/src";
+import { EngineDelegate } from "paperclip";
 import * as path from "path";
+import { compare, applyPatch } from "fast-json-patch";
 import {
   engineCrashed,
   engineLoaded,
   Action,
   ActionType,
   CodeEditorTextChanged,
+  workerInitialized,
+  appStateDiffed,
 } from "../actions";
 import {
   clientConnected,
   engineDelegateChanged,
   engineDelegateEventsHandled,
+  ActionType as VEActionType,
 } from "paperclip-visual-editor/src/actions";
 
 export function* handleEngine() {
@@ -23,62 +27,33 @@ export function* handleEngine() {
 }
 
 function* startEngine() {
+  const worker = new Worker(new URL("./engine-worker.ts", import.meta.url));
   let _state: AppState = yield select();
-  let _engine: EngineDelegate;
-
-  yield takeEvery([], function* () {
-    _state = yield select();
-  });
-
-  const channel = eventChannel((emit) => {
-    const onEngine = async (engine: EngineDelegate) => {
-      _engine = engine;
-      emit(engineLoaded(null));
-
-      engine.onEvent((event) => {
-        emit(engineDelegateChanged(event));
-      });
-
-      if (_state.ui.query.currentFileUri) {
-        await _engine.open(_state.ui.query.currentFileUri);
-      }
+  const incomming = eventChannel((emit) => {
+    worker.onmessage = ({ data: action }: MessageEvent) => {
+      emit(action);
     };
-
-    const onCrash = (error: Error) => {
-      emit(engineCrashed(error));
-    };
-
-    loadEngineDelegate(
-      {
-        io: {
-          readFile(uri) {
-            return _state.documentContents[uri];
-          },
-          fileExists(uri: string) {
-            return _state.documentContents[uri] != null;
-          },
-          resolveFile(fromPath: string, toPath: string) {
-            return path.resolve(fromPath, toPath);
-          },
-        },
-      },
-      onCrash
-    ).then(onEngine);
-
+    worker.postMessage(workerInitialized({ appState: _state }));
     return () => {};
   });
 
-  yield takeEvery(ActionType.CODE_EDITOR_TEXT_CHANGED, function* (
-    action: CodeEditorTextChanged
-  ) {
-    const state: AppState = yield select();
-    _engine.updateVirtualFileContent(
-      state.ui.query.currentFileUri,
-      action.payload
-    );
-  });
-
-  yield takeEvery(channel, function* (action: Action) {
+  yield takeEvery(incomming, function* (action: Action) {
     yield put(action);
   });
+
+  // Sync app state with worker
+  yield takeEvery(
+    [ActionType.CODE_EDITOR_TEXT_CHANGED, VEActionType.REDIRECT_REQUESTED],
+    function* (action) {
+      const newState: AppState = yield select();
+      const ops = compare(_state, newState);
+      _state = newState;
+
+      if (ops.length) {
+        worker.postMessage(appStateDiffed({ ops }));
+      }
+
+      worker.postMessage(action);
+    }
+  );
 }

@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@monaco-editor/react": "^3.8.3",
+    "fast-json-patch": "^3.0.0-1",
     "immer": "^8.0.0",
     "nodemon": "^2.0.7",
     "paperclip": "^17.3.8",
