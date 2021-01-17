@@ -36,8 +36,8 @@ export const createAppStore = ({
       ui: {
         ...INITIAL_STATE.ui,
         query: {
-          currentFileUri: mainUri,
           ...INITIAL_STATE.ui.query,
+          currentFileUri: mainUri,
           frame: activeFrameIndex,
           expanded: activeFrameIndex != null,
         },
