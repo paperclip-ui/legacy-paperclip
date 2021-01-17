@@ -1,7 +1,7 @@
 {
   "name": "button-test",
   "description": "",
-  "version": "17.4.4",
+  "version": "17.4.5",
   "private": true,
   "scripts": {
     "build": "paperclip build --definition --write && webpack",
@@ -21,10 +21,10 @@
     "css-loader": "^4.2.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
-    "paperclip-cli": "^17.4.4",
+    "paperclip-cli": "^17.4.5",
     "paperclip-compiler-react": "^17.4.4",
     "paperclip-loader": "^17.4.4",
-    "paperclip-visual-editor": "^17.4.4",
+    "paperclip-visual-editor": "^17.4.5",
     "percy": "^0.27.2",
     "percy-paperclip": "^17.4.4",
     "style-loader": "^1.2.1",
