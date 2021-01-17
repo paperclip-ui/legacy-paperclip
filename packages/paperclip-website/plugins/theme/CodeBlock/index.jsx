@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-// const { createComponentClass } = require("paperclip-mini-editor");
+
 import CodeBlock from "@theme-init/CodeBlock";
 import usePrismTheme from "@theme/hooks/usePrismTheme";
 

@@ -1,7 +1,7 @@
 
 ### Immediate
 
-- Playground server
+- Playground server (private repo)
   - ability to save playground (store in Mongo)
   - ability to clone playground
   - ability to download files (PC & JS)
