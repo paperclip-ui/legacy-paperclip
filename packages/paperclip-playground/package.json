@@ -1,6 +1,6 @@
 {
   "name": "paperclip-playground",
-  "version": "17.4.5",
+  "version": "17.4.6",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "nodemon": "^2.0.7",
     "paperclip": "^17.4.4",
     "paperclip-source-writer": "^17.4.4",
-    "paperclip-visual-editor": "^17.4.5",
+    "paperclip-visual-editor": "^17.4.6",
     "prism-material-themes": "^1.0.4",
     "prism-react-renderer": "^1.1.1",
     "prismjs": "^1.23.0",
@@ -35,7 +35,7 @@
     "events": "^3.2.0",
     "html-webpack-plugin": "^5.0.0-beta.5",
     "os-browserify": "^0.3.0",
-    "paperclip-cli": "^17.4.5",
+    "paperclip-cli": "^17.4.6",
     "paperclip-compiler-react": "^17.4.4",
     "paperclip-loader": "^17.4.4",
     "path-browserify": "^1.0.1",
