@@ -246,7 +246,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className="toolbar {className?}" {onDoubleClick?} className:gridMode="grid-mode">
+<div export component as="Container" className="toolbar {className?}" className:gridMode="grid-mode">
   <style>
     --border-color: var(--vscode-editorGroup-border, #777);
     /* --active-background: var(--vscode-activityBar-foreground, var(--active-background)); */

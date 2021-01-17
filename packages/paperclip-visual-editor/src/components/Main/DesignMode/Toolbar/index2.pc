@@ -51,11 +51,12 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Toolbar" {onDoubleClick?} className="v2 {className?}">
+<div export component as="Toolbar" className="v2 {className?}">
 
   <style>
     background: var(--grey-100);
     color: var(--text-color);
+    font-size: 14px;
     display: flex;
     font-size: 14px;
     height: 40px;
@@ -63,17 +64,21 @@
     justify-content: space-between;
     font-family: sans-serif;
     white-space: nowrap;
+    flex-shrink: 0;
   </style>
   <div>
     <style>
       display: flex;
+    width: 100%;
     </style>
     {leftControls}
   </div>
-  <div>
+  <div {onDoubleClick}>
     <style>
       display: flex;
       align-items: center;
+      width: 100%;
+      justify-content: center;
     </style>
     <div>
       {title?}
@@ -85,6 +90,8 @@
       display: flex;
       align-items: center;
       margin-right: 28px;
+      width: 100%;
+      justify-content: flex-end;
     </style>
     {rightControls}
   </div>
@@ -227,14 +234,15 @@
 <!--
   @frame { visible: false }
 -->
-<input export type="text" component as="ZoomInput" {onKeyPress} {onBlur} {onClick?} {onDoubleClick?} {value?} {onChange?} className:focus="focus">
+<input export type="text" component as="ZoomInput" {autoFocus} {defaultValue?} {onFocus} {onKeyPress} {onBlur} {onClick?} {onDoubleClick?} {onChange?} className:focus="focus">
   <style>
-    width: 35px;
-    height: 20px;
+    width: 33px;
     border: none;
     border-radius: 2px;
     padding: 0px 4px;
     color: var(--grey-300);
+    font-size: 14px;
+    margin: 0;
     background: transparent;
     outline: none;
       background: var(--grey-200);
@@ -251,9 +259,26 @@
 <span export component as="ZoomLabel" {onClick}>
   <style>
     padding: 0px 4px;
+    width: 35px;
+    position: relative;
+    // wierd line-height issue with with text input - 4px seems to fix this.
+    left: 2px;
+
+    padding-top: 4px;
   </style>
   {children}
 </span>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Spacer">
+    <style>
+      width: 100%;
+    </style>
+  </div>
+
+
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
@@ -264,15 +289,15 @@
     {readOnly?}
     leftControls={
       <fragment>
-        <Tab><GridButton /></Tab>
+        <Tab active={showGrid}><GridButton /></Tab>
         <Tab active={showEnvPopup}><EnvButton /></Tab>
       </fragment>
     }
     rightControls={
-      <div>
+      !showGrid && <fragment>
         {enterZoom && <ZoomInput value="100" focus={enterZoom} />}
         {!enterZoom && <ZoomLabel>100%</ZoomLabel>}
-      </div>
+      </fragment> || <Spacer />
     }
     />
 

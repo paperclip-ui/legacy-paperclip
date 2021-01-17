@@ -135,7 +135,8 @@ const Header = memo(({ filter, onFilter }: HeaderProps) => {
     <styles.Header>
       <styles.Filter
         filterInputRef={filterInputProps.ref}
-        onChange={filterInputProps.onChange}
+        {...filterInputProps}
+        autoFocus
       />
     </styles.Header>
   );

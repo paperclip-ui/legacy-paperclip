@@ -4,7 +4,7 @@
 <!--
   @frame { visible: false }
 -->
-<input export component as="default" className="input v2 {className?}" {ref?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autofocus?}>
+<input export component as="default" className="input v2 {className?}" {ref?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autoFocus?}>
   <style>
     background: var(--background-50);
     border: 0;
@@ -20,7 +20,7 @@
       border: 2px solid rgb(102, 163, 255);
     }
     &::placeholder {
-      color: var(--grey-200)
+      color: var(--grey-300)
     }
   </style>
 </input>

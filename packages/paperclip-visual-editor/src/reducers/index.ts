@@ -38,7 +38,7 @@ import * as path from "path";
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const PAN_Y_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
-const MIN_ZOOM = 0.02;
+const MIN_ZOOM = 0.01;
 const MAX_ZOOM = 6400 / 100;
 
 export default (state: AppState, action: Action) => {
@@ -225,11 +225,11 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.ZOOM_INPUT_CHANGED: {
       return produce(state, (newState) => {
-        console.log(action.payload.value);
         newState.canvas = setCanvasZoom(
           action.payload.value / 100,
           state.canvas,
-          newState.boxes
+          newState.boxes,
+          true
         );
       });
     }
@@ -459,7 +459,8 @@ const clampCanvasTransform = (canvas: Canvas, rects: Record<string, Box>) => {
 const setCanvasZoom = (
   zoom: number,
   state: Canvas,
-  rects: Record<string, Box>
+  rects: Record<string, Box>,
+  centered?: boolean
 ) => {
   zoom = clamp(zoom, MIN_ZOOM, MAX_ZOOM);
   return clampCanvasTransform(
@@ -468,7 +469,12 @@ const setCanvasZoom = (
         state.transform,
         { x: 0, y: 0, ...state.size },
         zoom,
-        state.mousePosition
+        centered
+          ? {
+              x: state.size.width / 2,
+              y: state.size.height / 2,
+            }
+          : state.mousePosition
       );
     }),
     rects

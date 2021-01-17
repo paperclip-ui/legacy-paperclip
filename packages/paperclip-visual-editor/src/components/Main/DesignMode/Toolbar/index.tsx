@@ -82,7 +82,7 @@ export const Toolbar = () => {
     dispatch(titleDoubleClicked({ uri: currentFileUri }));
   };
 
-  const zoom = String(Math.round(canvas.transform.z * 100)) + "%";
+  const zoom = String(Math.round(canvas.transform.z * 100));
 
   const { inputProps: zoomInputProps } = useTextInput({
     value: zoom,
@@ -123,16 +123,20 @@ export const Toolbar = () => {
             onPlusClick={onPlusClick}
             hidden={expanded || showingBirdsEye}
           /> */}
-            <styles.ZoomLabel onClick={() => setShowZoomInput(true)}>
-              {zoom}%
-            </styles.ZoomLabel>
-            <styles.ZoomInput
-              onBlur={() => setShowZoomInput(false)}
-              onKeyPress={(e) => e.key === "Enter" && setShowZoomInput(false)}
-              onDoubleClick={(e) => e.stopPropagation()}
-              onClick={(e) => e.target.select()}
-              {...zoomInputProps}
-            />
+            {!showZoomInput && !showingBirdsEye && (
+              <styles.ZoomLabel onClick={() => setShowZoomInput(true)}>
+                {zoom}
+              </styles.ZoomLabel>
+            )}
+            {showZoomInput && (
+              <styles.ZoomInput
+                onBlur={() => setShowZoomInput(false)}
+                onKeyPress={(e) => e.key === "Enter" && setShowZoomInput(false)}
+                onFocus={(e) => setTimeout(() => e.target.select(), 10)}
+                autoFocus
+                {...zoomInputProps}
+              />
+            )}
           </>
         }
       />

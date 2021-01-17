@@ -186,7 +186,7 @@
     }
   </style>
 
-  <TextInput placeholder="Filter" ref={filterInputRef} {onKeyPress?} {onChange?} autofocus>
+  <TextInput placeholder="Filter" ref={filterInputRef} {defaultValue?} {onKeyPress?} {onChange?} {autoFocus}>
     <style>
       max-width: 200px;    
       padding-left: 25px;
@@ -199,13 +199,13 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Header">
+<div export component as="Header" className="v2">
   <style>
-    padding: 12px 28px;
+    padding: 12px 14px;
 
     // account for cell margin
-    padding-bottom: 8px;
-    /* border-bottom: 1px solid var(--border-color-1); */
+    /* border-bottom: 2px solid var(--grey-200); */
+    background: var(--grey-200);
   </style>
   <!-- filter container -->
   {children}
@@ -223,6 +223,7 @@
     overflow: scroll;
     min-height: 100px;
     padding: 0px 14px;
+    padding-top: 8px;
 
     &:empty:before {
       display: block;

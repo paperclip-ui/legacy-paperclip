@@ -37,7 +37,7 @@
   @frame { visible: false, width: 1024, height: 768, x: -719, y: 50 }
 -->
 <Container export component as="Preview" className:light="light" className:dark="dark" className="$theme.font-default">
-  {v2 && <ToolbarV2.Preview {showEnvPopup} />}
+  {v2 && <ToolbarV2.Preview {showGrid} {showEnvPopup} />}
   {!v2 && <Toolbar.Preview gridMode {showEnvPopup} />}
   {showGrid && <CanvasContainer>
     <Birdseye.Preview {zoom?} />
