@@ -10,10 +10,10 @@ describe(__filename + "#", () => {
         .a {
           color: b;
         }
-      </style>`
+      </style>`,
     };
     const engine = await createMockEngine(graph);
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql("<style>[class]._80f4925f_a { color:b; }</style>");
   });
 
@@ -25,17 +25,17 @@ describe(__filename + "#", () => {
             background: url('/not/found.png')
           }
         </style>
-      `
+      `,
     };
     const engine = await createMockEngine(graph, noop, {
       resolveFile() {
         return null;
-      }
+      },
     });
 
     let err;
     try {
-      engine.run("/entry.pc");
+      engine.open("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -43,7 +43,7 @@ describe(__filename + "#", () => {
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 59, end: 91 },
-      message: "Unable to resolve file: /not/found.png from /entry.pc"
+      message: "Unable to resolve file: /not/found.png from /entry.pc",
     });
   });
 
@@ -57,10 +57,10 @@ describe(__filename + "#", () => {
           div {
             @include a;
           }
-        </style>`
+        </style>`,
       };
       const engine = await createMockEngine(graph);
-      const text = stringifyLoadResult(await engine.run("/entry.pc"));
+      const text = stringifyLoadResult(await engine.open("/entry.pc"));
       expect(text).to.eql(
         "<style>div[data-pc-80f4925f] { color:blue; }</style>"
       );
@@ -72,12 +72,12 @@ describe(__filename + "#", () => {
           div {
             @include a;
           }
-        </style>`
+        </style>`,
       };
       const engine = await createMockEngine(graph);
       let err;
       try {
-        await engine.run("/entry.pc");
+        await engine.open("/entry.pc");
       } catch (e) {
         err = e;
       }
@@ -85,7 +85,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
-        message: "Reference not found."
+        message: "Reference not found.",
       });
     });
 
@@ -102,10 +102,10 @@ describe(__filename + "#", () => {
               color: orange;
             }
           }
-        </style>`
+        </style>`,
       };
       const engine = await createMockEngine(graph);
-      const text = stringifyLoadResult(await engine.run("/entry.pc"));
+      const text = stringifyLoadResult(await engine.open("/entry.pc"));
       expect(text).to.eql(
         "<style>div[data-pc-80f4925f] { color:orange; }</style>"
       );
@@ -118,12 +118,12 @@ describe(__filename + "#", () => {
           }
         </style>`,
         "/module.pc": `<style>
-        </style>`
+        </style>`,
       };
       const engine = await createMockEngine(graph);
       let err;
       try {
-        await engine.run("/entry.pc");
+        await engine.open("/entry.pc");
       } catch (e) {
         err = e;
       }
@@ -131,7 +131,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 87, end: 88 },
-        message: "Reference not found."
+        message: "Reference not found.",
       });
     });
     it("Displays an error if the import is not found", async () => {
@@ -140,12 +140,12 @@ describe(__filename + "#", () => {
           div {
             @include mod.a;
           }
-        </style>`
+        </style>`,
       };
       const engine = await createMockEngine(graph);
       let err;
       try {
-        await engine.run("/entry.pc");
+        await engine.open("/entry.pc");
       } catch (e) {
         err = e;
       }
@@ -153,7 +153,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 48 },
-        message: "Reference not found."
+        message: "Reference not found.",
       });
     });
 
@@ -164,12 +164,12 @@ describe(__filename + "#", () => {
           div {
             @include a.b.c;
           }
-        </style>`
+        </style>`,
       };
       const engine = await createMockEngine(graph);
       let err;
       try {
-        await engine.run("/entry.pc");
+        await engine.open("/entry.pc");
       } catch (e) {
         err = e;
       }
@@ -177,7 +177,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
-        message: "Reference not found."
+        message: "Reference not found.",
       });
     });
 
@@ -192,12 +192,12 @@ describe(__filename + "#", () => {
           @mixin abcde {
             color: orange;
           }
-        </style>`
+        </style>`,
       };
       const engine = await createMockEngine(graph);
       let err;
       try {
-        await engine.run("/entry.pc");
+        await engine.open("/entry.pc");
       } catch (e) {
         err = e;
       }
@@ -205,7 +205,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 87, end: 92 },
-        message: "This mixin is private."
+        message: "This mixin is private.",
       });
     });
 
@@ -219,12 +219,12 @@ describe(__filename + "#", () => {
           @mixin abcde {
             color: orange;
           }
-        </style>`
+        </style>`,
       };
       const engine = await createMockEngine(graph);
       let err;
       try {
-        await engine.run("/entry.pc");
+        await engine.open("/entry.pc");
       } catch (e) {
         err = e;
       }
@@ -232,7 +232,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 98, end: 103 },
-        message: "This mixin is already declared in the upper scope."
+        message: "This mixin is already declared in the upper scope.",
       });
     });
 
@@ -254,11 +254,11 @@ describe(__filename + "#", () => {
               }
             }
           }
-        </style>`
+        </style>`,
       };
 
       const engine = await createMockEngine(graph);
-      const result = await engine.run("/entry.pc");
+      const result = await engine.open("/entry.pc");
       expect(stringifyLoadResult(result)).to.eql(
         `<style>[class]._80f4925f_company_list { list-style:none; margin:0; padding:0; } [class]._80f4925f_company_list li[data-pc-80f4925f] { display:block; padding:var(--spacing-600) 0; } [class]._80f4925f_company_list li[data-pc-80f4925f] + [class]._80f4925f_company_list li[data-pc-80f4925f] { border-top:1px solid var(--color-black-100); }</style>`
       );
@@ -271,11 +271,11 @@ describe(__filename + "#", () => {
         .a\\:b {
           color: blue;
         }
-      </style>`
+      </style>`,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._80f4925f_a\\:b { color:blue; }</style>`
     );
@@ -300,11 +300,11 @@ describe(__filename + "#", () => {
         }
       }
       
-      </style>`
+      </style>`,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label { background:var(--midnight-darker); } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label::after { transform:rotate(90deg); } input:checked[data-pc-80f4925f] ~ [class]._80f4925f_tab-content { max-height:100vh; padding:1em; }</style>`
     );
@@ -314,13 +314,13 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `<style>
         /* foreverrrrrr
-      </style>`
+      </style>`,
     };
 
     const engine = await createMockEngine(graph);
     let err;
     try {
-      await engine.run("/entry.pc");
+      await engine.open("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -330,8 +330,8 @@ describe(__filename + "#", () => {
       info: {
         kind: "Unterminated",
         message: "Unterminated element.",
-        location: { start: 0, end: 7 }
-      }
+        location: { start: 0, end: 7 },
+      },
     });
   });
 
@@ -341,10 +341,10 @@ describe(__filename + "#", () => {
         .element {
           --color: test;
         }
-      </style>ab`
+      </style>ab`,
     };
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
 
     expect(result.exports.style.variables["--color"]).to.eql({
       name: "--color",
@@ -353,9 +353,9 @@ describe(__filename + "#", () => {
         uri: "/entry.pc",
         location: {
           start: 37,
-          end: 51
-        }
-      }
+          end: 51,
+        },
+      },
     });
   });
 
@@ -382,10 +382,10 @@ describe(__filename + "#", () => {
 
           }
         }
-      </style>ab`
+      </style>ab`,
     };
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
 
     expect(result.exports.style.classNames).to.eql({
       color: { name: "color", public: false, scopedName: "_80f4925f_color" },
@@ -394,13 +394,13 @@ describe(__filename + "#", () => {
       "element--child": {
         name: "element--child",
         public: false,
-        scopedName: "_80f4925f_element--child"
+        scopedName: "_80f4925f_element--child",
       },
       element: {
         name: "element",
         public: false,
-        scopedName: "_80f4925f_element"
-      }
+        scopedName: "_80f4925f_element",
+      },
     });
   });
 
@@ -417,11 +417,11 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._80f4925f_todo:hover [class]._80f4925f_destroy { display:inline-block; } [class]._80f4925f_todo [class]._80f4925f_todo--item [class]._80f4925f_destroy { display:inline-block; }</style>`
     );
@@ -435,11 +435,11 @@ describe(__filename + "#", () => {
           margin-right: 4px;
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>a[data-pc-80f4925f] svg:a[data-pc-80f4925f] { margin-right:4px; }</style>`
     );
@@ -455,11 +455,11 @@ describe(__filename + "#", () => {
       div {
         animation: lds-something3 1s;
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>@keyframes _80f4925f_lds-something3 { } div[data-pc-80f4925f] { animation:_80f4925f_lds-something3 1s; }</style>`
     );
@@ -485,11 +485,11 @@ describe(__filename + "#", () => {
           color: green;
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       `<style>a[data-pc-80f4925f] > b[data-pc-80f4925f] { color:blue; } a[data-pc-80f4925f] + c[data-pc-80f4925f] { color:black; } a[data-pc-80f4925f] ~ d[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f] [data-pc-80f4925f]:not([class].div) { color:voilet; } a[data-pc-80f4925f] [data-pc-80f4925f]::active { color:green; }</style>`
     );
@@ -505,14 +505,14 @@ describe(__filename + "#", () => {
       }
       .another {
       }
-    </style>`
+    </style>`,
     };
     const engine = await createMockEngine(graph);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
     const ast = engine.getLoadedAst("/entry.pc") as any;
     expect(ast.children[0].sheet.rules[1].location).to.eql({
       start: 88,
-      end: 111
+      end: 111,
     });
   });
 
@@ -528,11 +528,11 @@ describe(__filename + "#", () => {
         }
       }
 
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(result.exports.style.keyframes).to.eql({
       b: {
         name: "b",
@@ -541,9 +541,9 @@ describe(__filename + "#", () => {
           uri: "/entry.pc",
           location: {
             start: 73,
-            end: 94
-          }
-        }
+            end: 94,
+          },
+        },
       },
       a: {
         name: "a",
@@ -552,10 +552,10 @@ describe(__filename + "#", () => {
           uri: "/entry.pc",
           location: {
             start: 25,
-            end: 44
-          }
-        }
-      }
+            end: 44,
+          },
+        },
+      },
     });
   });
 
@@ -568,13 +568,13 @@ describe(__filename + "#", () => {
         }
       }
 
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(result.exports.style.classNames).to.eql({
-      _b: { name: "_b", scopedName: "_80f4925f__b", public: true }
+      _b: { name: "_b", scopedName: "_80f4925f__b", public: true },
     });
   });
 
@@ -591,7 +591,7 @@ describe(__filename + "#", () => {
       .test {
         @include ab;
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
@@ -599,7 +599,7 @@ describe(__filename + "#", () => {
     let err;
 
     try {
-      await engine.run("/entry.pc");
+      await engine.open("/entry.pc");
     } catch (e) {
       err = e;
     }
@@ -607,7 +607,7 @@ describe(__filename + "#", () => {
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 63, end: 70 },
-      message: "Reference not found."
+      message: "Reference not found.",
     });
   });
 
@@ -620,12 +620,12 @@ describe(__filename + "#", () => {
           color: blue
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>[class]._80f4925f_parent [class].child:first-child[data-pc-80f4925f] { color:blue ; }</style>"
     );
@@ -643,12 +643,12 @@ describe(__filename + "#", () => {
       .div {
         @include a;
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql("<style>[class]._80f4925f_div { color:blue; }</style>");
   });
 
@@ -661,12 +661,12 @@ describe(__filename + "#", () => {
           color: blue;
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>div[data-pc-80f4925f] > * { color:blue; }</style>"
     );
@@ -679,12 +679,12 @@ describe(__filename + "#", () => {
         mask-image: d;
         
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>div[data-pc-80f4925f] { mask-image:d; -webkit-mask-image:d; }</style>"
     );
@@ -700,12 +700,12 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>[class]._80f4925f_a [class]._80f4925f_b--c[class]._80f4925f_a [class]._80f4925f_b--d { color:blue; }</style>"
     );
@@ -721,12 +721,12 @@ describe(__filename + "#", () => {
       }
 
       @include test;
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql("<style>[class]._80f4925f_a { color:blue; }</style>");
   });
 
@@ -744,12 +744,12 @@ describe(__filename + "#", () => {
           @include test;
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>a[data-pc-80f4925f] b[data-pc-80f4925f] [class]._80f4925f_e { color:blue; } a[data-pc-80f4925f] c[data-pc-80f4925f] [class]._80f4925f_e { color:blue; } a[data-pc-80f4925f] d[data-pc-80f4925f] [class]._80f4925f_e { color:blue; }</style>"
     );
@@ -763,12 +763,12 @@ describe(__filename + "#", () => {
           color: red;
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>@media screen and (max-width: 450px) { a[data-pc-80f4925f] { color:red; } }</style>"
     );
@@ -785,12 +785,12 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>@media screen and (max-width: 450px) { a[data-pc-80f4925f] b[data-pc-80f4925f] { color:orange; } a[data-pc-80f4925f] { color:red; } }</style>"
     );
@@ -808,12 +808,12 @@ describe(__filename + "#", () => {
       @include div {
         color: red;
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql("<style>div[data-pc-80f4925f] { color:red; }</style>");
   });
 
@@ -832,12 +832,12 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>a[data-pc-80f4925f] b[data-pc-80f4925f] c[data-pc-80f4925f] { color:red; }</style>"
     );
@@ -860,12 +860,12 @@ describe(__filename + "#", () => {
           color: red;
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>@media a { b[data-pc-80f4925f] { color:red; } c[data-pc-80f4925f] { color:red; } { } }</style>"
     );
@@ -886,12 +886,12 @@ describe(__filename + "#", () => {
           font-size: 40px;
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>[class]._80f4925f_test { font-family:sans-serif; } @media screen and (max-width: 400px) { [class]._80f4925f_test { font-size:40px; } }</style>"
     );
@@ -921,11 +921,11 @@ describe(__filename + "#", () => {
       </div>
       
       <Test />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       "<style>@media screen and (max-width: 900px) { [data-pc-376a18c0] a[data-pc-80f4925f]:nth-child(2n) { color:red; } [data-pc-376a18c0] a[data-pc-80f4925f] { } }</style><div data-pc-376a18c0 data-pc-80f4925f></div>"
     );
@@ -963,11 +963,11 @@ describe(__filename + "#", () => {
       </style>
       
       <Test />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
       "<style>@media screen and (max-width: 900px) { a[data-pc-80f4925f] b[data-pc-80f4925f] c[data-pc-80f4925f] { background:blue; } a[data-pc-80f4925f] b[data-pc-80f4925f] c[data-pc-80f4925f] ee[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f] b[data-pc-80f4925f] c[data-pc-80f4925f][class].ff { color:orange; } a[data-pc-80f4925f] ee[data-pc-80f4925f] { color:red; } a[data-pc-80f4925f][class].ff { color:orange; } a[data-pc-80f4925f] { background:blue; } }</style><Test data-pc-80f4925f></Test>"
     );
@@ -993,12 +993,12 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`
+    </style>`,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       "<style>[class]._80f4925f_test { font-family:sans-serif; } [class]._80f4925f_test [class]._80f4925f_b { color:blue; } @media screen and (max-width: 400px) { [class]._80f4925f_test [class]._80f4925f_b { font-size:40px; } [class]._80f4925f_test { } }</style>"
     );
@@ -1023,12 +1023,12 @@ describe(__filename + "#", () => {
     <div class="a hover">I'm red</div>
     <div class="a transparent hover">I'm blue</div>
     
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[class]._80f4925f_a[class].hover { color:blue; } [class]._80f4925f_a:not(:disabled):not([class].transparent)[class].hover { color:red; }</style><div class="_80f4925f_a a _80f4925f_hover hover" data-pc-80f4925f>I'm red</div><div class="_80f4925f_a a _80f4925f_transparent transparent _80f4925f_hover hover" data-pc-80f4925f>I'm blue</div>`
     );
@@ -1050,12 +1050,12 @@ describe(__filename + "#", () => {
         <div class="_button">I'm a button</div>
       </div>
     
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-406d2856] [class]._80f4925f__button[class]._80f4925f__button[class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f><div class="_80f4925f__button _button" data-pc-80f4925f>I'm a button</div></div>`
     );
@@ -1080,12 +1080,12 @@ describe(__filename + "#", () => {
         <div class="_button">I'm a button</div>
       </div>
     
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-406d2856][data-pc-406d2856] { color:blue; } [data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button[data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f><div class="_80f4925f__button _button" data-pc-80f4925f>I'm a button</div></div>`
     );
@@ -1104,12 +1104,12 @@ describe(__filename + "#", () => {
         </style>
       </div>
     
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-406d2856][data-pc-406d2856] { color:red; } [data-pc-406d2856][data-pc-406d2856] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
     );
@@ -1128,12 +1128,12 @@ describe(__filename + "#", () => {
         </style>
       </div>
     
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-406d2856][data-pc-406d2856] { color:red; } [class]._80f4925f_variant [data-pc-406d2856][data-pc-406d2856] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f></div>`
     );
@@ -1159,12 +1159,12 @@ describe(__filename + "#", () => {
         </div>
       </div>
     
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a { color:red; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9] [class]._80f4925f_b { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
@@ -1185,12 +1185,12 @@ describe(__filename + "#", () => {
         </div>
       </div>
     
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a { color:blue; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].b { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
@@ -1209,12 +1209,12 @@ describe(__filename + "#", () => {
         </div>
       </div>
     
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[class].variant [data-pc-9e7e6af9][data-pc-9e7e6af9] { color:orange; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
@@ -1237,12 +1237,12 @@ describe(__filename + "#", () => {
           </style>
         </div>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { display:block; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
@@ -1263,12 +1263,12 @@ describe(__filename + "#", () => {
           </style>
         </div>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[class]._80f4925f_light [data-pc-9e7e6af9][data-pc-9e7e6af9][class].variant { color:blue; } [class]._80f4925f_light [data-pc-9e7e6af9][data-pc-9e7e6af9][class].variant { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
@@ -1288,12 +1288,12 @@ describe(__filename + "#", () => {
           </style>
         </div>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { color:red; }</style><div className="_80f4925f_variant variant" data-pc-80f4925f><div className="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9></div></div>`
     );
@@ -1312,12 +1312,12 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
@@ -1335,12 +1335,12 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856]:empty { color:red; } }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
@@ -1358,12 +1358,12 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>@media screen and (min-width: 100px) { [data-pc-80f4925f]:empty [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
@@ -1380,12 +1380,12 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856][class].red { color:blue; }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
@@ -1401,12 +1401,12 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-406d2856][data-pc-406d2856][data-pc-406d2856][data-pc-406d2856] { color:orange; }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
@@ -1423,12 +1423,12 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856] { color:red; }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
@@ -1446,12 +1446,12 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
@@ -1469,12 +1469,12 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `
+    `,
     };
 
     const engine = await createMockEngine(graph);
 
-    const text = stringifyLoadResult(await engine.run("/entry.pc"));
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div className="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );

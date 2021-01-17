@@ -6,7 +6,7 @@ import {
   EngineDelegateEvent,
   LoadedData,
   ExprSource,
-  Action
+  Action,
 } from "paperclip-utils";
 import { Box, Directory, EnvOption, FSItemKind, Point, Size } from "../state";
 
@@ -14,6 +14,7 @@ export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
   LOCATION_CHANGED = "LOCATION_CHANGED",
   RENDERER_MOUNTED = "RENDERER_MOUNTED",
+  REDIRECT_REQUESTED = "REDIRECT_REQUESTED",
   ZOOM_IN_KEY_PRESSED = "ZOOM_IN_KEY_PRESSED",
   ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
@@ -32,6 +33,7 @@ export enum ActionType {
   POPOUT_WINDOW_REQUESTED = "POPOUT_WINDOW_REQUESTED",
   PASTED = "PASTED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
+  ZOOM_INPUT_CHANGED = "ZOOM_INPUT_CHANGED",
   CANVAS_RESIZED = "CANVAS_RESIZED",
   CANVAS_MOUSE_MOVED = "CANVAS_MOUSE_MOVED",
   TITLE_DOUBLE_CLICKED = "TITLE_DOUBLE_CLICKED",
@@ -65,7 +67,7 @@ export enum ActionType {
   FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
   EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
   COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED",
-  VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED"
+  VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED",
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -148,6 +150,13 @@ export type LocationChanged = BaseAction<
     host: string;
     pathname: string;
     query: any;
+  }
+>;
+export type RedirectRequested = BaseAction<
+  ActionType.REDIRECT_REQUESTED,
+  {
+    pathname?: string;
+    query?: any;
   }
 >;
 
@@ -264,6 +273,10 @@ export type ZoomInButtonClicked = BaseAction<ActionType.ZOOM_IN_BUTTON_CLICKED>;
 export type ZoomOutButtonClicked = BaseAction<
   ActionType.ZOOM_OUT_BUTTON_CLICKED
 >;
+export type ZoomInputChanged = BaseAction<
+  ActionType.ZOOM_INPUT_CHANGED,
+  { value: number }
+>;
 export type DirLoaded = BaseAction<
   ActionType.DIR_LOADED,
   {
@@ -314,6 +327,9 @@ export const rendererUnounted = actionCreator<RendererUnmounted>(
 );
 export const birdseyeFilterChanged = actionCreator<BirdseyeFilterChanged>(
   ActionType.BIRDSEYE_FILTER_CHANGED
+);
+export const redirectRequest = actionCreator<RedirectRequested>(
+  ActionType.REDIRECT_REQUESTED
 );
 export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
@@ -389,6 +405,9 @@ export const zoomInButtonClicked = actionCreator<ZoomInButtonClicked>(
 export const zoomOutButtonClicked = actionCreator<ZoomOutButtonClicked>(
   ActionType.ZOOM_OUT_BUTTON_CLICKED
 );
+export const zoomInputChanged = actionCreator<ZoomInputChanged>(
+  ActionType.ZOOM_INPUT_CHANGED
+);
 export const popoutWindowRequested = actionCreator<PopoutWindowRequested>(
   ActionType.POPOUT_WINDOW_REQUESTED
 );
@@ -459,6 +478,7 @@ export type InstanceAction =
   | ResizerPathStoppedMoving
   | Pasted
   | RendererMounted
+  | RedirectRequested
   | RendererUnmounted
   | BirdseyeFilterChanged
   | FrameTitleChanged
@@ -488,6 +508,7 @@ export type InstanceAction =
   | CollapseFrameButtonClicked
   | ExpandFrameButtonClicked
   | ZoomInButtonClicked
+  | ZoomInputChanged
   | ClientConnected
   | EnvOptionClicked
   | FrameTitleClicked

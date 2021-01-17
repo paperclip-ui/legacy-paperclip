@@ -1,20 +1,20 @@
 import { Parser, Printer, SupportLanguage } from "prettier";
 import { print } from "./print";
-import { createEngineSync } from "paperclip";
+import { createEngineDelegate } from "paperclip";
 
 export const languages: Partial<SupportLanguage>[] = [
   {
     name: "paperclip",
     parsers: ["paperclip"],
     extensions: [".pc"],
-    vscodeLanguageIds: ["paperclip"]
-  }
+    vscodeLanguageIds: ["paperclip"],
+  },
 ];
 
 export const parsers: Record<string, Parser> = {
   paperclip: {
     parse(text) {
-      const engine = createEngineSync();
+      const engine = createEngineDelegate();
       return engine.parseContent(text);
     },
     preprocess(text) {
@@ -26,14 +26,14 @@ export const parsers: Record<string, Parser> = {
     locEnd(node) {
       return node.end;
     },
-    astFormat: "paperclip-ast"
-  }
+    astFormat: "paperclip-ast",
+  },
 };
 
 export const printers: Record<string, Printer> = {
   "paperclip-ast": {
-    print
-  }
+    print,
+  },
 };
 
 export { options } from "./options";

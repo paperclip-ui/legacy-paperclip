@@ -5,13 +5,13 @@ import {
   memoize,
   NodeAnnotations,
   VirtualFrame,
-  VirtualNodeKind
+  VirtualNodeKind,
 } from "paperclip-utils";
 import {
   VirtualNode,
   EngineErrorEvent,
   EngineDelegateEvent,
-  LoadedData
+  LoadedData,
 } from "paperclip-utils";
 import {
   Transform,
@@ -20,7 +20,7 @@ import {
   Size,
   mergeBoxes,
   centerTransformZoom,
-  getScaledPoint
+  getScaledPoint,
 } from "./geom";
 import * as os from "os";
 import { Frame } from "paperclip-web-renderer";
@@ -29,7 +29,7 @@ export const DEFAULT_FRAME_BOX = {
   width: 1024,
   height: 768,
   x: 0,
-  y: 0
+  y: 0,
 };
 
 export type Canvas = {
@@ -48,7 +48,7 @@ export type BoxNodeInfo = {
 
 export enum FSItemKind {
   FILE = "file",
-  DIRECTORY = "directory"
+  DIRECTORY = "directory",
 }
 
 export type File = {
@@ -73,11 +73,25 @@ type ExpandedFrameInfo = {
   previousCanvasTransform: Transform;
 };
 
+export type UIState = {
+  pathname: string;
+  query: Partial<{
+    currentFileUri: string;
+    embedded: boolean;
+    id: string;
+    expanded: boolean;
+    frame: number;
+  }>;
+};
+
 export type AppState = {
   id?: string;
+  syncLocationWithUI?: boolean;
+  ui: UIState;
   readonly: boolean;
+  sharable: boolean;
   birdseyeFilter?: string;
-  renderProtocol?: string;
+  renderProtocol: string;
   availableBrowsers?: AvailableBrowser[];
   centeredInitial: boolean;
   toolsLayerEnabled: boolean;
@@ -86,10 +100,7 @@ export type AppState = {
   loadedBirdseyeInitially?: boolean;
   loadingBirdseye?: boolean;
   resizerMoving?: boolean;
-  currentFileUri: string;
-  locationQuery: Record<string, string>;
-  embedded?: boolean;
-  documentContent: Record<string, string>;
+  documentContents: Record<string, string>;
   mountedRendererIds: string[];
   currentEngineEvents: Record<string, EngineDelegateEvent[]>;
   allLoadedPCFileData: Record<string, LoadedData>;
@@ -107,7 +118,7 @@ export type AppState = {
 export enum EnvOptionKind {
   Public = "Public",
   Private = "Private",
-  Browserstack = "Browserstack"
+  Browserstack = "Browserstack",
 }
 
 export type EnvOption = {
@@ -125,12 +136,20 @@ export type AvailableBrowser = {
 
 export const INITIAL_STATE: AppState = {
   readonly: false,
-  locationQuery: {},
+  syncLocationWithUI: true,
+  sharable: true,
+  ui: {
+    pathname: "",
+    query: {},
+  },
   centeredInitial: false,
   mountedRendererIds: [],
   toolsLayerEnabled: true,
-  documentContent: {},
-  currentFileUri: null,
+  documentContents: {},
+  renderProtocol:
+    typeof window !== "undefined"
+      ? window.location.protocol + "//" + window.location.host + "/file"
+      : null,
   availableBrowsers: [],
   currentEngineEvents: {},
   allLoadedPCFileData: {},
@@ -146,17 +165,17 @@ export const INITIAL_STATE: AppState = {
     transform: {
       x: 0,
       y: 0,
-      z: 1
-    }
-  }
+      z: 1,
+    },
+  },
 };
 
 export const isExpanded = (state: AppState) => {
-  return Boolean(state.locationQuery.expanded);
+  return Boolean(state.ui.query.expanded);
 };
 
 export const getActiveFrameIndex = (state: AppState) => {
-  return state.locationQuery.frame && Number(state.locationQuery.frame);
+  return state.ui.query.frame && Number(state.ui.query.frame);
 };
 
 export const IS_WINDOWS = os.platform() === "win32";
@@ -164,7 +183,7 @@ export const IS_WINDOWS = os.platform() === "win32";
 export const resetCanvas = (canvas: Canvas) => ({
   ...canvas,
   scrollPosition: { x: 0, y: 0 },
-  transform: { x: 0, y: 0, z: 1 }
+  transform: { x: 0, y: 0, z: 1 },
 });
 
 export const mergeBoxesFromClientRects = (
@@ -213,7 +232,7 @@ export const findBoxNodeInfo = memoize(
 
     return {
       nodePath: bestIntersetingNodePath,
-      box: bestIntersetingBox
+      box: bestIntersetingBox,
     };
   }
 );
@@ -236,7 +255,7 @@ export const calcFrameBox = memoize((rects: Record<string, Box>) => {
     x,
     y,
     width,
-    height
+    height,
   };
 });
 
@@ -259,7 +278,7 @@ export const getFSItem = (absolutePath: string, current: FSItem) => {
 
 export const getSelectedFrames = (state: AppState): VirtualFrame[] => {
   return state.selectedNodePaths
-    .map(nodePath => {
+    .map((nodePath) => {
       const frameIndex = Number(nodePath);
       return getFrameFromIndex(frameIndex, state);
     })
@@ -273,7 +292,8 @@ export const getFrameFromIndex = (
   if (!state.allLoadedPCFileData) {
     return null;
   }
-  const preview = state.allLoadedPCFileData[state.currentFileUri]?.preview;
+  const preview =
+    state.allLoadedPCFileData[state.ui.query.currentFileUri]?.preview;
   if (!preview) {
     return null;
   }
@@ -330,7 +350,7 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
 const getAllFrameBounds = (state: AppState) => {
   return mergeBoxes(
     getPreviewFrameBoxes(
-      state.allLoadedPCFileData[state.currentFileUri].preview
+      state.allLoadedPCFileData[state.ui.query.currentFileUri].preview
     ).filter(Boolean)
   );
 };
@@ -347,11 +367,11 @@ export const maybeCenterCanvas = (state: AppState, force?: boolean) => {
   if (
     force ||
     (!state.centeredInitial &&
-      state.allLoadedPCFileData[state.currentFileUri] &&
+      state.allLoadedPCFileData[state.ui.query.currentFileUri] &&
       state.canvas.size?.width &&
       state.canvas.size?.height)
   ) {
-    state = produce(state, newState => {
+    state = produce(state, (newState) => {
       newState.centeredInitial = true;
     });
 
@@ -360,7 +380,7 @@ export const maybeCenterCanvas = (state: AppState, force?: boolean) => {
 
     if (currentFrameIndex != null) {
       const frameBoxes = getPreviewFrameBoxes(
-        state.allLoadedPCFileData[state.currentFileUri].preview
+        state.allLoadedPCFileData[state.ui.query.currentFileUri].preview
       );
       targetBounds = frameBoxes[currentFrameIndex];
     }
@@ -394,13 +414,13 @@ export const centerEditorCanvas = (
   const {
     canvas: {
       transform,
-      size: { width, height }
-    }
+      size: { width, height },
+    },
   } = state;
 
   const centered = {
     x: -innerBounds.x + width / 2 - innerBounds.width / 2,
-    y: -innerBounds.y + height / 2 - innerBounds.height / 2
+    y: -innerBounds.y + height / 2 - innerBounds.height / 2,
   };
 
   const scale =
@@ -413,17 +433,17 @@ export const centerEditorCanvas = (
       ? zoomOrZoomToFit
       : transform.z;
 
-  state = produce(state, newState => {
+  state = produce(state, (newState) => {
     newState.canvas.transform = centerTransformZoom(
       {
         ...centered,
-        z: 1
+        z: 1,
       },
       {
         x: 0,
         y: 0,
         width,
-        height
+        height,
       },
       Math.min(scale, 1)
     );

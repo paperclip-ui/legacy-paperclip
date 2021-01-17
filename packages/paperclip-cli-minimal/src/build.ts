@@ -7,10 +7,10 @@ import { mkdirpSync } from "fs-extra";
 import {
   PaperclipConfig,
   CompilerOptions,
-  createEngine,
+  createEngineDelegate,
   paperclipSourceGlobPattern,
   Node,
-  stringifyCSSSheet
+  stringifyCSSSheet,
 } from "paperclip";
 import { glob } from "glob";
 import { getPrettyMessage } from "paperclip-cli-utils";
@@ -56,8 +56,8 @@ export const build = async (options: BuildOptions) => {
     compilerOptions: {
       ...localConfig.compilerOptions,
       definition: options.definition || localConfig.compilerOptions.definition,
-      name: options.compilerName || localConfig.compilerOptions.name
-    }
+      name: options.compilerName || localConfig.compilerOptions.name,
+    },
   };
 
   const compiler = config.compilerOptions.name;
@@ -86,7 +86,7 @@ async function initBuild(
   options: BuildOptions,
   config: PaperclipConfig
 ) {
-  const pcEngine = await createEngine();
+  const pcEngine = await createEngineDelegate();
   const srcDir = path.join(
     cwd,
     config.sourceDirectory || config.sourceDirectory
@@ -129,7 +129,7 @@ async function initBuild(
       if (ast.error) {
         return handleError(ast.error, fullPath);
       }
-      const { sheet, exports } = await pcEngine.run(fullPath);
+      const { sheet, exports } = await pcEngine.open(fullPath);
 
       if (sheet.error) {
         return handleError(sheet.error, fullPath);
@@ -139,7 +139,7 @@ async function initBuild(
         {
           ast,
           classNames: exports.style.classNames,
-          module: config.compilerOptions.module
+          module: config.compilerOptions.module,
         },
         fullPath,
         compilerOptions
@@ -183,9 +183,9 @@ async function initBuild(
   glob(
     paperclipSourceGlobPattern(srcDirectory),
     {
-      cwd: cwd
+      cwd: cwd,
     },
-    async function(err, filePaths) {
+    async function (err, filePaths) {
       filePaths.map(compileFile);
     }
   );
@@ -197,13 +197,13 @@ async function initBuild(
 
 function watch(cwd, filesGlob, compileFile) {
   const watcher = chokidar.watch(filesGlob, {
-    cwd: cwd
+    cwd: cwd,
   });
 
   watcher.on("change", compileFile);
 }
 
-const resolve2 = module => {
+const resolve2 = (module) => {
   try {
     return resolve.sync(module, { basedir: process.cwd() });
   } catch (e) {

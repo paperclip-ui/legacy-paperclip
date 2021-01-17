@@ -1,4 +1,4 @@
-import { Engine, EngineDelegateEvent, SourceLocation } from "paperclip";
+import { EngineDelegateEvent, SourceLocation } from "paperclip";
 import { CompletionItem } from "vscode-languageclient";
 import { LoadedData } from "paperclip";
 import { EngineDelegate } from "paperclip";
@@ -79,7 +79,7 @@ export abstract class BaseEngineLanguageService<TAst>
       return {
         colors: [],
         links: [],
-        definitions: []
+        definitions: [],
       };
     }
     return (

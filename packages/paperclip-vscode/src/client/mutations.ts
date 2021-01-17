@@ -3,14 +3,16 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import { worker } from "cluster";
 import * as url from "url";
+import { createEngineDelegate } from "paperclip";
 
 export function activate() {
   const writer = new PCSourceWriter({
+    engine: createEngineDelegate(),
     getContent: async (uri: string) => {
       const filePath = url.fileURLToPath(uri);
       const doc = await vscode.workspace.openTextDocument(filePath);
       return doc.getText();
-    }
+    },
   });
 
   const handleMutations = async (mutations: PCMutation[]) => {
@@ -20,7 +22,7 @@ export function activate() {
       const changes = changesByUri[uri];
       const filePath = url.fileURLToPath(uri);
       const doc = await vscode.workspace.openTextDocument(filePath);
-      const tedits = changes.map(change => {
+      const tedits = changes.map((change) => {
         return new vscode.TextEdit(
           new vscode.Range(
             doc.positionAt(change.start),
@@ -35,6 +37,6 @@ export function activate() {
     }
   };
   return {
-    handleMutations
+    handleMutations,
   };
 }

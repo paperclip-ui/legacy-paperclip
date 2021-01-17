@@ -2,7 +2,7 @@ import {
   EngineDelegateEvent,
   EngineDelegateEventKind,
   EngineErrorEvent,
-  stripFileProtocol
+  stripFileProtocol,
 } from "paperclip-utils";
 import { PCMutation } from "paperclip-source-writer";
 import * as fs from "fs";
@@ -22,7 +22,7 @@ import {
   TextDocument,
   TextDocumentChangeEvent,
   TextEdit,
-  WorkspaceEdit
+  WorkspaceEdit,
 } from "vscode";
 import { isPaperclipFile } from "./utils";
 import * as path from "path";
@@ -38,13 +38,13 @@ import { LocationChanged } from "paperclip-visual-editor";
 enum OpenLivePreviewOptions {
   Yes = "Yes",
   Always = "Always",
-  No = "No"
+  No = "No",
 }
 
 type PreviewLocation = {
   pathname: string;
   query: Partial<{
-    currentFile: string;
+    currentFileUri: string;
     embedded: boolean;
     id: string;
     expanded: boolean;
@@ -79,7 +79,7 @@ export const activate = (
       sticky ? "sticky preview" : `⚡️ ${path.basename(paperclipUri)}`,
       ViewColumn.Beside,
       {
-        enableScripts: true
+        enableScripts: true,
       }
     );
 
@@ -89,8 +89,8 @@ export const activate = (
         panel,
         {
           query: {
-            currentFile: paperclipUri
-          }
+            currentFileUri: paperclipUri,
+          },
         },
         sticky
       )
@@ -102,7 +102,7 @@ export const activate = (
 
   const showTextDocument = async (uri: string) => {
     const sourceEditor = window.visibleTextEditors.find(
-      editor => String(editor.document.uri) === uri
+      (editor) => String(editor.document.uri) === uri
     );
 
     if (sourceEditor) {
@@ -133,12 +133,12 @@ export const activate = (
             listener();
           }
         }
-      })
+      }),
     ];
   };
 
   const getStickyWindow = () => {
-    return _previews.find(preview => preview.sticky);
+    return _previews.find((preview) => preview.sticky);
   };
 
   /**
@@ -185,12 +185,12 @@ export const activate = (
   };
 
   const onTextDocumentChange = async ({
-    document
+    document,
   }: TextDocumentChangeEvent) => {
     dispatchClient(
       ve.contentChanged({
         fileUri: document.uri.toString(),
-        content: document.getText()
+        content: document.getText(),
       })
     );
   };
@@ -203,14 +203,14 @@ export const activate = (
       registerLivePreview(
         new LivePreview(_devServerPort, panel, location, sticky)
       );
-    }
+    },
   });
 
   const onDidOpenTextDocument = (document: TextDocument) => {
     dispatchClient(
       ve.contentChanged({
         fileUri: document.uri.toString(),
-        content: document.getText()
+        content: document.getText(),
       })
     );
   };
@@ -253,7 +253,7 @@ export const activate = (
     switch (action.type) {
       case ActionType.DEV_SERVER_INITIALIZED: {
         _devServerPort = action.payload.port;
-        _previews.forEach(preview => {
+        _previews.forEach((preview) => {
           preview.setDevServerPort(_devServerPort);
         });
         break;
@@ -314,7 +314,7 @@ export const activate = (
     execCommand(targetPCFileUri, "redo");
   };
   const handleSave = async ({
-    payload: { targetPCFileUri }
+    payload: { targetPCFileUri },
   }: ve.InstanceChanged) => {
     (await showTextDocument(targetPCFileUri)).document.save();
   };
@@ -325,7 +325,7 @@ export const activate = (
     const editor = await showTextDocument(targetPCFileUri);
 
     const start = editor.document.positionAt(editor.document.getText().length);
-    const plainText = clipboardData.find(data => data.type === "text/plain");
+    const plainText = clipboardData.find((data) => data.type === "text/plain");
 
     if (!plainText) {
       return;
@@ -339,7 +339,7 @@ export const activate = (
   };
 
   const handlePreviewLocationChanged = (action: ve.LocationChanged) => {
-    _previews.forEach(preview => {
+    _previews.forEach((preview) => {
       if (preview.location.query.id === action.payload.query.id) {
         preview.handlePreviewLocationChanged(action);
       }
@@ -348,7 +348,7 @@ export const activate = (
 
   const openDoc = async (uri: string) => {
     return (
-      workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
+      workspace.textDocuments.find((doc) => String(doc.uri) === uri) ||
       (await workspace.openTextDocument(stripFileProtocol(uri)))
     );
   };
@@ -359,7 +359,8 @@ export const activate = (
 
     const editor =
       window.visibleTextEditors.find(
-        editor => editor.document && String(editor.document.uri) === source.uri
+        (editor) =>
+          editor.document && String(editor.document.uri) === source.uri
       ) || (await window.showTextDocument(textDocument, ViewColumn.One));
     editor.selection = new Selection(
       textDocument.positionAt(source.location.start),
@@ -369,7 +370,7 @@ export const activate = (
   };
 
   const handleErrorBannerClicked = async ({
-    payload: error
+    payload: error,
   }: ve.ErrorBannerClicked) => {
     const doc = await openDoc(error.uri);
     await window.showTextDocument(doc, ViewColumn.One);
@@ -393,8 +394,8 @@ class LivePreview {
       query: {
         id,
         embedded: true,
-        ...location.query
-      }
+        ...location.query,
+      },
     };
 
     this._em = new EventEmitter();
@@ -416,13 +417,13 @@ class LivePreview {
     this.panel.reveal(this.panel.viewColumn, false);
   }
   setTargetUri(value: string, rerender = true) {
-    if (this.location.query.currentFile === value) {
+    if (this.location.query.currentFileUri === value) {
       return;
     }
     this.panel.title = `⚡️ ${
       this.sticky ? "sticky preview" : path.basename(value)
     }`;
-    this.location.query.currentFile = value;
+    this.location.query.currentFileUri = value;
 
     if (rerender) {
       this._render();
@@ -431,7 +432,7 @@ class LivePreview {
   getState(): LivePreviewState {
     return {
       location: this.location,
-      sticky: this.sticky
+      sticky: this.sticky,
     };
   }
   private _render() {

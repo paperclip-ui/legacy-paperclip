@@ -1,27 +1,27 @@
 import { compile } from "../code-compiler";
-import { createEngine } from "paperclip";
+import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
 
 const builtin = {
-  react: React
+  react: React,
 };
 
 export const compileModules = async (graph: Record<string, string>) => {
-  const engine = await createEngine({
+  const engine = await createEngineDelegate({
     io: {
-      readFile: uri => graph[uri],
-      fileExists: uri => Boolean(graph[uri]),
+      readFile: (uri) => graph[uri],
+      fileExists: (uri) => Boolean(graph[uri]),
       resolveFile: (from, to) => {
         return to;
-      }
-    }
+      },
+    },
   });
 
   const modules = {};
 
   for (const path in graph) {
-    const { sheet, exports } = await engine.run(path);
+    const { sheet, exports } = await engine.open(path);
     const ast = engine.getLoadedAst(path) as any;
     const es6 = compile(
       { ast, sheet, classNames: exports.style.classNames },
@@ -47,7 +47,7 @@ export const compileModules = async (graph: Record<string, string>) => {
     const executed = {};
 
     const wrapper = () =>
-      module(path => {
+      module((path) => {
         const mod = modules[path] || modules[path.substr(1)];
         const ex = executed[path] || (executed[path] = mod && mod());
         return builtin[path] || ex;

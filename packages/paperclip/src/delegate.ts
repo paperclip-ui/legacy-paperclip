@@ -1,19 +1,17 @@
 // 🙈
 
 import * as fs from "fs";
-import * as path from "path";
 import * as url from "url";
 import {
   EngineDelegateEvent,
   updateAllLoadedData,
   EngineDelegateEventKind,
-  resolveImportUri,
   DependencyContent,
   SheetInfo,
   VirtualNode,
   LoadedData,
   PaperclipSourceWatcher,
-  ChangeKind
+  ChangeKind,
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -29,7 +27,7 @@ export type EngineIO = {
 
 export enum EngineMode {
   SingleFrame,
-  MultiFrame
+  MultiFrame,
 }
 
 export type EngineOptions = {
@@ -37,7 +35,7 @@ export type EngineOptions = {
   mode?: EngineMode;
 };
 
-const mapResult = result => {
+const mapResult = (result) => {
   if (!result) {
     return result;
   }
@@ -58,7 +56,7 @@ export type LoadResult = {
 
 export enum EngineDelegateEventType {
   Loaded = "Loaded",
-  ChangedSheets = "ChangedSheets"
+  ChangedSheets = "ChangedSheets",
 }
 
 /*
@@ -102,7 +100,7 @@ export class EngineDelegate {
       this._dispatch({
         kind: EngineDelegateEventKind.Loaded,
         uri: event.uri,
-        data: this._rendered[event.uri]
+        data: this._rendered[event.uri],
       });
     } else if (event.kind === EngineDelegateEventKind.Diffed) {
       const existingData = this._rendered[event.uri];
@@ -128,7 +126,7 @@ export class EngineDelegate {
         ) {
           addedSheets.push({
             uri: depUri,
-            sheet: this._rendered[depUri].sheet
+            sheet: this._rendered[depUri].sheet,
           });
         }
       }
@@ -140,8 +138,8 @@ export class EngineDelegate {
           data: {
             newSheets: addedSheets,
             removedSheetUris: removedSheetUris,
-            allDependencies: event.data.allDependencies
-          }
+            allDependencies: event.data.allDependencies,
+          },
         });
       }
     }
@@ -195,60 +193,6 @@ export class EngineDelegate {
     }
   };
 }
-
-const getIOOptions = (options: EngineOptions = {}) =>
-  Object.assign(
-    {
-      readFile: uri => {
-        return fs.readFileSync(new URL(uri) as any, "utf8");
-      },
-      fileExists: uri => {
-        try {
-          const url = new URL(uri) as any;
-
-          // need to make sure that case matches _exactly_ since some
-          // systems are sensitive to that.
-          return existsSyncCaseSensitive(url) && fs.lstatSync(url).isFile();
-        } catch (e) {
-          console.error(e);
-          return false;
-        }
-      },
-      resolveFile: resolveImportUri(fs),
-      mode: EngineMode.SingleFrame
-    },
-    options.io,
-    { mode: options.mode }
-  );
-
-export const createEngineDelegate = createNativeEngine => async (
-  options: EngineOptions,
-  onCrash: any
-) => {
-  const { readFile, fileExists, resolveFile, mode } = getIOOptions(options);
-  return new EngineDelegate(
-    await createNativeEngine(readFile, fileExists, resolveFile, mode),
-    onCrash
-  );
-};
-
-export const createEngineDelegateSync = createNativeEngine => (
-  options: EngineOptions,
-  onCrash: any
-) => {
-  const { readFile, fileExists, resolveFile, mode } = getIOOptions(options);
-  return new EngineDelegate(
-    createNativeEngine(readFile, fileExists, resolveFile, mode),
-    onCrash
-  );
-};
-
-const existsSyncCaseSensitive = (uri: URL) => {
-  const pathname = url.fileURLToPath(uri as any);
-  const dir = path.dirname(pathname);
-  const basename = path.basename(pathname);
-  return fs.readdirSync(dir).includes(basename);
-};
 
 export const keepEngineInSyncWithFileSystem2 = (
   watcher: PaperclipSourceWatcher,

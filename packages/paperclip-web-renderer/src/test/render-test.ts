@@ -4,13 +4,13 @@ import { createMockEngine, createMockRenderer } from "./utils";
 describe(__filename + "#", () => {
   it("Can render basic text", async () => {
     const graph = {
-      "/entry.pc": "Hello World"
+      "/entry.pc": "Hello World",
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       "<div></div><div><style></style></div><div>Hello World</div><div></div><div></div>"
     );
@@ -18,13 +18,13 @@ describe(__filename + "#", () => {
 
   it("Can render an element", async () => {
     const graph = {
-      "/entry.pc": "<a href='#'>abc</a>"
+      "/entry.pc": "<a href='#'>abc</a>",
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style></style></div><div><a href="#">abc</a></div><div></div><div></div>`
     );
@@ -32,13 +32,13 @@ describe(__filename + "#", () => {
 
   it("Re-renders a basic text change", async () => {
     const graph = {
-      "/entry.pc": "a"
+      "/entry.pc": "a",
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style></style></div><div>a</div><div></div><div></div>`
     );
@@ -50,13 +50,13 @@ describe(__filename + "#", () => {
 
   it("Re-renders a basic attribute change", async () => {
     const graph = {
-      "/entry.pc": `<span><div a="b"></div></span>`
+      "/entry.pc": `<span><div a="b"></div></span>`,
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style></style></div><div><span><div a="b"></div></span></div><div></div><div></div>`
     );
@@ -71,13 +71,13 @@ describe(__filename + "#", () => {
 
   it("Renders a basic style", async () => {
     const graph = {
-      "/entry.pc": `<style> a { color: blue; } </style><span></span>`
+      "/entry.pc": `<style> a { color: blue; } </style><span></span>`,
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
     );
@@ -86,13 +86,13 @@ describe(__filename + "#", () => {
   it("Renders imported styles", async () => {
     const graph = {
       "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
     );
@@ -101,13 +101,13 @@ describe(__filename + "#", () => {
   it("Removes styles if import is removed", async () => {
     const graph = {
       "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
     );
@@ -123,13 +123,13 @@ describe(__filename + "#", () => {
   it("Adds styles if import is added", async () => {
     const graph = {
       "file:///entry.pc": `<style> a { color: blue; } </style><span></span>`,
-      "file:///module.pc": `<style> a { color: black; } </style>`
+      "file:///module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("file:///entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("file:///entry.pc");
+    await engine.open("file:///entry.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
     );
@@ -144,14 +144,14 @@ describe(__filename + "#", () => {
   it("Adds styles if import is added of module that is already loaded", async () => {
     const graph = {
       "/entry.pc": `<style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
-    await engine.run("/module.pc");
+    await engine.open("/entry.pc");
+    await engine.open("/module.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
     );
@@ -167,14 +167,14 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `<style> a { color: blue; } </style>`,
       "/module.pc": `<style> a { color: black; } </style>`,
-      "/module2.pc": `<style> a { color: orange; } </style>`
+      "/module2.pc": `<style> a { color: orange; } </style>`,
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
-    await engine.run("/module.pc");
+    await engine.open("/entry.pc");
+    await engine.open("/module.pc");
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div></div><div></div><div></div>`
     );
@@ -194,20 +194,20 @@ describe(__filename + "#", () => {
   it("styles that are _added_ before renderer initializes are rendered", async () => {
     const graph = {
       "/entry.pc": `<style> a { color: blue; } </style>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngine(graph);
     // const renderer = createMockRenderer("/entry.pc");
     // engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
     await engine.updateVirtualFileContent(
       "/entry.pc",
       `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`
     );
 
     const renderer = createMockRenderer("/entry.pc");
-    renderer.initialize(await engine.run("/entry.pc"));
+    renderer.initialize(await engine.open("/entry.pc"));
 
     expect(renderer.mount.innerHTML).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
@@ -217,13 +217,13 @@ describe(__filename + "#", () => {
   it("styles that are _removed_ before renderer initializes are rendered", async () => {
     const graph = {
       "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span><style> a { color: blue; } </style>`,
-      "/module.pc": `<style> a { color: black; } </style>`
+      "/module.pc": `<style> a { color: black; } </style>`,
     };
 
     const engine = await createMockEngine(graph);
     // const renderer = createMockRenderer("/entry.pc");
     // engine.onEvent(renderer.handleEngineDelegateEvent);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
 
     await engine.updateVirtualFileContent(
       "/entry.pc",
@@ -231,7 +231,7 @@ describe(__filename + "#", () => {
     );
 
     const renderer = createMockRenderer("/entry.pc");
-    renderer.initialize(await engine.run("/entry.pc"));
+    renderer.initialize(await engine.open("/entry.pc"));
 
     expect(renderer.mount.innerHTML).to.eql(
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div><div></div><div></div>`
@@ -249,14 +249,14 @@ describe(__filename + "#", () => {
       "/module-a.pc": `<style> a { color: a; } </style>`,
       "/module-b.pc": `<style> a { color: b; } </style>`,
       "/module-c.pc": `<style> a { color: c; } </style>`,
-      "/module-d.pc": `<style> a { color: d; } </style>`
+      "/module-d.pc": `<style> a { color: d; } </style>`,
     };
 
     const engine = await createMockEngine(graph);
-    await engine.run("/entry.pc");
+    await engine.open("/entry.pc");
 
     const renderer = createMockRenderer("/entry.pc");
-    renderer.initialize(await engine.run("/entry.pc"));
+    renderer.initialize(await engine.open("/entry.pc"));
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(renderer.mount.innerHTML.replace(/\n/g, "")).to.eql(
@@ -297,12 +297,12 @@ describe(__filename + "#", () => {
         <StyledHeader open>
           Content
         </StyledHeader>
-      </preview>`
+      </preview>`,
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("/entry.pc");
-    renderer.initialize(await engine.run("/entry.pc"));
+    renderer.initialize(await engine.open("/entry.pc"));
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     await engine.updateVirtualFileContent(
@@ -332,7 +332,7 @@ describe(__filename + "#", () => {
     );
 
     const renderer2 = createMockRenderer("/entry.pc");
-    renderer2.initialize(await engine.run("/entry.pc"));
+    renderer2.initialize(await engine.open("/entry.pc"));
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(renderer.mount.innerHTML).not.to.eql(undefined);
@@ -346,12 +346,12 @@ describe(__filename + "#", () => {
         <img src="/file.jpg" />
       `,
       "file:///file.jpg": ``,
-      "file:///something-else.jpg": ``
+      "file:///something-else.jpg": ``,
     };
 
     const engine = await createMockEngine(graph);
     const renderer = createMockRenderer("file:///entry.pc", "blah:");
-    renderer.initialize(await engine.run("file:///entry.pc"));
+    renderer.initialize(await engine.open("file:///entry.pc"));
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(

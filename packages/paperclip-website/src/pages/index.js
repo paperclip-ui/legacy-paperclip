@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { createComponentClass } from "paperclip-mini-editor";
 import clsx from "clsx";
 import Layout from "@theme/Layout";
 // import Link from "@docusaurus/Link";
@@ -22,7 +21,7 @@ const DEMO_URL = Object.keys(MAIN_DEMO_GRAPH)[0];
 function Home() {
   const context = useDocusaurusContext();
   const { siteConfig = {} } = context;
-  const prismTheme = usePrismTheme();
+  // const prismTheme = usePrismTheme();
   return (
     <div className="home">
       <Layout

@@ -8,12 +8,14 @@
   },
   "exclude": [
     "**/*.d.ts",
+    "lib/**/*.d.ts",
     "esm",
     "native",
-    "lib",
+    "lib/**/*",
     "node_modules",
     "*-test",
     "index.d.ts",
+    "browser.d.ts",
     "test",
     "examples"
   ],

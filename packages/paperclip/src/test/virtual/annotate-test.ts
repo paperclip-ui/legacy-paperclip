@@ -18,10 +18,10 @@ describe(__filename + "#", () => {
 
 
         something
-      `
+      `,
     };
     const engine = await createMockEngine(graph);
-    const result = engine.run("/entry.pc");
+    const result = engine.open("/entry.pc");
     expect(
       (result as any).preview.children[0].annotations.values.desc.value
     ).to.eql("some description");
@@ -39,11 +39,11 @@ describe(__filename + "#", () => {
         -->
 
         <Test />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
-    const result = engine.run("/entry.pc");
+    const result = engine.open("/entry.pc");
 
     expect(
       (result as any).preview.children[0].annotations.values.desc.value
@@ -65,11 +65,11 @@ describe(__filename + "#", () => {
         <span export component as="Test">
           Hello
         </span>
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
-    const result = engine.run("/entry.pc");
+    const result = engine.open("/entry.pc");
 
     expect(
       (result as any).preview.children[0].annotations.values.desc.value
@@ -83,11 +83,11 @@ describe(__filename + "#", () => {
           @frame "a"
         -->
         hello
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.run("/entry.pc");
+    const result = await engine.open("/entry.pc");
 
     expect(
       (result as any).preview.children[0].annotations.values.frame.value
@@ -103,7 +103,7 @@ describe(__filename + "#", () => {
   `
     );
 
-    const result2 = await engine.run("/entry.pc");
+    const result2 = await engine.open("/entry.pc");
     expect(
       (result2 as any).preview.children[0].annotations.values.frame.value
     ).to.eql("b");
@@ -122,11 +122,11 @@ describe(__filename + "#", () => {
 
 
         <Test />
-      `
+      `,
     };
 
     const engine = await createMockEngine(graph);
-    const result = engine.run("/entry.pc");
+    const result = engine.open("/entry.pc");
 
     const metadata = computeVirtJSObject(
       (result as any).preview.children[0].annotations
@@ -134,7 +134,7 @@ describe(__filename + "#", () => {
 
     expect(metadata).to.eql({
       tags: { a: "b" },
-      frame: { x: -1145, y: -28, title: "Preview", width: 1024, height: 768 }
+      frame: { x: -1145, y: -28, title: "Preview", width: 1024, height: 768 },
     });
   });
 });

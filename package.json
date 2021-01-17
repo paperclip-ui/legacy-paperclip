@@ -16,7 +16,8 @@
     "husky": "^4.2.5",
     "lerna": "^3.22.1",
     "prettier": "1.19.1",
-    "pretty-quick": "^2.0.1"
+    "pretty-quick": "^2.0.1",
+    "typescript": "^4.1.3"
   },
   "husky": {
     "hooks": {

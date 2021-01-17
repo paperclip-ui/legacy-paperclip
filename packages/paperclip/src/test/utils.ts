@@ -1,12 +1,13 @@
 import * as path from "path";
-import { Engine, createEngine, LoadResult, EngineIO } from "../../";
+import { EngineDelegate, createEngineDelegate } from "../../";
 import {
   EngineErrorEvent,
   EngineDelegateEventKind,
   stringifyVirtualNode,
   stringifyCSSSheet,
-  LoadedEvent
+  LoadedEvent,
 } from "paperclip-utils";
+import { LoadResult } from "../delegate";
 
 export type Graph = {
   [identifier: string]: string;
@@ -19,29 +20,29 @@ export const TEST_FIXTURE_SRC_DIRECTORY = path.join(
 
 export const createMockEngine = (
   graph: Graph,
-  onErr = e => console.error(e),
-  io: Partial<EngineIO> = {}
+  onErr = (e) => console.error(e),
+  io: Partial<any> = {}
 ) =>
-  createEngine(
+  createEngineDelegate(
     {
       io: {
-        readFile: uri => graph[uri],
-        fileExists: uri => Boolean(graph[uri]),
+        readFile: (uri) => graph[uri],
+        fileExists: (uri) => Boolean(graph[uri]),
         resolveFile: (from, to) => {
           return path.join(path.dirname(from), to).replace(/\\/g, "/");
         },
-        ...io
-      }
+        ...io,
+      },
     },
     onErr
   );
 
 export const waitForError = (
-  engine: Engine,
+  engine: EngineDelegate,
   test: (event: EngineErrorEvent) => boolean = () => true
 ) => {
-  return new Promise<any>(resolve => {
-    engine.onEvent(event => {
+  return new Promise<any>((resolve) => {
+    engine.onEvent((event) => {
       if (event.kind === EngineDelegateEventKind.Error && test(event)) {
         resolve(event);
       }
@@ -50,11 +51,11 @@ export const waitForError = (
 };
 
 export const waitForRender = (
-  engine: Engine,
+  engine: EngineDelegate,
   test: (event: LoadedEvent) => boolean = () => true
 ) => {
-  return new Promise<any>(resolve => {
-    engine.onEvent(event => {
+  return new Promise<any>((resolve) => {
+    engine.onEvent((event) => {
       if (event.kind === EngineDelegateEventKind.Loaded && test(event)) {
         resolve(event);
       }
@@ -67,7 +68,7 @@ export const stringifyLoadResult = (
   shouldCleanHTML = true
 ) => {
   const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
-    .map(sheet => {
+    .map((sheet) => {
       return stringifyCSSSheet(sheet, { protocol: "" });
     })
     .join("\n")

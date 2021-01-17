@@ -1,4 +1,3 @@
-import { Engine } from "paperclip";
 import { EngineDelegate } from "paperclip";
 import { BaseLanguageService } from "./base";
 import { PCHTMLLanguageService } from "./html";
@@ -10,7 +9,7 @@ import { PCHTMLLanguageService } from "./html";
 export class LanguageServices {
   constructor(private _services: BaseLanguageService[]) {}
   getService(uri: string) {
-    return this._services.find(service => service.supports(uri));
+    return this._services.find((service) => service.supports(uri));
   }
 }
 
@@ -18,6 +17,6 @@ export const createServices = (engine: EngineDelegate) => {
   return new LanguageServices([
     // new PCCSSLanguageService(engine),
     // new PCJSLanguageService(engine),
-    new PCHTMLLanguageService(engine)
+    new PCHTMLLanguageService(engine),
   ]);
 };

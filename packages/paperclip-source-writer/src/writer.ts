@@ -1,10 +1,10 @@
-import { EngineDelegate, createEngineDelegate } from "paperclip";
+import { EngineDelegate } from "paperclip";
 import { EventEmitter } from "events";
 import {
   AnnotationsChanged,
   PCMutation,
   PCMutationAction,
-  PCMutationActionKind
+  PCMutationActionKind,
 } from "./mutations";
 import {
   ExprSource,
@@ -15,12 +15,13 @@ import {
   traverseExpression,
   Expression,
   Fragment,
-  getParentNode
+  getParentNode,
 } from "paperclip-utils";
 
 type ContentChangedHandler = (uri: string, content: string) => void;
 type PCSourceWriterOptions = {
   getContent: (uri: string) => Promise<string> | string;
+  engine: EngineDelegate;
 };
 
 export type ContentChange = {
@@ -39,8 +40,7 @@ export class PCSourceWriter {
     mutations: PCMutation[]
   ): Promise<Record<string, ContentChange[]>> {
     const changes: ContentChange[] = [];
-
-    const engine = await this._loadEngine();
+    const engine = this._options.engine;
     for (const { exprSource, action } of mutations) {
       const ast = engine.parseContent(
         await this._options.getContent(exprSource.uri)
@@ -76,21 +76,13 @@ export class PCSourceWriter {
     return changesByUri;
   }
 
-  private async _loadEngine() {
-    if (this._engine) {
-      return this._engine;
-    }
-
-    return (this._engine = await createEngineDelegate());
-  }
-
   private _getExpressionDeletedChanged(
     exprSource: ExprSource,
     ast: Node
   ): ContentChange[] {
     const node = getAssocNode(exprSource, ast);
     const parent = getParentNode(node, ast);
-    const childIndex = parent.children.findIndex(child => child === node);
+    const childIndex = parent.children.findIndex((child) => child === node);
 
     const changes = [];
 
@@ -102,7 +94,7 @@ export class PCSourceWriter {
         uri: exprSource.uri,
         start: beforeChild.location.start,
         end: beforeChild.location.end,
-        value: ""
+        value: "",
       });
     }
 
@@ -110,7 +102,7 @@ export class PCSourceWriter {
       uri: exprSource.uri,
       start: exprSource.location.start,
       end: exprSource.location.end,
-      value: ""
+      value: "",
     });
 
     return changes;
@@ -166,14 +158,14 @@ export class PCSourceWriter {
       end: annotationsSource
         ? annotationsSource.location.end
         : exprSource.location.start,
-      value: buffer.join("")
+      value: buffer.join(""),
     };
   }
 }
 
 const getAssocNode = (exprSource: ExprSource, root: Node): Node => {
   let foundExpr: Expression;
-  traverseExpression(root, node => {
+  traverseExpression(root, (node) => {
     if (
       node.location.start === exprSource.location.start &&
       node.location.end === exprSource.location.end

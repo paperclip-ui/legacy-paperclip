@@ -122,21 +122,23 @@ Style blocks that are the defined within elements are _scoped_ to that element. 
 
 ```html live height=150px
 <div>
-  <style>
-    :self {
-      color: red;
-    }
-    span {
-      color: blue;
-    }
-  </style>
-
-  I'm red text!
-
-  <span>I'm blue text!</span>
+  <div>
+    <style>
+      :self {
+        color: red;
+      }
+      span {
+        color: blue;
+      }
+    </style>
+  
+    I'm red text!
+  
+    <span>I'm blue text!</span>
+  </div>
+  
+  I'm black text
 </div>
-
-I'm black text
 ```
 
 The `:self` selector applies to the parent element that the style block is defined in. It can also be omitted like so:
@@ -198,7 +200,7 @@ Scoped styles are recommended since they keep your styles & elements together in
 <div className="bolder">
   <div>
     <style>
-      :within(.bolder) {
+      &:within(.bolder) {
         font-weight: 600;
       }
     </style>
@@ -249,7 +251,7 @@ Style mixins are useful for defining a bundle of style declarations (like `color
 ```html live height=150px
 // file: mixin-demo.pc
 <style>
-  :root {
+  :global(:root) {
     --font-family-default: Quotes Script;
     --color-grey-100: #333;
     --color-green-100: #0C0;
@@ -268,7 +270,8 @@ Style mixins are useful for defining a bundle of style declarations (like `color
   .message {
 
     /* @include includes style mixins; you can have any number of them separated by spaces. */
-    @include default-text color-text-green;
+    @include default-text;
+    @include color-text-green;
     text-decoration: underline;
   }
 </style>
@@ -521,7 +524,7 @@ import * as ui from './Select.pc';
 </div>
 // file: styles.pc
 <style>
-  :root {
+  :global(:root) {
     --color-red-default: #900;
   }
 
@@ -660,6 +663,9 @@ Components are your UI building blocks.
 ```html live height=150px
 
 <!-- className and class can be used interchangeably -->
+<!--
+  @frame { visible: false }
+-->
 <div component as="Message" className="Message">
   <style>
     font-family: Comic Sans MS;
@@ -702,6 +708,9 @@ Anything that doesn't have a `component` attribute is rendered to the screen, so
 <!-- Components -->
 
 <!-- $ is a class reference -- docs below -->
+<!--
+  @frame { visible: false }
+-->
 <div component as="Button" 
   className="$styles.Button"
   className:secondary="$styles.Button--secondary"
@@ -711,44 +720,46 @@ Anything that doesn't have a `component` attribute is rendered to the screen, so
 
 <!-- Previews -->
 
-<Button>primary</Button>
-<Button secondary>secondary</Button>
-<Button negate>negate</Button>
-<Button negate secondary>negate secondary</Button>
+<div>
+  <Button>primary</Button>
+  <Button secondary>secondary</Button>
+  <Button negate>negate</Button>
+  <Button negate secondary>negate secondary</Button>
+</div>
 
 // file: styles.pc
 
 <style>
-  :root {
+  :global(:root) {
     --color-grey-primary: #999;
     --color-red-primary: #990000;
   }
-  
-  .Button {
-    font-family: Bradley Hand;
-    padding: 4px 10px;
-    background: var(--color-grey-primary);
-    color: white;
-    display: inline-block;
-    margin-left: 10px;
-    border-radius: 4px;
-    box-sizing: border-box;
-    border: 2px solid var(--color-grey-primary);
-    &--secondary {
-      background: transparent;
-      color: var(--color-grey-primary);
-    }
-    &--negate {
-      background: var(--color-red-primary);
-      border-color: var(--color-red-primary);
-    }
-    &--negate&--secondary {
-      background: transparent;
-      color: var(--color-red-primary);
+  @export {  
+    .Button {
+      font-family: Bradley Hand;
+      padding: 4px 10px;
+      background: var(--color-grey-primary);
+      color: white;
+      display: inline-block;
+      margin-left: 10px;
+      border-radius: 4px;
+      box-sizing: border-box;
+      border: 2px solid var(--color-grey-primary);
+      &--secondary {
+        background: transparent;
+        color: var(--color-grey-primary);
+      }
+      &--negate {
+        background: var(--color-red-primary);
+        border-color: var(--color-red-primary);
+      }
+      &--negate&--secondary {
+        background: transparent;
+        color: var(--color-red-primary);
+      }
     }
   }
 </style>
-Nothing to see here!
 ```
 
 > Check out the [React Todo MVC Example](https://github.com/crcn/paperclip/blob/master/examples/react-todomvc/src/app.pc) if you're looking for a more extensive demo. 
@@ -779,23 +790,38 @@ Components can be exported to be used in application code, as well as other docu
 
 <!-- Components -->
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="App" className="$styles.App">
   {children}
 </div>
 
+<!--
+  @frame { visible: false }
+-->
 <input export component as="NewItemInput" {onChange} />
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Header" className="$styles.Header">
   <h4>Todos</h4>
   {children}
 </div>
 
+<!--
+  @frame { visible: false }
+-->
 <ul export component as="List" className="$styles.List">
   {children}
 </ul>
 
+<!--
+  @frame { visible: false }
+-->
 <li export component as="Item" className="$styles.Item" {onClick}>
-  <input type="checkbox" checked={completed}> 
+  <input type="checkbox" checked={completed} /> 
   <span className="$styles.label">{children}</span>
 </li>
 
@@ -816,34 +842,34 @@ Components can be exported to be used in application code, as well as other docu
 
 <!-- Typically in the same file as components, but they're here for this demo since they're not the focus. -->
 <style>
-  .App {
-    font-family: Chalkduster;
-  }
-  .Header {  
-    h4 {
-      margin: 0;
+  @export {
+    .App {
+      font-family: Chalkduster;
+    }
+    .Header {  
+      h4 {
+        margin: 0;
+        margin-bottom: 8px;
+      }
       margin-bottom: 8px;
     }
-    margin-bottom: 8px;
-  }
-  .List {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-  }
-  .Item {
+    .List {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+    .Item {
 
-    // Needs
-    :global(input[type="checkbox"]) {
-      margin-right: 8px;
-      &:checked ~ .label {
-        text-decoration: line-through;
+      // Needs
+      :global(input[type="checkbox"]) {
+        margin-right: 8px;
+        &:checked ~ .label {
+          text-decoration: line-through;
+        }
       }
     }
   }
 </style>
-
-No preview here!
 ```
 
 Here's how we can use this in our React app:
@@ -905,29 +931,47 @@ We can also use our exported component in other Paperclip documents. Here's an e
 
 <!-- Components -->
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="App" className="$styles.App {className?}">
   {children}
 </div>
 
+<!--
+  @frame { visible: false }
+-->
 <input export component as="NewItemInput" {onChange} />
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Header" className="$styles.Header">
   <h4>Todos</h4>
   {children}
 </div>
 
+<!--
+  @frame { visible: false }
+-->
 <ul export component as="List" className="$styles.List">
   {children}
 </ul>
 
+<!--
+  @frame { visible: false }
+-->
 <li export component as="Item" className="$styles.Item" {onClick}>
-  <input type="checkbox" checked={completed}> 
+  <input type="checkbox" checked={completed} /> 
   <span className="$styles.label">{children}</span>
 </li>
 
 <!-- Export re-usable previews that can be used
 in other previews -->
 
+<!--
+  @frame { visible: false }
+-->
 <App export component as="Preview" {className?}>
   <Header>
     <NewItemInput />
@@ -940,6 +984,9 @@ in other previews -->
 </App>
 
 
+<!--
+  @frame { visible: false }
+-->
 <App export component as="EmptyPreview" {className?}>
   <Header>
     <NewItemInput />
@@ -954,34 +1001,34 @@ in other previews -->
 
 <!-- Typically in the same file as components, but they're here for this demo since they're not the focus. -->
 <style>
-  .App {
-    font-family: Chalkduster;
-  }
-  .Header {  
-    h4 {
-      margin: 0;
+  @export {
+    .App {
+      font-family: Chalkduster;
+    }
+    .Header {  
+      h4 {
+        margin: 0;
+        margin-bottom: 8px;
+      }
       margin-bottom: 8px;
     }
-    margin-bottom: 8px;
-  }
-  .List {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-  }
-  .Item {
+    .List {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+    .Item {
 
-    // Needs
-    :global(input[type="checkbox"]) {
-      margin-right: 8px;
-      &:checked ~ .label {
-        text-decoration: line-through;
+      // Needs
+      :global(input[type="checkbox"]) {
+        margin-right: 8px;
+        &:checked ~ .label {
+          text-decoration: line-through;
+        }
       }
     }
   }
 </style>
-
-No preview here!
 ```
 
 ☝🏻 This is a pattern is pretty useful - creating various `preview` components & then using them in other documents to preview your entire application UI. They're removed from your application bundle (so long as you don't use them in app code) because of [tree-shaking](https://webpack.js.org/guides/tree-shaking/).
@@ -1013,6 +1060,9 @@ attributeBoundToClassName="$class-name"
 
 // file: message.pc
 
+<!--
+  @frame { visible: false }
+-->
 <div export component as="default" className="{className?}">
   <style>
       font-size: 24px;
@@ -1028,9 +1078,12 @@ Check out [class references](#class-reference) for more information on how to us
 
 Alternatively, you can overriding your components appearance by using scoped styles like so:
 
-```html live
+```html live height=200px
 
 <!-- Note that className is still necessary here! -->
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Message" {className?}>
   <style>
     font-family: sans-serif;
@@ -1066,12 +1119,19 @@ You may want to change the native tag name of a component. An example of this is
 
 **Example**
 
-```html live
+```html live height=200px
 // file: demo.pc 
+
+<!--
+  @frame { visible: false }
+-->
 <input component as="Input" {tagName?} {placeholder} />
 
-<Input placeholder="I'm a text input" />
-<Input tagName="textarea" placeholder="I'm a text area" />
+<div>
+  <Input placeholder="I'm a text input" />
+  <Input tagName="textarea" placeholder="I'm a text area" />
+</div>
+
 ```
 
 ## Bindings
@@ -1096,6 +1156,10 @@ Bindings allow you to define dynamic behavior in components.
 **Example**:
 
 ```html live height=150px
+
+<!--
+  @frame { visible: false }
+-->
 <h1 component as="Header">
   {children}
 </h1>
@@ -1111,12 +1175,13 @@ There will probably be the case where you want to define multiple areas of a com
 // file: main.pc
 <import src="./styles.pc" as="styles" />
 
-<!-- Components -->
-
+<!--
+  @frame { visible: false }
+-->
 <div component as="Pane" className="$styles.Pane">
   <div className="$styles.header">
     <div className="$styles.title">{title}</div>
-    <div className="$styles.controls">{controls}</div>
+    <div>{controls}</div>
   </div>
   <div className="$styles.content">
     {children}
@@ -1126,8 +1191,6 @@ There will probably be the case where you want to define multiple areas of a com
 <div component as="AddButton">
   +
 </div>
-
-<!-- Previews -->
 
 <Pane title={<strong>My header</strong>} controls={<AddButton />}>
   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -1183,12 +1246,14 @@ Attributes allow you to define dynamic component properties. For example:
 <!-- Components -->
 
 <!-- Generally I'd recommend just a `{className}` binding instead of `{customClassName}` class name, which I'm only using here to make more clear around how it works. -->
+<!--
+  @frame { visible: false }
+-->
 <div component as="Button" 
   className="$styles.button {customClassName}">
   {children}
 </div>
 
-<!-- Previews -->
 
 <Button customClassName="$typography.big-text $typography.strong">
   Button
@@ -1204,8 +1269,6 @@ Attributes allow you to define dynamic component properties. For example:
     }
   }
 </style>
-
-Nothing to see!
 
 // file: typography.pc
 <style>
@@ -1228,8 +1291,6 @@ Nothing to see!
     }
   }
 </style>
-
-Nothing to see!
 ```
 
 Bindings can also be defined outside of string attributes. For example:
@@ -1290,7 +1351,7 @@ type MessageProps = {
 export const Message: React.FC<MessageProps>;
 ```
 
-> For more information around type safety, take a look at the [type safety doc](safety-definition-files.md).
+<!-- > For more information around type safety, take a look at the [type safety doc](safety-definition-files.md). -->
 
 <!-- TODO: docs on type safety -->
 
@@ -1313,7 +1374,9 @@ The variant style syntax allows you to apply classes based on component properti
 
 ```html live height=200px
 
-
+<!--
+  @frame { visible: false }
+-->
 <div component as="Header"
   className:big="big"
   className:medium="medium"
@@ -1340,18 +1403,20 @@ The variant style syntax allows you to apply classes based on component properti
   {children}
 </div>
 
-<Header big>
-  Big header
-</Header>
-<Header medium>
-  Medium header
-</Header>
-<Header small>
-  Small header
-</Header>
-<Header>
-  Regular header
-</Header>
+<div>
+  <Header big>
+    Big header
+  </Header>
+  <Header medium>
+    Medium header
+  </Header>
+  <Header small>
+    Small header
+  </Header>
+  <Header>
+    Regular header
+  </Header>
+</div>
 ```
 
 
@@ -1361,6 +1426,9 @@ The variant style syntax allows you to apply classes based on component properti
 Fragments are useful if you want to render a collection of elements. For example:
 
 ```html live height=200px
+<!--
+  @frame { visible: false }
+-->
 <ul component as="List">
   {listItems}
 </ul>
@@ -1398,7 +1466,7 @@ for documentation & other visual helpers when developing your UIs.
 
 The `@frame` annotation allows to you to specify preview frame dimensions for your element. For example:
 
-![alt frames screenshot](assets/frames-annotations.png)
+<!-- ![alt frames screenshot](assets/frames-annotations.png) -->
 
 `x/y/width/height` dimensions can be specified visually in the preview window. 
 

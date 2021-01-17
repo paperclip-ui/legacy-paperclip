@@ -10,8 +10,10 @@
     "*-test",
     "lib",
     "index.d.ts",
+    "browser.d.ts",
     "test",
-    "examples"
+    "examples",
+    "*.json"
   ],
   "filesGlob": ["./src/**/*.ts"]
 }

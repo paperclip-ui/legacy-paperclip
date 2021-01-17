@@ -1,14 +1,15 @@
 import * as path from "path";
 import * as url from "url";
 import { expect } from "chai";
-import { createEngine } from "../../../";
+import { createEngineDelegate } from "../../../";
 import { stringifyLoadResult, TEST_FIXTURE_SRC_DIRECTORY } from "../utils";
 
 describe(__filename + "#", () => {
   it("Can load an entry that has an import", async () => {
-    const e = await createEngine();
+    const e = createEngineDelegate();
+
     const result = stringifyLoadResult(
-      await e.run(
+      await e.open(
         url
           .pathToFileURL(
             path.join(TEST_FIXTURE_SRC_DIRECTORY, "good-import.pc")
@@ -22,11 +23,11 @@ describe(__filename + "#", () => {
   });
 
   it("Won't load module src where the casing is incorrect", async () => {
-    const e = await createEngine();
+    const e = createEngineDelegate();
 
     let err;
     try {
-      e.run(
+      e.open(
         url
           .pathToFileURL(path.join(TEST_FIXTURE_SRC_DIRECTORY, "bad-import.pc"))
           .toString()
@@ -40,11 +41,11 @@ describe(__filename + "#", () => {
   });
 
   it("Displays an error for 404 CSS url", async () => {
-    const e = await createEngine();
+    const e = createEngineDelegate();
     let err;
 
     try {
-      await e.run(
+      await e.open(
         url
           .pathToFileURL(
             path.join(TEST_FIXTURE_SRC_DIRECTORY, "bad-css-url.pc")
@@ -61,9 +62,9 @@ describe(__filename + "#", () => {
   });
 
   it("can resolve a pc file from a a module", async () => {
-    const e = await createEngine();
+    const e = createEngineDelegate();
 
-    const result = await e.run(
+    const result = await e.open(
       url
         .pathToFileURL(path.join(TEST_FIXTURE_SRC_DIRECTORY, "mod-a-import.pc"))
         .toString()
@@ -75,9 +76,9 @@ describe(__filename + "#", () => {
   });
 
   it("can resolve a pc file from a nested module", async () => {
-    const e = await createEngine();
+    const e = createEngineDelegate();
 
-    const result = await e.run(
+    const result = await e.open(
       url
         .pathToFileURL(
           path.join(TEST_FIXTURE_SRC_DIRECTORY, "nested-mod-import.pc")

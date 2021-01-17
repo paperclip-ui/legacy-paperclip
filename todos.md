@@ -1,27 +1,22 @@
+
 ### Immediate
 
-- &&, || and !
-  - update vscode extension
-
-## Next
-
-- filter browsers that can't run Paperclip
-- !! CSSOM Patcher
-
-### Maybe
-
-- Component is used in in X places
-- right click elements
-- *Comments - abs position
-- @deprecated comment
-- meta click title
+- Playground server (private repo)
+  - ability to save playground (store in Mongo)
+  - ability to clone playground
+  - ability to download files (PC & JS)
+  - Ability to upload files
 
 
-#### Website
 
-- Build UIs in realtime
-- A hybrid approach to visually building
-UIs that's faster, and safer.
+- Other considerations
 
-- big pieces:
-  - safety / scalability
+
+### high-level
+
+- Embed rust engine in editor
+- Monaco editor
+- mock files in rust engine
+- ability to edit code 
+- language server for monaco
+  

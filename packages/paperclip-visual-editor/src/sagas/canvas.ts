@@ -11,15 +11,15 @@ function* handleDND() {
   yield takeEvery(
     [
       ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
-      ActionType.RESIZER_STOPPED_MOVING
+      ActionType.RESIZER_STOPPED_MOVING,
     ],
-    function*() {}
+    function* () {}
   );
 }
 
 function* handleToolbar() {
-  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function*() {
+  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function* () {
     const state: AppState = yield select();
-    yield put(popoutWindowRequested({ uri: state.currentFileUri }));
+    yield put(popoutWindowRequested({ uri: state.ui.query.currentFileUri }));
   });
 }

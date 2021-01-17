@@ -1,4 +1,4 @@
-import { createEngine, infer } from "../../..";
+import { createEngineDelegate, infer } from "../../..";
 import { expect } from "chai";
 
 describe(__filename + "#", async () => {
@@ -12,11 +12,11 @@ describe(__filename + "#", async () => {
           a: {
             optional: false,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
+              kind: 2,
+            },
+          },
+        },
+      },
     ],
     [
       `{a.b}`,
@@ -33,14 +33,14 @@ describe(__filename + "#", async () => {
                 b: {
                   optional: false,
                   value: {
-                    kind: 2
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    kind: 2,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     ],
     [
       `{{a, b, c: [d, {e, f: b.d}]}}`,
@@ -51,8 +51,8 @@ describe(__filename + "#", async () => {
           a: {
             optional: false,
             value: {
-              kind: 2
-            }
+              kind: 2,
+            },
           },
           b: {
             optional: false,
@@ -63,26 +63,26 @@ describe(__filename + "#", async () => {
                 d: {
                   optional: false,
                   value: {
-                    kind: 2
-                  }
-                }
-              }
-            }
+                    kind: 2,
+                  },
+                },
+              },
+            },
           },
           d: {
             optional: false,
             value: {
-              kind: 2
-            }
+              kind: 2,
+            },
           },
           e: {
             optional: false,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
+              kind: 2,
+            },
+          },
+        },
+      },
     ],
     [
       `{a.b} {a.c}`,
@@ -99,20 +99,20 @@ describe(__filename + "#", async () => {
                 b: {
                   optional: false,
                   value: {
-                    kind: 2
-                  }
+                    kind: 2,
+                  },
                 },
                 c: {
                   optional: false,
                   value: {
-                    kind: 2
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    kind: 2,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     ],
     [
       `<span {a}></span>`,
@@ -123,11 +123,11 @@ describe(__filename + "#", async () => {
           a: {
             optional: false,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
+              kind: 2,
+            },
+          },
+        },
+      },
     ],
     [
       `<span a={a}></span>`,
@@ -138,11 +138,11 @@ describe(__filename + "#", async () => {
           a: {
             optional: false,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
+              kind: 2,
+            },
+          },
+        },
+      },
     ],
     [
       `<span {...a}></span>`,
@@ -155,11 +155,11 @@ describe(__filename + "#", async () => {
             value: {
               kind: 0,
               fromSpread: true,
-              properties: {}
-            }
-          }
-        }
-      }
+              properties: {},
+            },
+          },
+        },
+      },
     ],
     [
       `<div a={<div>{a}</div>}></div>`,
@@ -170,11 +170,11 @@ describe(__filename + "#", async () => {
           a: {
             optional: false,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
+              kind: 2,
+            },
+          },
+        },
+      },
     ],
     [
       `<div component as="a">
@@ -187,17 +187,17 @@ describe(__filename + "#", async () => {
           a: {
             optional: false,
             value: {
-              kind: 2
-            }
+              kind: 2,
+            },
           },
           b: {
             optional: false,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
+              kind: 2,
+            },
+          },
+        },
+      },
     ],
     [
       `<div component as="a" class:test="test">
@@ -209,11 +209,11 @@ describe(__filename + "#", async () => {
           test: {
             optional: true,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
+              kind: 2,
+            },
+          },
+        },
+      },
     ],
     [
       `<div component as="a" class:test="test">
@@ -226,11 +226,11 @@ describe(__filename + "#", async () => {
           test: {
             optional: false,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
+              kind: 2,
+            },
+          },
+        },
+      },
     ],
     [
       `{a || b}`,
@@ -241,17 +241,17 @@ describe(__filename + "#", async () => {
           a: {
             optional: false,
             value: {
-              kind: 2
-            }
+              kind: 2,
+            },
           },
           b: {
             optional: false,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
+              kind: 2,
+            },
+          },
+        },
+      },
     ],
     [
       `{!a || b && c}`,
@@ -262,27 +262,27 @@ describe(__filename + "#", async () => {
           a: {
             optional: false,
             value: {
-              kind: 2
-            }
+              kind: 2,
+            },
           },
           b: {
             optional: false,
             value: {
-              kind: 2
-            }
+              kind: 2,
+            },
           },
           c: {
             optional: false,
             value: {
-              kind: 2
-            }
-          }
-        }
-      }
-    ]
+              kind: 2,
+            },
+          },
+        },
+      },
+    ],
   ];
 
-  const engine = await createEngine({});
+  const engine = await createEngineDelegate({});
   for (const [source, inference] of cases) {
     it(`can infer ${source}`, () => {
       const ast = engine.parseContent(String(source));
