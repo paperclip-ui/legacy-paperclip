@@ -1,0 +1,93 @@
+<import src="components/Theme/index.pc" as="Theme" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="MenuItem" {className?} className:active="active">
+  <style>
+    padding: 8px 14px;
+    font-family: sans-serif;
+    &.active {
+      background: var(--select-menu-item-background-color-active);
+      color: var(--select-menu-item-text-color-active);
+    }
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Menu"  className="v2 {className?}"  className:light="light" className:dark="dark" {style?}>
+  <style>
+    &.light {
+      --select-text-color: var(--text-color);
+      --select-background-color: var(--grey-200);
+      --select-menu-item-background-color-active: var(--grey-300);
+      --select-menu-item-text-color: var(--text-color);
+      --select-menu-item-text-color-active: white;
+    }
+
+    &.dark {
+      --select-text-color: var(--text-color-night);
+      --select-background-color: var(--grey-night-300);
+      --select-menu-item-background-color-active: var(--grey-night-100);
+    }
+  </style>
+
+  
+  <style>
+    color: var(--select-text-color);
+    position: fixed;
+    min-width: 300px;
+    background: var(--select-background-color);
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
+    z-index: 99999;
+  </style>
+  {children}
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div>
+  </div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="Preview"> 
+  <style>
+    padding: 20px;
+  </style>
+  <button>
+    I'm a button
+  </button>
+  <Menu {dark?} {light?}> 
+    <MenuItem>
+      Search
+    </MenuItem>
+    <MenuItem>
+      Search
+    </MenuItem>
+    <MenuItem active>
+      Search
+    </MenuItem>
+  </Menu>
+</div>
+
+<!--
+  @frame { title: "Select / Dark", width: 404, height: 198, x: 385, y: 962 }
+-->
+<Preview dark />
+
+<!--
+  @frame { title: "Select / Light", width: 399, height: 297, x: 370, y: 593 }
+-->
+<Preview light />

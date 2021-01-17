@@ -1,8 +1,42 @@
+### Playground goals
+
+- Lower barrier to using with code
+- getting a feel for 
+
+### TODO
+
+- Designer mode redesign
+- Wire up playground
+  - ability to add & switch between files
+
+  - compact version (for website) 
+  
+- Get website to use new playground
+
+- Playground (again)
+  - Ability to save changes
+    - Download zip?
+      - Raw PC code
+      - React code**
+    - Save to GitHub? (will require backend)
+
 ### Immediate
 
-- UI
-  - pages (just like figma)
-  
+
+- Wire up UI
+  - adding files
+  - selecting files
+
+- Update Docs to use playground
+- ability to share snippet
+- ability to clone**
+  - important for re-designing / skinning
+- publish NPM - add paperclip dev as collaborator
+  - ability to publish
+
+
+- should be able to handle DND images
+
 - ability to change frames from grid
 - capture key bindings
 

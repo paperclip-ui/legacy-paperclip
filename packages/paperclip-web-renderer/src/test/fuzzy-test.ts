@@ -1,5 +1,4 @@
 import { generateRandomPaperclipDocument } from "./random";
-import { Engine } from "paperclip";
 import { expect } from "chai";
 import { createMockEngine, createMockRenderer } from "./utils";
 import { repeat } from "lodash";

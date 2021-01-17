@@ -14,7 +14,7 @@
     "build:node": "tsc",
     "build:native": "cd native && cargo build --release",
     "build:browser": "npm run build:esm && npm run build:wasm:web",
-    "build:esm": "tsc build tsconfig.esm.json",
+    "build:esm": "tsc --build tsconfig.esm.json",
     "build:wasm:bundler": "cd native && wasm-pack build --release --target bundler --out-dir bundler",
     "build:wasm:browser": "cd native && wasm-pack build --release --target browser --out-dir browser",
     "build:wasm:web": "cd native && wasm-pack build --release --target web --out-dir web &&  cat web/paperclip.js | sed 's/import.meta.url/_NOOP_/g' > web/paperclip-no-import-meta.js && cd .. && mkdir -p dist && cp native/web/paperclip_bg.wasm dist/paperclip_bg.wasm",

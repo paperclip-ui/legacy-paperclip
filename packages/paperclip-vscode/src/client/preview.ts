@@ -417,13 +417,13 @@ class LivePreview {
     this.panel.reveal(this.panel.viewColumn, false);
   }
   setTargetUri(value: string, rerender = true) {
-    if (this.location.query.currentFile === value) {
+    if (this.location.query.currentFileUri === value) {
       return;
     }
     this.panel.title = `⚡️ ${
       this.sticky ? "sticky preview" : path.basename(value)
     }`;
-    this.location.query.currentFile = value;
+    this.location.query.currentFileUri = value;
 
     if (rerender) {
       this._render();

@@ -147,7 +147,9 @@ export const INITIAL_STATE: AppState = {
   toolsLayerEnabled: true,
   documentContents: {},
   renderProtocol:
-    window.location.protocol + "//" + window.location.host + "/file",
+    typeof window !== "undefined"
+      ? window.location.protocol + "//" + window.location.host + "/file"
+      : null,
   availableBrowsers: [],
   currentEngineEvents: {},
   allLoadedPCFileData: {},

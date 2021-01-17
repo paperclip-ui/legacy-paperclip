@@ -1,22 +1,33 @@
 <import src="components/Theme/index.pc" as="theme" />
 
-<style>
-  .input {
-    background: var(--background-2);
-    border: 0;
-    border-radius: var(--border-radius);
-    padding: var(--input-padding);
-    width: 100%;
-    box-sizing: border-box;
-  }
-</style>
-
 
 <!--
   @frame { visible: false }
 -->
-<input export component as="default" className="input"
-  {placeholder?}
-  {value?}
-  {defaultValue?}
-/>
+<input export component as="default" className="input v2 {className?}" {ref?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autofocus?}>
+  <style>
+    background: var(--background-50);
+    border: 0;
+    border-radius: var(--border-radius-100);
+    padding: var(--input-padding);
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    color: var(--text-color);
+    box-sizing: border-box;
+    border: 2px solid var(--background-200);
+    &:focus {
+      border: 2px solid rgb(102, 163, 255);
+    }
+    &::placeholder {
+      color: var(--grey-200)
+    }
+  </style>
+</input>
+
+<div>
+  <style>
+    background: blue;
+  </style>
+  <default />
+</div>

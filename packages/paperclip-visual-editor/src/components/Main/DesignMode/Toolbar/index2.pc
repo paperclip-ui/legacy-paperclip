@@ -1,0 +1,299 @@
+<import src="styles/utils.pc" as="utils" />
+<import src="components/Select/index2.pc" as="Select" />
+<import src="components/Theme/index.pc" as="Theme" />
+<import src="components/TextInput/index.pc" as="TextInput" />
+
+<style>
+  :root {
+    --icon-size: 18px;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="ServiceIcon" data-kind={kind}>
+  <style>
+    mask-image: url('./browser2.svg');
+    background: currentColor;
+    flex-shrink: 0;
+    --size: 1em;
+    mask-size: var(--size);
+    width: var(--size);
+    height: var(--size);
+    display: inline-block;
+    margin-right: 8px;
+    &[data-kind="public"] {
+      mask-image: url('./world.svg');
+    }
+    &[data-kind="private"] {
+      mask-image: url('./home.svg');
+    }
+    &[data-kind="chrome"] {
+      mask-image: url('./chrome.svg');
+    }
+    &[data-kind="safari"] {
+      mask-image: url('./safari2.svg');
+    }
+    &[data-kind="firefox"] {
+      mask-image: url('./firefox.svg');
+    }
+    &[data-kind="ie"] {
+      mask-image: url('./ie.svg');
+    }
+    &[data-kind="ie"] {
+      mask-image: url('./ie.svg');
+    }
+  </style>
+</i>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Toolbar" {onDoubleClick?} className="v2 {className?}">
+
+  <style>
+    background: var(--grey-100);
+    color: var(--text-color);
+    display: flex;
+    font-size: 14px;
+    height: 40px;
+    align-items: stretch;
+    justify-content: space-between;
+    font-family: sans-serif;
+    white-space: nowrap;
+  </style>
+  <div>
+    <style>
+      display: flex;
+    </style>
+    {leftControls}
+  </div>
+  <div>
+    <style>
+      display: flex;
+      align-items: center;
+    </style>
+    <div>
+      {title?}
+    </div>
+    {readOnly? && <ReadOnlyPill />}
+  </div>
+  <div>
+    <style> 
+      display: flex;
+      align-items: center;
+      margin-right: 28px;
+    </style>
+    {rightControls}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="GridButton" className:selected="selected">
+  <style>
+    @include utils.mask;
+    @include utils.mask-button;
+    --size: var(--icon-size);
+    mask-image: url('./gridv2.svg');
+    outline: none;
+    &.selected {
+      background: red;
+    }
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<span export component as="ReadOnlyPill">
+  <style>
+    margin-left: 14px;
+    padding: 4px 12px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-size: 9px;
+    background: #E1B209;
+    color: #795825;
+    font-weight: 600;
+  </style>
+  read-only
+</span>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="EnvButton">
+  
+  <style>
+    @include utils.mask;
+    @include utils.mask-button;
+    --size: var(--icon-size);
+    mask-image: url('./safari2.svg');
+    outline: none;
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Tab" className:active="active" {onClick?}>
+  <style>
+    display: inline-flex;
+    align-items: center;
+    padding: 0px 14px;
+    transition: 0.1s;
+    cursor: pointer;
+    &:first-child {
+      margin-left: 14px;
+    }
+    &.active {
+      background: var(--grey-200);
+    }
+    &:hover {
+      background: var(--grey-200);
+    }
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Select.MenuItem export component as="SerivceMenuItem" {active?}>
+  <style>
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  </style>
+
+  <!-- basic browser info -->
+  <div>
+    <style>
+      display: flex;
+      align-items: center;
+    </style>
+    <ServiceIcon {kind?} />
+    {browserName}
+    <span>
+      <style>
+        margin-left: 6px;
+      </style>
+      {browserVersion}
+    </span>
+  </div>
+
+  <!-- OS info -->
+  <div>
+    {osName}
+    <span>
+      <style>
+        margin-left: 6px;
+      </style>
+      {osVersion}
+    </span>
+  </div>
+
+</Select.MenuItem>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="EnvPopup">
+  <Select.Menu light>
+    <style> 
+      left: 60px;
+    </style>
+    <Select.MenuItem>
+      <TextInput placeholder="filter environment..." />
+    </Select.MenuItem>
+    <SerivceMenuItem browserName="safari" kind="safari" browserVersion="12" osName="Windows" osVersion="XP" />
+    <SerivceMenuItem browserName="chrome" kind="chrome" browserVersion="49" osName="OS X" osVersion="Catalina" active />
+    <SerivceMenuItem browserName="Internet Explorer" browserVersion="9" kind="ie" osName="Windows" osVersion="XP" />
+    <SerivceMenuItem browserName="Internet Explorer" browserVersion="8" kind="ie" osName="Windows" osVersion="XP" />
+  </Select.Menu>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<input export type="text" component as="ZoomInput" {onKeyPress} {onBlur} {onClick?} {onDoubleClick?} {value?} {onChange?} className:focus="focus">
+  <style>
+    width: 35px;
+    height: 20px;
+    border: none;
+    border-radius: 2px;
+    padding: 0px 4px;
+    color: var(--grey-300);
+    background: transparent;
+    outline: none;
+      background: var(--grey-200);
+      color: var(--grey-400);
+    &:focus, &.focus {
+    }
+  </style>
+</input>
+
+
+<!--
+  @frame { visible: false }
+-->
+<span export component as="ZoomLabel" {onClick}>
+  <style>
+    padding: 0px 4px;
+  </style>
+  {children}
+</span>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<div export component as="Preview">
+  <Toolbar 
+    title="Entry.pc"
+    {readOnly?}
+    leftControls={
+      <fragment>
+        <Tab><GridButton /></Tab>
+        <Tab active={showEnvPopup}><EnvButton /></Tab>
+      </fragment>
+    }
+    rightControls={
+      <div>
+        {enterZoom && <ZoomInput value="100" focus={enterZoom} />}
+        {!enterZoom && <ZoomLabel>100%</ZoomLabel>}
+      </div>
+    }
+    />
+
+  {showEnvPopup && <EnvPopup>
+  </EnvPopup>}
+</div>
+
+
+<!--
+  @frame { title: "Toolbar v2", width: 1024, height: 56, x: 24, y: -28 }
+-->
+<Preview  />
+
+
+<!--
+  @frame { title: "Toolbar v2", width: 1024, height: 56, x: 28, y: 87 }
+-->
+<Preview readOnly />
+
+
+<!--
+  @frame { title: "Toolbar / Env Popup", width: 1024, height: 449, x: 21, y: 312 }
+-->
+<Preview readOnly showEnvPopup enterZoom />

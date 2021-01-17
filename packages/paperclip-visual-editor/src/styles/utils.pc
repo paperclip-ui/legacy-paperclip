@@ -10,5 +10,11 @@
       mask-size: var(--size);
       background: currentColor;
     }
+    @mixin mask-button {
+      cursor: pointer;
+      color: inherit;
+      border: none;
+      padding: 0;
+    }
   }
 </style>

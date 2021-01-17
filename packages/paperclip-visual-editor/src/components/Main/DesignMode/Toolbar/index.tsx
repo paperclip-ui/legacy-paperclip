@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import * as styles from "./index.pc";
+import * as styles from "./index2.pc";
 import * as path from "path";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import {
@@ -8,6 +8,7 @@ import {
   birdseyeFilterChanged,
   titleDoubleClicked,
   redirectRequest,
+  zoomInputChanged,
 } from "../../../../actions";
 import { useTextInput } from "../../../TextInput";
 import * as qs from "qs";
@@ -25,7 +26,8 @@ export const Toolbar = () => {
   } = state;
   const expanded = isExpanded(state);
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
-  const showBirdseye = state.ui.pathname === "/all";
+  const showingBirdsEye = state.ui.pathname === "/all";
+  const [showZoomInput, setShowZoomInput] = useState<boolean>();
   const { embedded, currentFileUri } = state.ui.query;
 
   const onMinusClick = () => {
@@ -49,7 +51,7 @@ export const Toolbar = () => {
   }, [state.ui]);
 
   const onGridButtonClick = () => {
-    if (showBirdseye) {
+    if (showingBirdsEye) {
       dispatch(redirectRequest({ pathname: "/canvas" }));
     } else {
       dispatch(redirectRequest({ pathname: "/all" }));
@@ -59,7 +61,6 @@ export const Toolbar = () => {
 
   const { inputProps } = useTextInput({
     value: birdseyeFilter,
-    focus: true,
     onValueChange: (value: string) => {
       dispatch(birdseyeFilterChanged({ value }));
     },
@@ -81,52 +82,60 @@ export const Toolbar = () => {
     dispatch(titleDoubleClicked({ uri: currentFileUri }));
   };
 
+  const zoom = String(Math.round(canvas.transform.z * 100)) + "%";
+
+  const { inputProps: zoomInputProps } = useTextInput({
+    value: zoom,
+    onValueChange: (value) => {
+      dispatch(zoomInputChanged({ value: Number(value.replace("%", "")) }));
+    },
+  });
+
   return (
     <>
-      <styles.Container onDoubleClick={onDoubleClick}>
-        <styles.Controls>
-          {/* {showBirdseye ? (
-          <styles.SearchInput
-            inputRef={inputProps.ref}
-            onChange={inputProps.onChange}
-            defaultValue={inputProps.value}
-            onBlur={onFilterBlur}
-          />
-        ) : (
-          <styles.MagnifyButton onClick={onGridButtonClick} /> 
-        )} */}
-          <styles.GridButton
-            active={showBirdseye}
-            onClick={onGridButtonClick}
-          />
-          {/* <styles.PaintButton
-          active={toolsLayerEnabled}
-          onClick={onPainToolClick}
-        /> */}
-
-          <styles.Zoom
+      <styles.Toolbar
+        onDoubleClick={onDoubleClick}
+        leftControls={
+          <>
+            <styles.Tab active={showingBirdsEye} onClick={onGridButtonClick}>
+              <styles.GridButton />
+            </styles.Tab>
+            <styles.Tab
+              active={showEnvironmentPopup}
+              onClick={onGridButtonClick}
+            >
+              <styles.EnvButton />
+            </styles.Tab>
+          </>
+        }
+        title={
+          <>
+            {(!embedded || showingBirdsEye) &&
+              (showingBirdsEye ? "Project Frames" : relativePath)}
+          </>
+        }
+        readOnly={readonly}
+        rightControls={
+          <>
+            {/* <styles.Zoom
             amount={Math.round(canvas.transform.z * 100)}
             onMinusClick={onMinusClick}
             onPlusClick={onPlusClick}
-            hidden={expanded || showBirdseye}
-          />
-        </styles.Controls>
-
-        {(!embedded || showBirdseye) && (
-          <styles.Title>
-            {showBirdseye ? "All Paperclip UIs 🎨" : relativePath}
-          </styles.Title>
-        )}
-        <styles.Spacer />
-
-        <styles.Controls>
-          {expanded ? (
-            <styles.CollapseButton active onClick={onCollapseButtonClick} />
-          ) : null}
-          {sharable && <styles.PopOutButton onClick={onPopOutButtonClicked} />}
-        </styles.Controls>
-        {readonly && <styles.ReadOnlyBadge />}
-      </styles.Container>
+            hidden={expanded || showingBirdsEye}
+          /> */}
+            <styles.ZoomLabel onClick={() => setShowZoomInput(true)}>
+              {zoom}%
+            </styles.ZoomLabel>
+            <styles.ZoomInput
+              onBlur={() => setShowZoomInput(false)}
+              onKeyPress={(e) => e.key === "Enter" && setShowZoomInput(false)}
+              onDoubleClick={(e) => e.stopPropagation()}
+              onClick={(e) => e.target.select()}
+              {...zoomInputProps}
+            />
+          </>
+        }
+      />
       {showEnvironmentPopup && (
         <EnvironmentPopup onBlur={onEnvironmentPopupBlur} />
       )}

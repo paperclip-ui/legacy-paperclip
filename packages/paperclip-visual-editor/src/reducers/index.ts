@@ -33,7 +33,7 @@ import {
   isPaperclipFile,
   EngineDelegateEventKind,
 } from "paperclip-utils";
-import { getFrameBounds } from "paperclip-web-renderer";
+import * as path from "path";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -70,6 +70,12 @@ export default (state: AppState, action: Action) => {
     case ActionType.REDIRECT_REQUESTED: {
       state = produce(state, (newState) => {
         Object.assign(newState.ui, action.payload);
+
+        // clean path & ensure that it looks like "/canvas" instead of "/canvas/";
+        newState.ui.pathname = path
+          .normalize(newState.ui.pathname)
+          .replace(/\/$/, "");
+
         newState.centeredInitial = false;
       });
       return state;
@@ -215,6 +221,16 @@ export default (state: AppState, action: Action) => {
       return produce(state, (newState) => {
         newState.documentContents[action.payload.fileUri] =
           action.payload.content;
+      });
+    }
+    case ActionType.ZOOM_INPUT_CHANGED: {
+      return produce(state, (newState) => {
+        console.log(action.payload.value);
+        newState.canvas = setCanvasZoom(
+          action.payload.value / 100,
+          state.canvas,
+          newState.boxes
+        );
       });
     }
     case ActionType.ZOOM_IN_KEY_PRESSED:

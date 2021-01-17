@@ -12,15 +12,25 @@ export const CodeMode = () => {
   const onChange = (ev, value) => {
     dispatch(codeEditorChanged(value));
   };
+  const editorDidMount = (_, editor) => {
+    editor.getModel().updateOptions({ tabSize: 2 });
+  };
   return (
     <styles.Container>
       <Toolbar />
       <ControlledEditor
+        editorDidMount={editorDidMount}
+        options={{
+          minimap: {
+            enabled: false,
+          },
+        }}
         width="100%"
         height="100%"
         value={code}
         language="html"
         onChange={onChange}
+        theme="vs-dark"
       />
     </styles.Container>
   );

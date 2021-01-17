@@ -67,7 +67,7 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
     <styles.EnvironmentPopup
       visible={visible}
       filterInputRef={inputProps.ref}
-      filterValue={inputProps.value}
+      filterValue={inputProps.defaultValue}
       onFilterChange={inputProps.onChange}
       onFilterBlur={onFilterBlur}
       options={

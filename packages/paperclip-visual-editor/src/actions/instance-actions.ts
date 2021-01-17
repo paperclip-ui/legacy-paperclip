@@ -33,6 +33,7 @@ export enum ActionType {
   POPOUT_WINDOW_REQUESTED = "POPOUT_WINDOW_REQUESTED",
   PASTED = "PASTED",
   ZOOM_OUT_BUTTON_CLICKED = "ZOOM_OUT_BUTTON_CLICKED",
+  ZOOM_INPUT_CHANGED = "ZOOM_INPUT_CHANGED",
   CANVAS_RESIZED = "CANVAS_RESIZED",
   CANVAS_MOUSE_MOVED = "CANVAS_MOUSE_MOVED",
   TITLE_DOUBLE_CLICKED = "TITLE_DOUBLE_CLICKED",
@@ -272,6 +273,10 @@ export type ZoomInButtonClicked = BaseAction<ActionType.ZOOM_IN_BUTTON_CLICKED>;
 export type ZoomOutButtonClicked = BaseAction<
   ActionType.ZOOM_OUT_BUTTON_CLICKED
 >;
+export type ZoomInputChanged = BaseAction<
+  ActionType.ZOOM_INPUT_CHANGED,
+  { value: number }
+>;
 export type DirLoaded = BaseAction<
   ActionType.DIR_LOADED,
   {
@@ -400,6 +405,9 @@ export const zoomInButtonClicked = actionCreator<ZoomInButtonClicked>(
 export const zoomOutButtonClicked = actionCreator<ZoomOutButtonClicked>(
   ActionType.ZOOM_OUT_BUTTON_CLICKED
 );
+export const zoomInputChanged = actionCreator<ZoomInputChanged>(
+  ActionType.ZOOM_INPUT_CHANGED
+);
 export const popoutWindowRequested = actionCreator<PopoutWindowRequested>(
   ActionType.POPOUT_WINDOW_REQUESTED
 );
@@ -500,6 +508,7 @@ export type InstanceAction =
   | CollapseFrameButtonClicked
   | ExpandFrameButtonClicked
   | ZoomInButtonClicked
+  | ZoomInputChanged
   | ClientConnected
   | EnvOptionClicked
   | FrameTitleClicked

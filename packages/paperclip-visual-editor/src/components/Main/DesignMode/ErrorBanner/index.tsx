@@ -1,6 +1,6 @@
 import React from "react";
 import * as styles from "./index.pc";
-import { EngineErrorEvent } from "paperclip-utils";
+import { EngineErrorEvent, EngineErrorKind } from "paperclip-utils";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import { Dispatch } from "redux";
 import { Action, errorBannerClicked } from "../../../../actions";
@@ -17,11 +17,16 @@ export const ErrorBanner = React.memo(({ error, dispatch }: Props) => {
   const onClick = () => {
     dispatch(errorBannerClicked(error));
   };
+  const location =
+    error.errorKind === EngineErrorKind.Graph ? error.info.location : null;
+
+  const message = `${error.message || (error as any).info?.message}`;
+
   return (
     <styles.ErrorBanner
       onClick={onClick}
       filePath={error.uri.replace("file://", "")}
-      message={error.message || (error as any).info?.message}
+      message={message}
     />
   );
 });

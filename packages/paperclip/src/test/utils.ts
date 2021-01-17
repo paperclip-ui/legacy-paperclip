@@ -1,11 +1,5 @@
 import * as path from "path";
-import {
-  Engine,
-  EngineDelegate,
-  createEngineDelegate,
-  LoadResult,
-  EngineIO,
-} from "../../";
+import { EngineDelegate, createEngineDelegate } from "../../";
 import {
   EngineErrorEvent,
   EngineDelegateEventKind,
@@ -13,6 +7,7 @@ import {
   stringifyCSSSheet,
   LoadedEvent,
 } from "paperclip-utils";
+import { LoadResult } from "../delegate";
 
 export type Graph = {
   [identifier: string]: string;
@@ -26,7 +21,7 @@ export const TEST_FIXTURE_SRC_DIRECTORY = path.join(
 export const createMockEngine = (
   graph: Graph,
   onErr = (e) => console.error(e),
-  io: Partial<EngineIO> = {}
+  io: Partial<any> = {}
 ) =>
   createEngineDelegate(
     {
@@ -56,7 +51,7 @@ export const waitForError = (
 };
 
 export const waitForRender = (
-  engine: Engine,
+  engine: EngineDelegate,
   test: (event: LoadedEvent) => boolean = () => true
 ) => {
   return new Promise<any>((resolve) => {

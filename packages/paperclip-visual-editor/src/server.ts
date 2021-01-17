@@ -4,12 +4,7 @@ import * as chokidar from "chokidar";
 
 import sockjs from "sockjs";
 import getPort from "get-port";
-import {
-  createEngineDelegate,
-  EngineDelegate,
-  keepEngineInSyncWithFileSystem2,
-  findPCConfigUrl
-} from "paperclip";
+import { createEngineDelegate, EngineDelegate } from "paperclip";
 import * as URL from "url";
 import {
   engineDelegateChanged,
@@ -31,13 +26,13 @@ import {
   EnvOptionClicked,
   browserstackBrowsersLoaded,
   ServerAction,
-  TitleDoubleClicked
+  TitleDoubleClicked,
 } from "./actions";
 import {
   AvailableBrowser,
   EnvOption,
   EnvOptionKind,
-  FSItemKind
+  FSItemKind,
 } from "./state";
 import express from "express";
 import { normalize, relative } from "path";
@@ -74,11 +69,11 @@ export const startServer = async ({
   cwd = process.cwd(),
   credentials = {},
   openInitial,
-  readonly
+  readonly,
 }: ServerOptions) => {
   const engine = await createEngineDelegate(
     {
-      mode: EngineMode.MultiFrame
+      mode: EngineMode.MultiFrame,
     },
     () => {
       emitExternal(crashed(null));
@@ -93,9 +88,9 @@ export const startServer = async ({
   let _watcher: chokidar.FSWatcher;
   const em = new EventEmitter();
 
-  const openURI = uri => {
+  const openURI = (uri) => {
     const localPath = URL.fileURLToPath(uri);
-    if (!localResourceRoots.some(root => localPath.includes(root))) {
+    if (!localResourceRoots.some((root) => localPath.includes(root))) {
       return;
     }
 
@@ -106,16 +101,16 @@ export const startServer = async ({
   let _shareHost: string;
   let _browsers: any[];
 
-  io.on("connection", conn => {
+  io.on("connection", (conn) => {
     let targetUri;
 
-    const emit = message => {
+    const emit = (message) => {
       conn.write(JSON.stringify(message));
     };
 
     emit(initParamsDefined({ readonly, availableBrowsers: _browsers }));
 
-    const disposeEngineListener = engine.onEvent(event => {
+    const disposeEngineListener = engine.onEvent((event) => {
       emit(engineDelegateChanged(event));
     });
 
@@ -123,7 +118,7 @@ export const startServer = async ({
 
     em.on("externalAction", onExternalAction);
 
-    conn.on("data", data => {
+    conn.on("data", (data) => {
       const action: InstanceAction = JSON.parse(data) as any;
       switch (action.type) {
         case ActionType.FS_ITEM_CLICKED: {
@@ -159,7 +154,7 @@ export const startServer = async ({
     let _ngrokUrl;
 
     const handleEnvOptionClicked = async ({
-      payload: { option, path }
+      payload: { option, path },
     }: EnvOptionClicked) => {
       let host = `http://localhost:${port}`;
 
@@ -188,7 +183,7 @@ export const startServer = async ({
         os_version: launchOptions.osVersion,
         start: true,
         local: true,
-        url
+        url,
       };
 
       return `https://live.browserstack.com/dashboard#${qs.stringify(query)}`;
@@ -235,7 +230,7 @@ export const startServer = async ({
               url: URL.pathToFileURL(dirPath).toString(),
               kind: FSItemKind.DIRECTORY,
               name: path.basename(dirPath),
-              children: basenames.map(basename => {
+              children: basenames.map((basename) => {
                 const absolutePath = path.join(dirPath, basename);
                 const isDir = fs.lstatSync(absolutePath).isDirectory();
                 return {
@@ -243,10 +238,10 @@ export const startServer = async ({
                   url: URL.pathToFileURL(absolutePath).toString(),
                   name: basename,
                   kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
-                  children: isDir ? [] : undefined
+                  children: isDir ? [] : undefined,
                 };
-              })
-            }
+              }),
+            },
           })
         );
       });
@@ -290,10 +285,10 @@ export const startServer = async ({
       const used = {};
 
       _browsers = result
-        ?.map(browser => ({
+        ?.map((browser) => ({
           ...browser,
           osVersion: browser.os_version,
-          browserVersion: browser.browser_version
+          browserVersion: browser.browser_version,
         }))
         .sort((a, b) => {
           if (a.browser !== b.browser) {
@@ -321,7 +316,7 @@ export const startServer = async ({
   return {
     port,
     engine,
-    dispatch
+    dispatch,
   };
 };
 
@@ -338,7 +333,7 @@ const startHTTPServer = (
   const distHandler = express.static(path.join(__dirname, "..", "dist"));
 
   // cors to enable iframe embed
-  app.use(function(req, res, next) {
+  app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -352,7 +347,9 @@ const startHTTPServer = (
   app.use("/all", distHandler);
   app.use("/file/*", (req, res, next) => {
     const filePath = normalize(req.params["0"]);
-    const found = localResourceRoots.some(root => filePath.indexOf(root) === 0);
+    const found = localResourceRoots.some(
+      (root) => filePath.indexOf(root) === 0
+    );
     if (!found) {
       return next();
     }

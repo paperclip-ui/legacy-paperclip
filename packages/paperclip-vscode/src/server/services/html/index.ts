@@ -34,11 +34,10 @@ import {
   resolveImportUri,
   getMixins,
   ExportRule,
-  DEFAULT_PART_ID
+  DEFAULT_PART_ID,
 } from "paperclip";
 
 import CSS_COLOR_NAMES from "./css-color-names";
-import { Engine } from "paperclip";
 import { PCAutocomplete } from "./autocomplete";
 import { CompletionItem } from "vscode-languageclient";
 import { PCCompletionItem } from "./utils";
@@ -97,13 +96,13 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       importIds: getImportIds(root),
       data,
       partIds: getParts(root)
-        .map(part => getAttributeStringValue(AS_ATTR_NAME, part))
+        .map((part) => getAttributeStringValue(AS_ATTR_NAME, part))
         .filter(Boolean),
       info: {
         colors: [],
         links: [],
-        definitions: []
-      }
+        definitions: [],
+      },
     };
     this._handleStyles(context);
     this._handleDocument(context);
@@ -226,7 +225,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
 
       context.info.colors.push({
         color: colorValue,
-        location: { start: colorStart, end: colorStart + color.length }
+        location: { start: colorStart, end: colorStart + color.length },
       });
     }
   }
@@ -259,7 +258,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
             sourceUri: context.uri,
             sourceLocation: imp.openTagLocation,
             sourceDefinitionLocation: imp.openTagLocation,
-            instanceLocation: impRef.location
+            instanceLocation: impRef.location,
           });
           const mixin = getMixins(impAst)[ref.name];
           if (mixin) {
@@ -285,7 +284,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       sourceUri,
       sourceLocation: mixin.name.location,
       sourceDefinitionLocation: mixin.name.location,
-      instanceLocation: name.location
+      instanceLocation: name.location,
     });
   }
 
@@ -303,7 +302,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       if (srcAttr.attrValueKind === AttributeValueKind.String) {
         context.info.links.push({
           uri: resolveImportUri(fs)(uri, srcAttr.value),
-          location: srcAttr.location
+          location: srcAttr.location,
         });
       }
     }
@@ -395,7 +394,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
         ) {
           context.info.links.push({
             uri: resolveUri(context.uri, attr.value.value),
-            location: attr.value.location
+            location: attr.value.location,
           });
         }
       }
@@ -409,7 +408,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     sourceUri: string,
     context: HandleContext
   ) {
-    const part = getParts(sourceRoot).find(part => {
+    const part = getParts(sourceRoot).find((part) => {
       return getAttributeStringValue(AS_ATTR_NAME, part) === name;
     });
 
@@ -418,7 +417,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
         sourceUri,
         sourceLocation: part.openTagLocation,
         sourceDefinitionLocation: part.location,
-        instanceLocation: element.tagNameLocation
+        instanceLocation: element.tagNameLocation,
       });
     }
   }

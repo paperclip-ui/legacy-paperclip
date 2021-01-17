@@ -430,9 +430,11 @@ function* handleLocation() {
   });
 
   yield takeEvery(chan, handleLocationChanged);
-  yield takeEvery(ActionType.REDIRECT_REQUESTED, function (
+  yield takeEvery(ActionType.REDIRECT_REQUESTED, function* (
     action: RedirectRequested
   ) {
+    const state = yield select();
+    console.log(JSON.stringify(state.ui));
     history.push(state.ui.pathname + "?" + qs.stringify(state.ui.query));
   });
 }

@@ -3,33 +3,32 @@ import { noop } from "lodash";
 
 type UseTextInputProps = {
   value: string;
-  focus?: boolean;
+  select?: boolean;
   onValueChange?: (value: string) => any;
 };
 
 export const useTextInput = ({
   value,
-  focus,
-  onValueChange = noop
+  select,
+  onValueChange = noop,
 }: UseTextInputProps) => {
   const ref = useRef<HTMLInputElement>();
   const [internalValue, setInternalValue] = useState<string>(value);
 
   useEffect(() => {
-    if (ref.current && value !== ref.current.value) {
+    if (value !== internalValue) {
       setInternalValue(value);
       ref.current.value = value || "";
     }
-  }, [ref.current, focus, value, internalValue]);
+  }, [ref.current, value, internalValue]);
 
   useEffect(() => {
-    if (focus && ref.current) {
-      ref.current.focus();
+    if (select && ref.current) {
       setTimeout(() => {
         ref.current.select();
       });
     }
-  }, [focus, ref.current]);
+  }, [select, ref.current]);
 
   const onChange = (event: React.KeyboardEvent) => {
     const value = (event.target as HTMLInputElement).value;
@@ -40,7 +39,7 @@ export const useTextInput = ({
   const inputProps = {
     ref,
     onChange,
-    value: internalValue
+    defaultValue: internalValue,
   };
 
   return { inputProps };
