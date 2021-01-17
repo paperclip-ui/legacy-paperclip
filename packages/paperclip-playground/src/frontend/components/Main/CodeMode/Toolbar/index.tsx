@@ -4,7 +4,11 @@ import * as styles from "./index.pc";
 import * as path from "path";
 import TextInput from "paperclip-visual-editor/src/components/TextInput/index.pc";
 import { useTextInput } from "paperclip-visual-editor/src/components/TextInput";
-import { fileItemClicked, newFileNameEntered } from "../../../../actions";
+import {
+  fileItemClicked,
+  newFileNameEntered,
+  syncPanelsClicked,
+} from "../../../../actions";
 import { redirectRequest } from "paperclip-visual-editor/src/actions";
 
 export const Toolbar = () => {
@@ -26,7 +30,7 @@ export const Toolbar = () => {
     setShowNewFileInput(false);
   };
 
-  const basename = path.basename(state.ui.query.currentFileUri);
+  const basename = path.basename(state.currentCodeFileUri);
   const keepMenuOpen = showFileMenu || showNewFileInput;
   const allFileUris = useMemo(() => Object.keys(state.documentContents), [
     state.documentContents,
@@ -58,11 +62,13 @@ export const Toolbar = () => {
     if (fileMenuButton.current.contains(document.activeElement)) {
       return;
     }
-    console.log(document.activeElement);
 
     setShowFileMenu(false);
   };
 
+  const onSyncPanelsClick = () => {
+    dispatch(syncPanelsClicked(null));
+  };
   return (
     <styles.Topbar>
       <styles.FileMenuButton
@@ -111,6 +117,9 @@ export const Toolbar = () => {
           )
         }
       />
+      {state.currentCodeFileUri !== state.ui.query.currentFileUri && (
+        <styles.EyeButton onClick={onSyncPanelsClick} />
+      )}
     </styles.Topbar>
   );
 };

@@ -17,6 +17,7 @@ export enum ActionType {
   CONTENT_CHANGES_CREATED = "CONTENT_CHANGES_CREATED",
   FILE_ITEM_CLICKED = "FILE_ITEM_CLICKED",
   NEW_FILE_NAME_ENTERED = "NEW_FILE_NAME_ENTERED",
+  SYNC_PANELS_CLICKED = "SYNC_PANELS_CLICKED",
 }
 
 export type EngineLoaded = BaseAction<ActionType.ENGINE_LOADED>;
@@ -42,6 +43,8 @@ export type NewFileNameEntered = BaseAction<
   ActionType.NEW_FILE_NAME_ENTERED,
   { value: string }
 >;
+export type SyncPanelsClicked = BaseAction<ActionType.SYNC_PANELS_CLICKED>;
+
 export type FileItemClicked = BaseAction<
   ActionType.FILE_ITEM_CLICKED,
   { uri: string }
@@ -71,6 +74,9 @@ export const newFileNameEntered = actionCreator<NewFileNameEntered>(
 export const fileItemClicked = actionCreator<FileItemClicked>(
   ActionType.FILE_ITEM_CLICKED
 );
+export const syncPanelsClicked = actionCreator<SyncPanelsClicked>(
+  ActionType.SYNC_PANELS_CLICKED
+);
 
 export type Action =
   | ve.Action
@@ -78,6 +84,7 @@ export type Action =
   | EngineCrashed
   | AppStateDiffed
   | FileItemClicked
+  | SyncPanelsClicked
   | NewFileNameEntered
   | WorkerInitialized
   | ContentChangesCreated

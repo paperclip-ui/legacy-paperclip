@@ -125,6 +125,28 @@
   {children}
 </Select.MenuItem>
 
+<div export component as="EyeButton" className:highlight="highlight" {onClick}>
+  <style>
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    cursor: pointer;
+  </style>
+  <i>
+    <style>
+      --size: 24px;
+      @include utils.mask;
+      mask-image: url("./eye.svg");
+      transition: 0.2;
+      color: var(--grey-300);
+      &:hover {
+
+        color: var(--grey-100);
+      }
+    </style>
+  </i>
+</div>
+
 <Select.MenuItem export component as="AddFileMenuItem" {onMouseDown?} {onClick?}>
   <style>
     border-top: 1px solid rgb(65, 65, 65);
@@ -174,4 +196,7 @@
       <AddFileMenuItem />
     </FileMenu>
   } />
+
+  <EyeButton />
+
 </Topbar>
