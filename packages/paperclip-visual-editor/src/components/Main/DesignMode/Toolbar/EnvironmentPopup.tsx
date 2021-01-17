@@ -12,7 +12,9 @@ import { useAppStore } from "../../../../hooks/useAppStore";
 import { EnvOption, EnvOptionKind } from "../../../../state";
 import { InfiniteScroller } from "../../../InfiniteScroller";
 import { useTextInput } from "../../../TextInput";
-import * as styles from "./index.pc";
+import TextInput from "../../../TextInput/index.pc";
+import * as styles from "./index2.pc";
+import * as menuStyles from "../../../Select/index2.pc";
 
 type Option = {
   label: string;
@@ -45,7 +47,7 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
 
   useEffect(() => setVisible(true), []);
 
-  const { inputProps } = useTextInput({
+  const { inputProps: filterInputProps } = useTextInput({
     value: filter,
     onValueChange: setFilter,
   });
@@ -64,20 +66,23 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
   const filteredOptions = filterOptions(filter, options);
 
   return (
-    <styles.EnvironmentPopup
-      visible={visible}
-      filterInputRef={inputProps.ref}
-      filterValue={inputProps.defaultValue}
-      onFilterChange={inputProps.onChange}
-      onFilterBlur={onFilterBlur}
-      options={
+    <styles.EnvPopup visible={visible}>
+      <menuStyles.Menu>
+        <menuStyles.MenuItem noFocus>
+          <TextInput
+            placeholder="filter environment..."
+            autoFocus
+            {...filterInputProps}
+            onBlur={onFilterBlur}
+          />
+        </menuStyles.MenuItem>
+
         <InfiniteScroller
           size={filteredOptions.length}
           minVerticalItems={10}
           itemHeight={22}
         >
           {(cursor, maxVerticalItems) => {
-            console.log(cursor, filteredOptions.length);
             return filteredOptions
               .slice(cursor, cursor + maxVerticalItems)
               .map((option) => {
@@ -90,8 +95,8 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
               });
           }}
         </InfiniteScroller>
-      }
-    />
+      </menuStyles.Menu>
+    </styles.EnvPopup>
   );
 });
 
@@ -144,18 +149,17 @@ const EnvironmentOption = ({
     onOptionClick(option);
   }, [option]);
   return (
-    <styles.EnvironmentOption
+    <styles.SerivceMenuItem
       kind={
         option.kind === EnvOptionKind.Browserstack
           ? option.launchOptions.browser
           : option.kind.toLowerCase()
       }
-      onClick={onClick}
-      version={option.launchOptions?.browserVersion}
-      os={option.launchOptions?.os}
+      onMouseDown={onClick}
+      browserVersion={option.launchOptions?.browserVersion}
+      osName={option.launchOptions?.os}
       osVersion={option.launchOptions?.osVersion}
-    >
-      {option.label.toLowerCase()}
-    </styles.EnvironmentOption>
+      browserName={option.label.toString()}
+    />
   );
 };

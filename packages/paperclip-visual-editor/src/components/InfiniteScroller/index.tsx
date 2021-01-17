@@ -83,6 +83,7 @@ export const InfiniteScroller = memo(
     return (
       <styles.Container
         tagName={tagName}
+        style={{ minHeight: itemHeight * minVerticalItems }}
         ref={ref}
         resizerStyle={resizerStyle}
         contentStyle={contentStyle}

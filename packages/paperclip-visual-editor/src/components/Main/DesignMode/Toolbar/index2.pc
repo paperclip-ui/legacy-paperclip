@@ -88,7 +88,6 @@
   <div>
     <style> 
       display: flex;
-      align-items: center;
       margin-right: 28px;
       width: 100%;
       justify-content: flex-end;
@@ -152,6 +151,23 @@
 <!--
   @frame { visible: false }
 -->
+<i export component as="CollapseButton">
+  
+  <style>
+    @include utils.mask;
+    @include utils.mask-button;
+    --size: calc(var(--icon-size) - 1px);
+    mask-image: url('./collapse.svg');
+    outline: none;
+    position:relative;
+    top: 1px;
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Tab" className:active="active" {onClick?}>
   <style>
     display: inline-flex;
@@ -176,7 +192,7 @@
 <!--
   @frame { visible: false }
 -->
-<Select.MenuItem export component as="SerivceMenuItem" {active?}>
+<Select.MenuItem export component as="SerivceMenuItem" {active?} {onMouseDown}>
   <style>
     display: flex;
     justify-content: space-between;
@@ -215,18 +231,22 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="EnvPopup">
+<div export component as="EnvPopup" className:visible="visible">
+  <style>
+      transition: 0.2s;
+      opacity: 0;
+      position: relative;
+      top: -5px;
+      &.visible {
+        opacity: 1;
+        top: 0px;
+      }
+  </style>
   <Select.Menu light>
     <style> 
       left: 60px;
     </style>
-    <Select.MenuItem>
-      <TextInput placeholder="filter environment..." />
-    </Select.MenuItem>
-    <SerivceMenuItem browserName="safari" kind="safari" browserVersion="12" osName="Windows" osVersion="XP" />
-    <SerivceMenuItem browserName="chrome" kind="chrome" browserVersion="49" osName="OS X" osVersion="Catalina" active />
-    <SerivceMenuItem browserName="Internet Explorer" browserVersion="9" kind="ie" osName="Windows" osVersion="XP" />
-    <SerivceMenuItem browserName="Internet Explorer" browserVersion="8" kind="ie" osName="Windows" osVersion="XP" />
+    {children}
   </Select.Menu>
 </div>
 
@@ -273,12 +293,24 @@
   @frame { visible: false }
 -->
 <div export component as="Spacer">
-    <style>
-      width: 100%;
-    </style>
-  </div>
+  <style>
+    width: 100%;
+  </style>
+</div>
 
 
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ZoomContainer">
+  <style>
+    display: flex;
+    align-items: center;
+
+  </style>
+  {children}
+</div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
@@ -294,15 +326,27 @@
       </fragment>
     }
     rightControls={
-      !showGrid && <fragment>
-        {enterZoom && <ZoomInput value="100" focus={enterZoom} />}
-        {!enterZoom && <ZoomLabel>100%</ZoomLabel>}
+      !showGrid && <fragment> 
+        <Tab>
+          <CollapseButton />
+        </Tab>
+        <ZoomContainer>
+          {enterZoom && <ZoomInput value="100" focus={enterZoom} />}
+          {!enterZoom && <ZoomLabel>100%</ZoomLabel>}
+        </ZoomContainer>
       </fragment> || <Spacer />
     }
     />
 
-  {showEnvPopup && <EnvPopup>
-  </EnvPopup>}
+  <EnvPopup visible={showEnvPopup}>
+    <Select.MenuItem noFocus>
+      <TextInput placeholder="filter environment..." />
+    </Select.MenuItem>
+    <SerivceMenuItem browserName="safari" kind="safari" browserVersion="12" osName="Windows" osVersion="XP" />
+    <SerivceMenuItem browserName="chrome" kind="chrome" browserVersion="49" osName="OS X" osVersion="Catalina" active />
+    <SerivceMenuItem browserName="Internet Explorer" browserVersion="9" kind="ie" osName="Windows" osVersion="XP" />
+    <SerivceMenuItem browserName="Internet Explorer" browserVersion="8" kind="ie" osName="Windows" osVersion="XP" />
+  </EnvPopup>
 </div>
 
 

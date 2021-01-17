@@ -37,7 +37,7 @@ export const Toolbar = () => {
     dispatch(zoomInButtonClicked(null));
   };
   const onPopOutButtonClicked = () => {
-    setShowEnvironmentPopup(true);
+    setShowEnvironmentPopup(!showEnvironmentPopup);
   };
   const onCollapseButtonClick = useCallback(() => {
     dispatch(
@@ -100,12 +100,14 @@ export const Toolbar = () => {
             <styles.Tab active={showingBirdsEye} onClick={onGridButtonClick}>
               <styles.GridButton />
             </styles.Tab>
-            <styles.Tab
-              active={showEnvironmentPopup}
-              onClick={onGridButtonClick}
-            >
-              <styles.EnvButton />
-            </styles.Tab>
+            {sharable && (
+              <styles.Tab
+                active={showEnvironmentPopup}
+                onClick={onPopOutButtonClicked}
+              >
+                <styles.EnvButton />
+              </styles.Tab>
+            )}
           </>
         }
         title={
@@ -117,25 +119,33 @@ export const Toolbar = () => {
         readOnly={readonly}
         rightControls={
           <>
-            {/* <styles.Zoom
-            amount={Math.round(canvas.transform.z * 100)}
-            onMinusClick={onMinusClick}
-            onPlusClick={onPlusClick}
-            hidden={expanded || showingBirdsEye}
-          /> */}
-            {!showZoomInput && !showingBirdsEye && (
-              <styles.ZoomLabel onClick={() => setShowZoomInput(true)}>
-                {zoom}
-              </styles.ZoomLabel>
-            )}
-            {showZoomInput && (
-              <styles.ZoomInput
-                onBlur={() => setShowZoomInput(false)}
-                onKeyPress={(e) => e.key === "Enter" && setShowZoomInput(false)}
-                onFocus={(e) => setTimeout(() => e.target.select(), 10)}
-                autoFocus
-                {...zoomInputProps}
-              />
+            {!showingBirdsEye && (
+              <>
+                {expanded && (
+                  <styles.Tab active onClick={onCollapseButtonClick}>
+                    <styles.CollapseButton />
+                  </styles.Tab>
+                )}
+                <styles.ZoomContainer>
+                  {!showZoomInput && (
+                    <styles.ZoomLabel onClick={() => setShowZoomInput(true)}>
+                      {zoom}%
+                    </styles.ZoomLabel>
+                  )}
+
+                  {showZoomInput && (
+                    <styles.ZoomInput
+                      onBlur={() => setShowZoomInput(false)}
+                      onKeyPress={(e) =>
+                        e.key === "Enter" && setShowZoomInput(false)
+                      }
+                      onFocus={(e) => setTimeout(() => e.target.select(), 10)}
+                      autoFocus
+                      {...zoomInputProps}
+                    />
+                  )}
+                </styles.ZoomContainer>
+              </>
             )}
           </>
         }
