@@ -13,7 +13,7 @@
     "build:watch": "tsc --watch & (cd native && cargo watch -i .gitignore -i \"node/*\" -s 'wasm-pack build --release --target nodejs --out-dir node')",
     "build:node": "tsc",
     "build:native": "cd native && cargo build --release",
-    "build:browser": "npm run build:esm && npm run build:wasm:web",
+    "build:browser": "npm run build:esm && npm run build:wasm:browser",
     "build:esm": "tsc --build tsconfig.esm.json",
     "build:wasm:bundler": "cd native && wasm-pack build --release --target bundler --out-dir bundler",
     "build:wasm:browser": "cd native && wasm-pack build --release --target browser --out-dir browser",
