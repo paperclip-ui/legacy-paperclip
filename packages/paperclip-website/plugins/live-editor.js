@@ -17,6 +17,9 @@ module.exports = function (context, options) {
                 __dirname,
                 "../node_modules/paperclip-playground/dist"
               ),
+              globOptions: {
+                ignore: ["**/index.html"],
+              },
             },
           ],
         }),

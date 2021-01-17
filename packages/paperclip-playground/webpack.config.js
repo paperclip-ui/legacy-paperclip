@@ -3,6 +3,8 @@ const webpack = require("webpack");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
+const mode =
+  process.env.NODE_ENV === "production" ? "production" : "development";
 /*
  * We've enabled HtmlWebpackPlugin for you! This generates a html
  * page for you when you compile webpack, which will make you start
@@ -13,7 +15,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
  */
 
 module.exports = {
-  mode: "development",
+  mode,
   entry: "./src/frontend/entry.tsx",
 
   output: {

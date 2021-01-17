@@ -1,6 +1,6 @@
 {
   "name": "paperclip-loader",
-  "version": "17.4.1",
+  "version": "17.4.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -16,8 +16,8 @@
   "dependencies": {
     "@types/node": "^13.7.7",
     "loader-utils": "^1.2.3",
-    "paperclip": "^17.4.1",
-    "paperclip-cli-utils": "^17.4.1",
+    "paperclip": "^17.4.3",
+    "paperclip-cli-utils": "^17.4.3",
     "resolve": "^1.15.1",
     "typescript": "^3.8.3",
     "webpack-virtual-modules": "^0.4.1"

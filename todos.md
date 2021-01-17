@@ -2,10 +2,15 @@
 ### Immediate
 
 - Playground server (private repo)
-  - ability to save playground (store in Mongo)
+  - connect account (Github / Google)
+  - ability to save playground (store in SQL)
   - ability to clone playground
   - ability to download files (PC & JS)
-  - Ability to upload files
+  - Ability to upload files (img, svg)
+  - setup server on subdomain: `playground.paperclip.dev`
+
+- Tutorial button (show if new user)
+- Examples
 
 
 
