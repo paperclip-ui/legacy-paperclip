@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-const { createComponentClass } = require("paperclip-mini-editor");
+// const { createComponentClass } = require("paperclip-mini-editor");
 import CodeBlock from "@theme-init/CodeBlock";
 import usePrismTheme from "@theme/hooks/usePrismTheme";
-import "paperclip-playground/dist/browser";
 
 // const Editor = createComponentClass({ React, useState, useEffect, useRef });
-
-const createPaperclipPlayground = window.createPaperclipPlayground;
 
 export default (props) => {
   // const prismTheme = usePrismTheme();
 
   if (props.live) {
-    return <LiveEditor>{props.children}</LiveEditor>;
+    return (
+      <LiveEditor expanded={props.expanded !== "false"} height={props.height}>
+        {props.children}
+      </LiveEditor>
+    );
   }
   // if (props.live) {
   //   const content = String(props.children);
@@ -48,24 +49,46 @@ export default (props) => {
   return <CodeBlock {...props} />;
 };
 
-const LiveEditor = ({ children }) => {
+let _playgroundPromise;
+
+const loadPlayground = () => {
+  return (
+    _playgroundPromise ||
+    (_playgroundPromise = new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "/browser.js";
+      document.head.appendChild(script);
+      script.onload = resolve;
+    }))
+  );
+};
+
+const LiveEditor = ({ children, height, expanded }) => {
   const mountRef = useRef();
   const graph = useMemo(() => extractContent(children), [children]);
+  const [playgroundLoaded, setPlaygroundLoaded] = useState();
+
+  useEffect(() => loadPlayground().then(() => setPlaygroundLoaded(true)), []);
 
   useEffect(() => {
-    if (!mountRef.current) {
+    if (
+      !mountRef.current ||
+      typeof window === "undefined" ||
+      !playgroundLoaded
+    ) {
       return;
     }
 
     mountRef.current.appendChild(
-      createPaperclipPlayground({
+      window["createPaperclipPlayground"]({
         compact: true,
         documents: graph,
-        activeFrameInfex: 0,
-        height: `700px`,
+        activeFrameIndex: expanded !== false ? 0 : undefined,
+        height: height,
+        slim: true,
       })
     );
-  }, [mountRef.current]);
+  }, [playgroundLoaded, mountRef.current]);
 
   return <div ref={mountRef}></div>;
 };

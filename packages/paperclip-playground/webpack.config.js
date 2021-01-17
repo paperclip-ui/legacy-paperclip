@@ -29,6 +29,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: "Paperclip Playground",
+      template: path.join(__dirname, "src", "index.html"),
     }),
   ],
   resolve: {

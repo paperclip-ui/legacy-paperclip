@@ -334,7 +334,7 @@
   @frame { visible: false }
 -->
 <fragment export component as="Preview" {gridMode?}>
-  <Container  className:light="light" className="$theme.font-default {className?}">
+  <Container  className="light" className="$theme.font-default {className?}">
     <Controls>
       <GridButton />
       <Zoom amount="100" />
@@ -484,7 +484,7 @@
 -->
 
 
-<div export component as="EnvironmentPopup" className="$theme.font-default" className:visible="visible">
+<div export component as="EnvironmentPopup" className="light $theme.font-default" className:visible="visible">
   <style>
     position: absolute;
     background: var(--background-1);

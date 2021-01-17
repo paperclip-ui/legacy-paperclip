@@ -12,6 +12,7 @@ type InitOptions = Partial<{
   mainDocumentUri: string;
   documents: Record<string, string>;
   activeFrameIndex?: number;
+  slim: boolean;
 }>;
 
 export const createAppStore = ({
@@ -19,6 +20,7 @@ export const createAppStore = ({
   mainDocumentUri,
   documents,
   activeFrameIndex,
+  slim,
 }: InitOptions = {}) => {
   const sagaMiddleware = createSagaMiddleware();
   const mainUri =
@@ -30,6 +32,7 @@ export const createAppStore = ({
     reducer,
     {
       ...INITIAL_STATE,
+      slim: slim != null ? slim : INITIAL_STATE.slim,
       compact: compact || INITIAL_STATE.compact,
       documentContents: documents || INITIAL_STATE.documentContents,
       currentCodeFileUri: mainUri,

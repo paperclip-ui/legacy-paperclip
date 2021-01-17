@@ -92,7 +92,7 @@ export const Toolbar = () => {
   });
 
   return (
-    <>
+    <styles.Container>
       <styles.Toolbar
         onDoubleClick={onDoubleClick}
         leftControls={
@@ -153,6 +153,6 @@ export const Toolbar = () => {
       {showEnvironmentPopup && (
         <EnvironmentPopup onBlur={onEnvironmentPopupBlur} />
       )}
-    </>
+    </styles.Container>
   );
 };

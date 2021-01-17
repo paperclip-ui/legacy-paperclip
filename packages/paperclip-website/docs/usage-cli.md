@@ -43,7 +43,7 @@ paperclip build --write --watch
 paperclip build --write --definition --watch
 ```
 
-If you're using [Webpack](usage-webpack.md), then you probably don't need to run `paperclip build --write` since the paperclip loader handles that for you. 
+If you're using [Webpack](configure-webpack.md), then you probably don't need to run `paperclip build --write` since the paperclip loader handles that for you. 
 
 If you're using [TypeScript](configure-typescript.md), then you'll probably want to use the `paperclip build --write --definition --watch` to generate typed definition files.
 

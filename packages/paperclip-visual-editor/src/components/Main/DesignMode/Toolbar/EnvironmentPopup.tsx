@@ -79,8 +79,9 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
 
         <InfiniteScroller
           size={filteredOptions.length}
-          minVerticalItems={10}
-          itemHeight={22}
+          haveMinHeight={true}
+          minVerticalItems={Math.max(2, Math.min(6, filteredOptions.length))}
+          itemHeight={36}
         >
           {(cursor, maxVerticalItems) => {
             return filteredOptions

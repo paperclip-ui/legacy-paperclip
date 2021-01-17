@@ -1,19 +1,10 @@
-### Playground goals
-
-- Lower barrier to using with code
-- getting a feel for 
 
 ### TODO
 
-- Designer mode redesign
-- Wire up playground
-  - ability to add & switch between files
-
-- change font type
-
-  - compact version (for website) 
-  
-- Get website to use new playground
+- use codemirror instead
+- playground server
+  - ability to save snippet
+- fix colors for search
 
 - Playground (again)
   - Ability to save changes

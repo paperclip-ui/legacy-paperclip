@@ -7,10 +7,11 @@ const createPlayground = (options: any = {}) => {
   const store = createAppStore(options);
 
   const mount = document.createElement("div");
-  Object.assign(mount.style, {
-    width: "100%",
-    height: options.height || "100%",
-  });
+
+  mount.setAttribute(
+    "style",
+    `--designer-mode-height: ${options.height}; width: 100%`
+  );
 
   ReactDOM.render(<Main store={store} />, mount);
   return mount;

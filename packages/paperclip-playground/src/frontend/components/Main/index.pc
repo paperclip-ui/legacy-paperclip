@@ -16,12 +16,17 @@
   <style>
     display: flex;
     height: 100%;
+    --border-radius: 0px;
+    --designer-mode-top-left-radius: var(--border-radius);
+    --designer-mode-top-right-radius: var(--border-radius);
     @include breakpoints.mobile {
       flex-direction: column-reverse;
+      --border-radius: 6px;
     }
 
     &.compact {
       flex-direction: column-reverse;
+      --border-radius: 6px;
     }
   </style>
   {children}
@@ -33,7 +38,7 @@
 -->
 <Container export component as="Preview" {compact?}>
 
-  <CodeMode.Preview {showFileMenu} />
+  <CodeMode.Preview {showFileMenu} slim />
   <Main.Preview v2 dark designMode showGrid />
 </Container>
 

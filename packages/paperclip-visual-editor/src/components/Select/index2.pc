@@ -31,9 +31,9 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Menu"  className="v2 {className?}"  className:light="light" className:dark="dark" {style?}>
+<div export component as="Menu"  className="v2 {className?}" {style?}>
   <style>
-    &.light {
+    &:within(:global(.light)) {
       --select-text-color: var(--text-color);
       --select-background-color: var(--grey-200);
       --select-menu-item-background-color-active: var(--grey-300);
@@ -41,7 +41,7 @@
       --select-menu-item-text-color-active: white;
     }
 
-    &.dark {
+    &:within(:global(.dark)) {
       --select-text-color: var(--text-color-night);
       --select-background-color: var(--grey-night-300);
       --select-menu-item-background-color-active: var(--grey-night-100);
@@ -52,7 +52,7 @@
   <style>
     color: var(--select-text-color);
     font-size: 14px;
-    position: fixed;
+    position: absolute;
     min-width: 300px;
     background: var(--select-background-color);
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);

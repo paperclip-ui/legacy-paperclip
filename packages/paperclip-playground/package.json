@@ -18,7 +18,11 @@
     "paperclip": "^17.4.1",
     "paperclip-source-writer": "^17.4.1",
     "paperclip-visual-editor": "^17.4.1",
+    "prism-material-themes": "^1.0.4",
+    "prism-react-renderer": "^1.1.1",
+    "prismjs": "^1.23.0",
     "react-router": "^5.2.0",
+    "react-simple-code-editor": "^0.11.0",
     "redux": "^4.0.5",
     "redux-saga": "^1.1.3"
   },

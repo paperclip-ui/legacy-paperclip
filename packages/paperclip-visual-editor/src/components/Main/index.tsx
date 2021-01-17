@@ -5,11 +5,8 @@ import * as styles from "./index.pc";
 import { useAppStore } from "../../hooks/useAppStore";
 
 export const MainBase = () => {
-  const { state } = useAppStore();
   return (
-    <styles.Container className="dark">
-      {/* Feels unnecessary with birdseye view - removing for now */}
-      {/* {state.embedded ? null : <LeftSidebar />} */}
+    <styles.Container>
       <DesignMode />
     </styles.Container>
   );

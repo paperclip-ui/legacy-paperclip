@@ -5,6 +5,7 @@ const ENTRY_URI = "file:///main.pc";
 export type AppState = {
   currentCodeFileUri: string;
   compact?: boolean;
+  slim?: boolean;
 } & ve.AppState;
 
 const ENTRY_SOURCE = `<div>
@@ -20,6 +21,7 @@ export const INITIAL_STATE: AppState = {
   ...ve.INITIAL_STATE,
   sharable: false,
   compact: false,
+  slim: true,
   ui: {
     pathname: "/canvas",
     query: {

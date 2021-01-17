@@ -20,7 +20,7 @@ TODOS:
 <div export component as="Container" className="editor $theme.font-default $theme.full-wh {className?}">
   <style>
     width: 100%;
-    height: 100%;
+    height: var(--designer-mode-height, 100%);
     display: flex;
     flex-direction: row;
   </style>
@@ -31,7 +31,7 @@ TODOS:
 <!--
   @frame { visible: false }
 -->
-<Container export component as="Preview" className:light="light" className:dark="dark" className="$theme.font-default">
+<Container export component as="Preview" className="$theme.font-default">
   {showLeftSidebar? && <LeftSidebar.Preview />}
   {designMode? && <DesignMode.Preview v2 {dark?} {showEnvPopup?} {showGrid?} />}
 </Container>

@@ -73,6 +73,8 @@ export const InfiniteScroller = memo(
       const offset = scrollPosition % itemHeight;
       return {
         top: scrollPosition - offset,
+
+        // allows for dynamic height
         position: "absolute",
       };
     }, [scrollPosition, itemHeight]);

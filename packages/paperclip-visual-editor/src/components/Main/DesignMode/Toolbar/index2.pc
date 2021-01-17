@@ -64,6 +64,8 @@
     justify-content: space-between;
     white-space: nowrap;
     flex-shrink: 0;
+    border-top-right-radius: var(--designer-mode-top-right-radius);
+    border-top-left-radius: var(--designer-mode-top-left-radius);
   </style>
   <div>
     <style>
@@ -230,7 +232,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="EnvPopup" className:visible="visible">
+<div export component as="EnvPopup" className="light" className:visible="visible">
   <style>
       transition: 0.2s;
       opacity: 0;
@@ -311,10 +313,22 @@
   {children}
 </div>
 
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container">
+  <style>
+    position: relative;
+  </style>
+  {children}
+</div>
+
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
 -->
-<div export component as="Preview">
+<Container export component as="Preview">
   <Toolbar 
     title="Entry.pc"
     {readOnly?}
@@ -346,7 +360,7 @@
     <SerivceMenuItem browserName="Internet Explorer" browserVersion="9" kind="ie" osName="Windows" osVersion="XP" />
     <SerivceMenuItem browserName="Internet Explorer" browserVersion="8" kind="ie" osName="Windows" osVersion="XP" />
   </EnvPopup>
-</div>
+</Container>
 
 
 <!--
