@@ -9,7 +9,7 @@ import { CodeMode } from "./CodeMode";
 export const Main = withAppStore(() => {
   const store = useAppStore();
   return (
-    <styles.Container>
+    <styles.Container compact={store.state.compact}>
       <CodeMode />
       <DesignModeAppStoreContext.Provider value={store}>
         <DesignModeMainBase />

@@ -1,7 +1,6 @@
 import { eventChannel } from "redux-saga";
 import { fork, put, select, take, takeEvery } from "redux-saga/effects";
-import { loadEngineDelegate } from "paperclip/browser";
-import { AppState } from "paperclip-visual-editor/src/state";
+import { AppState } from "../state";
 import { EngineDelegate } from "paperclip";
 import * as path from "path";
 import { compare, applyPatch } from "fast-json-patch";

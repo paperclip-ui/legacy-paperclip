@@ -16,6 +16,7 @@
     "clsx": "^1.1.1",
     "dedent": "^0.7.0",
     "paperclip-mini-editor": "^17.3.9",
+    "paperclip-playground": "^17.3.8",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
   },

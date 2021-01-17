@@ -39,6 +39,10 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
     shouldCollectRects: true,
   });
 
+  if (!preview) {
+    return null;
+  }
+
   return (
     <>
       {renderer.immutableFrames.map((frame, i) => {

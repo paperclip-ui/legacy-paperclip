@@ -15,7 +15,7 @@
     background: var(--grey-night-500);
     mini-height: 300px;
 
-    :within(:global(.compact)) {
+    &:within(:global(.compact)) {
       width: 100%;
       height: 80%;
     }
