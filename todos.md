@@ -5,6 +5,7 @@
   - ability to save playground (store in Mongo)
   - ability to clone playground
   - ability to download files (PC & JS)
+  - Ability to upload files
 
 
 
