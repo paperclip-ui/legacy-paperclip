@@ -128,6 +128,7 @@
     --grey-400: rgb(85, 85, 85);
     --grey-night-100: #4D4D4D;
     --grey-night-300: #292929;
+    --grey-night-400: rgb(29, 29, 29);
     --grey-night-500: #151515;
 
     --background-50: rgb(240, 240, 240);
@@ -141,8 +142,13 @@
     // radiuses
 
     --border-radius-100: 4px;
-    
+    font-family: Open Sans;
+    .dark {
+      --background-50: red;
+    }
   }
+
+
 </style>
 
 

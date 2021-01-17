@@ -7,7 +7,7 @@ import { codeEditorChanged } from "../../../actions";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
-  const code = state.documentContents[state.ui.query.currentFileUri];
+  const code = state.documentContents[state.currentCodeFileUri];
 
   const onChange = (ev, value) => {
     dispatch(codeEditorChanged(value));
@@ -26,7 +26,6 @@ export const CodeMode = () => {
           },
         }}
         width="100%"
-        height="100%"
         value={code}
         language="html"
         onChange={onChange}

@@ -1,4 +1,7 @@
-
+<import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
+<import src="paperclip-visual-editor/src/styles/utils.pc" as="utils" />
+<import src="paperclip-visual-editor/src/components/Select/index2.pc" as="Select" />
+<import src="paperclip-visual-editor/src/components/TextInput/index.pc" as="TextInput" />
 
 <!--
   @frame { visible: false }
@@ -51,29 +54,124 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Topbar">
+<div export component as="Topbar" className="v2">
   <style>
-    background: rgb(212, 212, 212);
-    border-bottom: 1px solid rgb(190, 190, 190);
-    height: 30px;
+    background: var(--grey-night-500);
+    height: 40px;
+    flex-shrink: 0;
     display: flex;
     align-items: stretch;
+    color: var(--grey-100);
+    padding: 0px 14px;
+  </style>
+  {children}
+</div>
+
+<div export component as="FileMenuButton" className:active="active" tabIndex="0" {onMouseDown?} {onClick?} {onFocus} {onBlur?}>
+  <style>
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    outline: none;
+    padding: 0px 14px;
+    font-size: 14px;
+    transition: 0.2s;
+    position: relative;  
+    user-select: none;   
+    
+    &:hover {
+      background: var(--grey-night-400);
+    }
+
+    &.active {
+      background: var(--grey-night-300);
+    }
+  </style>
+  <div >
+    <style>
+    user-select: none;   
+    </style>
+    {name}
+  </div>
+  <i>
+    <style>
+      margin-left: 14px;
+      position: relative;
+      top: 1px;
+      --size: 14px;
+      @include utils.mask;
+      mask-image: url("./chevron-down.svg");
+      transition: 0.2s;
+      &:within(.active) {
+        top: 4px;
+      }
+    </style>
+  </i>
+  {menu}
+
+</div>
+<Select.Menu dark export component as="FileMenu">
+  <style>
+    top: 40px;
+    left: 0px;
+    z-index: 1024;
+    min-width: 250px;
+    position: absolute;
+  </style>
+  {children}
+</Select.Menu>
+
+<Select.MenuItem export component as="FileMenuItem" {noFocus?} {active?} {onClick?}>
+  {children}
+</Select.MenuItem>
+
+<Select.MenuItem export component as="AddFileMenuItem" {onMouseDown?} {onClick?}>
+  <style>
+    border-top: 1px solid rgb(65, 65, 65);
+    color: var(--grey-300);
+  </style>
+  + Add
+</Select.MenuItem>
+
+<div export component as="FileMenuItems">
+  <style>
+    max-height: 300px;
+    overflow: scroll;
   </style>
   {children}
 </div>
 
 <Topbar export component as="Preview">
-    <Tab>
-      file.pc
-    </Tab>
-    <Tab active>
-      file2.pc
-    </Tab>
-    <Tab hover>
-      file2.pc
-    </Tab>
-    <Tab>
-      file3.pc
-    </Tab>
-    <AddFileButton />
-  </Topbar>
+  <FileMenuButton name="Main.pc" active={showFileMenu} menu={
+    showFileMenu && <FileMenu>
+    
+      <FileMenuItems>
+        <FileMenuItem>
+          Buttons.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Typography.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Colors.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Colors.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Colors.pc
+        </FileMenuItem>
+        <FileMenuItem active>
+          Colors.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Molecules / Select.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          <TextInput />
+        </FileMenuItem>
+      </FileMenuItems>
+      <AddFileMenuItem />
+    </FileMenu>
+  } />
+</Topbar>

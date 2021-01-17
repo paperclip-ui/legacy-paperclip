@@ -4,11 +4,11 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="MenuItem" {className?} {onMouseDown?} className:active="active" className:noFocus="no-focus">
+<div export component as="MenuItem" {className?} {onMouseDown?} {onClick?} className:active="active" className:noFocus="no-focus">
   <style>
     padding: 8px 14px;
-    font-family: sans-serif;
     cursor: pointer;
+    user-select: none;
 
     &.active, &:hover {
       background: var(--select-menu-item-background-color-active);

@@ -14,6 +14,7 @@ type InfiniteScrollerProps = {
   minVerticalItems: number;
   tagName?: any;
   itemHeight: number;
+  haveMinHeight?: boolean;
   children: (
     cursor: number,
     maxVerticalItems: number
@@ -26,6 +27,7 @@ export const InfiniteScroller = memo(
     itemHeight,
     minVerticalItems,
     tagName,
+    haveMinHeight = true,
     children,
   }: InfiniteScrollerProps) => {
     const ref = useRef<HTMLDivElement>();
@@ -83,7 +85,9 @@ export const InfiniteScroller = memo(
     return (
       <styles.Container
         tagName={tagName}
-        style={{ minHeight: itemHeight * minVerticalItems }}
+        style={{
+          minHeight: haveMinHeight ? itemHeight * minVerticalItems : undefined,
+        }}
         ref={ref}
         resizerStyle={resizerStyle}
         contentStyle={contentStyle}

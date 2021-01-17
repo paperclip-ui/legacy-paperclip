@@ -1,5 +1,6 @@
 <import src="paperclip-visual-editor/src/components/Main/index.pc" as="Main" />
 <import src="./CodeMode/index.pc" as="CodeMode" />
+<import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
 <style>
   :global(html, body) {
     padding: 0;
@@ -11,10 +12,17 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container">
+<div export component as="Container" className:compact="compact">
   <style>
     display: flex;
     height: 100vh;
+    @include breakpoints.mobile {
+      flex-direction: column-reverse;
+    }
+
+    &.compact {
+      flex-direction: column-reverse;
+    }
   </style>
   {children}
 </div>
@@ -23,14 +31,31 @@
 <!--
   @frame { visible: false }
 -->
-<Container export component as="Preview">
-  <CodeMode.Preview />
-  <Main.Preview dark designMode showGrid />
+<Container export component as="Preview" {compact?}>
+  <CodeMode.Preview {showFileMenu} />
+  <Main.Preview v2 dark designMode showGrid />
 </Container>
 
 
 
 <!--
-  @frame { width: 1024, height: 768, x: 525, y: 61 }
+  @frame { width: 1212, height: 768, x: 484, y: 333 }
+-->
+<Preview showFileMenu />
+
+
+<!--
+  @frame { width: 1212, height: 768, x: 514, y: 1417 }
 -->
 <Preview />
+
+
+<!--
+  @frame { title: "Mobile", width: 873, height: 768, x: 1967, y: 267 }
+-->
+<Preview />
+
+<!--
+  @frame { title: "Compact", width: 1795, height: 931, x: 1967, y: 1316 }
+-->
+<Preview compact />

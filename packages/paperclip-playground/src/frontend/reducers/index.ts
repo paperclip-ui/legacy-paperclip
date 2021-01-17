@@ -1,4 +1,4 @@
-import { AppState } from "../state";
+import { AppState, getNewFilePath } from "../state";
 import { Action as VEAction } from "paperclip-visual-editor/src/actions";
 import { Action, ActionType } from "../actions";
 import produce from "immer";
@@ -11,8 +11,7 @@ export const reducer = (state: AppState, action: Action) => {
   switch (action.type) {
     case ActionType.CODE_EDITOR_TEXT_CHANGED: {
       return produce(state, (newState) => {
-        newState.documentContents[state.ui.query.currentFileUri] =
-          action.payload;
+        newState.documentContents[state.currentCodeFileUri] = action.payload;
       });
     }
     case ActionType.CONTENT_CHANGES_CREATED: {
@@ -24,6 +23,18 @@ export const reducer = (state: AppState, action: Action) => {
             changes[uri]
           );
         }
+      });
+    }
+    case ActionType.FILE_ITEM_CLICKED: {
+      return produce(state, (newState) => {
+        newState.currentCodeFileUri = action.payload.uri;
+      });
+    }
+    case ActionType.NEW_FILE_NAME_ENTERED: {
+      return produce(state, (newState) => {
+        const uri = getNewFilePath(action.payload.value);
+        newState.documentContents[uri] = "";
+        newState.currentCodeFileUri = uri;
       });
     }
   }

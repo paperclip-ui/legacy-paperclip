@@ -62,7 +62,6 @@
     height: 40px;
     align-items: stretch;
     justify-content: space-between;
-    font-family: sans-serif;
     white-space: nowrap;
     flex-shrink: 0;
   </style>

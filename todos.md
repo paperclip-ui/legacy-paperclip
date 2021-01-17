@@ -9,6 +9,8 @@
 - Wire up playground
   - ability to add & switch between files
 
+- change font type
+
   - compact version (for website) 
   
 - Get website to use new playground

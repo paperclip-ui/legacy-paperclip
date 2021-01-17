@@ -1,0 +1,9 @@
+<style>
+  @export {
+    @mixin mobile {
+      @media screen and (max-width: 900px) {
+        @content;
+      }
+    }
+  }
+</style>

@@ -12,10 +12,11 @@ import {
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
 import * as vea from "paperclip-visual-editor/src/actions";
-import { AppState } from "paperclip-visual-editor/src/state";
+import { AppState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
-import { EngineDelegateEvent } from "paperclip/src";
+import { EngineDelegateEvent } from "paperclip";
+import * as url from "url";
 import {
   engineDelegateChanged,
   RedirectRequested,
@@ -71,7 +72,7 @@ const init = async () => {
 
   const handleCodeChange = (action: CodeEditorTextChanged) => {
     _engine.updateVirtualFileContent(
-      _appState.ui.query.currentFileUri,
+      _appState.currentCodeFileUri,
       action.payload
     );
   };
@@ -93,7 +94,6 @@ const init = async () => {
   };
 
   const handleRedirect = (action: RedirectRequested) => {
-    console.log(_appState.ui);
     tryOpeningCurrentFile();
   };
 
@@ -124,7 +124,7 @@ const init = async () => {
           return _appState.documentContents[uri] != null;
         },
         resolveFile(fromPath: string, toPath: string) {
-          return path.resolve(fromPath, toPath);
+          return url.resolve(fromPath, toPath);
         },
       },
     },

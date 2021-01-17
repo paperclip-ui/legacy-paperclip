@@ -16,8 +16,16 @@
     color: var(--text-color);
     box-sizing: border-box;
     border: 2px solid var(--background-200);
+    &:within(:global(.dark)) {
+      background: var(--grey-night-100);
+      border: 2px solid var(--grey-night-300);
+      color: var(--grey-100);
+      font-size: 14px;
+    }
     &:focus {
-      border: 2px solid rgb(102, 163, 255);
+      && {
+        border: 2px solid rgb(102, 163, 255);
+      }
     }
     &::placeholder {
       color: var(--grey-300)

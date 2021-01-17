@@ -14,7 +14,7 @@
 <div export component as="default" className="right-sidebar $theme.font-default $theme.background-1">
   <style>
     width: 250px;
-    height: 100vh;
+    height: 100%;
     border-left: 2px solid var(--background-2);
   </style>
   {children}

@@ -1,18 +1,29 @@
 <import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
-
+<import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
 
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className="$Theme.font-default">
+<div export component as="Container" className="v2 $Theme.font-default">
   <style>
     display: flex;
     flex-direction: column;
-    border-right: 1px solid rgb(207, 207, 207);
     height: 100%;
     width: 70%;
     overflow: hidden;
+    background: var(--grey-night-500);
+    mini-height: 300px;
+
+    :within(:global(.compact)) {
+      width: 100%;
+      height: 80%;
+    }
+
+    @include breakpoints.mobile {
+      width: 100%;
+      height: 80%;
+    }
   </style>
   {children}
 </div>
@@ -21,8 +32,12 @@
   @frame { title: "CodeMode", width: 1024, height: 768, x: 41, y: -47 }
 -->
 <Container export component as="Preview">
-  <Toolbar.Preview />
+  <Toolbar.Preview {showFileMenu?} />
   <div>
-    Text editor
+    <img src="./code-screenshot.png">
+      <style>
+        height: 100%;
+      </style>
+    </img>
   </div>
 </Container>
