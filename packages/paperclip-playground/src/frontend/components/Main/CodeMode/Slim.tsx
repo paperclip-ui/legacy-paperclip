@@ -8,8 +8,6 @@ import "prismjs/components/prism-markup";
 
 import SimpleEditor from "react-simple-code-editor";
 
-console.log(languages);
-
 // import "prismjs/components/prism-clike";
 // import "prismjs/components/prism-javascript";
 import "./prism.css";

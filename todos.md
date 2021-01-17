@@ -2,9 +2,10 @@
 ### Immediate
 
 - Playground server
-  - ability to save files
+  - ability to save playground (store in Mongo)
+  - ability to clone playground
   - ability to download files (PC & JS)
-  
+
 
 
 - Other considerations
