@@ -284,8 +284,6 @@
     position: relative;
     // wierd line-height issue with with text input - 4px seems to fix this.
     left: 2px;
-
-    padding-top: 4px;
   </style>
   {children}
 </span>
