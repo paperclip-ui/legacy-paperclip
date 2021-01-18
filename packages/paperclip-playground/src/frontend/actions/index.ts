@@ -10,7 +10,9 @@ export type BaseAction<TType extends ActionType, TPayload = undefined> = {
 
 export enum ActionType {
   ENGINE_LOADED = "ENGINE_LOADED",
+  LOGOUT_BUTTON_CLICKED = "LOGOUT_BUTTON_CLICKED",
   ENGINE_CRASHED = "ENGINE_CRASHED",
+  LOGGED_OUT = "LOGGED_OUT",
   SESSION_LOADED = "SESSION_LOADED",
   CODE_EDITOR_TEXT_CHANGED = "CODE_EDITOR_TEXT_CHANGED",
   WORKER_INITIALIZED = "WORKER_INITIALIZED",
@@ -38,6 +40,8 @@ export type AccountConnected = BaseAction<
 >;
 
 export type EngineLoaded = BaseAction<ActionType.ENGINE_LOADED>;
+
+export type LogoutButtonClicked = BaseAction<ActionType.LOGOUT_BUTTON_CLICKED>;
 
 export type EngineCrashed = BaseAction<ActionType.ENGINE_CRASHED, Error>;
 export type CodeEditorTextChanged = BaseAction<
@@ -69,13 +73,18 @@ export type FileItemClicked = BaseAction<
   { uri: string }
 >;
 
+export type LoggedOut = BaseAction<ActionType.LOGGED_OUT>;
+
 export const accountConnected = actionCreator<AccountConnected>(
   ActionType.ACCOUNT_CONNECTED
+);
+export const logoutButtonClicked = actionCreator<LogoutButtonClicked>(
+  ActionType.LOGOUT_BUTTON_CLICKED
 );
 export const sessionLoaded = actionCreator<SessionLoaded>(
   ActionType.SESSION_LOADED
 );
-
+export const loggedOut = actionCreator<LoggedOut>(ActionType.LOGGED_OUT);
 export const engineLoaded = actionCreator<EngineLoaded>(
   ActionType.ENGINE_LOADED
 );
@@ -106,8 +115,10 @@ export const syncPanelsClicked = actionCreator<SyncPanelsClicked>(
 
 export type Action =
   | ve.Action
+  | LogoutButtonClicked
   | EngineLoaded
   | AccountConnected
+  | LoggedOut
   | SessionLoaded
   | EngineCrashed
   | AppStateDiffed

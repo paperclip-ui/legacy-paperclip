@@ -19,6 +19,11 @@ export const reducer = (state: AppState, action: Action) => {
         newState.loadingUserSession = true;
       });
     }
+    case ActionType.LOGOUT_BUTTON_CLICKED: {
+      return produce(state, (newState) => {
+        newState.user = null;
+      });
+    }
     case ActionType.SESSION_LOADED: {
       return produce(state, (newState) => {
         newState.user = action.payload;

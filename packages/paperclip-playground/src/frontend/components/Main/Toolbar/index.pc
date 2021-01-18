@@ -1,4 +1,5 @@
 <import src="frontend/components/Button/index.pc" as="Button" />
+<import src="paperclip-visual-editor/src/styles/utils.pc" as="utils" />
 
 <div export component as="Toolbar" className="v2">
   <style>
@@ -33,10 +34,26 @@
     <style>
       padding-right: 28px;
       z-index: 1;
+      display: flex;
+      align-items: center;
     </style>
     {rightControls}
   </div>
 </div>
+
+<button export component as="LogoutButton" {onClick}>
+  <style>
+    --size: 18px;
+    @include utils.mask-button;
+    @include utils.mask;
+    & {
+      background: var(--grey-300);
+    }
+    cursor: pointer;
+    mask-image: url("./logout2.svg");
+    margin-left: 14px;
+  </style>
+</button>
 
 <div export component as="ProfileIcon" {className?} {style?}>
   <style>
@@ -58,11 +75,14 @@
       {!loggedIn && <Button.Button primary>
         Log in to save
       </Button.Button>}
-      {loggedIn && <ProfileIcon>
-        <style>
-          background-image: url("./profile.jpg");
-        </style>
-      </ProfileIcon>}
+      {loggedIn && <fragment>
+        <ProfileIcon>
+          <style>
+            background-image: url("./profile.jpg");
+          </style>
+        </ProfileIcon>
+        <LogoutButton />
+      </fragment>}
     </fragment>
   } 
 />

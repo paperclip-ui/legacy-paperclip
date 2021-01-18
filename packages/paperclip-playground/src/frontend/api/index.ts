@@ -9,8 +9,14 @@ export const connectAccount = async (kind: string, params: any) => {
   });
 };
 
+export const logout = async () => {
+  return await request(`/session`, {
+    method: "DELETE",
+  });
+};
+
 export const getUser = async () => {
-  return await request(`/user`);
+  return await request(`/session`);
 };
 
 const request = async (path: string, options: any = {}) => {
@@ -25,5 +31,11 @@ const request = async (path: string, options: any = {}) => {
       },
     }
   );
-  return await resp.json();
+  const data = await resp.json();
+
+  if (resp.status !== 200) {
+    throw data;
+  }
+
+  return data;
 };
