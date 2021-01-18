@@ -1,10 +1,6 @@
 export const connectAccount = async (kind: string, params: any) => {
   return await request(`/connect/${kind}`, {
     method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(params),
   });
 };
@@ -12,6 +8,19 @@ export const connectAccount = async (kind: string, params: any) => {
 export const logout = async () => {
   return await request(`/session`, {
     method: "DELETE",
+  });
+};
+
+export const createProject = async (
+  name: string,
+  files: Record<string, string>
+) => {
+  return await request(`/projects`, {
+    method: "POST",
+    body: JSON.stringify({
+      files,
+      name,
+    }),
   });
 };
 

@@ -1,5 +1,5 @@
 import * as ve from "paperclip-visual-editor/src/actions";
-import { AppState, User } from "../state";
+import { AppState, Result, User } from "../state";
 import { actionCreator } from "./base";
 import { ContentChange } from "paperclip-source-writer";
 
@@ -12,6 +12,8 @@ export enum ActionType {
   ENGINE_LOADED = "ENGINE_LOADED",
   LOGOUT_BUTTON_CLICKED = "LOGOUT_BUTTON_CLICKED",
   ENGINE_CRASHED = "ENGINE_CRASHED",
+  SAVED_PROJECT = "SAVED_PROJECT",
+  SAVE_BUTTON_CLICKED = "SAVE_BUTTON_CLICKED",
   LOGGED_OUT = "LOGGED_OUT",
   SESSION_LOADED = "SESSION_LOADED",
   CODE_EDITOR_TEXT_CHANGED = "CODE_EDITOR_TEXT_CHANGED",
@@ -39,9 +41,16 @@ export type AccountConnected = BaseAction<
   }
 >;
 
+export type SavedProject = BaseAction<
+  ActionType.SAVED_PROJECT,
+  Result<boolean>
+>;
+
 export type EngineLoaded = BaseAction<ActionType.ENGINE_LOADED>;
 
 export type LogoutButtonClicked = BaseAction<ActionType.LOGOUT_BUTTON_CLICKED>;
+
+export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED>;
 
 export type EngineCrashed = BaseAction<ActionType.ENGINE_CRASHED, Error>;
 export type CodeEditorTextChanged = BaseAction<
@@ -84,12 +93,18 @@ export const logoutButtonClicked = actionCreator<LogoutButtonClicked>(
 export const sessionLoaded = actionCreator<SessionLoaded>(
   ActionType.SESSION_LOADED
 );
+export const savedProject = actionCreator<SavedProject>(
+  ActionType.SAVED_PROJECT
+);
 export const loggedOut = actionCreator<LoggedOut>(ActionType.LOGGED_OUT);
 export const engineLoaded = actionCreator<EngineLoaded>(
   ActionType.ENGINE_LOADED
 );
 export const engineCrashed = actionCreator<EngineCrashed>(
   ActionType.ENGINE_CRASHED
+);
+export const saveButtonClicked = actionCreator<SaveButtonClicked>(
+  ActionType.SAVE_BUTTON_CLICKED
 );
 export const codeEditorChanged = actionCreator<CodeEditorTextChanged>(
   ActionType.CODE_EDITOR_TEXT_CHANGED
@@ -118,10 +133,12 @@ export type Action =
   | LogoutButtonClicked
   | EngineLoaded
   | AccountConnected
+  | SaveButtonClicked
   | LoggedOut
   | SessionLoaded
   | EngineCrashed
   | AppStateDiffed
+  | SavedProject
   | FileItemClicked
   | SyncPanelsClicked
   | NewFileNameEntered

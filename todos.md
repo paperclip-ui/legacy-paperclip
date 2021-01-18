@@ -1,14 +1,19 @@
 
 ### Immediate
 
-- Log in with GH
-  - GH presense icon
+- move project ID to http router
+- load project based on router
+- update project
+- ability to see all projects
+- ability to delete projects
+- incrementally save project after each change
 - abiilty to save project
 - ability to laod project
 - ability to download PC code
 - ability to compile code to 
 - log out option
-
+- ensure that user is prompted to sasve before leaving
+- project id should be stored in url
 
 - Playground server (private repo)
   - connect account (Github / Google)

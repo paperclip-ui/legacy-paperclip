@@ -30,6 +30,16 @@ export const reducer = (state: AppState, action: Action) => {
         newState.loadingUserSession = false;
       });
     }
+    case ActionType.SAVED_PROJECT: {
+      return produce(state, (newState) => {
+        newState.saving = action.payload;
+      });
+    }
+    case ActionType.SAVE_BUTTON_CLICKED: {
+      return produce(state, (newState) => {
+        newState.saving = { done: false };
+      });
+    }
     case ActionType.CONTENT_CHANGES_CREATED: {
       return produce(state, (newState) => {
         const changes = action.payload.changes;
@@ -39,6 +49,9 @@ export const reducer = (state: AppState, action: Action) => {
             changes[uri]
           );
         }
+
+        // flag for saving
+        newState.hasUnsavedChanges = true;
       });
     }
     case ActionType.FILE_ITEM_CLICKED: {

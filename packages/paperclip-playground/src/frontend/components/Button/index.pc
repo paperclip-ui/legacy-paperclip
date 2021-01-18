@@ -8,6 +8,7 @@
   className:hover="hover" 
   className:big="big"
   className:primary="primary" 
+  className:secondary="secondary" 
   {onClick?}>
   <style>
     white-space: nowrap;
@@ -25,6 +26,13 @@
       color: white;
       &:hover, &.hover {
         background: var(--color-blue-500);
+      }
+    }
+    &.secondary {
+      background: var(--grey-400);
+      color: white;
+      &:hover, &.hover {
+        background: var(--grey-300);
       }
     }
     &.big {

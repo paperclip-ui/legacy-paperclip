@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { logoutButtonClicked } from "../../../actions";
+import { logoutButtonClicked, saveButtonClicked } from "../../../actions";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Button } from "../../Button/index.pc";
 import { Auth } from "../auth";
@@ -17,10 +17,30 @@ export const MainToolbar = () => {
   const onLogoutButtonClick = () => {
     dispatch(logoutButtonClicked(null));
   };
+  const onSaveCick = () => {
+    dispatch(saveButtonClicked(null));
+  };
 
   let rightControls;
+  let leftControls;
+
+  const saving = state.saving;
 
   if (state.user) {
+    leftControls = (
+      <>
+        <Button secondary onClick={onSaveCick}>
+          Save
+        </Button>
+        {state.saving && (
+          <styles.SaveStatus
+            success={!!state.saving.data}
+            failed={!!state.saving.error}
+            pending={!state.saving.done}
+          />
+        )}
+      </>
+    );
     rightControls = (
       <>
         <styles.ProfileIcon
@@ -32,7 +52,7 @@ export const MainToolbar = () => {
       </>
     );
   } else {
-    rightControls = (
+    leftControls = (
       <Button primary onClick={onSignInClick}>
         {state.loadingUserSession ? "Loading..." : "Sign in to save"}
       </Button>
@@ -41,7 +61,11 @@ export const MainToolbar = () => {
 
   return (
     <>
-      <styles.Toolbar documentName="Untitled" rightControls={rightControls} />
+      <styles.Toolbar
+        documentName="Untitled"
+        leftControls={leftControls}
+        rightControls={rightControls}
+      />
       {showAuth && <Auth onClose={onAuthClose} />}
     </>
   );

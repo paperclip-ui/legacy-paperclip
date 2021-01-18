@@ -8,10 +8,24 @@ export type User = {
   id: number;
 };
 
+export type Result<TData> = {
+  data?: TData;
+  done?: boolean;
+  error?: Error;
+};
+
+export type Project = {
+  id: number;
+  name: string;
+};
+
 export type AppState = {
   user?: User;
+  project?: Project;
+  saving?: Result<boolean>;
   loadingUserSession?: boolean;
   currentCodeFileUri: string;
+  hasUnsavedChanges?: boolean;
   compact?: boolean;
   slim?: boolean;
   apiHost: string;
