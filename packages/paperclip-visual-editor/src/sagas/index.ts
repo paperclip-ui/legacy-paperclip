@@ -244,7 +244,10 @@ function* handleKeyCommands(mount: HTMLElement) {
     console.log(Mousetrap);
     const handler = new Mousetrap(mount);
     console.log(mount);
-    handler.bind("esc", () => {
+    handler.bind("esc", (e) => {
+      if (isInput(e.target)) {
+        return;
+      }
       emit(globalEscapeKeyPressed(null));
       return false;
     });
@@ -283,7 +286,10 @@ function* handleKeyCommands(mount: HTMLElement) {
       emit(globalYKeyDown(null));
       return false;
     });
-    handler.bind("backspace", () => {
+    handler.bind("backspace", (e) => {
+      if (isInput(e.target)) {
+        return;
+      }
       emit(globalBackspaceKeyPressed(null));
       return false;
     });
@@ -306,6 +312,9 @@ function* handleKeyCommands(mount: HTMLElement) {
     yield put(yield take(chan));
   }
 }
+
+const isInput = (node: HTMLElement) =>
+  /textarea|input/.test(node.tagName.toLowerCase());
 
 function* handleClipboard() {
   yield fork(handleCopy);
