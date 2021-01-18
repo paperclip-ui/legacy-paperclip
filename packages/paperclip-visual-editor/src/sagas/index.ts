@@ -1,4 +1,4 @@
-import * as Mousetrap from "mousetrap";
+import Mousetrap, { addKeycodes } from "mousetrap";
 import SockJSClient from "sockjs-client";
 import { computeVirtJSObject } from "paperclip-utils";
 import * as Url from "url";
@@ -44,14 +44,14 @@ import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { utimes } from "fs";
 
-export default function* mainSaga() {
+export default function* mainSaga(mount: HTMLElement) {
   yield fork(handleRenderer);
   yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
 
   // wait for client to be loaded to initialize anything so that
   // events properly get sent (like LOCATION_CHANGED)
   yield take(ActionType.CLIENT_CONNECTED);
-  yield fork(handleKeyCommands);
+  yield fork(handleKeyCommands, mount);
   yield fork(handleDocumentEvents);
   yield fork(handleCanvas);
   yield fork(handleClipboard);
@@ -239,52 +239,55 @@ function* handleCanvasMouseUp(action: CanvasMouseUp) {
   yield put(metaClicked({ source: virtualNode.source }));
 }
 
-function* handleKeyCommands() {
+function* handleKeyCommands(mount: HTMLElement) {
   const chan = eventChannel((emit) => {
-    Mousetrap.bind("esc", () => {
+    console.log(Mousetrap);
+    const handler = new Mousetrap(mount);
+    console.log(mount);
+    handler.bind("esc", () => {
       emit(globalEscapeKeyPressed(null));
       return false;
     });
-    Mousetrap.bind("meta", () => {
+    handler.bind("meta", () => {
       emit(globalMetaKeyDown(null));
     });
-    Mousetrap.bind("meta+z", () => {
+    handler.bind("meta+z", () => {
       emit(globalZKeyDown(null));
       return false;
     });
-    Mousetrap.bind("meta+y", () => {
+    handler.bind("meta+y", () => {
       emit(globalYKeyDown(null));
       return false;
     });
-    Mousetrap.bind("meta+h", () => {
+    handler.bind("meta+h", () => {
       emit(globalHKeyDown(null));
       return false;
     });
-    Mousetrap.bind("meta+g", () => {
+    handler.bind("meta+g", () => {
       emit(gridHotkeyPressed(null));
       return false;
     });
-    Mousetrap.bind("meta+=", () => {
+    handler.bind("meta+=", () => {
       emit(zoomInKeyPressed(null));
       return false;
     });
-    Mousetrap.bind("meta+-", () => {
+    handler.bind("meta+-", () => {
       emit(zoomOutKeyPressed(null));
       return false;
     });
-    Mousetrap.bind("meta+s", () => {
+    handler.bind("meta+s", () => {
       emit(globalSaveKeyPress(null));
       return false;
     });
-    Mousetrap.bind("meta+shift+z", () => {
+    handler.bind("meta+shift+z", () => {
       emit(globalYKeyDown(null));
       return false;
     });
-    Mousetrap.bind("backspace", () => {
+    handler.bind("backspace", () => {
       emit(globalBackspaceKeyPressed(null));
       return false;
     });
-    Mousetrap.bind(
+    handler.bind(
       "meta",
       () => {
         emit(globalMetaKeyUp(null));
@@ -293,7 +296,7 @@ function* handleKeyCommands() {
     );
 
     // https://github.com/ccampbell/mousetrap/pull/215
-    Mousetrap.addKeycodes({ 173: "-" });
+    addKeycodes({ 173: "-" });
 
     // eslint-disable-next-line
     return () => {};

@@ -6,9 +6,9 @@ import { redirectRequest } from "paperclip-visual-editor/src/actions";
 import { getNewFilePath } from "../state";
 import { AppState } from "../state";
 
-export function* init() {
+export function* init(mount: HTMLDivElement) {
   yield fork(handleEngine);
-  yield fork(veSaga);
+  yield fork(veSaga, mount);
   yield fork(handleApp);
 }
 

@@ -23,7 +23,7 @@ export const withAppStore = (Child: React.FC) => {
       INITIAL_STATE,
       applyMiddleware(sagaMiddleware)
     );
-    sagaMiddleware.run(defaultSaga);
+    sagaMiddleware.run(defaultSaga, document.body);
   };
 
   return (props) => {

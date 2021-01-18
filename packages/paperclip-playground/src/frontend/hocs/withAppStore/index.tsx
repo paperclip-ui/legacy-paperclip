@@ -15,13 +15,16 @@ type InitOptions = Partial<{
   slim: boolean;
 }>;
 
-export const createAppStore = ({
-  compact,
-  mainDocumentUri,
-  documents,
-  activeFrameIndex,
-  slim,
-}: InitOptions = {}) => {
+export const createAppStore = (
+  {
+    compact,
+    mainDocumentUri,
+    documents,
+    activeFrameIndex,
+    slim,
+  }: InitOptions = {},
+  mount: HTMLDivElement
+) => {
   const sagaMiddleware = createSagaMiddleware();
   const mainUri =
     mainDocumentUri ||
@@ -48,7 +51,7 @@ export const createAppStore = ({
     },
     applyMiddleware(sagaMiddleware)
   );
-  sagaMiddleware.run(init);
+  sagaMiddleware.run(init, mount);
   return store;
 };
 

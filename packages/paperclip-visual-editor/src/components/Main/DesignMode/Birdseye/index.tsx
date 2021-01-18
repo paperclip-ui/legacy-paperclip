@@ -90,7 +90,7 @@ export const Birdseye = memo(() => {
 
         <InfiniteScroller
           size={Math.ceil(filteredCells.length / columns)}
-          itemHeight={200}
+          itemHeight={166}
           haveMinHeight={false}
           minVerticalItems={3}
         >
