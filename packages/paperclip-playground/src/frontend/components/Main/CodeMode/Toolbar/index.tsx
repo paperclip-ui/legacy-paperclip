@@ -74,10 +74,8 @@ export const Toolbar = () => {
       <styles.FileMenuButton
         ref={fileMenuButton}
         active={keepMenuOpen}
-        onMouseDown={(e) => {
-          if (!keepMenuOpen || !fileMenuButton.current.contains(e.target)) {
-            setShowFileMenu(!keepMenuOpen);
-          }
+        onClick={(e) => {
+          setShowFileMenu(!keepMenuOpen);
         }}
         onFocus={() => {
           // setShowFileMenu(true);
