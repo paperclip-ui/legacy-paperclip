@@ -1,5 +1,5 @@
 import * as ve from "paperclip-visual-editor/src/actions";
-import { AppState } from "../state";
+import { AppState, User } from "../state";
 import { actionCreator } from "./base";
 import { ContentChange } from "paperclip-source-writer";
 
@@ -11,6 +11,7 @@ export type BaseAction<TType extends ActionType, TPayload = undefined> = {
 export enum ActionType {
   ENGINE_LOADED = "ENGINE_LOADED",
   ENGINE_CRASHED = "ENGINE_CRASHED",
+  SESSION_LOADED = "SESSION_LOADED",
   CODE_EDITOR_TEXT_CHANGED = "CODE_EDITOR_TEXT_CHANGED",
   WORKER_INITIALIZED = "WORKER_INITIALIZED",
   APP_STATE_DIFFED = "APP_STATE_DIFFED",
@@ -18,7 +19,23 @@ export enum ActionType {
   FILE_ITEM_CLICKED = "FILE_ITEM_CLICKED",
   NEW_FILE_NAME_ENTERED = "NEW_FILE_NAME_ENTERED",
   SYNC_PANELS_CLICKED = "SYNC_PANELS_CLICKED",
+  ACCOUNT_CONNECTED = "ACCOUNT_CONNECTED",
 }
+
+export enum AccountKind {
+  Google = "google",
+  GitHub = "github",
+}
+
+export type AccountConnected = BaseAction<
+  ActionType.ACCOUNT_CONNECTED,
+  {
+    kind: AccountKind;
+
+    // for the backend, FE is just a trampoline
+    details: any;
+  }
+>;
 
 export type EngineLoaded = BaseAction<ActionType.ENGINE_LOADED>;
 
@@ -27,6 +44,8 @@ export type CodeEditorTextChanged = BaseAction<
   ActionType.CODE_EDITOR_TEXT_CHANGED,
   string
 >;
+export type SessionLoaded = BaseAction<ActionType.SESSION_LOADED, User>;
+
 export type WorkerInitialized = BaseAction<
   ActionType.WORKER_INITIALIZED,
   { appState: AppState }
@@ -49,6 +68,13 @@ export type FileItemClicked = BaseAction<
   ActionType.FILE_ITEM_CLICKED,
   { uri: string }
 >;
+
+export const accountConnected = actionCreator<AccountConnected>(
+  ActionType.ACCOUNT_CONNECTED
+);
+export const sessionLoaded = actionCreator<SessionLoaded>(
+  ActionType.SESSION_LOADED
+);
 
 export const engineLoaded = actionCreator<EngineLoaded>(
   ActionType.ENGINE_LOADED
@@ -81,6 +107,8 @@ export const syncPanelsClicked = actionCreator<SyncPanelsClicked>(
 export type Action =
   | ve.Action
   | EngineLoaded
+  | AccountConnected
+  | SessionLoaded
   | EngineCrashed
   | AppStateDiffed
   | FileItemClicked

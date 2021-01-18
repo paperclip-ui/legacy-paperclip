@@ -14,6 +14,17 @@ export const reducer = (state: AppState, action: Action) => {
         newState.documentContents[state.currentCodeFileUri] = action.payload;
       });
     }
+    case ActionType.ACCOUNT_CONNECTED: {
+      return produce(state, (newState) => {
+        newState.loadingUserSession = true;
+      });
+    }
+    case ActionType.SESSION_LOADED: {
+      return produce(state, (newState) => {
+        newState.user = action.payload;
+        newState.loadingUserSession = false;
+      });
+    }
     case ActionType.CONTENT_CHANGES_CREATED: {
       return produce(state, (newState) => {
         const changes = action.payload.changes;

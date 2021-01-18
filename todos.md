@@ -6,6 +6,8 @@
 - abiilty to save project
 - ability to laod project
 - ability to download PC code
+- ability to compile code to 
+- log out option
 
 
 - Playground server (private repo)

@@ -2,12 +2,15 @@ import * as ve from "paperclip-visual-editor/src/state";
 
 const ENTRY_URI = "file:///main.pc";
 
-export type UserSession = {
-  iconUrl: string;
+export type User = {
+  avatarUrl?: string;
+  email?: string;
+  id: number;
 };
 
 export type AppState = {
-  session?: UserSession;
+  user?: User;
+  loadingUserSession?: boolean;
   currentCodeFileUri: string;
   compact?: boolean;
   slim?: boolean;

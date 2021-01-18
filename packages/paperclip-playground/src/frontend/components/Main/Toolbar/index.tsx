@@ -16,18 +16,18 @@ export const MainToolbar = () => {
 
   let rightControls;
 
-  if (state.session) {
+  if (state.user) {
     rightControls = (
       <styles.ProfileIcon
         style={{
-          backgroundUrl: state.session.iconUrl,
+          backgroundImage: `url(${state.user.avatarUrl})`,
         }}
       />
     );
   } else {
     rightControls = (
       <Button primary onClick={onSignInClick}>
-        Sign in to save
+        {state.loadingUserSession ? "Loading..." : "Sign in to save"}
       </Button>
     );
   }

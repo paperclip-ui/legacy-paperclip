@@ -34,7 +34,7 @@
   {children}
 </div>
 
-<Button.Button export component as="ConnectButton" className="{name}" className:first="first">
+<Button.Button export component as="ConnectButton" className="{name}" className:first="first" {onClick?}>
   <style>
     &.google {
       color: white;

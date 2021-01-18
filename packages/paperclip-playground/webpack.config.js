@@ -9,6 +9,17 @@ const mode =
 const API_HOST =
   mode === "development" ? "localhost:3001" : "playground.api.paperclip.dev";
 
+const DEV_OAUTH_CLIENT_IDs = {
+  github: "2cdbfa6c949f0c8cd3f5",
+};
+
+const PROD_OAUTH_CLIENT_IDs = {
+  github: "1c47b5853e6d87769161",
+};
+
+const OAUTH_CLIENT_IDs =
+  mode === "production" ? PROD_OAUTH_CLIENT_IDs : DEV_OAUTH_CLIENT_IDs;
+
 module.exports = {
   mode,
   entry: "./src/frontend/entry.tsx",
@@ -30,6 +41,7 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       "process.env.API_HOST": JSON.stringify(API_HOST),
+      "process.env.GITHUB_CLIENT_ID": JSON.stringify(OAUTH_CLIENT_IDs.github),
     }),
   ],
   resolve: {
