@@ -1,6 +1,10 @@
 <import src="paperclip-visual-editor/src/components/Main/index.pc" as="Main" />
+<import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
 <import src="./CodeMode/index.pc" as="CodeMode" />
 <import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
+<import src="./Toolbar/index.pc" as="Toolbar" />
+<import src="./auth/index.pc" as="Auth" />
+
 <style>
   :global(html, body) {
     padding: 0;
@@ -12,7 +16,19 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className:compact="compact">
+<div export component as="Container" {className?}>
+  <style>
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="EditorContainer" className:compact="compact">
   <style>
     display: flex;
     height: 100%;
@@ -36,18 +52,25 @@
 <!--
   @frame { visible: false }
 -->
-<Container export component as="Preview" {compact?}>
-
-  <CodeMode.Preview {showFileMenu} slim />
-  <Main.Preview v2 dark designMode showGrid />
+<Container export component as="Preview" className="v2" {compact?}>
+  {!compact && <Toolbar.Preview  {loggedIn?} />}
+  <EditorContainer {compact?}>
+    <CodeMode.Preview {showFileMenu} slim />
+    <Main.Preview v2 dark designMode showGrid />
+  </EditorContainer>
+  {showLoginPrompt && <Auth.Preview />}
 </Container>
 
+<!--
+  @frame { title: "Show Login Prompt", width: 1212, height: 768, x: 489, y: -749 }
+-->
+<Preview showFileMenu showLoginPrompt  />
 
 
 <!--
-  @frame { width: 1212, height: 768, x: 484, y: 333 }
+  @frame { title: "File Select", width: 1212, height: 768, x: 505, y: 273 }
 -->
-<Preview showFileMenu />
+<Preview showFileMenu loggedIn  />
 
 
 <!--
@@ -57,7 +80,7 @@
 
 
 <!--
-  @frame { title: "Mobile", width: 873, height: 768, x: 1967, y: 267 }
+  @frame { title: "Mobile", width: 643, height: 768, x: 1967, y: 267 }
 -->
 <Preview />
 

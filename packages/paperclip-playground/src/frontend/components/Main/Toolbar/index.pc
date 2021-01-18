@@ -1,0 +1,67 @@
+<import src="frontend/components/Button/index.pc" as="Button" />
+
+<div export component as="Toolbar" className="v2">
+  <style>
+    height: 40px;
+    width: 100%;
+    background: var(--grey-night-500);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    color: white;
+    border-bottom: 2px solid var(--grey-night-300);
+  </style>
+
+  <div>
+    <style>
+      width: 100%;
+
+      // absolute so that it's centered
+      position: absolute;
+    </style>
+    {documentName}
+  </div>
+
+  <!-- Spacer -->
+  <div>
+    <style>
+      width: 100%;
+    </style>
+  </div>
+  <div>
+    <style>
+      padding-right: 28px;
+      z-index: 1;
+    </style>
+    {rightControls}
+  </div>
+</div>
+
+<div export component as="ProfileIcon" {className?} {style?}>
+  <style>
+    --size: 24px;
+    width: var(--size);
+    height: var(--size);
+    background-position: 50%;
+    background-size: 130%;
+    background-repeat: no-repeat;
+    border-radius: 99px;
+    border: 2px solid var(--grey-400);
+  </style>
+</div>
+
+<Toolbar export component as="Preview" 
+  documentName="Untitled"
+  rightControls={
+    <fragment>
+      {!loggedIn && <Button.Button primary>
+        Log in to save
+      </Button.Button>}
+      {loggedIn && <ProfileIcon>
+        <style>
+          background-image: url("./profile.jpg");
+        </style>
+      </ProfileIcon>}
+    </fragment>
+  } 
+/>

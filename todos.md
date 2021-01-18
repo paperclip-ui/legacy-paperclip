@@ -1,6 +1,13 @@
 
 ### Immediate
 
+- Log in with GH
+  - GH presense icon
+- abiilty to save project
+- ability to laod project
+- ability to download PC code
+
+
 - Playground server (private repo)
   - connect account (Github / Google)
   - ability to save playground (store in SQL)

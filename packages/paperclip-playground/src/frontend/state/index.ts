@@ -2,10 +2,16 @@ import * as ve from "paperclip-visual-editor/src/state";
 
 const ENTRY_URI = "file:///main.pc";
 
+export type UserSession = {
+  iconUrl: string;
+};
+
 export type AppState = {
+  session?: UserSession;
   currentCodeFileUri: string;
   compact?: boolean;
   slim?: boolean;
+  apiHost: string;
 } & ve.AppState;
 
 const ENTRY_SOURCE = `<div>
@@ -21,6 +27,7 @@ export const INITIAL_STATE: AppState = {
   ...ve.INITIAL_STATE,
   sharable: false,
   compact: false,
+  apiHost: process.env.API_HOST,
   slim: true,
   ui: {
     pathname: "/canvas",

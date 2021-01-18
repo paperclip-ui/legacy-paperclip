@@ -32,14 +32,15 @@ TODOS:
   @frame { visible: false }
 -->
 <Container export component as="Preview" className="$theme.font-default">
-  {showLeftSidebar? && <LeftSidebar.Preview />}
+  
+  {showLeftSidebar? && <LeftSidebar.Preview/>}
   {designMode? && <DesignMode.Preview v2 {dark?} {showEnvPopup?} {showGrid?} />}
 </Container>
 
 <!--
   @frame { title: "Grid View / Large", width: 1864, height: 1050, x: 2345, y: -86 }
 -->
-<Preview designMode showGrid showLeftSidebar />
+<Preview designMode showGrid showLeftSidebar  />
 
 <!--
   @frame { title: "Grid View / Large", width: 999, height: 737, x: 1219, y: -93 }

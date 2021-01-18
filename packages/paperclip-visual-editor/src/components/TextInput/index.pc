@@ -24,7 +24,7 @@
     }
     &:focus {
       && {
-        border: 2px solid rgb(102, 163, 255);
+        border: 2px solid var(--color-blue-100);
       }
     }
     &::placeholder {

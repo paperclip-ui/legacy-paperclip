@@ -5,14 +5,9 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const mode =
   process.env.NODE_ENV === "production" ? "production" : "development";
-/*
- * We've enabled HtmlWebpackPlugin for you! This generates a html
- * page for you when you compile webpack, which will make you start
- * developing and prototyping faster.
- *
- * https://github.com/jantimon/html-webpack-plugin
- *
- */
+
+const API_HOST =
+  mode === "development" ? "localhost:3001" : "playground.api.paperclip.dev";
 
 module.exports = {
   mode,
@@ -32,6 +27,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: "Paperclip Playground",
       template: path.join(__dirname, "src", "index.html"),
+    }),
+    new webpack.DefinePlugin({
+      "process.env.API_HOST": JSON.stringify(API_HOST),
     }),
   ],
   resolve: {
