@@ -1,6 +1,8 @@
 
 ### Immediate
 
+- Performance** - need to throttle changes
+
 - copy/paste hijacked
   - ensure that no other hotkeys are
 

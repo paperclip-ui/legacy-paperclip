@@ -57,11 +57,9 @@ type KeyValue<TValue> = {
 };
 
 export class VSCServiceBridge {
-  private _newEngineContent: KeyValue<boolean> = {};
-  private _newEnginePreviewContent: KeyValue<
-    TextDocumentContentChangeEvent
-  > = {};
   private _documents: KeyValue<TextDocument> = {};
+  private _contentChanges: Record<string, string> = {};
+  private _engineWerking = false;
 
   constructor(
     private _engine: EngineDelegate,
@@ -124,6 +122,31 @@ export class VSCServiceBridge {
     );
   };
 
+  private _deferUpdateEngineContent = (uri: string, content: string) => {
+    this._contentChanges[uri] = content;
+    if (!this._engineWerking) {
+      this._persistDeferredContentChanges();
+    }
+  };
+
+  private _persistDeferredContentChanges = throttle(
+    () => {
+      const contentChanges = this._contentChanges;
+      if (Object.keys(contentChanges).length === 0) {
+        this._engineWerking = false;
+        return;
+      }
+
+      this._engineWerking = true;
+      this._contentChanges = {};
+      for (const uri in contentChanges) {
+        this._engine.updateVirtualFileContent(uri, contentChanges[uri]);
+      }
+    },
+    PERSIST_ENGINE_THROTTLE_MS,
+    { leading: true }
+  );
+
   private _onDefinitionRequest = (params: DefinitionParams) => {
     const document = this._documents[params.textDocument.uri];
     const service = this._service.getService(document.uri);
@@ -179,7 +202,6 @@ export class VSCServiceBridge {
 
   private _onCompletionRequest = (params: CompletionParams) => {
     const document = this._documents[params.textDocument.uri];
-    const now = Date.now();
 
     const doc = document.getText();
     const text = doc.substr(0, document.offsetAt(params.position));
@@ -243,7 +265,8 @@ export class VSCServiceBridge {
     const source = TextDocument.applyEdits(document, [textEdit]);
 
     // update virtual file content to show preview
-    this._previewEngineContent(params.textDocument.uri, { text: source });
+    // this._previewEngineContent(params.textDocument.uri, { text: source });
+    this._deferUpdateEngineContent(params.textDocument.uri, source);
 
     return [presentation];
   };
@@ -258,51 +281,55 @@ export class VSCServiceBridge {
       this._documents[uri].version + 1
     );
     this._documents[uri] = newDocument;
-    this._newEngineContent[uri] = true;
-    this._deferPersistEditTextContent();
+    this._deferUpdateEngineContent(uri, newDocument.getText());
+    // this._newEngineContent[uri] = true;
+    // this._deferPersistEditTextContent();
   };
 
-  private _previewEngineContent = (
-    uri: string,
-    event: TextDocumentContentChangeEvent
-  ) => {
-    // TODO - include this change
-    this._newEnginePreviewContent[uri] = event;
-    this._deferPreviewEngineContent();
-  };
+  // private _previewEngineContent = (
+  //   uri: string,
+  //   event: TextDocumentContentChangeEvent
+  // ) => {
+  //   this._newEnginePreviewContent[uri] = event;
+  //   this._deferPreviewEngineContent();
+  // };
 
-  private _deferPersistEditTextContent = throttle(() => {
-    const newEngineContent = this._newEngineContent;
-    this._newEngineContent = {};
-    for (const uri in newEngineContent) {
-      this._engine.updateVirtualFileContent(
-        uri,
-        this._documents[uri].getText()
-      );
-    }
-  }, PERSIST_ENGINE_THROTTLE_MS);
+  // private _deferPersistEditTextContent = throttle(() => {
+  //   const newEngineContent = this._newEngineContent;
+  //   this._newEngineContent = {};
+  //   for (const uri in newEngineContent) {
+  //     this._engine.updateVirtualFileContent(
+  //       uri,
+  //       this._documents[uri].getText()
+  //     );
+  //   }
+  // }, PERSIST_ENGINE_THROTTLE_MS);
 
-  private _deferPreviewEngineContent = throttle(() => {
-    const newEngineContent = this._newEnginePreviewContent;
-    this._newEnginePreviewContent = {};
-    for (const uri in newEngineContent) {
-      const event = newEngineContent[uri];
-      this._engine.updateVirtualFileContent(uri, event.text);
-    }
-  }, PERSIST_ENGINE_THROTTLE_MS);
+  // private _deferPreviewEngineContent = throttle(() => {
+  //   const newEngineContent = this._newEnginePreviewContent;
+  //   this._newEnginePreviewContent = {};
+  //   for (const uri in newEngineContent) {
+  //     const event = newEngineContent[uri];
+  //     this._engine.updateVirtualFileContent(uri, event.text);
+  //   }
+  // }, PERSIST_ENGINE_THROTTLE_MS);
 
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
     switch (event.kind) {
       case EngineDelegateEventKind.Error: {
-        return this._onEngineErrorEvent(event);
+        this._onEngineErrorEvent(event);
+        break;
       }
       case EngineDelegateEventKind.Loaded:
       case EngineDelegateEventKind.Diffed:
       case EngineDelegateEventKind.ChangedSheets:
       case EngineDelegateEventKind.Evaluated: {
-        return this._onEngineEvaluatedEvent(event);
+        this._onEngineEvaluatedEvent(event);
+        break;
       }
     }
+
+    this._persistDeferredContentChanges();
   };
 
   private _onEngineEvaluatedEvent(
