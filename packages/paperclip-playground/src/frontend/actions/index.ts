@@ -50,11 +50,11 @@ export type GetProjectsRequestChanged = BaseRequestChanged<
 >;
 export type GetProjectRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECT_REQUEST_CHANGED,
-  Project[]
+  Project
 >;
 export type GetProjectFilesRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECT_FILES_REQUEST_CHANGED,
-  ProjectFile[],
+  Record<string, string>,
   { projectId: number }
 >;
 export type ProjectFilesHookUsed = BaseAction<

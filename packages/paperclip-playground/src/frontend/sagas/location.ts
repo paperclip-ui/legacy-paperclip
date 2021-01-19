@@ -13,9 +13,12 @@ import {
   APP_LOCATIONS,
   getLocationParams,
   matchesLocationPath,
+  Project,
+  Result,
 } from "../state";
 import { request } from "./utils";
 import {
+  getProjectFilesRequestChanged,
   getProjectRequestChanged,
   getProjectsRequestChanged,
 } from "../actions";
@@ -26,6 +29,7 @@ export function* handleLocation() {
 }
 
 export function* handleRoutes() {
+  // todo - require auth
   yield call(route, {
     [APP_LOCATIONS.PROJECTS]: function* () {
       // yield request(getProjectsRequestChanged, function*() {
@@ -33,9 +37,30 @@ export function* handleRoutes() {
       // });
     },
     [APP_LOCATIONS.PROJECT]: function* ({ projectId }) {
-      // const project = yield request(getProjectRequestChanged, function*() {
-      //   return yield call(api.getProject, projectId);
-      // });
+      const project: Result<Project> = yield request(
+        getProjectRequestChanged,
+        function* () {
+          return yield call(api.getProject, projectId);
+        }
+      );
+
+      if (project.error) {
+        return;
+      }
+
+      // TODO - to progress
+      yield request(getProjectFilesRequestChanged, function* () {
+        const allData = {};
+
+        for (const { path, url } of project.data.files) {
+          const resp = yield call(fetch, url, {
+            credentials: "include",
+          });
+          allData[path] = yield call(() => resp.text());
+        }
+
+        return allData;
+      });
     },
   });
 }
@@ -50,11 +75,12 @@ function* route(routes: Routes) {
   ) {
     for (const test in routes) {
       if (matchesLocationPath(action.payload.pathname, test)) {
-        const params = getLocationParams(
-          action.payload.pathname,
-          APP_LOCATIONS.PROJECTS
-        );
-        yield call(routes[test], params);
+        const params = getLocationParams(action.payload.pathname, test);
+        try {
+          yield call(routes[test], params);
+        } catch (e) {
+          console.error(e);
+        }
         break;
       }
     }

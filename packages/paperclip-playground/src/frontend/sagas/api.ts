@@ -34,6 +34,7 @@ function* handleSession() {
 }
 
 function* handleProjectChanges() {
+  let _lastSavedState: AppState;
   // user logged in after editing content
   // yield takeEvery(ActionType.SESSION_LOADED, function*() {
   //   const state: AppState = yield select();
@@ -42,17 +43,59 @@ function* handleProjectChanges() {
   //   }
   // })
 
+  function* createNewProject() {
+    const state: AppState = yield select();
+    const project = yield call(
+      api.createProject,
+      undefined,
+      state.designMode.documentContents,
+      state.currentCodeFileUri
+    );
+    history.push(`/projects/${project.id}`);
+  }
+
+  function* updateExistingProject() {
+    const state: AppState = yield select();
+
+    // first handle updates
+    for (const path in state.designMode.documentContents) {
+      const newContent = state.designMode.documentContents[path];
+      const oldContent = _lastSavedState.designMode.documentContents[path];
+
+      if (oldContent !== newContent) {
+        yield call(
+          api.updateProjectFile,
+          state.currentProject.data!.id,
+          path,
+          newContent
+        );
+      }
+    }
+
+    // next, handle deletes
+    for (const path in _lastSavedState.designMode.documentContents) {
+      const newContent = state.designMode.documentContents[path];
+
+      if (newContent == null) {
+        yield call(api.deleteProjectFile, state.currentProject.data!.id, path);
+      }
+    }
+
+    _lastSavedState = state;
+  }
+
+  yield takeEvery(ActionType.GET_PROJECT_FILES_REQUEST_CHANGED, function* () {
+    _lastSavedState = yield select();
+  });
+
   yield takeEvery(ActionType.SAVE_BUTTON_CLICKED, function* () {
     const state: AppState = yield select();
 
+    // create new project
     if (!state.currentProject?.data) {
-      const project = yield call(
-        api.createProject,
-        undefined,
-        state.designMode.documentContents
-      );
-      history.push(`/projects/${project.id}`);
+      yield call(createNewProject);
     } else {
+      yield call(updateExistingProject);
     }
 
     yield put(savedProject({ data: true, done: true }));

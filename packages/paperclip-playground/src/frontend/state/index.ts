@@ -19,11 +19,14 @@ export type Result<TData> = {
 export type Project = {
   id: number;
   name: string;
+  mainFileUri?: string;
+  files: ProjectFile[];
 };
 
 export type ProjectFile = {
   id: number;
   path: string;
+  url: string;
 };
 
 export const APP_LOCATIONS = {
@@ -62,14 +65,7 @@ export type AppState = {
   apiHost: string;
 };
 
-const ENTRY_SOURCE = `<div>
-  <style>
-    font-family: sans-serif;
-    font-size: 24px;
-  </style>
-
-  Welcome to Paperclip!
-</div>`;
+const ENTRY_SOURCE = ``;
 
 export const INITIAL_STATE: AppState = {
   designMode: {

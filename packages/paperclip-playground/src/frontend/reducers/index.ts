@@ -9,6 +9,7 @@ import produce from "immer";
 import veReducer from "paperclip-visual-editor/src/reducers/index";
 import { editString } from "../utils/string-editor";
 import { validate } from "fast-json-patch";
+import { resourceLimits } from "worker_threads";
 
 export const reducer = (state: AppState, action: Action) => {
   state = produce(state, (newState) => {
@@ -59,6 +60,31 @@ export const reducer = (state: AppState, action: Action) => {
 
         // flag for saving
         newState.hasUnsavedChanges = true;
+      });
+    }
+    case ActionType.GET_PROJECT_REQUEST_CHANGED: {
+      return produce(state, (newState) => {
+        newState.currentProject = action.payload.result;
+      });
+    }
+    case ActionType.GET_PROJECT_FILES_REQUEST_CHANGED: {
+      return produce(state, (newState) => {
+        const result = action.payload.result;
+
+        if (result.data) {
+          const contents = result.data!;
+          const mainFile = newState.currentProject.data!.mainFileUri
+            ? newState.currentProject.data!.files.find((file) => {
+                return file.path == newState.currentProject.data!.mainFileUri;
+              })
+            : newState.currentProject.data!.files[0];
+          newState.designMode.ui.query.currentFileUri = mainFile.path;
+          newState.designMode.documentContents = contents;
+          newState.currentCodeFileUri = mainFile.path;
+
+          // reset canvas zoom
+          newState.designMode.centeredInitial = false;
+        }
       });
     }
     case VEActionType.LOCATION_CHANGED: {

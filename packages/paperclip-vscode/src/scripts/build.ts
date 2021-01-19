@@ -7,12 +7,12 @@ import plist = require("plist");
 import { languages } from "vscode";
 
 enum Language {
-  Paperclip = "paperclip-html"
+  Paperclip = "paperclip-html",
 }
 
 enum Extension {
   YamlTmLanguage = "yaml",
-  JsonTmLanguage = "tmLanguage.json"
+  JsonTmLanguage = "tmLanguage.json",
 }
 
 function file(language: Language, extension: Extension) {
@@ -27,7 +27,6 @@ function file(language: Language, extension: Extension) {
 
 // function writePlistFile(grammar: TmGrammar | TmTheme, fileName: string) {
 //     const text = plist.build(grammar);
-//     console.log(JSON.stringify(grammar, null, 2));
 //     // fs.writeFileSync(fileName, text);
 // }
 
@@ -153,14 +152,14 @@ function updateGrammarVariables(
     );
     variableReplacers.push([new RegExp(`{{${variableName}}}`, "gim"), pattern]);
   }
-  transformGrammarRepository(grammar, ["begin", "end", "match"], pattern =>
+  transformGrammarRepository(grammar, ["begin", "end", "match"], (pattern) =>
     replacePatternVariables(pattern, variableReplacers)
   );
   return grammar;
 }
 
 function buildGrammar() {
-  const pcGrammar = getTsGrammar(grammarVariables => grammarVariables);
+  const pcGrammar = getTsGrammar((grammarVariables) => grammarVariables);
 
   // Write TypeScript.tmLanguage
   // writePlistFile(pcGrammar, file(Language.Paperclip, Extension.YamlTmLanguage));

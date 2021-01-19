@@ -64,7 +64,7 @@ export default function* mainSaga(
   yield fork(handleDocumentEvents);
   yield fork(handleCanvas, getState);
   yield fork(handleClipboard, getState);
-  yield fork(handleLocationChanged, getState);
+  yield fork(handleLocationChanged);
   yield fork(handleLocation, getState);
 }
 
@@ -253,9 +253,7 @@ function* handleCanvasMouseUp(
 
 function* handleKeyCommands(mount: HTMLElement) {
   const chan = eventChannel((emit) => {
-    console.log(Mousetrap);
     const handler = new Mousetrap(mount);
-    console.log(mount);
     handler.bind("esc", (e) => {
       if (isInput(e.target)) {
         return;
@@ -428,11 +426,7 @@ function* handleDocumentEvents() {
   });
 }
 
-function* handleLocationChanged(getState: AppStateSelector) {
-  const state: AppState = yield select(getState);
-  if (!state.syncLocationWithUI) {
-    return;
-  }
+function* handleLocationChanged() {
   const parts = Url.parse(location.href, true);
   yield put(
     locationChanged({
@@ -445,7 +439,6 @@ function* handleLocationChanged(getState: AppStateSelector) {
 }
 
 function* handleLocation(getState: AppStateSelector) {
-  const state: AppState = yield select(getState);
   const chan = eventChannel((emit) => {
     return history.listen(emit);
   });
@@ -458,7 +451,6 @@ function* handleLocation(getState: AppStateSelector) {
     if (!state.syncLocationWithUI) {
       return;
     }
-    console.log(JSON.stringify(state.ui));
     history.push(state.ui.pathname + "?" + qs.stringify(state.ui.query));
   });
 }
