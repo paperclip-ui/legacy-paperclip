@@ -9,7 +9,7 @@ import { handleAPI } from "./api";
 
 export function* init(mount: HTMLDivElement) {
   yield fork(handleEngine);
-  yield fork(veSaga, mount);
+  yield fork(veSaga, mount, (state: AppState) => state.designMode);
   yield fork(handleApp);
   yield fork(handleAPI);
 }

@@ -32,9 +32,10 @@ export const Toolbar = () => {
 
   const basename = path.basename(state.currentCodeFileUri);
   const keepMenuOpen = showFileMenu || showNewFileInput;
-  const allFileUris = useMemo(() => Object.keys(state.documentContents), [
-    state.documentContents,
-  ]);
+  const allFileUris = useMemo(
+    () => Object.keys(state.designMode.documentContents),
+    [state.designMode.documentContents]
+  );
   const fileMenuButton = useRef<HTMLDivElement>();
 
   const { inputProps: newFileInputProps } = useTextInput({
@@ -115,7 +116,8 @@ export const Toolbar = () => {
           )
         }
       />
-      {state.currentCodeFileUri !== state.ui.query.currentFileUri && (
+      {state.currentCodeFileUri !==
+        state.designMode.ui.query.currentFileUri && (
         <styles.EyeButton onClick={onSyncPanelsClick} />
       )}
     </styles.Topbar>

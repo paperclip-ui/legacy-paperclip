@@ -1,17 +1,24 @@
 import { AppState, getNewFilePath } from "../state";
-import { Action as VEAction } from "paperclip-visual-editor/src/actions";
+import {
+  Action as VEAction,
+  ActionType as VEActionType,
+} from "paperclip-visual-editor/src/actions";
 import { Action, ActionType } from "../actions";
 import produce from "immer";
 
 import veReducer from "paperclip-visual-editor/src/reducers/index";
 import { editString } from "../utils/string-editor";
+import { validate } from "fast-json-patch";
 
 export const reducer = (state: AppState, action: Action) => {
-  state = veReducer(state, action as VEAction) as AppState;
+  state = produce(state, (newState) => {
+    newState.designMode = veReducer(newState.designMode, action as VEAction);
+  });
   switch (action.type) {
     case ActionType.CODE_EDITOR_TEXT_CHANGED: {
       return produce(state, (newState) => {
-        newState.documentContents[state.currentCodeFileUri] = action.payload;
+        newState.designMode.documentContents[state.currentCodeFileUri] =
+          action.payload;
       });
     }
     case ActionType.ACCOUNT_CONNECTED: {
@@ -44,14 +51,19 @@ export const reducer = (state: AppState, action: Action) => {
       return produce(state, (newState) => {
         const changes = action.payload.changes;
         for (const uri in changes) {
-          newState.documentContents[uri] = editString(
-            newState.documentContents[uri],
+          newState.designMode.documentContents[uri] = editString(
+            newState.designMode.documentContents[uri],
             changes[uri]
           );
         }
 
         // flag for saving
         newState.hasUnsavedChanges = true;
+      });
+    }
+    case VEActionType.LOCATION_CHANGED: {
+      return produce(state, (newState) => {
+        newState.playgroundUi = action.payload;
       });
     }
     case ActionType.FILE_ITEM_CLICKED: {
@@ -62,7 +74,7 @@ export const reducer = (state: AppState, action: Action) => {
     case ActionType.NEW_FILE_NAME_ENTERED: {
       return produce(state, (newState) => {
         const uri = getNewFilePath(action.payload.value);
-        newState.documentContents[uri] = "";
+        newState.designMode.documentContents[uri] = "";
         newState.currentCodeFileUri = uri;
       });
     }

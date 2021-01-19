@@ -27,6 +27,11 @@
 - Examples
 
 
+#### Next
+
+- undo / redo functionality
+- sync saving with project save
+
 
 - Other considerations
 

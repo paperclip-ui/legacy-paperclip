@@ -1,5 +1,5 @@
 import * as ve from "paperclip-visual-editor/src/actions";
-import { AppState, Result, User } from "../state";
+import { AppState, Project, ProjectFile, Result, User } from "../state";
 import { actionCreator } from "./base";
 import { ContentChange } from "paperclip-source-writer";
 
@@ -9,7 +9,14 @@ export type BaseAction<TType extends ActionType, TPayload = undefined> = {
 };
 
 export enum ActionType {
+  PROJECT_HOOK_USED = "PROJECT_HOOK_USED",
+  ALL_PROJECTS_HOOK_USED = "ALL_PROJECTS_HOOK_USED",
+  PROJECT_FILES_HOOK_USED = "PROJECT_FILES_HOOK_USED",
+  REQUEST_CHANGED = "REQUEST_CHANGED",
   ENGINE_LOADED = "ENGINE_LOADED",
+  GET_PROJECTS_REQUEST_CHANGED = "GET_PROJECTS_REQUEST_CHANGED",
+  GET_PROJECT_REQUEST_CHANGED = "GET_PROJECT_REQUEST_CHANGED",
+  GET_PROJECT_FILES_REQUEST_CHANGED = "GET_PROJECT_FILES_REQUEST_CHANGED",
   LOGOUT_BUTTON_CLICKED = "LOGOUT_BUTTON_CLICKED",
   ENGINE_CRASHED = "ENGINE_CRASHED",
   SAVED_PROJECT = "SAVED_PROJECT",
@@ -30,6 +37,35 @@ export enum AccountKind {
   Google = "google",
   GitHub = "github",
 }
+
+export type BaseRequestChanged<
+  TType extends ActionType,
+  TData,
+  TPayload = {}
+> = BaseAction<TType, { result: Result<TData> } & TPayload>;
+
+export type GetProjectsRequestChanged = BaseRequestChanged<
+  ActionType.GET_PROJECTS_REQUEST_CHANGED,
+  Project[]
+>;
+export type GetProjectRequestChanged = BaseRequestChanged<
+  ActionType.GET_PROJECT_REQUEST_CHANGED,
+  Project[]
+>;
+export type GetProjectFilesRequestChanged = BaseRequestChanged<
+  ActionType.GET_PROJECT_FILES_REQUEST_CHANGED,
+  ProjectFile[],
+  { projectId: number }
+>;
+export type ProjectFilesHookUsed = BaseAction<
+  ActionType.PROJECT_FILES_HOOK_USED,
+  { projectId: number }
+>;
+export type ProjectHookUsed = BaseAction<
+  ActionType.PROJECT_HOOK_USED,
+  { projectId: number }
+>;
+export type AllProjectsHookUsed = BaseAction<ActionType.ALL_PROJECTS_HOOK_USED>;
 
 export type AccountConnected = BaseAction<
   ActionType.ACCOUNT_CONNECTED,
@@ -128,6 +164,26 @@ export const syncPanelsClicked = actionCreator<SyncPanelsClicked>(
   ActionType.SYNC_PANELS_CLICKED
 );
 
+export const getProjectRequestChanged = actionCreator<GetProjectRequestChanged>(
+  ActionType.GET_PROJECT_REQUEST_CHANGED
+);
+
+export const getProjectsRequestChanged = actionCreator<
+  GetProjectsRequestChanged
+>(ActionType.GET_PROJECTS_REQUEST_CHANGED);
+export const getProjectFilesRequestChanged = actionCreator<
+  GetProjectFilesRequestChanged
+>(ActionType.GET_PROJECT_FILES_REQUEST_CHANGED);
+export const projectHookUsed = actionCreator<ProjectHookUsed>(
+  ActionType.PROJECT_HOOK_USED
+);
+export const projectFilesHookUsed = actionCreator<ProjectFilesHookUsed>(
+  ActionType.PROJECT_FILES_HOOK_USED
+);
+export const allProjectsHookUsed = actionCreator<AllProjectsHookUsed>(
+  ActionType.ALL_PROJECTS_HOOK_USED
+);
+
 export type Action =
   | ve.Action
   | LogoutButtonClicked
@@ -136,6 +192,12 @@ export type Action =
   | SaveButtonClicked
   | LoggedOut
   | SessionLoaded
+  | GetProjectsRequestChanged
+  | AllProjectsHookUsed
+  | ProjectFilesHookUsed
+  | ProjectHookUsed
+  | GetProjectRequestChanged
+  | GetProjectFilesRequestChanged
   | EngineCrashed
   | AppStateDiffed
   | SavedProject

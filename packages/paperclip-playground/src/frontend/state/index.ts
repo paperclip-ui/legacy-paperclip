@@ -1,4 +1,6 @@
 import * as ve from "paperclip-visual-editor/src/state";
+import { memoize } from "paperclip-utils";
+import * as qs from "querystring";
 
 const ENTRY_URI = "file:///main.pc";
 
@@ -19,9 +21,38 @@ export type Project = {
   name: string;
 };
 
+export type ProjectFile = {
+  id: number;
+  path: string;
+};
+
+export const APP_LOCATIONS = {
+  PROJECTS: "/projects",
+  PROJECT: "/projects/:projectId",
+};
+
+export const matchesLocationPath = (pathname: string, test: string) => {
+  return Boolean(pathname.match(getPathnameRegexp(test)));
+};
+
+export const getLocationParams = (pathname: string, test: string) => {
+  return pathname.match(getPathnameRegexp(test))?.groups;
+};
+
+const getPathnameRegexp = memoize((test: string) => {
+  return new RegExp(`^${test}/*$`.replace(/:([^\/]+)/, "(?<$1>[^/]+)"));
+});
+
 export type AppState = {
+  designMode: ve.AppState;
   user?: User;
-  project?: Project;
+  currentProject?: Result<Project>;
+  playgroundUi: {
+    pathname: string;
+    query: any;
+  };
+  allProjects?: Result<Project[]>;
+  currentProjectFiles?: Result<ProjectFile[]>;
   saving?: Result<boolean>;
   loadingUserSession?: boolean;
   currentCodeFileUri: string;
@@ -29,7 +60,7 @@ export type AppState = {
   compact?: boolean;
   slim?: boolean;
   apiHost: string;
-} & ve.AppState;
+};
 
 const ENTRY_SOURCE = `<div>
   <style>
@@ -41,29 +72,41 @@ const ENTRY_SOURCE = `<div>
 </div>`;
 
 export const INITIAL_STATE: AppState = {
-  ...ve.INITIAL_STATE,
-  sharable: false,
+  designMode: {
+    ...ve.INITIAL_STATE,
+    sharable: false,
+    ui: {
+      pathname: "/canvas",
+      query: {
+        currentFileUri: ENTRY_URI,
+      },
+    },
+    syncLocationWithUI: false,
+    documentContents: {
+      [ENTRY_URI]: ENTRY_SOURCE,
+    },
+    projectDirectory: {
+      name: "/",
+      kind: ve.FSItemKind.DIRECTORY,
+      absolutePath: "/",
+      url: "file://",
+      children: [],
+    },
+  },
+  playgroundUi:
+    typeof window !== "undefined"
+      ? {
+          pathname: window.location.pathname,
+          query: qs.parse(window.location.search.substr(1)),
+        }
+      : {
+          pathname: "/",
+          query: {},
+        },
+  currentCodeFileUri: ENTRY_URI,
   compact: false,
   apiHost: process.env.API_HOST,
   slim: true,
-  ui: {
-    pathname: "/canvas",
-    query: {
-      currentFileUri: ENTRY_URI,
-    },
-  },
-  currentCodeFileUri: ENTRY_URI,
-  syncLocationWithUI: false,
-  documentContents: {
-    [ENTRY_URI]: ENTRY_SOURCE,
-  },
-  projectDirectory: {
-    name: "/",
-    kind: ve.FSItemKind.DIRECTORY,
-    absolutePath: "/",
-    url: "file://",
-    children: [],
-  },
 };
 export const getNewFilePath = (name: string) => {
   return "file:///" + name.replace(".pc", "") + ".pc";

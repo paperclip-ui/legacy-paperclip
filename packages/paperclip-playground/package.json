@@ -6,7 +6,7 @@
   "scripts": {
     "build": "paperclip build --definition --write && webpack",
     "build:watch": "concurrently \"webpack --watch\" \"paperclip build --definition --write --watch\"",
-    "start": "concurrently \"webpack serve\" \"paperclip build --definition --write --watch\""
+    "start": "concurrently \"webpack serve --history-api-fallback\" \"paperclip build --definition --write --watch\""
   },
   "author": "",
   "license": "MIT",
@@ -17,6 +17,7 @@
     "nodemon": "^2.0.7",
     "paperclip": "^17.4.4",
     "paperclip-source-writer": "^17.4.4",
+    "paperclip-utils": "^17.4.4",
     "paperclip-visual-editor": "^17.4.6",
     "prism-material-themes": "^1.0.4",
     "prism-react-renderer": "^1.1.1",
@@ -30,6 +31,7 @@
     "@types/node": "^14.14.21",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-router": "^5.1.11",
     "concurrently": "^5.3.0",
     "css-loader": "^5.0.1",
     "events": "^3.2.0",

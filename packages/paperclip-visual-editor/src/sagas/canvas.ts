@@ -1,25 +1,15 @@
 import { fork, put, select, takeEvery } from "redux-saga/effects";
+import { AppStateSelector } from ".";
 import { ActionType, popoutWindowRequested } from "../actions";
 import { AppState } from "../state";
 
-export function* handleCanvas() {
-  yield fork(handleDND);
-  yield fork(handleToolbar);
+export function* handleCanvas(getState: AppStateSelector) {
+  yield fork(handleToolbar, getState);
 }
 
-function* handleDND() {
-  yield takeEvery(
-    [
-      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
-      ActionType.RESIZER_STOPPED_MOVING,
-    ],
-    function* () {}
-  );
-}
-
-function* handleToolbar() {
+function* handleToolbar(getState: AppStateSelector) {
   yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function* () {
-    const state: AppState = yield select();
+    const state: AppState = yield select(getState);
     yield put(popoutWindowRequested({ uri: state.ui.query.currentFileUri }));
   });
 }

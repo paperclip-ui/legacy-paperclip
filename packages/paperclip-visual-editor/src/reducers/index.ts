@@ -20,6 +20,8 @@ import {
   Action,
   ActionType,
   ExternalActionType,
+  LocationChanged,
+  RedirectRequested,
   ServerActionType,
 } from "../actions";
 import { clamp } from "lodash";
@@ -66,19 +68,14 @@ export default (state: AppState, action: Action) => {
         newState.availableBrowsers = action.payload;
       });
     }
-    case ActionType.LOCATION_CHANGED:
+    case ActionType.LOCATION_CHANGED: {
+      if (!state.syncLocationWithUI) {
+        return state;
+      }
+      return handleLocationChange(state, action);
+    }
     case ActionType.REDIRECT_REQUESTED: {
-      state = produce(state, (newState) => {
-        Object.assign(newState.ui, action.payload);
-
-        // clean path & ensure that it looks like "/canvas" instead of "/canvas/";
-        newState.ui.pathname = path
-          .normalize(newState.ui.pathname)
-          .replace(/\/$/, "");
-
-        newState.centeredInitial = false;
-      });
-      return state;
+      return handleLocationChange(state, action);
     }
     case ActionType.GET_ALL_SCREENS_REQUESTED: {
       return produce(state, (newState) => {
@@ -553,4 +550,20 @@ const minimizeWindow = (state: AppState) => {
     return state;
   }
   return maybeCenterCanvas(state, true);
+};
+
+const handleLocationChange = (
+  state: AppState,
+  { payload }: LocationChanged | RedirectRequested
+) => {
+  return produce(state, (newState) => {
+    Object.assign(newState.ui, payload);
+
+    // clean path & ensure that it looks like "/canvas" instead of "/canvas/";
+    newState.ui.pathname = path
+      .normalize(newState.ui.pathname)
+      .replace(/\/$/, "");
+
+    newState.centeredInitial = false;
+  });
 };

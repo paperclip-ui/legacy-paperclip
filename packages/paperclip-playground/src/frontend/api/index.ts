@@ -28,6 +28,14 @@ export const getUser = async () => {
   return await request(`/session`);
 };
 
+export const getProject = async (projectId: string) => {
+  return await request(`/projects/${projectId}`);
+};
+
+export const getProjects = async () => {
+  return await request(`/projects`);
+};
+
 const request = async (path: string, options: any = {}) => {
   const resp = await fetch(
     window.location.protocol + "//" + process.env.API_HOST + path,

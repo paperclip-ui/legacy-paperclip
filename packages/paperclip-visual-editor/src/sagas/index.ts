@@ -44,19 +44,28 @@ import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { utimes } from "fs";
 
-export default function* mainSaga(mount: HTMLElement) {
-  yield fork(handleRenderer);
-  yield takeEvery(ActionType.CANVAS_MOUSE_UP, handleCanvasMouseUp);
+export type AppStateSelector = (state) => AppState;
+
+export default function* mainSaga(
+  mount: HTMLElement,
+  getState: AppStateSelector
+) {
+  yield fork(handleRenderer, getState);
+  yield takeEvery(ActionType.CANVAS_MOUSE_UP, function* (
+    action: CanvasMouseUp
+  ) {
+    yield call(handleCanvasMouseUp, action, getState);
+  });
 
   // wait for client to be loaded to initialize anything so that
   // events properly get sent (like LOCATION_CHANGED)
   yield take(ActionType.CLIENT_CONNECTED);
   yield fork(handleKeyCommands, mount);
   yield fork(handleDocumentEvents);
-  yield fork(handleCanvas);
-  yield fork(handleClipboard);
-  yield fork(handleLocationChanged);
-  yield fork(handleLocation);
+  yield fork(handleCanvas, getState);
+  yield fork(handleClipboard, getState);
+  yield fork(handleLocationChanged, getState);
+  yield fork(handleLocation, getState);
 }
 
 function handleSock(onMessage, onClient) {
@@ -82,7 +91,7 @@ function handleSock(onMessage, onClient) {
   };
 }
 
-function* handleRenderer() {
+function* handleRenderer(getState: AppStateSelector) {
   let _client: any;
 
   const chan = eventChannel((emit) => {
@@ -112,7 +121,7 @@ function* handleRenderer() {
       ActionType.FS_ITEM_CLICKED,
     ],
     function* () {
-      const state: AppState = yield select();
+      const state: AppState = yield select(getState);
       yield put(fileOpened({ uri: state.ui.query.currentFileUri }));
     }
   );
@@ -125,7 +134,7 @@ function* handleRenderer() {
       ActionType.GLOBAL_H_KEY_DOWN,
     ],
     function* () {
-      const state: AppState = yield select();
+      const state: AppState = yield select(getState);
       yield put(
         pcVirtObjectEdited({
           mutations: getSelectedFrames(state).map((frame) => {
@@ -144,7 +153,7 @@ function* handleRenderer() {
   );
 
   yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function* () {
-    const state: AppState = yield select();
+    const state: AppState = yield select(getState);
 
     if (state.readonly) {
       return;
@@ -169,7 +178,7 @@ function* handleRenderer() {
   yield takeEvery(
     [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
     function* () {
-      const state: AppState = yield select();
+      const state: AppState = yield select(getState);
       if (state.showBirdseye && !state.loadedBirdseyeInitially) {
         yield put(getAllScreensRequested(null));
       }
@@ -177,7 +186,7 @@ function* handleRenderer() {
   );
 
   yield takeEvery([ActionType.LOCATION_CHANGED], function* () {
-    const state: AppState = yield select();
+    const state: AppState = yield select(getState);
     if (
       (!state.ui.query.currentFileUri ||
         location.pathname.indexOf("/all") === 0) &&
@@ -210,12 +219,15 @@ function* handleRenderer() {
   );
 }
 
-function* handleCanvasMouseUp(action: CanvasMouseUp) {
+function* handleCanvasMouseUp(
+  action: CanvasMouseUp,
+  getState: AppStateSelector
+) {
   if (!action.payload.metaKey) {
     return;
   }
 
-  const state: AppState = yield select();
+  const state: AppState = yield select(getState);
 
   const nodeInfo = getNodeInfoAtPoint(
     state.canvas.mousePosition,
@@ -316,11 +328,11 @@ function* handleKeyCommands(mount: HTMLElement) {
 const isInput = (node: HTMLElement) =>
   /textarea|input/.test(node.tagName.toLowerCase());
 
-function* handleClipboard() {
-  yield fork(handleCopy);
-  yield fork(handlePaste);
+function* handleClipboard(getState: AppStateSelector) {
+  yield fork(handleCopy, getState);
+  yield fork(handlePaste, getState);
 }
-function* handleCopy() {
+function* handleCopy(getState: AppStateSelector) {
   const ev = eventChannel((emit) => {
     window.document.addEventListener("copy", emit);
     return () => {
@@ -329,7 +341,7 @@ function* handleCopy() {
   });
 
   yield takeEvery(ev, function* (event: ClipboardEvent) {
-    const state: AppState = yield select();
+    const state: AppState = yield select(getState);
     const frames = getSelectedFrames(state);
 
     if (!frames.length) {
@@ -359,7 +371,7 @@ function* handleCopy() {
   });
 }
 
-function* handlePaste() {
+function* handlePaste(getState: AppStateSelector) {
   const ev = eventChannel((emit) => {
     window.document.addEventListener("paste", emit);
     return () => {
@@ -368,7 +380,7 @@ function* handlePaste() {
   });
 
   yield takeEvery(ev, function* (event: ClipboardEvent) {
-    const state: AppState = yield select();
+    const state: AppState = yield select(getState);
     if (state.readonly) {
       return;
     }
@@ -416,8 +428,8 @@ function* handleDocumentEvents() {
   });
 }
 
-function* handleLocationChanged() {
-  const state: AppState = yield select();
+function* handleLocationChanged(getState: AppStateSelector) {
+  const state: AppState = yield select(getState);
   if (!state.syncLocationWithUI) {
     return;
   }
@@ -432,11 +444,8 @@ function* handleLocationChanged() {
   );
 }
 
-function* handleLocation() {
-  const state: AppState = yield select();
-  if (!state.syncLocationWithUI) {
-    return;
-  }
+function* handleLocation(getState: AppStateSelector) {
+  const state: AppState = yield select(getState);
   const chan = eventChannel((emit) => {
     return history.listen(emit);
   });
@@ -445,7 +454,10 @@ function* handleLocation() {
   yield takeEvery(ActionType.REDIRECT_REQUESTED, function* (
     action: RedirectRequested
   ) {
-    const state = yield select();
+    const state = yield select(getState);
+    if (!state.syncLocationWithUI) {
+      return;
+    }
     console.log(JSON.stringify(state.ui));
     history.push(state.ui.pathname + "?" + qs.stringify(state.ui.query));
   });

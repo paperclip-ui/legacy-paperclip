@@ -49,7 +49,7 @@ const init = async () => {
   const onEngineInit = () => {
     _writer = new PCSourceWriter({
       engine: _engine,
-      getContent: (uri) => _appState.documentContents[uri],
+      getContent: (uri) => _appState.designMode.documentContents[uri],
     });
     dispatch(engineLoaded(null));
     tryOpeningCurrentFile();
@@ -57,12 +57,13 @@ const init = async () => {
 
   const tryOpeningCurrentFile = () => {
     if (
-      _appState.ui.query.currentFileUri &&
+      _appState.designMode.ui.query.currentFileUri &&
       _engine &&
-      (!_currentUri || _currentUri !== _appState.ui.query.currentFileUri)
+      (!_currentUri ||
+        _currentUri !== _appState.designMode.ui.query.currentFileUri)
     ) {
-      _currentUri = _appState.ui.query.currentFileUri;
-      _engine.open(_appState.ui.query.currentFileUri);
+      _currentUri = _appState.designMode.ui.query.currentFileUri;
+      _engine.open(_appState.designMode.ui.query.currentFileUri);
     }
   };
 
@@ -89,7 +90,10 @@ const init = async () => {
     payload: { changes },
   }: ContentChangesCreated) => {
     for (const uri in changes) {
-      _engine.updateVirtualFileContent(uri, _appState.documentContents[uri]);
+      _engine.updateVirtualFileContent(
+        uri,
+        _appState.designMode.documentContents[uri]
+      );
     }
   };
 
@@ -118,10 +122,10 @@ const init = async () => {
     {
       io: {
         readFile(uri) {
-          return _appState.documentContents[uri];
+          return _appState.designMode.documentContents[uri];
         },
         fileExists(uri: string) {
-          return _appState.documentContents[uri] != null;
+          return _appState.designMode.documentContents[uri] != null;
         },
         resolveFile(fromPath: string, toPath: string) {
           return url.resolve(fromPath, toPath);

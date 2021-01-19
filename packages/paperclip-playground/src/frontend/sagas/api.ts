@@ -1,5 +1,6 @@
 import { AppState } from "../state";
 import { call, fork, put, select, takeEvery } from "redux-saga/effects";
+import history from "paperclip-visual-editor/src/dom-history";
 import {
   AccountConnected,
   ActionType,
@@ -44,8 +45,13 @@ function* handleProjectChanges() {
   yield takeEvery(ActionType.SAVE_BUTTON_CLICKED, function* () {
     const state: AppState = yield select();
 
-    if (!state.project) {
-      yield call(api.createProject, undefined, state.documentContents);
+    if (!state.currentProject?.data) {
+      const project = yield call(
+        api.createProject,
+        undefined,
+        state.designMode.documentContents
+      );
+      history.push(`/projects/${project.id}`);
     } else {
     }
 

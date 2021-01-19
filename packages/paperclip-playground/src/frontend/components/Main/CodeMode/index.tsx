@@ -9,7 +9,7 @@ import { SlimEditor } from "./Slim";
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
   const { slim } = state;
-  const code = state.documentContents[state.currentCodeFileUri];
+  const code = state.designMode.documentContents[state.currentCodeFileUri];
 
   const onChange = (ev, value) => {
     dispatch(codeEditorChanged(value));
