@@ -2,7 +2,7 @@ const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 
-module.exports = function (context, options) {
+module.exports = function(context, options) {
   return {
     name: "paperclip-live-editor",
     getThemePath() {
@@ -13,41 +13,39 @@ module.exports = function (context, options) {
         new CopyPlugin({
           patterns: [
             {
-              from: path.resolve(
-                __dirname,
-                "../node_modules/paperclip-playground/dist"
-              ),
+              from: path.resolve(__dirname, "../../paperclip-playground/dist"),
+              to: ".",
               globOptions: {
-                ignore: ["**/index.html"],
-              },
-            },
-          ],
-        }),
+                ignore: ["**/index.html"]
+              }
+            }
+          ]
+        })
       ];
 
       if (isServer) {
         plugins.push(
           new webpack.ProvidePlugin({
             TextDecoder: ["util", "TextDecoder"],
-            TextEncoder: ["util", "TextEncoder"],
+            TextEncoder: ["util", "TextEncoder"]
           })
         );
       }
 
       return {
         node: {
-          fs: "empty",
+          fs: "empty"
         },
         module: {
           rules: [
             {
               test: /(glob$|fsevents|readdirp|chokidar)/,
-              loader: "null-loader",
-            },
-          ],
+              loader: "null-loader"
+            }
+          ]
         },
-        plugins,
+        plugins
       };
-    },
+    }
   };
 };
