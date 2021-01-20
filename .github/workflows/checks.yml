@@ -10,8 +10,10 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
       - run: yarn policies set-version
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: yarn install
@@ -22,8 +24,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - run: yarn policies set-version
+        with:
+          node-version: "14"
       - run: yarn install
       - run: yarn lint
