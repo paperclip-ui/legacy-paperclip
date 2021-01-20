@@ -12,8 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v2
-      - run: |
-          yarn policies set-version 1.22.10
+      - run: yarn policies set-version 1.22.10
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: yarn install
       - run: yarn build
@@ -25,7 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v2
-      - run: |
-          yarn policies set-version 1.22.10
+      - run: yarn policies set-version 1.22.10
       - run: yarn install
       - run: yarn lint
