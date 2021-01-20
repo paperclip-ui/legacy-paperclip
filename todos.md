@@ -1,9 +1,9 @@
 
 ### Immediate
-- add logo
 
-- copy/paste hijacked
-  - ensure that no other hotkeys are
+- undo / redo needs to work across all changes
+  - use CRDTs for this
+
 
 - ability to see existing projects
 - profile icon menu options
@@ -17,8 +17,6 @@
     - confirm - type name
   - visibility options
 
-- undo / redo
-  - use CRDTs for this
 
 - cleanup
   - going to / should display blank page
