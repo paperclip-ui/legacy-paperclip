@@ -291,18 +291,18 @@ impl Engine {
             // TODO - CSSOM changes can still happen, but aren't picked up
             // so we need to send the diff :(
             // if mutations.len() > 0 {
-              self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
-                uri: uri.clone(),
-                data: DiffedData {
-                  sheet,
-                  imports: &data.imports,
-                  exports: &data.exports,
-                  all_dependencies: &data.all_dependencies,
-                  dependents: &data.dependents,
-                  mutations,
-                },
-              }));
-            // }
+            self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
+              uri: uri.clone(),
+              data: DiffedData {
+                sheet,
+                imports: &data.imports,
+                exports: &data.exports,
+                all_dependencies: &data.all_dependencies,
+                dependents: &data.dependents,
+                mutations,
+              },
+            }));
+          // }
           } else {
             self.dispatch(EngineDelegateEvent::Evaluated(EvaluatedEvent {
               uri: uri.clone(),
