@@ -13,7 +13,6 @@ jobs:
         with:
           node-version: "12.x"
           registry-url: https://registry.npmjs.org/
-      - uses: borales/actions-yarn@v2.0.0
       - uses: jetli/wasm-pack-action@v0.3.0
       - run: yarn install
       - run: yarn build
