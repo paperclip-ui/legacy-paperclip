@@ -6,9 +6,11 @@ export const languages: Partial<SupportLanguage>[] = [
   {
     name: "paperclip",
     parsers: ["paperclip"],
-    extensions: [".pc"],
-    vscodeLanguageIds: ["paperclip"],
-  },
+
+    // DO NOT SET THIS UNTIL THIS MODULE IS WORKING!!
+    extensions: [],
+    vscodeLanguageIds: ["paperclip"]
+  }
 ];
 
 export const parsers: Record<string, Parser> = {
@@ -26,14 +28,14 @@ export const parsers: Record<string, Parser> = {
     locEnd(node) {
       return node.end;
     },
-    astFormat: "paperclip-ast",
-  },
+    astFormat: "paperclip-ast"
+  }
 };
 
 export const printers: Record<string, Printer> = {
   "paperclip-ast": {
-    print,
-  },
+    print
+  }
 };
 
 export { options } from "./options";
