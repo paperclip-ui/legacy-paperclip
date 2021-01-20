@@ -12,7 +12,7 @@ import {
   DefinitionParams,
   CompletionRequest,
   CompletionParams,
-  CompletionResolveRequest,
+  CompletionResolveRequest
 } from "vscode-languageserver";
 import {
   EngineDelegateEvent,
@@ -25,7 +25,7 @@ import {
   SourceLocation,
   RuntimeErrorEvent,
   EvaluatedEvent,
-  LoadedEvent,
+  LoadedEvent
 } from "paperclip";
 
 import { throttle } from "lodash";
@@ -40,11 +40,11 @@ import {
   ColorInformation,
   DiagnosticSeverity,
   TextEdit,
-  Diagnostic,
+  Diagnostic
 } from "vscode-languageserver";
 import {
   TextDocument,
-  TextDocumentContentChangeEvent,
+  TextDocumentContentChangeEvent
 } from "vscode-languageserver-textdocument";
 import { LanguageServices } from "./services";
 import { stripFileProtocol } from "paperclip";
@@ -59,12 +59,13 @@ type KeyValue<TValue> = {
 export class VSCServiceBridge {
   private _documents: KeyValue<TextDocument> = {};
   private _contentChanges: Record<string, string> = {};
-  private _engineWerking = false;
+  private _waitingForCalm = false;
 
   constructor(
     private _engine: EngineDelegate,
     private _service: LanguageServices,
-    readonly connection: Connection
+    readonly connection: Connection,
+    private _enhanceCalm: () => void
   ) {
     _engine.onEvent(this._onEngineDelegateEvent);
     connection.onRequest(
@@ -96,11 +97,11 @@ export class VSCServiceBridge {
         textDocument.text
       );
     });
-    connection.onDidCloseTextDocument((params) => {
+    connection.onDidCloseTextDocument(params => {
       delete this._documents[params.textDocument.uri];
     });
 
-    connection.onDidChangeTextDocument((params) => {
+    connection.onDidChangeTextDocument(params => {
       this._updateTextContent(params.textDocument.uri, params.contentChanges);
     });
   }
@@ -116,36 +117,46 @@ export class VSCServiceBridge {
           target: uri,
           range: {
             start: document.positionAt(start),
-            end: document.positionAt(end),
-          },
+            end: document.positionAt(end)
+          }
         })) as DocumentLink[])
     );
   };
 
+  goAheadNowYaHear() {
+    this._waitingForCalm = false;
+    this._maybePersistContentChanges();
+  }
+
   private _deferUpdateEngineContent = (uri: string, content: string) => {
     this._contentChanges[uri] = content;
-    if (!this._engineWerking) {
-      this._persistDeferredContentChanges();
-    }
+    this._maybePersistContentChanges();
   };
 
-  private _persistDeferredContentChanges = throttle(
-    () => {
-      const contentChanges = this._contentChanges;
-      if (Object.keys(contentChanges).length === 0) {
-        this._engineWerking = false;
-        return;
-      }
+  private _maybePersistContentChanges = () => {
+    if (this._waitingForCalm) {
+      return;
+    }
 
-      this._engineWerking = true;
-      this._contentChanges = {};
-      for (const uri in contentChanges) {
-        this._engine.updateVirtualFileContent(uri, contentChanges[uri]);
-      }
-    },
-    PERSIST_ENGINE_THROTTLE_MS,
-    { leading: true }
-  );
+    if (Object.keys(this._contentChanges).length === 0) {
+      this._waitingForCalm = false;
+      return;
+    }
+    const contentChanges = this._contentChanges;
+    this._contentChanges = {};
+    this._waitingForCalm = true;
+
+    // Engine is synchronous, so we may end up with a flood of events
+    // that become a bottleneck. The _correct_ area would be put to this
+    // in the engine, but that would require async work that could defer
+    // performance elsewhere (e.g: transmitting data between worker & parent). So
+    // Cheap way is ask the client to help enhance calm
+    this._enhanceCalm();
+
+    for (const uri in contentChanges) {
+      this._engine.updateVirtualFileContent(uri, contentChanges[uri]);
+    }
+  };
 
   private _onDefinitionRequest = (params: DefinitionParams) => {
     const document = this._documents[params.textDocument.uri];
@@ -154,7 +165,7 @@ export class VSCServiceBridge {
       service &&
       (service
         .getDefinitions(document.uri)
-        .filter((info) => {
+        .filter(info => {
           const offset = document.offsetAt(params.position);
           return (
             offset >= info.instanceLocation.start &&
@@ -168,8 +179,8 @@ export class VSCServiceBridge {
             sourceLocation: { start: sourceStart, end: sourceEnd },
             sourceDefinitionLocation: {
               start: definitionStart,
-              end: definitionEnd,
-            },
+              end: definitionEnd
+            }
           }) => {
             const sourceDocument =
               this._documents[sourceUri] ||
@@ -184,16 +195,16 @@ export class VSCServiceBridge {
               targetUri: sourceDocument.uri,
               targetRange: {
                 start: sourceDocument.positionAt(definitionStart),
-                end: sourceDocument.positionAt(definitionEnd),
+                end: sourceDocument.positionAt(definitionEnd)
               },
               targetSelectionRange: {
                 start: sourceDocument.positionAt(sourceStart),
-                end: sourceDocument.positionAt(sourceEnd),
+                end: sourceDocument.positionAt(sourceEnd)
               },
               originSelectionRange: {
                 start: document.positionAt(instanceStart),
-                end: document.positionAt(instanceEnd),
-              },
+                end: document.positionAt(instanceEnd)
+              }
             };
           }
         ) as DefinitionLink[]);
@@ -213,7 +224,7 @@ export class VSCServiceBridge {
     return ret;
   };
 
-  private _onCompletionResolveRequest = (item) => {
+  private _onCompletionResolveRequest = item => {
     return this._service.getService(item.data.uri).resolveCompletionItem(item);
   };
 
@@ -233,20 +244,20 @@ export class VSCServiceBridge {
           try {
             const {
               color: [red, green, blue],
-              valpha: alpha,
+              valpha: alpha
             } = parseColor(color);
 
             return {
               range: {
                 start: document.positionAt(location.start),
-                end: document.positionAt(location.end),
+                end: document.positionAt(location.end)
               },
               color: {
                 red: red / 255,
                 green: green / 255,
                 blue: blue / 255,
-                alpha,
-              },
+                alpha
+              }
             };
           } catch (e) {
             console.error(e.stack);
@@ -329,7 +340,7 @@ export class VSCServiceBridge {
       }
     }
 
-    this._persistDeferredContentChanges();
+    this._maybePersistContentChanges();
   };
 
   private _onEngineEvaluatedEvent(
@@ -338,7 +349,7 @@ export class VSCServiceBridge {
     // reset error diagnostics
     this.connection.sendDiagnostics({
       uri: event.uri,
-      diagnostics: [],
+      diagnostics: []
     });
   }
 
@@ -359,7 +370,7 @@ export class VSCServiceBridge {
 
   private _handleGraphError({
     uri,
-    info: { message, location },
+    info: { message, location }
   }: GraphErrorEvent) {
     this._sendError(uri, message, location);
   }
@@ -380,12 +391,12 @@ export class VSCServiceBridge {
     }
 
     const diagnostics: Diagnostic[] = [
-      createErrorDiagnostic(message, textDocument, location),
+      createErrorDiagnostic(message, textDocument, location)
     ];
 
     this.connection.sendDiagnostics({
       uri,
-      diagnostics,
+      diagnostics
     });
   }
 }
@@ -414,9 +425,9 @@ const createErrorDiagnostic = (
     severity: DiagnosticSeverity.Error,
     range: {
       start: textDocument.positionAt(location.start),
-      end: textDocument.positionAt(location.end),
+      end: textDocument.positionAt(location.end)
     },
     message: `${message}`,
-    source: "ex",
+    source: "ex"
   };
 };

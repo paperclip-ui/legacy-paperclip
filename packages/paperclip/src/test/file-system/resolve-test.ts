@@ -3,7 +3,7 @@ import * as path from "path";
 import * as url from "url";
 import { expect } from "chai";
 import { TEST_FIXTURE_SRC_DIRECTORY } from "../utils";
-import { resolveAllPaperclipFiles } from "../../utils";
+import { resolveAllPaperclipFiles } from "../../core/utils";
 import { resolveImportFile, resolveImportUri } from "paperclip-utils";
 
 describe(__filename + "#", () => {

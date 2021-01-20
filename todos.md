@@ -1,7 +1,6 @@
 
 ### Immediate
-
-- Performance** - need to throttle changes
+- add logo
 
 - copy/paste hijacked
   - ensure that no other hotkeys are

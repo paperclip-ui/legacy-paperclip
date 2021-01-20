@@ -11,7 +11,7 @@ import {
   VirtualNode,
   LoadedData,
   PaperclipSourceWatcher,
-  ChangeKind,
+  ChangeKind
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -25,9 +25,14 @@ export type EngineIO = {
   readFile?: (filePath: string) => string;
 };
 
+export interface IEngineDelegate {
+  onEvent: (listener: EngineDelegateEventListener) => () => void;
+  parseFile: (uri: string) => any;
+}
+
 export enum EngineMode {
   SingleFrame,
-  MultiFrame,
+  MultiFrame
 }
 
 export type EngineOptions = {
@@ -35,7 +40,7 @@ export type EngineOptions = {
   mode?: EngineMode;
 };
 
-const mapResult = (result) => {
+const mapResult = result => {
   if (!result) {
     return result;
   }
@@ -56,7 +61,7 @@ export type LoadResult = {
 
 export enum EngineDelegateEventType {
   Loaded = "Loaded",
-  ChangedSheets = "ChangedSheets",
+  ChangedSheets = "ChangedSheets"
 }
 
 /*
@@ -75,10 +80,6 @@ export class EngineDelegate {
 
     this.onEvent(this._onEngineDelegateEvent);
     return this;
-  }
-
-  getGraphUris(): string[] {
-    return this._native.get_graph_uris();
   }
 
   onEvent(listener: EngineDelegateEventListener) {
@@ -100,7 +101,7 @@ export class EngineDelegate {
       this._dispatch({
         kind: EngineDelegateEventKind.Loaded,
         uri: event.uri,
-        data: this._rendered[event.uri],
+        data: this._rendered[event.uri]
       });
     } else if (event.kind === EngineDelegateEventKind.Diffed) {
       const existingData = this._rendered[event.uri];
@@ -126,7 +127,7 @@ export class EngineDelegate {
         ) {
           addedSheets.push({
             uri: depUri,
-            sheet: this._rendered[depUri].sheet,
+            sheet: this._rendered[depUri].sheet
           });
         }
       }
@@ -138,8 +139,8 @@ export class EngineDelegate {
           data: {
             newSheets: addedSheets,
             removedSheetUris: removedSheetUris,
-            allDependencies: event.data.allDependencies,
-          },
+            allDependencies: event.data.allDependencies
+          }
         });
       }
     }

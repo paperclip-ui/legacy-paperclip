@@ -18,7 +18,11 @@ import {
   devServerInitialized,
   devServerChanged,
   Action,
-  $$ACTION_NOTIFICATION
+  $$ACTION_NOTIFICATION,
+  goosefraba,
+  enhanceCalmRequested,
+  Goosefraba,
+  ActionType
 } from "../common/actions";
 import {
   startServer,
@@ -94,8 +98,11 @@ class Server {
 
     this._connection.onNotification(
       $$ACTION_NOTIFICATION,
-      (action: ExternalAction) => {
-        dispatch(action);
+      (action: ExternalAction | Goosefraba) => {
+        dispatch(action as ExternalAction);
+        if (action.type === ActionType.GOOSEFRABA) {
+          bridge.goAheadNowYaHear();
+        }
       }
     );
 
@@ -106,7 +113,14 @@ class Server {
     const services = createServices(engine);
 
     // Bridges language services to VSCode
-    new VSCServiceBridge(engine, services, this._connection);
+    const bridge = new VSCServiceBridge(
+      engine,
+      services,
+      this._connection,
+      () => {
+        this._dispatch(enhanceCalmRequested(null));
+      }
+    );
   };
 }
 

@@ -31,7 +31,7 @@ export type ProjectFile = {
 
 export const APP_LOCATIONS = {
   PROJECTS: "/projects",
-  PROJECT: "/projects/:projectId",
+  PROJECT: "/projects/:projectId"
 };
 
 export const matchesLocationPath = (pathname: string, test: string) => {
@@ -74,35 +74,35 @@ export const INITIAL_STATE: AppState = {
     ui: {
       pathname: "/canvas",
       query: {
-        currentFileUri: ENTRY_URI,
-      },
+        currentFileUri: ENTRY_URI
+      }
     },
     syncLocationWithUI: false,
     documentContents: {
-      [ENTRY_URI]: ENTRY_SOURCE,
+      [ENTRY_URI]: ENTRY_SOURCE
     },
     projectDirectory: {
       name: "/",
       kind: ve.FSItemKind.DIRECTORY,
       absolutePath: "/",
       url: "file://",
-      children: [],
-    },
+      children: []
+    }
   },
   playgroundUi:
     typeof window !== "undefined"
       ? {
           pathname: window.location.pathname,
-          query: qs.parse(window.location.search.substr(1)),
+          query: qs.parse(window.location.search.substr(1))
         }
       : {
           pathname: "/",
-          query: {},
+          query: {}
         },
   currentCodeFileUri: ENTRY_URI,
   compact: false,
   apiHost: process.env.API_HOST,
-  slim: true,
+  slim: false
 };
 export const getNewFilePath = (name: string) => {
   return "file:///" + name.replace(".pc", "") + ".pc";

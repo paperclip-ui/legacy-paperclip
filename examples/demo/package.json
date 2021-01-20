@@ -16,8 +16,8 @@
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
-    "@types/react": "^16.9.44",
-    "@types/react-dom": "^16.9.8",
+    "@types/react": "17.0.0",
+    "@types/react-dom": "17.0.0",
     "css-loader": "^4.2.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
@@ -28,7 +28,7 @@
     "percy": "^0.27.2",
     "percy-paperclip": "^17.4.4",
     "style-loader": "^1.2.1",
-    "ts-loader": "^8.0.2",
+    "ts-loader": "8.0.14",
     "typescript": "^3.9.7",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",

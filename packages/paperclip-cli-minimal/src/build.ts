@@ -10,7 +10,7 @@ import {
   createEngineDelegate,
   paperclipSourceGlobPattern,
   Node,
-  stringifyCSSSheet,
+  stringifyCSSSheet
 } from "paperclip";
 import { glob } from "glob";
 import { getPrettyMessage } from "paperclip-cli-utils";
@@ -19,6 +19,7 @@ import { ClassNameExport, stripFileProtocol } from "paperclip";
 export type BuildOptions = {
   config: string;
   write: boolean;
+  css: boolean;
   definition: boolean;
   watch: boolean;
   dropPcExtension: boolean;
@@ -56,8 +57,8 @@ export const build = async (options: BuildOptions) => {
     compilerOptions: {
       ...localConfig.compilerOptions,
       definition: options.definition || localConfig.compilerOptions.definition,
-      name: options.compilerName || localConfig.compilerOptions.name,
-    },
+      name: options.compilerName || localConfig.compilerOptions.name
+    }
   };
 
   const compiler = config.compilerOptions.name;
@@ -139,11 +140,13 @@ async function initBuild(
         {
           ast,
           classNames: exports.style.classNames,
-          module: config.compilerOptions.module,
+          module: config.compilerOptions.module
         },
         fullPath,
         compilerOptions
       );
+
+      const sheetCode = stringifyCSSSheet(sheet, { protocol: "file://" });
 
       if (options.write) {
         let outputFilePath = getOutputFilePath(fullPath, compilerOptions);
@@ -155,10 +158,7 @@ async function initBuild(
         if (!compilerOptions.definition) {
           const cssFilePath = outputFilePath.replace(/\.\w+$/, ".css");
           const basename = path.basename(url.fileURLToPath(cssFilePath));
-          writeFileSync(
-            cssFilePath,
-            stringifyCSSSheet(sheet, { protocol: "file://" })
-          );
+          writeFileSync(cssFilePath, sheetCode);
 
           code = `import "./${basename}"\n\n` + code;
         }
@@ -166,9 +166,12 @@ async function initBuild(
         writeFileSync(uri.href, code);
       } else {
         console.log("Compiling %s", relativePath);
-
         // Keep me for stdout
-        console.log(code);
+        if (options.css) {
+          console.log(sheetCode);
+        } else {
+          console.log(code);
+        }
       }
     } catch (e) {
       if (e.location) {
@@ -183,9 +186,9 @@ async function initBuild(
   glob(
     paperclipSourceGlobPattern(srcDirectory),
     {
-      cwd: cwd,
+      cwd: cwd
     },
-    async function (err, filePaths) {
+    async function(err, filePaths) {
       filePaths.map(compileFile);
     }
   );
@@ -197,13 +200,13 @@ async function initBuild(
 
 function watch(cwd, filesGlob, compileFile) {
   const watcher = chokidar.watch(filesGlob, {
-    cwd: cwd,
+    cwd: cwd
   });
 
   watcher.on("change", compileFile);
 }
 
-const resolve2 = (module) => {
+const resolve2 = module => {
   try {
     return resolve.sync(module, { basedir: process.cwd() });
   } catch (e) {

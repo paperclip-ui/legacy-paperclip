@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as url from "url";
 import { expect } from "chai";
-import { createEngineDelegate } from "../../../";
+import { createEngineDelegate } from "../../node";
 import { stringifyLoadResult, TEST_FIXTURE_SRC_DIRECTORY } from "../utils";
 
 describe(__filename + "#", () => {

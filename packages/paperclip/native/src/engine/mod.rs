@@ -284,17 +284,22 @@ impl Engine {
               Some(data.sheet.clone())
             };
 
-            self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
-              uri: uri.clone(),
-              data: DiffedData {
-                sheet,
-                imports: &data.imports,
-                exports: &data.exports,
-                all_dependencies: &data.all_dependencies,
-                dependents: &data.dependents,
-                mutations: diff_pc(&existing_info.preview, &data.preview),
-              },
-            }));
+            let mutations = diff_pc(&existing_info.preview, &data.preview);
+
+            // no need to dispatch mutation if no event
+            if mutations.len() > 0 {
+              self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
+                uri: uri.clone(),
+                data: DiffedData {
+                  sheet,
+                  imports: &data.imports,
+                  exports: &data.exports,
+                  all_dependencies: &data.all_dependencies,
+                  dependents: &data.dependents,
+                  mutations,
+                },
+              }));
+            }
           } else {
             self.dispatch(EngineDelegateEvent::Evaluated(EvaluatedEvent {
               uri: uri.clone(),

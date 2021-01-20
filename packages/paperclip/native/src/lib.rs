@@ -22,6 +22,11 @@ use crate::pc::runtime::evaluator::EngineMode;
 use ::futures::executor::block_on;
 use engine::{Engine, EngineError};
 
+#[cfg(feature = "wee_alloc")]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
+
 extern crate web_sys;
 
 #[wasm_bindgen]

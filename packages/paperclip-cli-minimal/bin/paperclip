@@ -8,6 +8,7 @@ const argv = require("yargs")
   .option("watch", desc("watch for changes"))
   .option("drop-pc-extension", desc("Drops PC extension from compiled files"))
   .option("write", desc("Write compiled file"))
+  .option("css", desc("Output CSS for stdout"))
   .option("verbose", desc("Write verbose information"))
   .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
   .option("definition", desc("Write typed definition type"))
@@ -15,6 +16,7 @@ const argv = require("yargs")
   build({
     config: argv.config,
     write: argv.write,
+    css: argv.css,
     watch: argv.watch,
     definition: argv.definition,
     verbose: argv.verbose,

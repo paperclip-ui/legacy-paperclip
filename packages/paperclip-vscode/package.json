@@ -152,11 +152,11 @@
     "nodemon": "^2.0.7",
     "plist": "^3.0.1",
     "typescript": "^3.9.7",
+    "vscode-languageserver-protocol": "3.15.1",
     "vscode-test": "^1.4.0",
     "vscode-textmate": "^5.2.0"
   },
   "dependencies": {
-    "@types/react": "^16.9.20",
     "axios": "^0.21.1",
     "browserstack": "^1.6.1",
     "browserstack-local": "^1.4.8",
@@ -173,8 +173,8 @@
     "paperclip-utils": "^17.4.4",
     "paperclip-visual-editor": "^17.4.6",
     "paperclip-web-renderer": "^17.4.4",
-    "vscode-languageclient": "^6.0.1",
-    "vscode-languageserver": "^6.0.1",
+    "vscode-languageclient": "6.0.1",
+    "vscode-languageserver": "6.0.1",
     "vscode-languageserver-textdocument": "^1.0.0"
   },
   "gitHead": "c57fa4658fb31214f2918c29e961bf2b16f459f1"
