@@ -26,6 +26,9 @@
 - wrap
   - paperclip.playground.dev
 
+- design tweaks
+  - profile icon should have dropdown caret next to it
+
 ### Necessary (but not yet planned)
 
 - Tutorial (show if new user)
