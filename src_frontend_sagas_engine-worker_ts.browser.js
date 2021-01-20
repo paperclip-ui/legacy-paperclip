@@ -30,22 +30,47 @@ var actionCreator = function (type) { return function (payload) { return ({
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ActionType": () => /* binding */ ActionType,
+/* harmony export */   "AccountKind": () => /* binding */ AccountKind,
+/* harmony export */   "accountConnected": () => /* binding */ accountConnected,
+/* harmony export */   "logoutButtonClicked": () => /* binding */ logoutButtonClicked,
+/* harmony export */   "sessionLoaded": () => /* binding */ sessionLoaded,
+/* harmony export */   "savedProject": () => /* binding */ savedProject,
+/* harmony export */   "loggedOut": () => /* binding */ loggedOut,
 /* harmony export */   "engineLoaded": () => /* binding */ engineLoaded,
 /* harmony export */   "engineCrashed": () => /* binding */ engineCrashed,
+/* harmony export */   "saveButtonClicked": () => /* binding */ saveButtonClicked,
 /* harmony export */   "codeEditorChanged": () => /* binding */ codeEditorChanged,
 /* harmony export */   "workerInitialized": () => /* binding */ workerInitialized,
 /* harmony export */   "appStateDiffed": () => /* binding */ appStateDiffed,
 /* harmony export */   "contentChangesCreated": () => /* binding */ contentChangesCreated,
 /* harmony export */   "newFileNameEntered": () => /* binding */ newFileNameEntered,
 /* harmony export */   "fileItemClicked": () => /* binding */ fileItemClicked,
-/* harmony export */   "syncPanelsClicked": () => /* binding */ syncPanelsClicked
+/* harmony export */   "syncPanelsClicked": () => /* binding */ syncPanelsClicked,
+/* harmony export */   "getProjectRequestChanged": () => /* binding */ getProjectRequestChanged,
+/* harmony export */   "getProjectsRequestChanged": () => /* binding */ getProjectsRequestChanged,
+/* harmony export */   "getProjectFilesRequestChanged": () => /* binding */ getProjectFilesRequestChanged,
+/* harmony export */   "projectHookUsed": () => /* binding */ projectHookUsed,
+/* harmony export */   "projectFilesHookUsed": () => /* binding */ projectFilesHookUsed,
+/* harmony export */   "allProjectsHookUsed": () => /* binding */ allProjectsHookUsed
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/frontend/actions/base.ts");
 
 var ActionType;
 (function (ActionType) {
+    ActionType["PROJECT_HOOK_USED"] = "PROJECT_HOOK_USED";
+    ActionType["ALL_PROJECTS_HOOK_USED"] = "ALL_PROJECTS_HOOK_USED";
+    ActionType["PROJECT_FILES_HOOK_USED"] = "PROJECT_FILES_HOOK_USED";
+    ActionType["REQUEST_CHANGED"] = "REQUEST_CHANGED";
     ActionType["ENGINE_LOADED"] = "ENGINE_LOADED";
+    ActionType["GET_PROJECTS_REQUEST_CHANGED"] = "GET_PROJECTS_REQUEST_CHANGED";
+    ActionType["GET_PROJECT_REQUEST_CHANGED"] = "GET_PROJECT_REQUEST_CHANGED";
+    ActionType["GET_PROJECT_FILES_REQUEST_CHANGED"] = "GET_PROJECT_FILES_REQUEST_CHANGED";
+    ActionType["LOGOUT_BUTTON_CLICKED"] = "LOGOUT_BUTTON_CLICKED";
     ActionType["ENGINE_CRASHED"] = "ENGINE_CRASHED";
+    ActionType["SAVED_PROJECT"] = "SAVED_PROJECT";
+    ActionType["SAVE_BUTTON_CLICKED"] = "SAVE_BUTTON_CLICKED";
+    ActionType["LOGGED_OUT"] = "LOGGED_OUT";
+    ActionType["SESSION_LOADED"] = "SESSION_LOADED";
     ActionType["CODE_EDITOR_TEXT_CHANGED"] = "CODE_EDITOR_TEXT_CHANGED";
     ActionType["WORKER_INITIALIZED"] = "WORKER_INITIALIZED";
     ActionType["APP_STATE_DIFFED"] = "APP_STATE_DIFFED";
@@ -53,9 +78,21 @@ var ActionType;
     ActionType["FILE_ITEM_CLICKED"] = "FILE_ITEM_CLICKED";
     ActionType["NEW_FILE_NAME_ENTERED"] = "NEW_FILE_NAME_ENTERED";
     ActionType["SYNC_PANELS_CLICKED"] = "SYNC_PANELS_CLICKED";
+    ActionType["ACCOUNT_CONNECTED"] = "ACCOUNT_CONNECTED";
 })(ActionType || (ActionType = {}));
+var AccountKind;
+(function (AccountKind) {
+    AccountKind["Google"] = "google";
+    AccountKind["GitHub"] = "github";
+})(AccountKind || (AccountKind = {}));
+var accountConnected = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ACCOUNT_CONNECTED);
+var logoutButtonClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.LOGOUT_BUTTON_CLICKED);
+var sessionLoaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SESSION_LOADED);
+var savedProject = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SAVED_PROJECT);
+var loggedOut = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.LOGGED_OUT);
 var engineLoaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ENGINE_LOADED);
 var engineCrashed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ENGINE_CRASHED);
+var saveButtonClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SAVE_BUTTON_CLICKED);
 var codeEditorChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.CODE_EDITOR_TEXT_CHANGED);
 var workerInitialized = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.WORKER_INITIALIZED);
 var appStateDiffed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.APP_STATE_DIFFED);
@@ -63,6 +100,12 @@ var contentChangesCreated = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)
 var newFileNameEntered = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.NEW_FILE_NAME_ENTERED);
 var fileItemClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.FILE_ITEM_CLICKED);
 var syncPanelsClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SYNC_PANELS_CLICKED);
+var getProjectRequestChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GET_PROJECT_REQUEST_CHANGED);
+var getProjectsRequestChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GET_PROJECTS_REQUEST_CHANGED);
+var getProjectFilesRequestChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GET_PROJECT_FILES_REQUEST_CHANGED);
+var projectHookUsed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.PROJECT_HOOK_USED);
+var projectFilesHookUsed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.PROJECT_FILES_HOOK_USED);
+var allProjectsHookUsed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ALL_PROJECTS_HOOK_USED);
 
 
 /***/ }),
@@ -78,8 +121,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../actions */ "./src/frontend/actions/index.ts");
 /* harmony import */ var paperclip_browser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paperclip/browser */ "../paperclip/browser.js");
 /* harmony import */ var paperclip_visual_editor_src_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! paperclip-visual-editor/src/actions */ "../paperclip-visual-editor/src/actions/index.ts");
-/* harmony import */ var fast_json_patch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! fast-json-patch */ "./node_modules/fast-json-patch/index.mjs");
-/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! url */ "./node_modules/url/url.js");
+/* harmony import */ var fast_json_patch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! fast-json-patch */ "../../node_modules/fast-json-patch/index.mjs");
+/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
 /* harmony import */ var paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! paperclip-source-writer */ "../paperclip-source-writer/lib/index.js");
 /* harmony import */ var paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__);
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -147,17 +190,18 @@ var init = function () { return __awaiter(void 0, void 0, void 0, function () {
                 onEngineInit = function () {
                     _writer = new paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__.PCSourceWriter({
                         engine: _engine,
-                        getContent: function (uri) { return _appState.documentContents[uri]; },
+                        getContent: function (uri) { return _appState.designMode.documentContents[uri]; },
                     });
                     dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_0__.engineLoaded)(null));
                     tryOpeningCurrentFile();
                 };
                 tryOpeningCurrentFile = function () {
-                    if (_appState.ui.query.currentFileUri &&
+                    if (_appState.designMode.ui.query.currentFileUri &&
                         _engine &&
-                        (!_currentUri || _currentUri !== _appState.ui.query.currentFileUri)) {
-                        _currentUri = _appState.ui.query.currentFileUri;
-                        _engine.open(_appState.ui.query.currentFileUri);
+                        (!_currentUri ||
+                            _currentUri !== _appState.designMode.ui.query.currentFileUri)) {
+                        _currentUri = _appState.designMode.ui.query.currentFileUri;
+                        _engine.open(_appState.designMode.ui.query.currentFileUri);
                     }
                 };
                 handleAppStateDiffed = function (_a) {
@@ -191,7 +235,7 @@ var init = function () { return __awaiter(void 0, void 0, void 0, function () {
                 handleContentChanges = function (_a) {
                     var changes = _a.payload.changes;
                     for (var uri in changes) {
-                        _engine.updateVirtualFileContent(uri, _appState.documentContents[uri]);
+                        _engine.updateVirtualFileContent(uri, _appState.designMode.documentContents[uri]);
                     }
                 };
                 handleRedirect = function (action) {
@@ -217,10 +261,10 @@ var init = function () { return __awaiter(void 0, void 0, void 0, function () {
                 return [4 /*yield*/, (0,paperclip_browser__WEBPACK_IMPORTED_MODULE_1__.loadEngineDelegate)({
                         io: {
                             readFile: function (uri) {
-                                return _appState.documentContents[uri];
+                                return _appState.designMode.documentContents[uri];
                             },
                             fileExists: function (uri) {
-                                return _appState.documentContents[uri] != null;
+                                return _appState.designMode.documentContents[uri] != null;
                             },
                             resolveFile: function (fromPath, toPath) {
                                 return url__WEBPACK_IMPORTED_MODULE_4__.resolve(fromPath, toPath);
@@ -855,9 +899,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getNestedReferences = exports.getCompletionItems = exports.traverseExpression = exports.isAttributeValue = exports.isAttribute = exports.isNode = exports.getMixins = exports.isComponentInstance = exports.getTreeNodeMap = exports.getParentNode = exports.getNodePath = exports.flattenTreeNode = exports.hasAttribute = exports.getLogicElement = exports.getDefaultPart = exports.getPartIds = exports.getParts = exports.getVisibleChildNodes = exports.isVisibleNode = exports.isVisibleElement = exports.getStyleElements = exports.getAttributeStringValue = exports.getAttributeValue = exports.getAttribute = exports.getMetaValue = exports.findByNamespace = exports.getChildrenByTagName = exports.getStyleScopeId = exports.getChildren = exports.getImportById = exports.getImportIds = exports.getRelativeFilePath = exports.getImports = exports.DynamicStringAttributeValuePartKind = exports.AttributeValueKind = exports.AttributeKind = exports.AnnotationPropertyKind = exports.NodeKind = void 0;
 var js_ast_1 = __webpack_require__(/*! ./js-ast */ "../paperclip-utils/lib/js-ast.js");
 var css_ast_1 = __webpack_require__(/*! ./css-ast */ "../paperclip-utils/lib/css-ast.js");
-var crc32 = __webpack_require__(/*! crc32 */ "../paperclip-utils/node_modules/crc32/lib/crc32.js");
+var crc32 = __webpack_require__(/*! crc32 */ "../../node_modules/crc32/lib/crc32.js");
 var resolve_1 = __webpack_require__(/*! ./resolve */ "../paperclip-utils/lib/resolve.js");
-var path = __webpack_require__(/*! path */ "./node_modules/path-browserify/index.js");
+var path = __webpack_require__(/*! path */ "../../node_modules/path-browserify/index.js");
 var constants_1 = __webpack_require__(/*! ./constants */ "../paperclip-utils/lib/constants.js");
 var memo_1 = __webpack_require__(/*! ./memo */ "../paperclip-utils/lib/memo.js");
 var NodeKind;
@@ -1794,8 +1838,8 @@ exports.underchange = function (fn) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.findPCConfigUrl = exports.resolveImportFile = exports.resolveImportUri = void 0;
-var path = __webpack_require__(/*! path */ "./node_modules/path-browserify/index.js");
-var url = __webpack_require__(/*! url */ "../paperclip-utils/node_modules/url/url.js");
+var path = __webpack_require__(/*! path */ "../../node_modules/path-browserify/index.js");
+var url = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
 var utils_1 = __webpack_require__(/*! ./utils */ "../paperclip-utils/lib/utils.js");
 var constants_1 = __webpack_require__(/*! ./constants */ "../paperclip-utils/lib/constants.js");
 exports.resolveImportUri = function (fs) { return function (fromPath, toPath, resolveOutput) {
@@ -1906,10 +1950,10 @@ var isntRoot = function (cdir) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PaperclipSourceWatcher = exports.ChangeKind = void 0;
-var chokidar = __webpack_require__(/*! chokidar */ "fs");
-var path = __webpack_require__(/*! path */ "./node_modules/path-browserify/index.js");
-var url = __webpack_require__(/*! url */ "../paperclip-utils/node_modules/url/url.js");
-var events_1 = __webpack_require__(/*! events */ "../paperclip-utils/node_modules/events/events.js");
+var chokidar = __webpack_require__(/*! chokidar */ "chokidar");
+var path = __webpack_require__(/*! path */ "../../node_modules/path-browserify/index.js");
+var url = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
+var events_1 = __webpack_require__(/*! events */ "../../node_modules/events/events.js");
 var utils_1 = __webpack_require__(/*! ./utils */ "../paperclip-utils/lib/utils.js");
 var ChangeKind;
 (function (ChangeKind) {
@@ -1967,8 +2011,8 @@ exports.PaperclipSourceWatcher = PaperclipSourceWatcher;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.stringifyCSSSheet = void 0;
-var path = __webpack_require__(/*! path */ "./node_modules/path-browserify/index.js");
-var url = __webpack_require__(/*! url */ "../paperclip-utils/node_modules/url/url.js");
+var path = __webpack_require__(/*! path */ "../../node_modules/path-browserify/index.js");
+var url = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
 exports.stringifyCSSSheet = function (sheet, options) {
     if (options === void 0) { options = {}; }
     return sheet.rules.map(function (rule) { return stringifyCSSRule(rule, options); }).join("\n");
@@ -2046,7 +2090,7 @@ var stringifyStyle = function (_a, _b) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.stringifyVirtualNode = void 0;
 var stringify_sheet_1 = __webpack_require__(/*! ./stringify-sheet */ "../paperclip-utils/lib/stringify-sheet.js");
-var html_entities_1 = __webpack_require__(/*! html-entities */ "../paperclip-utils/node_modules/html-entities/lib/index.js");
+var html_entities_1 = __webpack_require__(/*! html-entities */ "../../node_modules/html-entities/lib/index.js");
 var entities = new html_entities_1.Html5Entities();
 exports.stringifyVirtualNode = function (node) {
     switch (node.kind) {
@@ -2094,7 +2138,7 @@ var stringifyChildren = function (node) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isPaperclipFile = exports.paperclipSourceGlobPattern = exports.stripFileProtocol = void 0;
-var url = __webpack_require__(/*! url */ "../paperclip-utils/node_modules/url/url.js");
+var url = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
 exports.stripFileProtocol = function (filePath) {
     return filePath.includes("file://") ? url.fileURLToPath(filePath) : filePath;
 };
@@ -2307,7 +2351,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "loadEngineDelegate": () => /* binding */ loadEngineDelegate
 /* harmony export */ });
-/* harmony import */ var _esm__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./esm */ "../paperclip/esm/index.js");
+/* harmony import */ var _esm_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./esm/core */ "../paperclip/esm/core/index.js");
 
 
 const loadEngineDelegate = async (options, onCrash) => {
@@ -2317,15 +2361,15 @@ const loadEngineDelegate = async (options, onCrash) => {
   const { NativeEngine } = await __webpack_require__.e(/*! import() */ "paperclip_native_browser_paperclip_bg_js").then(__webpack_require__.bind(__webpack_require__, /*! ./native/browser/paperclip_bg */ "../paperclip/native/browser/paperclip_bg.js"));
   const { readFile, fileExists, resolveFile } = options.io;
 
-  return new _esm__WEBPACK_IMPORTED_MODULE_0__.EngineDelegate(
+  return new _esm_core__WEBPACK_IMPORTED_MODULE_0__.EngineDelegate(
     NativeEngine.new(
       readFile,
       fileExists,
       resolveFile,
-      options.mode || _esm__WEBPACK_IMPORTED_MODULE_0__.EngineMode.MultiFrame
+      options.mode || _esm_core__WEBPACK_IMPORTED_MODULE_0__.EngineMode.MultiFrame
     ),
     onCrash ||
-      function (e) {
+      function(e) {
         console.error(e);
       }
   );
@@ -2334,10 +2378,10 @@ const loadEngineDelegate = async (options, onCrash) => {
 
 /***/ }),
 
-/***/ "../paperclip/esm/delegate.js":
-/*!************************************!*\
-  !*** ../paperclip/esm/delegate.js ***!
-  \************************************/
+/***/ "../paperclip/esm/core/delegate.js":
+/*!*****************************************!*\
+  !*** ../paperclip/esm/core/delegate.js ***!
+  \*****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -2348,12 +2392,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "EngineDelegate": () => /* binding */ EngineDelegate,
 /* harmony export */   "keepEngineInSyncWithFileSystem2": () => /* binding */ keepEngineInSyncWithFileSystem2
 /* harmony export */ });
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! fs */ "fs");
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! fs */ "chokidar");
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! url */ "../paperclip/node_modules/url/url.js");
+/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
 /* harmony import */ var paperclip_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! paperclip-utils */ "../paperclip-utils/index.js");
 /* harmony import */ var paperclip_utils__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(paperclip_utils__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "../paperclip/esm/utils.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "../paperclip/esm/core/utils.js");
 // 🙈
 
 
@@ -2364,7 +2408,7 @@ var EngineMode;
     EngineMode[EngineMode["SingleFrame"] = 0] = "SingleFrame";
     EngineMode[EngineMode["MultiFrame"] = 1] = "MultiFrame";
 })(EngineMode || (EngineMode = {}));
-const mapResult = (result) => {
+const mapResult = result => {
     if (!result) {
         return result;
     }
@@ -2397,7 +2441,7 @@ class EngineDelegate {
                 this._dispatch({
                     kind: paperclip_utils__WEBPACK_IMPORTED_MODULE_2__.EngineDelegateEventKind.Loaded,
                     uri: event.uri,
-                    data: this._rendered[event.uri],
+                    data: this._rendered[event.uri]
                 });
             }
             else if (event.kind === paperclip_utils__WEBPACK_IMPORTED_MODULE_2__.EngineDelegateEventKind.Diffed) {
@@ -2419,7 +2463,7 @@ class EngineDelegate {
                         this._rendered[depUri]) {
                         addedSheets.push({
                             uri: depUri,
-                            sheet: this._rendered[depUri].sheet,
+                            sheet: this._rendered[depUri].sheet
                         });
                     }
                 }
@@ -2430,8 +2474,8 @@ class EngineDelegate {
                         data: {
                             newSheets: addedSheets,
                             removedSheetUris: removedSheetUris,
-                            allDependencies: event.data.allDependencies,
-                        },
+                            allDependencies: event.data.allDependencies
+                        }
                     });
                 }
             }
@@ -2455,9 +2499,6 @@ class EngineDelegate {
         this._native.add_listener(this._dispatch);
         this.onEvent(this._onEngineDelegateEvent);
         return this;
-    }
-    getGraphUris() {
-        return this._native.get_graph_uris();
     }
     onEvent(listener) {
         if (listener == null) {
@@ -2511,10 +2552,10 @@ const keepEngineInSyncWithFileSystem2 = (watcher, engine) => {
 
 /***/ }),
 
-/***/ "../paperclip/esm/index.js":
-/*!*********************************!*\
-  !*** ../paperclip/esm/index.js ***!
-  \*********************************/
+/***/ "../paperclip/esm/core/index.js":
+/*!**************************************!*\
+  !*** ../paperclip/esm/core/index.js ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -2529,14 +2570,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "EngineMode": () => /* reexport safe */ _delegate__WEBPACK_IMPORTED_MODULE_3__.EngineMode,
 /* harmony export */   "keepEngineInSyncWithFileSystem2": () => /* reexport safe */ _delegate__WEBPACK_IMPORTED_MODULE_3__.keepEngineInSyncWithFileSystem2
 /* harmony export */ });
-/* harmony import */ var _infer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./infer */ "../paperclip/esm/infer.js");
+/* harmony import */ var _infer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./infer */ "../paperclip/esm/core/infer.js");
 /* harmony import */ var paperclip_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paperclip-utils */ "../paperclip-utils/index.js");
 /* harmony import */ var paperclip_utils__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paperclip_utils__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony reexport (unknown) */ var __WEBPACK_REEXPORT_OBJECT__ = {};
 /* harmony reexport (unknown) */ for(const __WEBPACK_IMPORT_KEY__ in paperclip_utils__WEBPACK_IMPORTED_MODULE_1__) if(["default","EngineDelegate","EngineMode","keepEngineInSyncWithFileSystem2","InferenceKind","infer"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) __WEBPACK_REEXPORT_OBJECT__[__WEBPACK_IMPORT_KEY__] = () => paperclip_utils__WEBPACK_IMPORTED_MODULE_1__[__WEBPACK_IMPORT_KEY__]
 /* harmony reexport (unknown) */ __webpack_require__.d(__webpack_exports__, __WEBPACK_REEXPORT_OBJECT__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "../paperclip/esm/utils.js");
-/* harmony import */ var _delegate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./delegate */ "../paperclip/esm/delegate.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "../paperclip/esm/core/utils.js");
+/* harmony import */ var _delegate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./delegate */ "../paperclip/esm/core/delegate.js");
 
 
 
@@ -2545,10 +2586,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "../paperclip/esm/infer.js":
-/*!*********************************!*\
-  !*** ../paperclip/esm/infer.js ***!
-  \*********************************/
+/***/ "../paperclip/esm/core/infer.js":
+/*!**************************************!*\
+  !*** ../paperclip/esm/core/infer.js ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -2743,10 +2784,10 @@ const inferJsExpression = (expression, context, defaultInference = ANY_INFERENCE
 
 /***/ }),
 
-/***/ "../paperclip/esm/utils.js":
-/*!*********************************!*\
-  !*** ../paperclip/esm/utils.js ***!
-  \*********************************/
+/***/ "../paperclip/esm/core/utils.js":
+/*!**************************************!*\
+  !*** ../paperclip/esm/core/utils.js ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -2756,12 +2797,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "resolveAllAssetFiles": () => /* binding */ resolveAllAssetFiles,
 /* harmony export */   "noop": () => /* binding */ noop
 /* harmony export */ });
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! path */ "./node_modules/path-browserify/index.js");
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! path */ "../../node_modules/path-browserify/index.js");
 /* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! url */ "../paperclip/node_modules/url/url.js");
+/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
 /* harmony import */ var paperclip_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! paperclip-utils */ "../paperclip-utils/index.js");
 /* harmony import */ var paperclip_utils__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(paperclip_utils__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! fs */ "fs");
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! fs */ "chokidar");
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_3__);
 
 
@@ -2908,7 +2949,7 @@ const noop = () => { };
 
 /***/ }),
 
-/***/ "fs":
+/***/ "chokidar":
 /*!*********************!*\
   !*** external "{}" ***!
   \*********************/
@@ -3004,6 +3045,15 @@ module.exports = {};
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/get mini-css chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference all chunks
+/******/ 		__webpack_require__.miniCssF = (chunkId) => {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + ".css";
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
 /******/ 		__webpack_require__.g = (function() {
@@ -3060,7 +3110,7 @@ module.exports = {};
 /******/ 	(() => {
 /******/ 		var next = __webpack_require__.x;
 /******/ 		__webpack_require__.x = () => {
-/******/ 			return __webpack_require__.e("vendors-node_modules_fast-json-patch_index_mjs-node_modules_path-browserify_index_js-node_mod-430c25").then(next);
+/******/ 			return __webpack_require__.e("vendors-node_modules_crc32_lib_crc32_js-node_modules_events_events_js-node_modules_fast-json--a1661b").then(next);
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -3140,6 +3190,6 @@ module.exports = {};
 /******/ 	
 /************************************************************************/
 /******/ 	// run startup
-/******/ 	return __webpack_require__.x();
+/******/ 	__webpack_require__.x();
 /******/ })()
 ;

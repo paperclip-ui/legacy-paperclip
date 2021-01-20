@@ -14,14 +14,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "NativeEngine": () => /* binding */ NativeEngine,
 /* harmony export */   "__wbindgen_object_drop_ref": () => /* binding */ __wbindgen_object_drop_ref,
 /* harmony export */   "__wbindgen_string_new": () => /* binding */ __wbindgen_string_new,
-/* harmony export */   "__wbindgen_json_parse": () => /* binding */ __wbindgen_json_parse,
 /* harmony export */   "__wbg_call_0d50cec2d58307ad": () => /* binding */ __wbg_call_0d50cec2d58307ad,
+/* harmony export */   "__wbindgen_boolean_get": () => /* binding */ __wbindgen_boolean_get,
 /* harmony export */   "__wbg_call_56e03f05ec7df758": () => /* binding */ __wbg_call_56e03f05ec7df758,
+/* harmony export */   "__wbindgen_json_parse": () => /* binding */ __wbindgen_json_parse,
 /* harmony export */   "__wbg_new_59cb74e423758ede": () => /* binding */ __wbg_new_59cb74e423758ede,
 /* harmony export */   "__wbg_stack_558ba5917b466edd": () => /* binding */ __wbg_stack_558ba5917b466edd,
 /* harmony export */   "__wbg_error_4bb6c2a97407129a": () => /* binding */ __wbg_error_4bb6c2a97407129a,
 /* harmony export */   "__wbindgen_string_get": () => /* binding */ __wbindgen_string_get,
-/* harmony export */   "__wbindgen_boolean_get": () => /* binding */ __wbindgen_boolean_get,
 /* harmony export */   "__wbindgen_debug_string": () => /* binding */ __wbindgen_debug_string,
 /* harmony export */   "__wbindgen_throw": () => /* binding */ __wbindgen_throw
 /* harmony export */ });
@@ -337,20 +337,26 @@ const __wbindgen_string_new = function(arg0, arg1) {
     return addHeapObject(ret);
 };
 
-const __wbindgen_json_parse = function(arg0, arg1) {
-    var ret = JSON.parse(getStringFromWasm0(arg0, arg1));
-    return addHeapObject(ret);
-};
-
 const __wbg_call_0d50cec2d58307ad = handleError(function(arg0, arg1, arg2) {
     var ret = getObject(arg0).call(getObject(arg1), getObject(arg2));
     return addHeapObject(ret);
 });
 
+const __wbindgen_boolean_get = function(arg0) {
+    const v = getObject(arg0);
+    var ret = typeof(v) === 'boolean' ? (v ? 1 : 0) : 2;
+    return ret;
+};
+
 const __wbg_call_56e03f05ec7df758 = handleError(function(arg0, arg1, arg2, arg3) {
     var ret = getObject(arg0).call(getObject(arg1), getObject(arg2), getObject(arg3));
     return addHeapObject(ret);
 });
+
+const __wbindgen_json_parse = function(arg0, arg1) {
+    var ret = JSON.parse(getStringFromWasm0(arg0, arg1));
+    return addHeapObject(ret);
+};
 
 const __wbg_new_59cb74e423758ede = function() {
     var ret = new Error();
@@ -382,12 +388,6 @@ const __wbindgen_string_get = function(arg0, arg1) {
     getInt32Memory0()[arg0 / 4 + 0] = ptr0;
 };
 
-const __wbindgen_boolean_get = function(arg0) {
-    const v = getObject(arg0);
-    var ret = typeof(v) === 'boolean' ? (v ? 1 : 0) : 2;
-    return ret;
-};
-
 const __wbindgen_debug_string = function(arg0, arg1) {
     var ret = debugString(getObject(arg1));
     var ptr0 = passStringToWasm0(ret, _paperclip_bg_wasm__WEBPACK_IMPORTED_MODULE_0__.__wbindgen_malloc, _paperclip_bg_wasm__WEBPACK_IMPORTED_MODULE_0__.__wbindgen_realloc);
@@ -415,18 +415,18 @@ return __webpack_exports__;
 "use strict";
 /* harmony import */ var WEBPACK_IMPORTED_MODULE_0 = __webpack_require__(/*! ./paperclip_bg.js */ "../paperclip/native/browser/paperclip_bg.js");
 module.exports = Promise.resolve(WEBPACK_IMPORTED_MODULE_0).then((WEBPACK_IMPORTED_MODULE_0) => {
-	return __webpack_require__.v(exports, module.id, "b95bba9eff82aa1f4c3a", {
+	return __webpack_require__.v(exports, module.id, "29ad76bfd7e24fde0c6f", {
 		"./paperclip_bg.js": {
 			"__wbindgen_object_drop_ref": WEBPACK_IMPORTED_MODULE_0.__wbindgen_object_drop_ref,
 			"__wbindgen_string_new": WEBPACK_IMPORTED_MODULE_0.__wbindgen_string_new,
-			"__wbindgen_json_parse": WEBPACK_IMPORTED_MODULE_0.__wbindgen_json_parse,
 			"__wbg_call_0d50cec2d58307ad": WEBPACK_IMPORTED_MODULE_0.__wbg_call_0d50cec2d58307ad,
+			"__wbindgen_boolean_get": WEBPACK_IMPORTED_MODULE_0.__wbindgen_boolean_get,
 			"__wbg_call_56e03f05ec7df758": WEBPACK_IMPORTED_MODULE_0.__wbg_call_56e03f05ec7df758,
+			"__wbindgen_json_parse": WEBPACK_IMPORTED_MODULE_0.__wbindgen_json_parse,
 			"__wbg_new_59cb74e423758ede": WEBPACK_IMPORTED_MODULE_0.__wbg_new_59cb74e423758ede,
 			"__wbg_stack_558ba5917b466edd": WEBPACK_IMPORTED_MODULE_0.__wbg_stack_558ba5917b466edd,
 			"__wbg_error_4bb6c2a97407129a": WEBPACK_IMPORTED_MODULE_0.__wbg_error_4bb6c2a97407129a,
 			"__wbindgen_string_get": WEBPACK_IMPORTED_MODULE_0.__wbindgen_string_get,
-			"__wbindgen_boolean_get": WEBPACK_IMPORTED_MODULE_0.__wbindgen_boolean_get,
 			"__wbindgen_debug_string": WEBPACK_IMPORTED_MODULE_0.__wbindgen_debug_string,
 			"__wbindgen_throw": WEBPACK_IMPORTED_MODULE_0.__wbindgen_throw
 		}

@@ -10,81 +10,23 @@ object-assign
  * MIT license
  */
 
-/*! !!../../../../../../../../paperclip-playground/node_modules/css-loader/dist/cjs.js!./index.pc.css */
+/*! ../../../../../../../../node_modules/paperclip-visual-editor/src/components/Select/index2.pc */
 
-/*! !!../../../../../../../paperclip-playground/node_modules/css-loader/dist/cjs.js!./index.pc.css */
+/*! ../../../../../../../../node_modules/paperclip-visual-editor/src/components/TextInput/index.pc */
 
-/*! !!../../../../../../node_modules/css-loader/dist/cjs.js!./index.pc.css */
+/*! ../../../../../../../../node_modules/paperclip-visual-editor/src/components/Theme/index.pc */
 
-/*! !!../../../../../../paperclip-playground/node_modules/css-loader/dist/cjs.js!./index.pc.css */
+/*! ../../../../../../../../node_modules/paperclip-visual-editor/src/styles/utils.pc */
 
-/*! !!../../../../../../paperclip-playground/node_modules/css-loader/dist/cjs.js!./index2.pc.css */
+/*! ../../../../../../../node_modules/paperclip-visual-editor/src/components/Theme/index.pc */
 
-/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./index.pc.css */
-
-/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./prism.css */
-
-/*! !!../../../../../paperclip-playground/node_modules/css-loader/dist/cjs.js!./font-face.pc.css */
-
-/*! !!../../../../../paperclip-playground/node_modules/css-loader/dist/cjs.js!./index.pc.css */
-
-/*! !!../../../../node_modules/css-loader/dist/cjs.js!./breakpoints.pc.css */
-
-/*! !!../../../../node_modules/css-loader/dist/cjs.js!./index.pc.css */
-
-/*! !!../../../../paperclip-playground/node_modules/css-loader/dist/cjs.js!./index.pc.css */
-
-/*! !!../../../../paperclip-playground/node_modules/css-loader/dist/cjs.js!./index2.pc.css */
-
-/*! !!../../../paperclip-playground/node_modules/css-loader/dist/cjs.js!./utils.pc.css */
-
-/*! !!../../css-loader/dist/cjs.js!./material-palenight.css */
-
-/*! !../../../../../../../../paperclip-playground/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! !../../../../../../../paperclip-playground/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! !../../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! !../../../../../../paperclip-playground/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! !../../../../../paperclip-playground/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! !../../../../paperclip-playground/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! !../../../paperclip-playground/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! !../../style-loader/dist/runtime/injectStylesIntoStyleTag.js */
-
-/*! ../../../../../../../../paperclip-playground/node_modules/css-loader/dist/runtime/api.js */
-
-/*! ../../../../../../../../paperclip-playground/node_modules/css-loader/dist/runtime/getUrl.js */
-
-/*! ../../../../../../../paperclip-playground/node_modules/css-loader/dist/runtime/api.js */
-
-/*! ../../../../../../../paperclip-playground/node_modules/css-loader/dist/runtime/getUrl.js */
+/*! ../../../../../../../node_modules/paperclip-visual-editor/src/styles/utils.pc */
 
 /*! ../../../../../../actions */
 
-/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */
-
-/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */
-
-/*! ../../../../../../node_modules/paperclip-visual-editor/src/components/Select/index2.pc */
-
-/*! ../../../../../../node_modules/paperclip-visual-editor/src/components/TextInput/index.pc */
+/*! ../../../../../../node_modules/paperclip-visual-editor/src/components/Main/index.pc */
 
 /*! ../../../../../../node_modules/paperclip-visual-editor/src/components/Theme/index.pc */
-
-/*! ../../../../../../node_modules/paperclip-visual-editor/src/styles/utils.pc */
-
-/*! ../../../../../../paperclip-playground/node_modules/css-loader/dist/runtime/api.js */
-
-/*! ../../../../../../paperclip-playground/node_modules/css-loader/dist/runtime/getUrl.js */
 
 /*! ../../../../../../state */
 
@@ -97,14 +39,6 @@ object-assign
 /*! ../../../../../actions */
 
 /*! ../../../../../hooks/useAppStore */
-
-/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */
-
-/*! ../../../../../node_modules/paperclip-visual-editor/src/components/Theme/index.pc */
-
-/*! ../../../../../paperclip-playground/node_modules/css-loader/dist/runtime/api.js */
-
-/*! ../../../../../paperclip-playground/node_modules/css-loader/dist/runtime/getUrl.js */
 
 /*! ../../../../../state */
 
@@ -131,14 +65,6 @@ object-assign
 /*! ../../../../hooks/useAppStore */
 
 /*! ../../../../icons/index.pc */
-
-/*! ../../../../node_modules/css-loader/dist/runtime/api.js */
-
-/*! ../../../../node_modules/paperclip-visual-editor/src/components/Main/index.pc */
-
-/*! ../../../../paperclip-playground/node_modules/css-loader/dist/runtime/api.js */
-
-/*! ../../../../paperclip-playground/node_modules/css-loader/dist/runtime/getUrl.js */
 
 /*! ../../../../state */
 
@@ -174,9 +100,13 @@ object-assign
 
 /*! ../../../icons/index.pc */
 
-/*! ../../../paperclip-playground/node_modules/css-loader/dist/runtime/api.js */
+/*! ../../Button/index.pc */
 
 /*! ../../Field/index.pc */
+
+/*! ../../Modal */
+
+/*! ../../Modal/index.pc */
 
 /*! ../../Pane/index.pc */
 
@@ -187,8 +117,6 @@ object-assign
 /*! ../../Theme/index.pc */
 
 /*! ../../contexts */
-
-/*! ../../css-loader/dist/runtime/api.js */
 
 /*! ../../hocs */
 
@@ -235,6 +163,10 @@ object-assign
 /*! ../_virtual/_rollupPluginBabelHelpers.js */
 
 /*! ../actions */
+
+/*! ../api */
+
+/*! ../auth */
 
 /*! ../config/index.js */
 
@@ -326,16 +258,6 @@ object-assign
 
 /*! ./MoreStyles/index.pc */
 
-/*! ./OpenSans-Bold.ttf */
-
-/*! ./OpenSans-ExtraBold.ttf */
-
-/*! ./OpenSans-Light.ttf */
-
-/*! ./OpenSans-Regular.ttf */
-
-/*! ./OpenSans-SemiBold.ttf */
-
 /*! ./Pixels */
 
 /*! ./RightSidebar/index.pc */
@@ -358,11 +280,11 @@ object-assign
 
 /*! ./Typography/index.pc */
 
-/*! ./arrow-down.svg */
-
-/*! ./arrow-right.svg */
+/*! ./api */
 
 /*! ./ast */
+
+/*! ./auth/index.pc */
 
 /*! ./base */
 
@@ -374,19 +296,11 @@ object-assign
 
 /*! ./browser */
 
-/*! ./browser2.svg */
-
 /*! ./buffered-sender */
 
 /*! ./canvas */
 
 /*! ./checkPropTypes */
-
-/*! ./chevron-down-2.svg */
-
-/*! ./chevron-down.svg */
-
-/*! ./chrome.svg */
 
 /*! ./cjs/react-dom.development.js */
 
@@ -399,8 +313,6 @@ object-assign
 /*! ./cjs/scheduler.development.js */
 
 /*! ./code-screenshot.png */
-
-/*! ./collapse.svg */
 
 /*! ./common */
 
@@ -416,21 +328,13 @@ object-assign
 
 /*! ./css-virt */
 
-/*! ./cube.svg */
-
 /*! ./decode */
-
-/*! ./diamond.svg */
 
 /*! ./dnd */
 
 /*! ./dom-patcher */
 
-/*! ./dots.svg */
-
 /*! ./driver/websocket */
-
-/*! ./drop2.svg */
 
 /*! ./encode */
 
@@ -450,25 +354,15 @@ object-assign
 
 /*! ./eventtarget */
 
-/*! ./expand2.svg */
-
 /*! ./exports */
 
 /*! ./external-actions */
-
-/*! ./eye.svg */
 
 /*! ./facade */
 
 /*! ./factoryWithTypeCheckers */
 
-/*! ./file2.svg */
-
 /*! ./files/index.pc */
-
-/*! ./firefox.svg */
-
-/*! ./folder.svg */
 
 /*! ./font-face.pc.css */
 
@@ -478,21 +372,13 @@ object-assign
 
 /*! ./graph */
 
-/*! ./grid4.svg */
-
-/*! ./gridv2.svg */
-
 /*! ./helpers.mjs */
 
 /*! ./hocs/withAppStore */
 
-/*! ./home.svg */
-
 /*! ./html4-entities */
 
 /*! ./html5-entities */
-
-/*! ./ie.svg */
 
 /*! ./iframe-bootstrap */
 
@@ -512,8 +398,6 @@ object-assign
 
 /*! ./info-receiver */
 
-/*! ./inside.svg */
-
 /*! ./instance-actions */
 
 /*! ./io-6de156f3.js */
@@ -524,8 +408,6 @@ object-assign
 
 /*! ./js-virt */
 
-/*! ./letter-spacing-2.svg */
-
 /*! ./lib */
 
 /*! ./lib/ReactPropTypesSecret */
@@ -534,19 +416,11 @@ object-assign
 
 /*! ./lib/sender-receiver */
 
-/*! ./line-height-1.svg */
-
 /*! ./location */
-
-/*! ./magnify.svg */
 
 /*! ./main */
 
 /*! ./memo */
-
-/*! ./minimize-3.svg */
-
-/*! ./minus.svg */
 
 /*! ./misc */
 
@@ -560,13 +434,9 @@ object-assign
 
 /*! ./native-renderer */
 
+/*! ./oauth */
+
 /*! ./open-sans/font-face.pc */
-
-/*! ./paint-pallete.svg */
-
-/*! ./plug.svg */
-
-/*! ./plus.svg */
 
 /*! ./polling */
 
@@ -610,8 +480,6 @@ object-assign
 
 /*! ./resolve */
 
-/*! ./safari2.svg */
-
 /*! ./sender-receiver */
 
 /*! ./sender/jsonp */
@@ -624,21 +492,9 @@ object-assign
 
 /*! ./server-actions */
 
-/*! ./shadow.svg */
-
-/*! ./shape-icon.svg */
-
-/*! ./share.svg */
-
 /*! ./shims */
 
-/*! ./socket.svg */
-
 /*! ./source-watcher */
-
-/*! ./spinner.svg */
-
-/*! ./square-empty-3.svg */
 
 /*! ./stringify-sheet */
 
@@ -646,15 +502,9 @@ object-assign
 
 /*! ./styles.js */
 
+/*! ./surrogate-pairs */
+
 /*! ./symbols/index.pc */
-
-/*! ./text-center-4.svg */
-
-/*! ./text-icon-2.svg */
-
-/*! ./text-left-5.svg */
-
-/*! ./text-right-4.svg */
 
 /*! ./transport-list */
 
@@ -718,11 +568,7 @@ object-assign
 
 /*! ./virt-patcher */
 
-/*! ./warning.svg */
-
 /*! ./withAppStore */
-
-/*! ./world.svg */
 
 /*! ./xdr-streaming */
 
@@ -801,6 +647,8 @@ object-assign
 /*! paperclip-visual-editor/src/components/TextInput/index.pc */
 
 /*! paperclip-visual-editor/src/contexts */
+
+/*! paperclip-visual-editor/src/dom-history */
 
 /*! paperclip-visual-editor/src/reducers/index */
 
@@ -882,12 +730,20 @@ object-assign
   !*** ../paperclip-utils/index.js ***!
   \***********************************/
 
+/*!***********************************!*\
+  !*** ./src/frontend/api/index.ts ***!
+  \***********************************/
+
+/*!***********************************!*\
+  !*** ./src/frontend/sagas/api.ts ***!
+  \***********************************/
+
 /*!*************************************!*\
-  !*** ../paperclip-utils/lib/ast.js ***!
+  !*** ../../node_modules/url/url.js ***!
   \*************************************/
 
 /*!*************************************!*\
-  !*** ./node_modules/react/index.js ***!
+  !*** ../paperclip-utils/lib/ast.js ***!
   \*************************************/
 
 /*!*************************************!*\
@@ -895,8 +751,20 @@ object-assign
   \*************************************/
 
 /*!*************************************!*\
+  !*** ./src/frontend/sagas/utils.ts ***!
+  \*************************************/
+
+/*!*************************************!*\
   !*** ./src/frontend/state/index.ts ***!
   \*************************************/
+
+/*!**************************************!*\
+  !*** ../../node_modules/ms/index.js ***!
+  \**************************************/
+
+/*!**************************************!*\
+  !*** ../../node_modules/url/util.js ***!
+  \**************************************/
 
 /*!**************************************!*\
   !*** ../paperclip-utils/lib/memo.js ***!
@@ -943,20 +811,20 @@ object-assign
   \****************************************/
 
 /*!****************************************!*\
-  !*** ./node_modules/react-is/index.js ***!
-  \****************************************/
-
-/*!****************************************!*\
-  !*** ./node_modules/redux/es/redux.js ***!
-  \****************************************/
-
-/*!****************************************!*\
   !*** ./src/frontend/contexts/index.ts ***!
   \****************************************/
 
 /*!****************************************!*\
   !*** ./src/frontend/reducers/index.ts ***!
   \****************************************/
+
+/*!****************************************!*\
+  !*** ./src/frontend/sagas/location.ts ***!
+  \****************************************/
+
+/*!*****************************************!*\
+  !*** ../../node_modules/react/index.js ***!
+  \*****************************************/
 
 /*!*****************************************!*\
   !*** ../paperclip-utils/lib/css-ast.js ***!
@@ -974,14 +842,6 @@ object-assign
   !*** ../paperclip-utils/lib/resolve.js ***!
   \*****************************************/
 
-/*!*****************************************!*\
-  !*** ./node_modules/react-dom/index.js ***!
-  \*****************************************/
-
-/*!*****************************************!*\
-  !*** ./node_modules/scheduler/index.js ***!
-  \*****************************************/
-
 /*!******************************************!*\
   !*** ../paperclip-utils/lib/base-ast.js ***!
   \******************************************/
@@ -994,9 +854,13 @@ object-assign
   !*** ../paperclip-web-renderer/index.js ***!
   \******************************************/
 
-/*!******************************************!*\
-  !*** ./node_modules/prop-types/index.js ***!
-  \******************************************/
+/*!*******************************************!*\
+  !*** ../../node_modules/events/events.js ***!
+  \*******************************************/
+
+/*!*******************************************!*\
+  !*** ../../node_modules/lodash/lodash.js ***!
+  \*******************************************/
 
 /*!*******************************************!*\
   !*** ../paperclip-utils/lib/base-virt.js ***!
@@ -1006,17 +870,49 @@ object-assign
   !*** ../paperclip-utils/lib/constants.js ***!
   \*******************************************/
 
-/*!*******************************************!*\
-  !*** ./node_modules/scheduler/tracing.js ***!
-  \*******************************************/
+/*!********************************************!*\
+  !*** ../../node_modules/react-is/index.js ***!
+  \********************************************/
+
+/*!********************************************!*\
+  !*** ../../node_modules/redux/es/redux.js ***!
+  \********************************************/
 
 /*!*********************************************!*\
-  !*** ./node_modules/object-assign/index.js ***!
+  !*** ../../node_modules/crc32/lib/crc32.js ***!
+  \*********************************************/
+
+/*!*********************************************!*\
+  !*** ../../node_modules/json3/lib/json3.js ***!
+  \*********************************************/
+
+/*!*********************************************!*\
+  !*** ../../node_modules/react-dom/index.js ***!
+  \*********************************************/
+
+/*!*********************************************!*\
+  !*** ../../node_modules/scheduler/index.js ***!
+  \*********************************************/
+
+/*!*********************************************!*\
+  !*** ../../node_modules/url-parse/index.js ***!
+  \*********************************************/
+
+/*!*********************************************!*\
+  !*** ../../node_modules/yallist/yallist.js ***!
   \*********************************************/
 
 /*!*********************************************!*\
   !*** ./src/frontend/utils/string-editor.ts ***!
   \*********************************************/
+
+/*!**********************************************!*\
+  !*** ../../node_modules/prop-types/index.js ***!
+  \**********************************************/
+
+/*!**********************************************!*\
+  !*** ../../node_modules/yallist/iterator.js ***!
+  \**********************************************/
 
 /*!**********************************************!*\
   !*** ../paperclip-utils/lib/virt-patcher.js ***!
@@ -1031,11 +927,15 @@ object-assign
   \**********************************************/
 
 /*!***********************************************!*\
-  !*** ../paperclip-utils/lib/virt-mtuation.js ***!
+  !*** ../../node_modules/querystring/index.js ***!
   \***********************************************/
 
 /*!***********************************************!*\
-  !*** ./node_modules/path-browserify/index.js ***!
+  !*** ../../node_modules/scheduler/tracing.js ***!
+  \***********************************************/
+
+/*!***********************************************!*\
+  !*** ../paperclip-utils/lib/virt-mtuation.js ***!
   \***********************************************/
 
 /*!***********************************************!*\
@@ -1043,16 +943,40 @@ object-assign
   \***********************************************/
 
 /*!************************************************!*\
-  !*** ../paperclip-utils/lib/source-watcher.js ***!
+  !*** ../../node_modules/querystring/decode.js ***!
   \************************************************/
 
 /*!************************************************!*\
-  !*** ./node_modules/fast-json-patch/index.mjs ***!
+  !*** ../../node_modules/querystring/encode.js ***!
+  \************************************************/
+
+/*!************************************************!*\
+  !*** ../paperclip-utils/lib/source-watcher.js ***!
   \************************************************/
 
 /*!************************************************!*\
   !*** ./src/frontend/components/Main/index.tsx ***!
   \************************************************/
+
+/*!************************************************!*\
+  !*** ./src/frontend/components/Modal/index.pc ***!
+  \************************************************/
+
+/*!*************************************************!*\
+  !*** ../../node_modules/history/esm/history.js ***!
+  \*************************************************/
+
+/*!*************************************************!*\
+  !*** ../../node_modules/mousetrap/mousetrap.js ***!
+  \*************************************************/
+
+/*!*************************************************!*\
+  !*** ../../node_modules/object-assign/index.js ***!
+  \*************************************************/
+
+/*!*************************************************!*\
+  !*** ../../node_modules/requires-port/index.js ***!
+  \*************************************************/
 
 /*!*************************************************!*\
   !*** ../paperclip-utils/lib/stringify-sheet.js ***!
@@ -1063,11 +987,23 @@ object-assign
   \*************************************************/
 
 /*!*************************************************!*\
+  !*** ./src/frontend/components/Button/index.pc ***!
+  \*************************************************/
+
+/*!*************************************************!*\
+  !*** ./src/frontend/components/Modal/index.tsx ***!
+  \*************************************************/
+
+/*!*************************************************!*\
   !*** ./src/frontend/hooks/useAppStore/index.ts ***!
   \*************************************************/
 
 /*!**************************************************!*\
-  !*** ../paperclip-utils/node_modules/url/url.js ***!
+  !*** ../../node_modules/immer/dist/immer.esm.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ../../node_modules/querystringify/index.js ***!
   \**************************************************/
 
 /*!**************************************************!*\
@@ -1075,11 +1011,15 @@ object-assign
   \**************************************************/
 
 /*!***************************************************!*\
-  !*** ../paperclip-source-writer/lib/mutations.js ***!
+  !*** ../../node_modules/os-browserify/browser.js ***!
   \***************************************************/
 
 /*!***************************************************!*\
-  !*** ../paperclip-utils/node_modules/url/util.js ***!
+  !*** ../../node_modules/path-browserify/index.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ../paperclip-source-writer/lib/mutations.js ***!
   \***************************************************/
 
 /*!***************************************************!*\
@@ -1091,12 +1031,16 @@ object-assign
   \***************************************************/
 
 /*!***************************************************!*\
-  !*** ./node_modules/prop-types/checkPropTypes.js ***!
-  \***************************************************/
-
-/*!***************************************************!*\
   !*** ./src/frontend/components/Main/index.pc.css ***!
   \***************************************************/
+
+/*!****************************************************!*\
+  !*** ../../node_modules/fast-json-patch/index.mjs ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/main.js ***!
+  \****************************************************/
 
 /*!****************************************************!*\
   !*** ../paperclip-visual-editor/src/hocs/index.ts ***!
@@ -1115,8 +1059,28 @@ object-assign
   \****************************************************/
 
 /*!****************************************************!*\
-  !*** ./node_modules/symbol-observable/es/index.js ***!
+  !*** ./src/frontend/components/Main/auth/index.pc ***!
   \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./src/frontend/components/Main/auth/oauth.ts ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./src/frontend/components/Modal/index.pc.css ***!
+  \****************************************************/
+
+/*!*****************************************************!*\
+  !*** ../../node_modules/html-entities/lib/index.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/entry.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/shims.js ***!
+  \*****************************************************/
 
 /*!*****************************************************!*\
   !*** ../paperclip-utils/lib/stringify-virt-node.js ***!
@@ -1139,12 +1103,16 @@ object-assign
   \*****************************************************/
 
 /*!*****************************************************!*\
-  !*** ./node_modules/css-loader/dist/runtime/api.js ***!
+  !*** ./src/frontend/components/Button/index.pc.css ***!
   \*****************************************************/
 
 /*!*****************************************************!*\
-  !*** ./node_modules/react/cjs/react.development.js ***!
+  !*** ./src/frontend/components/Main/auth/index.tsx ***!
   \*****************************************************/
+
+/*!******************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/facade.js ***!
+  \******************************************************/
 
 /*!******************************************************!*\
   !*** ../paperclip-visual-editor/src/actions/base.ts ***!
@@ -1159,16 +1127,20 @@ object-assign
   \******************************************************/
 
 /*!******************************************************!*\
-  !*** ./node_modules/fast-json-patch/module/core.mjs ***!
-  \******************************************************/
-
-/*!******************************************************!*\
-  !*** ./node_modules/prismjs/components/prism-css.js ***!
-  \******************************************************/
-
-/*!******************************************************!*\
   !*** ./src/frontend/components/Theme/breakpoints.pc ***!
   \******************************************************/
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/inherits/inherits_browser.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/prop-types/checkPropTypes.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/version.js ***!
+  \*******************************************************/
 
 /*!*******************************************************!*\
   !*** ../paperclip-visual-editor/src/actions/index.ts ***!
@@ -1179,15 +1151,15 @@ object-assign
   \*******************************************************/
 
 /*!*******************************************************!*\
-  !*** ./node_modules/prismjs/components/prism-core.js ***!
-  \*******************************************************/
-
-/*!*******************************************************!*\
-  !*** ./node_modules/symbol-observable/es/ponyfill.js ***!
+  !*** ./src/frontend/components/Main/Toolbar/index.pc ***!
   \*******************************************************/
 
 /*!********************************************************!*\
-  !*** ../paperclip-utils/node_modules/events/events.js ***!
+  !*** ../../node_modules/sockjs-client/lib/location.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ../../node_modules/symbol-observable/es/index.js ***!
   \********************************************************/
 
 /*!********************************************************!*\
@@ -1203,22 +1175,6 @@ object-assign
   \********************************************************/
 
 /*!********************************************************!*\
-  !*** ./node_modules/css-loader/dist/runtime/getUrl.js ***!
-  \********************************************************/
-
-/*!********************************************************!*\
-  !*** ./node_modules/fast-json-patch/module/duplex.mjs ***!
-  \********************************************************/
-
-/*!********************************************************!*\
-  !*** ./node_modules/prismjs/components/prism-clike.js ***!
-  \********************************************************/
-
-/*!********************************************************!*\
-  !*** ./node_modules/state-local/lib/es/state-local.js ***!
-  \********************************************************/
-
-/*!********************************************************!*\
   !*** ./src/frontend/components/Main/CodeMode/Slim.tsx ***!
   \********************************************************/
 
@@ -1226,12 +1182,32 @@ object-assign
   !*** ./src/frontend/components/Main/CodeMode/index.pc ***!
   \********************************************************/
 
+/*!********************************************************!*\
+  !*** ./src/frontend/components/Main/Toolbar/index.tsx ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./src/frontend/components/Main/auth/index.pc.css ***!
+  \********************************************************/
+
 /*!*********************************************************!*\
-  !*** ./node_modules/fast-json-patch/module/helpers.mjs ***!
+  !*** ../../node_modules/react/cjs/react.development.js ***!
   \*********************************************************/
 
 /*!*********************************************************!*\
-  !*** ./node_modules/prismjs/components/prism-markup.js ***!
+  !*** ../../node_modules/sockjs-client/lib/info-ajax.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/utils/log.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/utils/url.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ../../node_modules/value-equal/esm/value-equal.js ***!
   \*********************************************************/
 
 /*!*********************************************************!*\
@@ -1243,19 +1219,15 @@ object-assign
   \*********************************************************/
 
 /*!**********************************************************!*\
-  !*** ../paperclip-utils/node_modules/crc32/lib/crc32.js ***!
+  !*** ../../node_modules/fast-json-patch/module/core.mjs ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ../../node_modules/prismjs/components/prism-css.js ***!
   \**********************************************************/
 
 /*!**********************************************************!*\
   !*** ../paperclip-utils/node_modules/lru-cache/index.js ***!
-  \**********************************************************/
-
-/*!**********************************************************!*\
-  !*** ../paperclip-utils/node_modules/yallist/yallist.js ***!
-  \**********************************************************/
-
-/*!**********************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/url/url.js ***!
   \**********************************************************/
 
 /*!**********************************************************!*\
@@ -1267,47 +1239,63 @@ object-assign
   \**********************************************************/
 
 /*!***********************************************************!*\
-  !*** ../paperclip-utils/node_modules/yallist/iterator.js ***!
+  !*** ../../node_modules/prismjs/components/prism-core.js ***!
   \***********************************************************/
 
 /*!***********************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/ms/index.js ***!
+  !*** ../../node_modules/sockjs-client/lib/event/close.js ***!
   \***********************************************************/
 
 /*!***********************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/url/util.js ***!
+  !*** ../../node_modules/sockjs-client/lib/event/event.js ***!
   \***********************************************************/
 
 /*!***********************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/index.js ***!
+  !*** ../../node_modules/sockjs-client/lib/info-iframe.js ***!
   \***********************************************************/
 
 /*!***********************************************************!*\
-  !*** ./node_modules/@redux-saga/core/dist/io-6de156f3.js ***!
+  !*** ../../node_modules/sockjs-client/lib/utils/event.js ***!
   \***********************************************************/
 
 /*!***********************************************************!*\
-  !*** ./node_modules/react-is/cjs/react-is.development.js ***!
+  !*** ../../node_modules/symbol-observable/es/ponyfill.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./src/frontend/components/Main/Toolbar/index.pc.css ***!
   \***********************************************************/
 
 /*!************************************************************!*\
-  !*** ../paperclip-utils/node_modules/querystring/index.js ***!
+  !*** ../../node_modules/fast-json-patch/module/duplex.mjs ***!
   \************************************************************/
 
 /*!************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/extends.js ***!
+  !*** ../../node_modules/html-entities/lib/xml-entities.js ***!
   \************************************************************/
 
 /*!************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/index.js ***!
+  !*** ../../node_modules/prismjs/components/prism-clike.js ***!
   \************************************************************/
 
 /*!************************************************************!*\
-  !*** ./node_modules/prop-types/factoryWithTypeCheckers.js ***!
+  !*** ../../node_modules/sockjs-client/lib/utils/escape.js ***!
   \************************************************************/
 
 /*!************************************************************!*\
-  !*** ./node_modules/react-simple-code-editor/lib/index.js ***!
+  !*** ../../node_modules/sockjs-client/lib/utils/iframe.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/utils/object.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/utils/random.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ../../node_modules/state-local/lib/es/state-local.js ***!
   \************************************************************/
 
 /*!************************************************************!*\
@@ -1315,24 +1303,56 @@ object-assign
   \************************************************************/
 
 /*!*************************************************************!*\
-  !*** ../paperclip-utils/node_modules/querystring/decode.js ***!
+  !*** ../../node_modules/fast-json-patch/module/helpers.mjs ***!
   \*************************************************************/
 
 /*!*************************************************************!*\
-  !*** ../paperclip-utils/node_modules/querystring/encode.js ***!
+  !*** ../../node_modules/prismjs/components/prism-markup.js ***!
   \*************************************************************/
 
 /*!*************************************************************!*\
-  !*** ./node_modules/prop-types/lib/ReactPropTypesSecret.js ***!
+  !*** ../../node_modules/sockjs-client/lib/event/emitter.js ***!
   \*************************************************************/
 
 /*!*************************************************************!*\
-  !*** ./node_modules/react-dom/cjs/react-dom.development.js ***!
+  !*** ../../node_modules/sockjs-client/lib/info-receiver.js ***!
   \*************************************************************/
 
 /*!*************************************************************!*\
-  !*** ./node_modules/scheduler/cjs/scheduler.development.js ***!
+  !*** ../../node_modules/sockjs-client/lib/utils/browser.js ***!
   \*************************************************************/
+
+/*!**************************************************************!*\
+  !*** ../../node_modules/html-entities/lib/html4-entities.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ../../node_modules/html-entities/lib/html5-entities.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport-list.js ***!
+  \**************************************************************/
+
+/*!***************************************************************!*\
+  !*** ../../node_modules/@monaco-editor/react/lib/es/index.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ../../node_modules/@redux-saga/core/dist/io-6de156f3.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ../../node_modules/html-entities/lib/surrogate-pairs.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ../../node_modules/react-is/cjs/react-is.development.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/utils/transport.js ***!
+  \***************************************************************/
 
 /*!***************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Grid/index.pc ***!
@@ -1354,20 +1374,36 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/Tree/index.pc ***!
   \***************************************************************/
 
-/*!***************************************************************!*\
-  !*** ../paperclip-web-renderer/node_modules/events/events.js ***!
-  \***************************************************************/
-
-/*!***************************************************************!*\
-  !*** ./node_modules/@redux-saga/is/dist/redux-saga-is.esm.js ***!
-  \***************************************************************/
-
-/*!***************************************************************!*\
-  !*** ./src/frontend/components/Main/CodeMode/Toolbar/eye.svg ***!
-  \***************************************************************/
+/*!****************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/extends.js ***!
+  \****************************************************************/
 
 /*!****************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/lodash/lodash.js ***!
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/index.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/prop-types/factoryWithTypeCheckers.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/react-simple-code-editor/lib/index.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/iframe-bootstrap.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/iframe.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/tiny-warning/dist/tiny-warning.esm.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/url/node_modules/punycode/punycode.js ***!
   \****************************************************************/
 
 /*!****************************************************************!*\
@@ -1387,19 +1423,7 @@ object-assign
   \****************************************************************/
 
 /*!****************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Tree/file2.svg ***!
-  \****************************************************************/
-
-/*!****************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/icons/dots.svg ***!
-  \****************************************************************/
-
-/*!****************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/icons/index.pc ***!
-  \****************************************************************/
-
-/*!****************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/icons/plus.svg ***!
   \****************************************************************/
 
 /*!****************************************************************!*\
@@ -1407,7 +1431,19 @@ object-assign
   \****************************************************************/
 
 /*!*****************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/redux/es/redux.js ***!
+  !*** ../../node_modules/prop-types/lib/ReactPropTypesSecret.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/react-dom/cjs/react-dom.development.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/scheduler/cjs/scheduler.development.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/event/eventtarget.js ***!
   \*****************************************************************/
 
 /*!*****************************************************************!*\
@@ -1419,15 +1455,7 @@ object-assign
   \*****************************************************************/
 
 /*!*****************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Tree/folder.svg ***!
-  \*****************************************************************/
-
-/*!*****************************************************************!*\
   !*** ../paperclip-visual-editor/src/hooks/useAppStore/index.ts ***!
-  \*****************************************************************/
-
-/*!*****************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/utils/index.js ***!
   \*****************************************************************/
 
 /*!*****************************************************************!*\
@@ -1435,15 +1463,7 @@ object-assign
   \*****************************************************************/
 
 /*!******************************************************************!*\
-  !*** ../paperclip-utils/node_modules/html-entities/lib/index.js ***!
-  \******************************************************************/
-
-/*!******************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/json3/lib/json3.js ***!
-  \******************************************************************/
-
-/*!******************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/url-parse/index.js ***!
+  !*** ../../node_modules/sockjs-client/lib/transport/htmlfile.js ***!
   \******************************************************************/
 
 /*!******************************************************************!*\
@@ -1466,16 +1486,20 @@ object-assign
   !*** ../paperclip-visual-editor/src/hocs/withAppStore/index.tsx ***!
   \******************************************************************/
 
-/*!******************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/utils/curry.js ***!
-  \******************************************************************/
-
-/*!******************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/Editor/index.js ***!
-  \******************************************************************/
+/*!*******************************************************************!*\
+  !*** ../../node_modules/@redux-saga/is/dist/redux-saga-is.esm.js ***!
+  \*******************************************************************/
 
 /*!*******************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/debug/src/common.js ***!
+  !*** ../../node_modules/resolve-pathname/esm/resolve-pathname.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/event/trans-message.js ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/websocket.js ***!
   \*******************************************************************/
 
 /*!*******************************************************************!*\
@@ -1499,31 +1523,23 @@ object-assign
   \*******************************************************************/
 
 /*!*******************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/config/index.js ***!
-  \*******************************************************************/
-
-/*!*******************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/monaco/index.js ***!
-  \*******************************************************************/
-
-/*!*******************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/Editor/Editor.js ***!
-  \*******************************************************************/
-
-/*!*******************************************************************!*\
-  !*** ./node_modules/@redux-saga/core/dist/redux-saga-core.esm.js ***!
-  \*******************************************************************/
-
-/*!*******************************************************************!*\
   !*** ./src/frontend/components/Main/CodeMode/code-screenshot.png ***!
   \*******************************************************************/
 
 /*!********************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/debug/src/browser.js ***!
+  !*** ../../node_modules/sockjs-client/lib/info-iframe-receiver.js ***!
   \********************************************************************/
 
 /*!********************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/querystring/index.js ***!
+  !*** ../../node_modules/sockjs-client/lib/transport/sender/xdr.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/utils/browser-crypto.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ../../node_modules/tiny-invariant/dist/tiny-invariant.esm.js ***!
   \********************************************************************/
 
 /*!********************************************************************!*\
@@ -1551,19 +1567,27 @@ object-assign
   \********************************************************************/
 
 /*!********************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/utils/compose.js ***!
-  \********************************************************************/
-
-/*!********************************************************************!*\
   !*** ./src/frontend/components/Main/CodeMode/Toolbar/index.pc.css ***!
   \********************************************************************/
 
 /*!*********************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/querystring/decode.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/utils/index.js ***!
   \*********************************************************************/
 
 /*!*********************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/querystring/encode.js ***!
+  !*** ../../node_modules/sockjs-client/lib/transport/eventsource.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/lib/polling.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/xdr-polling.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/xhr-polling.js ***!
   \*********************************************************************/
 
 /*!*********************************************************************!*\
@@ -1571,43 +1595,23 @@ object-assign
   \*********************************************************************/
 
 /*!*********************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Spinner/spinner.svg ***!
-  \*********************************************************************/
-
-/*!*********************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Toggle/index.pc.css ***!
   \*********************************************************************/
 
-/*!*********************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Tree/arrow-down.svg ***!
-  \*********************************************************************/
-
-/*!*********************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Tree/shape-icon.svg ***!
-  \*********************************************************************/
-
-/*!*********************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/utils/isObject.js ***!
-  \*********************************************************************/
-
-/*!*********************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/Loading/Loading.js ***!
-  \*********************************************************************/
-
-/*!*********************************************************************!*\
-  !*** ./node_modules/scheduler/cjs/scheduler-tracing.development.js ***!
-  \*********************************************************************/
-
 /*!**********************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/history/esm/history.js ***!
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/utils/curry.js ***!
   \**********************************************************************/
 
 /*!**********************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/mousetrap/mousetrap.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/Editor/index.js ***!
   \**********************************************************************/
 
 /*!**********************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/requires-port/index.js ***!
+  !*** ../../node_modules/sockjs-client/lib/transport/receiver/xhr.js ***!
+  \**********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/sender/jsonp.js ***!
   \**********************************************************************/
 
 /*!**********************************************************************!*\
@@ -1618,40 +1622,44 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/Spinner/index.pc.css ***!
   \**********************************************************************/
 
-/*!**********************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Tree/arrow-right.svg ***!
-  \**********************************************************************/
-
-/*!**********************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/utils/deepMerge.js ***!
-  \**********************************************************************/
-
-/*!**********************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/DiffEditor/index.js ***!
-  \**********************************************************************/
-
-/*!**********************************************************************!*\
-  !*** ./node_modules/@redux-saga/core/dist/redux-saga-effects.esm.js ***!
-  \**********************************************************************/
-
 /*!***********************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/immer/dist/immer.esm.js ***!
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/config/index.js ***!
   \***********************************************************************/
 
 /*!***********************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/querystringify/index.js ***!
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/monaco/index.js ***!
   \***********************************************************************/
 
 /*!***********************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/validators/index.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/Editor/Editor.js ***!
   \***********************************************************************/
 
 /*!***********************************************************************!*\
-  !*** ./node_modules/redux-saga/dist/redux-saga-core-npm-proxy.esm.js ***!
+  !*** ../../node_modules/@redux-saga/core/dist/redux-saga-core.esm.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/jsonp-polling.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/xdr-streaming.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/xhr-streaming.js ***!
   \***********************************************************************/
 
 /*!************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/os-browserify/browser.js ***!
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/utils/compose.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/lib/ajax-based.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/receiver/jsonp.js ***!
   \************************************************************************/
 
 /*!************************************************************************!*\
@@ -1662,36 +1670,52 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/TextInput/index.pc.css ***!
   \************************************************************************/
 
-/*!************************************************************************!*\
-  !*** ./src/frontend/components/Main/CodeMode/Toolbar/chevron-down.svg ***!
-  \************************************************************************/
-
 /*!*************************************************************************!*\
-  !*** ../paperclip-utils/node_modules/html-entities/lib/xml-entities.js ***!
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/utils/isObject.js ***!
   \*************************************************************************/
 
 /*!*************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/main.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/Loading/Loading.js ***!
   \*************************************************************************/
 
 /*!*************************************************************************!*\
-  !*** ../paperclip-web-renderer/node_modules/html-entities/lib/index.js ***!
+  !*** ../../node_modules/scheduler/cjs/scheduler-tracing.development.js ***!
   \*************************************************************************/
 
 /*!*************************************************************************!*\
-  !*** ./node_modules/@redux-saga/delay-p/dist/redux-saga-delay-p.esm.js ***!
+  !*** ../../node_modules/sockjs-client/lib/transport/lib/iframe-wrap.js ***!
   \*************************************************************************/
 
 /*!*************************************************************************!*\
-  !*** ./node_modules/@redux-saga/symbols/dist/redux-saga-symbols.esm.js ***!
+  !*** ../../node_modules/sockjs-client/lib/transport/sender/xhr-cors.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/sender/xhr-fake.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/node_modules/debug/src/common.js ***!
   \*************************************************************************/
 
 /*!**************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/entry.js ***!
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/utils/deepMerge.js ***!
   \**************************************************************************/
 
 /*!**************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/shims.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/DiffEditor/index.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ../../node_modules/@redux-saga/core/dist/redux-saga-effects.esm.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/sender/xhr-local.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/node_modules/debug/src/browser.js ***!
   \**************************************************************************/
 
 /*!**************************************************************************!*\
@@ -1702,28 +1726,20 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/index.pc ***!
   \**************************************************************************/
 
-/*!**************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/hooks/useMount/index.js ***!
-  \**************************************************************************/
-
-/*!**************************************************************************!*\
-  !*** ./node_modules/prism-material-themes/themes/material-palenight.css ***!
-  \**************************************************************************/
-
-/*!**************************************************************************!*\
-  !*** ./node_modules/redux-saga/dist/redux-saga-effects-npm-proxy.esm.js ***!
-  \**************************************************************************/
-
 /*!***************************************************************************!*\
-  !*** ../paperclip-utils/node_modules/html-entities/lib/html4-entities.js ***!
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/validators/index.js ***!
   \***************************************************************************/
 
 /*!***************************************************************************!*\
-  !*** ../paperclip-utils/node_modules/html-entities/lib/html5-entities.js ***!
+  !*** ../../node_modules/redux-saga/dist/redux-saga-core-npm-proxy.esm.js ***!
   \***************************************************************************/
 
 /*!***************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/facade.js ***!
+  !*** ../../node_modules/sockjs-client/lib/transport/browser/websocket.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/receiver/htmlfile.js ***!
   \***************************************************************************/
 
 /*!***************************************************************************!*\
@@ -1738,38 +1754,6 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/index.pc ***!
   \***************************************************************************/
 
-/*!***************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Select/chevron-down-2.svg ***!
-  \***************************************************************************/
-
-/*!***************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/utils/makeCancelable.js ***!
-  \***************************************************************************/
-
-/*!***************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/DiffEditor/DiffEditor.js ***!
-  \***************************************************************************/
-
-/*!***************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/MonacoContainer/index.js ***!
-  \***************************************************************************/
-
-/*!***************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/hooks/useUpdate/index.js ***!
-  \***************************************************************************/
-
-/*!***************************************************************************!*\
-  !*** ./node_modules/@redux-saga/deferred/dist/redux-saga-deferred.esm.js ***!
-  \***************************************************************************/
-
-/*!****************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/inherits/inherits_browser.js ***!
-  \****************************************************************************/
-
-/*!****************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/version.js ***!
-  \****************************************************************************/
-
 /*!****************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/InfiniteScroller/index.tsx ***!
   \****************************************************************************/
@@ -1778,44 +1762,44 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/index.pc ***!
   \****************************************************************************/
 
-/*!****************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/ControlledEditor/index.js ***!
-  \****************************************************************************/
-
-/*!****************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/MonacoContainer/styles.js ***!
-  \****************************************************************************/
-
-/*!****************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
-  \****************************************************************************/
-
 /*!*****************************************************************************!*\
-  !*** ../paperclip-utils/node_modules/url/node_modules/punycode/punycode.js ***!
+  !*** ../../node_modules/@redux-saga/delay-p/dist/redux-saga-delay-p.esm.js ***!
   \*****************************************************************************/
 
 /*!*****************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/location.js ***!
+  !*** ../../node_modules/@redux-saga/symbols/dist/redux-saga-symbols.esm.js ***!
   \*****************************************************************************/
 
 /*!*****************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/symbol-observable/es/index.js ***!
+  !*** ../../node_modules/sockjs-client/lib/transport/browser/eventsource.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/lib/buffered-sender.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/lib/sender-receiver.js ***!
   \*****************************************************************************/
 
 /*!******************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/info-ajax.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/hooks/useMount/index.js ***!
   \******************************************************************************/
 
 /*!******************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/log.js ***!
+  !*** ../../node_modules/prism-material-themes/themes/material-palenight.css ***!
   \******************************************************************************/
 
 /*!******************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/url.js ***!
+  !*** ../../node_modules/redux-saga/dist/redux-saga-effects-npm-proxy.esm.js ***!
   \******************************************************************************/
 
 /*!******************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/value-equal/esm/value-equal.js ***!
+  !*** ../../node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ../../node_modules/sockjs-client/lib/transport/receiver/eventsource.js ***!
   \******************************************************************************/
 
 /*!******************************************************************************!*\
@@ -1827,6 +1811,26 @@ object-assign
   \******************************************************************************/
 
 /*!*******************************************************************************!*\
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/utils/makeCancelable.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ../../node_modules/@monaco-editor/react/lib/es/DiffEditor/DiffEditor.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ../../node_modules/@monaco-editor/react/lib/es/MonacoContainer/index.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ../../node_modules/@monaco-editor/react/lib/es/hooks/useUpdate/index.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ../../node_modules/@redux-saga/deferred/dist/redux-saga-deferred.esm.js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/InfiniteScroller/index.pc.css ***!
   \*******************************************************************************/
 
@@ -1835,52 +1839,16 @@ object-assign
   \*******************************************************************************/
 
 /*!********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/event/close.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/ControlledEditor/index.js ***!
   \********************************************************************************/
 
 /*!********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/event/event.js ***!
-  \********************************************************************************/
-
-/*!********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/info-iframe.js ***!
-  \********************************************************************************/
-
-/*!********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/event.js ***!
-  \********************************************************************************/
-
-/*!********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/symbol-observable/es/ponyfill.js ***!
-  \********************************************************************************/
-
-/*!********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/ie.svg ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/MonacoContainer/styles.js ***!
   \********************************************************************************/
 
 /*!********************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/index.pc.css ***!
   \********************************************************************************/
-
-/*!********************************************************************************!*\
-  !*** ../paperclip-web-renderer/node_modules/html-entities/lib/xml-entities.js ***!
-  \********************************************************************************/
-
-/*!*********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/escape.js ***!
-  \*********************************************************************************/
-
-/*!*********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/iframe.js ***!
-  \*********************************************************************************/
-
-/*!*********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/object.js ***!
-  \*********************************************************************************/
-
-/*!*********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/random.js ***!
-  \*********************************************************************************/
 
 /*!*********************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/index.pc ***!
@@ -1890,28 +1858,8 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/files/index.pc ***!
   \*********************************************************************************/
 
-/*!*********************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js ***!
-  \*********************************************************************************/
-
-/*!**********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/event/emitter.js ***!
-  \**********************************************************************************/
-
-/*!**********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/info-receiver.js ***!
-  \**********************************************************************************/
-
-/*!**********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/browser.js ***!
-  \**********************************************************************************/
-
 /*!**********************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/index.tsx ***!
-  \**********************************************************************************/
-
-/*!**********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/home.svg ***!
   \**********************************************************************************/
 
 /*!**********************************************************************************!*\
@@ -1919,35 +1867,11 @@ object-assign
   \**********************************************************************************/
 
 /*!**********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/plus.svg ***!
-  \**********************************************************************************/
-
-/*!**********************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Theme/open-sans/font-face.pc.css ***!
   \**********************************************************************************/
 
-/*!**********************************************************************************!*\
-  !*** ../paperclip-web-renderer/node_modules/html-entities/lib/html4-entities.js ***!
-  \**********************************************************************************/
-
-/*!**********************************************************************************!*\
-  !*** ../paperclip-web-renderer/node_modules/html-entities/lib/html5-entities.js ***!
-  \**********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport-list.js ***!
-  \***********************************************************************************/
-
 /*!***********************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Birdseye/index.pc ***!
-  \***********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/drop2.svg ***!
-  \***********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/grid4.svg ***!
   \***********************************************************************************/
 
 /*!***********************************************************************************!*\
@@ -1959,79 +1883,19 @@ object-assign
   \***********************************************************************************/
 
 /*!***********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/minus.svg ***!
-  \***********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/share.svg ***!
-  \***********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/world.svg ***!
-  \***********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/cube.svg ***!
-  \***********************************************************************************/
-
-/*!***********************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/index.pc ***!
   \***********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/plug.svg ***!
-  \***********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Theme/open-sans/OpenSans-Bold.ttf ***!
-  \***********************************************************************************/
-
-/*!************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/@redux-saga/core/dist/io-6de156f3.js ***!
-  \************************************************************************************/
-
-/*!************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/transport.js ***!
-  \************************************************************************************/
 
 /*!************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Birdseye/index.tsx ***!
   \************************************************************************************/
 
 /*!************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/chrome.svg ***!
-  \************************************************************************************/
-
-/*!************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/gridv2.svg ***!
-  \************************************************************************************/
-
-/*!************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/index.pc ***!
   \************************************************************************************/
 
-/*!************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Theme/open-sans/OpenSans-Light.ttf ***!
-  \************************************************************************************/
-
 /*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/@babel/runtime/helpers/esm/extends.js ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/iframe-bootstrap.js ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/iframe.js ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/tiny-warning/dist/tiny-warning.esm.js ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/url/node_modules/punycode/punycode.js ***!
+  !*** ../../node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js ***!
   \*************************************************************************************/
 
 /*!*************************************************************************************!*\
@@ -2039,59 +1903,11 @@ object-assign
   \*************************************************************************************/
 
 /*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/firefox.svg ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/magnify.svg ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/safari2.svg ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/files/index.pc.css ***!
   \*************************************************************************************/
 
-/*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/inside.svg ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/shadow.svg ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/socket.svg ***!
-  \*************************************************************************************/
-
-/*!*************************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/MonacoContainer/MonacoContainer.js ***!
-  \*************************************************************************************/
-
-/*!**************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/event/eventtarget.js ***!
-  \**************************************************************************************/
-
-/*!**************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Birdseye/magnify.svg ***!
-  \**************************************************************************************/
-
-/*!**************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Birdseye/warning.svg ***!
-  \**************************************************************************************/
-
 /*!**************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/ErrorBanner/index.pc ***!
-  \**************************************************************************************/
-
-/*!**************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/browser2.svg ***!
-  \**************************************************************************************/
-
-/*!**************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/collapse.svg ***!
   \**************************************************************************************/
 
 /*!**************************************************************************************!*\
@@ -2099,24 +1915,8 @@ object-assign
   \**************************************************************************************/
 
 /*!**************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/diamond.svg ***!
-  \**************************************************************************************/
-
-/*!**************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Inspector/index.pc ***!
   \**************************************************************************************/
-
-/*!**************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Inspector/plus.svg ***!
-  \**************************************************************************************/
-
-/*!**************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Theme/open-sans/OpenSans-Regular.ttf ***!
-  \**************************************************************************************/
-
-/*!***************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/htmlfile.js ***!
-  \***************************************************************************************/
 
 /*!***************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Birdseye/index.pc.css ***!
@@ -2142,30 +1942,6 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/MoreStyles/index.pc ***!
   \***************************************************************************************/
 
-/*!***************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Theme/open-sans/OpenSans-SemiBold.ttf ***!
-  \***************************************************************************************/
-
-/*!***************************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/ControlledEditor/ControlledEditor.js ***!
-  \***************************************************************************************/
-
-/*!****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/@redux-saga/is/dist/redux-saga-is.esm.js ***!
-  \****************************************************************************************/
-
-/*!****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/resolve-pathname/esm/resolve-pathname.js ***!
-  \****************************************************************************************/
-
-/*!****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/event/trans-message.js ***!
-  \****************************************************************************************/
-
-/*!****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/websocket.js ***!
-  \****************************************************************************************/
-
 /*!****************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Frames/index.pc ***!
   \****************************************************************************************/
@@ -2175,71 +1951,19 @@ object-assign
   \****************************************************************************************/
 
 /*!****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/minimize-3.svg ***!
-  \****************************************************************************************/
-
-/*!****************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/index.pc.css ***!
   \****************************************************************************************/
 
-/*!****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Theme/open-sans/OpenSans-ExtraBold.ttf ***!
-  \****************************************************************************************/
-
-/*!****************************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/react/lib/es/_virtual/_rollupPluginBabelHelpers.js ***!
-  \****************************************************************************************/
-
 /*!*****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/info-iframe-receiver.js ***!
-  \*****************************************************************************************/
-
-/*!*****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/sender/xdr.js ***!
-  \*****************************************************************************************/
-
-/*!*****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/utils/browser-crypto.js ***!
-  \*****************************************************************************************/
-
-/*!*****************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/tiny-invariant/dist/tiny-invariant.esm.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/MonacoContainer/MonacoContainer.js ***!
   \*****************************************************************************************/
 
 /*!*****************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Frames/index.tsx ***!
   \*****************************************************************************************/
 
-/*!*****************************************************************************************!*\
-  !*** ./node_modules/@monaco-editor/loader/lib/es/_virtual/_rollupPluginBabelHelpers.js ***!
-  \*****************************************************************************************/
-
-/*!*****************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./src/frontend/components/Main/index.pc.css ***!
-  \*****************************************************************************************/
-
-/*!******************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/eventsource.js ***!
-  \******************************************************************************************/
-
-/*!******************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/lib/polling.js ***!
-  \******************************************************************************************/
-
-/*!******************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/xdr-polling.js ***!
-  \******************************************************************************************/
-
-/*!******************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/xhr-polling.js ***!
-  \******************************************************************************************/
-
 /*!******************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/ErrorBanner/index.pc.css ***!
-  \******************************************************************************************/
-
-/*!******************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/text-icon-2.svg ***!
   \******************************************************************************************/
 
 /*!******************************************************************************************!*\
@@ -2247,11 +1971,7 @@ object-assign
   \******************************************************************************************/
 
 /*!*******************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/receiver/xhr.js ***!
-  \*******************************************************************************************/
-
-/*!*******************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/sender/jsonp.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/ControlledEditor/ControlledEditor.js ***!
   \*******************************************************************************************/
 
 /*!*******************************************************************************************!*\
@@ -2263,19 +1983,7 @@ object-assign
   \*******************************************************************************************/
 
 /*!********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/@redux-saga/core/dist/redux-saga-core.esm.js ***!
-  \********************************************************************************************/
-
-/*!********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/jsonp-polling.js ***!
-  \********************************************************************************************/
-
-/*!********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/xdr-streaming.js ***!
-  \********************************************************************************************/
-
-/*!********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/xhr-streaming.js ***!
+  !*** ../../node_modules/@monaco-editor/react/lib/es/_virtual/_rollupPluginBabelHelpers.js ***!
   \********************************************************************************************/
 
 /*!********************************************************************************************!*\
@@ -2283,19 +1991,11 @@ object-assign
   \********************************************************************************************/
 
 /*!********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/paint-pallete.svg ***!
-  \********************************************************************************************/
-
-/*!********************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Filters/index.pc ***!
   \********************************************************************************************/
 
 /*!*********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/lib/ajax-based.js ***!
-  \*********************************************************************************************/
-
-/*!*********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/receiver/jsonp.js ***!
+  !*** ../../node_modules/@monaco-editor/loader/lib/es/_virtual/_rollupPluginBabelHelpers.js ***!
   \*********************************************************************************************/
 
 /*!*********************************************************************************************!*\
@@ -2303,24 +2003,8 @@ object-assign
   \*********************************************************************************************/
 
 /*!*********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/square-empty-3.svg ***!
-  \*********************************************************************************************/
-
-/*!*********************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Selector/index.pc ***!
   \*********************************************************************************************/
-
-/*!**********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/lib/iframe-wrap.js ***!
-  \**********************************************************************************************/
-
-/*!**********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/sender/xhr-cors.js ***!
-  \**********************************************************************************************/
-
-/*!**********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/sender/xhr-fake.js ***!
-  \**********************************************************************************************/
 
 /*!**********************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Empty/index.tsx ***!
@@ -2339,14 +2023,6 @@ object-assign
   \**********************************************************************************************/
 
 /*!***********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/@redux-saga/core/dist/redux-saga-effects.esm.js ***!
-  \***********************************************************************************************/
-
-/*!***********************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/sender/xhr-local.js ***!
-  \***********************************************************************************************/
-
-/*!***********************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Frames/index.tsx ***!
   \***********************************************************************************************/
 
@@ -2358,22 +2034,6 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Typography/index.pc ***!
   \***********************************************************************************************/
 
-/*!***********************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./src/frontend/components/Main/CodeMode/prism.css ***!
-  \***********************************************************************************************/
-
-/*!************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/redux-saga/dist/redux-saga-core-npm-proxy.esm.js ***!
-  \************************************************************************************************/
-
-/*!************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/browser/websocket.js ***!
-  \************************************************************************************************/
-
-/*!************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/receiver/htmlfile.js ***!
-  \************************************************************************************************/
-
 /*!************************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Distance/index.pc ***!
   \************************************************************************************************/
@@ -2383,19 +2043,7 @@ object-assign
   \************************************************************************************************/
 
 /*!************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Backgrounds/plus.svg ***!
-  \************************************************************************************************/
-
-/*!************************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Filters/index.pc.css ***!
-  \************************************************************************************************/
-
-/*!************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/styles/utils.pc.css ***!
-  \************************************************************************************************/
-
-/*!************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./src/frontend/components/Theme/breakpoints.pc.css ***!
   \************************************************************************************************/
 
 /*!*************************************************************************************************!*\
@@ -2407,32 +2055,8 @@ object-assign
   \*************************************************************************************************/
 
 /*!*************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Frames/expand2.svg ***!
-  \*************************************************************************************************/
-
-/*!*************************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Selector/index.pc.css ***!
   \*************************************************************************************************/
-
-/*!**************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/@redux-saga/delay-p/dist/redux-saga-delay-p.esm.js ***!
-  \**************************************************************************************************/
-
-/*!**************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/@redux-saga/symbols/dist/redux-saga-symbols.esm.js ***!
-  \**************************************************************************************************/
-
-/*!**************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/browser/eventsource.js ***!
-  \**************************************************************************************************/
-
-/*!**************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/lib/buffered-sender.js ***!
-  \**************************************************************************************************/
-
-/*!**************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/lib/sender-receiver.js ***!
-  \**************************************************************************************************/
 
 /*!**************************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Frames/index.pc.css ***!
@@ -2446,22 +2070,6 @@ object-assign
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Selectable/index.pc ***!
   \**************************************************************************************************/
 
-/*!**************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./src/frontend/components/Main/CodeMode/index.pc.css ***!
-  \**************************************************************************************************/
-
-/*!***************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/redux-saga/dist/redux-saga-effects-npm-proxy.esm.js ***!
-  \***************************************************************************************************/
-
-/*!***************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/browser/abstract-xhr.js ***!
-  \***************************************************************************************************/
-
-/*!***************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/sockjs-client/lib/transport/receiver/eventsource.js ***!
-  \***************************************************************************************************/
-
 /*!***************************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Selectable/index.tsx ***!
   \***************************************************************************************************/
@@ -2469,10 +2077,6 @@ object-assign
 /*!***************************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Typography/index.pc.css ***!
   \***************************************************************************************************/
-
-/*!****************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/@redux-saga/deferred/dist/redux-saga-deferred.esm.js ***!
-  \****************************************************************************************************/
 
 /*!****************************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Distance/index.pc.css ***!
@@ -2485,198 +2089,6 @@ object-assign
 /*!******************************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Selectable/index.pc.css ***!
   \******************************************************************************************************/
-
-/*!******************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Typography/text-left-5.svg ***!
-  \******************************************************************************************************/
-
-/*!*******************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Typography/text-right-4.svg ***!
-  \*******************************************************************************************************/
-
-/*!********************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Typography/line-height-1.svg ***!
-  \********************************************************************************************************/
-
-/*!********************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Typography/text-center-4.svg ***!
-  \********************************************************************************************************/
-
-/*!*********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Grid/index.pc.css ***!
-  \*********************************************************************************************************/
-
-/*!*********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/List/index.pc.css ***!
-  \*********************************************************************************************************/
-
-/*!*********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/index.pc.css ***!
-  \*********************************************************************************************************/
-
-/*!*********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Pane/index.pc.css ***!
-  \*********************************************************************************************************/
-
-/*!*********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Tree/index.pc.css ***!
-  \*********************************************************************************************************/
-
-/*!**********************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js ***!
-  \**********************************************************************************************************/
-
-/*!**********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Field/index.pc.css ***!
-  \**********************************************************************************************************/
-
-/*!**********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Theme/index.pc.css ***!
-  \**********************************************************************************************************/
-
-/*!**********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/icons/index.pc.css ***!
-  \**********************************************************************************************************/
-
-/*!**********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./src/frontend/components/Main/CodeMode/Toolbar/index.pc.css ***!
-  \**********************************************************************************************************/
-
-/*!***********************************************************************************************************!*\
-  !*** ../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Typography/letter-spacing-2.svg ***!
-  \***********************************************************************************************************/
-
-/*!***********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Select/index.pc.css ***!
-  \***********************************************************************************************************/
-
-/*!***********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Toggle/index.pc.css ***!
-  \***********************************************************************************************************/
-
-/*!************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Select/index2.pc.css ***!
-  \************************************************************************************************************/
-
-/*!************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Spinner/index.pc.css ***!
-  \************************************************************************************************************/
-
-/*!**************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/Pane/index.pc.css ***!
-  \**************************************************************************************************************/
-
-/*!**************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/TextInput/index.pc.css ***!
-  \**************************************************************************************************************/
-
-/*!****************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/prism-material-themes/themes/material-palenight.css ***!
-  \****************************************************************************************************************/
-
-/*!********************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/index.pc.css ***!
-  \********************************************************************************************************************/
-
-/*!*********************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/InfiniteScroller/index.pc.css ***!
-  \*********************************************************************************************************************/
-
-/*!*********************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/LeftSidebar/index.pc.css ***!
-  \*********************************************************************************************************************/
-
-/*!**********************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/RightSidebar/index.pc.css ***!
-  \**********************************************************************************************************************/
-
-/*!************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Theme/open-sans/font-face.pc.css ***!
-  \************************************************************************************************************************/
-
-/*!***************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/index.pc.css ***!
-  \***************************************************************************************************************************/
-
-/*!***************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/LeftSidebar/files/index.pc.css ***!
-  \***************************************************************************************************************************/
-
-/*!****************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/index.pc.css ***!
-  \****************************************************************************************************************************/
-
-/*!*****************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Birdseye/index.pc.css ***!
-  \*****************************************************************************************************************************/
-
-/*!*****************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Toolbar/index2.pc.css ***!
-  \*****************************************************************************************************************************/
-
-/*!*****************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/LeftSidebar/symbols/index.pc.css ***!
-  \*****************************************************************************************************************************/
-
-/*!******************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/index.pc.css ***!
-  \******************************************************************************************************************************/
-
-/*!********************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/ErrorBanner/index.pc.css ***!
-  \********************************************************************************************************************************/
-
-/*!********************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/RightSidebar/Inspector/index.pc.css ***!
-  \********************************************************************************************************************************/
-
-/*!*********************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/index.pc.css ***!
-  \*********************************************************************************************************************************/
-
-/*!*********************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/RightSidebar/MoreStyles/index.pc.css ***!
-  \*********************************************************************************************************************************/
-
-/*!**********************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Frames/index.pc.css ***!
-  \**********************************************************************************************************************************/
-
-/*!**************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Filters/index.pc.css ***!
-  \**************************************************************************************************************************************/
-
-/*!***************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Empty/index.pc.css ***!
-  \***************************************************************************************************************************************/
-
-/*!***************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Selector/index.pc.css ***!
-  \***************************************************************************************************************************************/
-
-/*!****************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Frames/index.pc.css ***!
-  \****************************************************************************************************************************************/
-
-/*!****************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Pixels/index.pc.css ***!
-  \****************************************************************************************************************************************/
-
-/*!*****************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Typography/index.pc.css ***!
-  \*****************************************************************************************************************************************/
-
-/*!******************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Distance/index.pc.css ***!
-  \******************************************************************************************************************************************/
-
-/*!******************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/RightSidebar/Styling/Backgrounds/index.pc.css ***!
-  \******************************************************************************************************************************************/
-
-/*!********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!../paperclip-visual-editor/src/components/Main/DesignMode/Canvas/Tools/Selectable/index.pc.css ***!
-  \********************************************************************************************************************************************/
 
 /*!********************************************************************************************************************************************************!*\
   !*** ../paperclip-visual-editor/src/components/Main/DesignMode/Birdseye/previews/0116800ba0b4383678bf58b68c18e3ec25bf8f2a0f86e02e9eef21182e0b00c9.jpg ***!
