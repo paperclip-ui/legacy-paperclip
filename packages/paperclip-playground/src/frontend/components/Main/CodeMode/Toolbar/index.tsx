@@ -3,25 +3,26 @@ import { useAppStore } from "../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
 import * as path from "path";
 import TextInput from "paperclip-visual-editor/src/components/TextInput/index.pc";
+import { useMenu } from "paperclip-visual-editor/src/components/Menu";
 import { useTextInput } from "paperclip-visual-editor/src/components/TextInput";
 import {
   fileItemClicked,
   newFileNameEntered,
-  syncPanelsClicked,
+  syncPanelsClicked
 } from "../../../../actions";
-import { redirectRequest } from "paperclip-visual-editor/src/actions";
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
   const [showNewFileInput, setShowNewFileInput] = useState(false);
   const [newFileName, setNewFileName] = useState<string>();
-  const [showFileMenu, setShowFileMenu] = useState(false);
-  const onAddFile = (e) => {
+  const onAddFile = e => {
     setShowNewFileInput(true);
   };
 
-  const onFileItemClick = (uri) => {
-    setShowFileMenu(false);
+  const menu = useMenu();
+
+  const onFileItemClick = uri => {
+    menu.close();
     dispatch(fileItemClicked({ uri }));
   };
 
@@ -31,19 +32,17 @@ export const Toolbar = () => {
   };
 
   const basename = path.basename(state.currentCodeFileUri);
-  const keepMenuOpen = showFileMenu || showNewFileInput;
   const allFileUris = useMemo(
     () => Object.keys(state.designMode.documentContents),
     [state.designMode.documentContents]
   );
-  const fileMenuButton = useRef<HTMLDivElement>();
 
   const { inputProps: newFileInputProps } = useTextInput({
     value: newFileName,
-    onValueChange: setNewFileName,
+    onValueChange: setNewFileName
   });
 
-  const onNewFileNameKeyPress = (e) => {
+  const onNewFileNameKeyPress = e => {
     if (e.key !== "Enter") {
       return;
     }
@@ -56,15 +55,9 @@ export const Toolbar = () => {
       }
     }
     dispatch(newFileNameEntered({ value: newFileName }));
+    menu.close();
     setShowNewFileInput(false);
     setNewFileName("");
-  };
-  const onBlur = () => {
-    if (fileMenuButton.current.contains(document.activeElement)) {
-      return;
-    }
-
-    setShowFileMenu(false);
   };
 
   const onSyncPanelsClick = () => {
@@ -72,22 +65,17 @@ export const Toolbar = () => {
   };
   return (
     <styles.Topbar>
-      <styles.FileMenuButton
-        ref={fileMenuButton}
-        active={keepMenuOpen}
-        onClick={(e) => {
-          setShowFileMenu(!keepMenuOpen);
-        }}
-        onFocus={() => {
-          // setShowFileMenu(true);
-        }}
-        onBlur={onBlur}
+      <styles.FileSelect
+        ref={menu.ref}
+        active={menu.showOptions}
+        onButtonClick={menu.onButtonClick}
+        onBlur={menu.onButtonBlur}
         name={basename}
         menu={
-          keepMenuOpen && (
+          menu.showOptions && (
             <styles.FileMenu>
               <styles.FileMenuItems>
-                {allFileUris.map((uri) => {
+                {allFileUris.map(uri => {
                   return (
                     <styles.FileMenuItem
                       key={uri}

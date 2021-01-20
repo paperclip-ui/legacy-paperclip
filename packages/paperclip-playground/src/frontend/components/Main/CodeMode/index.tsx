@@ -11,7 +11,7 @@ export const CodeMode = () => {
   const { slim } = state;
   const code = state.designMode.documentContents[state.currentCodeFileUri];
 
-  const onChange = (ev, value) => {
+  const onChange = (_, value) => {
     dispatch(codeEditorChanged(value));
   };
   const editorDidMount = (_, editor) => {
@@ -24,7 +24,7 @@ export const CodeMode = () => {
         {slim ? (
           <SlimEditor
             value={code}
-            onChange={(value) => {
+            onChange={value => {
               dispatch(codeEditorChanged(value));
             }}
           />
@@ -33,8 +33,8 @@ export const CodeMode = () => {
             editorDidMount={editorDidMount}
             options={{
               minimap: {
-                enabled: false,
-              },
+                enabled: false
+              }
             }}
             width="100%"
             value={code}

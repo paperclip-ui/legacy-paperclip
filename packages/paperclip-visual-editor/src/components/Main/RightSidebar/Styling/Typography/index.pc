@@ -1,70 +1,22 @@
-<!-- 
-
-TODO:
-
-- letter spacing
-- align top / middle / bottom
-- Decoration
-- Casing
--->
 
 <import src="components/Theme/index.pc" as="theme" />
 <import src="components/Pane/index.pc" as="Pane" />
 <import src="components/Field/index.pc" as="Field" />
-<import src="components/Select/index.pc" as="Select" />
+<import src="components/Menu/index2.pc" as="Select" />
 <import src="components/Toggle/index.pc" as="Toggle" />
 <import src="components/TextInput/index.pc" as="TextInput" />
 <import src="components/Grid/index.pc" as="Grid" />
 <import src="components/icons/index.pc" as="icons" />
-
-
 <style>
-  .icon {
-    --size: 1em;
-    display: inline-block;
-    width: var(--size);
-    height: var(--size);
-    mask-size: var(--size) var(--size);
-    background-color: currentColor;
-    margin-right: 4px;
-    &.text-left {
-       mask-image: url(./text-left-5.svg);
-    }
-    &.text-center {
-       mask-image: url(./text-center-4.svg);
-    }
-    &.text-right {
-       mask-image: url(./text-right-4.svg);
-    }
-    &.line-height {
-      mask-image: url(./line-height-1.svg);
-    }
-    &.letter-spacing {
-      mask-image: url(./letter-spacing-2.svg);
-    }
-  }
 </style>
-
-
-<!--
-  @frame { visible: false, width: 1024, height: 768, x: 4, y: 52 }
--->
-<div export component as="Preview" className="$theme.font-default">
-  <Pane title="Typography" controls={<fragment><icons.Icon dots /></fragment>}>
+<div export component as="Preview" className=>
+  <Pane title="Typography" controls={}>
     <Pane.Content>
       <Grid.Container columns="1fr 1fr">
-
-        <!-- font family -->
         <Field noLabel>
-          <Select.Preview placeholder="Open Sans" />
         </Field>
-
-        <!-- font weight -->
         <Field noLabel>
-          <Select.Preview placeholder="400" />
         </Field>
-
-        <!-- text align -->
         <Field noLabel>
           <Toggle.ButtonGroup>
             <Toggle.Button>
@@ -78,21 +30,14 @@ TODO:
             </Toggle.Button>
           </Toggle.ButtonGroup>
         </Field>
-
-        <!-- line height -->
-        <Field label={<i className="icon line-height" />} inline>
+        <Field label={} inline>
           <TextInput placeholder="0px" />
         </Field>
-        <Field label={<i className="icon letter-spacing" />}>
+        <Field label={}>
           <TextInput placeholder="0px" />
         </Field>
       </Grid.Container>
     </Pane.Content>
   </Pane>
 </div>
-
-
-<!--
-  @frame { title: "Typography", width: 1024, height: 768, x: 188, y: -121 }
--->
 <Preview />

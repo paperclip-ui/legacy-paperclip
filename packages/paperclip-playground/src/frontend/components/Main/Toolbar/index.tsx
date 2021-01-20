@@ -1,3 +1,5 @@
+import { profile } from "console";
+import { useMenu } from "paperclip-visual-editor/src/components/Menu";
 import React, { useState } from "react";
 import { logoutButtonClicked, saveButtonClicked } from "../../../actions";
 import { useAppStore } from "../../../hooks/useAppStore";
@@ -13,8 +15,10 @@ export const MainToolbar = () => {
     setShowAuth(true);
   };
 
+  const profileMenu = useMenu();
   const onAuthClose = () => setShowAuth(false);
   const onLogoutButtonClick = () => {
+    profileMenu.close();
     dispatch(logoutButtonClicked(null));
   };
   const onSaveCick = () => {
@@ -24,12 +28,10 @@ export const MainToolbar = () => {
   let rightControls;
   let leftControls;
 
-  const saving = state.saving;
-
   if (state.user) {
     leftControls = (
       <>
-        <Button secondary onClick={onSaveCick}>
+        <Button primary onClick={onSaveCick}>
           Save
         </Button>
         {state.saving && (
@@ -43,12 +45,23 @@ export const MainToolbar = () => {
     );
     rightControls = (
       <>
-        <styles.ProfileIcon
-          style={{
-            backgroundImage: `url(${state.user.avatarUrl})`,
-          }}
+        <styles.ProfileMenu
+          ref={profileMenu.ref}
+          button={
+            <styles.ProfileIcon
+              onClick={profileMenu.onButtonClick}
+              onBlur={profileMenu.onButtonBlur}
+              style={{
+                backgroundImage: `url(${state.user.avatarUrl})`
+              }}
+            />
+          }
+          options={
+            profileMenu.showOptions && (
+              <styles.ProfileMenuOptions onLogoutClick={onLogoutButtonClick} />
+            )
+          }
         />
-        <styles.LogoutButton onClick={onLogoutButtonClick} />
       </>
     );
   } else {
