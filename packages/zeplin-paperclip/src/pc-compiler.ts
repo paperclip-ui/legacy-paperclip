@@ -213,7 +213,7 @@ const compileLayerStyles = (
   const buffer = ["  <style>\n"];
   const textMixins = [];
   const castedLayer = castLayer(rawLayer);
-  const layer = new Layer(castedLayer);
+  const layer = new Layer(castedLayer, null);
 
   for (const decl of layer.style.declarations) {
     if (/^(width|height)$/.test(decl.name)) {

@@ -1,3 +1,4 @@
+
 <import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
 <import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
@@ -31,9 +32,15 @@
   {children}
 </div>
 
-<div export component as="Content" className:slim="slim" >
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Content" className:slim="slim">
   <style>
+    height: 100%;
     &.slim {
+      height: auto;
       padding: 14px 28px;
     }
   </style>
@@ -41,7 +48,7 @@
 </div>
 
 <!--
-  @frame { title: "CodeMode", width: 1024, height: 768, x: 41, y: -47 }
+  @frame { title: "CodeMode", width: 1024, height: 768, x: 1312, y: 180 }
 -->
 <Container export component as="Preview" {slim?}>
   <Toolbar.Preview {showFileMenu?} />

@@ -8,6 +8,11 @@
   "directories": {
     "doc": "docs"
   },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
@@ -18,6 +23,10 @@
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1",
     "typescript": "^4.1.3"
+  },
+  "resolutions": {
+    "vscode-languageserver-protocol": "3.15.1",
+    "terser": "4.8.0"
   },
   "husky": {
     "hooks": {
@@ -30,6 +39,8 @@
     "lint": "lerna run lint",
     "link": "lerna run link",
     "postinstall": "lerna bootstrap",
+    "clean": "find ./ -name node_modules -exec rm -rf {} \\;",
+    "clean:hard": "rm yarn.lock && yarn clean",
     "build:watch": "lerna run build:watch --parallel",
     "publish:packages": "lerna publish from-package --yes",
     "publish:marketplace": "lerna run publish:marketplace",

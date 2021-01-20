@@ -1,5 +1,6 @@
-import { EngineDelegate, EngineOptions } from "./src";
-export * from "./src";
+import { EngineDelegate, EngineOptions } from "./src/core";
+export * from "./src/core";
+export * from "./src/node";
 
 export function createEngineDelegate(
   options?: EngineOptions,

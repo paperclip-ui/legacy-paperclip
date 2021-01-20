@@ -1,0 +1,68 @@
+<import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
+
+<!--
+  @frame { visible: false }
+-->
+<button export component as="Button" 
+  className="v2 {className?}" 
+  className:hover="hover" 
+  className:big="big"
+  className:primary="primary" 
+  className:secondary="secondary" 
+  {onClick?}>
+  <style>
+    white-space: nowrap;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+    transition-property: background, color;
+    background: transparent;
+    border: 2px solid transparent;
+    padding: 4px 14px;
+    &.primary {
+      background: var(--color-blue-100);
+      color: white;
+      &:hover, &.hover {
+        background: var(--color-blue-500);
+      }
+    }
+    &.secondary {
+      background: var(--grey-400);
+      color: white;
+      &:hover, &.hover {
+        background: var(--grey-300);
+      }
+    }
+    &.big {
+          padding: 8px 24px;
+    }
+  </style>
+  {children}
+</button>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="PreviewContainer">
+  <style>
+    & > * {
+      margin: 8px;
+    }
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { title: "Primary", width: 171, height: 119, x: 0, y: 0 }
+-->
+<PreviewContainer>
+  <Button primary>
+    Default
+  </Button>
+  <Button primary hover>
+    Hover
+  </Button>
+</PreviewContainer>

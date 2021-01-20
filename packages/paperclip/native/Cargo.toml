@@ -1,5 +1,8 @@
 [profile.release]
-debug = true
+debug = false
+opt-level = 3
+lto = true
+
 
 [package]
 name = "paperclip"

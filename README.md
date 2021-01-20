@@ -46,22 +46,30 @@ Here's a basic Paperclip UI file:
 ```html
 <!-- Scoped styles here -->
 <style>
+
+  // regular selectors can be used
   ol {
-    padding-left: 1em;
-    font-family: Open Sans;
-  }
-  li {
-    margin-top: 6px;
   }
 </style>
 
 <!-- Components exported to code -->
 
 <ol export component as="List">
+
+  <!-- you can also scope styles to elements like this -->
+  <style>
+
+    // element styles don't need selectors, you can just define them like so:
+    padding-left: 1em;
+    font-family: Open Sans;
+  </style>
   {children}
 </ol>
 
 <li export component as="ListItem">
+  <style>
+    margin-top: 6px;
+  </style>
   {children}
 </li>
 
@@ -96,6 +104,23 @@ function GroceryList() {
   </styles.List>;  
 }
 ```
+
+<!-- ## Is this right for you?
+
+The biggest questions you probably have about this library are:
+
+- How's this approach better then what I'm used to?
+- Is this project mature & validated?
+- How often is this library being maintained?
+
+#### How's this approach better then what I'm used to?
+
+Mostly speed, safety, and maintainability. 
+
+Speed-wise, y
+
+- Is this project mature & validated? -->
+
 
 # Roadmap
 

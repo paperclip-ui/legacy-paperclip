@@ -4,9 +4,9 @@ import { Main } from "./components/Main";
 import { createAppStore } from "./hocs/withAppStore";
 
 const createPlayground = (options: any = {}) => {
-  const store = createAppStore(options);
-
   const mount = document.createElement("div");
+
+  const store = createAppStore(options, mount);
 
   mount.setAttribute(
     "style",

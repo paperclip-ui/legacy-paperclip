@@ -15,13 +15,16 @@ type InitOptions = Partial<{
   slim: boolean;
 }>;
 
-export const createAppStore = ({
-  compact,
-  mainDocumentUri,
-  documents,
-  activeFrameIndex,
-  slim,
-}: InitOptions = {}) => {
+export const createAppStore = (
+  {
+    compact,
+    mainDocumentUri,
+    documents,
+    activeFrameIndex,
+    slim,
+  }: InitOptions = {},
+  mount: HTMLDivElement
+) => {
   const sagaMiddleware = createSagaMiddleware();
   const mainUri =
     mainDocumentUri ||
@@ -34,21 +37,25 @@ export const createAppStore = ({
       ...INITIAL_STATE,
       slim: slim != null ? slim : INITIAL_STATE.slim,
       compact: compact || INITIAL_STATE.compact,
-      documentContents: documents || INITIAL_STATE.documentContents,
-      currentCodeFileUri: mainUri,
-      ui: {
-        ...INITIAL_STATE.ui,
-        query: {
-          ...INITIAL_STATE.ui.query,
-          currentFileUri: mainUri,
-          frame: activeFrameIndex,
-          expanded: activeFrameIndex != null,
+      designMode: {
+        ...INITIAL_STATE.designMode,
+        documentContents:
+          documents || INITIAL_STATE.designMode.documentContents,
+        ui: {
+          ...INITIAL_STATE.designMode.ui,
+          query: {
+            ...INITIAL_STATE.designMode.ui.query,
+            currentFileUri: mainUri,
+            frame: activeFrameIndex,
+            expanded: activeFrameIndex != null,
+          },
         },
       },
+      currentCodeFileUri: mainUri,
     },
     applyMiddleware(sagaMiddleware)
   );
-  sagaMiddleware.run(init);
+  sagaMiddleware.run(init, mount);
   return store;
 };
 

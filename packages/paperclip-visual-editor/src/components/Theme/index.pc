@@ -136,6 +136,9 @@
     --background-200: var(--grey-200);
     --background-300: var(--grey-300);
 
+    --color-blue-100: rgb(102, 163, 255);
+    --color-blue-500: rgb(51, 113, 206);
+
     // shadows
     --shadow-100: 4px 4px 4px rgba(0, 0, 0, 0.1);
 

@@ -47,6 +47,7 @@ function* startEngine() {
       VEActionType.REDIRECT_REQUESTED,
       VEActionType.PC_VIRT_OBJECT_EDITED,
       ActionType.CONTENT_CHANGES_CREATED,
+      ActionType.GET_PROJECT_FILES_REQUEST_CHANGED,
     ],
     function* (action) {
       const newState: AppState = yield select();

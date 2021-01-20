@@ -5,6 +5,26 @@
 import * as glob from "glob";
 import * as Mocha from "mocha";
 
+/*
+
+<div className={{
+  "some-class another-class": primary?,
+  secondary?
+}}>
+  <style>
+    .some-class {
+
+    }
+    .another-class {
+
+    }
+    .secondary {
+
+    }
+  </style>
+</div>
+*/
+
 export const run = async () => {
   const testFiles = glob.sync(`**/*-test.js`, {
     cwd: __dirname,
@@ -24,7 +44,7 @@ export const run = async () => {
         console.error(e);
         reject(e);
       } else {
-        resolve();
+        resolve(null);
       }
     });
   });

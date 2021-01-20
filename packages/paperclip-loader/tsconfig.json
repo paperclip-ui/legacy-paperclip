@@ -4,6 +4,7 @@
     "target": "es5",
     "declaration": true,
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "module": "commonjs",
     "allowSyntheticDefaultImports": true
   },

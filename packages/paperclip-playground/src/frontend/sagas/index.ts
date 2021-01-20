@@ -5,11 +5,15 @@ import { ActionType, NewFileNameEntered } from "../actions";
 import { redirectRequest } from "paperclip-visual-editor/src/actions";
 import { getNewFilePath } from "../state";
 import { AppState } from "../state";
+import { handleAPI } from "./api";
+import { handleLocation } from "./location";
 
-export function* init() {
+export function* init(mount: HTMLDivElement) {
   yield fork(handleEngine);
-  yield fork(veSaga);
+  yield fork(veSaga, mount, (state: AppState) => state.designMode);
   yield fork(handleApp);
+  yield fork(handleAPI);
+  yield fork(handleLocation);
 }
 
 function* handleApp() {

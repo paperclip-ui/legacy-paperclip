@@ -18,18 +18,18 @@ module.exports = {
 
   output: {
     filename: "browser.js",
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "dist")
   },
   devtool: false,
 
   plugins: [
     new HtmlWebpackPlugin({
       title: "Paperclip",
-      template: path.resolve(__dirname, "src", "index.html"),
-    }),
+      template: path.resolve(__dirname, "src", "index.html")
+    })
   ],
   externals: {
-    chokidar: "{}",
+    chokidar: "{}"
   },
 
   module: {
@@ -38,7 +38,7 @@ module.exports = {
         test: /\.(ts|tsx)?$/,
         loader: "ts-loader",
         include: [path.resolve(__dirname, "src")],
-        exclude: [/node_modules/],
+        exclude: [/node_modules/]
       },
       {
         test: /\.pc$/,
@@ -46,12 +46,12 @@ module.exports = {
         include: [path.resolve(__dirname, "src")],
         exclude: [/node_modules/],
         options: {
-          config: require("./paperclip.config.json"),
-        },
+          config: require("./paperclip.config.json")
+        }
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"],
+        use: ["style-loader", "css-loader"]
       },
       {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,
@@ -59,15 +59,18 @@ module.exports = {
           {
             loader: "url-loader",
             options: {
-              limit: Infinity,
-            },
-          },
-        ],
-      },
-    ],
+              limit: Infinity
+            }
+          }
+        ]
+      }
+    ]
   },
 
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
-  },
+    alias: {
+      os: "os-browserify/browser"
+    }
+  }
 };

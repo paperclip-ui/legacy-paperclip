@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { createMockEngine, stringifyLoadResult } from "../utils";
 
-import { noop } from "../../utils";
+import { noop } from "../../core/utils";
 
 describe(__filename + "#", () => {
   it("can render a simple style", async () => {
@@ -10,7 +10,7 @@ describe(__filename + "#", () => {
         .a {
           color: b;
         }
-      </style>`,
+      </style>`
     };
     const engine = await createMockEngine(graph);
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
@@ -25,12 +25,12 @@ describe(__filename + "#", () => {
             background: url('/not/found.png')
           }
         </style>
-      `,
+      `
     };
     const engine = await createMockEngine(graph, noop, {
       resolveFile() {
         return null;
-      },
+      }
     });
 
     let err;
@@ -43,7 +43,7 @@ describe(__filename + "#", () => {
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 59, end: 91 },
-      message: "Unable to resolve file: /not/found.png from /entry.pc",
+      message: "Unable to resolve file: /not/found.png from /entry.pc"
     });
   });
 
@@ -57,7 +57,7 @@ describe(__filename + "#", () => {
           div {
             @include a;
           }
-        </style>`,
+        </style>`
       };
       const engine = await createMockEngine(graph);
       const text = stringifyLoadResult(await engine.open("/entry.pc"));
@@ -72,7 +72,7 @@ describe(__filename + "#", () => {
           div {
             @include a;
           }
-        </style>`,
+        </style>`
       };
       const engine = await createMockEngine(graph);
       let err;
@@ -85,7 +85,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
-        message: "Reference not found.",
+        message: "Reference not found."
       });
     });
 
@@ -102,7 +102,7 @@ describe(__filename + "#", () => {
               color: orange;
             }
           }
-        </style>`,
+        </style>`
       };
       const engine = await createMockEngine(graph);
       const text = stringifyLoadResult(await engine.open("/entry.pc"));
@@ -118,7 +118,7 @@ describe(__filename + "#", () => {
           }
         </style>`,
         "/module.pc": `<style>
-        </style>`,
+        </style>`
       };
       const engine = await createMockEngine(graph);
       let err;
@@ -131,7 +131,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 87, end: 88 },
-        message: "Reference not found.",
+        message: "Reference not found."
       });
     });
     it("Displays an error if the import is not found", async () => {
@@ -140,7 +140,7 @@ describe(__filename + "#", () => {
           div {
             @include mod.a;
           }
-        </style>`,
+        </style>`
       };
       const engine = await createMockEngine(graph);
       let err;
@@ -153,7 +153,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 48 },
-        message: "Reference not found.",
+        message: "Reference not found."
       });
     });
 
@@ -164,7 +164,7 @@ describe(__filename + "#", () => {
           div {
             @include a.b.c;
           }
-        </style>`,
+        </style>`
       };
       const engine = await createMockEngine(graph);
       let err;
@@ -177,7 +177,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 45, end: 46 },
-        message: "Reference not found.",
+        message: "Reference not found."
       });
     });
 
@@ -192,7 +192,7 @@ describe(__filename + "#", () => {
           @mixin abcde {
             color: orange;
           }
-        </style>`,
+        </style>`
       };
       const engine = await createMockEngine(graph);
       let err;
@@ -205,7 +205,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 87, end: 92 },
-        message: "This mixin is private.",
+        message: "This mixin is private."
       });
     });
 
@@ -219,7 +219,7 @@ describe(__filename + "#", () => {
           @mixin abcde {
             color: orange;
           }
-        </style>`,
+        </style>`
       };
       const engine = await createMockEngine(graph);
       let err;
@@ -232,7 +232,7 @@ describe(__filename + "#", () => {
         errorKind: "Runtime",
         uri: "/entry.pc",
         location: { start: 98, end: 103 },
-        message: "This mixin is already declared in the upper scope.",
+        message: "This mixin is already declared in the upper scope."
       });
     });
 
@@ -254,7 +254,7 @@ describe(__filename + "#", () => {
               }
             }
           }
-        </style>`,
+        </style>`
       };
 
       const engine = await createMockEngine(graph);
@@ -271,7 +271,7 @@ describe(__filename + "#", () => {
         .a\\:b {
           color: blue;
         }
-      </style>`,
+      </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -300,7 +300,7 @@ describe(__filename + "#", () => {
         }
       }
       
-      </style>`,
+      </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -314,7 +314,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `<style>
         /* foreverrrrrr
-      </style>`,
+      </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -330,8 +330,8 @@ describe(__filename + "#", () => {
       info: {
         kind: "Unterminated",
         message: "Unterminated element.",
-        location: { start: 0, end: 7 },
-      },
+        location: { start: 0, end: 7 }
+      }
     });
   });
 
@@ -341,7 +341,7 @@ describe(__filename + "#", () => {
         .element {
           --color: test;
         }
-      </style>ab`,
+      </style>ab`
     };
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
@@ -353,9 +353,9 @@ describe(__filename + "#", () => {
         uri: "/entry.pc",
         location: {
           start: 37,
-          end: 51,
-        },
-      },
+          end: 51
+        }
+      }
     });
   });
 
@@ -382,7 +382,7 @@ describe(__filename + "#", () => {
 
           }
         }
-      </style>ab`,
+      </style>ab`
     };
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
@@ -394,13 +394,13 @@ describe(__filename + "#", () => {
       "element--child": {
         name: "element--child",
         public: false,
-        scopedName: "_80f4925f_element--child",
+        scopedName: "_80f4925f_element--child"
       },
       element: {
         name: "element",
         public: false,
-        scopedName: "_80f4925f_element",
-      },
+        scopedName: "_80f4925f_element"
+      }
     });
   });
 
@@ -417,7 +417,7 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -435,7 +435,7 @@ describe(__filename + "#", () => {
           margin-right: 4px;
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -455,7 +455,7 @@ describe(__filename + "#", () => {
       div {
         animation: lds-something3 1s;
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -485,7 +485,7 @@ describe(__filename + "#", () => {
           color: green;
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -505,14 +505,14 @@ describe(__filename + "#", () => {
       }
       .another {
       }
-    </style>`,
+    </style>`
     };
     const engine = await createMockEngine(graph);
     await engine.open("/entry.pc");
-    const ast = engine.getLoadedAst("/entry.pc") as any;
+    const ast = (await engine.getLoadedAst("/entry.pc")) as any;
     expect(ast.children[0].sheet.rules[1].location).to.eql({
       start: 88,
-      end: 111,
+      end: 111
     });
   });
 
@@ -528,7 +528,7 @@ describe(__filename + "#", () => {
         }
       }
 
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -541,9 +541,9 @@ describe(__filename + "#", () => {
           uri: "/entry.pc",
           location: {
             start: 73,
-            end: 94,
-          },
-        },
+            end: 94
+          }
+        }
       },
       a: {
         name: "a",
@@ -552,10 +552,10 @@ describe(__filename + "#", () => {
           uri: "/entry.pc",
           location: {
             start: 25,
-            end: 44,
-          },
-        },
-      },
+            end: 44
+          }
+        }
+      }
     });
   });
 
@@ -568,13 +568,13 @@ describe(__filename + "#", () => {
         }
       }
 
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(result.exports.style.classNames).to.eql({
-      _b: { name: "_b", scopedName: "_80f4925f__b", public: true },
+      _b: { name: "_b", scopedName: "_80f4925f__b", public: true }
     });
   });
 
@@ -591,7 +591,7 @@ describe(__filename + "#", () => {
       .test {
         @include ab;
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -607,7 +607,7 @@ describe(__filename + "#", () => {
       errorKind: "Runtime",
       uri: "/entry.pc",
       location: { start: 63, end: 70 },
-      message: "Reference not found.",
+      message: "Reference not found."
     });
   });
 
@@ -620,7 +620,7 @@ describe(__filename + "#", () => {
           color: blue
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -643,7 +643,7 @@ describe(__filename + "#", () => {
       .div {
         @include a;
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -661,7 +661,7 @@ describe(__filename + "#", () => {
           color: blue;
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -679,7 +679,7 @@ describe(__filename + "#", () => {
         mask-image: d;
         
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -700,7 +700,7 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -721,7 +721,7 @@ describe(__filename + "#", () => {
       }
 
       @include test;
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -744,7 +744,7 @@ describe(__filename + "#", () => {
           @include test;
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -763,7 +763,7 @@ describe(__filename + "#", () => {
           color: red;
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -785,7 +785,7 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -808,7 +808,7 @@ describe(__filename + "#", () => {
       @include div {
         color: red;
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -832,7 +832,7 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -860,7 +860,7 @@ describe(__filename + "#", () => {
           color: red;
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -886,7 +886,7 @@ describe(__filename + "#", () => {
           font-size: 40px;
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -921,7 +921,7 @@ describe(__filename + "#", () => {
       </div>
       
       <Test />
-      `,
+      `
     };
 
     const engine = await createMockEngine(graph);
@@ -963,7 +963,7 @@ describe(__filename + "#", () => {
       </style>
       
       <Test />
-      `,
+      `
     };
 
     const engine = await createMockEngine(graph);
@@ -993,7 +993,7 @@ describe(__filename + "#", () => {
           }
         }
       }
-    </style>`,
+    </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -1023,7 +1023,7 @@ describe(__filename + "#", () => {
     <div class="a hover">I'm red</div>
     <div class="a transparent hover">I'm blue</div>
     
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1050,7 +1050,7 @@ describe(__filename + "#", () => {
         <div class="_button">I'm a button</div>
       </div>
     
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1080,7 +1080,7 @@ describe(__filename + "#", () => {
         <div class="_button">I'm a button</div>
       </div>
     
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1104,7 +1104,7 @@ describe(__filename + "#", () => {
         </style>
       </div>
     
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1128,7 +1128,7 @@ describe(__filename + "#", () => {
         </style>
       </div>
     
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1159,7 +1159,7 @@ describe(__filename + "#", () => {
         </div>
       </div>
     
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1185,7 +1185,7 @@ describe(__filename + "#", () => {
         </div>
       </div>
     
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1209,7 +1209,7 @@ describe(__filename + "#", () => {
         </div>
       </div>
     
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1237,7 +1237,7 @@ describe(__filename + "#", () => {
           </style>
         </div>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1263,7 +1263,7 @@ describe(__filename + "#", () => {
           </style>
         </div>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1288,7 +1288,7 @@ describe(__filename + "#", () => {
           </style>
         </div>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1312,7 +1312,7 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1335,7 +1335,7 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1358,7 +1358,7 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1380,7 +1380,7 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1401,7 +1401,7 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1423,7 +1423,7 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1446,7 +1446,7 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);
@@ -1469,7 +1469,7 @@ describe(__filename + "#", () => {
           }
         </style>
       </div>
-    `,
+    `
     };
 
     const engine = await createMockEngine(graph);

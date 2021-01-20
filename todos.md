@@ -1,27 +1,53 @@
 
 ### Immediate
+- add logo
 
-- Playground server (private repo)
-  - connect account (Github / Google)
-  - ability to save playground (store in SQL)
-  - ability to clone playground
-  - ability to download files (PC & JS)
-  - Ability to upload files (img, svg)
-  - setup server on subdomain: `playground.paperclip.dev`
+- copy/paste hijacked
+  - ensure that no other hotkeys are
 
-- Tutorial button (show if new user)
-- Examples
+- ability to see existing projects
+- profile icon menu options
+  - logout
+  - create new project
+  - see projects
+
+- Projects page
+  - ability to change names (pen icon)
+  - ability to delete
+    - confirm - type name
+  - visibility options
+
+- undo / redo
+  - use CRDTs for this
+
+- cleanup
+  - going to / should display blank page
+  - bind meta + s to save
+  - ensure that user is prompted to sasve before leaving
+
+- wrap
+  - paperclip.playground.dev
+
+### Necessary (but not yet planned)
+
+- Tutorial (show if new user)
+- Example project (from shared link)
 
 
+#### Next
 
-- Other considerations
+- public share link (projects should be private unless publicly shared)
+  - use tiny url
 
+- shared links
+  - ability to clone
 
-### high-level
+- ability to upload images (DND)
+- download code
+  - PC code zip code
+  - 
 
-- Embed rust engine in editor
-- Monaco editor
-- mock files in rust engine
-- ability to edit code 
-- language server for monaco
-  
+- collaboration
+  - CRDT backend
+  - presense icons
+  - cursor icons

@@ -1,0 +1,135 @@
+<import src="frontend/components/Button/index.pc" as="Button" />
+<import src="paperclip-visual-editor/src/styles/utils.pc" as="utils" />
+
+<div export component as="Toolbar" className="v2">
+  <style>
+    height: 40px;
+    width: 100%;
+    background: var(--grey-night-500);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    color: white;
+    border-bottom: 2px solid var(--grey-night-300);
+    flex-shrink: 0;
+  </style>
+
+  <div>
+    <style>
+      margin-left: 28px;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+    </style>
+    {leftControls}
+  </div>
+
+  <div>
+    <style>
+      width: 100%;
+
+      // absolute so that it's centered
+      position: absolute;
+    </style>
+    {documentName}
+  </div>
+
+  <!-- Spacer -->
+  <div>
+    <style>
+      width: 100%;
+    </style>
+  </div>
+  <div>
+    <style>
+      padding-right: 28px;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+    </style>
+    {rightControls}
+  </div>
+</div>
+
+<button export component as="LogoutButton" {onClick}>
+  <style>
+    --size: 18px;
+    @include utils.mask-button;
+    @include utils.mask;
+    & {
+      background: var(--grey-300);
+    }
+    cursor: pointer;
+    mask-image: url("./logout2.svg");
+    margin-left: 14px;
+  </style>
+</button>
+
+<div export component as="ProfileIcon" {className?} {style?}>
+  <style>
+    --size: 24px;
+    width: var(--size);
+    height: var(--size);
+    background-position: 50%;
+    background-size: 130%;
+    background-repeat: no-repeat;
+    border-radius: 99px;
+    border: 2px solid var(--grey-400);
+  </style>
+</div>
+
+<i export component as="SaveStatus" className:success="success" className:failed="failed" className:pending="pending">
+  <style>
+    --size: 15px;
+    @include utils.mask;
+    @keyframes  spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    &.pending {
+      color: var(--grey-300);
+      mask-image: url("./spin.svg");
+      animation: spin 1.5s linear infinite;
+    }
+    &.success {
+      --size: 18px;
+      color: rgb(127, 241, 127);
+      mask-image: url("./check.svg");
+    }
+    &.failed {
+      --size: 12px;
+      color: rgb(241, 127, 127);
+      mask-image: url("./x2.svg");
+    }
+    margin-left: 14px;
+  </style>
+</i>
+
+<Toolbar export component as="Preview" 
+  documentName="Untitled"
+  leftControls={<fragment>  
+    {loggedIn && <fragment>
+      <Button.Button secondary>
+        Save
+      </Button.Button>
+    </fragment> || <Button.Button primary>
+        Log in to save
+      </Button.Button>}
+  </fragment>}
+  rightControls={
+    <fragment>
+      {loggedIn && <fragment>
+        <ProfileIcon>
+          <style>
+            background-image: url("./profile.jpg");
+          </style>
+        </ProfileIcon>
+        <LogoutButton />
+      </fragment>}
+    </fragment>
+  } 
+/>
