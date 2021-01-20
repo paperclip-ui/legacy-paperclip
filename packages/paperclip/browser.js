@@ -1,4 +1,4 @@
-import { EngineDelegate, EngineMode } from "./esm";
+import { EngineDelegate, EngineMode } from "./esm/core";
 
 export const loadEngineDelegate = async (options, onCrash) => {
   // need this here since webpack tree shakes it out
@@ -15,7 +15,7 @@ export const loadEngineDelegate = async (options, onCrash) => {
       options.mode || EngineMode.MultiFrame
     ),
     onCrash ||
-      function (e) {
+      function(e) {
         console.error(e);
       }
   );
