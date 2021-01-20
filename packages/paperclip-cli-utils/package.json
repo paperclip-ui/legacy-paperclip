@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli-utils",
-  "version": "17.4.9",
+  "version": "17.4.10",
   "description": "CLI util for Paperclip",
   "main": "lib/index.js",
   "bin": {
@@ -13,7 +13,7 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
+  "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",
   "dependencies": {
     "@types/inquirer": "^6.5.0",
     "@types/shelljs": "^0.8.8",
@@ -23,8 +23,8 @@
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "inquirer": "^7.3.0",
-    "paperclip": "^17.4.9",
-    "paperclip-utils": "^17.4.7",
+    "paperclip": "^17.4.10",
+    "paperclip-utils": "^17.4.10",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
     "yargs": "^15.1.0"
