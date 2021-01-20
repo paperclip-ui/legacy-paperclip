@@ -26,7 +26,6 @@ use engine::{Engine, EngineError};
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-
 extern crate web_sys;
 
 #[wasm_bindgen]
