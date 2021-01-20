@@ -46,6 +46,7 @@ const getIOOptions = options => {
   );
 };
 
+// eslint-disable-next-line
 export const createEngineDelegate = (options = {}, onCrash: any = () => {}) => {
   const {
     readFile,
