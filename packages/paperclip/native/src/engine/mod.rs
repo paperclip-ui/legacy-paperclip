@@ -287,7 +287,10 @@ impl Engine {
             let mutations = diff_pc(&existing_info.preview, &data.preview);
 
             // no need to dispatch mutation if no event
-            if mutations.len() > 0 {
+
+            // TODO - CSSOM changes can still happen, but aren't picked up
+            // so we need to send the diff :(
+            // if mutations.len() > 0 {
               self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
                 uri: uri.clone(),
                 data: DiffedData {
@@ -299,7 +302,7 @@ impl Engine {
                   mutations,
                 },
               }));
-            }
+            // }
           } else {
             self.dispatch(EngineDelegateEvent::Evaluated(EvaluatedEvent {
               uri: uri.clone(),
