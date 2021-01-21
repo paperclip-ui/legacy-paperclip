@@ -213,10 +213,6 @@ export const useFrames = ({
     return () => renderer.dispose();
   }, [renderer]);
 
-  useLayoutEffect(() => {
-    renderer.collectRects();
-  }, [renderer, isExpanded(state), state.canvas.size]);
-
   const onFrameLoaded = useCallback(() => {
     renderer.collectRects();
   }, [renderer]);
@@ -227,8 +223,17 @@ export const useFrames = ({
         state.currentEngineEvents[renderer.id],
         frameData?.preview
       );
+    } else if (frameData?.preview) {
+      // need to update preview in case frame bounds change
+      renderer.updatePreview(frameData.preview);
     }
-  }, [renderer, state.currentEngineEvents, frameData?.preview]);
+  }, [
+    renderer,
+    isExpanded(state),
+    state.currentEngineEvents,
+    state.canvas.size,
+    frameData?.preview
+  ]);
 
   return {
     renderer: renderer.renderer,

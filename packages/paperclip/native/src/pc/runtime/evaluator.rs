@@ -172,7 +172,6 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
                     add_script_property(&slot.script, &mut properties);
                   }
 
-
                   // <a key="value {anotherValue}" />
                   ast::AttributeValue::DyanmicString(d_string) => {
                     for val in &d_string.values {
@@ -1036,9 +1035,7 @@ fn evaluate_native_element<'a>(
 
     match attr {
       ast::Attribute::KeyValueAttribute(kv_attr) => {
-
         let actual_name = get_actual_attribute_name(&kv_attr.name);
-
 
         let (name, mut value_option) = if kv_attr.value == None {
           (actual_name, None)
@@ -1100,12 +1097,7 @@ fn evaluate_native_element<'a>(
         })?;
         let actual_name = get_actual_attribute_name(&name);
 
-        assert_attr_slot_restrictions(
-          &element.tag_name,
-          &actual_name,
-          &sh_attr.location,
-          context,
-        )?;
+        assert_attr_slot_restrictions(&element.tag_name, &actual_name, &sh_attr.location, context)?;
         let mut js_value = evaluate_attribute_slot(&sh_attr.reference, depth, context)?;
 
         if js_value.truthy() {

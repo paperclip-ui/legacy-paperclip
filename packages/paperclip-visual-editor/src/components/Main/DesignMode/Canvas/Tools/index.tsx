@@ -34,6 +34,7 @@ export const Tools = () => {
     boxes,
     canvas,
     selectedNodePaths,
+    resizerMoving,
     ui: {
       query: { currentFileUri }
     },
@@ -79,6 +80,7 @@ export const Tools = () => {
 
   const hoveringBox =
     canvas.mousePosition &&
+    !resizerMoving &&
     getNodeInfoAtPoint(
       canvas.mousePosition,
       canvas.transform,

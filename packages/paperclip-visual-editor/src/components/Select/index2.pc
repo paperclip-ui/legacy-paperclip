@@ -76,7 +76,7 @@
 <!--
   @frame { visible: false }
 -->
-<div component as="Preview" className:dark="dark"> 
+<div component as="Preview" className:dark="dark" className:light="light"> 
   <style>
     padding: 20px;
   </style>
@@ -97,7 +97,7 @@
 </div>
 
 <!--
-  @frame { title: "Select / Dark", width: 404, height: 198, x: 385, y: 962 }
+  @frame { title: "Select / Dark", width: 391, height: 200, x: 827, y: 644 }
 -->
 <Preview dark />
 
