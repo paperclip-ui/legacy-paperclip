@@ -19,7 +19,6 @@
     "paperclip": "^17.4.10",
     "paperclip-cli-utils": "^17.4.10",
     "resolve": "^1.15.1",
-    "typescript": "^3.8.3",
     "webpack-virtual-modules": "^0.4.1"
   },
   "devDependencies": {

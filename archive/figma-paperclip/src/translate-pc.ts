@@ -5,7 +5,7 @@ import {
   TranslateContext,
   addBuffer,
   startBlock,
-  endBlock,
+  endBlock
 } from "./translate-utils";
 import {
   Node,
@@ -45,7 +45,7 @@ import {
   ComponentSet,
   containsNode,
   getNodeParent,
-  getAllComponentSets,
+  getAllComponentSets
 } from "./state";
 import { pascalCase, logWarn } from "./utils";
 import * as chalk from "chalk";
@@ -120,7 +120,7 @@ const translateImports = (context: TranslateContext) => {
 const getImportFilePaths = (context: TranslateContext) => {
   const entry = context.graph[context.entryFilePath];
   return uniq(
-    Object.keys(entry.imports).map((refId) => {
+    Object.keys(entry.imports).map(refId => {
       return entry.imports[refId].filePath;
     })
   );
@@ -622,7 +622,7 @@ const LAYOUT_STYLE_PROP_NAMES = ["left", "top", "width", "height", "position"];
 
 const splitLayoutStyle = (style: any) => [
   pick(style, LAYOUT_STYLE_PROP_NAMES),
-  omit(style, LAYOUT_STYLE_PROP_NAMES),
+  omit(style, LAYOUT_STYLE_PROP_NAMES)
 ];
 
 const translateStyles = (document: Document, context: TranslateContext) => {
@@ -667,8 +667,8 @@ const translateComponentStyles = (context: TranslateContext) => {
     if (nodes.length > 1 || nodes[0].type !== NodeType.Component) {
       // if componenents exist in nodes list, then node is an instance, so skip them.
       classNamePath = nodes
-        .filter((node) => node.type !== NodeType.Component)
-        .map((node) => {
+        .filter(node => node.type !== NodeType.Component)
+        .map(node => {
           const component = getOwnerComponent(
             node,
             getNodeDocument(node, context.graph)
@@ -733,7 +733,7 @@ const computeComponentStyles = (context: TranslateContext) => {
   const document = context.graph[context.entryFilePath].document;
 
   const components = getAllComponents(document).filter(
-    (component) =>
+    component =>
       getNodeParent(component, document).type !== NodeType.ComponentSet
   );
 
@@ -891,14 +891,14 @@ const getNestedCSSStyles = (
     node,
     style: nodeStyle,
     children: hasChildren(node)
-      ? node.children.map((child) => {
+      ? node.children.map(child => {
           return getNestedCSSStyles(
             child,
             context,
             node.type == NodeType.Instance ? node : instance
           );
         })
-      : [],
+      : []
   };
 };
 
@@ -948,7 +948,7 @@ const getCSSStyle = (node, context: TranslateContext) => {
     Object.assign(style, getTextStyle(node));
 
     const containsNonSolifFill = node.fills.some(
-      (fill) => fill.type !== FillType.SOLID
+      fill => fill.type !== FillType.SOLID
     );
 
     if (containsNonSolifFill) {
@@ -958,7 +958,7 @@ const getCSSStyle = (node, context: TranslateContext) => {
 
     // text color must be solid, so search for one
     const solidFill = node.fills.find(
-      (fill) => fill.type === FillType.SOLID
+      fill => fill.type === FillType.SOLID
     ) as SolidFill;
     if (solidFill) {
       style.color = getCSSRGBAColor(solidFill.color);
@@ -985,13 +985,13 @@ const getVectorStyle = (
     const value = getFillStyleValue(node, node.fills);
     if (value) {
       style.background = value;
-      const containsBlendModes = node.fills.some((fill) => {
+      const containsBlendModes = node.fills.some(fill => {
         return fill.blendMode !== "NORMAL";
       });
 
       if (containsBlendModes) {
         style["background-blend-mode"] = node.fills
-          .map((fill) => {
+          .map(fill => {
             return BLEND_MODE_MAP[fill.blendMode];
           })
           .join(", ");
@@ -1003,12 +1003,12 @@ const getVectorStyle = (
   }
   if (node.strokes.length) {
     const containsInvalidStroke =
-      node.strokes.some((stroke) => {
+      node.strokes.some(stroke => {
         return stroke.type !== FillType.SOLID;
       }) || node.strokes.length > 1;
 
     const solidStroke = node.strokes.find(
-      (stroke) => stroke.type === FillType.SOLID
+      stroke => stroke.type === FillType.SOLID
     ) as SolidFill;
 
     if (containsInvalidStroke) {
@@ -1035,9 +1035,9 @@ const getVectorStyle = (
 
 const getEffectsStyle = (node: Node, effects: Effect[]) => {
   const newStyle = {};
-  const visibleEffects = effects.filter((effect) => effect.visible !== false);
+  const visibleEffects = effects.filter(effect => effect.visible !== false);
   const dropShadows = visibleEffects.filter(
-    (effect) => effect.type === "DROP_SHADOW" || effect.type === "INNER_SHADOW"
+    effect => effect.type === "DROP_SHADOW" || effect.type === "INNER_SHADOW"
   );
 
   if (dropShadows.length) {
@@ -1050,16 +1050,14 @@ const getEffectsStyle = (node: Node, effects: Effect[]) => {
       .join(", ");
   }
 
-  const layerBlur = visibleEffects.find(
-    (effect) => effect.type === "LAYER_BLUR"
-  );
+  const layerBlur = visibleEffects.find(effect => effect.type === "LAYER_BLUR");
 
   if (layerBlur) {
     newStyle["filter"] = `blur(${layerBlur.radius}px)`;
   }
 
   const backgroundBlur = visibleEffects.find(
-    (effect) => effect.type === "BACKGROUND_BLUR"
+    effect => effect.type === "BACKGROUND_BLUR"
   );
 
   if (layerBlur) {
@@ -1094,7 +1092,7 @@ const getPositionStyle = (node: any, context: TranslateContext) => {
   const nodePath = getNodePath(node, document);
   const frame = nodePath
     .map((v, i) => getNodeByPath(nodePath.slice(0, i), document))
-    .find((node) => {
+    .find(node => {
       return (
         node.type !== NodeType.Document &&
         node.type !== NodeType.Canvas &&
@@ -1114,7 +1112,7 @@ const getPositionStyle = (node: any, context: TranslateContext) => {
   const { x: left, y: top, width, height } = {
     ...absoluteBoundingBox,
     x: absoluteBoundingBox.x - frame.absoluteBoundingBox.x,
-    y: absoluteBoundingBox.y - frame.absoluteBoundingBox.y,
+    y: absoluteBoundingBox.y - frame.absoluteBoundingBox.y
   } as any;
 
   return {
@@ -1122,14 +1120,14 @@ const getPositionStyle = (node: any, context: TranslateContext) => {
     left: Math.round(left) + "px",
     top: Math.round(top) + "px",
     width: Math.round(width) + "px",
-    height: Math.round(height) + "px",
+    height: Math.round(height) + "px"
   };
 };
 
 const getFillStyleValue = (node: Node, fills: Fill[]) =>
   fills
     .reverse()
-    .filter((fill) => fill.visible !== false)
+    .filter(fill => fill.visible !== false)
     .map((fill, index) => {
       switch (fill.type) {
         case FillType.SOLID: {
@@ -1174,7 +1172,7 @@ const STYLE_MAP = {
   fontFamily: "font-family",
   fontWeight: "font-weight",
   fontSize: "font-size",
-  letterSpacing: "letter-spacing",
+  letterSpacing: "letter-spacing"
 };
 
 const BLEND_MODE_MAP = {
@@ -1193,18 +1191,18 @@ const BLEND_MODE_MAP = {
   HUE: "hue",
   LUMINOSITY: "luminosity",
   SATURATION: "saturation",
-  COLOR: "color",
+  COLOR: "color"
 };
 
 const TEXT_DECORATION_MAP = {
   STRIKETHROUGH: "line-through",
-  UNDERLINE: "underline",
+  UNDERLINE: "underline"
 };
 
 const TEXT_TRANSFORM_MAP = {
   UPPER: "uppercase",
   LOWER: "lowercase",
-  TITLE: "capitalize",
+  TITLE: "capitalize"
 };
 
 const getTextStyle = (node: Text) => {
@@ -1266,7 +1264,7 @@ const getTextStyle = (node: Text) => {
 
   if (style.opentypeFlags) {
     const fontFeatureSettings = Object.keys(style.opentypeFlags).map(
-      (key) => `"${key.toLowerCase()}" on`
+      key => `"${key.toLowerCase()}" on`
     );
     newStyle["font-featutes-settings"] = fontFeatureSettings.join(", ");
   }
@@ -1281,12 +1279,12 @@ const getTextStyle = (node: Text) => {
 
 const getCSSLinearGradient = ({
   gradientHandlePositions,
-  gradientStops,
+  gradientStops
 }: LinearGradient) => {
   // TODO: https://github.com/crcn/figmark/issues/12
   const radians = calcGradiantHandleRadians(gradientHandlePositions);
   return `linear-gradient(${radians}rad, ${gradientStops
-    .map((stop) => {
+    .map(stop => {
       return `${getCSSRGBAColor(stop.color)} ${stop.position * 100}%`;
     })
     .join(", ")})`;
@@ -1295,7 +1293,7 @@ const getCSSLinearGradient = ({
 const getCSSRadialGradient = ({ gradientStops }: RadialGradient) => {
   // TODO: https://github.com/crcn/figmark/issues/13
   return `radial-gradient(${gradientStops
-    .map((stop) => {
+    .map(stop => {
       return `${getCSSRGBAColor(stop.color)} ${stop.position * 100}%`;
     })
     .join(", ")})`;

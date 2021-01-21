@@ -143,11 +143,11 @@ export class Renderer {
     return new Promise(resolve => {
       const onLoaded = () => {
         this.frame.removeEventListener("load", onLoaded);
-        resolve();
+        resolve(null);
       };
 
       if (this.frame.contentDocument?.body) {
-        return resolve();
+        return resolve(null);
       }
       this.frame.addEventListener("load", onLoaded);
     });

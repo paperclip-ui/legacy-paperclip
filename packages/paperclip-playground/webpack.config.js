@@ -41,6 +41,9 @@ module.exports = {
       title: "Paperclip Playground",
       template: path.join(__dirname, "src", "index.html")
     }),
+    new webpack.ProvidePlugin({
+      process: "process/browser"
+    }),
     new webpack.DefinePlugin({
       "process.env.API_HOST": JSON.stringify(API_HOST),
       "process.env.GITHUB_CLIENT_ID": JSON.stringify(OAUTH_CLIENT_IDs.github)

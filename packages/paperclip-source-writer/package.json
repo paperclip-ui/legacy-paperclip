@@ -15,8 +15,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^8.2.1",
-    "typescript": "^3.9.7"
+    "mocha": "^8.2.1"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d"
 }

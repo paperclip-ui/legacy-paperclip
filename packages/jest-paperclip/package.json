@@ -15,8 +15,6 @@
     "paperclip": "^17.4.10",
     "resolve": "^1.17.0"
   },
-  "devDependencies": {
-    "typescript": "^3.9.7"
-  },
+  "devDependencies": {},
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d"
 }

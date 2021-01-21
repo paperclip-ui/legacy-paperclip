@@ -3,14 +3,14 @@ import {
   Frame,
   FramesRenderer,
   getFrameBounds,
-  getFrameVirtualNode,
+  getFrameVirtualNode
 } from "paperclip-web-renderer";
 import { memo, useEffect, useMemo } from "react";
 import {
   engineDelegateEventsHandled,
   rectsCaptured,
   rendererMounted,
-  rendererUnounted,
+  rendererUnounted
 } from "../../../../../actions";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import {
@@ -20,7 +20,7 @@ import {
   VirtualText,
   NodeAnnotations,
   LoadedData,
-  EngineDelegateEvent,
+  EngineDelegateEvent
 } from "paperclip-utils";
 import * as styles from "./index.pc";
 import { render } from "react-dom";
@@ -36,7 +36,7 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   const { state } = useAppStore();
   const { renderer, preview, onFrameLoaded } = useFrames({
     fileUri: state.ui.query.currentFileUri,
-    shouldCollectRects: true,
+    shouldCollectRects: true
   });
 
   if (!preview) {
@@ -71,6 +71,7 @@ type UseFrames2Props = {
 
 class FrameController {
   readonly id: string;
+  private _disposed: boolean;
   constructor(
     readonly renderer: FramesRenderer,
     readonly dispatch: any,
@@ -91,15 +92,16 @@ class FrameController {
     this.collectRects();
   }
   dispose() {
+    this._disposed = true;
     this, window.removeEventListener("resize", this._onWindowResize);
     this.dispatch(rendererUnounted({ id: this.id }));
   }
-  handleEvents = (events: EngineDelegateEvent[] = []) => {
+  handleEvents = (events: EngineDelegateEvent[] = [], preview: VirtualNode) => {
     if (!events.length) {
       return;
     }
     events.forEach(this.renderer.handleEngineDelegateEvent);
-    this.collectRects();
+    this.updatePreview(preview);
     this.dispatch(
       engineDelegateEventsHandled({ id: this.id, count: events.length })
     );
@@ -109,7 +111,7 @@ class FrameController {
   };
   collectRects = throttle(
     () => {
-      if (!this.shouldCollectRects) {
+      if (!this.shouldCollectRects || this._disposed) {
         return;
       }
       this.dispatch(rectsCaptured(this.renderer.getRects()));
@@ -121,7 +123,7 @@ class FrameController {
 
 export const useMultipleFrames = ({
   fileData,
-  shouldCollectRects,
+  shouldCollectRects
 }: UseFrames2Props) => {
   const [renderers, setRenderers] = useState<Record<string, FrameController>>(
     {}
@@ -154,33 +156,31 @@ export const useMultipleFrames = ({
 
   useLayoutEffect(() => {
     for (const fileUri in renderers) {
-      const frameData = state.allLoadedPCFileData[fileUri];
       const renderer = renderers[fileUri];
-      renderer.updatePreview(frameData?.preview);
+      renderer.collectRects();
     }
-  }, [
-    renderers,
-    state.allLoadedPCFileData,
-    isExpanded(state),
-    state.canvas.size,
-  ]);
+  }, [renderers, isExpanded(state), state.canvas.size]);
 
   useEffect(() => {
     for (const fileUri in renderers) {
+      const frameData = state.allLoadedPCFileData[fileUri];
       const renderer = renderers[fileUri];
-      renderer.handleEvents(state.currentEngineEvents[renderer.id]);
+      renderer.handleEvents(
+        state.currentEngineEvents[renderer.id],
+        frameData?.preview
+      );
     }
   }, [renderers, state.currentEngineEvents]);
 
   return useMemo(
     () =>
-      Object.keys(renderers).map((uri) => {
+      Object.keys(renderers).map(uri => {
         const renderer = renderers[uri];
 
         return {
           renderer: renderer.renderer,
           onFrameLoaded: renderer.collectRects,
-          preview: renderer.renderer.getPreview(),
+          preview: renderer.renderer.getPreview()
         };
       }, {}),
     [renderers]
@@ -194,7 +194,7 @@ type UseFramesProps = {
 
 export const useFrames = ({
   fileUri,
-  shouldCollectRects = true,
+  shouldCollectRects = true
 }: UseFramesProps) => {
   const { state, dispatch } = useAppStore();
 
@@ -214,10 +214,8 @@ export const useFrames = ({
   }, [renderer]);
 
   useLayoutEffect(() => {
-    if (renderer && frameData?.preview) {
-      renderer.updatePreview(frameData.preview);
-    }
-  }, [renderer, frameData, isExpanded(state), state.canvas.size]);
+    renderer.collectRects();
+  }, [renderer, isExpanded(state), state.canvas.size]);
 
   const onFrameLoaded = useCallback(() => {
     renderer.collectRects();
@@ -225,14 +223,17 @@ export const useFrames = ({
 
   useEffect(() => {
     if (state.currentEngineEvents[renderer.id]?.length) {
-      renderer.handleEvents(state.currentEngineEvents[renderer.id]);
+      renderer.handleEvents(
+        state.currentEngineEvents[renderer.id],
+        frameData?.preview
+      );
     }
-  }, [renderer, state.currentEngineEvents]);
+  }, [renderer, state.currentEngineEvents, frameData?.preview]);
 
   return {
     renderer: renderer.renderer,
     preview: frameData?.preview,
-    onFrameLoaded,
+    onFrameLoaded
   };
 };
 
@@ -269,7 +270,7 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
         left: bounds.x,
         top: bounds.y,
         zIndex: 1,
-        position: "absolute",
+        position: "absolute"
       };
     }
 
@@ -278,7 +279,7 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
       height: bounds.height,
       left: bounds.x,
       top: bounds.y,
-      position: "absolute",
+      position: "absolute"
     };
   }, [preview.annotations, expanded]) as any;
 
