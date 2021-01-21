@@ -13,7 +13,7 @@ import {
   getFrameFromIndex,
   mergeBoxes,
   getActiveFrameIndex,
-  isExpanded,
+  isExpanded
 } from "../state";
 import { produce } from "immer";
 import {
@@ -22,7 +22,7 @@ import {
   ExternalActionType,
   LocationChanged,
   RedirectRequested,
-  ServerActionType,
+  ServerActionType
 } from "../actions";
 import { clamp } from "lodash";
 import {
@@ -33,7 +33,7 @@ import {
   VirtJsObjectKind,
   NodeAnnotations,
   isPaperclipFile,
-  EngineDelegateEventKind,
+  EngineDelegateEventKind
 } from "paperclip-utils";
 import * as path from "path";
 
@@ -53,18 +53,18 @@ export default (state: AppState, action: Action) => {
       );
     }
     case ActionType.BIRDSEYE_FILTER_CHANGED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.birdseyeFilter = action.payload.value;
       });
     }
     case ServerActionType.INIT_PARAM_DEFINED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.readonly = action.payload.readonly;
         newState.availableBrowsers = action.payload.availableBrowsers;
       });
     }
     case ServerActionType.BROWSERSTACK_BROWSERS_LOADED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.availableBrowsers = action.payload;
       });
     }
@@ -78,18 +78,18 @@ export default (state: AppState, action: Action) => {
       return handleLocationChange(state, action);
     }
     case ActionType.GET_ALL_SCREENS_REQUESTED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.showBirdseye = true;
         newState.loadingBirdseye = true;
       });
     }
     case ActionType.RENDERER_MOUNTED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.mountedRendererIds.push(action.payload.id);
       });
     }
     case ActionType.RENDERER_UNMOUNTED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.mountedRendererIds.splice(
           newState.mountedRendererIds.indexOf(action.payload.id),
           1
@@ -98,7 +98,7 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
-      state = produce(state, (newState) => {
+      state = produce(state, newState => {
         if (action.payload.kind === EngineDelegateEventKind.Error) {
           newState.currentError = action.payload;
         } else {
@@ -140,7 +140,7 @@ export default (state: AppState, action: Action) => {
       return minimizeWindow(state);
     }
     case ActionType.PC_FILE_OPENED: {
-      state = produce(state, (newState) => {
+      state = produce(state, newState => {
         newState.allLoadedPCFileData[state.ui.query.currentFileUri] =
           action.payload;
       });
@@ -148,7 +148,7 @@ export default (state: AppState, action: Action) => {
       return state;
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.currentEngineEvents[action.payload.id].splice(
           0,
           action.payload.count
@@ -156,7 +156,7 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.FS_ITEM_CLICKED: {
-      state = produce(state, (newState) => {
+      state = produce(state, newState => {
         if (isPaperclipFile(action.payload.url)) {
           newState.centeredInitial = false;
         }
@@ -164,7 +164,7 @@ export default (state: AppState, action: Action) => {
       return state;
     }
     case ActionType.RECTS_CAPTURED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.boxes = mergeBoxesFromClientRects(
           newState.boxes,
           action.payload
@@ -172,33 +172,45 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.ENGINE_ERRORED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.currentError = action.payload;
       });
     }
     case ActionType.ERROR_BANNER_CLICKED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.currentError = null;
       });
     }
     case ActionType.GLOBAL_BACKSPACE_KEY_SENT:
     case ActionType.GLOBAL_ESCAPE_KEY_PRESSED: {
       // Don't do this until deselecting can be handled properly
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.selectedNodePaths = [];
         newState.showBirdseye = false;
       });
     }
     case ActionType.GLOBAL_META_KEY_DOWN: {
       // TODO
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.metaKeyDown = true;
       });
     }
     case ActionType.GLOBAL_META_KEY_UP: {
       // TODO
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.metaKeyDown = false;
+      });
+    }
+    case ActionType.GLOBAL_OPTION_KEY_DOWN: {
+      // TODO
+      return produce(state, newState => {
+        newState.optionKeyDown = true;
+      });
+    }
+    case ActionType.GLOBAL_OPTION_KEY_UP: {
+      // TODO
+      return produce(state, newState => {
+        newState.optionKeyDown = false;
       });
     }
     case ActionType.CANVAS_MOUSE_UP: {
@@ -215,13 +227,13 @@ export default (state: AppState, action: Action) => {
       return selectNode(nodePath, action.payload.shiftKey, state);
     }
     case ExternalActionType.CONTENT_CHANGED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.documentContents[action.payload.fileUri] =
           action.payload.content;
       });
     }
     case ActionType.ZOOM_INPUT_CHANGED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.canvas = setCanvasZoom(
           action.payload.value / 100,
           state.canvas,
@@ -232,7 +244,7 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.ZOOM_IN_KEY_PRESSED:
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.canvas = setCanvasZoom(
           normalizeZoom(state.canvas.transform.z) * 2,
           state.canvas,
@@ -242,7 +254,7 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.ZOOM_OUT_KEY_PRESSED:
     case ActionType.ZOOM_OUT_BUTTON_CLICKED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.canvas = setCanvasZoom(
           normalizeZoom(state.canvas.transform.z) / 2,
           state.canvas,
@@ -251,25 +263,25 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.CANVAS_PAN_START: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.canvas.panning = true;
       });
     }
     case ActionType.CANVAS_PAN_END: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.canvas.panning = false;
       });
     }
     case ActionType.RESIZER_STOPPED_MOVING:
     case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.resizerMoving = false;
       });
     }
     case ActionType.BIRDSEYE_TOP_FILTER_BLURRED:
     case ActionType.GRID_BUTTON_CLICKED:
     case ActionType.GRID_HOTKEY_PRESSED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.showBirdseye = !newState.showBirdseye;
         if (newState.showBirdseye && !newState.loadedBirdseyeInitially) {
           newState.loadingBirdseye = true;
@@ -279,7 +291,7 @@ export default (state: AppState, action: Action) => {
 
     // happens when grid view is requested
     case ServerActionType.ALL_PC_CONTENT_LOADED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.loadingBirdseye = false;
         newState.loadedBirdseyeInitially = true;
         newState.allLoadedPCFileData = action.payload;
@@ -287,7 +299,7 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.RESIZER_MOVED:
     case ActionType.RESIZER_PATH_MOUSE_MOVED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.resizerMoving = true;
         const frames = getSelectedFrames(newState);
 
@@ -297,7 +309,7 @@ export default (state: AppState, action: Action) => {
         }
 
         const oldBox = mergeBoxes(
-          state.selectedNodePaths.map((nodePath) => newState.boxes[nodePath])
+          state.selectedNodePaths.map(nodePath => newState.boxes[nodePath])
         );
 
         for (let i = 0, { length } = state.selectedNodePaths; i < length; i++) {
@@ -310,14 +322,14 @@ export default (state: AppState, action: Action) => {
                 newState.boxes[nodePath],
                 oldBox,
                 action.payload.newBounds
-              ),
+              )
             })
           );
         }
       });
     }
     case ActionType.GLOBAL_H_KEY_DOWN: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         const frames = getSelectedFrames(newState);
 
         for (
@@ -332,15 +344,15 @@ export default (state: AppState, action: Action) => {
             frame,
             updateAnnotations(frame, {
               frame: {
-                visible: !(annotations.frame?.visible !== false),
-              },
+                visible: !(annotations.frame?.visible !== false)
+              }
             })
           );
         }
       });
     }
     case ActionType.FRAME_TITLE_CHANGED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         const frame = getFrameFromIndex(action.payload.frameIndex, newState);
 
         if (!frame) {
@@ -352,8 +364,8 @@ export default (state: AppState, action: Action) => {
           frame,
           updateAnnotations(frame, {
             frame: {
-              title: action.payload.value,
-            },
+              title: action.payload.value
+            }
           })
         );
       });
@@ -370,13 +382,13 @@ export default (state: AppState, action: Action) => {
         delta: { x: deltaX, y: deltaY },
         metaKey,
         mousePosition,
-        size,
+        size
       } = action.payload;
 
       const delta2X = deltaX * PAN_X_SENSITIVITY;
       const delta2Y = deltaY * PAN_Y_SENSITIVITY;
 
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         const transform = newState.canvas.transform;
 
         if (metaKey) {
@@ -386,7 +398,7 @@ export default (state: AppState, action: Action) => {
               x: 0,
               y: 0,
               width: size.width,
-              height: size.height,
+              height: size.height
             },
             clamp(
               transform.z + (transform.z * -deltaY) / ZOOM_SENSITIVITY,
@@ -406,12 +418,12 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.CANVAS_MOUSE_MOVED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.canvas.mousePosition = action.payload;
       });
     }
     case ActionType.DIR_LOADED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         if (action.payload.isRoot) {
           newState.projectDirectory = action.payload.item;
         } else {
@@ -426,7 +438,7 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.CANVAS_RESIZED: {
-      state = produce(state, (newState) => {
+      state = produce(state, newState => {
         newState.canvas.size = action.payload;
       });
 
@@ -438,12 +450,12 @@ export default (state: AppState, action: Action) => {
   return state;
 };
 
-const normalizeZoom = (zoom) => {
+const normalizeZoom = zoom => {
   return zoom < 1 ? 1 / Math.round(1 / zoom) : Math.round(zoom);
 };
 
 const clampCanvasTransform = (canvas: Canvas, rects: Record<string, Box>) => {
-  return produce(canvas, (newCanvas) => {
+  return produce(canvas, newCanvas => {
     const w = (canvas.size.width / MIN_ZOOM) * canvas.transform.z;
     const h = (canvas.size.height / MIN_ZOOM) * canvas.transform.z;
 
@@ -461,7 +473,7 @@ const setCanvasZoom = (
 ) => {
   zoom = clamp(zoom, MIN_ZOOM, MAX_ZOOM);
   return clampCanvasTransform(
-    produce(state, (newState) => {
+    produce(state, newState => {
       newState.transform = centerTransformZoom(
         state.transform,
         { x: 0, y: 0, ...state.size },
@@ -469,7 +481,7 @@ const setCanvasZoom = (
         centered
           ? {
               x: state.size.width / 2,
-              y: state.size.height / 2,
+              y: state.size.height / 2
             }
           : state.mousePosition
       );
@@ -484,7 +496,7 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
     ({} as any);
 
   let mergedAnnotations = {
-    ...annotations,
+    ...annotations
   };
 
   for (const key in newAnnotations) {
@@ -497,9 +509,9 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
           typeof newAnnotations[key] === "object" &&
           !Array.isArray(newAnnotations) && {
             ...(annotations[key] || {}),
-            ...newAnnotations[key],
+            ...newAnnotations[key]
           }) ||
-        newAnnotations[key],
+        newAnnotations[key]
     };
   }
 
@@ -509,7 +521,7 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
       values: {},
 
       // null to indicate insertion
-      source: null,
+      source: null
     };
   }
 
@@ -518,7 +530,7 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
 };
 
 const selectNode = (nodePath: string, shiftKey: boolean, state: AppState) => {
-  return produce(state, (newState) => {
+  return produce(state, newState => {
     if (nodePath == null) {
       newState.selectedNodePaths = [];
       return;
@@ -541,7 +553,7 @@ const updateBox = (box: Box, oldBox: Box, newBox: Box) => {
     x,
     y,
     width,
-    height,
+    height
   };
 };
 
@@ -556,7 +568,7 @@ const handleLocationChange = (
   state: AppState,
   { payload }: LocationChanged | RedirectRequested
 ) => {
-  return produce(state, (newState) => {
+  return produce(state, newState => {
     Object.assign(newState.ui, payload);
 
     // clean path & ensure that it looks like "/canvas" instead of "/canvas/";

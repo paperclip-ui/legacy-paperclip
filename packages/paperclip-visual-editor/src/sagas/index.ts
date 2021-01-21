@@ -30,13 +30,15 @@ import {
   zoomOutKeyPressed,
   zoomInKeyPressed,
   RedirectRequested,
+  globalOptionKeyDown,
+  globalOptionKeyUp
 } from "../actions";
 import {
   AppState,
   getActiveFrameIndex,
   getNodeInfoAtPoint,
   getSelectedFrames,
-  isExpanded,
+  isExpanded
 } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
@@ -51,9 +53,7 @@ export default function* mainSaga(
   getState: AppStateSelector
 ) {
   yield fork(handleRenderer, getState);
-  yield takeEvery(ActionType.CANVAS_MOUSE_UP, function* (
-    action: CanvasMouseUp
-  ) {
+  yield takeEvery(ActionType.CANVAS_MOUSE_UP, function*(action: CanvasMouseUp) {
     yield call(handleCanvasMouseUp, action, getState);
   });
 
@@ -78,11 +78,11 @@ function handleSock(onMessage, onClient) {
 
   client.onopen = () => {
     onClient({
-      send: (message) => client.send(JSON.stringify(message)),
+      send: message => client.send(JSON.stringify(message))
     });
   };
 
-  client.onmessage = (message) => {
+  client.onmessage = message => {
     onMessage(JSON.parse(message.data));
   };
 
@@ -94,8 +94,8 @@ function handleSock(onMessage, onClient) {
 function* handleRenderer(getState: AppStateSelector) {
   let _client: any;
 
-  const chan = eventChannel((emit) => {
-    handleSock(emit, (client) => {
+  const chan = eventChannel(emit => {
+    handleSock(emit, client => {
       _client = client;
       emit(clientConnected(null));
     });
@@ -104,13 +104,13 @@ function* handleRenderer(getState: AppStateSelector) {
     return () => {};
   });
 
-  yield fork(function* () {
+  yield fork(function*() {
     while (1) {
       const action = yield take(chan);
       yield put(action);
     }
   });
-  yield takeEvery(["FOCUS"], function () {
+  yield takeEvery(["FOCUS"], function() {
     window.focus();
   });
 
@@ -118,9 +118,9 @@ function* handleRenderer(getState: AppStateSelector) {
     [
       ActionType.LOCATION_CHANGED,
       ActionType.CLIENT_CONNECTED,
-      ActionType.FS_ITEM_CLICKED,
+      ActionType.FS_ITEM_CLICKED
     ],
-    function* () {
+    function*() {
       const state: AppState = yield select(getState);
       yield put(fileOpened({ uri: state.ui.query.currentFileUri }));
     }
@@ -131,28 +131,28 @@ function* handleRenderer(getState: AppStateSelector) {
       ActionType.RESIZER_STOPPED_MOVING,
       ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
       ActionType.FRAME_TITLE_CHANGED,
-      ActionType.GLOBAL_H_KEY_DOWN,
+      ActionType.GLOBAL_H_KEY_DOWN
     ],
-    function* () {
+    function*() {
       const state: AppState = yield select(getState);
       yield put(
         pcVirtObjectEdited({
-          mutations: getSelectedFrames(state).map((frame) => {
+          mutations: getSelectedFrames(state).map(frame => {
             return {
               exprSource: frame.source,
               action: {
                 kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
                 annotationsSource: frame.annotations.source,
-                annotations: computeVirtJSObject(frame.annotations),
-              },
+                annotations: computeVirtJSObject(frame.annotations)
+              }
             };
-          }),
+          })
         })
       );
     }
   );
 
-  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function* () {
+  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
     const state: AppState = yield select(getState);
 
     if (state.readonly) {
@@ -161,14 +161,14 @@ function* handleRenderer(getState: AppStateSelector) {
 
     yield put(
       pcVirtObjectEdited({
-        mutations: getSelectedFrames(state).map((frame) => {
+        mutations: getSelectedFrames(state).map(frame => {
           return {
             exprSource: frame.source,
             action: {
-              kind: PCMutationActionKind.EXPRESSION_DELETED,
-            },
+              kind: PCMutationActionKind.EXPRESSION_DELETED
+            }
           };
-        }),
+        })
       })
     );
 
@@ -177,7 +177,7 @@ function* handleRenderer(getState: AppStateSelector) {
 
   yield takeEvery(
     [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
-    function* () {
+    function*() {
       const state: AppState = yield select(getState);
       if (state.showBirdseye && !state.loadedBirdseyeInitially) {
         yield put(getAllScreensRequested(null));
@@ -185,7 +185,7 @@ function* handleRenderer(getState: AppStateSelector) {
     }
   );
 
-  yield takeEvery([ActionType.LOCATION_CHANGED], function* () {
+  yield takeEvery([ActionType.LOCATION_CHANGED], function*() {
     const state: AppState = yield select(getState);
     if (
       (!state.ui.query.currentFileUri ||
@@ -211,9 +211,9 @@ function* handleRenderer(getState: AppStateSelector) {
       ActionType.LOCATION_CHANGED,
       ActionType.POPOUT_WINDOW_REQUESTED,
       ActionType.PC_VIRT_OBJECT_EDITED,
-      ActionType.FILE_OPENED,
+      ActionType.FILE_OPENED
     ],
-    function (action: Action) {
+    function(action: Action) {
       _client && _client.send(action);
     }
   );
@@ -252,9 +252,9 @@ function* handleCanvasMouseUp(
 }
 
 function* handleKeyCommands(mount: HTMLElement) {
-  const chan = eventChannel((emit) => {
+  const chan = eventChannel(emit => {
     const handler = new Mousetrap(mount);
-    handler.bind("esc", (e) => {
+    handler.bind("esc", e => {
       if (isInput(e.target)) {
         return;
       }
@@ -264,6 +264,23 @@ function* handleKeyCommands(mount: HTMLElement) {
     handler.bind("meta", () => {
       emit(globalMetaKeyDown(null));
     });
+    handler.bind(
+      "meta",
+      () => {
+        emit(globalMetaKeyUp(null));
+      },
+      "keyup"
+    );
+    handler.bind("option", () => {
+      emit(globalOptionKeyDown(null));
+    });
+    handler.bind(
+      "option",
+      () => {
+        emit(globalOptionKeyUp(null));
+      },
+      "keyup"
+    );
     handler.bind("meta+z", () => {
       emit(globalZKeyDown(null));
       return false;
@@ -296,20 +313,13 @@ function* handleKeyCommands(mount: HTMLElement) {
       emit(globalYKeyDown(null));
       return false;
     });
-    handler.bind("backspace", (e) => {
+    handler.bind("backspace", e => {
       if (isInput(e.target)) {
         return;
       }
       emit(globalBackspaceKeyPressed(null));
       return false;
     });
-    handler.bind(
-      "meta",
-      () => {
-        emit(globalMetaKeyUp(null));
-      },
-      "keyup"
-    );
 
     // https://github.com/ccampbell/mousetrap/pull/215
     addKeycodes({ 173: "-" });
@@ -331,14 +341,14 @@ function* handleClipboard(getState: AppStateSelector) {
   yield fork(handlePaste, getState);
 }
 function* handleCopy(getState: AppStateSelector) {
-  const ev = eventChannel((emit) => {
+  const ev = eventChannel(emit => {
     window.document.addEventListener("copy", emit);
     return () => {
       window.document.removeEventListener("copy", emit);
     };
   });
 
-  yield takeEvery(ev, function* (event: ClipboardEvent) {
+  yield takeEvery(ev, function*(event: ClipboardEvent) {
     const state: AppState = yield select(getState);
     const frames = getSelectedFrames(state);
 
@@ -370,14 +380,14 @@ function* handleCopy(getState: AppStateSelector) {
 }
 
 function* handlePaste(getState: AppStateSelector) {
-  const ev = eventChannel((emit) => {
+  const ev = eventChannel(emit => {
     window.document.addEventListener("paste", emit);
     return () => {
       window.document.removeEventListener("paste", emit);
     };
   });
 
-  yield takeEvery(ev, function* (event: ClipboardEvent) {
+  yield takeEvery(ev, function*(event: ClipboardEvent) {
     const state: AppState = yield select(getState);
     if (state.readonly) {
       return;
@@ -390,9 +400,9 @@ function* handlePaste(getState: AppStateSelector) {
           clipboardData: [
             {
               type: "text/plain",
-              content,
-            },
-          ],
+              content
+            }
+          ]
         })
       );
     }
@@ -400,8 +410,8 @@ function* handlePaste(getState: AppStateSelector) {
 }
 
 function* handleDocumentEvents() {
-  yield fork(function* () {
-    const chan = eventChannel((emit) => {
+  yield fork(function*() {
+    const chan = eventChannel(emit => {
       document.addEventListener("wheel", emit, { passive: false });
       document.addEventListener("keydown", emit);
       return () => {
@@ -433,18 +443,18 @@ function* handleLocationChanged() {
       protocol: parts.protocol,
       host: parts.host,
       pathname: parts.pathname,
-      query: parts.query,
+      query: parts.query
     })
   );
 }
 
 function* handleLocation(getState: AppStateSelector) {
-  const chan = eventChannel((emit) => {
+  const chan = eventChannel(emit => {
     return history.listen(emit);
   });
 
   yield takeEvery(chan, handleLocationChanged);
-  yield takeEvery(ActionType.REDIRECT_REQUESTED, function* (
+  yield takeEvery(ActionType.REDIRECT_REQUESTED, function*(
     action: RedirectRequested
   ) {
     const state = yield select(getState);

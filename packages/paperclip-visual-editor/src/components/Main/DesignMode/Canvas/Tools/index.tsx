@@ -5,7 +5,7 @@ import {
   mergeBoxes,
   getNodeInfoAtPoint,
   isExpanded,
-  getActiveFrameIndex,
+  getActiveFrameIndex
 } from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
@@ -19,12 +19,12 @@ import {
   computeVirtJSObject,
   NodeAnnotations,
   VirtualFrame,
-  VirtualNodeKind,
+  VirtualNodeKind
 } from "paperclip-utils";
 import {
   canvasMouseUp,
   canvasMouseLeave,
-  canvasMouseMoved,
+  canvasMouseMoved
 } from "../../../../../actions";
 import { Empty } from "./Empty";
 
@@ -35,11 +35,11 @@ export const Tools = () => {
     canvas,
     selectedNodePaths,
     ui: {
-      query: { currentFileUri },
+      query: { currentFileUri }
     },
-    metaKeyDown,
+    optionKeyDown,
     allLoadedPCFileData,
-    readonly,
+    readonly
   } = state;
   const toolsRef = useRef<HTMLDivElement>();
   const toolsLayerEnabled = !isExpanded(state);
@@ -51,7 +51,7 @@ export const Tools = () => {
       dispatch(
         canvasMouseMoved({
           x: event.pageX - rect.left,
-          y: event.pageY - rect.top,
+          y: event.pageY - rect.top
         })
       );
     },
@@ -63,7 +63,7 @@ export const Tools = () => {
       dispatch(
         canvasMouseUp({
           metaKey: event.metaKey,
-          shiftKey: event.shiftKey,
+          shiftKey: event.shiftKey
         })
       );
     },
@@ -75,7 +75,7 @@ export const Tools = () => {
   };
   const selectedBox =
     selectedNodePaths.length &&
-    mergeBoxes(selectedNodePaths.map((path) => boxes[path]));
+    mergeBoxes(selectedNodePaths.map(path => boxes[path]));
 
   const hoveringBox =
     canvas.mousePosition &&
@@ -97,7 +97,7 @@ export const Tools = () => {
     : [virtualNode.preview]) as Array<VirtualFrame>;
 
   const showEmpty =
-    frames.filter((frame) => {
+    frames.filter(frame => {
       const annotations: NodeAnnotations =
         (frame.annotations && computeVirtJSObject(frame.annotations)) ||
         ({} as any);
@@ -129,7 +129,7 @@ export const Tools = () => {
           canvasTransform={canvas.transform}
           box={selectedBox}
           showKnobs={
-            selectedNodePaths.every((nodePath) => !nodePath.includes(".")) &&
+            selectedNodePaths.every(nodePath => !nodePath.includes(".")) &&
             !readonly
           }
         />
@@ -141,7 +141,7 @@ export const Tools = () => {
         canvasTransform={canvas.transform}
         readonly={readonly}
       />
-      {metaKeyDown && selectedBox && hoveringBox ? (
+      {optionKeyDown && selectedBox && hoveringBox ? (
         <Distance
           canvasScroll={canvas.scrollPosition}
           canvasTransform={canvas.transform}
