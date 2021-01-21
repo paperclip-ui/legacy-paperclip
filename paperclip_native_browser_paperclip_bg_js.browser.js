@@ -415,7 +415,7 @@ return __webpack_exports__;
 "use strict";
 /* harmony import */ var WEBPACK_IMPORTED_MODULE_0 = __webpack_require__(/*! ./paperclip_bg.js */ "../paperclip/native/browser/paperclip_bg.js");
 module.exports = Promise.resolve(WEBPACK_IMPORTED_MODULE_0).then((WEBPACK_IMPORTED_MODULE_0) => {
-	return __webpack_require__.v(exports, module.id, "a268da2387a336b6d21e", {
+	return __webpack_require__.v(exports, module.id, "a93b9785f136b249d7bc", {
 		"./paperclip_bg.js": {
 			"__wbindgen_object_drop_ref": WEBPACK_IMPORTED_MODULE_0.__wbindgen_object_drop_ref,
 			"__wbindgen_string_new": WEBPACK_IMPORTED_MODULE_0.__wbindgen_string_new,

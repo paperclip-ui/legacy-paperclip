@@ -169,7 +169,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 var init = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _appState, _engine, _writer, _currentUri, dispatch, onCrash, handleInitialized, onEngineEvent, onEngineInit, tryOpeningCurrentFile, handleAppStateDiffed, handleCodeChange, handleVirtObjectEdited, handleContentChanges, handleRedirect;
+    var _appState, _engine, _writer, _currentUri, dispatch, onCrash, handleInitialized, onEngineEvent, onEngineInit, tryOpeningCurrentFile, handleAppStateDiffed, handleCodeChange, handleVirtObjectEdited, handleContentChanges, handleProjectLoaded, handleRedirect;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -190,7 +190,7 @@ var init = function () { return __awaiter(void 0, void 0, void 0, function () {
                 onEngineInit = function () {
                     _writer = new paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__.PCSourceWriter({
                         engine: _engine,
-                        getContent: function (uri) { return _appState.designMode.documentContents[uri]; },
+                        getContent: function (uri) { return _appState.designMode.documentContents[uri]; }
                     });
                     dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_0__.engineLoaded)(null));
                     tryOpeningCurrentFile();
@@ -239,6 +239,7 @@ var init = function () { return __awaiter(void 0, void 0, void 0, function () {
                         _engine.updateVirtualFileContent(uri, _appState.designMode.documentContents[uri]);
                     }
                 };
+                handleProjectLoaded = function () { };
                 handleRedirect = function (action) {
                     tryOpeningCurrentFile();
                 };
@@ -269,8 +270,8 @@ var init = function () { return __awaiter(void 0, void 0, void 0, function () {
                             },
                             resolveFile: function (fromPath, toPath) {
                                 return url__WEBPACK_IMPORTED_MODULE_4__.resolve(fromPath, toPath);
-                            },
-                        },
+                            }
+                        }
                     }, onCrash)];
             case 1:
                 _engine = _a.sent();
