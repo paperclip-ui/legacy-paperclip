@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-paperclip",
-  "version": "17.4.7",
+  "version": "17.4.10",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,14 +10,13 @@
   "license": "ISC",
   "dependencies": {
     "inquirer": "^7.3.0",
-    "paperclip": "^17.4.7",
-    "paperclip-loader": "^17.4.7"
+    "paperclip": "^17.4.10",
+    "paperclip-loader": "^17.4.10"
   },
-  "gitHead": "bc53692b56f676db2ce24f79efde8f52401c1159",
+  "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
-    "eslint": "^7.4.0",
-    "typescript": "^3.9.7"
+    "eslint": "^7.4.0"
   }
 }

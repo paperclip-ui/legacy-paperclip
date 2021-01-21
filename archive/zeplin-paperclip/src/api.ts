@@ -7,7 +7,7 @@ export type FigmaClientOptions = {
 
 export enum Namespace {
   Projects = "projects",
-  Styleguides = "styleguides",
+  Styleguides = "styleguides"
 }
 
 export class ZeplinClient {
@@ -58,12 +58,12 @@ export class ZeplinClient {
     }
 
     const headers = {
-      Authorization: `Bearer ${this.options.personalAccessToken}`,
+      Authorization: `Bearer ${this.options.personalAccessToken}`
     };
 
     const response = await request({
       url,
-      headers,
+      headers
     });
 
     return response.data;

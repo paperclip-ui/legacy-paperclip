@@ -6,7 +6,7 @@ import {
   EngineDelegateEvent,
   LoadedData,
   ExprSource,
-  Action,
+  Action
 } from "paperclip-utils";
 import { Box, Directory, EnvOption, FSItemKind, Point, Size } from "../state";
 
@@ -45,6 +45,7 @@ export enum ActionType {
   RECTS_CAPTURED = "RECTS_CAPTURED",
   GLOBAL_ESCAPE_KEY_PRESSED = "GLOBAL_ESCAPE_KEY_PRESSED",
   GLOBAL_META_KEY_DOWN = "GLOBAL_META_KEY_DOWN",
+  GLOBAL_OPTION_KEY_DOWN = "GLOBAL_OPTION_KEY_DOWN",
   GLOBAL_Z_KEY_DOWN = "GLOBAL_Z_KEY_DOWN",
   GLOBAL_Y_KEY_DOWN = "GLOBAL_Y_KEY_DOWN",
   GLOBAL_H_KEY_DOWN = "GLOBAL_H_KEY_DOWN",
@@ -54,6 +55,7 @@ export enum ActionType {
   GLOBAL_BACKSPACE_KEY_PRESSED = "GLOBAL_BACKSPACE_KEY_PRESSED",
   GLOBAL_BACKSPACE_KEY_SENT = "GLOBAL_BACKSPACE_KEY_SENT",
   GLOBAL_META_KEY_UP = "GLOBAL_META_KEY_UP",
+  GLOBAL_OPTION_KEY_UP = "GLOBAL_OPTION_KEY_UP",
   ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
   ENGINE_DELEGATE_EVENTS_HANDLED = "ENGINE_DELEGATE_EVENTS_HANDLED",
   FRAME_TITLE_CLICKED = "FRAME_TITLE_CLICKED",
@@ -67,7 +69,7 @@ export enum ActionType {
   FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
   EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
   COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED",
-  VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED",
+  VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED"
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -427,6 +429,10 @@ export const globalMetaKeyDown = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
 >(ActionType.GLOBAL_META_KEY_DOWN);
 
+export const globalOptionKeyDown = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_OPTION_KEY_DOWN>
+>(ActionType.GLOBAL_OPTION_KEY_DOWN);
+
 export const globalZKeyDown = actionCreator<KeyComboPressed<ActionType>>(
   ActionType.GLOBAL_Z_KEY_DOWN
 );
@@ -452,6 +458,9 @@ export const globalSaveKeyPress = actionCreator<KeyComboPressed<ActionType>>(
 export const globalMetaKeyUp = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
 >(ActionType.GLOBAL_META_KEY_UP);
+export const globalOptionKeyUp = actionCreator<
+  KeyComboPressed<ActionType.GLOBAL_OPTION_KEY_UP>
+>(ActionType.GLOBAL_OPTION_KEY_UP);
 export const dirLoaded = actionCreator<DirLoaded>(ActionType.DIR_LOADED);
 export const fsItemClicked = actionCreator<FSItemClicked>(
   ActionType.FS_ITEM_CLICKED
@@ -514,6 +523,8 @@ export type InstanceAction =
   | FrameTitleClicked
   | EngineDelegateChanged
   | EngineDelegateEventsHandled
+  | KeyComboPressed<ActionType.GLOBAL_OPTION_KEY_DOWN>
+  | KeyComboPressed<ActionType.GLOBAL_OPTION_KEY_UP>
   | KeyComboPressed<ActionType.GLOBAL_META_KEY_DOWN>
   | KeyComboPressed<ActionType.ZOOM_IN_KEY_PRESSED>
   | KeyComboPressed<ActionType.ZOOM_OUT_KEY_PRESSED>

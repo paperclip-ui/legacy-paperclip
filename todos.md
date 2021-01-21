@@ -1,5 +1,8 @@
 
 ### Immediate
+
+- process undefined error in visual editor (and paperclip dev server)
+
 - add logo
 
 - copy/paste hijacked

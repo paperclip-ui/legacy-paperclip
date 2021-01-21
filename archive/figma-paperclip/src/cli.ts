@@ -775,7 +775,7 @@ const downloadImageRef = (
         fs.unlinkSync(filePath);
       }
       response.pipe(localFile).on("close", () => {
-        resolve();
+        resolve(null);
       });
     });
   });

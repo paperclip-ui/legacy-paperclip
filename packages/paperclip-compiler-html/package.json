@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-html",
-  "version": "17.4.7",
+  "version": "17.4.16",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -15,10 +15,9 @@
     "@typescript-eslint/parser": "^3.6.1",
     "chai": "^4.2.0",
     "eslint": "^7.4.0",
-    "mocha": "^8.0.1",
-    "typescript": "^3.9.6"
+    "mocha": "^8.0.1"
   },
   "dependencies": {
-    "paperclip-utils": "^17.4.7"
+    "paperclip-utils": "^17.4.16"
   }
 }
