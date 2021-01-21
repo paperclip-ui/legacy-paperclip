@@ -1,7 +1,12 @@
 {
-  "packages": ["packages/*"],
-  "version": "17.4.18",
+  "packages": [
+    "packages/*"
+  ],
+  "version": "17.4.22",
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "nohoist": ["@docusaurus/*", "paperclip-vscode/*"]
+  "nohoist": [
+    "@docusaurus/*",
+    "paperclip-vscode/*"
+  ]
 }
