@@ -1,11 +1,11 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   BoxNodeInfo,
   Transform,
   Point,
   Box,
   roundBox,
-  getScaledPoint,
+  getScaledPoint
 } from "../../../../../../state";
 import * as styles from "./index.pc";
 import { Dispatch } from "redux";
@@ -14,9 +14,10 @@ import {
   resizerMoved,
   resizerPathMoved,
   resizerPathStoppedMoving,
-  resizerStoppedMoving,
+  resizerStoppedMoving
 } from "../../../../../../actions";
 import { startDOMDrag } from "../../../../../../utils";
+import { isEqual } from "lodash";
 
 type Props = {
   canvasScroll: Point;
@@ -30,18 +31,28 @@ type Props = {
 
 export const Selectable = React.memo(
   ({ box, canvasTransform, canvasScroll, showKnobs, dispatch }: Props) => {
-    if (!box) {
+    const [currentBox, setCurrentBox] = useState(box);
+    const [initialBox, setInitialBox] = useState(box);
+
+    useEffect(() => {
+      if (!isEqual(initialBox, box)) {
+        setCurrentBox(box);
+        setInitialBox(box);
+      }
+    }, [box]);
+
+    if (!currentBox) {
       return null;
     }
 
     const left =
-      (box.x - canvasScroll.x) * canvasTransform.z + canvasTransform.x;
+      (currentBox.x - canvasScroll.x) * canvasTransform.z + canvasTransform.x;
     const top =
-      (box.y - canvasScroll.y) * canvasTransform.z + canvasTransform.y;
+      (currentBox.y - canvasScroll.y) * canvasTransform.z + canvasTransform.y;
 
     let knobs: Point[] | null = null;
 
-    if (showKnobs && box) {
+    if (showKnobs && currentBox) {
       knobs = [
         { x: 0, y: 0 },
         { x: 50, y: 0 },
@@ -50,47 +61,84 @@ export const Selectable = React.memo(
         { x: 100, y: 100 },
         { x: 50, y: 100 },
         { x: 0, y: 100 },
-        { x: 0, y: 50 },
+        { x: 0, y: 50 }
       ];
     }
 
-    const onKnobMouseDown = useCallback(
-      (event: React.MouseEvent<any>, point: Point) => {
+    const onKnobMouseDown = (event: React.MouseEvent<any>, point: Point) => {
+      event.stopPropagation();
+      const bounds = currentBox;
+      const zoom = canvasTransform.z;
+
+      const wrapActionCreator = createAction => (event, info) => {
+        const delta = {
+          x: info.delta.x / zoom,
+          y: info.delta.y / zoom
+        };
+
+        // prevent parent containers from event like mouse click
+        // which would deselect multi-selected elements
         event.stopPropagation();
-        const bounds = box;
+
+        const newBounds = roundBox({
+          x: point.x === 0 ? bounds.x + delta.x : bounds.x,
+          y: point.y === 0 ? bounds.y + delta.y : bounds.y,
+          width:
+            point.x === 100
+              ? bounds.width + delta.x
+              : point.x == 50
+              ? bounds.width
+              : bounds.width - delta.x,
+          height:
+            point.y === 100
+              ? bounds.height + delta.y
+              : point.y === 50
+              ? bounds.height
+              : bounds.height - delta.y
+        });
+
+        setCurrentBox(newBounds);
+
+        dispatch(
+          createAction({
+            originalBounds: roundBox(bounds),
+            newBounds,
+            anchor: point,
+            sourceEvent: event
+          })
+        );
+      };
+
+      startDOMDrag(
+        event,
+        null,
+        wrapActionCreator(resizerPathMoved),
+        wrapActionCreator(resizerPathStoppedMoving)
+      );
+    };
+
+    const onMouseDown = event => {
+      if (knobs) {
+        const bounds = currentBox;
         const zoom = canvasTransform.z;
 
-        const wrapActionCreator = (createAction) => (event, info) => {
+        const wrapActionCreator = createAction => (event, info) => {
           const delta = {
             x: info.delta.x / zoom,
-            y: info.delta.y / zoom,
+            y: info.delta.y / zoom
           };
-
-          // prevent parent containers from event like mouse click
-          // which would deselect multi-selected elements
           event.stopPropagation();
-
+          const newBounds = roundBox({
+            ...bounds,
+            x: bounds.x + delta.x,
+            y: bounds.y + delta.y
+          });
+          setCurrentBox(newBounds);
           dispatch(
             createAction({
               originalBounds: roundBox(bounds),
-              newBounds: roundBox({
-                x: point.x === 0 ? bounds.x + delta.x : bounds.x,
-                y: point.y === 0 ? bounds.y + delta.y : bounds.y,
-                width:
-                  point.x === 100
-                    ? bounds.width + delta.x
-                    : point.x == 50
-                    ? bounds.width
-                    : bounds.width - delta.x,
-                height:
-                  point.y === 100
-                    ? bounds.height + delta.y
-                    : point.y === 50
-                    ? bounds.height
-                    : bounds.height - delta.y,
-              }),
-              anchor: point,
-              sourceEvent: event,
+              newBounds,
+              sourceEvent: event
             })
           );
         };
@@ -98,61 +146,26 @@ export const Selectable = React.memo(
         startDOMDrag(
           event,
           null,
-          wrapActionCreator(resizerPathMoved),
-          wrapActionCreator(resizerPathStoppedMoving)
+          wrapActionCreator(resizerMoved),
+          wrapActionCreator(resizerStoppedMoving)
         );
-      },
-      [box, canvasTransform]
-    );
-
-    const onMouseDown = useCallback(
-      (event) => {
-        if (knobs) {
-          const bounds = box;
-          const zoom = canvasTransform.z;
-
-          const wrapActionCreator = (createAction) => (event, info) => {
-            const delta = {
-              x: info.delta.x / zoom,
-              y: info.delta.y / zoom,
-            };
-            event.stopPropagation();
-            dispatch(
-              createAction({
-                originalBounds: roundBox(bounds),
-                newBounds: roundBox({
-                  ...bounds,
-                  x: bounds.x + delta.x,
-                  y: bounds.y + delta.y,
-                }),
-                sourceEvent: event,
-              })
-            );
-          };
-
-          startDOMDrag(
-            event,
-            null,
-            wrapActionCreator(resizerMoved),
-            wrapActionCreator(resizerStoppedMoving)
-          );
-        }
-      },
-      [knobs, box, canvasTransform]
-    );
+      }
+    };
 
     return (
       <>
         <styles.Overlay
           onMouseDown={onMouseDown}
-          size={`${Math.round(box.width)} x ${Math.round(box.height)}`}
+          size={`${Math.round(currentBox.width)} x ${Math.round(
+            currentBox.height
+          )}`}
           knobs={
             knobs && (
               <>
                 {knobs.map(({ x, y }) => {
                   return (
                     <styles.Knob
-                      onMouseDown={(event) => {
+                      onMouseDown={event => {
                         onKnobMouseDown(event, { x, y });
                       }}
                       key={`${x}-${y}`}
@@ -167,9 +180,9 @@ export const Selectable = React.memo(
           style={{
             "--zoom": 1,
             transform: `translateX(${left}px) translateY(${top}px)`,
-            width: box.width * canvasTransform.z,
-            height: box.height * canvasTransform.z,
-            transformOrigin: `top left`,
+            width: currentBox.width * canvasTransform.z,
+            height: currentBox.height * canvasTransform.z,
+            transformOrigin: `top left`
           }}
         />
       </>

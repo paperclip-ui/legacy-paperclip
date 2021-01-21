@@ -26,8 +26,8 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: "120s"
-      - run: yarn add vsce
-      - run: npm publish:marketplace
+      - run: yarn add vsce -W
+      - run: yarn publish:marketplace
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
 

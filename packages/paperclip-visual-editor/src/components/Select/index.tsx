@@ -18,10 +18,15 @@ export const useSelect = () => {
     });
 
   const onButtonClick = () => {
-    setMenuVisible(true);
+    setMenuVisible(!menuVisible);
+  };
+
+  const close = () => {
+    setMenuVisible(false);
   };
 
   return {
+    close,
     menuVisible,
     onButtonClick,
     onBlur,

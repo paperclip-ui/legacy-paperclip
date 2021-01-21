@@ -62,29 +62,29 @@
 </Container>
 
 <!--
-  @frame { title: "Show Login Prompt", width: 1212, height: 768, x: 489, y: -749 }
+  @frame { title: "Initial / auth", width: 1212, height: 768, x: 1843, y: -745 }
 -->
 <Preview showFileMenu showLoginPrompt  />
 
 
 <!--
-  @frame { title: "File Select", width: 1212, height: 768, x: 505, y: 273 }
+  @frame { title: "Logged in / file select", width: 1216, height: 767, x: 501, y: 274 }
 -->
 <Preview showFileMenu loggedIn  />
 
 
 <!--
-  @frame { width: 1212, height: 768, x: 514, y: 1417 }
+  @frame { title: "Initial", width: 1212, height: 768, x: 461, y: -726 }
 -->
 <Preview />
 
 
 <!--
-  @frame { title: "Mobile", width: 643, height: 768, x: 1967, y: 267 }
+  @frame { title: "Compact / responsive", width: 643, height: 768, x: 515, y: 1429 }
 -->
 <Preview />
 
 <!--
-  @frame { title: "Compact", width: 1795, height: 931, x: 1967, y: 1316 }
+  @frame { title: "Compact / Explicit", width: 1795, height: 931, x: 1313, y: 1436 }
 -->
 <Preview compact />

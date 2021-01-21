@@ -189,9 +189,6 @@
   
 </div>
 
-<!--
-  @frame { width: 100px, height: 100px, left: 100px, top: 100px }
--->
 
 <div component as="Field" className="Field" className:col1="col1" className:col2="col2">
   <div className="label">{label}</div>

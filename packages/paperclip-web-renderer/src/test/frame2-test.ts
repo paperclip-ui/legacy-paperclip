@@ -384,6 +384,57 @@ describe(__filename + "#", () => {
       `<div></div><div><style></style></div><div><img src="blah:///something-else.jpg"></img></div>`
     );
   });
+
+  it(`Treats doesn't remove previous className if class is set`, async () => {
+    const graph = {
+      "file:///entry.pc": `
+        
+        <span className="a">
+        </span>
+      `
+    };
+
+    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
+    const renderer = createMockFramesRenderer("file:///entry.pc", "blah:");
+    renderer.initialize(await engine.open("file:///entry.pc"));
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+
+    expect(
+      combineFrameHTML(renderer)
+        .replace("\n", "")
+        .replace(/\\+/g, "/")
+    ).to.eql(
+      `<div></div><div><style></style></div><div><span class="_80f4925f_a a"></span></div>`
+    );
+
+    engine.updateVirtualFileContent(
+      "file:///entry.pc",
+      `<span className="a" class>
+      </span>
+    `
+    );
+
+    expect(
+      combineFrameHTML(renderer)
+        .replace("\n", "")
+        .replace(/\\/g, "/Z/")
+    ).to.eql(`<div></div><div><style></style></div><div><span></span></div>`);
+
+    engine.updateVirtualFileContent(
+      "file:///entry.pc",
+      `<span className:a="a" className="b">
+      </span>
+    `
+    );
+
+    expect(
+      combineFrameHTML(renderer)
+        .replace("\n", "")
+        .replace(/\\/g, "/Z/")
+    ).to.eql(
+      `<div></div><div><style></style></div><div><span class="_80f4925f_b b"></span></div>`
+    );
+  });
 });
 
 const combineFrameHTML = (renderer: FramesRenderer) => {

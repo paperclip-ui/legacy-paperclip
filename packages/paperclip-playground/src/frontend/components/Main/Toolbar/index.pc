@@ -1,6 +1,10 @@
 <import src="frontend/components/Button/index.pc" as="Button" />
 <import src="paperclip-visual-editor/src/styles/utils.pc" as="utils" />
+<import src="paperclip-visual-editor/src/components/Select/index2.pc" as="Select" />
 
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 19, y: 918 }
+-->
 <div export component as="Toolbar" className="v2">
   <style>
     height: 40px;
@@ -8,15 +12,17 @@
     background: var(--grey-night-500);
     text-align: center;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     color: white;
     border-bottom: 2px solid var(--grey-night-300);
     flex-shrink: 0;
+    position: relative;
   </style>
+  <Logo />
 
   <div>
     <style>
-      margin-left: 28px;
+      margin-left: 21px;
       z-index: 1;
       display: flex;
       align-items: center;
@@ -30,6 +36,8 @@
 
       // absolute so that it's centered
       position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
     </style>
     {documentName}
   </div>
@@ -45,12 +53,16 @@
       padding-right: 28px;
       z-index: 1;
       display: flex;
-      align-items: center;
+      align-items: stretch;
     </style>
     {rightControls}
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <button export component as="LogoutButton" {onClick}>
   <style>
     --size: 18px;
@@ -65,6 +77,37 @@
   </style>
 </button>
 
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ProfileSelectButton" {className?} {style?} {onClick} className:active="active">
+  <style>
+    display: flex;
+    align-items: center;
+    padding: 7px;
+    transition: 0.2s;
+    cursor: pointer;
+    &.active {
+      background: var(--grey-night-300);
+    }
+  </style>
+  {children}
+  <i>
+    <style>
+      margin-left: 7px;
+      color: var(--grey-300);
+      --size: 7px;
+      @include utils.mask;
+      mask-image: url("./arrow-down.svg");
+    </style>
+  </i>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="ProfileIcon" {className?} {style?}>
   <style>
     --size: 24px;
@@ -78,6 +121,10 @@
   </style>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <i export component as="SaveStatus" className:success="success" className:failed="failed" className:pending="pending">
   <style>
     --size: 15px;
@@ -109,11 +156,68 @@
   </style>
 </i>
 
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 323, y: -53 }
+-->
+<div export component as="Logo">
+  <style>
+    display: flex;
+    align-items: center;
+  </style>
+  <img src="./logo.svg">
+    <style>
+      height: 28px;
+      position: relative;
+      top: 3px;
+      margin-left: 21px;
+    </style>
+  </img>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Select.Container export component as="ProfileSelect" {onBlur} className="dark">
+  <style>
+    display: flex;
+  </style>
+  {children}
+  {menu}
+</Select.Container>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Select.Menu export component as="ProfileMenu" className="right">
+  <style>
+    min-width: 150px;
+  </style>
+  <Select.MenuItem onClick={onLogoutClick}>
+    Log out
+    <i>
+
+      <style>
+        --size: 1em;
+        @include utils.mask;
+        color: var(--grey-300);
+        cursor: pointer;
+        mask-image: url("./logout2.svg");
+        margin-left: 14px;
+      </style>
+    </i>
+  </Select.MenuItem>
+</Select.Menu>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 323, y: -53 }
+-->
 <Toolbar export component as="Preview" 
   documentName="Untitled"
   leftControls={<fragment>  
     {loggedIn && <fragment>
-      <Button.Button secondary>
+      <Button.Button primary>
         Save
       </Button.Button>
     </fragment> || <Button.Button primary>
@@ -123,13 +227,31 @@
   rightControls={
     <fragment>
       {loggedIn && <fragment>
-        <ProfileIcon>
-          <style>
-            background-image: url("./profile.jpg");
-          </style>
-        </ProfileIcon>
-        <LogoutButton />
+        <ProfileSelect
+        menu={showLoggedInMenu && <ProfileMenu />}
+        >
+        <ProfileSelectButton active={showLoggedInMenu}>
+            <ProfileIcon>
+              <style>
+                background-image: url("./profile.jpg");
+              </style>
+            </ProfileIcon>
+          </ProfileSelectButton>
+        </ProfileSelect>
+        
+        
       </fragment>}
     </fragment>
   } 
 />
+
+
+<!--
+  @frame { title: "Toolbar / logged in", width: 1024, height: 260, x: 1143, y: -12 }
+-->
+<Preview loggedIn />
+
+<!--
+  @frame { title: "Toolbar / logged in / menu open", width: 1024, height: 260, x: 1181, y: 464 }
+-->
+<Preview loggedIn showLoggedInMenu />

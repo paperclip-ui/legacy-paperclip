@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "17.4.16",
+  "version": "17.4.18",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "preview": true,
@@ -133,6 +133,7 @@
     "build:watch": "concurrently \"tsc --watch\" \"npm run build:syntaxes:watch\"",
     "prepublishOnly": "npm run build",
     "rm-ngrok": "rm -rf node_modules/ngrok/bin",
+    "publish:local": "rm -rf node_modules && npm install && npm run rm-ngrok && vsce package && vsce publish",
     "publish:marketplace": "rm -rf node_modules && npm install && npm run rm-ngrok && vsce package && vsce publish -p $VSCE_TOKEN"
   },
   "author": "",
@@ -165,14 +166,15 @@
     "lodash": "^4.17.15",
     "mousetrap": "^1.6.5",
     "p-limit": "^3.0.2",
-    "paperclip": "^17.4.16",
-    "paperclip-autocomplete": "^17.4.16",
-    "paperclip-source-writer": "^17.4.16",
-    "paperclip-utils": "^17.4.16",
-    "paperclip-visual-editor": "^17.4.16",
-    "paperclip-web-renderer": "^17.4.16",
+    "paperclip": "^17.4.18",
+    "paperclip-autocomplete": "^17.4.18",
+    "paperclip-source-writer": "^17.4.18",
+    "paperclip-utils": "^17.4.18",
+    "paperclip-visual-editor": "^17.4.18",
+    "paperclip-web-renderer": "^17.4.18",
     "vscode-languageclient": "6.0.1",
     "vscode-languageserver": "6.0.1",
+    "vscode-languageserver-protocol": "3.15.3",
     "vscode-languageserver-textdocument": "^1.0.0"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d"
