@@ -1,6 +1,6 @@
 {
   "name": "paperclip",
-  "version": "17.4.10",
+  "version": "17.4.16",
   "description": "- real-time editing. Biggest priority is to have a bundler that  - Interoperability. Paperclip should work with any web framework.  - Type safety.  - Visually editable.",
   "main": "./index.js",
   "typings": "index.d.ts",
@@ -27,7 +27,7 @@
     "chai": "^4.2.0",
     "crc32": "^0.2.2",
     "mocha": "^7.0.1",
-    "paperclip-utils": "^17.4.10",
+    "paperclip-utils": "^17.4.16",
     "url": "^0.11.0"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",

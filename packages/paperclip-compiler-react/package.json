@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-react",
-  "version": "17.4.10",
+  "version": "17.4.16",
   "description": "",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -11,7 +11,7 @@
     "crc32": "^0.2.2",
     "html-entities": "^1.2.1",
     "lodash": "^4.17.15",
-    "paperclip": "^17.4.10"
+    "paperclip": "^17.4.16"
   },
   "scripts": {
     "build": "tsc",
