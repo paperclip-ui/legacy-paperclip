@@ -11,6 +11,10 @@
   "workspaces": {
     "packages": [
       "packages/*"
+    ],
+    "nohoist": [
+      "**/@docusaurus",
+      "**/@docusaurus/**"
     ]
   },
   "devDependencies": {
