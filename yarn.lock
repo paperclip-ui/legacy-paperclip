@@ -5676,7 +5676,7 @@ css-loader@^3.4.2:
     schema-utils "^2.7.0"
     semver "^6.3.0"
 
-css-loader@^4.2.1, css-loader@^4.3.0:
+css-loader@^4.3.0:
   version "4.3.0"
   resolved "https://registry.npmjs.org/css-loader/-/css-loader-4.3.0.tgz#c888af64b2a5b2e85462c72c0f4a85c7e2e0821e"
   integrity sha512-rdezjCjScIrsL8BSYszgT4s476IcNKt6yX69t0pHjJVnPUTDpn4WfIpDQTN3wCJvUvfsz/mFjuGOekf3PY3NUg==
