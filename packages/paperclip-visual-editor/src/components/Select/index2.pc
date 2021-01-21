@@ -50,6 +50,7 @@
 
   
   <style>
+    
     color: var(--select-text-color);
     font-size: 14px;
     position: absolute;
@@ -102,6 +103,6 @@
 <Preview dark />
 
 <!--
-  @frame { title: "Select / Light", width: 399, height: 297, x: 370, y: 593 }
+  @frame { title: "Select / Light", width: 224, height: 297, x: 368, y: 583 }
 -->
 <Preview light />

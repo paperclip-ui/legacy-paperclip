@@ -26,7 +26,7 @@ export const FrameContainer = memo(
           border: "none",
           background: "white",
           width: "100%",
-          height: "100%",
+          height: "100%"
         });
         iframe.srcdoc = `
       <!doctype html>
@@ -49,8 +49,11 @@ export const FrameContainer = memo(
 
         iframe.onload = () => {
           iframe.contentDocument.body.appendChild(frame.stage);
-          onLoad();
-          syncOverflow();
+
+          // wait for the fonts to be loaded - will affect bounding rects
+          (iframe.contentDocument as any).fonts.ready.then(() => {
+            onLoad();
+          });
         };
         frameRef.current.appendChild(iframe);
       }

@@ -217,7 +217,7 @@ export const useFrames = ({
     renderer.collectRects();
   }, [renderer]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (state.currentEngineEvents[renderer.id]?.length) {
       renderer.handleEvents(
         state.currentEngineEvents[renderer.id],

@@ -1,7 +1,7 @@
 import {
   createNativeNode,
   createNativeStyleFromSheet,
-  getNativeNodePath,
+  getNativeNodePath
 } from "./native-renderer";
 import {
   EngineDelegateEvent,
@@ -18,7 +18,7 @@ import {
   computeVirtJSObject,
   NodeAnnotations,
   VirtualFrame,
-  getVirtTarget,
+  getVirtTarget
 } from "paperclip-utils";
 import { EventEmitter } from "events";
 import { arraySplice, traverseNativeNode } from "./utils";
@@ -127,11 +127,12 @@ class FramesProxy implements Patchable {
   insertBefore(child: Node, existing: HTMLElement) {
     this.insert(
       child,
-      this._childNodes.findIndex((_child) => _child === existing)
+      this._childNodes.findIndex(_child => _child === existing)
     );
   }
   removeChild(child: Node) {
-    const index = this._childNodes.findIndex((_child) => _child === child);
+    const index = this._childNodes.findIndex(_child => _child === child);
+    const frame = this._frames[index];
     this._childNodes.splice(index, 1);
     this._frames = arraySplice(this._frames, index, 1);
   }
@@ -152,6 +153,7 @@ class FramesProxy implements Patchable {
     stage.appendChild(_mount);
 
     _mount.appendChild(child);
+
     this._childNodes.splice(index, 0, child as ChildNode);
 
     this._frames = arraySplice(this._frames, index, 0, {
@@ -159,7 +161,7 @@ class FramesProxy implements Patchable {
       _importedStylesContainer,
       _mainStylesContainer,
       _mount,
-      sourceUri: null,
+      sourceUri: null
     });
   }
 }
@@ -212,7 +214,7 @@ export class FramesRenderer {
       this._domFactory,
       this.protocol
     );
-    this._dependencies = importedSheets.map((info) => info.uri);
+    this._dependencies = importedSheets.map(info => info.uri);
     this._framesProxy.setMainStyle(sheet);
 
     for (const child of children) {
@@ -317,7 +319,7 @@ export class FramesRenderer {
               width: clientRect.width,
               height: clientRect.height,
               x: clientRect.left + bounds.x,
-              y: clientRect.top + bounds.y,
+              y: clientRect.top + bounds.y
             };
           }
         }
@@ -352,7 +354,7 @@ export const getFrameBounds = memoize((node: VirtualElement | VirtualText) => {
     height: 768,
     x: 0,
     y: 0,
-    ...(annotations.frame || {}),
+    ...(annotations.frame || {})
   };
 });
 
