@@ -163,12 +163,17 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
       ast::Node::Element(element) => {
         for attr in &element.attributes {
           match attr {
+            // <a key="value" />
             ast::Attribute::KeyValueAttribute(kv_attr) => {
               if let Some(value) = &kv_attr.value {
                 match value {
+                  // <a key={value} />
                   ast::AttributeValue::Slot(slot) => {
                     add_script_property(&slot.script, &mut properties);
                   }
+
+
+                  // <a key="value {anotherValue}" />
                   ast::AttributeValue::DyanmicString(d_string) => {
                     for val in &d_string.values {
                       match val {
@@ -184,12 +189,17 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
                 }
               }
             }
+
+            // <a {...props} />
             ast::Attribute::SpreadAttribute(spread) => {
               add_script_property(&spread.script, &mut properties);
             }
+
+            // <a className:b="c" />
             ast::Attribute::PropertyBoundAttribute(p_attr) => {
               add_property(&p_attr.binding_name, true, &mut properties);
             }
+            // <a {props} />
             ast::Attribute::ShorthandAttribute(s_attr) => {
               add_script_property(&s_attr.reference, &mut properties);
             }
@@ -999,6 +1009,14 @@ fn evaluate_component_instance<'a>(
   }
 }
 
+fn get_actual_attribute_name(name: &String) -> String {
+  if name == "className" {
+    "class".to_string()
+  } else {
+    name.clone()
+  }
+}
+
 fn evaluate_native_element<'a>(
   element: &ast::Element,
   is_root: bool,
@@ -1018,12 +1036,16 @@ fn evaluate_native_element<'a>(
 
     match attr {
       ast::Attribute::KeyValueAttribute(kv_attr) => {
+
+        let actual_name = get_actual_attribute_name(&kv_attr.name);
+
+
         let (name, mut value_option) = if kv_attr.value == None {
-          (kv_attr.name.to_string(), None)
+          (actual_name, None)
         } else {
           let value = evaluate_attribute_value(
             &element.tag_name,
-            &kv_attr.name,
+            &actual_name,
             &kv_attr.value.as_ref().unwrap(),
             true,
             depth,
@@ -1033,7 +1055,7 @@ fn evaluate_native_element<'a>(
             continue;
           }
           (
-            kv_attr.name.to_string(),
+            actual_name,
             Some(stringify_attribute_value(&kv_attr.name, &value)),
           )
         };
@@ -1041,7 +1063,7 @@ fn evaluate_native_element<'a>(
         if name == "export" || name == "component" || name == "as" {
           continue;
         }
-        attributes.insert(name.to_string(), value_option);
+        attributes.insert(name, value_option);
       }
       ast::Attribute::PropertyBoundAttribute(kv_attr) => {
         assert_attr_slot_restrictions(
@@ -1058,7 +1080,7 @@ fn evaluate_native_element<'a>(
         match attr_data {
           js_virt::JsValue::JsObject(mut object) => {
             for (key, value) in object.values.drain() {
-              attributes.insert(key.to_string(), Some(value.to_string()));
+              attributes.insert(get_actual_attribute_name(&key), Some(value.to_string()));
             }
           }
           _ => {
@@ -1076,19 +1098,21 @@ fn evaluate_native_element<'a>(
           message: message.to_string(),
           location: Location { start: 0, end: 0 },
         })?;
+        let actual_name = get_actual_attribute_name(&name);
+
         assert_attr_slot_restrictions(
           &element.tag_name,
-          &name.to_string(),
+          &actual_name,
           &sh_attr.location,
           context,
         )?;
         let mut js_value = evaluate_attribute_slot(&sh_attr.reference, depth, context)?;
 
         if js_value.truthy() {
-          js_value = maybe_cast_attribute_js_value(name, js_value, true, context);
+          js_value = maybe_cast_attribute_js_value(&actual_name, js_value, true, context);
 
           attributes.insert(
-            name.to_string(),
+            actual_name,
             Some(stringify_attribute_value(&name, &js_value)),
           );
         }
@@ -1103,10 +1127,11 @@ fn evaluate_native_element<'a>(
           let value_option = object.values.get(&kv_attr.binding_name);
           if let Some(prop_value) = value_option {
             if prop_value.truthy() {
+              let actual_name = get_actual_attribute_name(&kv_attr.name);
               let value = if let Some(kv_value) = &kv_attr.value {
                 evaluate_attribute_value(
                   &element.tag_name,
-                  &kv_attr.name,
+                  &actual_name,
                   &kv_value,
                   true,
                   depth,
@@ -1114,7 +1139,7 @@ fn evaluate_native_element<'a>(
                 )?
               } else {
                 evaluate_attribute_key_value_string(
-                  &kv_attr.name,
+                  &actual_name,
                   &kv_attr.binding_name,
                   &kv_attr.location,
                   true,
@@ -1123,12 +1148,12 @@ fn evaluate_native_element<'a>(
               };
 
               let combined_value = combine_attr_value(
-                stringify_attribute_value(&kv_attr.name, &value),
-                attributes.get(&kv_attr.name),
+                stringify_attribute_value(&actual_name, &value),
+                attributes.get(&actual_name),
                 " ".to_string(),
               );
 
-              attributes.insert(kv_attr.name.to_string(), Some(combined_value));
+              attributes.insert(actual_name, Some(combined_value));
             }
           }
         }

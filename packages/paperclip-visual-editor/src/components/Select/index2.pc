@@ -4,7 +4,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="MenuItem" {className?} {onMouseDown?} {onClick?} className:active="active" className:noFocus="no-focus">
+<div export component as="MenuItem" {className?} {onMouseDown?} {onClick?} tabIndex="-1" className:active="active" className:noFocus="no-focus">
   <style>
     padding: 8px 14px;
     cursor: pointer;
@@ -76,7 +76,7 @@
 <!--
   @frame { visible: false }
 -->
-<div component as="Preview"> 
+<div component as="Preview" className:dark="dark"> 
   <style>
     padding: 20px;
   </style>
