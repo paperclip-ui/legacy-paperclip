@@ -217,7 +217,8 @@ var init = function () { return __awaiter(void 0, void 0, void 0, function () {
                     _engine.updateVirtualFileContent(_appState.currentCodeFileUri, action.payload);
                 };
                 handleVirtObjectEdited = function (action) { return __awaiter(void 0, void 0, void 0, function () {
-                    var _a, _b, _c;
+                    var _a, _b;
+                    var _c;
                     return __generator(this, function (_d) {
                         switch (_d.label) {
                             case 0:
@@ -368,6 +369,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "globalHKeyDown": () => /* reexport safe */ _instance_actions__WEBPACK_IMPORTED_MODULE_0__.globalHKeyDown,
 /* harmony export */   "globalMetaKeyDown": () => /* reexport safe */ _instance_actions__WEBPACK_IMPORTED_MODULE_0__.globalMetaKeyDown,
 /* harmony export */   "globalMetaKeyUp": () => /* reexport safe */ _instance_actions__WEBPACK_IMPORTED_MODULE_0__.globalMetaKeyUp,
+/* harmony export */   "globalOptionKeyDown": () => /* reexport safe */ _instance_actions__WEBPACK_IMPORTED_MODULE_0__.globalOptionKeyDown,
+/* harmony export */   "globalOptionKeyUp": () => /* reexport safe */ _instance_actions__WEBPACK_IMPORTED_MODULE_0__.globalOptionKeyUp,
 /* harmony export */   "globalSaveKeyPress": () => /* reexport safe */ _instance_actions__WEBPACK_IMPORTED_MODULE_0__.globalSaveKeyPress,
 /* harmony export */   "globalYKeyDown": () => /* reexport safe */ _instance_actions__WEBPACK_IMPORTED_MODULE_0__.globalYKeyDown,
 /* harmony export */   "globalZKeyDown": () => /* reexport safe */ _instance_actions__WEBPACK_IMPORTED_MODULE_0__.globalZKeyDown,
@@ -467,6 +470,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "globalBackspaceKeyPressed": () => /* binding */ globalBackspaceKeyPressed,
 /* harmony export */   "globalBackspaceKeySent": () => /* binding */ globalBackspaceKeySent,
 /* harmony export */   "globalMetaKeyDown": () => /* binding */ globalMetaKeyDown,
+/* harmony export */   "globalOptionKeyDown": () => /* binding */ globalOptionKeyDown,
 /* harmony export */   "globalZKeyDown": () => /* binding */ globalZKeyDown,
 /* harmony export */   "popoutButtonClicked": () => /* binding */ popoutButtonClicked,
 /* harmony export */   "clientConnected": () => /* binding */ clientConnected,
@@ -474,6 +478,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "globalHKeyDown": () => /* binding */ globalHKeyDown,
 /* harmony export */   "globalSaveKeyPress": () => /* binding */ globalSaveKeyPress,
 /* harmony export */   "globalMetaKeyUp": () => /* binding */ globalMetaKeyUp,
+/* harmony export */   "globalOptionKeyUp": () => /* binding */ globalOptionKeyUp,
 /* harmony export */   "dirLoaded": () => /* binding */ dirLoaded,
 /* harmony export */   "fsItemClicked": () => /* binding */ fsItemClicked,
 /* harmony export */   "pasted": () => /* binding */ pasted,
@@ -520,6 +525,7 @@ var ActionType;
     ActionType["RECTS_CAPTURED"] = "RECTS_CAPTURED";
     ActionType["GLOBAL_ESCAPE_KEY_PRESSED"] = "GLOBAL_ESCAPE_KEY_PRESSED";
     ActionType["GLOBAL_META_KEY_DOWN"] = "GLOBAL_META_KEY_DOWN";
+    ActionType["GLOBAL_OPTION_KEY_DOWN"] = "GLOBAL_OPTION_KEY_DOWN";
     ActionType["GLOBAL_Z_KEY_DOWN"] = "GLOBAL_Z_KEY_DOWN";
     ActionType["GLOBAL_Y_KEY_DOWN"] = "GLOBAL_Y_KEY_DOWN";
     ActionType["GLOBAL_H_KEY_DOWN"] = "GLOBAL_H_KEY_DOWN";
@@ -529,6 +535,7 @@ var ActionType;
     ActionType["GLOBAL_BACKSPACE_KEY_PRESSED"] = "GLOBAL_BACKSPACE_KEY_PRESSED";
     ActionType["GLOBAL_BACKSPACE_KEY_SENT"] = "GLOBAL_BACKSPACE_KEY_SENT";
     ActionType["GLOBAL_META_KEY_UP"] = "GLOBAL_META_KEY_UP";
+    ActionType["GLOBAL_OPTION_KEY_UP"] = "GLOBAL_OPTION_KEY_UP";
     ActionType["ENGINE_DELEGATE_CHANGED"] = "ENGINE_DELEGATE_CHANGED";
     ActionType["ENGINE_DELEGATE_EVENTS_HANDLED"] = "ENGINE_DELEGATE_EVENTS_HANDLED";
     ActionType["FRAME_TITLE_CLICKED"] = "FRAME_TITLE_CLICKED";
@@ -586,6 +593,7 @@ var globalEscapeKeyPressed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator
 var globalBackspaceKeyPressed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GLOBAL_BACKSPACE_KEY_PRESSED);
 var globalBackspaceKeySent = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GLOBAL_BACKSPACE_KEY_SENT);
 var globalMetaKeyDown = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GLOBAL_META_KEY_DOWN);
+var globalOptionKeyDown = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GLOBAL_OPTION_KEY_DOWN);
 var globalZKeyDown = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GLOBAL_Z_KEY_DOWN);
 var popoutButtonClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.POPOUT_BUTTON_CLICKED);
 var clientConnected = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.CLIENT_CONNECTED);
@@ -593,6 +601,7 @@ var globalYKeyDown = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(Action
 var globalHKeyDown = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GLOBAL_H_KEY_DOWN);
 var globalSaveKeyPress = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GLOBAL_SAVE_KEY_DOWN);
 var globalMetaKeyUp = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GLOBAL_META_KEY_UP);
+var globalOptionKeyUp = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GLOBAL_OPTION_KEY_UP);
 var dirLoaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.DIR_LOADED);
 var fsItemClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.FS_ITEM_CLICKED);
 var pasted = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.PASTED);
@@ -655,7 +664,7 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     o[k2] = m[k];
 }));
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(/*! ./writer */ "../paperclip-source-writer/lib/writer.js"), exports);
@@ -939,12 +948,13 @@ var DynamicStringAttributeValuePartKind;
     DynamicStringAttributeValuePartKind["Slot"] = "Slot";
 })(DynamicStringAttributeValuePartKind = exports.DynamicStringAttributeValuePartKind || (exports.DynamicStringAttributeValuePartKind = {}));
 var a = null;
-exports.getImports = function (ast) {
+var getImports = function (ast) {
     return exports.getChildrenByTagName("import", ast).filter(function (child) {
         return exports.hasAttribute("src", child);
     });
 };
-exports.getRelativeFilePath = function (fs) { return function (fromFilePath, importFilePath) {
+exports.getImports = getImports;
+var getRelativeFilePath = function (fs) { return function (fromFilePath, importFilePath) {
     var logicPath = resolve_1.resolveImportFile(fs)(fromFilePath, importFilePath);
     var relativePath = path.relative(path.dirname(fromFilePath), logicPath);
     if (relativePath.charAt(0) !== ".") {
@@ -952,29 +962,35 @@ exports.getRelativeFilePath = function (fs) { return function (fromFilePath, imp
     }
     return relativePath;
 }; };
-exports.getImportIds = function (ast) {
+exports.getRelativeFilePath = getRelativeFilePath;
+var getImportIds = function (ast) {
     return exports.getImports(ast)
         .map(function (node) { return exports.getAttributeStringValue(constants_1.AS_ATTR_NAME, node); })
         .filter(Boolean);
 };
-exports.getImportById = function (id, ast) {
+exports.getImportIds = getImportIds;
+var getImportById = function (id, ast) {
     return exports.getImports(ast).find(function (imp) {
         return exports.getAttributeStringValue(constants_1.AS_ATTR_NAME, imp) === id;
     });
 };
-exports.getChildren = function (ast) {
+exports.getImportById = getImportById;
+var getChildren = function (ast) {
     if (ast.kind === NodeKind.Element || ast.kind === NodeKind.Fragment) {
         return ast.children;
     }
     return [];
 };
-exports.getStyleScopeId = function (filePath) { return crc32(filePath); };
-exports.getChildrenByTagName = function (tagName, parent) {
+exports.getChildren = getChildren;
+var getStyleScopeId = function (filePath) { return crc32(filePath); };
+exports.getStyleScopeId = getStyleScopeId;
+var getChildrenByTagName = function (tagName, parent) {
     return exports.getChildren(parent).filter(function (child) {
         return child.kind === NodeKind.Element && child.tagName === tagName;
     });
 };
-exports.findByNamespace = function (namespace, current, allChildrenByNamespace) {
+exports.getChildrenByTagName = getChildrenByTagName;
+var findByNamespace = function (namespace, current, allChildrenByNamespace) {
     if (allChildrenByNamespace === void 0) { allChildrenByNamespace = []; }
     if (current.kind === NodeKind.Element) {
         if (current.tagName.split(".")[0] === namespace) {
@@ -999,27 +1015,32 @@ exports.findByNamespace = function (namespace, current, allChildrenByNamespace) 
     }
     return allChildrenByNamespace;
 };
-exports.getMetaValue = function (name, root) {
+exports.findByNamespace = findByNamespace;
+var getMetaValue = function (name, root) {
     var metaElement = exports.getChildrenByTagName("meta", root).find(function (meta) {
         return exports.hasAttribute("src", meta) &&
             exports.getAttributeStringValue("name", meta) === name;
     });
     return metaElement && exports.getAttributeStringValue("content", metaElement);
 };
-exports.getAttribute = function (name, element) {
+exports.getMetaValue = getMetaValue;
+var getAttribute = function (name, element) {
     return element.attributes.find(function (attr) {
         return attr.kind === AttributeKind.KeyValueAttribute && attr.name === name;
     });
 };
-exports.getAttributeValue = function (name, element) {
+exports.getAttribute = getAttribute;
+var getAttributeValue = function (name, element) {
     var attr = exports.getAttribute(name, element);
     return attr && attr.value;
 };
-exports.getAttributeStringValue = function (name, element) {
+exports.getAttributeValue = getAttributeValue;
+var getAttributeStringValue = function (name, element) {
     var value = exports.getAttributeValue(name, element);
     return (value && value.attrValueKind === AttributeValueKind.String && value.value);
 };
-exports.getStyleElements = function (ast) {
+exports.getAttributeStringValue = getAttributeStringValue;
+var getStyleElements = function (ast) {
     var styleElements = [];
     exports.traverseExpression(ast, function (node) {
         if (node.kind === NodeKind.StyleElement) {
@@ -1028,39 +1049,48 @@ exports.getStyleElements = function (ast) {
     });
     return styleElements;
 };
-exports.isVisibleElement = function (ast) {
+exports.getStyleElements = getStyleElements;
+var isVisibleElement = function (ast) {
     return !/^(import|logic|meta|style|part|preview)$/.test(ast.tagName);
 };
-exports.isVisibleNode = function (node) {
+exports.isVisibleElement = isVisibleElement;
+var isVisibleNode = function (node) {
     return node.kind === NodeKind.Text ||
         node.kind === NodeKind.Fragment ||
         node.kind === NodeKind.Slot ||
         (node.kind === NodeKind.Element && exports.isVisibleElement(node));
 };
-exports.getVisibleChildNodes = function (ast) {
+exports.isVisibleNode = isVisibleNode;
+var getVisibleChildNodes = function (ast) {
     return exports.getChildren(ast).filter(exports.isVisibleNode);
 };
-exports.getParts = function (ast) {
+exports.getVisibleChildNodes = getVisibleChildNodes;
+var getParts = function (ast) {
     return exports.getChildren(ast).filter(function (child) {
         return (child.kind === NodeKind.Element &&
             exports.hasAttribute("component", child) &&
             exports.hasAttribute(constants_1.AS_ATTR_NAME, child));
     });
 };
-exports.getPartIds = function (ast) {
+exports.getParts = getParts;
+var getPartIds = function (ast) {
     return exports.getParts(ast)
         .map(function (node) { return exports.getAttributeStringValue(constants_1.AS_ATTR_NAME, node); })
         .filter(Boolean);
 };
-exports.getDefaultPart = function (ast) {
+exports.getPartIds = getPartIds;
+var getDefaultPart = function (ast) {
     return exports.getParts(ast).find(function (part) { return exports.getAttributeStringValue(constants_1.AS_ATTR_NAME, part) === constants_1.DEFAULT_PART_ID; });
 };
-exports.getLogicElement = function (ast) {
+exports.getDefaultPart = getDefaultPart;
+var getLogicElement = function (ast) {
     return exports.getChildren(ast).find(function (child) { return child.kind === NodeKind.Element && child.tagName === constants_1.LOGIC_TAG_NAME; });
 };
-exports.hasAttribute = function (name, element) {
+exports.getLogicElement = getLogicElement;
+var hasAttribute = function (name, element) {
     return exports.getAttribute(name, element) != null;
 };
+exports.hasAttribute = hasAttribute;
 // https://github.com/crcn/tandem/blob/10.0.0/packages/common/src/state/tree.ts#L137
 exports.flattenTreeNode = memo_1.memoize(function (current) {
     var treeNodeMap = exports.getTreeNodeMap(current);
@@ -1075,12 +1105,13 @@ exports.getNodePath = memo_1.memoize(function (node, root) {
     }
 });
 // TODO
-exports.getParentNode = function (node, root) {
+var getParentNode = function (node, root) {
     var nodePath = exports.getNodePath(node, root).split(".");
     nodePath.pop();
     var map = exports.getTreeNodeMap(root);
     return map[nodePath.join(".")];
 };
+exports.getParentNode = getParentNode;
 exports.getTreeNodeMap = memo_1.memoize(function (current, path) {
     var _a;
     if (path === void 0) { path = "0"; }
@@ -1095,17 +1126,18 @@ exports.getTreeNodeMap = memo_1.memoize(function (current, path) {
     }
     return map;
 });
-exports.isComponentInstance = function (node, importIds) {
+var isComponentInstance = function (node, importIds) {
     return (node.kind === NodeKind.Element &&
         importIds.indexOf(node.tagName.split(".").shift()) !== -1);
 };
+exports.isComponentInstance = isComponentInstance;
 var maybeAddReference = function (stmt, _statements) {
     if (_statements === void 0) { _statements = []; }
     if (stmt.jsKind === js_ast_1.JsExpressionKind.Reference) {
         _statements.push([stmt, null]);
     }
 };
-exports.getMixins = function (ast) {
+var getMixins = function (ast) {
     var styles = exports.getStyleElements(ast);
     var mixins = {};
     for (var _i = 0, styles_1 = styles; _i < styles_1.length; _i++) {
@@ -1118,16 +1150,20 @@ exports.getMixins = function (ast) {
     }
     return mixins;
 };
-exports.isNode = function (ast) {
+exports.getMixins = getMixins;
+var isNode = function (ast) {
     return NodeKind[ast.kind] != null;
 };
-exports.isAttribute = function (ast) {
+exports.isNode = isNode;
+var isAttribute = function (ast) {
     return AttributeKind[ast.kind] != null;
 };
-exports.isAttributeValue = function (ast) {
+exports.isAttribute = isAttribute;
+var isAttributeValue = function (ast) {
     return AttributeValueKind[ast.attrValueKind] != null;
 };
-exports.traverseExpression = function (ast, each) {
+exports.isAttributeValue = isAttributeValue;
+var traverseExpression = function (ast, each) {
     if (each(ast) === false) {
         return false;
     }
@@ -1147,7 +1183,8 @@ exports.traverseExpression = function (ast, each) {
     }
     return true;
 };
-exports.getCompletionItems = function (root, position) {
+exports.traverseExpression = traverseExpression;
+var getCompletionItems = function (root, position) {
     var parent;
     var previousSibling;
     exports.traverseExpression(root, function (expr) {
@@ -1156,6 +1193,7 @@ exports.getCompletionItems = function (root, position) {
         }
     });
 };
+exports.getCompletionItems = getCompletionItems;
 var traverseExpressions = function (expressions, each) {
     for (var _i = 0, expressions_1 = expressions; _i < expressions_1.length; _i++) {
         var child = expressions_1[_i];
@@ -1165,7 +1203,7 @@ var traverseExpressions = function (expressions, each) {
     }
     return true;
 };
-exports.getNestedReferences = function (node, _statements) {
+var getNestedReferences = function (node, _statements) {
     if (_statements === void 0) { _statements = []; }
     if (node.kind === NodeKind.Slot) {
         maybeAddReference(node.script, _statements);
@@ -1205,6 +1243,7 @@ exports.getNestedReferences = function (node, _statements) {
     }
     return _statements;
 };
+exports.getNestedReferences = getNestedReferences;
 
 
 /***/ }),
@@ -1320,10 +1359,11 @@ var StyleDeclarationKind;
     StyleDeclarationKind["Media"] = "Media";
     StyleDeclarationKind["Content"] = "Content";
 })(StyleDeclarationKind = exports.StyleDeclarationKind || (exports.StyleDeclarationKind = {}));
-exports.getSheetClassNames = function (sheet, allClassNames) {
+var getSheetClassNames = function (sheet, allClassNames) {
     if (allClassNames === void 0) { allClassNames = []; }
     return getRulesClassNames(sheet.rules, allClassNames);
 };
+exports.getSheetClassNames = getSheetClassNames;
 var getRulesClassNames = function (rules, allClassNames) {
     if (allClassNames === void 0) { allClassNames = []; }
     for (var _i = 0, rules_1 = rules; _i < rules_1.length; _i++) {
@@ -1332,7 +1372,7 @@ var getRulesClassNames = function (rules, allClassNames) {
     }
     return allClassNames;
 };
-exports.getRuleClassNames = function (rule, allClassNames) {
+var getRuleClassNames = function (rule, allClassNames) {
     if (allClassNames === void 0) { allClassNames = []; }
     switch (rule.kind) {
         case RuleKind.Media: {
@@ -1346,9 +1386,11 @@ exports.getRuleClassNames = function (rule, allClassNames) {
     }
     return allClassNames;
 };
-exports.traverseSheet = function (sheet, each) {
+exports.getRuleClassNames = getRuleClassNames;
+var traverseSheet = function (sheet, each) {
     return traverseStyleExpressions(sheet.rules, each);
 };
+exports.traverseSheet = traverseSheet;
 var traverseStyleExpressions = function (rules, each) {
     for (var _i = 0, rules_2 = rules; _i < rules_2.length; _i++) {
         var rule = rules_2[_i];
@@ -1358,17 +1400,20 @@ var traverseStyleExpressions = function (rules, each) {
     }
     return true;
 };
-exports.isRule = function (expression) {
+var isRule = function (expression) {
     return RuleKind[expression.kind] != null;
 };
-exports.isStyleDeclaration = function (expression) {
+exports.isRule = isRule;
+var isStyleDeclaration = function (expression) {
     return (StyleDeclarationKind[expression.declarationKind] !=
         null);
 };
-exports.isIncludePart = function (expression) {
+exports.isStyleDeclaration = isStyleDeclaration;
+var isIncludePart = function (expression) {
     return expression.name != null;
 };
-exports.traverseStyleExpression = function (rule, each) {
+exports.isIncludePart = isIncludePart;
+var traverseStyleExpression = function (rule, each) {
     if (each(rule) === false) {
         return false;
     }
@@ -1404,7 +1449,8 @@ exports.traverseStyleExpression = function (rule, each) {
     }
     return true;
 };
-exports.getSelectorClassNames = function (selector, allClassNames) {
+exports.traverseStyleExpression = traverseStyleExpression;
+var getSelectorClassNames = function (selector, allClassNames) {
     if (allClassNames === void 0) { allClassNames = []; }
     switch (selector.kind) {
         case SelectorKind.Combo:
@@ -1454,6 +1500,7 @@ exports.getSelectorClassNames = function (selector, allClassNames) {
     }
     return allClassNames;
 };
+exports.getSelectorClassNames = getSelectorClassNames;
 
 
 /***/ }),
@@ -1567,7 +1614,7 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     o[k2] = m[k];
 }));
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__webpack_require__(/*! ./events */ "../paperclip-utils/lib/events.js"), exports);
@@ -1719,7 +1766,7 @@ exports.computeVirtJSValue = memo_1.memoize(function (obj) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.underchange = exports.reuser = exports.shallowEquals = exports.memoize = void 0;
-var LRU = __webpack_require__(/*! lru-cache */ "../paperclip-utils/node_modules/lru-cache/index.js");
+var LRU = __webpack_require__(/*! lru-cache */ "../../node_modules/lru-cache/index.js");
 var DEFAULT_LRU_MAX = 10000;
 // need this for default arguments
 var getArgumentCount = function (fn) {
@@ -1731,7 +1778,7 @@ var getArgumentCount = function (fn) {
         .filter(function (arg) { return arg.substr(0, 3) !== "..."; });
     return args.length;
 };
-exports.memoize = function (fn, lruMax, argumentCount) {
+var memoize = function (fn, lruMax, argumentCount) {
     if (lruMax === void 0) { lruMax = DEFAULT_LRU_MAX; }
     if (argumentCount === void 0) { argumentCount = getArgumentCount(fn); }
     if (argumentCount == Infinity || isNaN(argumentCount)) {
@@ -1743,7 +1790,8 @@ exports.memoize = function (fn, lruMax, argumentCount) {
     }
     return compilFastMemoFn(argumentCount, lruMax > 0)(fn, new LRU({ max: lruMax }));
 };
-exports.shallowEquals = function (a, b) {
+exports.memoize = memoize;
+var shallowEquals = function (a, b) {
     var toa = typeof a;
     var tob = typeof b;
     if (toa !== tob) {
@@ -1762,7 +1810,8 @@ exports.shallowEquals = function (a, b) {
     }
     return true;
 };
-exports.reuser = function (lruMax, getKey, equals) {
+exports.shallowEquals = shallowEquals;
+var reuser = function (lruMax, getKey, equals) {
     if (lruMax === void 0) { lruMax = DEFAULT_LRU_MAX; }
     if (equals === void 0) { equals = exports.shallowEquals; }
     var cache = new LRU({ max: lruMax });
@@ -1774,6 +1823,7 @@ exports.reuser = function (lruMax, getKey, equals) {
         return cache.get(key);
     };
 };
+exports.reuser = reuser;
 var _memoFns = {};
 var compilFastMemoFn = function (argumentCount, acceptPrimitives) {
     var hash = "" + argumentCount + acceptPrimitives;
@@ -1798,7 +1848,7 @@ var compilFastMemoFn = function (argumentCount, acceptPrimitives) {
  * Calls target function once & proxies passed functions
  * @param fn
  */
-exports.underchange = function (fn) {
+var underchange = function (fn) {
     var currentArgs = [];
     var ret;
     var started;
@@ -1824,6 +1874,7 @@ exports.underchange = function (fn) {
         return start();
     });
 };
+exports.underchange = underchange;
 
 
 /***/ }),
@@ -1842,11 +1893,12 @@ var path = __webpack_require__(/*! path */ "../../node_modules/path-browserify/i
 var url = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
 var utils_1 = __webpack_require__(/*! ./utils */ "../paperclip-utils/lib/utils.js");
 var constants_1 = __webpack_require__(/*! ./constants */ "../paperclip-utils/lib/constants.js");
-exports.resolveImportUri = function (fs) { return function (fromPath, toPath, resolveOutput) {
+var resolveImportUri = function (fs) { return function (fromPath, toPath, resolveOutput) {
     var filePath = exports.resolveImportFile(fs)(fromPath, toPath, resolveOutput);
     return filePath;
 }; };
-exports.resolveImportFile = function (fs) { return function (fromPath, toPath, resolveOutput) {
+exports.resolveImportUri = resolveImportUri;
+var resolveImportFile = function (fs) { return function (fromPath, toPath, resolveOutput) {
     try {
         if (/\w+:\/\//.test(toPath)) {
             return toPath;
@@ -1864,6 +1916,7 @@ exports.resolveImportFile = function (fs) { return function (fromPath, toPath, r
         return null;
     }
 }; };
+exports.resolveImportFile = resolveImportFile;
 var readJSONSync = function (fs) { return function (uri) {
     return JSON.parse(fs.readFileSync(uri, "utf8"));
 }; };
@@ -1921,7 +1974,7 @@ var resolveModuleDirectory = function (fs) { return function (cwd, moduleDir) {
         cdir = path.dirname(cdir);
     } while (isntRoot(cdir));
 }; };
-exports.findPCConfigUrl = function (fs) { return function (fromUri) {
+var findPCConfigUrl = function (fs) { return function (fromUri) {
     var cdir = utils_1.stripFileProtocol(fromUri);
     // can't cache in case PC config was moved.
     do {
@@ -1933,6 +1986,7 @@ exports.findPCConfigUrl = function (fs) { return function (fromUri) {
     } while (isntRoot(cdir));
     return null;
 }; };
+exports.findPCConfigUrl = findPCConfigUrl;
 var isntRoot = function (cdir) {
     return cdir !== "/" && cdir !== "." && !/^\w+:\\$/.test(cdir);
 };
@@ -2013,10 +2067,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.stringifyCSSSheet = void 0;
 var path = __webpack_require__(/*! path */ "../../node_modules/path-browserify/index.js");
 var url = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
-exports.stringifyCSSSheet = function (sheet, options) {
+var stringifyCSSSheet = function (sheet, options) {
     if (options === void 0) { options = {}; }
     return sheet.rules.map(function (rule) { return stringifyCSSRule(rule, options); }).join("\n");
 };
+exports.stringifyCSSSheet = stringifyCSSSheet;
 var stringifyCSSRule = function (rule, options) {
     switch (rule.kind) {
         case "Style":
@@ -2092,7 +2147,7 @@ exports.stringifyVirtualNode = void 0;
 var stringify_sheet_1 = __webpack_require__(/*! ./stringify-sheet */ "../paperclip-utils/lib/stringify-sheet.js");
 var html_entities_1 = __webpack_require__(/*! html-entities */ "../../node_modules/html-entities/lib/index.js");
 var entities = new html_entities_1.Html5Entities();
-exports.stringifyVirtualNode = function (node) {
+var stringifyVirtualNode = function (node) {
     switch (node.kind) {
         case "Fragment":
             return stringifyChildren(node);
@@ -2121,6 +2176,7 @@ exports.stringifyVirtualNode = function (node) {
         }
     }
 };
+exports.stringifyVirtualNode = stringifyVirtualNode;
 var stringifyChildren = function (node) {
     return node.children.map(exports.stringifyVirtualNode).join("");
 };
@@ -2139,13 +2195,16 @@ var stringifyChildren = function (node) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isPaperclipFile = exports.paperclipSourceGlobPattern = exports.stripFileProtocol = void 0;
 var url = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
-exports.stripFileProtocol = function (filePath) {
+var stripFileProtocol = function (filePath) {
     return filePath.includes("file://") ? url.fileURLToPath(filePath) : filePath;
 };
-exports.paperclipSourceGlobPattern = function (dir) {
+exports.stripFileProtocol = stripFileProtocol;
+var paperclipSourceGlobPattern = function (dir) {
     return dir === "." ? "**/*.pc" : dir + "/**/*.pc";
 };
-exports.isPaperclipFile = function (filePath) { return /\.pc$/.test(filePath); };
+exports.paperclipSourceGlobPattern = paperclipSourceGlobPattern;
+var isPaperclipFile = function (filePath) { return /\.pc$/.test(filePath); };
+exports.isPaperclipFile = isPaperclipFile;
 
 
 /***/ }),
@@ -2207,7 +2266,7 @@ exports.updateAllLoadedData = exports.getVirtTarget = exports.patchVirtNode = vo
 var virt_mtuation_1 = __webpack_require__(/*! ./virt-mtuation */ "../paperclip-utils/lib/virt-mtuation.js");
 var virt_1 = __webpack_require__(/*! ./virt */ "../paperclip-utils/lib/virt.js");
 var events_1 = __webpack_require__(/*! ./events */ "../paperclip-utils/lib/events.js");
-exports.patchVirtNode = function (root, mutations) {
+var patchVirtNode = function (root, mutations) {
     for (var _i = 0, mutations_1 = mutations; _i < mutations_1.length; _i++) {
         var mutation = mutations_1[_i];
         var target = exports.getVirtTarget(root, mutation.nodePath);
@@ -2262,12 +2321,14 @@ exports.patchVirtNode = function (root, mutations) {
     }
     return root;
 };
-exports.getVirtTarget = function (mount, nodePath) {
+exports.patchVirtNode = patchVirtNode;
+var getVirtTarget = function (mount, nodePath) {
     return nodePath.reduce(function (current, i) {
         var c = current.children[i];
         return c;
     }, mount);
 };
+exports.getVirtTarget = getVirtTarget;
 var updateNode = function (ancestor, nodePath, newNode, depth) {
     if (depth === void 0) { depth = 0; }
     if (depth === nodePath.length) {
@@ -2281,7 +2342,7 @@ var updateNode = function (ancestor, nodePath, newNode, depth) {
             updateNode(ancestor.children[nodePath[depth]], nodePath, newNode, depth + 1)
         ], ancestor.children.slice(nodePath[depth] + 1)) });
 };
-exports.updateAllLoadedData = function (allData, event) {
+var updateAllLoadedData = function (allData, event) {
     var _a, _b;
     if (event.kind === events_1.EngineDelegateEventKind.Evaluated) {
         return __assign(__assign({}, allData), (_a = {}, _a[event.uri] = __assign(__assign({}, event.data), { importedSheets: getImportedSheets(allData, event) }), _a));
@@ -2297,6 +2358,7 @@ exports.updateAllLoadedData = function (allData, event) {
     }
     return allData;
 };
+exports.updateAllLoadedData = updateAllLoadedData;
 var getImportedSheets = function (allData, _a) {
     // ick, wworks for now.
     var allDependencies = _a.data.allDependencies;
@@ -3110,7 +3172,7 @@ module.exports = {};
 /******/ 	(() => {
 /******/ 		var next = __webpack_require__.x;
 /******/ 		__webpack_require__.x = () => {
-/******/ 			return __webpack_require__.e("vendors-node_modules_crc32_lib_crc32_js-node_modules_events_events_js-node_modules_fast-json--a1661b").then(next);
+/******/ 			return __webpack_require__.e("vendors-node_modules_crc32_lib_crc32_js-node_modules_events_events_js-node_modules_fast-json--5ebe60").then(next);
 /******/ 		};
 /******/ 	})();
 /******/ 	
