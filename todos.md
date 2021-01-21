@@ -1,27 +1,22 @@
 
 ### Immediate
 
-- process undefined error in visual editor (and paperclip dev server)
-
-- add logo
-
 - copy/paste hijacked
   - ensure that no other hotkeys are
 
-- ability to see existing projects
-- profile icon menu options
+- cmd + s should work
+- undo / redo (CRDTs)
+
+- profile menu
   - logout
   - create new project
   - see projects
 
-- Projects page
+- projects
   - ability to change names (pen icon)
   - ability to delete
     - confirm - type name
-  - visibility options
-
-- undo / redo
-  - use CRDTs for this
+  - visibility options (public / private)
 
 - cleanup
   - going to / should display blank page

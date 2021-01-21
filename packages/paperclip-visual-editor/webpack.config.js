@@ -56,10 +56,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use:
-          mode === "production"
-            ? [MiniCssExtractPlugin.loader, "css-loader"]
-            : ["style-loader", "css-loader"]
+        use: [MiniCssExtractPlugin.loader, "css-loader"]
       },
       {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,
