@@ -348,12 +348,17 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
   return frameBoxes;
 };
 
+export const getCurrentPreviewFrameBoxes = (state: AppState) => {
+  const currentPCData =
+    state.allLoadedPCFileData[state.ui.query?.currentFileUri];
+
+  return currentPCData?.preview
+    ? getPreviewFrameBoxes(currentPCData?.preview).filter(Boolean)
+    : [];
+};
+
 const getAllFrameBounds = (state: AppState) => {
-  return mergeBoxes(
-    getPreviewFrameBoxes(
-      state.allLoadedPCFileData[state.ui.query.currentFileUri].preview
-    ).filter(Boolean)
-  );
+  return mergeBoxes(getCurrentPreviewFrameBoxes(state));
 };
 
 const INITIAL_ZOOM_PADDING = 50;

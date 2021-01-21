@@ -67,49 +67,63 @@
   {children}
 </div>
 
-<div export component as="FileMenuButton" className:active="active" tabIndex="0" {onMouseDown?} {onClick?} {onFocus} {onBlur?}>
-  <style>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 941, y: -8 }
+-->
+<div export component as="FileSelect" tabIndex="0" {onMouseDown?} {onBlur?}>
+<style>
     display: flex;
     cursor: pointer;
-    align-items: center;
+    align-items: stretch;
     outline: none;
-    padding: 0px 14px;
     font-size: 14px;
     transition: 0.2s;
     position: relative;  
-    user-select: none;   
-    
-    &:hover {
-      background: var(--grey-night-400);
-    }
-
-    &.active {
-      background: var(--grey-night-300);
-    }
   </style>
-  <div >
+  
+  <div onClick={onButtonClick} className:active="active"> 
     <style>
-    user-select: none;   
-    </style>
-    {name}
-  </div>
-  <i>
-    <style>
-      margin-left: 14px;
-      position: relative;
-      top: 1px;
-      --size: 14px;
-      @include utils.mask;
-      mask-image: url("./chevron-down.svg");
+      display: flex;
+      cursor: pointer;
+      align-items: center;
+      outline: none;
+      padding: 0px 14px;
+      font-size: 14px;
       transition: 0.2s;
-      &:within(.active) {
-        top: 4px;
+      position: relative;  
+      
+      &:hover {
+        background: var(--grey-night-400);
+      }
+
+      &.active {
+        background: var(--grey-night-300);
       }
     </style>
-  </i>
+    {name}
+    <i>
+      <style>
+        margin-left: 14px;
+        position: relative;
+        top: 1px;
+        --size: 14px;
+        @include utils.mask;
+        mask-image: url("./chevron-down.svg");
+        transition: 0.2s;
+        &:within(.active) {
+          top: 4px;
+        }
+      </style>
+    </i>
+  </div>
   {menu}
 
 </div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 492, y: -121 }
+-->
 <Select.Menu dark export component as="FileMenu">
   <style>
     top: 40px;
@@ -121,10 +135,18 @@
   {children}
 </Select.Menu>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 599, y: -202 }
+-->
 <Select.MenuItem export component as="FileMenuItem" {noFocus?} {active?} {onClick?}>
   {children}
 </Select.MenuItem>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 561, y: -226 }
+-->
 <div export component as="EyeButton" className:highlight="highlight" {onClick}>
   <style>
     display: flex;
@@ -147,6 +169,10 @@
   </i>
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 325, y: -475 }
+-->
 <Select.MenuItem export component as="AddFileMenuItem" {onMouseDown?} {onClick?}>
   <style>
     border-top: 1px solid rgb(65, 65, 65);
@@ -155,6 +181,10 @@
   + Add
 </Select.MenuItem>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -33, y: -17 }
+-->
 <div export component as="FileMenuItems">
   <style>
     max-height: 300px;
@@ -163,8 +193,12 @@
   {children}
 </div>
 
+
+<!--
+  @frame { title: "", width: 1024, height: 768, x: 21, y: 178 }
+-->
 <Topbar export component as="Preview">
-  <FileMenuButton name="Main.pc" active={showFileMenu} menu={
+  <FileSelect name="Main.pc" active={showFileMenu} menu={
     showFileMenu && <FileMenu>
     
       <FileMenuItems>

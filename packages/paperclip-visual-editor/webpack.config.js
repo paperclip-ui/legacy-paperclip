@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 /*
  * We've enabled HtmlWebpackPlugin for you! This generates a html
@@ -23,6 +24,7 @@ module.exports = {
   devtool: false,
 
   plugins: [
+    new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       title: "Paperclip",
       template: path.resolve(__dirname, "src", "index.html")
@@ -54,7 +56,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use:
+          mode === "production"
+            ? [MiniCssExtractPlugin.loader, "css-loader"]
+            : ["style-loader", "css-loader"]
       },
       {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,

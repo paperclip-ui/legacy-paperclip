@@ -300,6 +300,9 @@ export class FramesRenderer {
         this._framesProxy.immutableFrames,
         this._preview
       );
+      if (!frameNode) {
+        continue;
+      }
       const annotations: NodeAnnotations =
         (frameNode.annotations && computeVirtJSObject(frameNode.annotations)) ||
         {};

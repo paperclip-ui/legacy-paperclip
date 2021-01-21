@@ -55,6 +55,7 @@
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^5.0.0-beta.6",
     "lru-cache": "^6.0.0",
+    "mini-css-extract-plugin": "^1.3.4",
     "paperclip-cli-minimal": "^17.4.16",
     "paperclip-compiler-react": "^17.4.16",
     "paperclip-loader": "^17.4.16",

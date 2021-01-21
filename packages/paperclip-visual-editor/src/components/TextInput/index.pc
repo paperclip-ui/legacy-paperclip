@@ -33,9 +33,3 @@
   </style>
 </input>
 
-<div>
-  <style>
-    background: blue;
-  </style>
-  <default />
-</div>

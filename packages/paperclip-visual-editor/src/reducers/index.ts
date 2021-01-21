@@ -13,7 +13,9 @@ import {
   getFrameFromIndex,
   mergeBoxes,
   getActiveFrameIndex,
-  isExpanded
+  isExpanded,
+  getPreviewChildren,
+  getCurrentPreviewFrameBoxes
 } from "../state";
 import { produce } from "immer";
 import {
@@ -99,6 +101,15 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
       state = produce(state, newState => {
+        // if centered initially but there were no frames, then the canvas never really centered
+        // so flag it do so now.
+        if (
+          state.centeredInitial &&
+          getCurrentPreviewFrameBoxes(state).length === 0
+        ) {
+          newState.centeredInitial = false;
+        }
+
         if (action.payload.kind === EngineDelegateEventKind.Error) {
           newState.currentError = action.payload;
         } else {

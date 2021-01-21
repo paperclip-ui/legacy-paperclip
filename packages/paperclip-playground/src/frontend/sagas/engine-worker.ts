@@ -8,7 +8,7 @@ import {
   contentChangesCreated,
   engineCrashed,
   engineLoaded,
-  WorkerInitialized,
+  WorkerInitialized
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
 import * as vea from "paperclip-visual-editor/src/actions";
@@ -19,7 +19,7 @@ import { EngineDelegateEvent } from "paperclip";
 import * as url from "url";
 import {
   engineDelegateChanged,
-  RedirectRequested,
+  RedirectRequested
 } from "paperclip-visual-editor/src/actions";
 import { PCSourceWriter } from "paperclip-source-writer";
 
@@ -49,7 +49,7 @@ const init = async () => {
   const onEngineInit = () => {
     _writer = new PCSourceWriter({
       engine: _engine,
-      getContent: (uri) => _appState.designMode.documentContents[uri],
+      getContent: uri => _appState.designMode.documentContents[uri]
     });
     dispatch(engineLoaded(null));
     tryOpeningCurrentFile();
@@ -81,13 +81,13 @@ const init = async () => {
   const handleVirtObjectEdited = async (action: vea.PCVirtObjectEdited) => {
     dispatch(
       contentChangesCreated({
-        changes: await _writer.getContentChanges(action.payload.mutations),
+        changes: await _writer.getContentChanges(action.payload.mutations)
       })
     );
   };
 
   const handleContentChanges = ({
-    payload: { changes },
+    payload: { changes }
   }: ContentChangesCreated) => {
     for (const uri in changes) {
       _engine.updateVirtualFileContent(
@@ -96,6 +96,8 @@ const init = async () => {
       );
     }
   };
+
+  const handleProjectLoaded = () => {};
 
   const handleRedirect = (action: RedirectRequested) => {
     tryOpeningCurrentFile();
@@ -129,8 +131,8 @@ const init = async () => {
         },
         resolveFile(fromPath: string, toPath: string) {
           return url.resolve(fromPath, toPath);
-        },
-      },
+        }
+      }
     },
     onCrash
   );
