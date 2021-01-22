@@ -218,6 +218,9 @@ I also feel like the direction that front-end development needs to head is close
 
 - **Super easy visual regression coverage** - just plug in Percy, point to Paperclip files, and you're good to go.
 
+### Documentation
+
+🙅‍♂️ Private until I do more user testing. [Let me know if you'd like to help out!](https://forms.gle/FATDYcAVUdRVJvQaA)
 
 <!-- Hidden until public beta -->
 <!--# Resources
@@ -233,6 +236,7 @@ I also feel like the direction that front-end development needs to head is close
   - [Paperclip website](./packages/paperclip-website)
   - [Todo MVC](./examples/react-todomvc)
 -->
+
 
 ### Roadmap
 
