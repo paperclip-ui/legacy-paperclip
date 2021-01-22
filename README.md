@@ -10,7 +10,14 @@
 -----
 
 
-Paperclip is DSL that provides a hybrid approach to building user interfaces that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. Here's an example UI file:
+Paperclip is DSL that provides a hybrid approach to building user interfaces that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. 
+
+Here's a demo if Paperclip in action:
+
+![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif)
+
+
+Here's the UI file for the clip above:
 
 ```html
 
@@ -149,11 +156,6 @@ Paperclip is DSL that provides a hybrid approach to building user interfaces tha
 -->
 <Preview showSignup />
 ```
-
-
-Here's the code above being created within Paperclip's designer:
-
-https://user-images.githubusercontent.com/757408/105437207-95551700-5c9b-11eb-8d45-73d088d7b5af.mp4
 
 Here's how you integrate Paperclip into your code:
 
