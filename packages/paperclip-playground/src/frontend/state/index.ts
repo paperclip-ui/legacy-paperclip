@@ -2,6 +2,8 @@ import * as ve from "paperclip-designer/src/state";
 import { memoize } from "paperclip-utils";
 import * as qs from "querystring";
 
+import Automerge from "automerge";
+import { mapValues } from "lodash";
 const ENTRY_URI = "file:///main.pc";
 
 export type User = {
@@ -46,6 +48,16 @@ const getPathnameRegexp = memoize((test: string) => {
   return new RegExp(`^${test}/*$`.replace(/:([^\/]+)/, "(?<$1>[^/]+)"));
 });
 
+/**
+ * State that's also recorded with CRDTs -- needs
+ * to be synced with undo / redo stack
+ */
+
+export type WorkerState = {
+  currentFileUri: string;
+  documents: Record<string, string>;
+};
+
 export type AppState = {
   user?: User;
   currentProject?: Result<Project>;
@@ -53,25 +65,23 @@ export type AppState = {
     pathname: string;
     query: any;
   };
+  currentCodeFileUri: string;
   allProjects?: Result<Project[]>;
   currentProjectFiles?: Result<ProjectFile[]>;
   saving?: Result<boolean>;
   loadingUserSession?: boolean;
-  currentCodeFileUri: string;
   hasUnsavedChanges?: boolean;
   compact?: boolean;
   slim?: boolean;
   apiHost: string;
 } & ve.AppState;
 
-const ENTRY_SOURCE = ``;
-
 export const INITIAL_STATE: AppState = {
   ...ve.INITIAL_STATE,
   shared: {
-    documents: {
-      [ENTRY_URI]: ENTRY_SOURCE
-    }
+    documents: Automerge.from({
+      [ENTRY_URI]: new Automerge.Text("")
+    })
   },
   designer: {
     ...ve.INITIAL_STATE.designer,
@@ -91,6 +101,7 @@ export const INITIAL_STATE: AppState = {
       children: []
     }
   },
+  currentCodeFileUri: ENTRY_URI,
   playgroundUi:
     typeof window !== "undefined"
       ? {
@@ -101,11 +112,17 @@ export const INITIAL_STATE: AppState = {
           pathname: "/",
           query: {}
         },
-  currentCodeFileUri: ENTRY_URI,
   compact: false,
   apiHost: process.env.API_HOST,
   slim: false
 };
 export const getNewFilePath = (name: string) => {
   return "file:///" + name.replace(".pc", "") + ".pc";
+};
+
+export const getWorkerState = (state: AppState): WorkerState => {
+  return {
+    currentFileUri: state.designer.ui.query.currentFileUri,
+    documents: mapValues(state.shared.documents, value => value.toString())
+  };
 };

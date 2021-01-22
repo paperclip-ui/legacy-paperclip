@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import { AppStoreContext } from "../../contexts";
-
+import Automerge from "automerge";
 import { reducer } from "../../reducers";
 import { init } from "../../sagas";
 import { INITIAL_STATE, AppState } from "../../state";
+import { mapValues } from "lodash";
 
 type InitOptions = Partial<{
   compact: boolean;
@@ -36,7 +37,11 @@ export const createAppStore = (
     {
       ...INITIAL_STATE,
       shared: {
-        documents: documents || INITIAL_STATE.shared.documents
+        documents: documents
+          ? Automerge.from(
+              mapValues(documents, text => new Automerge.Text(text))
+            )
+          : INITIAL_STATE.shared.documents
       },
       slim: slim != null ? slim : INITIAL_STATE.slim,
       compact: compact || INITIAL_STATE.compact,
@@ -53,7 +58,7 @@ export const createAppStore = (
         }
       },
       currentCodeFileUri: mainUri
-    },
+    } as AppState,
     applyMiddleware(sagaMiddleware)
   );
   sagaMiddleware.run(init, mount);

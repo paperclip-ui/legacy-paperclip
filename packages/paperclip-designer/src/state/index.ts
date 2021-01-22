@@ -1,5 +1,6 @@
 import produce from "immer";
 import { isEqual, pick, pickBy } from "lodash";
+import Automerge from "automerge";
 import {
   computeVirtJSObject,
   memoize,
@@ -77,10 +78,10 @@ export type UIState = {
   pathname: string;
   query: Partial<{
     currentFileUri: string;
-    embedded: boolean;
     id: string;
     expanded: boolean;
     frame: number;
+    embedded: boolean;
   }>;
 };
 
@@ -93,7 +94,7 @@ export type Project = {
 
 // state that can be synchronized between documents
 export type SharedState = {
-  documents: Record<string, string>;
+  documents: Record<string, Automerge.Text>;
 };
 
 export type DesignerState = {
@@ -130,6 +131,7 @@ export type AppState = {
   // state that can be hooked up with CRDTs
   shared: SharedState;
   designer: DesignerState;
+  compact?: boolean;
 };
 
 export enum EnvOptionKind {
@@ -153,7 +155,7 @@ export type AvailableBrowser = {
 
 export const INITIAL_STATE: AppState = {
   shared: {
-    documents: {}
+    documents: Automerge.from({})
   },
   designer: {
     readonly: false,
@@ -421,6 +423,27 @@ export const maybeCenterCanvas = (state: AppState, force?: boolean) => {
     return state;
   }
   return state;
+};
+
+export const updateShared = (state: AppState, shared: Partial<SharedState>) => {
+  return {
+    ...state,
+    shared: {
+      ...state.shared,
+      ...shared
+    }
+  };
+};
+
+export const editSharedDocuments = (
+  state: AppState,
+  edit: (
+    documents: Record<string, Automerge.Text>
+  ) => Record<string, Automerge.Text>
+) => {
+  return updateShared(state, {
+    documents: edit(state.shared.documents)
+  });
 };
 
 // https://github.com/crcn/tandem/blob/10.0.0/packages/front-end/src/state/index.ts#L1304

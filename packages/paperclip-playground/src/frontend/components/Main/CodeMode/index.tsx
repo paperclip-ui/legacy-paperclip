@@ -1,21 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import { ControlledEditor } from "@monaco-editor/react";
+import { globalZKeyDown, globalYKeyDown } from "paperclip-designer/src/actions";
+
+// Can't import, otherwise the react monaco editor breaks :(
+// import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+
 import * as styles from "./index.pc";
 import { Toolbar } from "./Toolbar";
 import { useAppStore } from "../../../hooks/useAppStore";
-import { codeEditorChanged } from "../../../actions";
+import { codeEditorChanged, slimCodeEditorChanged } from "../../../actions";
 import { SlimEditor } from "./Slim";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
   const { slim } = state;
-  const code = state.shared.documents[state.currentCodeFileUri];
+  const code = String(
+    state.shared.documents[state.currentCodeFileUri]
+  ).toString();
 
-  const onChange = (ev, value) => {
-    dispatch(codeEditorChanged(value));
+  const onChange = event => {
+    dispatch(codeEditorChanged(event.changes));
   };
   const editorDidMount = (_, editor) => {
     editor.getModel().updateOptions({ tabSize: 2 });
+
+    // control Z
+    editor.addCommand(2104, function() {
+      // 🙈
+      dispatch(globalZKeyDown(null) as any);
+    });
+
+    // Note that we cna't do this
+    // monacoEditor.KeyMod.CtrlCmd | monacoEditor.KeyCode.KEY_Y
+    editor.addCommand(2013, function() {
+      dispatch(globalYKeyDown(null) as any);
+    });
   };
   return (
     <styles.Container>
@@ -25,7 +44,7 @@ export const CodeMode = () => {
           <SlimEditor
             value={code}
             onChange={value => {
-              dispatch(codeEditorChanged(value));
+              dispatch(slimCodeEditorChanged(value));
             }}
           />
         ) : (

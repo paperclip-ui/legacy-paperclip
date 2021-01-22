@@ -9,6 +9,7 @@ import {
   sessionLoaded
 } from "../actions";
 import * as api from "../api";
+import { mapValues } from "lodash";
 
 export function* handleAPI() {
   yield fork(handleAccountConnected);
@@ -45,10 +46,11 @@ function* handleProjectChanges() {
 
   function* createNewProject() {
     const state: AppState = yield select();
+
     const project = yield call(
       api.createProject,
       undefined,
-      state.shared.documents,
+      mapValues(state.shared.documents, doc => doc.toString()),
       state.currentCodeFileUri
     );
     history.push(`/projects/${project.id}`);
@@ -59,8 +61,8 @@ function* handleProjectChanges() {
 
     // first handle updates
     for (const path in state.shared.documents) {
-      const newContent = state.shared.documents[path];
-      const oldContent = _lastSavedState.shared.documents[path];
+      const newContent = state.shared.documents[path].toString();
+      const oldContent = _lastSavedState.shared.documents[path].toString();
 
       if (oldContent !== newContent) {
         yield call(

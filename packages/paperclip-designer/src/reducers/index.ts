@@ -15,9 +15,12 @@ import {
   getActiveFrameIndex,
   isExpanded,
   getPreviewChildren,
-  getCurrentPreviewFrameBoxes
+  getCurrentPreviewFrameBoxes,
+  updateShared,
+  editSharedDocuments
 } from "../state";
 import { produce } from "immer";
+import Automerge from "automerge";
 import {
   Action,
   ActionType,
@@ -229,6 +232,9 @@ export default (state: AppState, action: Action) => {
       if (state.designer.resizerMoving) {
         return state;
       }
+      if (!state.designer.canvas.transform.x) {
+        return state;
+      }
       // Don't do this until deselecting can be handled properly
       const nodePath = getNodeInfoAtPoint(
         state.designer.canvas.mousePosition,
@@ -239,9 +245,14 @@ export default (state: AppState, action: Action) => {
       return selectNode(nodePath, action.payload.shiftKey, state);
     }
     case ExternalActionType.CONTENT_CHANGED: {
-      return produce(state, newState => {
-        newState.shared.documents[action.payload.fileUri] =
-          action.payload.content;
+      return updateShared(state, {
+        documents: Automerge.change(state.shared.documents, documents => {
+          documents[action.payload.fileUri] = new Automerge.Text();
+          documents[action.payload.fileUri].insertAt(
+            0,
+            ...action.payload.content.split("")
+          );
+        })
       });
     }
     case ActionType.ZOOM_INPUT_CHANGED: {
@@ -316,7 +327,7 @@ export default (state: AppState, action: Action) => {
     case ActionType.RESIZER_PATH_MOUSE_MOVED: {
       return produce(state, newState => {
         newState.designer.resizerMoving = true;
-        const frames = getSelectedFrames(newState);
+        const frames = getSelectedFrames(newState as AppState);
 
         if (!frames.length) {
           console.warn(`Trying to resize non-frame`);
@@ -349,9 +360,37 @@ export default (state: AppState, action: Action) => {
         }
       });
     }
+    case ActionType.GLOBAL_Z_KEY_DOWN: {
+      // if embedded, then we want history to be left up to IDE
+      if (state.designer.ui.query.embedded) {
+        return state;
+      }
+
+      if (!Automerge.canUndo(state.shared.documents)) {
+        return state;
+      }
+
+      return updateShared(state, {
+        documents: Automerge.undo(state.shared.documents)
+      });
+    }
+    case ActionType.GLOBAL_Y_KEY_DOWN: {
+      // if embedded, then we want history to be left up to IDE
+      if (state.designer.ui.query.embedded) {
+        return state;
+      }
+
+      if (!Automerge.canRedo(state.shared.documents)) {
+        return state;
+      }
+
+      return updateShared(state, {
+        documents: Automerge.redo(state.shared.documents)
+      });
+    }
     case ActionType.GLOBAL_H_KEY_DOWN: {
       return produce(state, newState => {
-        const frames = getSelectedFrames(newState);
+        const frames = getSelectedFrames(newState as AppState);
 
         for (
           let i = 0, { length } = newState.designer.selectedNodePaths;
@@ -374,7 +413,7 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.FRAME_TITLE_CHANGED: {
       return produce(state, newState => {
-        const frame = getFrameFromIndex(action.payload.frameIndex, newState);
+        const frame = getFrameFromIndex(action.payload.frameIndex, state);
 
         if (!frame) {
           console.warn(`Trying to resize non-frame`);

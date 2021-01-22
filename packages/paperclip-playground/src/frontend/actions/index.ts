@@ -1,7 +1,15 @@
 import * as ve from "paperclip-designer/src/actions";
-import { AppState, Project, ProjectFile, Result, User } from "../state";
+import {
+  AppState,
+  Project,
+  ProjectFile,
+  Result,
+  User,
+  WorkerState
+} from "../state";
 import { actionCreator } from "./base";
 import { ContentChange } from "paperclip-source-writer";
+import { KeyComboPressed } from "paperclip-designer/src/actions";
 
 export type BaseAction<TType extends ActionType, TPayload = undefined> = {
   type: TType;
@@ -24,6 +32,7 @@ export enum ActionType {
   LOGGED_OUT = "LOGGED_OUT",
   SESSION_LOADED = "SESSION_LOADED",
   CODE_EDITOR_TEXT_CHANGED = "CODE_EDITOR_TEXT_CHANGED",
+  SLIM_CODE_EDITOR_TEXT_CHANGED = "SLIM_CODE_EDITOR_TEXT_CHANGED",
   WORKER_INITIALIZED = "WORKER_INITIALIZED",
   APP_STATE_DIFFED = "APP_STATE_DIFFED",
   CONTENT_CHANGES_CREATED = "CONTENT_CHANGES_CREATED",
@@ -82,6 +91,12 @@ export type SavedProject = BaseAction<
   Result<boolean>
 >;
 
+type TextEditChange = {
+  rangeOffset: number;
+  rangeLength: number;
+  text: string;
+};
+
 export type EngineLoaded = BaseAction<ActionType.ENGINE_LOADED>;
 
 export type LogoutButtonClicked = BaseAction<ActionType.LOGOUT_BUTTON_CLICKED>;
@@ -91,13 +106,17 @@ export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED>;
 export type EngineCrashed = BaseAction<ActionType.ENGINE_CRASHED, Error>;
 export type CodeEditorTextChanged = BaseAction<
   ActionType.CODE_EDITOR_TEXT_CHANGED,
+  TextEditChange[]
+>;
+export type SlimEditorTextChanged = BaseAction<
+  ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED,
   string
 >;
 export type SessionLoaded = BaseAction<ActionType.SESSION_LOADED, User>;
 
 export type WorkerInitialized = BaseAction<
   ActionType.WORKER_INITIALIZED,
-  { appState: AppState }
+  { state: WorkerState }
 >;
 export type AppStateDiffed = BaseAction<
   ActionType.APP_STATE_DIFFED,
@@ -145,6 +164,9 @@ export const saveButtonClicked = actionCreator<SaveButtonClicked>(
 export const codeEditorChanged = actionCreator<CodeEditorTextChanged>(
   ActionType.CODE_EDITOR_TEXT_CHANGED
 );
+export const slimCodeEditorChanged = actionCreator<SlimEditorTextChanged>(
+  ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED
+);
 export const workerInitialized = actionCreator<WorkerInitialized>(
   ActionType.WORKER_INITIALIZED
 );
@@ -190,6 +212,7 @@ export type Action =
   | EngineLoaded
   | AccountConnected
   | SaveButtonClicked
+  | SlimEditorTextChanged
   | LoggedOut
   | SessionLoaded
   | GetProjectsRequestChanged

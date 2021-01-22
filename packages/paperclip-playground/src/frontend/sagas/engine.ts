@@ -1,6 +1,6 @@
 import { eventChannel } from "redux-saga";
 import { cancel, fork, put, select, take, takeEvery } from "redux-saga/effects";
-import { AppState } from "../state";
+import { AppState, WorkerState, getWorkerState } from "../state";
 import { EngineDelegate } from "paperclip";
 import * as path from "path";
 import { compare, applyPatch } from "fast-json-patch";
@@ -14,6 +14,7 @@ import {
   appStateDiffed,
   GetProjectFilesRequestChanged
 } from "../actions";
+
 import {
   clientConnected,
   engineDelegateChanged,
@@ -44,15 +45,14 @@ function* syncCurrentProjectWithEngine() {
 
 function* startEngine() {
   const worker = new Worker(new URL("./engine-worker.ts", import.meta.url));
-  let _state: AppState = yield select();
+  let _state: WorkerState = getWorkerState(yield select());
   const incomming = eventChannel(emit => {
     worker.onmessage = ({ data: action }: MessageEvent) => {
       emit(action);
     };
-    worker.postMessage(workerInitialized({ appState: _state }));
+    worker.postMessage(workerInitialized({ state: _state }));
     return () => {
       worker.terminate();
-      console.log("DISPOSE");
     };
   });
 
@@ -66,12 +66,15 @@ function* startEngine() {
       ActionType.CODE_EDITOR_TEXT_CHANGED,
       VEActionType.REDIRECT_REQUESTED,
       VEActionType.PC_VIRT_OBJECT_EDITED,
-      ActionType.CONTENT_CHANGES_CREATED
+      ActionType.CONTENT_CHANGES_CREATED,
+      VEActionType.GLOBAL_Z_KEY_DOWN,
+      VEActionType.GLOBAL_Y_KEY_DOWN
     ],
     function*(action) {
       const newState: AppState = yield select();
-      const ops = compare(_state, newState);
-      _state = newState;
+      const workerState: WorkerState = getWorkerState(newState);
+      const ops = compare(_state, workerState);
+      _state = workerState;
 
       if (ops.length) {
         worker.postMessage(appStateDiffed({ ops }));

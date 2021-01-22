@@ -1,9 +1,7 @@
 
 ### Immediate
 
-- CRDTs!
-  - just hook up to history for now
-  - prototype backend integration
+- make CRDTs per document
 
 - cmd + s should work
 - undo / redo (CRDTs)

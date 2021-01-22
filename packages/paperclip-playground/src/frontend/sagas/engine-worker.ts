@@ -12,7 +12,7 @@ import {
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
 import * as vea from "paperclip-designer/src/actions";
-import { AppState } from "../state";
+import { AppState, WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
 import { EngineDelegateEvent } from "paperclip";
@@ -24,7 +24,7 @@ import {
 import { PCSourceWriter } from "paperclip-source-writer";
 
 const init = async () => {
-  let _appState: AppState;
+  let _state: WorkerState;
   let _engine: EngineDelegate;
   let _writer: PCSourceWriter;
   let _currentUri: string;
@@ -37,8 +37,8 @@ const init = async () => {
     dispatch(engineCrashed(e));
   };
 
-  const handleInitialized = ({ payload: { appState } }: WorkerInitialized) => {
-    _appState = appState;
+  const handleInitialized = ({ payload: { state } }: WorkerInitialized) => {
+    _state = state;
     tryOpeningCurrentFile();
   };
 
@@ -49,7 +49,7 @@ const init = async () => {
   const onEngineInit = () => {
     _writer = new PCSourceWriter({
       engine: _engine,
-      getContent: uri => _appState.shared.documents[uri]
+      getContent: uri => _state.documents[uri]
     });
     dispatch(engineLoaded(null));
     tryOpeningCurrentFile();
@@ -57,26 +57,41 @@ const init = async () => {
 
   const tryOpeningCurrentFile = () => {
     if (
-      _appState.designer.ui.query.currentFileUri &&
+      _state.currentFileUri &&
       _engine &&
-      (!_currentUri ||
-        _currentUri !== _appState.designer.ui.query.currentFileUri)
+      (!_currentUri || _currentUri !== _state.currentFileUri)
     ) {
-      _currentUri = _appState.designer.ui.query.currentFileUri;
-      _engine.open(_appState.designer.ui.query.currentFileUri);
+      _currentUri = _state.currentFileUri;
+      _engine.open(_state.currentFileUri);
     }
   };
 
   const handleAppStateDiffed = async ({ payload: { ops } }: AppStateDiffed) => {
-    _appState = applyPatch(_appState, ops, false, false).newDocument;
+    const oldState = _state;
+    _state = applyPatch(_state, ops, false, false).newDocument;
+    syncEngineDocuments(oldState);
   };
 
-  const handleCodeChange = (action: CodeEditorTextChanged) => {
-    _engine.updateVirtualFileContent(
-      _appState.currentCodeFileUri,
-      action.payload
-    );
+  const syncEngineDocuments = (oldState: WorkerState) => {
+    if (_state.documents === oldState.documents) {
+      return;
+    }
+
+    for (const uri in _state.documents) {
+      const newContent = _state.documents[uri];
+      const oldContent = oldState.documents[uri];
+      if (newContent !== oldContent) {
+        _engine.updateVirtualFileContent(uri, newContent);
+      }
+    }
   };
+
+  // const handleCodeChange = (action: CodeEditorTextChanged) => {
+  //   _engine.updateVirtualFileContent(
+  //     _appState.currentCodeFileUri,
+  //     action.payload
+  //   );
+  // };
 
   const handleVirtObjectEdited = async (action: vea.PCVirtObjectEdited) => {
     dispatch(
@@ -86,13 +101,13 @@ const init = async () => {
     );
   };
 
-  const handleContentChanges = ({
-    payload: { changes }
-  }: ContentChangesCreated) => {
-    for (const uri in changes) {
-      _engine.updateVirtualFileContent(uri, _appState.shared.documents[uri]);
-    }
-  };
+  // const handleContentChanges = ({
+  //   payload: { changes }
+  // }: ContentChangesCreated) => {
+  //   for (const uri in changes) {
+  //     _engine.updateVirtualFileContent(uri, _state.documents[uri]);
+  //   }
+  // };
 
   const handleProjectLoaded = () => {};
 
@@ -106,14 +121,10 @@ const init = async () => {
         return handleInitialized(action);
       case ActionType.APP_STATE_DIFFED:
         return handleAppStateDiffed(action);
-      case ActionType.CODE_EDITOR_TEXT_CHANGED:
-        return handleCodeChange(action);
       case vea.ActionType.REDIRECT_REQUESTED:
         return handleRedirect(action);
       case vea.ActionType.PC_VIRT_OBJECT_EDITED:
         return handleVirtObjectEdited(action);
-      case ActionType.CONTENT_CHANGES_CREATED:
-        return handleContentChanges(action);
     }
   };
 
@@ -121,10 +132,10 @@ const init = async () => {
     {
       io: {
         readFile(uri) {
-          return _appState.shared.documents[uri];
+          return _state.documents[uri];
         },
         fileExists(uri: string) {
-          return _appState.shared.documents[uri] != null;
+          return _state.documents[uri] != null;
         },
         resolveFile(fromPath: string, toPath: string) {
           return url.resolve(fromPath, toPath);

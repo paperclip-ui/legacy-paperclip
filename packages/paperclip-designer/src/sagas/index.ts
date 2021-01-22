@@ -256,8 +256,13 @@ function* handleCanvasMouseUp(
 }
 
 function* handleKeyCommands(mount: HTMLElement) {
+  const state: AppState = yield select();
+
+  // if compact, then only capture events on mount, othwewise we'll expect
+  // the designer to take the whole page.
+  const keyBindingMount = state.compact ? mount : document;
   const chan = eventChannel(emit => {
-    const handler = new Mousetrap(mount);
+    const handler = new Mousetrap(keyBindingMount);
     handler.bind("esc", e => {
       if (isInput(e.target)) {
         return;
@@ -373,7 +378,7 @@ function* handleCopy(getState: AppStateSelector) {
       const end = frame.source.location.end;
 
       buffer.push(
-        state.shared.documents[frame.source.uri].slice(start, end),
+        state.shared.documents[frame.source.uri].toString().slice(start, end),
         "\n"
       );
     }
@@ -458,9 +463,7 @@ function* handleLocation(getState: AppStateSelector) {
   });
 
   yield takeEvery(chan, handleLocationChanged);
-  yield takeEvery(ActionType.REDIRECT_REQUESTED, function*(
-    action: RedirectRequested
-  ) {
+  yield takeEvery(ActionType.REDIRECT_REQUESTED, function*() {
     const state = yield select(getState);
     if (!state.designer.syncLocationWithUI) {
       return;
