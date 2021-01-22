@@ -12,7 +12,7 @@
 
 Paperclip is DSL that provides a hybrid approach to building UIs that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components, and compile directly into React code (more targets to come). 
 
-Here's a demo if Paperclip in action:
+Here's a demo of Paperclip in action:
 
 ![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif)
 
@@ -187,15 +187,10 @@ export const LoginPage = () => {
 
 #### Why did you build this?
 
-I felt there was a better approach to building UIs that involved an experience that's closer to what
-designers have, but without losing the fidelity that engineers need. A _purely_ visual design doesn't quite cut it for engineers,
-and the current state of front-end tooling kind of sucks. So, I built something in-between that I think gets the job done nicely. 👌
 
-Why isn't HMR enough? It's not really a canvas where you can draw & see your result immediately, and I find the lag time to be an absolute concentration killer, especially as projects grow in scale - HMR also gets slower, _much_ slower. 
+I usually split my UI development into two stages: first the HTML & CSS, then wire that up with code. The result of this is a separation between purely visual components & components with logic. Since the visual components don't have any logic in them, I felt that there could be an approach to building them that's faster, safer, more maintainable, and more precise.
 
-Paperclip's engine is built on top of Rust and designed to handle large projects, so you don't ever have to wait around your previews to refresh - it just happens in realtime (as I think it should). It's actually much more of a joy to work with, and I'm finding myself saying "yes" more to designers when they ask for features, instead of cutting corners.
-
-Visual regression testing, style maintainability, and cross-browser testing are a few other areas I wanted to make easier, so that's all baked into Paperclip's design as well. 
+Also, I feel like the direction that front-end development needs to head is closer to a designer-like experience. However, I don't think that a _purely_ visual editor cuts it because of the precision needed for creating UIs. So, I built something in-between code & design that I think gets the job done nicely 👌. 
 
 
 #### What are some features of the DSL?
