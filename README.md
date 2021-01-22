@@ -49,7 +49,6 @@ Here's the UI file for the clip above:
   </style>
 </input>
 
-
 <!--
   @frame { visible: false }
 -->
@@ -60,7 +59,6 @@ Here's the UI file for the clip above:
   </style>
   {children}
 </div>
-
 
 <!--
   @frame { visible: false }
@@ -78,7 +76,6 @@ Here's the UI file for the clip above:
   </style>
   {children}
 </button>
-
 
 <!--
   @frame { visible: false }
@@ -102,7 +99,6 @@ Here's the UI file for the clip above:
   {children}
 </div>
 
-
 <!--
   @frame { visible: false, title: "Auth / login", width: 586, height: 446, x: 3, y: 141 }
 -->
@@ -112,15 +108,10 @@ Here's the UI file for the clip above:
     height: 100vh;
   </style>
   
-
   {showLogin && <AuthModal>
     <FormTitle>Log in</FormTitle>
-    <TextInput placeholder="Username">
-
-    </TextInput>
-    <TextInput placeholder="Password">
-
-    </TextInput>
+    <TextInput placeholder="Username" />
+    <TextInput placeholder="Password" />
     <FormFooter>
       <Button>Sign up</Button>
     </FormFooter>
@@ -128,31 +119,20 @@ Here's the UI file for the clip above:
 
   {showSignup && <AuthModal>
     <FormTitle>Sign up</FormTitle>
-    <TextInput placeholder="Full Name">
-
-    </TextInput>
-    <TextInput placeholder="Username">
-
-    </TextInput>
-    <TextInput placeholder="Password">
-
-    </TextInput>
-    <TextInput placeholder="Repeat Password">
-
-    </TextInput>
+    <TextInput placeholder="Full Name" />
+    <TextInput placeholder="Username" />
+    <TextInput placeholder="Password" />
+    <TextInput placeholder="Repeat Password" />
     <FormFooter>
       <Button>Sign up</Button>
     </FormFooter>
   </AuthModal>}
 </div>
 
-
-
 <!--
   @frame { title: "Auth / Login", width: 501, height: 427, x: 0, y: 0 }
 -->
 <Preview showLogin />
-
 
 <!--
   @frame { title: "Auth / Sign Up", width: 501, height: 561, x: 581, y: 1 }
