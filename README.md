@@ -201,6 +201,7 @@ I also feel like the direction that front-end development needs to head is close
 - Abiltiy to define primitive components.
 - Sass-like syntax: nested selectors, mixins, etc.
 - **Generalized for multiple compile targets**. Currently works with React, but other languages & frameworks are planned.
+- **Compiles to strongly typed code**. Currently it outputs typed definition files for React components.
 - **No lock-in**. Swap in and out any similar libraries (styled-components, emotion, etc)
 
 ### What can you do with the designer?
