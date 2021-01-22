@@ -13,8 +13,146 @@ Paperclip is a hybrid approach to building user interfaces that allows you to de
 ![alt button demo](assets/button-demo.gif)
 
 
+Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. Here's an example of what it looks like:
 
-### Features
+```html
+
+<!--
+  @frame { visible: false }
+-->
+<h4 export component as="FormTitle">
+  
+  <!-- Styles defined within elements are scoped, and don't need selectors -->  
+  <style>
+    margin: 0px;
+  </style>
+  {children}
+</h4>
+
+<!--
+  @frame { visible: false }
+-->
+<input export component as="TextInput" {placeholder?} {type}>
+  <style>
+    border: 1px solid rgb(156, 156, 156);
+    padding: 8px 16px;
+    border-radius: 2px;
+  </style>
+</input>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="FormFooter">  
+  <style>
+    display: flex;
+    justify-content: flex-end;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<button export component as="Button">
+  <style>
+    --button-bg-color: rgb(116, 176, 255);
+    background: var(--button-bg-color);
+    color: rgb(46, 85, 136);
+    padding: 8px 16px;
+    border-radius: 2px;
+    border: 2px solid var(--button-bg-color);
+  </style>
+  {children}
+</button>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Modal">
+  <style>
+    display: grid;
+    grid-row-gap: 16px;
+    max-width: 250px;
+    margin: 0px auto;
+
+    // rule of thirds
+    top: 30%;
+    padding: 32px;
+    border-radius: 4px;
+    color: rgb(97, 97, 97);
+    background: rgb(238, 238, 238);
+    position: relative;
+    border: 1px solid rgb(194, 194, 194);
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, title: "Auth / login", width: 586, height: 446, x: 3, y: 141 }
+-->
+<div export component as="Preview">
+  <style>
+    font-family: sans-serif;
+    height: 100vh;
+  </style>
+  
+
+  {showLogin && <Modal>
+    <FormTitle>Log in</FormTitle>
+    <TextInput placeholder="Username">
+
+    </TextInput>
+    <TextInput placeholder="Password">
+
+    </TextInput>
+    <FormFooter>
+      <Button>Sign up</Button>
+    </FormFooter>
+  </Modal>}
+
+  {showSignup && <Modal>
+    <FormTitle>Sign up</FormTitle>
+    <TextInput placeholder="Full Name">
+
+    </TextInput>
+    <TextInput placeholder="Username">
+
+    </TextInput>
+    <TextInput placeholder="Password">
+
+    </TextInput>
+    <TextInput placeholder="Repeat Password">
+
+    </TextInput>
+    <FormFooter>
+      <Button>Sign up</Button>
+    </FormFooter>
+  </Modal>}
+</div>
+
+
+
+<!--
+  @frame { title: "Auth / Login", width: 501, height: 427, x: 0, y: 0 }
+-->
+<Preview showLogin />
+
+
+<!--
+  @frame { title: "Auth / Sign Up", width: 501, height: 561, x: 581, y: 1 }
+-->
+<Preview showSignup />
+```
+
+
+
+
+### Big Features
 
 - **No global CSS** - Paperclip removes global CSS in favor of scoped styles.
 - **Realtime visual editing** - Open up the paperclip dev server and see your UIs update in realtime _as you're writing code_.
