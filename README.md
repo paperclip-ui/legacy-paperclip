@@ -246,6 +246,9 @@ Here's a peek at what's planned for Paperclip:
 - Extension for Atom, Sublime, and other editors
 - More visual editing tools so that you don't have to write code. Possibly more designer-friendly tooling.
 - A11Y & other linting stools
+- Zeplin integration
+- Figma export directly to Paperclip UIs
+
 
 # Documentation
 
