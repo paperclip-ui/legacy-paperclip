@@ -10,7 +10,7 @@
 -----
 
 
-Paperclip is DSL that provides a hybrid approach to building UIs that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components, and compile directly into React code (more targets to come). 
+Paperclip is a DSL that provides a hybrid approach to building UIs that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. It also compile directly into React code (more targets to come). 
 
 Here's a demo of Paperclip in action:
 
@@ -20,6 +20,8 @@ Here's a demo of Paperclip in action:
 Here's the UI file for the clip above:
 
 ```html
+
+<!-- @frame is like a doc-comment & attaches metadata about your elements for the designer & other visual tooling. -->
 
 <!--
   @frame { visible: false }
@@ -188,35 +190,31 @@ export const LoginPage = () => {
 #### Why did you build this?
 
 
-I usually split my UI development into two stages: first the HTML & CSS, then wire that up with code. The result of this is a separation between purely visual components & components with logic. Since the visual components don't have any logic in them, I felt that there could be an approach to building them that's faster, safer, more maintainable, and more precise.
+I usually split my UI development into two stages: first the HTML & CSS, then wire that up with code. The result of this is a separation between purely visual components & components with logic. Since the visual components don't have any logic in them, I felt that there could be a better approach to building them that's faster, safer, more maintainable, and overall makes me feel like I'm building cleaner & more precise UIs.
 
 Also, I feel like the direction that front-end development needs to head is closer to a designer-like experience. However, I don't think that a _purely_ visual editor cuts it because of the precision needed for creating UIs. So, I built something in-between code & design that I think gets the job done nicely 👌.  
 
 #### What are some features of the DSL?
 
-- No global CSS - everything's explicit so you never run into leaky styles.
+- **No global CSS** - everything's explicit so you never run into leaky styles.
 - Sass-like syntax: nested selectors, mixins, etc.
-- Generalized for multiple compile targets. Currently works with React, but other languages & frameworks are planned.
-- No lock-in. Swap in and out any similar libraries (styled-components, emotion, etc)
+- **Generalized for multiple compile targets**. Currently works with React, but other languages & frameworks are planned.
+- **No lock-in**. Swap in and out any similar libraries (styled-components, emotion, etc)
 
 ### What can you do with the designer?
 
+- Figma-like canvas that you can zoom in and out of.
 - Measure between elements just like Figma.
 - Meta + select visual elements to reveal source code.
-- Create different sized frames for responsive testing.
+- **Create different sized frames for responsive testing.**
 - Share your workspace with others & for cross-browser testing.
-- Browserstack integration - launch instance directly from designer.
+- **Browserstack integration** - launch instance directly from designer.
 - Grid view of all of your project UIs so that you can visually find what you're looking for.
-
-### What does the IDE extension come equipt with?
-
-- CSS fixings: auto-complete, color pickers, and more.
-- meta + click elements to reveal source code.
-- realtime updates between the designer & code.
+- **VS Code integration - open the designer directly alongside your code editor.**
 
 ### What are some other neat Paperclip features?
 
-- Super easy visual regression coverage - just plug in Percy, point to Paperclip files, and you're good to go.
+- **Super easy visual regression coverage** - just plug in Percy, point to Paperclip files, and you're good to go.
 
 
 <!-- Hidden until public beta -->
@@ -234,13 +232,11 @@ Also, I feel like the direction that front-end development needs to head is clos
   - [Todo MVC](./examples/react-todomvc)
 -->
 
-# Roadmap
+### Roadmap
 
 Here's a peek at what's planned for Paperclip:
 
 - Multiple compiler targets so that you can re-use your Paperclip UIs in different languages & frameworks
 - Extension for Atom, Sublime, and other editors
-- Storybook integration
 - More visual editing tools so that you don't have to write code. Possibly more designer-friendly tooling.
 - A11Y & other linting stools
-- Code splitting so that you don't need to include all of your CSS into one bundle
