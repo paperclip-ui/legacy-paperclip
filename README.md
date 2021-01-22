@@ -9,10 +9,6 @@ Paperclip is a hybrid approach to building user interfaces that allows you to de
 
 **⚠️ Right now I'm polishing up this project, I'm looking for help on testing & feedback. [Please send me a message if you're interested!](https://forms.gle/FATDYcAVUdRVJvQaA)**
 
-
-![alt button demo](assets/button-demo.gif)
-
-
 Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. Here's an example of what it looks like:
 
 ```html
@@ -32,6 +28,8 @@ Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just
 <!--
   @frame { visible: false }
 -->
+
+<!-- Note this would typically be defined in a separate file & imported into this doc -->
 <input export component as="TextInput" {placeholder?} {type}>
   <style>
     border: 1px solid rgb(156, 156, 156);
@@ -56,6 +54,8 @@ Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just
 <!--
   @frame { visible: false }
 -->
+
+<!-- This typically wouldn't be defined here -->
 <button export component as="Button">
   <style>
     --button-bg-color: rgb(116, 176, 255);
@@ -72,7 +72,7 @@ Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just
 <!--
   @frame { visible: false }
 -->
-<div export component as="Modal">
+<div export component as="AuthModal">
   <style>
     display: grid;
     grid-row-gap: 16px;
@@ -102,7 +102,7 @@ Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just
   </style>
   
 
-  {showLogin && <Modal>
+  {showLogin && <AuthModal>
     <FormTitle>Log in</FormTitle>
     <TextInput placeholder="Username">
 
@@ -113,9 +113,9 @@ Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just
     <FormFooter>
       <Button>Sign up</Button>
     </FormFooter>
-  </Modal>}
+  </AuthModal>}
 
-  {showSignup && <Modal>
+  {showSignup && <AuthModal>
     <FormTitle>Sign up</FormTitle>
     <TextInput placeholder="Full Name">
 
@@ -132,7 +132,7 @@ Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just
     <FormFooter>
       <Button>Sign up</Button>
     </FormFooter>
-  </Modal>}
+  </AuthModal>}
 </div>
 
 
@@ -150,21 +150,63 @@ Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just
 ```
 
 
+Here's the code above being created within Paperclip's designer:
 
 
-### Big Features
+Here's how you integrate Paperclip into your code:
 
-- **No global CSS** - Paperclip removes global CSS in favor of scoped styles.
-- **Realtime visual editing** - Open up the paperclip dev server and see your UIs update in realtime _as you're writing code_.
-- **Visual regression testing** - All Paperclip UI files are automatically covered for visual regression testing.
-- **Browserstack integration** - launch any UI in Browserstack, directly from Paperclip.
-- **No lock-in** - You can easily move away from Paperclip if you want to. I'd even wager that it's faster to build UIs in Paperclip _first_, then translate to something else. 
-- **compiles to plain code** - Just import `*.pc` files into your app and use them like render functions.
-- **No runtime libraries** - Paperclip comes with a CLI tool and webpack loader that compiles Paperclip UIs into plain code.
-- **SASS-like syntax** - Paperclip supports some sass-like features such as mixins, & nested rules. 
-- **Rich VS Code experience** - Intellisense, color pickers, autocomplete, and more.
-- **Zeplin integration** - (Experimental) sync design tokens to your project & use them in Paperclip UIs.
-- **Birds-eye view** - see of your UIs
+```typescript
+import React from "react";
+import * as styles from "./auth.pc";
+import { TextInput } from "@design-system/components/TextInput";
+import { Button } from "@design-system/components/Button";
+
+export const LoginPage = () => {
+
+  const { onSubmit, usernameInputProps, passwordInputProps } = useLogin();
+  const userNameProps = useTextInput();
+
+  return <form onSubmit={onSubmit}>
+    <auth.Modal>
+      <auth.AuthModal> 
+        <auth.FormTitle>Welcome back!</auth.FormTitle>
+        <TextInput type="text" {...usernameInputProps} />
+        <TextInput type="password" {...passwordInputProps} />
+        <auth.FormFooter>
+          <Button>Log in</Button>
+        </auth.FormFooter>
+      </auth.AuthModal>
+    </auth.Modal>
+  </form>;
+};
+```
+
+
+#### What are some features of the DSL?
+
+- No global CSS - everything's explicit so you never run into leaky styles.
+- Sass-like syntax: nested selectors, mixins, etc.
+- Generalized for multiple compile targets. Currently works with React, but other languages & frameworks are planned.
+- No lock-in. Swap in and out any similar libraries (styled-components, emotion, etc)
+
+### What else can you do with the designer?
+
+- Measure between elements just like Figma
+- Meta + select visual elements to reveal source code
+- Create different sized frames for responsive testing
+- Share your workspace with others & for cross-browser testing
+- Browserstack integration - launch instance directly from designe
+- Grid view of all of your project UIs so that you can visually find what you're looking for
+
+### What does the IDE extension come equipt with?
+
+- CSS fixings: auto-complete, color pickers, and more
+- meta + click elements to reveal source code
+- realtime updates between the designer & code.
+
+### What are some other neat Paperclip features?
+
+- Super easy visual regression coverage - just plug in Percy, point to Paperclip files, and you're good to go.
 
 <!-- Hidden until public beta -->
 <!--# Resources
