@@ -204,6 +204,7 @@ I also feel like the direction that front-end development needs to head is close
 - **Generalized for multiple compile targets**. Currently works with React, but other languages & frameworks are planned.
 - **Compiles to strongly typed code**. Currently it outputs typed definition files for React components.
 - **No lock-in**. Swap in and out any similar libraries (styled-components, emotion, etc)
+- **Easy integration with third-party CSS like Tailwind, and Bootstrap. They're all kept scoped too!**
 
 ### What can you do with the designer?
 
