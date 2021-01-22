@@ -1,7 +1,7 @@
 {
   "name": "jest-paperclip",
   "version": "17.4.22",
-  "description": "",
+  "description": "Jest Paperclip plugin",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",

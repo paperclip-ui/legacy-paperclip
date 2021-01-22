@@ -15,7 +15,7 @@
     "live",
     "template"
   ],
-  "description": "Use plain HTML & CSS to build web UIs visually",
+  "description": "IDE extension for Paperclip",
   "homepage": "http://paperclip.dev",
   "icon": "assets/logo.png",
   "repository": {

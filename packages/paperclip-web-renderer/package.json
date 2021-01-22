@@ -1,7 +1,7 @@
 {
   "name": "paperclip-web-renderer",
   "version": "17.4.22",
-  "description": "My webpack project",
+  "description": "Internal web renderer for Paperclip designer",
   "main": "index.js",
   "scripts": {
     "test": "mocha ./lib/test --timeout=5000",

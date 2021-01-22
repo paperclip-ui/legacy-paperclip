@@ -1,7 +1,7 @@
 {
   "name": "paperclip-compiler-react",
   "version": "17.4.22",
-  "description": "",
+  "description": "React compiler for Paperclip",
   "main": "index.js",
   "typings": "index.d.ts",
   "directories": {

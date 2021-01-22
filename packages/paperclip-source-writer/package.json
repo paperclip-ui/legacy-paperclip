@@ -1,7 +1,7 @@
 {
   "name": "paperclip-source-writer",
   "version": "17.4.22",
-  "description": "",
+  "description": "Internal util for writing source code from the designer",
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",

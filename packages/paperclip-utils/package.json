@@ -1,7 +1,7 @@
 {
   "name": "paperclip-utils",
   "version": "17.4.22",
-  "description": "- real-time editing. Biggest priority is to have a bundler that  - Interoperability. Paperclip should work with any web framework.  - Type safety.  - Visually editable.",
+  "description": "Internal utils for Paperclip",
   "main": "index.js",
   "scripts": {
     "build": "tsc",

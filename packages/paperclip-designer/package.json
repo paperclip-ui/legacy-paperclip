@@ -1,7 +1,7 @@
 {
   "name": "paperclip-designer",
   "version": "17.4.22",
-  "description": "",
+  "description": "Visual designer for Paperclip files",
   "main": "lib/index.js",
   "scripts": {
     "build": "yarn build:definitions && tsc && webpack",

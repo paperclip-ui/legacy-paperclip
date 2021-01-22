@@ -1,7 +1,7 @@
 {
   "name": "paperclip-cli-utils",
   "version": "17.4.22",
-  "description": "CLI util for Paperclip",
+  "description": "CLI utils for Paperclip",
   "main": "lib/index.js",
   "bin": {
     "paperclip": "./bin/paperclip"
