@@ -10,7 +10,7 @@
 -----
 
 
-Paperclip is DSL that provides a hybrid approach to building UIs that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components, and compile directly into React code (more targets to come). No runtime needed.
+Paperclip is DSL that provides a hybrid approach to building UIs that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components, and compile directly into React code (more targets to come). No runtime. 🙌
 
 Here's a demo if Paperclip in action:
 
