@@ -171,16 +171,16 @@ export const LoginPage = () => {
   const userNameProps = useTextInput();
 
   return <form onSubmit={onSubmit}>
-    <auth.Modal>
-      <auth.AuthModal> 
-        <auth.FormTitle>Welcome back!</auth.FormTitle>
+    <styles.Modal>
+      <styles.AuthModal> 
+        <styles.FormTitle>Welcome back!</auth.FormTitle>
         <TextInput type="text" {...usernameInputProps} />
         <TextInput type="password" {...passwordInputProps} />
-        <auth.FormFooter>
+        <styles.FormFooter>
           <Button>Log in</Button>
-        </auth.FormFooter>
-      </auth.AuthModal>
-    </auth.Modal>
+        </styles.FormFooter>
+      </styles.AuthModal>
+    </styles.Modal>
   </form>;
 };
 ```
@@ -193,24 +193,25 @@ export const LoginPage = () => {
 - Generalized for multiple compile targets. Currently works with React, but other languages & frameworks are planned.
 - No lock-in. Swap in and out any similar libraries (styled-components, emotion, etc)
 
-### What else can you do with the designer?
+### What can you do with the designer?
 
-- Measure between elements just like Figma
-- Meta + select visual elements to reveal source code
-- Create different sized frames for responsive testing
-- Share your workspace with others & for cross-browser testing
-- Browserstack integration - launch instance directly from designe
-- Grid view of all of your project UIs so that you can visually find what you're looking for
+- Measure between elements just like Figma.
+- Meta + select visual elements to reveal source code.
+- Create different sized frames for responsive testing.
+- Share your workspace with others & for cross-browser testing.
+- Browserstack integration - launch instance directly from designer.
+- Grid view of all of your project UIs so that you can visually find what you're looking for.
 
 ### What does the IDE extension come equipt with?
 
-- CSS fixings: auto-complete, color pickers, and more
-- meta + click elements to reveal source code
+- CSS fixings: auto-complete, color pickers, and more.
+- meta + click elements to reveal source code.
 - realtime updates between the designer & code.
 
 ### What are some other neat Paperclip features?
 
 - Super easy visual regression coverage - just plug in Percy, point to Paperclip files, and you're good to go.
+
 
 <!-- Hidden until public beta -->
 <!--# Resources
@@ -226,89 +227,6 @@ export const LoginPage = () => {
   - [Paperclip website](./packages/paperclip-website)
   - [Todo MVC](./examples/react-todomvc)
 -->
-
-# Example
-
-Here's a basic Paperclip UI file:
-
-```html
-<!-- Scoped styles here -->
-<style>
-
-  // regular selectors can be used
-  ol {
-  }
-</style>
-
-<!-- Components exported to code -->
-
-<ol export component as="List">
-
-  <!-- you can also scope styles to elements like this -->
-  <style>
-
-    // element styles don't need selectors, you can just define them like so:
-    padding-left: 1em;
-    font-family: Open Sans;
-  </style>
-  {children}
-</ol>
-
-<li export component as="ListItem">
-  <style>
-    margin-top: 6px;
-  </style>
-  {children}
-</li>
-
-<!-- Preview of UI -->
-
-<List>
-  <ListItem>Something</ListItem>
-  <ListItem>Something</ListItem>
-  <ListItem>Something</ListItem>
-</List>
-```
-
-☝🏻 Here's how you can import this file in React code:
-
-```jsx
-import * as styles from "./styles.pc";
-
-function GroceryList() {
-
-  const groceries = [
-    "Milk 🥛", 
-    "Water 💧", 
-    "Taco seasoning 🌮"
-  ];
-
-  return <styles.List>
-    {
-      groceries.map(item => (
-        <styles.ListItem>{item}</styles.ListItem>;
-      ))
-    }
-  </styles.List>;  
-}
-```
-
-<!-- ## Is this right for you?
-
-The biggest questions you probably have about this library are:
-
-- How's this approach better then what I'm used to?
-- Is this project mature & validated?
-- How often is this library being maintained?
-
-#### How's this approach better then what I'm used to?
-
-Mostly speed, safety, and maintainability. 
-
-Speed-wise, y
-
-- Is this project mature & validated? -->
-
 
 # Roadmap
 
