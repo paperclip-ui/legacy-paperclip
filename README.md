@@ -3,11 +3,14 @@
 
 <br />
 
-# <img src="assets/logo.png" width="230">
+<img src="assets/logo.png" width="230">
+
+**⚠️ Right now I'm polishing up this project, I'm looking for help on testing & feedback. [Please send me a message if you're interested!](https://forms.gle/FATDYcAVUdRVJvQaA)**
+-----
+
 
 Paperclip is DSL that provides a hybrid approach to building user interfaces that allows you to design & code in parallel.
 
-**⚠️ Right now I'm polishing up this project, I'm looking for help on testing & feedback. [Please send me a message if you're interested!](https://forms.gle/FATDYcAVUdRVJvQaA)**
 
 Paperclip focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. Here's an example UI file:
 
