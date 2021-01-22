@@ -1,6 +1,7 @@
 import { AppState } from "../state";
 import { call, fork, put, select, takeEvery } from "redux-saga/effects";
 import history from "paperclip-designer/src/dom-history";
+import * as vea from "paperclip-designer/src/actions";
 import {
   AccountConnected,
   ActionType,
@@ -76,7 +77,7 @@ function* handleProjectChanges() {
 
     // next, handle deletes
     for (const path in _lastSavedState.shared.documents) {
-      const newContent = state.shared.documents[path];
+      const newContent = state.shared.documents[path].toString();
 
       if (newContent == null) {
         yield call(api.deleteProjectFile, state.currentProject.data!.id, path);
@@ -90,18 +91,24 @@ function* handleProjectChanges() {
     _lastSavedState = yield select();
   });
 
-  yield takeEvery(ActionType.SAVE_BUTTON_CLICKED, function*() {
-    const state: AppState = yield select();
+  yield takeEvery(
+    [ActionType.SAVE_BUTTON_CLICKED, vea.ActionType.GLOBAL_SAVE_KEY_DOWN],
+    function*() {
+      const state: AppState = yield select();
+      if (!state.user) {
+        return prompt(`You need to be logged in for to save this project!`);
+      }
 
-    // create new project
-    if (!state.currentProject?.data) {
-      yield call(createNewProject);
-    } else {
-      yield call(updateExistingProject);
+      // create new project
+      if (!state.currentProject?.data) {
+        yield call(createNewProject);
+      } else {
+        yield call(updateExistingProject);
+      }
+
+      yield put(savedProject({ data: true, done: true }));
     }
-
-    yield put(savedProject({ data: true, done: true }));
-  });
+  );
 }
 
 function* loadSession() {

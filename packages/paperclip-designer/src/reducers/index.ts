@@ -413,7 +413,10 @@ export default (state: AppState, action: Action) => {
     }
     case ActionType.FRAME_TITLE_CHANGED: {
       return produce(state, newState => {
-        const frame = getFrameFromIndex(action.payload.frameIndex, state);
+        const frame = getFrameFromIndex(
+          action.payload.frameIndex,
+          newState as AppState
+        );
 
         if (!frame) {
           console.warn(`Trying to resize non-frame`);

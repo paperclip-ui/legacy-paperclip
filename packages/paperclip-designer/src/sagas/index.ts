@@ -261,6 +261,7 @@ function* handleKeyCommands(mount: HTMLElement) {
   // if compact, then only capture events on mount, othwewise we'll expect
   // the designer to take the whole page.
   const keyBindingMount = state.compact ? mount : document;
+  const embedded = state.designer.ui.query.embedded;
   const chan = eventChannel(emit => {
     const handler = new Mousetrap(keyBindingMount);
     handler.bind("esc", e => {
@@ -314,9 +315,12 @@ function* handleKeyCommands(mount: HTMLElement) {
       emit(zoomOutKeyPressed(null));
       return false;
     });
-    handler.bind("meta+s", () => {
+    handler.bind("meta+s", e => {
       emit(globalSaveKeyPress(null));
-      return false;
+      if (!embedded) {
+        e.preventDefault();
+      }
+      return !embedded;
     });
     handler.bind("meta+shift+z", () => {
       emit(globalYKeyDown(null));

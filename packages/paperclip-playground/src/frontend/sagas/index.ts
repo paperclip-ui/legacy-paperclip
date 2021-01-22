@@ -1,12 +1,15 @@
 import { handleEngine } from "./engine";
 import { fork, put, select, takeEvery } from "redux-saga/effects";
 import veSaga from "paperclip-designer/src/sagas";
+import * as vea from "paperclip-designer/src/actions";
 import { ActionType, NewFileNameEntered } from "../actions";
 import { redirectRequest } from "paperclip-designer/src/actions";
-import { getNewFilePath } from "../state";
+import { getNewFilePath, hasUnsavedChanges } from "../state";
 import { AppState } from "../state";
 import { handleAPI } from "./api";
 import { handleLocation } from "./location";
+import { eventChannel } from "redux-saga";
+import { emit } from "process";
 
 export function* init(mount: HTMLDivElement) {
   yield fork(handleEngine);
@@ -14,6 +17,7 @@ export function* init(mount: HTMLDivElement) {
   yield fork(handleApp);
   yield fork(handleAPI);
   yield fork(handleLocation);
+  yield fork(handleLeave);
 }
 
 function* handleApp() {
@@ -42,4 +46,38 @@ function* handleNewFile() {
       })
     );
   });
+}
+
+function* handleLeave() {
+  let _savedState: AppState = yield select();
+  let _currentState: AppState = yield select();
+
+  eventChannel(() => {
+    window.onbeforeunload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges(_currentState, _savedState)) {
+        return "You have unsaved changes, are you sure you want to leave?";
+      }
+    };
+    return () => {};
+  });
+
+  yield takeEvery(
+    [ActionType.SAVED_PROJECT, ActionType.GET_PROJECT_FILES_REQUEST_CHANGED],
+    function*() {
+      _savedState = _currentState = yield select();
+    }
+  );
+
+  yield takeEvery(
+    [
+      ActionType.CONTENT_CHANGES_CREATED,
+      vea.ActionType.GLOBAL_Y_KEY_DOWN,
+      vea.ActionType.GLOBAL_Y_KEY_DOWN,
+      ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED,
+      ActionType.CODE_EDITOR_TEXT_CHANGED
+    ],
+    function*(e: BeforeUnloadEvent) {
+      _currentState = yield select();
+    }
+  );
 }

@@ -73,7 +73,7 @@ const init = async () => {
   };
 
   const syncEngineDocuments = (oldState: WorkerState) => {
-    if (_state.documents === oldState.documents) {
+    if (_state.documents === oldState.documents || !_engine) {
       return;
     }
 

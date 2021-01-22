@@ -1,10 +1,7 @@
 
 ### Immediate
 
-- make CRDTs per document
-
 - cmd + s should work
-- undo / redo (CRDTs)
 
 - profile menu
   - logout
@@ -19,8 +16,6 @@
 
 - cleanup
   - going to / should display blank page
-  - bind meta + s to save
-  - ensure that user is prompted to sasve before leaving
 
 - wrap
   - paperclip.playground.dev

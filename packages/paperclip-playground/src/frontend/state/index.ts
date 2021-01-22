@@ -126,3 +126,18 @@ export const getWorkerState = (state: AppState): WorkerState => {
     documents: mapValues(state.shared.documents, value => value.toString())
   };
 };
+
+export const hasUnsavedChanges = (state: AppState, prevState: AppState) => {
+  for (const key in state.shared.documents) {
+    if (prevState.shared.documents[key] !== state.shared.documents[key]) {
+      return true;
+    }
+  }
+  for (const key in prevState.shared.documents) {
+    if (prevState.shared.documents[key] !== state.shared.documents[key]) {
+      return true;
+    }
+  }
+
+  return false;
+};

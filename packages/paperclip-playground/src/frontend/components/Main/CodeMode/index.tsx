@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { ControlledEditor } from "@monaco-editor/react";
-import { globalZKeyDown, globalYKeyDown } from "paperclip-designer/src/actions";
+import {
+  globalZKeyDown,
+  globalYKeyDown,
+  globalSaveKeyPress
+} from "paperclip-designer/src/actions";
 
 // Can't import, otherwise the react monaco editor breaks :(
-// import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 
 import * as styles from "./index.pc";
 import { Toolbar } from "./Toolbar";
@@ -34,6 +38,11 @@ export const CodeMode = () => {
     // monacoEditor.KeyMod.CtrlCmd | monacoEditor.KeyCode.KEY_Y
     editor.addCommand(2013, function() {
       dispatch(globalYKeyDown(null) as any);
+    });
+    // console.log(monacoEditor.KeyMod.CtrlCmd | monacoEditor.KeyCode.KEY_S);
+
+    editor.addCommand(2097, function() {
+      dispatch(globalSaveKeyPress(null) as any);
     });
   };
   return (

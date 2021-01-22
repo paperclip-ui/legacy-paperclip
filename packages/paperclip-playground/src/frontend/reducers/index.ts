@@ -10,7 +10,7 @@ import veReducer from "paperclip-designer/src/reducers/index";
 import { editString } from "../utils/string-editor";
 import Automerge from "automerge";
 import { updateShared } from "paperclip-designer/src/state";
-import { mapValues } from "lodash";
+import { mapValues, result } from "lodash";
 
 export const reducer = (state: AppState, action: Action) => {
   state = veReducer(state, action as VEAction) as AppState;
@@ -85,8 +85,12 @@ export const reducer = (state: AppState, action: Action) => {
         newState.saving = action.payload;
       });
     }
+    case VEActionType.GLOBAL_SAVE_KEY_DOWN:
     case ActionType.SAVE_BUTTON_CLICKED: {
       return produce(state, newState => {
+        if (!state.user) {
+          return;
+        }
         newState.saving = { done: false };
       });
     }
@@ -117,6 +121,7 @@ export const reducer = (state: AppState, action: Action) => {
       });
     }
     case ActionType.GET_PROJECT_FILES_REQUEST_CHANGED: {
+      const result = action.payload.result;
       const mainFile = state.currentProject.data!.mainFileUri
         ? state.currentProject.data!.files.find(file => {
             return file.path == state.currentProject.data!.mainFileUri;
@@ -124,23 +129,24 @@ export const reducer = (state: AppState, action: Action) => {
         : state.currentProject.data!.files[0];
 
       state = produce(state, newState => {
-        const result = action.payload.result;
-
         if (result.data) {
           const contents = result.data!;
           newState.designer.ui.query.currentFileUri = mainFile.path;
-          newState.shared.documents = Automerge.from(
-            mapValues(
-              contents,
-              value => new Automerge.Text(null, value.split(""))
-            )
-          );
           newState.currentCodeFileUri = mainFile.path;
 
           // reset canvas zoom
           newState.designer.centeredInitial = false;
         }
       });
+
+      if (result.data) {
+        const contents = result.data!;
+        state = updateShared(state, {
+          documents: Automerge.from(
+            mapValues(contents, value => new Automerge.Text(value))
+          )
+        }) as AppState;
+      }
 
       return state;
     }
