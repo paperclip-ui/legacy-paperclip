@@ -1,9 +1,0 @@
-<style>
-@font-face {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Roboto'), local('Roboto-Regular'), url(./cf99a9d56c411ce3fa8a2fc49c520e74.gstatic.ttf) format('truetype');
-}
-
-</style>

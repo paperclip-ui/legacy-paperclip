@@ -103,6 +103,15 @@ export default (state: AppState, action: Action) => {
       });
     }
     case ActionType.ENGINE_DELEGATE_CHANGED: {
+      // delete file
+      if (action.payload.kind === EngineDelegateEventKind.Deleted) {
+        state = produce(state, newState => {
+          delete newState.designer.allLoadedPCFileData[action.payload.uri];
+        });
+
+        return state;
+      }
+
       state = produce(state, newState => {
         // if centered initially but there were no frames, then the canvas never really centered
         // so flag it do so now.

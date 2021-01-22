@@ -34,9 +34,27 @@ impl VirtualFileSystem {
       self.reload(uri).await
     }
   }
+  
 
   pub fn resolve(&self, from_path: &String, relative_path: &String) -> Option<String> {
     (self.resolve_file)(from_path, relative_path)
+  }
+  pub fn purge_unlinked_files(&mut self) -> Vec<String> {
+
+    let mut unlinked: Vec<String>  = Vec::new();
+
+    for (uri, _) in self.contents.iter() {
+      if !(self.file_exists)(uri) {
+        unlinked.push(uri.clone());
+      }
+    }
+
+
+    for uri in &unlinked {
+      self.contents.remove(uri);
+    }
+
+    unlinked
   }
 
   pub async fn update(&mut self, uri: &String, content: &String) -> Result<&String, &'static str> {

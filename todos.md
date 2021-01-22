@@ -1,6 +1,7 @@
 
 ### Immediate
 
+
 - projects
   - ability to change names (pen icon)
   - ability to delete

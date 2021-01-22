@@ -27,7 +27,9 @@ export const createMockEngine = (
   createEngineDelegate(
     {
       io: {
-        readFile: uri => graph[uri],
+        readFile: uri => {
+          return graph[uri];
+        },
         fileExists: uri => Boolean(graph[uri]),
         resolveFile: (from, to) => {
           return path.join(path.dirname(from), to).replace(/\\/g, "/");

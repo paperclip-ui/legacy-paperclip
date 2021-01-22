@@ -1,9 +1,0 @@
-<style>
-@font-face {
-  font-family: 'Eagle Lake';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Eagle Lake'), local('EagleLake-Regular'), url(./b7887a5308b3978cca91d061e042f8fd.gstatic.ttf) format('truetype');
-}
-
-</style>

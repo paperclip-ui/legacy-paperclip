@@ -96,7 +96,9 @@ export class EngineDelegate {
   }
 
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
-    if (event.kind === EngineDelegateEventKind.Evaluated) {
+    if (event.kind === EngineDelegateEventKind.Deleted) {
+      delete this._rendered[event.uri];
+    } else if (event.kind === EngineDelegateEventKind.Evaluated) {
       this._rendered = updateAllLoadedData(this._rendered, event);
       this._dispatch({
         kind: EngineDelegateEventKind.Loaded,
@@ -154,6 +156,12 @@ export class EngineDelegate {
   parseContent(content: string) {
     return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }
+  purgeUnlinkedFiles() {
+    return this._tryCatch(() => {
+      const ret = mapResult(this._native.purge_unlinked_files());
+      return ret;
+    });
+  }
   updateVirtualFileContent(uri: string, content: string) {
     return this._tryCatch(() => {
       const ret = mapResult(
@@ -205,6 +213,8 @@ export const keepEngineInSyncWithFileSystem2 = (
         uri,
         fs.readFileSync(new url.URL(uri), "utf8")
       );
+    } else if (kind === ChangeKind.Removed) {
+      engine.purgeUnlinkedFiles();
     }
   });
 };

@@ -148,6 +148,7 @@ export const useMultipleFrames = ({
     for (const fileUri in newRenderers) {
       if (!fileData[fileUri]) {
         newRenderers[fileUri].dispose();
+        delete newRenderers[fileUri];
       }
     }
 

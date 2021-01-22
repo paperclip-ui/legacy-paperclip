@@ -378,6 +378,10 @@ const watchPaperclipSources = (
       engine.updateVirtualFileContent(uri.href, fs.readFileSync(uri, "utf8"));
     } else if (eventName === "add") {
       engine.open(uri.href);
+    } else if (eventName === "unlink") {
+      engine.purgeUnlinkedFiles();
+    } else if (eventName === "unlinkDir") {
+      engine.purgeUnlinkedFiles();
     }
   });
 };

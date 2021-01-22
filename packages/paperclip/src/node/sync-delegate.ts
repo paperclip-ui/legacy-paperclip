@@ -10,6 +10,9 @@ const existsSyncCaseSensitive = uri => {
   const pathname = fileURLToPath(uri);
   const dir = path.dirname(pathname);
   const basename = path.basename(pathname);
+  if (!fs.existsSync(dir)) {
+    return false;
+  }
   return fs.readdirSync(dir).includes(basename);
 };
 
