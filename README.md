@@ -185,6 +185,16 @@ export const LoginPage = () => {
 };
 ```
 
+#### Why did you build this?
+
+I felt there was a better approach to building UIs that involved an experience that's closer to what
+designers have, but without losing the fidelity that engineers need. A purely UI tool that writes code doesn't quite cut it,
+and the current state of front-end tooling kind of sucks. So, I built something in-between that I think gets the job done nicely. 👌
+
+Why isn't HMR enough? It's not really a canvas where you can draw & see your result immediately, and I find the lag time to be an absolute concentration killer, especially as projects grow in scale - HMR also gets slower, _much_ slower. 
+
+Paperclip's engine is built on top of Rust and designed to handle large projects, so you don't ever have to wait around your previews to refresh - it just happens in realtime as it should. It's actually much more of a joy to work with, and I'm finding myself saying "yes" more to designers when they ask for features, instead of cutting corners.
+
 
 #### What are some features of the DSL?
 
