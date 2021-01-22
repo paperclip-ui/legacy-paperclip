@@ -8,6 +8,7 @@ import {
 
 // Can't import, otherwise the react monaco editor breaks :(
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
+// TODO: https://github.com/microsoft/monaco-editor/issues/221
 
 import * as styles from "./index.pc";
 import { Toolbar } from "./Toolbar";
@@ -26,8 +27,6 @@ export const CodeMode = () => {
     dispatch(codeEditorChanged(event.changes));
   };
   const editorDidMount = (_, editor) => {
-    editor.getModel().updateOptions({ tabSize: 2 });
-
     // control Z
     editor.addCommand(2104, function() {
       // 🙈
@@ -35,7 +34,10 @@ export const CodeMode = () => {
     });
 
     // Note that we cna't do this
-    // monacoEditor.KeyMod.CtrlCmd | monacoEditor.KeyCode.KEY_Y
+    // console.log(monacoEditor.KeyMod.CtrlCmd | monacoEditor.KeyMod.Shift | monacoEditor.KeyCode.KEY_Z);
+    editor.addCommand(3128, function() {
+      dispatch(globalYKeyDown(null) as any);
+    });
     editor.addCommand(2013, function() {
       dispatch(globalYKeyDown(null) as any);
     });

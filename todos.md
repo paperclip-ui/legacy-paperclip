@@ -1,23 +1,23 @@
 
 ### Immediate
 
-- cmd + s should work
-
-- profile menu
-  - logout
-  - create new project
-  - see projects
-
 - projects
   - ability to change names (pen icon)
   - ability to delete
     - confirm - type name
   - visibility options (public / private)
 
+- ability to change title of document 
+
+- profile menu
+  - create new project
+  - see projects
+
+
 - cleanup
   - going to / should display blank page
 
-- wrap
+- wrap it up!
   - paperclip.playground.dev
 
 ### Necessary (but not yet planned)
