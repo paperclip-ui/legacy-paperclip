@@ -197,7 +197,7 @@ I also feel like the direction that front-end development needs to head is close
 ### What are some features of the DSL?
 
 - **No global CSS** - everything's explicit so you never run into leaky styles.
-- Scoped element styles.
+- Scoped element styles. Keep your CSS closer to the elements they're styling.
 - Abiltiy to define primitive components.
 - Sass-like syntax: nested selectors, mixins, etc.
 - **Generalized for multiple compile targets**. Currently works with React, but other languages & frameworks are planned.
