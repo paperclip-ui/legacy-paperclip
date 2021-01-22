@@ -199,7 +199,7 @@ I also feel like the direction that front-end development needs to head is close
 
 - **No global CSS** - everything's explicit so you never run into leaky styles.
 - Scoped element styles. Keep your CSS closer to the elements they're styling.
-- Abiltiy to define primitive components.
+- Abiltiy to define primitive components that can be imported directly into your app code.
 - Sass-like syntax: nested selectors, mixins, etc.
 - **Generalized for multiple compile targets**. Currently works with React, but other languages & frameworks are planned.
 - **Compiles to strongly typed code**. Currently it outputs typed definition files for React components.
