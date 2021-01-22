@@ -12,7 +12,7 @@
 
 Paperclip is a DSL that provides a hybrid approach to building UIs that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. It also compile directly into React code (more targets to come). 
 
-Here's a demo of Paperclip in action:
+Here's a demo of Paperclip's designer app in action:
 
 ![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif)
 
