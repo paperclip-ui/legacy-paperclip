@@ -5,7 +5,7 @@
 
 # <img src="assets/logo.png" width="230">
 
-A template language designed for visual development.
+Paperclip is a hybrid approach to building user interfaces that allows you to design & code in parallel.
 
 **Right now I'm polishing up this project, I'm looking for any help on testing. [Please send me a message if you're interested!](https://forms.gle/FATDYcAVUdRVJvQaA)**
 
