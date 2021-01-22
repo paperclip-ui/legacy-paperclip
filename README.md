@@ -242,3 +242,9 @@ Here's a peek at what's planned for Paperclip:
 - Extension for Atom, Sublime, and other editors
 - More visual editing tools so that you don't have to write code. Possibly more designer-friendly tooling.
 - A11Y & other linting stools
+
+## Sponsors
+
+![index](https://user-images.githubusercontent.com/757408/105444620-254d8d80-5ca9-11eb-97c8-9c0fd66408d4.png)
+
+
