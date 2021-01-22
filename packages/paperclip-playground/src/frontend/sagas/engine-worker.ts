@@ -11,7 +11,7 @@ import {
   WorkerInitialized
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
-import * as vea from "paperclip-visual-editor/src/actions";
+import * as vea from "paperclip-designer/src/actions";
 import { AppState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
@@ -20,7 +20,7 @@ import * as url from "url";
 import {
   engineDelegateChanged,
   RedirectRequested
-} from "paperclip-visual-editor/src/actions";
+} from "paperclip-designer/src/actions";
 import { PCSourceWriter } from "paperclip-source-writer";
 
 const init = async () => {
@@ -49,7 +49,7 @@ const init = async () => {
   const onEngineInit = () => {
     _writer = new PCSourceWriter({
       engine: _engine,
-      getContent: uri => _appState.designMode.documentContents[uri]
+      getContent: uri => _appState.shared.documents[uri]
     });
     dispatch(engineLoaded(null));
     tryOpeningCurrentFile();
@@ -57,13 +57,13 @@ const init = async () => {
 
   const tryOpeningCurrentFile = () => {
     if (
-      _appState.designMode.ui.query.currentFileUri &&
+      _appState.designer.ui.query.currentFileUri &&
       _engine &&
       (!_currentUri ||
-        _currentUri !== _appState.designMode.ui.query.currentFileUri)
+        _currentUri !== _appState.designer.ui.query.currentFileUri)
     ) {
-      _currentUri = _appState.designMode.ui.query.currentFileUri;
-      _engine.open(_appState.designMode.ui.query.currentFileUri);
+      _currentUri = _appState.designer.ui.query.currentFileUri;
+      _engine.open(_appState.designer.ui.query.currentFileUri);
     }
   };
 
@@ -90,10 +90,7 @@ const init = async () => {
     payload: { changes }
   }: ContentChangesCreated) => {
     for (const uri in changes) {
-      _engine.updateVirtualFileContent(
-        uri,
-        _appState.designMode.documentContents[uri]
-      );
+      _engine.updateVirtualFileContent(uri, _appState.shared.documents[uri]);
     }
   };
 
@@ -124,10 +121,10 @@ const init = async () => {
     {
       io: {
         readFile(uri) {
-          return _appState.designMode.documentContents[uri];
+          return _appState.shared.documents[uri];
         },
         fileExists(uri: string) {
-          return _appState.designMode.documentContents[uri] != null;
+          return _appState.shared.documents[uri] != null;
         },
         resolveFile(fromPath: string, toPath: string) {
           return url.resolve(fromPath, toPath);

@@ -1,4 +1,4 @@
-<import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
+<import src="paperclip-designer/src/components/Theme/index.pc" as="Theme" />
 <!--
   @frame { visible: false }
 -->

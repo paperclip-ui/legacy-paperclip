@@ -19,7 +19,7 @@ import {
   engineDelegateChanged,
   engineDelegateEventsHandled,
   ActionType as VEActionType
-} from "paperclip-visual-editor/src/actions";
+} from "paperclip-designer/src/actions";
 
 export function* handleEngine() {
   yield fork(syncCurrentProjectWithEngine);

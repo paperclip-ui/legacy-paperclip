@@ -1,4 +1,4 @@
-import * as ve from "paperclip-visual-editor/src/state";
+import * as ve from "paperclip-designer/src/state";
 import { memoize } from "paperclip-utils";
 import * as qs from "querystring";
 
@@ -47,7 +47,6 @@ const getPathnameRegexp = memoize((test: string) => {
 });
 
 export type AppState = {
-  designMode: ve.AppState;
   user?: User;
   currentProject?: Result<Project>;
   playgroundUi: {
@@ -63,13 +62,19 @@ export type AppState = {
   compact?: boolean;
   slim?: boolean;
   apiHost: string;
-};
+} & ve.AppState;
 
 const ENTRY_SOURCE = ``;
 
 export const INITIAL_STATE: AppState = {
-  designMode: {
-    ...ve.INITIAL_STATE,
+  ...ve.INITIAL_STATE,
+  shared: {
+    documents: {
+      [ENTRY_URI]: ENTRY_SOURCE
+    }
+  },
+  designer: {
+    ...ve.INITIAL_STATE.designer,
     sharable: false,
     ui: {
       pathname: "/canvas",
@@ -78,9 +83,6 @@ export const INITIAL_STATE: AppState = {
       }
     },
     syncLocationWithUI: false,
-    documentContents: {
-      [ENTRY_URI]: ENTRY_SOURCE
-    },
     projectDirectory: {
       name: "/",
       kind: ve.FSItemKind.DIRECTORY,

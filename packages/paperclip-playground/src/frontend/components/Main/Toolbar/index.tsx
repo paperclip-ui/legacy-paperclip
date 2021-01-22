@@ -1,6 +1,6 @@
 import { profile } from "console";
 import React, { useState } from "react";
-import { useSelect } from "../../../../../../paperclip-visual-editor/src/components/Select";
+import { useSelect } from "../../../../../../paperclip-designer/src/components/Select";
 import { logoutButtonClicked, saveButtonClicked } from "../../../actions";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Button } from "../../Button/index.pc";

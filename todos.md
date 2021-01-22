@@ -1,8 +1,9 @@
 
 ### Immediate
 
-- copy/paste hijacked
-  - ensure that no other hotkeys are
+- CRDTs!
+  - just hook up to history for now
+  - prototype backend integration
 
 - cmd + s should work
 - undo / redo (CRDTs)

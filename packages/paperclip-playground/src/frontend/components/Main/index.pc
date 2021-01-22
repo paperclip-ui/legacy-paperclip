@@ -1,5 +1,5 @@
-<import src="paperclip-visual-editor/src/components/Main/index.pc" as="Main" />
-<import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
+<import src="paperclip-designer/src/components/Main/index.pc" as="Main" />
+<import src="paperclip-designer/src/components/Theme/index.pc" as="Theme" />
 <import src="./CodeMode/index.pc" as="CodeMode" />
 <import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
@@ -56,7 +56,7 @@
   {!compact && <Toolbar.Preview  {loggedIn?} />}
   <EditorContainer {compact?}>
     <CodeMode.Preview {showFileMenu} slim />
-    <Main.Preview v2 dark designMode showGrid />
+    <Main.Preview v2 dark designer showGrid />
   </EditorContainer>
   {showLoginPrompt && <Auth.Preview />}
 </Container>

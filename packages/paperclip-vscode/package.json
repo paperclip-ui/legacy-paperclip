@@ -170,7 +170,7 @@
     "paperclip-autocomplete": "^17.4.22",
     "paperclip-source-writer": "^17.4.22",
     "paperclip-utils": "^17.4.22",
-    "paperclip-visual-editor": "^17.4.22",
+    "paperclip-designer": "^17.4.22",
     "paperclip-web-renderer": "^17.4.22",
     "vscode-languageclient": "6.0.1",
     "vscode-languageserver": "6.0.1",

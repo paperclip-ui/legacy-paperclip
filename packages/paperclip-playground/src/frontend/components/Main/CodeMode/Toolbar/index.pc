@@ -1,7 +1,7 @@
-<import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
-<import src="paperclip-visual-editor/src/styles/utils.pc" as="utils" />
-<import src="paperclip-visual-editor/src/components/Select/index2.pc" as="Select" />
-<import src="paperclip-visual-editor/src/components/TextInput/index.pc" as="TextInput" />
+<import src="paperclip-designer/src/components/Theme/index.pc" as="Theme" />
+<import src="paperclip-designer/src/styles/utils.pc" as="utils" />
+<import src="paperclip-designer/src/components/Select/index2.pc" as="Select" />
+<import src="paperclip-designer/src/components/TextInput/index.pc" as="TextInput" />
 
 <!--
   @frame { visible: false }

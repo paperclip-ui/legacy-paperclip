@@ -1,4 +1,4 @@
-import * as ve from "paperclip-visual-editor/src/actions";
+import * as ve from "paperclip-designer/src/actions";
 import { AppState, Project, ProjectFile, Result, User } from "../state";
 import { actionCreator } from "./base";
 import { ContentChange } from "paperclip-source-writer";
@@ -30,12 +30,12 @@ export enum ActionType {
   FILE_ITEM_CLICKED = "FILE_ITEM_CLICKED",
   NEW_FILE_NAME_ENTERED = "NEW_FILE_NAME_ENTERED",
   SYNC_PANELS_CLICKED = "SYNC_PANELS_CLICKED",
-  ACCOUNT_CONNECTED = "ACCOUNT_CONNECTED",
+  ACCOUNT_CONNECTED = "ACCOUNT_CONNECTED"
 }
 
 export enum AccountKind {
   Google = "google",
-  GitHub = "github",
+  GitHub = "github"
 }
 
 export type BaseRequestChanged<

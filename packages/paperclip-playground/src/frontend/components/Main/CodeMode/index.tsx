@@ -9,7 +9,7 @@ import { SlimEditor } from "./Slim";
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
   const { slim } = state;
-  const code = state.designMode.documentContents[state.currentCodeFileUri];
+  const code = state.shared.documents[state.currentCodeFileUri];
 
   const onChange = (ev, value) => {
     dispatch(codeEditorChanged(value));
@@ -24,7 +24,7 @@ export const CodeMode = () => {
         {slim ? (
           <SlimEditor
             value={code}
-            onChange={(value) => {
+            onChange={value => {
               dispatch(codeEditorChanged(value));
             }}
           />
@@ -33,8 +33,8 @@ export const CodeMode = () => {
             editorDidMount={editorDidMount}
             options={{
               minimap: {
-                enabled: false,
-              },
+                enabled: false
+              }
             }}
             width="100%"
             value={code}

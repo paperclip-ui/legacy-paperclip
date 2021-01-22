@@ -2,24 +2,21 @@ import { AppState, getNewFilePath } from "../state";
 import {
   Action as VEAction,
   ActionType as VEActionType
-} from "paperclip-visual-editor/src/actions";
+} from "paperclip-designer/src/actions";
 import { Action, ActionType } from "../actions";
 import produce from "immer";
 
-import veReducer from "paperclip-visual-editor/src/reducers/index";
+import veReducer from "paperclip-designer/src/reducers/index";
 import { editString } from "../utils/string-editor";
-import { maybeCenterCanvas } from "../../../../paperclip-visual-editor/src/state";
+import { maybeCenterCanvas } from "../../../../paperclip-designer/src/state";
 
 export const reducer = (state: AppState, action: Action) => {
-  state = {
-    ...state,
-    designMode: veReducer(state.designMode, action as VEAction)
-  };
+  state = veReducer(state, action as VEAction) as AppState;
+
   switch (action.type) {
     case ActionType.CODE_EDITOR_TEXT_CHANGED: {
       return produce(state, newState => {
-        newState.designMode.documentContents[state.currentCodeFileUri] =
-          action.payload;
+        newState.shared.documents[state.currentCodeFileUri] = action.payload;
       });
     }
     case ActionType.ACCOUNT_CONNECTED: {
@@ -52,8 +49,8 @@ export const reducer = (state: AppState, action: Action) => {
       return produce(state, newState => {
         const changes = action.payload.changes;
         for (const uri in changes) {
-          newState.designMode.documentContents[uri] = editString(
-            newState.designMode.documentContents[uri],
+          newState.shared.documents[uri] = editString(
+            newState.shared.documents[uri],
             changes[uri]
           );
         }
@@ -78,12 +75,12 @@ export const reducer = (state: AppState, action: Action) => {
                 return file.path == newState.currentProject.data!.mainFileUri;
               })
             : newState.currentProject.data!.files[0];
-          newState.designMode.ui.query.currentFileUri = mainFile.path;
-          newState.designMode.documentContents = contents;
+          newState.designer.ui.query.currentFileUri = mainFile.path;
+          newState.shared.documents = contents;
           newState.currentCodeFileUri = mainFile.path;
 
           // reset canvas zoom
-          newState.designMode.centeredInitial = false;
+          newState.designer.centeredInitial = false;
         }
       });
     }
@@ -100,7 +97,7 @@ export const reducer = (state: AppState, action: Action) => {
     case ActionType.NEW_FILE_NAME_ENTERED: {
       return produce(state, newState => {
         const uri = getNewFilePath(action.payload.value);
-        newState.designMode.documentContents[uri] = "";
+        newState.shared.documents[uri] = "";
         newState.currentCodeFileUri = uri;
       });
     }

@@ -2,16 +2,16 @@ import React, { useMemo, useRef, useState } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
 import * as path from "path";
-import TextInput from "paperclip-visual-editor/src/components/TextInput/index.pc";
-import { useTextInput } from "paperclip-visual-editor/src/components/TextInput";
-import { useSelect } from "paperclip-visual-editor/src/components/Select";
+import TextInput from "paperclip-designer/src/components/TextInput/index.pc";
+import { useTextInput } from "paperclip-designer/src/components/TextInput";
+import { useSelect } from "paperclip-designer/src/components/Select";
 
 import {
   fileItemClicked,
   newFileNameEntered,
   syncPanelsClicked
 } from "../../../../actions";
-import { redirectRequest } from "paperclip-visual-editor/src/actions";
+import { redirectRequest } from "paperclip-designer/src/actions";
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
@@ -33,10 +33,9 @@ export const Toolbar = () => {
   };
 
   const basename = path.basename(state.currentCodeFileUri);
-  const allFileUris = useMemo(
-    () => Object.keys(state.designMode.documentContents),
-    [state.designMode.documentContents]
-  );
+  const allFileUris = useMemo(() => Object.keys(state.shared.documents), [
+    state.shared.documents
+  ]);
 
   const { inputProps: newFileInputProps } = useTextInput({
     value: newFileName,
@@ -105,8 +104,7 @@ export const Toolbar = () => {
           )
         }
       />
-      {state.currentCodeFileUri !==
-        state.designMode.ui.query.currentFileUri && (
+      {state.currentCodeFileUri !== state.designer.ui.query.currentFileUri && (
         <styles.EyeButton onClick={onSyncPanelsClick} />
       )}
     </styles.Topbar>

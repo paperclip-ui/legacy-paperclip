@@ -1,6 +1,6 @@
 <import src="frontend/components/Button/index.pc" as="Button" />
-<import src="paperclip-visual-editor/src/styles/utils.pc" as="utils" />
-<import src="paperclip-visual-editor/src/components/Select/index2.pc" as="Select" />
+<import src="paperclip-designer/src/styles/utils.pc" as="utils" />
+<import src="paperclip-designer/src/components/Select/index2.pc" as="Select" />
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 19, y: 918 }

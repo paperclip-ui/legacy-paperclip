@@ -39,8 +39,8 @@ import {
 
 const VIEW_TYPE = "paperclip-preview";
 
-import * as ve from "paperclip-visual-editor";
-import { LocationChanged } from "paperclip-visual-editor";
+import * as ve from "paperclip-designer";
+import { LocationChanged } from "paperclip-designer";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
