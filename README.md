@@ -190,7 +190,7 @@ export const LoginPage = () => {
 ### Why did you build this?
 
 
-I usually split my UI development into two stages: first the HTML & CSS, then wire that up with code. The result of this is a separation between purely visual components & components with logic. Since the visual components don't have any logic in them, I felt that there could be a better & more focused approach to building them that's faster, safer, more maintainable, and overall feels like I'm building cleaner, more precise UIs, and more fun to use.
+I usually split my UI development into two stages: first the HTML & CSS, then wire that up with code. The result of this is a separation between purely visual components & components with logic. Since the visual components don't have any logic in them, I felt that there could be a better & more focused approach to building them that's faster, safer, more maintainable, and overall feels like I'm building cleaner, and more precise UIs. I also wanted something more fun to use 🙂.
 
 I also feel like the direction that front-end development needs to head is closer to a designer-like experience. However, I don't think that a _purely_ visual editor cuts it because of the precision needed for creating UIs. So, I built something in-between code & design that I think gets the job done nicely 👌.  
 
