@@ -79,7 +79,7 @@ Paperclip is a DSL that focuses _purely_ on the visual aspect of your app - just
     max-width: 250px;
     margin: 0px auto;
 
-    // rule of thirds
+    /* rule of thirds */
     top: 30%;
     padding: 32px;
     border-radius: 4px;
