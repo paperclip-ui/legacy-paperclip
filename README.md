@@ -195,7 +195,7 @@ Why isn't HMR enough? It's not really a canvas where you can draw & see your res
 
 Paperclip's engine is built on top of Rust and designed to handle large projects, so you don't ever have to wait around your previews to refresh - it just happens in realtime (as I think it should). It's actually much more of a joy to work with, and I'm finding myself saying "yes" more to designers when they ask for features, instead of cutting corners.
 
-Visual regression testing, style maintainence, and cross-browser testing are a few other areas I wanted to make easier, so that's all baked into Paperclip's design as well. 
+Visual regression testing, style maintainability, and cross-browser testing are a few other areas I wanted to make easier, so that's all baked into Paperclip's design as well. 
 
 
 #### What are some features of the DSL?
