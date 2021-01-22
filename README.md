@@ -7,7 +7,8 @@
 
 A template language designed for visual development.
 
-⚠️ Still a work in progress! If you'd like early access to some of the tooling & docs, [let me know](https://forms.gle/FATDYcAVUdRVJvQaA).
+**Right now I'm collecting polishing up this project, I would love some feedback. [Please send me a message if you're interested!](https://forms.gle/FATDYcAVUdRVJvQaA)**
+
 
 ![alt button demo](assets/button-demo.gif)
 
