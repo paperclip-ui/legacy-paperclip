@@ -6,13 +6,11 @@
 <img src="assets/logo.png" width="230">
 
 **⚠️ Right now I'm polishing up this project, I'm looking for help on testing & feedback. [Please send me a message if you're interested!](https://forms.gle/FATDYcAVUdRVJvQaA)**
+
 -----
 
 
-Paperclip is DSL that provides a hybrid approach to building user interfaces that allows you to design & code in parallel.
-
-
-Paperclip focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. Here's an example UI file:
+Paperclip is DSL that provides a hybrid approach to building user interfaces that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. Here's an example UI file:
 
 ```html
 
@@ -155,6 +153,7 @@ Paperclip focuses _purely_ on the visual aspect of your app - just HTML, CSS, an
 
 Here's the code above being created within Paperclip's designer:
 
+https://user-images.githubusercontent.com/757408/105437207-95551700-5c9b-11eb-8d45-73d088d7b5af.mp4
 
 Here's how you integrate Paperclip into your code:
 
