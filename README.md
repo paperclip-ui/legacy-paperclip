@@ -7,7 +7,7 @@
 
 A template language designed for visual development.
 
-**Right now I'm collecting polishing up this project, I would love some feedback. [Please send me a message if you're interested!](https://forms.gle/FATDYcAVUdRVJvQaA)**
+**Right now I'm polishing up this project, I'm looking for any help on testing. [Please send me a message if you're interested!](https://forms.gle/FATDYcAVUdRVJvQaA)**
 
 
 ![alt button demo](assets/button-demo.gif)
