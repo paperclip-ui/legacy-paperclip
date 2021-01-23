@@ -66,6 +66,7 @@ function* startEngine() {
       ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED,
       ActionType.CODE_EDITOR_TEXT_CHANGED,
       VEActionType.REDIRECT_REQUESTED,
+      ActionType.GET_PROJECT_REQUEST_CHANGED,
       VEActionType.PC_VIRT_OBJECT_EDITED,
       ActionType.CONTENT_CHANGES_CREATED,
       VEActionType.GLOBAL_Z_KEY_DOWN,
@@ -78,6 +79,7 @@ function* startEngine() {
       _state = workerState;
 
       if (ops.length) {
+        console.log("OP");
         worker.postMessage(appStateDiffed({ ops }));
       }
 

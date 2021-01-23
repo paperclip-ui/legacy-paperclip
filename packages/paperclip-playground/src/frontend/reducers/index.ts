@@ -17,25 +17,6 @@ export const reducer = historyReducer((state: AppState, action: Action) => {
   state = veReducer(state, action as VEAction) as AppState;
 
   switch (action.type) {
-    // case ActionType.CODE_EDITOR_TEXT_CHANGED: {
-    //   return {
-    //     ...state,
-    //     shared: {
-    //       ...state.shared,
-    //       documents: produce(state.shared.documents, documents => {
-    //         for (const { text, rangeOffset, rangeLength } of action.payload) {
-    //           // no replace operation by automerge, so need to do 2 things. I sure hope this scales 🤞
-
-    //           const textDoc = documents[
-    //             state.currentCodeFileUri
-    //           ];
-
-    //           documents[state.currentCodeFileUri] = textDoc.substr(0, rangeOffset) + text + textDoc.substr(rangeOffset, rangeLength);
-    //         }
-    //       })
-    //     }
-    //   };
-    // }
     case VEActionType.GLOBAL_Z_KEY_DOWN: {
       // undo may remove files
       if (!state.shared.documents[state.currentCodeFileUri]) {
@@ -110,6 +91,11 @@ export const reducer = historyReducer((state: AppState, action: Action) => {
         newState.currentProject = action.payload.result;
       });
     }
+    case ActionType.GET_PROJECTS_REQUEST_CHANGED: {
+      return produce(state, newState => {
+        newState.allProjects = action.payload.result;
+      });
+    }
     case ActionType.GET_PROJECT_FILES_REQUEST_CHANGED: {
       const result = action.payload.result;
       const mainFile = state.currentProject.data!.mainFileUri
@@ -164,4 +150,4 @@ export const reducer = historyReducer((state: AppState, action: Action) => {
   }
 
   return state;
-});
+}, [ActionType.GET_PROJECT_REQUEST_CHANGED]);

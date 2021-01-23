@@ -3,7 +3,7 @@ import { clamp } from "lodash";
 import { Action, ActionType } from "../actions"
 import { HistState } from "../state"
 
-export const historyReducer = (mainReducer: (state: HistState, action: Action) => HistState) => {
+export const historyReducer = (mainReducer: (state: HistState, action: Action) => HistState, reset: string[] = []) => {
   return (state: HistState, action: Action) => {
     switch(action.type) {
       case ActionType.GLOBAL_Z_KEY_DOWN: {
@@ -25,6 +25,14 @@ export const historyReducer = (mainReducer: (state: HistState, action: Action) =
         })
       }
       default: {
+
+        if (reset.includes(action.type)) {
+          return produce(mainReducer(state, action), newState => {
+            newState.history.future = [];
+            newState.history.past = [];
+          });
+        }
+
         const prevState = state;
         let newState = mainReducer(state, action);
         if (newState.shared !== prevState.shared) {

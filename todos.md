@@ -1,14 +1,21 @@
 
 ### Immediate
 
-- automerge for backend
-  - need to diff strings
+
+- ability to change name
+- nav to project on click
+- server-side 
+- project options (gear)
+  - remove
+  - rename
+
 
 - projects
   - ability to change names (pen icon)
   - ability to delete
     - confirm - type name
   - visibility options (public / private)
+
 
 - ability to change title of document 
 
@@ -20,6 +27,8 @@
 
 - cleanup
   - going to / should display blank page
+  - add Paperclip color theme
+  - remove pesky indent behavior
 
 - wrap it up!
   - paperclip.playground.dev

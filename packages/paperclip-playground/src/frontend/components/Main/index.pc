@@ -4,6 +4,7 @@
 <import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
 <import src="./auth/index.pc" as="Auth" />
+<import src="./Projects/index.pc" as="Projects" />
 
 <style>
   :global(html, body) {
@@ -35,7 +36,7 @@
     --border-radius: 0px;
     --designer-mode-top-left-radius: var(--border-radius);
     --designer-mode-top-right-radius: var(--border-radius);
-    @include breakpoints.mobile {
+    @include breakpoints.tablet {
       flex-direction: column-reverse;
       --border-radius: 6px;
     }
@@ -53,24 +54,42 @@
   @frame { visible: false }
 -->
 <Container export component as="Preview" className="v2" {compact?}>
-  {!compact && <Toolbar.Preview  {loggedIn?} />}
-  <EditorContainer {compact?}>
+  {!compact && !showProjects && <Toolbar.Preview  {loggedIn?} />}
+  {showProjects && <Toolbar.Preview loggedIn minimal />}
+  {showProjects && <Projects.Preview />}
+  {showEditor && <EditorContainer {compact?}>
     <CodeMode.Preview {showFileMenu} slim />
     <Main.Preview v2 dark designer showGrid />
-  </EditorContainer>
+  </EditorContainer> }
   {showLoginPrompt && <Auth.Preview />}
 </Container>
 
 <!--
   @frame { title: "Initial / auth", width: 1212, height: 768, x: 1843, y: -745 }
 -->
-<Preview showFileMenu showLoginPrompt  />
+<Preview showEditor showFileMenu showLoginPrompt  />
 
 
 <!--
-  @frame { title: "Logged in / file select", width: 1216, height: 767, x: 501, y: 274 }
+  @frame { title: "Projects / Desktop", width: 1219, height: 767, x: 4103, y: 171 }
 -->
-<Preview showFileMenu loggedIn  />
+<Preview showFileMenu showProjects loggedIn  />
+
+<!--
+  @frame { title: "Projects / Tablet", width: 458, height: 767, x: 4086, y: 1993 }
+-->
+<Preview  showFileMenu showProjects  />
+
+<!--
+  @frame { title: "Projects / Small Desktop", width: 981, height: 767, x: 4096, y: 1062 }
+-->
+<Preview showFileMenu showProjects  />
+
+
+<!--
+  @frame { title: "Logged in / file select", width: 1216, height: 767, x: 493, y: 270 }
+-->
+<Preview showEditor showFileMenu loggedIn  />
 
 
 <!--
@@ -80,11 +99,11 @@
 
 
 <!--
-  @frame { title: "Compact / responsive", width: 643, height: 768, x: 515, y: 1429 }
+  @frame { title: "Compact / responsive", width: 643, height: 768, x: 532, y: 1874 }
 -->
 <Preview />
 
 <!--
-  @frame { title: "Compact / Explicit", width: 1795, height: 931, x: 1313, y: 1436 }
+  @frame { title: "Compact / Explicit", width: 1795, height: 931, x: 1330, y: 1881 }
 -->
 <Preview compact />

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { projectFilesHookUsed, projectHookUsed } from "../actions";
 import { useAppStore } from "./useAppStore";
 
-export function* useProject(projectId: number) {
+export function useProject(projectId: number) {
   const { state, dispatch } = useAppStore();
   useEffect(() => {
     dispatch(projectHookUsed({ projectId }));
@@ -11,7 +11,7 @@ export function* useProject(projectId: number) {
   return state.currentProject || { done: false };
 }
 
-export function* useProjectFiles(projectId: number) {
+export function useProjectFiles(projectId: number) {
   const { state, dispatch } = useAppStore();
   useEffect(() => {
     dispatch(projectFilesHookUsed({ projectId }));
@@ -20,7 +20,7 @@ export function* useProjectFiles(projectId: number) {
   return state.currentProjectFiles || { done: false };
 }
 
-export function* useProjects() {
+export function useProjects() {
   const { state, dispatch } = useAppStore();
   useEffect(() => {
     dispatch(projectFilesHookUsed(null));

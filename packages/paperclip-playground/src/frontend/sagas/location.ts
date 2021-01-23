@@ -23,6 +23,7 @@ import {
   getProjectsRequestChanged
 } from "../actions";
 import { eventChannel } from "redux-saga";
+import { result } from "lodash";
 
 export function* handleLocation() {
   yield fork(handleRoutes);
@@ -36,6 +37,11 @@ export function* handleRoutes() {
       //   return yield call(api.getProjects);
       // });
     },
+    [APP_LOCATIONS.PROJECTS]: function*() {
+      yield request(getProjectsRequestChanged, function*() {
+        return yield call(api.getProjects);
+      });
+    },
     [APP_LOCATIONS.PROJECT]: function*({ projectId }) {
       const project: Result<Project> = yield request(
         getProjectRequestChanged,
@@ -43,6 +49,7 @@ export function* handleRoutes() {
           return yield call(api.getProject, projectId);
         }
       );
+      console.log(project);
 
       if (project.error) {
         return;

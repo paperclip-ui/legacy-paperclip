@@ -24,7 +24,7 @@
       border-bottom-right-radius: var(--border-radius);
     }
 
-    @include breakpoints.mobile {
+    @include breakpoints.tablet {
       width: 100%;
       height: 80%;
     }
@@ -48,7 +48,7 @@
 </div>
 
 <!--
-  @frame { title: "CodeMode", width: 1024, height: 768, x: 1312, y: 180 }
+  @frame { visible: false, title: "CodeMode", width: 1024, height: 768, x: 1309, y: 171 }
 -->
 <Container export component as="Preview" {slim?}>
   <Toolbar.Preview {showFileMenu?} />

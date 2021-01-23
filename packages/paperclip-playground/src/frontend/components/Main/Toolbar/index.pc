@@ -208,6 +208,9 @@
       </style>
     </i>
   </Select.MenuItem>
+  <Select.MenuItem onClick={onMyProjectsClick}>
+    My Projects
+  </Select.MenuItem>
 </Select.Menu>
 
 <!--

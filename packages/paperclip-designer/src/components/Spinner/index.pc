@@ -1,4 +1,4 @@
-
+<import src="styles/utils.pc" as="utils" />
 
 <style>
 
@@ -25,8 +25,18 @@
       opacity: 1;
     }
   }
+</style>
 
-  .throbber {
+<!--
+  @frame { visible: false }
+-->
+<div export component as="default" className:immediate="immediate">
+  <style>
+    --size: 30px;
+    background: rgb(117, 117, 117);
+    @include utils.mask;
+    mask-position: 50%;
+    mask-image: url(./spinner2.svg);
     --speed: 1s;
     position: absolute;
     top: calc(50% - 0.5rem);
@@ -35,42 +45,44 @@
     width: 1rem;
     animation: rotate infinite linear, fadeIn 1.4s forwards;
     
-    &--immediate {
+    &.immediate {
       animation: rotate infinite linear;
     }
+    animation-duration: var(--speed, 1s);
 
-    & {
-      animation-duration: var(--speed, 1s);
+    &:within(:global(.dark)) {
+      background: white;
     }
-  }
-</style>
-
-<!--
-  @frame { visible: false }
--->
-<div export component as="default" className="throbber" className:immediate="throbber--immediate" style="--speed: {speed?};">
-  <style>
-    --size: 30px;
-    background: rgb(117, 117, 117);
-    width: var(--size);
-    height: var(--size);
-    mask-size: var(--size);
-    mask-position: 50%;
-    mask-image: url(./spinner.svg);
+  
   </style>
 </div>
 
 
 
 <!--
-  @frame { title: "Spinner" }
+  @frame { visible: false, title: "Spinner", width: 559, height: 435, x: 1092, y: 330 }
 -->
-<div>
+<div export component as="Preview" className:dark="dark" className:light="light">
   <style>
     background: rgb(255, 255, 255);
     width: 100%;
     height: 100%;
     position: absolute;
+    &.dark {
+      background: rgb(26, 26, 26);
+    }
   </style>
   <default speed="2s" />
 </div>
+
+
+
+<!--
+  @frame { title: "Spinner /light", width: 177, height: 113, x: 465, y: 333 }
+-->
+<Preview light />
+
+<!--
+  @frame { title: "Spinner /dark", width: 243, height: 169, x: 746, y: 292 }
+-->
+<Preview dark />

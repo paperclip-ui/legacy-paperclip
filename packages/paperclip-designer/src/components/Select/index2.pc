@@ -35,6 +35,10 @@
       background: transparent;
       cursor: default;
     }
+    &:within(.round):first-child {
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+    }
     &:last-child {
       border-bottom-left-radius: 2px;
       border-bottom-right-radius: 2px;
@@ -47,7 +51,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Menu"  className="v2 {className?}" {style?} className:right="right">
+<div export component as="Menu"  className:round="round" className="v2 {className?}" {style?} className:right="right">
   <style>
 
     color: var(--select-text-color);
@@ -65,6 +69,10 @@
       right: 0px;
     }
     
+    &.round {
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+    }
 
     &:within(:global(.light)) {
       --select-text-color: var(--text-color);

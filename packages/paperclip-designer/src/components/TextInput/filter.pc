@@ -1,0 +1,35 @@
+<import src="styles/utils.pc" as="utils" />
+<import src="./index.pc" as="TextInput" />
+
+<!--
+  @frame { visible: false }
+-->
+
+<div export component as="FilterTextInput" className="v2 {className?}" className:dark="dark">
+  
+  <style>
+    position: relative;
+    display: inline-block;
+    max-width: 200px;
+  </style>
+  <i>
+    <style>
+     position: absolute;
+      top: 50%;
+      color: var(--grey-200);
+      left: 22px;
+      transform: translate(-100%, -50%);
+      --size: 15px;
+      @include utils.mask;
+      mask-image: url(./magnify.svg);
+    </style>
+  </i>
+
+  <TextInput placeholder="Filter" ref={filterInputRef} {defaultValue?} {onKeyPress?} {onChange?} {autoFocus}>
+    <style>
+      padding-left: 25px;
+    </style>
+  </TextInput>
+
+</div>
+

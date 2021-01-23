@@ -4,7 +4,7 @@
 <!--
   @frame { visible: false }
 -->
-<input export component as="default" className="input v2 {className?}" {onBlur?} {ref?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autoFocus?}>
+<input export component as="default" className="input v2 {className?}" className:dark="dark" {onBlur?} {ref?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autoFocus?}>
   <style>
     background: var(--background-50);
     border: 0;
@@ -16,7 +16,7 @@
     color: var(--text-color);
     box-sizing: border-box;
     border: 2px solid var(--background-200);
-    &:within(:global(.dark)) {
+    &:within(:global(.dark)), &.dark {
       background: var(--grey-night-100);
       border: 2px solid var(--grey-night-300);
       color: var(--grey-100);
