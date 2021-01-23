@@ -26,11 +26,14 @@ export const Canvas = React.memo(() => {
     }
   } = state;
 
-  const expanded = isExpanded(state);
+  const expanded = isExpanded(state.designer);
 
   const actualTransform = useMemo(() => {
     if (expanded) {
-      const frame = getFrameFromIndex(getActiveFrameIndex(state), state);
+      const frame = getFrameFromIndex(
+        getActiveFrameIndex(state.designer),
+        state.designer
+      );
       if (!frame) {
         return transform;
       }
@@ -117,7 +120,9 @@ export const Canvas = React.memo(() => {
         }}
       >
         <Frames
-          expandedFrameIndex={expanded ? getActiveFrameIndex(state) : null}
+          expandedFrameIndex={
+            expanded ? getActiveFrameIndex(state.designer) : null
+          }
         />
       </styles.Inner>
       <Tools />

@@ -8,5 +8,9 @@
   }
 </style>
 
+
+<!--
+  @frame { width: 1024, height: 768, x: 66, y: -11 }
+-->
 <div export component as="Preview" 
   className="preview $theme.full-wh" />

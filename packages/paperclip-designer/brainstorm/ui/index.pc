@@ -179,15 +179,41 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 81, y: 0 }
+-->
+
+
 <div component as="BoxModel" className="BoxModel">
   
 </div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 1024, y: 81 }
+-->
+
+
 <div component as="PaddingModel" className="PaddingModel BoxModel">
   
 </div>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 1303, y: -55 }
+-->
+
+
+
+
 <div component as="MarginModel" className="MarginModel BoxModel">
   
 </div>
+
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 1189, y: 100 }
+-->
 
 
 <div component as="Field" className="Field" className:col1="col1" className:col2="col2">
@@ -195,12 +221,32 @@
   <div className="input">{input}</div>
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -288, y: 421 }
+-->
+
+
+
+
 <div component as="Dropdown" className="Dropdown">
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 1264, y: 49 }
+-->
+
+
 <div component as="LineHeightIcon"  className="LineHeightIcon">
 </div>
+
+
+<!--
+  @frame { width: 1024, height: 768, x: -450, y: 91 }
+-->
+
 
 <div className="Editor">
 

@@ -13,14 +13,11 @@ import {
   VirtualText,
   VirtualElement,
   patchVirtNode,
-  VirtualFragment,
   memoize,
   computeVirtJSObject,
   NodeAnnotations,
-  VirtualFrame,
-  getVirtTarget
+  VirtualFrame
 } from "paperclip-utils";
-import { EventEmitter } from "events";
 import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
@@ -314,7 +311,7 @@ export class FramesRenderer {
       // mount child node _is_ the frame -- can only ever be one child
       traverseNativeNode(frame._mount.childNodes[0], (node, path) => {
         if (node.nodeType === 1) {
-          const pathStr = i + "." + path.join(".");
+          const pathStr = path.length ? i + "." + path.join(".") : i;
           if (pathStr) {
             const clientRect = (node as Element).getBoundingClientRect();
 

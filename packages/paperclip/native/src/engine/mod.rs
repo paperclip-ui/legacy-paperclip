@@ -183,13 +183,10 @@ impl Engine {
   }
 
   // Called when files are deleted
-  pub async fn purge_unlinked_files(
-    &mut self,
-  ) -> Result<(), EngineError> {
+  pub async fn purge_unlinked_files(&mut self) -> Result<(), EngineError> {
     let deleted_uris: Vec<String> = self.vfs.purge_unlinked_files();
 
     for uri in deleted_uris {
-
       let dep_uris: Vec<String> = self.dependency_graph.flatten_dependents(&uri);
 
       self.dependency_graph.dependencies.remove(&uri);
@@ -197,17 +194,14 @@ impl Engine {
       self.import_graph.remove(&uri);
 
       self.dispatch(EngineDelegateEvent::Deleted(DeletedFileEvent {
-        uri: uri.to_string()
+        uri: uri.to_string(),
       }));
 
-      // inefficient, but purge_unlinked_files won't get called often - this is okay for now I guess 
+      // inefficient, but purge_unlinked_files won't get called often - this is okay for now I guess
       for dep in dep_uris {
         self.load(&dep).await;
       }
     }
-    
-
-    
 
     Ok(())
   }

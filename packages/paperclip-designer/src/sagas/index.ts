@@ -83,7 +83,11 @@ function handleSock(onMessage, onClient) {
   };
 
   client.onmessage = message => {
-    onMessage(JSON.parse(message.data));
+    const now = Date.now();
+    const ev = JSON.parse(message.data);
+    // console.log("EV", ev);
+    onMessage(ev);
+    // console.log(now - Date.now());
   };
 
   return () => {
@@ -137,7 +141,7 @@ function* handleRenderer(getState: AppStateSelector) {
       const state: AppState = yield select(getState);
       yield put(
         pcVirtObjectEdited({
-          mutations: getSelectedFrames(state).map(frame => {
+          mutations: getSelectedFrames(state.designer).map(frame => {
             return {
               exprSource: frame.source,
               action: {
@@ -161,7 +165,7 @@ function* handleRenderer(getState: AppStateSelector) {
 
     yield put(
       pcVirtObjectEdited({
-        mutations: getSelectedFrames(state).map(frame => {
+        mutations: getSelectedFrames(state.designer).map(frame => {
           return {
             exprSource: frame.source,
             action: {
@@ -236,7 +240,7 @@ function* handleCanvasMouseUp(
     state.designer.canvas.mousePosition,
     state.designer.canvas.transform,
     state.designer.boxes,
-    isExpanded(state) ? getActiveFrameIndex(state) : null
+    isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
   );
 
   // maybe offscreen
@@ -363,7 +367,7 @@ function* handleCopy(getState: AppStateSelector) {
 
   yield takeEvery(ev, function*(event: ClipboardEvent) {
     const state: AppState = yield select(getState);
-    const frames = getSelectedFrames(state);
+    const frames = getSelectedFrames(state.designer);
 
     if (!frames.length) {
       return;

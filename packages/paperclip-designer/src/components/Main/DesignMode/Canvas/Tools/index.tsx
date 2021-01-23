@@ -45,7 +45,7 @@ export const Tools = () => {
     }
   } = state;
   const toolsRef = useRef<HTMLDivElement>();
-  const toolsLayerEnabled = !isExpanded(state);
+  const toolsLayerEnabled = !isExpanded(state.designer);
 
   const onMouseMove = useCallback(
     (event: React.MouseEvent<any>) => {
@@ -87,7 +87,7 @@ export const Tools = () => {
       canvas.mousePosition,
       canvas.transform,
       boxes,
-      isExpanded(state) ? getActiveFrameIndex(state) : null
+      isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
     )?.box;
 
   const virtualNode = allLoadedPCFileData[currentFileUri];

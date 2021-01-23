@@ -17,7 +17,8 @@ import {
   getPreviewChildren,
   getCurrentPreviewFrameBoxes,
   updateShared,
-  editSharedDocuments
+  editSharedDocuments,
+  DesignerState
 } from "../state";
 import { produce } from "immer";
 import Automerge from "automerge";
@@ -49,324 +50,20 @@ const MIN_ZOOM = 0.01;
 const MAX_ZOOM = 6400 / 100;
 
 export default (state: AppState, action: Action) => {
+  const now = Date.now();
+  const newDesigner = reduceDesigner(state.designer, action);
+  if (newDesigner !== state.designer) {
+    state = { ...state, designer: newDesigner };
+  }
+
   switch (action.type) {
-    case ActionType.FRAME_TITLE_CLICKED: {
-      return selectNode(
-        String(action.payload.frameIndex),
-        action.payload.shiftKey,
-        state
-      );
-    }
-    case ActionType.BIRDSEYE_FILTER_CHANGED: {
-      return produce(state, newState => {
-        newState.designer.birdseyeFilter = action.payload.value;
-      });
-    }
-    case ServerActionType.INIT_PARAM_DEFINED: {
-      return produce(state, newState => {
-        newState.designer.readonly = action.payload.readonly;
-        newState.designer.availableBrowsers = action.payload.availableBrowsers;
-      });
-    }
-    case ServerActionType.BROWSERSTACK_BROWSERS_LOADED: {
-      return produce(state, newState => {
-        newState.designer.availableBrowsers = action.payload;
-      });
-    }
-    case ActionType.LOCATION_CHANGED: {
-      if (!state.designer.syncLocationWithUI) {
-        return state;
-      }
-      return handleLocationChange(state, action);
-    }
-    case ActionType.REDIRECT_REQUESTED: {
-      return handleLocationChange(state, action);
-    }
-    case ActionType.GET_ALL_SCREENS_REQUESTED: {
-      return produce(state, newState => {
-        newState.designer.showBirdseye = true;
-        newState.designer.loadingBirdseye = true;
-      });
-    }
-    case ActionType.RENDERER_MOUNTED: {
-      return produce(state, newState => {
-        newState.designer.mountedRendererIds.push(action.payload.id);
-      });
-    }
-    case ActionType.RENDERER_UNMOUNTED: {
-      return produce(state, newState => {
-        newState.designer.mountedRendererIds.splice(
-          newState.designer.mountedRendererIds.indexOf(action.payload.id),
-          1
-        );
-        newState.designer.currentEngineEvents[action.payload.id] = undefined;
-      });
-    }
-    case ActionType.ENGINE_DELEGATE_CHANGED: {
-      // delete file
-      if (action.payload.kind === EngineDelegateEventKind.Deleted) {
-        state = produce(state, newState => {
-          delete newState.designer.allLoadedPCFileData[action.payload.uri];
-        });
-
-        return state;
-      }
-
-      state = produce(state, newState => {
-        // if centered initially but there were no frames, then the canvas never really centered
-        // so flag it do so now.
-        if (
-          state.designer.centeredInitial &&
-          getCurrentPreviewFrameBoxes(state).length === 0
-        ) {
-          newState.designer.centeredInitial = false;
-        }
-
-        if (action.payload.kind === EngineDelegateEventKind.Error) {
-          newState.designer.currentError = action.payload;
-        } else {
-          newState.designer.currentError = undefined;
-        }
-
-        for (const id of newState.designer.mountedRendererIds) {
-          if (!newState.designer.currentEngineEvents[id]) {
-            newState.designer.currentEngineEvents[id] = [];
-          }
-          newState.designer.currentEngineEvents[id].push(action.payload);
-        }
-        newState.designer.allLoadedPCFileData = updateAllLoadedData(
-          newState.designer.allLoadedPCFileData,
-          action.payload
-        );
-      });
-
-      state = maybeCenterCanvas(state);
-
-      return state;
-    }
-    // case ActionType.EXPAND_FRAME_BUTTON_CLICKED: {
-    //   return produce(state, newState => {
-    //     newState.designer.expandedFrameInfo = {
-    //       frameIndex: action.payload.frameIndex,
-    //       previousCanvasTransform: state.canvas.transform
-    //     };
-
-    //     const frame = getFrameFromIndex(action.payload.frameIndex, state);
-    //     const frameBounds = getFrameBounds(frame);
-
-    //     newState.designer.canvas.transform.x = -frameBounds.x;
-    //     newState.designer.canvas.transform.y = -frameBounds.y;
-    //     newState.designer.canvas.transform.z = 1;
-    //   });
-    // }
-    case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
-      return minimizeWindow(state);
-    }
-    case ActionType.PC_FILE_OPENED: {
-      state = produce(state, newState => {
-        newState.designer.allLoadedPCFileData[
-          state.designer.ui.query.currentFileUri
-        ] = action.payload;
-      });
-      state = maybeCenterCanvas(state);
-      return state;
-    }
-    case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
-      return produce(state, newState => {
-        newState.designer.currentEngineEvents[action.payload.id].splice(
-          0,
-          action.payload.count
-        );
-      });
-    }
-    case ActionType.FS_ITEM_CLICKED: {
-      state = produce(state, newState => {
-        if (isPaperclipFile(action.payload.url)) {
-          newState.designer.centeredInitial = false;
-        }
-      });
-      return state;
-    }
-    case ActionType.RECTS_CAPTURED: {
-      return produce(state, newState => {
-        newState.designer.boxes = mergeBoxesFromClientRects(
-          newState.designer.boxes,
-          action.payload
-        );
-      });
-    }
-    case ActionType.ENGINE_ERRORED: {
-      return produce(state, newState => {
-        newState.designer.currentError = action.payload;
-      });
-    }
-    case ActionType.ERROR_BANNER_CLICKED: {
-      return produce(state, newState => {
-        newState.designer.currentError = null;
-      });
-    }
-    case ActionType.GLOBAL_BACKSPACE_KEY_SENT:
-    case ActionType.GLOBAL_ESCAPE_KEY_PRESSED: {
-      // Don't do this until deselecting can be handled properly
-      return produce(state, newState => {
-        newState.designer.selectedNodePaths = [];
-        newState.designer.showBirdseye = false;
-      });
-    }
-    case ActionType.GLOBAL_META_KEY_DOWN: {
-      // TODO
-      return produce(state, newState => {
-        newState.designer.metaKeyDown = true;
-      });
-    }
-    case ActionType.GLOBAL_META_KEY_UP: {
-      // TODO
-      return produce(state, newState => {
-        newState.designer.metaKeyDown = false;
-      });
-    }
-    case ActionType.GLOBAL_OPTION_KEY_DOWN: {
-      // TODO
-      return produce(state, newState => {
-        newState.designer.optionKeyDown = true;
-      });
-    }
-    case ActionType.GLOBAL_OPTION_KEY_UP: {
-      // TODO
-      return produce(state, newState => {
-        newState.designer.optionKeyDown = false;
-      });
-    }
-    case ActionType.CANVAS_MOUSE_UP: {
-      if (state.designer.resizerMoving) {
-        return state;
-      }
-      if (!state.designer.canvas.transform.x) {
-        return state;
-      }
-      // Don't do this until deselecting can be handled properly
-      const nodePath = getNodeInfoAtPoint(
-        state.designer.canvas.mousePosition,
-        state.designer.canvas.transform,
-        state.designer.boxes,
-        isExpanded(state) ? getActiveFrameIndex(state) : null
-      )?.nodePath;
-      return selectNode(nodePath, action.payload.shiftKey, state);
-    }
     case ExternalActionType.CONTENT_CHANGED: {
       return updateShared(state, {
         documents: Automerge.change(state.shared.documents, documents => {
-          documents[action.payload.fileUri] = new Automerge.Text();
-          documents[action.payload.fileUri].insertAt(
-            0,
-            ...action.payload.content.split("")
+          documents[action.payload.fileUri] = new Automerge.Text(
+            action.payload.content
           );
         })
-      });
-    }
-    case ActionType.ZOOM_INPUT_CHANGED: {
-      return produce(state, newState => {
-        newState.designer.canvas = setCanvasZoom(
-          action.payload.value / 100,
-          state.designer.canvas,
-          newState.designer.boxes,
-          true
-        );
-      });
-    }
-    case ActionType.ZOOM_IN_KEY_PRESSED:
-    case ActionType.ZOOM_IN_BUTTON_CLICKED: {
-      return produce(state, newState => {
-        newState.designer.canvas = setCanvasZoom(
-          normalizeZoom(state.designer.canvas.transform.z) * 2,
-          state.designer.canvas,
-          newState.designer.boxes
-        );
-      });
-    }
-    case ActionType.ZOOM_OUT_KEY_PRESSED:
-    case ActionType.ZOOM_OUT_BUTTON_CLICKED: {
-      return produce(state, newState => {
-        newState.designer.canvas = setCanvasZoom(
-          normalizeZoom(state.designer.canvas.transform.z) / 2,
-          state.designer.canvas,
-          newState.designer.boxes
-        );
-      });
-    }
-    case ActionType.CANVAS_PAN_START: {
-      return produce(state, newState => {
-        newState.designer.canvas.panning = true;
-      });
-    }
-    case ActionType.CANVAS_PAN_END: {
-      return produce(state, newState => {
-        newState.designer.canvas.panning = false;
-      });
-    }
-    case ActionType.RESIZER_STOPPED_MOVING:
-    case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING: {
-      return produce(state, newState => {
-        newState.designer.resizerMoving = false;
-      });
-    }
-    case ActionType.BIRDSEYE_TOP_FILTER_BLURRED:
-    case ActionType.GRID_BUTTON_CLICKED:
-    case ActionType.GRID_HOTKEY_PRESSED: {
-      return produce(state, newState => {
-        newState.designer.showBirdseye = !newState.designer.showBirdseye;
-        if (
-          newState.designer.showBirdseye &&
-          !newState.designer.loadedBirdseyeInitially
-        ) {
-          newState.designer.loadingBirdseye = true;
-        }
-      });
-    }
-
-    // happens when grid view is requested
-    case ServerActionType.ALL_PC_CONTENT_LOADED: {
-      return produce(state, newState => {
-        newState.designer.loadingBirdseye = false;
-        newState.designer.loadedBirdseyeInitially = true;
-        newState.designer.allLoadedPCFileData = action.payload;
-      });
-    }
-    case ActionType.RESIZER_MOVED:
-    case ActionType.RESIZER_PATH_MOUSE_MOVED: {
-      return produce(state, newState => {
-        newState.designer.resizerMoving = true;
-        const frames = getSelectedFrames(newState as AppState);
-
-        if (!frames.length) {
-          console.warn(`Trying to resize non-frame`);
-          return;
-        }
-
-        const oldBox = mergeBoxes(
-          state.designer.selectedNodePaths.map(
-            nodePath => newState.designer.boxes[nodePath]
-          )
-        );
-
-        for (
-          let i = 0, { length } = state.designer.selectedNodePaths;
-          i < length;
-          i++
-        ) {
-          const frame = frames[i];
-          const nodePath = state.designer.selectedNodePaths[i];
-          Object.assign(
-            frame,
-            updateAnnotations(frame, {
-              frame: updateBox(
-                newState.designer.boxes[nodePath],
-                oldBox,
-                action.payload.newBounds
-              )
-            })
-          );
-        }
       });
     }
     case ActionType.GLOBAL_Z_KEY_DOWN: {
@@ -397,131 +94,8 @@ export default (state: AppState, action: Action) => {
         documents: Automerge.redo(state.shared.documents)
       });
     }
-    case ActionType.GLOBAL_H_KEY_DOWN: {
-      return produce(state, newState => {
-        const frames = getSelectedFrames(newState as AppState);
-
-        for (
-          let i = 0, { length } = newState.designer.selectedNodePaths;
-          i < length;
-          i++
-        ) {
-          const frame = frames[i];
-          const annotations: NodeAnnotations =
-            (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
-          Object.assign(
-            frame,
-            updateAnnotations(frame, {
-              frame: {
-                visible: !(annotations.frame?.visible !== false)
-              }
-            })
-          );
-        }
-      });
-    }
-    case ActionType.FRAME_TITLE_CHANGED: {
-      return produce(state, newState => {
-        const frame = getFrameFromIndex(
-          action.payload.frameIndex,
-          newState as AppState
-        );
-
-        if (!frame) {
-          console.warn(`Trying to resize non-frame`);
-          return;
-        }
-
-        Object.assign(
-          frame,
-          updateAnnotations(frame, {
-            frame: {
-              title: action.payload.value
-            }
-          })
-        );
-      });
-
-      return state;
-    }
-    case ActionType.CANVAS_PANNED: {
-      // do not allow panning when expanded
-      if (isExpanded(state)) {
-        return state;
-      }
-
-      const {
-        delta: { x: deltaX, y: deltaY },
-        metaKey,
-        mousePosition,
-        size
-      } = action.payload;
-
-      const delta2X = deltaX * PAN_X_SENSITIVITY;
-      const delta2Y = deltaY * PAN_Y_SENSITIVITY;
-
-      return produce(state, newState => {
-        const transform = newState.designer.canvas.transform;
-
-        if (metaKey) {
-          newState.designer.canvas.transform = centerTransformZoom(
-            newState.designer.canvas.transform,
-            {
-              x: 0,
-              y: 0,
-              width: size.width,
-              height: size.height
-            },
-            clamp(
-              transform.z + (transform.z * -deltaY) / ZOOM_SENSITIVITY,
-              MIN_ZOOM,
-              MAX_ZOOM
-            ),
-            mousePosition
-          );
-        } else {
-          newState.designer.canvas.transform.x = transform.x - delta2X; // clamp(transform.x - delta2X, 0, size.width * transform.z - size.width);
-          newState.designer.canvas.transform.y = transform.y - delta2Y; // clamp(transform.y - delta2Y, 0, size.height * transform.z - size.height);
-        }
-        Object.assign(
-          newState.designer.canvas,
-          clampCanvasTransform(
-            newState.designer.canvas,
-            newState.designer.boxes
-          )
-        );
-      });
-    }
-    case ActionType.CANVAS_MOUSE_MOVED: {
-      return produce(state, newState => {
-        newState.designer.canvas.mousePosition = action.payload;
-      });
-    }
-    case ActionType.DIR_LOADED: {
-      return produce(state, newState => {
-        if (action.payload.isRoot) {
-          newState.designer.projectDirectory = action.payload.item;
-        } else {
-          const target = getFSItem(
-            action.payload.item.absolutePath,
-            newState.designer.projectDirectory
-          );
-          if (target) {
-            (target as Directory).children = action.payload.item.children;
-          }
-        }
-      });
-    }
-    case ActionType.CANVAS_RESIZED: {
-      state = produce(state, newState => {
-        newState.designer.canvas.size = action.payload;
-      });
-
-      state = maybeCenterCanvas(state);
-
-      return state;
-    }
   }
+  console.log(Date.now() - now);
   return state;
 };
 
@@ -604,17 +178,21 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
   return frame;
 };
 
-const selectNode = (nodePath: string, shiftKey: boolean, state: AppState) => {
-  return produce(state, newState => {
+const selectNode = (
+  nodePath: string,
+  shiftKey: boolean,
+  designer: DesignerState
+) => {
+  return produce(designer, newDesigner => {
     if (nodePath == null) {
-      newState.designer.selectedNodePaths = [];
+      newDesigner.selectedNodePaths = [];
       return;
     }
     if (shiftKey) {
       // allow toggle selecting elements - necessary since escape key doesn't work.
-      newState.designer.selectedNodePaths.push(nodePath);
+      newDesigner.selectedNodePaths.push(nodePath);
     } else {
-      newState.designer.selectedNodePaths = [nodePath];
+      newDesigner.selectedNodePaths = [nodePath];
     }
   });
 };
@@ -632,25 +210,455 @@ const updateBox = (box: Box, oldBox: Box, newBox: Box) => {
   };
 };
 
-const minimizeWindow = (state: AppState) => {
-  if (!isExpanded(state)) {
-    return state;
+const minimizeWindow = (designer: DesignerState) => {
+  if (!isExpanded(designer)) {
+    return designer;
   }
-  return maybeCenterCanvas(state, true);
+  return maybeCenterCanvas(designer, true);
 };
 
 const handleLocationChange = (
-  state: AppState,
+  designer: DesignerState,
   { payload }: LocationChanged | RedirectRequested
 ) => {
-  return produce(state, newState => {
-    Object.assign(newState.designer.ui, payload);
+  return produce(designer, newDesigner => {
+    Object.assign(newDesigner.ui, payload);
 
     // clean path & ensure that it looks like "/canvas" instead of "/canvas/";
-    newState.designer.ui.pathname = path
-      .normalize(newState.designer.ui.pathname)
+    newDesigner.ui.pathname = path
+      .normalize(newDesigner.ui.pathname)
       .replace(/\/$/, "");
 
-    newState.designer.centeredInitial = false;
+    newDesigner.centeredInitial = false;
   });
+};
+
+const reduceDesigner = (
+  designer: DesignerState,
+  action: Action
+): DesignerState => {
+  switch (action.type) {
+    case ActionType.FRAME_TITLE_CLICKED: {
+      return selectNode(
+        String(action.payload.frameIndex),
+        action.payload.shiftKey,
+        designer
+      );
+    }
+    case ActionType.BIRDSEYE_FILTER_CHANGED: {
+      return produce(designer, newDesigner => {
+        newDesigner.birdseyeFilter = action.payload.value;
+      });
+    }
+    case ServerActionType.INIT_PARAM_DEFINED: {
+      return produce(designer, newDesigner => {
+        newDesigner.readonly = action.payload.readonly;
+        newDesigner.availableBrowsers = action.payload.availableBrowsers;
+      });
+    }
+    case ServerActionType.BROWSERSTACK_BROWSERS_LOADED: {
+      return produce(designer, newDesigner => {
+        newDesigner.availableBrowsers = action.payload;
+      });
+    }
+    case ActionType.LOCATION_CHANGED: {
+      if (!designer.syncLocationWithUI) {
+        return designer;
+      }
+      return handleLocationChange(designer, action);
+    }
+    case ActionType.REDIRECT_REQUESTED: {
+      return handleLocationChange(designer, action);
+    }
+    case ActionType.GET_ALL_SCREENS_REQUESTED: {
+      return produce(designer, newDesigner => {
+        newDesigner.showBirdseye = true;
+        newDesigner.loadingBirdseye = true;
+      });
+    }
+    case ActionType.RENDERER_MOUNTED: {
+      return produce(designer, newDesigner => {
+        newDesigner.mountedRendererIds.push(action.payload.id);
+      });
+    }
+    case ActionType.RENDERER_UNMOUNTED: {
+      return produce(designer, newDesigner => {
+        newDesigner.mountedRendererIds.splice(
+          newDesigner.mountedRendererIds.indexOf(action.payload.id),
+          1
+        );
+        newDesigner.currentEngineEvents[action.payload.id] = undefined;
+      });
+    }
+    case ActionType.ENGINE_DELEGATE_CHANGED: {
+      // delete file
+      if (action.payload.kind === EngineDelegateEventKind.Deleted) {
+        designer = produce(designer, newDesigner => {
+          delete newDesigner.allLoadedPCFileData[action.payload.uri];
+        });
+
+        return designer;
+      }
+
+      designer = produce(designer, newDesigner => {
+        // if centered initially but there were no frames, then the canvas never really centered
+        // so flag it do so now.
+        if (
+          designer.centeredInitial &&
+          getCurrentPreviewFrameBoxes(designer).length === 0
+        ) {
+          newDesigner.centeredInitial = false;
+        }
+
+        if (action.payload.kind === EngineDelegateEventKind.Error) {
+          newDesigner.currentError = action.payload;
+        } else {
+          newDesigner.currentError = undefined;
+        }
+
+        for (const id of newDesigner.mountedRendererIds) {
+          if (!newDesigner.currentEngineEvents[id]) {
+            newDesigner.currentEngineEvents[id] = [];
+          }
+          newDesigner.currentEngineEvents[id].push(action.payload);
+        }
+        newDesigner.allLoadedPCFileData = updateAllLoadedData(
+          newDesigner.allLoadedPCFileData,
+          action.payload
+        );
+      });
+
+      designer = maybeCenterCanvas(designer);
+
+      return designer;
+    }
+    // case ActionType.EXPAND_FRAME_BUTTON_CLICKED: {
+    //   return produce(designer, newDesigner => {
+    //     newDesigner.expandedFrameInfo = {
+    //       frameIndex: action.payload.frameIndex,
+    //       previousCanvasTransform: designer.canvas.transform
+    //     };
+
+    //     const frame = getFrameFromIndex(action.payload.frameIndex, designer);
+    //     const frameBounds = getFrameBounds(frame);
+
+    //     newDesigner.canvas.transform.x = -frameBounds.x;
+    //     newDesigner.canvas.transform.y = -frameBounds.y;
+    //     newDesigner.canvas.transform.z = 1;
+    //   });
+    // }
+    case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
+      return minimizeWindow(designer);
+    }
+    case ActionType.PC_FILE_OPENED: {
+      designer = produce(designer, newDesigner => {
+        newDesigner.allLoadedPCFileData[designer.ui.query.currentFileUri] =
+          action.payload;
+      });
+      designer = maybeCenterCanvas(designer);
+      return designer;
+    }
+    case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
+      return produce(designer, newDesigner => {
+        newDesigner.currentEngineEvents[action.payload.id].splice(
+          0,
+          action.payload.count
+        );
+      });
+    }
+    case ActionType.FS_ITEM_CLICKED: {
+      designer = produce(designer, newDesigner => {
+        if (isPaperclipFile(action.payload.url)) {
+          newDesigner.centeredInitial = false;
+        }
+      });
+      return designer;
+    }
+    case ActionType.RECTS_CAPTURED: {
+      return produce(designer, newDesigner => {
+        newDesigner.boxes = mergeBoxesFromClientRects(
+          newDesigner.boxes,
+          action.payload
+        );
+      });
+    }
+    case ActionType.ENGINE_ERRORED: {
+      return produce(designer, newDesigner => {
+        newDesigner.currentError = action.payload;
+      });
+    }
+    case ActionType.ERROR_BANNER_CLICKED: {
+      return produce(designer, newDesigner => {
+        newDesigner.currentError = null;
+      });
+    }
+    case ActionType.GLOBAL_BACKSPACE_KEY_SENT:
+    case ActionType.GLOBAL_ESCAPE_KEY_PRESSED: {
+      // Don't do this until deselecting can be handled properly
+      return produce(designer, newDesigner => {
+        newDesigner.selectedNodePaths = [];
+        newDesigner.showBirdseye = false;
+      });
+    }
+    case ActionType.GLOBAL_META_KEY_DOWN: {
+      // TODO
+      return produce(designer, newDesigner => {
+        newDesigner.metaKeyDown = true;
+      });
+    }
+    case ActionType.GLOBAL_META_KEY_UP: {
+      // TODO
+      return produce(designer, newDesigner => {
+        newDesigner.metaKeyDown = false;
+      });
+    }
+    case ActionType.GLOBAL_OPTION_KEY_DOWN: {
+      // TODO
+      return produce(designer, newDesigner => {
+        newDesigner.optionKeyDown = true;
+      });
+    }
+    case ActionType.GLOBAL_OPTION_KEY_UP: {
+      // TODO
+      return produce(designer, newDesigner => {
+        newDesigner.optionKeyDown = false;
+      });
+    }
+    case ActionType.CANVAS_MOUSE_UP: {
+      if (designer.resizerMoving) {
+        return designer;
+      }
+      if (!designer.canvas.transform.x) {
+        return designer;
+      }
+      // Don't do this until deselecting can be handled properly
+      const nodePath = getNodeInfoAtPoint(
+        designer.canvas.mousePosition,
+        designer.canvas.transform,
+        designer.boxes,
+        isExpanded(designer) ? getActiveFrameIndex(designer) : null
+      )?.nodePath;
+      return selectNode(nodePath, action.payload.shiftKey, designer);
+    }
+    case ActionType.ZOOM_INPUT_CHANGED: {
+      return produce(designer, newDesigner => {
+        newDesigner.canvas = setCanvasZoom(
+          action.payload.value / 100,
+          designer.canvas,
+          newDesigner.boxes,
+          true
+        );
+      });
+    }
+    case ActionType.ZOOM_IN_KEY_PRESSED:
+    case ActionType.ZOOM_IN_BUTTON_CLICKED: {
+      return produce(designer, newDesigner => {
+        newDesigner.canvas = setCanvasZoom(
+          normalizeZoom(designer.canvas.transform.z) * 2,
+          designer.canvas,
+          newDesigner.boxes
+        );
+      });
+    }
+    case ActionType.ZOOM_OUT_KEY_PRESSED:
+    case ActionType.ZOOM_OUT_BUTTON_CLICKED: {
+      return produce(designer, newDesigner => {
+        newDesigner.canvas = setCanvasZoom(
+          normalizeZoom(designer.canvas.transform.z) / 2,
+          designer.canvas,
+          newDesigner.boxes
+        );
+      });
+    }
+    case ActionType.CANVAS_PAN_START: {
+      return produce(designer, newDesigner => {
+        newDesigner.canvas.panning = true;
+      });
+    }
+    case ActionType.CANVAS_PAN_END: {
+      return produce(designer, newDesigner => {
+        newDesigner.canvas.panning = false;
+      });
+    }
+    case ActionType.RESIZER_STOPPED_MOVING:
+    case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING: {
+      return produce(designer, newDesigner => {
+        newDesigner.resizerMoving = false;
+      });
+    }
+    case ActionType.BIRDSEYE_TOP_FILTER_BLURRED:
+    case ActionType.GRID_BUTTON_CLICKED:
+    case ActionType.GRID_HOTKEY_PRESSED: {
+      return produce(designer, newDesigner => {
+        newDesigner.showBirdseye = !newDesigner.showBirdseye;
+        if (newDesigner.showBirdseye && !newDesigner.loadedBirdseyeInitially) {
+          newDesigner.loadingBirdseye = true;
+        }
+      });
+    }
+
+    // happens when grid view is requested
+    case ServerActionType.ALL_PC_CONTENT_LOADED: {
+      return produce(designer, newDesigner => {
+        newDesigner.loadingBirdseye = false;
+        newDesigner.loadedBirdseyeInitially = true;
+        newDesigner.allLoadedPCFileData = action.payload;
+      });
+    }
+    case ActionType.RESIZER_MOVED:
+    case ActionType.RESIZER_PATH_MOUSE_MOVED: {
+      return produce(designer, newDesigner => {
+        newDesigner.resizerMoving = true;
+        const frames = getSelectedFrames(newDesigner);
+
+        if (!frames.length) {
+          console.warn(`Trying to resize non-frame`);
+          return;
+        }
+
+        const oldBox = mergeBoxes(
+          designer.selectedNodePaths.map(
+            nodePath => newDesigner.boxes[nodePath]
+          )
+        );
+
+        for (
+          let i = 0, { length } = designer.selectedNodePaths;
+          i < length;
+          i++
+        ) {
+          const frame = frames[i];
+          const nodePath = designer.selectedNodePaths[i];
+          Object.assign(
+            frame,
+            updateAnnotations(frame, {
+              frame: updateBox(
+                newDesigner.boxes[nodePath],
+                oldBox,
+                action.payload.newBounds
+              )
+            })
+          );
+        }
+      });
+    }
+    case ActionType.GLOBAL_H_KEY_DOWN: {
+      return produce(designer, newDesigner => {
+        const frames = getSelectedFrames(newDesigner);
+
+        for (
+          let i = 0, { length } = newDesigner.selectedNodePaths;
+          i < length;
+          i++
+        ) {
+          const frame = frames[i];
+          const annotations: NodeAnnotations =
+            (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
+          Object.assign(
+            frame,
+            updateAnnotations(frame, {
+              frame: {
+                visible: !(annotations.frame?.visible !== false)
+              }
+            })
+          );
+        }
+      });
+    }
+    case ActionType.FRAME_TITLE_CHANGED: {
+      return produce(designer, newDesigner => {
+        const frame = getFrameFromIndex(action.payload.frameIndex, newDesigner);
+
+        if (!frame) {
+          console.warn(`Trying to resize non-frame`);
+          return;
+        }
+
+        Object.assign(
+          frame,
+          updateAnnotations(frame, {
+            frame: {
+              title: action.payload.value
+            }
+          })
+        );
+      });
+    }
+    case ActionType.CANVAS_PANNED: {
+      // do not allow panning when expanded
+      if (isExpanded(designer)) {
+        return designer;
+      }
+
+      const {
+        delta: { x: deltaX, y: deltaY },
+        metaKey,
+        mousePosition,
+        size
+      } = action.payload;
+
+      const delta2X = deltaX * PAN_X_SENSITIVITY;
+      const delta2Y = deltaY * PAN_Y_SENSITIVITY;
+
+      return produce(designer, newDesigner => {
+        const transform = newDesigner.canvas.transform;
+
+        if (metaKey) {
+          newDesigner.canvas.transform = centerTransformZoom(
+            newDesigner.canvas.transform,
+            {
+              x: 0,
+              y: 0,
+              width: size.width,
+              height: size.height
+            },
+            clamp(
+              transform.z + (transform.z * -deltaY) / ZOOM_SENSITIVITY,
+              MIN_ZOOM,
+              MAX_ZOOM
+            ),
+            mousePosition
+          );
+        } else {
+          newDesigner.canvas.transform.x = transform.x - delta2X; // clamp(transform.x - delta2X, 0, size.width * transform.z - size.width);
+          newDesigner.canvas.transform.y = transform.y - delta2Y; // clamp(transform.y - delta2Y, 0, size.height * transform.z - size.height);
+        }
+        Object.assign(
+          newDesigner.canvas,
+          clampCanvasTransform(newDesigner.canvas, newDesigner.boxes)
+        );
+      });
+    }
+    case ActionType.CANVAS_MOUSE_MOVED: {
+      return produce(designer, newDesigner => {
+        newDesigner.canvas.mousePosition = action.payload;
+      });
+    }
+    case ActionType.DIR_LOADED: {
+      return produce(designer, newDesigner => {
+        if (action.payload.isRoot) {
+          newDesigner.projectDirectory = action.payload.item;
+        } else {
+          const target = getFSItem(
+            action.payload.item.absolutePath,
+            newDesigner.projectDirectory
+          );
+          if (target) {
+            (target as Directory).children = action.payload.item.children;
+          }
+        }
+      });
+    }
+    case ActionType.CANVAS_RESIZED: {
+      designer = produce(designer, newDesigner => {
+        newDesigner.canvas.size = action.payload;
+      });
+
+      designer = maybeCenterCanvas(designer);
+
+      return designer;
+    }
+  }
+
+  return designer;
 };

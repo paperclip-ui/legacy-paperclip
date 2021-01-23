@@ -160,7 +160,7 @@ export const useMultipleFrames = ({
       const renderer = renderers[fileUri];
       renderer.collectRects();
     }
-  }, [renderers, isExpanded(state), state.designer.canvas.size]);
+  }, [renderers, isExpanded(state.designer), state.designer.canvas.size]);
 
   useEffect(() => {
     for (const fileUri in renderers) {
@@ -230,7 +230,7 @@ export const useFrames = ({
     }
   }, [
     renderer,
-    isExpanded(state),
+    isExpanded(state.designer),
     state.designer.currentEngineEvents,
     state.designer.canvas.size,
     frameData?.preview

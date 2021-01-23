@@ -20,7 +20,7 @@ export const Toolbar = () => {
   const {
     designer: { canvas, projectDirectory, sharable, readonly, birdseyeFilter }
   } = state;
-  const expanded = isExpanded(state);
+  const expanded = isExpanded(state.designer);
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
   const showingBirdsEye = state.designer.ui.pathname === "/all";
   const [showZoomInput, setShowZoomInput] = useState<boolean>();

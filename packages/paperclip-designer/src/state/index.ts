@@ -193,12 +193,12 @@ export const INITIAL_STATE: AppState = {
   }
 };
 
-export const isExpanded = (state: AppState) => {
-  return Boolean(state.designer.ui.query.expanded);
+export const isExpanded = (designer: DesignerState) => {
+  return Boolean(designer.ui.query.expanded);
 };
 
-export const getActiveFrameIndex = (state: AppState) => {
-  return state.designer.ui.query.frame && Number(state.designer.ui.query.frame);
+export const getActiveFrameIndex = (designer: DesignerState) => {
+  return designer.ui.query.frame && Number(designer.ui.query.frame);
 };
 
 export const IS_WINDOWS = os.platform() === "win32";
@@ -299,25 +299,24 @@ export const getFSItem = (absolutePath: string, current: FSItem) => {
   return null;
 };
 
-export const getSelectedFrames = (state: AppState): VirtualFrame[] => {
-  return state.designer.selectedNodePaths
+export const getSelectedFrames = (designer: DesignerState): VirtualFrame[] => {
+  return designer.selectedNodePaths
     .map(nodePath => {
       const frameIndex = Number(nodePath);
-      return getFrameFromIndex(frameIndex, state);
+      return getFrameFromIndex(frameIndex, designer);
     })
     .filter(Boolean);
 };
 
 export const getFrameFromIndex = (
   frameIndex: number,
-  state: AppState
+  designer: DesignerState
 ): VirtualFrame => {
-  if (!state.designer.allLoadedPCFileData) {
+  if (!designer.allLoadedPCFileData) {
     return null;
   }
   const preview =
-    state.designer.allLoadedPCFileData[state.designer.ui.query.currentFileUri]
-      ?.preview;
+    designer.allLoadedPCFileData[designer.ui.query.currentFileUri]?.preview;
   if (!preview) {
     return null;
   }
@@ -371,17 +370,17 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
   return frameBoxes;
 };
 
-export const getCurrentPreviewFrameBoxes = (state: AppState) => {
+export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
   const currentPCData =
-    state.designer.allLoadedPCFileData[state.designer.ui.query?.currentFileUri];
+    designer.allLoadedPCFileData[designer.ui.query?.currentFileUri];
 
   return currentPCData?.preview
     ? getPreviewFrameBoxes(currentPCData?.preview).filter(Boolean)
     : [];
 };
 
-const getAllFrameBounds = (state: AppState) => {
-  return mergeBoxes(getCurrentPreviewFrameBoxes(state));
+const getAllFrameBounds = (designer: DesignerState) => {
+  return mergeBoxes(getCurrentPreviewFrameBoxes(designer));
 };
 
 const INITIAL_ZOOM_PADDING = 50;
@@ -392,37 +391,33 @@ const INITIAL_ZOOM_PADDING = 50;
  * file data is loaded
  */
 
-export const maybeCenterCanvas = (state: AppState, force?: boolean) => {
+export const maybeCenterCanvas = (designer: DesignerState, force?: boolean) => {
   if (
     force ||
-    (!state.designer.centeredInitial &&
-      state.designer.allLoadedPCFileData[
-        state.designer.ui.query.currentFileUri
-      ] &&
-      state.designer.canvas.size?.width &&
-      state.designer.canvas.size?.height)
+    (!designer.centeredInitial &&
+      designer.allLoadedPCFileData[designer.ui.query.currentFileUri] &&
+      designer.canvas.size?.width &&
+      designer.canvas.size?.height)
   ) {
-    state = produce(state, newState => {
-      newState.designer.centeredInitial = true;
+    designer = produce(designer, newDesigner => {
+      newDesigner.centeredInitial = true;
     });
 
     let targetBounds: Box;
-    const currentFrameIndex = getActiveFrameIndex(state);
+    const currentFrameIndex = getActiveFrameIndex(designer);
 
     if (currentFrameIndex != null) {
       const frameBoxes = getPreviewFrameBoxes(
-        state.designer.allLoadedPCFileData[
-          state.designer.ui.query.currentFileUri
-        ].preview
+        designer.allLoadedPCFileData[designer.ui.query.currentFileUri].preview
       );
       targetBounds = frameBoxes[currentFrameIndex];
     }
 
-    state = centerEditorCanvas(state, targetBounds);
+    designer = centerEditorCanvas(designer, targetBounds);
 
-    return state;
+    return designer;
   }
-  return state;
+  return designer;
 };
 
 export const updateShared = (state: AppState, shared: Partial<SharedState>) => {
@@ -448,12 +443,12 @@ export const editSharedDocuments = (
 
 // https://github.com/crcn/tandem/blob/10.0.0/packages/front-end/src/state/index.ts#L1304
 export const centerEditorCanvas = (
-  state: AppState,
+  designer: DesignerState,
   innerBounds?: Box,
   zoomOrZoomToFit: boolean | number = true
 ) => {
   if (!innerBounds) {
-    innerBounds = getAllFrameBounds(state);
+    innerBounds = getAllFrameBounds(designer);
   }
 
   // no windows loaded
@@ -462,17 +457,15 @@ export const centerEditorCanvas = (
     0
   ) {
     console.warn(` Cannot center when bounds has no size`);
-    return state;
+    return designer;
   }
 
   const {
-    designer: {
-      canvas: {
-        transform,
-        size: { width, height }
-      }
+    canvas: {
+      transform,
+      size: { width, height }
     }
-  } = state;
+  } = designer;
 
   const centered = {
     x: -innerBounds.x + width / 2 - innerBounds.width / 2,
@@ -489,8 +482,8 @@ export const centerEditorCanvas = (
       ? zoomOrZoomToFit
       : transform.z;
 
-  state = produce(state, newState => {
-    newState.designer.canvas.transform = centerTransformZoom(
+  designer = produce(designer, newDesigner => {
+    newDesigner.canvas.transform = centerTransformZoom(
       {
         ...centered,
         z: 1
@@ -505,5 +498,5 @@ export const centerEditorCanvas = (
     );
   });
 
-  return state;
+  return designer;
 };
