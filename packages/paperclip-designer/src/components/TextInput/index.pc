@@ -4,8 +4,9 @@
 <!--
   @frame { visible: false }
 -->
-<input export component as="default" className="input v2 {className?}" className:dark="dark" {onBlur?} {ref?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autoFocus?}>
+<input export component as="default" className="input v2 {className?}" className:dark="dark" className:light="light" {onBlur?} {onFocus?} {ref?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autoFocus?}>
   <style>
+
     background: var(--background-50);
     border: 0;
     border-radius: var(--border-radius-100);

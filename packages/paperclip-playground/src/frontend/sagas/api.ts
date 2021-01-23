@@ -5,12 +5,19 @@ import * as vea from "paperclip-designer/src/actions";
 import {
   AccountConnected,
   ActionType,
+  DeleteProjectConfirmed,
+  FileRenamed,
+  getProjectsRequestChanged,
   loggedOut,
+  ProjectRenamed,
+  RemoveFileClicked,
   savedProject,
   sessionLoaded
 } from "../actions";
 import * as api from "../api";
 import { mapValues } from "lodash";
+import { request } from "./utils";
+import { actionCreator } from "paperclip-designer/src/actions/base";
 
 export function* handleAPI() {
   yield fork(handleAccountConnected);
@@ -44,6 +51,7 @@ function* handleProjectChanges() {
 
   //   }
   // })
+  
 
   function* createNewProject() {
     const state: AppState = yield select();
@@ -62,8 +70,8 @@ function* handleProjectChanges() {
 
     // first handle updates
     for (const path in state.shared.documents) {
-      const newContent = state.shared.documents[path].toString();
-      const oldContent = _lastSavedState.shared.documents[path].toString();
+      const newContent = state.shared.documents[path];
+      const oldContent = _lastSavedState.shared.documents[path];
 
       if (oldContent !== newContent) {
         yield call(
@@ -77,7 +85,7 @@ function* handleProjectChanges() {
 
     // next, handle deletes
     for (const path in _lastSavedState.shared.documents) {
-      const newContent = state.shared.documents[path].toString();
+      const newContent = state.shared.documents[path];
 
       if (newContent == null) {
         yield call(api.deleteProjectFile, state.currentProject.data!.id, path);
@@ -85,6 +93,12 @@ function* handleProjectChanges() {
     }
 
     _lastSavedState = state;
+  }
+
+  function* loadProjects() {
+    yield request(getProjectsRequestChanged, function*() {
+      return yield call(api.getProjects);
+    })
   }
 
   yield takeEvery(ActionType.GET_PROJECT_FILES_REQUEST_CHANGED, function*() {
@@ -109,6 +123,14 @@ function* handleProjectChanges() {
       yield put(savedProject({ data: true, done: true }));
     }
   );
+
+  yield takeEvery([ActionType.DELETE_PROJECT_CONFIRMED], function*(action: DeleteProjectConfirmed) {
+    yield call(api.deleteProject, action.payload.projectId);
+    yield call(loadProjects)
+  });
+  yield takeEvery([ActionType.PROJECT_RENAMED], function*(action: ProjectRenamed) {
+    yield call(api.updateProject, action.payload.projectId, { name: action.payload.newName });
+  });
 }
 
 function* loadSession() {

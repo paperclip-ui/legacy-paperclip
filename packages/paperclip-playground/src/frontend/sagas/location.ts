@@ -49,7 +49,6 @@ export function* handleRoutes() {
           return yield call(api.getProject, projectId);
         }
       );
-      console.log(project);
 
       if (project.error) {
         return;

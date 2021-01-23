@@ -12,6 +12,7 @@ import Automerge from "automerge";
 import { updateShared } from "paperclip-designer/src/state";
 import { historyReducer } from "paperclip-designer/src/reducers/history"
 import { mapValues, result } from "lodash";
+import { stat } from "fs";
 
 export const reducer = historyReducer((state: AppState, action: Action) => {
   state = veReducer(state, action as VEAction) as AppState;
@@ -21,9 +22,7 @@ export const reducer = historyReducer((state: AppState, action: Action) => {
       // undo may remove files
       if (!state.shared.documents[state.currentCodeFileUri]) {
         state = produce(state, newState => {
-          const uri = (newState.currentCodeFileUri =
-            newState.currentProject?.data?.mainFileUri ||
-            Object.keys(state.shared.documents)[0]);
+          const uri = getMainUri(state);
           newState.designer.ui.query.currentFileUri = uri;
         });
       }
@@ -134,6 +133,30 @@ export const reducer = historyReducer((state: AppState, action: Action) => {
         newState.currentCodeFileUri = action.payload.uri;
       });
     }
+    case ActionType.REMOVE_FILE_CLICKED: {
+      state = updateShared(state, {
+        documents: produce(state.shared.documents, documents => {
+          delete documents[action.payload.uri];
+        })
+      }) as AppState;
+
+      const currentUri = state.currentCodeFileUri === action.payload.uri ? getMainUri(state) : state.currentCodeFileUri;
+
+      state = maybeOpenUri(state, action.payload.uri, currentUri);
+      return state;
+    }
+    case ActionType.FILE_RENAMED: {
+      const newUri = getNewFilePath(action.payload.newName);
+      state = produce(state, newState => {
+        const content = newState.shared.documents[action.payload.uri];
+          delete newState.shared.documents[action.payload.uri];
+          newState.shared.documents[newUri] = content;
+      });
+
+      state = maybeOpenUri(state, action.payload.uri, newUri);
+
+      return state;
+    }
     case ActionType.NEW_FILE_NAME_ENTERED: {
       const uri = getNewFilePath(action.payload.value);
 
@@ -151,3 +174,21 @@ export const reducer = historyReducer((state: AppState, action: Action) => {
 
   return state;
 }, [ActionType.GET_PROJECT_REQUEST_CHANGED]);
+
+
+const maybeOpenUri = (state: AppState, checkUri: string, newUri: string) => {
+  return produce(state, newState => {
+
+    if (newState.currentCodeFileUri === checkUri) {
+      newState.currentCodeFileUri = newUri;
+    }
+
+    if (newState.designer.ui.query.currentFileUri === checkUri) {
+      newState.designer.ui.query.currentFileUri = newUri;
+    }
+  });
+}
+
+const getMainUri = (state: AppState) => (state.currentCodeFileUri =
+  state.currentProject?.data?.mainFileUri ||
+  Object.keys(state.shared.documents)[0]);

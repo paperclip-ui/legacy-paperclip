@@ -58,7 +58,7 @@
   {showProjects && <Toolbar.Preview loggedIn minimal />}
   {showProjects && <Projects.Preview />}
   {showEditor && <EditorContainer {compact?}>
-    <CodeMode.Preview {showFileMenu} slim />
+    <CodeMode.Preview {showFileMenu} {showFileOptions} slim />
     <Main.Preview v2 dark designer showGrid />
   </EditorContainer> }
   {showLoginPrompt && <Auth.Preview />}
@@ -87,9 +87,12 @@
 
 
 <!--
-  @frame { title: "Logged in / file select", width: 1216, height: 767, x: 493, y: 270 }
+  @frame { title: "Logged in / file select", width: 1216, height: 767, x: 492, y: 267 }
 -->
 <Preview showEditor showFileMenu loggedIn  />
+
+
+
 
 
 <!--

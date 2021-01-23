@@ -1,6 +1,6 @@
 <import src="styles/utils.pc" as="utils" />
 <import src="components/Theme/index.pc" as="theme" />
-<import src="components/TextInput/index.pc" as="TextInput" />
+<import src="components/TextInput/filter.pc" as="FilterTextInput" />
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 329, y: 77 }
@@ -164,38 +164,6 @@
 </div>
 
 
-
-<!--
-  @frame { visible: false }
--->
-
-<div export component as="Filter" className="v2">
-  <style>
-    position: relative;
-    display: inline-block;
-
-    :self(:before) {
-      position: absolute;
-      top: 50%;
-      color: var(--grey-200);
-      left: 22px;
-      transform: translate(-100%, -50%);
-      --size: 15px;
-      @include utils.mask;
-      mask-image: url(./magnify.svg);
-    }
-  </style>
-
-  <TextInput placeholder="Filter" ref={filterInputRef} {defaultValue?} {onKeyPress?} {onChange?} {autoFocus}>
-    <style>
-      max-width: 200px;    
-      padding-left: 25px;
-    </style>
-  </TextInput>
-
-</div>
-
-
 <!--
   @frame { visible: false }
 -->
@@ -247,7 +215,7 @@
 
   <!-- header -->
   <Header>
-    <Filter />
+    <FilterTextInput.FilterTextInput />
   </Header>
   <div>
     <style>

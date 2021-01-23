@@ -1,3 +1,5 @@
+import { Project } from "../state";
+
 export const connectAccount = async (kind: string, params: any) => {
   return await requestJSON(`/connect/${kind}`, {
     method: "POST",
@@ -40,6 +42,36 @@ export const updateProjectFile = async (
   );
 };
 
+export const updateProjectFilePath = async (
+  projectId: number,
+  path: string,
+  newPath: string
+) => {
+  return await request(
+    `/projects/${projectId}/files/${encodeURIComponent(path)}`,
+    {
+      method: "PATCH",
+      body: { uri: newPath },
+    }
+  );
+};
+
+export const updateProject = async (
+  projectId: number,
+  properties: Partial<{
+    name: string;
+    mainFileUri?: string
+  }>
+) => {
+  return await requestJSON(
+    `/projects/${projectId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(properties),
+    }
+  );
+};
+
 export const deleteProjectFile = async (projectId: number, path: string) => {
   return await request(
     `/projects/${projectId}/files/${encodeURIComponent(path)}`,
@@ -55,6 +87,11 @@ export const getUser = async () => {
 
 export const getProject = async (projectId: string) => {
   return await requestJSON(`/projects/${projectId}`);
+};
+export const deleteProject = async (projectId: number) => {
+  return await requestJSON(`/projects/${projectId}`, {
+    method: "DELETE"
+  });
 };
 
 export const getProjects = async () => {

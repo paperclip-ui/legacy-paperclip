@@ -139,8 +139,16 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 599, y: -202 }
 -->
-<Select.MenuItem export component as="FileMenuItem" {noFocus?} {active?} {onClick?}>
+<Select.MenuItem export component as="FileMenuItem" {noFocus?} {hover?} {onClick?}>
+  <style>
+    &:hover {
+      .more-file-select {
+          display: block;
+      }
+    }
+  </style>
   {children}
+  {moreSelect}
 </Select.MenuItem>
 
 
@@ -169,6 +177,52 @@
   </i>
 </div>
 
+<Select.Container export component as="MoreFileSelect" {onClick} {onBlur} className="$more-file-select">
+  <style>
+    // necessary to pop out of scroll
+    position: absolute;
+    right: 0px;
+    z-index: 99999;
+    display: none;
+
+  </style>
+  {children}
+  {menu}
+</Select.Container>
+
+<Select.Menu export component as="MoreFileMenu">
+  <style>
+    min-width: 150px;
+  </style>
+  <Select.MenuItem onClick={onRenameClick}>Rename</Select.MenuItem>
+  <Select.MenuItem onClick={onRemoveClick}>
+    Delete
+    <i>
+      <style>
+        --size: 0.9em;
+        @include utils.mask;
+        mask-image: url("./trash.svg");
+      </style>
+    </i>
+  </Select.MenuItem>
+</Select.Menu>
+
+<div export component as="MoreFileButton" {onClick} className:highlight="highlight" {onClick}>
+  <style>
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width:24px;
+  </style>
+  <i>
+    <style>
+      --size: 18px;
+      @include utils.mask;
+      mask-image: url("./more.svg");
+      color: var(--grey-300);
+    </style>
+  </i>
+</div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 325, y: -475 }
@@ -188,7 +242,8 @@
 <div export component as="FileMenuItems">
   <style>
     max-height: 300px;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
   </style>
   {children}
 </div>
@@ -220,7 +275,7 @@
         <FileMenuItem>
           Colors.pc
         </FileMenuItem>
-        <FileMenuItem active>
+        <FileMenuItem hover>
           Colors.pc
         </FileMenuItem>
         <FileMenuItem>

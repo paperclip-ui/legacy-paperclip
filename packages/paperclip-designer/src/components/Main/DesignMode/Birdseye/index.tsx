@@ -27,6 +27,7 @@ import {
 import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useFrames, useMultipleFrames } from "../Canvas/Frames";
 import { useTextInput } from "../../../TextInput";
+import { FilterTextInput } from "../../../TextInput/filter.pc";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";
 import { birdseyeFilterChanged, redirectRequest } from "../../../../actions";
@@ -134,7 +135,7 @@ const Header = memo(({ filter, onFilter }: HeaderProps) => {
   });
   return (
     <styles.Header>
-      <styles.Filter
+      <FilterTextInput
         filterInputRef={filterInputProps.ref}
         {...filterInputProps}
         autoFocus

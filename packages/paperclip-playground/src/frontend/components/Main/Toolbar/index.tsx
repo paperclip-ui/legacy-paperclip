@@ -84,7 +84,7 @@ export const MainToolbar = () => {
   return (
     <>
       <styles.Toolbar
-        documentName="Untitled"
+        documentName={state.currentProject?.data?.name || "Untitled"}
         leftControls={leftControls}
         rightControls={rightControls}
       />

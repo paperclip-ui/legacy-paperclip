@@ -10,11 +10,13 @@ import { noop } from "lodash";
 type UseTextInputProps = {
   value: string;
   onValueChange?: (value: string) => any;
+  select?: boolean;
 };
 
 export const useTextInput = ({
   value,
-  onValueChange = noop
+  onValueChange = noop,
+  select = false
 }: UseTextInputProps) => {
   const ref = useRef<HTMLInputElement>();
   const [internalValue, setInternalValue] = useState<string>(value);
@@ -34,9 +36,16 @@ export const useTextInput = ({
     onValueChange(value);
   };
 
+  const onFocus = (e) => {
+    if (select) {
+      e.target.select();
+    }
+  }
+
   const inputProps = {
     ref,
     onChange,
+    onFocus,
     defaultValue: internalValue
   };
 

@@ -8,6 +8,7 @@ import {
   contentChangesCreated,
   engineCrashed,
   engineLoaded,
+  GetProjectFilesRequestChanged,
   WorkerInitialized
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
@@ -109,14 +110,22 @@ const init = async () => {
   //   }
   // };
 
-  const handleProjectLoaded = () => {};
+  const handleProjectLoaded = (action: GetProjectFilesRequestChanged) => {
+    if (!action.payload.result.data) {
+      return;
+    }
+    _engine.purgeUnlinkedFiles();
+  };
 
   const handleRedirect = (action: RedirectRequested) => {
     tryOpeningCurrentFile();
   };
 
+
   self.onmessage = ({ data: action }: MessageEvent) => {
     switch (action.type) {
+      case ActionType.GET_PROJECT_FILES_REQUEST_CHANGED:
+        return handleProjectLoaded(action);
       case ActionType.WORKER_INITIALIZED:
         return handleInitialized(action);
       case ActionType.APP_STATE_DIFFED:

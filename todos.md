@@ -1,29 +1,14 @@
 
 ### Immediate
 
-
-- ability to change name
-- nav to project on click
-- server-side 
-- project options (gear)
-  - remove
-  - rename
-
-
-- projects
-  - ability to change names (pen icon)
-  - ability to delete
-    - confirm - type name
-  - visibility options (public / private)
-
-
-- ability to change title of document 
+- ability to create new project from projects page
+- ability to upload image (explicit file upload button)
+- share url
 
 - profile menu
-  - create new project
+  - create new project - focus on title
   - see projects
 
-- remove automerge (for now)
 
 - cleanup
   - going to / should display blank page

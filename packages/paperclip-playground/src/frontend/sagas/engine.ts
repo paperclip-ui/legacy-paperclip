@@ -1,5 +1,5 @@
 import { eventChannel } from "redux-saga";
-import { cancel, fork, put, select, take, takeEvery } from "redux-saga/effects";
+import { call, cancel, cancelled, fork, put, select, take, takeEvery } from "redux-saga/effects";
 import { AppState, WorkerState, getWorkerState } from "../state";
 import { EngineDelegate } from "paperclip";
 import * as path from "path";
@@ -23,67 +23,53 @@ import {
 } from "paperclip-designer/src/actions";
 
 export function* handleEngine() {
-  yield fork(syncCurrentProjectWithEngine);
-}
-
-function* syncCurrentProjectWithEngine() {
-  while (1) {
-    const chan = yield fork(startEngine);
-    yield put(clientConnected(null));
-
-    // project project is loaded, then dump current engine for new one
-    yield take((action: Action) => {
-      return (
-        action.type === ActionType.GET_PROJECT_FILES_REQUEST_CHANGED &&
-        action.payload.result.data != null
-      );
-    });
-
-    yield cancel(chan);
-  }
+  yield fork(startEngine);
+  yield put(clientConnected(null));
 }
 
 function* startEngine() {
-  const worker = new Worker(new URL("./engine-worker.ts", import.meta.url));
-  let _state: WorkerState = getWorkerState(yield select());
-  const incomming = eventChannel(emit => {
-    worker.onmessage = ({ data: action }: MessageEvent) => {
-      emit(action);
-    };
-    worker.postMessage(workerInitialized({ state: _state }));
-    return () => {
-      worker.terminate();
-    };
-  });
+    const worker = new Worker(new URL("./engine-worker.ts", import.meta.url));
 
-  yield takeEvery(incomming, function*(action: Action) {
-    yield put(action);
-  });
+    let _state: WorkerState = getWorkerState(yield select());
+    const incomming = eventChannel(emit => {
+      worker.onmessage = ({ data: action }: MessageEvent) => {
+        emit(action);
+      };
+      worker.postMessage(workerInitialized({ state: _state }));
+      return () => {
+        worker.onmessage = undefined;
+        worker.terminate();
+      };
+    });
 
-  // Sync app state with worker
-  yield takeEvery(
-    [
-      ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED,
-      ActionType.CODE_EDITOR_TEXT_CHANGED,
-      VEActionType.REDIRECT_REQUESTED,
-      ActionType.GET_PROJECT_REQUEST_CHANGED,
-      VEActionType.PC_VIRT_OBJECT_EDITED,
-      ActionType.CONTENT_CHANGES_CREATED,
-      VEActionType.GLOBAL_Z_KEY_DOWN,
-      VEActionType.GLOBAL_Y_KEY_DOWN
-    ],
-    function*(action) {
-      const newState: AppState = yield select();
-      const workerState: WorkerState = getWorkerState(newState);
-      const ops = compare(_state, workerState);
-      _state = workerState;
+    yield takeEvery(incomming, function*(action: Action) {
+      yield put(action);
+    });
 
-      if (ops.length) {
-        console.log("OP");
-        worker.postMessage(appStateDiffed({ ops }));
+    // Sync app state with worker
+    yield takeEvery(
+      [
+        ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED,
+        ActionType.CODE_EDITOR_TEXT_CHANGED,
+        ActionType.GET_PROJECT_FILES_REQUEST_CHANGED,
+        VEActionType.REDIRECT_REQUESTED,
+        VEActionType.PC_VIRT_OBJECT_EDITED,
+        ActionType.CONTENT_CHANGES_CREATED,
+        VEActionType.GLOBAL_Z_KEY_DOWN,
+        VEActionType.GLOBAL_Y_KEY_DOWN
+      ],
+      function*(action) {
+        const newState: AppState = yield select();
+        const workerState: WorkerState = getWorkerState(newState);
+        const ops = compare(_state, workerState);
+        _state = workerState;
+
+        if (ops.length) {
+          worker.postMessage(appStateDiffed({ ops }));
+        }
+
+        worker.postMessage(action);
       }
+    );
 
-      worker.postMessage(action);
-    }
-  );
 }

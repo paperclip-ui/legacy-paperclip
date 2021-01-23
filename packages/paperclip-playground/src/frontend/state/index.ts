@@ -23,6 +23,7 @@ export type Project = {
   name: string;
   mainFileUri?: string;
   files: ProjectFile[];
+  updatedAt: string;
 };
 
 export type ProjectFile = {

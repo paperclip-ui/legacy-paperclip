@@ -4,6 +4,7 @@
 <import src="paperclip-designer/src/components/Spinner/index.pc" as="Spinner" />
 <import src="paperclip-designer/src/styles/utils.pc" as="utils" />
 <import src="paperclip-designer/src/components/Select/index2.pc" as="Select" />
+<import src="paperclip-designer/src/components/TextInput/index.pc" as="TextInput" />
 
 
 <!--
@@ -146,7 +147,7 @@
 <!--
   @frame { visible: false }
 -->
-<Select.Container export component as="MoreSelect">
+<Select.Container export component as="MoreSelect" {onClick} {onBlur}>
   {children}
   {menu}
 </Select.Container>
@@ -159,9 +160,9 @@
   <style>
     min-width: 150px;
   </style>
-  <Select.MenuItem>Rename</Select.MenuItem>
-  <Select.MenuItem>Open</Select.MenuItem>
-  <Select.MenuItem>Open</Select.MenuItem>
+  <Select.MenuItem onClick={onRenameClick}>Rename</Select.MenuItem>
+  <Select.MenuItem onClick={onOpenClick}>Open</Select.MenuItem>
+  <Select.MenuItem onClick={onDeleteClick}>Delete</Select.MenuItem>
 </Select.Menu>
 
 
@@ -169,19 +170,33 @@
 <!--
   @frame { visible: false }
 -->
-<button export component as="MoreButton" className="more">
+<button export component as="MoreButton" {onClick} className="more">
   <style>
     --size: 24px;
     visibility: hidden;
     @include utils.mask;
     @include utils.mask-button;
-    && {
-      width: calc(var(--size) /2);
-    }
     mask-image: url("./more.svg");
+    position: relative;
+    left: 12px;
   </style>
   
 </button>
+
+
+<!--
+  @frame { visible: false }
+-->
+<TextInput export component as="NameInput" {defaultValue?} light autoFocus {onBlur} {onChange} {onKeyPress}>
+  <style>
+    && {
+     border-color: transparent;
+     background: var(--grey-200);
+     color: var(--grey-night-300);
+     height: 22px;
+    }
+  </style>
+</TextInput>
 
 <!--
   @frame { visible: false }
@@ -213,7 +228,7 @@
 
   {!loading && <Content>
     <Project name="My simple project" lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} />
-    <Project name="My simple project" lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} />
+    <Project name={<NameInput />} hover lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} />
     <Project name="My simple project" hover lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} moreSelect={<MoreSelect menu={<MoreMenu />}>
       <MoreButton />
     </MoreSelect>} />

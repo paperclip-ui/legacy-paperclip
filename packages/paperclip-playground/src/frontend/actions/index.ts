@@ -20,6 +20,10 @@ export enum ActionType {
   PROJECT_HOOK_USED = "PROJECT_HOOK_USED",
   ALL_PROJECTS_HOOK_USED = "ALL_PROJECTS_HOOK_USED",
   PROJECT_FILES_HOOK_USED = "PROJECT_FILES_HOOK_USED",
+  DELETE_PROJECT_CONFIRMED = "DELETE_PROJECT_CONFIRMED",
+  REMOVE_FILE_CLICKED = "REMOVE_FILE_CLICKED",
+  FILE_RENAMED = "FILE_RENAMED",
+  PROJECT_RENAMED = "PROJECT_RENAMED",
   REQUEST_CHANGED = "REQUEST_CHANGED",
   ENGINE_LOADED = "ENGINE_LOADED",
   GET_PROJECTS_REQUEST_CHANGED = "GET_PROJECTS_REQUEST_CHANGED",
@@ -70,6 +74,8 @@ export type ProjectFilesHookUsed = BaseAction<
   ActionType.PROJECT_FILES_HOOK_USED,
   { projectId: number }
 >;
+export type RemoveFileClicked = BaseAction<ActionType.REMOVE_FILE_CLICKED, { uri: string }>;
+export type FileRenamed = BaseAction<ActionType.FILE_RENAMED, { uri: string, newName: string }>;
 export type ProjectHookUsed = BaseAction<
   ActionType.PROJECT_HOOK_USED,
   { projectId: number }
@@ -98,8 +104,10 @@ type TextEditChange = {
 };
 
 export type EngineLoaded = BaseAction<ActionType.ENGINE_LOADED>;
+export type ProjectRenamed = BaseAction<ActionType.PROJECT_RENAMED, { projectId: number, newName: string }>;
 
 export type LogoutButtonClicked = BaseAction<ActionType.LOGOUT_BUTTON_CLICKED>;
+export type DeleteProjectConfirmed = BaseAction<ActionType.DELETE_PROJECT_CONFIRMED, { projectId: number }>;
 
 export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED>;
 
@@ -145,6 +153,12 @@ export const accountConnected = actionCreator<AccountConnected>(
 export const logoutButtonClicked = actionCreator<LogoutButtonClicked>(
   ActionType.LOGOUT_BUTTON_CLICKED
 );
+export const removeFileClicked = actionCreator<RemoveFileClicked>(
+  ActionType.REMOVE_FILE_CLICKED
+);
+export const fileRenamed = actionCreator<FileRenamed>(
+  ActionType.FILE_RENAMED
+);
 export const sessionLoaded = actionCreator<SessionLoaded>(
   ActionType.SESSION_LOADED
 );
@@ -179,9 +193,11 @@ export const contentChangesCreated = actionCreator<ContentChangesCreated>(
 export const newFileNameEntered = actionCreator<NewFileNameEntered>(
   ActionType.NEW_FILE_NAME_ENTERED
 );
+export const projectRenamed = actionCreator<ProjectRenamed>(ActionType.PROJECT_RENAMED);
 export const fileItemClicked = actionCreator<FileItemClicked>(
   ActionType.FILE_ITEM_CLICKED
 );
+export const deleteProjectConfirmed = actionCreator<DeleteProjectConfirmed>(ActionType.DELETE_PROJECT_CONFIRMED);
 export const syncPanelsClicked = actionCreator<SyncPanelsClicked>(
   ActionType.SYNC_PANELS_CLICKED
 );
@@ -213,18 +229,22 @@ export type Action =
   | AccountConnected
   | SaveButtonClicked
   | SlimEditorTextChanged
+  | DeleteProjectConfirmed
   | LoggedOut
   | SessionLoaded
   | GetProjectsRequestChanged
   | AllProjectsHookUsed
   | ProjectFilesHookUsed
   | ProjectHookUsed
+  | FileRenamed
+  | RemoveFileClicked
   | GetProjectRequestChanged
   | GetProjectFilesRequestChanged
   | EngineCrashed
   | AppStateDiffed
   | SavedProject
   | FileItemClicked
+  | ProjectRenamed
   | SyncPanelsClicked
   | NewFileNameEntered
   | WorkerInitialized
