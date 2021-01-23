@@ -1,6 +1,8 @@
 
 ### Immediate
 
+- automerge for backend
+  - need to diff strings
 
 - projects
   - ability to change names (pen icon)
@@ -14,6 +16,7 @@
   - create new project
   - see projects
 
+- remove automerge (for now)
 
 - cleanup
   - going to / should display blank page

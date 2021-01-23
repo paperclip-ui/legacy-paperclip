@@ -118,6 +118,8 @@ function* handleRenderer(getState: AppStateSelector) {
     window.focus();
   });
 
+  let _previousFileUri;
+
   yield takeEvery(
     [
       ActionType.LOCATION_CHANGED,
@@ -126,7 +128,11 @@ function* handleRenderer(getState: AppStateSelector) {
     ],
     function*() {
       const state: AppState = yield select(getState);
-      yield put(fileOpened({ uri: state.designer.ui.query.currentFileUri }));
+      const currUri = state.designer.ui.query.currentFileUri;
+      if (currUri !== _previousFileUri) {
+        _previousFileUri = currUri;
+        yield put(fileOpened({ uri: state.designer.ui.query.currentFileUri }));
+      }
     }
   );
 

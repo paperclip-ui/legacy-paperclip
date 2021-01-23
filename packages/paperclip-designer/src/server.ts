@@ -26,7 +26,8 @@ import {
   EnvOptionClicked,
   browserstackBrowsersLoaded,
   ServerAction,
-  TitleDoubleClicked
+  TitleDoubleClicked,
+  openedDocument
 } from "./actions";
 import {
   AvailableBrowser,
@@ -203,10 +204,9 @@ export const startServer = async ({
     };
 
     const handleOpen = (uri: string) => {
-      const result = openURI(uri);
-      if (result) {
-        emit(pcFileLoaded(result));
-      }
+      const data = openURI(uri);
+      const document = engine.getVirtualContent(uri) || fs.readFileSync(new URL.URL(uri), "utf8");
+      emit(pcFileLoaded({ uri, document, data }))
     };
 
     // const onPopoutWindowRequested = async ({

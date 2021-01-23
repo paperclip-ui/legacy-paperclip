@@ -50,7 +50,7 @@ const MIN_ZOOM = 0.01;
 const MAX_ZOOM = 6400 / 100;
 
 export default (state: AppState, action: Action) => {
-  const now = Date.now();
+
   const newDesigner = reduceDesigner(state.designer, action);
   if (newDesigner !== state.designer) {
     state = { ...state, designer: newDesigner };
@@ -58,11 +58,25 @@ export default (state: AppState, action: Action) => {
 
   switch (action.type) {
     case ExternalActionType.CONTENT_CHANGED: {
+      if (!state.shared.documents[action.payload.fileUri]) {
+        return state;
+      }
       return updateShared(state, {
         documents: Automerge.change(state.shared.documents, documents => {
-          documents[action.payload.fileUri] = new Automerge.Text(
-            action.payload.content
-          );
+          for (const {rangeOffset, rangeLength, text} of action.payload.changes) {
+            documents[action.payload.fileUri].deleteAt(rangeOffset, rangeLength);
+            documents[action.payload.fileUri].insertAt(rangeOffset, ...text.split(""));
+          }
+        })
+      });
+    }
+    case ActionType.PC_FILE_OPENED: {
+      if (state.shared.documents[action.payload.uri]) {
+        return state;
+      }
+      return updateShared(state, {
+        documents: Automerge.change(state.shared.documents, documents => {
+          documents[action.payload.uri] = new Automerge.Text(action.payload.document);
         })
       });
     }
@@ -95,7 +109,7 @@ export default (state: AppState, action: Action) => {
       });
     }
   }
-  console.log(Date.now() - now);
+
   return state;
 };
 
@@ -353,7 +367,7 @@ const reduceDesigner = (
     case ActionType.PC_FILE_OPENED: {
       designer = produce(designer, newDesigner => {
         newDesigner.allLoadedPCFileData[designer.ui.query.currentFileUri] =
-          action.payload;
+          action.payload.data;
       });
       designer = maybeCenterCanvas(designer);
       return designer;

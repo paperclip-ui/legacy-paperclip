@@ -3,23 +3,23 @@
 
 
 "@algolia/autocomplete-core@^1.0.0-alpha.35":
-  version "1.0.0-alpha.38"
-  resolved "https://registry.npmjs.org/@algolia/autocomplete-core/-/autocomplete-core-1.0.0-alpha.38.tgz#c9f0b2b8bb8970e349469e11db3ffcdd8e8cc673"
-  integrity sha512-mN/cMSNqMvkodkUZ8yMZUof8RquKCjNMGJwt+sejpLuvq4/kTzZZmsJQW7pplWxp+E/axXkdfMwkh/OdRTa8vA==
+  version "1.0.0-alpha.39"
+  resolved "https://registry.npmjs.org/@algolia/autocomplete-core/-/autocomplete-core-1.0.0-alpha.39.tgz#46d4c612243df75da9f2c57edd6f6d7b08633f13"
+  integrity sha512-Iaer2aItGbNlJr5/lI65zR0yfFCEVedBwm8A3MTLB6Gj/A5sXscL+X4mP04hQemUMqZ9c2cLryVN1UI0h09t3w==
   dependencies:
-    "@algolia/autocomplete-shared" "1.0.0-alpha.38"
+    "@algolia/autocomplete-shared" "1.0.0-alpha.39"
 
 "@algolia/autocomplete-preset-algolia@^1.0.0-alpha.35":
-  version "1.0.0-alpha.38"
-  resolved "https://registry.npmjs.org/@algolia/autocomplete-preset-algolia/-/autocomplete-preset-algolia-1.0.0-alpha.38.tgz#38626c05bba8a12d7c527c31dcb9c8bb4838984d"
-  integrity sha512-wwdU1kjUWkOa0XrGi9Smp2eS6R3hfOze1O0AUnAFQ+kGLOpo02DmydU1yXRFfXnYgW3mW97CvsMpMe73BWKkDA==
+  version "1.0.0-alpha.39"
+  resolved "https://registry.npmjs.org/@algolia/autocomplete-preset-algolia/-/autocomplete-preset-algolia-1.0.0-alpha.39.tgz#efbd238cf8fba4ed178344cca70b84addb0f0209"
+  integrity sha512-0E9dvwk1ibGpQk7Kq1M8bqcxZ5ToXowAxcICLpy6SwQoWAV4P5lygkeU3gkkEwqZCzCdRbB+KbahUP62ie26Jw==
   dependencies:
-    "@algolia/autocomplete-shared" "1.0.0-alpha.38"
+    "@algolia/autocomplete-shared" "1.0.0-alpha.39"
 
-"@algolia/autocomplete-shared@1.0.0-alpha.38":
-  version "1.0.0-alpha.38"
-  resolved "https://registry.npmjs.org/@algolia/autocomplete-shared/-/autocomplete-shared-1.0.0-alpha.38.tgz#37a2b927fa718105cbabdc5cdb8ac0d2efbc10b4"
-  integrity sha512-4GPHme9Wm8JN2ZTQWZaOgfJk28Z3WdC9XUaAhdd0Vii0GZkBMXSwlpeLPvKyrpuaocnkrMPafKJOMRHU0baMGQ==
+"@algolia/autocomplete-shared@1.0.0-alpha.39":
+  version "1.0.0-alpha.39"
+  resolved "https://registry.npmjs.org/@algolia/autocomplete-shared/-/autocomplete-shared-1.0.0-alpha.39.tgz#5f661a09150cb5a049d4697eb57fffb4adbceb63"
+  integrity sha512-t0tOPVBjWicKWtysQZbblXmFDRToTgXXtjSeiDCeAfD9lCN7jx52F8kkT1ZnzhmAHcSpcaLagjTLttcyJwJjwQ==
 
 "@algolia/cache-browser-local-storage@4.8.4":
   version "4.8.4"
@@ -2449,10 +2449,10 @@
     is-plain-object "^5.0.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/openapi-types@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-3.0.0.tgz#f73d48af2d21bf4f97fbf38fae43b54699e0dbba"
-  integrity sha512-jOp1CVRw+OBJaZtG9QzZggvJXvyzgDXuW948SWsDiwmyDuCjeYCiF3TDD/qvhpF580RfP7iBIos4AVU6yhgMlA==
+"@octokit/openapi-types@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-3.2.0.tgz#d62d0ff7147dbf4d218616b2484ee2a5d023055d"
+  integrity sha512-X7yW/fpzF3uTAE+LbPD3HEeeU+/49o0V4kNA/yv8jQ3BDpFayv/osTOhY1y1mLXljW2bOJcOCSGZo4jFKPJ6Vw==
 
 "@octokit/plugin-enterprise-rest@^6.0.1":
   version "6.0.1"
@@ -2541,11 +2541,11 @@
     "@types/node" ">= 8"
 
 "@octokit/types@^6.0.0", "@octokit/types@^6.0.3":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@octokit/types/-/types-6.4.0.tgz#f3f47be70bcdb3c26f2c2619f3dd0ced466a265c"
-  integrity sha512-1FEmuVppZE2zG0rBdQlviRz5cp0udyI63zyhBVPrm0FRNAsQkAXU7IYWQg1XvhChFut8YbFYN1usQpk54D6/4w==
+  version "6.5.0"
+  resolved "https://registry.npmjs.org/@octokit/types/-/types-6.5.0.tgz#8f27c52d57eb4096fb05a290f4afc90194e08b19"
+  integrity sha512-mzCy7lkYQv+kM58W37uTg/mWoJ4nvRDRCkjSdqlrgA28hJEYNJTMYiGTvmq39cdtnMPJd0hshysBEAaH4D5C7w==
   dependencies:
-    "@octokit/openapi-types" "^3.0.0"
+    "@octokit/openapi-types" "^3.2.0"
     "@types/node" ">= 8"
 
 "@percy/agent@^0.28.6":
@@ -2817,7 +2817,7 @@
     "@types/estree" "*"
     "@types/json-schema" "*"
 
-"@types/estree@*":
+"@types/estree@*", "@types/estree@^0.0.46":
   version "0.0.46"
   resolved "https://registry.npmjs.org/@types/estree/-/estree-0.0.46.tgz#0fb6bfbbeabd7a30880504993369c4bf1deab1fe"
   integrity sha512-laIjwTQaD+5DukBZaygQ79K1Z0jb1bPEMRrkXSLjtCcZm+abyp5YbrqpSLzD42FwWW6gK/aS4NYpJ804nG2brg==
@@ -4675,9 +4675,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001035, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001173, caniuse-lite@^1.0.30001178:
-  version "1.0.30001178"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001178.tgz#3ad813b2b2c7d585b0be0a2440e1e233c6eabdbc"
-  integrity sha512-VtdZLC0vsXykKni8Uztx45xynytOi71Ufx9T8kHptSw9AL4dpqailUJJHavttuzUe1KYuBYtChiWv+BAb7mPmQ==
+  version "1.0.30001179"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001179.tgz#b0803883b4471a6c62066fb1752756f8afc699c8"
+  integrity sha512-blMmO0QQujuUWZKyVrD1msR4WNDAqb/UPO1Sw2WWsQ7deoM5bJiicKnWJ1Y0NS/aGINSnKPIWBMw5luX+NDUCA==
 
 cardinal@^2.1.1:
   version "2.1.1"
@@ -6238,6 +6238,11 @@ diff@4.0.2:
   resolved "https://registry.npmjs.org/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
 
+diff@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/diff/-/diff-5.0.0.tgz#7ed6ad76d859d030787ec35855f5b1daf31d852b"
+  integrity sha512-/VTCrvm5Z0JGty/BWHljh+BAiw3IK+2j87NGMu8Nwc/f48WoDAC395uomO9ZD117ZOBaHmkX1oyLvkVM/aIT3w==
+
 diffie-hellman@^5.0.0:
   version "5.0.3"
   resolved "https://registry.npmjs.org/diffie-hellman/-/diffie-hellman-5.0.3.tgz#40e8ee98f55a2149607146921c63e1ae5f3d2875"
@@ -6453,9 +6458,9 @@ ejs@^2.6.1:
   integrity sha512-7vmuyh5+kuUyJKePhQfRQBhXV5Ce+RnaeeQArKu1EAMpL3WbgMt5WG6uQZpEVvYSSsxMXRKOewtDk9RaTKXRlA==
 
 electron-to-chromium@^1.3.378, electron-to-chromium@^1.3.634:
-  version "1.3.642"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.642.tgz#8b884f50296c2ae2a9997f024d0e3e57facc2b94"
-  integrity sha512-cev+jOrz/Zm1i+Yh334Hed6lQVOkkemk2wRozfMF4MtTR7pxf3r3L5Rbd7uX1zMcEqVJ7alJBnJL7+JffkC6FQ==
+  version "1.3.643"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.643.tgz#fc196e17d01f4d874ef2307b009c0cd993ebe1c7"
+  integrity sha512-TGomM4gj8adt/uqRgPbu9F0yhUVAR1deww5X0fvbQgpGr9suSMjLgc4IwQ9YKGkp1t03cDbZum20OfAkiTYjAg==
 
 elliptic@^6.5.3:
   version "6.5.3"
@@ -7234,9 +7239,9 @@ fecha@^4.2.0:
   integrity sha512-aN3pcx/DSmtyoovUudctc8+6Hl4T+hI9GBBHLjA76jdZl7+b1sgh5g4k+u/GL3dTy1/pnYzKp69FpJ0OicE3Wg==
 
 feed@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.npmjs.org/feed/-/feed-4.2.1.tgz#b246ef891051c7dbf088ca203341d9fb0444baee"
-  integrity sha512-l28KKcK1J/u3iq5dRDmmoB2p7dtBfACC2NqJh4dI2kFptxH0asfjmOfcxqh5Sv8suAlVa73gZJ4REY5RrafVvg==
+  version "4.2.2"
+  resolved "https://registry.npmjs.org/feed/-/feed-4.2.2.tgz#865783ef6ed12579e2c44bbef3c9113bc4956a7e"
+  integrity sha512-u5/sxGfiMfZNtJ3OvQpXcvotFpYkL0n9u9mM2vkui2nGo8b4wvDkJ8gAkYqbA8QpGyFCv3RK0Z+Iv+9veCS9bQ==
   dependencies:
     xml-js "^1.6.11"
 
@@ -14222,7 +14227,7 @@ source-map-resolve@^0.5.0:
     source-map-url "^0.4.0"
     urix "^0.1.0"
 
-source-map-support@~0.5.12, source-map-support@~0.5.19:
+source-map-support@~0.5.12:
   version "0.5.19"
   resolved "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.19.tgz#a98b62f86dcaf4f67399648c085291ab9e8fed61"
   integrity sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==
@@ -14245,7 +14250,7 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.0, source-map@~0.6.1:
   resolved "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
-source-map@^0.7.3, source-map@~0.7.2:
+source-map@^0.7.3:
   version "0.7.3"
   resolved "https://registry.npmjs.org/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
   integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
@@ -14913,7 +14918,7 @@ terser-webpack-plugin@^5.1.1:
     source-map "^0.6.1"
     terser "^5.5.1"
 
-terser@^4.1.2, terser@^4.6.3:
+terser@4.8.0, terser@^4.1.2, terser@^4.6.3, terser@^5.3.4, terser@^5.5.1:
   version "4.8.0"
   resolved "https://registry.npmjs.org/terser/-/terser-4.8.0.tgz#63056343d7c70bb29f3af665865a46fe03a0df17"
   integrity sha512-EAPipTNeWsb/3wLPeup1tVPaXfIaU68xMnVdPafIL1TV05OhASArYyIfFvnvJCNrR2NIOvDVNNTFRa+Re2MWyw==
@@ -14921,15 +14926,6 @@ terser@^4.1.2, terser@^4.6.3:
     commander "^2.20.0"
     source-map "~0.6.1"
     source-map-support "~0.5.12"
-
-terser@^5.3.4, terser@^5.5.1:
-  version "5.5.1"
-  resolved "https://registry.npmjs.org/terser/-/terser-5.5.1.tgz#540caa25139d6f496fdea056e414284886fb2289"
-  integrity sha512-6VGWZNVP2KTUcltUQJ25TtNjx/XgdDsBDKGt8nN0MpydU36LmbPPcMBd2kmtZNNGVVDLg44k7GKeHHj+4zPIBQ==
-  dependencies:
-    commander "^2.20.0"
-    source-map "~0.7.2"
-    source-map-support "~0.5.19"
 
 text-extensions@^1.0.0:
   version "1.9.0"
@@ -16016,7 +16012,7 @@ webpack-virtual-modules@^0.4.1:
   resolved "https://registry.npmjs.org/webpack-virtual-modules/-/webpack-virtual-modules-0.4.2.tgz#68ce4479df7334a491b7a3f3bead47fe382947d9"
   integrity sha512-OUsT1VZhArN8nY7g6mMlw91HWnXcNXsIQjsQ83WteF4ViZ6YXqF2sWKOTDIZ0H+PPiApQdszLdZIrD7NNlU0Yw==
 
-webpack@5.16, webpack@^5.15.0:
+webpack@5.16:
   version "5.16.0"
   resolved "https://registry.npmjs.org/webpack/-/webpack-5.16.0.tgz#796e093c2d92c229f013aefefde82b50c0572570"
   integrity sha512-QOkctcjYfEGxcYg4AzPJafyAQ7ANc266/URkX881uFA7b2k31E0Dmpy1ExfppHOTp1kHDTsRh9sXojVUvgPF0g==
@@ -16074,6 +16070,36 @@ webpack@^4.43.0, webpack@^4.44.1:
     terser-webpack-plugin "^1.4.3"
     watchpack "^1.7.4"
     webpack-sources "^1.4.1"
+
+webpack@^5.15.0:
+  version "5.17.0"
+  resolved "https://registry.npmjs.org/webpack/-/webpack-5.17.0.tgz#e92aebad45be25f86f788dc72fc11daacdcfd55d"
+  integrity sha512-R+IdNEaYcYaACpXZOt7reyc8txBK7J06lOPkX1SbgmeoAnUbyBZivJIksrDBnmMA3wlTWvPcX7DubxELyPB8rA==
+  dependencies:
+    "@types/eslint-scope" "^3.7.0"
+    "@types/estree" "^0.0.46"
+    "@webassemblyjs/ast" "1.11.0"
+    "@webassemblyjs/wasm-edit" "1.11.0"
+    "@webassemblyjs/wasm-parser" "1.11.0"
+    acorn "^8.0.4"
+    browserslist "^4.14.5"
+    chrome-trace-event "^1.0.2"
+    enhanced-resolve "^5.7.0"
+    es-module-lexer "^0.3.26"
+    eslint-scope "^5.1.1"
+    events "^3.2.0"
+    glob-to-regexp "^0.4.1"
+    graceful-fs "^4.2.4"
+    json-parse-better-errors "^1.0.2"
+    loader-runner "^4.2.0"
+    mime-types "^2.1.27"
+    neo-async "^2.6.2"
+    pkg-dir "^5.0.0"
+    schema-utils "^3.0.0"
+    tapable "^2.1.1"
+    terser-webpack-plugin "^5.1.1"
+    watchpack "^2.0.0"
+    webpack-sources "^2.1.1"
 
 webpackbar@^4.0.0:
   version "4.0.0"

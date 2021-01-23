@@ -244,8 +244,12 @@
 
 
 <!--
-  @frame { width: 1024, height: 768, x: -450, y: 91 }
+  @frame { visible: false, width: 1024, height: 768, x: -368, y: 46 }
 -->
+
+
+
+
 
 
 <div className="Editor">

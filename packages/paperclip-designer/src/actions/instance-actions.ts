@@ -143,7 +143,11 @@ export type BirdseyeTopFilterBlurred = BaseAction<
   ActionType.BIRDSEYE_TOP_FILTER_BLURRED
 >;
 
-export type PCFileLoaded = BaseAction<ActionType.PC_FILE_OPENED, LoadedData>;
+export type PCFileLoaded = BaseAction<ActionType.PC_FILE_OPENED, {
+  uri: string;
+  data: LoadedData,
+  document: string
+}>;
 export type ClientConnected = BaseAction<ActionType.CLIENT_CONNECTED>;
 export type LocationChanged = BaseAction<
   ActionType.LOCATION_CHANGED,

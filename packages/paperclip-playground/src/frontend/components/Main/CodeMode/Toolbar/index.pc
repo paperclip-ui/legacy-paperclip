@@ -195,8 +195,11 @@
 
 
 <!--
-  @frame { title: "", width: 1024, height: 768, x: 21, y: 178 }
+  @frame { visible: false, title: "", width: 1024, height: 768, x: 55, y: 171 }
 -->
+
+
+
 <Topbar export component as="Preview">
   <FileSelect name="Main.pc" active={showFileMenu} menu={
     showFileMenu && <FileMenu>

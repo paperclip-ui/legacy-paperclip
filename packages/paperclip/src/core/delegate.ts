@@ -73,6 +73,7 @@ reducing amount of data being passed between Rust <-> JS
 export class EngineDelegate {
   private _listeners: EngineDelegateEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
+  private _documents: Record<string, string> = {};
 
   constructor(private _native: any, private _onCrash: (err) => void = noop) {
     // only one native listener to for buffer performance
@@ -162,7 +163,12 @@ export class EngineDelegate {
       return ret;
     });
   }
+  getVirtualContent(uri: string) {
+    return this._documents[uri];
+  }
+  
   updateVirtualFileContent(uri: string, content: string) {
+    this._documents[uri] = content;
     return this._tryCatch(() => {
       const ret = mapResult(
         this._native.update_virtual_file_content(uri, content)
