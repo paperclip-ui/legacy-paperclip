@@ -38,9 +38,7 @@ export const createAppStore = (
       ...INITIAL_STATE,
       shared: {
         documents: documents
-          ? mapValues(documents, text =>
-              Automerge.from(new Automerge.Text(text))
-            )
+          ? documents
           : INITIAL_STATE.shared.documents
       },
       slim: slim != null ? slim : INITIAL_STATE.slim,

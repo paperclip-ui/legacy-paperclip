@@ -63,6 +63,7 @@ function* startEngine() {
   // Sync app state with worker
   yield takeEvery(
     [
+      ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED,
       ActionType.CODE_EDITOR_TEXT_CHANGED,
       VEActionType.REDIRECT_REQUESTED,
       VEActionType.PC_VIRT_OBJECT_EDITED,

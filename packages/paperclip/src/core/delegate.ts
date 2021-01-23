@@ -158,6 +158,7 @@ export class EngineDelegate {
     return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }
   purgeUnlinkedFiles() {
+    console.log("PURGING");
     return this._tryCatch(() => {
       const ret = mapResult(this._native.purge_unlinked_files());
       return ret;

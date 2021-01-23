@@ -79,9 +79,9 @@ export type AppState = {
 export const INITIAL_STATE: AppState = {
   ...ve.INITIAL_STATE,
   shared: {
-    documents: Automerge.from({
-      [ENTRY_URI]: new Automerge.Text("")
-    })
+    documents: {
+      [ENTRY_URI]: ""
+    }
   },
   designer: {
     ...ve.INITIAL_STATE.designer,

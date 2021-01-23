@@ -10,36 +10,32 @@ import veReducer from "paperclip-designer/src/reducers/index";
 import { editString } from "../utils/string-editor";
 import Automerge from "automerge";
 import { updateShared } from "paperclip-designer/src/state";
+import { historyReducer } from "paperclip-designer/src/reducers/history"
 import { mapValues, result } from "lodash";
 
-export const reducer = (state: AppState, action: Action) => {
+export const reducer = historyReducer((state: AppState, action: Action) => {
   state = veReducer(state, action as VEAction) as AppState;
 
   switch (action.type) {
-    case ActionType.CODE_EDITOR_TEXT_CHANGED: {
-      return {
-        ...state,
-        shared: {
-          ...state.shared,
-          documents: Automerge.change(state.shared.documents, documents => {
-            for (const { text, rangeOffset, rangeLength } of action.payload) {
-              // no replace operation by automerge, so need to do 2 things. I sure hope this scales 🤞
+    // case ActionType.CODE_EDITOR_TEXT_CHANGED: {
+    //   return {
+    //     ...state,
+    //     shared: {
+    //       ...state.shared,
+    //       documents: produce(state.shared.documents, documents => {
+    //         for (const { text, rangeOffset, rangeLength } of action.payload) {
+    //           // no replace operation by automerge, so need to do 2 things. I sure hope this scales 🤞
 
-              let textDoc = documents[
-                state.currentCodeFileUri
-              ] as Automerge.Text;
-              if (!textDoc) {
-                documents[
-                  state.currentCodeFileUri
-                ] = textDoc = new Automerge.Text();
-              }
-              textDoc.deleteAt(rangeOffset, rangeLength);
-              textDoc.insertAt(rangeOffset, ...text.split(""));
-            }
-          })
-        }
-      };
-    }
+    //           const textDoc = documents[
+    //             state.currentCodeFileUri
+    //           ];
+
+    //           documents[state.currentCodeFileUri] = textDoc.substr(0, rangeOffset) + text + textDoc.substr(rangeOffset, rangeLength);
+    //         }
+    //       })
+    //     }
+    //   };
+    // }
     case VEActionType.GLOBAL_Z_KEY_DOWN: {
       // undo may remove files
       if (!state.shared.documents[state.currentCodeFileUri]) {
@@ -55,12 +51,8 @@ export const reducer = (state: AppState, action: Action) => {
     }
     case ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED: {
       return updateShared(state, {
-        documents: Automerge.change(state.shared.documents, documents => {
-          documents[state.currentCodeFileUri].splice(
-            0,
-            documents[state.currentCodeFileUri].length,
-            action.payload
-          );
+        documents: produce(state.shared.documents, documents => {
+          documents[state.currentCodeFileUri] = action.payload;
         })
       });
     }
@@ -103,12 +95,10 @@ export const reducer = (state: AppState, action: Action) => {
       const changes = action.payload.changes;
 
       state = updateShared(state, {
-        documents: Automerge.change(state.shared.documents, documents => {
+        documents: produce(state.shared.documents, documents => {
           for (const uri in changes) {
-            for (const { start, end, value } of changes[uri]) {
-              documents[uri].deleteAt(start, end);
-              documents[uri].insertAt(start, ...value.split(""));
-            }
+            const doc = documents[uri];
+            documents[uri] = editString(doc, changes[uri]);
           }
         })
       }) as AppState;
@@ -142,9 +132,7 @@ export const reducer = (state: AppState, action: Action) => {
       if (result.data) {
         const contents = result.data!;
         state = updateShared(state, {
-          documents: Automerge.from(
-            mapValues(contents, value => new Automerge.Text(value))
-          )
+          documents: contents
         }) as AppState;
       }
 
@@ -164,8 +152,8 @@ export const reducer = (state: AppState, action: Action) => {
       const uri = getNewFilePath(action.payload.value);
 
       state = updateShared(state, {
-        documents: Automerge.change(state.shared.documents, documents => {
-          documents[uri] = new Automerge.Text();
+        documents: produce(state.shared.documents, documents => {
+          documents[uri] = "";
         })
       }) as AppState;
 
@@ -176,4 +164,4 @@ export const reducer = (state: AppState, action: Action) => {
   }
 
   return state;
-};
+});

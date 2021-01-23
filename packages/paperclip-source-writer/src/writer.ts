@@ -160,7 +160,7 @@ export class PCSourceWriter {
         : exprSource.location.start,
 
       // newline may have been clipped off, so re-add if that happens
-      value: buffer.join("").replace(/\n$/, "\n") + "\n"
+      value: buffer.join("")
     };
   }
 }

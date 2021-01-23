@@ -94,7 +94,7 @@ export type Project = {
 
 // state that can be synchronized between documents
 export type SharedState = {
-  documents: Record<string, Automerge.Text>;
+  documents: Record<string, string>;
 };
 
 export type DesignerState = {
@@ -127,12 +127,20 @@ export type DesignerState = {
   zoomLevel: number;
 };
 
+export type HistState = {
+  shared: SharedState;
+  history: {
+    past: SharedState[],
+    future: SharedState[]
+  }
+}
+
 export type AppState = {
   // state that can be hooked up with CRDTs
   shared: SharedState;
   designer: DesignerState;
   compact?: boolean;
-};
+} & HistState;
 
 export enum EnvOptionKind {
   Public = "Public",
@@ -154,8 +162,12 @@ export type AvailableBrowser = {
 };
 
 export const INITIAL_STATE: AppState = {
+  history: {
+    past: [],
+    future: []
+  },
   shared: {
-    documents: Automerge.from({})
+    documents: {}
   },
   designer: {
     readonly: false,
@@ -433,8 +445,8 @@ export const updateShared = (state: AppState, shared: Partial<SharedState>) => {
 export const editSharedDocuments = (
   state: AppState,
   edit: (
-    documents: Record<string, Automerge.Text>
-  ) => Record<string, Automerge.Text>
+    documents: Record<string, string>
+  ) => Record<string, string>
 ) => {
   return updateShared(state, {
     documents: edit(state.shared.documents)

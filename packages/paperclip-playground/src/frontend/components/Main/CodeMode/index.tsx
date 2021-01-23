@@ -23,8 +23,8 @@ export const CodeMode = () => {
     state.shared.documents[state.currentCodeFileUri]
   ).toString();
 
-  const onChange = event => {
-    dispatch(codeEditorChanged(event.changes));
+  const onChange = (event, code) => {
+    dispatch(slimCodeEditorChanged(code));
   };
   const editorDidMount = (_, editor) => {
     // control Z
