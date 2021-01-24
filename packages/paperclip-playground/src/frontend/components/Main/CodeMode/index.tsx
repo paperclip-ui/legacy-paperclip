@@ -25,17 +25,18 @@ export const CodeMode = () => {
 
   let content;
 
-  const onChange = (code) => {
+  const onChange = code => {
     dispatch(slimCodeEditorChanged(code));
   };
-  const onMount = (editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: Monaco) => {
-    monaco.languages.setLanguageConfiguration("html", {
+  const onMount = (
+    editor: monacoEditor.editor.IStandaloneCodeEditor,
+    monaco: Monaco
+  ) => {
+    monaco.languages.setLanguageConfiguration("html", {});
 
-    });
-    
     monaco.languages.html.htmlDefaults.setOptions({
       format: {
-        ...(monaco.languages.html.htmlDefaults.options.format),
+        ...monaco.languages.html.htmlDefaults.options.format,
         indentInnerHtml: false,
         tabSize: 4,
         insertSpaces: true,
@@ -43,14 +44,12 @@ export const CodeMode = () => {
         endWithNewline: false,
         wrapLineLength: 0
       }
-    })
-    
-    editor.getModel().updateOptions({ 
-      tabSize: 2, 
-      insertSpaces: true,
-
     });
 
+    editor.getModel().updateOptions({
+      tabSize: 2,
+      insertSpaces: true
+    });
 
     // console.log(editor.);
     // control Z
@@ -59,9 +58,12 @@ export const CodeMode = () => {
       dispatch(globalZKeyDown(null) as any);
     });
 
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_Z, function() {
-      dispatch(globalYKeyDown(null) as any);
-    });
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_Z,
+      function() {
+        dispatch(globalYKeyDown(null) as any);
+      }
+    );
 
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
       dispatch(globalSaveKeyPress(null) as any);
@@ -93,12 +95,12 @@ export const CodeMode = () => {
           />
         ) : (
           <Editor
-          onMount={onMount}
+            onMount={onMount}
             options={{
               minimap: {
-                enabled: false,
+                enabled: false
               },
-              autoIndent: 'keep'
+              autoIndent: "keep"
             }}
             onChange={onChange}
             width="100%"
