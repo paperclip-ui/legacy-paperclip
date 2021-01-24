@@ -706,7 +706,7 @@ mod tests {
 
       {block}
 
-      <!-- historically broken stuff -->
+      <!-- y broken stuff -->
       <meta charSet=\"utf-8\" />\n   
       <form action=\"/search/\" autoComplete=\"off\" method=\"get\" role=\"search\">
         <!--input type=\"search\" id=\"header-search-bar\" name=\"q\" class=\"_2xQx4j6lBnDGQ8QsRnJEJa\" placeholder=\"Search\" value=\"\" /-->

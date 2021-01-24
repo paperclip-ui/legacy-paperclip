@@ -500,7 +500,6 @@ const getPrevNode = memoize((nextNode: Node, graph: DependencyGraph) => {
 
     // Instances can remain, but components may be deleted - cover that case
     if (!component) {
-      // console.log("NO COMPONENT??");
       logWarn(`Found detached instance: ${instance.name}`);
       // console.log(instance, ancestor, JSON.stringify(instanceDependency, null, 2));
       return null;

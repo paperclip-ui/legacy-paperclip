@@ -4,7 +4,7 @@ import {
   AnnotationsChanged,
   PCMutation,
   PCMutationAction,
-  PCMutationActionKind,
+  PCMutationActionKind
 } from "./mutations";
 import {
   ExprSource,
@@ -15,7 +15,7 @@ import {
   traverseExpression,
   Expression,
   Fragment,
-  getParentNode,
+  getParentNode
 } from "paperclip-utils";
 
 type ContentChangedHandler = (uri: string, content: string) => void;
@@ -82,7 +82,7 @@ export class PCSourceWriter {
   ): ContentChange[] {
     const node = getAssocNode(exprSource, ast);
     const parent = getParentNode(node, ast);
-    const childIndex = parent.children.findIndex((child) => child === node);
+    const childIndex = parent.children.findIndex(child => child === node);
 
     const changes = [];
 
@@ -94,7 +94,7 @@ export class PCSourceWriter {
         uri: exprSource.uri,
         start: beforeChild.location.start,
         end: beforeChild.location.end,
-        value: "",
+        value: ""
       });
     }
 
@@ -102,7 +102,7 @@ export class PCSourceWriter {
       uri: exprSource.uri,
       start: exprSource.location.start,
       end: exprSource.location.end,
-      value: "",
+      value: ""
     });
 
     return changes;
@@ -158,14 +158,16 @@ export class PCSourceWriter {
       end: annotationsSource
         ? annotationsSource.location.end
         : exprSource.location.start,
-      value: buffer.join(""),
+
+      // newline may have been clipped off, so re-add if that happens
+      value: buffer.join("")
     };
   }
 }
 
 const getAssocNode = (exprSource: ExprSource, root: Node): Node => {
   let foundExpr: Expression;
-  traverseExpression(root, (node) => {
+  traverseExpression(root, node => {
     if (
       node.location.start === exprSource.location.start &&
       node.location.end === exprSource.location.end

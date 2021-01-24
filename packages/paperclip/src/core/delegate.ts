@@ -73,6 +73,7 @@ reducing amount of data being passed between Rust <-> JS
 export class EngineDelegate {
   private _listeners: EngineDelegateEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
+  private _documents: Record<string, string> = {};
 
   constructor(private _native: any, private _onCrash: (err) => void = noop) {
     // only one native listener to for buffer performance
@@ -96,7 +97,9 @@ export class EngineDelegate {
   }
 
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
-    if (event.kind === EngineDelegateEventKind.Evaluated) {
+    if (event.kind === EngineDelegateEventKind.Deleted) {
+      delete this._rendered[event.uri];
+    } else if (event.kind === EngineDelegateEventKind.Evaluated) {
       this._rendered = updateAllLoadedData(this._rendered, event);
       this._dispatch({
         kind: EngineDelegateEventKind.Loaded,
@@ -108,7 +111,7 @@ export class EngineDelegate {
       this._rendered = updateAllLoadedData(this._rendered, event);
       const newData = this._rendered[event.uri];
 
-      const removedSheetUris = [];
+      const removedSheetUris: string[] = [];
 
       for (const { uri } of existingData.importedSheets) {
         if (!newData.allDependencies.includes(uri)) {
@@ -154,7 +157,18 @@ export class EngineDelegate {
   parseContent(content: string) {
     return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }
+  purgeUnlinkedFiles() {
+    return this._tryCatch(() => {
+      const ret = mapResult(this._native.purge_unlinked_files());
+      return ret;
+    });
+  }
+  getVirtualContent(uri: string) {
+    return this._documents[uri];
+  }
+
   updateVirtualFileContent(uri: string, content: string) {
+    this._documents[uri] = content;
     return this._tryCatch(() => {
       const ret = mapResult(
         this._native.update_virtual_file_content(uri, content)
@@ -205,6 +219,8 @@ export const keepEngineInSyncWithFileSystem2 = (
         uri,
         fs.readFileSync(new url.URL(uri), "utf8")
       );
+    } else if (kind === ChangeKind.Removed) {
+      engine.purgeUnlinkedFiles();
     }
   });
 };

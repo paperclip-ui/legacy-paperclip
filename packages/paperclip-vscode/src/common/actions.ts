@@ -1,5 +1,5 @@
 import { actionCreator } from "./base";
-import * as ve from "paperclip-visual-editor";
+import * as ve from "paperclip-designer";
 
 // to be used with sendNotification
 export const $$ACTION_NOTIFICATION = "$$ACTION_NOTIFICATION";

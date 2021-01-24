@@ -79,7 +79,7 @@ export abstract class BaseEngineLanguageService<TAst>
       return {
         colors: [],
         links: [],
-        definitions: [],
+        definitions: []
       };
     }
     return (

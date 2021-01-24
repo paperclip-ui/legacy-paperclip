@@ -114,6 +114,10 @@ impl NativeEngine {
     let result = block_on(self.target.parse_file(&uri));
     JsValue::from_serde(&result).unwrap()
   }
+  pub fn purge_unlinked_files(&mut self) {
+    console_error_panic_hook::set_once();
+    block_on(self.target.purge_unlinked_files());
+  }
   pub fn update_virtual_file_content(&mut self, uri: String, content: String) {
     console_error_panic_hook::set_once();
     block_on(self.target.update_virtual_file_content(&uri, &content));

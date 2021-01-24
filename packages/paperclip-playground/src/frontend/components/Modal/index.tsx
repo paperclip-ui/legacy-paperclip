@@ -20,7 +20,7 @@ export const Modal = ({ title, onClose, children }: ModalProps) => {
   );
 };
 
-const useModal = (onClose) => {
+const useModal = onClose => {
   const [visible, setVisible] = useState(false);
 
   const onCloseEvent = () => {
@@ -40,6 +40,6 @@ const useModal = (onClose) => {
   return {
     onCloseButtonClick,
     onBackgroundClick,
-    visible,
+    visible
   };
 };

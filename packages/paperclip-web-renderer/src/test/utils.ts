@@ -1,15 +1,15 @@
-import { DOMFactory, Renderer } from "../renderer";
+import { DOMFactory } from "../renderer";
 import { createEngineDelegate } from "paperclip";
 import * as path from "path";
 import { FramesRenderer } from "../frame-renderer";
 import { EngineMode } from "paperclip";
+import { identity } from "lodash";
 
 export const mockDOMFactory: DOMFactory = {
-  createElement: (tagName) => (new MockElement(tagName) as any) as HTMLElement,
-  createElementNS: (tagName) =>
-    (new MockElement(tagName) as any) as HTMLElement,
+  createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
+  createElementNS: tagName => (new MockElement(tagName) as any) as HTMLElement,
   createDocumentFragment: () => (new MockFragment() as any) as DocumentFragment,
-  createTextNode: (nodeValue) => (new MockTextNode(nodeValue) as any) as Text,
+  createTextNode: nodeValue => (new MockTextNode(nodeValue) as any) as Text
 };
 
 abstract class BaseNode {
@@ -33,7 +33,7 @@ abstract class ParentNode extends BaseNode {
   appendChild(child: BaseNode) {
     child.$$parent = this;
     if (child instanceof MockFragment) {
-      child.childNodes.forEach((child) => {
+      child.childNodes.forEach(child => {
         child.$$parent = this;
       });
       this.childNodes.push(...child.childNodes);
@@ -98,7 +98,7 @@ class MockElement extends ParentNode {
     let buffer = `<${this.tagName}`;
     const sortedAttributes = Object.keys(this.attributes)
       .sort()
-      .map((name) => ({ name, value: this.attributes[name] }));
+      .map(name => ({ name, value: this.attributes[name] }));
     for (const { name, value } of sortedAttributes) {
       if (!value) {
         continue;
@@ -148,9 +148,9 @@ export type Graph = {
 export const createMockEngine = (graph: Graph) =>
   createEngineDelegate({
     io: {
-      readFile: (uri) =>
+      readFile: uri =>
         graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],
-      fileExists: (uri) =>
+      fileExists: uri =>
         Boolean(
           graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
         ),
@@ -163,8 +163,8 @@ export const createMockEngine = (graph: Graph) =>
             .join(path.dirname(from.replace("file://", "")), to)
             .replace(/\\+/g, "/")
         );
-      },
-    },
+      }
+    }
   });
 
 export const createMockEngineDelegate = (
@@ -173,9 +173,9 @@ export const createMockEngineDelegate = (
 ) =>
   createEngineDelegate({
     io: {
-      readFile: (uri) =>
+      readFile: uri =>
         graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],
-      fileExists: (uri) =>
+      fileExists: uri =>
         Boolean(
           graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")]
         ),
@@ -188,15 +188,14 @@ export const createMockEngineDelegate = (
             .join(path.dirname(from.replace("file://", "")), to)
             .replace(/\\+/g, "/")
         );
-      },
+      }
     },
-    mode,
+    mode
   });
 
-export const createMockRenderer = (uri: string, protocol = "") =>
-  new Renderer(protocol, uri, mockDOMFactory);
-
-export const createMockFramesRenderer = (uri = "", protocol = "") =>
-  new FramesRenderer(uri, protocol, mockDOMFactory);
+export const createMockFramesRenderer = (
+  uri = "",
+  resolveUrl: (url: string) => string = identity
+) => new FramesRenderer(uri, resolveUrl, mockDOMFactory);
 
 export const trimWS = (str: string) => str.replace(/[\s\r\n\t]+/g, " ");

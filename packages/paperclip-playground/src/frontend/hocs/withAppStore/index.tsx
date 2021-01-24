@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import { AppStoreContext } from "../../contexts";
-
+import Automerge from "automerge";
 import { reducer } from "../../reducers";
 import { init } from "../../sagas";
 import { INITIAL_STATE, AppState } from "../../state";
+import { mapValues } from "lodash";
 
 type InitOptions = Partial<{
   compact: boolean;
@@ -21,7 +22,7 @@ export const createAppStore = (
     mainDocumentUri,
     documents,
     activeFrameIndex,
-    slim,
+    slim
   }: InitOptions = {},
   mount: HTMLDivElement
 ) => {
@@ -35,24 +36,25 @@ export const createAppStore = (
     reducer,
     {
       ...INITIAL_STATE,
+      shared: {
+        documents: documents ? documents : INITIAL_STATE.shared.documents
+      },
       slim: slim != null ? slim : INITIAL_STATE.slim,
       compact: compact || INITIAL_STATE.compact,
-      designMode: {
-        ...INITIAL_STATE.designMode,
-        documentContents:
-          documents || INITIAL_STATE.designMode.documentContents,
+      designer: {
+        ...INITIAL_STATE.designer,
         ui: {
-          ...INITIAL_STATE.designMode.ui,
+          ...INITIAL_STATE.designer.ui,
           query: {
-            ...INITIAL_STATE.designMode.ui.query,
+            ...INITIAL_STATE.designer.ui.query,
             currentFileUri: mainUri,
             frame: activeFrameIndex,
-            expanded: activeFrameIndex != null,
-          },
-        },
+            expanded: activeFrameIndex != null
+          }
+        }
       },
-      currentCodeFileUri: mainUri,
-    },
+      currentCodeFileUri: mainUri
+    } as AppState,
     applyMiddleware(sagaMiddleware)
   );
   sagaMiddleware.run(init, mount);
@@ -60,7 +62,7 @@ export const createAppStore = (
 };
 
 export const withAppStore = (Child: React.FC) => {
-  return (props) => {
+  return props => {
     const { store } = props;
     const [state, setState] = useState(store.getState());
 

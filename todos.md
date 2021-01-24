@@ -1,29 +1,19 @@
 
 ### Immediate
 
-- copy/paste hijacked
-  - ensure that no other hotkeys are
+- file menu
+  - download React code
+  - download source code
 
-- cmd + s should work
-- undo / redo (CRDTs)
 
-- profile menu
-  - logout
-  - create new project
-  - see projects
-
-- projects
-  - ability to change names (pen icon)
-  - ability to delete
-    - confirm - type name
-  - visibility options (public / private)
 
 - cleanup
   - going to / should display blank page
-  - bind meta + s to save
-  - ensure that user is prompted to sasve before leaving
+  - add Paperclip color theme
+  - remove pesky indent behavior
+  - on login and on /projects/id, reload page
 
-- wrap
+- wrap it up!
   - paperclip.playground.dev
 
 ### Necessary (but not yet planned)

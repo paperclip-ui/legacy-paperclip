@@ -1,13 +1,16 @@
+import { Project, ProjectFile } from "../state";
+import mime from "mime-types";
+
 export const connectAccount = async (kind: string, params: any) => {
   return await requestJSON(`/connect/${kind}`, {
     method: "POST",
-    body: JSON.stringify(params),
+    body: JSON.stringify(params)
   });
 };
 
 export const logout = async () => {
   return await requestJSON(`/session`, {
-    method: "DELETE",
+    method: "DELETE"
   });
 };
 
@@ -21,30 +24,72 @@ export const createProject = async (
     body: JSON.stringify({
       files,
       name,
-      mainFileUri,
-    }),
+      mainFileUri
+    })
   });
 };
 
 export const updateProjectFile = async (
   projectId: number,
   path: string,
-  contents: string
+  contents: string | Blob
 ) => {
   return await request(
     `/projects/${projectId}/files/${encodeURIComponent(path)}`,
     {
       method: "POST",
-      body: contents,
+      headers: {
+        "Content-Type": mime.lookup(path) || "text/plain"
+      },
+      body: contents
     }
   );
+};
+export const updateRawProjectFile = async (
+  projectId: number,
+  file: File
+): Promise<ProjectFile> => {
+  return await requestJSON(
+    `/projects/${projectId}/files?name=${encodeURIComponent(file.name)}`,
+    {
+      method: "POST",
+      body: file
+    }
+  );
+};
+
+export const updateProjectFilePath = async (
+  projectId: number,
+  path: string,
+  newPath: string
+) => {
+  return await request(
+    `/projects/${projectId}/files/${encodeURIComponent(path)}`,
+    {
+      method: "PATCH",
+      body: { uri: newPath }
+    }
+  );
+};
+
+export const updateProject = async (
+  projectId: number,
+  properties: Partial<{
+    name: string;
+    mainFileUri?: string;
+  }>
+) => {
+  return await requestJSON(`/projects/${projectId}`, {
+    method: "PATCH",
+    body: JSON.stringify(properties)
+  });
 };
 
 export const deleteProjectFile = async (projectId: number, path: string) => {
   return await request(
     `/projects/${projectId}/files/${encodeURIComponent(path)}`,
     {
-      method: "DELETE",
+      method: "DELETE"
     }
   );
 };
@@ -55,6 +100,11 @@ export const getUser = async () => {
 
 export const getProject = async (projectId: string) => {
   return await requestJSON(`/projects/${projectId}`);
+};
+export const deleteProject = async (projectId: number) => {
+  return await requestJSON(`/projects/${projectId}`, {
+    method: "DELETE"
+  });
 };
 
 export const getProjects = async () => {
@@ -67,7 +117,8 @@ const requestJSON = async (path: string, options: any = {}) => {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-    },
+      ...(options.headers || {})
+    }
   });
 
   const data = await resp.json();
@@ -84,7 +135,7 @@ const request = async (path: string, options: any = {}) => {
     window.location.protocol + "//" + process.env.API_HOST + path,
     {
       ...options,
-      credentials: "include",
+      credentials: "include"
     }
   );
 };

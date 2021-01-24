@@ -1,7 +1,7 @@
 {
   "name": "paperclip-loader",
-  "version": "17.4.22",
-  "description": "",
+  "version": "17.4.23",
+  "description": "Webpack loader for Paperclip",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
@@ -16,8 +16,8 @@
   "dependencies": {
     "@types/node": "^13.7.7",
     "loader-utils": "^1.2.3",
-    "paperclip": "^17.4.22",
-    "paperclip-cli-utils": "^17.4.22",
+    "paperclip": "^17.4.23",
+    "paperclip-cli-utils": "^17.4.23",
     "resolve": "^1.15.1",
     "webpack-virtual-modules": "^0.4.1"
   },

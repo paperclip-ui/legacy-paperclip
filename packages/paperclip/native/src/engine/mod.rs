@@ -33,6 +33,11 @@ pub struct EvaluatedEvent<'a> {
 }
 
 #[derive(Debug, PartialEq, Serialize)]
+pub struct DeletedFileEvent {
+  pub uri: String,
+}
+
+#[derive(Debug, PartialEq, Serialize)]
 pub struct DiffedData<'a> {
   // TODO - needs to be sheetMutations
   pub sheet: Option<css_virt::CSSSheet>,
@@ -70,6 +75,7 @@ pub enum EngineError {
 #[serde(tag = "kind")]
 pub enum EngineDelegateEvent<'a> {
   Evaluated(EvaluatedEvent<'a>),
+  Deleted(DeletedFileEvent),
   Diffed(DiffedEvent<'a>),
   NodeParsed(NodeParsedEvent),
   Error(EngineError),
@@ -174,6 +180,30 @@ impl Engine {
 
   pub async fn parse_content(&mut self, content: &String) -> Result<pc_ast::Node, ParseError> {
     parse_pc(content)
+  }
+
+  // Called when files are deleted
+  pub async fn purge_unlinked_files(&mut self) -> Result<(), EngineError> {
+    let deleted_uris: Vec<String> = self.vfs.purge_unlinked_files();
+
+    for uri in deleted_uris {
+      let dep_uris: Vec<String> = self.dependency_graph.flatten_dependents(&uri);
+
+      self.dependency_graph.dependencies.remove(&uri);
+      self.evaluated_data.remove(&uri);
+      self.import_graph.remove(&uri);
+
+      self.dispatch(EngineDelegateEvent::Deleted(DeletedFileEvent {
+        uri: uri.to_string(),
+      }));
+
+      // inefficient, but purge_unlinked_files won't get called often - this is okay for now I guess
+      for dep in dep_uris {
+        self.load(&dep).await;
+      }
+    }
+
+    Ok(())
   }
 
   pub async fn update_virtual_file_content(

@@ -20,7 +20,7 @@ export const editString = (input: string, mutations: ContentChange[]) => {
       const {
         start: previousStartIndex,
         end: previousEndIndex,
-        value: previousNewValue,
+        value: previousNewValue
       } = mutations[j];
 
       const prevInsertion = previousStartIndex === previousEndIndex;

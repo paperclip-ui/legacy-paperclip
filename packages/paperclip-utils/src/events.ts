@@ -7,6 +7,7 @@ import { EvaluateData, DiffedData, LoadedData, SheetInfo } from "./virt";
 
 export enum EngineDelegateEventKind {
   Loading = "Loading",
+  Deleted = "Deleted",
   Loaded = "Loaded",
   Updating = "Updating",
   Evaluated = "Evaluated",
@@ -33,6 +34,10 @@ export type EvaluatedEvent = {
   uri: string;
   data: EvaluateData;
 } & BaseEngineDelegateEvent<EngineDelegateEventKind.Evaluated>;
+
+export type DeletedEvent = {
+  uri: string;
+} & BaseEngineDelegateEvent<EngineDelegateEventKind.Deleted>;
 
 export type DiffedEvent = {
   uri: string;
@@ -105,6 +110,7 @@ export type EngineDelegateEvent =
   | EvaluatedEvent
   | EngineErrorEvent
   | ChangedSheetsEvent
+  | DeletedEvent
   | NodeParsedEvent
   | LoadedEvent
   | DiffedEvent;

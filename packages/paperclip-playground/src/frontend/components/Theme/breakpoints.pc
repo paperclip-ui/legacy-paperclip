@@ -1,7 +1,23 @@
 <style>
   @export {
-    @mixin mobile {
+    @mixin desktop {
+      @media screen and (max-width: 1200px) {
+        @content;
+      }
+    }
+
+    @mixin small {
+      @media screen and (max-width: 1000px) {
+        @content;
+      }
+    }
+    @mixin tablet {
       @media screen and (max-width: 900px) {
+        @content;
+      }
+    }
+    @mixin mobile {
+      @media screen and (max-width: 600px) {
         @content;
       }
     }

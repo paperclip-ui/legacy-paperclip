@@ -114,7 +114,9 @@ describe(__filename + "#", () => {
       "file:///entry.pc": `<img src="/file.jpeg" />`
     };
 
-    const renderer = createMockFramesRenderer("file:///entry.pc", "blah:");
+    const renderer = createMockFramesRenderer("file:///entry.pc", url =>
+      url.replace("file", "blah")
+    );
     const engine = await createMockEngineDelegate(graph);
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("file:///entry.pc");

@@ -18,7 +18,7 @@ describe(__filename + "#", () => {
 
 
         something
-      `,
+      `
     };
     const engine = await createMockEngine(graph);
     const result = engine.open("/entry.pc");
@@ -39,7 +39,7 @@ describe(__filename + "#", () => {
         -->
 
         <Test />
-      `,
+      `
     };
 
     const engine = await createMockEngine(graph);
@@ -65,7 +65,7 @@ describe(__filename + "#", () => {
         <span export component as="Test">
           Hello
         </span>
-      `,
+      `
     };
 
     const engine = await createMockEngine(graph);
@@ -83,7 +83,7 @@ describe(__filename + "#", () => {
           @frame "a"
         -->
         hello
-      `,
+      `
     };
 
     const engine = await createMockEngine(graph);
@@ -122,7 +122,7 @@ describe(__filename + "#", () => {
 
 
         <Test />
-      `,
+      `
     };
 
     const engine = await createMockEngine(graph);
@@ -134,7 +134,7 @@ describe(__filename + "#", () => {
 
     expect(metadata).to.eql({
       tags: { a: "b" },
-      frame: { x: -1145, y: -28, title: "Preview", width: 1024, height: 768 },
+      frame: { x: -1145, y: -28, title: "Preview", width: 1024, height: 768 }
     });
   });
 });

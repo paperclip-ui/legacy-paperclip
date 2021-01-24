@@ -6,6 +6,7 @@ export type TranslateContext = {
   buffer: string;
   lineNumber: number;
   currentIndexKey?: string;
+  fileSystem: any;
   scopes: {
     [identifier: string]: boolean;
   };
@@ -32,7 +33,8 @@ export const createTranslateContext = (
   partIds: string[],
   hasLogicFile: boolean,
   args: Options,
-  indent = "  "
+  indent = "  ",
+  fileSystem: any
 ): TranslateContext => ({
   buffer: "",
   classNames,
@@ -47,7 +49,8 @@ export const createTranslateContext = (
   lineNumber: 0,
   indent,
   args,
-  keyCount: 0
+  keyCount: 0,
+  fileSystem
 });
 
 export const addBuffer = (buffer: string, context: TranslateContext) => ({

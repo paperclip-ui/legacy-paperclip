@@ -1,6 +1,0 @@
-{
-  "compilerOptions": {
-    "name": "paperclip-compiler-react"
-  },
-  "filesGlob": "./src/design-generated/**/*.pc"
-}

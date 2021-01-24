@@ -10,7 +10,7 @@ export const patchNativeNode = (
   mount: HTMLElement,
   mutations: Mutation[],
   factory: DOMFactory,
-  protocol: string | null
+  resolveUrl: (url: string) => string
 ) => {
   for (const mutation of mutations) {
     const target = getTarget(mount, mutation);
@@ -25,7 +25,7 @@ export const patchNativeNode = (
         const newChild = createNativeNode(
           action.child,
           factory,
-          protocol,
+          resolveUrl,
           target.namespaceURI
         );
         if (action.index >= target.childNodes.length) {
@@ -41,7 +41,7 @@ export const patchNativeNode = (
           createNativeNode(
             action.replacement,
             factory,
-            protocol,
+            resolveUrl,
             parent.namespaceURI
           ),
           target
@@ -60,7 +60,7 @@ export const patchNativeNode = (
         const aliasName = ATTR_ALIASES[action.name] || action.name;
         let value = action.value || "";
         if (value.indexOf("file:") === 0) {
-          value = value.replace("file:", protocol);
+          value = resolveUrl(value);
         }
         element.setAttribute(aliasName, value);
         break;

@@ -1,58 +1,47 @@
 import { eventChannel } from "redux-saga";
-import { cancel, fork, put, select, take, takeEvery } from "redux-saga/effects";
-import { AppState } from "../state";
+import {
+  call,
+  cancel,
+  cancelled,
+  fork,
+  put,
+  select,
+  take,
+  takeEvery
+} from "redux-saga/effects";
+import { AppState, WorkerState, getWorkerState } from "../state";
 import { EngineDelegate } from "paperclip";
 import * as path from "path";
 import { compare, applyPatch } from "fast-json-patch";
 import {
-  engineCrashed,
-  engineLoaded,
   Action,
   ActionType,
-  CodeEditorTextChanged,
   workerInitialized,
-  appStateDiffed,
-  GetProjectFilesRequestChanged
+  appStateDiffed
 } from "../actions";
+
 import {
   clientConnected,
-  engineDelegateChanged,
-  engineDelegateEventsHandled,
   ActionType as VEActionType
-} from "paperclip-visual-editor/src/actions";
+} from "paperclip-designer/src/actions";
 
 export function* handleEngine() {
-  yield fork(syncCurrentProjectWithEngine);
-}
-
-function* syncCurrentProjectWithEngine() {
-  while (1) {
-    const chan = yield fork(startEngine);
-    yield put(clientConnected(null));
-
-    // project project is loaded, then dump current engine for new one
-    yield take((action: Action) => {
-      return (
-        action.type === ActionType.GET_PROJECT_FILES_REQUEST_CHANGED &&
-        action.payload.result.data != null
-      );
-    });
-
-    yield cancel(chan);
-  }
+  yield fork(startEngine);
+  yield put(clientConnected(null));
 }
 
 function* startEngine() {
   const worker = new Worker(new URL("./engine-worker.ts", import.meta.url));
-  let _state: AppState = yield select();
+
+  let _state: WorkerState = getWorkerState(yield select());
   const incomming = eventChannel(emit => {
     worker.onmessage = ({ data: action }: MessageEvent) => {
       emit(action);
     };
-    worker.postMessage(workerInitialized({ appState: _state }));
+    worker.postMessage(workerInitialized({ state: _state }));
     return () => {
+      worker.onmessage = undefined;
       worker.terminate();
-      console.log("DISPOSE");
     };
   });
 
@@ -63,15 +52,20 @@ function* startEngine() {
   // Sync app state with worker
   yield takeEvery(
     [
+      ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED,
       ActionType.CODE_EDITOR_TEXT_CHANGED,
+      ActionType.GET_PROJECT_FILES_REQUEST_CHANGED,
       VEActionType.REDIRECT_REQUESTED,
       VEActionType.PC_VIRT_OBJECT_EDITED,
-      ActionType.CONTENT_CHANGES_CREATED
+      ActionType.CONTENT_CHANGES_CREATED,
+      VEActionType.GLOBAL_Z_KEY_DOWN,
+      VEActionType.GLOBAL_Y_KEY_DOWN
     ],
     function*(action) {
       const newState: AppState = yield select();
-      const ops = compare(_state, newState);
-      _state = newState;
+      const workerState: WorkerState = getWorkerState(newState);
+      const ops = compare(_state, workerState);
+      _state = workerState;
 
       if (ops.length) {
         worker.postMessage(appStateDiffed({ ops }));

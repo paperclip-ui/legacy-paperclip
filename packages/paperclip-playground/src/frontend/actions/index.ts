@@ -1,7 +1,15 @@
-import * as ve from "paperclip-visual-editor/src/actions";
-import { AppState, Project, ProjectFile, Result, User } from "../state";
+import * as ve from "paperclip-designer/src/actions";
+import {
+  AppState,
+  Project,
+  ProjectFile,
+  Result,
+  User,
+  WorkerState
+} from "../state";
 import { actionCreator } from "./base";
 import { ContentChange } from "paperclip-source-writer";
+import { KeyComboPressed } from "paperclip-designer/src/actions";
 
 export type BaseAction<TType extends ActionType, TPayload = undefined> = {
   type: TType;
@@ -12,6 +20,14 @@ export enum ActionType {
   PROJECT_HOOK_USED = "PROJECT_HOOK_USED",
   ALL_PROJECTS_HOOK_USED = "ALL_PROJECTS_HOOK_USED",
   PROJECT_FILES_HOOK_USED = "PROJECT_FILES_HOOK_USED",
+  DELETE_PROJECT_CONFIRMED = "DELETE_PROJECT_CONFIRMED",
+  DOWNLOAD_PROJECT_CLICKED = "DOWNLOAD_PROJECT_CLICKED",
+  RAW_FILE_UPLOADED = "RAW_FILE_UPLOADED",
+  FILES_DROPPED = "FILES_DROPPED",
+  NEW_PROJECT_ENTERED = "NEW_PROJECT_ENTERED",
+  REMOVE_FILE_CLICKED = "REMOVE_FILE_CLICKED",
+  FILE_RENAMED = "FILE_RENAMED",
+  PROJECT_RENAMED = "PROJECT_RENAMED",
   REQUEST_CHANGED = "REQUEST_CHANGED",
   ENGINE_LOADED = "ENGINE_LOADED",
   GET_PROJECTS_REQUEST_CHANGED = "GET_PROJECTS_REQUEST_CHANGED",
@@ -24,18 +40,19 @@ export enum ActionType {
   LOGGED_OUT = "LOGGED_OUT",
   SESSION_LOADED = "SESSION_LOADED",
   CODE_EDITOR_TEXT_CHANGED = "CODE_EDITOR_TEXT_CHANGED",
+  SLIM_CODE_EDITOR_TEXT_CHANGED = "SLIM_CODE_EDITOR_TEXT_CHANGED",
   WORKER_INITIALIZED = "WORKER_INITIALIZED",
   APP_STATE_DIFFED = "APP_STATE_DIFFED",
   CONTENT_CHANGES_CREATED = "CONTENT_CHANGES_CREATED",
   FILE_ITEM_CLICKED = "FILE_ITEM_CLICKED",
   NEW_FILE_NAME_ENTERED = "NEW_FILE_NAME_ENTERED",
   SYNC_PANELS_CLICKED = "SYNC_PANELS_CLICKED",
-  ACCOUNT_CONNECTED = "ACCOUNT_CONNECTED",
+  ACCOUNT_CONNECTED = "ACCOUNT_CONNECTED"
 }
 
 export enum AccountKind {
   Google = "google",
-  GitHub = "github",
+  GitHub = "github"
 }
 
 export type BaseRequestChanged<
@@ -52,6 +69,9 @@ export type GetProjectRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECT_REQUEST_CHANGED,
   Project
 >;
+export type DownloadProjectClicked = BaseAction<
+  ActionType.DOWNLOAD_PROJECT_CLICKED
+>;
 export type GetProjectFilesRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECT_FILES_REQUEST_CHANGED,
   Record<string, string>,
@@ -61,10 +81,23 @@ export type ProjectFilesHookUsed = BaseAction<
   ActionType.PROJECT_FILES_HOOK_USED,
   { projectId: number }
 >;
+export type RemoveFileClicked = BaseAction<
+  ActionType.REMOVE_FILE_CLICKED,
+  { uri: string }
+>;
+export type FileRenamed = BaseAction<
+  ActionType.FILE_RENAMED,
+  { uri: string; newUri: string }
+>;
 export type ProjectHookUsed = BaseAction<
   ActionType.PROJECT_HOOK_USED,
   { projectId: number }
 >;
+export type RawFileUploaded = BaseAction<
+  ActionType.RAW_FILE_UPLOADED,
+  { data: Blob; path: string }
+>;
+
 export type AllProjectsHookUsed = BaseAction<ActionType.ALL_PROJECTS_HOOK_USED>;
 
 export type AccountConnected = BaseAction<
@@ -82,22 +115,40 @@ export type SavedProject = BaseAction<
   Result<boolean>
 >;
 
+type TextEditChange = {
+  rangeOffset: number;
+  rangeLength: number;
+  text: string;
+};
+
 export type EngineLoaded = BaseAction<ActionType.ENGINE_LOADED>;
+export type ProjectRenamed = BaseAction<
+  ActionType.PROJECT_RENAMED,
+  { projectId: number; newName: string }
+>;
 
 export type LogoutButtonClicked = BaseAction<ActionType.LOGOUT_BUTTON_CLICKED>;
+export type DeleteProjectConfirmed = BaseAction<
+  ActionType.DELETE_PROJECT_CONFIRMED,
+  { projectId: number }
+>;
 
-export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED>;
+export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED, {}>;
 
 export type EngineCrashed = BaseAction<ActionType.ENGINE_CRASHED, Error>;
 export type CodeEditorTextChanged = BaseAction<
   ActionType.CODE_EDITOR_TEXT_CHANGED,
+  TextEditChange[]
+>;
+export type SlimEditorTextChanged = BaseAction<
+  ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED,
   string
 >;
 export type SessionLoaded = BaseAction<ActionType.SESSION_LOADED, User>;
 
 export type WorkerInitialized = BaseAction<
   ActionType.WORKER_INITIALIZED,
-  { appState: AppState }
+  { state: WorkerState }
 >;
 export type AppStateDiffed = BaseAction<
   ActionType.APP_STATE_DIFFED,
@@ -109,7 +160,7 @@ export type ContentChangesCreated = BaseAction<
 >;
 export type NewFileNameEntered = BaseAction<
   ActionType.NEW_FILE_NAME_ENTERED,
-  { value: string }
+  { uri: string }
 >;
 export type SyncPanelsClicked = BaseAction<ActionType.SYNC_PANELS_CLICKED>;
 
@@ -118,14 +169,36 @@ export type FileItemClicked = BaseAction<
   { uri: string }
 >;
 
-export type LoggedOut = BaseAction<ActionType.LOGGED_OUT>;
+export type NewProjectEntered = BaseAction<
+  ActionType.NEW_PROJECT_ENTERED,
+  { name: string }
+>;
 
+export type LoggedOut = BaseAction<ActionType.LOGGED_OUT>;
+export type FilesDropped = BaseAction<ActionType.FILES_DROPPED, FileList>;
+
+export const newProjectEntered = actionCreator<NewProjectEntered>(
+  ActionType.NEW_PROJECT_ENTERED
+);
+export const rawFileUploaded = actionCreator<RawFileUploaded>(
+  ActionType.RAW_FILE_UPLOADED
+);
+export const filesDropped = actionCreator<FilesDropped>(
+  ActionType.FILES_DROPPED
+);
+export const downloadProjectClicked = actionCreator<DownloadProjectClicked>(
+  ActionType.DOWNLOAD_PROJECT_CLICKED
+);
 export const accountConnected = actionCreator<AccountConnected>(
   ActionType.ACCOUNT_CONNECTED
 );
 export const logoutButtonClicked = actionCreator<LogoutButtonClicked>(
   ActionType.LOGOUT_BUTTON_CLICKED
 );
+export const removeFileClicked = actionCreator<RemoveFileClicked>(
+  ActionType.REMOVE_FILE_CLICKED
+);
+export const fileRenamed = actionCreator<FileRenamed>(ActionType.FILE_RENAMED);
 export const sessionLoaded = actionCreator<SessionLoaded>(
   ActionType.SESSION_LOADED
 );
@@ -145,6 +218,9 @@ export const saveButtonClicked = actionCreator<SaveButtonClicked>(
 export const codeEditorChanged = actionCreator<CodeEditorTextChanged>(
   ActionType.CODE_EDITOR_TEXT_CHANGED
 );
+export const slimCodeEditorChanged = actionCreator<SlimEditorTextChanged>(
+  ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED
+);
 export const workerInitialized = actionCreator<WorkerInitialized>(
   ActionType.WORKER_INITIALIZED
 );
@@ -157,8 +233,14 @@ export const contentChangesCreated = actionCreator<ContentChangesCreated>(
 export const newFileNameEntered = actionCreator<NewFileNameEntered>(
   ActionType.NEW_FILE_NAME_ENTERED
 );
+export const projectRenamed = actionCreator<ProjectRenamed>(
+  ActionType.PROJECT_RENAMED
+);
 export const fileItemClicked = actionCreator<FileItemClicked>(
   ActionType.FILE_ITEM_CLICKED
+);
+export const deleteProjectConfirmed = actionCreator<DeleteProjectConfirmed>(
+  ActionType.DELETE_PROJECT_CONFIRMED
 );
 export const syncPanelsClicked = actionCreator<SyncPanelsClicked>(
   ActionType.SYNC_PANELS_CLICKED
@@ -190,18 +272,27 @@ export type Action =
   | EngineLoaded
   | AccountConnected
   | SaveButtonClicked
+  | SlimEditorTextChanged
+  | DeleteProjectConfirmed
   | LoggedOut
   | SessionLoaded
   | GetProjectsRequestChanged
   | AllProjectsHookUsed
   | ProjectFilesHookUsed
+  | FilesDropped
   | ProjectHookUsed
+  | FileRenamed
+  | RemoveFileClicked
   | GetProjectRequestChanged
   | GetProjectFilesRequestChanged
   | EngineCrashed
   | AppStateDiffed
+  | DownloadProjectClicked
+  | RawFileUploaded
+  | NewProjectEntered
   | SavedProject
   | FileItemClicked
+  | ProjectRenamed
   | SyncPanelsClicked
   | NewFileNameEntered
   | WorkerInitialized

@@ -42,7 +42,9 @@ export const compile = (
     "",
     getPartIds(ast),
     Boolean(getLogicElement(ast)),
-    options
+    options,
+    " ",
+    null
   );
   context = translateRoot(ast, classNames, context);
   return context.buffer;

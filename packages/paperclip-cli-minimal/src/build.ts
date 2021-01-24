@@ -146,7 +146,7 @@ async function initBuild(
         compilerOptions
       );
 
-      const sheetCode = stringifyCSSSheet(sheet, { protocol: "file://" });
+      const sheetCode = stringifyCSSSheet(sheet);
 
       if (options.write) {
         let outputFilePath = getOutputFilePath(fullPath, compilerOptions);

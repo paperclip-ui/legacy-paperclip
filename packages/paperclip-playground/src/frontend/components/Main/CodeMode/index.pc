@@ -1,5 +1,5 @@
 
-<import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
+<import src="paperclip-designer/src/components/Theme/index.pc" as="Theme" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
 <import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
 
@@ -24,7 +24,7 @@
       border-bottom-right-radius: var(--border-radius);
     }
 
-    @include breakpoints.mobile {
+    @include breakpoints.tablet {
       width: 100%;
       height: 80%;
     }
@@ -47,16 +47,38 @@
   {children}
 </div>
 
+
 <!--
-  @frame { title: "CodeMode", width: 1024, height: 768, x: 1312, y: 180 }
+  @frame { visible: false }
+-->
+<div export component as="CantEditScreen" className="v2 dark">
+  <style>
+    background: var(--grey-night-500);
+    width: 100%;
+    height: 100%;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+  </style>
+  <div>
+    <style>
+      position: relative;
+      top: 30%;
+    </style>
+    Unable to edit this file
+  </div>
+</div>
+
+<!--
+  @frame { visible: false, title: "CodeMode", width: 1024, height: 768, x: 1309, y: 171 }
 -->
 <Container export component as="Preview" {slim?}>
   <Toolbar.Preview {showFileMenu?} />
-  <Content>
+  {!cantEdit && <Content>
     <img src="./code-screenshot.png">
       <style>
         height: 100%;
       </style>
     </img>
-  </Content>
+  </Content>}
+  {cantEdit && <CantEditScreen />}
 </Container>

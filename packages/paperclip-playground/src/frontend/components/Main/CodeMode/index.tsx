@@ -1,49 +1,123 @@
-import React from "react";
-import { ControlledEditor } from "@monaco-editor/react";
+import React, { useEffect, useState } from "react";
+import Editor from "@monaco-editor/react";
+import {
+  globalZKeyDown,
+  globalYKeyDown,
+  globalSaveKeyPress
+} from "paperclip-designer/src/actions";
+
+// Can't import, otherwise the react monaco editor breaks :(
+import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
+
+export type Monaco = typeof monacoEditor;
+// TODO: https://github.com/microsoft/monaco-editor/issues/221
+
 import * as styles from "./index.pc";
 import { Toolbar } from "./Toolbar";
 import { useAppStore } from "../../../hooks/useAppStore";
-import { codeEditorChanged } from "../../../actions";
+import { codeEditorChanged, slimCodeEditorChanged } from "../../../actions";
 import { SlimEditor } from "./Slim";
+import { canEditFile } from "../../../state";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
   const { slim } = state;
-  const code = state.designMode.documentContents[state.currentCodeFileUri];
 
-  const onChange = (ev, value) => {
-    dispatch(codeEditorChanged(value));
+  let content;
+
+  const onChange = code => {
+    dispatch(slimCodeEditorChanged(code));
   };
-  const editorDidMount = (_, editor) => {
-    editor.getModel().updateOptions({ tabSize: 2 });
+  const onMount = (
+    editor: monacoEditor.editor.IStandaloneCodeEditor,
+    monaco: Monaco
+  ) => {
+    monaco.languages.setLanguageConfiguration("html", {});
+
+    monaco.languages.html.htmlDefaults.setOptions({
+      format: {
+        ...monaco.languages.html.htmlDefaults.options.format,
+        indentInnerHtml: false,
+        tabSize: 4,
+        insertSpaces: true,
+        indentHandlebars: false,
+        endWithNewline: false,
+        wrapLineLength: 0
+      }
+    });
+
+    editor.getModel().updateOptions({
+      tabSize: 2,
+      insertSpaces: true
+    });
+
+    // console.log(editor.);
+    // control Z
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_Z, function() {
+      // 🙈
+      dispatch(globalZKeyDown(null) as any);
+    });
+
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_Z,
+      function() {
+        dispatch(globalYKeyDown(null) as any);
+      }
+    );
+
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
+      dispatch(globalSaveKeyPress(null) as any);
+    });
   };
-  return (
-    <styles.Container>
-      <Toolbar />
+
+  const [code, setCode] = useState<string>();
+  const docContent = state.shared.documents[state.currentCodeFileUri];
+
+  useEffect(() => {
+    if (docContent instanceof File) {
+      const reader = new FileReader();
+      reader.onload = () => setCode(String(reader.result));
+      reader.readAsText(docContent);
+    } else {
+      setCode(String(docContent));
+    }
+  }, [docContent]);
+
+  if (canEditFile(state.currentCodeFileUri)) {
+    content = (
       <styles.Content slim={slim}>
         {slim ? (
           <SlimEditor
             value={code}
-            onChange={(value) => {
-              dispatch(codeEditorChanged(value));
+            onChange={value => {
+              dispatch(slimCodeEditorChanged(value));
             }}
           />
         ) : (
-          <ControlledEditor
-            editorDidMount={editorDidMount}
+          <Editor
+            onMount={onMount}
             options={{
               minimap: {
-                enabled: false,
+                enabled: false
               },
+              autoIndent: "keep"
             }}
+            onChange={onChange}
             width="100%"
             value={code}
             language="html"
-            onChange={onChange}
             theme="vs-dark"
           />
         )}
       </styles.Content>
+    );
+  } else {
+    content = <styles.CantEditScreen />;
+  }
+  return (
+    <styles.Container>
+      <Toolbar />
+      {content}
     </styles.Container>
   );
 };

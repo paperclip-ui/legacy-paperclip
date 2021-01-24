@@ -1,9 +1,9 @@
 import * as path from "path";
-import { relative } from "path";
+import { relative, resolve } from "path";
 import * as url from "url";
 
 export type StringifySheetOptions = {
-  protocol?: string;
+  resolveUrl?: (url: string) => string;
   uri?: string;
 };
 
@@ -73,7 +73,7 @@ const stringifyStyleRule = (
 
 const stringifyStyle = (
   { name, value },
-  { uri, protocol }: StringifySheetOptions
+  { uri, resolveUrl }: StringifySheetOptions
 ) => {
   if (value) {
     // required for bundling, otherwise file protocol is maintained
@@ -91,8 +91,9 @@ const stringifyStyle = (
       }
     }
 
-    if (protocol) {
-      value = value.replace(/file:/g, protocol);
+    if (value && value.includes("file:") && resolveUrl) {
+      const url = value.match(/(file:\/\/[^)]+)/)[1];
+      value = value.replace(url, resolveUrl(url));
     }
   }
 

@@ -1,8 +1,8 @@
 {
   "name": "paperclip-compiler-html",
-  "version": "17.4.22",
+  "version": "17.4.23",
   "private": true,
-  "description": "",
+  "description": "HTML compiler for Paperclip",
   "main": "index.js",
   "scripts": {
     "lint": "eslint src"
@@ -18,6 +18,6 @@
     "mocha": "^8.0.1"
   },
   "dependencies": {
-    "paperclip-utils": "^17.4.22"
+    "paperclip-utils": "^17.4.23"
   }
 }

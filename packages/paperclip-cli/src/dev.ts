@@ -1,5 +1,5 @@
 import { exec } from "child_process";
-import { startServer } from "paperclip-visual-editor";
+import { startServer } from "paperclip-designer";
 
 export type ServerOptions = {
   port?: number;

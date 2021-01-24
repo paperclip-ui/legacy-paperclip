@@ -1,7 +1,7 @@
 {
   "name": "paperclip-compiler-react",
-  "version": "17.4.22",
-  "description": "",
+  "version": "17.4.23",
+  "description": "React compiler for Paperclip",
   "main": "index.js",
   "typings": "index.d.ts",
   "directories": {
@@ -11,7 +11,7 @@
     "crc32": "^0.2.2",
     "html-entities": "^1.2.1",
     "lodash": "^4.17.15",
-    "paperclip": "^17.4.22"
+    "paperclip": "^17.4.23"
   },
   "scripts": {
     "build": "tsc",

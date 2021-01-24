@@ -1715,4 +1715,42 @@ describe(__filename + "#", () => {
       `<style></style><div class="_80f4925f_a a" data-pc-80f4925f></div><div class="_80f4925f_b b" data-pc-80f4925f></div><div class="_80f4925f_c c" data-pc-80f4925f></div><div class="_80f4925f_c c" data-pc-80f4925f></div><div class data-pc-80f4925f></div><div class="_80f4925f_a2 a2" data-pc-80f4925f></div><div class="_80f4925f_a a _80f4925f_a2 a2" data-pc-80f4925f></div>`
     );
   });
+  it(`Can delete files from the graph`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./mod.pc" as="mod" />
+        <mod.Test>a</mod.Test>
+
+      `,
+      "/mod.pc": `
+        <div export component as="Test">
+          {children} b
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    let result = (await engine.open("/entry.pc")) as any;
+
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style></style><div data-pc-c938aea3>a b </div>`
+    );
+
+    graph["/mod.pc"] = undefined;
+
+    engine.purgeUnlinkedFiles();
+
+    try {
+      await engine.open("/entry.pc");
+    } catch (e) {
+      expect(e.info.message).to.eql("import not found");
+    }
+
+    await engine.updateVirtualFileContent("/entry.pc", "<b>a</b>");
+    result = (await engine.open("/entry.pc")) as any;
+
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style></style><b data-pc-80f4925f>a</b>`
+    );
+  });
 });

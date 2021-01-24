@@ -1,7 +1,12 @@
-import { profile } from "console";
+import { APP_LOCATIONS } from "../../../state";
 import React, { useState } from "react";
-import { useSelect } from "../../../../../../paperclip-visual-editor/src/components/Select";
-import { logoutButtonClicked, saveButtonClicked } from "../../../actions";
+import { useHistory } from "react-router";
+import { useSelect } from "../../../../../../paperclip-designer/src/components/Select";
+import {
+  downloadProjectClicked,
+  logoutButtonClicked,
+  saveButtonClicked
+} from "../../../actions";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Button } from "../../Button/index.pc";
 import { Auth } from "../auth";
@@ -10,6 +15,7 @@ import * as styles from "./index.pc";
 export const MainToolbar = () => {
   const { state, dispatch } = useAppStore();
   const [showAuth, setShowAuth] = useState<boolean>();
+  const history = useHistory();
 
   const onSignInClick = () => {
     setShowAuth(true);
@@ -21,7 +27,16 @@ export const MainToolbar = () => {
     profileSelect.close();
   };
   const onSaveCick = () => {
-    dispatch(saveButtonClicked(null));
+    dispatch(saveButtonClicked({}));
+  };
+  const onMyProjectsClick = () => {
+    history.push(APP_LOCATIONS.PROJECTS);
+  };
+
+  const onDownloadClick = () => {
+    window.open(
+      `${window.location.protocol}//${state.apiHost}/projects/${state.currentProject.data.id}/package.zip`
+    );
   };
 
   let rightControls;
@@ -32,16 +47,25 @@ export const MainToolbar = () => {
   if (state.user) {
     leftControls = (
       <>
-        <Button primary onClick={onSaveCick}>
-          Save
-        </Button>
-        {state.saving && (
-          <styles.SaveStatus
-            success={!!state.saving.data}
-            failed={!!state.saving.error}
-            pending={!state.saving.done}
-          />
-        )}
+        <styles.NavAction save onClick={onSaveCick}>
+          {state.currentProject ? "Save" : "Save As..."}
+          {state.saving && (
+            <styles.SaveStatus
+              success={!!state.saving.data}
+              failed={!!state.saving.error}
+              pending={!state.saving.done}
+            />
+          )}{" "}
+        </styles.NavAction>
+
+        <styles.NavAction
+          download
+          onClick={onDownloadClick}
+          disabled={!state.currentProject?.data}
+          title={!state.currentProject?.data && "Save project to download"}
+        >
+          Download React Code
+        </styles.NavAction>
       </>
     );
     rightControls = (
@@ -51,7 +75,10 @@ export const MainToolbar = () => {
           onBlur={profileSelect.onBlur}
           menu={
             profileSelect.menuVisible && (
-              <styles.ProfileMenu onLogoutClick={onLogoutButtonClick} />
+              <styles.ProfileMenu
+                onLogoutClick={onLogoutButtonClick}
+                onMyProjectsClick={onMyProjectsClick}
+              />
             )
           }
         >
@@ -71,7 +98,7 @@ export const MainToolbar = () => {
   } else {
     leftControls = (
       <Button primary onClick={onSignInClick}>
-        {state.loadingUserSession ? "Loading..." : "Sign in to save"}
+        {state.loadingUserSession ? "Loading..." : "Sign in to save & download"}
       </Button>
     );
   }
@@ -79,7 +106,7 @@ export const MainToolbar = () => {
   return (
     <>
       <styles.Toolbar
-        documentName="Untitled"
+        documentName={state.currentProject?.data?.name || "Untitled"}
         leftControls={leftControls}
         rightControls={rightControls}
       />

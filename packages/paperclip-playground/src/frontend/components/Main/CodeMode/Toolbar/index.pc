@@ -1,7 +1,7 @@
-<import src="paperclip-visual-editor/src/components/Theme/index.pc" as="Theme" />
-<import src="paperclip-visual-editor/src/styles/utils.pc" as="utils" />
-<import src="paperclip-visual-editor/src/components/Select/index2.pc" as="Select" />
-<import src="paperclip-visual-editor/src/components/TextInput/index.pc" as="TextInput" />
+<import src="paperclip-designer/src/components/Theme/index.pc" as="Theme" />
+<import src="paperclip-designer/src/styles/utils.pc" as="utils" />
+<import src="paperclip-designer/src/components/Select/index2.pc" as="Select" />
+<import src="paperclip-designer/src/components/TextInput/index.pc" as="TextInput" />
 
 <!--
   @frame { visible: false }
@@ -92,6 +92,7 @@
       font-size: 14px;
       transition: 0.2s;
       position: relative;  
+      white-space: nowrap;
       
       &:hover {
         background: var(--grey-night-400);
@@ -101,7 +102,14 @@
         background: var(--grey-night-300);
       }
     </style>
-    {name}
+    <div title={name}>
+      <style>
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      </style>
+      {name}
+    </div>
     <i>
       <style>
         margin-left: 14px;
@@ -139,8 +147,20 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 599, y: -202 }
 -->
-<Select.MenuItem export component as="FileMenuItem" {noFocus?} {active?} {onClick?}>
+<Select.MenuItem export component as="FileMenuItem" {noFocus?} {hover?} {onClick?}>
+  <style>
+    &:hover, &.hover {
+      .more-file-select {
+          visibility: visible;
+      }
+    }
+
+    // ensure that more button isn't covered
+    padding-right: 16px;
+    
+  </style>
   {children}
+  {moreSelect}
 </Select.MenuItem>
 
 
@@ -170,16 +190,162 @@
 </div>
 
 
+<div export component as="UploadButton" className:highlight="highlight">
+  <style>
+      --size: 20px;
+    display: flex;
+    align-items: center;
+
+    cursor: pointer;
+    position: relative;
+    white-space: nowrap;
+    transition: 0.2s;
+    color: var(--grey-300);
+    &:hover {
+      color: var(--grey-100);
+    }
+  </style>
+  <i>
+    <style>
+      @include utils.mask;
+      mask-image: url("./plus.svg");
+      margin-right: 6px;
+    </style>
+  </i>
+  Add file
+  <input type="file" {onChange}>
+    <style>
+      opacity: 0;
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      cursor: pointer;
+    </style>
+  </input>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<Select.Container export component as="MoreFileSelect" {onClick} {onBlur} className="$more-file-select">
+  <style>
+    // necessary to pop out of scroll
+    position: absolute;
+    right: 0px;
+    z-index: 99999;
+    visibility: hidden;
+    margin-left: 16px;
+
+  </style>
+  {children}
+  {menu}
+</Select.Container>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Select.Menu export component as="MoreFileMenu">
+  <style>
+    min-width: 150px;
+  </style>
+  <Select.MenuItem onClick={onRenameClick}>Rename</Select.MenuItem>
+  <Select.MenuItem onClick={onRemoveClick}>
+    Delete
+    <i>
+      <style>
+        --size: 0.9em;
+        @include utils.mask;
+        mask-image: url("./trash.svg");
+      </style>
+    </i>
+  </Select.MenuItem>
+</Select.Menu>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 148, y: 51 }
+-->
+<div export component as="MoreFileButton" {onClick} className:highlight="highlight" {onClick}>
+  <style>
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width:24px;
+  </style>
+  <i>
+    <style>
+      --size: 18px;
+      @include utils.mask;
+      mask-image: url("./more.svg");
+      color: var(--grey-300);
+    </style>
+  </i>
+</div>
+
+
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 325, y: -475 }
 -->
-<Select.MenuItem export component as="AddFileMenuItem" {onMouseDown?} {onClick?}>
+<Select.MenuItem export component as="AddDocumentButton" className:media="$media" className:page="$page" {onMouseDown?} {onClick?}>
+  <style>
+    &:hover {
+      color: var(--color-blue-100);
+    }
+    position: relative;
+  </style>
+  <div>
+    <style>
+      display: flex;
+      align-items: center;
+    </style>
+    <i>
+      <style>
+        @include utils.mask;
+        position: relative;
+        &:within(.media) {
+          --size: 14px; 
+          mask-image: url("./image2.svg");
+          margin: 0px 1px;
+          left: 1px;
+        }
+        &:within(.page) {
+          --size: 16px;
+          mask-image: url("./shape.svg");
+        }
+      </style>
+    </i>
+    <div>
+      <style>
+        margin-left: 8px;
+      </style>
+      {children}
+    </div>
+  </div>
+  { media? && <input type="file" {onChange?} {accept?}>
+    <style>
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: black;
+      left: 0px;
+      top: 0px;
+      opacity: 0;
+      cursor: pointer;
+    </style>
+  </input>}
+</Select.MenuItem>
+
+<div export component as="MenuFooter">
   <style>
     border-top: 1px solid rgb(65, 65, 65);
     color: var(--grey-300);
+    padding-bottom: 8px;
   </style>
-  + Add
-</Select.MenuItem>
+  {children}
+</div>
 
 
 <!--
@@ -188,17 +354,36 @@
 <div export component as="FileMenuItems">
   <style>
     max-height: 300px;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
+  </style>
+  {children}
+</div>
+
+
+<div export component as="Spacer">
+  <style>
+    width: 100%;
+  </style>
+</div>
+
+<div export component as="RightControls">
+  <style>
+    display: flex;
+    margin-right: 16px;
+    & > * {
+      margin-left: 8px;
+    }
   </style>
   {children}
 </div>
 
 
 <!--
-  @frame { title: "", width: 1024, height: 768, x: 21, y: 178 }
+  @frame { visible: false, title: "", width: 1024, height: 768, x: 55, y: 171 }
 -->
 <Topbar export component as="Preview">
-  <FileSelect name="Main.pc" active={showFileMenu} menu={
+  <FileSelect name="super-log-main file that.pc" active={showFileMenu} menu={
     showFileMenu && <FileMenu>
     
       <FileMenuItems>
@@ -211,13 +396,15 @@
         <FileMenuItem>
           Colors.pc
         </FileMenuItem>
-        <FileMenuItem>
-          Colors.pc
+        <FileMenuItem hover moreSelect={<MoreFileSelect menu={<MoreFileMenu />}>
+          <MoreFileButton />
+        </MoreFileSelect>}>
+          Super-long-file-name-that-should-wrap-around.png
         </FileMenuItem>
         <FileMenuItem>
           Colors.pc
         </FileMenuItem>
-        <FileMenuItem active>
+        <FileMenuItem hover>
           Colors.pc
         </FileMenuItem>
         <FileMenuItem>
@@ -227,10 +414,18 @@
           <TextInput />
         </FileMenuItem>
       </FileMenuItems>
-      <AddFileMenuItem />
+      <MenuFooter>
+        <AddDocumentButton page>
+          Create new page
+        </AddDocumentButton>
+        <AddDocumentButton media>
+          Upload file
+        </AddDocumentButton>
+      </MenuFooter>
     </FileMenu>
   } />
 
   <EyeButton />
+  <Spacer />
 
 </Topbar>

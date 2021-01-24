@@ -8,11 +8,12 @@ import {
   contentChangesCreated,
   engineCrashed,
   engineLoaded,
+  GetProjectFilesRequestChanged,
   WorkerInitialized
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
-import * as vea from "paperclip-visual-editor/src/actions";
-import { AppState } from "../state";
+import * as vea from "paperclip-designer/src/actions";
+import { AppState, WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
 import { EngineDelegateEvent } from "paperclip";
@@ -20,11 +21,12 @@ import * as url from "url";
 import {
   engineDelegateChanged,
   RedirectRequested
-} from "paperclip-visual-editor/src/actions";
+} from "paperclip-designer/src/actions";
 import { PCSourceWriter } from "paperclip-source-writer";
+import { isPaperclipFile } from "paperclip-utils";
 
 const init = async () => {
-  let _appState: AppState;
+  let _state: WorkerState;
   let _engine: EngineDelegate;
   let _writer: PCSourceWriter;
   let _currentUri: string;
@@ -37,8 +39,8 @@ const init = async () => {
     dispatch(engineCrashed(e));
   };
 
-  const handleInitialized = ({ payload: { appState } }: WorkerInitialized) => {
-    _appState = appState;
+  const handleInitialized = ({ payload: { state } }: WorkerInitialized) => {
+    _state = state;
     tryOpeningCurrentFile();
   };
 
@@ -49,7 +51,7 @@ const init = async () => {
   const onEngineInit = () => {
     _writer = new PCSourceWriter({
       engine: _engine,
-      getContent: uri => _appState.designMode.documentContents[uri]
+      getContent: uri => String(_state.documents[uri])
     });
     dispatch(engineLoaded(null));
     tryOpeningCurrentFile();
@@ -57,26 +59,47 @@ const init = async () => {
 
   const tryOpeningCurrentFile = () => {
     if (
-      _appState.designMode.ui.query.currentFileUri &&
+      _state.currentFileUri &&
       _engine &&
-      (!_currentUri ||
-        _currentUri !== _appState.designMode.ui.query.currentFileUri)
+      (!_currentUri || _currentUri !== _state.currentFileUri)
     ) {
-      _currentUri = _appState.designMode.ui.query.currentFileUri;
-      _engine.open(_appState.designMode.ui.query.currentFileUri);
+      _currentUri = _state.currentFileUri;
+
+      if (isPaperclipFile(_currentUri)) {
+        _engine.open(_state.currentFileUri);
+      }
     }
   };
 
   const handleAppStateDiffed = async ({ payload: { ops } }: AppStateDiffed) => {
-    _appState = applyPatch(_appState, ops, false, false).newDocument;
+    const oldState = _state;
+    _state = applyPatch(_state, ops, false, false).newDocument;
+    syncEngineDocuments(oldState);
   };
 
-  const handleCodeChange = (action: CodeEditorTextChanged) => {
-    _engine.updateVirtualFileContent(
-      _appState.currentCodeFileUri,
-      action.payload
-    );
+  const syncEngineDocuments = (oldState: WorkerState) => {
+    if (_state.documents === oldState.documents || !_engine) {
+      return;
+    }
+
+    for (const uri in _state.documents) {
+      if (!isPaperclipFile(uri)) {
+        continue;
+      }
+      const newContent = _state.documents[uri];
+      const oldContent = oldState.documents[uri];
+      if (newContent !== oldContent && isPaperclipFile(uri)) {
+        _engine.updateVirtualFileContent(uri, String(newContent));
+      }
+    }
   };
+
+  // const handleCodeChange = (action: CodeEditorTextChanged) => {
+  //   _engine.updateVirtualFileContent(
+  //     _appState.currentCodeFileUri,
+  //     action.payload
+  //   );
+  // };
 
   const handleVirtObjectEdited = async (action: vea.PCVirtObjectEdited) => {
     dispatch(
@@ -86,18 +109,20 @@ const init = async () => {
     );
   };
 
-  const handleContentChanges = ({
-    payload: { changes }
-  }: ContentChangesCreated) => {
-    for (const uri in changes) {
-      _engine.updateVirtualFileContent(
-        uri,
-        _appState.designMode.documentContents[uri]
-      );
-    }
-  };
+  // const handleContentChanges = ({
+  //   payload: { changes }
+  // }: ContentChangesCreated) => {
+  //   for (const uri in changes) {
+  //     _engine.updateVirtualFileContent(uri, _state.documents[uri]);
+  //   }
+  // };
 
-  const handleProjectLoaded = () => {};
+  const handleProjectLoaded = (action: GetProjectFilesRequestChanged) => {
+    if (!action.payload.result.data) {
+      return;
+    }
+    _engine.purgeUnlinkedFiles();
+  };
 
   const handleRedirect = (action: RedirectRequested) => {
     tryOpeningCurrentFile();
@@ -105,18 +130,16 @@ const init = async () => {
 
   self.onmessage = ({ data: action }: MessageEvent) => {
     switch (action.type) {
+      case ActionType.GET_PROJECT_FILES_REQUEST_CHANGED:
+        return handleProjectLoaded(action);
       case ActionType.WORKER_INITIALIZED:
         return handleInitialized(action);
       case ActionType.APP_STATE_DIFFED:
         return handleAppStateDiffed(action);
-      case ActionType.CODE_EDITOR_TEXT_CHANGED:
-        return handleCodeChange(action);
       case vea.ActionType.REDIRECT_REQUESTED:
         return handleRedirect(action);
       case vea.ActionType.PC_VIRT_OBJECT_EDITED:
         return handleVirtObjectEdited(action);
-      case ActionType.CONTENT_CHANGES_CREATED:
-        return handleContentChanges(action);
     }
   };
 
@@ -124,10 +147,10 @@ const init = async () => {
     {
       io: {
         readFile(uri) {
-          return _appState.designMode.documentContents[uri];
+          return _state.documents[uri];
         },
         fileExists(uri: string) {
-          return _appState.designMode.documentContents[uri] != null;
+          return _state.documents[uri] != null;
         },
         resolveFile(fromPath: string, toPath: string) {
           return url.resolve(fromPath, toPath);

@@ -1,17 +1,22 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { memo, useMemo, useRef, useState } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
 import * as path from "path";
-import TextInput from "paperclip-visual-editor/src/components/TextInput/index.pc";
-import { useTextInput } from "paperclip-visual-editor/src/components/TextInput";
-import { useSelect } from "paperclip-visual-editor/src/components/Select";
+import TextInput from "paperclip-designer/src/components/TextInput/index.pc";
+import { useTextInput } from "paperclip-designer/src/components/TextInput";
+import { useSelect } from "paperclip-designer/src/components/Select";
 
 import {
   fileItemClicked,
+  fileRenamed,
+  filesDropped,
   newFileNameEntered,
+  removeFileClicked,
   syncPanelsClicked
 } from "../../../../actions";
-import { redirectRequest } from "paperclip-visual-editor/src/actions";
+import { redirectRequest } from "paperclip-designer/src/actions";
+import { isPaperclipFile } from "paperclip-utils";
+import { canUpload, getNewFilePath } from "../../../../state";
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
@@ -27,16 +32,30 @@ export const Toolbar = () => {
     dispatch(fileItemClicked({ uri }));
   };
 
+  const onRemoveClick = uri => {
+    if (state.currentProject?.data?.mainFileUri == uri) {
+      return alert(`You can't delete the main file`);
+    }
+
+    if (
+      isPaperclipFile(uri) &&
+      Object.keys(state.shared.documents).filter(isPaperclipFile).length === 1
+    ) {
+      return alert(`You must have at least one Paperclip file`);
+    }
+    select.close();
+    dispatch(removeFileClicked({ uri }));
+  };
+
   const onNewInputBlur = () => {
     setNewFileName(null);
     setShowNewFileInput(false);
   };
 
-  const basename = path.basename(state.currentCodeFileUri);
-  const allFileUris = useMemo(
-    () => Object.keys(state.designMode.documentContents),
-    [state.designMode.documentContents]
-  );
+  const relativePath = stripRoot(state.currentCodeFileUri);
+  const allFileUris = useMemo(() => Object.keys(state.shared.documents), [
+    state.shared.documents
+  ]);
 
   const { inputProps: newFileInputProps } = useTextInput({
     value: newFileName,
@@ -47,15 +66,12 @@ export const Toolbar = () => {
     if (e.key !== "Enter") {
       return;
     }
-    for (const uri of allFileUris) {
-      if (
-        uri.replace(/(\w+:\/\/\/|\.pc$)/g, "") ===
-        newFileName.replace(".pc", "")
-      ) {
-        return alert(`A file with that name already exists`);
-      }
+    const uri = getNewFilePath(newFileName, null);
+
+    if (fileExists(uri, allFileUris)) {
+      return alert(`A file with that name already exists`);
     }
-    dispatch(newFileNameEntered({ value: newFileName }));
+    dispatch(newFileNameEntered({ uri }));
     setShowNewFileInput(false);
     setNewFileName("");
     select.close();
@@ -64,6 +80,27 @@ export const Toolbar = () => {
   const onSyncPanelsClick = () => {
     dispatch(syncPanelsClicked(null));
   };
+  const onRenamed = (uri: string, newName: string) => {
+    // for now
+    if (state.currentProject?.data?.mainFileUri == uri) {
+      return alert(`You can't rename the main file`);
+    }
+    const newUri = getNewFilePath(newName, uri);
+
+    if (fileExists(newUri, allFileUris)) {
+      return alert(`A file with that name already exists`);
+    }
+    dispatch(fileRenamed({ newUri, uri }));
+    select.close();
+  };
+  const onUploadChange = (event: React.ChangeEvent<any>) => {
+    const input = event.target as HTMLInputElement;
+    if (!canUpload(input.files)) {
+      `Whoops, can't upload that. Make sure you're only uploading images that are under 2 MB`;
+    }
+    dispatch(filesDropped(input.files));
+    select.close();
+  };
   return (
     <styles.Topbar>
       <styles.FileSelect
@@ -71,25 +108,23 @@ export const Toolbar = () => {
         active={select.menuVisible}
         onButtonClick={select.onButtonClick}
         onBlur={select.onBlur}
-        name={basename}
+        name={relativePath}
         menu={
           select.menuVisible && (
             <styles.FileMenu>
               <styles.FileMenuItems>
                 {allFileUris.map(uri => {
                   return (
-                    <styles.FileMenuItem
-                      key={uri}
-                      onClick={() => {
-                        onFileItemClick(uri);
-                      }}
-                    >
-                      {path.basename(uri)}
-                    </styles.FileMenuItem>
+                    <FileMenuItem
+                      onRenamed={onRenamed}
+                      uri={uri}
+                      onFileItemClick={onFileItemClick}
+                      onRemoveClick={onRemoveClick}
+                    />
                   );
                 })}
                 {showNewFileInput && (
-                  <styles.FileMenuItem noFocus>
+                  <styles.FileMenuItem noFocus moreSelect={null}>
                     <TextInput
                       autoFocus
                       onBlur={onNewInputBlur}
@@ -100,15 +135,106 @@ export const Toolbar = () => {
                 )}
               </styles.FileMenuItems>
 
-              <styles.AddFileMenuItem onClick={onAddFile} />
+              <styles.MenuFooter>
+                <styles.AddDocumentButton page onClick={onAddFile}>
+                  Create new page
+                </styles.AddDocumentButton>
+                <styles.AddDocumentButton
+                  media
+                  onChange={onUploadChange}
+                  accept=".pc, .jpeg, .jpg, .svg, .png"
+                >
+                  Upload file
+                </styles.AddDocumentButton>
+              </styles.MenuFooter>
             </styles.FileMenu>
           )
         }
       />
-      {state.currentCodeFileUri !==
-        state.designMode.ui.query.currentFileUri && (
+      {state.currentCodeFileUri !== state.designer.ui.query.currentFileUri && (
         <styles.EyeButton onClick={onSyncPanelsClick} />
       )}
     </styles.Topbar>
   );
+};
+type FileMenuItemProps = {
+  uri: string;
+  onFileItemClick: (uri: string) => void;
+  onRemoveClick: (uri: string) => void;
+  onRenamed: (uri: string, newName: string) => void;
+};
+
+const FileMenuItem = memo(
+  ({ uri, onRenamed, onFileItemClick, onRemoveClick }: FileMenuItemProps) => {
+    const [renaming, setRenaming] = useState(false);
+    const [newName, setNewName] = useState<string>(path.basename(uri));
+    const renamingInputProps = useTextInput({
+      value: newName,
+      onValueChange: setNewName,
+      select: true
+    }).inputProps;
+
+    const select = useSelect();
+    const onRenameClick = () => {
+      setRenaming(true);
+      select.close();
+    };
+    const onNewNameBlur = () => {
+      onRenamed(uri, newName);
+      setRenaming(false);
+    };
+    const onNewNameKeyPress = event => {
+      if (event.key === "Enter") {
+        onRenamed(uri, newName);
+        setRenaming(false);
+      }
+    };
+
+    return (
+      <styles.FileMenuItem
+        key={uri}
+        onClick={() => {
+          onFileItemClick(uri);
+        }}
+        moreSelect={
+          <styles.MoreFileSelect
+            onClick={select.onClick}
+            onBlur={select.onBlur}
+            menu={
+              select.menuVisible && (
+                <styles.MoreFileMenu
+                  onRemoveClick={() => onRemoveClick(uri)}
+                  onRenameClick={onRenameClick}
+                />
+              )
+            }
+          >
+            <styles.MoreFileButton onClick={select.onButtonClick} />
+          </styles.MoreFileSelect>
+        }
+      >
+        {renaming ? (
+          <TextInput
+            autoFocus
+            onBlur={onNewNameBlur}
+            {...renamingInputProps}
+            onKeyPress={onNewNameKeyPress}
+          />
+        ) : (
+          stripRoot(uri)
+        )}
+      </styles.FileMenuItem>
+    );
+  }
+);
+
+const stripRoot = uri => uri.replace(/^\w+:\/\/\//, "");
+
+const fileExists = (testUri: string, allFiles: any) => {
+  for (const uri of allFiles) {
+    if (testUri === uri) {
+      return true;
+    }
+  }
+  return false;
 };

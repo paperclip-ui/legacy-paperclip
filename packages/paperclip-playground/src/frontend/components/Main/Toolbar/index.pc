@@ -1,6 +1,6 @@
 <import src="frontend/components/Button/index.pc" as="Button" />
-<import src="paperclip-visual-editor/src/styles/utils.pc" as="utils" />
-<import src="paperclip-visual-editor/src/components/Select/index2.pc" as="Select" />
+<import src="paperclip-designer/src/styles/utils.pc" as="utils" />
+<import src="paperclip-designer/src/components/Select/index2.pc" as="Select" />
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 19, y: 918 }
@@ -58,6 +58,99 @@
     {rightControls}
   </div>
 </div>
+
+
+<div export component as="DownloadButton" {onClick} className:highlight="highlight">
+  <style>
+      --size: 20px;
+    display: flex;
+    align-items: center;
+
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+    color: var(--grey-300);
+    &:hover {
+      color: var(--grey-100);
+    }
+  </style>
+  <i>
+    <style>
+      @include utils.mask;
+      mask-image: url("./download.svg");
+    </style>
+  </i>
+</div>
+
+<div export component as="NavAction" {onClick} {title?} className:disabled="disabled" className:hover="hover" className:save="save" className:download="download" className:publish="publish">
+  <style>
+    color: var(--grey-300);
+    font-size: 14px;
+    display: flex;
+    margin-left: 24px;
+    cursor: pointer;
+    white-space: nowrap;
+    &:first-child {
+      margin-left: 0px;
+    }
+    &:hover, &.hover {
+      color: var(--color-blue-100);
+    }
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      &:hover {
+        color: var(--grey-300);
+      }
+    }
+  </style>
+  <i>
+    <style>
+      --size: 18px;
+      position: relative;
+      @include utils.mask;
+        top: 1px;
+      &:within(.save) {
+        mask-image: url("./upload.svg");
+      }
+      &:within(.download) {
+        mask-image: url("./box.svg");
+      }
+      &:within(.publish) {
+        --size: 15px;
+        mask-image: url("./share5.svg");
+      }
+      margin-right: 8px;
+    </style>
+  </i>
+  {children}
+</div>  
+
+
+<div export component as="ShareButton" {onClick} className:highlight="highlight">
+  <style>
+      --size: 18px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    top: -1px;
+
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+    color: var(--grey-300);
+    &:hover {
+      color: var(--grey-100);
+    }
+  </style>
+  <i>
+    <style>
+      @include utils.mask;
+      mask-image: url("./share5.svg");
+    </style>
+  </i>
+</div>
+
 
 
 <!--
@@ -166,9 +259,9 @@
   </style>
   <img src="./logo.svg">
     <style>
-      height: 28px;
+      height: 24px;
       position: relative;
-      top: 3px;
+      top: 1px;
       margin-left: 21px;
     </style>
   </img>
@@ -208,6 +301,9 @@
       </style>
     </i>
   </Select.MenuItem>
+  <Select.MenuItem onClick={onMyProjectsClick}>
+    My Projects
+  </Select.MenuItem>
 </Select.Menu>
 
 <!--
@@ -217,9 +313,15 @@
   documentName="Untitled"
   leftControls={<fragment>  
     {loggedIn && <fragment>
-      <Button.Button primary>
-        Save
-      </Button.Button>
+      <NavAction save>
+        Save as...
+      </NavAction>
+      <NavAction download hover>
+        Download
+      </NavAction>
+      <NavAction disabled publish>
+        Share
+      </NavAction>
     </fragment> || <Button.Button primary>
         Log in to save
       </Button.Button>}

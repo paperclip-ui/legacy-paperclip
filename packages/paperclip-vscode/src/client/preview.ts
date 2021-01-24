@@ -39,8 +39,9 @@ import {
 
 const VIEW_TYPE = "paperclip-preview";
 
-import * as ve from "paperclip-visual-editor";
-import { LocationChanged } from "paperclip-visual-editor";
+import * as ve from "paperclip-designer";
+import { LocationChanged } from "paperclip-designer";
+import { TextDocumentContentChangeEvent } from "vscode-languageserver-textdocument";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -192,12 +193,17 @@ export const activate = (
   };
 
   const onTextDocumentChange = async ({
+    contentChanges,
     document
   }: TextDocumentChangeEvent) => {
     dispatchClient(
       ve.contentChanged({
         fileUri: document.uri.toString(),
-        content: document.getText()
+        changes: contentChanges.map(({ text, rangeOffset, rangeLength }) => ({
+          text,
+          rangeLength,
+          rangeOffset
+        }))
       })
     );
   };
@@ -213,19 +219,9 @@ export const activate = (
     }
   });
 
-  const onDidOpenTextDocument = (document: TextDocument) => {
-    dispatchClient(
-      ve.contentChanged({
-        fileUri: document.uri.toString(),
-        content: document.getText()
-      })
-    );
-  };
-
   setTimeout(() => {
     window.onDidChangeActiveTextEditor(onTextEditorChange);
     workspace.onDidChangeTextDocument(onTextDocumentChange);
-    workspace.onDidOpenTextDocument(onDidOpenTextDocument);
     if (window.activeTextEditor) {
       onTextEditorChange(window.activeTextEditor);
     }

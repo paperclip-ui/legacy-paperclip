@@ -30,7 +30,7 @@ import {
   ServerAction,
   ExternalAction,
   configChanged
-} from "paperclip-visual-editor";
+} from "paperclip-designer";
 class Server {
   private _connection: Connection;
   private _workspaceFolders: WorkspaceFolder[];

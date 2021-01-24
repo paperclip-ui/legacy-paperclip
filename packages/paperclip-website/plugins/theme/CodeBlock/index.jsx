@@ -5,7 +5,7 @@ import usePrismTheme from "@theme/hooks/usePrismTheme";
 
 // const Editor = createComponentClass({ React, useState, useEffect, useRef });
 
-export default (props) => {
+export default props => {
   // const prismTheme = usePrismTheme();
 
   if (props.live) {
@@ -54,7 +54,7 @@ let _playgroundPromise;
 const loadPlayground = () => {
   return (
     _playgroundPromise ||
-    (_playgroundPromise = new Promise((resolve) => {
+    (_playgroundPromise = new Promise(resolve => {
       const script = document.createElement("script");
       script.src = "/browser.js";
       document.head.appendChild(script);
@@ -85,7 +85,7 @@ const LiveEditor = ({ children, height, expanded }) => {
         documents: graph,
         activeFrameIndex: expanded !== false ? 0 : undefined,
         height: height,
-        slim: true,
+        slim: true
       })
     );
   }, [playgroundLoaded, mountRef.current]);
@@ -93,7 +93,7 @@ const LiveEditor = ({ children, height, expanded }) => {
   return <div ref={mountRef}></div>;
 };
 
-const extractContent = (text) => {
+const extractContent = text => {
   const content = String(text);
   const files = content.split(/\/\/\s*file:\s*/g).filter(Boolean);
   const graph = {};
