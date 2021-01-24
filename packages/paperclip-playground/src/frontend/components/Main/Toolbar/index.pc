@@ -82,18 +82,26 @@
   </i>
 </div>
 
-<div export component as="NavAction" {onClick} className:hover="hover" className:save="save" className:download="download" className:publish="publish">
+<div export component as="NavAction" {onClick} {title?} className:disabled="disabled" className:hover="hover" className:save="save" className:download="download" className:publish="publish">
   <style>
     color: var(--grey-300);
     font-size: 14px;
     display: flex;
     margin-left: 24px;
     cursor: pointer;
+    white-space: nowrap;
     &:first-child {
       margin-left: 0px;
     }
     &:hover, &.hover {
       color: var(--color-blue-100);
+    }
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      &:hover {
+        color: var(--grey-300);
+      }
     }
   </style>
   <i>
@@ -306,12 +314,12 @@
   leftControls={<fragment>  
     {loggedIn && <fragment>
       <NavAction save>
-        Save
+        Save as...
       </NavAction>
       <NavAction download hover>
         Download
       </NavAction>
-      <NavAction publish>
+      <NavAction disabled publish>
         Share
       </NavAction>
     </fragment> || <Button.Button primary>

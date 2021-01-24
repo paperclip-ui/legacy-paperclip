@@ -24,12 +24,12 @@ export const Auth = memo(({ onClose }: AuthProps) => {
         >
           Sign in with GitHub
         </styles.ConnectButton>
-        <styles.ConnectButton
+        {/* <styles.ConnectButton
           name="google"
           onClick={onConnectClick(connectGoogle)}
         >
           Sign in with Google
-        </styles.ConnectButton>
+        </styles.ConnectButton> */}
       </styles.ConnectServices>
     </Modal>
   );

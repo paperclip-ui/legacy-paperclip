@@ -70,13 +70,14 @@ type Config = {
 export const compile = (
   { ast, sheet, classNames, sheetRelativeFilePath }: Config,
   fileUri: string,
-  options: Options = {}
+  options: Options = {},
+  fileSystem: any = fs 
 ): string => {
   const imports = getImports(ast).reduce((record, element) => {
     const _as = getAttributeStringValue(AS_ATTR_NAME, element);
     const _src = getAttributeStringValue("src", element);
     if (_as) {
-      record[_as] = resolveImportFile(fs)(fileUri, _src, true) || _src;
+      record[_as] = resolveImportFile(fileSystem)(fileUri, _src, true) || _src;
     }
     return record;
   }, {});
@@ -88,7 +89,9 @@ export const compile = (
     sheetRelativeFilePath,
     getPartIds(ast),
     Boolean(getLogicElement(ast)),
-    options
+    options,
+    "  ",
+    fileSystem
   );
   context = translateRoot(ast, sheet, classNames, context);
   return context.buffer;
@@ -111,7 +114,7 @@ const translateRoot = (
   if (logicElement) {
     const src = getAttributeStringValue("src", logicElement);
     if (src) {
-      const logicRelativePath = getRelativeFilePath(fs)(context.fileUri, src);
+      const logicRelativePath = getRelativeFilePath(context.fileSystem)(context.fileUri, src);
       context = addBuffer(
         `const logic = require("${logicRelativePath}");\n`,
         context
@@ -383,7 +386,7 @@ const translateImports = (ast: Node, context: TranslateContext) => {
     let relativePath = path
       .relative(
         path.dirname(context.fileUri),
-        resolveImportFile(fs)(context.fileUri, src, true) || src
+        resolveImportFile(context.fileSystem)(context.fileUri, src, true) || src
       )
       .replace(/\\/g, "/");
 

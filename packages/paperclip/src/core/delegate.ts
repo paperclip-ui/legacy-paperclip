@@ -111,7 +111,7 @@ export class EngineDelegate {
       this._rendered = updateAllLoadedData(this._rendered, event);
       const newData = this._rendered[event.uri];
 
-      const removedSheetUris = [];
+      const removedSheetUris: string[] = [];
 
       for (const { uri } of existingData.importedSheets) {
         if (!newData.allDependencies.includes(uri)) {

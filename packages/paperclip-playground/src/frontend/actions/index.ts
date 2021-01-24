@@ -21,6 +21,7 @@ export enum ActionType {
   ALL_PROJECTS_HOOK_USED = "ALL_PROJECTS_HOOK_USED",
   PROJECT_FILES_HOOK_USED = "PROJECT_FILES_HOOK_USED",
   DELETE_PROJECT_CONFIRMED = "DELETE_PROJECT_CONFIRMED",
+  DOWNLOAD_PROJECT_CLICKED = "DOWNLOAD_PROJECT_CLICKED",
   RAW_FILE_UPLOADED = "RAW_FILE_UPLOADED",
   FILES_DROPPED = "FILES_DROPPED",
   NEW_PROJECT_ENTERED = "NEW_PROJECT_ENTERED",
@@ -68,6 +69,7 @@ export type GetProjectRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECT_REQUEST_CHANGED,
   Project
 >;
+export type DownloadProjectClicked = BaseAction<ActionType.DOWNLOAD_PROJECT_CLICKED>;
 export type GetProjectFilesRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECT_FILES_REQUEST_CHANGED,
   Record<string, string>,
@@ -177,6 +179,7 @@ export const rawFileUploaded = actionCreator<RawFileUploaded>(ActionType.RAW_FIL
 export const filesDropped = actionCreator<FilesDropped>(
   ActionType.FILES_DROPPED
 );
+export const downloadProjectClicked = actionCreator<DownloadProjectClicked>(ActionType.DOWNLOAD_PROJECT_CLICKED);
 export const accountConnected = actionCreator<AccountConnected>(
   ActionType.ACCOUNT_CONNECTED
 );
@@ -275,6 +278,7 @@ export type Action =
   | GetProjectFilesRequestChanged
   | EngineCrashed
   | AppStateDiffed
+  | DownloadProjectClicked
   | RawFileUploaded
   | NewProjectEntered
   | SavedProject

@@ -5,6 +5,8 @@
   - download React code
   - download source code
 
+- on login and on /projects/id, reload page
+
 
 - cleanup
   - going to / should display blank page

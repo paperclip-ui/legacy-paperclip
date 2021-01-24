@@ -2,7 +2,7 @@ import { APP_LOCATIONS } from "../../../state";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
 import { useSelect } from "../../../../../../paperclip-designer/src/components/Select";
-import { logoutButtonClicked, saveButtonClicked } from "../../../actions";
+import { downloadProjectClicked, logoutButtonClicked, saveButtonClicked } from "../../../actions";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Button } from "../../Button/index.pc";
 import { Auth } from "../auth";
@@ -30,7 +30,7 @@ export const MainToolbar = () => {
   };
 
   const onDownloadClick = () => {
-
+    window.open(`${window.location.protocol}//${state.apiHost}/projects/${state.currentProject.data.id}/package.zip`);
   };
 
   let rightControls;
@@ -42,7 +42,7 @@ export const MainToolbar = () => {
     leftControls = (
       <>  
         <styles.NavAction save onClick={onSaveCick}>
-          {state.currentProject ? "Save" : "Save as..."}
+          {state.currentProject ? "Save" : "Save As..."}
        
         {state.saving && (
           <styles.SaveStatus
@@ -52,8 +52,8 @@ export const MainToolbar = () => {
           />
         )} </styles.NavAction>
 
-        <styles.NavAction download onClick={onDownloadClick}>
-            Download
+        <styles.NavAction download onClick={onDownloadClick} disabled={!state.currentProject?.data} title={!state.currentProject?.data && "Save project to download"}>
+            Download React Code
         </styles.NavAction>
       </>
     );
@@ -87,7 +87,7 @@ export const MainToolbar = () => {
   } else {
     leftControls = (
       <Button primary onClick={onSignInClick}>
-        {state.loadingUserSession ? "Loading..." : "Sign in to save"}
+        {state.loadingUserSession ? "Loading..." : "Sign in to save & download"}
       </Button>
     );
   }
