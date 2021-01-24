@@ -7,10 +7,12 @@ import { useAppStore } from "../../hooks/useAppStore";
 import { MainToolbar } from "./Toolbar";
 import * as styles from "./index.pc";
 import { CodeMode } from "./CodeMode";
-import { APP_LOCATIONS, canUpload, matchesLocationPath } from "../../state";
+import { APP_LOCATIONS, canEditFile, canPreviewFile, canUpload, matchesLocationPath } from "../../state";
 import { Projects } from "./Projects";
 import { Route, Router, Switch } from "react-router";
 import { filesDropped } from "../../actions";
+import { isPaperclipFile } from "paperclip-utils";
+import mime from "mime-types";
 
 export const Main = withAppStore(() => {
   const store = useAppStore();
@@ -80,7 +82,7 @@ const Editor = memo(() => {
       <styles.EditorContainer compact={compact}>
         <CodeMode />
         <DesignModeAppStoreContext.Provider value={store}>
-          <DesignModeMainBase />
+          <Preview />
         </DesignModeAppStoreContext.Provider>
       </styles.EditorContainer>
       <styles.FileDrop
@@ -91,3 +93,35 @@ const Editor = memo(() => {
     </styles.Container>
   );
 });
+
+
+const Preview = () => {
+  const {state} = useAppStore();
+
+  const currentUri = state.designer.ui.query.currentFileUri;
+
+  const content: Blob = state.shared.documents[currentUri] as Blob;
+
+  const objectUrl = useMemo(() => {
+    if (content instanceof Blob) {
+      return canPreviewFile(currentUri) && !isPaperclipFile(currentUri) && URL.createObjectURL(content);
+    } else {
+      return `data:${mime.lookup(currentUri)};utf8,${encodeURIComponent(content)}`;
+    }
+  }, [content]);
+
+  if (!canPreviewFile(currentUri)) {
+    return <styles.MediaPreview>
+      <span>Unable to preview this file</span>
+    </styles.MediaPreview>
+  }
+
+  if (isPaperclipFile(currentUri))  {
+    return <DesignModeMainBase />
+  }
+
+
+  return <styles.MediaPreview>
+    <img src={objectUrl} />
+  </styles.MediaPreview>
+}

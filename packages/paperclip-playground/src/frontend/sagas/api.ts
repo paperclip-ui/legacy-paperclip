@@ -1,4 +1,4 @@
-import { AppState } from "../state";
+import { AppState, Project, ProjectFile } from "../state";
 import { call, fork, put, select, takeEvery } from "redux-saga/effects";
 import history from "paperclip-designer/src/dom-history";
 import * as vea from "paperclip-designer/src/actions";
@@ -6,20 +6,18 @@ import {
   AccountConnected,
   ActionType,
   DeleteProjectConfirmed,
-  FileRenamed,
   FilesDropped,
   getProjectsRequestChanged,
   loggedOut,
   NewProjectEntered,
   ProjectRenamed,
-  RemoveFileClicked,
+  rawFileUploaded,
   savedProject,
   sessionLoaded
 } from "../actions";
 import * as api from "../api";
 import { mapValues } from "lodash";
 import { request } from "./utils";
-import { actionCreator } from "paperclip-designer/src/actions/base";
 
 export function* handleAPI() {
   yield fork(handleAccountConnected);
@@ -108,7 +106,7 @@ function* handleProjectChanges() {
     });
   }
 
-  yield takeEvery(ActionType.GET_PROJECT_FILES_REQUEST_CHANGED, function*() {
+  yield takeEvery([ActionType.GET_PROJECT_FILES_REQUEST_CHANGED, ActionType.RAW_FILE_UPLOADED], function*() {
     _lastSavedState = yield select();
   });
 
@@ -117,7 +115,7 @@ function* handleProjectChanges() {
     function*() {
       const state: AppState = yield select();
       if (!state.user) {
-        return prompt(`You need to be logged in for to save this project!`);
+        return alert(`You need to be logged in for to save this project!`);
       }
 
       // create new project
@@ -158,28 +156,22 @@ function* handleProjectChanges() {
 
     history.push(`/projects/${project.id}`);
   });
-  yield takeEvery([ActionType.FILES_DROPPED], function*({
-    payload
-  }: FilesDropped) {
-    const files = Array.from(payload.files);
+  // yield takeEvery([ActionType.FILES_DROPPED], function*({
+  //   payload
+  // }: FilesDropped) {
+  //   const files = Array.from(payload.files);
+  //   const state: AppState = yield select();
 
-    const dataUrls = yield call(() =>
-      Promise.all(
-        files.map(file => {
-          return new Promise(resolve => {
-            for (const file of files) {
-              const reader = new FileReader();
-              reader.onload = () => {
-                resolve(reader.result);
-              };
-              reader.readAsArrayBuffer(file);
-            }
-          });
-        })
-      )
-    );
-    console.log(files);
-  });
+  //   for (const file of files) {
+
+  //     yield call(function*() {
+  //       const { path }: ProjectFile = yield call(api.updateRawProjectFile, state.currentProject.data.id, file);
+  //       yield put(rawFileUploaded({ path, data: file }));
+  //     });
+  //   }
+
+
+  // });
 }
 
 function* loadSession() {

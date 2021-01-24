@@ -17,7 +17,6 @@ import {
   getPreviewChildren,
   getCurrentPreviewFrameBoxes,
   updateShared,
-  editSharedDocuments,
   DesignerState
 } from "../state";
 import { produce } from "immer";

@@ -15,6 +15,7 @@ import {
 } from "../../../../actions";
 import { redirectRequest } from "paperclip-designer/src/actions";
 import { isPaperclipFile } from "paperclip-utils";
+import { getNewFilePath } from "../../../../state";
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
@@ -50,7 +51,7 @@ export const Toolbar = () => {
     setShowNewFileInput(false);
   };
 
-  const basename = path.basename(state.currentCodeFileUri);
+  const relativePath = stripRoot(state.currentCodeFileUri);
   const allFileUris = useMemo(() => Object.keys(state.shared.documents), [
     state.shared.documents
   ]);
@@ -64,10 +65,12 @@ export const Toolbar = () => {
     if (e.key !== "Enter") {
       return;
     }
-    if (fileExists(newFileName, allFileUris)) {
+    const uri = getNewFilePath(newFileName, null);
+
+    if (fileExists(uri, allFileUris)) {
       return alert(`A file with that name already exists`);
     }
-    dispatch(newFileNameEntered({ value: newFileName }));
+    dispatch(newFileNameEntered({ uri }));
     setShowNewFileInput(false);
     setNewFileName("");
     select.close();
@@ -81,11 +84,12 @@ export const Toolbar = () => {
     if (state.currentProject?.data?.mainFileUri == uri) {
       return alert(`You can't rename the main file`);
     }
+    const newUri = getNewFilePath(newName, uri);
 
-    if (fileExists(uri, allFileUris)) {
+    if (fileExists(newUri, allFileUris)) {
       return alert(`A file with that name already exists`);
     }
-    dispatch(fileRenamed({ newName, uri }));
+    dispatch(fileRenamed({ newUri, uri }));
     select.close();
   };
   return (
@@ -95,7 +99,7 @@ export const Toolbar = () => {
         active={select.menuVisible}
         onButtonClick={select.onButtonClick}
         onBlur={select.onBlur}
-        name={basename}
+        name={relativePath}
         menu={
           select.menuVisible && (
             <styles.FileMenu>
@@ -197,16 +201,18 @@ const FileMenuItem = memo(
             onKeyPress={onNewNameKeyPress}
           />
         ) : (
-          path.basename(uri)
+          stripRoot(uri)
         )}
       </styles.FileMenuItem>
     );
   }
 );
 
-const fileExists = (uri: string, allFiles: any) => {
+const stripRoot = (uri) => uri.replace(/^\w+:\/\/\//, "");
+
+const fileExists = (testUri: string, allFiles: any) => {
   for (const uri of allFiles) {
-    if (uri.replace(/(\w+:\/\/\/|\.pc$)/g, "") === uri.replace(".pc", "")) {
+    if (testUri === uri) {
       return true;
     }
   }

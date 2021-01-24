@@ -1,9 +1,12 @@
 import * as ve from "paperclip-designer/src/state";
-import { memoize } from "paperclip-utils";
+import { isPaperclipFile, memoize } from "paperclip-utils";
 import * as qs from "querystring";
+import mime from "mime-types";
+
+
 
 import Automerge from "automerge";
-import { mapValues } from "lodash";
+import { mapValues, omit, pickBy } from "lodash";
 const ENTRY_URI = "file:///main.pc";
 
 export type User = {
@@ -56,7 +59,7 @@ const getPathnameRegexp = memoize((test: string) => {
 
 export type WorkerState = {
   currentFileUri: string;
-  documents: Record<string, string>;
+  documents: Record<string, string | Blob>;
 };
 
 export type AppState = {
@@ -117,14 +120,20 @@ export const INITIAL_STATE: AppState = {
   apiHost: process.env.API_HOST,
   slim: false
 };
-export const getNewFilePath = (name: string) => {
-  return "file:///" + name.replace(".pc", "") + ".pc";
+export const getNewFilePath = (name: string, previousNameOrExt: string) => {
+
+  const ext = previousNameOrExt ? previousNameOrExt.split(".").pop() :name.includes(".") ? name.split(".").pop() : "pc";
+
+  return "file:///" + name.replace(".pc", "") + "." + ext;
 };
 
 export const getWorkerState = (state: AppState): WorkerState => {
+  
   return {
     currentFileUri: state.designer.ui.query.currentFileUri,
-    documents: mapValues(state.shared.documents, value => value.toString())
+    documents: pickBy(mapValues(state.shared.documents, value => value.toString()), (content: string, uri: string) => {
+      return typeof content === "string";
+    })
   };
 };
 
@@ -149,11 +158,21 @@ export const hasUnsavedChanges = (state: AppState, prevState: AppState) => {
   return false;
 };
 
-const ACCEPTED_MIME_TYPES = [
+export const EDITABLE_MIME_TYPES = [
+  "text/plain",
+  "image/svg+xml"
+];
+
+const MEDIA_MIME_TYPES = [
   "image/png",
   "image/jpeg",
   "image/gif",
   "image/svg+xml"
+];
+
+const ACCEPTED_MIME_TYPES = [
+  ...MEDIA_MIME_TYPES,
+  ...EDITABLE_MIME_TYPES
 ];
 
 export const canUpload = (transfer: DataTransfer) => {
@@ -161,3 +180,24 @@ export const canUpload = (transfer: DataTransfer) => {
     return ACCEPTED_MIME_TYPES.includes(file.type);
   });
 };
+
+
+export const canEditFile = (name: string) => {
+  if (isPaperclipFile(name)) {
+    return true;
+  }
+  const type = String(mime.lookup(name));
+
+  return EDITABLE_MIME_TYPES.includes(type);
+}
+
+
+export const canPreviewFile = (name: string) => {
+  if (isPaperclipFile(name)) {
+    return true;
+  }
+
+  const type = String(mime.lookup(name));
+
+  return ACCEPTED_MIME_TYPES.includes(type);
+}

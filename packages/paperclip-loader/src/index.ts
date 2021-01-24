@@ -99,7 +99,7 @@ async function pcLoader(
 
   const sheetCode = stringifyCSSSheet(sheet, {
     uri: resourceUrl,
-    protocol: resourceProtocol
+    resolveUrl: resourceProtocol && (url => url.replace("file:", resourceProtocol))
   });
 
   // covers bug with node@10.13.0 where paths aren't stringified correctly (C:/this/path/is/bad)

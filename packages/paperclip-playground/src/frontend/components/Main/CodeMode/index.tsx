@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ControlledEditor } from "@monaco-editor/react";
 import {
   globalZKeyDown,
@@ -15,13 +15,14 @@ import { Toolbar } from "./Toolbar";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { codeEditorChanged, slimCodeEditorChanged } from "../../../actions";
 import { SlimEditor } from "./Slim";
+import { canEditFile } from "../../../state";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
   const { slim } = state;
-  const code = String(
-    state.shared.documents[state.currentCodeFileUri]
-  ).toString();
+
+  let content;
+
 
   const onChange = (event, code) => {
     dispatch(slimCodeEditorChanged(code));
@@ -47,33 +48,53 @@ export const CodeMode = () => {
       dispatch(globalSaveKeyPress(null) as any);
     });
   };
+
+  const [code, setCode] = useState<string>();
+  const docContent = state.shared.documents[state.currentCodeFileUri];
+
+  useEffect(() => {
+    if (docContent instanceof File) {
+      const reader = new FileReader();
+      reader.onload = () => setCode(String(reader.result));
+      reader.readAsText(docContent);
+    } else {
+      setCode(String(docContent));
+    }
+  }, [docContent]);
+
+  if (canEditFile(state.currentCodeFileUri)) {
+
+    content = <styles.Content slim={slim}>
+    {slim ? (
+      <SlimEditor
+        value={code}
+        onChange={value => {
+          dispatch(slimCodeEditorChanged(value));
+        }}
+      />
+    ) : (
+      <ControlledEditor
+        editorDidMount={editorDidMount}
+        options={{
+          minimap: {
+            enabled: false
+          }
+        }}
+        width="100%"
+        value={code}
+        language="html"
+        onChange={onChange}
+        theme="vs-dark"
+      />
+    )}
+  </styles.Content>
+  } else {
+    content = <styles.CantEditScreen />
+  }
   return (
     <styles.Container>
       <Toolbar />
-      <styles.Content slim={slim}>
-        {slim ? (
-          <SlimEditor
-            value={code}
-            onChange={value => {
-              dispatch(slimCodeEditorChanged(value));
-            }}
-          />
-        ) : (
-          <ControlledEditor
-            editorDidMount={editorDidMount}
-            options={{
-              minimap: {
-                enabled: false
-              }
-            }}
-            width="100%"
-            value={code}
-            language="html"
-            onChange={onChange}
-            theme="vs-dark"
-          />
-        )}
-      </styles.Content>
+      {content}
     </styles.Container>
   );
 };

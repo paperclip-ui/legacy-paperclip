@@ -23,10 +23,12 @@ export const getNativeNodePath = (root: Node, node: Node) => {
   return path;
 };
 
+export type UrlResolver = (url: string) => string;
+
 export const createNativeNode = (
   node,
   factory: DOMFactory,
-  protocol: string | null,
+  resolveUrl: UrlResolver,
   namespaceURI: string
 ) => {
   if (!node) {
@@ -39,11 +41,11 @@ export const createNativeNode = (
         return text;
       }
       case "Element":
-        return createNativeElement(node, factory, protocol, namespaceURI);
+        return createNativeElement(node, factory, resolveUrl, namespaceURI);
       case "StyleElement":
-        return createNativeStyleFromSheet(node.sheet, factory, protocol);
+        return createNativeStyleFromSheet(node.sheet, factory, resolveUrl);
       case "Fragment":
-        return createNativeFragment(node, factory, protocol);
+        return createNativeFragment(node, factory, resolveUrl);
     }
   } catch (e) {
     return factory.createTextNode(String(e.stack));
@@ -53,10 +55,10 @@ export const createNativeNode = (
 export const createNativeStyleFromSheet = (
   sheet,
   factory: DOMFactory,
-  protocol: string
+  resolveUrl: UrlResolver
 ) => {
   const nativeElement = factory.createElement("style");
-  nativeElement.textContent = stringifyCSSSheet(sheet, { protocol });
+  nativeElement.textContent = stringifyCSSSheet(sheet, { resolveUrl });
   return nativeElement as HTMLStyleElement;
 };
 
@@ -70,7 +72,7 @@ const createNativeTextNode = (node, factory: DOMFactory) => {
 const createNativeElement = (
   element,
   factory: DOMFactory,
-  protocol: string,
+  resolveUrl: UrlResolver,
   namespaceUri?: string
 ) => {
   const nativeElement =
@@ -85,8 +87,8 @@ const createNativeElement = (
 
   for (const name in element.attributes) {
     let value = element.attributes[name];
-    if (name === "src" && protocol) {
-      value = value.replace("file:", protocol);
+    if (name === "src" && resolveUrl) {
+      value = resolveUrl(value);
     }
 
     const aliasName = ATTR_ALIASES[name] || name;
@@ -95,7 +97,7 @@ const createNativeElement = (
   }
   for (const child of element.children) {
     nativeElement.appendChild(
-      createNativeNode(child, factory, protocol, childNamespaceUri)
+      createNativeNode(child, factory, resolveUrl, childNamespaceUri)
     );
   }
 
@@ -112,12 +114,12 @@ const createNativeElement = (
 const createNativeFragment = (
   fragment,
   factory: DOMFactory,
-  protocol: string
+  resolveUrl: UrlResolver
 ) => {
   const nativeFragment = factory.createDocumentFragment();
   for (const child of fragment.children) {
     nativeFragment.appendChild(
-      createNativeNode(child, factory, protocol, nativeFragment.namespaceURI)
+      createNativeNode(child, factory, resolveUrl, nativeFragment.namespaceURI)
     );
   }
   return nativeFragment;

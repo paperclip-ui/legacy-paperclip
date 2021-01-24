@@ -13,7 +13,7 @@ export const sharedReducer = (state: AppState, action: Action) => {
         documents: produce(state.shared.documents, documents => {
           for (const { rangeOffset, rangeLength, text } of action.payload
             .changes) {
-            const doc = documents[action.payload.fileUri];
+            const doc = String(documents[action.payload.fileUri]);
             documents[action.payload.fileUri] =
               doc.substr(0, rangeOffset) +
               text +

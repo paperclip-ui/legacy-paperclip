@@ -72,7 +72,9 @@ export const stringifyLoadResult = (
 ) => {
   const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
     .map(sheet => {
-      return stringifyCSSSheet(sheet, { protocol: "" });
+      return stringifyCSSSheet(sheet, {
+        resolveUrl: (url) => url.replace("file://", "")
+      });
     })
     .join("\n")
     .trim();

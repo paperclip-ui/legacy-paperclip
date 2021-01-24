@@ -94,7 +94,7 @@ export type Project = {
 
 // state that can be synchronized between documents
 export type SharedState = {
-  documents: Record<string, string>;
+  documents: Record<string, string | Blob>;
 };
 
 export type DesignerState = {
@@ -442,14 +442,6 @@ export const updateShared = (state: AppState, shared: Partial<SharedState>) => {
   };
 };
 
-export const editSharedDocuments = (
-  state: AppState,
-  edit: (documents: Record<string, string>) => Record<string, string>
-) => {
-  return updateShared(state, {
-    documents: edit(state.shared.documents)
-  });
-};
 
 // https://github.com/crcn/tandem/blob/10.0.0/packages/front-end/src/state/index.ts#L1304
 export const centerEditorCanvas = (

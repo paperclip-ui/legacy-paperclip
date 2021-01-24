@@ -1,7 +1,8 @@
 import {
   createNativeNode,
   createNativeStyleFromSheet,
-  getNativeNodePath
+  getNativeNodePath,
+  UrlResolver
 } from "./native-renderer";
 import {
   EngineDelegateEvent,
@@ -21,6 +22,7 @@ import {
 import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
+import { times } from "lodash";
 
 type Box = {
   width: number;
@@ -52,7 +54,7 @@ class FramesProxy implements Patchable {
   constructor(
     private _preview: VirtualNode,
     private _domFactory: DOMFactory = document,
-    private _protocol: string = null
+    public resolveUrl: (url: string) => string,
   ) {
     this._frames = [];
     this._childNodes = [];
@@ -76,7 +78,7 @@ class FramesProxy implements Patchable {
     const nativeStyle = (this._mainNativeStyle = createNativeStyleFromSheet(
       style,
       this._domFactory,
-      this._protocol
+      this.resolveUrl
     ));
     for (const frame of this._frames) {
       removeAllChildren(frame._mainStylesContainer);
@@ -103,7 +105,7 @@ class FramesProxy implements Patchable {
       const nativeSheet = createNativeStyleFromSheet(
         sheet,
         this._domFactory,
-        this._protocol
+        this.resolveUrl
       );
       this._importedNativeStyles.push(nativeSheet);
       for (const frame of this._frames) {
@@ -174,14 +176,23 @@ export class FramesRenderer {
 
   constructor(
     private _targetUri: string,
-    readonly protocol: string,
+    private _resolveUrl: (url: string) => string,
     private _domFactory: DOMFactory = document
   ) {
     this._framesProxy = new FramesProxy(
       this._preview,
       _domFactory,
-      this.protocol
+      this._resolveUrl
     );
+  }
+
+  get urlResolver() {
+    return this._resolveUrl;
+  }
+
+  set urlResolver(value: UrlResolver) {
+    this._resolveUrl = value;
+    this._framesProxy.resolveUrl = value;
   }
 
   setPreview(preview: VirtualNode) {
@@ -209,7 +220,7 @@ export class FramesRenderer {
     this._framesProxy = new FramesProxy(
       this._preview,
       this._domFactory,
-      this.protocol
+      this._resolveUrl
     );
     this._dependencies = importedSheets.map(info => info.uri);
     this._framesProxy.setMainStyle(sheet);
@@ -218,7 +229,7 @@ export class FramesRenderer {
       const childNode = createNativeNode(
         child,
         this._domFactory,
-        this.protocol,
+        this._resolveUrl,
         null
       );
       this._framesProxy.appendChild(childNode);
@@ -269,7 +280,7 @@ export class FramesRenderer {
             this._framesProxy,
             event.data.mutations,
             this._domFactory,
-            this.protocol
+            this._resolveUrl
           );
 
           if (event.data.sheet) {

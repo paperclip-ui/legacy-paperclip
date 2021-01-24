@@ -17,6 +17,7 @@
     "html-webpack-plugin": "^5.0.0-beta.6",
     "immer": "^8.0.0",
     "lodash": "^4.17.20",
+    "mime-types": "^2.1.28",
     "monaco-editor": "^0.21.3",
     "nodemon": "^2.0.7",
     "paperclip": "^17.4.22",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.168",
+    "@types/mime-types": "^2.1.0",
     "@types/node": "^14.14.21",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",

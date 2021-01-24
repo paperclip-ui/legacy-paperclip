@@ -1,4 +1,5 @@
-import { Project } from "../state";
+import { Project, ProjectFile } from "../state";
+import mime from "mime-types";
 
 export const connectAccount = async (kind: string, params: any) => {
   return await requestJSON(`/connect/${kind}`, {
@@ -31,13 +32,28 @@ export const createProject = async (
 export const updateProjectFile = async (
   projectId: number,
   path: string,
-  contents: string
+  contents: string | Blob
 ) => {
   return await request(
     `/projects/${projectId}/files/${encodeURIComponent(path)}`,
     {
       method: "POST",
+      headers: {
+        "Content-Type": mime.lookup(path) || "text/plain"
+      },
       body: contents
+    }
+  );
+};
+export const updateRawProjectFile = async (
+  projectId: number,
+  file: File
+): Promise<ProjectFile> => {
+  return await requestJSON(
+    `/projects/${projectId}/files?name=${encodeURIComponent(file.name)}`,
+    {
+      method: "POST",
+      body: file
     }
   );
 };
@@ -100,7 +116,8 @@ const requestJSON = async (path: string, options: any = {}) => {
     ...options,
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      ...(options.headers || {})
     }
   });
 

@@ -23,6 +23,7 @@ import {
   RedirectRequested
 } from "paperclip-designer/src/actions";
 import { PCSourceWriter } from "paperclip-source-writer";
+import { isPaperclipFile } from "paperclip-utils";
 
 const init = async () => {
   let _state: WorkerState;
@@ -50,7 +51,7 @@ const init = async () => {
   const onEngineInit = () => {
     _writer = new PCSourceWriter({
       engine: _engine,
-      getContent: uri => _state.documents[uri]
+      getContent: uri => String(_state.documents[uri])
     });
     dispatch(engineLoaded(null));
     tryOpeningCurrentFile();
@@ -63,7 +64,10 @@ const init = async () => {
       (!_currentUri || _currentUri !== _state.currentFileUri)
     ) {
       _currentUri = _state.currentFileUri;
-      _engine.open(_state.currentFileUri);
+
+      if (isPaperclipFile(_currentUri)) {
+        _engine.open(_state.currentFileUri);
+      }
     }
   };
 
@@ -79,10 +83,13 @@ const init = async () => {
     }
 
     for (const uri in _state.documents) {
+      if (!isPaperclipFile(uri)) {
+        continue;
+      }
       const newContent = _state.documents[uri];
       const oldContent = oldState.documents[uri];
-      if (newContent !== oldContent) {
-        _engine.updateVirtualFileContent(uri, newContent);
+      if (newContent !== oldContent && isPaperclipFile(uri)) {
+        _engine.updateVirtualFileContent(uri, String(newContent));
       }
     }
   };

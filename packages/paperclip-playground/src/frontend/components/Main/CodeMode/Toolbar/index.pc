@@ -141,11 +141,15 @@
 -->
 <Select.MenuItem export component as="FileMenuItem" {noFocus?} {hover?} {onClick?}>
   <style>
-    &:hover {
+    &:hover, &.hover {
       .more-file-select {
-          display: block;
+          visibility: visible;
       }
     }
+
+    // ensure that more button isn't covered
+    padding-right: 16px;
+    
   </style>
   {children}
   {moreSelect}
@@ -177,19 +181,28 @@
   </i>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <Select.Container export component as="MoreFileSelect" {onClick} {onBlur} className="$more-file-select">
   <style>
     // necessary to pop out of scroll
     position: absolute;
     right: 0px;
     z-index: 99999;
-    display: none;
+    visibility: hidden;
+    margin-left: 16px;
 
   </style>
   {children}
   {menu}
 </Select.Container>
 
+
+<!--
+  @frame { visible: false }
+-->
 <Select.Menu export component as="MoreFileMenu">
   <style>
     min-width: 150px;
@@ -207,6 +220,10 @@
   </Select.MenuItem>
 </Select.Menu>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 148, y: 51 }
+-->
 <div export component as="MoreFileButton" {onClick} className:highlight="highlight" {onClick}>
   <style>
     display: flex;
@@ -269,8 +286,10 @@
         <FileMenuItem>
           Colors.pc
         </FileMenuItem>
-        <FileMenuItem>
-          Colors.pc
+        <FileMenuItem hover moreSelect={<MoreFileSelect menu={<MoreFileMenu />}>
+          <MoreFileButton />
+        </MoreFileSelect>}>
+          Super-long-file-name-that-should-wrap-around.png
         </FileMenuItem>
         <FileMenuItem>
           Colors.pc

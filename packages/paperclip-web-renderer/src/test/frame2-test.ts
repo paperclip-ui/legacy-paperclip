@@ -357,7 +357,7 @@ describe(__filename + "#", () => {
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
-    const renderer = createMockFramesRenderer("file:///entry.pc", "blah:");
+    const renderer = createMockFramesRenderer("file:///entry.pc", (url: string) => url.replace("file:", "black:"));
     renderer.initialize(await engine.open("file:///entry.pc"));
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
@@ -395,7 +395,7 @@ describe(__filename + "#", () => {
     };
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
-    const renderer = createMockFramesRenderer("file:///entry.pc", "blah:");
+    const renderer = createMockFramesRenderer("file:///entry.pc", url => url.replace("file", "blah"));
     renderer.initialize(await engine.open("file:///entry.pc"));
     engine.onEvent(renderer.handleEngineDelegateEvent);
 

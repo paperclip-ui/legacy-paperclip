@@ -1,8 +1,9 @@
-import { DOMFactory, Renderer } from "../renderer";
+import { DOMFactory } from "../renderer";
 import { createEngineDelegate } from "paperclip";
 import * as path from "path";
 import { FramesRenderer } from "../frame-renderer";
 import { EngineMode } from "paperclip";
+import { identity } from "lodash";
 
 export const mockDOMFactory: DOMFactory = {
   createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
@@ -192,10 +193,8 @@ export const createMockEngineDelegate = (
     mode
   });
 
-export const createMockRenderer = (uri: string, protocol = "") =>
-  new Renderer(protocol, uri, mockDOMFactory);
 
-export const createMockFramesRenderer = (uri = "", protocol = "") =>
-  new FramesRenderer(uri, protocol, mockDOMFactory);
+export const createMockFramesRenderer = (uri = "", resolveUrl: ((url: string) => string) = identity) =>
+  new FramesRenderer(uri, resolveUrl, mockDOMFactory);
 
 export const trimWS = (str: string) => str.replace(/[\s\r\n\t]+/g, " ");

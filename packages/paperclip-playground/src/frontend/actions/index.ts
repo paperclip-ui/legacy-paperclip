@@ -21,6 +21,7 @@ export enum ActionType {
   ALL_PROJECTS_HOOK_USED = "ALL_PROJECTS_HOOK_USED",
   PROJECT_FILES_HOOK_USED = "PROJECT_FILES_HOOK_USED",
   DELETE_PROJECT_CONFIRMED = "DELETE_PROJECT_CONFIRMED",
+  RAW_FILE_UPLOADED = "RAW_FILE_UPLOADED",
   FILES_DROPPED = "FILES_DROPPED",
   NEW_PROJECT_ENTERED = "NEW_PROJECT_ENTERED",
   REMOVE_FILE_CLICKED = "REMOVE_FILE_CLICKED",
@@ -82,12 +83,14 @@ export type RemoveFileClicked = BaseAction<
 >;
 export type FileRenamed = BaseAction<
   ActionType.FILE_RENAMED,
-  { uri: string; newName: string }
+  { uri: string; newUri: string }
 >;
 export type ProjectHookUsed = BaseAction<
   ActionType.PROJECT_HOOK_USED,
   { projectId: number }
 >;
+export type RawFileUploaded = BaseAction<ActionType.RAW_FILE_UPLOADED, { data: Blob, path: string}>;
+
 export type AllProjectsHookUsed = BaseAction<ActionType.ALL_PROJECTS_HOOK_USED>;
 
 export type AccountConnected = BaseAction<
@@ -150,7 +153,7 @@ export type ContentChangesCreated = BaseAction<
 >;
 export type NewFileNameEntered = BaseAction<
   ActionType.NEW_FILE_NAME_ENTERED,
-  { value: string }
+  { uri: string }
 >;
 export type SyncPanelsClicked = BaseAction<ActionType.SYNC_PANELS_CLICKED>;
 
@@ -170,6 +173,7 @@ export type FilesDropped = BaseAction<ActionType.FILES_DROPPED, DataTransfer>;
 export const newProjectEntered = actionCreator<NewProjectEntered>(
   ActionType.NEW_PROJECT_ENTERED
 );
+export const rawFileUploaded = actionCreator<RawFileUploaded>(ActionType.RAW_FILE_UPLOADED);
 export const filesDropped = actionCreator<FilesDropped>(
   ActionType.FILES_DROPPED
 );
@@ -271,6 +275,7 @@ export type Action =
   | GetProjectFilesRequestChanged
   | EngineCrashed
   | AppStateDiffed
+  | RawFileUploaded
   | NewProjectEntered
   | SavedProject
   | FileItemClicked

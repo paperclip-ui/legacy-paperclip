@@ -1,4 +1,4 @@
-import { AppState, getNewFilePath } from "../state";
+import { AppState, canEditFile, getNewFilePath } from "../state";
 import {
   Action as VEAction,
   ActionType as VEActionType
@@ -12,7 +12,9 @@ import Automerge from "automerge";
 import { updateShared } from "paperclip-designer/src/state";
 import { historyReducer } from "paperclip-designer/src/reducers/history";
 import { mapValues, result } from "lodash";
+import mime from "mime-types";
 import { stat } from "fs";
+import { isPaperclipFile } from "paperclip-utils";
 
 export const reducer = historyReducer(
   (state: AppState, action: Action) => {
@@ -79,7 +81,7 @@ export const reducer = historyReducer(
           documents: produce(state.shared.documents, documents => {
             for (const uri in changes) {
               const doc = documents[uri];
-              documents[uri] = editString(doc, changes[uri]);
+              documents[uri] = editString(String(doc), changes[uri]);
             }
           })
         }) as AppState;
@@ -131,7 +133,13 @@ export const reducer = historyReducer(
       }
       case ActionType.FILE_ITEM_CLICKED: {
         return produce(state, newState => {
+          const previousUri = newState.currentCodeFileUri;
           newState.currentCodeFileUri = action.payload.uri;
+
+          // media & svg files sync
+          if (!isPaperclipFile(action.payload.uri) || !isPaperclipFile(previousUri)) {
+            newState.designer.ui.query.currentFileUri = action.payload.uri;
+          }
         });
       }
       case ActionType.REMOVE_FILE_CLICKED: {
@@ -149,8 +157,30 @@ export const reducer = historyReducer(
         state = maybeOpenUri(state, action.payload.uri, currentUri);
         return state;
       }
+      case ActionType.RAW_FILE_UPLOADED: {
+        const { data, path } = action.payload;
+        return produce(state, newState => {
+          newState.shared.documents[path] = data;
+        })
+      }
+
+      case ActionType.FILES_DROPPED: {
+        const dt = action.payload;
+        return produce(state, newState => {
+          const files = Array.from(dt.files);
+          for (const file of files) {
+            const uri = getUniqueUri(file.name.replace(/\.\w+$/, ""),mime.extension(file.type) || "text/plain", newState.shared.documents);
+            newState.shared.documents[uri] = file;
+
+            // set dropped file as preview
+            newState.currentCodeFileUri = uri;
+            newState.designer.ui.query.currentFileUri = uri;
+          }
+        });
+      }
+
       case ActionType.FILE_RENAMED: {
-        const newUri = getNewFilePath(action.payload.newName);
+        const { newUri } = action.payload;
         state = produce(state, newState => {
           const content = newState.shared.documents[action.payload.uri];
           delete newState.shared.documents[action.payload.uri];
@@ -162,7 +192,7 @@ export const reducer = historyReducer(
         return state;
       }
       case ActionType.NEW_FILE_NAME_ENTERED: {
-        const uri = getNewFilePath(action.payload.value);
+        const { uri } = action.payload;
 
         state = updateShared(state, {
           documents: produce(state.shared.documents, documents => {
@@ -197,3 +227,21 @@ const getMainUri = (state: AppState) =>
   (state.currentCodeFileUri =
     state.currentProject?.data?.mainFileUri ||
     Object.keys(state.shared.documents)[0]);
+
+
+const getUniqueUri = (name: string, ext: string, allFiles: Record<string, any>) => {
+
+  let i = 0;
+  let path = `file:///${name}.${ext}`;
+  while(1) {
+
+    const pathExists = allFiles[path];
+    if (!pathExists) {
+      break;
+    }
+
+    path = `file:///${name}-${++i}.${ext}`;
+  }
+
+  return path;
+};

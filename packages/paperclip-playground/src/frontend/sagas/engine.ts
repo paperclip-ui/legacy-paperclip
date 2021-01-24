@@ -14,20 +14,14 @@ import { EngineDelegate } from "paperclip";
 import * as path from "path";
 import { compare, applyPatch } from "fast-json-patch";
 import {
-  engineCrashed,
-  engineLoaded,
   Action,
   ActionType,
-  CodeEditorTextChanged,
   workerInitialized,
   appStateDiffed,
-  GetProjectFilesRequestChanged
 } from "../actions";
 
 import {
   clientConnected,
-  engineDelegateChanged,
-  engineDelegateEventsHandled,
   ActionType as VEActionType
 } from "paperclip-designer/src/actions";
 

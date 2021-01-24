@@ -14,7 +14,9 @@ import {
   getLocationParams,
   matchesLocationPath,
   Project,
-  Result
+  EDITABLE_MIME_TYPES,
+  Result,
+  canEditFile
 } from "../state";
 import { request } from "./utils";
 import {
@@ -59,10 +61,13 @@ export function* handleRoutes() {
         const allData = {};
 
         for (const { path, url } of project.data.files) {
-          const resp = yield call(fetch, url, {
-            credentials: "include"
+          allData[path] = yield call(async () => {
+            const resp = await fetch(url, { credentials: "include" });
+
+            const editable = EDITABLE_MIME_TYPES.includes(String(resp.headers.get("content-type")).split(";").shift());
+
+            return editable ? resp.text() : resp.blob();
           });
-          allData[path] = yield call(() => resp.text());
         }
 
         return allData;

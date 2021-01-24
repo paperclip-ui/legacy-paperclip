@@ -6,6 +6,7 @@ import {
   getFrameVirtualNode
 } from "paperclip-web-renderer";
 import { memo, useEffect, useMemo } from "react";
+import mime from "mime-types";
 import {
   engineDelegateEventsHandled,
   rectsCaptured,
@@ -129,6 +130,7 @@ export const useMultipleFrames = ({
     {}
   );
   const { state, dispatch } = useAppStore();
+  const resolveUrl = useUrlResolver();
 
   useEffect(() => {
     const newRenderers = { ...renderers };
@@ -138,7 +140,7 @@ export const useMultipleFrames = ({
       }
 
       newRenderers[fileUri] = new FrameController(
-        new FramesRenderer(fileUri, state.designer.renderProtocol),
+        new FramesRenderer(fileUri, resolveUrl),
         dispatch,
         shouldCollectRects,
         fileData[fileUri]
@@ -154,6 +156,14 @@ export const useMultipleFrames = ({
 
     setRenderers(newRenderers);
   }, [fileData]);
+
+  useEffect(() => {
+    
+    for (const uri in renderers) {
+      renderers[uri].renderer.urlResolver = resolveUrl;
+    }
+
+  }, [resolveUrl])
 
   useLayoutEffect(() => {
     for (const fileUri in renderers) {
@@ -192,6 +202,20 @@ type UseFramesProps = {
   fileUri: string;
   shouldCollectRects: boolean;
 };
+const useUrlResolver = () => {
+  const { state: {designer: {renderProtocol}, shared: {documents}}, } = useAppStore();
+
+  return useCallback((url) => {
+    const content = documents[url];
+
+
+    if (!content) {
+      return url;
+    }
+
+    return typeof content === "string" ? `data:${mime.lookup(url)};utf8,${encodeURIComponent(content)}` : URL.createObjectURL(content);
+  }, [renderProtocol, documents]);
+}
 
 export const useFrames = ({
   fileUri,
@@ -201,14 +225,20 @@ export const useFrames = ({
 
   const frameData = state.designer.allLoadedPCFileData[fileUri];
 
+  const resolveUrl = useUrlResolver();
+
   const renderer = useMemo(() => {
     return new FrameController(
-      new FramesRenderer(fileUri, state.designer.renderProtocol),
+      new FramesRenderer(fileUri, resolveUrl),
       dispatch,
       shouldCollectRects,
       frameData
     );
-  }, [fileUri, state.designer.renderProtocol, shouldCollectRects, !!frameData]);
+  }, [fileUri, shouldCollectRects, !!frameData]);
+
+  useEffect(() => {
+    renderer.renderer.urlResolver = resolveUrl;
+  }, [resolveUrl]);
 
   useEffect(() => {
     return () => renderer.dispose();

@@ -31,7 +31,7 @@ function* handleNewFile() {
     yield put(
       redirectRequest({
         query: {
-          currentFileUri: getNewFilePath(action.payload.value)
+          currentFileUri: action.payload.uri
         }
       })
     );
