@@ -92,7 +92,7 @@ const stringifyStyle = (
     }
 
     if (value && value.includes("file:") && resolveUrl) {
-      const url = value.match(/(file:\/\/[^\)]+)/)[1];
+      const url = value.match(/(file:\/\/[^)]+)/)[1];
       value = value.replace(url, resolveUrl(url));
     }
   }
