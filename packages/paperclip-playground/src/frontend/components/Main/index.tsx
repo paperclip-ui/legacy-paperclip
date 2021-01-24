@@ -51,7 +51,7 @@ const Editor = memo(() => {
   };
   const onDrop = (event: React.DragEvent<any>) => {
     event.preventDefault();
-    const allowed = canUpload(event.dataTransfer);
+    const allowed = canUpload(event.dataTransfer.files);
     setDraggingFileOver(false);
     if (!allowed) {
       return alert(
@@ -60,7 +60,7 @@ const Editor = memo(() => {
     }
 
     if (allowed) {
-      dispatch(filesDropped(event.dataTransfer));
+      dispatch(filesDropped(event.dataTransfer.files));
     }
   };
 

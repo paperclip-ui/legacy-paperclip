@@ -1,15 +1,8 @@
 
 ### Immediate
 
-- ability to load uploaded assets
-  - should be able to load unsaved assets
-- upload progress
 - explicit upload button
-- ability to drag files over to app
-- ability to upload image (explicit file upload button)
-- upload progress
 - sign-in to upload media
-- maintain ext name
 
 - max project size
 

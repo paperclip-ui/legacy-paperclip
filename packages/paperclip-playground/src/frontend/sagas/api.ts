@@ -18,6 +18,7 @@ import {
 import * as api from "../api";
 import { mapValues } from "lodash";
 import { request } from "./utils";
+import { isPaperclipFile } from "paperclip-utils";
 
 export function* handleAPI() {
   yield fork(handleAccountConnected);
@@ -64,9 +65,15 @@ function* handleProjectChanges() {
     const project = yield call(
       api.createProject,
       name,
-      mapValues(state.shared.documents, doc => doc.toString()),
-      state.currentCodeFileUri
+      {},
+      isPaperclipFile(state.currentCodeFileUri) ? state.currentCodeFileUri : Object.keys(state.shared.documents).find(isPaperclipFile)
     );
+
+    for (const uri in state.shared.documents) {
+      yield call(api.updateProjectFile, project.id, uri, state.shared.documents[uri]);
+    }
+
+
     history.push(`/projects/${project.id}`);
   }
 

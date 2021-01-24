@@ -175,8 +175,9 @@ const ACCEPTED_MIME_TYPES = [
   ...EDITABLE_MIME_TYPES
 ];
 
-export const canUpload = (transfer: DataTransfer) => {
-  return Array.from(transfer.files).every(file => {
+export const canUpload = (files: FileList) => {
+  return Array.from(files).every(file => {
+    console.log(file.size);
     return ACCEPTED_MIME_TYPES.includes(file.type);
   });
 };

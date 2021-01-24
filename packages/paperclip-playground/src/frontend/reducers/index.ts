@@ -165,9 +165,8 @@ export const reducer = historyReducer(
       }
 
       case ActionType.FILES_DROPPED: {
-        const dt = action.payload;
         return produce(state, newState => {
-          const files = Array.from(dt.files);
+          const files = Array.from(action.payload);
           for (const file of files) {
             const uri = getUniqueUri(file.name.replace(/\.\w+$/, ""),mime.extension(file.type) || "text/plain", newState.shared.documents);
             newState.shared.documents[uri] = file;

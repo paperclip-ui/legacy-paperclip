@@ -168,7 +168,7 @@ export type NewProjectEntered = BaseAction<
 >;
 
 export type LoggedOut = BaseAction<ActionType.LOGGED_OUT>;
-export type FilesDropped = BaseAction<ActionType.FILES_DROPPED, DataTransfer>;
+export type FilesDropped = BaseAction<ActionType.FILES_DROPPED, FileList>;
 
 export const newProjectEntered = actionCreator<NewProjectEntered>(
   ActionType.NEW_PROJECT_ENTERED

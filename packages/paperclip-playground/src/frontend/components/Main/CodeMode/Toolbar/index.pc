@@ -92,6 +92,7 @@
       font-size: 14px;
       transition: 0.2s;
       position: relative;  
+      white-space: nowrap;
       
       &:hover {
         background: var(--grey-night-400);
@@ -101,7 +102,14 @@
         background: var(--grey-night-300);
       }
     </style>
-    {name}
+    <div title={name}>
+      <style>
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      </style>
+      {name}
+    </div>
     <i>
       <style>
         margin-left: 14px;
@@ -180,6 +188,39 @@
     </style>
   </i>
 </div>
+
+-->
+<div export component as="UploadButton" className:highlight="highlight">
+  <style>
+      --size: 20px;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+    color: var(--grey-300);
+    &:hover {
+      color: var(--grey-100);
+    }
+  </style>
+  <i>
+    <style>
+      @include utils.mask;
+      mask-image: url("./upload3.svg");
+    </style>
+  </i>
+  <input type="file" {onChange}>
+    <style>
+      opacity: 0;
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      cursor: pointer;
+    </style>
+  </input>
+</div>
+
 
 
 <!--
@@ -266,6 +307,13 @@
 </div>
 
 
+<div export component as="Spacer">
+  <style>
+    width: 100%;
+  </style>
+</div>
+
+
 <!--
   @frame { visible: false, title: "", width: 1024, height: 768, x: 55, y: 171 }
 -->
@@ -273,7 +321,7 @@
 
 
 <Topbar export component as="Preview">
-  <FileSelect name="Main.pc" active={showFileMenu} menu={
+  <FileSelect name="super-log-main file that.pc" active={showFileMenu} menu={
     showFileMenu && <FileMenu>
     
       <FileMenuItems>
@@ -309,5 +357,8 @@
   } />
 
   <EyeButton />
+  <Spacer />
+
+  <UploadButton />
 
 </Topbar>

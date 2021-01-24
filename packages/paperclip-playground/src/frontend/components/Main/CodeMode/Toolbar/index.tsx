@@ -9,13 +9,14 @@ import { useSelect } from "paperclip-designer/src/components/Select";
 import {
   fileItemClicked,
   fileRenamed,
+  filesDropped,
   newFileNameEntered,
   removeFileClicked,
   syncPanelsClicked
 } from "../../../../actions";
 import { redirectRequest } from "paperclip-designer/src/actions";
 import { isPaperclipFile } from "paperclip-utils";
-import { getNewFilePath } from "../../../../state";
+import { canUpload, getNewFilePath } from "../../../../state";
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
@@ -92,6 +93,13 @@ export const Toolbar = () => {
     dispatch(fileRenamed({ newUri, uri }));
     select.close();
   };
+  const onUploadChange = (event: React.ChangeEvent<any>) => {
+    const input = event.target as HTMLInputElement;
+    if (!canUpload(input.files)) {
+      `Whoops, can't upload that. Make sure you're only uploading images that are under 2 MB`
+    }
+    dispatch(filesDropped(input.files));
+  }
   return (
     <styles.Topbar>
       <styles.FileSelect
@@ -134,6 +142,8 @@ export const Toolbar = () => {
       {state.currentCodeFileUri !== state.designer.ui.query.currentFileUri && (
         <styles.EyeButton onClick={onSyncPanelsClick} />
       )}
+      <styles.Spacer />
+      <styles.UploadButton onChange={onUploadChange} />
     </styles.Topbar>
   );
 };

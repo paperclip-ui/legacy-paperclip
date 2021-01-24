@@ -114,6 +114,10 @@
 
 
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="MediaPreview" className="v2 light">
   <style> 
     background: var(--grey-100);
@@ -198,12 +202,12 @@
 
 
 <!--
-  @frame { title: "Logged in / unpreviewable", width: 1216, height: 767, x: 1913, y: 1183 }
+  @frame { title: "Logged in / unpreviewable", width: 1216, height: 767, x: 1926, y: 1354 }
 -->
 <Preview showEditor2 cantPreview loggedIn  />
 
 <!--
-  @frame { title: "Logged in / binary selected", width: 1216, height: 767, x: 493, y: 1137 }
+  @frame { title: "Logged in / binary selected", width: 1216, height: 767, x: 520, y: 1382 }
 -->
 <Preview showEditor2 loggedIn  />
 
