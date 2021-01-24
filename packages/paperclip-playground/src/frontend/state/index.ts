@@ -15,6 +15,9 @@ export type User = {
   id: number;
 };
 
+// 2 MB
+export const MAX_FILE_SIZE = 2 * 1000 * 1000;
+
 export type Result<TData> = {
   data?: TData;
   done?: boolean;
@@ -177,7 +180,9 @@ const ACCEPTED_MIME_TYPES = [
 
 export const canUpload = (files: FileList) => {
   return Array.from(files).every(file => {
-    console.log(file.size);
+    if (file.size > MAX_FILE_SIZE) {
+      return false;
+    }
     return ACCEPTED_MIME_TYPES.includes(file.type);
   });
 };

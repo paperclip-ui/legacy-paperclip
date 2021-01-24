@@ -189,15 +189,16 @@
   </i>
 </div>
 
--->
+
 <div export component as="UploadButton" className:highlight="highlight">
   <style>
       --size: 20px;
     display: flex;
     align-items: center;
-    padding: 12px;
+
     cursor: pointer;
     position: relative;
+    white-space: nowrap;
     transition: 0.2s;
     color: var(--grey-300);
     &:hover {
@@ -207,9 +208,11 @@
   <i>
     <style>
       @include utils.mask;
-      mask-image: url("./upload3.svg");
+      mask-image: url("./plus.svg");
+      margin-right: 6px;
     </style>
   </i>
+  Add file
   <input type="file" {onChange}>
     <style>
       opacity: 0;
@@ -282,16 +285,67 @@
   </i>
 </div>
 
+
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 325, y: -475 }
 -->
-<Select.MenuItem export component as="AddFileMenuItem" {onMouseDown?} {onClick?}>
+<Select.MenuItem export component as="AddDocumentButton" className:media="$media" className:page="$page" {onMouseDown?} {onClick?}>
+  <style>
+    &:hover {
+      color: var(--color-blue-100);
+    }
+    position: relative;
+  </style>
+  <div>
+    <style>
+      display: flex;
+      align-items: center;
+    </style>
+    <i>
+      <style>
+        @include utils.mask;
+        position: relative;
+        &:within(.media) {
+          --size: 14px; 
+          mask-image: url("./image2.svg");
+          margin: 0px 1px;
+          left: 1px;
+        }
+        &:within(.page) {
+          --size: 16px;
+          mask-image: url("./shape.svg");
+        }
+      </style>
+    </i>
+    <div>
+      <style>
+        margin-left: 8px;
+      </style>
+      {children}
+    </div>
+  </div>
+  { media? && <input type="file" {onChange?} {accept?}>
+    <style>
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: black;
+      left: 0px;
+      top: 0px;
+      opacity: 0;
+      cursor: pointer;
+    </style>
+  </input>}
+</Select.MenuItem>
+
+<div export component as="MenuFooter">
   <style>
     border-top: 1px solid rgb(65, 65, 65);
     color: var(--grey-300);
+    padding-bottom: 8px;
   </style>
-  + Add
-</Select.MenuItem>
+  {children}
+</div>
 
 
 <!--
@@ -313,13 +367,21 @@
   </style>
 </div>
 
+<div export component as="RightControls">
+  <style>
+    display: flex;
+    margin-right: 16px;
+    & > * {
+      margin-left: 8px;
+    }
+  </style>
+  {children}
+</div>
+
 
 <!--
   @frame { visible: false, title: "", width: 1024, height: 768, x: 55, y: 171 }
 -->
-
-
-
 <Topbar export component as="Preview">
   <FileSelect name="super-log-main file that.pc" active={showFileMenu} menu={
     showFileMenu && <FileMenu>
@@ -352,13 +414,18 @@
           <TextInput />
         </FileMenuItem>
       </FileMenuItems>
-      <AddFileMenuItem />
+      <MenuFooter>
+        <AddDocumentButton page>
+          Create new page
+        </AddDocumentButton>
+        <AddDocumentButton media>
+          Upload file
+        </AddDocumentButton>
+      </MenuFooter>
     </FileMenu>
   } />
 
   <EyeButton />
   <Spacer />
-
-  <UploadButton />
 
 </Topbar>

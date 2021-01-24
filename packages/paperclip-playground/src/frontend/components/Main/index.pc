@@ -202,18 +202,24 @@
 
 
 <!--
-  @frame { title: "Logged in / unpreviewable", width: 1216, height: 767, x: 1926, y: 1354 }
+  @frame { title: "Logged in / unpreviewable", width: 1216, height: 767, x: 1899, y: 2295 }
 -->
 <Preview showEditor2 cantPreview loggedIn  />
 
 <!--
-  @frame { title: "Logged in / binary selected", width: 1216, height: 767, x: 520, y: 1382 }
+  @frame { title: "Logged in / binary selected", width: 1216, height: 767, x: 481, y: 2290 }
 -->
 <Preview showEditor2 loggedIn  />
 
 
 <!--
-  @frame { title: "Logged in / file select", width: 1216, height: 767, x: 490, y: 267 }
+  @frame { title: "Logged in / download select", width: 1216, height: 767, x: 457, y: 1264 }
+-->
+<Preview showEditor showDownloadMenu loggedIn  />
+
+
+<!--
+  @frame { title: "Logged in / file select", width: 1216, height: 767, x: 490, y: 264 }
 -->
 <Preview showEditor showFileMenu loggedIn  />
 
@@ -226,11 +232,11 @@
 
 
 <!--
-  @frame { title: "Compact / responsive", width: 643, height: 768, x: 545, y: 2576 }
+  @frame { title: "Compact / responsive", width: 643, height: 768, x: 519, y: 3446 }
 -->
 <Preview showEditor />
 
 <!--
-  @frame { title: "Compact / Explicit", width: 1795, height: 931, x: 1343, y: 2583 }
+  @frame { title: "Compact / Explicit", width: 1795, height: 931, x: 1369, y: 3410 }
 -->
 <Preview compact showEditor />

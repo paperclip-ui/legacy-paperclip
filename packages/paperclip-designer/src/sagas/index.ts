@@ -7,7 +7,6 @@ import { eventChannel } from "redux-saga";
 import * as qs from "querystring";
 import {
   ActionType,
-  ErrorBannerClicked,
   globalEscapeKeyPressed,
   globalBackspaceKeyPressed,
   globalMetaKeyDown,
@@ -29,7 +28,6 @@ import {
   getAllScreensRequested,
   zoomOutKeyPressed,
   zoomInKeyPressed,
-  RedirectRequested,
   globalOptionKeyDown,
   globalOptionKeyUp
 } from "../actions";

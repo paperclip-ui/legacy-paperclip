@@ -99,6 +99,7 @@ export const Toolbar = () => {
       `Whoops, can't upload that. Make sure you're only uploading images that are under 2 MB`
     }
     dispatch(filesDropped(input.files));
+    select.close();
   }
   return (
     <styles.Topbar>
@@ -134,7 +135,14 @@ export const Toolbar = () => {
                 )}
               </styles.FileMenuItems>
 
-              <styles.AddFileMenuItem onClick={onAddFile} />
+              <styles.MenuFooter>
+                <styles.AddDocumentButton page onClick={onAddFile}>
+                    Create new page
+                </styles.AddDocumentButton>
+                <styles.AddDocumentButton media onChange={onUploadChange} accept=".pc, .jpeg, .jpg, .svg, .png">
+                    Upload file
+                </styles.AddDocumentButton>
+              </styles.MenuFooter>
             </styles.FileMenu>
           )
         }
@@ -142,8 +150,6 @@ export const Toolbar = () => {
       {state.currentCodeFileUri !== state.designer.ui.query.currentFileUri && (
         <styles.EyeButton onClick={onSyncPanelsClick} />
       )}
-      <styles.Spacer />
-      <styles.UploadButton onChange={onUploadChange} />
     </styles.Topbar>
   );
 };

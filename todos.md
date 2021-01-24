@@ -1,15 +1,6 @@
 
 ### Immediate
 
-- explicit upload button
-- sign-in to upload media
-
-- max project size
-
-- profile menu
-  - create new project - focus on title
-  - see projects
-
 - file menu
   - download React code
   - download source code

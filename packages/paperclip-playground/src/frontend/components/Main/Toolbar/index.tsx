@@ -29,6 +29,10 @@ export const MainToolbar = () => {
     history.push(APP_LOCATIONS.PROJECTS);
   };
 
+  const onDownloadClick = () => {
+
+  };
+
   let rightControls;
   let leftControls;
 
@@ -36,17 +40,21 @@ export const MainToolbar = () => {
 
   if (state.user) {
     leftControls = (
-      <>
-        <Button primary onClick={onSaveCick}>
+      <>  
+        <styles.NavAction save onClick={onSaveCick}>
           {state.currentProject ? "Save" : "Save as..."}
-        </Button>
+       
         {state.saving && (
           <styles.SaveStatus
             success={!!state.saving.data}
             failed={!!state.saving.error}
             pending={!state.saving.done}
           />
-        )}
+        )} </styles.NavAction>
+
+        <styles.NavAction download onClick={onDownloadClick}>
+            Download
+        </styles.NavAction>
       </>
     );
     rightControls = (
