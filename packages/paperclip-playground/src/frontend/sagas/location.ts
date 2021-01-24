@@ -64,7 +64,11 @@ export function* handleRoutes() {
           allData[path] = yield call(async () => {
             const resp = await fetch(url, { credentials: "include" });
 
-            const editable = EDITABLE_MIME_TYPES.includes(String(resp.headers.get("content-type")).split(";").shift());
+            const editable = EDITABLE_MIME_TYPES.includes(
+              String(resp.headers.get("content-type"))
+                .split(";")
+                .shift()
+            );
 
             return editable ? resp.text() : resp.blob();
           });

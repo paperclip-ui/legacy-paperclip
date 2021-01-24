@@ -66,13 +66,19 @@ function* handleProjectChanges() {
       api.createProject,
       name,
       {},
-      isPaperclipFile(state.currentCodeFileUri) ? state.currentCodeFileUri : Object.keys(state.shared.documents).find(isPaperclipFile)
+      isPaperclipFile(state.currentCodeFileUri)
+        ? state.currentCodeFileUri
+        : Object.keys(state.shared.documents).find(isPaperclipFile)
     );
 
     for (const uri in state.shared.documents) {
-      yield call(api.updateProjectFile, project.id, uri, state.shared.documents[uri]);
+      yield call(
+        api.updateProjectFile,
+        project.id,
+        uri,
+        state.shared.documents[uri]
+      );
     }
-
 
     history.push(`/projects/${project.id}`);
   }
@@ -113,9 +119,15 @@ function* handleProjectChanges() {
     });
   }
 
-  yield takeEvery([ActionType.GET_PROJECT_FILES_REQUEST_CHANGED, ActionType.RAW_FILE_UPLOADED], function*() {
-    _lastSavedState = yield select();
-  });
+  yield takeEvery(
+    [
+      ActionType.GET_PROJECT_FILES_REQUEST_CHANGED,
+      ActionType.RAW_FILE_UPLOADED
+    ],
+    function*() {
+      _lastSavedState = yield select();
+    }
+  );
 
   yield takeEvery(
     [ActionType.SAVE_BUTTON_CLICKED, vea.ActionType.GLOBAL_SAVE_KEY_DOWN],
@@ -176,7 +188,6 @@ function* handleProjectChanges() {
   //       yield put(rawFileUploaded({ path, data: file }));
   //     });
   //   }
-
 
   // });
 }

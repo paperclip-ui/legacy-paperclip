@@ -4,7 +4,6 @@ import { Mutation, ActionKind } from "paperclip-utils";
 import { DOMFactory } from "./renderer";
 import { ATTR_ALIASES } from "./utils";
 
-
 const entities = new Html5Entities();
 
 export interface Patchable {

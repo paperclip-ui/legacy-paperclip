@@ -158,12 +158,10 @@ export const useMultipleFrames = ({
   }, [fileData]);
 
   useEffect(() => {
-    
     for (const uri in renderers) {
       renderers[uri].renderer.urlResolver = resolveUrl;
     }
-
-  }, [resolveUrl])
+  }, [resolveUrl]);
 
   useLayoutEffect(() => {
     for (const fileUri in renderers) {
@@ -203,19 +201,28 @@ type UseFramesProps = {
   shouldCollectRects: boolean;
 };
 const useUrlResolver = () => {
-  const { state: {designer: {renderProtocol}, shared: {documents}}, } = useAppStore();
-
-  return useCallback((url) => {
-    const content = documents[url];
-
-
-    if (!content) {
-      return url;
+  const {
+    state: {
+      designer: { renderProtocol },
+      shared: { documents }
     }
+  } = useAppStore();
 
-    return typeof content === "string" ? `data:${mime.lookup(url)};utf8,${encodeURIComponent(content)}` : URL.createObjectURL(content);
-  }, [renderProtocol, documents]);
-}
+  return useCallback(
+    url => {
+      const content = documents[url];
+
+      if (!content) {
+        return url;
+      }
+
+      return typeof content === "string"
+        ? `data:${mime.lookup(url)};utf8,${encodeURIComponent(content)}`
+        : URL.createObjectURL(content);
+    },
+    [renderProtocol, documents]
+  );
+};
 
 export const useFrames = ({
   fileUri,

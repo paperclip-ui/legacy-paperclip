@@ -2,7 +2,11 @@ import { APP_LOCATIONS } from "../../../state";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
 import { useSelect } from "../../../../../../paperclip-designer/src/components/Select";
-import { downloadProjectClicked, logoutButtonClicked, saveButtonClicked } from "../../../actions";
+import {
+  downloadProjectClicked,
+  logoutButtonClicked,
+  saveButtonClicked
+} from "../../../actions";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Button } from "../../Button/index.pc";
 import { Auth } from "../auth";
@@ -30,7 +34,9 @@ export const MainToolbar = () => {
   };
 
   const onDownloadClick = () => {
-    window.open(`${window.location.protocol}//${state.apiHost}/projects/${state.currentProject.data.id}/package.zip`);
+    window.open(
+      `${window.location.protocol}//${state.apiHost}/projects/${state.currentProject.data.id}/package.zip`
+    );
   };
 
   let rightControls;
@@ -40,20 +46,25 @@ export const MainToolbar = () => {
 
   if (state.user) {
     leftControls = (
-      <>  
+      <>
         <styles.NavAction save onClick={onSaveCick}>
           {state.currentProject ? "Save" : "Save As..."}
-       
-        {state.saving && (
-          <styles.SaveStatus
-            success={!!state.saving.data}
-            failed={!!state.saving.error}
-            pending={!state.saving.done}
-          />
-        )} </styles.NavAction>
+          {state.saving && (
+            <styles.SaveStatus
+              success={!!state.saving.data}
+              failed={!!state.saving.error}
+              pending={!state.saving.done}
+            />
+          )}{" "}
+        </styles.NavAction>
 
-        <styles.NavAction download onClick={onDownloadClick} disabled={!state.currentProject?.data} title={!state.currentProject?.data && "Save project to download"}>
-            Download React Code
+        <styles.NavAction
+          download
+          onClick={onDownloadClick}
+          disabled={!state.currentProject?.data}
+          title={!state.currentProject?.data && "Save project to download"}
+        >
+          Download React Code
         </styles.NavAction>
       </>
     );

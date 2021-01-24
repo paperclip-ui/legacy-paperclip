@@ -34,7 +34,7 @@ export const createTranslateContext = (
   hasLogicFile: boolean,
   args: Options,
   indent = "  ",
-  fileSystem :any
+  fileSystem: any
 ): TranslateContext => ({
   buffer: "",
   classNames,

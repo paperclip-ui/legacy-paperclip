@@ -69,7 +69,9 @@ export type GetProjectRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECT_REQUEST_CHANGED,
   Project
 >;
-export type DownloadProjectClicked = BaseAction<ActionType.DOWNLOAD_PROJECT_CLICKED>;
+export type DownloadProjectClicked = BaseAction<
+  ActionType.DOWNLOAD_PROJECT_CLICKED
+>;
 export type GetProjectFilesRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECT_FILES_REQUEST_CHANGED,
   Record<string, string>,
@@ -91,7 +93,10 @@ export type ProjectHookUsed = BaseAction<
   ActionType.PROJECT_HOOK_USED,
   { projectId: number }
 >;
-export type RawFileUploaded = BaseAction<ActionType.RAW_FILE_UPLOADED, { data: Blob, path: string}>;
+export type RawFileUploaded = BaseAction<
+  ActionType.RAW_FILE_UPLOADED,
+  { data: Blob; path: string }
+>;
 
 export type AllProjectsHookUsed = BaseAction<ActionType.ALL_PROJECTS_HOOK_USED>;
 
@@ -175,11 +180,15 @@ export type FilesDropped = BaseAction<ActionType.FILES_DROPPED, FileList>;
 export const newProjectEntered = actionCreator<NewProjectEntered>(
   ActionType.NEW_PROJECT_ENTERED
 );
-export const rawFileUploaded = actionCreator<RawFileUploaded>(ActionType.RAW_FILE_UPLOADED);
+export const rawFileUploaded = actionCreator<RawFileUploaded>(
+  ActionType.RAW_FILE_UPLOADED
+);
 export const filesDropped = actionCreator<FilesDropped>(
   ActionType.FILES_DROPPED
 );
-export const downloadProjectClicked = actionCreator<DownloadProjectClicked>(ActionType.DOWNLOAD_PROJECT_CLICKED);
+export const downloadProjectClicked = actionCreator<DownloadProjectClicked>(
+  ActionType.DOWNLOAD_PROJECT_CLICKED
+);
 export const accountConnected = actionCreator<AccountConnected>(
   ActionType.ACCOUNT_CONNECTED
 );

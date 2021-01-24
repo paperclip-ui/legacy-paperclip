@@ -17,7 +17,7 @@ import {
   Action,
   ActionType,
   workerInitialized,
-  appStateDiffed,
+  appStateDiffed
 } from "../actions";
 
 import {

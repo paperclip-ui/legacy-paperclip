@@ -442,7 +442,6 @@ export const updateShared = (state: AppState, shared: Partial<SharedState>) => {
   };
 };
 
-
 // https://github.com/crcn/tandem/blob/10.0.0/packages/front-end/src/state/index.ts#L1304
 export const centerEditorCanvas = (
   designer: DesignerState,

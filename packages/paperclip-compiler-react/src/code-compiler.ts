@@ -71,7 +71,7 @@ export const compile = (
   { ast, sheet, classNames, sheetRelativeFilePath }: Config,
   fileUri: string,
   options: Options = {},
-  fileSystem: any = fs 
+  fileSystem: any = fs
 ): string => {
   const imports = getImports(ast).reduce((record, element) => {
     const _as = getAttributeStringValue(AS_ATTR_NAME, element);
@@ -114,7 +114,10 @@ const translateRoot = (
   if (logicElement) {
     const src = getAttributeStringValue("src", logicElement);
     if (src) {
-      const logicRelativePath = getRelativeFilePath(context.fileSystem)(context.fileUri, src);
+      const logicRelativePath = getRelativeFilePath(context.fileSystem)(
+        context.fileUri,
+        src
+      );
       context = addBuffer(
         `const logic = require("${logicRelativePath}");\n`,
         context

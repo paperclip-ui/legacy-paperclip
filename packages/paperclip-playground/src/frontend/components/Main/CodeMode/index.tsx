@@ -23,7 +23,6 @@ export const CodeMode = () => {
 
   let content;
 
-
   const onChange = (event, code) => {
     dispatch(slimCodeEditorChanged(code));
   };
@@ -63,33 +62,34 @@ export const CodeMode = () => {
   }, [docContent]);
 
   if (canEditFile(state.currentCodeFileUri)) {
-
-    content = <styles.Content slim={slim}>
-    {slim ? (
-      <SlimEditor
-        value={code}
-        onChange={value => {
-          dispatch(slimCodeEditorChanged(value));
-        }}
-      />
-    ) : (
-      <ControlledEditor
-        editorDidMount={editorDidMount}
-        options={{
-          minimap: {
-            enabled: false
-          }
-        }}
-        width="100%"
-        value={code}
-        language="html"
-        onChange={onChange}
-        theme="vs-dark"
-      />
-    )}
-  </styles.Content>
+    content = (
+      <styles.Content slim={slim}>
+        {slim ? (
+          <SlimEditor
+            value={code}
+            onChange={value => {
+              dispatch(slimCodeEditorChanged(value));
+            }}
+          />
+        ) : (
+          <ControlledEditor
+            editorDidMount={editorDidMount}
+            options={{
+              minimap: {
+                enabled: false
+              }
+            }}
+            width="100%"
+            value={code}
+            language="html"
+            onChange={onChange}
+            theme="vs-dark"
+          />
+        )}
+      </styles.Content>
+    );
   } else {
-    content = <styles.CantEditScreen />
+    content = <styles.CantEditScreen />;
   }
   return (
     <styles.Container>

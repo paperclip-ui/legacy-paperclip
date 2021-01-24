@@ -279,21 +279,21 @@
 //   it(`Properly replaces elements`, async () => {
 //     const graph = {
 //       "/entry.pc": `
-//       <div export component as="StyledHeader" 
+//       <div export component as="StyledHeader"
 //         className="StyledHeader"
 //         {onClick?}
-//         > 
+//         >
 //       </div>
-      
+
 //       <div export component as="Preview">
 //         <StyledHeader {depth?} {open?}>
 //         </StyledHeader>
 //       </div>
-      
+
 //       <preview noPadding>
 //         <Preview>
 //         </Preview>
-      
+
 //         <StyledHeader open>
 //           Content
 //         </StyledHeader>
@@ -309,10 +309,10 @@
 //       "file:///entry.pc",
 //       `
 
-//   <div export component as="StyledHeader" 
+//   <div export component as="StyledHeader"
 //     className="StyledHeader"
 //     {onClick?}
-//     > 
+//     >
 //   </div>
 
 //   <div export component as="Preview">

@@ -3,8 +3,6 @@ import { isPaperclipFile, memoize } from "paperclip-utils";
 import * as qs from "querystring";
 import mime from "mime-types";
 
-
-
 import Automerge from "automerge";
 import { mapValues, omit, pickBy } from "lodash";
 const ENTRY_URI = "file:///main.pc";
@@ -124,19 +122,24 @@ export const INITIAL_STATE: AppState = {
   slim: false
 };
 export const getNewFilePath = (name: string, previousNameOrExt: string) => {
-
-  const ext = previousNameOrExt ? previousNameOrExt.split(".").pop() :name.includes(".") ? name.split(".").pop() : "pc";
+  const ext = previousNameOrExt
+    ? previousNameOrExt.split(".").pop()
+    : name.includes(".")
+    ? name.split(".").pop()
+    : "pc";
 
   return "file:///" + name.replace(".pc", "") + "." + ext;
 };
 
 export const getWorkerState = (state: AppState): WorkerState => {
-  
   return {
     currentFileUri: state.designer.ui.query.currentFileUri,
-    documents: pickBy(mapValues(state.shared.documents, value => value.toString()), (content: string, uri: string) => {
-      return typeof content === "string";
-    })
+    documents: pickBy(
+      mapValues(state.shared.documents, value => value.toString()),
+      (content: string, uri: string) => {
+        return typeof content === "string";
+      }
+    )
   };
 };
 
@@ -161,10 +164,7 @@ export const hasUnsavedChanges = (state: AppState, prevState: AppState) => {
   return false;
 };
 
-export const EDITABLE_MIME_TYPES = [
-  "text/plain",
-  "image/svg+xml"
-];
+export const EDITABLE_MIME_TYPES = ["text/plain", "image/svg+xml"];
 
 const MEDIA_MIME_TYPES = [
   "image/png",
@@ -173,10 +173,7 @@ const MEDIA_MIME_TYPES = [
   "image/svg+xml"
 ];
 
-const ACCEPTED_MIME_TYPES = [
-  ...MEDIA_MIME_TYPES,
-  ...EDITABLE_MIME_TYPES
-];
+const ACCEPTED_MIME_TYPES = [...MEDIA_MIME_TYPES, ...EDITABLE_MIME_TYPES];
 
 export const canUpload = (files: FileList) => {
   return Array.from(files).every(file => {
@@ -187,7 +184,6 @@ export const canUpload = (files: FileList) => {
   });
 };
 
-
 export const canEditFile = (name: string) => {
   if (isPaperclipFile(name)) {
     return true;
@@ -195,8 +191,7 @@ export const canEditFile = (name: string) => {
   const type = String(mime.lookup(name));
 
   return EDITABLE_MIME_TYPES.includes(type);
-}
-
+};
 
 export const canPreviewFile = (name: string) => {
   if (isPaperclipFile(name)) {
@@ -206,4 +201,4 @@ export const canPreviewFile = (name: string) => {
   const type = String(mime.lookup(name));
 
   return ACCEPTED_MIME_TYPES.includes(type);
-}
+};

@@ -96,11 +96,11 @@ export const Toolbar = () => {
   const onUploadChange = (event: React.ChangeEvent<any>) => {
     const input = event.target as HTMLInputElement;
     if (!canUpload(input.files)) {
-      `Whoops, can't upload that. Make sure you're only uploading images that are under 2 MB`
+      `Whoops, can't upload that. Make sure you're only uploading images that are under 2 MB`;
     }
     dispatch(filesDropped(input.files));
     select.close();
-  }
+  };
   return (
     <styles.Topbar>
       <styles.FileSelect
@@ -137,10 +137,14 @@ export const Toolbar = () => {
 
               <styles.MenuFooter>
                 <styles.AddDocumentButton page onClick={onAddFile}>
-                    Create new page
+                  Create new page
                 </styles.AddDocumentButton>
-                <styles.AddDocumentButton media onChange={onUploadChange} accept=".pc, .jpeg, .jpg, .svg, .png">
-                    Upload file
+                <styles.AddDocumentButton
+                  media
+                  onChange={onUploadChange}
+                  accept=".pc, .jpeg, .jpg, .svg, .png"
+                >
+                  Upload file
                 </styles.AddDocumentButton>
               </styles.MenuFooter>
             </styles.FileMenu>
@@ -224,7 +228,7 @@ const FileMenuItem = memo(
   }
 );
 
-const stripRoot = (uri) => uri.replace(/^\w+:\/\/\//, "");
+const stripRoot = uri => uri.replace(/^\w+:\/\/\//, "");
 
 const fileExists = (testUri: string, allFiles: any) => {
   for (const uri of allFiles) {

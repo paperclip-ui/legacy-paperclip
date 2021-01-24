@@ -54,7 +54,7 @@ class FramesProxy implements Patchable {
   constructor(
     private _preview: VirtualNode,
     private _domFactory: DOMFactory = document,
-    public resolveUrl: (url: string) => string,
+    public resolveUrl: (url: string) => string
   ) {
     this._frames = [];
     this._childNodes = [];

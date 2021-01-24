@@ -137,7 +137,10 @@ export const reducer = historyReducer(
           newState.currentCodeFileUri = action.payload.uri;
 
           // media & svg files sync
-          if (!isPaperclipFile(action.payload.uri) || !isPaperclipFile(previousUri)) {
+          if (
+            !isPaperclipFile(action.payload.uri) ||
+            !isPaperclipFile(previousUri)
+          ) {
             newState.designer.ui.query.currentFileUri = action.payload.uri;
           }
         });
@@ -161,14 +164,18 @@ export const reducer = historyReducer(
         const { data, path } = action.payload;
         return produce(state, newState => {
           newState.shared.documents[path] = data;
-        })
+        });
       }
 
       case ActionType.FILES_DROPPED: {
         return produce(state, newState => {
           const files = Array.from(action.payload);
           for (const file of files) {
-            const uri = getUniqueUri(file.name.replace(/\.\w+$/, ""),mime.extension(file.type) || "text/plain", newState.shared.documents);
+            const uri = getUniqueUri(
+              file.name.replace(/\.\w+$/, ""),
+              mime.extension(file.type) || "text/plain",
+              newState.shared.documents
+            );
             newState.shared.documents[uri] = file;
 
             // set dropped file as preview
@@ -227,13 +234,14 @@ const getMainUri = (state: AppState) =>
     state.currentProject?.data?.mainFileUri ||
     Object.keys(state.shared.documents)[0]);
 
-
-const getUniqueUri = (name: string, ext: string, allFiles: Record<string, any>) => {
-
+const getUniqueUri = (
+  name: string,
+  ext: string,
+  allFiles: Record<string, any>
+) => {
   let i = 0;
   let path = `file:///${name}.${ext}`;
-  while(1) {
-
+  while (1) {
     const pathExists = allFiles[path];
     if (!pathExists) {
       break;

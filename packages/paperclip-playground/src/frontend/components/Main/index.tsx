@@ -7,7 +7,13 @@ import { useAppStore } from "../../hooks/useAppStore";
 import { MainToolbar } from "./Toolbar";
 import * as styles from "./index.pc";
 import { CodeMode } from "./CodeMode";
-import { APP_LOCATIONS, canEditFile, canPreviewFile, canUpload, matchesLocationPath } from "../../state";
+import {
+  APP_LOCATIONS,
+  canEditFile,
+  canPreviewFile,
+  canUpload,
+  matchesLocationPath
+} from "../../state";
 import { Projects } from "./Projects";
 import { Route, Router, Switch } from "react-router";
 import { filesDropped } from "../../actions";
@@ -94,9 +100,8 @@ const Editor = memo(() => {
   );
 });
 
-
 const Preview = () => {
-  const {state} = useAppStore();
+  const { state } = useAppStore();
 
   const currentUri = state.designer.ui.query.currentFileUri;
 
@@ -104,24 +109,33 @@ const Preview = () => {
 
   const objectUrl = useMemo(() => {
     if (content instanceof Blob) {
-      return canPreviewFile(currentUri) && !isPaperclipFile(currentUri) && URL.createObjectURL(content);
+      return (
+        canPreviewFile(currentUri) &&
+        !isPaperclipFile(currentUri) &&
+        URL.createObjectURL(content)
+      );
     } else {
-      return `data:${mime.lookup(currentUri)};utf8,${encodeURIComponent(content)}`;
+      return `data:${mime.lookup(currentUri)};utf8,${encodeURIComponent(
+        content
+      )}`;
     }
   }, [content]);
 
   if (!canPreviewFile(currentUri)) {
-    return <styles.MediaPreview>
-      <span>Unable to preview this file</span>
+    return (
+      <styles.MediaPreview>
+        <span>Unable to preview this file</span>
+      </styles.MediaPreview>
+    );
+  }
+
+  if (isPaperclipFile(currentUri)) {
+    return <DesignModeMainBase />;
+  }
+
+  return (
+    <styles.MediaPreview>
+      <img src={objectUrl} />
     </styles.MediaPreview>
-  }
-
-  if (isPaperclipFile(currentUri))  {
-    return <DesignModeMainBase />
-  }
-
-
-  return <styles.MediaPreview>
-    <img src={objectUrl} />
-  </styles.MediaPreview>
-}
+  );
+};
