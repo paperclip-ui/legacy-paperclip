@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ControlledEditor } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import {
   globalZKeyDown,
   globalYKeyDown,
@@ -8,6 +8,8 @@ import {
 
 // Can't import, otherwise the react monaco editor breaks :(
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
+
+export type Monaco = typeof monacoEditor;
 // TODO: https://github.com/microsoft/monaco-editor/issues/221
 
 import * as styles from "./index.pc";
@@ -23,27 +25,45 @@ export const CodeMode = () => {
 
   let content;
 
-  const onChange = (event, code) => {
+  const onChange = (code) => {
     dispatch(slimCodeEditorChanged(code));
   };
-  const editorDidMount = (_, editor) => {
+  const onMount = (editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: Monaco) => {
+    monaco.languages.setLanguageConfiguration("html", {
+
+    });
+    
+    monaco.languages.html.htmlDefaults.setOptions({
+      format: {
+        ...(monaco.languages.html.htmlDefaults.options.format),
+        indentInnerHtml: false,
+        tabSize: 4,
+        insertSpaces: true,
+        indentHandlebars: false,
+        endWithNewline: false,
+        wrapLineLength: 0
+      }
+    })
+    
+    editor.getModel().updateOptions({ 
+      tabSize: 2, 
+      insertSpaces: true,
+
+    });
+
+
+    // console.log(editor.);
     // control Z
-    editor.addCommand(2104, function() {
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_Z, function() {
       // 🙈
       dispatch(globalZKeyDown(null) as any);
     });
 
-    // Note that we cna't do this
-    // console.log(monacoEditor.KeyMod.CtrlCmd | monacoEditor.KeyMod.Shift | monacoEditor.KeyCode.KEY_Z);
-    editor.addCommand(3128, function() {
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_Z, function() {
       dispatch(globalYKeyDown(null) as any);
     });
-    editor.addCommand(2013, function() {
-      dispatch(globalYKeyDown(null) as any);
-    });
-    // console.log(monacoEditor.KeyMod.CtrlCmd | monacoEditor.KeyCode.KEY_S);
 
-    editor.addCommand(2097, function() {
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
       dispatch(globalSaveKeyPress(null) as any);
     });
   };
@@ -72,17 +92,18 @@ export const CodeMode = () => {
             }}
           />
         ) : (
-          <ControlledEditor
-            editorDidMount={editorDidMount}
+          <Editor
+          onMount={onMount}
             options={{
               minimap: {
-                enabled: false
-              }
+                enabled: false,
+              },
+              autoIndent: 'keep'
             }}
+            onChange={onChange}
             width="100%"
             value={code}
             language="html"
-            onChange={onChange}
             theme="vs-dark"
           />
         )}

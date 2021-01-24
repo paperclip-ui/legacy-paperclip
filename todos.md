@@ -5,13 +5,13 @@
   - download React code
   - download source code
 
-- on login and on /projects/id, reload page
 
 
 - cleanup
   - going to / should display blank page
   - add Paperclip color theme
   - remove pesky indent behavior
+  - on login and on /projects/id, reload page
 
 - wrap it up!
   - paperclip.playground.dev
