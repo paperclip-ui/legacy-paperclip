@@ -114,7 +114,7 @@
     My projects
   </div>
 
-  <Button.Button secondary {onCreateClick}>
+  <Button.Button secondary onClick={onCreateClick}>
     Create
   </Button.Button>
   {filter?}

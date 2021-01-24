@@ -9,6 +9,7 @@ import {
   FileRenamed,
   getProjectsRequestChanged,
   loggedOut,
+  NewProjectEntered,
   ProjectRenamed,
   RemoveFileClicked,
   savedProject,
@@ -52,7 +53,7 @@ function* handleProjectChanges() {
   //   }
   // })
 
-  function* createNewProject() {
+  function* createBlankNewProject() {
     const state: AppState = yield select();
 
     const project = yield call(
@@ -114,7 +115,7 @@ function* handleProjectChanges() {
 
       // create new project
       if (!state.currentProject?.data) {
-        yield call(createNewProject);
+        yield call(createBlankNewProject);
       } else {
         yield call(updateExistingProject);
       }
@@ -135,6 +136,20 @@ function* handleProjectChanges() {
     yield call(api.updateProject, action.payload.projectId, {
       name: action.payload.newName
     });
+  });
+  yield takeEvery([ActionType.NEW_PROJECT_ENTERED], function*(
+    action: NewProjectEntered
+  ) {
+    const project = yield call(
+      api.createProject,
+      action.payload.name,
+      {
+        "file:///main.pc": ""
+      },
+      "file:///main.pc"
+    );
+
+    history.push(`/projects/${project.id}`);
   });
 }
 

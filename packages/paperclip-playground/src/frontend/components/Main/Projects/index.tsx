@@ -7,17 +7,15 @@ import { Project } from "../../../state";
 import { useHistory } from "react-router";
 import { useSelect } from "paperclip-designer/src/components/Select";
 import { useAppStore } from "../../../hooks/useAppStore";
-import { deleteProjectConfirmed, projectRenamed } from "../../../actions";
-import { Selectable } from "paperclip-designer/src/components/Main/DesignMode/Canvas/Tools/Selectable";
-import { rename } from "fs";
+import {
+  deleteProjectConfirmed,
+  newProjectEntered,
+  projectRenamed
+} from "../../../actions";
 
 export const Projects = memo(() => {
   const projects = useProjects();
-  // const [filter, setFilter] = useState<string>();
-  // const { inputProps: filterProps } = useTextInput({
-  //   value: filter,
-  //   onValueChange: setFilter
-  // });
+  const { dispatch } = useAppStore();
 
   let content;
 
@@ -29,9 +27,16 @@ export const Projects = memo(() => {
     });
   }
 
+  const onCreateClick = () => {
+    const name = prompt(`Project name`);
+    if (name) {
+      dispatch(newProjectEntered({ name }));
+    }
+  };
+
   return (
     <styles.Container>
-      <styles.Header />
+      <styles.Header onCreateClick={onCreateClick} />
       <styles.Content>{content}</styles.Content>
     </styles.Container>
   );

@@ -11,6 +11,7 @@ type UseTextInputProps = {
   value: string;
   onValueChange?: (value: string) => any;
   onSave?: (value: string) => any;
+  onEscape?: () => any;
   select?: boolean;
 };
 
@@ -18,6 +19,7 @@ export const useTextInput = ({
   value,
   onValueChange = noop,
   onSave = noop,
+  onEscape = noop,
   select = false
 }: UseTextInputProps) => {
   const ref = useRef<HTMLInputElement>();
@@ -49,8 +51,11 @@ export const useTextInput = ({
   };
 
   const onKeyPress = (event: KeyboardEvent) => {
+    console.log(event.key);
     if (event.key === "Enter") {
       onSave(internalValue);
+    } else if (event.key === "Escape") {
+      onEscape();
     }
   };
 

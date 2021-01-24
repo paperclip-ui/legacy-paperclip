@@ -21,6 +21,7 @@ export enum ActionType {
   ALL_PROJECTS_HOOK_USED = "ALL_PROJECTS_HOOK_USED",
   PROJECT_FILES_HOOK_USED = "PROJECT_FILES_HOOK_USED",
   DELETE_PROJECT_CONFIRMED = "DELETE_PROJECT_CONFIRMED",
+  NEW_PROJECT_ENTERED = "NEW_PROJECT_ENTERED",
   REMOVE_FILE_CLICKED = "REMOVE_FILE_CLICKED",
   FILE_RENAMED = "FILE_RENAMED",
   PROJECT_RENAMED = "PROJECT_RENAMED",
@@ -157,8 +158,16 @@ export type FileItemClicked = BaseAction<
   { uri: string }
 >;
 
+export type NewProjectEntered = BaseAction<
+  ActionType.NEW_PROJECT_ENTERED,
+  { name: string }
+>;
+
 export type LoggedOut = BaseAction<ActionType.LOGGED_OUT>;
 
+export const newProjectEntered = actionCreator<NewProjectEntered>(
+  ActionType.NEW_PROJECT_ENTERED
+);
 export const accountConnected = actionCreator<AccountConnected>(
   ActionType.ACCOUNT_CONNECTED
 );
@@ -256,6 +265,7 @@ export type Action =
   | GetProjectFilesRequestChanged
   | EngineCrashed
   | AppStateDiffed
+  | NewProjectEntered
   | SavedProject
   | FileItemClicked
   | ProjectRenamed
