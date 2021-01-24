@@ -30,17 +30,20 @@ export const Toolbar = () => {
     dispatch(fileItemClicked({ uri }));
   };
 
-  const onRemoveClick = (uri) => {
+  const onRemoveClick = uri => {
     if (state.currentProject?.data?.mainFileUri == uri) {
       return alert(`You can't delete the main file`);
     }
-    
-    if (isPaperclipFile(uri) && Object.keys(state.shared.documents).filter(isPaperclipFile).length === 1) {
+
+    if (
+      isPaperclipFile(uri) &&
+      Object.keys(state.shared.documents).filter(isPaperclipFile).length === 1
+    ) {
       return alert(`You must have at least one Paperclip file`);
     }
     select.close();
-    dispatch(removeFileClicked({ uri }))
-  }
+    dispatch(removeFileClicked({ uri }));
+  };
 
   const onNewInputBlur = () => {
     setNewFileName(null);
@@ -74,8 +77,6 @@ export const Toolbar = () => {
     dispatch(syncPanelsClicked(null));
   };
   const onRenamed = (uri: string, newName: string) => {
-
-
     // for now
     if (state.currentProject?.data?.mainFileUri == uri) {
       return alert(`You can't rename the main file`);
@@ -86,7 +87,7 @@ export const Toolbar = () => {
     }
     dispatch(fileRenamed({ newName, uri }));
     select.close();
-  }
+  };
   return (
     <styles.Topbar>
       <styles.FileSelect
@@ -101,7 +102,12 @@ export const Toolbar = () => {
               <styles.FileMenuItems>
                 {allFileUris.map(uri => {
                   return (
-                    <FileMenuItem onRenamed={onRenamed} uri={uri} onFileItemClick={onFileItemClick} onRemoveClick={onRemoveClick}  />
+                    <FileMenuItem
+                      onRenamed={onRenamed}
+                      uri={uri}
+                      onFileItemClick={onFileItemClick}
+                      onRemoveClick={onRemoveClick}
+                    />
                   );
                 })}
                 {showNewFileInput && (
@@ -132,63 +138,77 @@ type FileMenuItemProps = {
   onFileItemClick: (uri: string) => void;
   onRemoveClick: (uri: string) => void;
   onRenamed: (uri: string, newName: string) => void;
-}
+};
 
-const FileMenuItem = memo(({ uri, onRenamed, onFileItemClick, onRemoveClick}: FileMenuItemProps) => {
-  const [renaming, setRenaming] = useState(false);
-  const [newName, setNewName] = useState<string>(path.basename(uri));
-  const renamingInputProps = useTextInput({
-    value: newName,
-    onValueChange: setNewName,
-    select: true
-  }).inputProps;
+const FileMenuItem = memo(
+  ({ uri, onRenamed, onFileItemClick, onRemoveClick }: FileMenuItemProps) => {
+    const [renaming, setRenaming] = useState(false);
+    const [newName, setNewName] = useState<string>(path.basename(uri));
+    const renamingInputProps = useTextInput({
+      value: newName,
+      onValueChange: setNewName,
+      select: true
+    }).inputProps;
 
-  const select = useSelect();
-  const onRenameClick = () => {
-    setRenaming(true);
-    select.close();
-  };
-  const onNewNameBlur = () => {
-    onRenamed(uri, newName);
-    setRenaming(false);
-  }
-  const onNewNameKeyPress = (event) => {
-    if (event.key === "Enter") {
+    const select = useSelect();
+    const onRenameClick = () => {
+      setRenaming(true);
+      select.close();
+    };
+    const onNewNameBlur = () => {
       onRenamed(uri, newName);
       setRenaming(false);
-    }
+    };
+    const onNewNameKeyPress = event => {
+      if (event.key === "Enter") {
+        onRenamed(uri, newName);
+        setRenaming(false);
+      }
+    };
+
+    return (
+      <styles.FileMenuItem
+        key={uri}
+        onClick={() => {
+          onFileItemClick(uri);
+        }}
+        moreSelect={
+          <styles.MoreFileSelect
+            onClick={select.onClick}
+            onBlur={select.onBlur}
+            menu={
+              select.menuVisible && (
+                <styles.MoreFileMenu
+                  onRemoveClick={() => onRemoveClick(uri)}
+                  onRenameClick={onRenameClick}
+                />
+              )
+            }
+          >
+            <styles.MoreFileButton onClick={select.onButtonClick} />
+          </styles.MoreFileSelect>
+        }
+      >
+        {renaming ? (
+          <TextInput
+            autoFocus
+            onBlur={onNewNameBlur}
+            {...renamingInputProps}
+            onKeyPress={onNewNameKeyPress}
+          />
+        ) : (
+          path.basename(uri)
+        )}
+      </styles.FileMenuItem>
+    );
   }
-
-  return <styles.FileMenuItem
-  key={uri}
-  onClick={() => {
-    onFileItemClick(uri);
-  }}
-  moreSelect={<styles.MoreFileSelect onClick={select.onClick} onBlur={select.onBlur} menu={select.menuVisible && <styles.MoreFileMenu
-    onRemoveClick={() => onRemoveClick(uri)}
-    onRenameClick={onRenameClick}
-  />}>
-    <styles.MoreFileButton onClick={select.onButtonClick} />
-  </styles.MoreFileSelect>}
->
-  {renaming ? <TextInput
-                      autoFocus
-                      onBlur={onNewNameBlur}
-                      {...renamingInputProps}
-                      onKeyPress={onNewNameKeyPress}
-                    /> : path.basename(uri)}
-</styles.FileMenuItem>;
-});
-
+);
 
 const fileExists = (uri: string, allFiles: any) => {
   for (const uri of allFiles) {
-    if (
-      uri.replace(/(\w+:\/\/\/|\.pc$)/g, "") ===
-      uri.replace(".pc", "")
-    ) {
+    if (uri.replace(/(\w+:\/\/\/|\.pc$)/g, "") === uri.replace(".pc", "")) {
       return true;
     }
   }
   return false;
-}
+};

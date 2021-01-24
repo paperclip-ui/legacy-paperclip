@@ -10,7 +10,7 @@ type AuthProps = {
 
 export const Auth = memo(({ onClose }: AuthProps) => {
   const { dispatch } = useAppStore();
-  const onConnectClick = (connectOuath) => async () => {
+  const onConnectClick = connectOuath => async () => {
     await connectOuath(dispatch);
     onClose();
   };

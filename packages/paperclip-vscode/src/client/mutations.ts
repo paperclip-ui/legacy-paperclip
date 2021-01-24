@@ -12,7 +12,7 @@ export function activate() {
       const filePath = url.fileURLToPath(uri);
       const doc = await vscode.workspace.openTextDocument(filePath);
       return doc.getText();
-    },
+    }
   });
 
   const handleMutations = async (mutations: PCMutation[]) => {
@@ -22,7 +22,7 @@ export function activate() {
       const changes = changesByUri[uri];
       const filePath = url.fileURLToPath(uri);
       const doc = await vscode.workspace.openTextDocument(filePath);
-      const tedits = changes.map((change) => {
+      const tedits = changes.map(change => {
         return new vscode.TextEdit(
           new vscode.Range(
             doc.positionAt(change.start),
@@ -37,6 +37,6 @@ export function activate() {
     }
   };
   return {
-    handleMutations,
+    handleMutations
   };
 }

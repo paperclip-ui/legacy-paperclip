@@ -27,7 +27,7 @@ export const MainToolbar = () => {
   };
   const onMyProjectsClick = () => {
     history.push(APP_LOCATIONS.PROJECTS);
-  }
+  };
 
   let rightControls;
   let leftControls;
@@ -56,7 +56,10 @@ export const MainToolbar = () => {
           onBlur={profileSelect.onBlur}
           menu={
             profileSelect.menuVisible && (
-              <styles.ProfileMenu onLogoutClick={onLogoutButtonClick} onMyProjectsClick={onMyProjectsClick} />
+              <styles.ProfileMenu
+                onLogoutClick={onLogoutButtonClick}
+                onMyProjectsClick={onMyProjectsClick}
+              />
             )
           }
         >

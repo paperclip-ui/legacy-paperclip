@@ -166,7 +166,7 @@ export class EngineDelegate {
   getVirtualContent(uri: string) {
     return this._documents[uri];
   }
-  
+
   updateVirtualFileContent(uri: string, content: string) {
     this._documents[uri] = content;
     return this._tryCatch(() => {

@@ -199,8 +199,10 @@ export const activate = (
     dispatchClient(
       ve.contentChanged({
         fileUri: document.uri.toString(),
-        changes: contentChanges.map(({ text, rangeOffset, rangeLength}) => ({
-          text, rangeLength, rangeOffset
+        changes: contentChanges.map(({ text, rangeOffset, rangeLength }) => ({
+          text,
+          rangeLength,
+          rangeOffset
         }))
       })
     );

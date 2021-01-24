@@ -30,11 +30,11 @@ export const SlimEditor = ({ value, onChange, theme }: SlimEditorProps) => {
           'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
         fontSize: 15.2,
         letterSpacing: "0.06em",
-        ...baseTheme,
+        ...baseTheme
       }}
       preClassName="language-html"
       onValueChange={onChange}
-      highlight={(code) =>
+      highlight={code =>
         highlight(code, { ...languages.html, ...languages.css }, theme)
       }
     />

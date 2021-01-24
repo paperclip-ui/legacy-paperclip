@@ -121,7 +121,6 @@ const init = async () => {
     tryOpeningCurrentFile();
   };
 
-
   self.onmessage = ({ data: action }: MessageEvent) => {
     switch (action.type) {
       case ActionType.GET_PROJECT_FILES_REQUEST_CHANGED:

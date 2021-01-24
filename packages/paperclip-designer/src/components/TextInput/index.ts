@@ -38,21 +38,21 @@ export const useTextInput = ({
     onValueChange(value);
   };
 
-  const onFocus = (e) => {
+  const onFocus = e => {
     if (select) {
       e.target.select();
     }
-  }
+  };
 
   const onBlur = () => {
     onSave(internalValue);
-  }
-  
+  };
+
   const onKeyPress = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
       onSave(internalValue);
     }
-  }
+  };
 
   const inputProps = {
     ref,

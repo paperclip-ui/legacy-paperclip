@@ -3,13 +3,13 @@ import { Project } from "../state";
 export const connectAccount = async (kind: string, params: any) => {
   return await requestJSON(`/connect/${kind}`, {
     method: "POST",
-    body: JSON.stringify(params),
+    body: JSON.stringify(params)
   });
 };
 
 export const logout = async () => {
   return await requestJSON(`/session`, {
-    method: "DELETE",
+    method: "DELETE"
   });
 };
 
@@ -23,8 +23,8 @@ export const createProject = async (
     body: JSON.stringify({
       files,
       name,
-      mainFileUri,
-    }),
+      mainFileUri
+    })
   });
 };
 
@@ -37,7 +37,7 @@ export const updateProjectFile = async (
     `/projects/${projectId}/files/${encodeURIComponent(path)}`,
     {
       method: "POST",
-      body: contents,
+      body: contents
     }
   );
 };
@@ -51,7 +51,7 @@ export const updateProjectFilePath = async (
     `/projects/${projectId}/files/${encodeURIComponent(path)}`,
     {
       method: "PATCH",
-      body: { uri: newPath },
+      body: { uri: newPath }
     }
   );
 };
@@ -60,23 +60,20 @@ export const updateProject = async (
   projectId: number,
   properties: Partial<{
     name: string;
-    mainFileUri?: string
+    mainFileUri?: string;
   }>
 ) => {
-  return await requestJSON(
-    `/projects/${projectId}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify(properties),
-    }
-  );
+  return await requestJSON(`/projects/${projectId}`, {
+    method: "PATCH",
+    body: JSON.stringify(properties)
+  });
 };
 
 export const deleteProjectFile = async (projectId: number, path: string) => {
   return await request(
     `/projects/${projectId}/files/${encodeURIComponent(path)}`,
     {
-      method: "DELETE",
+      method: "DELETE"
     }
   );
 };
@@ -103,8 +100,8 @@ const requestJSON = async (path: string, options: any = {}) => {
     ...options,
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+      "Content-Type": "application/json"
+    }
   });
 
   const data = await resp.json();
@@ -121,7 +118,7 @@ const request = async (path: string, options: any = {}) => {
     window.location.protocol + "//" + process.env.API_HOST + path,
     {
       ...options,
-      credentials: "include",
+      credentials: "include"
     }
   );
 };

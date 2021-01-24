@@ -205,8 +205,10 @@ export const startServer = async ({
 
     const handleOpen = (uri: string) => {
       const data = openURI(uri);
-      const document = engine.getVirtualContent(uri) || fs.readFileSync(new URL.URL(uri), "utf8");
-      emit(pcFileLoaded({ uri, document, data }))
+      const document =
+        engine.getVirtualContent(uri) ||
+        fs.readFileSync(new URL.URL(uri), "utf8");
+      emit(pcFileLoaded({ uri, document, data }));
     };
 
     // const onPopoutWindowRequested = async ({

@@ -4,18 +4,18 @@ import * as babel from "@babel/core";
 import * as React from "react";
 
 const builtin = {
-  react: React,
+  react: React
 };
 
 export const compileModules = async (graph: Record<string, string>) => {
   const engine = await createEngineDelegate({
     io: {
-      readFile: (uri) => graph[uri],
-      fileExists: (uri) => Boolean(graph[uri]),
+      readFile: uri => graph[uri],
+      fileExists: uri => Boolean(graph[uri]),
       resolveFile: (from, to) => {
         return to;
-      },
-    },
+      }
+    }
   });
 
   const modules = {};
@@ -47,7 +47,7 @@ export const compileModules = async (graph: Record<string, string>) => {
     const executed = {};
 
     const wrapper = () =>
-      module((path) => {
+      module(path => {
         const mod = modules[path] || modules[path.substr(1)];
         const ex = executed[path] || (executed[path] = mod && mod());
         return builtin[path] || ex;

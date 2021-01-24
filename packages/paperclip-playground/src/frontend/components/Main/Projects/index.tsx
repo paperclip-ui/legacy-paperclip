@@ -22,32 +22,81 @@ export const Projects = memo(() => {
   let content;
 
   if (!projects.data) {
-    content = <Spinner />
+    content = <Spinner />;
   } else {
     content = projects.data!.map(project => {
       return <ProjectCell key={project.id} item={project} />;
     });
   }
 
-
-  return <styles.Container>
-    <styles.Header  />
-    <styles.Content>
-      {content}
-    </styles.Content>
-  </styles.Container>
+  return (
+    <styles.Container>
+      <styles.Header />
+      <styles.Content>{content}</styles.Content>
+    </styles.Container>
+  );
 });
 
 export type ProjectCellProps = {
-  item: Project
-}
+  item: Project;
+};
 
 const ProjectCell = memo(({ item: project }: ProjectCellProps) => {
-  const {select, renaming, renamingInputProps, onOpenClick, onClick, lastModifiedDays, projectName, onDeleteClick, onRenameClick} = useProjectCell(project);
-  
-  return <styles.Project lastModified={`Last modified: ${lastModifiedDays === 0 ? "today" : lastModifiedDays === 1 ? "yesterday" : `${lastModifiedDays} days ago`}`} name={renaming ? <styles.NameInput ref={renamingInputProps.ref} onKeyPress={renamingInputProps.onKeyPress} onBlur={renamingInputProps.onBlur} onChange={renamingInputProps.onChange} /> : projectName} onClick={onClick} screenshot={null} moreSelect={<styles.MoreSelect ref={select.ref} onClick={select.onClick} onBlur={select.onBlur} menu={select.menuVisible && <styles.MoreMenu onRenameClick={onRenameClick} onDeleteClick={onDeleteClick} onOpenClick={onOpenClick} />}>
-    <styles.MoreButton onClick={select.onButtonClick} />
-  </styles.MoreSelect>} />;
+  const {
+    select,
+    renaming,
+    renamingInputProps,
+    onOpenClick,
+    onClick,
+    lastModifiedDays,
+    projectName,
+    onDeleteClick,
+    onRenameClick
+  } = useProjectCell(project);
+
+  return (
+    <styles.Project
+      lastModified={`Last modified: ${
+        lastModifiedDays === 0
+          ? "today"
+          : lastModifiedDays === 1
+          ? "yesterday"
+          : `${lastModifiedDays} days ago`
+      }`}
+      name={
+        renaming ? (
+          <styles.NameInput
+            ref={renamingInputProps.ref}
+            onKeyPress={renamingInputProps.onKeyPress}
+            onBlur={renamingInputProps.onBlur}
+            onChange={renamingInputProps.onChange}
+          />
+        ) : (
+          projectName
+        )
+      }
+      onClick={onClick}
+      screenshot={null}
+      moreSelect={
+        <styles.MoreSelect
+          ref={select.ref}
+          onClick={select.onClick}
+          onBlur={select.onBlur}
+          menu={
+            select.menuVisible && (
+              <styles.MoreMenu
+                onRenameClick={onRenameClick}
+                onDeleteClick={onDeleteClick}
+                onOpenClick={onOpenClick}
+              />
+            )
+          }
+        >
+          <styles.MoreButton onClick={select.onButtonClick} />
+        </styles.MoreSelect>
+      }
+    />
+  );
 });
 
 const useProjectCell = (project: Project) => {
@@ -55,7 +104,7 @@ const useProjectCell = (project: Project) => {
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState<string>(project.name);
   const history = useHistory();
-  const {dispatch} = useAppStore();
+  const { dispatch } = useAppStore();
   const onClick = () => {
     history.push(`/projects/${project.id}`);
   };
@@ -64,15 +113,20 @@ const useProjectCell = (project: Project) => {
     setRenaming(true);
   };
   const onDeleteClick = () => {
-    if (prompt(`To confirm, type "${projectName}" in order to delete.`) === projectName) {
+    if (
+      prompt(`To confirm, type "${projectName}" in order to delete.`) ===
+      projectName
+    ) {
       dispatch(deleteProjectConfirmed({ projectId: project.id }));
     }
   };
   const onOpenClick = onClick;
 
   const updatedAt = new Date(project.updatedAt);
-  
-  const lastModifiedDays = Math.floor((Date.now()  - updatedAt.getTime()) / 24 / 3600 / 1000);
+
+  const lastModifiedDays = Math.floor(
+    (Date.now() - updatedAt.getTime()) / 24 / 3600 / 1000
+  );
 
   const select = useSelect();
   const renamingInputProps = useTextInput({
@@ -94,5 +148,5 @@ const useProjectCell = (project: Project) => {
     projectName: newName || projectName,
     onRenameClick,
     lastModifiedDays
-  }
-}
+  };
+};

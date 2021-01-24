@@ -6,4 +6,8 @@ export * from "./instance-actions";
 export * from "./server-actions";
 export * from "./external-actions";
 
-export type Action = InstanceAction | ServerAction | ContentChanged | OpenedDocument;
+export type Action =
+  | InstanceAction
+  | ServerAction
+  | ContentChanged
+  | OpenedDocument;

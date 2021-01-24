@@ -7,7 +7,7 @@ import {
   createEngineDelegate,
   PC_CONFIG_FILE_NAME,
   findPCConfigUrl,
-  PaperclipConfig,
+  PaperclipConfig
 } from "paperclip";
 
 const engine = createEngineDelegate();
@@ -20,7 +20,7 @@ module.exports = {
       throw new Error(`Unable to config ${PC_CONFIG_FILE_NAME}`);
     }
     const {
-      compilerOptions: { name: compilerName },
+      compilerOptions: { name: compilerName }
     }: PaperclipConfig = JSON.parse(
       fs.readFileSync(url.fileURLToPath(pcUrl), "utf8")
     );
@@ -31,12 +31,12 @@ module.exports = {
 
     const {
       exports: {
-        style: { classNames },
-      },
+        style: { classNames }
+      }
     } = engine.open(fileUri);
 
     const { compile } = require(resolve.sync(compilerName, {
-      basedir: path.dirname(fullPath),
+      basedir: path.dirname(fullPath)
     }));
 
     const ast = engine.parseContent(content);
@@ -44,7 +44,7 @@ module.exports = {
     const es6 = compile({ ast, classNames }, fileUri, {});
 
     return babel.transformSync(es6, {
-      presets: ["@babel/env"],
+      presets: ["@babel/env"]
     }).code;
-  },
+  }
 };

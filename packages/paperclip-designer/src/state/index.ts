@@ -130,10 +130,10 @@ export type DesignerState = {
 export type HistState = {
   shared: SharedState;
   history: {
-    past: SharedState[],
-    future: SharedState[]
-  }
-}
+    past: SharedState[];
+    future: SharedState[];
+  };
+};
 
 export type AppState = {
   // state that can be hooked up with CRDTs
@@ -444,9 +444,7 @@ export const updateShared = (state: AppState, shared: Partial<SharedState>) => {
 
 export const editSharedDocuments = (
   state: AppState,
-  edit: (
-    documents: Record<string, string>
-  ) => Record<string, string>
+  edit: (documents: Record<string, string>) => Record<string, string>
 ) => {
   return updateShared(state, {
     documents: edit(state.shared.documents)

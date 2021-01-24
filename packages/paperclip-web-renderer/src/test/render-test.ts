@@ -4,7 +4,7 @@ import { createMockEngine, createMockRenderer } from "./utils";
 describe(__filename + "#", () => {
   it("Can render basic text", async () => {
     const graph = {
-      "/entry.pc": "Hello World",
+      "/entry.pc": "Hello World"
     };
 
     const engine = await createMockEngine(graph);
@@ -18,7 +18,7 @@ describe(__filename + "#", () => {
 
   it("Can render an element", async () => {
     const graph = {
-      "/entry.pc": "<a href='#'>abc</a>",
+      "/entry.pc": "<a href='#'>abc</a>"
     };
 
     const engine = await createMockEngine(graph);
@@ -32,7 +32,7 @@ describe(__filename + "#", () => {
 
   it("Re-renders a basic text change", async () => {
     const graph = {
-      "/entry.pc": "a",
+      "/entry.pc": "a"
     };
 
     const engine = await createMockEngine(graph);
@@ -50,7 +50,7 @@ describe(__filename + "#", () => {
 
   it("Re-renders a basic attribute change", async () => {
     const graph = {
-      "/entry.pc": `<span><div a="b"></div></span>`,
+      "/entry.pc": `<span><div a="b"></div></span>`
     };
 
     const engine = await createMockEngine(graph);
@@ -71,7 +71,7 @@ describe(__filename + "#", () => {
 
   it("Renders a basic style", async () => {
     const graph = {
-      "/entry.pc": `<style> a { color: blue; } </style><span></span>`,
+      "/entry.pc": `<style> a { color: blue; } </style><span></span>`
     };
 
     const engine = await createMockEngine(graph);
@@ -86,7 +86,7 @@ describe(__filename + "#", () => {
   it("Renders imported styles", async () => {
     const graph = {
       "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`,
+      "/module.pc": `<style> a { color: black; } </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -101,7 +101,7 @@ describe(__filename + "#", () => {
   it("Removes styles if import is removed", async () => {
     const graph = {
       "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`,
+      "/module.pc": `<style> a { color: black; } </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -123,7 +123,7 @@ describe(__filename + "#", () => {
   it("Adds styles if import is added", async () => {
     const graph = {
       "file:///entry.pc": `<style> a { color: blue; } </style><span></span>`,
-      "file:///module.pc": `<style> a { color: black; } </style>`,
+      "file:///module.pc": `<style> a { color: black; } </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -144,7 +144,7 @@ describe(__filename + "#", () => {
   it("Adds styles if import is added of module that is already loaded", async () => {
     const graph = {
       "/entry.pc": `<style> a { color: blue; } </style><span></span>`,
-      "/module.pc": `<style> a { color: black; } </style>`,
+      "/module.pc": `<style> a { color: black; } </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -167,7 +167,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `<style> a { color: blue; } </style>`,
       "/module.pc": `<style> a { color: black; } </style>`,
-      "/module2.pc": `<style> a { color: orange; } </style>`,
+      "/module2.pc": `<style> a { color: orange; } </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -194,7 +194,7 @@ describe(__filename + "#", () => {
   it("styles that are _added_ before renderer initializes are rendered", async () => {
     const graph = {
       "/entry.pc": `<style> a { color: blue; } </style>`,
-      "/module.pc": `<style> a { color: black; } </style>`,
+      "/module.pc": `<style> a { color: black; } </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -217,7 +217,7 @@ describe(__filename + "#", () => {
   it("styles that are _removed_ before renderer initializes are rendered", async () => {
     const graph = {
       "/entry.pc": `<import src="./module.pc" /><style> a { color: blue; } </style><span></span><style> a { color: blue; } </style>`,
-      "/module.pc": `<style> a { color: black; } </style>`,
+      "/module.pc": `<style> a { color: black; } </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -249,7 +249,7 @@ describe(__filename + "#", () => {
       "/module-a.pc": `<style> a { color: a; } </style>`,
       "/module-b.pc": `<style> a { color: b; } </style>`,
       "/module-c.pc": `<style> a { color: c; } </style>`,
-      "/module-d.pc": `<style> a { color: d; } </style>`,
+      "/module-d.pc": `<style> a { color: d; } </style>`
     };
 
     const engine = await createMockEngine(graph);
@@ -297,7 +297,7 @@ describe(__filename + "#", () => {
         <StyledHeader open>
           Content
         </StyledHeader>
-      </preview>`,
+      </preview>`
     };
 
     const engine = await createMockEngine(graph);
@@ -346,7 +346,7 @@ describe(__filename + "#", () => {
         <img src="/file.jpg" />
       `,
       "file:///file.jpg": ``,
-      "file:///something-else.jpg": ``,
+      "file:///something-else.jpg": ``
     };
 
     const engine = await createMockEngine(graph);

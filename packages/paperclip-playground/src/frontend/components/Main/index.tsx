@@ -15,34 +15,38 @@ export const Main = withAppStore(() => {
   const store = useAppStore();
   const { compact, playgroundUi } = store.state;
   if (compact) {
-    return <Editor />
-  };
+    return <Editor />;
+  }
 
-  return <Router history={history}>
-    <Switch>
-      <Route path={APP_LOCATIONS.PROJECT}>
-        <Editor />
-      </Route>
-      <Route path={APP_LOCATIONS.PROJECTS}>
-        <Projects />
-      </Route>
-      <Route path="/">
-        <Editor />
-      </Route>
-    </Switch>
-  </Router>
+  return (
+    <Router history={history}>
+      <Switch>
+        <Route path={APP_LOCATIONS.PROJECT}>
+          <Editor />
+        </Route>
+        <Route path={APP_LOCATIONS.PROJECTS}>
+          <Projects />
+        </Route>
+        <Route path="/">
+          <Editor />
+        </Route>
+      </Switch>
+    </Router>
+  );
 });
 
 const Editor = memo(() => {
   const store = useAppStore();
   const { compact } = store.state;
-  return <styles.Container>
-  {!compact && <MainToolbar />}
-  <styles.EditorContainer compact={store.state.compact}>
-    <CodeMode />
-    <DesignModeAppStoreContext.Provider value={store}>
-      <DesignModeMainBase />
-    </DesignModeAppStoreContext.Provider>
-  </styles.EditorContainer>
-</styles.Container>
+  return (
+    <styles.Container>
+      {!compact && <MainToolbar />}
+      <styles.EditorContainer compact={store.state.compact}>
+        <CodeMode />
+        <DesignModeAppStoreContext.Provider value={store}>
+          <DesignModeMainBase />
+        </DesignModeAppStoreContext.Provider>
+      </styles.EditorContainer>
+    </styles.Container>
+  );
 });

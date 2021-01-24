@@ -12,16 +12,16 @@ type BaseAction<TType extends ExternalActionType, TPayload = undefined> = {
 };
 
 type ContentChange = {
-  rangeOffset: number,
-  rangeLength: number,
-  text: string
-}
+  rangeOffset: number;
+  rangeLength: number;
+  text: string;
+};
 
 export type ContentChanged = BaseAction<
   ExternalActionType.CONTENT_CHANGED,
   {
     fileUri: string;
-    changes: ContentChange[]
+    changes: ContentChange[];
   }
 >;
 

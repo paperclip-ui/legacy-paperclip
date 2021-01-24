@@ -37,9 +37,7 @@ export const createAppStore = (
     {
       ...INITIAL_STATE,
       shared: {
-        documents: documents
-          ? documents
-          : INITIAL_STATE.shared.documents
+        documents: documents ? documents : INITIAL_STATE.shared.documents
       },
       slim: slim != null ? slim : INITIAL_STATE.slim,
       compact: compact || INITIAL_STATE.compact,

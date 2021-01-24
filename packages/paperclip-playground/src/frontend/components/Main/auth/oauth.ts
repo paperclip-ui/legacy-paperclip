@@ -2,7 +2,7 @@ import * as qs from "querystring";
 import { accountConnected, AccountKind } from "../../../actions";
 
 const oauthConnect = (url: string): Promise<any> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const width = 500;
     const height = 500;
 
@@ -10,7 +10,7 @@ const oauthConnect = (url: string): Promise<any> => {
       `width=${width}`,
       `height=${height}`,
       `left=${window.screenX + (window.outerWidth - width) / 2}`,
-      `top=${window.screenY + (window.outerHeight - height) / 2.5}`,
+      `top=${window.screenY + (window.outerHeight - height) / 2.5}`
     ].join(", ");
 
     const oauthWindow = window.open(url, "OAuth connect", features);
@@ -40,7 +40,7 @@ export const connectGithub = async (dispatch: any) => {
   dispatch(
     accountConnected({
       kind: AccountKind.GitHub,
-      details: { code, state },
+      details: { code, state }
     })
   );
 };
@@ -52,7 +52,7 @@ export const connectGoogle = async (dispatch: any) => {
   dispatch(
     accountConnected({
       kind: AccountKind.Google,
-      details,
+      details
     })
   );
 };

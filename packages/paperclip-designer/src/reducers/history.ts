@@ -1,11 +1,14 @@
 import produce from "immer";
 import { clamp } from "lodash";
-import { Action, ActionType } from "../actions"
-import { HistState } from "../state"
+import { Action, ActionType } from "../actions";
+import { HistState } from "../state";
 
-export const historyReducer = (mainReducer: (state: HistState, action: Action) => HistState, reset: string[] = []) => {
+export const historyReducer = (
+  mainReducer: (state: HistState, action: Action) => HistState,
+  reset: string[] = []
+) => {
   return (state: HistState, action: Action) => {
-    switch(action.type) {
+    switch (action.type) {
       case ActionType.GLOBAL_Z_KEY_DOWN: {
         return produce(state, newState => {
           const prev = newState.history.past.pop();
@@ -13,7 +16,7 @@ export const historyReducer = (mainReducer: (state: HistState, action: Action) =
             newState.history.future.unshift(newState.shared);
             newState.shared = prev;
           }
-        })
+        });
       }
       case ActionType.GLOBAL_Y_KEY_DOWN: {
         return produce(state, newState => {
@@ -22,10 +25,9 @@ export const historyReducer = (mainReducer: (state: HistState, action: Action) =
             newState.history.past.push(newState.shared);
             newState.shared = next;
           }
-        })
+        });
       }
       default: {
-
         if (reset.includes(action.type)) {
           return produce(mainReducer(state, action), newState => {
             newState.history.future = [];
@@ -36,7 +38,6 @@ export const historyReducer = (mainReducer: (state: HistState, action: Action) =
         const prevState = state;
         let newState = mainReducer(state, action);
         if (newState.shared !== prevState.shared) {
-
           // TODO - may want to diff this
           newState = produce(newState, newerState => {
             newerState.history.past.push(prevState.shared);
@@ -46,5 +47,5 @@ export const historyReducer = (mainReducer: (state: HistState, action: Action) =
         return newState;
       }
     }
-  }
+  };
 };

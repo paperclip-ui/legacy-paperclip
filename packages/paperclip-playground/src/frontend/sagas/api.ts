@@ -51,7 +51,6 @@ function* handleProjectChanges() {
 
   //   }
   // })
-  
 
   function* createNewProject() {
     const state: AppState = yield select();
@@ -98,7 +97,7 @@ function* handleProjectChanges() {
   function* loadProjects() {
     yield request(getProjectsRequestChanged, function*() {
       return yield call(api.getProjects);
-    })
+    });
   }
 
   yield takeEvery(ActionType.GET_PROJECT_FILES_REQUEST_CHANGED, function*() {
@@ -124,12 +123,18 @@ function* handleProjectChanges() {
     }
   );
 
-  yield takeEvery([ActionType.DELETE_PROJECT_CONFIRMED], function*(action: DeleteProjectConfirmed) {
+  yield takeEvery([ActionType.DELETE_PROJECT_CONFIRMED], function*(
+    action: DeleteProjectConfirmed
+  ) {
     yield call(api.deleteProject, action.payload.projectId);
-    yield call(loadProjects)
+    yield call(loadProjects);
   });
-  yield takeEvery([ActionType.PROJECT_RENAMED], function*(action: ProjectRenamed) {
-    yield call(api.updateProject, action.payload.projectId, { name: action.payload.newName });
+  yield takeEvery([ActionType.PROJECT_RENAMED], function*(
+    action: ProjectRenamed
+  ) {
+    yield call(api.updateProject, action.payload.projectId, {
+      name: action.payload.newName
+    });
   });
 }
 

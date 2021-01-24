@@ -17,8 +17,7 @@ export const useSelect = () => {
       setMenuVisible(false);
     });
 
-  const onButtonClick = (event) => {
-
+  const onButtonClick = event => {
     setMenuVisible(!menuVisible);
   };
 
@@ -26,10 +25,10 @@ export const useSelect = () => {
     setMenuVisible(false);
   };
 
-  const onClick = (event) => {
+  const onClick = event => {
     // there might be click handlers for parents
     event.stopPropagation();
-  }
+  };
 
   return {
     close,

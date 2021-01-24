@@ -7,5 +7,5 @@ export const actionCreator = <TAction extends BaseAction<any, any>>(
   type: TAction["type"]
 ) => (payload: TAction["payload"]) => ({
   type,
-  payload,
+  payload
 });
