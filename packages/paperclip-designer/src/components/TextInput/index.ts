@@ -10,12 +10,14 @@ import { noop } from "lodash";
 type UseTextInputProps = {
   value: string;
   onValueChange?: (value: string) => any;
+  onSave?: (value: string) => any;
   select?: boolean;
 };
 
 export const useTextInput = ({
   value,
   onValueChange = noop,
+  onSave = noop,
   select = false
 }: UseTextInputProps) => {
   const ref = useRef<HTMLInputElement>();
@@ -42,10 +44,22 @@ export const useTextInput = ({
     }
   }
 
+  const onBlur = () => {
+    onSave(internalValue);
+  }
+  
+  const onKeyPress = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      onSave(internalValue);
+    }
+  }
+
   const inputProps = {
     ref,
     onChange,
     onFocus,
+    onBlur,
+    onKeyPress,
     defaultValue: internalValue
   };
 
