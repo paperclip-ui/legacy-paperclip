@@ -38,7 +38,7 @@ export const MainToolbar = () => {
     leftControls = (
       <>
         <Button primary onClick={onSaveCick}>
-          Save
+          {state.currentProject ? "Save" : "Save as..."}
         </Button>
         {state.saving && (
           <styles.SaveStatus

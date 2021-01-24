@@ -56,6 +56,9 @@ function* handleProjectChanges() {
   function* createBlankNewProject() {
     //TODO - need to dispatch promptRequested & then action go with that
     const name = prompt(`New project name`);
+    if (!name) {
+      return;
+    }
 
     const state: AppState = yield select();
 
