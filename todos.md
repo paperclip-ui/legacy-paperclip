@@ -1,12 +1,18 @@
 
 ### Immediate
 
-
+- ability to drag files over to app
 - ability to upload image (explicit file upload button)
+
+- max project size
 
 - profile menu
   - create new project - focus on title
   - see projects
+
+- file menu
+  - download React code
+  - download source code
 
 
 - cleanup

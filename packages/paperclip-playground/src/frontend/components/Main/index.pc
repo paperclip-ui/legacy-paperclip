@@ -5,6 +5,7 @@
 <import src="./Toolbar/index.pc" as="Toolbar" />
 <import src="./auth/index.pc" as="Auth" />
 <import src="./Projects/index.pc" as="Projects" />
+<import src="paperclip-designer/src/styles/utils.pc" as="utils" />
 
 <style>
   :global(html, body) {
@@ -17,7 +18,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" {className?}>
+<div export component as="Container" {className?} {onDrop} {onDragOver?} {onDragEnter?} {onDragLeave}>
   <style>
     display: flex;
     height: 100%;
@@ -53,6 +54,67 @@
 <!--
   @frame { visible: false }
 -->
+<div export component as="FileDrop" className="v2" {onClick} className:visible="visible" className:cantUpload="cant-upload">
+  <style>
+    font-family: Open Sans;
+    pointer-events: none;
+    background: rgba(111, 169, 255, 0.8);
+    opacity: 1;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    opacity: 0;
+    transition: 0.2s;
+    transition-property: opacity;
+    &.visible {
+      opacity: 1;
+    }
+    &.cant-upload {
+      background: rgba(255, 111, 111, 0.8);
+      pointer-events: auto;
+      cursor: pointer;
+    }
+  </style>
+  <div>
+    <style>
+      font-size: 42px;
+      color: white;
+      position: absolute;
+      left: 50%;
+      top: 30%;
+      transform: translate(-50%);
+      text-align: center;
+    </style>
+    {cantUpload && <div>
+      <style>
+        font-size: 24px;
+      </style>
+      Whoops, that won't work. Make sure you're only uploading SVGs & other image files that are under 2 MB
+    </div>}
+    {!cantUpload && <div>
+      Drop to upload it!
+    </div>}
+    <i>
+      <style>
+        display: block;
+        text-align: center;
+        --size: 100px;
+        @include utils.mask;
+        mask-image: url("./dnd.svg");
+        &:within(.cant-upload) {
+        mask-image: url("./big-x.svg");
+        }
+      </style>
+    </i>
+  </div>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
 <Container export component as="Preview" className="v2" {compact?}>
   {!compact && !showProjects && <Toolbar.Preview  {loggedIn?} />}
   {showProjects && <Toolbar.Preview loggedIn minimal />}
@@ -62,6 +124,7 @@
     <Main.Preview v2 dark designer showGrid />
   </EditorContainer> }
   {showLoginPrompt && <Auth.Preview />}
+  <FileDrop visible={showFileDrop} {cantUpload} />
 </Container>
 
 <!--
@@ -71,19 +134,31 @@
 
 
 <!--
-  @frame { title: "Projects / Desktop", width: 1219, height: 767, x: 4103, y: 171 }
+  @frame { title: "Projects / Desktop", width: 1219, height: 767, x: 5218, y: 235 }
 -->
 <Preview showFileMenu showProjects loggedIn  />
 
 <!--
-  @frame { title: "Projects / Tablet", width: 458, height: 767, x: 4086, y: 1993 }
+  @frame { title: "Projects / Tablet", width: 458, height: 767, x: 5201, y: 2057 }
 -->
 <Preview  showFileMenu showProjects  />
 
 <!--
-  @frame { title: "Projects / Small Desktop", width: 981, height: 767, x: 4096, y: 1062 }
+  @frame { title: "Projects / Small Desktop", width: 981, height: 767, x: 5211, y: 1126 }
 -->
 <Preview showFileMenu showProjects  />
+
+
+<!--
+  @frame { title: "Logged in / DND file", width: 1216, height: 767, x: 1914, y: 290 }
+-->
+<Preview showEditor loggedIn showFileDrop />
+
+<!--
+  @frame { title: "Logged in / DND file X", width: 1216, height: 767, x: 3296, y: 272 }
+-->
+<Preview showEditor loggedIn showFileDrop cantUpload />
+
 
 
 <!--
@@ -98,15 +173,15 @@
 <!--
   @frame { title: "Initial", width: 1212, height: 768, x: 461, y: -726 }
 -->
-<Preview />
+<Preview showEditor />
 
 
 <!--
   @frame { title: "Compact / responsive", width: 643, height: 768, x: 532, y: 1874 }
 -->
-<Preview />
+<Preview showEditor />
 
 <!--
   @frame { title: "Compact / Explicit", width: 1795, height: 931, x: 1330, y: 1881 }
 -->
-<Preview compact />
+<Preview compact showEditor />

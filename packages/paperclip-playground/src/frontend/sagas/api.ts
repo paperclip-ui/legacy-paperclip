@@ -7,6 +7,7 @@ import {
   ActionType,
   DeleteProjectConfirmed,
   FileRenamed,
+  FilesDropped,
   getProjectsRequestChanged,
   loggedOut,
   NewProjectEntered,
@@ -156,6 +157,28 @@ function* handleProjectChanges() {
     );
 
     history.push(`/projects/${project.id}`);
+  });
+  yield takeEvery([ActionType.FILES_DROPPED], function*({
+    payload
+  }: FilesDropped) {
+    const files = Array.from(payload.files);
+
+    const dataUrls = yield call(() =>
+      Promise.all(
+        files.map(file => {
+          return new Promise(resolve => {
+            for (const file of files) {
+              const reader = new FileReader();
+              reader.onload = () => {
+                resolve(reader.result);
+              };
+              reader.readAsArrayBuffer(file);
+            }
+          });
+        })
+      )
+    );
+    console.log(files);
   });
 }
 

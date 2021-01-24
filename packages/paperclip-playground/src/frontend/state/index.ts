@@ -148,3 +148,16 @@ export const hasUnsavedChanges = (state: AppState, prevState: AppState) => {
 
   return false;
 };
+
+const ACCEPTED_MIME_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "image/svg+xml"
+];
+
+export const canUpload = (transfer: DataTransfer) => {
+  return Array.from(transfer.files).every(file => {
+    return ACCEPTED_MIME_TYPES.includes(file.type);
+  });
+};
