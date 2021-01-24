@@ -359,7 +359,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
     const renderer = createMockFramesRenderer(
       "file:///entry.pc",
-      (url: string) => url.replace("file:", "black:")
+      (url: string) => url.replace("file:", "blah:")
     );
     renderer.initialize(await engine.open("file:///entry.pc"));
     engine.onEvent(renderer.handleEngineDelegateEvent);

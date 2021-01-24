@@ -115,7 +115,7 @@ describe(__filename + "#", () => {
     };
 
     const renderer = createMockFramesRenderer("file:///entry.pc", url =>
-      url.replace("file", "black")
+      url.replace("file", "blah")
     );
     const engine = await createMockEngineDelegate(graph);
     engine.onEvent(renderer.handleEngineDelegateEvent);
