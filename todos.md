@@ -1,9 +1,8 @@
 
 ### Immediate
 
-- ability to create new project from projects page
+
 - ability to upload image (explicit file upload button)
-- share url
 
 - profile menu
   - create new project - focus on title

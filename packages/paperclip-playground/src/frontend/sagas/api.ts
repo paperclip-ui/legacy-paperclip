@@ -54,11 +54,14 @@ function* handleProjectChanges() {
   // })
 
   function* createBlankNewProject() {
+    //TODO - need to dispatch promptRequested & then action go with that
+    const name = prompt(`New project name`);
+
     const state: AppState = yield select();
 
     const project = yield call(
       api.createProject,
-      undefined,
+      name,
       mapValues(state.shared.documents, doc => doc.toString()),
       state.currentCodeFileUri
     );

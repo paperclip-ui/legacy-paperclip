@@ -122,7 +122,7 @@ export type DeleteProjectConfirmed = BaseAction<
   { projectId: number }
 >;
 
-export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED>;
+export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED, {}>;
 
 export type EngineCrashed = BaseAction<ActionType.ENGINE_CRASHED, Error>;
 export type CodeEditorTextChanged = BaseAction<

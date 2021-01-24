@@ -23,7 +23,7 @@ export const MainToolbar = () => {
     profileSelect.close();
   };
   const onSaveCick = () => {
-    dispatch(saveButtonClicked(null));
+    dispatch(saveButtonClicked({}));
   };
   const onMyProjectsClick = () => {
     history.push(APP_LOCATIONS.PROJECTS);
