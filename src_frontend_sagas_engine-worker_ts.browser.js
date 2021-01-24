@@ -1,295 +1,10 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/frontend/actions/base.ts":
-/*!**************************************!*\
-  !*** ./src/frontend/actions/base.ts ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "actionCreator": () => /* binding */ actionCreator
-/* harmony export */ });
-var actionCreator = function (type) { return function (payload) { return ({
-    type: type,
-    payload: payload,
-}); }; };
-
-
-/***/ }),
-
-/***/ "./src/frontend/actions/index.ts":
-/*!***************************************!*\
-  !*** ./src/frontend/actions/index.ts ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ActionType": () => /* binding */ ActionType,
-/* harmony export */   "AccountKind": () => /* binding */ AccountKind,
-/* harmony export */   "accountConnected": () => /* binding */ accountConnected,
-/* harmony export */   "logoutButtonClicked": () => /* binding */ logoutButtonClicked,
-/* harmony export */   "sessionLoaded": () => /* binding */ sessionLoaded,
-/* harmony export */   "savedProject": () => /* binding */ savedProject,
-/* harmony export */   "loggedOut": () => /* binding */ loggedOut,
-/* harmony export */   "engineLoaded": () => /* binding */ engineLoaded,
-/* harmony export */   "engineCrashed": () => /* binding */ engineCrashed,
-/* harmony export */   "saveButtonClicked": () => /* binding */ saveButtonClicked,
-/* harmony export */   "codeEditorChanged": () => /* binding */ codeEditorChanged,
-/* harmony export */   "workerInitialized": () => /* binding */ workerInitialized,
-/* harmony export */   "appStateDiffed": () => /* binding */ appStateDiffed,
-/* harmony export */   "contentChangesCreated": () => /* binding */ contentChangesCreated,
-/* harmony export */   "newFileNameEntered": () => /* binding */ newFileNameEntered,
-/* harmony export */   "fileItemClicked": () => /* binding */ fileItemClicked,
-/* harmony export */   "syncPanelsClicked": () => /* binding */ syncPanelsClicked,
-/* harmony export */   "getProjectRequestChanged": () => /* binding */ getProjectRequestChanged,
-/* harmony export */   "getProjectsRequestChanged": () => /* binding */ getProjectsRequestChanged,
-/* harmony export */   "getProjectFilesRequestChanged": () => /* binding */ getProjectFilesRequestChanged,
-/* harmony export */   "projectHookUsed": () => /* binding */ projectHookUsed,
-/* harmony export */   "projectFilesHookUsed": () => /* binding */ projectFilesHookUsed,
-/* harmony export */   "allProjectsHookUsed": () => /* binding */ allProjectsHookUsed
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/frontend/actions/base.ts");
-
-var ActionType;
-(function (ActionType) {
-    ActionType["PROJECT_HOOK_USED"] = "PROJECT_HOOK_USED";
-    ActionType["ALL_PROJECTS_HOOK_USED"] = "ALL_PROJECTS_HOOK_USED";
-    ActionType["PROJECT_FILES_HOOK_USED"] = "PROJECT_FILES_HOOK_USED";
-    ActionType["REQUEST_CHANGED"] = "REQUEST_CHANGED";
-    ActionType["ENGINE_LOADED"] = "ENGINE_LOADED";
-    ActionType["GET_PROJECTS_REQUEST_CHANGED"] = "GET_PROJECTS_REQUEST_CHANGED";
-    ActionType["GET_PROJECT_REQUEST_CHANGED"] = "GET_PROJECT_REQUEST_CHANGED";
-    ActionType["GET_PROJECT_FILES_REQUEST_CHANGED"] = "GET_PROJECT_FILES_REQUEST_CHANGED";
-    ActionType["LOGOUT_BUTTON_CLICKED"] = "LOGOUT_BUTTON_CLICKED";
-    ActionType["ENGINE_CRASHED"] = "ENGINE_CRASHED";
-    ActionType["SAVED_PROJECT"] = "SAVED_PROJECT";
-    ActionType["SAVE_BUTTON_CLICKED"] = "SAVE_BUTTON_CLICKED";
-    ActionType["LOGGED_OUT"] = "LOGGED_OUT";
-    ActionType["SESSION_LOADED"] = "SESSION_LOADED";
-    ActionType["CODE_EDITOR_TEXT_CHANGED"] = "CODE_EDITOR_TEXT_CHANGED";
-    ActionType["WORKER_INITIALIZED"] = "WORKER_INITIALIZED";
-    ActionType["APP_STATE_DIFFED"] = "APP_STATE_DIFFED";
-    ActionType["CONTENT_CHANGES_CREATED"] = "CONTENT_CHANGES_CREATED";
-    ActionType["FILE_ITEM_CLICKED"] = "FILE_ITEM_CLICKED";
-    ActionType["NEW_FILE_NAME_ENTERED"] = "NEW_FILE_NAME_ENTERED";
-    ActionType["SYNC_PANELS_CLICKED"] = "SYNC_PANELS_CLICKED";
-    ActionType["ACCOUNT_CONNECTED"] = "ACCOUNT_CONNECTED";
-})(ActionType || (ActionType = {}));
-var AccountKind;
-(function (AccountKind) {
-    AccountKind["Google"] = "google";
-    AccountKind["GitHub"] = "github";
-})(AccountKind || (AccountKind = {}));
-var accountConnected = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ACCOUNT_CONNECTED);
-var logoutButtonClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.LOGOUT_BUTTON_CLICKED);
-var sessionLoaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SESSION_LOADED);
-var savedProject = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SAVED_PROJECT);
-var loggedOut = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.LOGGED_OUT);
-var engineLoaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ENGINE_LOADED);
-var engineCrashed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ENGINE_CRASHED);
-var saveButtonClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SAVE_BUTTON_CLICKED);
-var codeEditorChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.CODE_EDITOR_TEXT_CHANGED);
-var workerInitialized = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.WORKER_INITIALIZED);
-var appStateDiffed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.APP_STATE_DIFFED);
-var contentChangesCreated = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.CONTENT_CHANGES_CREATED);
-var newFileNameEntered = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.NEW_FILE_NAME_ENTERED);
-var fileItemClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.FILE_ITEM_CLICKED);
-var syncPanelsClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SYNC_PANELS_CLICKED);
-var getProjectRequestChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GET_PROJECT_REQUEST_CHANGED);
-var getProjectsRequestChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GET_PROJECTS_REQUEST_CHANGED);
-var getProjectFilesRequestChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GET_PROJECT_FILES_REQUEST_CHANGED);
-var projectHookUsed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.PROJECT_HOOK_USED);
-var projectFilesHookUsed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.PROJECT_FILES_HOOK_USED);
-var allProjectsHookUsed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ALL_PROJECTS_HOOK_USED);
-
-
-/***/ }),
-
-/***/ "./src/frontend/sagas/engine-worker.ts":
-/*!*********************************************!*\
-  !*** ./src/frontend/sagas/engine-worker.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../actions */ "./src/frontend/actions/index.ts");
-/* harmony import */ var paperclip_browser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paperclip/browser */ "../paperclip/browser.js");
-/* harmony import */ var paperclip_visual_editor_src_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! paperclip-visual-editor/src/actions */ "../paperclip-visual-editor/src/actions/index.ts");
-/* harmony import */ var fast_json_patch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! fast-json-patch */ "../../node_modules/fast-json-patch/index.mjs");
-/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
-/* harmony import */ var paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! paperclip-source-writer */ "../paperclip-source-writer/lib/index.js");
-/* harmony import */ var paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__);
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-
-
-
-
-
-
-
-var init = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _appState, _engine, _writer, _currentUri, dispatch, onCrash, handleInitialized, onEngineEvent, onEngineInit, tryOpeningCurrentFile, handleAppStateDiffed, handleCodeChange, handleVirtObjectEdited, handleContentChanges, handleProjectLoaded, handleRedirect;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                dispatch = function (action) {
-                    self.postMessage(action);
-                };
-                onCrash = function (e) {
-                    dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_0__.engineCrashed)(e));
-                };
-                handleInitialized = function (_a) {
-                    var appState = _a.payload.appState;
-                    _appState = appState;
-                    tryOpeningCurrentFile();
-                };
-                onEngineEvent = function (event) {
-                    dispatch((0,paperclip_visual_editor_src_actions__WEBPACK_IMPORTED_MODULE_2__.engineDelegateChanged)(event));
-                };
-                onEngineInit = function () {
-                    _writer = new paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__.PCSourceWriter({
-                        engine: _engine,
-                        getContent: function (uri) { return _appState.designMode.documentContents[uri]; }
-                    });
-                    dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_0__.engineLoaded)(null));
-                    tryOpeningCurrentFile();
-                };
-                tryOpeningCurrentFile = function () {
-                    if (_appState.designMode.ui.query.currentFileUri &&
-                        _engine &&
-                        (!_currentUri ||
-                            _currentUri !== _appState.designMode.ui.query.currentFileUri)) {
-                        _currentUri = _appState.designMode.ui.query.currentFileUri;
-                        _engine.open(_appState.designMode.ui.query.currentFileUri);
-                    }
-                };
-                handleAppStateDiffed = function (_a) {
-                    var ops = _a.payload.ops;
-                    return __awaiter(void 0, void 0, void 0, function () {
-                        return __generator(this, function (_b) {
-                            _appState = (0,fast_json_patch__WEBPACK_IMPORTED_MODULE_3__.applyPatch)(_appState, ops, false, false).newDocument;
-                            return [2 /*return*/];
-                        });
-                    });
-                };
-                handleCodeChange = function (action) {
-                    _engine.updateVirtualFileContent(_appState.currentCodeFileUri, action.payload);
-                };
-                handleVirtObjectEdited = function (action) { return __awaiter(void 0, void 0, void 0, function () {
-                    var _a, _b;
-                    var _c;
-                    return __generator(this, function (_d) {
-                        switch (_d.label) {
-                            case 0:
-                                _a = dispatch;
-                                _b = _actions__WEBPACK_IMPORTED_MODULE_0__.contentChangesCreated;
-                                _c = {};
-                                return [4 /*yield*/, _writer.getContentChanges(action.payload.mutations)];
-                            case 1:
-                                _a.apply(void 0, [_b.apply(void 0, [(_c.changes = _d.sent(),
-                                            _c)])]);
-                                return [2 /*return*/];
-                        }
-                    });
-                }); };
-                handleContentChanges = function (_a) {
-                    var changes = _a.payload.changes;
-                    for (var uri in changes) {
-                        _engine.updateVirtualFileContent(uri, _appState.designMode.documentContents[uri]);
-                    }
-                };
-                handleProjectLoaded = function () { };
-                handleRedirect = function (action) {
-                    tryOpeningCurrentFile();
-                };
-                self.onmessage = function (_a) {
-                    var action = _a.data;
-                    switch (action.type) {
-                        case _actions__WEBPACK_IMPORTED_MODULE_0__.ActionType.WORKER_INITIALIZED:
-                            return handleInitialized(action);
-                        case _actions__WEBPACK_IMPORTED_MODULE_0__.ActionType.APP_STATE_DIFFED:
-                            return handleAppStateDiffed(action);
-                        case _actions__WEBPACK_IMPORTED_MODULE_0__.ActionType.CODE_EDITOR_TEXT_CHANGED:
-                            return handleCodeChange(action);
-                        case paperclip_visual_editor_src_actions__WEBPACK_IMPORTED_MODULE_2__.ActionType.REDIRECT_REQUESTED:
-                            return handleRedirect(action);
-                        case paperclip_visual_editor_src_actions__WEBPACK_IMPORTED_MODULE_2__.ActionType.PC_VIRT_OBJECT_EDITED:
-                            return handleVirtObjectEdited(action);
-                        case _actions__WEBPACK_IMPORTED_MODULE_0__.ActionType.CONTENT_CHANGES_CREATED:
-                            return handleContentChanges(action);
-                    }
-                };
-                return [4 /*yield*/, (0,paperclip_browser__WEBPACK_IMPORTED_MODULE_1__.loadEngineDelegate)({
-                        io: {
-                            readFile: function (uri) {
-                                return _appState.designMode.documentContents[uri];
-                            },
-                            fileExists: function (uri) {
-                                return _appState.designMode.documentContents[uri] != null;
-                            },
-                            resolveFile: function (fromPath, toPath) {
-                                return url__WEBPACK_IMPORTED_MODULE_4__.resolve(fromPath, toPath);
-                            }
-                        }
-                    }, onCrash)];
-            case 1:
-                _engine = _a.sent();
-                _engine.onEvent(onEngineEvent);
-                onEngineInit();
-                return [2 /*return*/];
-        }
-    });
-}); };
-init();
-
-
-/***/ }),
-
-/***/ "../paperclip-visual-editor/src/actions/base.ts":
-/*!******************************************************!*\
-  !*** ../paperclip-visual-editor/src/actions/base.ts ***!
-  \******************************************************/
+/***/ "../paperclip-designer/src/actions/base.ts":
+/*!*************************************************!*\
+  !*** ../paperclip-designer/src/actions/base.ts ***!
+  \*************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -305,10 +20,10 @@ var actionCreator = function (type) { return function (payload) { return ({
 
 /***/ }),
 
-/***/ "../paperclip-visual-editor/src/actions/external-actions.ts":
-/*!******************************************************************!*\
-  !*** ../paperclip-visual-editor/src/actions/external-actions.ts ***!
-  \******************************************************************/
+/***/ "../paperclip-designer/src/actions/external-actions.ts":
+/*!*************************************************************!*\
+  !*** ../paperclip-designer/src/actions/external-actions.ts ***!
+  \*************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -316,25 +31,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ExternalActionType": () => /* binding */ ExternalActionType,
 /* harmony export */   "contentChanged": () => /* binding */ contentChanged,
+/* harmony export */   "openedDocument": () => /* binding */ openedDocument,
 /* harmony export */   "configChanged": () => /* binding */ configChanged
 /* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "../paperclip-visual-editor/src/actions/base.ts");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "../paperclip-designer/src/actions/base.ts");
 
 var ExternalActionType;
 (function (ExternalActionType) {
+    ExternalActionType["OPENED_DOCUMENT"] = "OPENED_DOCUMENT";
     ExternalActionType["CONTENT_CHANGED"] = "CONTENT_CHANGED";
     ExternalActionType["CONFIG_CHANGED"] = "CONFIG_CHANGED";
 })(ExternalActionType || (ExternalActionType = {}));
 var contentChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ExternalActionType.CONTENT_CHANGED);
+var openedDocument = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ExternalActionType.OPENED_DOCUMENT);
 var configChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ExternalActionType.CONFIG_CHANGED);
 
 
 /***/ }),
 
-/***/ "../paperclip-visual-editor/src/actions/index.ts":
-/*!*******************************************************!*\
-  !*** ../paperclip-visual-editor/src/actions/index.ts ***!
-  \*******************************************************/
+/***/ "../paperclip-designer/src/actions/index.ts":
+/*!**************************************************!*\
+  !*** ../paperclip-designer/src/actions/index.ts ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -407,11 +125,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "instanceChanged": () => /* reexport safe */ _server_actions__WEBPACK_IMPORTED_MODULE_1__.instanceChanged,
 /* harmony export */   "ExternalActionType": () => /* reexport safe */ _external_actions__WEBPACK_IMPORTED_MODULE_2__.ExternalActionType,
 /* harmony export */   "configChanged": () => /* reexport safe */ _external_actions__WEBPACK_IMPORTED_MODULE_2__.configChanged,
-/* harmony export */   "contentChanged": () => /* reexport safe */ _external_actions__WEBPACK_IMPORTED_MODULE_2__.contentChanged
+/* harmony export */   "contentChanged": () => /* reexport safe */ _external_actions__WEBPACK_IMPORTED_MODULE_2__.contentChanged,
+/* harmony export */   "openedDocument": () => /* reexport safe */ _external_actions__WEBPACK_IMPORTED_MODULE_2__.openedDocument
 /* harmony export */ });
-/* harmony import */ var _instance_actions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./instance-actions */ "../paperclip-visual-editor/src/actions/instance-actions.ts");
-/* harmony import */ var _server_actions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./server-actions */ "../paperclip-visual-editor/src/actions/server-actions.ts");
-/* harmony import */ var _external_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./external-actions */ "../paperclip-visual-editor/src/actions/external-actions.ts");
+/* harmony import */ var _instance_actions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./instance-actions */ "../paperclip-designer/src/actions/instance-actions.ts");
+/* harmony import */ var _server_actions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./server-actions */ "../paperclip-designer/src/actions/server-actions.ts");
+/* harmony import */ var _external_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./external-actions */ "../paperclip-designer/src/actions/external-actions.ts");
 
 
 
@@ -419,10 +138,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "../paperclip-visual-editor/src/actions/instance-actions.ts":
-/*!******************************************************************!*\
-  !*** ../paperclip-visual-editor/src/actions/instance-actions.ts ***!
-  \******************************************************************/
+/***/ "../paperclip-designer/src/actions/instance-actions.ts":
+/*!*************************************************************!*\
+  !*** ../paperclip-designer/src/actions/instance-actions.ts ***!
+  \*************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -488,7 +207,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "zoomInKeyPressed": () => /* binding */ zoomInKeyPressed,
 /* harmony export */   "zoomOutKeyPressed": () => /* binding */ zoomOutKeyPressed
 /* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "../paperclip-visual-editor/src/actions/base.ts");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "../paperclip-designer/src/actions/base.ts");
 
 var ActionType;
 (function (ActionType) {
@@ -614,10 +333,10 @@ var zoomOutKeyPressed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(Act
 
 /***/ }),
 
-/***/ "../paperclip-visual-editor/src/actions/server-actions.ts":
-/*!****************************************************************!*\
-  !*** ../paperclip-visual-editor/src/actions/server-actions.ts ***!
-  \****************************************************************/
+/***/ "../paperclip-designer/src/actions/server-actions.ts":
+/*!***********************************************************!*\
+  !*** ../paperclip-designer/src/actions/server-actions.ts ***!
+  \***********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -630,7 +349,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "allPCContentLoaded": () => /* binding */ allPCContentLoaded,
 /* harmony export */   "browserstackBrowsersLoaded": () => /* binding */ browserstackBrowsersLoaded
 /* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "../paperclip-visual-editor/src/actions/base.ts");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "../paperclip-designer/src/actions/base.ts");
 
 var ServerActionType;
 (function (ServerActionType) {
@@ -645,6 +364,334 @@ var initParamsDefined = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(Ser
 var crashed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ServerActionType.CRASHED);
 var allPCContentLoaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ServerActionType.ALL_PC_CONTENT_LOADED);
 var browserstackBrowsersLoaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ServerActionType.BROWSERSTACK_BROWSERS_LOADED);
+
+
+/***/ }),
+
+/***/ "./src/frontend/actions/base.ts":
+/*!**************************************!*\
+  !*** ./src/frontend/actions/base.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "actionCreator": () => /* binding */ actionCreator
+/* harmony export */ });
+var actionCreator = function (type) { return function (payload) { return ({
+    type: type,
+    payload: payload
+}); }; };
+
+
+/***/ }),
+
+/***/ "./src/frontend/actions/index.ts":
+/*!***************************************!*\
+  !*** ./src/frontend/actions/index.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ActionType": () => /* binding */ ActionType,
+/* harmony export */   "AccountKind": () => /* binding */ AccountKind,
+/* harmony export */   "newProjectEntered": () => /* binding */ newProjectEntered,
+/* harmony export */   "rawFileUploaded": () => /* binding */ rawFileUploaded,
+/* harmony export */   "filesDropped": () => /* binding */ filesDropped,
+/* harmony export */   "downloadProjectClicked": () => /* binding */ downloadProjectClicked,
+/* harmony export */   "accountConnected": () => /* binding */ accountConnected,
+/* harmony export */   "logoutButtonClicked": () => /* binding */ logoutButtonClicked,
+/* harmony export */   "removeFileClicked": () => /* binding */ removeFileClicked,
+/* harmony export */   "fileRenamed": () => /* binding */ fileRenamed,
+/* harmony export */   "sessionLoaded": () => /* binding */ sessionLoaded,
+/* harmony export */   "savedProject": () => /* binding */ savedProject,
+/* harmony export */   "loggedOut": () => /* binding */ loggedOut,
+/* harmony export */   "engineLoaded": () => /* binding */ engineLoaded,
+/* harmony export */   "engineCrashed": () => /* binding */ engineCrashed,
+/* harmony export */   "saveButtonClicked": () => /* binding */ saveButtonClicked,
+/* harmony export */   "codeEditorChanged": () => /* binding */ codeEditorChanged,
+/* harmony export */   "slimCodeEditorChanged": () => /* binding */ slimCodeEditorChanged,
+/* harmony export */   "workerInitialized": () => /* binding */ workerInitialized,
+/* harmony export */   "appStateDiffed": () => /* binding */ appStateDiffed,
+/* harmony export */   "contentChangesCreated": () => /* binding */ contentChangesCreated,
+/* harmony export */   "newFileNameEntered": () => /* binding */ newFileNameEntered,
+/* harmony export */   "projectRenamed": () => /* binding */ projectRenamed,
+/* harmony export */   "fileItemClicked": () => /* binding */ fileItemClicked,
+/* harmony export */   "deleteProjectConfirmed": () => /* binding */ deleteProjectConfirmed,
+/* harmony export */   "syncPanelsClicked": () => /* binding */ syncPanelsClicked,
+/* harmony export */   "getProjectRequestChanged": () => /* binding */ getProjectRequestChanged,
+/* harmony export */   "getProjectsRequestChanged": () => /* binding */ getProjectsRequestChanged,
+/* harmony export */   "getProjectFilesRequestChanged": () => /* binding */ getProjectFilesRequestChanged,
+/* harmony export */   "projectHookUsed": () => /* binding */ projectHookUsed,
+/* harmony export */   "projectFilesHookUsed": () => /* binding */ projectFilesHookUsed,
+/* harmony export */   "allProjectsHookUsed": () => /* binding */ allProjectsHookUsed
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/frontend/actions/base.ts");
+
+var ActionType;
+(function (ActionType) {
+    ActionType["PROJECT_HOOK_USED"] = "PROJECT_HOOK_USED";
+    ActionType["ALL_PROJECTS_HOOK_USED"] = "ALL_PROJECTS_HOOK_USED";
+    ActionType["PROJECT_FILES_HOOK_USED"] = "PROJECT_FILES_HOOK_USED";
+    ActionType["DELETE_PROJECT_CONFIRMED"] = "DELETE_PROJECT_CONFIRMED";
+    ActionType["DOWNLOAD_PROJECT_CLICKED"] = "DOWNLOAD_PROJECT_CLICKED";
+    ActionType["RAW_FILE_UPLOADED"] = "RAW_FILE_UPLOADED";
+    ActionType["FILES_DROPPED"] = "FILES_DROPPED";
+    ActionType["NEW_PROJECT_ENTERED"] = "NEW_PROJECT_ENTERED";
+    ActionType["REMOVE_FILE_CLICKED"] = "REMOVE_FILE_CLICKED";
+    ActionType["FILE_RENAMED"] = "FILE_RENAMED";
+    ActionType["PROJECT_RENAMED"] = "PROJECT_RENAMED";
+    ActionType["REQUEST_CHANGED"] = "REQUEST_CHANGED";
+    ActionType["ENGINE_LOADED"] = "ENGINE_LOADED";
+    ActionType["GET_PROJECTS_REQUEST_CHANGED"] = "GET_PROJECTS_REQUEST_CHANGED";
+    ActionType["GET_PROJECT_REQUEST_CHANGED"] = "GET_PROJECT_REQUEST_CHANGED";
+    ActionType["GET_PROJECT_FILES_REQUEST_CHANGED"] = "GET_PROJECT_FILES_REQUEST_CHANGED";
+    ActionType["LOGOUT_BUTTON_CLICKED"] = "LOGOUT_BUTTON_CLICKED";
+    ActionType["ENGINE_CRASHED"] = "ENGINE_CRASHED";
+    ActionType["SAVED_PROJECT"] = "SAVED_PROJECT";
+    ActionType["SAVE_BUTTON_CLICKED"] = "SAVE_BUTTON_CLICKED";
+    ActionType["LOGGED_OUT"] = "LOGGED_OUT";
+    ActionType["SESSION_LOADED"] = "SESSION_LOADED";
+    ActionType["CODE_EDITOR_TEXT_CHANGED"] = "CODE_EDITOR_TEXT_CHANGED";
+    ActionType["SLIM_CODE_EDITOR_TEXT_CHANGED"] = "SLIM_CODE_EDITOR_TEXT_CHANGED";
+    ActionType["WORKER_INITIALIZED"] = "WORKER_INITIALIZED";
+    ActionType["APP_STATE_DIFFED"] = "APP_STATE_DIFFED";
+    ActionType["CONTENT_CHANGES_CREATED"] = "CONTENT_CHANGES_CREATED";
+    ActionType["FILE_ITEM_CLICKED"] = "FILE_ITEM_CLICKED";
+    ActionType["NEW_FILE_NAME_ENTERED"] = "NEW_FILE_NAME_ENTERED";
+    ActionType["SYNC_PANELS_CLICKED"] = "SYNC_PANELS_CLICKED";
+    ActionType["ACCOUNT_CONNECTED"] = "ACCOUNT_CONNECTED";
+})(ActionType || (ActionType = {}));
+var AccountKind;
+(function (AccountKind) {
+    AccountKind["Google"] = "google";
+    AccountKind["GitHub"] = "github";
+})(AccountKind || (AccountKind = {}));
+var newProjectEntered = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.NEW_PROJECT_ENTERED);
+var rawFileUploaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.RAW_FILE_UPLOADED);
+var filesDropped = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.FILES_DROPPED);
+var downloadProjectClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.DOWNLOAD_PROJECT_CLICKED);
+var accountConnected = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ACCOUNT_CONNECTED);
+var logoutButtonClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.LOGOUT_BUTTON_CLICKED);
+var removeFileClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.REMOVE_FILE_CLICKED);
+var fileRenamed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.FILE_RENAMED);
+var sessionLoaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SESSION_LOADED);
+var savedProject = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SAVED_PROJECT);
+var loggedOut = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.LOGGED_OUT);
+var engineLoaded = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ENGINE_LOADED);
+var engineCrashed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ENGINE_CRASHED);
+var saveButtonClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SAVE_BUTTON_CLICKED);
+var codeEditorChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.CODE_EDITOR_TEXT_CHANGED);
+var slimCodeEditorChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED);
+var workerInitialized = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.WORKER_INITIALIZED);
+var appStateDiffed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.APP_STATE_DIFFED);
+var contentChangesCreated = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.CONTENT_CHANGES_CREATED);
+var newFileNameEntered = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.NEW_FILE_NAME_ENTERED);
+var projectRenamed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.PROJECT_RENAMED);
+var fileItemClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.FILE_ITEM_CLICKED);
+var deleteProjectConfirmed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.DELETE_PROJECT_CONFIRMED);
+var syncPanelsClicked = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.SYNC_PANELS_CLICKED);
+var getProjectRequestChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GET_PROJECT_REQUEST_CHANGED);
+var getProjectsRequestChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GET_PROJECTS_REQUEST_CHANGED);
+var getProjectFilesRequestChanged = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.GET_PROJECT_FILES_REQUEST_CHANGED);
+var projectHookUsed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.PROJECT_HOOK_USED);
+var projectFilesHookUsed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.PROJECT_FILES_HOOK_USED);
+var allProjectsHookUsed = (0,_base__WEBPACK_IMPORTED_MODULE_0__.actionCreator)(ActionType.ALL_PROJECTS_HOOK_USED);
+
+
+/***/ }),
+
+/***/ "./src/frontend/sagas/engine-worker.ts":
+/*!*********************************************!*\
+  !*** ./src/frontend/sagas/engine-worker.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../actions */ "./src/frontend/actions/index.ts");
+/* harmony import */ var paperclip_browser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paperclip/browser */ "../paperclip/browser.js");
+/* harmony import */ var paperclip_designer_src_actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! paperclip-designer/src/actions */ "../paperclip-designer/src/actions/index.ts");
+/* harmony import */ var fast_json_patch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! fast-json-patch */ "../../node_modules/fast-json-patch/index.mjs");
+/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! url */ "../../node_modules/url/url.js");
+/* harmony import */ var paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! paperclip-source-writer */ "../paperclip-source-writer/lib/index.js");
+/* harmony import */ var paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var paperclip_utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! paperclip-utils */ "../paperclip-utils/index.js");
+/* harmony import */ var paperclip_utils__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(paperclip_utils__WEBPACK_IMPORTED_MODULE_6__);
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+
+
+
+
+
+
+var init = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var _state, _engine, _writer, _currentUri, dispatch, onCrash, handleInitialized, onEngineEvent, onEngineInit, tryOpeningCurrentFile, handleAppStateDiffed, syncEngineDocuments, handleVirtObjectEdited, handleProjectLoaded, handleRedirect;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                dispatch = function (action) {
+                    self.postMessage(action);
+                };
+                onCrash = function (e) {
+                    dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_0__.engineCrashed)(e));
+                };
+                handleInitialized = function (_a) {
+                    var state = _a.payload.state;
+                    _state = state;
+                    tryOpeningCurrentFile();
+                };
+                onEngineEvent = function (event) {
+                    dispatch((0,paperclip_designer_src_actions__WEBPACK_IMPORTED_MODULE_2__.engineDelegateChanged)(event));
+                };
+                onEngineInit = function () {
+                    _writer = new paperclip_source_writer__WEBPACK_IMPORTED_MODULE_5__.PCSourceWriter({
+                        engine: _engine,
+                        getContent: function (uri) { return String(_state.documents[uri]); }
+                    });
+                    dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_0__.engineLoaded)(null));
+                    tryOpeningCurrentFile();
+                };
+                tryOpeningCurrentFile = function () {
+                    if (_state.currentFileUri &&
+                        _engine &&
+                        (!_currentUri || _currentUri !== _state.currentFileUri)) {
+                        _currentUri = _state.currentFileUri;
+                        if ((0,paperclip_utils__WEBPACK_IMPORTED_MODULE_6__.isPaperclipFile)(_currentUri)) {
+                            _engine.open(_state.currentFileUri);
+                        }
+                    }
+                };
+                handleAppStateDiffed = function (_a) {
+                    var ops = _a.payload.ops;
+                    return __awaiter(void 0, void 0, void 0, function () {
+                        var oldState;
+                        return __generator(this, function (_b) {
+                            oldState = _state;
+                            _state = (0,fast_json_patch__WEBPACK_IMPORTED_MODULE_3__.applyPatch)(_state, ops, false, false).newDocument;
+                            syncEngineDocuments(oldState);
+                            return [2 /*return*/];
+                        });
+                    });
+                };
+                syncEngineDocuments = function (oldState) {
+                    if (_state.documents === oldState.documents || !_engine) {
+                        return;
+                    }
+                    for (var uri in _state.documents) {
+                        if (!(0,paperclip_utils__WEBPACK_IMPORTED_MODULE_6__.isPaperclipFile)(uri)) {
+                            continue;
+                        }
+                        var newContent = _state.documents[uri];
+                        var oldContent = oldState.documents[uri];
+                        if (newContent !== oldContent && (0,paperclip_utils__WEBPACK_IMPORTED_MODULE_6__.isPaperclipFile)(uri)) {
+                            _engine.updateVirtualFileContent(uri, String(newContent));
+                        }
+                    }
+                };
+                handleVirtObjectEdited = function (action) { return __awaiter(void 0, void 0, void 0, function () {
+                    var _a, _b;
+                    var _c;
+                    return __generator(this, function (_d) {
+                        switch (_d.label) {
+                            case 0:
+                                _a = dispatch;
+                                _b = _actions__WEBPACK_IMPORTED_MODULE_0__.contentChangesCreated;
+                                _c = {};
+                                return [4 /*yield*/, _writer.getContentChanges(action.payload.mutations)];
+                            case 1:
+                                _a.apply(void 0, [_b.apply(void 0, [(_c.changes = _d.sent(),
+                                            _c)])]);
+                                return [2 /*return*/];
+                        }
+                    });
+                }); };
+                handleProjectLoaded = function (action) {
+                    if (!action.payload.result.data) {
+                        return;
+                    }
+                    _engine.purgeUnlinkedFiles();
+                };
+                handleRedirect = function (action) {
+                    tryOpeningCurrentFile();
+                };
+                self.onmessage = function (_a) {
+                    var action = _a.data;
+                    switch (action.type) {
+                        case _actions__WEBPACK_IMPORTED_MODULE_0__.ActionType.GET_PROJECT_FILES_REQUEST_CHANGED:
+                            return handleProjectLoaded(action);
+                        case _actions__WEBPACK_IMPORTED_MODULE_0__.ActionType.WORKER_INITIALIZED:
+                            return handleInitialized(action);
+                        case _actions__WEBPACK_IMPORTED_MODULE_0__.ActionType.APP_STATE_DIFFED:
+                            return handleAppStateDiffed(action);
+                        case paperclip_designer_src_actions__WEBPACK_IMPORTED_MODULE_2__.ActionType.REDIRECT_REQUESTED:
+                            return handleRedirect(action);
+                        case paperclip_designer_src_actions__WEBPACK_IMPORTED_MODULE_2__.ActionType.PC_VIRT_OBJECT_EDITED:
+                            return handleVirtObjectEdited(action);
+                    }
+                };
+                return [4 /*yield*/, (0,paperclip_browser__WEBPACK_IMPORTED_MODULE_1__.loadEngineDelegate)({
+                        io: {
+                            readFile: function (uri) {
+                                return _state.documents[uri];
+                            },
+                            fileExists: function (uri) {
+                                return _state.documents[uri] != null;
+                            },
+                            resolveFile: function (fromPath, toPath) {
+                                return url__WEBPACK_IMPORTED_MODULE_4__.resolve(fromPath, toPath);
+                            }
+                        }
+                    }, onCrash)];
+            case 1:
+                _engine = _a.sent();
+                _engine.onEvent(onEngineEvent);
+                onEngineInit();
+                return [2 /*return*/];
+        }
+    });
+}); };
+init();
 
 
 /***/ }),
@@ -803,14 +850,14 @@ var PCSourceWriter = /** @class */ (function () {
                 uri: exprSource.uri,
                 start: beforeChild.location.start,
                 end: beforeChild.location.end,
-                value: "",
+                value: ""
             });
         }
         changes.push({
             uri: exprSource.uri,
             start: exprSource.location.start,
             end: exprSource.location.end,
-            value: "",
+            value: ""
         });
         return changes;
     };
@@ -854,7 +901,8 @@ var PCSourceWriter = /** @class */ (function () {
             end: annotationsSource
                 ? annotationsSource.location.end
                 : exprSource.location.start,
-            value: buffer.join(""),
+            // newline may have been clipped off, so re-add if that happens
+            value: buffer.join("")
         };
     };
     return PCSourceWriter;
@@ -1540,6 +1588,7 @@ exports.GraphErrorInfoType = exports.ParseErrorKind = exports.EngineErrorKind = 
 var EngineDelegateEventKind;
 (function (EngineDelegateEventKind) {
     EngineDelegateEventKind["Loading"] = "Loading";
+    EngineDelegateEventKind["Deleted"] = "Deleted";
     EngineDelegateEventKind["Loaded"] = "Loaded";
     EngineDelegateEventKind["Updating"] = "Updating";
     EngineDelegateEventKind["Evaluated"] = "Evaluated";
@@ -2109,7 +2158,7 @@ var stringifyStyleRule = function (_a, options) {
 };
 var stringifyStyle = function (_a, _b) {
     var name = _a.name, value = _a.value;
-    var uri = _b.uri, protocol = _b.protocol;
+    var uri = _b.uri, resolveUrl = _b.resolveUrl;
     if (value) {
         // required for bundling, otherwise file protocol is maintained
         if (uri) {
@@ -2125,8 +2174,9 @@ var stringifyStyle = function (_a, _b) {
                 value = value.replace(foundUrl, relativePath);
             }
         }
-        if (protocol) {
-            value = value.replace(/file:/g, protocol);
+        if (value && value.includes("file:") && resolveUrl) {
+            var url_1 = value.match(/(file:\/\/[^)]+)/)[1];
+            value = value.replace(url_1, resolveUrl(url_1));
         }
     }
     return name + ":" + value + ";";
@@ -2498,8 +2548,12 @@ class EngineDelegate {
         this._onCrash = _onCrash;
         this._listeners = [];
         this._rendered = {};
+        this._documents = {};
         this._onEngineDelegateEvent = (event) => {
-            if (event.kind === paperclip_utils__WEBPACK_IMPORTED_MODULE_2__.EngineDelegateEventKind.Evaluated) {
+            if (event.kind === paperclip_utils__WEBPACK_IMPORTED_MODULE_2__.EngineDelegateEventKind.Deleted) {
+                delete this._rendered[event.uri];
+            }
+            else if (event.kind === paperclip_utils__WEBPACK_IMPORTED_MODULE_2__.EngineDelegateEventKind.Evaluated) {
                 this._rendered = (0,paperclip_utils__WEBPACK_IMPORTED_MODULE_2__.updateAllLoadedData)(this._rendered, event);
                 this._dispatch({
                     kind: paperclip_utils__WEBPACK_IMPORTED_MODULE_2__.EngineDelegateEventKind.Loaded,
@@ -2584,7 +2638,17 @@ class EngineDelegate {
     parseContent(content) {
         return this._tryCatch(() => mapResult(this._native.parse_content(content)));
     }
+    purgeUnlinkedFiles() {
+        return this._tryCatch(() => {
+            const ret = mapResult(this._native.purge_unlinked_files());
+            return ret;
+        });
+    }
+    getVirtualContent(uri) {
+        return this._documents[uri];
+    }
     updateVirtualFileContent(uri, content) {
+        this._documents[uri] = content;
         return this._tryCatch(() => {
             const ret = mapResult(this._native.update_virtual_file_content(uri, content));
             return ret;
@@ -2608,6 +2672,9 @@ const keepEngineInSyncWithFileSystem2 = (watcher, engine) => {
     return watcher.onChange((kind, uri) => {
         if (kind === paperclip_utils__WEBPACK_IMPORTED_MODULE_2__.ChangeKind.Changed) {
             engine.updateVirtualFileContent(uri, fs__WEBPACK_IMPORTED_MODULE_0__.readFileSync(new url__WEBPACK_IMPORTED_MODULE_1__.URL(uri), "utf8"));
+        }
+        else if (kind === paperclip_utils__WEBPACK_IMPORTED_MODULE_2__.ChangeKind.Removed) {
+            engine.purgeUnlinkedFiles();
         }
     });
 };
@@ -2991,8 +3058,8 @@ const getModulePath = (configUri, config, fullPath, fromDir) => {
     const moduleDirectory = path__WEBPACK_IMPORTED_MODULE_0__.join(configDir, config.sourceDirectory) + "/";
     if (fullPath.indexOf(moduleDirectory) === 0) {
         const modulePath = fullPath.replace(moduleDirectory, "");
-        const relativePath = path__WEBPACK_IMPORTED_MODULE_0__.relative(fromDir, fullPath);
-        if (((_a = relativePath.match(/\.\.\//g)) === null || _a === void 0 ? void 0 : _a.length) > 0) {
+        const relativePath = fromDir && path__WEBPACK_IMPORTED_MODULE_0__.relative(fromDir, fullPath);
+        if (((_a = relativePath === null || relativePath === void 0 ? void 0 : relativePath.match(/\.\.\//g)) === null || _a === void 0 ? void 0 : _a.length) || 0 > 0) {
             return modulePath;
         }
     }
