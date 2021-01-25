@@ -38,10 +38,8 @@
     "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^4.3.0",
     "file-loader": "^6.2.0",
-    "mini-css-extract-plugin": "^0.9.0",
     "null-loader": "^4.0.1",
     "paperclip-compiler-react": "^17.4.23",
-    "paperclip-loader": "^17.4.23",
-    "webpack": "^4.43.0"
+    "paperclip-loader": "^17.4.23"
   }
 }

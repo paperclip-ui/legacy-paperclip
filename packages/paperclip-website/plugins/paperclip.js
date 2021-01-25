@@ -1,7 +1,3 @@
-const path = require("path");
-const CopyPlugin = require("copy-webpack-plugin");
-const webpack = require("webpack");
-
 module.exports = function(context, options) {
   return {
     name: "paperclip-plugin",
