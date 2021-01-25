@@ -1,0 +1,31 @@
+name: Playground Deploy
+on:
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    working-directory: packages/paperclip-playground-server
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build
+        run: yarn build
+
+      - name: Deploy
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete --cache-control 'max-age=604800'
+        env:
+          SOURCE_DIR: packages/paperclip-playground-server/node_modules/paperclip-playground/dist
+          AWS_S3_BUCKET: ${{ secrets.PLAYGROUND_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-2"
