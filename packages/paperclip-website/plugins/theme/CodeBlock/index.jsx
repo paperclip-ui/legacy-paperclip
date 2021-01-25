@@ -8,7 +8,8 @@ import usePrismTheme from "@theme/hooks/usePrismTheme";
 export default props => {
   // const prismTheme = usePrismTheme();
 
-  if (props.live) {
+  // turned off for now
+  if (props.live && false) {
     return (
       <LiveEditor expanded={props.expanded !== "false"} height={props.height}>
         {props.children}
@@ -56,7 +57,7 @@ const loadPlayground = () => {
     _playgroundPromise ||
     (_playgroundPromise = new Promise(resolve => {
       const script = document.createElement("script");
-      script.src = "/browser.js";
+      script.src = "/paperclip-playground-main.js";
       document.head.appendChild(script);
       script.onload = resolve;
     }))
