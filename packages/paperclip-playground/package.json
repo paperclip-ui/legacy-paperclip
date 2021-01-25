@@ -4,7 +4,7 @@
   "description": "Online Paperclip playground",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "paperclip build --definition --write && webpack && yarn build:standalone",
+    "build": "paperclip build --definition --write && webpack",
     "build:standalone": "PLAYGROUND_STANDALONE=1 webpack",
     "build:watch": "concurrently \"webpack --watch\" \"paperclip build --definition --write --watch\"",
     "start": "concurrently \"webpack serve --history-api-fallback\" \"paperclip build --definition --write --watch\""
