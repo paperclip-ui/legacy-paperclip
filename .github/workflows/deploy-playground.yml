@@ -2,7 +2,7 @@ name: Playground Deploy
 on:
   push:
     branches:
-      - main
+      - master
 
 defaults:
   run:
