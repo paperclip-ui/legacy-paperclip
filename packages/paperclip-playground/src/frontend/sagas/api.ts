@@ -28,7 +28,7 @@ import { isPaperclipFile } from "paperclip-utils";
 
 export function* handleAPI() {
   yield fork(handleAccountConnected);
-  yield call(handleSession);
+  yield fork(handleSession);
   yield fork(handleProjectChanges);
 }
 

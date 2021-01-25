@@ -115,7 +115,7 @@ const init = async () => {
   // };
 
   const handleProjectLoaded = (action: GetProjectFilesRequestChanged) => {
-    if (!action.payload.result.data) {
+    if (!action.payload.result.data || !_engine) {
       return;
     }
     _engine.purgeUnlinkedFiles();
