@@ -83,7 +83,6 @@ function handleSock(onMessage, onClient) {
   client.onmessage = message => {
     const now = Date.now();
     const ev = JSON.parse(message.data);
-    console.log("EV", ev);
     onMessage(ev);
     // console.log(now - Date.now());
   };

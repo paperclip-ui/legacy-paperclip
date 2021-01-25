@@ -115,7 +115,7 @@ export type DesignerState = {
   allLoadedPCFileData: Record<string, LoadedData>;
   // rendererElement?: any;
   availableBrowsers: AvailableBrowser[];
-  renderProtocol: string;
+  resourceHost: string;
   selectedNodePaths: string[];
   projectDirectory?: Directory;
   metaKeyDown?: boolean;
@@ -180,9 +180,9 @@ export const INITIAL_STATE: AppState = {
     centeredInitial: false,
     mountedRendererIds: [],
     toolsLayerEnabled: true,
-    renderProtocol:
+    resourceHost:
       typeof window !== "undefined"
-        ? window.location.protocol + "//" + window.location.host + "/file"
+        ? window.location.protocol + "//" + window.location.host + "/file/"
         : null,
     availableBrowsers: [],
     currentEngineEvents: {},

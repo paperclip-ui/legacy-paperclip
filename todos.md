@@ -1,17 +1,22 @@
 
 ### Immediate
 
-- SQL db
-- google analytics
 - ability to share project
-- ability to copy project
+  - share button in header
+    - popdown should have public / private input
+    - ability to revoke share link
+- 
+- ability to clone project
+  sign in -> clone project
+  signed in -> clone project
+- Welcome to Paperclip! project
+- redis session storage
+- loader for projects
+- google analytics
 
 - file menu
   - download React code
   - download source code
-
-- extract css & files from bundles
-- min version for deploy
 
 
 - cleanup

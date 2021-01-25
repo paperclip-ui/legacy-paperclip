@@ -203,13 +203,16 @@ type UseFramesProps = {
 const useUrlResolver = () => {
   const {
     state: {
-      designer: { renderProtocol },
+      designer: { resourceHost },
       shared: { documents }
     }
   } = useAppStore();
 
   return useCallback(
     url => {
+      if (resourceHost) {
+        return resourceHost + url.replace("file://", "");
+      }
       const content = documents[url];
 
       if (!content) {
@@ -220,7 +223,7 @@ const useUrlResolver = () => {
         ? `data:${mime.lookup(url)};utf8,${encodeURIComponent(content)}`
         : URL.createObjectURL(content);
     },
-    [renderProtocol, documents]
+    [resourceHost, documents]
   );
 };
 

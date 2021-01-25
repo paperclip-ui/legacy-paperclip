@@ -90,6 +90,7 @@ export const INITIAL_STATE: AppState = {
   designer: {
     ...ve.INITIAL_STATE.designer,
     sharable: false,
+    resourceHost: null,
     ui: {
       pathname: "/canvas",
       query: {
