@@ -8,7 +8,7 @@ import usePrismTheme from "@theme/hooks/usePrismTheme";
 export default props => {
   // const prismTheme = usePrismTheme();
 
-  // turned off for now
+  // turned off for now until playground hooked up to this repo
   if (props.live && false) {
     return (
       <LiveEditor expanded={props.expanded !== "false"} height={props.height}>

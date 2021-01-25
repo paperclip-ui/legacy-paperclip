@@ -2,7 +2,6 @@
 ### Immediate
 
 - SQL db
-- fix website
 - google analytics
 - ability to share project
 - ability to copy project
