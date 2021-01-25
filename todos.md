@@ -2,6 +2,7 @@
 ### Immediate
 
 - SQL db
+- fix website
 
 - file menu
   - download React code
@@ -16,6 +17,10 @@
   - add Paperclip color theme
   - remove pesky indent behavior
   - on login and on /projects/id, reload page
+  - copy/past hijacked
+  - need easy way of opening text docs from preview
+  - fix close button for sign in modal
+  - fix ext being added twice
 
 - wrap it up!
   - paperclip.playground.dev
