@@ -13,7 +13,10 @@ module.exports = function(context, options) {
         new CopyPlugin({
           patterns: [
             {
-              from: path.resolve(__dirname, "../../paperclip-playground/dist"),
+              from: path.resolve(
+                __dirname,
+                "../../paperclip-playground/standalone-dist"
+              ),
               to: ".",
               globOptions: {
                 ignore: ["**/index.html"]

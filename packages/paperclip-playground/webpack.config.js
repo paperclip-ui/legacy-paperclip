@@ -13,6 +13,8 @@ const prodMode = mode === "production";
 const API_HOST =
   mode === "development" ? "localhost:3001" : "playground-api.paperclip.dev";
 
+const standalone = process.env.PLAYGROUND_STANDALONE != null;
+
 const DEV_OAUTH_CLIENT_IDs = {
   github: "2cdbfa6c949f0c8cd3f5"
 };
@@ -25,13 +27,42 @@ const OAUTH_CLIENT_IDs = prodMode
   ? PROD_OAUTH_CLIENT_IDs
   : DEV_OAUTH_CLIENT_IDs;
 
+const plugins = [
+  new HtmlWebpackPlugin({
+    publicPath: "/",
+    title: "Paperclip Playground",
+    template: path.join(__dirname, "src", "index.html")
+  }),
+  new webpack.ProvidePlugin({
+    process: "process/browser"
+  }),
+  new webpack.DefinePlugin({
+    "process.env.API_HOST": JSON.stringify(API_HOST),
+    "process.env.GITHUB_CLIENT_ID": JSON.stringify(OAUTH_CLIENT_IDs.github)
+  })
+];
+
+if (prodMode && !standalone) {
+  plugins.push(new MiniCssExtractPlugin());
+}
+
+if (standalone) {
+  plugins.push(
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1
+    })
+  );
+}
+
 module.exports = {
   mode,
   entry: "./src/frontend/entry.tsx",
 
   output: {
-    filename: "[name].js",
-    path: path.resolve(__dirname, "dist"),
+    filename: "paperclip-playground-[name].js",
+    path: standalone
+      ? path.resolve(__dirname, "standalone-dist")
+      : path.resolve(__dirname, "dist"),
     publicPath: "/"
   },
   experiments: {
@@ -39,21 +70,7 @@ module.exports = {
   },
   devtool: false,
 
-  plugins: [
-    new MiniCssExtractPlugin(),
-    new HtmlWebpackPlugin({
-      publicPath: "/",
-      title: "Paperclip Playground",
-      template: path.join(__dirname, "src", "index.html")
-    }),
-    new webpack.ProvidePlugin({
-      process: "process/browser"
-    }),
-    new webpack.DefinePlugin({
-      "process.env.API_HOST": JSON.stringify(API_HOST),
-      "process.env.GITHUB_CLIENT_ID": JSON.stringify(OAUTH_CLIENT_IDs.github)
-    })
-  ],
+  plugins,
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
@@ -90,42 +107,55 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: prodMode
-          ? [MiniCssExtractPlugin.loader, "css-loader"]
-          : ["style-loader", "css-loader"]
+        use:
+          prodMode && !standalone
+            ? [MiniCssExtractPlugin.loader, "css-loader"]
+            : ["style-loader", "css-loader"]
       },
       {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,
         use: [
-          {
-            loader: "file-loader"
-          }
+          standalone
+            ? {
+                loader: "url-loader",
+                options: {
+                  limit: Infinity
+                }
+              }
+            : {
+                loader: "file-loader"
+              }
         ]
       }
     ]
   },
-  optimization: {
-    minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
-    runtimeChunk: true,
-    minimize: prodMode,
+  optimization: standalone
+    ? {
+        minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
+        minimize: prodMode
+      }
+    : {
+        minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
+        runtimeChunk: true,
+        minimize: prodMode,
 
-    splitChunks: {
-      maxInitialRequests: Infinity,
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/
+        splitChunks: {
+          maxInitialRequests: Infinity,
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/
+            }
+          },
+
+          chunks: "all",
+          minChunks: 1,
+
+          // make sure that chunks are larger than 400kb
+          minSize: 1000 * 200,
+
+          // make sure that chunks are smaller than 1.5 MB
+          maxSize: 1000 * 1500,
+          name: false
         }
-      },
-
-      chunks: "all",
-      minChunks: 1,
-
-      // make sure that chunks are larger than 400kb
-      minSize: 1000 * 200,
-
-      // make sure that chunks are smaller than 1.5 MB
-      maxSize: 1000 * 1500,
-      name: false
-    }
-  }
+      }
 };
