@@ -1,10 +1,14 @@
 
 ### Immediate
 
+- SQL db
+
 - file menu
   - download React code
   - download source code
 
+- extract css & files from bundles
+- min version for deploy
 
 
 - cleanup
