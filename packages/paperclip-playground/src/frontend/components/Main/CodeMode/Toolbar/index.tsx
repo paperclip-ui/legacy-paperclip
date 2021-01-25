@@ -116,6 +116,7 @@ export const Toolbar = () => {
                 {allFileUris.map(uri => {
                   return (
                     <FileMenuItem
+                      key={uri}
                       onRenamed={onRenamed}
                       uri={uri}
                       onFileItemClick={onFileItemClick}

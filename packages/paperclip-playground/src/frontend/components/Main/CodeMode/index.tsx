@@ -79,7 +79,7 @@ export const CodeMode = () => {
       reader.onload = () => setCode(String(reader.result));
       reader.readAsText(docContent);
     } else {
-      setCode(String(docContent));
+      setCode(String(docContent || ""));
     }
   }, [docContent]);
 

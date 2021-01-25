@@ -115,7 +115,7 @@ module.exports = {
       {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,
         use: [
-          standalone
+          !prodMode
             ? {
                 loader: "url-loader",
                 options: {

@@ -1,10 +1,7 @@
-import * as path from "path";
 import {
   Action,
   ActionType,
   AppStateDiffed,
-  CodeEditorTextChanged,
-  ContentChangesCreated,
   contentChangesCreated,
   engineCrashed,
   engineLoaded,
@@ -118,7 +115,7 @@ const init = async () => {
   // };
 
   const handleProjectLoaded = (action: GetProjectFilesRequestChanged) => {
-    if (!action.payload.result.data) {
+    if (!action.payload.result.data || !_engine) {
       return;
     }
     _engine.purgeUnlinkedFiles();

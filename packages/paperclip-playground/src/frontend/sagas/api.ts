@@ -1,4 +1,10 @@
-import { AppState, Project, ProjectFile } from "../state";
+import {
+  AppState,
+  APP_LOCATIONS,
+  matchesLocationPath,
+  Project,
+  ProjectFile
+} from "../state";
 import { call, fork, put, select, takeEvery } from "redux-saga/effects";
 import history from "paperclip-designer/src/dom-history";
 import * as vea from "paperclip-designer/src/actions";
@@ -13,10 +19,10 @@ import {
   ProjectRenamed,
   rawFileUploaded,
   savedProject,
-  sessionLoaded
+  sessionRequestStateChanged
 } from "../actions";
 import * as api from "../api";
-import { mapValues } from "lodash";
+import { mapValues, matchesProperty } from "lodash";
 import { request } from "./utils";
 import { isPaperclipFile } from "paperclip-utils";
 
@@ -30,17 +36,19 @@ function* handleAccountConnected() {
   yield takeEvery(ActionType.ACCOUNT_CONNECTED, function*({
     payload: { kind, details }
   }: AccountConnected) {
-    const user = yield call(api.connectAccount, kind, details);
-    yield put(sessionLoaded(user));
+    yield request(sessionRequestStateChanged, function*() {
+      return yield call(api.connectAccount, kind, details);
+    });
   });
 }
 
 function* handleSession() {
-  yield fork(loadSession);
   yield takeEvery(ActionType.LOGOUT_BUTTON_CLICKED, function*() {
     yield call(api.logout);
     yield put(loggedOut(null));
+    history.push("/");
   });
+  yield call(loadSession);
 }
 
 function* handleProjectChanges() {
@@ -175,6 +183,7 @@ function* handleProjectChanges() {
 
     history.push(`/projects/${project.id}`);
   });
+
   // yield takeEvery([ActionType.FILES_DROPPED], function*({
   //   payload
   // }: FilesDropped) {
@@ -193,10 +202,5 @@ function* handleProjectChanges() {
 }
 
 function* loadSession() {
-  try {
-    const user = yield call(api.getUser);
-    if (user) {
-      yield put(sessionLoaded(user));
-    }
-  } catch (e) {}
+  yield request(sessionRequestStateChanged, api.getUser);
 }

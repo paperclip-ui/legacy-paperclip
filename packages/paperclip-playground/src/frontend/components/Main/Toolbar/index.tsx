@@ -2,11 +2,7 @@ import { APP_LOCATIONS } from "../../../state";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
 import { useSelect } from "../../../../../../paperclip-designer/src/components/Select";
-import {
-  downloadProjectClicked,
-  logoutButtonClicked,
-  saveButtonClicked
-} from "../../../actions";
+import { logoutButtonClicked, saveButtonClicked } from "../../../actions";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Button } from "../../Button/index.pc";
 import { Auth } from "../auth";
@@ -44,7 +40,7 @@ export const MainToolbar = () => {
 
   const profileSelect = useSelect();
 
-  if (state.user) {
+  if (state.user?.data) {
     leftControls = (
       <>
         <styles.NavAction save onClick={onSaveCick}>
@@ -88,7 +84,7 @@ export const MainToolbar = () => {
           >
             <styles.ProfileIcon
               style={{
-                backgroundImage: `url(${state.user.avatarUrl})`
+                backgroundImage: `url(${state.user?.data?.avatarUrl})`
               }}
             />
           </styles.ProfileSelectButton>
@@ -98,7 +94,9 @@ export const MainToolbar = () => {
   } else {
     leftControls = (
       <Button primary onClick={onSignInClick}>
-        {state.loadingUserSession ? "Loading..." : "Sign in to save & download"}
+        {state.user && !state.user.done
+          ? "Loading..."
+          : "Sign in to save & download"}
       </Button>
     );
   }

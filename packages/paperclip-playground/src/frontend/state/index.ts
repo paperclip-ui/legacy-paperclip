@@ -64,7 +64,7 @@ export type WorkerState = {
 };
 
 export type AppState = {
-  user?: User;
+  user?: Result<User>;
   currentProject?: Result<Project>;
   playgroundUi: {
     pathname: string;
@@ -74,7 +74,6 @@ export type AppState = {
   allProjects?: Result<Project[]>;
   currentProjectFiles?: Result<ProjectFile[]>;
   saving?: Result<boolean>;
-  loadingUserSession?: boolean;
   hasUnsavedChanges?: boolean;
   compact?: boolean;
   slim?: boolean;
@@ -128,7 +127,7 @@ export const getNewFilePath = (name: string, previousNameOrExt: string) => {
     ? name.split(".").pop()
     : "pc";
 
-  return "file:///" + name.replace(".pc", "") + "." + ext;
+  return "file:///" + name.replace(/\.\w+$/, "") + "." + ext;
 };
 
 export const getWorkerState = (state: AppState): WorkerState => {
