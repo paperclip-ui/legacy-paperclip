@@ -38,7 +38,7 @@ export enum ActionType {
   SAVED_PROJECT = "SAVED_PROJECT",
   SAVE_BUTTON_CLICKED = "SAVE_BUTTON_CLICKED",
   LOGGED_OUT = "LOGGED_OUT",
-  SESSION_LOADED = "SESSION_LOADED",
+  SESSION_REQUEST_STATE_CHANGED = "SESSION_REQUEST_STATE_CHANGED",
   CODE_EDITOR_TEXT_CHANGED = "CODE_EDITOR_TEXT_CHANGED",
   SLIM_CODE_EDITOR_TEXT_CHANGED = "SLIM_CODE_EDITOR_TEXT_CHANGED",
   WORKER_INITIALIZED = "WORKER_INITIALIZED",
@@ -134,7 +134,6 @@ export type DeleteProjectConfirmed = BaseAction<
 >;
 
 export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED, {}>;
-
 export type EngineCrashed = BaseAction<ActionType.ENGINE_CRASHED, Error>;
 export type CodeEditorTextChanged = BaseAction<
   ActionType.CODE_EDITOR_TEXT_CHANGED,
@@ -144,7 +143,10 @@ export type SlimEditorTextChanged = BaseAction<
   ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED,
   string
 >;
-export type SessionLoaded = BaseAction<ActionType.SESSION_LOADED, User>;
+export type SessionRequestStateChanged = BaseRequestChanged<
+  ActionType.SESSION_REQUEST_STATE_CHANGED,
+  User
+>;
 
 export type WorkerInitialized = BaseAction<
   ActionType.WORKER_INITIALIZED,
@@ -199,9 +201,9 @@ export const removeFileClicked = actionCreator<RemoveFileClicked>(
   ActionType.REMOVE_FILE_CLICKED
 );
 export const fileRenamed = actionCreator<FileRenamed>(ActionType.FILE_RENAMED);
-export const sessionLoaded = actionCreator<SessionLoaded>(
-  ActionType.SESSION_LOADED
-);
+export const sessionRequestStateChanged = actionCreator<
+  SessionRequestStateChanged
+>(ActionType.SESSION_REQUEST_STATE_CHANGED);
 export const savedProject = actionCreator<SavedProject>(
   ActionType.SAVED_PROJECT
 );
@@ -275,7 +277,7 @@ export type Action =
   | SlimEditorTextChanged
   | DeleteProjectConfirmed
   | LoggedOut
-  | SessionLoaded
+  | SessionRequestStateChanged
   | GetProjectsRequestChanged
   | AllProjectsHookUsed
   | ProjectFilesHookUsed

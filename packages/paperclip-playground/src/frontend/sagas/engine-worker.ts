@@ -1,10 +1,7 @@
-import * as path from "path";
 import {
   Action,
   ActionType,
   AppStateDiffed,
-  CodeEditorTextChanged,
-  ContentChangesCreated,
   contentChangesCreated,
   engineCrashed,
   engineLoaded,

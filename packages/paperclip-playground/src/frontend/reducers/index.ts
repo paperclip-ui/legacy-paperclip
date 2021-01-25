@@ -1,4 +1,10 @@
-import { AppState, canEditFile, getNewFilePath } from "../state";
+import {
+  AppState,
+  canEditFile,
+  getNewFilePath,
+  matchesLocationPath,
+  APP_LOCATIONS
+} from "../state";
 import {
   Action as VEAction,
   ActionType as VEActionType
@@ -39,20 +45,14 @@ export const reducer = historyReducer(
           })
         });
       }
-      case ActionType.ACCOUNT_CONNECTED: {
-        return produce(state, newState => {
-          newState.loadingUserSession = true;
-        });
-      }
       case ActionType.LOGOUT_BUTTON_CLICKED: {
         return produce(state, newState => {
           newState.user = null;
         });
       }
-      case ActionType.SESSION_LOADED: {
+      case ActionType.SESSION_REQUEST_STATE_CHANGED: {
         return produce(state, newState => {
-          newState.user = action.payload;
-          newState.loadingUserSession = false;
+          newState.user = action.payload.result;
         });
       }
       case ActionType.SAVED_PROJECT: {
@@ -91,6 +91,9 @@ export const reducer = historyReducer(
       case ActionType.GET_PROJECT_REQUEST_CHANGED: {
         return produce(state, newState => {
           newState.currentProject = action.payload.result;
+          if (!action.payload.result.data) {
+            newState.shared.documents = {};
+          }
         });
       }
       case ActionType.GET_PROJECTS_REQUEST_CHANGED: {
@@ -100,11 +103,10 @@ export const reducer = historyReducer(
       }
       case ActionType.GET_PROJECT_FILES_REQUEST_CHANGED: {
         const result = action.payload.result;
-        const mainFile = state.currentProject.data!.mainFileUri
-          ? state.currentProject.data!.files.find(file => {
-              return file.path == state.currentProject.data!.mainFileUri;
-            })
-          : state.currentProject.data!.files[0];
+        const mainFile =
+          state.currentProject.data!.files.find(file => {
+            return file.path == state.currentProject.data!.mainFileUri;
+          }) || state.currentProject.data!.files[0];
 
         state = produce(state, newState => {
           if (result.data) {

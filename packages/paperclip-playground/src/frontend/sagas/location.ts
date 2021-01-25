@@ -1,12 +1,21 @@
 import {
-  ActionType,
+  ActionType as VEActionType,
   locationChanged,
   LocationChanged
 } from "paperclip-designer/src/actions";
+import { ActionType, Action } from "../actions";
 import * as qs from "querystring";
 import * as Url from "url";
 import history from "paperclip-designer/src/dom-history";
-import { call, fork, put, select, takeEvery } from "redux-saga/effects";
+import {
+  call,
+  fork,
+  put,
+  select,
+  take,
+  takeEvery,
+  takeLatest
+} from "redux-saga/effects";
 import * as api from "../api";
 import {
   AppState,
@@ -18,14 +27,14 @@ import {
   Result,
   canEditFile
 } from "../state";
-import { request } from "./utils";
+import { loadProject, loadProjectFiles, request } from "./utils";
 import {
   getProjectFilesRequestChanged,
   getProjectRequestChanged,
   getProjectsRequestChanged
 } from "../actions";
 import { eventChannel } from "redux-saga";
-import { result } from "lodash";
+import { delay, result } from "lodash";
 
 export function* handleLocation() {
   yield fork(handleRoutes);
@@ -39,45 +48,35 @@ export function* handleRoutes() {
       //   return yield call(api.getProjects);
       // });
     },
-    [APP_LOCATIONS.PROJECTS]: function*() {
+    [APP_LOCATIONS.PROJECTS]: requireAuth(function*() {
       yield request(getProjectsRequestChanged, function*() {
         return yield call(api.getProjects);
       });
-    },
-    [APP_LOCATIONS.PROJECT]: function*({ projectId }) {
-      const project: Result<Project> = yield request(
-        getProjectRequestChanged,
-        function*() {
-          return yield call(api.getProject, projectId);
-        }
-      );
-
-      if (project.error) {
-        return;
-      }
-
-      // TODO - to progress
-      yield request(getProjectFilesRequestChanged, function*() {
-        const allData = {};
-
-        for (const { path, url } of project.data.files) {
-          allData[path] = yield call(async () => {
-            const resp = await fetch(url, { credentials: "include" });
-
-            const editable = EDITABLE_MIME_TYPES.includes(
-              String(resp.headers.get("content-type"))
-                .split(";")
-                .shift()
-            );
-
-            return editable ? resp.text() : resp.blob();
-          });
-        }
-
-        return allData;
-      });
-    }
+    }),
+    [APP_LOCATIONS.PROJECT]: requireAuth(function*({ projectId }) {
+      yield call(loadProject, projectId);
+    })
   });
+}
+
+function requireAuth(fn) {
+  return function*(params) {
+    let state: AppState = yield select();
+    if (!state.user || !state.user.done) {
+      while (1) {
+        const action = yield take(ActionType.SESSION_REQUEST_STATE_CHANGED);
+        if (action.payload.result.done) {
+          break;
+        }
+      }
+      state = yield select();
+    }
+
+    if (!state.user.data) {
+      return history.push("/");
+    }
+    yield call(fn, params);
+  };
 }
 
 type Routes = {
@@ -85,7 +84,7 @@ type Routes = {
 };
 
 function* route(routes: Routes) {
-  yield takeEvery(ActionType.LOCATION_CHANGED, function*(
+  yield takeEvery(VEActionType.LOCATION_CHANGED, function*(
     action: LocationChanged
   ) {
     for (const test in routes) {

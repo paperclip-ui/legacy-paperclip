@@ -64,7 +64,7 @@ export type WorkerState = {
 };
 
 export type AppState = {
-  user?: User;
+  user?: Result<User>;
   currentProject?: Result<Project>;
   playgroundUi: {
     pathname: string;
@@ -74,7 +74,6 @@ export type AppState = {
   allProjects?: Result<Project[]>;
   currentProjectFiles?: Result<ProjectFile[]>;
   saving?: Result<boolean>;
-  loadingUserSession?: boolean;
   hasUnsavedChanges?: boolean;
   compact?: boolean;
   slim?: boolean;
