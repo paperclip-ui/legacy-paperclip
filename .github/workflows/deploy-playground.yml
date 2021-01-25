@@ -4,10 +4,6 @@ on:
     branches:
       - master
 
-defaults:
-  run:
-    working-directory: packages/paperclip-playground
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -15,13 +11,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: yarn
-
+      - name: bootstrap
+        run: yarn bootstrap
       - name: Build
         run: yarn build
         env:
           NODE_ENV: production
-
       - name: Deploy
+        working-directory: packages/paperclip-playground
         uses: jakejarvis/s3-sync-action@master
         with:
           args: --acl public-read --follow-symlinks --delete --cache-control 'max-age=604800'
