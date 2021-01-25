@@ -10,20 +10,20 @@ module.exports = function(context, options) {
     },
     configureWebpack(config, isServer) {
       const plugins = [
-        new CopyPlugin({
-          patterns: [
-            {
-              from: path.resolve(
-                __dirname,
-                "../../paperclip-playground/standalone-dist"
-              ),
-              to: ".",
-              globOptions: {
-                ignore: ["**/index.html"]
-              }
-            }
-          ]
-        })
+        // new CopyPlugin({
+        //   patterns: [
+        //     {
+        //       from: path.resolve(
+        //         __dirname,
+        //         "../../paperclip-playground/standalone-dist"
+        //       ),
+        //       to: ".",
+        //       globOptions: {
+        //         ignore: ["**/index.html"]
+        //       }
+        //     }
+        //   ]
+        // })
       ];
 
       if (isServer) {
