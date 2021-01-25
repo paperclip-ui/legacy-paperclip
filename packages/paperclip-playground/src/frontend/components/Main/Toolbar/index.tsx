@@ -2,7 +2,11 @@ import { APP_LOCATIONS } from "../../../state";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
 import { useSelect } from "../../../../../../paperclip-designer/src/components/Select";
-import { logoutButtonClicked, saveButtonClicked } from "../../../actions";
+import {
+  logoutButtonClicked,
+  saveButtonClicked,
+  shareButtonClicked
+} from "../../../actions";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Button } from "../../Button/index.pc";
 import { Auth } from "../auth";
@@ -35,6 +39,10 @@ export const MainToolbar = () => {
     );
   };
 
+  const onShareClick = () => {
+    dispatch(shareButtonClicked(null));
+  };
+
   let rightControls;
   let leftControls;
 
@@ -54,14 +62,25 @@ export const MainToolbar = () => {
           )}{" "}
         </styles.NavAction>
 
-        <styles.NavAction
-          download
-          onClick={onDownloadClick}
-          disabled={!state.currentProject?.data}
-          title={!state.currentProject?.data && "Save project to download"}
-        >
-          Download React Code
-        </styles.NavAction>
+        {state.currentProject?.data && (
+          <styles.NavAction
+            download
+            onClick={onDownloadClick}
+            disabled={!state.currentProject?.data}
+          >
+            Download React Code
+          </styles.NavAction>
+        )}
+
+        {state.currentProject?.data && (
+          <styles.NavAction
+            publish
+            onClick={onShareClick}
+            disabled={!state.currentProject?.data}
+          >
+            share
+          </styles.NavAction>
+        )}
       </>
     );
     rightControls = (

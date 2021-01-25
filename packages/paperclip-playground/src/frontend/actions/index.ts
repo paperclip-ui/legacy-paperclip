@@ -22,6 +22,7 @@ export enum ActionType {
   PROJECT_FILES_HOOK_USED = "PROJECT_FILES_HOOK_USED",
   DELETE_PROJECT_CONFIRMED = "DELETE_PROJECT_CONFIRMED",
   DOWNLOAD_PROJECT_CLICKED = "DOWNLOAD_PROJECT_CLICKED",
+  SHARE_BUTTON_CLICKED = "SHARE_BUTTON_CLICKED",
   RAW_FILE_UPLOADED = "RAW_FILE_UPLOADED",
   FILES_DROPPED = "FILES_DROPPED",
   NEW_PROJECT_ENTERED = "NEW_PROJECT_ENTERED",
@@ -152,6 +153,8 @@ export type WorkerInitialized = BaseAction<
   ActionType.WORKER_INITIALIZED,
   { state: WorkerState }
 >;
+export type ShareButtonClicked = BaseAction<ActionType.SHARE_BUTTON_CLICKED>;
+
 export type AppStateDiffed = BaseAction<
   ActionType.APP_STATE_DIFFED,
   { ops: any[] }
@@ -196,6 +199,9 @@ export const accountConnected = actionCreator<AccountConnected>(
 );
 export const logoutButtonClicked = actionCreator<LogoutButtonClicked>(
   ActionType.LOGOUT_BUTTON_CLICKED
+);
+export const shareButtonClicked = actionCreator<ShareButtonClicked>(
+  ActionType.SHARE_BUTTON_CLICKED
 );
 export const removeFileClicked = actionCreator<RemoveFileClicked>(
   ActionType.REMOVE_FILE_CLICKED
@@ -294,6 +300,7 @@ export type Action =
   | NewProjectEntered
   | SavedProject
   | FileItemClicked
+  | ShareButtonClicked
   | ProjectRenamed
   | SyncPanelsClicked
   | NewFileNameEntered
