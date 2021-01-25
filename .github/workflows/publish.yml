@@ -7,8 +7,6 @@ jobs:
   publish-packages:
     name: Publish NPM & Marketplaces
     runs-on: ubuntu-latest
-    env:
-      NODE_ENV: "production"
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -21,6 +19,7 @@ jobs:
       - run: yarn publish:packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_ENV: "production"
 
       # wait for a bit for NPM packages to show up in registry
       - name: Sleep for a bit
