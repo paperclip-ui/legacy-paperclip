@@ -128,7 +128,7 @@ export const getNewFilePath = (name: string, previousNameOrExt: string) => {
     ? name.split(".").pop()
     : "pc";
 
-  return "file:///" + name.replace(".pc", "") + "." + ext;
+  return "file:///" + name.replace(/\.\w+$/, "") + "." + ext;
 };
 
 export const getWorkerState = (state: AppState): WorkerState => {
