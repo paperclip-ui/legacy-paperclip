@@ -60,6 +60,10 @@ async function pcLoader(
   let info: LoadedData;
   let ast: any;
 
+  console.log("compiling: ", resourceUrl);
+
+  resourceUrl = resourceUrl.toLowerCase();
+
   try {
     // need to update virtual content to bust the cache
     await engine.updateVirtualFileContent(resourceUrl, source);

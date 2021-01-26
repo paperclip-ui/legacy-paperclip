@@ -5,8 +5,6 @@ use crate::js::ast as js_ast;
 use serde::Serialize;
 use std::fmt;
 
-use crate::base::utils::get_document_style_scope;
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
   pub id: String,
