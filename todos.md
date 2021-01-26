@@ -2,16 +2,13 @@
 ### Immediate
 
 - google analytics
-- Welcome to Paperclip! project
 - redis session storage
-- loader for projects
+- Welcome to Paperclip! project
 
 - need to be able to focus on screen
 
 - cleanup
-  - going to / should display blank page
   - add Paperclip color theme
-  - remove pesky indent behavior
   - on login and on /projects/id, reload page
   - copy/past hijacked
   - need easy way of opening text docs from preview

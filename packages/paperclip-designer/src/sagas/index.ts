@@ -369,6 +369,11 @@ function* handleCopy(getState: AppStateSelector) {
   });
 
   yield takeEvery(ev, function*(event: ClipboardEvent) {
+
+    if (isInput(event.target as any)) {
+      return;
+    }
+
     const state: AppState = yield select(getState);
     const frames = getSelectedFrames(state.designer);
 
