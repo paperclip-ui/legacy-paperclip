@@ -1,6 +1,6 @@
 {
   "name": "paperclip-web-renderer",
-  "version": "17.4.27",
+  "version": "17.4.30",
   "description": "Internal web renderer for Paperclip designer",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "eslint": "^7.4.0",
     "lodash": "^4.17.19",
     "mocha": "^7.0.1",
-    "paperclip": "^17.4.27"
+    "paperclip": "^17.4.30"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d"
 }
