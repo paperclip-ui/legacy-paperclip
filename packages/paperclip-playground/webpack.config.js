@@ -10,6 +10,7 @@ const mode =
   process.env.NODE_ENV === "production" ? "production" : "development";
 
 const prodMode = mode === "production";
+const devMode = mode === "development";
 const API_HOST =
   mode === "development" ? "localhost:3001" : "playground-api.paperclip.dev";
 
@@ -42,7 +43,12 @@ const plugins = [
   })
 ];
 
-plugins.push(new MiniCssExtractPlugin());
+plugins.push(
+  new MiniCssExtractPlugin({
+    filename: devMode ? "[name].css" : "[name]-[contenthash].css",
+    chunkFilename: devMode ? "[id].css" : "[id]-[contenthash].css"
+  })
+);
 
 if (standalone) {
   plugins.push(
@@ -57,7 +63,7 @@ module.exports = {
   entry: "./src/frontend/entry.tsx",
 
   output: {
-    filename: "paperclip-playground-[name]-[contenthash].js",
+    filename: devMode ? `[name].js` : "[name]-[contenthash].js",
     path: standalone
       ? path.resolve(__dirname, "standalone-dist")
       : path.resolve(__dirname, "dist"),
