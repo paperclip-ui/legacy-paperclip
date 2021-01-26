@@ -13,18 +13,23 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
  *
  */
 
+const prodMode = process.env.NODE_ENV === "production";
+
 module.exports = {
   mode: "development",
   entry: "./src/entry.tsx",
 
   output: {
-    filename: "browser.js",
+    filename: "[name]-[contenthash].js",
     path: path.resolve(__dirname, "dist")
   },
   devtool: false,
 
   plugins: [
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({
+      filename: devMode ? "[name].css" : "[name]-[contenthash].css",
+      chunkFilename: devMode ? "[id].css" : "[id]-[contenthash].css"
+    }),
     new HtmlWebpackPlugin({
       title: "Paperclip",
       template: path.resolve(__dirname, "src", "index.html")
@@ -56,7 +61,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: [MiniCssExtractPlugin.loader, "css-loader"]
       },
       {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,
@@ -76,6 +81,31 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
       os: "os-browserify/browser"
+    }
+  },
+
+  optimization: {
+    minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
+    runtimeChunk: true,
+    minimize: prodMode,
+
+    splitChunks: {
+      maxInitialRequests: Infinity,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/
+        }
+      },
+
+      chunks: "all",
+      minChunks: 1,
+
+      // make sure that chunks are larger than 400kb
+      minSize: 1000 * 200,
+
+      // make sure that chunks are smaller than 1.5 MB
+      maxSize: 1000 * 1500,
+      name: false
     }
   }
 };
