@@ -39,7 +39,8 @@ const plugins = [
   }),
   new webpack.DefinePlugin({
     "process.env.API_HOST": JSON.stringify(API_HOST),
-    "process.env.GITHUB_CLIENT_ID": JSON.stringify(OAUTH_CLIENT_IDs.github)
+    "process.env.GITHUB_CLIENT_ID": JSON.stringify(OAUTH_CLIENT_IDs.github),
+    "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
   })
 ];
 

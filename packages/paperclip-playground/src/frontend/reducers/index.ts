@@ -114,6 +114,7 @@ export const reducer = historyReducer(
           }) || state.currentProject.data!.files[0];
 
         state = produce(state, newState => {
+          newState.currentProjectFiles = action.payload.result;
           if (result.data) {
             const contents = result.data!;
             newState.designer.ui.query.currentFileUri = mainFile.path;
@@ -141,12 +142,12 @@ export const reducer = historyReducer(
       case ActionType.SHARE_PROJECT_REQUEST_STATE_CHANGED: {
         return produce(state, newState => {
           newState.shareProjectInfo = action.payload.result;
-        })
+        });
       }
       case ActionType.SHARE_MODAL_CLOSED: {
         return produce(state, newState => {
           newState.shareProjectInfo = null;
-        })
+        });
       }
       case ActionType.FILE_ITEM_CLICKED: {
         return produce(state, newState => {

@@ -11,15 +11,6 @@ export function useProject(projectId: number) {
   return state.currentProject || { done: false };
 }
 
-export function useProjectFiles(projectId: number) {
-  const { state, dispatch } = useAppStore();
-  useEffect(() => {
-    dispatch(projectFilesHookUsed({ projectId }));
-  });
-
-  return state.currentProjectFiles || { done: false };
-}
-
 export function useProjects() {
   const { state, dispatch } = useAppStore();
   useEffect(() => {

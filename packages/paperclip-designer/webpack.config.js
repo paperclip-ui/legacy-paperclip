@@ -3,6 +3,8 @@ const webpack = require("webpack");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 /*
  * We've enabled HtmlWebpackPlugin for you! This generates a html
@@ -14,6 +16,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
  */
 
 const prodMode = process.env.NODE_ENV === "production";
+const devMode = !prodMode;
 
 module.exports = {
   mode: "development",
@@ -21,7 +24,8 @@ module.exports = {
 
   output: {
     filename: "[name]-[contenthash].js",
-    path: path.resolve(__dirname, "dist")
+    path: path.resolve(__dirname, "dist"),
+    publicPath: "/"
   },
   devtool: false,
 
@@ -31,11 +35,15 @@ module.exports = {
       chunkFilename: devMode ? "[id].css" : "[id]-[contenthash].css"
     }),
     new HtmlWebpackPlugin({
+      publicPath: "/",
       title: "Paperclip",
       template: path.resolve(__dirname, "src", "index.html")
     }),
     new webpack.ProvidePlugin({
       process: "process/browser"
+    }),
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
     })
   ],
   externals: {
@@ -67,10 +75,7 @@ module.exports = {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,
         use: [
           {
-            loader: "url-loader",
-            options: {
-              limit: Infinity
-            }
+            loader: "file-loader"
           }
         ]
       }

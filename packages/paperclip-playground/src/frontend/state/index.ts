@@ -80,7 +80,7 @@ export type AppState = {
   shareProjectInfo?: Result<ShareProjectInfo>;
   currentCodeFileUri: string;
   allProjects?: Result<Project[]>;
-  currentProjectFiles?: Result<ProjectFile[]>;
+  currentProjectFiles?: Result<Record<string, string | Buffer>>;
   saving?: Result<boolean>;
   hasUnsavedChanges?: boolean;
   compact?: boolean;

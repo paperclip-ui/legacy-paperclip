@@ -27,6 +27,9 @@ export function* request<TData>(
 }
 
 export function* loadProject(projectIdOrHash: string) {
+  // show loader
+  yield put(projectFilesLoadProgressChanged(0));
+
   const project: Result<Project> = yield request(
     getProjectRequestChanged,
     function*() {
@@ -35,6 +38,7 @@ export function* loadProject(projectIdOrHash: string) {
   );
 
   if (project.error) {
+    yield put(projectFilesLoadProgressChanged(1));
     return;
   }
 
@@ -42,21 +46,19 @@ export function* loadProject(projectIdOrHash: string) {
   yield call(loadProjectFiles, project);
 }
 
-export function* loadProjectFiles(project: Result<Project>) {
-  yield put(projectFilesLoadProgressChanged(0));
+function* loadProjectFiles(project: Result<Project>) {
   yield request(getProjectFilesRequestChanged, function*() {
     const allData = {};
 
     let i = 0;
     for (const { path, url } of project.data.files) {
       i++;
-      
+
       // set progress immediately so that people can see progress
-      yield put(projectFilesLoadProgressChanged(i / (project.data.files.length + 1)));
+      yield put(projectFilesLoadProgressChanged(i / project.data.files.length));
 
       allData[path] = yield call(async () => {
         const resp = await fetch(url, { credentials: "include" });
-
 
         const editable = EDITABLE_MIME_TYPES.includes(
           String(resp.headers.get("content-type"))
@@ -66,7 +68,6 @@ export function* loadProjectFiles(project: Result<Project>) {
 
         return editable ? resp.text() : resp.blob();
       });
-
     }
 
     yield put(projectFilesLoadProgressChanged(1));

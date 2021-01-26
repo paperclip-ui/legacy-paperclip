@@ -27,7 +27,7 @@ import {
   Result,
   canEditFile
 } from "../state";
-import { loadProject, loadProjectFiles, request } from "./utils";
+import { loadProject, request } from "./utils";
 import {
   getProjectFilesRequestChanged,
   getProjectRequestChanged,
