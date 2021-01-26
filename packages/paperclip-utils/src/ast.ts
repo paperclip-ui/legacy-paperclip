@@ -253,7 +253,7 @@ export const getStyleScopeId = (filePath: string) => {
   if (filePath.indexOf("file://") !== 0) {
     filePath = "file://" + filePath;
   }
-  return crc32(filePath.toLowerCase());
+  return crc32(filePath);
 };
 
 export const getChildrenByTagName = (tagName: string, parent: Node) =>
