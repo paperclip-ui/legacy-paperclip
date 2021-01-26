@@ -32,7 +32,12 @@ export const CodeMode = () => {
     editor: monacoEditor.editor.IStandaloneCodeEditor,
     monaco: Monaco
   ) => {
-    monaco.languages.setLanguageConfiguration("html", {});
+    monaco.languages.css.cssDefaults.setModeConfiguration({
+      completionItems: true,
+      hovers: true,
+      colors: true,
+      documentSymbols: true
+    });
 
     monaco.languages.html.htmlDefaults.setOptions({
       format: {

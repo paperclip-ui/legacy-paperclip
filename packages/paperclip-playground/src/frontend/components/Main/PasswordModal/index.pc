@@ -19,7 +19,7 @@
     <style>
       font-size: 18px;
     </style>
-    What's the pasword?
+    What's the password?
   </div>
 </div>
 
