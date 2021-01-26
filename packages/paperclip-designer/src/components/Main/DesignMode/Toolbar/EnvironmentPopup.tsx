@@ -72,6 +72,7 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
           <TextInput
             placeholder="filter environment..."
             autoFocus
+            type="text"
             {...filterInputProps}
             onBlur={onFilterBlur}
           />
