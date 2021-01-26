@@ -1,0 +1,39 @@
+
+<import src="components/Menu/index2.pc" as="Select" />
+<import src="styles/utils.pc" as="utils" />
+<div export component as="Preview">
+  <div>
+    <style>
+    </style>
+  </div>
+  <div>
+    <style>
+    </style>
+    <div>
+      <style>
+      </style>
+      :self
+      <i>
+        <style>
+        </style>
+      </i>
+    </div>
+    <PropertyList>
+      <PropertyItem name="background" value="rgba(0,0,0)" />
+      <PropertyItem name="color" value="blue" />
+      <PropertyItem name="display" value="inline-block" />
+    </PropertyList>
+  </div>
+</div>
+<ul component as="PropertyList">
+  <style>
+  </style>
+</ul>
+<li component as="PropertyItem">
+  <style>
+  </style>
+  <span className="name">
+  </span>
+  <span className="value">
+  </span>
+</li>

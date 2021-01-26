@@ -1,0 +1,34 @@
+<import src="components/Theme/index.pc" as="theme" />
+
+<style>
+  .canvas, .inner {
+    position: absolute;
+    background: rgb(231, 231, 231);
+    top: 0px;
+    left: 0px;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Canvas" {style?} {onMouseMove?} {onWheel?} className="canvas $theme.full-wh">
+  {children}
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Inner" {style?} className="inner $theme.full-wh">
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Canvas />
+

@@ -1,0 +1,5 @@
+<style>
+  :root {
+    --color-black-100: rgb(73, 73, 73);
+  }
+</style>

@@ -1,0 +1,42 @@
+{
+  "name": "figma-paperclip",
+  "version": "17.4.4",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "figma-paperclip": "./bin/figma-paperclip"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "scripts": {
+    "test": "",
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^4.2.5",
+    "p-limit": "^2.3.0",
+    "pretty-quick": "^2.0.1",
+    "typescript": "^3.9.2"
+  },
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "fast-memoize": "^2.5.2",
+    "fs-extra": "^9.0.0",
+    "inquirer": "^7.1.0",
+    "lodash": "^4.17.15",
+    "lru-cache": "^5.1.1",
+    "mime": "^2.4.5",
+    "ora": "^4.0.4",
+    "paperclip": "^15.1.1",
+    "paperclip-cli": "^15.1.1",
+    "prettier": "^2.0.5",
+    "progress": "^2.0.3",
+    "yargs": "^15.3.1"
+  }
+}

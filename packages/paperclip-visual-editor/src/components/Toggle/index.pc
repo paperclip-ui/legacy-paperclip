@@ -1,0 +1,93 @@
+<import src="../Theme/index.pc" as="theme" />
+
+<style>
+  .button-group {
+    display: inline-flex;
+    /* white-space: nowrap; */
+    /* overflow: hidden; */
+    border-radius: var(--border-radius);
+    .button {
+      overflow: hidden;
+      display: inline-block;
+      cursor: pointer;
+      font-weight: 600;
+      background: transparent;
+      padding: var(--input-padding);
+      border: none;
+      color: inherit;
+      &--hover, &:hover {
+        background: var(--background-active-1);
+      }
+      &--selected {
+        background: var(--background-selected-1);
+      }
+      &:first-child {
+        border-top-left-radius: var(--border-radius);
+        border-bottom-left-radius: var(--border-radius);
+      }
+      &:last-child {
+        border-top-right-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+    }
+  }
+
+  .preview {
+    margin: 10px;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ButtonGroup" className="button-group $theme.font-default $theme.background-2">
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 42, y: 31 }
+-->
+<button export component as="Button" className="button" className:selected="button--selected" className:hover="button--hover">
+  {children}
+</button>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 44, y: 31 }
+-->
+<div className="preview $theme.font-default">
+  <ButtonGroup>
+    <Button selected>a</Button>
+    <Button>b</Button>
+    <Button>c</Button>
+    <Button>d</Button>
+  </ButtonGroup>
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 64, y: 38 }
+-->
+<div className="preview $theme.font-default">
+  <ButtonGroup>
+    <Button>a</Button>
+    <Button>b</Button>
+    <Button>c</Button>
+    <Button selected>d</Button>
+  </ButtonGroup>
+</div>
+
+
+<!--
+  @frame { title: "Button Group", width: 1024, height: 768, x: 0, y: 0 }
+-->
+<div className="preview $theme.font-default">
+  <ButtonGroup>
+    <Button>a</Button>
+    <Button>b</Button>
+    <Button selected>c</Button>
+    <Button>d</Button>
+  </ButtonGroup>
+</div>

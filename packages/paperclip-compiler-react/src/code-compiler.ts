@@ -1134,9 +1134,10 @@ const translateStatment = (
     }
     context = endBlock(context);
     context = addBuffer(`}`, context);
+  } else if (statement.jsKind === JsExpressionKind.String) {
+    return addBuffer(JSON.stringify(statement.value), context);
   } else if (
     statement.jsKind === JsExpressionKind.Number ||
-    statement.jsKind === JsExpressionKind.String ||
     statement.jsKind === JsExpressionKind.Boolean
   ) {
     return addBuffer(String(statement.value), context);

@@ -1,0 +1,27 @@
+
+<import src="components/Theme/index.pc" as="theme" />
+<import src="./Styling/index.pc" as="Styling" />
+<import src="components/Pane/index.pc" as="Pane" />
+<import src="components/Field/index.pc" as="Field" />
+<import src="components/Menu/index2.pc" as="Select" />
+<import src="./MoreStyles/index.pc" as="MoreStyles" />
+<import src="./Inspector/index.pc" as="Inspector" />
+<div export component as="default" className=>
+  <style>
+  </style>
+</div>
+<div export component as="Preview">
+  <default>
+    <Styling.Preview />
+    <div className="more-styles">
+      <style>
+      </style>
+    </div>
+  </default>
+</div>
+<div export component as="InspectorPreview2">
+  <default>
+    <Inspector.Preview />
+  </default>
+</div>
+<Preview />

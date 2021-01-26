@@ -18,7 +18,7 @@ describe(__filename + "#", () => {
         HelloWorld: {}
       },
       {
-        HelloWorld: `<div data-pc-19fba394="true" data-pc-3402f12b="true">Hello</div>`
+        HelloWorld: `<div data-pc-406d2856="true" data-pc-80f4925f="true">Hello</div>`
       }
     ],
     [
@@ -34,7 +34,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" class=" _3402f12b_b b">bbb</div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" class=" _80f4925f_b b">bbb</div>`
       }
     ],
     [
@@ -58,7 +58,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div data-pc-6efc9302="true" data-pc-3402f12b="true" class="_b7823a60_text-red text-red"></div>`
+        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" class="_e05e7926_text-red text-red"></div>`
       }
     ],
     [
@@ -75,7 +75,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-6efc9302="true" data-pc-3402f12b="true"><div data-pc-19fba394="true" data-pc-3402f12b="true">b</div></div>`
+        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true">b</div></div>`
       }
     ],
     [
@@ -91,7 +91,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" style="color:red"></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" style="color:red"></div>`
       }
     ],
     [
@@ -107,7 +107,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" style="color:red"></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" style="color:red"></div>`
       }
     ],
     [
@@ -123,7 +123,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" style="color:red"></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" style="color:red"></div>`
       }
     ],
     [
@@ -139,7 +139,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" style="color:red"></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" style="color:red"></div>`
       }
     ],
     [
@@ -155,7 +155,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" style="a:red"></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" style="a:red"></div>`
       }
     ],
     [
@@ -172,7 +172,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" class="_3402f12b_ab ab"></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" class="_80f4925f_ab ab"></div>`
       }
     ],
     [
@@ -189,7 +189,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" class="_3402f12b_ab ab"></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" class="_80f4925f_ab ab"></div>`
       }
     ],
     [
@@ -206,7 +206,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" class="_3402f12b_ab ab"></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" class="_80f4925f_ab ab"></div>`
       }
     ],
     [
@@ -223,7 +223,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true" class="_3402f12b_ab ab"></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" class="_80f4925f_ab ab"></div>`
       }
     ],
     [
@@ -248,7 +248,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<span data-pc-6efc9302="true" data-pc-3402f12b="true"><span data-pc-19fba394="true" data-pc-3402f12b="true"></span><h1 data-pc-19fba394="true" data-pc-3402f12b="true"></h1><div data-pc-19fba394="true" data-pc-3402f12b="true"></div></span>`
+        Entry: `<span data-pc-376a18c0="true" data-pc-80f4925f="true"><span data-pc-406d2856="true" data-pc-80f4925f="true"></span><h1 data-pc-406d2856="true" data-pc-80f4925f="true"></h1><div data-pc-406d2856="true" data-pc-80f4925f="true"></div></span>`
       }
     ],
     [
@@ -275,7 +275,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<span data-pc-6efc9302="true" data-pc-3402f12b="true"><div data-pc-19fba394="true" data-pc-3402f12b="true" class="_3402f12b__1c1ab63c _1c1ab63c"></div></span>`
+        Entry: `<span data-pc-376a18c0="true" data-pc-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" class="_80f4925f__9fbc00ce _9fbc00ce"></div></span>`
       }
     ],
     [
@@ -302,7 +302,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<span data-pc-6efc9302="true" data-pc-3402f12b="true"><div data-pc-19fba394="true" data-pc-3402f12b="true" class="_3402f12b__3402f12b_another-test another-test _1c1ab63c _3402f12b_another-test another-test _1c1ab63c"></div></span>`
+        Entry: `<span data-pc-376a18c0="true" data-pc-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" class="_80f4925f__80f4925f_another-test another-test _9fbc00ce _80f4925f_another-test another-test _9fbc00ce"></div></span>`
       }
     ],
     [
@@ -334,7 +334,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<span data-pc-f7f5c2b8="true" data-pc-3402f12b="true"><div data-pc-19fba394="true" data-pc-3402f12b="true" class="_3402f12b__3402f12b_blaaaa blaaaa _3402f12b__3402f12b_another-test another-test _1e5c0865 _3402f12b_another-test another-test _1e5c0865 _6efc9302 _3402f12b_blaaaa blaaaa _3402f12b__3402f12b_another-test another-test _1e5c0865 _3402f12b_another-test another-test _1e5c0865 _6efc9302"></div></span>`
+        Entry: `<span data-pc-ae63497a="true" data-pc-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" class="_80f4925f__80f4925f_blaaaa blaaaa _80f4925f__80f4925f_another-test another-test _9dfabe97 _80f4925f_another-test another-test _9dfabe97 _376a18c0 _80f4925f_blaaaa blaaaa _80f4925f__80f4925f_another-test another-test _9dfabe97 _80f4925f_another-test another-test _9dfabe97 _376a18c0"></div></span>`
       }
     ],
     [
@@ -356,7 +356,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div data-pc-6efc9302="true" data-pc-3402f12b="true"><div data-pc-b9b0d72d="true" data-pc-4aa1ff40="true">click me!</div></div>`
+        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true"><div data-pc-348c8067="true" data-pc-1d7dbc06="true">click me!</div></div>`
       }
     ],
     [
@@ -384,7 +384,29 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-19fba394="true" data-pc-3402f12b="true"><span data-pc-6314de75="true" data-pc-3402f12b="true">A</span><span data-pc-48398db6="true" data-pc-3402f12b="true">D</span><span data-pc-7781b71="true" data-pc-3402f12b="true">E</span>0<span data-pc-354e79f3="true" data-pc-3402f12b="true">H</span><span data-pc-2c5548b2="true" data-pc-3402f12b="true">I</span><span data-pc-abcd547d="true" data-pc-3402f12b="true">J</span><span data-pc-b2d6653c="true" data-pc-3402f12b="true">K</span></div>`
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true"><span data-pc-3024ebf3="true" data-pc-80f4925f="true">A</span><span data-pc-1b09b830="true" data-pc-80f4925f="true">D</span><span data-pc-54482ef7="true" data-pc-80f4925f="true">E</span>0<span data-pc-667e4c75="true" data-pc-80f4925f="true">H</span><span data-pc-7f657d34="true" data-pc-80f4925f="true">I</span><span data-pc-f8fd61fb="true" data-pc-80f4925f="true">J</span><span data-pc-e1e650ba="true" data-pc-80f4925f="true">K</span></div>`
+      }
+    ],
+    [
+      "Can render && and || in attribute",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" a={b || "te's'a'dfds"} c={d && "d" || "e"}>
+          </div>
+
+          <div export component as="Test">
+            <Entry />
+            <Entry a />
+            <Entry d />
+            <Entry b />
+          </div>
+        `
+      },
+      {
+        Test: {}
+      },
+      {
+        Test: `<div data-pc-376a18c0="true" data-pc-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div data-pc-406d2856="true" data-pc-80f4925f="true" a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div data-pc-406d2856="true" data-pc-80f4925f="true" a="te&#x27;s&#x27;a&#x27;dfds" c="d"></div><div data-pc-406d2856="true" data-pc-80f4925f="true" c="e"></div></div>`
       }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {

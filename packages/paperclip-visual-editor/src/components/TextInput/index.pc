@@ -1,0 +1,6 @@
+
+<import src="components/Theme/index.pc" as="theme" />
+<input export component as="default" className=>
+  <style>
+  </style>
+</input>

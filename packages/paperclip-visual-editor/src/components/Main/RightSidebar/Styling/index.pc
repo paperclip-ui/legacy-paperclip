@@ -1,0 +1,13 @@
+
+<import src="components/Field/index.pc" as="Field" />
+<import src="components/Menu/index2.pc" as="Select" />
+<import src="./Typography/index.pc" as="Typography" />
+<import src="./Selector/index.pc" as="Selector" />
+<import src="./Backgrounds/index.pc" as="Background" />
+<import src="./Filters/index.pc" as="Filters" />
+<div export component as="Preview">
+  <Selector.Preview />
+  <Typography.Preview />
+  <Background.Preview />
+  <Filters.Preview />
+</div>
