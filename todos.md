@@ -1,7 +1,7 @@
 
 ### Immediate
 
-- google analytics
+- heap analytics
 - redis session storage
 - Welcome to Paperclip! project
 
@@ -9,19 +9,7 @@
 
 - cleanup
   - add Paperclip color theme
-  - on login and on /projects/id, reload page
-  - copy/past hijacked
   - need easy way of opening text docs from preview
-  - fix close button for sign in modal
-  - fix ext being added twice
-
-- wrap it up!
-  - paperclip.playground.dev
-
-### Necessary (but not yet planned)
-
-- Tutorial (show if new user)
-- Example project (from shared link)
 
 
 #### Next
