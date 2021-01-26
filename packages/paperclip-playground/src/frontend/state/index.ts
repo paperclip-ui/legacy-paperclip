@@ -178,7 +178,9 @@ const MEDIA_MIME_TYPES = [
   "image/png",
   "image/jpeg",
   "image/gif",
-  "image/svg+xml"
+  "image/svg+xml",
+  "video/quicktime",
+  "video/mp4"
 ];
 
 const ACCEPTED_MIME_TYPES = [...MEDIA_MIME_TYPES, ...EDITABLE_MIME_TYPES];

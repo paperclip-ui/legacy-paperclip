@@ -2,10 +2,10 @@
 ### Immediate
 
 - heap analytics
-- redis session storage
+- need to be able to focus on specific frame (needed for welcome page step 1)
 - Welcome to Paperclip! project
+- redis session storage
 
-- need to be able to focus on screen
 
 - cleanup
   - add Paperclip color theme
