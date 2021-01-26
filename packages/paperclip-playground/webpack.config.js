@@ -42,9 +42,7 @@ const plugins = [
   })
 ];
 
-if (prodMode && !standalone) {
-  plugins.push(new MiniCssExtractPlugin());
-}
+plugins.push(new MiniCssExtractPlugin());
 
 if (standalone) {
   plugins.push(
@@ -107,10 +105,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use:
-          prodMode && !standalone
-            ? [MiniCssExtractPlugin.loader, "css-loader"]
-            : ["style-loader", "css-loader"]
+        use: [MiniCssExtractPlugin.loader, "css-loader"]
       },
       {
         test: /\.(png|jpe?g|gif|ttf|svg)$/i,
