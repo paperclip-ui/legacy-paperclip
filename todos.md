@@ -1,8 +1,12 @@
+### Tomorrow
 
-### Immediate
-
-
+- color picker**
 - need to be able to focus on specific frame (needed for welcome page step 1)
+
+
+- color picker**
+- need to be able to focus on specific frame (needed for welcome page step 1)
+
 - Welcome to Paperclip! tutorial
   - welcome screen
     - building UIs super fast
@@ -16,14 +20,12 @@
     - measure between elements
     - meta click to view source
 
-
-
 - GH oauth icon
+
+
+### Immediate
+
 - redis session storage
-
-
-- color picker
-- remove scrollbars
 
 - cleanup
   - make sure loading page doesn't popup in auth page
