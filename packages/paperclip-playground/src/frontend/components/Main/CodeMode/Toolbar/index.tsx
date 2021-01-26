@@ -127,6 +127,7 @@ export const Toolbar = () => {
                 {showNewFileInput && (
                   <styles.FileMenuItem noFocus moreSelect={null}>
                     <TextInput
+                      type="text"
                       autoFocus
                       onBlur={onNewInputBlur}
                       {...newFileInputProps}
