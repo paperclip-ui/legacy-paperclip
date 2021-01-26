@@ -19,7 +19,8 @@ import {
   ProjectRenamed,
   rawFileUploaded,
   savedProject,
-  sessionRequestStateChanged
+  sessionRequestStateChanged,
+  shareProjectRequestStateChanged
 } from "../actions";
 import * as api from "../api";
 import { mapValues, matchesProperty } from "lodash";
@@ -146,7 +147,7 @@ function* handleProjectChanges() {
       }
 
       // create new project
-      if (!state.currentProject?.data) {
+      if (!state.currentProject?.data?.owner) {
         yield call(createBlankNewProject);
       } else {
         yield call(updateExistingProject);
@@ -182,6 +183,13 @@ function* handleProjectChanges() {
     );
 
     history.push(`/projects/${project.id}`);
+  });
+
+  yield takeEvery([ActionType.SHARE_BUTTON_CLICKED], function*() {
+    const state: AppState = yield select();
+    yield request(shareProjectRequestStateChanged, function*() {
+      return yield call(api.generateShareLink, state.currentProject.data.id);
+    });
   });
 
   // yield takeEvery([ActionType.FILES_DROPPED], function*({

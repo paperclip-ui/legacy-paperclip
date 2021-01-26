@@ -1,23 +1,12 @@
 
 ### Immediate
 
-- ability to share project
-  - share button in header
-    - popdown should have public / private input
-    - ability to revoke share link
-- 
-- ability to clone project
-  sign in -> clone project
-  signed in -> clone project
+- google analytics
 - Welcome to Paperclip! project
 - redis session storage
 - loader for projects
-- google analytics
 
-- file menu
-  - download React code
-  - download source code
-
+- need to be able to focus on screen
 
 - cleanup
   - going to / should display blank page

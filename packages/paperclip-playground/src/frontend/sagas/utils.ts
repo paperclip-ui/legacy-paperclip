@@ -1,8 +1,9 @@
-import { call, put } from "redux-saga/effects";
+import { call, put, delay } from "redux-saga/effects";
 import {
   BaseRequestChanged,
   getProjectFilesRequestChanged,
-  getProjectRequestChanged
+  getProjectRequestChanged,
+  projectFilesLoadProgressChanged
 } from "../actions";
 import { EDITABLE_MIME_TYPES, Project, Result } from "../state";
 import * as api from "../api";
@@ -25,11 +26,11 @@ export function* request<TData>(
   }
 }
 
-export function* loadProject(projectId: string) {
+export function* loadProject(projectIdOrHash: string) {
   const project: Result<Project> = yield request(
     getProjectRequestChanged,
     function*() {
-      return yield call(api.getProject, projectId);
+      return yield call(api.getProject, projectIdOrHash);
     }
   );
 
@@ -42,12 +43,20 @@ export function* loadProject(projectId: string) {
 }
 
 export function* loadProjectFiles(project: Result<Project>) {
+  yield put(projectFilesLoadProgressChanged(0));
   yield request(getProjectFilesRequestChanged, function*() {
     const allData = {};
 
+    let i = 0;
     for (const { path, url } of project.data.files) {
+      i++;
+      
+      // set progress immediately so that people can see progress
+      yield put(projectFilesLoadProgressChanged(i / (project.data.files.length + 1)));
+
       allData[path] = yield call(async () => {
         const resp = await fetch(url, { credentials: "include" });
+
 
         const editable = EDITABLE_MIME_TYPES.includes(
           String(resp.headers.get("content-type"))
@@ -57,7 +66,10 @@ export function* loadProjectFiles(project: Result<Project>) {
 
         return editable ? resp.text() : resp.blob();
       });
+
     }
+
+    yield put(projectFilesLoadProgressChanged(1));
 
     return allData;
   });

@@ -4,6 +4,7 @@ import {
   Project,
   ProjectFile,
   Result,
+  ShareProjectInfo,
   User,
   WorkerState
 } from "../state";
@@ -22,6 +23,9 @@ export enum ActionType {
   PROJECT_FILES_HOOK_USED = "PROJECT_FILES_HOOK_USED",
   DELETE_PROJECT_CONFIRMED = "DELETE_PROJECT_CONFIRMED",
   DOWNLOAD_PROJECT_CLICKED = "DOWNLOAD_PROJECT_CLICKED",
+  PROJECT_FILES_LOAD_PROGRESS_CHANGED = "PROJECT_FILES_LOAD_PROGRESS_CHANGED",
+  SHARE_PROJECT_REQUEST_STATE_CHANGED = "SHARE_PROJECT_REQUEST_STATE_CHANGED",
+  SHARE_MODAL_CLOSED = "SHARE_MODAL_CLOSED",
   SHARE_BUTTON_CLICKED = "SHARE_BUTTON_CLICKED",
   RAW_FILE_UPLOADED = "RAW_FILE_UPLOADED",
   FILES_DROPPED = "FILES_DROPPED",
@@ -66,6 +70,7 @@ export type GetProjectsRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECTS_REQUEST_CHANGED,
   Project[]
 >;
+export type ShareModalClosed = BaseAction<ActionType.SHARE_MODAL_CLOSED>;
 export type GetProjectRequestChanged = BaseRequestChanged<
   ActionType.GET_PROJECT_REQUEST_CHANGED,
   Project
@@ -94,6 +99,8 @@ export type ProjectHookUsed = BaseAction<
   ActionType.PROJECT_HOOK_USED,
   { projectId: number }
 >;
+export type ProjectFilesLoadProgressChanged = BaseAction<ActionType.PROJECT_FILES_LOAD_PROGRESS_CHANGED, number>;
+
 export type RawFileUploaded = BaseAction<
   ActionType.RAW_FILE_UPLOADED,
   { data: Blob; path: string }
@@ -133,7 +140,7 @@ export type DeleteProjectConfirmed = BaseAction<
   ActionType.DELETE_PROJECT_CONFIRMED,
   { projectId: number }
 >;
-
+export type ShareProjectRequestStateChanged = BaseRequestChanged<ActionType.SHARE_PROJECT_REQUEST_STATE_CHANGED, ShareProjectInfo>;
 export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED, {}>;
 export type EngineCrashed = BaseAction<ActionType.ENGINE_CRASHED, Error>;
 export type CodeEditorTextChanged = BaseAction<
@@ -185,9 +192,11 @@ export type FilesDropped = BaseAction<ActionType.FILES_DROPPED, FileList>;
 export const newProjectEntered = actionCreator<NewProjectEntered>(
   ActionType.NEW_PROJECT_ENTERED
 );
+export const shareProjectRequestStateChanged = actionCreator<ShareProjectRequestStateChanged>(ActionType.SHARE_PROJECT_REQUEST_STATE_CHANGED);
 export const rawFileUploaded = actionCreator<RawFileUploaded>(
   ActionType.RAW_FILE_UPLOADED
 );
+export const projectFilesLoadProgressChanged = actionCreator<ProjectFilesLoadProgressChanged>(ActionType.PROJECT_FILES_LOAD_PROGRESS_CHANGED);
 export const filesDropped = actionCreator<FilesDropped>(
   ActionType.FILES_DROPPED
 );
@@ -241,6 +250,7 @@ export const contentChangesCreated = actionCreator<ContentChangesCreated>(
 export const newFileNameEntered = actionCreator<NewFileNameEntered>(
   ActionType.NEW_FILE_NAME_ENTERED
 );
+export const shareModalClosed = actionCreator<ShareModalClosed>(ActionType.SHARE_MODAL_CLOSED);
 export const projectRenamed = actionCreator<ProjectRenamed>(
   ActionType.PROJECT_RENAMED
 );
@@ -282,6 +292,7 @@ export type Action =
   | SaveButtonClicked
   | SlimEditorTextChanged
   | DeleteProjectConfirmed
+  | ProjectFilesLoadProgressChanged
   | LoggedOut
   | SessionRequestStateChanged
   | GetProjectsRequestChanged
@@ -289,6 +300,8 @@ export type Action =
   | ProjectFilesHookUsed
   | FilesDropped
   | ProjectHookUsed
+  | ShareModalClosed
+  | ShareProjectRequestStateChanged
   | FileRenamed
   | RemoveFileClicked
   | GetProjectRequestChanged

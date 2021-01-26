@@ -30,7 +30,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="default" className:immediate="immediate">
+<div export component as="default" {className?} className:immediate="immediate">
   <style>
     --size: 30px;
     background: rgb(117, 117, 117);

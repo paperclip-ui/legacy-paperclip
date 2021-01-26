@@ -19,6 +19,9 @@ import { Route, Router, Switch } from "react-router";
 import { filesDropped } from "../../actions";
 import { isPaperclipFile } from "paperclip-utils";
 import mime from "mime-types";
+import { ShareModal } from "./ShareModal";
+import { PasswordModal } from "./PasswordModal";
+import { ProjectLoadingModal } from "./ProjectLoadingModal";
 
 export const Main = withAppStore(() => {
   const store = useAppStore();
@@ -28,19 +31,23 @@ export const Main = withAppStore(() => {
   }
 
   return (
-    <Router history={history}>
-      <Switch>
-        <Route path={APP_LOCATIONS.PROJECT}>
-          <Editor />
-        </Route>
-        <Route path={APP_LOCATIONS.PROJECTS}>
-          <Projects />
-        </Route>
-        <Route path="/">
-          <Editor />
-        </Route>
-      </Switch>
-    </Router>
+    <>
+      <Router history={history}>
+        <Switch>
+          <Route path={APP_LOCATIONS.PROJECT}>
+            <Editor />
+          </Route>
+          <Route path={APP_LOCATIONS.PROJECTS}>
+            <Projects />
+          </Route>
+          <Route path="/">
+            <Editor />
+          </Route>
+        </Switch>
+      </Router>
+      <PasswordModal />
+      <ProjectLoadingModal />
+    </>
   );
 });
 
@@ -96,6 +103,7 @@ const Editor = memo(() => {
         visible={draggingFileOver}
         cantUpload={false}
       />
+      <ShareModal />
     </styles.Container>
   );
 });

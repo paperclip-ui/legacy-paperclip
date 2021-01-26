@@ -55,7 +55,10 @@ export function* handleRoutes() {
     }),
     [APP_LOCATIONS.PROJECT]: requireAuth(function*({ projectId }) {
       yield call(loadProject, projectId);
-    })
+    }),
+    [APP_LOCATIONS.SHARED_PROJECT]: function*({ projectHash }) {
+      yield call(loadProject, projectHash);
+    }
   });
 }
 

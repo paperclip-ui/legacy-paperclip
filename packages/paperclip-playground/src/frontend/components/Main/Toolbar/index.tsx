@@ -52,7 +52,7 @@ export const MainToolbar = () => {
     leftControls = (
       <>
         <styles.NavAction save onClick={onSaveCick}>
-          {state.currentProject ? "Save" : "Save As..."}
+          {state.currentProject?.data?.owner ? "Save" : "Save As..."}
           {state.saving && (
             <styles.SaveStatus
               success={!!state.saving.data}
@@ -72,7 +72,7 @@ export const MainToolbar = () => {
           </styles.NavAction>
         )}
 
-        {state.currentProject?.data && (
+        {state.currentProject?.data?.owner && (
           <styles.NavAction
             publish
             onClick={onShareClick}
@@ -115,7 +115,7 @@ export const MainToolbar = () => {
       <Button primary onClick={onSignInClick}>
         {state.user && !state.user.done
           ? "Loading..."
-          : "Sign in to save & download"}
+          : "Sign in to save"}
       </Button>
     );
   }

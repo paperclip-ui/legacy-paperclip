@@ -2,7 +2,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className="v2 $Theme.font-default" className:visible="visible">
+<div export component as="Container" className="v2 $Theme.font-default" className:secret="secret" className:visible="visible">
     <style>
     
     position: fixed;
@@ -11,6 +11,8 @@
     z-index: 999999;
     opacity: 0;
     transition: 0.3s;
+    top: 0;
+    left: 0;
     pointer-events: none;
     &.visible {
       opacity: 1;
@@ -23,6 +25,9 @@
       width: 100%;
       height: 100%;
       position: absolute;
+      &:within(.secret) {
+        background: rgb(43, 43, 43);
+      }
     </style>
   </div>
   {children}
@@ -61,8 +66,9 @@
     display: flex;
     margin-bottom: 20px;
     justify-content: space-between;
-    color: var(--grey-400);
+    color: rgb(109, 92, 92);
     font-weight: 300;
+    align-items: center;
   </style>
   {title}
   <button onClick={onCloseButtonClick}>
@@ -72,6 +78,9 @@
       font-size: inherit;
       color: inherit;
       cursor: pointer;
+      &:within(.secret) {
+        display: none
+      }
     </style>
     &times;
   </button>

@@ -6,6 +6,9 @@
 <import src="./auth/index.pc" as="Auth" />
 <import src="./Projects/index.pc" as="Projects" />
 <import src="paperclip-designer/src/styles/utils.pc" as="utils" />
+<import src="./ShareModal/index.pc" as="ShareModal" />
+<import src="./PasswordModal/index.pc" as="PasswordModal" />
+<import src="./ProjectLoadingModal/index.pc" as="ProjectLoadingModal" />
 
 <style>
   :global(html, body) {
@@ -149,7 +152,7 @@
 <Container export component as="Preview" className="v2" {compact?}>
   {!compact && !showProjects && <Toolbar.Preview  {loggedIn?} />}
   {showProjects && <Toolbar.Preview loggedIn minimal />}
-  {showProjects && <Projects.Preview />}
+
   {showEditor && <EditorContainer {compact?}>
     <CodeMode.Preview {showFileMenu} {showFileOptions} slim />
     <Main.Preview v2 dark designer showGrid />
@@ -165,12 +168,28 @@
       {!cantPreview && <img src="./VanillaHappyCat.jpg" />}
     </MediaPreview>
   </EditorContainer> }
+  {showShare && <ShareModal.Preview />}
+  { showPasswordModal && <PasswordModal.Preview />}
+  {showProjectLoading && <ProjectLoadingModal.Preview visible percent="0.5" />}
 </Container>
 
 <!--
   @frame { title: "Initial / auth", width: 1212, height: 768, x: 1843, y: -745 }
 -->
 <Preview showEditor showFileMenu showLoginPrompt  />
+
+
+<!--
+  @frame { title: "Project loading", width: 1212, height: 768, x: 1905, y: -1887 }
+-->
+<Preview showEditor showProjectLoading  />
+
+
+
+<!--
+  @frame { title: "Password Modal", width: 1212, height: 768, x: 434, y: -1892 }
+-->
+<Preview showPasswordModal  />
 
 
 <!--
@@ -218,8 +237,16 @@
 <Preview showEditor showDownloadMenu loggedIn  />
 
 
+
 <!--
-  @frame { title: "Logged in / file select", width: 1216, height: 767, x: 490, y: 264 }
+  @frame { title: "Logged in / Share select", width: 1216, height: 767, x: 1937, y: 1269 }
+-->
+<Preview showEditor showShare loggedIn  />
+
+
+
+<!--
+  @frame { title: "Logged in / file select", width: 1216, height: 767, x: 437, y: 273 }
 -->
 <Preview showEditor showFileMenu loggedIn  />
 

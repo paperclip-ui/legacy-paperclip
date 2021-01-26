@@ -3,9 +3,6 @@
   "version": "17.4.25",
   "description": "CLI utils for Paperclip",
   "main": "lib/index.js",
-  "bin": {
-    "paperclip": "./bin/paperclip"
-  },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",

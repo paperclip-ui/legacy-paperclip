@@ -2,16 +2,17 @@ import React, { useEffect, useState } from "react";
 import * as styles from "./index.pc";
 
 export type ModalProps = {
-  title: string;
+  title: any;
+  secret?: boolean;
   onClose: () => void;
   children: any;
 };
 
-export const Modal = ({ title, onClose, children }: ModalProps) => {
-  const { onBackgroundClick, visible, onCloseButtonClick } = useModal(onClose);
+export const Modal = ({ title, secret, onClose, children }: ModalProps) => {
+  const { onBackgroundClick, visible, onCloseButtonClick } = useModal(onClose, secret);
 
   return (
-    <styles.Container visible={visible} onBackgroundClick={onBackgroundClick}>
+    <styles.Container visible={visible} secret={secret} onBackgroundClick={onBackgroundClick}>
       <styles.Content>
         <styles.Header title={title} onCloseButtonClick={onCloseButtonClick} />
         {children}
@@ -20,10 +21,14 @@ export const Modal = ({ title, onClose, children }: ModalProps) => {
   );
 };
 
-const useModal = onClose => {
-  const [visible, setVisible] = useState(false);
+export const useModal = (onClose, secret: boolean) => {
+  const [visible, setVisible] = useState(!secret);
+
 
   const onCloseEvent = () => {
+    if (secret) {
+      return;
+    }
     setVisible(false);
     setTimeout(onClose, 300);
   };
@@ -35,7 +40,7 @@ const useModal = onClose => {
     setTimeout(() => {
       setVisible(true);
     }, 100);
-  }, []);
+  }, [secret]);
 
   return {
     onCloseButtonClick,

@@ -88,6 +88,11 @@ export const reducer = historyReducer(
 
         return state;
       }
+      case ActionType.PROJECT_FILES_LOAD_PROGRESS_CHANGED: {
+        return produce(state, newState => {
+          newState.progressLoadedPercent = action.payload;
+        });
+      }
       case ActionType.GET_PROJECT_REQUEST_CHANGED: {
         return produce(state, newState => {
           newState.currentProject = action.payload.result;
@@ -132,6 +137,16 @@ export const reducer = historyReducer(
         return produce(state, newState => {
           newState.playgroundUi = action.payload;
         });
+      }
+      case ActionType.SHARE_PROJECT_REQUEST_STATE_CHANGED: {
+        return produce(state, newState => {
+          newState.shareProjectInfo = action.payload.result;
+        })
+      }
+      case ActionType.SHARE_MODAL_CLOSED: {
+        return produce(state, newState => {
+          newState.shareProjectInfo = null;
+        })
       }
       case ActionType.FILE_ITEM_CLICKED: {
         return produce(state, newState => {

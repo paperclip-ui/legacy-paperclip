@@ -4,7 +4,7 @@
 <!--
   @frame { visible: false }
 -->
-<input export component as="default" className="input v2 {className?}" className:dark="dark" className:light="light" {onBlur?} {onFocus?} {ref?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autoFocus?}>
+<input export component as="default" {disabled?} className="input v2 {className?}" className:dark="dark" className:light="light" {type} {onBlur?} {onFocus?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autoFocus?} {autocomplete?}  allow-1password="no">
   <style>
 
     background: var(--background-50);

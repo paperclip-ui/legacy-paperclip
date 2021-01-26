@@ -25,6 +25,7 @@ export type Result<TData> = {
 export type Project = {
   id: number;
   name: string;
+  owner: boolean;
   mainFileUri?: string;
   files: ProjectFile[];
   updatedAt: string;
@@ -38,7 +39,8 @@ export type ProjectFile = {
 
 export const APP_LOCATIONS = {
   PROJECTS: "/projects",
-  PROJECT: "/projects/:projectId"
+  PROJECT: "/projects/:projectId",
+  SHARED_PROJECT: "/s/:projectHash"
 };
 
 export const matchesLocationPath = (pathname: string, test: string) => {
@@ -63,6 +65,10 @@ export type WorkerState = {
   documents: Record<string, string | Blob>;
 };
 
+export type ShareProjectInfo = {
+  link: string;
+};
+
 export type AppState = {
   user?: Result<User>;
   currentProject?: Result<Project>;
@@ -70,6 +76,8 @@ export type AppState = {
     pathname: string;
     query: any;
   };
+  progressLoadedPercent?: number;
+  shareProjectInfo?: Result<ShareProjectInfo>;
   currentCodeFileUri: string;
   allProjects?: Result<Project[]>;
   currentProjectFiles?: Result<ProjectFile[]>;

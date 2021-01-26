@@ -29,6 +29,14 @@ export const createProject = async (
   });
 };
 
+export const generateShareLink = async (
+  projectId: number
+) => {
+  return await requestJSON(`/projects/${projectId}/share`, {
+    method: "GET"
+  });
+};
+
 export const updateProjectFile = async (
   projectId: number,
   path: string,
@@ -98,8 +106,8 @@ export const getUser = async () => {
   return await requestJSON(`/session`);
 };
 
-export const getProject = async (projectId: string) => {
-  return await requestJSON(`/projects/${projectId}`);
+export const getProject = async (projectIdOrHash: string) => {
+  return await requestJSON(`/projects/${projectIdOrHash}`);
 };
 export const deleteProject = async (projectId: number) => {
   return await requestJSON(`/projects/${projectId}`, {
