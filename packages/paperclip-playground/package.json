@@ -1,6 +1,6 @@
 {
   "name": "paperclip-playground",
-  "version": "17.4.27",
+  "version": "17.4.28",
   "description": "Online Paperclip playground",
   "main": "./lib/index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "monaco-editor": "^0.21.3",
     "nodemon": "^2.0.7",
     "paperclip": "^17.4.27",
-    "paperclip-designer": "^17.4.27",
+    "paperclip-designer": "^17.4.28",
     "paperclip-source-writer": "^17.4.27",
     "paperclip-utils": "^17.4.27",
     "prism-material-themes": "^1.0.4",
@@ -50,8 +50,8 @@
     "html-webpack-plugin": "5.0.0-beta.5",
     "mini-css-extract-plugin": "1.3.4",
     "os-browserify": "^0.3.0",
-    "paperclip-cli": "^17.4.27",
-    "paperclip-loader": "^17.4.27",
+    "paperclip-cli": "^17.4.28",
+    "paperclip-loader": "^17.4.28",
     "path-browserify": "^1.0.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

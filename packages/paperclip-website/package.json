@@ -1,6 +1,6 @@
 {
   "name": "paperclip-website",
-  "version": "17.4.27",
+  "version": "17.4.28",
   "private": true,
   "scripts": {
     "start": "docusaurus start",
@@ -16,7 +16,7 @@
     "caniuse-lite": "^1.0.30001178",
     "clsx": "^1.1.1",
     "dedent": "^0.7.0",
-    "paperclip-playground": "^17.4.27",
+    "paperclip-playground": "^17.4.28",
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
   },
@@ -40,6 +40,6 @@
     "file-loader": "^6.2.0",
     "null-loader": "^4.0.1",
     "paperclip-compiler-react": "^17.4.27",
-    "paperclip-loader": "^17.4.27"
+    "paperclip-loader": "^17.4.28"
   }
 }

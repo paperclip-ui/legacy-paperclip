@@ -1,6 +1,6 @@
 {
   "name": "paperclip-loader",
-  "version": "17.4.27",
+  "version": "17.4.28",
   "description": "Webpack loader for Paperclip",
   "main": "index.js",
   "scripts": {
