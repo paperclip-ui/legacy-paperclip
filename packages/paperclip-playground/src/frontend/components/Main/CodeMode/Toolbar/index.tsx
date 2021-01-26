@@ -218,6 +218,7 @@ const FileMenuItem = memo(
         {renaming ? (
           <TextInput
             autoFocus
+            type="text"
             onBlur={onNewNameBlur}
             {...renamingInputProps}
             onKeyPress={onNewNameKeyPress}
