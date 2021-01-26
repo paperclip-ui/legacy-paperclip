@@ -59,7 +59,7 @@ module.exports = {
   entry: "./src/frontend/entry.tsx",
 
   output: {
-    filename: "paperclip-playground-[name].js",
+    filename: "paperclip-playground-[name]-[contenthash].js",
     path: standalone
       ? path.resolve(__dirname, "standalone-dist")
       : path.resolve(__dirname, "dist"),

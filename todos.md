@@ -6,11 +6,12 @@
 - Welcome to Paperclip! project
 - redis session storage
 
+- color picker
+- remove scrollbars
 
 - cleanup
   - add Paperclip color theme
   - need easy way of opening text docs from preview
-
 
 #### Next
 
