@@ -8,7 +8,9 @@ pub fn get_document_style_scope<'a>(uri: &String) -> String {
     buff = format!("file://{}", buff);
   }
 
-  format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
+  
+
+  format!("{:x}", crc32::checksum_ieee(buff.to_lowercase().as_bytes())).to_string()
 }
 
 pub fn is_relative_path(path: &String) -> bool {

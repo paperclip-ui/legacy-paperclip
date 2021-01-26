@@ -249,7 +249,12 @@ export const getChildren = (ast: Node): Node[] => {
   return [];
 };
 
-export const getStyleScopeId = (filePath: string) => crc32(filePath);
+export const getStyleScopeId = (filePath: string) => {
+  if (filePath.indexOf("file://") !== 0) {
+    filePath = "file://" + filePath;
+  }
+  return crc32(filePath.toLowerCase());
+};
 
 export const getChildrenByTagName = (tagName: string, parent: Node) =>
   getChildren(parent).filter(child => {
