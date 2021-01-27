@@ -75,6 +75,7 @@
 <style>
     display: flex;
     cursor: pointer;
+    outline: none;
     align-items: stretch;
     outline: none;
     font-size: 14px;
