@@ -22,6 +22,7 @@ import mime from "mime-types";
 import { ShareModal } from "./ShareModal";
 import { PasswordModal } from "./PasswordModal";
 import { ProjectLoadingModal } from "./ProjectLoadingModal";
+import { current } from "immer";
 
 export const Main = withAppStore(() => {
   const store = useAppStore();
@@ -111,21 +112,24 @@ const Editor = memo(() => {
 const Preview = () => {
   const { state } = useAppStore();
 
-  const currentUri = state.designer.ui.query.currentFileUri;
+  const currentUri = state.designer.ui.query.canvasFile;
 
   const content: Blob = state.shared.documents[currentUri] as Blob;
 
-  const objectUrl = useMemo(() => {
+  const [objectUrl, type] = useMemo(() => {
+    const type = mime.lookup(currentUri);
     if (content instanceof Blob) {
-      return (
+      return [
         canPreviewFile(currentUri) &&
-        !isPaperclipFile(currentUri) &&
-        URL.createObjectURL(content)
-      );
+          !isPaperclipFile(currentUri) &&
+          URL.createObjectURL(content),
+        type
+      ];
     } else {
-      return `data:${mime.lookup(currentUri)};utf8,${encodeURIComponent(
-        content
-      )}`;
+      return [
+        `data:${mime.lookup(currentUri)};utf8,${encodeURIComponent(content)}`,
+        type
+      ];
     }
   }, [content]);
 
@@ -141,9 +145,17 @@ const Preview = () => {
     return <DesignModeMainBase />;
   }
 
-  return (
-    <styles.MediaPreview>
-      <img src={objectUrl} />
-    </styles.MediaPreview>
-  );
+  let mediaContent;
+
+  if (isVideo(type)) {
+    mediaContent = <video src={objectUrl} controls />;
+  } else {
+    mediaContent = <img src={objectUrl} />;
+  }
+
+  return <styles.MediaPreview>{mediaContent}</styles.MediaPreview>;
+};
+
+const isVideo = type => {
+  return type.indexOf("video") === 0;
 };

@@ -76,7 +76,7 @@ export const CodeMode = () => {
   };
 
   const [code, setCode] = useState<string>();
-  const docContent = state.shared.documents[state.currentCodeFileUri];
+  const docContent = state.shared.documents[state.currentCodeFilePath];
 
   useEffect(() => {
     if (docContent instanceof File) {
@@ -88,7 +88,7 @@ export const CodeMode = () => {
     }
   }, [docContent]);
 
-  if (canEditFile(state.currentCodeFileUri)) {
+  if (canEditFile(state.currentCodeFilePath)) {
     content = (
       <styles.Content slim={slim}>
         {slim ? (

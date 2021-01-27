@@ -1,8 +1,5 @@
 ### Tomorrow
 
-- color picker**
-- need to be able to focus on specific frame (needed for welcome page step 1)
-
 
 - color picker**
 - need to be able to focus on specific frame (needed for welcome page step 1)

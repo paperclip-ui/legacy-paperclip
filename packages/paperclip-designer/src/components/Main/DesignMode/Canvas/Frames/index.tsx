@@ -36,7 +36,7 @@ type FramesProps = {
 export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   const { state } = useAppStore();
   const { renderer, preview, onFrameLoaded } = useFrames({
-    fileUri: state.designer.ui.query.currentFileUri,
+    fileUri: state.designer.ui.query.canvasFile,
     shouldCollectRects: true
   });
 

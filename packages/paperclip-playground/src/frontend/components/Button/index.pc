@@ -16,6 +16,7 @@
     border-radius: 2px;
     display: inline-flex;
     align-items: center;
+    outline: none;
     cursor: pointer;
     transition: 0.2s;
     transition-property: background, color;

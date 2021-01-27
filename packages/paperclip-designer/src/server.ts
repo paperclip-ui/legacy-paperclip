@@ -215,7 +215,7 @@ export const startServer = async ({
     //   payload: { uri }
     // }: PopoutWindowRequested) => {
     //   const shareHost = await getShareHost();
-    //   exec(`open ${shareHost}/canvas?currentFile=${encodeURIComponent(uri)}`);
+    //   exec(`open ${shareHost}/canvas?canvasFile=${encodeURIComponent(uri)}`);
     // };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {

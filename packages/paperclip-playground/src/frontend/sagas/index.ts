@@ -31,7 +31,7 @@ function* handleNewFile() {
     yield put(
       redirectRequest({
         query: {
-          currentFileUri: action.payload.uri
+          canvasFile: action.payload.uri
         }
       })
     );
@@ -41,7 +41,7 @@ function* handleNewFile() {
     yield put(
       redirectRequest({
         query: {
-          currentFileUri: state.currentCodeFileUri
+          canvasFile: state.currentCodeFilePath
         }
       })
     );

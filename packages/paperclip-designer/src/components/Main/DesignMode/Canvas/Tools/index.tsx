@@ -37,7 +37,7 @@ export const Tools = () => {
       selectedNodePaths,
       resizerMoving,
       ui: {
-        query: { currentFileUri }
+        query: { canvasFile }
       },
       optionKeyDown,
       allLoadedPCFileData,
@@ -90,7 +90,7 @@ export const Tools = () => {
       isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
     )?.box;
 
-  const virtualNode = allLoadedPCFileData[currentFileUri];
+  const virtualNode = allLoadedPCFileData[canvasFile];
 
   if (!virtualNode || !toolsLayerEnabled) {
     return null;

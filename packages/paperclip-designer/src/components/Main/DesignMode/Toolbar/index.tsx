@@ -24,7 +24,7 @@ export const Toolbar = () => {
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
   const showingBirdsEye = state.designer.ui.pathname === "/all";
   const [showZoomInput, setShowZoomInput] = useState<boolean>();
-  const { embedded, currentFileUri } = state.designer.ui.query;
+  const { embedded, canvasFile } = state.designer.ui.query;
 
   const onMinusClick = () => {
     dispatch(zoomOutButtonClicked(null));
@@ -70,12 +70,12 @@ export const Toolbar = () => {
     setShowEnvironmentPopup(false);
   };
 
-  const relativePath = currentFileUri
+  const relativePath = canvasFile
     ?.replace(projectDirectory?.url, "")
-    .substr(1);
+    .replace(/^\//, "");
 
   const onDoubleClick = () => {
-    dispatch(titleDoubleClicked({ uri: currentFileUri }));
+    dispatch(titleDoubleClicked({ uri: canvasFile }));
   };
 
   const zoom = String(Math.round(canvas.transform.z * 100));

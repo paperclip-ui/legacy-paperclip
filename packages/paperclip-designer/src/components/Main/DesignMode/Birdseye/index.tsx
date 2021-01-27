@@ -243,7 +243,7 @@ const useCell = ({
         pathname: "/canvas",
         query: {
           ...parts.query,
-          currentFileUri: uri,
+          canvasFile: uri,
           frame: frameIndex
         }
       })
