@@ -1,6 +1,6 @@
 {
   "name": "paperclip",
-  "version": "17.4.30",
+  "version": "17.4.31",
   "description": "A hybrid approach to design & code",
   "main": "./index.js",
   "typings": "index.d.ts",
