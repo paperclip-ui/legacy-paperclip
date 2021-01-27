@@ -115,17 +115,20 @@ const Preview = () => {
 
   const content: Blob = state.shared.documents[currentUri] as Blob;
 
-  const objectUrl = useMemo(() => {
+  const [objectUrl, type] = useMemo(() => {
+    const type = mime.lookup(currentUri);
     if (content instanceof Blob) {
-      return (
+      return [
         canPreviewFile(currentUri) &&
-        !isPaperclipFile(currentUri) &&
-        URL.createObjectURL(content)
-      );
+          !isPaperclipFile(currentUri) &&
+          URL.createObjectURL(content),
+        type
+      ];
     } else {
-      return `data:${mime.lookup(currentUri)};utf8,${encodeURIComponent(
-        content
-      )}`;
+      return [
+        `data:${mime.lookup(currentUri)};utf8,${encodeURIComponent(content)}`,
+        type
+      ];
     }
   }, [content]);
 
@@ -141,9 +144,17 @@ const Preview = () => {
     return <DesignModeMainBase />;
   }
 
-  return (
-    <styles.MediaPreview>
-      <img src={objectUrl} />
-    </styles.MediaPreview>
-  );
+  let mediaContent;
+
+  if (isVideo(type)) {
+    mediaContent = <video src={objectUrl} controls />;
+  } else {
+    mediaContent = <img src={objectUrl} />;
+  }
+
+  return <styles.MediaPreview>{mediaContent}</styles.MediaPreview>;
+};
+
+const isVideo = type => {
+  return type.indexOf("video") === 0;
 };

@@ -137,7 +137,7 @@
       transform: translate(-50%, -50%);
       width: 100%;
       justify-content: space-around;
-      :global(img) {
+      :global(img, video) {
         display: inline-block;
         max-width: 50%;
       }
