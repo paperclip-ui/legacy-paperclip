@@ -75,8 +75,8 @@ function* handleProjectChanges() {
       api.createProject,
       name,
       {},
-      isPaperclipFile(state.currentCodeFileUri)
-        ? state.currentCodeFileUri
+      isPaperclipFile(state.currentCodeFilePath)
+        ? state.currentCodeFilePath
         : Object.keys(state.shared.documents).find(isPaperclipFile)
     );
 
@@ -177,9 +177,9 @@ function* handleProjectChanges() {
       api.createProject,
       action.payload.name,
       {
-        "file:///main.pc": ""
+        "/main.pc": ""
       },
-      "file:///main.pc"
+      "/main.pc"
     );
 
     history.push(`/projects/${project.id}`);

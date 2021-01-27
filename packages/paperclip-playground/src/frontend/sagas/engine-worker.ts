@@ -93,7 +93,7 @@ const init = async () => {
 
   // const handleCodeChange = (action: CodeEditorTextChanged) => {
   //   _engine.updateVirtualFileContent(
-  //     _appState.currentCodeFileUri,
+  //     _appState.currentCodeFilePath,
   //     action.payload
   //   );
   // };

@@ -33,7 +33,7 @@ export const Toolbar = () => {
   };
 
   const onRemoveClick = uri => {
-    if (state.currentProject?.data?.mainFileUri == uri) {
+    if (state.currentProject?.data?.mainFilePath == uri) {
       return alert(`You can't delete the main file`);
     }
 
@@ -52,7 +52,7 @@ export const Toolbar = () => {
     setShowNewFileInput(false);
   };
 
-  const relativePath = stripRoot(state.currentCodeFileUri);
+  const relativePath = stripRoot(state.currentCodeFilePath);
   const allFileUris = useMemo(() => Object.keys(state.shared.documents), [
     state.shared.documents
   ]);
@@ -82,7 +82,7 @@ export const Toolbar = () => {
   };
   const onRenamed = (uri: string, newName: string) => {
     // for now
-    if (state.currentProject?.data?.mainFileUri == uri) {
+    if (state.currentProject?.data?.mainFilePath == uri) {
       return alert(`You can't rename the main file`);
     }
     const newUri = getNewFilePath(newName, uri);
@@ -153,7 +153,7 @@ export const Toolbar = () => {
           )
         }
       />
-      {state.currentCodeFileUri !== state.designer.ui.query.currentFileUri && (
+      {state.currentCodeFilePath !== state.designer.ui.query.currentFileUri && (
         <styles.EyeButton onClick={onSyncPanelsClick} />
       )}
     </styles.Topbar>
@@ -169,7 +169,7 @@ type FileMenuItemProps = {
 const FileMenuItem = memo(
   ({ uri, onRenamed, onFileItemClick, onRemoveClick }: FileMenuItemProps) => {
     const [renaming, setRenaming] = useState(false);
-    const [newName, setNewName] = useState<string>(path.basename(uri));
+    const [newName, setNewName] = useState<string>(uri);
     const renamingInputProps = useTextInput({
       value: newName,
       onValueChange: setNewName,

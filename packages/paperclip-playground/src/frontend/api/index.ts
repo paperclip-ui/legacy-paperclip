@@ -17,21 +17,19 @@ export const logout = async () => {
 export const createProject = async (
   name: string,
   files: Record<string, string>,
-  mainFileUri?: string
+  mainFilePath?: string
 ) => {
   return await requestJSON(`/projects`, {
     method: "POST",
     body: JSON.stringify({
       files,
       name,
-      mainFileUri
+      mainFilePath
     })
   });
 };
 
-export const generateShareLink = async (
-  projectId: number
-) => {
+export const generateShareLink = async (projectId: number) => {
   return await requestJSON(`/projects/${projectId}/share`, {
     method: "GET"
   });
@@ -84,7 +82,7 @@ export const updateProject = async (
   projectId: number,
   properties: Partial<{
     name: string;
-    mainFileUri?: string;
+    mainFilePath?: string;
   }>
 ) => {
   return await requestJSON(`/projects/${projectId}`, {

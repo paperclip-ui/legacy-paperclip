@@ -31,7 +31,7 @@ export const createAppStore = (
     mainDocumentUri ||
     (Object.keys(documents || {}).length
       ? Object.keys(documents)[0]
-      : INITIAL_STATE.currentCodeFileUri);
+      : INITIAL_STATE.currentCodeFilePath);
   const store = createStore(
     reducer,
     {
@@ -53,7 +53,7 @@ export const createAppStore = (
           }
         }
       },
-      currentCodeFileUri: mainUri
+      currentCodeFilePath: mainUri
     } as AppState,
     applyMiddleware(sagaMiddleware)
   );

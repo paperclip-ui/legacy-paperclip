@@ -2,10 +2,8 @@ import * as ve from "paperclip-designer/src/state";
 import { isPaperclipFile, memoize } from "paperclip-utils";
 import * as qs from "querystring";
 import mime from "mime-types";
-
-import Automerge from "automerge";
 import { mapValues, omit, pickBy } from "lodash";
-const ENTRY_URI = "file:///main.pc";
+const ENTRY_URI = "main.pc";
 
 export type User = {
   avatarUrl?: string;
@@ -26,7 +24,7 @@ export type Project = {
   id: number;
   name: string;
   owner: boolean;
-  mainFileUri?: string;
+  mainFilePath?: string;
   files: ProjectFile[];
   updatedAt: string;
 };
@@ -78,7 +76,7 @@ export type AppState = {
   };
   progressLoadedPercent?: number;
   shareProjectInfo?: Result<ShareProjectInfo>;
-  currentCodeFileUri: string;
+  currentCodeFilePath: string;
   allProjects?: Result<Project[]>;
   currentProjectFiles?: Result<Record<string, string | Buffer>>;
   saving?: Result<boolean>;
@@ -114,7 +112,7 @@ export const INITIAL_STATE: AppState = {
       children: []
     }
   },
-  currentCodeFileUri: ENTRY_URI,
+  currentCodeFilePath: ENTRY_URI,
   playgroundUi:
     typeof window !== "undefined"
       ? {
@@ -136,7 +134,7 @@ export const getNewFilePath = (name: string, previousNameOrExt: string) => {
     ? name.split(".").pop()
     : "pc";
 
-  return "file:///" + name.replace(/\.\w+$/, "") + "." + ext;
+  return name.replace(/\.\w+$/, "") + "." + ext;
 };
 
 export const getWorkerState = (state: AppState): WorkerState => {
@@ -211,4 +209,9 @@ export const canPreviewFile = (name: string) => {
   const type = String(mime.lookup(name));
 
   return ACCEPTED_MIME_TYPES.includes(type);
+};
+
+export const cleanupPath = (path: string) => {
+  // just rel directory - no root defined
+  return path.replace(/\w+:\/\//, "").replace(/\/+/, "/");
 };

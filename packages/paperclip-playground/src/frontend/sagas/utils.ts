@@ -58,7 +58,9 @@ function* loadProjectFiles(project: Result<Project>) {
       yield put(projectFilesLoadProgressChanged(i / project.data.files.length));
 
       allData[path] = yield call(async () => {
-        const resp = await fetch(url, { credentials: "include" });
+        const resp = await fetch(url + "?" + Date.now(), {
+          credentials: "include"
+        });
 
         const editable = EDITABLE_MIME_TYPES.includes(
           String(resp.headers.get("content-type"))

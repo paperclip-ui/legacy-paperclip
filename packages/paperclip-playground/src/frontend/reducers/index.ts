@@ -3,6 +3,7 @@ import {
   canEditFile,
   getNewFilePath,
   matchesLocationPath,
+  cleanupPath,
   APP_LOCATIONS
 } from "../state";
 import {
@@ -17,9 +18,8 @@ import { editString } from "../utils/string-editor";
 import Automerge from "automerge";
 import { updateShared } from "paperclip-designer/src/state";
 import { historyReducer } from "paperclip-designer/src/reducers/history";
-import { mapValues, result } from "lodash";
+import { mapValues, replace, result } from "lodash";
 import mime from "mime-types";
-import { stat } from "fs";
 import { isPaperclipFile } from "paperclip-utils";
 
 export const reducer = historyReducer(
@@ -29,7 +29,7 @@ export const reducer = historyReducer(
     switch (action.type) {
       case VEActionType.GLOBAL_Z_KEY_DOWN: {
         // undo may remove files
-        if (!state.shared.documents[state.currentCodeFileUri]) {
+        if (!state.shared.documents[state.currentCodeFilePath]) {
           state = produce(state, newState => {
             const uri = getMainUri(state);
             newState.designer.ui.query.currentFileUri = uri;
@@ -41,7 +41,7 @@ export const reducer = historyReducer(
       case ActionType.SLIM_CODE_EDITOR_TEXT_CHANGED: {
         return updateShared(state, {
           documents: produce(state.shared.documents, documents => {
-            documents[state.currentCodeFileUri] = action.payload;
+            documents[state.currentCodeFilePath] = action.payload;
           })
         });
       }
@@ -110,15 +110,14 @@ export const reducer = historyReducer(
         const result = action.payload.result;
         const mainFile =
           state.currentProject.data!.files.find(file => {
-            return file.path == state.currentProject.data!.mainFileUri;
+            return file.path == state.currentProject.data!.mainFilePath;
           }) || state.currentProject.data!.files[0];
 
         state = produce(state, newState => {
           newState.currentProjectFiles = action.payload.result;
           if (result.data) {
-            const contents = result.data!;
             newState.designer.ui.query.currentFileUri = mainFile.path;
-            newState.currentCodeFileUri = mainFile.path;
+            newState.currentCodeFilePath = mainFile.path;
 
             // reset canvas zoom
             newState.designer.centeredInitial = false;
@@ -151,8 +150,8 @@ export const reducer = historyReducer(
       }
       case ActionType.FILE_ITEM_CLICKED: {
         return produce(state, newState => {
-          const previousUri = newState.currentCodeFileUri;
-          newState.currentCodeFileUri = action.payload.uri;
+          const previousUri = newState.currentCodeFilePath;
+          newState.currentCodeFilePath = action.payload.uri;
 
           // media & svg files sync
           if (
@@ -171,9 +170,9 @@ export const reducer = historyReducer(
         }) as AppState;
 
         const currentUri =
-          state.currentCodeFileUri === action.payload.uri
+          state.currentCodeFilePath === action.payload.uri
             ? getMainUri(state)
-            : state.currentCodeFileUri;
+            : state.currentCodeFilePath;
 
         state = maybeOpenUri(state, action.payload.uri, currentUri);
         return state;
@@ -197,7 +196,7 @@ export const reducer = historyReducer(
             newState.shared.documents[uri] = file;
 
             // set dropped file as preview
-            newState.currentCodeFileUri = uri;
+            newState.currentCodeFilePath = uri;
             newState.designer.ui.query.currentFileUri = uri;
           }
         });
@@ -225,7 +224,7 @@ export const reducer = historyReducer(
         }) as AppState;
 
         return produce(state, newState => {
-          newState.currentCodeFileUri = uri;
+          newState.currentCodeFilePath = uri;
         });
       }
     }
@@ -237,8 +236,8 @@ export const reducer = historyReducer(
 
 const maybeOpenUri = (state: AppState, checkUri: string, newUri: string) => {
   return produce(state, newState => {
-    if (newState.currentCodeFileUri === checkUri) {
-      newState.currentCodeFileUri = newUri;
+    if (newState.currentCodeFilePath === checkUri) {
+      newState.currentCodeFilePath = newUri;
     }
 
     if (newState.designer.ui.query.currentFileUri === checkUri) {
@@ -248,24 +247,26 @@ const maybeOpenUri = (state: AppState, checkUri: string, newUri: string) => {
 };
 
 const getMainUri = (state: AppState) =>
-  (state.currentCodeFileUri =
-    state.currentProject?.data?.mainFileUri ||
+  (state.currentCodeFilePath =
+    state.currentProject?.data?.mainFilePath ||
     Object.keys(state.shared.documents)[0]);
 
 const getUniqueUri = (
   name: string,
   ext: string,
   allFiles: Record<string, any>
-) => {
+): string => {
   let i = 0;
-  let path = `file:///${name}.${ext}`;
+  let path = cleanupPath(`${name}.${ext}`);
+
+  const existingPaths = Object.keys(allFiles).map(cleanupPath);
+
   while (1) {
-    const pathExists = allFiles[path];
-    if (!pathExists) {
+    if (!existingPaths.includes(path)) {
       break;
     }
 
-    path = `file:///${name}-${++i}.${ext}`;
+    path = cleanupPath(`${name}-${++i}.${ext}`);
   }
 
   return path;
