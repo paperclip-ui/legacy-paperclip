@@ -2,9 +2,10 @@ import { useRef, useState } from "react";
 
 export const useSelect = () => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const [menuStyle, setMenuStyle] = useState<any>();
   const ref = useRef<HTMLElement>();
 
-  const onBlur = () =>
+  const onBlur = () => {
     requestAnimationFrame(() => {
       if (!ref.current) {
         return;
@@ -16,8 +17,11 @@ export const useSelect = () => {
 
       setMenuVisible(false);
     });
+  };
 
   const onButtonClick = event => {
+    const rect = event.target.getBoundingClientRect();
+    setMenuStyle({ top: rect.top + rect.height, position: "fixed" });
     setMenuVisible(!menuVisible);
   };
 
@@ -33,6 +37,7 @@ export const useSelect = () => {
   return {
     close,
     onClick,
+    menuStyle,
     menuVisible,
     onButtonClick,
     onBlur,
