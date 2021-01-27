@@ -30,7 +30,8 @@ import {
   zoomInKeyPressed,
   globalOptionKeyDown,
   globalOptionKeyUp,
-  actionHandled
+  actionHandled,
+  redirectRequest
 } from "../actions";
 import {
   AppState,
@@ -44,8 +45,7 @@ import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
-import { utimes } from "fs";
-import { SearchInput } from "../components/Main/DesignMode/Toolbar/index.pc";
+import { omit } from "lodash";
 
 export type AppStateSelector = (state) => AppState;
 
@@ -234,6 +234,47 @@ function* handleRenderer(getState: AppStateSelector) {
 }
 
 function* handleCanvasMouseUp(
+  action: CanvasMouseUp,
+  getState: AppStateSelector
+) {
+  yield fork(handleMetaKeyClick, action, getState);
+  yield fork(handleSyncFrameToLocation);
+}
+
+function* handleSyncFrameToLocation() {
+  const state: AppState = yield select();
+
+  function* removeFrameFromQuery() {
+    if (!state.designer.ui.query.frame) {
+      return;
+    }
+
+    yield put(
+      redirectRequest({ query: omit(state.designer.ui.query, ["frame"]) })
+    );
+  }
+
+  if (state.designer.selectedNodePaths.length !== 1) {
+    return yield call(removeFrameFromQuery);
+  }
+
+  const nodePath = state.designer.selectedNodePaths[0].split(".");
+
+  if (nodePath.length !== 1) {
+    return yield call(removeFrameFromQuery);
+  }
+
+  yield put(
+    redirectRequest({
+      query: {
+        ...state.designer.ui.query,
+        frame: nodePath[0]
+      }
+    })
+  );
+}
+
+function* handleMetaKeyClick(
   action: CanvasMouseUp,
   getState: AppStateSelector
 ) {
