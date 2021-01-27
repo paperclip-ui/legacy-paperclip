@@ -273,7 +273,10 @@ export const reducer = historyReducer(
 
     return state;
   },
-  [ActionType.GET_PROJECT_REQUEST_CHANGED]
+  [
+    ActionType.GET_PROJECT_REQUEST_CHANGED,
+    ActionType.GET_PROJECT_FILES_REQUEST_CHANGED
+  ]
 );
 
 const maybeOpenUri = (state: AppState, checkUri: string, newUri: string) => {
