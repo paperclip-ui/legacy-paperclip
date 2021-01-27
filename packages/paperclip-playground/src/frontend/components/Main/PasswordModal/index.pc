@@ -47,7 +47,7 @@
         <style>
           align-self: flex-end;
         </style>
-        Log in
+        Open sesame
       </Button.Button>
     </div>
   </form>
