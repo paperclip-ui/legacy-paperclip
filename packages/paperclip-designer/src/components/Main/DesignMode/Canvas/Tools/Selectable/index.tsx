@@ -70,6 +70,10 @@ export const Selectable = React.memo(
       const bounds = currentBox;
       const zoom = canvasTransform.z;
 
+      // need to keep track of this internal state since it doesn't get
+      // refreshed outside of this function because DND handlers here.
+      let _currentBox = currentBox;
+
       const wrapActionCreator = createAction => (event, info) => {
         const delta = {
           x: info.delta.x / zoom,
@@ -80,22 +84,43 @@ export const Selectable = React.memo(
         // which would deselect multi-selected elements
         event.stopPropagation();
 
-        const newBounds = roundBox({
-          x: point.x === 0 ? bounds.x + delta.x : bounds.x,
-          y: point.y === 0 ? bounds.y + delta.y : bounds.y,
-          width:
-            point.x === 100
-              ? bounds.width + delta.x
-              : point.x == 50
-              ? bounds.width
-              : bounds.width - delta.x,
-          height:
-            point.y === 100
-              ? bounds.height + delta.y
-              : point.y === 50
-              ? bounds.height
-              : bounds.height - delta.y
-        });
+        let x = point.x === 0 ? bounds.x + delta.x : bounds.x;
+        let y = point.y === 0 ? bounds.y + delta.y : bounds.y;
+
+        // make sure sizes don't go into negative values
+        const width = Math.max(
+          1,
+          point.x === 100
+            ? bounds.width + delta.x
+            : point.x == 50
+            ? bounds.width
+            : bounds.width - delta.x
+        );
+
+        const height = Math.max(
+          1,
+          point.y === 100
+            ? bounds.height + delta.y
+            : point.y === 50
+            ? bounds.height
+            : bounds.height - delta.y
+        );
+
+        // if params don't change, then make sure that the box doesn't move
+        if (width == _currentBox.width) {
+          x = _currentBox.x;
+        }
+
+        if (height == _currentBox.height) {
+          y = _currentBox.y;
+        }
+
+        const newBounds = (_currentBox = roundBox({
+          x,
+          y,
+          width,
+          height
+        }));
 
         setCurrentBox(newBounds);
 
