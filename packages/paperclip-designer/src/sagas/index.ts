@@ -29,20 +29,23 @@ import {
   zoomOutKeyPressed,
   zoomInKeyPressed,
   globalOptionKeyDown,
-  globalOptionKeyUp
+  globalOptionKeyUp,
+  actionHandled
 } from "../actions";
 import {
   AppState,
   getActiveFrameIndex,
   getNodeInfoAtPoint,
   getSelectedFrames,
-  isExpanded
+  isExpanded,
+  SyncLocationMode
 } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { utimes } from "fs";
+import { SearchInput } from "../components/Main/DesignMode/Toolbar/index.pc";
 
 export type AppStateSelector = (state) => AppState;
 
@@ -64,6 +67,7 @@ export default function* mainSaga(
   yield fork(handleClipboard, getState);
   yield fork(handleLocationChanged);
   yield fork(handleLocation, getState);
+  yield fork(handleActions, getState);
 }
 
 function handleSock(onMessage, onClient) {
@@ -125,10 +129,10 @@ function* handleRenderer(getState: AppStateSelector) {
     ],
     function*() {
       const state: AppState = yield select(getState);
-      const currUri = state.designer.ui.query.currentFileUri;
+      const currUri = state.designer.ui.query.canvasFile;
       if (currUri !== _previousFileUri) {
         _previousFileUri = currUri;
-        yield put(fileOpened({ uri: state.designer.ui.query.currentFileUri }));
+        yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
       }
     }
   );
@@ -198,7 +202,7 @@ function* handleRenderer(getState: AppStateSelector) {
   yield takeEvery([ActionType.LOCATION_CHANGED], function*() {
     const state: AppState = yield select(getState);
     if (
-      (!state.designer.ui.query.currentFileUri ||
+      (!state.designer.ui.query.canvasFile ||
         location.pathname.indexOf("/all") === 0) &&
       !state.designer.loadedBirdseyeInitially
     ) {
@@ -254,7 +258,7 @@ function* handleCanvasMouseUp(
   const nodePathParts = nodeInfo.nodePath.split(".").map(Number);
 
   const virtualNode = getVirtTarget(
-    state.designer.allLoadedPCFileData[state.designer.ui.query.currentFileUri]
+    state.designer.allLoadedPCFileData[state.designer.ui.query.canvasFile]
       .preview,
     nodePathParts
   );
@@ -369,7 +373,6 @@ function* handleCopy(getState: AppStateSelector) {
   });
 
   yield takeEvery(ev, function*(event: ClipboardEvent) {
-
     if (isInput(event.target as any)) {
       return;
     }
@@ -481,11 +484,33 @@ function* handleLocation(getState: AppStateSelector) {
   yield takeEvery(chan, handleLocationChanged);
   yield takeEvery(ActionType.REDIRECT_REQUESTED, function*() {
     const state = yield select(getState);
-    if (!state.designer.syncLocationWithUI) {
-      return;
+
+    const pathname =
+      state.designer.syncLocationMode & SyncLocationMode.Location
+        ? state.designer.ui.pathname
+        : history.location.pathname;
+    const search =
+      state.designer.syncLocationMode & SyncLocationMode.Query
+        ? "?" + qs.stringify(state.designer.ui.query)
+        : history.location.search;
+
+    const newPath = pathname + search;
+
+    if (newPath !== history.location.pathname + history.location.search) {
+      history.push(newPath);
     }
-    history.push(
-      state.designer.ui.pathname + "?" + qs.stringify(state.designer.ui.query)
-    );
   });
+}
+
+function* handleActions(getState: AppStateSelector) {
+  while (1) {
+    yield take();
+    const state: AppState = yield select(getState);
+    if (state.actions.length) {
+      yield put(actionHandled(null));
+
+      // need to clone to unfreeze
+      yield put(JSON.parse(JSON.stringify(state.actions[0])));
+    }
+  }
 }

@@ -153,7 +153,7 @@ export const Toolbar = () => {
           )
         }
       />
-      {state.currentCodeFilePath !== state.designer.ui.query.currentFileUri && (
+      {state.currentCodeFilePath !== state.designer.ui.query.canvasFile && (
         <styles.EyeButton onClick={onSyncPanelsClick} />
       )}
     </styles.Topbar>

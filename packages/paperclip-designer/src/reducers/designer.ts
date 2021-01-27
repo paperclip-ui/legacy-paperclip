@@ -17,7 +17,8 @@ import {
   getPreviewChildren,
   getCurrentPreviewFrameBoxes,
   updateShared,
-  DesignerState
+  DesignerState,
+  SyncLocationMode
 } from "../state";
 import { produce } from "immer";
 import Automerge from "automerge";
@@ -41,6 +42,7 @@ import {
   EngineDelegateEventKind
 } from "paperclip-utils";
 import * as path from "path";
+import { actionCreator } from "../actions/base";
 
 const ZOOM_SENSITIVITY = IS_WINDOWS ? 2500 : 250;
 const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
@@ -168,17 +170,22 @@ const minimizeWindow = (designer: DesignerState) => {
 
 const handleLocationChange = (
   designer: DesignerState,
-  { payload }: LocationChanged | RedirectRequested
+  { payload }: LocationChanged | RedirectRequested,
+  mode: SyncLocationMode
 ) => {
   return produce(designer, newDesigner => {
-    Object.assign(newDesigner.ui, payload);
+    if (payload.query && mode & SyncLocationMode.Query) {
+      newDesigner.ui.query = payload.query || {};
+    }
 
-    // clean path & ensure that it looks like "/canvas" instead of "/canvas/";
-    newDesigner.ui.pathname = path
-      .normalize(newDesigner.ui.pathname)
-      .replace(/\/$/, "");
+    if (payload.pathname && mode & SyncLocationMode.Location) {
+      const oldLocation = newDesigner.ui.pathname;
+      newDesigner.ui.pathname = cleanupPath(payload.pathname);
 
-    newDesigner.centeredInitial = false;
+      if (oldLocation !== newDesigner.ui.pathname) {
+        newDesigner.centeredInitial = false;
+      }
+    }
   });
 };
 
@@ -211,13 +218,14 @@ export const reduceDesigner = (
       });
     }
     case ActionType.LOCATION_CHANGED: {
-      if (!designer.syncLocationWithUI) {
-        return designer;
-      }
-      return handleLocationChange(designer, action);
+      return handleLocationChange(designer, action, designer.syncLocationMode);
     }
     case ActionType.REDIRECT_REQUESTED: {
-      return handleLocationChange(designer, action);
+      return handleLocationChange(
+        designer,
+        action,
+        SyncLocationMode.Location | SyncLocationMode.Query
+      );
     }
     case ActionType.GET_ALL_SCREENS_REQUESTED: {
       return produce(designer, newDesigner => {
@@ -301,7 +309,7 @@ export const reduceDesigner = (
     }
     case ActionType.PC_FILE_OPENED: {
       designer = produce(designer, newDesigner => {
-        newDesigner.allLoadedPCFileData[designer.ui.query.currentFileUri] =
+        newDesigner.allLoadedPCFileData[designer.ui.query.canvasFile] =
           action.payload.data;
       });
       designer = maybeCenterCanvas(designer);
@@ -611,3 +619,6 @@ export const reduceDesigner = (
 
   return designer;
 };
+
+const cleanupPath = (pathname: string) =>
+  path.normalize(pathname).replace(/\/$/, "");

@@ -36,6 +36,7 @@ export type ProjectFile = {
 };
 
 export const APP_LOCATIONS = {
+  ROOT: "/",
   PROJECTS: "/projects",
   PROJECT: "/projects/:projectId",
   SHARED_PROJECT: "/s/:projectHash"
@@ -59,7 +60,7 @@ const getPathnameRegexp = memoize((test: string) => {
  */
 
 export type WorkerState = {
-  currentFileUri: string;
+  canvasFile: string;
   documents: Record<string, string | Blob>;
 };
 
@@ -100,10 +101,10 @@ export const INITIAL_STATE: AppState = {
     ui: {
       pathname: "/canvas",
       query: {
-        currentFileUri: ENTRY_URI
+        canvasFile: ENTRY_URI
       }
     },
-    syncLocationWithUI: false,
+    syncLocationMode: ve.SyncLocationMode.Query,
     projectDirectory: {
       name: "/",
       kind: ve.FSItemKind.DIRECTORY,
@@ -113,16 +114,10 @@ export const INITIAL_STATE: AppState = {
     }
   },
   currentCodeFilePath: ENTRY_URI,
-  playgroundUi:
-    typeof window !== "undefined"
-      ? {
-          pathname: window.location.pathname,
-          query: qs.parse(window.location.search.substr(1))
-        }
-      : {
-          pathname: "/",
-          query: {}
-        },
+  playgroundUi: {
+    pathname: "/",
+    query: {}
+  },
   compact: false,
   apiHost: process.env.API_HOST,
   slim: false
@@ -139,7 +134,7 @@ export const getNewFilePath = (name: string, previousNameOrExt: string) => {
 
 export const getWorkerState = (state: AppState): WorkerState => {
   return {
-    currentFileUri: state.designer.ui.query.currentFileUri,
+    canvasFile: state.designer.ui.query.canvasFile,
     documents: pickBy(
       mapValues(state.shared.documents, value => value.toString()),
       (content: string, uri: string) => {

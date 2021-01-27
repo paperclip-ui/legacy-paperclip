@@ -66,6 +66,8 @@ export enum ActionType {
   RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING",
   META_CLICKED = "META_CLICKED",
   PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED",
+
+  ACTION_HANDLED = "ACTION_HANDLED",
   FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
   EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
   COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED",
@@ -269,6 +271,7 @@ export type CanvasPanStart = BaseAction<ActionType.CANVAS_PAN_START>;
 export type CanvasPanEnd = BaseAction<ActionType.CANVAS_PAN_END>;
 export type CanvasResized = BaseAction<ActionType.CANVAS_RESIZED, Size>;
 export type CanvasMouseMoved = BaseAction<ActionType.CANVAS_MOUSE_MOVED, Point>;
+export type ActionHandled = BaseAction<ActionType.ACTION_HANDLED>;
 export type EngineErrored = BaseAction<
   ActionType.ENGINE_ERRORED,
   EngineErrorEvent
@@ -368,6 +371,9 @@ export const envOptionClicked = actionCreator<EnvOptionClicked>(
 export const metaClicked = actionCreator<MetaClicked>(ActionType.META_CLICKED);
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
   ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
+);
+export const actionHandled = actionCreator<ActionHandled>(
+  ActionType.ACTION_HANDLED
 );
 export const birdseyeTopFilterBlurred = actionCreator<BirdseyeTopFilterBlurred>(
   ActionType.BIRDSEYE_TOP_FILTER_BLURRED
@@ -524,6 +530,7 @@ export type InstanceAction =
   | CollapseFrameButtonClicked
   | ExpandFrameButtonClicked
   | ZoomInButtonClicked
+  | ActionHandled
   | ZoomInputChanged
   | ClientConnected
   | EnvOptionClicked

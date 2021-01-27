@@ -56,14 +56,14 @@ const init = async () => {
 
   const tryOpeningCurrentFile = () => {
     if (
-      _state.currentFileUri &&
+      _state.canvasFile &&
       _engine &&
-      (!_currentUri || _currentUri !== _state.currentFileUri)
+      (!_currentUri || _currentUri !== _state.canvasFile)
     ) {
-      _currentUri = _state.currentFileUri;
+      _currentUri = _state.canvasFile;
 
       if (isPaperclipFile(_currentUri)) {
-        _engine.open(_state.currentFileUri);
+        _engine.open(_state.canvasFile);
       }
     }
   };

@@ -22,6 +22,7 @@ import mime from "mime-types";
 import { ShareModal } from "./ShareModal";
 import { PasswordModal } from "./PasswordModal";
 import { ProjectLoadingModal } from "./ProjectLoadingModal";
+import { current } from "immer";
 
 export const Main = withAppStore(() => {
   const store = useAppStore();
@@ -111,7 +112,7 @@ const Editor = memo(() => {
 const Preview = () => {
   const { state } = useAppStore();
 
-  const currentUri = state.designer.ui.query.currentFileUri;
+  const currentUri = state.designer.ui.query.canvasFile;
 
   const content: Blob = state.shared.documents[currentUri] as Blob;
 

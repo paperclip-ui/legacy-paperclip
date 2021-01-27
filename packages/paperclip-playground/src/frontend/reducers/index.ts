@@ -8,7 +8,8 @@ import {
 } from "../state";
 import {
   Action as VEAction,
-  ActionType as VEActionType
+  ActionType as VEActionType,
+  redirectRequest
 } from "paperclip-designer/src/actions";
 import { Action, ActionType } from "../actions";
 import produce from "immer";
@@ -18,7 +19,6 @@ import { editString } from "../utils/string-editor";
 import Automerge from "automerge";
 import { updateShared } from "paperclip-designer/src/state";
 import { historyReducer } from "paperclip-designer/src/reducers/history";
-import { mapValues, replace, result } from "lodash";
 import mime from "mime-types";
 import { isPaperclipFile } from "paperclip-utils";
 
@@ -32,7 +32,14 @@ export const reducer = historyReducer(
         if (!state.shared.documents[state.currentCodeFilePath]) {
           state = produce(state, newState => {
             const uri = getMainUri(state);
-            newState.designer.ui.query.currentFileUri = uri;
+
+            newState.actions.push(
+              redirectRequest({
+                query: {
+                  canvasFile: uri
+                }
+              })
+            );
           });
         }
 
@@ -116,7 +123,16 @@ export const reducer = historyReducer(
         state = produce(state, newState => {
           newState.currentProjectFiles = action.payload.result;
           if (result.data) {
-            newState.designer.ui.query.currentFileUri = mainFile.path;
+            if (!newState.designer.ui.query.canvasFile) {
+              newState.actions.push(
+                redirectRequest({
+                  query: {
+                    canvasFile: mainFile.path
+                  }
+                })
+              );
+            }
+
             newState.currentCodeFilePath = mainFile.path;
 
             // reset canvas zoom
@@ -136,6 +152,19 @@ export const reducer = historyReducer(
       case VEActionType.LOCATION_CHANGED: {
         return produce(state, newState => {
           newState.playgroundUi = action.payload;
+
+          // new project
+          if (
+            matchesLocationPath(APP_LOCATIONS.ROOT, action.payload.pathname)
+          ) {
+            newState.actions.push(
+              redirectRequest({
+                query: {
+                  canvasFile: newState.currentCodeFilePath
+                }
+              })
+            );
+          }
         });
       }
       case ActionType.SHARE_PROJECT_REQUEST_STATE_CHANGED: {
@@ -158,7 +187,13 @@ export const reducer = historyReducer(
             !isPaperclipFile(action.payload.uri) ||
             !isPaperclipFile(previousUri)
           ) {
-            newState.designer.ui.query.currentFileUri = action.payload.uri;
+            newState.actions.push(
+              redirectRequest({
+                query: {
+                  canvasFile: action.payload.uri
+                }
+              })
+            );
           }
         });
       }
@@ -197,7 +232,14 @@ export const reducer = historyReducer(
 
             // set dropped file as preview
             newState.currentCodeFilePath = uri;
-            newState.designer.ui.query.currentFileUri = uri;
+
+            newState.actions.push(
+              redirectRequest({
+                query: {
+                  canvasFile: uri
+                }
+              })
+            );
           }
         });
       }
@@ -240,8 +282,14 @@ const maybeOpenUri = (state: AppState, checkUri: string, newUri: string) => {
       newState.currentCodeFilePath = newUri;
     }
 
-    if (newState.designer.ui.query.currentFileUri === checkUri) {
-      newState.designer.ui.query.currentFileUri = newUri;
+    if (newState.designer.ui.query.canvasFile === checkUri) {
+      newState.actions.push(
+        redirectRequest({
+          query: {
+            canvasFile: newUri
+          }
+        })
+      );
     }
   });
 };

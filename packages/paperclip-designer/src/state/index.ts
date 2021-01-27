@@ -25,6 +25,7 @@ import {
 } from "./geom";
 import * as os from "os";
 import { Frame } from "paperclip-web-renderer";
+import { Action } from "../actions";
 
 export const DEFAULT_FRAME_BOX = {
   width: 1024,
@@ -77,7 +78,7 @@ type ExpandedFrameInfo = {
 export type UIState = {
   pathname: string;
   query: Partial<{
-    currentFileUri: string;
+    canvasFile: string;
     id: string;
     expanded: boolean;
     frame: number;
@@ -97,8 +98,14 @@ export type SharedState = {
   documents: Record<string, string | Blob>;
 };
 
+export enum SyncLocationMode {
+  None = 0,
+  Query = 1,
+  Location = 1 << 1
+}
+
 export type DesignerState = {
-  syncLocationWithUI?: boolean;
+  syncLocationMode?: number;
   ui: UIState;
   readonly: boolean;
   sharable: boolean;
@@ -135,8 +142,14 @@ export type HistState = {
   };
 };
 
+type ActionShape = {
+  type: string;
+  payload: any;
+};
+
 export type AppState = {
   // state that can be hooked up with CRDTs
+  actions: ActionShape[];
   shared: SharedState;
   designer: DesignerState;
   compact?: boolean;
@@ -162,6 +175,7 @@ export type AvailableBrowser = {
 };
 
 export const INITIAL_STATE: AppState = {
+  actions: [],
   history: {
     past: [],
     future: []
@@ -171,7 +185,7 @@ export const INITIAL_STATE: AppState = {
   },
   designer: {
     readonly: false,
-    syncLocationWithUI: true,
+    syncLocationMode: SyncLocationMode.Location | SyncLocationMode.Query,
     sharable: true,
     ui: {
       pathname: "",
@@ -328,7 +342,7 @@ export const getFrameFromIndex = (
     return null;
   }
   const preview =
-    designer.allLoadedPCFileData[designer.ui.query.currentFileUri]?.preview;
+    designer.allLoadedPCFileData[designer.ui.query.canvasFile]?.preview;
   if (!preview) {
     return null;
   }
@@ -384,7 +398,7 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
 
 export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
   const currentPCData =
-    designer.allLoadedPCFileData[designer.ui.query?.currentFileUri];
+    designer.allLoadedPCFileData[designer.ui.query?.canvasFile];
 
   return currentPCData?.preview
     ? getPreviewFrameBoxes(currentPCData?.preview).filter(Boolean)
@@ -407,7 +421,7 @@ export const maybeCenterCanvas = (designer: DesignerState, force?: boolean) => {
   if (
     force ||
     (!designer.centeredInitial &&
-      designer.allLoadedPCFileData[designer.ui.query.currentFileUri] &&
+      designer.allLoadedPCFileData[designer.ui.query.canvasFile] &&
       designer.canvas.size?.width &&
       designer.canvas.size?.height)
   ) {
@@ -420,7 +434,7 @@ export const maybeCenterCanvas = (designer: DesignerState, force?: boolean) => {
 
     if (currentFrameIndex != null) {
       const frameBoxes = getPreviewFrameBoxes(
-        designer.allLoadedPCFileData[designer.ui.query.currentFileUri].preview
+        designer.allLoadedPCFileData[designer.ui.query.canvasFile].preview
       );
       targetBounds = frameBoxes[currentFrameIndex];
     }

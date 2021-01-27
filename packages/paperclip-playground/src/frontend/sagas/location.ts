@@ -87,11 +87,23 @@ type Routes = {
 };
 
 function* route(routes: Routes) {
+  let _currentState: AppState;
+
   yield takeEvery(VEActionType.LOCATION_CHANGED, function*(
     action: LocationChanged
   ) {
     for (const test in routes) {
       if (matchesLocationPath(action.payload.pathname, test)) {
+        const _previousState = _currentState;
+        _currentState = yield select();
+
+        // Skip if just changing query
+        if (
+          _previousState?.playgroundUi?.pathname === action.payload.pathname
+        ) {
+          break;
+        }
+
         const params = getLocationParams(action.payload.pathname, test);
         try {
           yield call(routes[test], params);

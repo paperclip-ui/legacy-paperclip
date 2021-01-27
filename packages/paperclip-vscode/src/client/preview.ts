@@ -52,7 +52,7 @@ enum OpenLivePreviewOptions {
 type PreviewLocation = {
   pathname: string;
   query: Partial<{
-    currentFileUri: string;
+    canvasFile: string;
     embedded: boolean;
     id: string;
     expanded: boolean;
@@ -97,7 +97,7 @@ export const activate = (
         panel,
         {
           query: {
-            currentFileUri: paperclipUri
+            canvasFile: paperclipUri
           }
         },
         sticky
@@ -428,13 +428,13 @@ class LivePreview {
     this.panel.reveal(this.panel.viewColumn, false);
   }
   setTargetUri(value: string, rerender = true) {
-    if (this.location.query.currentFileUri === value) {
+    if (this.location.query.canvasFile === value) {
       return;
     }
     this.panel.title = `⚡️ ${
       this.sticky ? "sticky preview" : path.basename(value)
     }`;
-    this.location.query.currentFileUri = value;
+    this.location.query.canvasFile = value;
 
     if (rerender) {
       this._render();

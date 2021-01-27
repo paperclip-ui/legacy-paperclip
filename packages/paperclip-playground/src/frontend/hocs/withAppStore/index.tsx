@@ -47,7 +47,7 @@ export const createAppStore = (
           ...INITIAL_STATE.designer.ui,
           query: {
             ...INITIAL_STATE.designer.ui.query,
-            currentFileUri: mainUri,
+            canvasFile: mainUri,
             frame: activeFrameIndex,
             expanded: activeFrameIndex != null
           }
