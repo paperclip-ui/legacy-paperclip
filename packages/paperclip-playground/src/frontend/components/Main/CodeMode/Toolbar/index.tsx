@@ -205,6 +205,7 @@ const FileMenuItem = memo(
             menu={
               select.menuVisible && (
                 <styles.MoreFileMenu
+                  style={select.menuStyle}
                   onRemoveClick={() => onRemoveClick(uri)}
                   onRenameClick={onRenameClick}
                 />

@@ -152,13 +152,15 @@
   <style>
     &:hover, &.hover {
       .more-file-select {
-          visibility: visible;
+        opacity: 1;
+        pointer-events: initial;
       }
     }
 
     // ensure that more button isn't covered
     padding-right: 16px;
-    
+    position: static;
+    /* position: inherit; */
   </style>
   {children}
   {moreSelect}
@@ -233,11 +235,14 @@
 <Select.Container export component as="MoreFileSelect" {onClick} {onBlur} className="$more-file-select">
   <style>
     // necessary to pop out of scroll
-    position: absolute;
     right: 0px;
     z-index: 99999;
-    visibility: hidden;
+
+    // need to use opacity so focus is not lost
+    pointer-events: none;
+    opacity: 0;
     margin-left: 16px;
+    position: static;
 
   </style>
   {children}
@@ -248,9 +253,10 @@
 <!--
   @frame { visible: false }
 -->
-<Select.Menu export component as="MoreFileMenu">
+<Select.Menu export component as="MoreFileMenu" {style}>
   <style>
     min-width: 150px;
+    position: absolute;
   </style>
   <Select.MenuItem onClick={onRenameClick}>Rename</Select.MenuItem>
   <Select.MenuItem onClick={onRemoveClick}>
@@ -397,9 +403,7 @@
         <FileMenuItem>
           Colors.pc
         </FileMenuItem>
-        <FileMenuItem hover moreSelect={<MoreFileSelect menu={<MoreFileMenu />}>
-          <MoreFileButton />
-        </MoreFileSelect>}>
+        <FileMenuItem hover moreSelect={<MoreFileSelect><MoreFileButton /></MoreFileSelect>}>
           Super-long-file-name-that-should-wrap-around.png
         </FileMenuItem>
         <FileMenuItem>
@@ -407,6 +411,24 @@
         </FileMenuItem>
         <FileMenuItem hover>
           Colors.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Molecules / Select.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Molecules / Select.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Molecules / Select.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Molecules / Select.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Molecules / Select.pc
+        </FileMenuItem>
+        <FileMenuItem>
+          Molecules / Select.pc
         </FileMenuItem>
         <FileMenuItem>
           Molecules / Select.pc
