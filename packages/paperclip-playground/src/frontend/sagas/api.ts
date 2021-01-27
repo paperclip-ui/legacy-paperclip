@@ -177,9 +177,9 @@ function* handleProjectChanges() {
       api.createProject,
       action.payload.name,
       {
-        "/main.pc": ""
+        "main.pc": ""
       },
-      "/main.pc"
+      "main.pc"
     );
 
     history.push(`/projects/${project.id}`);
