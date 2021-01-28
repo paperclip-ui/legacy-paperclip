@@ -1,12 +1,6 @@
 import { camelCase } from "lodash";
 import * as path from "path";
-import {
-  getMetaValue,
-  Node,
-  Element,
-  AS_ATTR_NAME,
-  getAttributeStringValue
-} from "paperclip";
+import { Element, AS_ATTR_NAME, getAttributeStringValue } from "paperclip";
 
 export const RENAME_PROPS = {
   class: "className",

@@ -57,7 +57,6 @@ import { camelCase, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import { ClassNameExport } from "paperclip";
-import { connect } from "http2";
 
 const entities = new Html5Entities();
 type Config = {
@@ -845,8 +844,7 @@ const translateAttribute = (
   added: Record<string, boolean>
 ) => {
   if (attr.kind === AttributeKind.KeyValueAttribute) {
-    // maintain exact key if component instance
-    let name = isComponentInstance
+    const name = isComponentInstance
       ? attr.name
       : RENAME_PROPS[attr.name] || attr.name;
     const value = attr.value;
@@ -863,10 +861,6 @@ const translateAttribute = (
       return context;
     }
 
-    // can't handle for now
-    if (!/^data-/.test(name)) {
-      name = camelCase(name);
-    }
     context = addBuffer(`${JSON.stringify(name)}: `, context);
 
     if (name === "style") {
@@ -915,8 +909,7 @@ const translateAttribute = (
     )}`;
 
     if (!isComponentInstance && !isSpecialPropName(property.name)) {
-      // everything must be a string
-      value = `(${value} ? String(${value}) : null)`;
+      value = `${value}`;
     }
     context = addBuffer(`${JSON.stringify(property.name)}:`, context);
     context = prepPropertyBoundAttribute(
@@ -1099,18 +1092,18 @@ const translateStatment = (
   context: TranslateContext
 ) => {
   if (statement.jsKind === JsExpressionKind.Reference) {
-    if (shouldStringifyProp) {
-      context = translateStatment(statement, isRoot, false, context);
-      context = addBuffer(" ? String(", context);
-    }
+    // if (shouldStringifyProp) {
+    //   context = translateStatment(statement, isRoot, false, context);
+    //   context = addBuffer(" ? String(", context);
+    // }
 
     if (!context.scopes[statement.path[0].name]) {
       context = translateReferencePath(statement.path, context);
     }
 
-    if (shouldStringifyProp) {
-      context = addBuffer(") : null", context);
-    }
+    // if (shouldStringifyProp) {
+    //   context = addBuffer(") : null", context);
+    // }
 
     return context;
   } else if (statement.jsKind === JsExpressionKind.Node) {

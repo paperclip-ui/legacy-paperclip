@@ -1334,7 +1334,7 @@ fn evaluate_style_key_value_declaration<'a>(
   let mut value = expr.value.to_string();
 
   lazy_static! {
-    static ref url_re: Regex = Regex::new(r#"url\((?:['"]?)(.*?)(?:['"]?)\)"#).unwrap();
+    static ref url_re: Regex = Regex::new(r#"url\((?:['"]?)([^(]*?)(?:['"]?)\)"#).unwrap();
     static ref protocol_re: Regex = Regex::new(r"^\w+:").unwrap();
 
     // Only want to cover CSS that can affect the preview. All other CSS prefixing can happen via

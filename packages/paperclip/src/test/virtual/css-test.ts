@@ -1479,4 +1479,25 @@ describe(__filename + "#", () => {
       `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
   });
+
+  it(`url vars work`, async () => {
+    const graph = {
+      "/entry.pc": `
+      <div className="variant">
+        <style>
+          div {
+            background: url(var(--test));
+          }
+        </style>
+      </div>
+    `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-406d2856] div[data-pc-80f4925f] { background:url(var(--test)); }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+    );
+  });
 });
