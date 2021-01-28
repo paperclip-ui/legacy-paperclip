@@ -844,8 +844,7 @@ const translateAttribute = (
   added: Record<string, boolean>
 ) => {
   if (attr.kind === AttributeKind.KeyValueAttribute) {
-    // maintain exact key if component instance
-    let name = isComponentInstance
+    const name = isComponentInstance
       ? attr.name
       : RENAME_PROPS[attr.name] || attr.name;
     const value = attr.value;
@@ -862,10 +861,6 @@ const translateAttribute = (
       return context;
     }
 
-    // can't handle for now
-    if (!/^data-/.test(name)) {
-      name = camelCase(name);
-    }
     context = addBuffer(`${JSON.stringify(name)}: `, context);
 
     if (name === "style") {
