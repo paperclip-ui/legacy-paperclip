@@ -408,6 +408,21 @@ describe(__filename + "#", () => {
       {
         Test: `<div data-pc-376a18c0="true" data-pc-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" data-a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div data-pc-406d2856="true" data-pc-80f4925f="true" data-a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div data-pc-406d2856="true" data-pc-80f4925f="true" data-a="te&#x27;s&#x27;a&#x27;dfds" c="d"></div><div data-pc-406d2856="true" data-pc-80f4925f="true" data-a="true" c="e"></div></div>`
       }
+    ],
+    [
+      "Maintains attribute casing",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" allow-1password="no">
+          </div>
+        `
+      },
+      {
+        Entry: {}
+      },
+      {
+        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" allow-1password="no"></div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {
