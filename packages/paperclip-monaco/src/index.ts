@@ -7,15 +7,9 @@ export type Monaco = typeof monacoEditor;
 export const active = (monaco: Monaco) => {
   console.log("OKFDOFS");
 
-  monacoEditor.languages.onLanguage("paperclip", () => {
-    console.log("ACTIVATE!");
-  });
 
   registerLanguages(monaco);
 
-  monacoEditor.languages.onLanguage("paperclip", () => {
-    console.log("ACTIVATE!");
-  });
 };
 
 const EMPTY_ELEMENTS: string[] = [
