@@ -1,31 +1,28 @@
-
 // import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import * as monacoEditor from "monaco-editor-core/esm/vs/editor/editor.api";
-
 
 export type Monaco = typeof monacoEditor;
 import * as html from "./html";
 import * as pcss from "./pcss";
 import * as pcs from "./script";
 
-
 export const registerLanguages = (monaco: Monaco) => {
   monaco.languages.register({
     id: "paperclip",
     extensions: [".pc"],
-    mimetypes: ["text/paperclip"],
+    mimetypes: ["text/paperclip"]
   });
 
   monaco.languages.register({
     id: "pcss",
     extensions: [".pcss"],
-    mimetypes: ["text/pcss"],
+    mimetypes: ["text/pcss"]
   });
 
   monaco.languages.register({
     id: "pcs",
     extensions: [".pcs"],
-    mimetypes: ["text/pcs"],
+    mimetypes: ["text/pcs"]
   });
 
   monaco.languages.setLanguageConfiguration("paperclip", html.config);
@@ -36,5 +33,4 @@ export const registerLanguages = (monaco: Monaco) => {
 
   monaco.languages.setLanguageConfiguration("pcs", pcs.config);
   monaco.languages.setMonarchTokensProvider("pcs", pcs.language as any);
-
-}
+};

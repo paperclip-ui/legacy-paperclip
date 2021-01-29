@@ -149,19 +149,16 @@ const Editor = ({ value, onChange }: EditorProps) => {
     }
   }, [editor, value]);
 
-
-
   useEffect(() => {
     if (!editorRef.current) {
       return;
     }
 
-
     loadMonaco.init().then(monaco => {
       activatePaperclipExtension(monaco as any);
       const editor = monaco.editor.create(editorRef.current, {
         language: "paperclip",
-        automaticLayout: true,
+        automaticLayout: true
       });
       setEditor(editor);
       editor.onDidChangeModelContent(() => {
@@ -170,16 +167,14 @@ const Editor = ({ value, onChange }: EditorProps) => {
       });
 
       setLoading(false);
-      
     });
 
-    
-
-    return () => {
-    }
+    return () => {};
   }, []);
 
-  return <>
-    <div ref={editorRef} style={{height: `100%`, width: '100%'}} />
-  </>
+  return (
+    <>
+      <div ref={editorRef} style={{ height: `100%`, width: "100%" }} />
+    </>
+  );
 };
