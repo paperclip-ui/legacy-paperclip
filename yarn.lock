@@ -10559,6 +10559,11 @@ modify-values@^1.0.0:
   resolved "https://registry.npmjs.org/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
+monaco-editor-core@^0.21.3:
+  version "0.21.3"
+  resolved "https://registry.npmjs.org/monaco-editor-core/-/monaco-editor-core-0.21.3.tgz#7e04102f8a5f7c506b576317d2c4e3537e52a1d7"
+  integrity sha512-luhmUQ5bHL6APZubTW8Evtid1idf4FJPKuXUS+IrslCq/isdzHOrJNxl/DTwZXegidyAGijQHamdCGRJPV+yyg==
+
 monaco-editor@^0.21.3:
   version "0.21.3"
   resolved "https://registry.npmjs.org/monaco-editor/-/monaco-editor-0.21.3.tgz#3381b66614b64d1c5e3b77dd5564ad496d1b4e5d"

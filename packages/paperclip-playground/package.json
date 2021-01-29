@@ -12,6 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@monaco-editor/loader": "^1.0.0",
     "@monaco-editor/react": "^4.0.0",
     "automerge": "^0.14.2",
     "buffer-crc32": "^0.2.13",
@@ -23,6 +24,7 @@
     "nodemon": "^2.0.7",
     "paperclip": "^17.5.0",
     "paperclip-designer": "^17.5.0",
+    "paperclip-monaco": "^1.0.0",
     "paperclip-source-writer": "^17.5.0",
     "paperclip-utils": "^17.4.27",
     "prism-material-themes": "^1.0.4",

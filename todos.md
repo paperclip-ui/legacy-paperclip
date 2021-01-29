@@ -1,6 +1,9 @@
 ### Tomorrow
 
 
+- language colors
+- save controls
+- option + backspace
 - color picker**
 
 - GH oauth icon

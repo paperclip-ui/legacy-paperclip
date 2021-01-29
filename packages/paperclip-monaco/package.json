@@ -1,0 +1,18 @@
+{
+  "name": "paperclip-monaco",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch --incremental"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "monaco-editor": "^0.21.3",
+    "monaco-editor-core": "^0.21.3",
+    "paperclip-language-service": "^1.0.0",
+    "typescript": "^4.1.3"
+  }
+}
