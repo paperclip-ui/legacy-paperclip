@@ -60,156 +60,26 @@ export const config: languages.LanguageConfiguration = {
   }
 };
 
+// https://microsoft.github.io/monaco-editor/monarch.html#htmlembed
 export const language = {
   defaultToken: "",
   tokenPostfix: ".pc",
   ignoreCase: true,
+  tagName: /(?:[\w\-]+:)?[\w\-\.]+/,
 
   // The main tokenizer for our languages
   tokenizer: {
     root: [
-      { include: "@slot" },
-      [/<!--/, "comment", "@comment"],
-      [
-        /(<)((?:[\w\-]+:)?[\w\-]+)(\s*)(\/>)/,
-        ["delimiter", "tag", "", "delimiter"]
-      ],
-      [/(<)(style)/, ["delimiter", { token: "tag", next: "@style" }]],
-      [
-        /(<)((?:[\w\-]+:)?[\w\-]+)/,
-        ["delimiter", { token: "tag", next: "@otherTag" }]
-      ],
-      [
-        /(<\/)((?:[\w\-]+:)?[\w\-]+)/,
-        ["delimiter", { token: "tag", next: "@otherTag" }]
-      ],
-      [/</, "delimiter"],
-      [/[^<{]+/] // text
+      { include: '@node'}
     ],
 
-    doctype: [
-      [/[^>]+/, "metatag.content"],
-      [/>/, "metatag", "@pop"]
+    node: [
+      [/<(\w+)/,       { token: 'tag.tag-$1', bracket: '@open', next: '@tag.$1' }],
+      [/<\/(\w+)\s*>/, { token: 'tag.tag-$1', bracket: '@close' } ],
     ],
 
-    comment: [
-      [/-->/, "comment", "@pop"],
-      [/[^-]+/, "comment.content"],
-      [/./, "comment.content"]
-    ],
-
-    otherTag: [
-      [/\/?>/, "delimiter", "@pop"],
-      [/"([^"]*)"/, "attribute.value"],
-      [/'([^']*)'/, "attribute.value"],
-      [/[\w\-]+/, "attribute.name"],
-      [/=/, "delimiter"],
-      [/[ \t\r\n]+/] // whitespace
-    ],
-
-    slot: [
-      [
-        /\{/,
-        {
-          token: "delimiter",
-          next: "slotEmbedded",
-          nextEmbedded: "text/pcs"
-        }
-      ]
-    ],
-
-    slotEmbedded: [
-      [/}/, { token: "@rematch", next: "@pop", nextEmbedded: "@pop" }]
-    ],
-
-    // -- BEGIN <style> tags handling
-
-    // After <style
-    style: [
-      [/type/, "attribute.name", "@styleAfterType"],
-      [/"([^"]*)"/, "attribute.value"],
-      [/'([^']*)'/, "attribute.value"],
-      [/[\w\-]+/, "attribute.name"],
-      [/=/, "delimiter"],
-      [
-        />/,
-        {
-          token: "delimiter",
-          next: "@styleEmbedded",
-          nextEmbedded: "text/pcss"
-        }
-      ],
-      [/[ \t\r\n]+/], // whitespace
-      [
-        /(<\/)(style\s*)(>)/,
-        ["delimiter", "tag", { token: "delimiter", next: "@pop" }]
-      ]
-    ],
-
-    // After <style ... type
-    styleAfterType: [
-      [/=/, "delimiter", "@styleAfterTypeEquals"],
-      [
-        />/,
-        {
-          token: "delimiter",
-          next: "@styleEmbedded",
-          nextEmbedded: "text/pcss"
-        }
-      ], // cover invalid e.g. <style type>
-      [/[ \t\r\n]+/], // whitespace
-      [/<\/style\s*>/, { token: "@rematch", next: "@pop" }]
-    ],
-
-    // After <style ... type =
-    styleAfterTypeEquals: [
-      [
-        /"([^"]*)"/,
-        {
-          token: "attribute.value",
-          switchTo: "@styleWithCustomType.$1"
-        }
-      ],
-      [
-        /'([^']*)'/,
-        {
-          token: "attribute.value",
-          switchTo: "@styleWithCustomType.$1"
-        }
-      ],
-      [
-        />/,
-        {
-          token: "delimiter",
-          next: "@styleEmbedded",
-          nextEmbedded: "text/css"
-        }
-      ], // cover invalid e.g. <style type=>
-      [/[ \t\r\n]+/], // whitespace
-      [/<\/style\s*>/, { token: "@rematch", next: "@pop" }]
-    ],
-
-    // After <style ... type = $S2
-    styleWithCustomType: [
-      [
-        />/,
-        {
-          token: "delimiter",
-          next: "@styleEmbedded.$S2",
-          nextEmbedded: "$S2"
-        }
-      ],
-      [/"([^"]*)"/, "attribute.value"],
-      [/'([^']*)'/, "attribute.value"],
-      [/[\w\-]+/, "attribute.name"],
-      [/=/, "delimiter"],
-      [/[ \t\r\n]+/], // whitespace
-      [/<\/style\s*>/, { token: "@rematch", next: "@pop" }]
-    ],
-
-    styleEmbedded: [
-      [/<\/style/, { token: "@rematch", next: "@pop", nextEmbedded: "@pop" }],
-      [/[^<]+/, ""]
+    tag: [
+      [/>/, { cases: { '$S2==style' : { token: 'delimiter', switchTo: '@embedded.$S2', nextEmbedded: 'text/css'}}}]
     ]
   }
 };
