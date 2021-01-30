@@ -12,7 +12,9 @@
   "dependencies": {
     "monaco-editor": "^0.21.3",
     "monaco-editor-core": "^0.21.3",
+    "paperclip": "^17.5.0",
     "paperclip-language-service": "^1.0.0",
+    "paperclip-utils": "^17.4.27",
     "typescript": "^4.1.3"
   }
 }

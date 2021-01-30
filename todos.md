@@ -1,8 +1,8 @@
 ### Tomorrow
 
-
-- language colors
-- save controls
+- TODO
+  - need to get a lay of exactly what features to implement
+  
 - option + backspace
 - color picker**
 

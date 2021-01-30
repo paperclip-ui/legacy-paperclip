@@ -28,8 +28,16 @@ const init = async () => {
   let _writer: PCSourceWriter;
   let _currentUri: string;
 
+  // open a line for any web workers that need access to the engine. Note that
+  // this is _one way_ since whatever's controlling the engine worker needs to also control its state since
+  // the engine worker handler may be the source of truth for that state.
+  const channel = new BroadcastChannel("paperclip");
+
+
+
   const dispatch = (action: Action) => {
     (self as any).postMessage(action);
+    channel.postMessage(action);
   };
 
   const onCrash = (e: Error) => {

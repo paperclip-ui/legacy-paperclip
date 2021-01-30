@@ -35,32 +35,6 @@ export const CodeMode = () => {
     editor: monacoEditor.editor.IStandaloneCodeEditor,
     monaco: Monaco
   ) => {
-    monaco.languages.css.cssDefaults.setModeConfiguration({
-      completionItems: true,
-      hovers: true,
-      colors: true,
-      documentSymbols: true
-    });
-
-    monaco.languages.html.htmlDefaults.setOptions({
-      format: {
-        ...monaco.languages.html.htmlDefaults.options.format,
-        indentInnerHtml: false,
-        tabSize: 4,
-        insertSpaces: true,
-        indentHandlebars: false,
-        endWithNewline: false,
-        wrapLineLength: 0
-      }
-    });
-
-    editor.getModel().updateOptions({
-      tabSize: 2,
-      insertSpaces: true
-    });
-
-    // console.log(editor.);
-    // control Z
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_Z, function() {
       // 🙈
       dispatch(globalZKeyDown(null) as any);
@@ -105,6 +79,7 @@ export const CodeMode = () => {
           <Editor
             value={code}
             onChange={onChange}
+            onMount={onMount}
             // onMount={onMount}
             // options={{
             //   minimap: {
@@ -135,9 +110,10 @@ export const CodeMode = () => {
 export type EditorProps = {
   value: string;
   onChange: (value: string) => void;
+  onMount: (editor: any, monaco: any) => void;
 };
 
-const Editor = ({ value, onChange }: EditorProps) => {
+const Editor = ({ value, onChange, onMount }: EditorProps) => {
   const monacoRef = useRef();
   const editorRef = useRef<HTMLDivElement>();
   const [editor, setEditor] = useState<any>();
@@ -167,16 +143,18 @@ const Editor = ({ value, onChange }: EditorProps) => {
       const editor = monaco.editor.create(editorRef.current, {
         language: "paperclip",
         tabSize: 2,
-        automaticLayout: true
+        automaticLayout: true,
+        insertSpaces: true
       });
       
       monaco.editor.setTheme("vs-dark");
       setEditor(editor);
 
       editor.onDidChangeModelContent(() => {
-        console.log("CHANG");
-        // onChange(editor.getValue());
+        onChange(editor.getValue());
       });
+
+      onMount(editor, monaco);
 
       setLoading(false);
     });
@@ -189,64 +167,4 @@ const Editor = ({ value, onChange }: EditorProps) => {
       <div ref={editorRef} style={{ height: `100%`, width: "100%" }} />
     </>
   );
-};
-
-
-const options = {
-  "acceptSuggestionOnCommitCharacter": true,
-  "acceptSuggestionOnEnter": "on",
-  "accessibilitySupport": "auto",
-  "autoIndent": false,
-  "automaticLayout": true,
-  "codeLens": true,
-  "colorDecorators": true,
-  "contextmenu": true,
-  "cursorBlinking": "blink",
-  "cursorSmoothCaretAnimation": false,
-  "cursorStyle": "line",
-  "disableLayerHinting": false,
-  "disableMonospaceOptimizations": false,
-  "dragAndDrop": false,
-  "fixedOverflowWidgets": false,
-  "folding": true,
-  "foldingStrategy": "auto",
-  "fontLigatures": false,
-  "formatOnPaste": false,
-  "formatOnType": false,
-  "hideCursorInOverviewRuler": false,
-  "highlightActiveIndentGuide": true,
-  "links": true,
-  "mouseWheelZoom": false,
-  "multiCursorMergeOverlapping": true,
-  "multiCursorModifier": "alt",
-  "overviewRulerBorder": true,
-  "overviewRulerLanes": 2,
-  "quickSuggestions": true,
-  "quickSuggestionsDelay": 100,
-  "readOnly": false,
-  "renderControlCharacters": false,
-  "renderFinalNewline": true,
-  "renderIndentGuides": true,
-  "renderLineHighlight": "all",
-  "renderWhitespace": "none",
-  "revealHorizontalRightPadding": 30,
-  "roundedSelection": true,
-  "rulers": [],
-  "scrollBeyondLastColumn": 5,
-  "scrollBeyondLastLine": true,
-  "selectOnLineNumbers": true,
-  "selectionClipboard": true,
-  "selectionHighlight": true,
-  "showFoldingControls": "mouseover",
-  "smoothScrolling": false,
-  "suggestOnTriggerCharacters": true,
-  "wordBasedSuggestions": true,
-  "wordSeparators": "~!@#$%^&*()-=+[{]}|;:'\",.<>/?",
-  "wordWrap": "off",
-  "wordWrapBreakAfterCharacters": "\t})]?|&,;",
-  "wordWrapBreakBeforeCharacters": "{([+",
-  "wordWrapBreakObtrusiveCharacters": ".",
-  "wordWrapColumn": 80,
-  "wordWrapMinified": true,
-  "wrappingIndent": "none"
 };
