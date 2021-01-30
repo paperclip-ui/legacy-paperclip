@@ -1,5 +1,5 @@
 import { SourceLocation } from "paperclip-utils";
-import { ColorInfo } from "./base";
+import { ColorInfo, Suggestion } from "./base";
 
 export type Channel<TRequest, TResponse> = {
   request: (request: TRequest) => Promise<TResponse>;
@@ -59,4 +59,7 @@ export const documentColors = channel<{ uri: string }, ColorInfo[]>(
 );
 export const updateDocument = channel<{ uri: string; value: string }>(
   "updateDocument"
+);
+export const getSuggestions = channel<{ uri: string; text: string }, Suggestion[]>(
+  "getSuggestions"
 );

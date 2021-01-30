@@ -1,9 +1,12 @@
 import { Node } from "./ast";
 import { EngineDelegateEvent } from "./events";
 import { DependencyContent } from "./graph";
+import { LoadedData } from "./virt";
 
 export enum BasicPaperclipActionType {
   AST_REQUESTED = "AST_REQUESTED",
+  LOADED_DATA_REQUESTED = "LOADED_DATA_REQUESTED",
+  LOADED_DATA_EMITTED = "LOADED_DATA_EMITTED",
   AST_EMITTED = "AST_EMITTED",
   ENGINE_DELEGATE_CHANGED = "ENGINE_DELEGATE_CHANGED",
   PREVIEW_CONTENT = "PREVIEW_CONTENT"
@@ -25,6 +28,14 @@ export type AstRequested = BaseAction<
   BasicPaperclipActionType.AST_REQUESTED,
   { uri: string }
 >;
+export type LoadedDataRequested = BaseAction<
+  BasicPaperclipActionType.LOADED_DATA_REQUESTED,
+  { uri: string }
+>;
+export type LoadedDataEmitted = BaseAction<
+  BasicPaperclipActionType.LOADED_DATA_EMITTED,
+  { uri: string, data: LoadedData }
+>;
 export type PreviewContent = BaseAction<
   BasicPaperclipActionType.PREVIEW_CONTENT,
   { uri: string; value: string }
@@ -45,6 +56,12 @@ export const astEmitted = actionCreator<AstEmitted>(
 export const astRequested = actionCreator<AstRequested>(
   BasicPaperclipActionType.AST_REQUESTED
 );
+export const loadedDataRequested = actionCreator<LoadedDataRequested>(
+  BasicPaperclipActionType.LOADED_DATA_REQUESTED
+);
+export const loadedDataEmitted = actionCreator<LoadedDataEmitted>(
+  BasicPaperclipActionType.LOADED_DATA_EMITTED
+);
 export const previewContent = actionCreator<PreviewContent>(
   BasicPaperclipActionType.PREVIEW_CONTENT
 );
@@ -55,5 +72,7 @@ export const engineDelegateChanged = actionCreator<EngineDelegateChanged>(
 export type BasicPaperclipAction =
   | AstEmitted
   | AstRequested
+  | LoadedDataRequested
+  | LoadedDataEmitted
   | EngineDelegateChanged
   | PreviewContent;

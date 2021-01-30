@@ -12,6 +12,16 @@ export type ColorInfo = {
   color: Color;
 };
 
+export type Suggestion = {
+  	/**
+		 * The label of this completion item. By default
+		 * this is also the text that is inserted when selecting
+		 * this completion.
+		 */
+    label: string;
+    insertText: string;
+    location: SourceLocation;
+}
 export interface IPaperclipEngineInfoProvider {
   /**
    * asynchronously returns the AST of a node file - note that
@@ -21,4 +31,5 @@ export interface IPaperclipEngineInfoProvider {
 
   getDocumentColors: (uri: string) => Promise<ColorInfo[]>;
   updateDocument: (uri: string, value: string) => void;
+  getSuggestions: (text: string, uri: string) => Promise<Suggestion[]>;
 }

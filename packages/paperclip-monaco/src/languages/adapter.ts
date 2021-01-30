@@ -65,16 +65,36 @@ export class PaperclipMonacoServiceAdapter
     return Promise.resolve([presentation]);
   }
 
-  provideCompletionItems(
+  async provideCompletionItems(
     model: editor.ITextModel,
     position: Position,
     context: languages.CompletionContext,
     token: CancellationToken
   ): Promise<languages.CompletionList> {
-    console.log("COMPLETION");
-    return Promise.resolve({
-      suggestions: []
-    });
+    const suggestions = await this._provider.getSuggestions(model.getValue().substr(0, model.getOffsetAt(position)), model.uri.path.substr(1));
+
+    return {
+      suggestions: suggestions.map(({ label, insertText, location }) => {
+        return {
+          label,
+          kind: languages.CompletionItemKind.Property,
+          insertText,
+          range: getRange(model, location.start, location.end)
+        }
+      })
+    }
+  }
+}
+
+const getRange = (model: editor.ITextModel, start: number, end: number): IRange => {
+  const sp = model.getPositionAt(start);
+  const ep = model.getPositionAt(end);
+
+  return {
+    startColumn: sp.column,
+    startLineNumber: sp.lineNumber,
+    endColumn: ep.column,
+    endLineNumber: ep.lineNumber
   }
 }
 

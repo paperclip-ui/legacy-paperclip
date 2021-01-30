@@ -10,7 +10,7 @@ import {
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
 import * as vea from "paperclip-designer/src/actions";
-import { astEmitted, BasicPaperclipActionType } from "paperclip-utils";
+import { astEmitted, BasicPaperclipActionType, loadedDataEmitted } from "paperclip-utils";
 import { AppState, WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
@@ -147,6 +147,14 @@ const init = async () => {
           astEmitted({
             uri: action.payload.uri,
             content: _engine.getLoadedAst(action.payload.uri)
+          })
+        );
+      }
+      case BasicPaperclipActionType.LOADED_DATA_REQUESTED: {
+        return dispatch(
+          loadedDataEmitted({
+            uri: action.payload.uri,
+            data: _engine.getLoadedData(action.payload.uri)
           })
         );
       }
