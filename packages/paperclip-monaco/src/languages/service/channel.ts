@@ -60,6 +60,7 @@ export const documentColors = channel<{ uri: string }, ColorInfo[]>(
 export const updateDocument = channel<{ uri: string; value: string }>(
   "updateDocument"
 );
-export const getSuggestions = channel<{ uri: string; text: string }, Suggestion[]>(
-  "getSuggestions"
-);
+export const getSuggestions = channel<
+  { uri: string; text: string },
+  Suggestion[]
+>("getSuggestions");

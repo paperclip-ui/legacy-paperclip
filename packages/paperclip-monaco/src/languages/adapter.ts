@@ -71,7 +71,10 @@ export class PaperclipMonacoServiceAdapter
     context: languages.CompletionContext,
     token: CancellationToken
   ): Promise<languages.CompletionList> {
-    const suggestions = await this._provider.getSuggestions(model.getValue().substr(0, model.getOffsetAt(position)), model.uri.path.substr(1));
+    const suggestions = await this._provider.getSuggestions(
+      model.getValue().substr(0, model.getOffsetAt(position)),
+      model.uri.path.substr(1)
+    );
 
     return {
       suggestions: suggestions.map(({ label, insertText, location }) => {
@@ -80,13 +83,17 @@ export class PaperclipMonacoServiceAdapter
           kind: languages.CompletionItemKind.Property,
           insertText,
           range: getRange(model, location.start, location.end)
-        }
+        };
       })
-    }
+    };
   }
 }
 
-const getRange = (model: editor.ITextModel, start: number, end: number): IRange => {
+const getRange = (
+  model: editor.ITextModel,
+  start: number,
+  end: number
+): IRange => {
   const sp = model.getPositionAt(start);
   const ep = model.getPositionAt(end);
 
@@ -95,8 +102,8 @@ const getRange = (model: editor.ITextModel, start: number, end: number): IRange 
     startLineNumber: sp.lineNumber,
     endColumn: ep.column,
     endLineNumber: ep.lineNumber
-  }
-}
+  };
+};
 
 const getColorPresentation = (
   { red, green, blue, alpha }: Color,

@@ -118,7 +118,13 @@ export type EditorProps = {
   onMount: (editor: any, monaco: any) => void;
 };
 
-const Editor = ({ uri, value, onChange, highlightLocation, onMount }: EditorProps) => {
+const Editor = ({
+  uri,
+  value,
+  onChange,
+  highlightLocation,
+  onMount
+}: EditorProps) => {
   const monacoRef = useRef();
   const editorRef = useRef<HTMLDivElement>();
   const [monaco, setMonaco] = useState<Monaco>();
@@ -148,17 +154,22 @@ const Editor = ({ uri, value, onChange, highlightLocation, onMount }: EditorProp
   }, [monaco, editor, uri, value]);
 
   useEffect(() => {
-
     if (!highlightLocation) {
       return;
     }
 
-    // dirty tricks here - trying to race against page changes. I'm 
+    // dirty tricks here - trying to race against page changes. I'm
     // just too damn lazy to do it the right way.
     setTimeout(() => {
-      editor.setSelection(getRange(editor.getModel(), highlightLocation.start, highlightLocation.end))
+      editor.setSelection(
+        getRange(
+          editor.getModel(),
+          highlightLocation.start,
+          highlightLocation.end
+        )
+      );
     }, 100);
-  }, [highlightLocation])
+  }, [highlightLocation]);
 
   useEffect(() => {
     if (!editorRef.current) {
@@ -202,8 +213,11 @@ const Editor = ({ uri, value, onChange, highlightLocation, onMount }: EditorProp
   );
 };
 
-
-const getRange = (model: monacoEditor.editor.ITextModel, start: number, end: number): monacoEditor.IRange => {
+const getRange = (
+  model: monacoEditor.editor.ITextModel,
+  start: number,
+  end: number
+): monacoEditor.IRange => {
   const sp = model.getPositionAt(start);
   const ep = model.getPositionAt(end);
 
@@ -212,5 +226,5 @@ const getRange = (model: monacoEditor.editor.ITextModel, start: number, end: num
     startLineNumber: sp.lineNumber,
     endColumn: ep.column,
     endLineNumber: ep.lineNumber
-  }
-}
+  };
+};

@@ -1,25 +1,7 @@
 ### Tomorrow
 
-- monaco extension
-  - ensure that color picker works
-    - mixins
-    - nested selectors
-    - include w/ content
-  - ensure that auto-complete works for style names
-  - ensure that you can meta + click 
-
-- option + backspace
-- color picker**
-
-- GH oauth icon
-
-
-### Immediate
-
-- redis session storage
-
-  - add Paperclip color theme
-  - need easy way of opening text docs from preview
+- UI tooling
+  - margin & padding controls
 
 #### Next
 

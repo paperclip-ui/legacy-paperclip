@@ -24,7 +24,7 @@ const init = () => {
   channels.updateDocument(self).responder(async ({ uri, value }) => {
     channel.postMessage(previewContent({ uri, value }));
   });
-  channels.getSuggestions(self).responder(async ({ uri, text}) => {
+  channels.getSuggestions(self).responder(async ({ uri, text }) => {
     return getSuggestions(text, await getLoadedData(uri));
   });
 
@@ -49,9 +49,7 @@ const init = () => {
   const handleEngineAction = (action: BasicPaperclipAction) => {
     if (action.type === BasicPaperclipActionType.AST_EMITTED) {
       _resolveAst((asts[action.payload.uri] = action.payload.content));
-    } else if (
-      action.type === BasicPaperclipActionType.LOADED_DATA_EMITTED
-    ) {
+    } else if (action.type === BasicPaperclipActionType.LOADED_DATA_EMITTED) {
       _resolveLoadedData(action.payload.data);
     }
   };

@@ -13,15 +13,15 @@ export type ColorInfo = {
 };
 
 export type Suggestion = {
-  	/**
-		 * The label of this completion item. By default
-		 * this is also the text that is inserted when selecting
-		 * this completion.
-		 */
-    label: string;
-    insertText: string;
-    location: SourceLocation;
-}
+  /**
+   * The label of this completion item. By default
+   * this is also the text that is inserted when selecting
+   * this completion.
+   */
+  label: string;
+  insertText: string;
+  location: SourceLocation;
+};
 export interface IPaperclipEngineInfoProvider {
   /**
    * asynchronously returns the AST of a node file - note that

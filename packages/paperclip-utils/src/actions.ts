@@ -34,7 +34,7 @@ export type LoadedDataRequested = BaseAction<
 >;
 export type LoadedDataEmitted = BaseAction<
   BasicPaperclipActionType.LOADED_DATA_EMITTED,
-  { uri: string, data: LoadedData }
+  { uri: string; data: LoadedData }
 >;
 export type PreviewContent = BaseAction<
   BasicPaperclipActionType.PREVIEW_CONTENT,

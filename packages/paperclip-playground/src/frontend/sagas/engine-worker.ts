@@ -10,7 +10,11 @@ import {
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
 import * as vea from "paperclip-designer/src/actions";
-import { astEmitted, BasicPaperclipActionType, loadedDataEmitted } from "paperclip-utils";
+import {
+  astEmitted,
+  BasicPaperclipActionType,
+  loadedDataEmitted
+} from "paperclip-utils";
 import { AppState, WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
