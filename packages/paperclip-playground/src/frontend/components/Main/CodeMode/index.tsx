@@ -20,6 +20,7 @@ import { slimCodeEditorChanged } from "../../../actions";
 import { SlimEditor } from "./Slim";
 import { canEditFile } from "../../../state";
 import { active as activatePaperclipExtension } from "paperclip-monaco";
+import { SourceLocation } from "paperclip-utils";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
@@ -79,6 +80,7 @@ export const CodeMode = () => {
           <Editor
             uri={"file:///" + state.currentCodeFilePath}
             value={code}
+            highlightLocation={state.highlightLocation}
             onChange={onChange}
             onMount={onMount}
             // onMount={onMount}
@@ -111,11 +113,12 @@ export const CodeMode = () => {
 export type EditorProps = {
   uri: string;
   value: string;
+  highlightLocation: SourceLocation;
   onChange: (value: string) => void;
   onMount: (editor: any, monaco: any) => void;
 };
 
-const Editor = ({ uri, value, onChange, onMount }: EditorProps) => {
+const Editor = ({ uri, value, onChange, highlightLocation, onMount }: EditorProps) => {
   const monacoRef = useRef();
   const editorRef = useRef<HTMLDivElement>();
   const [monaco, setMonaco] = useState<Monaco>();
@@ -143,6 +146,19 @@ const Editor = ({ uri, value, onChange, onMount }: EditorProps) => {
       editor.pushUndoStop();
     }
   }, [monaco, editor, uri, value]);
+
+  useEffect(() => {
+
+    if (!highlightLocation) {
+      return;
+    }
+
+    // dirty tricks here - trying to race against page changes. I'm 
+    // just too damn lazy to do it the right way.
+    setTimeout(() => {
+      editor.setSelection(getRange(editor.getModel(), highlightLocation.start, highlightLocation.end))
+    }, 100);
+  }, [highlightLocation])
 
   useEffect(() => {
     if (!editorRef.current) {
@@ -185,3 +201,16 @@ const Editor = ({ uri, value, onChange, onMount }: EditorProps) => {
     </>
   );
 };
+
+
+const getRange = (model: monacoEditor.editor.ITextModel, start: number, end: number): monacoEditor.IRange => {
+  const sp = model.getPositionAt(start);
+  const ep = model.getPositionAt(end);
+
+  return {
+    startColumn: sp.column,
+    startLineNumber: sp.lineNumber,
+    endColumn: ep.column,
+    endLineNumber: ep.lineNumber
+  }
+}
