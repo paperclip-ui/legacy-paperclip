@@ -18,7 +18,8 @@ export enum RuleKind {
   Supports = "Supports",
   Page = "Page",
   Document = "Document",
-  Keyframes = "Keyframes"
+  Keyframes = "Keyframes",
+  Keyframe = "Keyframe"
 }
 
 type BaseRule<TKind extends RuleKind> = {
@@ -144,6 +145,8 @@ export type KeyValueDeclaration = {
   valueLocation: SourceLocation;
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
+export type MediaDeclaration = ConditionShape & BaseStyleDeclaration<StyleDeclarationKind.Media>;
+
 export type Include = BaseInclude &
   BaseStyleDeclaration<StyleDeclarationKind.Include>;
 
@@ -157,7 +160,7 @@ export type IncludePart = {
   location: SourceLocation;
 };
 
-export type StyleDeclaration = KeyValueDeclaration | Include;
+export type StyleDeclaration = KeyValueDeclaration | Include | MediaDeclaration;
 
 export type StyleRule = {
   location: SourceLocation;
@@ -166,12 +169,47 @@ export type StyleRule = {
   children: StyleRule[];
 } & BaseRule<RuleKind.Style>;
 
-type BaseConditionRule<TRule extends RuleKind> = {
+/*
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct KeyframeRule {
+  pub key: String,
+  pub declarations: Vec<Declaration>,
+  pub location: Location,
+}
+*/
+
+export type KeyframeRule = {
+  key: string;
+  declarations: StyleDeclaration[];
+  location: SourceLocation
+} & BaseRule<RuleKind.Keyframe>;
+
+/*
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct KeyframesRule {
+  pub name: String,
+  pub rules: Vec<KeyframeRule>,
+  pub location: Location,
+}*/
+
+
+export type KeyframesRule = {
+  name: string;
+  rules: KeyframeRule[];
+  location: SourceLocation;
+} & BaseRule<RuleKind.Keyframes>;
+
+type ConditionShape = {
   name: string;
   condition_text: string;
   rules: StyleRule[];
   location: SourceLocation;
-} & BaseRule<TRule>;
+  declarations: StyleDeclaration[];
+}
+
+type BaseConditionRule<TRule extends RuleKind> = ConditionShape & BaseRule<TRule>;
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
 type BaseInclude = {
@@ -205,7 +243,10 @@ export type Rule =
   | ConditionRule
   | MixinRule
   | ExportRule
-  | IncludeRule;
+  | IncludeRule
+  | KeyframesRule
+  | KeyframeRule;
+  
 export type StyleExpression =
   | Rule
   | Include

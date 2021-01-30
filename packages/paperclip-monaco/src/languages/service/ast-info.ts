@@ -1,5 +1,5 @@
 import { ColorInfo } from "./base";
-import { DependencyContent, DependencyContentKind, DependencyNodeContent, getStyleElements, KeyValueDeclaration, memoize, StyleDeclaration, StyleDeclarationKind, StyleElement } from "paperclip-utils";
+import { DependencyContent, DependencyContentKind, DependencyNodeContent, getStyleElements, KeyValueDeclaration, memoize, Rule, RuleKind, StyleDeclaration, StyleDeclarationKind, StyleElement, StyleRule } from "paperclip-utils";
 
 import * as parseColor from "color";
 
@@ -21,7 +21,7 @@ export const collectASTInfo = memoize((content: DependencyContent): ASTInfo => {
   if (!content) {
     return info;
   }
-  
+
   if (content.contentKind === DependencyContentKind.Node) {
     handleStyles(content, info);
   }
@@ -39,12 +39,41 @@ const handleStyles = (content: DependencyNodeContent, info: ASTInfo) => {
 
 const handleStyle = (style: StyleElement, info: ASTInfo) => {
   handleDeclarations(style.sheet.declarations, info);
+  handleRules(style.sheet.rules, info);
 }
+
+const handleRules = (rules: Rule[], info: ASTInfo) => {
+  for (const rule of rules) {
+    if (rule.kind === RuleKind.Style) {
+      handleStyleRule(rule, info);
+    } else if (rule.kind === RuleKind.Mixin) {
+      handleDeclarations(rule.declarations, info);
+    } else if (rule.kind === RuleKind.Media) {
+      handleRules(rule.rules, info);
+      handleDeclarations(rule.declarations, info);
+    } else if (rule.kind === RuleKind.Keyframes) {
+
+      // keyframe doesn't have type so need to do this
+      rule.rules.forEach(rule => handleDeclarations(rule.declarations, info));
+    }
+  }
+};
+
+const handleStyleRule = (rule: StyleRule, info: ASTInfo) => {
+  handleDeclarations(rule.declarations, info);
+  rule.children.forEach(child => handleStyleRule(child, info))
+};
+
 
 const handleDeclarations = (declarations: StyleDeclaration[], info: ASTInfo) => {
   for (const declaration of declarations) {
     if (declaration.declarationKind === StyleDeclarationKind.KeyValue) {
       handleKeyValueDeclaration(declaration, info);
+    } else if (declaration.declarationKind === StyleDeclarationKind.Include) {
+      handleDeclarations(declaration.declarations, info);
+    } else if (declaration.declarationKind === StyleDeclarationKind.Media) {
+      handleDeclarations(declaration.declarations, info);
+      handleRules(declaration.rules, info);
     }
   }
 }

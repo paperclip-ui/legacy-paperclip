@@ -1,4 +1,4 @@
-import { CancellationToken, editor, IRange, languages } from "monaco-editor-core";
+import { CancellationToken, editor, IRange, languages, Position } from "monaco-editor-core";
 import { Color, IPaperclipEngineInfoProvider } from "./service/base";
 import * as parseColor from "color";
 import { textSpanIsEmpty } from "typescript";
@@ -7,7 +7,7 @@ export type Options = {
   getCurrentUri: () => string;
 };
 
-export class PaperclipMonacoServiceAdapter implements languages.DocumentColorProvider {
+export class PaperclipMonacoServiceAdapter implements languages.DocumentColorProvider, languages.CompletionItemProvider {
   constructor(private _provider: IPaperclipEngineInfoProvider, private _options: Options) {
 
   }
@@ -41,6 +41,14 @@ export class PaperclipMonacoServiceAdapter implements languages.DocumentColorPro
     this._provider.updateDocument(model.uri.path.substr(1), newValue);
     return Promise.resolve([presentation]);
   }
+
+  provideCompletionItems(model: editor.ITextModel, position: Position, context: languages.CompletionContext, token: CancellationToken): Promise<languages.CompletionList> {
+    console.log("COMPLETION");
+    return Promise.resolve({
+      suggestions: []
+    });
+  }
+
 }
 
 
