@@ -2,7 +2,8 @@ import { IPaperclipEngineInfoProvider } from "./base";
 import { SourceLocation } from "paperclip-utils";
 import * as channels from "./channel";
 
-export class PaperclipEngineAsyncInfoProvider implements IPaperclipEngineInfoProvider {
+export class PaperclipEngineAsyncInfoProvider
+  implements IPaperclipEngineInfoProvider {
   private _worker: Worker;
   private _colorsChannel: ReturnType<typeof channels.documentColors>;
   private _updateDocument: ReturnType<typeof channels.updateDocument>;
@@ -17,7 +18,6 @@ export class PaperclipEngineAsyncInfoProvider implements IPaperclipEngineInfoPro
     return this._colorsChannel.request({ uri });
   }
   updateDocument(uri: string, value: string) {
-    this._updateDocument.request({ uri, value })
+    this._updateDocument.request({ uri, value });
   }
 }
-

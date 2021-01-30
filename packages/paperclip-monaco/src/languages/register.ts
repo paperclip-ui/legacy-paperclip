@@ -43,4 +43,3 @@ export const registerLanguages = (monaco: Monaco, options: Options) => {
   monaco.languages.registerColorProvider("paperclip", adapter);
   monaco.languages.registerCompletionItemProvider("paperclip", adapter);
 };
-

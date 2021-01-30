@@ -128,13 +128,17 @@ const Editor = ({ uri, value, onChange, onMount }: EditorProps) => {
     }
     if (editor.getModel().uri.toString() !== uri) {
       editor.getModel().dispose();
-      editor.setModel(monaco.editor.createModel(value, undefined, monaco.Uri.parse(uri)));
+      editor.setModel(
+        monaco.editor.createModel(value, undefined, monaco.Uri.parse(uri))
+      );
     } else if (editor.getValue() !== value) {
-      editor.executeEdits('', [{
-        range: editor.getModel().getFullModelRange(),
-        text: value,
-        forceMoveMarkers: true,
-      }]);
+      editor.executeEdits("", [
+        {
+          range: editor.getModel().getFullModelRange(),
+          text: value,
+          forceMoveMarkers: true
+        }
+      ]);
 
       editor.pushUndoStop();
     }
@@ -153,10 +157,13 @@ const Editor = ({ uri, value, onChange, onMount }: EditorProps) => {
         tabSize: 2,
         automaticLayout: true,
         insertSpaces: true,
-        model: monaco.editor.createModel(value || "", undefined, monaco.Uri.parse(uri))
+        model: monaco.editor.createModel(
+          value || "",
+          undefined,
+          monaco.Uri.parse(uri)
+        )
       });
 
-      
       monaco.editor.setTheme("vs-dark");
       setEditor(editor);
 

@@ -1,5 +1,18 @@
 import { ColorInfo } from "./base";
-import { DependencyContent, DependencyContentKind, DependencyNodeContent, getStyleElements, KeyValueDeclaration, memoize, Rule, RuleKind, StyleDeclaration, StyleDeclarationKind, StyleElement, StyleRule } from "paperclip-utils";
+import {
+  DependencyContent,
+  DependencyContentKind,
+  DependencyNodeContent,
+  getStyleElements,
+  KeyValueDeclaration,
+  memoize,
+  Rule,
+  RuleKind,
+  StyleDeclaration,
+  StyleDeclarationKind,
+  StyleElement,
+  StyleRule
+} from "paperclip-utils";
 
 import * as parseColor from "color";
 
@@ -11,23 +24,24 @@ const CSS_COLOR_NAME_REGEXP = new RegExp(
   "g"
 );
 
-
 type ASTInfo = {
-  colors: ColorInfo[]
+  colors: ColorInfo[];
 };
 
-export const collectASTInfo = memoize((content: DependencyContent): ASTInfo => {
-  const info = { colors: [] };
-  if (!content) {
+export const collectASTInfo = memoize(
+  (content: DependencyContent): ASTInfo => {
+    const info = { colors: [] };
+    if (!content) {
+      return info;
+    }
+
+    if (content.contentKind === DependencyContentKind.Node) {
+      handleStyles(content, info);
+    }
+
     return info;
   }
-
-  if (content.contentKind === DependencyContentKind.Node) {
-    handleStyles(content, info);
-  }
-
-  return info;
-});
+);
 
 const handleStyles = (content: DependencyNodeContent, info: ASTInfo) => {
   const styles = getStyleElements(content);
@@ -36,11 +50,10 @@ const handleStyles = (content: DependencyNodeContent, info: ASTInfo) => {
   }
 };
 
-
 const handleStyle = (style: StyleElement, info: ASTInfo) => {
   handleDeclarations(style.sheet.declarations, info);
   handleRules(style.sheet.rules, info);
-}
+};
 
 const handleRules = (rules: Rule[], info: ASTInfo) => {
   for (const rule of rules) {
@@ -52,7 +65,6 @@ const handleRules = (rules: Rule[], info: ASTInfo) => {
       handleRules(rule.rules, info);
       handleDeclarations(rule.declarations, info);
     } else if (rule.kind === RuleKind.Keyframes) {
-
       // keyframe doesn't have type so need to do this
       rule.rules.forEach(rule => handleDeclarations(rule.declarations, info));
     }
@@ -61,11 +73,13 @@ const handleRules = (rules: Rule[], info: ASTInfo) => {
 
 const handleStyleRule = (rule: StyleRule, info: ASTInfo) => {
   handleDeclarations(rule.declarations, info);
-  rule.children.forEach(child => handleStyleRule(child, info))
+  rule.children.forEach(child => handleStyleRule(child, info));
 };
 
-
-const handleDeclarations = (declarations: StyleDeclaration[], info: ASTInfo) => {
+const handleDeclarations = (
+  declarations: StyleDeclaration[],
+  info: ASTInfo
+) => {
   for (const declaration of declarations) {
     if (declaration.declarationKind === StyleDeclarationKind.KeyValue) {
       handleKeyValueDeclaration(declaration, info);
@@ -76,56 +90,57 @@ const handleDeclarations = (declarations: StyleDeclaration[], info: ASTInfo) => 
       handleRules(declaration.rules, info);
     }
   }
-}
-
-
-const handleKeyValueDeclaration = (declaration: KeyValueDeclaration, info: ASTInfo) => {
-  const colors =
-      matchColor(declaration.value) ||
-      declaration.value.match(/#[^\s,;]+|(var)\(.*?\)/g) ||
-      [];
-
-    let modelDecl = declaration.value;
-
-    for (const color of colors) {
-      let colorValue;
-      if (/var\(.*?\)/.test(color)) {
-        // const name = color.match(/var\((.*?)\)/)[1];
-        // const value = getVariableValue(name, context.data);
-        // if (value) {
-        //   const match = matchColor(value);
-        //   if (match) {
-        //     colorValue = match[0];
-        //   }
-        // }
-      } else {
-        colorValue = color;
-      }
-
-      if (!colorValue) {
-        continue;
-      }
-
-      const colorIndex = modelDecl.indexOf(color);
-
-      // ensure that color isn't there in case there is another instance
-      // in the string -- want to go through each one.
-      modelDecl = modelDecl.replace(color, "_".repeat(color.length));
-
-      // Color(color)
-      // const {color: [r, g, b], valpha: a } = Color(color);
-      const colorStart = declaration.valueLocation.start + colorIndex;
-
-      const rgba = maybeParseColor(colorValue);
-      if (rgba) {
-        info.colors.push({
-          color: rgba,
-          location: { start: colorStart, end: colorStart + color.length }
-        });
-      }
-    }
 };
 
+const handleKeyValueDeclaration = (
+  declaration: KeyValueDeclaration,
+  info: ASTInfo
+) => {
+  const colors =
+    matchColor(declaration.value) ||
+    declaration.value.match(/#[^\s,;]+|(var)\(.*?\)/g) ||
+    [];
+
+  let modelDecl = declaration.value;
+
+  for (const color of colors) {
+    let colorValue;
+    if (/var\(.*?\)/.test(color)) {
+      // const name = color.match(/var\((.*?)\)/)[1];
+      // const value = getVariableValue(name, context.data);
+      // if (value) {
+      //   const match = matchColor(value);
+      //   if (match) {
+      //     colorValue = match[0];
+      //   }
+      // }
+    } else {
+      colorValue = color;
+    }
+
+    if (!colorValue) {
+      continue;
+    }
+
+    const colorIndex = modelDecl.indexOf(color);
+
+    // ensure that color isn't there in case there is another instance
+    // in the string -- want to go through each one.
+    modelDecl = modelDecl.replace(color, "_".repeat(color.length));
+
+    // Color(color)
+    // const {color: [r, g, b], valpha: a } = Color(color);
+    const colorStart = declaration.valueLocation.start + colorIndex;
+
+    const rgba = maybeParseColor(colorValue);
+    if (rgba) {
+      info.colors.push({
+        color: rgba,
+        location: { start: colorStart, end: colorStart + color.length }
+      });
+    }
+  }
+};
 
 const matchColor = (value: string) => {
   return (
@@ -135,7 +150,6 @@ const matchColor = (value: string) => {
 };
 
 const maybeParseColor = (value: string) => {
-
   try {
     const {
       color: [red, green, blue],
@@ -153,4 +167,4 @@ const maybeParseColor = (value: string) => {
   }
 
   return null;
-}
+};

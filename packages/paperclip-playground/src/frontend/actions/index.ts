@@ -100,7 +100,10 @@ export type ProjectHookUsed = BaseAction<
   ActionType.PROJECT_HOOK_USED,
   { projectId: number }
 >;
-export type ProjectFilesLoadProgressChanged = BaseAction<ActionType.PROJECT_FILES_LOAD_PROGRESS_CHANGED, number>;
+export type ProjectFilesLoadProgressChanged = BaseAction<
+  ActionType.PROJECT_FILES_LOAD_PROGRESS_CHANGED,
+  number
+>;
 
 export type RawFileUploaded = BaseAction<
   ActionType.RAW_FILE_UPLOADED,
@@ -141,7 +144,10 @@ export type DeleteProjectConfirmed = BaseAction<
   ActionType.DELETE_PROJECT_CONFIRMED,
   { projectId: number }
 >;
-export type ShareProjectRequestStateChanged = BaseRequestChanged<ActionType.SHARE_PROJECT_REQUEST_STATE_CHANGED, ShareProjectInfo>;
+export type ShareProjectRequestStateChanged = BaseRequestChanged<
+  ActionType.SHARE_PROJECT_REQUEST_STATE_CHANGED,
+  ShareProjectInfo
+>;
 export type SaveButtonClicked = BaseAction<ActionType.SAVE_BUTTON_CLICKED, {}>;
 export type EngineCrashed = BaseAction<ActionType.ENGINE_CRASHED, Error>;
 export type CodeEditorTextChanged = BaseAction<
@@ -193,11 +199,15 @@ export type FilesDropped = BaseAction<ActionType.FILES_DROPPED, FileList>;
 export const newProjectEntered = actionCreator<NewProjectEntered>(
   ActionType.NEW_PROJECT_ENTERED
 );
-export const shareProjectRequestStateChanged = actionCreator<ShareProjectRequestStateChanged>(ActionType.SHARE_PROJECT_REQUEST_STATE_CHANGED);
+export const shareProjectRequestStateChanged = actionCreator<
+  ShareProjectRequestStateChanged
+>(ActionType.SHARE_PROJECT_REQUEST_STATE_CHANGED);
 export const rawFileUploaded = actionCreator<RawFileUploaded>(
   ActionType.RAW_FILE_UPLOADED
 );
-export const projectFilesLoadProgressChanged = actionCreator<ProjectFilesLoadProgressChanged>(ActionType.PROJECT_FILES_LOAD_PROGRESS_CHANGED);
+export const projectFilesLoadProgressChanged = actionCreator<
+  ProjectFilesLoadProgressChanged
+>(ActionType.PROJECT_FILES_LOAD_PROGRESS_CHANGED);
 export const filesDropped = actionCreator<FilesDropped>(
   ActionType.FILES_DROPPED
 );
@@ -251,7 +261,9 @@ export const contentChangesCreated = actionCreator<ContentChangesCreated>(
 export const newFileNameEntered = actionCreator<NewFileNameEntered>(
   ActionType.NEW_FILE_NAME_ENTERED
 );
-export const shareModalClosed = actionCreator<ShareModalClosed>(ActionType.SHARE_MODAL_CLOSED);
+export const shareModalClosed = actionCreator<ShareModalClosed>(
+  ActionType.SHARE_MODAL_CLOSED
+);
 export const projectRenamed = actionCreator<ProjectRenamed>(
   ActionType.PROJECT_RENAMED
 );

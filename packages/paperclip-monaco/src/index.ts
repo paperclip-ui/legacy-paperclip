@@ -7,5 +7,4 @@ export type Monaco = typeof monacoEditor;
 
 export const active = (monaco: Monaco, options: Options) => {
   registerLanguages(monaco, options);
-
 };

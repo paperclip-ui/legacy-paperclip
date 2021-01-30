@@ -145,7 +145,8 @@ export type KeyValueDeclaration = {
   valueLocation: SourceLocation;
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
-export type MediaDeclaration = ConditionShape & BaseStyleDeclaration<StyleDeclarationKind.Media>;
+export type MediaDeclaration = ConditionShape &
+  BaseStyleDeclaration<StyleDeclarationKind.Media>;
 
 export type Include = BaseInclude &
   BaseStyleDeclaration<StyleDeclarationKind.Include>;
@@ -182,7 +183,7 @@ pub struct KeyframeRule {
 export type KeyframeRule = {
   key: string;
   declarations: StyleDeclaration[];
-  location: SourceLocation
+  location: SourceLocation;
 } & BaseRule<RuleKind.Keyframe>;
 
 /*
@@ -193,7 +194,6 @@ pub struct KeyframesRule {
   pub rules: Vec<KeyframeRule>,
   pub location: Location,
 }*/
-
 
 export type KeyframesRule = {
   name: string;
@@ -207,9 +207,10 @@ type ConditionShape = {
   rules: StyleRule[];
   location: SourceLocation;
   declarations: StyleDeclaration[];
-}
+};
 
-type BaseConditionRule<TRule extends RuleKind> = ConditionShape & BaseRule<TRule>;
+type BaseConditionRule<TRule extends RuleKind> = ConditionShape &
+  BaseRule<TRule>;
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
 type BaseInclude = {
@@ -246,7 +247,7 @@ export type Rule =
   | IncludeRule
   | KeyframesRule
   | KeyframeRule;
-  
+
 export type StyleExpression =
   | Rule
   | Include
