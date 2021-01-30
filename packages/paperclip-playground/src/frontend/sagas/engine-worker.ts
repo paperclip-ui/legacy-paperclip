@@ -10,17 +10,19 @@ import {
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
 import * as vea from "paperclip-designer/src/actions";
+import { astEmitted, BasicPaperclipActionType } from "paperclip-utils";
 import { AppState, WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
 import { EngineDelegateEvent } from "paperclip";
 import * as url from "url";
 import {
-  engineDelegateChanged,
   RedirectRequested
 } from "paperclip-designer/src/actions";
 import { PCSourceWriter } from "paperclip-source-writer";
-import { isPaperclipFile } from "paperclip-utils";
+import { isPaperclipFile, 
+  engineDelegateChanged} from "paperclip-utils";
+import { emit } from "process";
 
 const init = async () => {
   let _state: WorkerState;
@@ -34,9 +36,7 @@ const init = async () => {
   const channel = new BroadcastChannel("paperclip");
 
 
-
   const dispatch = (action: Action) => {
-    (self as any).postMessage(action);
     channel.postMessage(action);
   };
 
@@ -95,16 +95,13 @@ const init = async () => {
       const oldContent = oldState.documents[uri];
       if (newContent !== oldContent && isPaperclipFile(uri)) {
         _engine.updateVirtualFileContent(uri, String(newContent));
+
+        // necessary for editor extensions
+        dispatch(astEmitted({ uri, content: _engine.getLoadedAst(uri)}));
       }
     }
   };
 
-  // const handleCodeChange = (action: CodeEditorTextChanged) => {
-  //   _engine.updateVirtualFileContent(
-  //     _appState.currentCodeFilePath,
-  //     action.payload
-  //   );
-  // };
 
   const handleVirtObjectEdited = async (action: vea.PCVirtObjectEdited) => {
     dispatch(
@@ -134,6 +131,7 @@ const init = async () => {
   };
 
   self.onmessage = ({ data: action }: MessageEvent) => {
+
     switch (action.type) {
       case ActionType.GET_PROJECT_FILES_REQUEST_CHANGED:
         return handleProjectLoaded(action);
@@ -145,6 +143,17 @@ const init = async () => {
         return handleRedirect(action);
       case vea.ActionType.PC_VIRT_OBJECT_EDITED:
         return handleVirtObjectEdited(action);
+    }
+  };
+
+  channel.onmessage = ({ data: action }: MessageEvent) => {
+    switch(action.type) {
+      case BasicPaperclipActionType.AST_REQUESTED: {
+        return dispatch(astEmitted({ uri: action.payload.uri, content: _engine.getLoadedAst(action.payload.uri)}));
+      }
+      case BasicPaperclipActionType.PREVIEW_CONTENT: {
+        return _engine.updateVirtualFileContent(action.payload.uri, action.payload.value);
+      }
     }
   };
 

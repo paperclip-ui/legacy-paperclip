@@ -1,15 +1,15 @@
 // import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import * as monacoEditor from "monaco-editor-core/esm/vs/editor/editor.api";
-import { DocumentColorAdapter } from "./features";
+import { Options, PaperclipMonacoServiceAdapter } from "./adapter";
 
 export type Monaco = typeof monacoEditor;
 import * as html from "./html";
 import * as pcss from "./pcss";
 import * as pcs from "./script";
-import { PaperclipLanguageService } from "./service";
-import { PaperclipEngineWorkerHandler } from "./service/worker-handler";
+// import { PaperclipLanguageService } from "./service";
+import { PaperclipEngineAsyncInfoProvider } from "./service/async-provider";
 
-export const registerLanguages = (monaco: Monaco) => {
+export const registerLanguages = (monaco: Monaco, options: Options) => {
   monaco.languages.register({
     id: "paperclip",
     extensions: [".pc"],
@@ -37,8 +37,9 @@ export const registerLanguages = (monaco: Monaco) => {
   monaco.languages.setLanguageConfiguration("pcs", pcs.config);
   monaco.languages.setMonarchTokensProvider("pcs", pcs.language as any);
 
-  const service = new PaperclipLanguageService(new PaperclipEngineWorkerHandler());
+  const service = new PaperclipEngineAsyncInfoProvider();
+  const adapter = new PaperclipMonacoServiceAdapter(service, options);
 
-  monaco.languages.registerColorProvider("paperclip", new DocumentColorAdapter(service));
+  monaco.languages.registerColorProvider("paperclip", adapter);
 };
 

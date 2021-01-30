@@ -39,7 +39,8 @@ import {
   VirtJsObjectKind,
   NodeAnnotations,
   isPaperclipFile,
-  EngineDelegateEventKind
+  EngineDelegateEventKind,
+  BasicPaperclipActionType
 } from "paperclip-utils";
 import * as path from "path";
 import { actionCreator } from "../actions/base";
@@ -247,7 +248,7 @@ export const reduceDesigner = (
         newDesigner.currentEngineEvents[action.payload.id] = undefined;
       });
     }
-    case ActionType.ENGINE_DELEGATE_CHANGED: {
+    case BasicPaperclipActionType.ENGINE_DELEGATE_CHANGED: {
       // delete file
       if (action.payload.kind === EngineDelegateEventKind.Deleted) {
         designer = produce(designer, newDesigner => {

@@ -1,6 +1,19 @@
-import { Node, VirtualNode } from "paperclip-utils";
+import { Node, VirtualNode, SourceLocation } from "paperclip-utils";
 
-export interface IPaperclipEngineHandler {
+
+export type Color = {
+  red: number;
+  green: number;
+  blue: number;
+  alpha: number;
+}
+
+export type ColorInfo = {
+  location: SourceLocation,
+  color: Color
+}
+
+export interface IPaperclipEngineInfoProvider {
 
   /**
    * asynchronously returns the AST of a node file - note that
@@ -8,6 +21,7 @@ export interface IPaperclipEngineHandler {
    * content, so it's assumed that whatever uri is the most recent content
    */
 
-  getAST: (uri: string) => Promise<Node>;
+  getDocumentColors: (uri: string) => Promise<ColorInfo[]>;
+  updateDocument: (uri: string, value: string) => void;
 }
 

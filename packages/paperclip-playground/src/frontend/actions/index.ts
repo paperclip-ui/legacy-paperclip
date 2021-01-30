@@ -11,6 +11,7 @@ import {
 import { actionCreator } from "./base";
 import { ContentChange } from "paperclip-source-writer";
 import { KeyComboPressed } from "paperclip-designer/src/actions";
+import { AstEmitted } from "paperclip-utils";
 
 export type BaseAction<TType extends ActionType, TPayload = undefined> = {
   type: TType;
@@ -305,6 +306,7 @@ export type Action =
   | FileRenamed
   | RemoveFileClicked
   | GetProjectRequestChanged
+  | AstEmitted
   | GetProjectFilesRequestChanged
   | EngineCrashed
   | AppStateDiffed

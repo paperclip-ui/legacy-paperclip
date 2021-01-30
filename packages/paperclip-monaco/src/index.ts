@@ -1,30 +1,11 @@
 // import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import * as monacoEditor from "monaco-editor-core/esm/vs/editor/editor.api";
+import { Options } from "./languages/adapter";
 import { registerLanguages } from "./languages/register";
 
 export type Monaco = typeof monacoEditor;
 
-export const active = (monaco: Monaco) => {
-  console.log("OKFDOFS");
-
-
-  registerLanguages(monaco);
+export const active = (monaco: Monaco, options: Options) => {
+  registerLanguages(monaco, options);
 
 };
-
-const EMPTY_ELEMENTS: string[] = [
-  "area",
-  "base",
-  "br",
-  "col",
-  "embed",
-  "hr",
-  "keygen",
-  "link",
-  "menuitem",
-  "meta",
-  "param",
-  "source",
-  "track",
-  "wbr"
-];

@@ -2,6 +2,7 @@ export * from "./events";
 export * from "./virt";
 export * from "./ast";
 export * from "./js-ast";
+export * from "./actions";
 export * from "./js-virt";
 export * from "./stringify-sheet";
 export * from "./css-ast";

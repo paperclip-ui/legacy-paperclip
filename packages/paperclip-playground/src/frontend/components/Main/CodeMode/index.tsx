@@ -77,6 +77,7 @@ export const CodeMode = () => {
           />
         ) : (
           <Editor
+            uri={"file:///" + state.currentCodeFilePath}
             value={code}
             onChange={onChange}
             onMount={onMount}
@@ -108,30 +109,36 @@ export const CodeMode = () => {
 };
 
 export type EditorProps = {
+  uri: string;
   value: string;
   onChange: (value: string) => void;
   onMount: (editor: any, monaco: any) => void;
 };
 
-const Editor = ({ value, onChange, onMount }: EditorProps) => {
+const Editor = ({ uri, value, onChange, onMount }: EditorProps) => {
   const monacoRef = useRef();
   const editorRef = useRef<HTMLDivElement>();
-  const [editor, setEditor] = useState<any>();
+  const [monaco, setMonaco] = useState<Monaco>();
+  const [editor, setEditor] = useState<monacoEditor.editor.ICodeEditor>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (editor && editor.getValue() !== value) {
-      if (value !== editor.getValue()) {
-        editor.executeEdits('', [{
-          range: editor.getModel().getFullModelRange(),
-          text: value,
-          forceMoveMarkers: true,
-        }]);
-
-        editor.pushUndoStop();
-      }
+    if (!editor) {
+      return;
     }
-  }, [editor, value]);
+    if (editor.getModel().uri.toString() !== uri) {
+      editor.getModel().dispose();
+      editor.setModel(monaco.editor.createModel(value, undefined, monaco.Uri.parse(uri)));
+    } else if (editor.getValue() !== value) {
+      editor.executeEdits('', [{
+        range: editor.getModel().getFullModelRange(),
+        text: value,
+        forceMoveMarkers: true,
+      }]);
+
+      editor.pushUndoStop();
+    }
+  }, [monaco, editor, uri, value]);
 
   useEffect(() => {
     if (!editorRef.current) {
@@ -139,13 +146,16 @@ const Editor = ({ value, onChange, onMount }: EditorProps) => {
     }
 
     loadMonaco.init().then(monaco => {
-      activatePaperclipExtension(monaco as any);
+      setMonaco(monaco);
+      activatePaperclipExtension(monaco as any, { getCurrentUri: null });
       const editor = monaco.editor.create(editorRef.current, {
         language: "paperclip",
         tabSize: 2,
         automaticLayout: true,
-        insertSpaces: true
+        insertSpaces: true,
+        model: monaco.editor.createModel(value || "", undefined, monaco.Uri.parse(uri))
       });
+
       
       monaco.editor.setTheme("vs-dark");
       setEditor(editor);

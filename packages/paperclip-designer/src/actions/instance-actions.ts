@@ -2,6 +2,7 @@ import { BaseAction, actionCreator } from "./base";
 import { PCMutation } from "paperclip-source-writer";
 import {
   VirtualNode,
+  BasicPaperclipAction,
   EngineErrorEvent,
   EngineDelegateEvent,
   LoadedData,
@@ -215,10 +216,6 @@ export type PCVirtObjectEdited = BaseAction<
   }
 >;
 
-export type EngineDelegateChanged = BaseAction<
-  ActionType.ENGINE_DELEGATE_CHANGED,
-  EngineDelegateEvent
->;
 export type FrameTitleChanged = BaseAction<
   ActionType.FRAME_TITLE_CHANGED,
   {
@@ -314,9 +311,6 @@ export type KeyComboPressed<TType extends ActionType> = BaseAction<TType, null>;
 
 export const pcVirtObjectEdited = actionCreator<PCVirtObjectEdited>(
   ActionType.PC_VIRT_OBJECT_EDITED
-);
-export const engineDelegateChanged = actionCreator<EngineDelegateChanged>(
-  ActionType.ENGINE_DELEGATE_CHANGED
 );
 export const gridButtonClicked = actionCreator<GridButtonClicked>(
   ActionType.GRID_BUTTON_CLICKED
@@ -529,13 +523,13 @@ export type InstanceAction =
   | PopoutButtonClicked
   | CollapseFrameButtonClicked
   | ExpandFrameButtonClicked
+  | BasicPaperclipAction
   | ZoomInButtonClicked
   | ActionHandled
   | ZoomInputChanged
   | ClientConnected
   | EnvOptionClicked
   | FrameTitleClicked
-  | EngineDelegateChanged
   | EngineDelegateEventsHandled
   | KeyComboPressed<ActionType.GLOBAL_OPTION_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_OPTION_KEY_UP>
