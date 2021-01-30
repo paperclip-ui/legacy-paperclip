@@ -37,13 +37,13 @@ import {
   DEFAULT_PART_ID
 } from "paperclip";
 
-import CSS_COLOR_NAMES from "./css-color-names";
 import { PCAutocomplete } from "./autocomplete";
 import { CompletionItem } from "vscode-languageclient";
 import { PCCompletionItem } from "./utils";
 import { LoadedData } from "paperclip";
 import { EngineDelegate } from "paperclip";
 import { JsExpression, Slot } from "paperclip";
+import CSS_COLOR_NAMES from "./css-color-names";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,

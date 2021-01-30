@@ -149,6 +149,12 @@ export const reducer = historyReducer(
 
         return state;
       }
+      case VEActionType.META_CLICKED: {
+        return produce(state, newState => {
+          newState.highlightLocation = action.payload.source.location;
+          newState.currentCodeFilePath = action.payload.source.uri;
+        });
+      }
       case VEActionType.LOCATION_CHANGED: {
         return produce(state, newState => {
           newState.playgroundUi = action.payload;

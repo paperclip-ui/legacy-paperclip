@@ -32,10 +32,11 @@ export function* handleEngine() {
 
 function* startEngine() {
   const worker = new Worker(new URL("./engine-worker.ts", import.meta.url));
+  const channel = new BroadcastChannel("paperclip");
 
   let _state: WorkerState = getWorkerState(yield select());
   const incomming = eventChannel(emit => {
-    worker.onmessage = ({ data: action }: MessageEvent) => {
+    channel.onmessage = ({ data: action }: MessageEvent) => {
       emit(action);
     };
     worker.postMessage(workerInitialized({ state: _state }));

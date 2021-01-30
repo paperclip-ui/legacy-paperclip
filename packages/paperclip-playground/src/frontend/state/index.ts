@@ -1,5 +1,5 @@
 import * as ve from "paperclip-designer/src/state";
-import { isPaperclipFile, memoize } from "paperclip-utils";
+import { isPaperclipFile, memoize, SourceLocation } from "paperclip-utils";
 import * as qs from "querystring";
 import mime from "mime-types";
 import { mapValues, omit, pickBy } from "lodash";
@@ -76,6 +76,7 @@ export type AppState = {
     query: any;
   };
   progressLoadedPercent?: number;
+  highlightLocation?: SourceLocation;
   shareProjectInfo?: Result<ShareProjectInfo>;
   currentCodeFilePath: string;
   allProjects?: Result<Project[]>;

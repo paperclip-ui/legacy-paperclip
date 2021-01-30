@@ -1,17 +1,7 @@
 ### Tomorrow
 
-
-- color picker**
-
-- GH oauth icon
-
-
-### Immediate
-
-- redis session storage
-
-  - add Paperclip color theme
-  - need easy way of opening text docs from preview
+- UI tooling
+  - margin & padding controls
 
 #### Next
 

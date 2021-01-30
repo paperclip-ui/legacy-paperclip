@@ -7,7 +7,6 @@ import getPort from "get-port";
 import { createEngineDelegate, EngineDelegate } from "paperclip";
 import * as URL from "url";
 import {
-  engineDelegateChanged,
   dirLoaded,
   ActionType,
   FileOpened,
@@ -45,6 +44,7 @@ import { isPaperclipFile, PaperclipConfig } from "paperclip";
 import * as ngrok from "ngrok";
 import * as qs from "querystring";
 import * as bs from "browserstack";
+import { engineDelegateChanged } from "paperclip-utils";
 
 type BrowserstackCredentials = {
   username: string;
