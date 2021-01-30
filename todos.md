@@ -1,8 +1,13 @@
 ### Tomorrow
 
-- TODO
-  - need to get a lay of exactly what features to implement
-  
+- monaco extension
+  - ensure that color picker works
+    - mixins
+    - nested selectors
+    - include w/ content
+  - ensure that auto-complete works for style names
+  - ensure that you can meta + click 
+
 - option + backspace
 - color picker**
 
