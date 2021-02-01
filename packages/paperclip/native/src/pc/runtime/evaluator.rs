@@ -7,9 +7,10 @@ use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
+use crate::core::eval::{Import};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
-use crate::css::runtime::evaluator2::{evaluate as evaluate_css2, EvalInfo as CSSEvalInfo};
+use crate::css::runtime::evaluator2::{evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
@@ -39,7 +40,7 @@ pub struct Context<'a> {
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
-  pub import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  pub import_graph: &'a HashMap<String, BTreeMap<String, Import>>,
   pub mode: &'a EngineMode,
 }
 
@@ -70,9 +71,9 @@ pub fn evaluate<'a>(
   uri: &String,
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
-  import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  import_graph: &'a HashMap<String, BTreeMap<String, Import>>,
   mode: &EngineMode,
-) -> Result<Option<EvalInfo>, RuntimeError> {
+) -> Result<EvalInfo, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   if let DependencyContent::Node(node_expr) = &dep.content {
     let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(ExprSource::new(
@@ -96,14 +97,14 @@ pub fn evaluate<'a>(
 
     let (sheet, css_exports) = evaluate_document_sheet(uri, node_expr, &mut context)?;
 
-    Ok(Some(EvalInfo {
+    Ok(EvalInfo {
       sheet,
       preview,
       exports: Exports {
         style: css_exports,
         components: collect_component_exports(&node_expr, &context)?,
       },
-    }))
+    })
   } else {
     Err(RuntimeError::new(
       "Incorrect file type".to_string(),
@@ -336,7 +337,7 @@ fn evaluate_node_sheet<'a>(
   };
 
   if let ast::Node::StyleElement(style_element) = &current {
-    let info = evaluate_css2(
+    let info = evaluate_css_expr(
       &style_element.sheet,
       uri,
       &scope,

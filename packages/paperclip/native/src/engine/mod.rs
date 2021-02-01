@@ -1,13 +1,15 @@
 use crate::base::ast;
 use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
-use crate::core::graph::{DependencyContent, DependencyGraph, GraphError};
+use crate::core::graph::{DependencyContent, Dependency, DependencyGraph, GraphError};
+use crate::core::eval::{DependencyEval};
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
 use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
+use crate::css::runtime::evaluator2::{evaluate as evaluate_css};
 use crate::pc::runtime::export as pc_export;
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
@@ -20,11 +22,13 @@ pub struct EvaluateData {
   #[serde(rename = "allDependencies")]
   pub all_dependencies: Vec<String>,
   pub dependents: Vec<String>,
-  pub imports: BTreeMap<String, pc_export::Exports>,
-  pub sheet: css_virt::CSSSheet,
-  pub preview: pc_virt::Node,
-  pub exports: pc_export::Exports,
+  pub imports: BTreeMap<String, DependencyExport>,
+  // pub sheet: css_virt::CSSSheet,
+  // pub preview: pc_virt::Node,
+  // pub exports: DependencyExport,
+  pub details: DependencyEval
 }
+
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct EvaluatedEvent<'a> {
@@ -37,8 +41,30 @@ pub struct DeletedFileEvent {
   pub uri: String,
 }
 
+
 #[derive(Debug, PartialEq, Serialize)]
-pub struct DiffedData<'a> {
+pub enum DiffedData<'a> {
+  PC(DiffedPCData<'a>),
+  CSS(DiffedCSSData<'a>)
+}
+
+
+#[derive(Debug, PartialEq, Serialize)]
+pub struct DiffedPCData<'a> {
+  // TODO - needs to be sheetMutations
+  pub sheet: Option<css_virt::CSSSheet>,
+  #[serde(rename = "allDependencies")]
+  pub all_dependencies: &'a Vec<String>,
+  pub dependents: &'a Vec<String>,
+  pub imports: &'a BTreeMap<String, pc_export::Exports>,
+  pub exports: &'a pc_export::Exports,
+
+  // TODO - needs to be domMutations
+  pub mutations: Vec<pc_mutation::Mutation>,
+}
+
+#[derive(Debug, PartialEq, Serialize)]
+pub struct DiffedCSSData<'a> {
   // TODO - needs to be sheetMutations
   pub sheet: Option<css_virt::CSSSheet>,
   #[serde(rename = "allDependencies")]
@@ -91,7 +117,7 @@ pub struct Engine {
   listeners: Vec<Box<EngineDelegateEventListener>>,
   pub vfs: VirtualFileSystem,
   pub evaluated_data: HashMap<String, EvaluateData>,
-  pub import_graph: HashMap<String, BTreeMap<String, pc_export::Exports>>,
+  pub import_graph: HashMap<String, BTreeMap<String, DependencyExport>>,
   pub dependency_graph: DependencyGraph,
   pub mode: EngineMode,
 }
@@ -232,7 +258,7 @@ impl Engine {
     // prevent infinite loop
     if stack.contains(uri) {
       let err = RuntimeError::new(
-        "Circular dependencies are not supported yet.".to_string(),
+        "Circular dependencies are not supported".to_string(),
         uri,
         &ast::Location { start: 0, end: 1 },
       );
@@ -255,6 +281,7 @@ impl Engine {
       ));
     };
 
+    // TODO - move this section into collect_imports function
     let dept_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);
 
     let mut imports = BTreeMap::new();
@@ -281,40 +308,61 @@ impl Engine {
 
     self.import_graph.insert(uri.to_string(), imports.clone());
 
-    let node_result = evaluate_pc(
-      uri,
-      &self.dependency_graph,
-      &self.vfs,
-      &self.import_graph,
-      &self.mode,
-    );
+    let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
-    match node_result {
-      Ok(node_option) => {
-        if let Some(info) = node_option {
-          let existing_info_option = self.evaluated_data.remove(uri);
+    let capture_eval = |err: RuntimeError| {
+      let e = EngineError::Runtime(err.clone());
+      self.dispatch(EngineDelegateEvent::Error(e));
+      Err(err)
+    };
 
-          let data = EvaluateData {
-            all_dependencies,
-            dependents: dept_uris,
-            imports: imports,
-            exports: info.exports,
-            sheet: info.sheet,
-            preview: info.preview,
-          };
 
-          self.evaluated_data.insert(uri.clone(), data);
-          let data = self.evaluated_data.get(uri).unwrap();
+    let eval_result = match &dependency.content {
+      DependencyContent::StyleSheet(sheet) => {
+        DependencyEval::CSS(evaluate_css(
+          uri,
+          &self.dependency_graph,
+          &self.vfs,
+          &self.import_graph
+        ).or_else(capture_eval)?)
+      }
+      
+      DependencyContent::Node(_) => {
+        DependencyEval::PC(evaluate_pc(
+          uri,
+          &self.dependency_graph,
+          &self.vfs,
+          &self.import_graph,
+          &self.mode,
+        ).or_else(capture_eval)?)
+      }
+    };
 
-          if let Some(existing_info) = existing_info_option {
+    let existing_info_option = self.evaluated_data.remove(uri);
+
+    let data = EvaluateData {
+      all_dependencies,
+      dependents: dept_uris,
+      imports: imports,
+      details: eval_result
+    };
+
+    self.evaluated_data.insert(uri.clone(), data);
+    let data = self.evaluated_data.get(uri).unwrap();
+
+    if let Some(existing_info) = existing_info_option {
+
+      match &existing_info.details {
+        DependencyEval::PC(existing_details) => {
+          if let DependencyEval::PC(new_details) = &data.details {
             // temporary - eventually want to diff this.
-            let sheet: Option<css_virt::CSSSheet> = if existing_info.sheet == data.sheet {
+            let sheet: Option<css_virt::CSSSheet> = if new_details.sheet == existing_details.sheet {
               None
             } else {
-              Some(data.sheet.clone())
+              Some(new_details.sheet.clone())
             };
 
-            let mutations = diff_pc(&existing_info.preview, &data.preview);
+            let mutations = diff_pc(&existing_details.preview, &new_details.preview);
 
             // no need to dispatch mutation if no event
 
@@ -323,35 +371,29 @@ impl Engine {
             // if mutations.len() > 0 {
             self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
               uri: uri.clone(),
-              data: DiffedData {
+              data: DiffedData(DiffedPCData {
                 sheet,
                 imports: &data.imports,
                 exports: &data.exports,
                 all_dependencies: &data.all_dependencies,
                 dependents: &data.dependents,
                 mutations,
-              },
-            }));
-          // }
-          } else {
-            self.dispatch(EngineDelegateEvent::Evaluated(EvaluatedEvent {
-              uri: uri.clone(),
-              data: &data,
+              })
             }));
           }
+        }
+        DependencyEval::CSS(pc_info) => {
 
-          Ok(())
-        } else {
-          Ok(())
         }
       }
-      Err(err) => {
-        // self.evaluated_data.remove(uri);
-        let e = EngineError::Runtime(err.clone());
-        self.dispatch(EngineDelegateEvent::Error(e));
-        Err(err)
-      }
+    } else {
+      self.dispatch(EngineDelegateEvent::Evaluated(EvaluatedEvent {
+        uri: uri.clone(),
+        data: &data,
+      }));
     }
+
+    Ok(())
   }
 }
 

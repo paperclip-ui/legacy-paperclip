@@ -1500,4 +1500,29 @@ describe(__filename + "#", () => {
       `<style>[data-pc-406d2856] div[data-pc-80f4925f] { background:url(var(--test)); }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
     );
   });
+
+  it(`can load CSS files directly`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./styles.css" as="styles" />
+
+        <div className="$styles.test">
+          Hello world
+        </div>
+      `,
+      "/styles.css": `
+        .test {
+          color: red;
+        }
+      `
+    };
+
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[data-pc-406d2856] div[data-pc-80f4925f] { background:url(var(--test)); }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+    );
+  });
 });

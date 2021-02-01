@@ -21,7 +21,7 @@ describe(__filename + "#", () => {
     } catch (e) {
       err = e;
     }
-    expect(err.message).to.eql("Circular dependencies are not supported yet.");
+    expect(err.message).to.eql("Circular dependencies are not supported");
   });
 
   it("dynamic attributes work", async () => {
