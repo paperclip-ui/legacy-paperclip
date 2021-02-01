@@ -14,11 +14,8 @@ use std::collections::{BTreeMap, HashSet};
 //   PC(css_exports::Exports)
 // }
 
-
-
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum DependencyEval {
   CSS(css_eval::EvalInfo),
-  PC(pc_eval::EvalInfo)
+  PC(pc_eval::EvalInfo),
 }
-

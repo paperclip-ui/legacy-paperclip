@@ -24,22 +24,20 @@ export type NodeAnnotations = {
 };
 
 export type EvaluateData = {
-  allDependencies: string[];
+  // allDependencies: string[];
   sheet: any;
   preview: VirtualNode;
 
   // TODO - change to declarations, or something to imply declarations in the file. Definitions maybe?
   exports: PCExports;
-  imports: Record<string, PCExports>;
 };
 
 export type DiffedData = {
-  allDependencies: string[];
+  // allDependencies: string[];
   // TODO - needs to be sheetMutations
   sheet: any;
   mutations: Mutation[];
   exports: PCExports;
-  imports: Record<string, PCExports>;
 };
 
 export type SheetInfo = {

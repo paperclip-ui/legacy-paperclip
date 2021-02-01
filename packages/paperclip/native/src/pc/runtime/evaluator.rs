@@ -6,11 +6,13 @@ use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
+use crate::core::eval::DependencyEval;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
-use crate::core::eval::{Import};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
-use crate::css::runtime::evaluator2::{evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo};
+use crate::css::runtime::evaluator2::{
+  evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo,
+};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
@@ -40,7 +42,7 @@ pub struct Context<'a> {
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
-  pub import_graph: &'a HashMap<String, BTreeMap<String, Import>>,
+  pub evaluated_graph: &'a BTreeMap<String, DependencyEval>,
   pub mode: &'a EngineMode,
 }
 
@@ -71,7 +73,7 @@ pub fn evaluate<'a>(
   uri: &String,
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
-  import_graph: &'a HashMap<String, BTreeMap<String, Import>>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEval>,
   mode: &EngineMode,
 ) -> Result<EvalInfo, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
@@ -80,7 +82,7 @@ pub fn evaluate<'a>(
       uri.clone(),
       node_expr.get_location().clone(),
     )));
-    let mut context = create_context(node_expr, uri, graph, vfs, &data, None, import_graph, mode);
+    let mut context = create_context(node_expr, uri, graph, vfs, &data, None, evaluated_graph, mode);
 
     let mut preview = wrap_as_fragment(
       evaluate_instance_node(
@@ -345,7 +347,7 @@ fn evaluate_node_sheet<'a>(
       context.import_scopes.clone(),
       context.vfs,
       context.graph,
-      &context.import_graph,
+      &context.evaluated_graph,
       Some(&css_exports),
     )?;
     match info {
@@ -460,7 +462,7 @@ fn create_context<'a>(
   vfs: &'a VirtualFileSystem,
   data: &'a js_virt::JsValue,
   parent_option: Option<&'a Context>,
-  import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEval>,
   mode: &'a EngineMode,
 ) -> Context<'a> {
   let render_call_stack = if let Some(parent) = parent_option {
@@ -476,7 +478,7 @@ fn create_context<'a>(
     uri,
     vfs,
     render_call_stack,
-    import_graph,
+    evaluated_graph,
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
     import_scopes: get_import_scopes(graph.dependencies.get(uri).unwrap()),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
@@ -973,7 +975,7 @@ fn evaluate_component_instance<'a>(
         context.vfs,
         &data,
         Some(&context),
-        context.import_graph,
+        context.evaluated_graph,
         context.mode,
       );
       check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
@@ -1367,14 +1369,14 @@ fn evaluate_attribute_dynamic_string<'a>(
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
         if pierce.class_name.contains(".") {
           let parts = pierce.class_name.split(".").collect::<Vec<&str>>();
-          let imp = parts.first().unwrap().to_string();
+          let import_id = parts.first().unwrap().to_string();
           let dep_option = context
             .graph
             .dependencies
             .get(context.uri)
-            .unwrap()
-            .dependencies
-            .get(&imp);
+            .and_then(|dep| {
+              dep.dependencies.get(&import_id)
+            });
 
           let dep_uri = if let Some(dep_uri) = dep_option {
             dep_uri
@@ -1387,13 +1389,15 @@ fn evaluate_attribute_dynamic_string<'a>(
           };
 
           let class_name = parts.last().unwrap();
-          let imports = if let Some(imports) = context.import_graph.get(context.uri) {
-            imports
-          } else {
-            return Err(RuntimeError::unknown(context.uri));
-          };
+          // let imports = if let Some(imports) = context.evaluated_graph.get(context.uri) {
+          //   imports
+          // } else {
+          //   return Err(RuntimeError::unknown(context.uri));
+          // };
 
-          let import_option = imports.get(&imp);
+          // let import_option = imports.get(&import_id);
+
+          let import_option = get_import(context.uri, &import_id, context);
 
           let import = if let Some(import) = import_option {
             import
@@ -1405,7 +1409,8 @@ fn evaluate_attribute_dynamic_string<'a>(
             ));
           };
 
-          let class_export_option = import.style.class_names.get(&class_name.to_string());
+          
+          let class_export_option = get_import_sheet(import).class_names.get(&class_name.to_string());
 
           let class_export = if let Some(class_export) = class_export_option {
             class_export
@@ -1466,6 +1471,21 @@ fn evaluate_attribute_dynamic_string<'a>(
   Ok(maybe_cast_attribute_js_value(
     name, js_value, is_native, context,
   ))
+}
+
+fn get_import<'a>(source_uri: &String, import_id: &String, context: &'a Context) -> Option<&'a DependencyEval> {
+  context.graph.dependencies.get(source_uri).and_then(|source: &Dependency| {
+    source.dependencies.get(import_id).and_then(|dep_uri| {
+      context.evaluated_graph.get(dep_uri)
+    })
+  })
+}
+
+fn get_import_sheet<'a>(ev: &'a DependencyEval) -> &'a css_export::Exports {
+  match &ev {
+    DependencyEval::CSS(css) => &css.exports,
+    DependencyEval::PC(pc) => &pc.exports.style
+  }
 }
 
 fn is_class_attribute_name(name: &String) -> bool {
@@ -1744,7 +1764,7 @@ mod tests {
     .unwrap();
   }
 
-  fn evaluate_source<'a>(code: &'a str) -> Result<Option<EvalInfo>, RuntimeError> {
+  fn evaluate_source<'a>(code: &'a str) -> Result<EvalInfo, RuntimeError> {
     let mut graph = DependencyGraph::new();
     let uri = "some-file.pc".to_string();
     let vfs = VirtualFileSystem::new(
@@ -1757,10 +1777,7 @@ mod tests {
       Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
     );
 
-    let mut import_graph = HashMap::new();
-    import_graph.insert(uri.to_string(), BTreeMap::new());
-
-    evaluate(&uri, &graph, &vfs, &import_graph, &EngineMode::SingleFrame)
+    evaluate(&uri, &graph, &vfs, &BTreeMap::new(), &EngineMode::SingleFrame)
   }
 
   #[test]
