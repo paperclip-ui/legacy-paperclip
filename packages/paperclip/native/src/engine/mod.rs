@@ -306,22 +306,20 @@ impl Engine {
 
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
-
     let eval_result: Result<DependencyEval, RuntimeError> = match &dependency.content {
-      DependencyContent::StyleSheet(sheet) => evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data).
-      and_then(|info| { Ok(DependencyEval::CSS(info)) }),
-
-      DependencyContent::Node(_) => {
-        evaluate_pc(
-          uri,
-          &self.dependency_graph,
-          &self.vfs,
-          &self.evaluated_data,
-          &self.mode,
-        ).and_then(|info| {
-          Ok(DependencyEval::PC(info))
-        })
+      DependencyContent::StyleSheet(sheet) => {
+        evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data)
+          .and_then(|info| Ok(DependencyEval::CSS(info)))
       }
+
+      DependencyContent::Node(_) => evaluate_pc(
+        uri,
+        &self.dependency_graph,
+        &self.vfs,
+        &self.evaluated_data,
+        &self.mode,
+      )
+      .and_then(|info| Ok(DependencyEval::PC(info))),
     };
 
     let eval = eval_result.or_else(|err| {
@@ -331,7 +329,6 @@ impl Engine {
     })?;
 
     let existing_info_option = self.evaluated_data.remove(uri);
-
 
     self.evaluated_data.insert(uri.clone(), eval);
     let data = self.evaluated_data.get(uri).unwrap();

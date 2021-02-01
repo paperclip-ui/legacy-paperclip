@@ -34,10 +34,10 @@ use super::virt;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEval;
-use serde::Serialize;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
+use serde::Serialize;
 use std::collections::{BTreeMap, HashMap};
 use std::fmt;
 
@@ -679,24 +679,21 @@ fn fork_context<'a>(dependency_uri: &'a String, context: &Context<'a>) -> Contex
   return child;
 }
 
-
 fn get_style_import<'a, 'b>(
   uri: &'a String,
   id: &'a String,
   context: &mut Context<'b>,
 ) -> Option<&'b Exports> {
-  context.graph.dependencies.get(uri).and_then(|source| {
-    source.dependencies.get(id)
-  })
-  .and_then(|dep_uri| {
-    context
-      .evaluated_graph
-      .get(dep_uri)
-  })
-  .and_then(|import| match &import {
-    DependencyEval::CSS(css) => Some(&css.exports),
-    DependencyEval::PC(pc) => Some(&pc.exports.style)
-  })
+  context
+    .graph
+    .dependencies
+    .get(uri)
+    .and_then(|source| source.dependencies.get(id))
+    .and_then(|dep_uri| context.evaluated_graph.get(dep_uri))
+    .and_then(|import| match &import {
+      DependencyEval::CSS(css) => Some(&css.exports),
+      DependencyEval::PC(pc) => Some(&pc.exports.style),
+    })
 }
 
 fn assert_get_mixin<'a>(

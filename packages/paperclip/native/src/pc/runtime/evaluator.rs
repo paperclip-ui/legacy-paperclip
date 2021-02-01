@@ -82,7 +82,16 @@ pub fn evaluate<'a>(
       uri.clone(),
       node_expr.get_location().clone(),
     )));
-    let mut context = create_context(node_expr, uri, graph, vfs, &data, None, evaluated_graph, mode);
+    let mut context = create_context(
+      node_expr,
+      uri,
+      graph,
+      vfs,
+      &data,
+      None,
+      evaluated_graph,
+      mode,
+    );
 
     let mut preview = wrap_as_fragment(
       evaluate_instance_node(
@@ -1374,9 +1383,7 @@ fn evaluate_attribute_dynamic_string<'a>(
             .graph
             .dependencies
             .get(context.uri)
-            .and_then(|dep| {
-              dep.dependencies.get(&import_id)
-            });
+            .and_then(|dep| dep.dependencies.get(&import_id));
 
           let dep_uri = if let Some(dep_uri) = dep_option {
             dep_uri
@@ -1409,8 +1416,9 @@ fn evaluate_attribute_dynamic_string<'a>(
             ));
           };
 
-          
-          let class_export_option = get_import_sheet(import).class_names.get(&class_name.to_string());
+          let class_export_option = get_import_sheet(import)
+            .class_names
+            .get(&class_name.to_string());
 
           let class_export = if let Some(class_export) = class_export_option {
             class_export
@@ -1473,18 +1481,27 @@ fn evaluate_attribute_dynamic_string<'a>(
   ))
 }
 
-fn get_import<'a>(source_uri: &String, import_id: &String, context: &'a Context) -> Option<&'a DependencyEval> {
-  context.graph.dependencies.get(source_uri).and_then(|source: &Dependency| {
-    source.dependencies.get(import_id).and_then(|dep_uri| {
-      context.evaluated_graph.get(dep_uri)
+fn get_import<'a>(
+  source_uri: &String,
+  import_id: &String,
+  context: &'a Context,
+) -> Option<&'a DependencyEval> {
+  context
+    .graph
+    .dependencies
+    .get(source_uri)
+    .and_then(|source: &Dependency| {
+      source
+        .dependencies
+        .get(import_id)
+        .and_then(|dep_uri| context.evaluated_graph.get(dep_uri))
     })
-  })
 }
 
 fn get_import_sheet<'a>(ev: &'a DependencyEval) -> &'a css_export::Exports {
   match &ev {
     DependencyEval::CSS(css) => &css.exports,
-    DependencyEval::PC(pc) => &pc.exports.style
+    DependencyEval::PC(pc) => &pc.exports.style,
   }
 }
 
@@ -1777,7 +1794,13 @@ mod tests {
       Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
     );
 
-    evaluate(&uri, &graph, &vfs, &BTreeMap::new(), &EngineMode::SingleFrame)
+    evaluate(
+      &uri,
+      &graph,
+      &vfs,
+      &BTreeMap::new(),
+      &EngineMode::SingleFrame,
+    )
   }
 
   #[test]
