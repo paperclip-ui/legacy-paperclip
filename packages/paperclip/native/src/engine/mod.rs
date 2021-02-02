@@ -1,8 +1,10 @@
 use crate::base::ast;
 use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
-use crate::core::graph::{DependencyContent, DependencyGraph, GraphError};
+use crate::core::eval::DependencyEvalInfo;
+use crate::core::graph::{Dependency, DependencyContent, DependencyGraph, GraphError};
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
+use crate::css::runtime::evaluator2::evaluate as evaluate_css;
 use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
@@ -15,21 +17,21 @@ use ::futures::executor::block_on;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct EvaluateData {
-  #[serde(rename = "allDependencies")]
-  pub all_dependencies: Vec<String>,
-  pub dependents: Vec<String>,
-  pub imports: BTreeMap<String, pc_export::Exports>,
-  pub sheet: css_virt::CSSSheet,
-  pub preview: pc_virt::Node,
-  pub exports: pc_export::Exports,
-}
+// #[derive(Debug, PartialEq, Serialize, Clone)]
+// pub struct EvaluateData {
+//   #[serde(rename = "allDependencies")]
+//   pub all_dependencies: Vec<String>,
+//   pub dependents: Vec<String>,
+//   // pub sheet: css_virt::CSSSheet,
+//   // pub preview: pc_virt::Node,
+//   // pub exports: DependencyExport,
+//   pub details: DependencyEvalInfo,
+// }
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct EvaluatedEvent<'a> {
   pub uri: String,
-  data: &'a EvaluateData,
+  pub data: &'a DependencyEvalInfo,
 }
 
 #[derive(Debug, PartialEq, Serialize)]
@@ -38,11 +40,32 @@ pub struct DeletedFileEvent {
 }
 
 #[derive(Debug, PartialEq, Serialize)]
-pub struct DiffedData<'a> {
+#[serde(tag = "kind")]
+pub enum DiffedData<'a> {
+  PC(DiffedPCData<'a>),
+  CSS(DiffedCSSData<'a>),
+}
+
+#[derive(Debug, PartialEq, Serialize)]
+pub struct DiffedPCData<'a> {
   // TODO - needs to be sheetMutations
   pub sheet: Option<css_virt::CSSSheet>,
-  #[serde(rename = "allDependencies")]
-  pub all_dependencies: &'a Vec<String>,
+
+  #[serde(rename = "allImportedSheetUris")]
+  pub all_imported_sheet_uris: &'a Vec<String>,
+
+  pub dependencies: &'a BTreeMap<String, String>,
+
+  pub exports: &'a pc_export::Exports,
+
+  // TODO - needs to be domMutations
+  pub mutations: Vec<pc_mutation::Mutation>,
+}
+
+#[derive(Debug, PartialEq, Serialize)]
+pub struct DiffedCSSData<'a> {
+  // TODO - needs to be sheetMutations
+  pub sheet: Option<css_virt::CSSSheet>,
   pub dependents: &'a Vec<String>,
   pub imports: &'a BTreeMap<String, pc_export::Exports>,
   pub exports: &'a pc_export::Exports,
@@ -90,8 +113,8 @@ type EngineDelegateEventListener = dyn Fn(&EngineDelegateEvent);
 pub struct Engine {
   listeners: Vec<Box<EngineDelegateEventListener>>,
   pub vfs: VirtualFileSystem,
-  pub evaluated_data: HashMap<String, EvaluateData>,
-  pub import_graph: HashMap<String, BTreeMap<String, pc_export::Exports>>,
+  pub evaluated_data: BTreeMap<String, DependencyEvalInfo>,
+  // pub import_graph: HashMap<String, BTreeMap<String, DependencyExport>>,
   pub dependency_graph: DependencyGraph,
   pub mode: EngineMode,
 }
@@ -105,8 +128,8 @@ impl Engine {
   ) -> Engine {
     Engine {
       listeners: vec![],
-      evaluated_data: HashMap::new(),
-      import_graph: HashMap::new(),
+      evaluated_data: BTreeMap::new(),
+      // import_graph: HashMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
       dependency_graph: DependencyGraph::new(),
       mode,
@@ -134,15 +157,20 @@ impl Engine {
 
   pub fn get_graph_uris(&self) -> Vec<String> {
     self.dependency_graph.dependencies.keys().cloned().collect()
-  }
+  }  
 
   pub fn get_loaded_ast(&self, uri: &String) -> Option<&DependencyContent> {
-    let dep_option = self.dependency_graph.dependencies.get(uri);
-    match dep_option {
-      Some(dep) => Some(&dep.content),
-      None => None,
-    }
+    self.dependency_graph.dependencies.get(uri)
+    .and_then(|dep| {
+      Some(&dep.content)
+    })
   }
+  // pub fn get_dependency_uris(&self, uri: &String) -> Option<Vec<String>> {
+  //   self.dependency_graph.dependencies.get(uri)
+  //   .and_then(|dep| {
+  //     Some(dep.dependencies.values().cloned().collect())
+  //   })
+  // }
 
   pub async fn load(&mut self, uri: &String) -> Result<(), EngineError> {
     let load_result = self
@@ -191,7 +219,6 @@ impl Engine {
 
       self.dependency_graph.dependencies.remove(&uri);
       self.evaluated_data.remove(&uri);
-      self.import_graph.remove(&uri);
 
       self.dispatch(EngineDelegateEvent::Deleted(DeletedFileEvent {
         uri: uri.to_string(),
@@ -232,7 +259,7 @@ impl Engine {
     // prevent infinite loop
     if stack.contains(uri) {
       let err = RuntimeError::new(
-        "Circular dependencies are not supported yet.".to_string(),
+        "Circular dependencies are not supported".to_string(),
         uri,
         &ast::Location { start: 0, end: 1 },
       );
@@ -255,17 +282,16 @@ impl Engine {
       ));
     };
 
+    // TODO - move this section into collect_imports function
     let dept_uris: Vec<String> = self.dependency_graph.flatten_dependents(uri);
 
-    let mut imports = BTreeMap::new();
+    let mut imports: BTreeMap<String, DependencyEvalInfo> = BTreeMap::new();
 
     let relative_deps = &dependency
       .dependencies
       .iter()
       .map(|(relative_path, uri)| (relative_path.to_string(), uri.to_string()))
       .collect::<Vec<(String, String)>>();
-
-    let all_dependencies = self.dependency_graph.flatten_dependencies(uri);
 
     for (id, dep_uri) in relative_deps {
       let data = if let Some(dep_result) = self.evaluated_data.get(dep_uri) {
@@ -276,45 +302,52 @@ impl Engine {
         self.evaluated_data.get(dep_uri).unwrap()
       };
 
-      imports.insert(id.to_string(), data.exports.clone());
+      // imports.insert(id.to_string(), &data);
     }
 
-    self.import_graph.insert(uri.to_string(), imports.clone());
+    // self.import_graph.insert(uri.to_string(), imports.clone());
 
-    let node_result = evaluate_pc(
-      uri,
-      &self.dependency_graph,
-      &self.vfs,
-      &self.import_graph,
-      &self.mode,
-    );
+    let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
-    match node_result {
-      Ok(node_option) => {
-        if let Some(info) = node_option {
-          let existing_info_option = self.evaluated_data.remove(uri);
+    let eval_result: Result<DependencyEvalInfo, RuntimeError> = match &dependency.content {
+      DependencyContent::StyleSheet(sheet) => {
+        evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data)
+          .and_then(|info| Ok(DependencyEvalInfo::CSS(info)))
+      }
 
-          let data = EvaluateData {
-            all_dependencies,
-            dependents: dept_uris,
-            imports: imports,
-            exports: info.exports,
-            sheet: info.sheet,
-            preview: info.preview,
-          };
+      DependencyContent::Node(_) => evaluate_pc(
+        uri,
+        &self.dependency_graph,
+        &self.vfs,
+        &self.evaluated_data,
+        &self.mode,
+      )
+      .and_then(|info| Ok(DependencyEvalInfo::PC(info))),
+    };
 
-          self.evaluated_data.insert(uri.clone(), data);
-          let data = self.evaluated_data.get(uri).unwrap();
+    let eval = eval_result.or_else(|err| {
+      let e = EngineError::Runtime(err.clone());
+      self.dispatch(EngineDelegateEvent::Error(e));
+      Err(err)
+    })?;
 
-          if let Some(existing_info) = existing_info_option {
+    let existing_info_option = self.evaluated_data.remove(uri);
+
+    self.evaluated_data.insert(uri.clone(), eval);
+    let data = self.evaluated_data.get(uri).unwrap();
+
+    if let Some(existing_info) = existing_info_option {
+      match &existing_info {
+        DependencyEvalInfo::PC(existing_details) => {
+          if let DependencyEvalInfo::PC(new_details) = &data {
             // temporary - eventually want to diff this.
-            let sheet: Option<css_virt::CSSSheet> = if existing_info.sheet == data.sheet {
+            let sheet: Option<css_virt::CSSSheet> = if new_details.sheet == existing_details.sheet {
               None
             } else {
-              Some(data.sheet.clone())
+              Some(new_details.sheet.clone())
             };
 
-            let mutations = diff_pc(&existing_info.preview, &data.preview);
+            let mutations = diff_pc(&existing_details.preview, &new_details.preview);
 
             // no need to dispatch mutation if no event
 
@@ -323,35 +356,29 @@ impl Engine {
             // if mutations.len() > 0 {
             self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
               uri: uri.clone(),
-              data: DiffedData {
+              data: DiffedData::PC(DiffedPCData {
                 sheet,
-                imports: &data.imports,
-                exports: &data.exports,
-                all_dependencies: &data.all_dependencies,
-                dependents: &data.dependents,
+                // imports: &existing_details.imports,
+                exports: &existing_details.exports,
+                all_imported_sheet_uris: &new_details.all_imported_sheet_uris,
+                dependencies: &new_details.dependencies,
+                // all_dependencies: &existing_details.all_dependencies,
+                // dependents: &data.dependents,
                 mutations,
-              },
-            }));
-          // }
-          } else {
-            self.dispatch(EngineDelegateEvent::Evaluated(EvaluatedEvent {
-              uri: uri.clone(),
-              data: &data,
+              }),
             }));
           }
-
-          Ok(())
-        } else {
-          Ok(())
         }
+        DependencyEvalInfo::CSS(pc_info) => {}
       }
-      Err(err) => {
-        // self.evaluated_data.remove(uri);
-        let e = EngineError::Runtime(err.clone());
-        self.dispatch(EngineDelegateEvent::Error(e));
-        Err(err)
-      }
+    } else {
+      self.dispatch(EngineDelegateEvent::Evaluated(EvaluatedEvent {
+        uri: uri.clone(),
+        data: &data,
+      }));
     }
+
+    Ok(())
   }
 }
 

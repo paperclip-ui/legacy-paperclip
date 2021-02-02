@@ -12,7 +12,7 @@ import { render } from "react-dom";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import { FrameContainer } from "../../../FrameContainer";
 import * as styles from "./index.pc";
-import { throttle, toUpper } from "lodash";
+import { memoize, omitBy, throttle, toUpper } from "lodash";
 import * as url from "url";
 import * as qs from "querystring";
 
@@ -22,7 +22,10 @@ import {
   computeVirtJSObject,
   NodeAnnotations,
   VirtualNode,
-  VirtualFrame
+  VirtualFrame,
+  LoadedData,
+  EvaluatedDataKind,
+  LoadedPCData
 } from "paperclip-utils";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useFrames, useMultipleFrames } from "../Canvas/Frames";
@@ -31,6 +34,7 @@ import { FilterTextInput } from "../../../TextInput/filter.pc";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";
 import { birdseyeFilterChanged, redirectRequest } from "../../../../actions";
+omitBy;
 
 type CellFrame = {
   filePath: string;
@@ -45,7 +49,7 @@ export const Birdseye = memo(() => {
   const filter = state.designer.birdseyeFilter;
 
   const renderers = useMultipleFrames({
-    fileData: state.designer.allLoadedPCFileData,
+    fileData: getPCFileData(state.designer.allLoadedPCFileData),
     shouldCollectRects: false
   });
 
@@ -332,3 +336,11 @@ const filterCells = (cells: CellFrame[], filter = "") => {
     return visible;
   });
 };
+
+const getPCFileData = memoize(
+  (data: Record<string, LoadedData>): Record<string, LoadedPCData> => {
+    return omitBy(data, value => {
+      return value.kind != EvaluatedDataKind.PC;
+    }) as Record<string, LoadedPCData>;
+  }
+);

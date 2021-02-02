@@ -1,4 +1,4 @@
-import { PCExports } from "./exports";
+import { CSSExports, PCExports } from "./exports";
 import { VirtJsObject } from "./js-virt";
 import { Mutation } from "./virt-mtuation";
 
@@ -23,33 +23,68 @@ export type NodeAnnotations = {
   tags?: string[];
 };
 
-export type EvaluateData = {
-  allDependencies: string[];
+export enum EvaluatedDataKind {
+  PC = "PC",
+  CSS = "CSS"
+}
+
+type BaseEvaluatedData<TKind = EvaluatedDataKind> = {
+  kind: TKind;
+};
+
+export type EvaluatedPCData = {
+  allImportedSheetUris: string[];
+  dependencies: Record<string, string>;
   sheet: any;
   preview: VirtualNode;
 
   // TODO - change to declarations, or something to imply declarations in the file. Definitions maybe?
   exports: PCExports;
-  imports: Record<string, PCExports>;
+} & BaseEvaluatedData<EvaluatedDataKind.PC>;
+
+export type EvaluatedCSSData = {
+  sheet: any;
+
+  // TODO - change to declarations, or something to imply declarations in the file. Definitions maybe?
+  exports: CSSExports;
+} & BaseEvaluatedData<EvaluatedDataKind.CSS>;
+
+export type EvaluatedData = EvaluatedPCData | EvaluatedCSSData;
+
+export enum DiffedDataKind {
+  CSS = "CSS",
+  PC = "PC"
+}
+
+export type BaseDiffedData<TKind = DiffedDataKind> = {
+  kind: TKind;
 };
 
-export type DiffedData = {
-  allDependencies: string[];
+export type DiffedCSSData = BaseDiffedData<DiffedDataKind.CSS>;
+
+export type DiffedPCData = {
+  allImportedSheetUris: string[];
+  dependencies: Record<string, string>;
   // TODO - needs to be sheetMutations
   sheet: any;
   mutations: Mutation[];
   exports: PCExports;
-  imports: Record<string, PCExports>;
-};
+} & BaseDiffedData<DiffedDataKind.PC>;
+
+export type DiffedData = DiffedCSSData | DiffedPCData;
 
 export type SheetInfo = {
   sheet: any;
   uri: string;
 };
 
-export type LoadedData = EvaluateData & {
+export type LoadedPCData = {
   importedSheets: SheetInfo[];
-};
+} & EvaluatedPCData;
+
+export type LoadedCSSData = EvaluatedCSSData;
+
+export type LoadedData = LoadedPCData | LoadedCSSData;
 
 type VirtualBaseNode<KKind extends VirtualNodeKind> = {
   kind: KKind;
@@ -85,3 +120,6 @@ export type VirtualNode =
   | VirtualStyleElement;
 
 export type VirtualFrame = VirtualElement | VirtualText;
+
+export const getStyleExports = (data: LoadedData) =>
+  data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;

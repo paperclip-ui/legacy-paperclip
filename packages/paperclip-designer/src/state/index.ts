@@ -3,6 +3,7 @@ import { isEqual, pick, pickBy } from "lodash";
 import Automerge from "automerge";
 import {
   computeVirtJSObject,
+  LoadedPCData,
   memoize,
   NodeAnnotations,
   VirtualFrame,
@@ -341,8 +342,9 @@ export const getFrameFromIndex = (
   if (!designer.allLoadedPCFileData) {
     return null;
   }
-  const preview =
-    designer.allLoadedPCFileData[designer.ui.query.canvasFile]?.preview;
+  const preview = (designer.allLoadedPCFileData[
+    designer.ui.query.canvasFile
+  ] as LoadedPCData)?.preview;
   if (!preview) {
     return null;
   }
@@ -397,8 +399,9 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
 };
 
 export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
-  const currentPCData =
-    designer.allLoadedPCFileData[designer.ui.query?.canvasFile];
+  const currentPCData = designer.allLoadedPCFileData[
+    designer.ui.query?.canvasFile
+  ] as LoadedPCData;
 
   return currentPCData?.preview
     ? getPreviewFrameBoxes(currentPCData?.preview).filter(Boolean)
@@ -434,7 +437,9 @@ export const maybeCenterCanvas = (designer: DesignerState, force?: boolean) => {
 
     if (currentFrameIndex != null) {
       const frameBoxes = getPreviewFrameBoxes(
-        designer.allLoadedPCFileData[designer.ui.query.canvasFile].preview
+        (designer.allLoadedPCFileData[
+          designer.ui.query.canvasFile
+        ] as LoadedPCData).preview
       );
       targetBounds = frameBoxes[currentFrameIndex];
     }

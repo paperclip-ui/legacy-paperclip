@@ -3,7 +3,7 @@
 
 import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
-import { EvaluateData, DiffedData, LoadedData, SheetInfo } from "./virt";
+import { EvaluatedData, DiffedData, LoadedData, SheetInfo } from "./virt";
 
 export enum EngineDelegateEventKind {
   Loading = "Loading",
@@ -32,7 +32,7 @@ type BaseEngineDelegateEvent<KKind extends EngineDelegateEventKind> = {
 
 export type EvaluatedEvent = {
   uri: string;
-  data: EvaluateData;
+  data: EvaluatedData;
 } & BaseEngineDelegateEvent<EngineDelegateEventKind.Evaluated>;
 
 export type DeletedEvent = {
@@ -52,7 +52,7 @@ export type NodeParsedEvent = {
 export type ChangedSheetsData = {
   newSheets: SheetInfo[];
   removedSheetUris: string[];
-  allDependencies: string[];
+  allImportedSheetUris: string[];
 };
 
 export type ChangedSheetsEvent = {

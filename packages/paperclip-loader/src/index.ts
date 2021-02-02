@@ -13,7 +13,7 @@ import * as path from "path";
 import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import VirtualModules from "webpack-virtual-modules";
-import { LoadedData } from "paperclip";
+import { LoadedData, getStyleExports } from "paperclip";
 
 let _engine: EngineDelegate;
 
@@ -79,7 +79,7 @@ async function pcLoader(
     );
   }
 
-  const { sheet, exports } = info;
+  const { sheet } = info;
 
   const styleCache = { ..._loadedStyleFiles };
   _loadedStyleFiles = styleCache;
@@ -90,7 +90,7 @@ async function pcLoader(
   const code = compiler.compile(
     {
       ast,
-      classNames: exports.style.classNames,
+      classNames: getStyleExports(info).classNames,
       sheetRelativeFilePath: `./${sheetFileName}`
     },
     resourceUrl,

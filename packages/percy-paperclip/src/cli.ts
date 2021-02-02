@@ -15,7 +15,8 @@ import {
   LoadedData,
   VirtualFrame,
   computeVirtJSObject,
-  NodeAnnotations
+  NodeAnnotations,
+  EvaluatedDataKind
 } from "paperclip";
 import { PCDocument } from "./pc-document";
 
@@ -65,6 +66,11 @@ export const run = async (
       console.error(e);
       process.exit(1);
     }
+
+    if (result.kind !== EvaluatedDataKind.PC) {
+      continue;
+    }
+
     const { sheet, importedSheets, preview } = result;
 
     const frames = (preview.kind === VirtualNodeKind.Fragment

@@ -8,10 +8,11 @@ import {
   EngineDelegateEventKind,
   DependencyContent,
   SheetInfo,
-  VirtualNode,
   LoadedData,
   PaperclipSourceWatcher,
-  ChangeKind
+  ChangeKind,
+  EvaluatedDataKind,
+  DiffedPCData
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -53,12 +54,6 @@ const mapResult = result => {
 
 export type EngineDelegateEventListener = (event: EngineDelegateEvent) => void;
 
-export type LoadResult = {
-  importedSheets: SheetInfo[];
-  sheet: any;
-  preview: VirtualNode;
-};
-
 export enum EngineDelegateEventType {
   Loaded = "Loaded",
   ChangedSheets = "ChangedSheets"
@@ -79,7 +74,7 @@ export class EngineDelegate {
     // only one native listener to for buffer performance
     this._native.add_listener(this._dispatch);
 
-    this.onEvent(this._onEngineDelegateEvent);
+    this.onEvent(this._onEngineEvent);
     return this;
   }
 
@@ -96,7 +91,7 @@ export class EngineDelegate {
     };
   }
 
-  private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
+  private _onEngineEvent = (event: EngineDelegateEvent) => {
     if (event.kind === EngineDelegateEventKind.Deleted) {
       delete this._rendered[event.uri];
     } else if (event.kind === EngineDelegateEventKind.Evaluated) {
@@ -111,40 +106,49 @@ export class EngineDelegate {
       this._rendered = updateAllLoadedData(this._rendered, event);
       const newData = this._rendered[event.uri];
 
-      const removedSheetUris: string[] = [];
+      if (
+        existingData.kind === EvaluatedDataKind.PC &&
+        newData.kind === EvaluatedDataKind.PC
+      ) {
+        const removedSheetUris: string[] = [];
+        const diffData = event.data as DiffedPCData;
 
-      for (const { uri } of existingData.importedSheets) {
-        if (!newData.allDependencies.includes(uri)) {
-          removedSheetUris.push(uri);
+        for (const { uri } of existingData.importedSheets) {
+          if (!newData.allImportedSheetUris.includes(uri)) {
+            removedSheetUris.push(uri);
+          }
         }
-      }
 
-      const addedSheets: SheetInfo[] = [];
-      for (const depUri of event.data.allDependencies) {
-        // Note that we only do this if the sheet is already rendered -- engine
-        // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
-        // has been added, including the actual sheet object.
-        if (
-          !existingData.allDependencies.includes(depUri) &&
-          this._rendered[depUri]
-        ) {
-          addedSheets.push({
-            uri: depUri,
-            sheet: this._rendered[depUri].sheet
+        const addedSheets: SheetInfo[] = [];
+
+        for (const depUri of diffData.allImportedSheetUris) {
+          // Note that we only do this if the sheet is already rendered -- engine
+          // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
+          // has been added, including the actual sheet object.
+          if (
+            !existingData.allImportedSheetUris.includes(depUri) &&
+            this._rendered[depUri]
+          ) {
+            addedSheets.push({
+              uri: depUri,
+              sheet: this._rendered[depUri].sheet
+            });
+          }
+        }
+
+        if (addedSheets.length || removedSheetUris.length) {
+          this._dispatch({
+            uri: event.uri,
+            kind: EngineDelegateEventKind.ChangedSheets,
+            data: {
+              // TODO - don't do this - instead include newSheetUris and
+              // allow renderer to fetch these sheets
+              newSheets: addedSheets,
+              removedSheetUris: removedSheetUris,
+              allImportedSheetUris: diffData.allImportedSheetUris
+            }
           });
         }
-      }
-
-      if (addedSheets.length || removedSheetUris.length) {
-        this._dispatch({
-          uri: event.uri,
-          kind: EngineDelegateEventKind.ChangedSheets,
-          data: {
-            newSheets: addedSheets,
-            removedSheetUris: removedSheetUris,
-            allDependencies: event.data.allDependencies
-          }
-        });
       }
     }
   };
@@ -166,7 +170,6 @@ export class EngineDelegate {
   getVirtualContent(uri: string) {
     return this._documents[uri];
   }
-
   updateVirtualFileContent(uri: string, content: string) {
     this._documents[uri] = content;
     return this._tryCatch(() => {
@@ -223,4 +226,24 @@ export const keepEngineInSyncWithFileSystem2 = (
       engine.purgeUnlinkedFiles();
     }
   });
+};
+
+/**
+ * Kept separate from the engine since this is more of a util function for ID inspection
+ */
+
+export const getEngineImports = (
+  uri: string,
+  delegate: EngineDelegate
+): Record<string, LoadedData> => {
+  const data = delegate.getLoadedData(uri);
+
+  if (data.kind === EvaluatedDataKind.PC) {
+    return Object.keys(data.dependencies).reduce((record: any, id: string) => {
+      record[id] = delegate.getLoadedData(data.dependencies[id])!;
+      return record;
+    }, {});
+  } else {
+    return {};
+  }
 };

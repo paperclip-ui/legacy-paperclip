@@ -21,7 +21,8 @@ import {
   VirtualText,
   NodeAnnotations,
   LoadedData,
-  EngineDelegateEvent
+  EngineDelegateEvent,
+  LoadedPCData
 } from "paperclip-utils";
 import * as styles from "./index.pc";
 import { render } from "react-dom";
@@ -66,7 +67,7 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
 });
 
 type UseFrames2Props = {
-  fileData: Record<string, LoadedData>;
+  fileData: Record<string, LoadedPCData>;
   shouldCollectRects: boolean;
 };
 
@@ -77,7 +78,7 @@ class FrameController {
     readonly renderer: FramesRenderer,
     readonly dispatch: any,
     public shouldCollectRects: boolean,
-    readonly loadedData?: LoadedData
+    readonly loadedData?: LoadedPCData
   ) {
     this.id = `${Date.now()}.${Math.random()}`;
     this.dispatch(rendererMounted({ id: this.id }));
@@ -172,7 +173,9 @@ export const useMultipleFrames = ({
 
   useEffect(() => {
     for (const fileUri in renderers) {
-      const frameData = state.designer.allLoadedPCFileData[fileUri];
+      const frameData = state.designer.allLoadedPCFileData[
+        fileUri
+      ] as LoadedPCData;
       const renderer = renderers[fileUri];
       renderer.handleEvents(
         state.designer.currentEngineEvents[renderer.id],
@@ -233,7 +236,7 @@ export const useFrames = ({
 }: UseFramesProps) => {
   const { state, dispatch } = useAppStore();
 
-  const frameData = state.designer.allLoadedPCFileData[fileUri];
+  const frameData = state.designer.allLoadedPCFileData[fileUri] as LoadedPCData;
 
   const resolveUrl = useUrlResolver();
 

@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { createMockEngine, stringifyLoadResult } from "../utils";
 
 import { noop } from "../../core/utils";
+import { LoadedPCData } from "../../core";
 
 describe(__filename + "#", () => {
   it("can render a simple style", async () => {
@@ -346,7 +347,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(result.exports.style.variables["--color"]).to.eql({
+    expect((result as LoadedPCData).exports.style.variables["--color"]).to.eql({
       name: "--color",
       value: "test",
       source: {
@@ -387,7 +388,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(result.exports.style.classNames).to.eql({
+    expect((result as LoadedPCData).exports.style.classNames).to.eql({
       color: { name: "color", public: false, scopedName: "_80f4925f_color" },
       div: { name: "div", public: true, scopedName: "_80f4925f_div" },
       child: { name: "child", public: false, scopedName: "child" },
@@ -533,7 +534,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
-    expect(result.exports.style.keyframes).to.eql({
+    expect((result as LoadedPCData).exports.style.keyframes).to.eql({
       b: {
         name: "b",
         public: true,
@@ -573,7 +574,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
-    expect(result.exports.style.classNames).to.eql({
+    expect((result as LoadedPCData).exports.style.classNames).to.eql({
       _b: { name: "_b", scopedName: "_80f4925f__b", public: true }
     });
   });
@@ -1498,6 +1499,30 @@ describe(__filename + "#", () => {
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
       `<style>[data-pc-406d2856] div[data-pc-80f4925f] { background:url(var(--test)); }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+    );
+  });
+
+  it(`can load CSS files directly`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./styles.css" as="styles" />
+
+        <div className="$styles.test">
+          Hello world
+        </div>
+      `,
+      "/styles.css": `
+        .test {
+          color: red;
+        }
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    const text = stringifyLoadResult(await engine.open("/entry.pc"));
+    expect(text).to.eql(
+      `<style>[class]._8f1a5142_test { color:red; }</style><div class="_8f1a5142_test test" data-pc-80f4925f>Hello world </div>`
     );
   });
 });

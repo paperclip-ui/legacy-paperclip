@@ -27,16 +27,19 @@ global -> document -> scoped -> element
 
 use super::super::super::pc::ast as pc_ast;
 use super::super::super::pc::runtime::evaluator as pc_runtime;
-use super::super::super::pc::runtime::export as pc_export;
 use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
-use crate::base::ast::ExprSource;
+use crate::base::utils::{get_document_style_scope, is_relative_path};
+
+use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
+use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
-use std::collections::{BTreeMap, HashMap};
+use serde::Serialize;
+use std::collections::{BTreeMap};
 use std::fmt;
 
 pub struct Context<'a> {
@@ -49,7 +52,7 @@ pub struct Context<'a> {
   graph: &'a DependencyGraph,
   uri: &'a String,
   import_scopes: BTreeMap<String, String>,
-  import_graph: &'a HashMap<String, BTreeMap<String, pc_export::Exports>>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   exports: Exports,
   in_public_scope: bool,
   all_rules: Vec<virt::Rule>,
@@ -259,12 +262,42 @@ impl fmt::Display for SelectorContext {
     Ok(())
   }
 }
+
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct EvalInfo {
   pub sheet: virt::CSSSheet,
   pub exports: Exports,
 }
 
 pub fn evaluate<'a>(
+  uri: &String,
+  graph: &'a DependencyGraph,
+  vfs: &'a VirtualFileSystem,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
+) -> Result<EvalInfo, RuntimeError> {
+  let dep = graph.dependencies.get(uri).unwrap();
+  match &dep.content {
+    DependencyContent::StyleSheet(sheet) => evaluate_expr(
+      sheet,
+      uri,
+      &get_document_style_scope(uri),
+      None,
+      BTreeMap::new(),
+      vfs,
+      graph,
+      evaluated_graph,
+      None,
+      true
+    ),
+    _ => Err(RuntimeError::new(
+      "Incorrect file type".to_string(),
+      uri,
+      &Location { start: 0, end: 0 },
+    )),
+  }
+}
+
+pub fn evaluate_expr<'a>(
   expr: &ast::Sheet,
   uri: &'a String,
   document_scope: &'a str,
@@ -272,8 +305,9 @@ pub fn evaluate<'a>(
   import_scopes: BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
-  import_graph: &'a HashMap<String, BTreeMap<String, pc_export::Exports>>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   existing_exports: Option<&Exports>,
+  public: bool
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     document_scope,
@@ -282,9 +316,9 @@ pub fn evaluate<'a>(
     vfs,
     graph,
     content: None,
-    import_graph,
+    evaluated_graph,
     import_scopes,
-    in_public_scope: false,
+    in_public_scope: public,
     exports: Exports::new(),
     all_rules: vec![],
     inc_declarations: vec![],
@@ -631,7 +665,7 @@ fn create_child_context<'a>(context: &Context<'a>) -> Context<'a> {
     all_rules: vec![],
     graph: context.graph,
     import_scopes: context.import_scopes.clone(),
-    import_graph: context.import_graph,
+    evaluated_graph: context.evaluated_graph,
     in_public_scope: context.in_public_scope,
     exports: context.exports.clone(),
     inc_declarations: vec![],
@@ -648,6 +682,23 @@ fn fork_context<'a>(dependency_uri: &'a String, context: &Context<'a>) -> Contex
   return child;
 }
 
+fn get_style_import<'a, 'b>(
+  uri: &'a String,
+  id: &'a String,
+  context: &mut Context<'b>,
+) -> Option<&'b Exports> {
+  context
+    .graph
+    .dependencies
+    .get(uri)
+    .and_then(|source| source.dependencies.get(id))
+    .and_then(|dep_uri| context.evaluated_graph.get(dep_uri))
+    .and_then(|import| match &import {
+      DependencyEvalInfo::CSS(css) => Some(&css.exports),
+      DependencyEvalInfo::PC(pc) => Some(&pc.exports.style),
+    })
+}
+
 fn assert_get_mixin<'a>(
   iref: &ast::IncludeReference,
   context: &mut Context<'a>,
@@ -656,22 +707,18 @@ fn assert_get_mixin<'a>(
   if let Some(mixin) = mixin_option {
     // make sure it's public
     if dependency_uri != context.uri {
-      let export = context
-        .import_graph
-        .get(context.uri)
-        .unwrap()
-        .get(&iref.parts.first().unwrap().name)
-        .unwrap()
-        .style
-        .mixins
-        .get(&iref.parts.last().unwrap().name)
-        .unwrap();
-      if !export.public {
-        return Err(RuntimeError::new(
-          "This mixin is private.".to_string(),
-          context.uri,
-          &iref.parts.last().unwrap().location,
-        ));
+      let style_import_option =
+        get_style_import(context.uri, &iref.parts.first().unwrap().name, context);
+
+      if let Some(import) = style_import_option {
+        let export = import.mixins.get(&iref.parts.last().unwrap().name).unwrap();
+        if !export.public {
+          return Err(RuntimeError::new(
+            "This mixin is private.".to_string(),
+            context.uri,
+            &iref.parts.last().unwrap().location,
+          ));
+        }
       }
     }
 

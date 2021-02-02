@@ -6,10 +6,13 @@ use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
+use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
-use crate::css::runtime::evaluator2::{evaluate as evaluate_css2, EvalInfo as CSSEvalInfo};
+use crate::css::runtime::evaluator2::{
+  evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo,
+};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
@@ -39,7 +42,7 @@ pub struct Context<'a> {
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
-  pub import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  pub evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   pub mode: &'a EngineMode,
 }
 
@@ -61,6 +64,15 @@ pub enum RenderStrategy {
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct EvalInfo {
+
+  // this is necessary so that consumers of EvalInfo can pull in all
+  // style sheets
+  #[serde(rename = "allImportedSheetUris")]
+  pub all_imported_sheet_uris: Vec<String>,
+
+  // need to include the imported dependency URIs since they're a snapshot for the evaluated data,
+  // and might not exist as AST if there's a parse error
+  pub dependencies: BTreeMap<String, String>,
   pub sheet: css_virt::CSSSheet,
   pub preview: virt::Node,
   pub exports: Exports,
@@ -70,16 +82,28 @@ pub fn evaluate<'a>(
   uri: &String,
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
-  import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   mode: &EngineMode,
-) -> Result<Option<EvalInfo>, RuntimeError> {
-  let dep = graph.dependencies.get(uri).unwrap();
+) -> Result<EvalInfo, RuntimeError> {
+  let dep: &Dependency = graph.dependencies.get(uri).ok_or(RuntimeError::new("URI not loaded".to_string(), uri, &Location { start: 0, end: 0 }))?;
+
+  
+
   if let DependencyContent::Node(node_expr) = &dep.content {
     let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(ExprSource::new(
       uri.clone(),
       node_expr.get_location().clone(),
     )));
-    let mut context = create_context(node_expr, uri, graph, vfs, &data, None, import_graph, mode);
+    let mut context = create_context(
+      node_expr,
+      uri,
+      graph,
+      vfs,
+      &data,
+      None,
+      evaluated_graph,
+      mode,
+    );
 
     let mut preview = wrap_as_fragment(
       evaluate_instance_node(
@@ -95,15 +119,18 @@ pub fn evaluate<'a>(
     );
 
     let (sheet, css_exports) = evaluate_document_sheet(uri, node_expr, &mut context)?;
+    
 
-    Ok(Some(EvalInfo {
+    Ok(EvalInfo {
       sheet,
       preview,
+      all_imported_sheet_uris: graph.flatten_dependencies(uri),
+      dependencies: dep.dependencies.clone(),
       exports: Exports {
         style: css_exports,
         components: collect_component_exports(&node_expr, &context)?,
       },
-    }))
+    })
   } else {
     Err(RuntimeError::new(
       "Incorrect file type".to_string(),
@@ -127,7 +154,7 @@ fn collect_component_exports<'a>(
         if ast::has_attribute("component", element)
           && ast::get_attribute_value("as", element) != None
         {
-          let id = ast::get_attribute_value("as", element).unwrap();
+          let id = ast::get_attribute_value("as", element).ok_or(RuntimeError::new("As must be present".to_string(), context.uri, &Location { start: 0, end: 0 }))?;
 
           let properties = collect_node_properties(child);
 
@@ -336,7 +363,7 @@ fn evaluate_node_sheet<'a>(
   };
 
   if let ast::Node::StyleElement(style_element) = &current {
-    let info = evaluate_css2(
+    let info = evaluate_css_expr(
       &style_element.sheet,
       uri,
       &scope,
@@ -344,8 +371,9 @@ fn evaluate_node_sheet<'a>(
       context.import_scopes.clone(),
       context.vfs,
       context.graph,
-      &context.import_graph,
+      &context.evaluated_graph,
       Some(&css_exports),
+      false
     )?;
     match info {
       CSSEvalInfo {
@@ -459,7 +487,7 @@ fn create_context<'a>(
   vfs: &'a VirtualFileSystem,
   data: &'a js_virt::JsValue,
   parent_option: Option<&'a Context>,
-  import_graph: &'a HashMap<String, BTreeMap<String, Exports>>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   mode: &'a EngineMode,
 ) -> Context<'a> {
   let render_call_stack = if let Some(parent) = parent_option {
@@ -475,7 +503,7 @@ fn create_context<'a>(
     uri,
     vfs,
     render_call_stack,
-    import_graph,
+    evaluated_graph,
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
     import_scopes: get_import_scopes(graph.dependencies.get(uri).unwrap()),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
@@ -527,6 +555,30 @@ pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> S
   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }
 
+fn is_frame_visible(annotations: &Option<js_virt::JsObject>) -> bool {
+  let visible = annotations.as_ref().and_then(|obj| -> Option<&js_virt::JsValue> {
+    obj.values.get("frame")
+  }).and_then(|frame_value| {
+    match frame_value {
+      js_virt::JsValue::JsObject(frame) => Some(frame),
+      _ => None
+    }
+  }).and_then(|frame| {
+    frame.values.get("visible")
+  }).and_then(|visible_value| {
+    match visible_value {
+      js_virt::JsValue::JsBoolean(visible) => {
+        Some(visible.value)
+      } 
+      _ => {
+        Some(true)
+      }
+    }
+  });
+
+  visible != Some(false)
+}
+
 fn evaluate_element<'a>(
   element: &ast::Element,
   is_root: bool,
@@ -561,6 +613,11 @@ fn evaluate_element<'a>(
             }
           }
         }
+      }
+
+
+      if context.mode == &EngineMode::MultiFrame  && !is_frame_visible(annotations) {
+        return Ok(None);
       }
 
       let source = instance_or_element_source(element, context.uri, instance_source);
@@ -972,7 +1029,7 @@ fn evaluate_component_instance<'a>(
         context.vfs,
         &data,
         Some(&context),
-        context.import_graph,
+        context.evaluated_graph,
         context.mode,
       );
       check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
@@ -1024,6 +1081,11 @@ fn evaluate_native_element<'a>(
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+
+  if context.mode == &EngineMode::MultiFrame && !is_frame_visible(annotations) {
+    return Ok(None)
+  }
+
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
 
   let mut tag_name = ast::get_tag_name(element);
@@ -1366,14 +1428,12 @@ fn evaluate_attribute_dynamic_string<'a>(
       ast::AttributeDynamicStringPart::ClassNamePierce(pierce) => {
         if pierce.class_name.contains(".") {
           let parts = pierce.class_name.split(".").collect::<Vec<&str>>();
-          let imp = parts.first().unwrap().to_string();
+          let import_id = parts.first().unwrap().to_string();
           let dep_option = context
             .graph
             .dependencies
             .get(context.uri)
-            .unwrap()
-            .dependencies
-            .get(&imp);
+            .and_then(|dep| dep.dependencies.get(&import_id));
 
           let dep_uri = if let Some(dep_uri) = dep_option {
             dep_uri
@@ -1386,13 +1446,15 @@ fn evaluate_attribute_dynamic_string<'a>(
           };
 
           let class_name = parts.last().unwrap();
-          let imports = if let Some(imports) = context.import_graph.get(context.uri) {
-            imports
-          } else {
-            return Err(RuntimeError::unknown(context.uri));
-          };
+          // let imports = if let Some(imports) = context.evaluated_graph.get(context.uri) {
+          //   imports
+          // } else {
+          //   return Err(RuntimeError::unknown(context.uri));
+          // };
 
-          let import_option = imports.get(&imp);
+          // let import_option = imports.get(&import_id);
+
+          let import_option = get_import(context.uri, &import_id, context);
 
           let import = if let Some(import) = import_option {
             import
@@ -1404,7 +1466,9 @@ fn evaluate_attribute_dynamic_string<'a>(
             ));
           };
 
-          let class_export_option = import.style.class_names.get(&class_name.to_string());
+          let class_export_option = get_import_sheet(import)
+            .class_names
+            .get(&class_name.to_string());
 
           let class_export = if let Some(class_export) = class_export_option {
             class_export
@@ -1465,6 +1529,30 @@ fn evaluate_attribute_dynamic_string<'a>(
   Ok(maybe_cast_attribute_js_value(
     name, js_value, is_native, context,
   ))
+}
+
+fn get_import<'a>(
+  source_uri: &String,
+  import_id: &String,
+  context: &'a Context,
+) -> Option<&'a DependencyEvalInfo> {
+  context
+    .graph
+    .dependencies
+    .get(source_uri)
+    .and_then(|source: &Dependency| {
+      source
+        .dependencies
+        .get(import_id)
+        .and_then(|dep_uri| context.evaluated_graph.get(dep_uri))
+    })
+}
+
+fn get_import_sheet<'a>(ev: &'a DependencyEvalInfo) -> &'a css_export::Exports {
+  match &ev {
+    DependencyEvalInfo::CSS(css) => &css.exports,
+    DependencyEvalInfo::PC(pc) => &pc.exports.style,
+  }
 }
 
 fn is_class_attribute_name(name: &String) -> bool {
@@ -1743,7 +1831,7 @@ mod tests {
     .unwrap();
   }
 
-  fn evaluate_source<'a>(code: &'a str) -> Result<Option<EvalInfo>, RuntimeError> {
+  fn evaluate_source<'a>(code: &'a str) -> Result<EvalInfo, RuntimeError> {
     let mut graph = DependencyGraph::new();
     let uri = "some-file.pc".to_string();
     let vfs = VirtualFileSystem::new(
@@ -1756,10 +1844,13 @@ mod tests {
       Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
     );
 
-    let mut import_graph = HashMap::new();
-    import_graph.insert(uri.to_string(), BTreeMap::new());
-
-    evaluate(&uri, &graph, &vfs, &import_graph, &EngineMode::SingleFrame)
+    evaluate(
+      &uri,
+      &graph,
+      &vfs,
+      &BTreeMap::new(),
+      &EngineMode::SingleFrame,
+    )
   }
 
   #[test]

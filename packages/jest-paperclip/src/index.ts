@@ -7,7 +7,8 @@ import {
   createEngineDelegate,
   PC_CONFIG_FILE_NAME,
   findPCConfigUrl,
-  PaperclipConfig
+  PaperclipConfig,
+  EvaluatedDataKind
 } from "paperclip";
 
 const engine = createEngineDelegate();
@@ -29,11 +30,12 @@ module.exports = {
       throw new Error(`compiler.name is not defined in ${PC_CONFIG_FILE_NAME}`);
     }
 
-    const {
-      exports: {
-        style: { classNames }
-      }
-    } = engine.open(fileUri);
+    const result = engine.open(fileUri);
+
+    const classNames =
+      result.kind === EvaluatedDataKind.PC
+        ? result.exports.style.classNames
+        : result.exports.classNames;
 
     const { compile } = require(resolve.sync(compilerName, {
       basedir: path.dirname(fullPath)

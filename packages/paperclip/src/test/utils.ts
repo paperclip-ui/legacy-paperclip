@@ -1,14 +1,15 @@
 import * as path from "path";
 import { createEngineDelegate } from "../node";
-import { EngineDelegate } from "../core";
+import { EngineDelegate, EngineMode } from "../core";
 import {
   EngineErrorEvent,
   EngineDelegateEventKind,
   stringifyVirtualNode,
   stringifyCSSSheet,
-  LoadedEvent
+  LoadedEvent,
+  LoadedData,
+  EvaluatedDataKind
 } from "paperclip-utils";
-import { LoadResult } from "../core/delegate";
 
 export type Graph = {
   [identifier: string]: string;
@@ -22,7 +23,8 @@ export const TEST_FIXTURE_SRC_DIRECTORY = path.join(
 export const createMockEngine = (
   graph: Graph,
   onErr = e => console.error(e),
-  io: Partial<any> = {}
+  io: Partial<any> = {},
+  mode = EngineMode.SingleFrame
 ) =>
   createEngineDelegate(
     {
@@ -35,7 +37,8 @@ export const createMockEngine = (
           return path.join(path.dirname(from), to).replace(/\\/g, "/");
         },
         ...io
-      }
+      },
+      mode
     },
     onErr
   );
@@ -67,20 +70,27 @@ export const waitForRender = (
 };
 
 export const stringifyLoadResult = (
-  { sheet, preview, importedSheets: sheets }: LoadResult,
+  data: LoadedData,
   shouldCleanHTML = true
 ) => {
-  const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
-    .map(sheet => {
-      return stringifyCSSSheet(sheet, {
-        resolveUrl: url => url.replace("file://", "")
-      });
-    })
-    .join("\n")
-    .trim();
+  if (data.kind === EvaluatedDataKind.PC) {
+    const { sheet, preview, importedSheets: sheets } = data;
+    const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
+      .map(sheet => {
+        return stringifyCSSSheet(sheet, {
+          resolveUrl: url => url.replace("file://", "")
+        });
+      })
+      .join("\n")
+      .trim();
 
-  const buffer = `<style>${sheetText}</style>${stringifyVirtualNode(preview)}`;
-  return shouldCleanHTML ? cleanHTML(buffer) : buffer;
+    const buffer = `<style>${sheetText}</style>${stringifyVirtualNode(
+      preview
+    )}`;
+    return shouldCleanHTML ? cleanHTML(buffer) : buffer;
+  } else {
+    return "";
+  }
 };
 
 export const cleanHTML = (value: string) => {
