@@ -155,9 +155,13 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = await createMockEngine(graph, null, {}, EngineMode.MultiFrame);
+    const engine = await createMockEngine(
+      graph,
+      null,
+      {},
+      EngineMode.MultiFrame
+    );
     const result = engine.open("/entry.pc");
-
 
     expect((result as any).preview.children.length).to.eql(1);
   });
@@ -176,7 +180,12 @@ describe(__filename + "#", () => {
       `
     };
 
-    const engine = await createMockEngine(graph, null, {}, EngineMode.MultiFrame);
+    const engine = await createMockEngine(
+      graph,
+      null,
+      {},
+      EngineMode.MultiFrame
+    );
     const result = engine.open("/entry.pc");
 
     expect((result as any).preview.children.length).to.eql(1);

@@ -12,7 +12,7 @@ import {
   PaperclipSourceWatcher,
   ChangeKind,
   EvaluatedDataKind,
-  DiffedPCData,
+  DiffedPCData
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -236,7 +236,6 @@ export const getEngineImports = (
   uri: string,
   delegate: EngineDelegate
 ): Record<string, LoadedData> => {
-
   const data = delegate.getLoadedData(uri);
 
   if (data.kind === EvaluatedDataKind.PC) {

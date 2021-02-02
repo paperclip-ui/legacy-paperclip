@@ -82,7 +82,7 @@ export type LoadedPCData = {
   importedSheets: SheetInfo[];
 } & EvaluatedPCData;
 
-export type LoadedCSSData = {} & EvaluatedCSSData;
+export type LoadedCSSData = EvaluatedCSSData;
 
 export type LoadedData = LoadedPCData | LoadedCSSData;
 

@@ -20,7 +20,7 @@ import { resolveAllPaperclipFiles, resolveAllAssetFiles } from "paperclip";
 import {
   ComponentExport,
   EvaluatedDataKind,
-  LoadedPCData,
+  LoadedPCData
 } from "paperclip-utils";
 import { CompletionItem, InsertTextFormat } from "vscode-languageserver";
 import {
