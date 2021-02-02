@@ -29,7 +29,7 @@ export enum EvaluatedDataKind {
 }
 
 type BaseEvaluatedData<TKind = EvaluatedDataKind> = {
-  kind: TKind
+  kind: TKind;
 };
 
 export type EvaluatedPCData = {
@@ -56,12 +56,10 @@ export enum DiffedDataKind {
 }
 
 export type BaseDiffedData<TKind = DiffedDataKind> = {
-  kind: TKind
+  kind: TKind;
 };
 
-export type DiffedCSSData = {
-   
-} & BaseDiffedData<DiffedDataKind.CSS>;
+export type DiffedCSSData = {} & BaseDiffedData<DiffedDataKind.CSS>;
 
 export type DiffedPCData = {
   allImportedSheetUris: string[];
@@ -82,8 +80,7 @@ export type LoadedPCData = {
   importedSheets: SheetInfo[];
 } & EvaluatedPCData;
 
-export type LoadedCSSData = {
-} & EvaluatedCSSData;
+export type LoadedCSSData = {} & EvaluatedCSSData;
 
 export type LoadedData = LoadedPCData | LoadedCSSData;
 
@@ -122,4 +119,5 @@ export type VirtualNode =
 
 export type VirtualFrame = VirtualElement | VirtualText;
 
-export const getStyleExports = (data: LoadedData) => data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+export const getStyleExports = (data: LoadedData) =>
+  data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;

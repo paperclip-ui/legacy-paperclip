@@ -17,7 +17,13 @@ import {
 } from "paperclip-autocomplete";
 
 import { resolveAllPaperclipFiles, resolveAllAssetFiles } from "paperclip";
-import { ComponentExport, CSSExports, EvaluatedDataKind, LoadedPCData, PCExports } from "paperclip-utils";
+import {
+  ComponentExport,
+  CSSExports,
+  EvaluatedDataKind,
+  LoadedPCData,
+  PCExports
+} from "paperclip-utils";
 import { CompletionItem, InsertTextFormat } from "vscode-languageserver";
 import {
   stringArrayToAutoCompleteItems,
@@ -48,7 +54,7 @@ export class PCAutocomplete {
     uri: string,
     text: string,
     data: LoadedData,
-    imports: Record<string, LoadedData>,
+    imports: Record<string, LoadedData>
   ): PCCompletionItem[] {
     return this.getSuggestions2(uri, text, data, imports).map(item =>
       addCompletionItemData(item, uri)
@@ -59,7 +65,7 @@ export class PCAutocomplete {
     uri: string,
     text: string,
     data: LoadedData,
-    imports: Record<string, LoadedData> 
+    imports: Record<string, LoadedData>
   ): CompletionItem[] {
     let context;
 
@@ -80,7 +86,11 @@ export class PCAutocomplete {
         case SuggestContextKind.HTML_TAG_NAME:
           return this._getHTMLTagNameSuggestions(data as LoadedPCData, imports);
         case SuggestContextKind.HTML_ATTRIBUTE_NAME:
-          return this._getAttributeNameSuggestions(context, data as LoadedPCData, imports);
+          return this._getAttributeNameSuggestions(
+            context,
+            data as LoadedPCData,
+            imports
+          );
         case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
           return this._getHTMLAttributeStringValueSuggestions(
             uri,
@@ -91,9 +101,17 @@ export class PCAutocomplete {
         case SuggestContextKind.CSS_DECLARATION_NAME:
           return this._getCSSDeclarationNameSuggestion(context, data, imports);
         case SuggestContextKind.CSS_DECLARATION_AT_RULE:
-          return this._getCSSDeclarationAtRuleSuggestion(context, data, imports);
+          return this._getCSSDeclarationAtRuleSuggestion(
+            context,
+            data,
+            imports
+          );
         case SuggestContextKind.CSS_AT_RULE_PARAMS:
-          return this._getCSSDeclarationAtRuleParamsSuggestion(context, data, imports);
+          return this._getCSSDeclarationAtRuleParamsSuggestion(
+            context,
+            data,
+            imports
+          );
         case SuggestContextKind.CSS_AT_RULE_NAME:
           return this._getCSSAtRuleSuggestion(context);
         case SuggestContextKind.CSS_DECLARATION_VALUE:
@@ -126,7 +144,10 @@ export class PCAutocomplete {
       }
     ];
   }
-  private _getHTMLTagNameSuggestions(data: LoadedPCData, imports: Record<string, LoadedData>) {
+  private _getHTMLTagNameSuggestions(
+    data: LoadedPCData,
+    imports: Record<string, LoadedData>
+  ) {
     const options = [];
 
     for (const tagName in data.exports.components) {
@@ -244,7 +265,9 @@ export class PCAutocomplete {
       } else if (imports[basename]?.kind === EvaluatedDataKind.PC) {
         const componentAs = context.tagPath[1] || DEFAULT_PART_ID;
 
-        const compInfo = (imports[basename] as LoadedPCData).exports.components[componentAs];
+        const compInfo = (imports[basename] as LoadedPCData).exports.components[
+          componentAs
+        ];
         items.push(...this._getComponentPropCompletionItems(compInfo));
         isComponent = true;
       }
@@ -308,8 +331,8 @@ export class PCAutocomplete {
     data: LoadedData,
     imports: Record<string, LoadedData>
   ) {
-
-    const styleExports = data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+    const styleExports =
+      data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
 
     // This is the easiest approach. Ignore if there's text right before cursor -- this is to prevent bad autocompletions. E.g
     // -- expanded to --var(--color)
@@ -385,7 +408,8 @@ export class PCAutocomplete {
     includeImports = true
   ) {
     const list: CompletionItem[] = [];
-    const styleExports = data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+    const styleExports =
+      data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
 
     for (const className in styleExports.classNames) {
       list.push({
@@ -433,9 +457,13 @@ export class PCAutocomplete {
   }
 }
 const declaredVarsToCompletionItems = memoize(
-  (data: LoadedData, 
-    imports: Record<string, LoadedData>, includeVar?: boolean) => {
-    const styleExports = data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+  (
+    data: LoadedData,
+    imports: Record<string, LoadedData>,
+    includeVar?: boolean
+  ) => {
+    const styleExports =
+      data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
     const list: CompletionItem[] = [];
     const used = {};
     for (const name in styleExports.variables) {
@@ -467,13 +495,17 @@ const declaredVarsToCompletionItems = memoize(
   }
 );
 
-const containsVars = (data: LoadedData,
-  imports: Record<string, LoadedData>,) => {
+const containsVars = (
+  data: LoadedData,
+  imports: Record<string, LoadedData>
+) => {
   return containsExports(data, imports, "variables");
 };
 
-const containsClasses = (data: LoadedPCData,
-  imports: Record<string, LoadedData>) => {
+const containsClasses = (
+  data: LoadedPCData,
+  imports: Record<string, LoadedData>
+) => {
   return containsExports(data, imports, "classNames");
 };
 
@@ -495,38 +527,38 @@ const containsExports = (
   return false;
 };
 
-const loadedMixinsAsCompletionList = memoize((data: LoadedData, imports: Record<string, LoadedData>) => {
-  const list: CompletionItem[] = [];
-  const styleExports = getStyleExport(data);
+const loadedMixinsAsCompletionList = memoize(
+  (data: LoadedData, imports: Record<string, LoadedData>) => {
+    const list: CompletionItem[] = [];
+    const styleExports = getStyleExport(data);
 
-  
-
-  for (const mixinName in styleExports.mixins) {
-    // const mixin = data.exports.style.mixins[mixinName];
-    list.push({
-      label: mixinName
-
-      // detail: stringifyDeclarations(mixin.declarations)
-    });
-  }
-
-  for (const importId in imports) {
-    // is file
-    if (/\//.test(importId)) {
-      continue;
-    }
-    const imp = getStyleExport(imports[importId]);
-    for (const mixinName in imp.mixins) {
-      const mixin = imp.mixins[mixinName];
-      if (!mixin.public) {
-        continue;
-      }
+    for (const mixinName in styleExports.mixins) {
+      // const mixin = data.exports.style.mixins[mixinName];
       list.push({
-        label: `${importId}.${mixinName}`
+        label: mixinName
+
         // detail: stringifyDeclarations(mixin.declarations)
       });
     }
-  }
 
-  return list;
-});
+    for (const importId in imports) {
+      // is file
+      if (/\//.test(importId)) {
+        continue;
+      }
+      const imp = getStyleExport(imports[importId]);
+      for (const mixinName in imp.mixins) {
+        const mixin = imp.mixins[mixinName];
+        if (!mixin.public) {
+          continue;
+        }
+        list.push({
+          label: `${importId}.${mixinName}`
+          // detail: stringifyDeclarations(mixin.declarations)
+        });
+      }
+    }
+
+    return list;
+  }
+);

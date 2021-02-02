@@ -34,7 +34,7 @@ import { FilterTextInput } from "../../../TextInput/filter.pc";
 import Spinner from "../../../Spinner/index.pc";
 import { InfiniteScroller } from "../../../InfiniteScroller";
 import { birdseyeFilterChanged, redirectRequest } from "../../../../actions";
-omitBy
+omitBy;
 
 type CellFrame = {
   filePath: string;
@@ -43,7 +43,6 @@ type CellFrame = {
   relativePath: string;
   node: VirtualFrame;
 } & Frame;
-
 
 export const Birdseye = memo(() => {
   const { state, dispatch } = useAppStore();
@@ -338,9 +337,10 @@ const filterCells = (cells: CellFrame[], filter = "") => {
   });
 };
 
-
-const getPCFileData = memoize((data: Record<string, LoadedData>): Record<string, LoadedPCData> => {
-  return omitBy(data, (value) => {
-    return value.kind != EvaluatedDataKind.PC
-  }) as Record<string, LoadedPCData>;
-}); 
+const getPCFileData = memoize(
+  (data: Record<string, LoadedData>): Record<string, LoadedPCData> => {
+    return omitBy(data, value => {
+      return value.kind != EvaluatedDataKind.PC;
+    }) as Record<string, LoadedPCData>;
+  }
+);

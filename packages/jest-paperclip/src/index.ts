@@ -32,7 +32,10 @@ module.exports = {
 
     const result = engine.open(fileUri);
 
-    const classNames = result.kind ===  EvaluatedDataKind.PC ? result.exports.style.classNames : result.exports.classNames;
+    const classNames =
+      result.kind === EvaluatedDataKind.PC
+        ? result.exports.style.classNames
+        : result.exports.classNames;
 
     const { compile } = require(resolve.sync(compilerName, {
       basedir: path.dirname(fullPath)

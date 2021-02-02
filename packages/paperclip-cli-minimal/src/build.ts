@@ -132,12 +132,11 @@ async function initBuild(
         return handleError(ast.error, fullPath);
       }
       const result = await pcEngine.open(fullPath);
-      const {sheet} = result;
+      const { sheet } = result;
 
       if (sheet.error) {
         return handleError(sheet.error, fullPath);
       }
-
 
       let code = compile(
         {

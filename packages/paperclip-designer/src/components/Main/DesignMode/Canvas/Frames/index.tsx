@@ -173,7 +173,9 @@ export const useMultipleFrames = ({
 
   useEffect(() => {
     for (const fileUri in renderers) {
-      const frameData = state.designer.allLoadedPCFileData[fileUri] as LoadedPCData;
+      const frameData = state.designer.allLoadedPCFileData[
+        fileUri
+      ] as LoadedPCData;
       const renderer = renderers[fileUri];
       renderer.handleEvents(
         state.designer.currentEngineEvents[renderer.id],

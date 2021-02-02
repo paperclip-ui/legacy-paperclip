@@ -299,8 +299,9 @@ function* handleMetaKeyClick(
   const nodePathParts = nodeInfo.nodePath.split(".").map(Number);
 
   const virtualNode = getVirtTarget(
-    (state.designer.allLoadedPCFileData[state.designer.ui.query.canvasFile] as LoadedPCData)
-      .preview,
+    (state.designer.allLoadedPCFileData[
+      state.designer.ui.query.canvasFile
+    ] as LoadedPCData).preview,
     nodePathParts
   );
 

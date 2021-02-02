@@ -86,7 +86,6 @@ async function pcLoader(
 
   let sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
   const sheetFileName = path.basename(sheetFilePath);
-  
 
   const code = compiler.compile(
     {

@@ -24,8 +24,8 @@ export const stringArrayToAutoCompleteItems = memoize(
     }))
 );
 
-export const getStyleExport = (data: LoadedData) => data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
-
+export const getStyleExport = (data: LoadedData) =>
+  data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
 
 export const stringArraytoSnippetStringOptions = memoize(
   (values: string[]) => `|${values.join(",")}|`

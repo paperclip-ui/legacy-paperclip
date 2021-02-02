@@ -82,7 +82,6 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     return this._engine.getLoadedAst(uri) as DependencyNodeContent;
   }
   public getCompletionItems(uri: string, text: string): any {
-
     return this._autocomplete.getSuggestions(
       uri,
       text,
@@ -202,7 +201,11 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       let colorValue;
       if (/var\(.*?\)/.test(color)) {
         const name = color.match(/var\((.*?)\)/)[1];
-        const value = getVariableValue(name, context.data, getEngineImports(context.uri, this._engine));
+        const value = getVariableValue(
+          name,
+          context.data,
+          getEngineImports(context.uri, this._engine)
+        );
         if (value) {
           const match = matchColor(value);
           if (match) {
@@ -450,7 +453,11 @@ const getImportSourceAst = (
   return [imp, engine.getLoadedAst(impUri) as DependencyNodeContent, impUri];
 };
 
-const getVariableValue = (name: string, data: LoadedData, imports: Record<string, LoadedData>) => {
+const getVariableValue = (
+  name: string,
+  data: LoadedData,
+  imports: Record<string, LoadedData>
+) => {
   if (!data) {
     return null;
   }

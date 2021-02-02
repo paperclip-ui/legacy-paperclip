@@ -142,7 +142,7 @@ export const updateAllLoadedData = (
         [event.uri]: {
           ...event.data
         }
-      }
+      };
     }
   } else if (event.kind === EngineDelegateEventKind.Diffed) {
     const existingData = allData[event.uri];
@@ -165,7 +165,7 @@ export const updateAllLoadedData = (
           sheet: event.data.sheet || existingPCData.sheet,
           preview: patchVirtNode(existingPCData.preview, event.data.mutations)
         }
-      }
+      };
     } else {
       const existingCSSData = existingData as LoadedCSSData;
       return {
@@ -175,7 +175,7 @@ export const updateAllLoadedData = (
           exports: existingCSSData.exports,
           sheet: existingCSSData.sheet
         }
-      }
+      };
     }
   }
 
@@ -186,13 +186,10 @@ const getImportedSheets = (
   allData: Record<string, LoadedData>,
   { data }: EvaluatedEvent | DiffedEvent
 ) => {
-
-
   // ick, wworks for now.
 
   const deps: SheetInfo[] = [];
   if (data.kind === EvaluatedDataKind.PC) {
-
     for (const depUri of data.allImportedSheetUris) {
       const data = allData[depUri];
       if (data) {

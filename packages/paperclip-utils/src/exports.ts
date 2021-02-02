@@ -7,7 +7,7 @@ export type CSSExports = {
 
 export type PCExports = {
   components: Record<string, ComponentExport>;
-  style: CSSExports
+  style: CSSExports;
 };
 
 export type ComponentProperty = {

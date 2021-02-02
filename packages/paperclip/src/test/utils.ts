@@ -71,8 +71,7 @@ export const stringifyLoadResult = (
   data: LoadedData,
   shouldCleanHTML = true
 ) => {
-
-  if (data.kind ===  EvaluatedDataKind.PC) {
+  if (data.kind === EvaluatedDataKind.PC) {
     const { sheet, preview, importedSheets: sheets } = data;
     const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
       .map(sheet => {
@@ -83,7 +82,9 @@ export const stringifyLoadResult = (
       .join("\n")
       .trim();
 
-    const buffer = `<style>${sheetText}</style>${stringifyVirtualNode(preview)}`;
+    const buffer = `<style>${sheetText}</style>${stringifyVirtualNode(
+      preview
+    )}`;
     return shouldCleanHTML ? cleanHTML(buffer) : buffer;
   } else {
     return "";

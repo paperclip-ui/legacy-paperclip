@@ -6,7 +6,11 @@ import {
   stringifyLoadResult,
   noop
 } from "../utils";
-import { EngineDelegateEventKind, LoadedPCData, stringifyVirtualNode } from "paperclip-utils";
+import {
+  EngineDelegateEventKind,
+  LoadedPCData,
+  stringifyVirtualNode
+} from "paperclip-utils";
 
 describe(__filename + "#", () => {
   it("prevents circular dependencies", async () => {
@@ -37,7 +41,7 @@ describe(__filename + "#", () => {
       `
     };
     const engine = await createMockEngine(graph);
-    const { preview } = await engine.open("/entry.pc") as LoadedPCData;
+    const { preview } = (await engine.open("/entry.pc")) as LoadedPCData;
     const buffer = `${stringifyVirtualNode(preview)}`;
 
     expect(cleanHTML(buffer)).to.eql(
@@ -187,7 +191,7 @@ describe(__filename + "#", () => {
         `
       };
       const engine = await createMockEngine(graph);
-      const { preview } = await engine.open("/entry.pc") as LoadedPCData;
+      const { preview } = (await engine.open("/entry.pc")) as LoadedPCData;
       const buffer = `${stringifyVirtualNode(preview)}`;
 
       expect(cleanHTML(buffer)).to.eql(
@@ -205,7 +209,7 @@ describe(__filename + "#", () => {
         `
       };
       const engine = await createMockEngine(graph);
-      const { preview } = await engine.open("/entry.pc") as LoadedPCData;
+      const { preview } = (await engine.open("/entry.pc")) as LoadedPCData;
       const buffer = `${stringifyVirtualNode(preview)}`;
 
       expect(cleanHTML(buffer)).to.eql(
@@ -217,7 +221,7 @@ describe(__filename + "#", () => {
         "/entry.pc": `<span>{-1}</span>`
       };
       const engine = await createMockEngine(graph);
-      const { preview } = await engine.open("/entry.pc") as LoadedPCData;
+      const { preview } = (await engine.open("/entry.pc")) as LoadedPCData;
       expect(cleanHTML(stringifyVirtualNode(preview))).to.eql(
         "<span data-pc-80f4925f>-1</span>"
       );
@@ -496,7 +500,7 @@ describe(__filename + "#", () => {
     };
 
     const engine = await createMockEngine(graph);
-    const result = await engine.open("/entry.pc") as LoadedPCData;
+    const result = (await engine.open("/entry.pc")) as LoadedPCData;
 
     expect(result.exports.components).to.eql({
       Test: {

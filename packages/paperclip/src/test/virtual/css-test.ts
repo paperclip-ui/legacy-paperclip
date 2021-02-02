@@ -1518,7 +1518,6 @@ describe(__filename + "#", () => {
       `
     };
 
-
     const engine = await createMockEngine(graph);
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));

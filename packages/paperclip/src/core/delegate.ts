@@ -57,7 +57,6 @@ const mapResult = result => {
 
 export type EngineDelegateEventListener = (event: EngineDelegateEvent) => void;
 
-
 export enum EngineDelegateEventType {
   Loaded = "Loaded",
   ChangedSheets = "ChangedSheets"
@@ -110,8 +109,10 @@ export class EngineDelegate {
       this._rendered = updateAllLoadedData(this._rendered, event);
       const newData = this._rendered[event.uri];
 
-      if (existingData.kind === EvaluatedDataKind.PC && newData.kind === EvaluatedDataKind.PC) {
-
+      if (
+        existingData.kind === EvaluatedDataKind.PC &&
+        newData.kind === EvaluatedDataKind.PC
+      ) {
         const removedSheetUris: string[] = [];
         const diffData = event.data as DiffedPCData;
 
@@ -143,9 +144,8 @@ export class EngineDelegate {
             uri: event.uri,
             kind: EngineDelegateEventKind.ChangedSheets,
             data: {
-
-              // TODO - don't do this - instead include newSheetUris and 
-              // allow renderer to fetch these sheets 
+              // TODO - don't do this - instead include newSheetUris and
+              // allow renderer to fetch these sheets
               newSheets: addedSheets,
               removedSheetUris: removedSheetUris,
               allImportedSheetUris: diffData.allImportedSheetUris
@@ -182,7 +182,6 @@ export class EngineDelegate {
       return ret;
     });
   }
-
 
   public getLoadedData(uri: string): LoadedData | null {
     return this._rendered[uri];
@@ -236,21 +235,24 @@ export const keepEngineInSyncWithFileSystem2 = (
  * Kept separate from the engine since this is more of a util function for ID inspection
  */
 
-export const getEngineImports = (uri: string, delegate: EngineDelegate): Record<string, LoadedData> => {
+export const getEngineImports = (
+  uri: string,
+  delegate: EngineDelegate
+): Record<string, LoadedData> => {
   const ast = delegate.getLoadedAst(uri);
 
   if (ast.contentKind === DependencyContentKind.Node) {
-    const importUris: string[] = getImports(ast).map(element => {
-    
-      return getAttributeStringValue("src", element);
-    }).filter(Boolean);
+    const importUris: string[] = getImports(ast)
+      .map(element => {
+        return getAttributeStringValue("src", element);
+      })
+      .filter(Boolean);
 
     return importUris.reduce((record: any, uri: string) => {
       record[uri] = delegate.getLoadedData(uri)!;
       return record;
     }, {});
-
   } else {
     return {};
   }
-}
+};
