@@ -161,7 +161,7 @@ export const updateAllLoadedData = (
           ...existingPCData,
           exports: existingPCData.exports,
           importedSheets: getImportedSheets(allData, event),
-          allImportedSheetUris: existingPCData.allImportedSheetUris,
+          allImportedSheetUris: event.data.allImportedSheetUris,
           sheet: event.data.sheet || existingPCData.sheet,
           preview: patchVirtNode(existingPCData.preview, event.data.mutations)
         }

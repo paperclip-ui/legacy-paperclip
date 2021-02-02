@@ -17,7 +17,10 @@ import {
   memoize,
   computeVirtJSObject,
   NodeAnnotations,
-  VirtualFrame
+  VirtualFrame,
+  DiffedDataKind,
+  EvaluatedDataKind,
+  LoadedPCData
 } from "paperclip-utils";
 import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
@@ -212,7 +215,7 @@ export class FramesRenderer {
     return this._framesProxy.immutableFrames;
   }
 
-  public initialize({ sheet, importedSheets, preview }: LoadedData) {
+  public initialize({ sheet, importedSheets, preview }: LoadedPCData) {
     const children =
       preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
     this._preview = preview;
@@ -254,45 +257,51 @@ export class FramesRenderer {
         break;
       }
       case EngineDelegateEventKind.Loaded: {
-        if (event.uri === this.targetUri) {
-          this._dependencies = event.data.allImportedSheetUris;
-          this.initialize(event.data);
+        if (event.data.kind === EvaluatedDataKind.PC) {
+          if (event.uri === this.targetUri) {
+            this._dependencies = event.data.allImportedSheetUris;
+            this.initialize(event.data);
+          }
         }
         break;
       }
       case EngineDelegateEventKind.Evaluated: {
-        if (event.uri === this.targetUri) {
-          this._dependencies = event.data.allImportedSheetUris;
-        } else if (this._dependencies.includes(event.uri)) {
-          // Replace
-          this._framesProxy.updateImportedStyles(
-            [{ uri: event.uri, sheet: event.data.sheet }],
-            [event.uri]
-          );
+        if (event.data.kind === EvaluatedDataKind.PC) {
+          if (event.uri === this.targetUri) {
+            this._dependencies = event.data.allImportedSheetUris;
+          } else if (this._dependencies.includes(event.uri)) {
+            // Replace
+            this._framesProxy.updateImportedStyles(
+              [{ uri: event.uri, sheet: event.data.sheet }],
+              [event.uri]
+            );
+          }
         }
         break;
       }
       case EngineDelegateEventKind.Diffed: {
-        if (event.uri === this.targetUri) {
-          this._dependencies = event.data.allImportedSheetUris;
+        if (event.data.kind === DiffedDataKind.PC) {
+          if (event.uri === this.targetUri) {
+            this._dependencies = event.data.allImportedSheetUris;
 
-          patchNativeNode(
-            this._framesProxy,
-            event.data.mutations,
-            this._domFactory,
-            this._resolveUrl
-          );
+            patchNativeNode(
+              this._framesProxy,
+              event.data.mutations,
+              this._domFactory,
+              this._resolveUrl
+            );
 
-          if (event.data.sheet) {
-            this._framesProxy.setMainStyle(event.data.sheet);
+            if (event.data.sheet) {
+              this._framesProxy.setMainStyle(event.data.sheet);
+            }
+
+            this._preview = patchVirtNode(this._preview, event.data.mutations);
+          } else if (event.data.sheet) {
+            this._framesProxy.updateImportedStyles(
+              [{ uri: event.uri, sheet: event.data.sheet }],
+              [event.uri]
+            );
           }
-
-          this._preview = patchVirtNode(this._preview, event.data.mutations);
-        } else if (event.data.sheet) {
-          this._framesProxy.updateImportedStyles(
-            [{ uri: event.uri, sheet: event.data.sheet }],
-            [event.uri]
-          );
         }
         break;
       }

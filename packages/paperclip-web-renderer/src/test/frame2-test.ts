@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { EngineMode } from "paperclip";
+import { LoadedPCData } from "paperclip-utils";
 import { FramesRenderer } from "../frame-renderer";
 import {
   createMockEngine,
@@ -117,6 +118,7 @@ describe(__filename + "#", () => {
     expect(combineFrameHTML(renderer)).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
     );
+
     await engine.updateVirtualFileContent(
       "/entry.pc",
       `<style> a { color: blue; } </style><span></span>`
@@ -213,7 +215,7 @@ describe(__filename + "#", () => {
     );
 
     const renderer = createMockFramesRenderer("/entry.pc");
-    renderer.initialize(await engine.open("/entry.pc"));
+    renderer.initialize(await engine.open("/entry.pc") as LoadedPCData);
 
     expect(combineFrameHTML(renderer)).to.eql(
       `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
@@ -237,7 +239,7 @@ describe(__filename + "#", () => {
     );
 
     const renderer = createMockFramesRenderer("/entry.pc");
-    renderer.initialize(await engine.open("/entry.pc"));
+    renderer.initialize(await engine.open("/entry.pc") as LoadedPCData);
 
     expect(combineFrameHTML(renderer)).to.eql(
       `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
@@ -263,7 +265,7 @@ describe(__filename + "#", () => {
     await engine.open("/entry.pc");
 
     const renderer = createMockFramesRenderer("/entry.pc");
-    renderer.initialize(await engine.open("/entry.pc"));
+    renderer.initialize(await engine.open("/entry.pc") as LoadedPCData);
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(combineFrameHTML(renderer).replace(/\n/g, "")).to.eql(
@@ -309,7 +311,7 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
     const renderer = createMockFramesRenderer("/entry.pc");
-    renderer.initialize(await engine.open("/entry.pc"));
+    renderer.initialize(await engine.open("/entry.pc") as LoadedPCData);
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     await engine.updateVirtualFileContent(
@@ -339,7 +341,7 @@ describe(__filename + "#", () => {
     );
 
     const renderer2 = createMockFramesRenderer("/entry.pc");
-    renderer2.initialize(await engine.open("/entry.pc"));
+    renderer2.initialize(await engine.open("/entry.pc") as LoadedPCData);
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(combineFrameHTML(renderer)).not.to.eql(undefined);
@@ -361,7 +363,7 @@ describe(__filename + "#", () => {
       "file:///entry.pc",
       (url: string) => url.replace("file:", "blah:")
     );
-    renderer.initialize(await engine.open("file:///entry.pc"));
+    renderer.initialize(await engine.open("file:///entry.pc") as LoadedPCData);
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(
@@ -401,7 +403,7 @@ describe(__filename + "#", () => {
     const renderer = createMockFramesRenderer("file:///entry.pc", url =>
       url.replace("file", "blah")
     );
-    renderer.initialize(await engine.open("file:///entry.pc"));
+    renderer.initialize(await engine.open("file:///entry.pc") as LoadedPCData);
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(

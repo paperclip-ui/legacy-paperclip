@@ -8,7 +8,6 @@ import {
   EngineDelegateEventKind,
   DependencyContent,
   SheetInfo,
-  VirtualNode,
   LoadedData,
   PaperclipSourceWatcher,
   ChangeKind,
@@ -76,7 +75,7 @@ export class EngineDelegate {
     // only one native listener to for buffer performance
     this._native.add_listener(this._dispatch);
 
-    this.onEvent(this._onEngineDelegateEvent);
+    this.onEvent(this._onEngineEvent);
     return this;
   }
 
@@ -93,7 +92,7 @@ export class EngineDelegate {
     };
   }
 
-  private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
+  private _onEngineEvent = (event: EngineDelegateEvent) => {
     if (event.kind === EngineDelegateEventKind.Deleted) {
       delete this._rendered[event.uri];
     } else if (event.kind === EngineDelegateEventKind.Evaluated) {
@@ -120,6 +119,7 @@ export class EngineDelegate {
         }
 
         const addedSheets: SheetInfo[] = [];
+
         for (const depUri of diffData.allImportedSheetUris) {
           // Note that we only do this if the sheet is already rendered -- engine
           // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
