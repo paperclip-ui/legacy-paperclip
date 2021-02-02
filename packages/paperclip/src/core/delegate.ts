@@ -11,7 +11,9 @@ import {
   VirtualNode,
   LoadedData,
   PaperclipSourceWatcher,
-  ChangeKind
+  ChangeKind,
+  EvaluatedDataKind,
+  DiffedPCData
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -111,40 +113,47 @@ export class EngineDelegate {
       this._rendered = updateAllLoadedData(this._rendered, event);
       const newData = this._rendered[event.uri];
 
-      const removedSheetUris: string[] = [];
+      if (existingData.kind === EvaluatedDataKind.PC && newData.kind === EvaluatedDataKind.PC) {
 
-      for (const { uri } of existingData.importedSheets) {
-        if (!newData.allDependencies.includes(uri)) {
-          removedSheetUris.push(uri);
+        const removedSheetUris: string[] = [];
+        const diffData = event.data as DiffedPCData;
+
+        for (const { uri } of existingData.importedSheets) {
+          if (!newData.allImportedSheetUris.includes(uri)) {
+            removedSheetUris.push(uri);
+          }
         }
-      }
 
-      const addedSheets: SheetInfo[] = [];
-      for (const depUri of event.data.allDependencies) {
-        // Note that we only do this if the sheet is already rendered -- engine
-        // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
-        // has been added, including the actual sheet object.
-        if (
-          !existingData.allDependencies.includes(depUri) &&
-          this._rendered[depUri]
-        ) {
-          addedSheets.push({
-            uri: depUri,
-            sheet: this._rendered[depUri].sheet
+        const addedSheets: SheetInfo[] = [];
+        for (const depUri of diffData.allImportedSheetUris) {
+          // Note that we only do this if the sheet is already rendered -- engine
+          // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
+          // has been added, including the actual sheet object.
+          if (
+            !existingData.allImportedSheetUris.includes(depUri) &&
+            this._rendered[depUri]
+          ) {
+            addedSheets.push({
+              uri: depUri,
+              sheet: this._rendered[depUri].sheet
+            });
+          }
+        }
+
+        if (addedSheets.length || removedSheetUris.length) {
+          this._dispatch({
+            uri: event.uri,
+            kind: EngineDelegateEventKind.ChangedSheets,
+            data: {
+
+              // TODO - don't do this - instead include newSheetUris and 
+              // allow renderer to fetch these sheets 
+              newSheets: addedSheets,
+              removedSheetUris: removedSheetUris,
+              allImportedSheetUris: diffData.allImportedSheetUris
+            }
           });
         }
-      }
-
-      if (addedSheets.length || removedSheetUris.length) {
-        this._dispatch({
-          uri: event.uri,
-          kind: EngineDelegateEventKind.ChangedSheets,
-          data: {
-            newSheets: addedSheets,
-            removedSheetUris: removedSheetUris,
-            allDependencies: event.data.allDependencies
-          }
-        });
       }
     }
   };
@@ -166,7 +175,6 @@ export class EngineDelegate {
   getVirtualContent(uri: string) {
     return this._documents[uri];
   }
-
   updateVirtualFileContent(uri: string, content: string) {
     this._documents[uri] = content;
     return this._tryCatch(() => {
@@ -176,6 +184,7 @@ export class EngineDelegate {
       return ret;
     });
   }
+
 
   public getLoadedData(uri: string): LoadedData | null {
     return this._rendered[uri];

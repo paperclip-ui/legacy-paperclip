@@ -27,18 +27,17 @@ global -> document -> scoped -> element
 
 use super::super::super::pc::ast as pc_ast;
 use super::super::super::pc::runtime::evaluator as pc_runtime;
-use super::super::super::pc::runtime::export as pc_export;
 use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
-use crate::core::eval::DependencyEval;
+use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use serde::Serialize;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap};
 use std::fmt;
 
 pub struct Context<'a> {
@@ -51,7 +50,7 @@ pub struct Context<'a> {
   graph: &'a DependencyGraph,
   uri: &'a String,
   import_scopes: BTreeMap<String, String>,
-  evaluated_graph: &'a BTreeMap<String, DependencyEval>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   exports: Exports,
   in_public_scope: bool,
   all_rules: Vec<virt::Rule>,
@@ -272,7 +271,7 @@ pub fn evaluate<'a>(
   uri: &String,
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
-  evaluated_graph: &'a BTreeMap<String, DependencyEval>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
 ) -> Result<EvalInfo, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   match &dep.content {
@@ -303,7 +302,7 @@ pub fn evaluate_expr<'a>(
   import_scopes: BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
-  evaluated_graph: &'a BTreeMap<String, DependencyEval>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   existing_exports: Option<&Exports>,
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
@@ -691,8 +690,8 @@ fn get_style_import<'a, 'b>(
     .and_then(|source| source.dependencies.get(id))
     .and_then(|dep_uri| context.evaluated_graph.get(dep_uri))
     .and_then(|import| match &import {
-      DependencyEval::CSS(css) => Some(&css.exports),
-      DependencyEval::PC(pc) => Some(&pc.exports.style),
+      DependencyEvalInfo::CSS(css) => Some(&css.exports),
+      DependencyEvalInfo::PC(pc) => Some(&pc.exports.style),
     })
 }
 

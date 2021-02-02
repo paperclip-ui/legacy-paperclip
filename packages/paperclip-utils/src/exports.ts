@@ -1,11 +1,13 @@
+export type CSSExports = {
+  mixins: Record<string, MixinExport>;
+  classNames: Record<string, ClassNameExport>;
+  variables: Record<string, VariableExport>;
+  keyframes: Record<string, KeyframesExport>;
+};
+
 export type PCExports = {
   components: Record<string, ComponentExport>;
-  style: {
-    mixins: Record<string, MixinExport>;
-    classNames: Record<string, ClassNameExport>;
-    variables: Record<string, VariableExport>;
-    keyframes: Record<string, KeyframesExport>;
-  };
+  style: CSSExports
 };
 
 export type ComponentProperty = {

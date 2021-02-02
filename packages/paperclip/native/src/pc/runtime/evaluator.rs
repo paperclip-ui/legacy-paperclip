@@ -6,7 +6,7 @@ use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_style_scope, is_relative_path};
-use crate::core::eval::DependencyEval;
+use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
@@ -42,7 +42,7 @@ pub struct Context<'a> {
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
-  pub evaluated_graph: &'a BTreeMap<String, DependencyEval>,
+  pub evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   pub mode: &'a EngineMode,
 }
 
@@ -64,6 +64,11 @@ pub enum RenderStrategy {
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct EvalInfo {
+
+  // this is necessary so that consumers of EvalInfo can pull in all
+  // style sheets
+  #[serde(rename = "allImportedSheetUris")]
+  pub all_imported_sheet_uris: Vec<String>,
   pub sheet: css_virt::CSSSheet,
   pub preview: virt::Node,
   pub exports: Exports,
@@ -73,10 +78,13 @@ pub fn evaluate<'a>(
   uri: &String,
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
-  evaluated_graph: &'a BTreeMap<String, DependencyEval>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   mode: &EngineMode,
 ) -> Result<EvalInfo, RuntimeError> {
-  let dep = graph.dependencies.get(uri).unwrap();
+  let dep: &Dependency = graph.dependencies.get(uri).ok_or(RuntimeError::new("URI not loaded".to_string(), uri, &Location { start: 0, end: 0 }))?;
+
+  
+
   if let DependencyContent::Node(node_expr) = &dep.content {
     let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(ExprSource::new(
       uri.clone(),
@@ -107,10 +115,12 @@ pub fn evaluate<'a>(
     );
 
     let (sheet, css_exports) = evaluate_document_sheet(uri, node_expr, &mut context)?;
+    
 
     Ok(EvalInfo {
       sheet,
       preview,
+      all_imported_sheet_uris: graph.flatten_dependencies(uri),
       exports: Exports {
         style: css_exports,
         components: collect_component_exports(&node_expr, &context)?,
@@ -139,7 +149,7 @@ fn collect_component_exports<'a>(
         if ast::has_attribute("component", element)
           && ast::get_attribute_value("as", element) != None
         {
-          let id = ast::get_attribute_value("as", element).unwrap();
+          let id = ast::get_attribute_value("as", element).ok_or(RuntimeError::new("As must be present".to_string(), context.uri, &Location { start: 0, end: 0 }))?;
 
           let properties = collect_node_properties(child);
 
@@ -471,7 +481,7 @@ fn create_context<'a>(
   vfs: &'a VirtualFileSystem,
   data: &'a js_virt::JsValue,
   parent_option: Option<&'a Context>,
-  evaluated_graph: &'a BTreeMap<String, DependencyEval>,
+  evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   mode: &'a EngineMode,
 ) -> Context<'a> {
   let render_call_stack = if let Some(parent) = parent_option {
@@ -1485,7 +1495,7 @@ fn get_import<'a>(
   source_uri: &String,
   import_id: &String,
   context: &'a Context,
-) -> Option<&'a DependencyEval> {
+) -> Option<&'a DependencyEvalInfo> {
   context
     .graph
     .dependencies
@@ -1498,10 +1508,10 @@ fn get_import<'a>(
     })
 }
 
-fn get_import_sheet<'a>(ev: &'a DependencyEval) -> &'a css_export::Exports {
+fn get_import_sheet<'a>(ev: &'a DependencyEvalInfo) -> &'a css_export::Exports {
   match &ev {
-    DependencyEval::CSS(css) => &css.exports,
-    DependencyEval::PC(pc) => &pc.exports.style,
+    DependencyEvalInfo::CSS(css) => &css.exports,
+    DependencyEvalInfo::PC(pc) => &pc.exports.style,
   }
 }
 

@@ -245,7 +245,7 @@ export class FramesRenderer {
     switch (event.kind) {
       case EngineDelegateEventKind.ChangedSheets: {
         if (event.uri === this.targetUri) {
-          this._dependencies = event.data.allDependencies;
+          this._dependencies = event.data.allImportedSheetUris;
           this._framesProxy.updateImportedStyles(
             event.data.newSheets,
             event.data.removedSheetUris
@@ -255,14 +255,14 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Loaded: {
         if (event.uri === this.targetUri) {
-          this._dependencies = event.data.allDependencies;
+          this._dependencies = event.data.allImportedSheetUris;
           this.initialize(event.data);
         }
         break;
       }
       case EngineDelegateEventKind.Evaluated: {
         if (event.uri === this.targetUri) {
-          this._dependencies = event.data.allDependencies;
+          this._dependencies = event.data.allImportedSheetUris;
         } else if (this._dependencies.includes(event.uri)) {
           // Replace
           this._framesProxy.updateImportedStyles(
@@ -274,7 +274,7 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Diffed: {
         if (event.uri === this.targetUri) {
-          this._dependencies = event.data.allDependencies;
+          this._dependencies = event.data.allImportedSheetUris;
 
           patchNativeNode(
             this._framesProxy,

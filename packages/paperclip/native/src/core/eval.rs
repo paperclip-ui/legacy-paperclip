@@ -15,7 +15,8 @@ use std::collections::{BTreeMap, HashSet};
 // }
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub enum DependencyEval {
+#[serde(tag = "kind")]
+pub enum DependencyEvalInfo {
   CSS(css_eval::EvalInfo),
   PC(pc_eval::EvalInfo),
 }
