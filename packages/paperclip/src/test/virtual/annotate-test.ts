@@ -1,6 +1,6 @@
 import { createMockEngine } from "../utils";
 import { expect } from "chai";
-import { computeVirtJSObject, EngineErrorKind } from "paperclip-utils";
+import { computeVirtJSObject } from "paperclip-utils";
 import { EngineMode } from "../../core";
 
 describe(__filename + "#", () => {
