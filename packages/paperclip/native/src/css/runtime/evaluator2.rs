@@ -30,6 +30,8 @@ use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
+use crate::base::utils::{get_document_style_scope, is_relative_path};
+
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
@@ -278,13 +280,14 @@ pub fn evaluate<'a>(
     DependencyContent::StyleSheet(sheet) => evaluate_expr(
       sheet,
       uri,
-      "",
+      &get_document_style_scope(uri),
       None,
       BTreeMap::new(),
       vfs,
       graph,
       evaluated_graph,
       None,
+      true
     ),
     _ => Err(RuntimeError::new(
       "Incorrect file type".to_string(),
@@ -304,6 +307,7 @@ pub fn evaluate_expr<'a>(
   graph: &'a DependencyGraph,
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   existing_exports: Option<&Exports>,
+  public: bool
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     document_scope,
@@ -314,7 +318,7 @@ pub fn evaluate_expr<'a>(
     content: None,
     evaluated_graph,
     import_scopes,
-    in_public_scope: false,
+    in_public_scope: public,
     exports: Exports::new(),
     all_rules: vec![],
     inc_declarations: vec![],

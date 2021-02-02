@@ -55,11 +55,6 @@ const mapResult = result => {
 
 export type EngineDelegateEventListener = (event: EngineDelegateEvent) => void;
 
-export type LoadResult = {
-  importedSheets: SheetInfo[];
-  sheet: any;
-  preview: VirtualNode;
-};
 
 export enum EngineDelegateEventType {
   Loaded = "Loaded",

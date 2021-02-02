@@ -368,6 +368,7 @@ fn evaluate_node_sheet<'a>(
       context.graph,
       &context.evaluated_graph,
       Some(&css_exports),
+      false
     )?;
     match info {
       CSSEvalInfo {

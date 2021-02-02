@@ -6,9 +6,10 @@ import {
   EngineDelegateEventKind,
   stringifyVirtualNode,
   stringifyCSSSheet,
-  LoadedEvent
+  LoadedEvent,
+  LoadedData,
+  EvaluatedDataKind
 } from "paperclip-utils";
-import { LoadResult } from "../core/delegate";
 
 export type Graph = {
   [identifier: string]: string;
@@ -67,20 +68,26 @@ export const waitForRender = (
 };
 
 export const stringifyLoadResult = (
-  { sheet, preview, importedSheets: sheets }: LoadResult,
+  data: LoadedData,
   shouldCleanHTML = true
 ) => {
-  const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
-    .map(sheet => {
-      return stringifyCSSSheet(sheet, {
-        resolveUrl: url => url.replace("file://", "")
-      });
-    })
-    .join("\n")
-    .trim();
 
-  const buffer = `<style>${sheetText}</style>${stringifyVirtualNode(preview)}`;
-  return shouldCleanHTML ? cleanHTML(buffer) : buffer;
+  if (data.kind ===  EvaluatedDataKind.PC) {
+    const { sheet, preview, importedSheets: sheets } = data;
+    const sheetText = [...sheets.map(({ sheet }) => sheet), sheet]
+      .map(sheet => {
+        return stringifyCSSSheet(sheet, {
+          resolveUrl: url => url.replace("file://", "")
+        });
+      })
+      .join("\n")
+      .trim();
+
+    const buffer = `<style>${sheetText}</style>${stringifyVirtualNode(preview)}`;
+    return shouldCleanHTML ? cleanHTML(buffer) : buffer;
+  } else {
+    return "";
+  }
 };
 
 export const cleanHTML = (value: string) => {
