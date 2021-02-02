@@ -121,3 +121,5 @@ export type VirtualNode =
   | VirtualStyleElement;
 
 export type VirtualFrame = VirtualElement | VirtualText;
+
+export const getStyleExports = (data: LoadedData) => data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;

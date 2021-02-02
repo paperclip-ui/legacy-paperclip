@@ -1,6 +1,6 @@
 import Mousetrap, { addKeycodes } from "mousetrap";
 import SockJSClient from "sockjs-client";
-import { computeVirtJSObject } from "paperclip-utils";
+import { computeVirtJSObject, LoadedPCData } from "paperclip-utils";
 import * as Url from "url";
 import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
@@ -299,7 +299,7 @@ function* handleMetaKeyClick(
   const nodePathParts = nodeInfo.nodePath.split(".").map(Number);
 
   const virtualNode = getVirtTarget(
-    state.designer.allLoadedPCFileData[state.designer.ui.query.canvasFile]
+    (state.designer.allLoadedPCFileData[state.designer.ui.query.canvasFile] as LoadedPCData)
       .preview,
     nodePathParts
   );

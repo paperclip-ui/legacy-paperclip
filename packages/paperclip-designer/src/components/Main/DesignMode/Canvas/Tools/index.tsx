@@ -17,6 +17,7 @@ import { Distance } from "./Distance";
 import { Frames } from "./Frames";
 import {
   computeVirtJSObject,
+  LoadedPCData,
   NodeAnnotations,
   VirtualFrame,
   VirtualNodeKind
@@ -90,7 +91,7 @@ export const Tools = () => {
       isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
     )?.box;
 
-  const virtualNode = allLoadedPCFileData[canvasFile];
+  const virtualNode = allLoadedPCFileData[canvasFile] as LoadedPCData;
 
   if (!virtualNode || !toolsLayerEnabled) {
     return null;

@@ -15,6 +15,7 @@ import {
 import { glob } from "glob";
 import { getPrettyMessage } from "paperclip-cli-utils";
 import { ClassNameExport, stripFileProtocol } from "paperclip";
+import { getStyleExports } from "paperclip-utils";
 
 export type BuildOptions = {
   config: string;
@@ -130,16 +131,18 @@ async function initBuild(
       if (ast.error) {
         return handleError(ast.error, fullPath);
       }
-      const { sheet, exports } = await pcEngine.open(fullPath);
+      const result = await pcEngine.open(fullPath);
+      const {sheet} = result;
 
       if (sheet.error) {
         return handleError(sheet.error, fullPath);
       }
 
+
       let code = compile(
         {
           ast,
-          classNames: exports.style.classNames,
+          classNames: getStyleExports(result).classNames,
           module: config.compilerOptions.module
         },
         fullPath,

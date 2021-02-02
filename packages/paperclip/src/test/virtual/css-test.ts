@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { createMockEngine, stringifyLoadResult } from "../utils";
 
 import { noop } from "../../core/utils";
-import { LoadedCSSData, LoadedPCData } from "../../core";
+import { LoadedPCData } from "../../core";
 
 describe(__filename + "#", () => {
   it("can render a simple style", async () => {

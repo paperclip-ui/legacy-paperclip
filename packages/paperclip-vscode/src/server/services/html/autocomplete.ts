@@ -17,12 +17,13 @@ import {
 } from "paperclip-autocomplete";
 
 import { resolveAllPaperclipFiles, resolveAllAssetFiles } from "paperclip";
-import { ComponentExport } from "paperclip-utils";
+import { ComponentExport, CSSExports, EvaluatedDataKind, LoadedPCData, PCExports } from "paperclip-utils";
 import { CompletionItem, InsertTextFormat } from "vscode-languageserver";
 import {
   stringArrayToAutoCompleteItems,
   addCompletionItemData,
   PCCompletionItem,
+  getStyleExport,
   RETRIGGER_COMMAND,
   tagCompletionItem
 } from "./utils";
@@ -46,9 +47,10 @@ export class PCAutocomplete {
   getSuggestions(
     uri: string,
     text: string,
-    data?: LoadedData
+    data: LoadedData,
+    imports: Record<string, LoadedData>,
   ): PCCompletionItem[] {
-    return this.getSuggestions2(uri, text, data).map(item =>
+    return this.getSuggestions2(uri, text, data, imports).map(item =>
       addCompletionItemData(item, uri)
     );
   }
@@ -56,7 +58,8 @@ export class PCAutocomplete {
   getSuggestions2(
     uri: string,
     text: string,
-    data?: LoadedData
+    data: LoadedData,
+    imports: Record<string, LoadedData> 
   ): CompletionItem[] {
     let context;
 
@@ -75,29 +78,30 @@ export class PCAutocomplete {
     try {
       switch (context.kind) {
         case SuggestContextKind.HTML_TAG_NAME:
-          return this._getHTMLTagNameSuggestions(data);
+          return this._getHTMLTagNameSuggestions(data as LoadedPCData, imports);
         case SuggestContextKind.HTML_ATTRIBUTE_NAME:
-          return this._getAttributeNameSuggestions(context, data);
+          return this._getAttributeNameSuggestions(context, data as LoadedPCData, imports);
         case SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE:
           return this._getHTMLAttributeStringValueSuggestions(
             uri,
             context,
-            data
+            data,
+            imports
           );
         case SuggestContextKind.CSS_DECLARATION_NAME:
-          return this._getCSSDeclarationNameSuggestion(context, data);
+          return this._getCSSDeclarationNameSuggestion(context, data, imports);
         case SuggestContextKind.CSS_DECLARATION_AT_RULE:
-          return this._getCSSDeclarationAtRuleSuggestion(context, data);
+          return this._getCSSDeclarationAtRuleSuggestion(context, data, imports);
         case SuggestContextKind.CSS_AT_RULE_PARAMS:
-          return this._getCSSDeclarationAtRuleParamsSuggestion(context, data);
+          return this._getCSSDeclarationAtRuleParamsSuggestion(context, data, imports);
         case SuggestContextKind.CSS_AT_RULE_NAME:
           return this._getCSSAtRuleSuggestion(context);
         case SuggestContextKind.CSS_DECLARATION_VALUE:
-          return this._getCSSDeclarationValueSugestion(context, data);
+          return this._getCSSDeclarationValueSugestion(context, data, imports);
         case SuggestContextKind.CSS_FUNCTION:
-          return this._getCSSFunctionSuggestion(context, uri, data);
+          return this._getCSSFunctionSuggestion(context, uri, data, imports);
         case SuggestContextKind.CSS_CLASS_REFERENCE:
-          return this._getCSSClassReferenceSuggestion(data);
+          return this._getCSSClassReferenceSuggestion(data, imports);
         // case SuggestContextKind.HTML_CLOSE_TAG_NAME:
         //   return this._getCloseTagSuggestion(context);
       }
@@ -122,7 +126,7 @@ export class PCAutocomplete {
       }
     ];
   }
-  private _getHTMLTagNameSuggestions(data: LoadedData) {
+  private _getHTMLTagNameSuggestions(data: LoadedPCData, imports: Record<string, LoadedData>) {
     const options = [];
 
     for (const tagName in data.exports.components) {
@@ -135,30 +139,33 @@ export class PCAutocomplete {
       );
     }
 
-    for (const id in data.imports) {
+    for (const id in imports) {
       if (/\//.test(id)) {
         continue;
       }
-      const imp = data.imports[id];
-      for (const componentId in imp.components) {
-        const componentInfo = imp.components[componentId];
-        if (!componentInfo || !componentInfo.public) {
-          continue;
-        }
-        let tagName;
+      const imp = imports[id];
 
-        if (componentId === DEFAULT_PART_ID) {
-          tagName = id;
-        } else {
-          tagName = `${id}.${componentId}`;
-        }
+      if (imp.kind === EvaluatedDataKind.PC) {
+        for (const componentId in imp.exports.components) {
+          const componentInfo = imp.exports.components[componentId];
+          if (!componentInfo || !componentInfo.public) {
+            continue;
+          }
+          let tagName;
 
-        options.push(
-          tagCompletionItem(
-            tagName,
-            Object.keys(componentInfo.properties).length > 0
-          )
-        );
+          if (componentId === DEFAULT_PART_ID) {
+            tagName = id;
+          } else {
+            tagName = `${id}.${componentId}`;
+          }
+
+          options.push(
+            tagCompletionItem(
+              tagName,
+              Object.keys(componentInfo.properties).length > 0
+            )
+          );
+        }
       }
     }
 
@@ -169,14 +176,15 @@ export class PCAutocomplete {
 
   private _getCSSDeclarationAtRuleSuggestion(
     _context: CSSDeclarationAtRuleSuggestionContext,
-    data: LoadedData
+    data: LoadedData,
+    imports: Record<string, LoadedData>
   ) {
     return [
       {
         label: "include",
         insertText: "include ${1:};",
         insertTextFormat: InsertTextFormat.Snippet,
-        command: loadedMixinsAsCompletionList(data).length
+        command: loadedMixinsAsCompletionList(data, imports).length
           ? RETRIGGER_COMMAND
           : null
       },
@@ -193,10 +201,11 @@ export class PCAutocomplete {
 
   private _getCSSDeclarationAtRuleParamsSuggestion(
     context: CSSDeclarationAtRuleParamsSuggestionContext,
-    data: LoadedData
+    data: LoadedData,
+    imports: Record<string, LoadedData>
   ) {
     if (context.atRuleName === "include") {
-      return loadedMixinsAsCompletionList(data);
+      return loadedMixinsAsCompletionList(data, imports);
     } else {
       return [];
     }
@@ -219,7 +228,8 @@ export class PCAutocomplete {
 
   private _getAttributeNameSuggestions(
     context: HTMLAttributeNameSuggestionContext,
-    data?: LoadedData
+    data: LoadedPCData,
+    imports: Record<string, LoadedData>
   ) {
     const items: CompletionItem[] = [];
 
@@ -231,10 +241,10 @@ export class PCAutocomplete {
         const componentInfo = data.exports.components[basename];
         items.push(...this._getComponentPropCompletionItems(componentInfo));
         isComponent = true;
-      } else if (data.imports[basename]) {
+      } else if (imports[basename]?.kind === EvaluatedDataKind.PC) {
         const componentAs = context.tagPath[1] || DEFAULT_PART_ID;
 
-        const compInfo = data.imports[basename].components[componentAs];
+        const compInfo = (imports[basename] as LoadedPCData).exports.components[componentAs];
         items.push(...this._getComponentPropCompletionItems(compInfo));
         isComponent = true;
       }
@@ -244,7 +254,7 @@ export class PCAutocomplete {
       items.push(
         ...(ATTRIBUTE_NAME_COMPLETION_ITEMS[context.tagPath[0]] || []).map(
           item => {
-            if (item.label === "className" && containsClasses(data)) {
+            if (item.label === "className" && containsClasses(data, imports)) {
               return {
                 ...item,
                 command: RETRIGGER_COMMAND
@@ -268,7 +278,8 @@ export class PCAutocomplete {
   private _getHTMLAttributeStringValueSuggestions(
     uri: string,
     context: HTMLAttributeStringValueContext,
-    data: LoadedData
+    data: LoadedData,
+    imports: Record<string, LoadedData>
   ) {
     if (context.tagPath.length === 1 && context.tagPath[0] === "import") {
       if (context.attributeName == "src") {
@@ -287,15 +298,19 @@ export class PCAutocomplete {
     const attrName = context.attributeName.split(":").shift();
 
     if (attrName === "className" || attrName === "class") {
-      return this._getCSSClassReferenceSuggestion(data, false);
+      return this._getCSSClassReferenceSuggestion(data, imports, false);
     }
     return [];
   }
 
   private _getCSSDeclarationValueSugestion(
     info: CSSDeclarationValueSuggestionContext,
-    data: LoadedData
+    data: LoadedData,
+    imports: Record<string, LoadedData>
   ) {
+
+    const styleExports = data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+
     // This is the easiest approach. Ignore if there's text right before cursor -- this is to prevent bad autocompletions. E.g
     // -- expanded to --var(--color)
     if (
@@ -316,19 +331,20 @@ export class PCAutocomplete {
       info.declarationName === "animation" ||
       info.declarationName === "animation-name"
     ) {
-      for (const name in data.exports.style.keyframes) {
-        const info = data.exports.style.keyframes[name];
+      for (const name in styleExports.keyframes) {
+        const info = styleExports.keyframes[name];
         list.push({
           label: info.name
         });
       }
-      for (const id in data.imports) {
+      for (const id in imports) {
         if (/\//.test(id)) {
           continue;
         }
-        const imp = data.imports[id];
-        for (const name in imp.style.keyframes) {
-          const info = imp.style.keyframes[name];
+        const imp = imports[id];
+        const styleExport = getStyleExport(imp);
+        for (const name in styleExport.keyframes) {
+          const info = styleExport.keyframes[name];
           if (!info.public) {
             continue;
           }
@@ -339,7 +355,7 @@ export class PCAutocomplete {
       }
     }
 
-    list.push(...declaredVarsToCompletionItems(data, true));
+    list.push(...declaredVarsToCompletionItems(data, imports, true));
 
     return list;
   }
@@ -347,10 +363,11 @@ export class PCAutocomplete {
   private _getCSSFunctionSuggestion(
     context: CSSFunctionSuggestionContext,
     uri: string,
-    data: LoadedData
+    data: LoadedData,
+    imports: Record<string, LoadedData>
   ) {
     if (context.name === "var") {
-      return declaredVarsToCompletionItems(data);
+      return declaredVarsToCompletionItems(data, imports);
     }
 
     if (context.name === "url") {
@@ -364,22 +381,24 @@ export class PCAutocomplete {
 
   private _getCSSClassReferenceSuggestion(
     data: LoadedData,
+    imports: Record<string, LoadedData>,
     includeImports = true
   ) {
     const list: CompletionItem[] = [];
+    const styleExports = data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
 
-    for (const className in data.exports.style.classNames) {
+    for (const className in styleExports.classNames) {
       list.push({
         label: className
       });
     }
     if (includeImports) {
-      for (const id in data.imports) {
+      for (const id in imports) {
         if (/\//.test(id)) {
           continue;
         }
 
-        const cx = data.imports[id].style.classNames;
+        const cx = getStyleExport(imports[id]).classNames;
 
         for (const className in cx) {
           const part = cx[className];
@@ -401,33 +420,36 @@ export class PCAutocomplete {
 
   private _getCSSDeclarationNameSuggestion(
     info: CSSDeclarationSuggestionContext,
-    data: LoadedData
+    data: LoadedData,
+    imports: Record<string, LoadedData>
   ) {
     let list = CSS_DECLARATION_NAME_COMPLETION_ITEMS;
 
-    if (containsVars(data)) {
+    if (containsVars(data, imports)) {
       list = list.map(item => ({ ...item, command: RETRIGGER_COMMAND }));
     }
 
     return list;
   }
 }
-
 const declaredVarsToCompletionItems = memoize(
-  (data: LoadedData, includeVar?: boolean) => {
+  (data: LoadedData, 
+    imports: Record<string, LoadedData>, includeVar?: boolean) => {
+    const styleExports = data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
     const list: CompletionItem[] = [];
     const used = {};
-    for (const name in data.exports.style.variables) {
+    for (const name in styleExports.variables) {
       used[name] = true;
       list.push({
         label: name,
         insertText: includeVar ? `var(${name})` : name,
         sortText: "zz" + name,
-        detail: data.exports.style.variables[name].value
+        detail: styleExports.variables[name].value
       });
     }
-    for (const imp in data.imports) {
-      for (const name in data.imports[imp].style.variables) {
+    for (const imp in imports) {
+      const styleExports = getStyleExport(imports[imp]);
+      for (const name in styleExports.variables) {
         if (used[name]) {
           continue;
         }
@@ -436,7 +458,7 @@ const declaredVarsToCompletionItems = memoize(
           label: name,
           insertText: includeVar ? `var(${name})` : name,
           sortText: "zz" + name,
-          detail: data.imports[imp].style.variables[name].value
+          detail: styleExports.variables[name].value
         });
       }
     }
@@ -445,33 +467,41 @@ const declaredVarsToCompletionItems = memoize(
   }
 );
 
-const containsVars = (data: LoadedData) => {
-  return containsExports(data, "variables");
+const containsVars = (data: LoadedData,
+  imports: Record<string, LoadedData>,) => {
+  return containsExports(data, imports, "variables");
 };
 
-const containsClasses = (data: LoadedData) => {
-  return containsExports(data, "classNames");
+const containsClasses = (data: LoadedPCData,
+  imports: Record<string, LoadedData>) => {
+  return containsExports(data, imports, "classNames");
 };
 
 const containsExports = (
   data: LoadedData,
+  imports: Record<string, LoadedData>,
   kind: "classNames" | "keyframes" | "variables"
 ) => {
-  for (const name in data.exports.style[kind]) {
+  const styleExports = getStyleExport(data);
+
+  for (const name in styleExports[kind]) {
     return true;
   }
-  for (const imp in data.imports) {
-    for (const name in data.imports[imp].style[kind]) {
+  for (const imp in imports) {
+    for (const name in getStyleExport(imports[imp])[kind]) {
       return true;
     }
   }
   return false;
 };
 
-const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
+const loadedMixinsAsCompletionList = memoize((data: LoadedData, imports: Record<string, LoadedData>) => {
   const list: CompletionItem[] = [];
+  const styleExports = getStyleExport(data);
 
-  for (const mixinName in data.exports.style.mixins) {
+  
+
+  for (const mixinName in styleExports.mixins) {
     // const mixin = data.exports.style.mixins[mixinName];
     list.push({
       label: mixinName
@@ -480,14 +510,14 @@ const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
     });
   }
 
-  for (const importId in data.imports) {
+  for (const importId in imports) {
     // is file
     if (/\//.test(importId)) {
       continue;
     }
-    const imp = data.imports[importId];
-    for (const mixinName in imp.style.mixins) {
-      const mixin = imp.style.mixins[mixinName];
+    const imp = getStyleExport(imports[importId]);
+    for (const mixinName in imp.mixins) {
+      const mixin = imp.mixins[mixinName];
       if (!mixin.public) {
         continue;
       }
@@ -500,11 +530,3 @@ const loadedMixinsAsCompletionList = memoize((data: LoadedData) => {
 
   return list;
 });
-
-const stringifyDeclarations = decl => {
-  return decl
-    .map(({ name, value }) => {
-      return `${name}: ${value}`;
-    })
-    .join(";");
-};

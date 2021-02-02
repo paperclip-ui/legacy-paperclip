@@ -1,4 +1,5 @@
 import { memoize } from "lodash";
+import { EvaluatedDataKind, LoadedData } from "paperclip-utils";
 import { CompletionItem, InsertTextFormat } from "vscode-languageserver";
 
 export type PCCompletionItem = Omit<CompletionItem, "data"> & {
@@ -22,6 +23,9 @@ export const stringArrayToAutoCompleteItems = memoize(
       preselect: i === 0
     }))
 );
+
+export const getStyleExport = (data: LoadedData) => data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+
 
 export const stringArraytoSnippetStringOptions = memoize(
   (values: string[]) => `|${values.join(",")}|`

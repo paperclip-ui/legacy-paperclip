@@ -40,7 +40,8 @@ import {
   NodeAnnotations,
   isPaperclipFile,
   EngineDelegateEventKind,
-  BasicPaperclipActionType
+  BasicPaperclipActionType,
+  LoadedPCData
 } from "paperclip-utils";
 import * as path from "path";
 import { actionCreator } from "../actions/base";
@@ -311,7 +312,7 @@ export const reduceDesigner = (
     case ActionType.PC_FILE_OPENED: {
       designer = produce(designer, newDesigner => {
         newDesigner.allLoadedPCFileData[designer.ui.query.canvasFile] =
-          action.payload.data;
+          action.payload.data as LoadedPCData;
       });
       designer = maybeCenterCanvas(designer);
       return designer;

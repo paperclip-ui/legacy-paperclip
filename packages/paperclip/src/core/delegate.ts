@@ -12,7 +12,10 @@ import {
   PaperclipSourceWatcher,
   ChangeKind,
   EvaluatedDataKind,
-  DiffedPCData
+  DiffedPCData,
+  getImports,
+  DependencyContentKind,
+  getAttributeStringValue
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -228,3 +231,26 @@ export const keepEngineInSyncWithFileSystem2 = (
     }
   });
 };
+
+/**
+ * Kept separate from the engine since this is more of a util function for ID inspection
+ */
+
+export const getEngineImports = (uri: string, delegate: EngineDelegate): Record<string, LoadedData> => {
+  const ast = delegate.getLoadedAst(uri);
+
+  if (ast.contentKind === DependencyContentKind.Node) {
+    const importUris: string[] = getImports(ast).map(element => {
+    
+      return getAttributeStringValue("src", element);
+    }).filter(Boolean);
+
+    return importUris.reduce((record: any, uri: string) => {
+      record[uri] = delegate.getLoadedData(uri)!;
+      return record;
+    }, {});
+
+  } else {
+    return {};
+  }
+}

@@ -39,11 +39,13 @@ import {
 
 import { PCAutocomplete } from "./autocomplete";
 import { CompletionItem } from "vscode-languageclient";
-import { PCCompletionItem } from "./utils";
+import { getStyleExport, PCCompletionItem } from "./utils";
 import { LoadedData } from "paperclip";
 import { EngineDelegate } from "paperclip";
 import { JsExpression, Slot } from "paperclip";
 import CSS_COLOR_NAMES from "./css-color-names";
+import { LoadedDataEmitted } from "paperclip-utils";
+import { getEngineImports } from "paperclip/src/core/delegate";
 const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
 const CSS_COLOR_NAME_REGEXP = new RegExp(
   `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
@@ -80,10 +82,12 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     return this._engine.getLoadedAst(uri) as DependencyNodeContent;
   }
   public getCompletionItems(uri: string, text: string): any {
+
     return this._autocomplete.getSuggestions(
       uri,
       text,
-      this._engine.getLoadedData(uri)
+      this._engine.getLoadedData(uri),
+      getEngineImports(uri, this._engine)
     );
   }
   public resolveCompletionItem(item: PCCompletionItem): CompletionItem {
@@ -198,7 +202,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       let colorValue;
       if (/var\(.*?\)/.test(color)) {
         const name = color.match(/var\((.*?)\)/)[1];
-        const value = getVariableValue(name, context.data);
+        const value = getVariableValue(name, context.data, getEngineImports(context.uri, this._engine));
         if (value) {
           const match = matchColor(value);
           if (match) {
@@ -446,15 +450,17 @@ const getImportSourceAst = (
   return [imp, engine.getLoadedAst(impUri) as DependencyNodeContent, impUri];
 };
 
-const getVariableValue = (name: string, data: LoadedData) => {
+const getVariableValue = (name: string, data: LoadedData, imports: Record<string, LoadedData>) => {
   if (!data) {
     return null;
   }
-  const v = data.exports.style.variables[name];
+
+  const styleExport = getStyleExport(data);
+  const v = styleExport.variables[name];
   if (v) return v.value;
 
-  for (const id in data.imports) {
-    const v = data.imports[id].style.variables[name];
+  for (const id in imports) {
+    const v = getStyleExport(imports[id]).variables[name];
     if (v) {
       return v.value;
     }
