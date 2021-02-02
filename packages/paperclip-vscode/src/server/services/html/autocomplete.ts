@@ -19,10 +19,8 @@ import {
 import { resolveAllPaperclipFiles, resolveAllAssetFiles } from "paperclip";
 import {
   ComponentExport,
-  CSSExports,
   EvaluatedDataKind,
   LoadedPCData,
-  PCExports
 } from "paperclip-utils";
 import { CompletionItem, InsertTextFormat } from "vscode-languageserver";
 import {

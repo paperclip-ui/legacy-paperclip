@@ -91,7 +91,6 @@ impl NativeEngine {
     let result = self.target.get_graph_uris();
     JsValue::from_serde(&result).unwrap()
   }
-
   pub fn add_listener(&mut self, listener: js_sys::Function) {
     self.target.add_listener(Box::new(move |event| {
       let this = JsValue::NULL;

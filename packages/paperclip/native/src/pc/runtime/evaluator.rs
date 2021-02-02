@@ -69,6 +69,10 @@ pub struct EvalInfo {
   // style sheets
   #[serde(rename = "allImportedSheetUris")]
   pub all_imported_sheet_uris: Vec<String>,
+
+  // need to include the imported dependency URIs since they're a snapshot for the evaluated data,
+  // and might not exist as AST if there's a parse error
+  pub dependencies: BTreeMap<String, String>,
   pub sheet: css_virt::CSSSheet,
   pub preview: virt::Node,
   pub exports: Exports,
@@ -121,6 +125,7 @@ pub fn evaluate<'a>(
       sheet,
       preview,
       all_imported_sheet_uris: graph.flatten_dependencies(uri),
+      dependencies: dep.dependencies.clone(),
       exports: Exports {
         style: css_exports,
         components: collect_component_exports(&node_expr, &context)?,

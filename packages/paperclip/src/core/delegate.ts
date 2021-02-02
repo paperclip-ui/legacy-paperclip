@@ -13,9 +13,6 @@ import {
   ChangeKind,
   EvaluatedDataKind,
   DiffedPCData,
-  getImports,
-  DependencyContentKind,
-  getAttributeStringValue
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -239,17 +236,12 @@ export const getEngineImports = (
   uri: string,
   delegate: EngineDelegate
 ): Record<string, LoadedData> => {
-  const ast = delegate.getLoadedAst(uri);
 
-  if (ast.contentKind === DependencyContentKind.Node) {
-    const importUris: string[] = getImports(ast)
-      .map(element => {
-        return getAttributeStringValue("src", element);
-      })
-      .filter(Boolean);
+  const data = delegate.getLoadedData(uri);
 
-    return importUris.reduce((record: any, uri: string) => {
-      record[uri] = delegate.getLoadedData(uri)!;
+  if (data.kind === EvaluatedDataKind.PC) {
+    return Object.keys(data.dependencies).reduce((record: any, id: string) => {
+      record[id] = delegate.getLoadedData(data.dependencies[id])!;
       return record;
     }, {});
   } else {

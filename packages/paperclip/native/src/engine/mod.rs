@@ -54,6 +54,8 @@ pub struct DiffedPCData<'a> {
   #[serde(rename = "allImportedSheetUris")]
   pub all_imported_sheet_uris: &'a Vec<String>,
 
+  pub dependencies: &'a BTreeMap<String, String>,
+
   pub exports: &'a pc_export::Exports,
 
   // TODO - needs to be domMutations
@@ -158,12 +160,17 @@ impl Engine {
   }  
 
   pub fn get_loaded_ast(&self, uri: &String) -> Option<&DependencyContent> {
-    let dep_option = self.dependency_graph.dependencies.get(uri);
-    match dep_option {
-      Some(dep) => Some(&dep.content),
-      None => None,
-    }
+    self.dependency_graph.dependencies.get(uri)
+    .and_then(|dep| {
+      Some(&dep.content)
+    })
   }
+  // pub fn get_dependency_uris(&self, uri: &String) -> Option<Vec<String>> {
+  //   self.dependency_graph.dependencies.get(uri)
+  //   .and_then(|dep| {
+  //     Some(dep.dependencies.values().cloned().collect())
+  //   })
+  // }
 
   pub async fn load(&mut self, uri: &String) -> Result<(), EngineError> {
     let load_result = self
@@ -212,7 +219,6 @@ impl Engine {
 
       self.dependency_graph.dependencies.remove(&uri);
       self.evaluated_data.remove(&uri);
-      // self.import_graph.remove(&uri);
 
       self.dispatch(EngineDelegateEvent::Deleted(DeletedFileEvent {
         uri: uri.to_string(),
@@ -355,6 +361,7 @@ impl Engine {
                 // imports: &existing_details.imports,
                 exports: &existing_details.exports,
                 all_imported_sheet_uris: &new_details.all_imported_sheet_uris,
+                dependencies: &new_details.dependencies,
                 // all_dependencies: &existing_details.all_dependencies,
                 // dependents: &data.dependents,
                 mutations,

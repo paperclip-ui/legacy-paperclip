@@ -34,6 +34,7 @@ type BaseEvaluatedData<TKind = EvaluatedDataKind> = {
 
 export type EvaluatedPCData = {
   allImportedSheetUris: string[];
+  dependencies: Record<string, string>;
   sheet: any;
   preview: VirtualNode;
 
@@ -59,10 +60,11 @@ export type BaseDiffedData<TKind = DiffedDataKind> = {
   kind: TKind;
 };
 
-export type DiffedCSSData = {} & BaseDiffedData<DiffedDataKind.CSS>;
+export type DiffedCSSData = BaseDiffedData<DiffedDataKind.CSS>;
 
 export type DiffedPCData = {
   allImportedSheetUris: string[];
+  dependencies: Record<string, string>;
   // TODO - needs to be sheetMutations
   sheet: any;
   mutations: Mutation[];
