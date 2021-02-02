@@ -2,6 +2,7 @@ import { compile } from "../code-compiler";
 import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
+import { getStyleExports } from "paperclip/src/core";
 
 const builtin = {
   react: React
@@ -21,10 +22,12 @@ export const compileModules = async (graph: Record<string, string>) => {
   const modules = {};
 
   for (const path in graph) {
-    const { sheet, exports } = await engine.open(path);
+    const result = await engine.open(path);
+    const { sheet } = result;
     const ast = engine.getLoadedAst(path) as any;
+
     const es6 = compile(
-      { ast, sheet, classNames: exports.style.classNames },
+      { ast, sheet, classNames: getStyleExports(result).classNames },
       path
     );
 
