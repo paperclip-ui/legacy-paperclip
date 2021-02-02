@@ -1,7 +1,5 @@
 ### Tomorrow
 
-- get vscode extension to work
-- don't render invisible frames
 - cssom patching
 - fix CSS class name escapes
   - md:1

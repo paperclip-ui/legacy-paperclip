@@ -1,6 +1,7 @@
 import { createMockEngine } from "../utils";
 import { expect } from "chai";
-import { computeVirtJSObject } from "paperclip-utils";
+import { computeVirtJSObject, EngineErrorKind } from "paperclip-utils";
+import { EngineMode } from "../../core";
 
 describe(__filename + "#", () => {
   it("can parse a @desc", async () => {
@@ -136,5 +137,48 @@ describe(__filename + "#", () => {
       tags: { a: "b" },
       frame: { x: -1145, y: -28, title: "Preview", width: 1024, height: 768 }
     });
+  });
+
+  it("Does not render invisible component frames", async () => {
+    const graph = {
+      "/entry.pc": `
+        <!--
+          @frame { visible: false }
+        -->
+
+        <span component as="Test">
+          Hello
+        </span>
+
+
+        <Test />
+      `
+    };
+
+    const engine = await createMockEngine(graph, null, {}, EngineMode.MultiFrame);
+    const result = engine.open("/entry.pc");
+
+
+    expect((result as any).preview.children.length).to.eql(1);
+  });
+  it("Does not render invisible element frames", async () => {
+    const graph = {
+      "/entry.pc": `
+        <!--
+        @frame { visible: false }
+        -->
+        <span component as="Test">
+          Hello
+        </span>
+
+
+        <div />
+      `
+    };
+
+    const engine = await createMockEngine(graph, null, {}, EngineMode.MultiFrame);
+    const result = engine.open("/entry.pc");
+
+    expect((result as any).preview.children.length).to.eql(1);
   });
 });

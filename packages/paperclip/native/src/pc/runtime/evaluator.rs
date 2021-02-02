@@ -555,6 +555,30 @@ pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> S
   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }
 
+fn is_frame_visible(annotations: &Option<js_virt::JsObject>) -> bool {
+  let visible = annotations.as_ref().and_then(|obj| -> Option<&js_virt::JsValue> {
+    obj.values.get("frame")
+  }).and_then(|frame_value| {
+    match frame_value {
+      js_virt::JsValue::JsObject(frame) => Some(frame),
+      _ => None
+    }
+  }).and_then(|frame| {
+    frame.values.get("visible")
+  }).and_then(|visible_value| {
+    match visible_value {
+      js_virt::JsValue::JsBoolean(visible) => {
+        Some(visible.value)
+      } 
+      _ => {
+        Some(true)
+      }
+    }
+  });
+
+  visible != Some(false)
+}
+
 fn evaluate_element<'a>(
   element: &ast::Element,
   is_root: bool,
@@ -589,6 +613,11 @@ fn evaluate_element<'a>(
             }
           }
         }
+      }
+
+
+      if context.mode == &EngineMode::MultiFrame  && !is_frame_visible(annotations) {
+        return Ok(None);
       }
 
       let source = instance_or_element_source(element, context.uri, instance_source);
@@ -1052,6 +1081,11 @@ fn evaluate_native_element<'a>(
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+
+  if context.mode == &EngineMode::MultiFrame && !is_frame_visible(annotations) {
+    return Ok(None)
+  }
+
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
 
   let mut tag_name = ast::get_tag_name(element);
