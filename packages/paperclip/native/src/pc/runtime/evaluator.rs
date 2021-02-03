@@ -64,7 +64,6 @@ pub enum RenderStrategy {
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct EvalInfo {
-
   // this is necessary so that consumers of EvalInfo can pull in all
   // style sheets
   #[serde(rename = "allImportedSheetUris")]
@@ -85,9 +84,11 @@ pub fn evaluate<'a>(
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   mode: &EngineMode,
 ) -> Result<EvalInfo, RuntimeError> {
-  let dep: &Dependency = graph.dependencies.get(uri).ok_or(RuntimeError::new("URI not loaded".to_string(), uri, &Location { start: 0, end: 0 }))?;
-
-  
+  let dep: &Dependency = graph.dependencies.get(uri).ok_or(RuntimeError::new(
+    "URI not loaded".to_string(),
+    uri,
+    &Location { start: 0, end: 0 },
+  ))?;
 
   if let DependencyContent::Node(node_expr) = &dep.content {
     let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(ExprSource::new(
@@ -119,7 +120,6 @@ pub fn evaluate<'a>(
     );
 
     let (sheet, css_exports) = evaluate_document_sheet(uri, node_expr, &mut context)?;
-    
 
     Ok(EvalInfo {
       sheet,
@@ -154,7 +154,11 @@ fn collect_component_exports<'a>(
         if ast::has_attribute("component", element)
           && ast::get_attribute_value("as", element) != None
         {
-          let id = ast::get_attribute_value("as", element).ok_or(RuntimeError::new("As must be present".to_string(), context.uri, &Location { start: 0, end: 0 }))?;
+          let id = ast::get_attribute_value("as", element).ok_or(RuntimeError::new(
+            "As must be present".to_string(),
+            context.uri,
+            &Location { start: 0, end: 0 },
+          ))?;
 
           let properties = collect_node_properties(child);
 
@@ -373,7 +377,7 @@ fn evaluate_node_sheet<'a>(
       context.graph,
       &context.evaluated_graph,
       Some(&css_exports),
-      false
+      false,
     )?;
     match info {
       CSSEvalInfo {
@@ -556,25 +560,18 @@ pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> S
 }
 
 fn is_frame_visible(annotations: &Option<js_virt::JsObject>) -> bool {
-  let visible = annotations.as_ref().and_then(|obj| -> Option<&js_virt::JsValue> {
-    obj.values.get("frame")
-  }).and_then(|frame_value| {
-    match frame_value {
+  let visible = annotations
+    .as_ref()
+    .and_then(|obj| -> Option<&js_virt::JsValue> { obj.values.get("frame") })
+    .and_then(|frame_value| match frame_value {
       js_virt::JsValue::JsObject(frame) => Some(frame),
-      _ => None
-    }
-  }).and_then(|frame| {
-    frame.values.get("visible")
-  }).and_then(|visible_value| {
-    match visible_value {
-      js_virt::JsValue::JsBoolean(visible) => {
-        Some(visible.value)
-      } 
-      _ => {
-        Some(true)
-      }
-    }
-  });
+      _ => None,
+    })
+    .and_then(|frame| frame.values.get("visible"))
+    .and_then(|visible_value| match visible_value {
+      js_virt::JsValue::JsBoolean(visible) => Some(visible.value),
+      _ => Some(true),
+    });
 
   visible != Some(false)
 }
@@ -615,8 +612,7 @@ fn evaluate_element<'a>(
         }
       }
 
-
-      if context.mode == &EngineMode::MultiFrame  && !is_frame_visible(annotations) {
+      if context.mode == &EngineMode::MultiFrame && !is_frame_visible(annotations) {
         return Ok(None);
       }
 
@@ -1081,9 +1077,8 @@ fn evaluate_native_element<'a>(
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-
   if context.mode == &EngineMode::MultiFrame && !is_frame_visible(annotations) {
-    return Ok(None)
+    return Ok(None);
   }
 
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();

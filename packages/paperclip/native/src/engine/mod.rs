@@ -4,16 +4,16 @@ use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph, GraphError};
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
+use crate::css::runtime::diff::diff as diff_css;
 use crate::css::runtime::evaluator2::evaluate as evaluate_css;
+use crate::css::runtime::mutation as css_mutation;
 use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
-use crate::css::runtime::diff::diff as diff_css;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
 use crate::pc::runtime::mutation as pc_mutation;
-use crate::css::runtime::mutation as css_mutation;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use serde::Serialize;
@@ -50,7 +50,6 @@ pub enum DiffedData<'a> {
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct DiffedPCData<'a> {
-  
   #[serde(rename = "sheetMutations")]
   pub sheet_mutations: Vec<css_mutation::Mutation>,
 
@@ -160,13 +159,14 @@ impl Engine {
 
   pub fn get_graph_uris(&self) -> Vec<String> {
     self.dependency_graph.dependencies.keys().cloned().collect()
-  }  
+  }
 
   pub fn get_loaded_ast(&self, uri: &String) -> Option<&DependencyContent> {
-    self.dependency_graph.dependencies.get(uri)
-    .and_then(|dep| {
-      Some(&dep.content)
-    })
+    self
+      .dependency_graph
+      .dependencies
+      .get(uri)
+      .and_then(|dep| Some(&dep.content))
   }
   // pub fn get_dependency_uris(&self, uri: &String) -> Option<Vec<String>> {
   //   self.dependency_graph.dependencies.get(uri)
@@ -353,8 +353,11 @@ impl Engine {
             let sheet_mutations = diff_css(&existing_details.sheet, &new_details.sheet);
             let mutations = diff_pc(&existing_details.preview, &new_details.preview);
 
-            if sheet_mutations.len() > 0 || mutations.len() > 0 || existing_details.all_imported_sheet_uris != new_details.all_imported_sheet_uris || existing_details.exports != new_details.exports {
-
+            if sheet_mutations.len() > 0
+              || mutations.len() > 0
+              || existing_details.all_imported_sheet_uris != new_details.all_imported_sheet_uris
+              || existing_details.exports != new_details.exports
+            {
               // no need to dispatch mutation if no event
 
               // TODO - CSSOM changes can still happen, but aren't picked up

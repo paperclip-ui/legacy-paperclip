@@ -295,7 +295,6 @@ export class FramesRenderer {
         break;
       }
       case EngineDelegateEventKind.Diffed: {
-        
         if (event.data.kind === DiffedDataKind.PC) {
           this._framesProxy.applyStylePatches(
             event.data.sheetMutations,

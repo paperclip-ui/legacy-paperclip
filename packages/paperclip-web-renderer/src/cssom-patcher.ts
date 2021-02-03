@@ -20,8 +20,8 @@ export const patchCSSOM = (sheet: CSSStyleSheet, mutations: any[]) => {
       }
     }
 
-  // bypass illegal string issues
-  } catch(e) {
+    // bypass illegal string issues
+  } catch (e) {
     console.warn(e);
   }
 };

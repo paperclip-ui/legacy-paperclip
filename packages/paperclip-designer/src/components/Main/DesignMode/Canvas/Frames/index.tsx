@@ -112,7 +112,7 @@ class FrameController {
     this.collectRects();
   };
 
-  // This is really f'n slow, so we need to debounce this 
+  // This is really f'n slow, so we need to debounce this
   // so that it doesn't hold things up like color pickers
   collectRects = debounce(
     () => {

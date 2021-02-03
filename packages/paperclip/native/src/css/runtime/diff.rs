@@ -16,9 +16,7 @@ pub fn diff(a: &virt::CSSSheet, b: &virt::CSSSheet) -> Vec<mutation::Mutation> {
 }
 
 pub fn diff_rules(old_rules: &Vec<virt::Rule>, new_rules: &Vec<virt::Rule>, context: &mut Context) {
-
   for (i, old_rule) in old_rules.iter().enumerate() {
-
     if let Some(new_rule) = new_rules.get(i) {
       diff_rule(old_rule, new_rule, i, &vec![], context)
     } else {
@@ -26,7 +24,7 @@ pub fn diff_rules(old_rules: &Vec<virt::Rule>, new_rules: &Vec<virt::Rule>, cont
         path: vec![],
         action: mutation::Action::DeleteRule(mutation::DeleteRule {
           index: new_rules.len(),
-        })
+        }),
       });
     }
   }
@@ -37,8 +35,8 @@ pub fn diff_rules(old_rules: &Vec<virt::Rule>, new_rules: &Vec<virt::Rule>, cont
         path: vec![],
         action: mutation::Action::InsertRule(mutation::InsertRule {
           rule: new_rules.get(i).unwrap().clone(),
-          index: i
-        })
+          index: i,
+        }),
       })
     }
   }
