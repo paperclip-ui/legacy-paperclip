@@ -353,24 +353,24 @@ impl Engine {
             let sheet_mutations = diff_css(&existing_details.sheet, &new_details.sheet);
             let mutations = diff_pc(&existing_details.preview, &new_details.preview);
 
-            // no need to dispatch mutation if no event
+            if sheet_mutations.len() > 0 || mutations.len() > 0 || existing_details.all_imported_sheet_uris != new_details.all_imported_sheet_uris || existing_details.exports != new_details.exports {
 
-            // TODO - CSSOM changes can still happen, but aren't picked up
-            // so we need to send the diff :(
-            // if mutations.len() > 0 {
-            self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
-              uri: uri.clone(),
-              data: DiffedData::PC(DiffedPCData {
-                sheet_mutations,
-                // imports: &existing_details.imports,
-                exports: &existing_details.exports,
-                all_imported_sheet_uris: &new_details.all_imported_sheet_uris,
-                dependencies: &new_details.dependencies,
-                // all_dependencies: &existing_details.all_dependencies,
-                // dependents: &data.dependents,
-                mutations,
-              }),
-            }));
+              // no need to dispatch mutation if no event
+
+              // TODO - CSSOM changes can still happen, but aren't picked up
+              // so we need to send the diff :(
+              // if mutations.len() > 0 {
+              self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
+                uri: uri.clone(),
+                data: DiffedData::PC(DiffedPCData {
+                  sheet_mutations,
+                  exports: &new_details.exports,
+                  all_imported_sheet_uris: &new_details.all_imported_sheet_uris,
+                  dependencies: &new_details.dependencies,
+                  mutations,
+                }),
+              }));
+            }
           }
         }
         DependencyEvalInfo::CSS(pc_info) => {}

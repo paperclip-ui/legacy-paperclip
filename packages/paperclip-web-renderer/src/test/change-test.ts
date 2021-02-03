@@ -45,11 +45,11 @@ describe(__filename, () => {
       "Updates CSS from module",
       {
         "entry.pc": `<import src="./module.pc" as="module" /><module.Test />`,
-        "module.pc": `<div export component as="Test"><style>color: red;</style></div>`
+        "module.pc": `<div export component as="Test"><style>color: before;</style></div>`
       },
       {
-        "module.pc": `<div export component as="Test"><style>color: blue;</style></div>`
-      },
+        "module.pc": `<div export component as="Test"><style>color: after;</style></div>`
+      }
     ],
     [
       "Updates CSS from module _module_",
@@ -67,15 +67,15 @@ describe(__filename, () => {
         "b.pc": `<div export component as="Test">
           <style>background: orange;</style>
         </div>`
-      },
+      }
     ]
   ].forEach(([title, initial, ...changes]: any) => {
-    it (title, async () => {
+    it(title, async () => {
       const engine = createMockEngine(initial);
 
       const renderer = createMockFramesRenderer("entry.pc");
       engine.onEvent(renderer.handleEngineDelegateEvent);
-      renderer.initialize(await engine.open("entry.pc") as LoadedPCData);
+      renderer.initialize((await engine.open("entry.pc")) as LoadedPCData);
 
       for (const change of changes) {
         for (const name in change) {
@@ -83,13 +83,17 @@ describe(__filename, () => {
         }
 
         const baseline = createMockFramesRenderer("entry.pc");
-        await baseline.initialize(await engine.open("entry.pc") as LoadedPCData);
+        await baseline.initialize(
+          (await engine.open("entry.pc")) as LoadedPCData
+        );
         expect(combineFrameHTML(renderer)).to.eql(combineFrameHTML(baseline));
       }
     });
   });
 
   const combineFrameHTML = (renderer: FramesRenderer) => {
-    return renderer.immutableFrames.map(frame => frame.stage.innerHTML).join("");
+    return renderer.immutableFrames
+      .map(frame => frame.stage.innerHTML)
+      .join("");
   };
 });

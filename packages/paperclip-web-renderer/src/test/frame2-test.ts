@@ -557,7 +557,6 @@ describe(__filename + "#", () => {
       `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: blue;} </style></div><div><div></div></div>`
     );
   });
-
 });
 
 const combineFrameHTML = (renderer: FramesRenderer) => {

@@ -92,11 +92,12 @@ class FramesProxy implements Patchable {
   }
   applyStylePatches(mutations: any[], uri?: string) {
     for (const frame of this._frames) {
-      const styleElement = (frame._importedStylesContainer.childNodes[
+      const styleElement = ((frame._importedStylesContainer.childNodes[
         this._importedStyles.findIndex(style => {
           return style.uri === uri;
         })
-      ] || frame._mainStylesContainer.childNodes[0]) as any as HTMLStyleElement;
+      ] ||
+        frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
 
       patchCSSOM(styleElement.sheet, mutations);
     }
