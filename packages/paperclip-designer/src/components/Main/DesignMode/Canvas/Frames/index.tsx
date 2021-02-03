@@ -27,7 +27,7 @@ import {
 import * as styles from "./index.pc";
 import { render } from "react-dom";
 import { FrameContainer } from "../../../../FrameContainer";
-import { throttle } from "lodash";
+import { debounce } from "lodash";
 import { isExpanded } from "../../../../../state";
 
 type FramesProps = {
@@ -111,14 +111,18 @@ class FrameController {
   private _onWindowResize = () => {
     this.collectRects();
   };
-  collectRects = throttle(
+
+  // This is really f'n slow, so we need to debounce this 
+  // so that it doesn't hold things up like color pickers
+  collectRects = debounce(
     () => {
       if (!this.shouldCollectRects || this._disposed) {
         return;
       }
-      this.dispatch(rectsCaptured(this.renderer.getRects()));
+      const rects = this.renderer.getRects();
+      this.dispatch(rectsCaptured(rects));
     },
-    5,
+    100,
     { leading: false }
   );
 }

@@ -259,6 +259,8 @@ export class FramesRenderer {
    */
 
   public handleEngineDelegateEvent = (event: EngineDelegateEvent): void => {
+    const now = Date.now();
+
     switch (event.kind) {
       case EngineDelegateEventKind.ChangedSheets: {
         if (event.uri === this.targetUri) {
@@ -293,6 +295,7 @@ export class FramesRenderer {
         break;
       }
       case EngineDelegateEventKind.Diffed: {
+        
         if (event.data.kind === DiffedDataKind.PC) {
           this._framesProxy.applyStylePatches(
             event.data.sheetMutations,
