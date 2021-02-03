@@ -28,7 +28,7 @@ describe(__filename + "#", () => {
 
     engine.open("/entry.pc");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style>[data-pc-406d2856][data-pc-406d2856] { color:red; }</style></div><div><div> Hello world </div></div>`
+      `<div></div><div><style>[data-pc-406d2856][data-pc-406d2856] {color: red;} </style></div><div><div> Hello world </div></div>`
     );
   });
 
@@ -95,10 +95,10 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     engine.open("/entry.pc");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style>div[data-pc-80f4925f] { color:red; }</style></div><div><div>a</div></div>`
+      `<div></div><div><style>div[data-pc-80f4925f] {color: red;} </style></div><div><div>a</div></div>`
     );
     expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
-      `<div></div><div><style>div[data-pc-80f4925f] { color:red; }</style></div><div><div>b</div></div>`
+      `<div></div><div><style>div[data-pc-80f4925f] {color: red;} </style></div><div><div>b</div></div>`
     );
   });
 
@@ -188,14 +188,14 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div><style>a[data-pc-c938aea3] { color:blue ; }</style></div><div><style></style></div><div>a</div>`
+      `<div><style>a[data-pc-c938aea3] {color: blue;} </style></div><div><style></style></div><div>a</div>`
     );
     engine.updateVirtualFileContent(
       "/entry.pc",
       `<import src="/mod.pc" /><span /><!-- @frame { } --><div />`
     );
     expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
-      `<div><style>a[data-pc-c938aea3] { color:blue ; }</style></div><div><style></style></div><div><div></div></div>`
+      `<div><style>a[data-pc-c938aea3] {color: blue;} </style></div><div><style></style></div><div><div></div></div>`
     );
   });
 });

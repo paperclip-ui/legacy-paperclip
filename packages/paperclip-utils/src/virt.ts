@@ -66,7 +66,7 @@ export type DiffedPCData = {
   allImportedSheetUris: string[];
   dependencies: Record<string, string>;
   // TODO - needs to be sheetMutations
-  sheet: any;
+  sheetMutations: any[];
   mutations: Mutation[];
   exports: PCExports;
 } & BaseDiffedData<DiffedDataKind.PC>;

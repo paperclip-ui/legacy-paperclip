@@ -11,7 +11,8 @@ import {
   EvaluatedCSSData,
   DiffedDataKind,
   LoadedPCData,
-  LoadedCSSData
+  LoadedCSSData,
+  EvaluatedPCData
 } from "./virt";
 import {
   DiffedEvent,
@@ -19,6 +20,7 @@ import {
   EngineDelegateEventKind,
   EvaluatedEvent
 } from "./events";
+import { patchCSSSheet } from "./virt-css-patcher";
 
 export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
   for (const mutation of mutations) {
@@ -127,13 +129,44 @@ export const updateAllLoadedData = (
   allData: Record<string, LoadedData>,
   event: EngineDelegateEvent
 ): Record<string, LoadedData> => {
+  allData = updatePrimary(allData, event);
+
+  // update dependents
+  for (const name in allData) {
+    const info = allData[name];
+    if (info.kind === EvaluatedDataKind.PC) {
+      if (info.allImportedSheetUris.includes(event.uri)) {
+        allData = {
+          ...allData,
+          [name]: {
+            ...(allData[name] as EvaluatedPCData),
+            importedSheets: getImportedSheets(
+              allData,
+              info.allImportedSheetUris
+            )
+          }
+        };
+      }
+    }
+  }
+
+  return allData;
+};
+
+const updatePrimary = (
+  allData: Record<string, LoadedData>,
+  event: EngineDelegateEvent
+): Record<string, LoadedData> => {
   if (event.kind === EngineDelegateEventKind.Evaluated) {
     if (event.data.kind === EvaluatedDataKind.PC) {
       return {
         ...allData,
         [event.uri]: {
           ...event.data,
-          importedSheets: getImportedSheets(allData, event)
+          importedSheets: getImportedSheets(
+            allData,
+            event.data.allImportedSheetUris
+          )
         }
       };
     } else {
@@ -160,10 +193,13 @@ export const updateAllLoadedData = (
         [event.uri]: {
           ...existingPCData,
           exports: existingPCData.exports,
-          importedSheets: getImportedSheets(allData, event),
+          importedSheets: getImportedSheets(
+            allData,
+            event.data.allImportedSheetUris
+          ),
           allImportedSheetUris: event.data.allImportedSheetUris,
           dependencies: event.data.dependencies,
-          sheet: event.data.sheet || existingPCData.sheet,
+          sheet: patchCSSSheet(existingPCData.sheet, event.data.sheetMutations),
           preview: patchVirtNode(existingPCData.preview, event.data.mutations)
         }
       };
@@ -182,25 +218,22 @@ export const updateAllLoadedData = (
 
   return allData;
 };
-
 const getImportedSheets = (
   allData: Record<string, LoadedData>,
-  { data }: EvaluatedEvent | DiffedEvent
+  allImportedSheetUris: string[]
 ) => {
   // ick, wworks for now.
 
   const deps: SheetInfo[] = [];
-  if (data.kind === EvaluatedDataKind.PC) {
-    for (const depUri of data.allImportedSheetUris) {
-      const data = allData[depUri];
-      if (data) {
-        deps.push({ uri: depUri, sheet: data.sheet });
+  for (const depUri of allImportedSheetUris) {
+    const data = allData[depUri];
+    if (data) {
+      deps.push({ uri: depUri, sheet: data.sheet });
 
-        // scenario won't happen for renderer since renderers are only
-        // concerned about the file that's currently opened -- ignore for now. Might
-      } else {
-        // console.error(`data not loaded, this shouldn't happen 😬.`);
-      }
+      // scenario won't happen for renderer since renderers are only
+      // concerned about the file that's currently opened -- ignore for now. Might
+    } else {
+      // console.error(`data not loaded, this shouldn't happen 😬.`);
     }
   }
 

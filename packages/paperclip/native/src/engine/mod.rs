@@ -4,7 +4,9 @@ use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph, GraphError};
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
+use crate::css::runtime::diff::diff as diff_css;
 use crate::css::runtime::evaluator2::evaluate as evaluate_css;
+use crate::css::runtime::mutation as css_mutation;
 use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
@@ -48,8 +50,8 @@ pub enum DiffedData<'a> {
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct DiffedPCData<'a> {
-  // TODO - needs to be sheetMutations
-  pub sheet: Option<css_virt::CSSSheet>,
+  #[serde(rename = "sheetMutations")]
+  pub sheet_mutations: Vec<css_mutation::Mutation>,
 
   #[serde(rename = "allImportedSheetUris")]
   pub all_imported_sheet_uris: &'a Vec<String>,
@@ -157,13 +159,14 @@ impl Engine {
 
   pub fn get_graph_uris(&self) -> Vec<String> {
     self.dependency_graph.dependencies.keys().cloned().collect()
-  }  
+  }
 
   pub fn get_loaded_ast(&self, uri: &String) -> Option<&DependencyContent> {
-    self.dependency_graph.dependencies.get(uri)
-    .and_then(|dep| {
-      Some(&dep.content)
-    })
+    self
+      .dependency_graph
+      .dependencies
+      .get(uri)
+      .and_then(|dep| Some(&dep.content))
   }
   // pub fn get_dependency_uris(&self, uri: &String) -> Option<Vec<String>> {
   //   self.dependency_graph.dependencies.get(uri)
@@ -341,32 +344,36 @@ impl Engine {
         DependencyEvalInfo::PC(existing_details) => {
           if let DependencyEvalInfo::PC(new_details) = &data {
             // temporary - eventually want to diff this.
-            let sheet: Option<css_virt::CSSSheet> = if new_details.sheet == existing_details.sheet {
-              None
-            } else {
-              Some(new_details.sheet.clone())
-            };
+            // let sheet: Option<css_virt::CSSSheet> = if new_details.sheet == existing_details.sheet {
+            //   None
+            // } else {
+            //   Some(new_details.sheet.clone())
+            // };
 
+            let sheet_mutations = diff_css(&existing_details.sheet, &new_details.sheet);
             let mutations = diff_pc(&existing_details.preview, &new_details.preview);
 
-            // no need to dispatch mutation if no event
+            if sheet_mutations.len() > 0
+              || mutations.len() > 0
+              || existing_details.all_imported_sheet_uris != new_details.all_imported_sheet_uris
+              || existing_details.exports != new_details.exports
+            {
+              // no need to dispatch mutation if no event
 
-            // TODO - CSSOM changes can still happen, but aren't picked up
-            // so we need to send the diff :(
-            // if mutations.len() > 0 {
-            self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
-              uri: uri.clone(),
-              data: DiffedData::PC(DiffedPCData {
-                sheet,
-                // imports: &existing_details.imports,
-                exports: &existing_details.exports,
-                all_imported_sheet_uris: &new_details.all_imported_sheet_uris,
-                dependencies: &new_details.dependencies,
-                // all_dependencies: &existing_details.all_dependencies,
-                // dependents: &data.dependents,
-                mutations,
-              }),
-            }));
+              // TODO - CSSOM changes can still happen, but aren't picked up
+              // so we need to send the diff :(
+              // if mutations.len() > 0 {
+              self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
+                uri: uri.clone(),
+                data: DiffedData::PC(DiffedPCData {
+                  sheet_mutations,
+                  exports: &new_details.exports,
+                  all_imported_sheet_uris: &new_details.all_imported_sheet_uris,
+                  dependencies: &new_details.dependencies,
+                  mutations,
+                }),
+              }));
+            }
           }
         }
         DependencyEvalInfo::CSS(pc_info) => {}

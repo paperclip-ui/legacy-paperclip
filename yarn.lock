@@ -2798,6 +2798,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/cssom@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.npmjs.org/@types/cssom/-/cssom-0.4.1.tgz#fb64e145b425bd6c1b0ed78ebd66ba43b6e088ab"
+  integrity sha512-hHGVfUuGZe5FpgCxpTJccH0gD1bui5gWceW0We0TyAzUr6wBaqDnSLG9Yr3xqS4AkGhnclNOwRSXH/LIfki3fQ==
+
 "@types/eslint-scope@^3.7.0":
   version "3.7.0"
   resolved "https://registry.npmjs.org/@types/eslint-scope/-/eslint-scope-3.7.0.tgz#4792816e31119ebd506902a482caec4951fabd86"
@@ -5919,6 +5924,11 @@ csso@^4.0.2:
   integrity sha512-wvlcdIbf6pwKEk7vHj8/Bkc0B4ylXZruLvOgs9doS5eOsOpuodOV2zJChSpkp+pRpYQLQMeF04nr3Z68Sta9jA==
   dependencies:
     css-tree "^1.1.2"
+
+cssom@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.npmjs.org/cssom/-/cssom-0.4.4.tgz#5a66cf93d2d0b661d80bf6a44fb65f5c2e4e0a10"
+  integrity sha512-p3pvU7r1MyyqbTk+WbNJIgJjG2VmTIaB10rI93LzVPrmDJKkzKYMtxxyAvQXR/NS6otuzveI7+7BBq3SjBS2mw==
 
 csstype@^3.0.2:
   version "3.0.6"

@@ -39,7 +39,7 @@ use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 use regex::Regex;
 use serde::Serialize;
-use std::collections::{BTreeMap};
+use std::collections::BTreeMap;
 use std::fmt;
 
 pub struct Context<'a> {
@@ -287,7 +287,7 @@ pub fn evaluate<'a>(
       graph,
       evaluated_graph,
       None,
-      true
+      true,
     ),
     _ => Err(RuntimeError::new(
       "Incorrect file type".to_string(),
@@ -307,7 +307,7 @@ pub fn evaluate_expr<'a>(
   graph: &'a DependencyGraph,
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   existing_exports: Option<&Exports>,
-  public: bool
+  public: bool,
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     document_scope,

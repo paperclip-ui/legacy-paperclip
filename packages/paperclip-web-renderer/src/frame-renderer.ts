@@ -20,12 +20,14 @@ import {
   VirtualFrame,
   DiffedDataKind,
   EvaluatedDataKind,
-  LoadedPCData
+  LoadedPCData,
+  StyleElement
 } from "paperclip-utils";
 import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
 import { times } from "lodash";
+import { patchCSSOM } from "./cssom-patcher";
 
 type Box = {
   width: number;
@@ -86,6 +88,18 @@ class FramesProxy implements Patchable {
     for (const frame of this._frames) {
       removeAllChildren(frame._mainStylesContainer);
       frame._mainStylesContainer.appendChild(nativeStyle.cloneNode(true));
+    }
+  }
+  applyStylePatches(mutations: any[], uri?: string) {
+    for (const frame of this._frames) {
+      const styleElement = ((frame._importedStylesContainer.childNodes[
+        this._importedStyles.findIndex(style => {
+          return style.uri === uri;
+        })
+      ] ||
+        frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
+
+      patchCSSOM(styleElement.sheet, mutations);
     }
   }
   updateImportedStyles(newStyles: SheetInfo[], removeStyleUris: string[] = []) {
@@ -245,6 +259,8 @@ export class FramesRenderer {
    */
 
   public handleEngineDelegateEvent = (event: EngineDelegateEvent): void => {
+    const now = Date.now();
+
     switch (event.kind) {
       case EngineDelegateEventKind.ChangedSheets: {
         if (event.uri === this.targetUri) {
@@ -270,7 +286,6 @@ export class FramesRenderer {
           if (event.uri === this.targetUri) {
             this._dependencies = event.data.allImportedSheetUris;
           } else if (this._dependencies.includes(event.uri)) {
-            // Replace
             this._framesProxy.updateImportedStyles(
               [{ uri: event.uri, sheet: event.data.sheet }],
               [event.uri]
@@ -281,6 +296,11 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Diffed: {
         if (event.data.kind === DiffedDataKind.PC) {
+          this._framesProxy.applyStylePatches(
+            event.data.sheetMutations,
+            event.uri
+          );
+
           if (event.uri === this.targetUri) {
             this._dependencies = event.data.allImportedSheetUris;
 
@@ -291,16 +311,7 @@ export class FramesRenderer {
               this._resolveUrl
             );
 
-            if (event.data.sheet) {
-              this._framesProxy.setMainStyle(event.data.sheet);
-            }
-
             this._preview = patchVirtNode(this._preview, event.data.mutations);
-          } else if (event.data.sheet) {
-            this._framesProxy.updateImportedStyles(
-              [{ uri: event.uri, sheet: event.data.sheet }],
-              [event.uri]
-            );
           }
         }
         break;

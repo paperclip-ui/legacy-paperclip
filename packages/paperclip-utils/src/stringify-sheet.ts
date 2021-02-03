@@ -14,7 +14,7 @@ export const stringifyCSSSheet = (
   return sheet.rules.map(rule => stringifyCSSRule(rule, options)).join("\n");
 };
 
-const stringifyCSSRule = (rule, options: StringifySheetOptions) => {
+export const stringifyCSSRule = (rule, options: StringifySheetOptions = {}) => {
   switch (rule.kind) {
     case "Style":
       return stringifyStyleRule(rule, options);

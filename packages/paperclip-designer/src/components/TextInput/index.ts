@@ -51,7 +51,6 @@ export const useTextInput = ({
   };
 
   const onKeyPress = (event: KeyboardEvent) => {
-    console.log(event.key);
     if (event.key === "Enter") {
       onSave(internalValue);
     } else if (event.key === "Escape") {
