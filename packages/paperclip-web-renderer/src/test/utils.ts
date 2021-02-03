@@ -3,10 +3,17 @@ import { createEngineDelegate } from "paperclip";
 import * as path from "path";
 import { FramesRenderer } from "../frame-renderer";
 import { EngineMode } from "paperclip";
-import { identity } from "lodash";
+import { identity, replace, takeWhile } from "lodash";
+import * as CSSOM from "cssom";
 
 export const mockDOMFactory: DOMFactory = {
-  createElement: tagName => (new MockElement(tagName) as any) as HTMLElement,
+  createElement: tagName => {
+    if (tagName === "style") {
+      return (new StyleElement() as any) as HTMLElement;
+    }
+
+    return (new MockElement(tagName) as any) as HTMLElement;
+  },
   createElementNS: tagName => (new MockElement(tagName) as any) as HTMLElement,
   createDocumentFragment: () => (new MockFragment() as any) as DocumentFragment,
   createTextNode: nodeValue => (new MockTextNode(nodeValue) as any) as Text
@@ -63,6 +70,30 @@ abstract class ParentNode extends BaseNode {
       buffer += child.toString();
     }
     return buffer;
+  }
+}
+
+class StyleElement extends ParentNode {
+  private _textContent: string;
+  private _sheet: CSSOM.StyleSheet;
+
+  get textContent() {
+    return this._textContent;
+  }
+  set textContent(value: string) {
+    this._textContent = value;
+    this._sheet = CSSOM.parse(value);
+  }
+  get sheet() {
+    return this._sheet;
+  }
+  cloneNode() {
+    const el = new StyleElement();
+    el.textContent = this.textContent;
+    return el;
+  }
+  toString() {
+    return `<style>${this._sheet.toString().replace(/\n+/g, " ")}</style>`;
   }
 }
 

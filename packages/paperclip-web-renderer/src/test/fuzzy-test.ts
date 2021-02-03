@@ -1,6 +1,6 @@
 // import { generateRandomPaperclipDocument } from "./random";
 // import { expect } from "chai";
-// import { createMockEngine, createMockRenderer } from "./utils";
+// import { createMockEngine, createMockFramesRenderer } from "./utils";
 // import { repeat } from "lodash";
 
 // describe(__filename + "#", () => {
@@ -20,7 +20,7 @@
 
 //     const engine = await createMockEngine(graph);
 
-//     const renderer = createMockRenderer("/entry.pc");
+//     const renderer = createMockFramesRenderer("/entry.pc");
 //     engine.onEvent(renderer.handleEngineDelegateEvent);
 //     await engine.open("/entry.pc");
 
@@ -31,12 +31,13 @@
 //       });
 
 //       try {
-//         const baselineRenderer = createMockRenderer("/entry.pc");
+//         const baselineRenderer = createMockFramesRenderer("/entry.pc");
 //         baselineEngine.onEvent(baselineRenderer.handleEngineDelegateEvent);
 //         await baselineEngine.open("/entry.pc");
 
 //         await engine.updateVirtualFileContent("/entry.pc", randomDocument);
 
+//         renderer.immutableFrames
 //         expect(renderer.mount.innerHTML).to.eql(
 //           baselineRenderer.mount.innerHTML
 //         );

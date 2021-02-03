@@ -10,9 +10,7 @@ import {
   takeEvery
 } from "redux-saga/effects";
 import { AppState, WorkerState, getWorkerState } from "../state";
-import { EngineDelegate } from "paperclip";
-import * as path from "path";
-import { compare, applyPatch } from "fast-json-patch";
+import { compare } from "fast-json-patch";
 import {
   Action,
   ActionType,

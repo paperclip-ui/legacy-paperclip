@@ -9,9 +9,11 @@ use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
 use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
+use crate::css::runtime::diff::diff as diff_css;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
 use crate::pc::runtime::mutation as pc_mutation;
+use crate::css::runtime::mutation as css_mutation;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use serde::Serialize;
@@ -48,8 +50,9 @@ pub enum DiffedData<'a> {
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct DiffedPCData<'a> {
-  // TODO - needs to be sheetMutations
-  pub sheet: Option<css_virt::CSSSheet>,
+  
+  #[serde(rename = "sheetMutations")]
+  pub sheet_mutations: Vec<css_mutation::Mutation>,
 
   #[serde(rename = "allImportedSheetUris")]
   pub all_imported_sheet_uris: &'a Vec<String>,
@@ -341,12 +344,13 @@ impl Engine {
         DependencyEvalInfo::PC(existing_details) => {
           if let DependencyEvalInfo::PC(new_details) = &data {
             // temporary - eventually want to diff this.
-            let sheet: Option<css_virt::CSSSheet> = if new_details.sheet == existing_details.sheet {
-              None
-            } else {
-              Some(new_details.sheet.clone())
-            };
+            // let sheet: Option<css_virt::CSSSheet> = if new_details.sheet == existing_details.sheet {
+            //   None
+            // } else {
+            //   Some(new_details.sheet.clone())
+            // };
 
+            let sheet_mutations = diff_css(&existing_details.sheet, &new_details.sheet);
             let mutations = diff_pc(&existing_details.preview, &new_details.preview);
 
             // no need to dispatch mutation if no event
@@ -357,7 +361,7 @@ impl Engine {
             self.dispatch(EngineDelegateEvent::Diffed(DiffedEvent {
               uri: uri.clone(),
               data: DiffedData::PC(DiffedPCData {
-                sheet,
+                sheet_mutations,
                 // imports: &existing_details.imports,
                 exports: &existing_details.exports,
                 all_imported_sheet_uris: &new_details.all_imported_sheet_uris,

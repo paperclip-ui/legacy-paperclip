@@ -86,7 +86,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
   });
 
@@ -101,7 +101,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
   });
 
@@ -116,7 +116,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
 
     await engine.updateVirtualFileContent(
@@ -124,7 +124,7 @@ describe(__filename + "#", () => {
       `<style> a { color: blue; } </style><span></span>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
   });
 
@@ -139,14 +139,14 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("file:///entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
     await engine.updateVirtualFileContent(
       "file:///entry.pc",
       `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
   });
   it("Adds styles if import is added of module that is already loaded", async () => {
@@ -161,14 +161,14 @@ describe(__filename + "#", () => {
     await engine.open("/entry.pc");
     await engine.open("/module.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
     await engine.updateVirtualFileContent(
       "/entry.pc",
       `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
   });
   it("Adds styles from dependency dependency", async () => {
@@ -184,7 +184,7 @@ describe(__filename + "#", () => {
     await engine.open("/entry.pc");
     await engine.open("/module.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div>a</div>`
+      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div>a</div>`
     );
     await engine.updateVirtualFileContent(
       "/entry.pc",
@@ -195,7 +195,7 @@ describe(__filename + "#", () => {
       `<import src="./module2.pc" /><style> a { color: black; } </style>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] { color:black; }</style><style>a[data-pc-11a847ab] { color:orange; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div><style>a[data-pc-139cec8e] {color: black;} </style><style>a[data-pc-11a847ab] {color: orange;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
   });
 
@@ -218,7 +218,7 @@ describe(__filename + "#", () => {
     renderer.initialize((await engine.open("/entry.pc")) as LoadedPCData);
 
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] { color:black; }</style></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
   });
 
@@ -242,7 +242,7 @@ describe(__filename + "#", () => {
     renderer.initialize((await engine.open("/entry.pc")) as LoadedPCData);
 
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] { color:blue; }</style></div><div><span></span></div>`
+      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
   });
 
@@ -269,7 +269,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(combineFrameHTML(renderer).replace(/\n/g, "")).to.eql(
-      `<div><style>a[data-pc-61a60758] { color:a; }</style><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-cbafcfd3] { color:c; }</style><style>a[data-pc-5678f76a] { color:d; }</style></div><div><style></style></div><div> a </div>`
+      `<div><style>a[data-pc-61a60758] {color: a;} </style><style>a[data-pc-7313a8b6] {color: b;} </style><style>a[data-pc-cbafcfd3] {color: c;} </style><style>a[data-pc-5678f76a] {color: d;} </style></div><div><style></style></div><div> a </div>`
     );
 
     await engine.updateVirtualFileContent(
@@ -281,7 +281,7 @@ describe(__filename + "#", () => {
     );
 
     expect(combineFrameHTML(renderer).replace(/\n/g, "")).to.eql(
-      `<div><style>a[data-pc-7313a8b6] { color:b; }</style><style>a[data-pc-cbafcfd3] { color:c; }</style></div><div><style></style></div><div>a </div>`
+      `<div><style>a[data-pc-7313a8b6] {color: b;} </style><style>a[data-pc-cbafcfd3] {color: c;} </style></div><div><style></style></div><div>a </div>`
     );
   });
 
@@ -446,6 +446,118 @@ describe(__filename + "#", () => {
       `<div></div><div><style></style></div><div><span class="_80f4925f_b b"></span></div>`
     );
   });
+
+  it(`Properly replaces rule`, async () => {
+    const graph = {
+      "file:///entry.pc": `
+        <style>
+          .a {
+            color: red;
+          }
+          .b {
+            color: orange;
+            @media screen and (max-width: 100px) {
+              color: blue;
+            }
+          }
+          @keyframes {
+            0% {
+              color: blue;
+            }
+            100% {
+              color: black;
+            }
+          }
+        </style>
+        <div></div>
+      `
+    };
+
+    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
+    const renderer = createMockFramesRenderer("file:///entry.pc");
+
+    renderer.initialize(
+      (await engine.open("file:///entry.pc")) as LoadedPCData
+    );
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+
+    expect(
+      combineFrameHTML(renderer)
+        .replace("\n", "")
+        .replace(/\\+/g, "/")
+    ).to.eql(
+      `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: orange;} @media screen and (max-width: 100px) {[class]._80f4925f_b {color: blue;}} @keyframes _80f4925f_ {    0% {color: blue;}    100% {color: black;}  } </style></div><div><div></div></div>`
+    );
+
+    engine.updateVirtualFileContent(
+      "file:///entry.pc",
+      `<style>
+      .d {
+        color: orange;
+      }
+  </style>
+  <div></div>`
+    );
+
+    expect(
+      combineFrameHTML(renderer)
+        .replace("\n", "")
+        .replace(/\\+/g, "/")
+    ).to.eql(
+      `<div></div><div><style>[class]._80f4925f_d {color: orange;} </style></div><div><div></div></div>`
+    );
+  });
+
+  it(`Properly inserts rule`, async () => {
+    const graph = {
+      "file:///entry.pc": `
+        <style>
+          .a {
+            color: red;
+          }
+        </style>
+        <div></div>
+      `
+    };
+
+    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
+    const renderer = createMockFramesRenderer("file:///entry.pc");
+
+    renderer.initialize(
+      (await engine.open("file:///entry.pc")) as LoadedPCData
+    );
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+
+    expect(
+      combineFrameHTML(renderer)
+        .replace("\n", "")
+        .replace(/\\+/g, "/")
+    ).to.eql(
+      `<div></div><div><style>[class]._80f4925f_a {color: red;} </style></div><div><div></div></div>`
+    );
+
+    engine.updateVirtualFileContent(
+      "file:///entry.pc",
+      `<style>
+      .a {
+        color: red;
+      }
+      .b {
+        color: blue;
+      }
+  </style>
+  <div></div>`
+    );
+
+    expect(
+      combineFrameHTML(renderer)
+        .replace("\n", "")
+        .replace(/\\+/g, "/")
+    ).to.eql(
+      `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: blue;} </style></div><div><div></div></div>`
+    );
+  });
+
 });
 
 const combineFrameHTML = (renderer: FramesRenderer) => {

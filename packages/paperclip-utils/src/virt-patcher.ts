@@ -19,6 +19,7 @@ import {
   EngineDelegateEventKind,
   EvaluatedEvent
 } from "./events";
+import { patchCSSSheet } from "./virt-css-patcher";
 
 export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
   for (const mutation of mutations) {
@@ -163,7 +164,7 @@ export const updateAllLoadedData = (
           importedSheets: getImportedSheets(allData, event),
           allImportedSheetUris: event.data.allImportedSheetUris,
           dependencies: event.data.dependencies,
-          sheet: event.data.sheet || existingPCData.sheet,
+          sheet: patchCSSSheet(existingPCData.sheet, event.data.sheetMutations),
           preview: patchVirtNode(existingPCData.preview, event.data.mutations)
         }
       };

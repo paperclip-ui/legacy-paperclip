@@ -16,7 +16,32 @@ pub fn diff(a: &virt::CSSSheet, b: &virt::CSSSheet) -> Vec<mutation::Mutation> {
 }
 
 pub fn diff_rules(old_rules: &Vec<virt::Rule>, new_rules: &Vec<virt::Rule>, context: &mut Context) {
-  for new_rule in new_rules {}
+
+  for (i, old_rule) in old_rules.iter().enumerate() {
+
+    if let Some(new_rule) = new_rules.get(i) {
+      diff_rule(old_rule, new_rule, i, &vec![], context)
+    } else {
+      context.mutations.push(mutation::Mutation {
+        path: vec![],
+        action: mutation::Action::DeleteRule(mutation::DeleteRule {
+          index: new_rules.len(),
+        })
+      });
+    }
+  }
+
+  if new_rules.len() > old_rules.len() {
+    for i in old_rules.len()..new_rules.len() {
+      context.mutations.push(mutation::Mutation {
+        path: vec![],
+        action: mutation::Action::InsertRule(mutation::InsertRule {
+          rule: new_rules.get(i).unwrap().clone(),
+          index: i
+        })
+      })
+    }
+  }
 }
 
 fn diff_rule(
@@ -26,10 +51,8 @@ fn diff_rule(
   path: &Vec<usize>,
   context: &mut Context,
 ) {
-  if let virt::Rule::Style(old_style_rule) = old_rule {
-    if let virt::Rule::Style(new_style_rule) = new_rule {
-      return diff_style_rule(old_style_rule, new_style_rule, context);
-    }
+  if old_rule == new_rule {
+    return;
   }
 
   context.mutations.push(mutation::Mutation {
@@ -40,8 +63,6 @@ fn diff_rule(
     }),
   })
 }
-
-fn diff_style_rule(old_rule: &virt::StyleRule, new_rule: &virt::StyleRule, context: &mut Context) {}
 
 fn get_rule_indices(rules: &Vec<virt::Rule>) -> HashMap<String, Vec<usize>> {
   let mut indices: HashMap<String, Vec<usize>> = HashMap::new();
