@@ -96,7 +96,7 @@ describe(__filename, () => {
             Test B
           </div>
         `
-      },
+      }
     ],
     [
       "Properly patches between",
@@ -114,7 +114,7 @@ describe(__filename, () => {
           </style>
         `
       },
-  
+
       {
         "entry.pc": `
           <span />

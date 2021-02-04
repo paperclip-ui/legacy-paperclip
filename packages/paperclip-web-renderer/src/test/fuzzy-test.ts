@@ -19,14 +19,13 @@ describe(__filename + "#", () => {
     };
 
     const engine = await createMockEngine(graph);
-    
+
     const renderer = createMockFramesRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
 
     // console.log("C", currentDocumentSource);
     for (let i = 50; i--; ) {
-  
       const randomDocument = generateRandomPaperclipDocument(randOptions);
 
       // too lazy to fix
@@ -34,25 +33,29 @@ describe(__filename + "#", () => {
         continue;
       }
 
-
       const baselineEngine = await createMockEngine({
         "/entry.pc": randomDocument
       });
 
-    
       try {
         const baselineRenderer = createMockFramesRenderer("/entry.pc");
         baselineEngine.onEvent(baselineRenderer.handleEngineDelegateEvent);
         await baselineEngine.open("/entry.pc");
 
         await engine.updateVirtualFileContent("/entry.pc", randomDocument);
-        expect(renderer.immutableFrames.length).to.eql(baselineRenderer.immutableFrames.length);
+        expect(renderer.immutableFrames.length).to.eql(
+          baselineRenderer.immutableFrames.length
+        );
 
-        for (let i = 0, {length} = renderer.immutableFrames; i < length; i++) {
+        for (
+          let i = 0, { length } = renderer.immutableFrames;
+          i < length;
+          i++
+        ) {
           const frameA = renderer.immutableFrames[i];
           const frameB = baselineRenderer.immutableFrames[i];
           expect(frameA._mount.innerHTML).to.eql(frameB._mount.innerHTML);
-        } 
+        }
 
         currentDocumentSource = randomDocument;
       } catch (e) {

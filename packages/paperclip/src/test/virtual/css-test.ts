@@ -496,7 +496,6 @@ describe(__filename + "#", () => {
     );
   });
 
-
   it("AST location is correct with unicode characters", async () => {
     const graph = {
       "/entry.pc": `<style>
@@ -1528,7 +1527,6 @@ describe(__filename + "#", () => {
   });
 
   it(`breaks if ; is missing from decl`, async () => {
-
     const graph = {
       "/entry.pc": `
         <div>
@@ -1546,23 +1544,23 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
 
     let err;
-    
+
     try {
       const result = await engine.open("/entry.pc");
       console.log(JSON.stringify(result, null, 2));
-    } catch(e) {
+    } catch (e) {
       err = e;
-    } 
+    }
 
     expect(err).to.eql({
-      "errorKind": "Graph",
-      "uri": "/entry.pc",
-      "info": {
-        "kind": "Unexpected",
-        "message": "Unexpected token",
-        "location": {
-          "start": 100,
-          "end": 101
+      errorKind: "Graph",
+      uri: "/entry.pc",
+      info: {
+        kind: "Unexpected",
+        message: "Unexpected token",
+        location: {
+          start: 100,
+          end: 101
         }
       }
     });

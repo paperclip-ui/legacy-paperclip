@@ -23,7 +23,6 @@ const generateCSSRule = (options: Options, context: Context) => {
   );
 };
 
-
 const generateCSSMediaRule = (options: Options, context: Context) => {
   return (
     `@media ${randomChars(1, 5, 5)} {\n` +

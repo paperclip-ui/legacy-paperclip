@@ -878,7 +878,7 @@ fn parse_key_value_declaration<'a, 'b>(
     let value_end = context.tokenizer.utf16_pos;
 
     eat_superfluous(context)?;
-    
+
     // ; or } must be present
     if context.tokenizer.peek(1)? == Token::Semicolon {
       context.tokenizer.next()?; // eat ;
@@ -888,9 +888,7 @@ fn parse_key_value_declaration<'a, 'b>(
       return Err(ParseError::unexpected_token(context.tokenizer.pos));
     }
 
-
     let end = context.tokenizer.utf16_pos;
-
 
     Ok(Declaration::KeyValue(KeyValueDeclaration {
       name,
@@ -913,7 +911,6 @@ fn parse_key_value_declaration<'a, 'b>(
 fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
   let mut buffer = String::new();
   while !context.tokenizer.is_eof() {
-    
     match context.tokenizer.peek(1)? {
       Token::Semicolon | Token::CurlyClose | Token::Colon => {
         break;
@@ -1015,7 +1012,7 @@ mod tests {
     //     }
     //   }
     //   @page :first {
-  
+
     //   }
     //   @supports (display: flex) {
     //     .el {
@@ -1043,7 +1040,6 @@ mod tests {
     //     @include a.b;
     //   }
 
-
     //   .parent {
     //     &-child {
 
@@ -1052,7 +1048,7 @@ mod tests {
 
     //     }
     //     &.child {
-          
+
     //     }
     //   }
 

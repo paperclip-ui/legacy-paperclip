@@ -91,25 +91,26 @@ class FramesProxy implements Patchable {
     }
   }
   applyStylePatches(mutations: any[], uri?: string) {
-
     const styleIndex = this._importedStyles.findIndex(style => {
       return style.uri === uri;
     });
 
     // first do the frames
     for (const frame of this._frames) {
-      const styleElement = (styleIndex !== -1 ? frame._importedStylesContainer.childNodes[styleIndex] :
-        frame._mainStylesContainer.childNodes[0]) as any as HTMLStyleElement;
+      const styleElement = ((styleIndex !== -1
+        ? frame._importedStylesContainer.childNodes[styleIndex]
+        : frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
 
       patchCSSOM(styleElement.sheet, mutations);
     }
 
-    const styleElement = (styleIndex !== -1 ? this._importedNativeStyles[styleIndex] :
-      this._mainNativeStyle) as any as HTMLStyleElement;
+    const styleElement = ((styleIndex !== -1
+      ? this._importedNativeStyles[styleIndex]
+      : this._mainNativeStyle) as any) as HTMLStyleElement;
 
     patchCSSOM(styleElement.sheet, mutations);
   }
-  
+
   updateImportedStyles(newStyles: SheetInfo[], removeStyleUris: string[] = []) {
     const rmIndices = [];
 
@@ -303,7 +304,6 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Diffed: {
         if (event.data.kind === DiffedDataKind.PC) {
-
           if (event.uri === this.targetUri) {
             this._dependencies = event.data.allImportedSheetUris;
 
