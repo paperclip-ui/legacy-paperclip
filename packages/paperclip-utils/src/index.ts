@@ -19,5 +19,6 @@ export * from "./virt-patcher";
 export * from "./exports";
 export * from "./utils";
 export * from "./source-watcher";
+export * from "./virt-css-patcher";
 export * from "./memo";
 export * from "./base-virt";
