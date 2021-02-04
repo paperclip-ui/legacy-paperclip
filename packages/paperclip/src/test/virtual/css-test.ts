@@ -1565,4 +1565,40 @@ describe(__filename + "#", () => {
       }
     });
   });
+
+  // don't need to solve this right now
+  xit(`Can include mixins in mixins`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="/breakpoints.pc" as="breakpoints" />
+        <style>
+          @mixin b {
+            color: red;
+          }
+
+          div {
+            @include breakpoints.medium {
+              @include b;
+            }
+          }
+        </style>
+      `,
+      "/breakpoints.pc": `
+        <style>
+          @export {
+            @mixin medium {
+              @media screen and (max-width: 500px) {
+                @content;
+              }
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql("a");
+  });
 });
