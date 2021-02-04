@@ -96,6 +96,29 @@ describe(__filename, () => {
             Test B
           </div>
         `
+      },
+    ],
+    [
+      "Properly patches between",
+      {
+        "entry.pc": `
+          <span />
+        `
+      },
+      {
+        "entry.pc": `
+          <style>
+            .dbe {
+              bacc: qr;
+            }
+          </style>
+        `
+      },
+  
+      {
+        "entry.pc": `
+          <span />
+        `
       }
     ]
   ].forEach(([title, initial, ...changes]: any) => {
@@ -103,9 +126,6 @@ describe(__filename, () => {
       const engine = createMockEngine(initial);
 
       const renderer = createMockFramesRenderer("entry.pc");
-      engine.onEvent(ev => {
-        console.log(JSON.stringify(ev, null ,2));
-      });
       engine.onEvent(renderer.handleEngineDelegateEvent);
       renderer.initialize((await engine.open("entry.pc")) as LoadedPCData);
 

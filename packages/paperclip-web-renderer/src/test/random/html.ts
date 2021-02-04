@@ -40,7 +40,7 @@ const generateElement = (options: Options, context: Context) => {
   let tagName;
 
   while (1) {
-    tagName = randomChars(0, 3, 3);
+    tagName = randomChars(1, 3, 3);
 
     // Probably never going to happen, but no harm in checking
     if (!/img|br|import/.test(tagName)) {

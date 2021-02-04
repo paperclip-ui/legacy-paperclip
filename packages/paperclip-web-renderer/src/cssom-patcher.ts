@@ -1,7 +1,7 @@
 import { stringifyCSSRule } from "paperclip-utils";
 
 export const patchCSSOM = (sheet: CSSStyleSheet, mutations: any[]) => {
-  try {
+
     for (const { action } of mutations) {
       switch (action.kind) {
         case "DeleteRule": {
@@ -20,8 +20,4 @@ export const patchCSSOM = (sheet: CSSStyleSheet, mutations: any[]) => {
       }
     }
 
-    // bypass illegal string issues
-  } catch (e) {
-    console.warn(e);
-  }
 };

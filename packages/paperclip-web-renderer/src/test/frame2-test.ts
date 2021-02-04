@@ -3,7 +3,6 @@ import { EngineMode } from "paperclip";
 import { LoadedPCData } from "paperclip-utils";
 import { FramesRenderer } from "../frame-renderer";
 import {
-  createMockEngine,
   createMockFramesRenderer,
   createMockEngineDelegate
 } from "./utils";

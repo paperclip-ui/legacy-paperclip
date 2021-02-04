@@ -496,6 +496,7 @@ describe(__filename + "#", () => {
     );
   });
 
+
   it("AST location is correct with unicode characters", async () => {
     const graph = {
       "/entry.pc": `<style>
@@ -1524,5 +1525,46 @@ describe(__filename + "#", () => {
     expect(text).to.eql(
       `<style>[class]._8f1a5142_test { color:red; }</style><div class="_8f1a5142_test test" data-pc-80f4925f>Hello world </div>`
     );
+  });
+
+  it(`breaks if ; is missing from decl`, async () => {
+
+    const graph = {
+      "/entry.pc": `
+        <div>
+          <style>
+            div {
+              color: red
+              background: blue;
+            }
+          </style>
+          Hello world
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+    
+    try {
+      const result = await engine.open("/entry.pc");
+      console.log(JSON.stringify(result, null, 2));
+    } catch(e) {
+      err = e;
+    } 
+
+    expect(err).to.eql({
+      "errorKind": "Graph",
+      "uri": "/entry.pc",
+      "info": {
+        "kind": "Unexpected",
+        "message": "Unexpected token",
+        "location": {
+          "start": 100,
+          "end": 101
+        }
+      }
+    });
   });
 });

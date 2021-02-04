@@ -877,13 +877,20 @@ fn parse_key_value_declaration<'a, 'b>(
     let value = parse_declaration_value(context)?;
     let value_end = context.tokenizer.utf16_pos;
 
+    eat_superfluous(context)?;
+    
+    // ; or } must be present
     if context.tokenizer.peek(1)? == Token::Semicolon {
       context.tokenizer.next()?; // eat ;
+
+    // check for { color: red }, if not, then probably dealing with this: { color: red background: blue; }
+    } else if context.tokenizer.peek(1)? != Token::CurlyClose {
+      return Err(ParseError::unexpected_token(context.tokenizer.pos));
     }
+
 
     let end = context.tokenizer.utf16_pos;
 
-    eat_superfluous(context)?;
 
     Ok(Declaration::KeyValue(KeyValueDeclaration {
       name,
@@ -906,8 +913,9 @@ fn parse_key_value_declaration<'a, 'b>(
 fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
   let mut buffer = String::new();
   while !context.tokenizer.is_eof() {
+    
     match context.tokenizer.peek(1)? {
-      Token::Semicolon | Token::CurlyClose => {
+      Token::Semicolon | Token::CurlyClose | Token::Colon => {
         break;
       }
       Token::Str((value, boundary)) => {
@@ -978,83 +986,89 @@ mod tests {
 
   #[test]
   fn can_smoke_parse_various_at_rules() {
+    // let source = "
+    //   div {
+    //     color: blue;
+    //   }
+    //   @charset \"utf-8\";
+    //   @namespace svg \"http://google.com\";
+    //   @font-face {
+    //     font-family: 'abcd';
+    //   }
+    //   @keyframes abc {
+    //   }
+    //   @keyframes abc {
+    //     0% {
+    //       color: red;
+    //     }
+    //     100% {
+    //       color: red;
+    //     }
+    //   }
+    //   @media (max-width:640px){._3nRJIwLuth2pKYrXnr2jPN{width:360px } }
+    //   @media print {
+    //     & div {
+    //       color: red;
+    //     }
+    //     & .span {
+    //       color: blue;
+    //     }
+    //   }
+    //   @page :first {
+  
+    //   }
+    //   @supports (display: flex) {
+    //     .el {
+    //       display: flex;
+    //     }
+    //   }
+
+    //   @media ab {._a{a:b;}}
+
+    //   .test {
+    //     background: url(';');
+    //   }
+    //   @mixin a {
+    //     color: red;
+    //   }
+    //   @export {
+    //     @mixin a {
+    //       color: red;
+    //     }
+    //     .a {
+    //       color: c;
+    //     }
+    //   }
+    //   .a {
+    //     @include a.b;
+    //   }
+
+
+    //   .parent {
+    //     &-child {
+
+    //     }
+    //     >.child {
+
+    //     }
+    //     &.child {
+          
+    //     }
+    //   }
+
+    //   a {
+    //     b, c {
+    //       color: red;
+    //     }
+    //     &--d, &--e {
+
+    //     }
+    //   }
+    // ";
+
     let source = "
       div {
         color: blue;
-      }
-      @charset \"utf-8\";
-      @namespace svg \"http://google.com\";
-      @font-face {
-        font-family: 'abcd';
-      }
-      @keyframes abc {
-      }
-      @keyframes abc {
-        0% {
-          color: red;
-        }
-        100% {
-          color: red;
-        }
-      }
-      @media (max-width:640px){._3nRJIwLuth2pKYrXnr2jPN{width:360px } }
-      @media print {
-        & div {
-          color: red;
-        }
-        & .span {
-          color: blue;
-        }
-      }
-      @page :first {
-  
-      }
-      @supports (display: flex) {
-        .el {
-          display: flex;
-        }
-      }
-
-      @media ab {._a{a:b;}}
-
-      .test {
-        background: url(';');
-      }
-      @mixin a {
-        color: red;
-      }
-      @export {
-        @mixin a {
-          color: red;
-        }
-        .a {
-          color: c;
-        }
-      }
-      .a {
-        @include a.b;
-      }
-
-
-      .parent {
-        &-child {
-
-        }
-        >.child {
-
-        }
-        &.child {
-          
-        }
-      }
-
-      a {
-        b, c {
-          color: red;
-        }
-        &--d, &--e {
-
-        }
       }
     ";
 

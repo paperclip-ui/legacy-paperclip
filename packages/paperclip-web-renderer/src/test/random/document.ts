@@ -11,7 +11,7 @@ export const generateRandomPaperclipDocument = (options: Options) => {
 
   buffer += randomArray(options.minWidth, options.maxWidth)
     .map(() => {
-      return pickRandom([generateNode], [4, 1])(
+      return pickRandom([generateNode, generateStyleElement], [4, 1])(
         options,
         context
       );
