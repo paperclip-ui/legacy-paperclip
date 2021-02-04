@@ -1,5 +1,7 @@
 ### Tomorrow
 
+- playground CSS not appearing immediately
+- playground getting slow
 - cssom patching
 - fix CSS class name escapes
   - md:1

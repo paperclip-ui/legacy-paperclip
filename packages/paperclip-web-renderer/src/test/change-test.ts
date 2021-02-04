@@ -68,12 +68,44 @@ describe(__filename, () => {
           <style>background: orange;</style>
         </div>`
       }
+    ],
+    [
+      "Can add new frams & still maintain styles",
+      {
+        "entry.pc": `
+          <div>
+            <style>
+              color: red;
+            </style>
+            Test
+          </div>
+        `
+      },
+      {
+        "entry.pc": `
+          <div>
+            <style>
+              color: blue;
+            </style>
+            Test A
+          </div>
+          <div>
+            <style>
+              color: red;
+            </style>
+            Test B
+          </div>
+        `
+      }
     ]
   ].forEach(([title, initial, ...changes]: any) => {
     it(title, async () => {
       const engine = createMockEngine(initial);
 
       const renderer = createMockFramesRenderer("entry.pc");
+      engine.onEvent(ev => {
+        console.log(JSON.stringify(ev, null ,2));
+      });
       engine.onEvent(renderer.handleEngineDelegateEvent);
       renderer.initialize((await engine.open("entry.pc")) as LoadedPCData);
 

@@ -1,59 +1,62 @@
-// import { generateRandomPaperclipDocument } from "./random";
-// import { expect } from "chai";
-// import { createMockEngine, createMockFramesRenderer } from "./utils";
-// import { repeat } from "lodash";
+import { generateRandomPaperclipDocument } from "./random";
+import { expect } from "chai";
+import { createMockEngine, createMockFramesRenderer } from "./utils";
+import { repeat } from "lodash";
 
-// describe(__filename + "#", () => {
-//   it("passes the fuzzy test", async () => {
-//     const randOptions = {
-//       minWidth: 2,
-//       maxWidth: 6,
-//       minDepth: 1,
-//       maxDepth: 4
-//     };
+describe(__filename + "#", () => {
+  it("passes the fuzzy test", async () => {
+    const randOptions = {
+      minWidth: 2,
+      maxWidth: 6,
+      minDepth: 1,
+      maxDepth: 4
+    };
 
-//     let currentDocumentSource = generateRandomPaperclipDocument(randOptions);
+    let currentDocumentSource = generateRandomPaperclipDocument(randOptions);
 
-//     const graph = {
-//       "/entry.pc": currentDocumentSource
-//     };
+    const graph = {
+      "/entry.pc": currentDocumentSource
+    };
 
-//     const engine = await createMockEngine(graph);
+    const engine = await createMockEngine(graph);
 
-//     const renderer = createMockFramesRenderer("/entry.pc");
-//     engine.onEvent(renderer.handleEngineDelegateEvent);
-//     await engine.open("/entry.pc");
+    const renderer = createMockFramesRenderer("/entry.pc");
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+    await engine.open("/entry.pc");
 
-//     for (let i = 30; i--; ) {
-//       const randomDocument = generateRandomPaperclipDocument(randOptions);
-//       const baselineEngine = await createMockEngine({
-//         "/entry.pc": randomDocument
-//       });
+    for (let i = 30; i--; ) {
+      const randomDocument = generateRandomPaperclipDocument(randOptions);
 
-//       try {
-//         const baselineRenderer = createMockFramesRenderer("/entry.pc");
-//         baselineEngine.onEvent(baselineRenderer.handleEngineDelegateEvent);
-//         await baselineEngine.open("/entry.pc");
+      const baselineEngine = await createMockEngine({
+        "/entry.pc": randomDocument
+      });
 
-//         await engine.updateVirtualFileContent("/entry.pc", randomDocument);
+      try {
+        const baselineRenderer = createMockFramesRenderer("/entry.pc");
+        baselineEngine.onEvent(baselineRenderer.handleEngineDelegateEvent);
+        await baselineEngine.open("/entry.pc");
 
-//         renderer.immutableFrames
-//         expect(renderer.mount.innerHTML).to.eql(
-//           baselineRenderer.mount.innerHTML
-//         );
+        await engine.updateVirtualFileContent("/entry.pc", randomDocument);
+        expect(renderer.immutableFrames.length).to.eql(baselineRenderer.immutableFrames.length);
 
-//         currentDocumentSource = randomDocument;
-//       } catch (e) {
-//         console.error(`Fuzzy test failed to diff & patch:\n`);
-//         console.error(repeat("-", 80));
-//         console.error(currentDocumentSource);
-//         console.error(repeat("-", 80));
-//         console.error(repeat("-", 37) + " into " + repeat("-", 37));
-//         console.error(repeat("-", 80));
-//         console.error(randomDocument);
-//         console.error(repeat("-", 80));
-//         throw e;
-//       }
-//     }
-//   });
-// });
+        for (let i = 0, {length} = renderer.immutableFrames; i < length; i++) {
+          const frameA = renderer.immutableFrames[i];
+          const frameB = baselineRenderer.immutableFrames[i];
+          expect(frameA._mount.innerHTML).to.eql(frameB._mount.innerHTML);
+        } 
+
+        currentDocumentSource = randomDocument;
+      } catch (e) {
+        console.error(`Fuzzy test failed to diff & patch:\n`);
+        console.error(repeat("-", 80));
+        console.error(currentDocumentSource);
+        console.error(repeat("-", 80));
+        console.error(repeat("-", 37) + " into " + repeat("-", 37));
+        console.error(repeat("-", 80));
+        console.error(randomDocument);
+        console.error(repeat("-", 80));
+        throw e;
+      }
+    }
+  });
+});

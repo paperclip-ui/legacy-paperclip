@@ -296,10 +296,6 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Diffed: {
         if (event.data.kind === DiffedDataKind.PC) {
-          this._framesProxy.applyStylePatches(
-            event.data.sheetMutations,
-            event.uri
-          );
 
           if (event.uri === this.targetUri) {
             this._dependencies = event.data.allImportedSheetUris;
@@ -313,6 +309,12 @@ export class FramesRenderer {
 
             this._preview = patchVirtNode(this._preview, event.data.mutations);
           }
+
+          // Style patches need to happen after the fact to cover new frames taht are added
+          this._framesProxy.applyStylePatches(
+            event.data.sheetMutations,
+            event.uri
+          );
         }
         break;
       }
