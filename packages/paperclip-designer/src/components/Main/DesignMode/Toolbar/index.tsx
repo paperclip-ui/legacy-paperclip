@@ -82,10 +82,20 @@ export const Toolbar = () => {
 
   const { inputProps: zoomInputProps } = useTextInput({
     value: zoom,
+    select: true,
+    onEscape() {
+      setShowZoomInput(false);
+    },
+    onSave() {
+      setShowZoomInput(false);
+    },
     onValueChange: value => {
       dispatch(zoomInputChanged({ value: Number(value.replace("%", "")) }));
     }
   });
+
+  console.log(showZoomInput)
+
 
   return (
     <styles.Container>
@@ -131,11 +141,6 @@ export const Toolbar = () => {
 
                   {showZoomInput && (
                     <styles.ZoomInput
-                      onBlur={() => setShowZoomInput(false)}
-                      onKeyPress={e =>
-                        e.key === "Enter" && setShowZoomInput(false)
-                      }
-                      onFocus={e => setTimeout(() => e.target.select(), 10)}
                       autoFocus
                       {...zoomInputProps}
                     />
