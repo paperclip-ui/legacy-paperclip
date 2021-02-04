@@ -1769,7 +1769,7 @@ describe(__filename + "#", () => {
 
     let lastEvent;
 
-    engine.onEvent((e) => {
+    engine.onEvent(e => {
       lastEvent = e;
     });
 
@@ -1779,48 +1779,42 @@ describe(__filename + "#", () => {
 
     await engine.updateVirtualFileContent("/entry.pc", "<div /");
 
-    expect(lastEvent).to.eql(
-      {
-        "kind": "Error",
-        "errorKind": "Graph",
-        "uri": "/entry.pc",
-        "info": {
-          "kind": "Unexpected",
-          "message": "Unexpected token",
-          "location": {
-            "start": 5,
-            "end": 6
-          }
+    expect(lastEvent).to.eql({
+      kind: "Error",
+      errorKind: "Graph",
+      uri: "/entry.pc",
+      info: {
+        kind: "Unexpected",
+        message: "Unexpected token",
+        location: {
+          start: 5,
+          end: 6
         }
       }
-    );
-
+    });
 
     await engine.updateVirtualFileContent("/entry.pc", "<div />");
 
-    expect(lastEvent).to.eql(
-      {
-        "kind": "Diffed",
-        "uri": "/entry.pc",
-        "data": {
-          "kind": "PC",
-          "sheetMutations": [],
-          "allImportedSheetUris": [],
-          "dependencies": {},
-          "exports": {
-            "style": {
-              "kind": "Exports",
-              "classNames": {},
-              "mixins": {},
-              "variables": {},
-              "keyframes": {}
-            },
-            "components": {}
+    expect(lastEvent).to.eql({
+      kind: "Diffed",
+      uri: "/entry.pc",
+      data: {
+        kind: "PC",
+        sheetMutations: [],
+        allImportedSheetUris: [],
+        dependencies: {},
+        exports: {
+          style: {
+            kind: "Exports",
+            classNames: {},
+            mixins: {},
+            variables: {},
+            keyframes: {}
           },
-          "mutations": []
-        }
+          components: {}
+        },
+        mutations: []
       }
-    );
-
+    });
   });
 });

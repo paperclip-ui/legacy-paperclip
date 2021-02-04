@@ -105,11 +105,14 @@ class FramesProxy implements Patchable {
     }
 
     // note we patch the virt objects here since native styles don't parse text unless
-    // mounted so we don't have access to that 
+    // mounted so we don't have access to that
     if (styleIndex === -1) {
       this._mainStyle = patchCSSSheet(this._mainStyle, mutations);
     } else {
-      this._importedStyles[styleIndex].sheet = patchCSSSheet(this._importedStyles[styleIndex].sheet, mutations);
+      this._importedStyles[styleIndex].sheet = patchCSSSheet(
+        this._importedStyles[styleIndex].sheet,
+        mutations
+      );
     }
   }
 
@@ -170,7 +173,13 @@ class FramesProxy implements Patchable {
     }
     const _mainStylesContainer = this._domFactory.createElement("div");
     if (this._mainStyle) {
-      _mainStylesContainer.appendChild(createNativeStyleFromSheet(this._mainStyle, this._domFactory, this.resolveUrl));
+      _mainStylesContainer.appendChild(
+        createNativeStyleFromSheet(
+          this._mainStyle,
+          this._domFactory,
+          this.resolveUrl
+        )
+      );
     }
     const _mount = this._domFactory.createElement("div");
     const stage = this._domFactory.createElement("div");

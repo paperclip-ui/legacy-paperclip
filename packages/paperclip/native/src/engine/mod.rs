@@ -188,14 +188,11 @@ impl Engine {
 
         self
           .evaluate(uri, &mut stack)
-          .or_else(|e| {
-            Err(EngineError::Runtime(e))
-          })?;
+          .or_else(|e| Err(EngineError::Runtime(e)))?;
 
         Ok(())
       }
       Err(error) => {
-
         self.needs_reval.insert(uri.to_string(), true);
 
         // Note - this was removed to prevent the engine
@@ -361,7 +358,6 @@ impl Engine {
             //   Some(new_details.sheet.clone())
             // };
 
-
             let sheet_mutations = diff_css(&existing_details.sheet, &new_details.sheet);
             let mutations = diff_pc(&existing_details.preview, &new_details.preview);
 
@@ -371,7 +367,6 @@ impl Engine {
               || existing_details.exports != new_details.exports
               || self.needs_reval.contains_key(uri)
             {
-
               self.needs_reval.remove(uri);
               // no need to dispatch mutation if no event
 

@@ -94,8 +94,7 @@ export const Toolbar = () => {
     }
   });
 
-  console.log(showZoomInput)
-
+  console.log(showZoomInput);
 
   return (
     <styles.Container>
@@ -140,10 +139,7 @@ export const Toolbar = () => {
                   )}
 
                   {showZoomInput && (
-                    <styles.ZoomInput
-                      autoFocus
-                      {...zoomInputProps}
-                    />
+                    <styles.ZoomInput autoFocus {...zoomInputProps} />
                   )}
                 </styles.ZoomContainer>
               </>
