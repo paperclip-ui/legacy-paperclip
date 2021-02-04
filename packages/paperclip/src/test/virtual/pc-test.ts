@@ -1757,4 +1757,64 @@ describe(__filename + "#", () => {
       `<style></style><b data-pc-80f4925f>a</b>`
     );
   });
+
+  // https://github.com/crcn/paperclip/issues/708
+  it(`Re-evaluates module after error & no change`, async () => {
+    const graph = {
+      "/entry.pc": `<div />`
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.open("/entry.pc")) as any;
+
+    let lastEvent;
+
+    engine.onEvent(e => {
+      lastEvent = e;
+    });
+
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style></style><div data-pc-80f4925f></div>`
+    );
+
+    await engine.updateVirtualFileContent("/entry.pc", "<div /");
+
+    expect(lastEvent).to.eql({
+      kind: "Error",
+      errorKind: "Graph",
+      uri: "/entry.pc",
+      info: {
+        kind: "Unexpected",
+        message: "Unexpected token",
+        location: {
+          start: 5,
+          end: 6
+        }
+      }
+    });
+
+    await engine.updateVirtualFileContent("/entry.pc", "<div />");
+
+    expect(lastEvent).to.eql({
+      kind: "Diffed",
+      uri: "/entry.pc",
+      data: {
+        kind: "PC",
+        sheetMutations: [],
+        allImportedSheetUris: [],
+        dependencies: {},
+        exports: {
+          style: {
+            kind: "Exports",
+            classNames: {},
+            mixins: {},
+            variables: {},
+            keyframes: {}
+          },
+          components: {}
+        },
+        mutations: []
+      }
+    });
+  });
 });

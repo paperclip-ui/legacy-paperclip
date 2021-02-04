@@ -326,6 +326,7 @@ export class VSCServiceBridge {
   // }, PERSIST_ENGINE_THROTTLE_MS);
 
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
+    console.log("EVENTTNTNn", event);
     switch (event.kind) {
       case EngineDelegateEventKind.Error: {
         this._onEngineErrorEvent(event);
@@ -346,6 +347,7 @@ export class VSCServiceBridge {
   private _onEngineEvaluatedEvent(
     event: DiffedEvent | EvaluatedEvent | LoadedEvent | ChangedSheetsEvent
   ) {
+    console.log("EV", event);
     // reset error diagnostics
     this.connection.sendDiagnostics({
       uri: event.uri,

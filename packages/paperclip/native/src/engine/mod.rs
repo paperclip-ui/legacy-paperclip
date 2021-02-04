@@ -116,6 +116,7 @@ pub struct Engine {
   listeners: Vec<Box<EngineDelegateEventListener>>,
   pub vfs: VirtualFileSystem,
   pub evaluated_data: BTreeMap<String, DependencyEvalInfo>,
+  pub needs_reval: BTreeMap<String, bool>,
   // pub import_graph: HashMap<String, BTreeMap<String, DependencyExport>>,
   pub dependency_graph: DependencyGraph,
   pub mode: EngineMode,
@@ -131,7 +132,7 @@ impl Engine {
     Engine {
       listeners: vec![],
       evaluated_data: BTreeMap::new(),
-      // import_graph: HashMap::new(),
+      needs_reval: BTreeMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
       dependency_graph: DependencyGraph::new(),
       mode,
@@ -192,6 +193,8 @@ impl Engine {
         Ok(())
       }
       Err(error) => {
+        self.needs_reval.insert(uri.to_string(), true);
+
         // Note - this was removed to prevent the engine
         // from dispatching an Evaluated event after error which
         // stops a flash from happening: https://github.com/crcn/paperclip/issues/604
@@ -330,6 +333,11 @@ impl Engine {
 
     let eval = eval_result.or_else(|err| {
       let e = EngineError::Runtime(err.clone());
+
+      // need to re-eval so that any diagnostics or state get reset
+      // if rendering resumes but there are no changes
+
+      self.needs_reval.insert(uri.to_string(), true);
       self.dispatch(EngineDelegateEvent::Error(e));
       Err(err)
     })?;
@@ -357,7 +365,9 @@ impl Engine {
               || mutations.len() > 0
               || existing_details.all_imported_sheet_uris != new_details.all_imported_sheet_uris
               || existing_details.exports != new_details.exports
+              || self.needs_reval.contains_key(uri)
             {
+              self.needs_reval.remove(uri);
               // no need to dispatch mutation if no event
 
               // TODO - CSSOM changes can still happen, but aren't picked up

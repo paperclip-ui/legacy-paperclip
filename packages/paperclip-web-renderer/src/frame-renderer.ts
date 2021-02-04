@@ -21,7 +21,8 @@ import {
   DiffedDataKind,
   EvaluatedDataKind,
   LoadedPCData,
-  StyleElement
+  StyleElement,
+  patchCSSSheet
 } from "paperclip-utils";
 import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
@@ -51,7 +52,6 @@ class FramesProxy implements Patchable {
   private _frames: Frame[];
   private _childNodes: ChildNode[];
   private _mainStyle: any;
-  private _mainNativeStyle: HTMLStyleElement;
   private _importedNativeStyles: HTMLStyleElement[];
   private _importedStyles: SheetInfo[];
   readonly namespaceURI = null;
@@ -80,11 +80,11 @@ class FramesProxy implements Patchable {
   }
   setMainStyle(style: any) {
     this._mainStyle = style;
-    const nativeStyle = (this._mainNativeStyle = createNativeStyleFromSheet(
+    const nativeStyle = createNativeStyleFromSheet(
       style,
       this._domFactory,
       this.resolveUrl
-    ));
+    );
     for (const frame of this._frames) {
       removeAllChildren(frame._mainStylesContainer);
       frame._mainStylesContainer.appendChild(nativeStyle.cloneNode(true));
@@ -104,11 +104,16 @@ class FramesProxy implements Patchable {
       patchCSSOM(styleElement.sheet, mutations);
     }
 
-    const styleElement = ((styleIndex !== -1
-      ? this._importedNativeStyles[styleIndex]
-      : this._mainNativeStyle) as any) as HTMLStyleElement;
-
-    patchCSSOM(styleElement.sheet, mutations);
+    // note we patch the virt objects here since native styles don't parse text unless
+    // mounted so we don't have access to that
+    if (styleIndex === -1) {
+      this._mainStyle = patchCSSSheet(this._mainStyle, mutations);
+    } else {
+      this._importedStyles[styleIndex].sheet = patchCSSSheet(
+        this._importedStyles[styleIndex].sheet,
+        mutations
+      );
+    }
   }
 
   updateImportedStyles(newStyles: SheetInfo[], removeStyleUris: string[] = []) {
@@ -167,8 +172,14 @@ class FramesProxy implements Patchable {
       _importedStylesContainer.appendChild(style.cloneNode(true));
     }
     const _mainStylesContainer = this._domFactory.createElement("div");
-    if (this._mainNativeStyle) {
-      _mainStylesContainer.appendChild(this._mainNativeStyle.cloneNode(true));
+    if (this._mainStyle) {
+      _mainStylesContainer.appendChild(
+        createNativeStyleFromSheet(
+          this._mainStyle,
+          this._domFactory,
+          this.resolveUrl
+        )
+      );
     }
     const _mount = this._domFactory.createElement("div");
     const stage = this._domFactory.createElement("div");
