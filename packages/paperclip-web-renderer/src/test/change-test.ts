@@ -68,6 +68,58 @@ describe(__filename, () => {
           <style>background: orange;</style>
         </div>`
       }
+    ],
+    [
+      "Can add new frams & still maintain styles",
+      {
+        "entry.pc": `
+          <div>
+            <style>
+              color: red;
+            </style>
+            Test
+          </div>
+        `
+      },
+      {
+        "entry.pc": `
+          <div>
+            <style>
+              color: blue;
+            </style>
+            Test A
+          </div>
+          <div>
+            <style>
+              color: red;
+            </style>
+            Test B
+          </div>
+        `
+      }
+    ],
+    [
+      "Properly patches between",
+      {
+        "entry.pc": `
+          <span />
+        `
+      },
+      {
+        "entry.pc": `
+          <style>
+            .dbe {
+              bacc: qr;
+            }
+          </style>
+        `
+      },
+
+      {
+        "entry.pc": `
+          <span />
+        `
+      }
     ]
   ].forEach(([title, initial, ...changes]: any) => {
     it(title, async () => {

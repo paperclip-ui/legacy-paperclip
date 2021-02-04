@@ -17,7 +17,7 @@ export const generateStyleElement = (options: Options, context: Context) => {
 };
 
 const generateCSSRule = (options: Options, context: Context) => {
-  return pickRandom([generateCSSMediaRule, generateCSSStyleRule])(
+  return pickRandom([generateCSSStyleRule, generateCSSMediaRule])(
     options,
     context
   );

@@ -1525,4 +1525,80 @@ describe(__filename + "#", () => {
       `<style>[class]._8f1a5142_test { color:red; }</style><div class="_8f1a5142_test test" data-pc-80f4925f>Hello world </div>`
     );
   });
+
+  it(`breaks if ; is missing from decl`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <div>
+          <style>
+            div {
+              color: red
+              background: blue;
+            }
+          </style>
+          Hello world
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+
+    let err;
+
+    try {
+      const result = await engine.open("/entry.pc");
+      console.log(JSON.stringify(result, null, 2));
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.eql({
+      errorKind: "Graph",
+      uri: "/entry.pc",
+      info: {
+        kind: "Unexpected",
+        message: "Unexpected token",
+        location: {
+          start: 100,
+          end: 101
+        }
+      }
+    });
+  });
+
+  // don't need to solve this right now
+  xit(`Can include mixins in mixins`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="/breakpoints.pc" as="breakpoints" />
+        <style>
+          @mixin b {
+            color: red;
+          }
+
+          div {
+            @include breakpoints.medium {
+              @include b;
+            }
+          }
+        </style>
+      `,
+      "/breakpoints.pc": `
+        <style>
+          @export {
+            @mixin medium {
+              @media screen and (max-width: 500px) {
+                @content;
+              }
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql("a");
+  });
 });

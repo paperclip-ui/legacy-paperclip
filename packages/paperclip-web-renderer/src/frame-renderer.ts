@@ -91,17 +91,26 @@ class FramesProxy implements Patchable {
     }
   }
   applyStylePatches(mutations: any[], uri?: string) {
+    const styleIndex = this._importedStyles.findIndex(style => {
+      return style.uri === uri;
+    });
+
+    // first do the frames
     for (const frame of this._frames) {
-      const styleElement = ((frame._importedStylesContainer.childNodes[
-        this._importedStyles.findIndex(style => {
-          return style.uri === uri;
-        })
-      ] ||
-        frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
+      const styleElement = ((styleIndex !== -1
+        ? frame._importedStylesContainer.childNodes[styleIndex]
+        : frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
 
       patchCSSOM(styleElement.sheet, mutations);
     }
+
+    const styleElement = ((styleIndex !== -1
+      ? this._importedNativeStyles[styleIndex]
+      : this._mainNativeStyle) as any) as HTMLStyleElement;
+
+    patchCSSOM(styleElement.sheet, mutations);
   }
+
   updateImportedStyles(newStyles: SheetInfo[], removeStyleUris: string[] = []) {
     const rmIndices = [];
 
@@ -148,7 +157,6 @@ class FramesProxy implements Patchable {
   }
   removeChild(child: Node) {
     const index = this._childNodes.findIndex(_child => _child === child);
-    const frame = this._frames[index];
     this._childNodes.splice(index, 1);
     this._frames = arraySplice(this._frames, index, 1);
   }
@@ -296,11 +304,6 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Diffed: {
         if (event.data.kind === DiffedDataKind.PC) {
-          this._framesProxy.applyStylePatches(
-            event.data.sheetMutations,
-            event.uri
-          );
-
           if (event.uri === this.targetUri) {
             this._dependencies = event.data.allImportedSheetUris;
 
@@ -313,6 +316,12 @@ export class FramesRenderer {
 
             this._preview = patchVirtNode(this._preview, event.data.mutations);
           }
+
+          // Style patches need to happen after the fact to cover new frames taht are added
+          this._framesProxy.applyStylePatches(
+            event.data.sheetMutations,
+            event.uri
+          );
         }
         break;
       }

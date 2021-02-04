@@ -89,7 +89,7 @@ class StyleElement extends ParentNode {
   }
   cloneNode() {
     const el = new StyleElement();
-    el.textContent = this.textContent;
+    el.textContent = this.sheet.toString();
     return el;
   }
   toString() {

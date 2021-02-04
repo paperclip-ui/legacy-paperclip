@@ -2,11 +2,7 @@ import { expect } from "chai";
 import { EngineMode } from "paperclip";
 import { LoadedPCData } from "paperclip-utils";
 import { FramesRenderer } from "../frame-renderer";
-import {
-  createMockEngine,
-  createMockFramesRenderer,
-  createMockEngineDelegate
-} from "./utils";
+import { createMockFramesRenderer, createMockEngineDelegate } from "./utils";
 
 describe(__filename + "#", () => {
   it("Can render basic text", async () => {

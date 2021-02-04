@@ -124,9 +124,7 @@ Style blocks that are the defined within elements are _scoped_ to that element. 
 <div>
   <div>
     <style>
-      :self {
-        color: red;
-      }
+      color: red;
       span {
         color: blue;
       }
@@ -141,55 +139,9 @@ Style blocks that are the defined within elements are _scoped_ to that element. 
 </div>
 ```
 
-The `:self` selector applies to the parent element that the style block is defined in. It can also be omitted like so:
+Declarations defined directly in the style elements like the example above are applied to the parent element.
 
-```html live height=150px
-
-<div>
-  <style>
-    color: red;
-    font-family: sans-serif;
-
-
-    span {
-      color: blue;
-    }
-  </style>
-
-  I'm red text!
-
-  <span>I'm blue text!</span>
-</div>
-```
-
-Scoped styles are recommended since they keep your styles & elements together in one spot, which makes them a bit more portable & maintianable if you're looking to move or refactor code. 
-
-
-### :self
-
-`:self` is a special selector that applies to _parent_ elements of `style blocks`. 
-
-### :self(selector)
-
-`:self([selector])` allows you to select parent elements with `[selector]`. For example:
-
-```html live height=150px
-<div className="blue">
-  <style>
-    color: red;
-    font-family: sans-serif;
-
-    :self(.blue) {
-      color: blue;
-    }
-  </style>
-
-  some text
-</div>
-```
-
-☝ This is particularly useful for [style variants](#variant-styles).
-
+Scoped styles are recommended since they keep your styles & elements together in one spot, which makes them a bit more maintainable. It also provides you an easier way to know exactly what's being styled at a glance.
 
 
 ### :within(ancestor-selector)
@@ -1388,13 +1340,13 @@ The variant style syntax allows you to apply classes based on component properti
 
     /* I recommend that you do this instead of &.big to avoid
     CSS specificity issues */
-    :self(.big) {
+    &.big {
       font-size: 32px;
     }
-    :self(.medium) {
+    &.medium {
       font-size: 18px;
     }
-    :self(.small) {
+    &.small {
       font-size: 12px;
     }
 
