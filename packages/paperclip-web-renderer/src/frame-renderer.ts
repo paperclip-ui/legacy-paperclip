@@ -27,9 +27,7 @@ import {
 import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
-import { times } from "lodash";
 import { patchCSSOM } from "./cssom-patcher";
-import { produce } from "immer";
 
 type Box = {
   width: number;
@@ -110,12 +108,13 @@ class FramesProxy implements Patchable {
     if (styleIndex === -1) {
       this._mainStyle = patchCSSSheet(this._mainStyle, mutations);
     } else {
-      this._importedStyles = produce(this._importedStyles, importedStyles => {
-        importedStyles[styleIndex].sheet = patchCSSSheet(
-          importedStyles[styleIndex].sheet,
+      this._importedStyles[styleIndex] =  {
+        ...this._importedStyles[styleIndex],
+        sheet: patchCSSSheet(
+          this._importedStyles[styleIndex].sheet,
           mutations
-        );
-      });
+        )
+      }
     }
   }
 
