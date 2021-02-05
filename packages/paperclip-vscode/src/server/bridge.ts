@@ -293,40 +293,9 @@ export class VSCServiceBridge {
     );
     this._documents[uri] = newDocument;
     this._deferUpdateEngineContent(uri, newDocument.getText());
-    // this._newEngineContent[uri] = true;
-    // this._deferPersistEditTextContent();
   };
 
-  // private _previewEngineContent = (
-  //   uri: string,
-  //   event: TextDocumentContentChangeEvent
-  // ) => {
-  //   this._newEnginePreviewContent[uri] = event;
-  //   this._deferPreviewEngineContent();
-  // };
-
-  // private _deferPersistEditTextContent = throttle(() => {
-  //   const newEngineContent = this._newEngineContent;
-  //   this._newEngineContent = {};
-  //   for (const uri in newEngineContent) {
-  //     this._engine.updateVirtualFileContent(
-  //       uri,
-  //       this._documents[uri].getText()
-  //     );
-  //   }
-  // }, PERSIST_ENGINE_THROTTLE_MS);
-
-  // private _deferPreviewEngineContent = throttle(() => {
-  //   const newEngineContent = this._newEnginePreviewContent;
-  //   this._newEnginePreviewContent = {};
-  //   for (const uri in newEngineContent) {
-  //     const event = newEngineContent[uri];
-  //     this._engine.updateVirtualFileContent(uri, event.text);
-  //   }
-  // }, PERSIST_ENGINE_THROTTLE_MS);
-
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
-    console.log("EVENTTNTNn", event);
     switch (event.kind) {
       case EngineDelegateEventKind.Error: {
         this._onEngineErrorEvent(event);
@@ -347,7 +316,7 @@ export class VSCServiceBridge {
   private _onEngineEvaluatedEvent(
     event: DiffedEvent | EvaluatedEvent | LoadedEvent | ChangedSheetsEvent
   ) {
-    console.log("EV", event);
+
     // reset error diagnostics
     this.connection.sendDiagnostics({
       uri: event.uri,
