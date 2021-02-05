@@ -748,9 +748,6 @@ const getNodeStyle = (node: Node, context: TranslateContext) => {
 
   const name = getNodeComponentName(node, getNodeDocument(node, context.graph));
 
-  // if (node.rectangleCornerRadii && node.rectangleCornerRadii.includes(20)) {}
-  // console.log(node.rectangleCornerRadii);
-
   if (name === "Property1Green0_Frame10") {
     const component = getOwnerComponent(
       node,

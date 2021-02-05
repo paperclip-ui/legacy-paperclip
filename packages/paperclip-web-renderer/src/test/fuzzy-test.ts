@@ -24,7 +24,6 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
 
-    // console.log("C", currentDocumentSource);
     for (let i = 50; i--; ) {
       const randomDocument = generateRandomPaperclipDocument(randOptions);
 

@@ -94,8 +94,6 @@ export const Toolbar = () => {
     }
   });
 
-  console.log(showZoomInput);
-
   return (
     <styles.Container>
       <styles.Toolbar
