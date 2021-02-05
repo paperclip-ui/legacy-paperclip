@@ -1,6 +1,6 @@
 {
   "name": "paperclip",
-  "version": "17.6.5",
+  "version": "17.6.7",
   "description": "A hybrid approach to design & code",
   "main": "./index.js",
   "typings": "index.d.ts",
@@ -37,7 +37,7 @@
     "chai": "^4.2.0",
     "crc32": "^0.2.2",
     "mocha": "^7.0.1",
-    "paperclip-utils": "^17.6.2",
+    "paperclip-utils": "^17.6.7",
     "url": "^0.11.0"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",
