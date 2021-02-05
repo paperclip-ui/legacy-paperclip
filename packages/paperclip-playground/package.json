@@ -1,6 +1,6 @@
 {
   "name": "paperclip-playground",
-  "version": "17.6.5",
+  "version": "17.6.6",
   "description": "Online Paperclip playground",
   "main": "./lib/index.js",
   "scripts": {
