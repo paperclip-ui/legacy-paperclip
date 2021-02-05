@@ -172,7 +172,7 @@
   {showShare && <ShareModal.Preview />}
   { showPasswordModal && <PasswordModal.Preview />}
   {showProjectLoading && <ProjectLoadingModal.Preview visible percent="0.5" />}
-  {showNoBrowserSupport}
+  {showNoBrowserSupport && <NoBrowserSupportModal.Preview visible />}
 </Container>
 
 <!--

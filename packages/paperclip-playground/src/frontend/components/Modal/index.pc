@@ -2,7 +2,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className="v2 $Theme.font-default" className:secret="secret" className:visible="visible">
+<div export component as="Container" className="v2 $Theme.font-default" className:secret="secret" className:noclose="noclose" className:visible="visible">
     <style>
     
     position: fixed;
@@ -37,7 +37,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Content">
+<div export component as="Content" {className?}>
 
     <style>
       background: white;
@@ -78,7 +78,7 @@
       font-size: inherit;
       color: inherit;
       cursor: pointer;
-      &:within(.secret) {
+      &:within(.secret, .noclose) {
         display: none
       }
     </style>
