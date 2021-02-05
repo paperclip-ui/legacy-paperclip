@@ -1601,4 +1601,25 @@ describe(__filename + "#", () => {
 
     expect(stringifyLoadResult(result)).to.eql("a");
   });
+
+  // TODO - this is broken with CSS patcher
+  xit(`breaks if inline declaration is defined without semicolon`, async () => {
+
+    const graph = {
+      "/entry.pc": `
+        <style>
+          text-align: left
+          img {
+            width: 100px;
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql("a");
+  });
+
 });
