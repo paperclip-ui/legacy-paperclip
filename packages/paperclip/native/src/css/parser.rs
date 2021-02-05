@@ -915,9 +915,6 @@ fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Stri
       Token::Semicolon | Token::CurlyClose | Token::Colon => {
         break;
       }
-      Token::CurlyOpen => {
-        return Err(ParseError::unexpected_token(context.tokenizer.pos));
-      }
       Token::Str((value, boundary)) => {
         context.tokenizer.next();
         buffer.push_str(format!("{}{}{}", boundary, value, boundary).as_str());

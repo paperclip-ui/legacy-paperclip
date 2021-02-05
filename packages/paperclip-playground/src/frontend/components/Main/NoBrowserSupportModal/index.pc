@@ -1,6 +1,11 @@
 <import src="frontend/components/Modal/index.pc" as="Modal" />
 
-<Modal.Container export component as="Preview" noclose {visible?}>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Modal.Container export component as="NoBrowserSupportModal" noclose {visible?}>
   <Modal.Content>
     <style>
       font-size: 18px;
@@ -12,13 +17,13 @@
         margin-bottom: 12px;
         text-align: center;
       </style>
-      This browser isn't supported yet! 
+      Your browser isn't supported yet! 
       <div>
         <style>
           font-size: 12px;
           opacity: 0.5;
         </style>
-        Try any one of these instead:
+        Try one of these instead:
       </div>
     </div>
 
@@ -48,3 +53,9 @@
     </div>
   </Modal.Content>
 </Modal.Container>
+
+
+<!--
+  @frame { visible: false }
+-->
+<NoBrowserSupportModal export component as="Preview" {visible?} />

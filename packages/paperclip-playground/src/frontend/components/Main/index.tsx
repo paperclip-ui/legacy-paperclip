@@ -22,7 +22,7 @@ import mime from "mime-types";
 import { ShareModal } from "./ShareModal";
 import { PasswordModal } from "./PasswordModal";
 import { ProjectLoadingModal } from "./ProjectLoadingModal";
-import { current } from "immer";
+import { NoBrowserSupportModal } from "./NoBrowserSupportModal/index.pc";
 
 export const Main = withAppStore(() => {
   const store = useAppStore();
@@ -105,6 +105,7 @@ const Editor = memo(() => {
         cantUpload={false}
       />
       <ShareModal />
+      <NoBrowserSupportModal visible={!state.browserSupported} />
     </styles.Container>
   );
 });

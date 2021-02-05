@@ -4,12 +4,19 @@ import * as qs from "querystring";
 import mime from "mime-types";
 import { mapValues, omit, pickBy } from "lodash";
 const ENTRY_URI = "main.pc";
+import bowser from "bowser"; 
 
 export type User = {
   avatarUrl?: string;
   email?: string;
   id: number;
 };
+
+const SUPPORTED_BROWSERS = [
+  { name: "chrome", minVersion: 54 },
+  { name: "firefox", minVersion: 38 },
+  { name: "edge", minVersion: 79 }
+];
 
 // 2 MB
 export const MAX_FILE_SIZE = 2 * 1000 * 1000;
@@ -75,6 +82,7 @@ export type AppState = {
     pathname: string;
     query: any;
   };
+  browserSupported?: boolean;
   progressLoadedPercent?: number;
   highlightLocation?: SourceLocation;
   shareProjectInfo?: Result<ShareProjectInfo>;
@@ -95,6 +103,7 @@ export const INITIAL_STATE: AppState = {
       [ENTRY_URI]: ""
     }
   },
+  browserSupported: isBrowserSupported(),
   designer: {
     ...ve.INITIAL_STATE.designer,
     sharable: false,
@@ -187,6 +196,20 @@ export const canUpload = (files: FileList) => {
     return ACCEPTED_MIME_TYPES.includes(file.type);
   });
 };
+
+function isBrowserSupported() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const info = bowser.parse(window.navigator.userAgent);
+
+  console.log(info);
+
+  return SUPPORTED_BROWSERS.some(browser => {
+    return browser.name === info.browser.name.toLowerCase() && browser.minVersion < Number(info.browser.version.split(".").shift())
+  })
+}
 
 export const canEditFile = (name: string) => {
   if (isPaperclipFile(name)) {
