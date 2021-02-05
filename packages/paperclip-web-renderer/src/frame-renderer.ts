@@ -314,11 +314,7 @@ export class FramesRenderer {
         break;
       }
       case EngineDelegateEventKind.Diffed: {
-
-          
-
         if (event.data.kind === DiffedDataKind.PC) {
-
           // Style patches need to happen _before_ patching frames since style elements don't have
           // their sheets until their mounted
           this._framesProxy.applyStylePatches(
@@ -338,7 +334,6 @@ export class FramesRenderer {
 
             this._preview = patchVirtNode(this._preview, event.data.mutations);
           }
-
         }
         break;
       }

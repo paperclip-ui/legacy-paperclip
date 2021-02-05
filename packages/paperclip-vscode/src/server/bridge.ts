@@ -316,7 +316,6 @@ export class VSCServiceBridge {
   private _onEngineEvaluatedEvent(
     event: DiffedEvent | EvaluatedEvent | LoadedEvent | ChangedSheetsEvent
   ) {
-
     // reset error diagnostics
     this.connection.sendDiagnostics({
       uri: event.uri,
