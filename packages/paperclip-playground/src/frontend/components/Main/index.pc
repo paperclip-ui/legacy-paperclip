@@ -9,6 +9,7 @@
 <import src="./ShareModal/index.pc" as="ShareModal" />
 <import src="./PasswordModal/index.pc" as="PasswordModal" />
 <import src="./ProjectLoadingModal/index.pc" as="ProjectLoadingModal" />
+<import src="./NoBrowserSupportModal/index.pc" as="NoBrowserSupportModal" />
 
 <style>
   :global(html, body) {
@@ -171,6 +172,7 @@
   {showShare && <ShareModal.Preview />}
   { showPasswordModal && <PasswordModal.Preview />}
   {showProjectLoading && <ProjectLoadingModal.Preview visible percent="0.5" />}
+  {showNoBrowserSupport}
 </Container>
 
 <!--
@@ -180,9 +182,14 @@
 
 
 <!--
-  @frame { title: "Project loading", width: 1212, height: 768, x: 1905, y: -1887 }
+  @frame { title: "Project loading", width: 1212, height: 768, x: 3328, y: -1905 }
 -->
 <Preview showEditor showProjectLoading  />
+
+<!--
+  @frame { title: "Incompatible browser", width: 1212, height: 768, x: 1905, y: -1887 }
+-->
+<Preview showEditor showNoBrowserSupport  />
 
 
 
