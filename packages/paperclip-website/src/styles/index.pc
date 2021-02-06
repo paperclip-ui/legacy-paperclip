@@ -241,8 +241,7 @@
     <div className="_title">
       <style>
         @include typography.text-secondary;
-        display: none;
-        font-size: 1.2em;
+        font-size: 1.5em;
         font-weight: 500;
         margin-bottom: var(--gap-4);
       </style>
@@ -500,7 +499,7 @@
     preview={<video src="../../static/vid/paperclip-fast-demo.mp4" autoplay loop />}
   />
 
-  <Summary title="Web development is slow" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
+  <Summary title="Iterate faster" text="You shouldn't have to be bogged down by developer tooling in order to make simple HTML & CSS changes. And you should be able to make style changes confidently without needing to worry about introducing bugs. " />
 
   <MainFeatures>
     <MainFeatureItem

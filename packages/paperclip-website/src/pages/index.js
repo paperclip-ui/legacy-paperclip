@@ -34,7 +34,8 @@ function Home() {
           <styles.Header
             // title={<>A hybrid approach to building web applications</>}
             // title={<>Live previews for web development</>}
-            title={<>Build web application in no time.</>}
+            // title={<>Build web application in no time.</>}
+            title={<>Realtime visual web development.</>}
             description={
               /* 
 
@@ -45,8 +46,9 @@ function Home() {
             - More natural than the current way of building UIs
             */
               <>
-                Paperclip is a template language that comes with visual tooling
-                to help you build UIs faster, bug-free, and more precicely.
+                <i>See</i> & design what you're coding in realtime. Paperclip is an open-source tool to help you build UIs faster than ever.
+                {/* Paperclip is a fast & intuitive open-source UI tool that works with your existing codebase. */}
+                {/* Build your web interfaces directly within your code editor.   */}
                 {/* Paperclip is a template language designed to help you build UIs more quickly & safely. */}
                 {/* See what you're building, as you're typing code.  */}
                 {/* Paperclip is a template language that's optimized for visual development, so you can build UIs in record time. */}
@@ -114,18 +116,15 @@ function Home() {
           />
 
           <styles.Summary
-            title=""
+            title="Iterate faster"
             text={
               <>
                 {/* Paperclip is a template language specifically designed around visual development. This allows for a hybrid approach to building UIs
           that's faster */}
                 {/* Nothing sucks more than waiting around for your browser to see CSS changes. With Paperclip there's none of that - just open up the live preview
           window and start typing code. Watch as your changes appear in realtime.  */}
-                Web development is slow & CSS tends to become unmanageable over
-                time, especially as projects & teams become larger. Paperclip
-                helps with that by providing you with tooling to keep track of
-                visual changes, keep CSS tidy, and create your UIs in a visual
-                editor.
+                No more waiting for the browser to reload when you make changes. Paperclip comes with a realtime preview that updates <i>as you're typing</i>, so you can iterate faster on your HTML & CSS, and ship products
+                pixel-perfect UIs faster than ever.
                 {/* UI development is visual, and tooling should reflect that. Paperclip */}
               </>
             }
@@ -134,12 +133,10 @@ function Home() {
           <styles.MainFeatures>
             <styles.MainFeatureItem
               iconName="shapes"
-              title="Simple syntax"
+              title="Designed for presentational components"
               description={
                 <>
-                  Paperclip uses familiar syntax, so there the learning curve is
-                  small. Use the <a href="/docs/">visual editor</a> to see your
-                  visual changes live.
+                  Paperclip's syntax is designed for just the <i>appearance</i> of your application: HTML, CSS, and logic-less components.
                 </>
               }
               example={
@@ -151,7 +148,7 @@ function Home() {
             <styles.MainFeatureItem
               iconName="reactjs"
               title="Import directly into your React app"
-              description="Templates compile into plain code that you can import directly in your app. No runtimes needed."
+              description="Templates compile into strongly typed code that you can import directly in your existing application."
               example={
                 <CodeBlock className="language-jsx">
                   {IMPORT_CODE_DEMO_SOURCE}
@@ -162,44 +159,44 @@ function Home() {
 
           <styles.VariousFeatures>
             <styles.VariousFeatureItem
+              iconName="grow"
+              title="Just like CSS-in-JS"
+              description="Try it out! Paperclip works just like other CSS-in-JS libraries such as Emotion, and Styled Components. If you don't like Paperclip, you can easily switch back."
+            />
+            <styles.VariousFeatureItem
               iconName="chaotic-1"
-              title="No global CSS"
-              description="Styles are scoped to the documents they're defined in, so you don't have to worry about them leaking out."
+              title="Scoped CSS"
+              description="Paperclip keeps your styles manageable by scoping them to the documents they're defined in. Never worry about leaky CSS again."
             />
             <styles.VariousFeatureItem
               iconName="link"
-              title="Live previews in VS Code"
-              description="Paperclip comes with a live preview extension for VS Code, so you never have to leave your editor to see your HTML & CSS."
-            />
-            <styles.VariousFeatureItem
-              iconName="grow"
-              title="Incrementally adoptable"
-              description="Paperclip compliments your existing codebase, so use it as you go."
+              title="Live VS Code extension"
+              description={["Conveniently build UIs ", <i>live</i>, " within VS Code. No more need to switch back and forth between the browser."]}
             />
           </styles.VariousFeatures>
-          {/* <styles.BigFeature
+          <styles.BigFeature
           title="Pairs well with existing CSS"
-          description="Just import your regular CSS to keep it scoped."
+          description={["Paperclip enhances the existing CSS framework you're using by keeping it ", <i>scoped</i>, ", so you have absolute control over how it's used in your app, and never have to worry about it leaking out."]}
           preview={<CodeBlock className="language-html">
           {THIRD_PART_CSS_EXAMPLE}
         </CodeBlock>}
-        /> */}
+        />
           <styles.BigFeature
-            title="See all of your UIs in one spot"
-            description="No more digging around for UI elements. Open the birds-eye view to see all of your application UIs, and easily find what you're looking for."
+            title="Everything in one spot"
+            description={["Use the birds-eye view to see ", <i>all</i>, " of your components, and find exactly what you're looking for."]}
             preview={<video src="vid/grid-demo.mp4" autoPlay loop />}
           />
           <styles.BigFeature
             title="Cross-browser testing made easy"
-            description="Launch any browser directly within Paperclip and design against them in realtime."
+            description={["Launch ", <i>any browser</i>, " directly from Paperclip. Cross-browser UI testing has never been easier."]}
             preview={
               <video src="vid/cross-browser-testing.mp4" autoPlay loop />
             }
           />
 
           <styles.BigFeature
-            title="Never miss a CSS Bug"
-            description="Every single Paperclip UI is covered with visual regression tests - hardly any setup required. Just setup the Percy integration and you're good to go."
+            title="Easy visual regression test setup"
+            description="Paperclip comes with visual regression tooling that takes less than 10 minutes to setup and gives you nearly 100% visual regression coverage, so you can feel confident about making big style changes in your application, and without breaking production."
             preview={
               <video src="vid/visual-regression-testing.mp4" autoPlay loop />
             }

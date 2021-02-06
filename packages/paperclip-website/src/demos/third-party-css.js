@@ -11,7 +11,8 @@ const SOURCE = `
     <div class="$tw.pt-6 $tw.text-center $tw.space-y-4">
       <blockquote>
         <p class="$tw.text-lg $tw.font-semibold">
-          “Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.”
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+          sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </p>
       </blockquote>
       <figcaption class="$tw.font-medium">
