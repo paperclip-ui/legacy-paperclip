@@ -12,7 +12,7 @@ export const compileGlobalVariables = (map: VariableMap) => {
 
   for (const key in map) {
     if (/var\(.*?\)/.test(key)) {
-      varMap[key.replace(/var\((.*?)\)/, "$1")] = map[key];
+      varMap[key.replace(/var\((.*?)\)/, "$1").replace(/-2\b/g, "")] = map[key];
     }
   }
 
@@ -51,12 +51,12 @@ export const compileGlobalColorVariables = (map: VariableMap) => {
   buffer.push(`  @frame { title: "Colors" }\n`);
   buffer.push(`-->\n`);
   buffer.push("<div>\n");
-  for (const name in map) {
-    if (!/var\(.*?\)/.test(name)) {
-      continue;
-    }
+  for (const name in varMap) {
+    // if (!/var\(.*?\)/.test(name)) {
+    //   continue;
+    // }
     buffer.push(
-      `  <div className="preview" style="color: ${name};">${name}</div>\n`
+      `  <div className="preview" style="color: var(${name});">var(${name})</div>\n`
     );
   }
 
@@ -107,7 +107,6 @@ export const compileTypography = (
   buffer.push(`  }\n\n`);
 
   buffer.push(`  .preview {\n`);
-  buffer.push(`    display: inline-block;\n`);
   buffer.push(`    padding: 6px 10px;\n`);
   buffer.push(`  }\n`);
   buffer.push(`</style>\n`);
@@ -119,7 +118,7 @@ export const compileTypography = (
   buffer.push("<div>\n");
   for (const name in map) {
     buffer.push(
-      `<span className="preview ${name}">.${name}<br /><br /></span>\n`
+      `<div className="preview ${name}">.${name}<br /><br /></div>\n`
     );
   }
   buffer.push("</div>");
@@ -210,10 +209,13 @@ const compileLayerStyles = (
   variables: VariableMap,
   textStyles: TypographyMap
 ): [string, string[]] => {
+
   const buffer = ["  <style>\n"];
   const textMixins = [];
   const castedLayer = castLayer(rawLayer);
-  const layer = new Layer(castedLayer, null);
+
+  
+  const layer = new Layer(castedLayer, { showPaddingMargin: false });
 
   for (const decl of layer.style.declarations) {
     if (/^(width|height)$/.test(decl.name)) {

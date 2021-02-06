@@ -178,6 +178,13 @@ const Editor = ({
 
     loadMonaco.init().then(monaco => {
       setMonaco(monaco);
+
+      // might exist if switching between pages - models are global so we need to dispose.
+      const model = monaco.editor.getModel(monaco.Uri.parse(uri));
+      if (model) {
+        model.dispose();
+      }
+
       activatePaperclipExtension(monaco as any, { getCurrentUri: null });
       const editor = monaco.editor.create(editorRef.current, {
         language: "paperclip",
