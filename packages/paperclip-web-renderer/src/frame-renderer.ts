@@ -94,6 +94,8 @@ class FramesProxy implements Patchable {
       return style.uri === uri;
     });
 
+    console.log(mutations, uri);
+
     // first do the frames
     for (const frame of this._frames) {
       const styleElement = ((styleIndex !== -1
@@ -280,8 +282,6 @@ export class FramesRenderer {
    */
 
   public handleEngineDelegateEvent = (event: EngineDelegateEvent): void => {
-    const now = Date.now();
-
     switch (event.kind) {
       case EngineDelegateEventKind.ChangedSheets: {
         if (event.uri === this.targetUri) {

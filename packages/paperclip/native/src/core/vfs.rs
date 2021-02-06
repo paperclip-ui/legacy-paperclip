@@ -27,6 +27,9 @@ impl VirtualFileSystem {
       contents: HashMap::new(),
     }
   }
+  pub fn reset(&mut self) {
+    self.contents = HashMap::new();
+  }
   pub async fn load(&mut self, uri: &String) -> Result<&String, &'static str> {
     if self.contents.contains_key(uri) {
       Ok(self.contents.get(uri).unwrap())

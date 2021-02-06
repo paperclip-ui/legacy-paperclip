@@ -53,7 +53,7 @@ import {
   strToClassName,
   pascalCase
 } from "./utils";
-import { camelCase, uniq } from "lodash";
+import { add, camelCase, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import { ClassNameExport } from "paperclip";
@@ -204,11 +204,8 @@ const translateStyleScopeAttributes = (
   context: TranslateContext,
   newLine = ""
 ) => {
-  context = addBuffer(
-    `"data-pc-${getElementScopeId(element, context.fileUri)}": true,\n` +
-      `"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`,
-    context
-  );
+  context = addBuffer(`"data-pc-${getElementScopeId(element, context.fileUri)}": true,\n`, context);
+  context = addBuffer(`"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`, context);
   return context;
 };
 
@@ -674,7 +671,7 @@ const translateElement = (
     context = addBuffer(`"ref": ref,\n`, context);
   }
   context = addBuffer(
-    `"key": ${JSON.stringify(String(context.keyCount++))}${
+    `"key": ${JSON.stringify(getElementScopeId(element, context.fileUri))}${
       context.currentIndexKey ? ` + ${context.currentIndexKey}` : ""
     },\n`,
     context
