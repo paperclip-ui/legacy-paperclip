@@ -1,6 +1,6 @@
 {
   "name": "paperclip-language-service",
-  "version": "17.6.7",
+  "version": "17.6.8",
   "description": "",
   "main": "index.js",
   "scripts": {

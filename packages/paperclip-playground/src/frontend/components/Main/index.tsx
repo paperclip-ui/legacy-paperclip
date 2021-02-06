@@ -105,7 +105,9 @@ const Editor = memo(() => {
         cantUpload={false}
       />
       <ShareModal />
-      <NoBrowserSupportModal visible={!state.browserSupported} />
+      <div>
+        <NoBrowserSupportModal visible={!state.browserSupported} />
+      </div>
     </styles.Container>
   );
 });
