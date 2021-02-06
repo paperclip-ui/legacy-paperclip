@@ -255,7 +255,7 @@ export const useFrames = ({
     setRenderer(renderer);
     return () => {
       renderer.dispose();
-    }
+    };
   }, [fileUri, shouldCollectRects, !!frameData]);
 
   useEffect(() => {
@@ -273,7 +273,6 @@ export const useFrames = ({
   }, [renderer]);
 
   useLayoutEffect(() => {
-
     if (!renderer) {
       return;
     }

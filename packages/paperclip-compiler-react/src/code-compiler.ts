@@ -204,8 +204,14 @@ const translateStyleScopeAttributes = (
   context: TranslateContext,
   newLine = ""
 ) => {
-  context = addBuffer(`"data-pc-${getElementScopeId(element, context.fileUri)}": true,\n`, context);
-  context = addBuffer(`"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`, context);
+  context = addBuffer(
+    `"data-pc-${getElementScopeId(element, context.fileUri)}": true,\n`,
+    context
+  );
+  context = addBuffer(
+    `"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`,
+    context
+  );
   return context;
 };
 

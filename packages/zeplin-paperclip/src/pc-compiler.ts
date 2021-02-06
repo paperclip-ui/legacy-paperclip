@@ -209,12 +209,10 @@ const compileLayerStyles = (
   variables: VariableMap,
   textStyles: TypographyMap
 ): [string, string[]] => {
-
   const buffer = ["  <style>\n"];
   const textMixins = [];
   const castedLayer = castLayer(rawLayer);
 
-  
   const layer = new Layer(castedLayer, { showPaddingMargin: false });
 
   for (const decl of layer.style.declarations) {

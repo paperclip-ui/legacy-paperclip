@@ -108,13 +108,10 @@ class FramesProxy implements Patchable {
     if (styleIndex === -1) {
       this._mainStyle = patchCSSSheet(this._mainStyle, mutations);
     } else {
-      this._importedStyles[styleIndex] =  {
+      this._importedStyles[styleIndex] = {
         ...this._importedStyles[styleIndex],
-        sheet: patchCSSSheet(
-          this._importedStyles[styleIndex].sheet,
-          mutations
-        )
-      }
+        sheet: patchCSSSheet(this._importedStyles[styleIndex].sheet, mutations)
+      };
     }
   }
 
@@ -314,11 +311,7 @@ export class FramesRenderer {
         break;
       }
       case EngineDelegateEventKind.Diffed: {
-
-          
-
         if (event.data.kind === DiffedDataKind.PC) {
-
           // Style patches need to happen _before_ patching frames since style elements don't have
           // their sheets until their mounted
           this._framesProxy.applyStylePatches(
@@ -338,7 +331,6 @@ export class FramesRenderer {
 
             this._preview = patchVirtNode(this._preview, event.data.mutations);
           }
-
         }
         break;
       }

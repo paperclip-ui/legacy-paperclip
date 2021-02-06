@@ -32,7 +32,7 @@ const init = async () => {
   let _resolveEngine: (engine: EngineDelegate) => void;
   let _enginePromise = new Promise<EngineDelegate>(resolve => {
     _resolveEngine = resolve;
-  })
+  });
 
   // open a line for any web workers that need access to the engine. Note that
   // this is _one way_ since whatever's controlling the engine worker needs to also control its state since
@@ -104,7 +104,9 @@ const init = async () => {
         _engine.updateVirtualFileContent(uri, String(newContent));
 
         // necessary for editor extensions
-        dispatch(astEmitted({ uri, content: (await _enginePromise).getLoadedAst(uri) }));
+        dispatch(
+          astEmitted({ uri, content: (await _enginePromise).getLoadedAst(uri) })
+        );
       }
     }
   };
@@ -116,7 +118,6 @@ const init = async () => {
       })
     );
   };
-
 
   const handleRedirect = (action: RedirectRequested) => {
     tryOpeningCurrentFile();
@@ -162,22 +163,24 @@ const init = async () => {
     }
   };
 
-  _resolveEngine(_engine = await loadEngineDelegate(
-    {
-      io: {
-        readFile(uri) {
-          return _state.documents[uri];
-        },
-        fileExists(uri: string) {
-          return _state.documents[uri] != null;
-        },
-        resolveFile(fromPath: string, toPath: string) {
-          return url.resolve(fromPath, toPath);
+  _resolveEngine(
+    (_engine = await loadEngineDelegate(
+      {
+        io: {
+          readFile(uri) {
+            return _state.documents[uri];
+          },
+          fileExists(uri: string) {
+            return _state.documents[uri] != null;
+          },
+          resolveFile(fromPath: string, toPath: string) {
+            return url.resolve(fromPath, toPath);
+          }
         }
-      }
-    },
-    onCrash
-  ));
+      },
+      onCrash
+    ))
+  );
 
   _engine.onEvent(onEngineEvent);
   onEngineInit();

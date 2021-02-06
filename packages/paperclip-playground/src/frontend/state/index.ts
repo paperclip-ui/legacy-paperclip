@@ -4,7 +4,7 @@ import * as qs from "querystring";
 import mime from "mime-types";
 import { mapValues, omit, pickBy } from "lodash";
 const ENTRY_URI = "main.pc";
-import bowser from "bowser"; 
+import bowser from "bowser";
 
 export type User = {
   avatarUrl?: string;
@@ -207,8 +207,11 @@ function isBrowserSupported() {
   const info = bowser.parse(window.navigator.userAgent);
 
   return SUPPORTED_BROWSERS.some(browser => {
-    return browser.name === info.browser.name.toLowerCase() && browser.minVersion < Number(info.browser.version.split(".").shift())
-  })
+    return (
+      browser.name === info.browser.name.toLowerCase() &&
+      browser.minVersion < Number(info.browser.version.split(".").shift())
+    );
+  });
 }
 
 export const canEditFile = (name: string) => {
