@@ -162,6 +162,13 @@ impl Engine {
     self.dependency_graph.dependencies.keys().cloned().collect()
   }
 
+  pub fn reset(&mut self) {
+    self.dependency_graph = DependencyGraph::new();
+    self.needs_reval = BTreeMap::new();
+    self.evaluated_data = BTreeMap::new();
+    self.vfs.reset();
+  }
+
   pub fn get_loaded_ast(&self, uri: &String) -> Option<&DependencyContent> {
     self
       .dependency_graph
@@ -169,12 +176,6 @@ impl Engine {
       .get(uri)
       .and_then(|dep| Some(&dep.content))
   }
-  // pub fn get_dependency_uris(&self, uri: &String) -> Option<Vec<String>> {
-  //   self.dependency_graph.dependencies.get(uri)
-  //   .and_then(|dep| {
-  //     Some(dep.dependencies.values().cloned().collect())
-  //   })
-  // }
 
   pub async fn load(&mut self, uri: &String) -> Result<(), EngineError> {
     let load_result = self

@@ -23,13 +23,16 @@ import * as url from "url";
 import { RedirectRequested } from "paperclip-designer/src/actions";
 import { PCSourceWriter } from "paperclip-source-writer";
 import { isPaperclipFile, engineDelegateChanged } from "paperclip-utils";
-import { emit } from "process";
 
 const init = async () => {
   let _state: WorkerState;
   let _engine: EngineDelegate;
   let _writer: PCSourceWriter;
   let _currentUri: string;
+  let _resolveEngine: (engine: EngineDelegate) => void;
+  let _enginePromise = new Promise<EngineDelegate>(resolve => {
+    _resolveEngine = resolve;
+  });
 
   // open a line for any web workers that need access to the engine. Note that
   // this is _one way_ since whatever's controlling the engine worker needs to also control its state since
@@ -82,9 +85,13 @@ const init = async () => {
     syncEngineDocuments(oldState);
   };
 
-  const syncEngineDocuments = (oldState: WorkerState) => {
+  const syncEngineDocuments = async (oldState: WorkerState) => {
     if (_state.documents === oldState.documents || !_engine) {
       return;
+    }
+
+    if (oldState.currentProjectId !== _state.currentProjectId) {
+      _engine.reset();
     }
 
     for (const uri in _state.documents) {
@@ -97,7 +104,9 @@ const init = async () => {
         _engine.updateVirtualFileContent(uri, String(newContent));
 
         // necessary for editor extensions
-        dispatch(astEmitted({ uri, content: _engine.getLoadedAst(uri) }));
+        dispatch(
+          astEmitted({ uri, content: (await _enginePromise).getLoadedAst(uri) })
+        );
       }
     }
   };
@@ -110,29 +119,12 @@ const init = async () => {
     );
   };
 
-  // const handleContentChanges = ({
-  //   payload: { changes }
-  // }: ContentChangesCreated) => {
-  //   for (const uri in changes) {
-  //     _engine.updateVirtualFileContent(uri, _state.documents[uri]);
-  //   }
-  // };
-
-  const handleProjectLoaded = (action: GetProjectFilesRequestChanged) => {
-    if (!action.payload.result.data || !_engine) {
-      return;
-    }
-    _engine.purgeUnlinkedFiles();
-  };
-
   const handleRedirect = (action: RedirectRequested) => {
     tryOpeningCurrentFile();
   };
 
   self.onmessage = ({ data: action }: MessageEvent) => {
     switch (action.type) {
-      case ActionType.GET_PROJECT_FILES_REQUEST_CHANGED:
-        return handleProjectLoaded(action);
       case ActionType.WORKER_INITIALIZED:
         return handleInitialized(action);
       case ActionType.APP_STATE_DIFFED:
@@ -144,13 +136,13 @@ const init = async () => {
     }
   };
 
-  channel.onmessage = ({ data: action }: MessageEvent) => {
+  channel.onmessage = async ({ data: action }: MessageEvent) => {
     switch (action.type) {
       case BasicPaperclipActionType.AST_REQUESTED: {
         return dispatch(
           astEmitted({
             uri: action.payload.uri,
-            content: _engine.getLoadedAst(action.payload.uri)
+            content: (await _enginePromise).getLoadedAst(action.payload.uri)
           })
         );
       }
@@ -158,12 +150,12 @@ const init = async () => {
         return dispatch(
           loadedDataEmitted({
             uri: action.payload.uri,
-            data: _engine.getLoadedData(action.payload.uri)
+            data: (await _enginePromise).getLoadedData(action.payload.uri)
           })
         );
       }
       case BasicPaperclipActionType.PREVIEW_CONTENT: {
-        return _engine.updateVirtualFileContent(
+        return (await _enginePromise).updateVirtualFileContent(
           action.payload.uri,
           action.payload.value
         );
@@ -171,21 +163,23 @@ const init = async () => {
     }
   };
 
-  _engine = await loadEngineDelegate(
-    {
-      io: {
-        readFile(uri) {
-          return _state.documents[uri];
-        },
-        fileExists(uri: string) {
-          return _state.documents[uri] != null;
-        },
-        resolveFile(fromPath: string, toPath: string) {
-          return url.resolve(fromPath, toPath);
+  _resolveEngine(
+    (_engine = await loadEngineDelegate(
+      {
+        io: {
+          readFile(uri) {
+            return _state.documents[uri];
+          },
+          fileExists(uri: string) {
+            return _state.documents[uri] != null;
+          },
+          resolveFile(fromPath: string, toPath: string) {
+            return url.resolve(fromPath, toPath);
+          }
         }
-      }
-    },
-    onCrash
+      },
+      onCrash
+    ))
   );
 
   _engine.onEvent(onEngineEvent);

@@ -41,7 +41,7 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
     shouldCollectRects: true
   });
 
-  if (!preview) {
+  if (!preview || !renderer) {
     return null;
   }
 
@@ -239,33 +239,44 @@ export const useFrames = ({
   shouldCollectRects = true
 }: UseFramesProps) => {
   const { state, dispatch } = useAppStore();
+  const [renderer, setRenderer] = useState<FrameController>();
 
   const frameData = state.designer.allLoadedPCFileData[fileUri] as LoadedPCData;
 
   const resolveUrl = useUrlResolver();
 
-  const renderer = useMemo(() => {
-    return new FrameController(
+  useEffect(() => {
+    const renderer = new FrameController(
       new FramesRenderer(fileUri, resolveUrl),
       dispatch,
       shouldCollectRects,
       frameData
     );
+    setRenderer(renderer);
+    return () => {
+      renderer.dispose();
+    };
   }, [fileUri, shouldCollectRects, !!frameData]);
 
   useEffect(() => {
+    if (!renderer) {
+      return;
+    }
     renderer.renderer.urlResolver = resolveUrl;
   }, [resolveUrl]);
 
-  useEffect(() => {
-    return () => renderer.dispose();
-  }, [renderer]);
-
   const onFrameLoaded = useCallback(() => {
+    if (!renderer) {
+      return;
+    }
     renderer.collectRects();
   }, [renderer]);
 
   useLayoutEffect(() => {
+    if (!renderer) {
+      return;
+    }
+
     if (state.designer.currentEngineEvents[renderer.id]?.length) {
       renderer.handleEvents(
         state.designer.currentEngineEvents[renderer.id],
@@ -284,7 +295,7 @@ export const useFrames = ({
   ]);
 
   return {
-    renderer: renderer.renderer,
+    renderer: renderer?.renderer,
     preview: frameData?.preview,
     onFrameLoaded
   };

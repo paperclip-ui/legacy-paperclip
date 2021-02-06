@@ -4,7 +4,7 @@ import * as qs from "querystring";
 import mime from "mime-types";
 import { mapValues, omit, pickBy } from "lodash";
 const ENTRY_URI = "main.pc";
-import bowser from "bowser"; 
+import bowser from "bowser";
 
 export type User = {
   avatarUrl?: string;
@@ -67,6 +67,7 @@ const getPathnameRegexp = memoize((test: string) => {
  */
 
 export type WorkerState = {
+  currentProjectId?: number;
   canvasFile: string;
   documents: Record<string, string | Blob>;
 };
@@ -144,6 +145,7 @@ export const getNewFilePath = (name: string, previousNameOrExt: string) => {
 
 export const getWorkerState = (state: AppState): WorkerState => {
   return {
+    currentProjectId: state.currentProject?.data?.id,
     canvasFile: state.designer.ui.query.canvasFile,
     documents: pickBy(
       mapValues(state.shared.documents, value => value.toString()),
@@ -204,11 +206,12 @@ function isBrowserSupported() {
 
   const info = bowser.parse(window.navigator.userAgent);
 
-  console.log(info);
-
   return SUPPORTED_BROWSERS.some(browser => {
-    return browser.name === info.browser.name.toLowerCase() && browser.minVersion < Number(info.browser.version.split(".").shift())
-  })
+    return (
+      browser.name === info.browser.name.toLowerCase() &&
+      browser.minVersion < Number(info.browser.version.split(".").shift())
+    );
+  });
 }
 
 export const canEditFile = (name: string) => {

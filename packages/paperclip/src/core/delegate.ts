@@ -187,6 +187,11 @@ export class EngineDelegate {
   public getAllLoadedData(): Record<string, LoadedData> {
     return this._rendered;
   }
+  reset() {
+    this._rendered = {};
+    this._documents = {};
+    this._native.reset();
+  }
 
   open(uri: string): LoadedData {
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));

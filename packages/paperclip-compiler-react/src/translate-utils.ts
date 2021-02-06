@@ -59,7 +59,7 @@ export const addBuffer = (buffer: string, context: TranslateContext) => ({
     context.buffer +
     (context.isNewLine ? context.indent.repeat(context.lineNumber) : "") +
     buffer,
-  isNewLine: buffer.indexOf("\n") === buffer.length - 1
+  isNewLine: buffer.lastIndexOf("\n") === buffer.length - 1
 });
 
 export const startBlock = (context: TranslateContext) => ({

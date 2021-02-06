@@ -28,7 +28,7 @@ import {
   LoadedPCData
 } from "paperclip-utils";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
-import { useFrames, useMultipleFrames } from "../Canvas/Frames";
+import { useMultipleFrames } from "../Canvas/Frames";
 import { useTextInput } from "../../../TextInput";
 import { FilterTextInput } from "../../../TextInput/filter.pc";
 import Spinner from "../../../Spinner/index.pc";
