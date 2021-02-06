@@ -94,8 +94,6 @@ class FramesProxy implements Patchable {
       return style.uri === uri;
     });
 
-    console.log(mutations, uri);
-
     // first do the frames
     for (const frame of this._frames) {
       const styleElement = ((styleIndex !== -1
