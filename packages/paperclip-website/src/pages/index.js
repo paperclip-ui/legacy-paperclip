@@ -185,7 +185,7 @@ function Home() {
           </styles.VariousFeatures>
           <styles.BigFeature
           title="Pairs well with existing CSS"
-          description={["Paperclip enhances your existing CSS framework by keeping it ", <i>scoped</i>, ", so you have absolute control over how it's used in your app, and never have to worry about styles leaking out."]}
+          description={["Paperclip enhances your existing CSS by keeping it ", <i>scoped</i>, ", so you have absolute control over how it's used in your app, and never have to worry about styles leaking out."]}
           preview={<CodeBlock className="language-html">
           {THIRD_PART_CSS_EXAMPLE}
         </CodeBlock>}
