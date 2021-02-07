@@ -170,7 +170,7 @@ function Home() {
             <styles.VariousFeatureItem
               iconName="chaotic-1"
               title="HTML & CSS however you want"
-              description="Paperclip comes with loads of safety features to make sure that your code stays maintainble, and you can confidently make updates without introducing visual regressions."
+              description="Paperclip comes with loads of safety features to make sure that your code stays maintainble, and you can confidently make updates without introducing visual bugs."
             />
             <styles.VariousFeatureItem
               iconName="link"
