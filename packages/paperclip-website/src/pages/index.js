@@ -14,7 +14,7 @@ import * as typography from "../styles/typography.pc";
 
 // const Editor = createComponentClass({ React, useState, useEffect, useRef });
 
-const DEMO_URL = Object.keys(MAIN_DEMO_GRAPH)[0];
+// const DEMO_URL = Object.keys(MAIN_DEMO_GRAPH)[0];
 
 function Home() {
   const context = useDocusaurusContext();
