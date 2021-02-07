@@ -118,7 +118,7 @@ function Home() {
           />
 
           <styles.Summary
-            title="Build UIs faster, and more precisely"
+            title="Build UIs faster, and precisely"
             text={
               <>
                 You shouldn't be bogged down by developer tooling in order to see your UIs. With Paperclip, you see what you're creating <i>as you're typing</i>, no matter
