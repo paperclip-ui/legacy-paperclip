@@ -25,8 +25,8 @@ function Home() {
       <Layout
         noFooter
         className="dograg"
-        title={`${siteConfig.title} - build React apps live in VS Code`}
-        description="Paperclip is a language for UI primitives that helps you build web apps more quickly."
+        title={`${siteConfig.title} - A hybrid approach between designing & coding UIs`}
+        description="Paperclip is a free & open-source tool that gives you a designer-like experience for creating web interfaces."
       >
         <styles.Home>
           <styles.Header
