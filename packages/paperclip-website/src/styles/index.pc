@@ -95,7 +95,10 @@
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
-    height: 900px;
+    height: 1100px;
+    @include mobile {
+      height: 900px;
+    }
   </style>
 
   <!-- navigation -->
@@ -195,7 +198,8 @@
         width: 100%;
         /* box-shadow: -4px 1px 4px 4px rgb(153, 153, 153); */
         :global(img, video) {
-          /* border-radius: 4px; */
+          border-radius: 4px;
+          box-shadow: 0px 0px 10px 10px rgba(36, 36, 36, 0.281);
           /* box-shadow: -2px -2px 6px 0px rgba(0, 0, 0, 0.247); */
           /* border: 1px solid rgba(99, 99, 99, 0.404); */
 
@@ -473,9 +477,10 @@
         @include mobile {
           margin-left: 0;
         }
-        :global(img, video) {
+        :global(img, video, .prism-code) {
           border-radius: 4px;
           width: 100%;
+          box-shadow: 0px 0px 20px 8px rgba(0, 0, 0, 0.123);
         }
       }
     </style>
