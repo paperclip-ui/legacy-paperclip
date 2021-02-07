@@ -205,7 +205,7 @@ function Home() {
 
           <styles.BigFeature
             title="Easy visual regression test setup"
-            description="Paperclip comes with visual regression tooling that takes less than 10 minutes to setup and gives you nearly 100% visual regression coverage, so you can feel confident about making big style changes in your application, and without breaking production."
+            description="Paperclip comes with visual regression tooling that takes less than 10 minutes to setup and gives you nearly 100% visual regression coverage, so you can feel confident about making big style changes in your application without breaking production."
             preview={
               <video src="vid/visual-regression-testing.mp4" autoPlay loop />
             }
