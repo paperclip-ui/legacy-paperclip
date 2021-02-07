@@ -25,7 +25,7 @@ function Home() {
       <Layout
         noFooter
         className="dograg"
-        title={`${siteConfig.title} - A hybrid approach between designing & coding UIs`}
+        title={`${siteConfig.title} - A hybrid approach to designing & coding UIs`}
         description="Paperclip is a free & open-source tool that gives you a designer-like experience for creating web interfaces."
       >
         <styles.Home>
@@ -34,7 +34,7 @@ function Home() {
             // title={<>Live previews for web development</>}
             // title={<>Build web application in no time.</>}
             // title={<>Realtime visual web development.</>}
-            title={<>A hybrid approach between designing & coding UIs</>}
+            title={<>A hybrid approach to designing & coding UIs</>}
             description={
               /* 
 
