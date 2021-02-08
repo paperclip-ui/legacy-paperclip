@@ -1,0 +1,5 @@
+- start on virtual object inspector
+  - start with styles
+    - consider :global, :within, nested &
+      - a { &--b }
+    - come up with list of 

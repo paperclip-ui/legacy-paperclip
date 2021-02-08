@@ -132,7 +132,7 @@
     <div className="_blurb">
       <style>
           width: 100%;
-          width: 600px;
+          max-width: 600px;
           margin: 0px auto;
 
           flex-shrink:0;
@@ -622,7 +622,7 @@
 <Preview />
 
 <!--
-  @frame { title: "Mobile", width: 816, height: 3085, x: 1531, y: -57 }
+  @frame { title: "Mobile", width: 491, height: 3085, x: 1531, y: -57 }
 -->
 <Preview />
 
