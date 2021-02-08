@@ -599,7 +599,7 @@
     </style>
     <div>
       <style>
-        width: 400px;
+        max-width: 400px;
         margin: 0px auto;
       </style>
       <div>
@@ -622,7 +622,7 @@
 <Preview />
 
 <!--
-  @frame { title: "Mobile", width: 491, height: 3085, x: 1531, y: -57 }
+  @frame { title: "Mobile", width: 491, height: 4817, x: 1531, y: -57 }
 -->
 <Preview />
 
