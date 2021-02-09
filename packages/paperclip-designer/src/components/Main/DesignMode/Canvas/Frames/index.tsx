@@ -312,7 +312,7 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
   if (!preview) {
     return null;
   }
-
+  
   const annotations: NodeAnnotations =
     (preview.annotations && computeVirtJSObject(preview.annotations)) ||
     ({} as any);

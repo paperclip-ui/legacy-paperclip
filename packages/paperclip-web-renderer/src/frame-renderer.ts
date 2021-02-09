@@ -1,14 +1,12 @@
 import {
   createNativeNode,
   createNativeStyleFromSheet,
-  getNativeNodePath,
   UrlResolver
 } from "./native-renderer";
 import {
   EngineDelegateEvent,
   EngineDelegateEventKind,
   SheetInfo,
-  LoadedData,
   VirtualNodeKind,
   VirtualNode,
   VirtualText,
@@ -21,7 +19,6 @@ import {
   DiffedDataKind,
   EvaluatedDataKind,
   LoadedPCData,
-  StyleElement,
   patchCSSSheet
 } from "paperclip-utils";
 import { arraySplice, traverseNativeNode } from "./utils";
@@ -353,6 +350,7 @@ export class FramesRenderer {
         (frameNode.annotations && computeVirtJSObject(frameNode.annotations)) ||
         {};
       if (annotations.frame?.visible === false) {
+        console.log("HID", annotations.frame.title);
         continue;
       }
       const bounds = getFrameBounds(frameNode);
