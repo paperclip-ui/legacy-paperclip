@@ -152,9 +152,9 @@ impl Engine {
     self.listeners.push(listener);
   }
 
-  pub fn inspect_node(&mut self, node_path: Vec<i32>, document_uri: String) {
+  // pub fn inspect_node(&mut self, node_path: Vec<i32>, document_uri: String) {
     
-  }
+  // }
 
   fn dispatch(&self, event: EngineDelegateEvent) {
     for listener in &self.listeners {
