@@ -286,7 +286,8 @@ describe(__filename + "#", () => {
       `:within(.a) { transform: translateX(100%); &:within(.b) { color: red; } }`,
       `[class]._80f4925f_a [data-pc-406d2856] [data-pc-80f4925f] { transform:translateX(100%); } [class]._80f4925f_a[class]._80f4925f_b [data-pc-406d2856] [data-pc-80f4925f] { color:red; }`,
       true
-    ]
+    ],
+
 
     // group, selector
   ].forEach(([input, output, scoped]) => {

@@ -75,6 +75,8 @@ pub struct SelectorContext {
 
   // & is included
   parent_is_target: bool,
+  parent_is_within: bool,
+  defined_within: bool,
 
   // parent - { div { child { } }}
   parent: Option<String>,
@@ -94,6 +96,8 @@ impl SelectorContext {
       within_scope: self.within_scope.clone(),
       parent_is_target: false,
       scope_is_target: false,
+      parent_is_within: self.defined_within,
+      defined_within: false,
       buffer_scope: BufferScope::Target,
       element_scope: if self.has_usable_scope() {
         self.element_scope.clone()
@@ -172,16 +176,17 @@ impl SelectorContext {
   fn prepend_within<'a>(&mut self, scope: String) {
     if let Some(existing_scope) = &self.within_scope {
 
-      // &:within(.a) { &:within(.c) { color: red; }}
-      if self.parent_is_target {
+      // :within(.a):within(.b) OR &:within(.a) { &:within(.b) { color: red }}
+      if self.defined_within {
         self.within_scope = Some(format!("{}{}", existing_scope, scope));
       
-      // &:within(.a) { :within(.c) { color: red; }}
+      // :within(.a) { :within(.c) { color: red; }}
       } else {
         self.within_scope = Some(format!("{} {}", existing_scope, scope));
       }
     } else {
       self.within_scope = Some(scope);
+      self.defined_within = true;
     }
   }
   pub fn nil() -> SelectorContext {
@@ -190,6 +195,8 @@ impl SelectorContext {
       within_scope: None,
       parent_is_target: false,
       scope_is_target: false,
+      parent_is_within: false,
+      defined_within: false,
       element_scope: None,
       parent: None,
       target: None,
@@ -210,6 +217,7 @@ impl SelectorContext {
       self.push_target(parent.clone());
     }
     self.parent_is_target = true;
+    self.defined_within = self.parent_is_within;
   }
   pub fn with_element_scope(scope: String) -> SelectorContext {
     SelectorContext {
@@ -217,6 +225,8 @@ impl SelectorContext {
       within_scope: None,
       parent_is_target: false,
       scope_is_target: false,
+      parent_is_within: false,
+      defined_within: false,
       element_scope: Some(scope),
       parent: None,
       target: None,
@@ -233,6 +243,8 @@ impl SelectorContext {
       },
       parent_is_target: false,
       scope_is_target: false,
+      parent_is_within: false,
+      defined_within: false,
       parent: None,
       target: None,
       buffer: None,
