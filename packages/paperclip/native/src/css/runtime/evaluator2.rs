@@ -171,7 +171,15 @@ impl SelectorContext {
 
   fn prepend_within<'a>(&mut self, scope: String) {
     if let Some(existing_scope) = &self.within_scope {
-      self.within_scope = Some(format!("{} {}", scope, existing_scope));
+
+      // &:within(.a) { &:within(.c) { color: red; }}
+      if self.parent_is_target {
+        self.within_scope = Some(format!("{}{}", existing_scope, scope));
+      
+      // &:within(.a) { :within(.c) { color: red; }}
+      } else {
+        self.within_scope = Some(format!("{} {}", existing_scope, scope));
+      }
     } else {
       self.within_scope = Some(scope);
     }
@@ -1133,7 +1141,7 @@ fn write_element_selector(
       for scope_context in scope.into_iter() {
         curr = curr.split();
 
-        // :within define
+        // :within defined within root style block
         if curr.context.empty() {
           curr.push_target(get_document_scope_selector(context));
         }
