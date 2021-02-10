@@ -72,6 +72,10 @@ export const FrameContainer = memo(
       if (doc) {
         const overflow = fullscreen ? "scroll" : "hidden";
         doc.body.style.overflow = overflow;
+        if (!fullscreen) {
+          doc.body.scrollTop = 0;
+          doc.body.scrollLeft = 0;
+        }
       }
     };
 
