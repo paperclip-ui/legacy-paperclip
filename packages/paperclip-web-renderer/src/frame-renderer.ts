@@ -350,7 +350,6 @@ export class FramesRenderer {
         (frameNode.annotations && computeVirtJSObject(frameNode.annotations)) ||
         {};
       if (annotations.frame?.visible === false) {
-        console.log("HID", annotations.frame.title);
         continue;
       }
       const bounds = getFrameBounds(frameNode);
