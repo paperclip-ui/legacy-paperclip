@@ -101,6 +101,9 @@ impl NativeEngine {
       listener.call1(&this, &arg).unwrap();
     }));
   }
+  // pub fn inspect_node(&mut self, node_path: Vec<i32>, document_uri: String) -> JsValue {
+    
+  // }
   pub fn get_loaded_ast(&mut self, uri: String) -> JsValue {
     console_error_panic_hook::set_once();
     let result = self.target.get_loaded_ast(&uri);
