@@ -533,6 +533,10 @@ pub fn evaluate_node<'a>(
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
+  if context.mode == &EngineMode::MultiFrame && !is_frame_visible(annotations) {
+    return Ok(None);
+  }
+  
   match &node_expr {
     ast::Node::Element(el) => {
       evaluate_element(&el, is_root, depth, instance_source, annotations, context)
@@ -610,10 +614,6 @@ fn evaluate_element<'a>(
             }
           }
         }
-      }
-
-      if context.mode == &EngineMode::MultiFrame && !is_frame_visible(annotations) {
-        return Ok(None);
       }
 
       let source = instance_or_element_source(element, context.uri, instance_source);
@@ -1077,9 +1077,6 @@ fn evaluate_native_element<'a>(
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-  if context.mode == &EngineMode::MultiFrame && !is_frame_visible(annotations) {
-    return Ok(None);
-  }
 
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
 

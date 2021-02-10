@@ -190,4 +190,36 @@ describe(__filename + "#", () => {
 
     expect((result as any).preview.children.length).to.eql(1);
   });
+  it("Does not render invisible text elements", async () => {
+    const graph = {
+      "/entry.pc": `
+
+        <!--
+        @frame { visible: false }
+        -->
+        <span component as="Test">
+          Hello
+        </span>
+
+
+        <div />
+
+        <!--
+        @frame { visible: false }
+        -->
+
+        
+      `
+    };
+
+    const engine = await createMockEngine(
+      graph,
+      null,
+      {},
+      EngineMode.MultiFrame
+    );
+    const result = engine.open("/entry.pc");
+
+    expect((result as any).preview.children.length).to.eql(1);
+  });
 });

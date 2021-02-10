@@ -17,7 +17,7 @@
         margin-bottom: 12px;
         text-align: center;
       </style>
-      Your browser isn't supported yet! 
+      Your browser isn't supported yet!
       <div>
         <style>
           font-size: 12px;

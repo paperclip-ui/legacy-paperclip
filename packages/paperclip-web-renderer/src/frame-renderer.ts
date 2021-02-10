@@ -1,14 +1,12 @@
 import {
   createNativeNode,
   createNativeStyleFromSheet,
-  getNativeNodePath,
   UrlResolver
 } from "./native-renderer";
 import {
   EngineDelegateEvent,
   EngineDelegateEventKind,
   SheetInfo,
-  LoadedData,
   VirtualNodeKind,
   VirtualNode,
   VirtualText,
@@ -21,7 +19,6 @@ import {
   DiffedDataKind,
   EvaluatedDataKind,
   LoadedPCData,
-  StyleElement,
   patchCSSSheet
 } from "paperclip-utils";
 import { arraySplice, traverseNativeNode } from "./utils";

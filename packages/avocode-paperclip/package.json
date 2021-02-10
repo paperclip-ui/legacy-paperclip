@@ -1,11 +1,10 @@
 {
-  "name": "paperclip-language-service",
+  "name": "avocode-paperclip",
   "version": "17.6.9",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch --incremental"
+
   },
   "author": "",
   "license": "ISC",
