@@ -260,7 +260,34 @@ describe(__filename + "#", () => {
       `:within(.a) { color: red }`,
       `[class]._80f4925f_a [data-pc-406d2856] [data-pc-80f4925f] { color:red ; }`,
       true
-    ]
+    ],
+
+    // https://github.com/crcn/paperclip/issues/721
+    [
+      `&:within(.variant) { transform: translateX(100%); &:within(.visible) { transform: translateX(0%); } }`,
+      `[class]._80f4925f_variant [data-pc-406d2856][data-pc-406d2856] { transform:translateX(100%); } [class]._80f4925f_variant[class]._80f4925f_visible [data-pc-406d2856][data-pc-406d2856] { transform:translateX(0%); }`,
+      true
+    ],
+
+    // .variant .visible
+    [
+      `&:within(.variant) { transform: translateX(100%); :within(.visible) { transform: translateX(0%); } }`,
+      `[class]._80f4925f_variant [data-pc-406d2856][data-pc-406d2856] { transform:translateX(100%); } [class]._80f4925f_variant [class]._80f4925f_visible [data-pc-406d2856][data-pc-406d2856] [data-pc-80f4925f] { transform:translateX(0%); }`,
+      true
+    ],
+
+    [
+      `&:within(.a) { transform: translateX(100%); &:within(.b) { :within(.c, .d)  { color: red; }} }`,
+      `[class]._80f4925f_a [data-pc-406d2856][data-pc-406d2856] { transform:translateX(100%); } [class]._80f4925f_a[class]._80f4925f_b [class]._80f4925f_c [data-pc-406d2856][data-pc-406d2856] [data-pc-80f4925f] { color:red; } [class]._80f4925f_a[class]._80f4925f_b [class]._80f4925f_d [data-pc-406d2856][data-pc-406d2856] [data-pc-80f4925f] { color:red; }`,
+      true
+    ],
+
+    [
+      `:within(.a) { transform: translateX(100%); &:within(.b) { color: red; } }`,
+      `[class]._80f4925f_a [data-pc-406d2856] [data-pc-80f4925f] { transform:translateX(100%); } [class]._80f4925f_a[class]._80f4925f_b [data-pc-406d2856] [data-pc-80f4925f] { color:red; }`,
+      true
+    ],
+
 
     // group, selector
   ].forEach(([input, output, scoped]) => {
