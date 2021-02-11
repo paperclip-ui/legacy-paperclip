@@ -68,10 +68,6 @@ module.exports = {
             {
               label: "Installation",
               to: "docs/getting-started-installation"
-            },
-            {
-              label: "Why Paperclip?",
-              to: "docs/guide-why"
             }
           ]
         },
