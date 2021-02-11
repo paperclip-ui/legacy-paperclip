@@ -6,6 +6,9 @@
     background: rgb(231, 231, 231);
     top: 0px;
     left: 0px;
+    /* overscroll-behavior-x: contain; */
+    /* touch-action: none; */
+     touch-action:pan-y;
   }
 </style>
 
@@ -13,7 +16,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Canvas" {style?} {onMouseMove?} {onWheel?} className="canvas $theme.full-wh">
+<div export component as="Canvas" {style?} {onMouseMove?} {onWheel?} {onScroll?} {onWheelCapture?} className="canvas $theme.full-wh">
   {children}
 </div>
 
