@@ -83,18 +83,6 @@ export const CodeMode = () => {
             highlightLocation={state.highlightLocation}
             onChange={onChange}
             onMount={onMount}
-            // onMount={onMount}
-            // options={{
-            //   minimap: {
-            //     enabled: false
-            //   },
-            //   autoIndent: "keep"
-            // }}
-            // onChange={onChange}
-            // width="100%"
-            // value={code}
-            // language={language}
-            // theme="vs-dark"
           />
         )}
       </styles.Content>
@@ -161,13 +149,16 @@ const Editor = ({
     // dirty tricks here - trying to race against page changes. I'm
     // just too damn lazy to do it the right way.
     setTimeout(() => {
-      editor.setSelection(
-        getRange(
-          editor.getModel(),
-          highlightLocation.start,
-          highlightLocation.end
-        )
+      const range = getRange(
+        editor.getModel(),
+        highlightLocation.start,
+        highlightLocation.end
       );
+      editor.setSelection(
+        range
+      );
+
+      editor.revealLine(range.startLineNumber);
     }, 100);
   }, [highlightLocation]);
 
