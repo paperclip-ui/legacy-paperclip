@@ -85,6 +85,8 @@ export const Canvas = React.memo(() => {
         dispatch(canvasPanEnd(null));
       }, 100)
     );
+
+    return false;
   };
 
   useEffect(() => {
@@ -109,6 +111,7 @@ export const Canvas = React.memo(() => {
       window.removeEventListener("resize", onResize);
     };
   }, [canvasRef]);
+
 
   return (
     <styles.Canvas ref={canvasRef} onWheel={onWheel}>
