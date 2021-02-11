@@ -175,11 +175,10 @@ impl SelectorContext {
 
   fn prepend_within<'a>(&mut self, scope: String) {
     if let Some(existing_scope) = &self.within_scope {
-
       // :within(.a):within(.b) OR &:within(.a) { &:within(.b) { color: red }}
       if self.defined_within {
         self.within_scope = Some(format!("{}{}", existing_scope, scope));
-      
+
       // :within(.a) { :within(.c) { color: red; }}
       } else {
         self.within_scope = Some(format!("{} {}", existing_scope, scope));

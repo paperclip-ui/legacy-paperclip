@@ -153,7 +153,7 @@ impl Engine {
   }
 
   // pub fn inspect_node(&mut self, node_path: Vec<i32>, document_uri: String) {
-    
+
   // }
 
   fn dispatch(&self, event: EngineDelegateEvent) {

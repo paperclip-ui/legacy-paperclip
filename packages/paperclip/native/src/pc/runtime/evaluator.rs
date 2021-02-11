@@ -536,7 +536,7 @@ pub fn evaluate_node<'a>(
   if context.mode == &EngineMode::MultiFrame && !is_frame_visible(annotations) {
     return Ok(None);
   }
-  
+
   match &node_expr {
     ast::Node::Element(el) => {
       evaluate_element(&el, is_root, depth, instance_source, annotations, context)
@@ -1077,7 +1077,6 @@ fn evaluate_native_element<'a>(
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
 
   let mut tag_name = ast::get_tag_name(element);
