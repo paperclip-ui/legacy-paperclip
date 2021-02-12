@@ -97,16 +97,6 @@ class FramesProxy implements Patchable {
       const styleElement = ((styleIndex !== -1
         ? frame._importedStylesContainer.childNodes[styleIndex]
         : frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
-      
-      if (styleElement.sheet.cssRules.length !== this._mainStyle.rules.length) {
-        
-        document.body.innerHTML = `
-          <div style="height: 100vh; overflow: scroll;">
-            ${styleElement.sheet.cssRules.length} ${stringifyCSSSheet(this._mainStyle, { resolveUrl: this.resolveUrl}).replace(/\n/g, "<br />")} ${JSON.stringify(mutations)}<br />
-          </div>
-        `;
-        throw "EE";
-      }
 
       patchCSSOM(styleElement.sheet, mutations, this.resolveUrl);
       
