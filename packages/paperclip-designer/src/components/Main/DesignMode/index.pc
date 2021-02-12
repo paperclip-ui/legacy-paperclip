@@ -2,6 +2,7 @@
 <import src="./Toolbar/index.pc" as="Toolbar" />
 <import src="./Toolbar/index2.pc" as="ToolbarV2" />
 <import src="./Birdseye/index.pc" as="Birdseye" />
+<import src="./Canvas/index.pc" as="Canvas" />
 
 
 <!--
@@ -42,6 +43,7 @@
     <Birdseye.Preview {zoom?} />
   </CanvasContainer>}
   {showEmpty && <Birdseye.PreviewEmpty />}
+  {showCanvas && <Canvas.Preview />}
 </Container>
 
 <!--
@@ -94,4 +96,10 @@
   @frame { title: "Center / Empty", width: 1024, height: 768, x: 1069, y: 745 }
 -->
 <Preview showEmpty />
+
+
+<!--
+  @frame { title: "Center / Empty", width: 1024, height: 768, x: 2558, y: 736 }
+-->
+<Preview showCanvas v2 />
 

@@ -1,14 +1,9 @@
 <import src="components/Theme/index.pc" as="theme" />
+<import src="./Tools/Frames/index.pc" as="Frames" />
 
 <style>
   .canvas, .inner {
-    position: absolute;
     background: rgb(231, 231, 231);
-    top: 0px;
-    left: 0px;
-    /* overscroll-behavior-x: contain; */
-    /* touch-action: none; */
-     touch-action:pan-y;
   }
 </style>
 
@@ -34,4 +29,8 @@
   @frame { visible: false }
 -->
 <Canvas />
+
+<Canvas export component as="Preview">
+  <Frames.Preview />
+</Canvas>
 
