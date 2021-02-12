@@ -234,6 +234,13 @@ Here's a peek at what's planned for Paperclip:
 
 🙅‍♂️ Private until I do more user testing. [Let me know if you'd like to help out!](https://forms.gle/FATDYcAVUdRVJvQaA)
 
+# Feature requests & other feedback
+
+Have feedback or would like a feature? Please feel free to add something to one of these boards:
+
+- https://paperclip.canny.io/
+- https://github.com/crcn/paperclip/issues
+
 # Sponsors
 
 ![index](https://user-images.githubusercontent.com/757408/105444620-254d8d80-5ca9-11eb-97c8-9c0fd66408d4.png)
