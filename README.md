@@ -236,10 +236,7 @@ Here's a peek at what's planned for Paperclip:
 
 # Feature requests & other feedback
 
-Have feedback or would like a feature? Please feel free to add something to one of these boards:
-
-- https://paperclip.canny.io/
-- https://github.com/crcn/paperclip/issues
+Have feedback or would like a feature? Please feel free to add something to the [Canny board](https://paperclip.canny.io/)!
 
 # Sponsors
 
