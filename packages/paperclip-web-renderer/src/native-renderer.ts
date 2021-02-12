@@ -1,5 +1,5 @@
 import { Html5Entities } from "html-entities";
-import { stringifyCSSSheet } from "paperclip-utils";
+import { stringifyCSSRule, stringifyCSSSheet } from "paperclip-utils";
 import { preventDefault, ATTR_ALIASES } from "./utils";
 import { DOMFactory } from "./renderer";
 
@@ -52,13 +52,43 @@ export const createNativeNode = (
   }
 };
 
+let _dummyStyle: HTMLStyleElement;
+
+const ruleIsValid = (ruleText: string) => {
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  if (!_dummyStyle) {
+    _dummyStyle = document.createElement("style") as HTMLStyleElement;
+    document.head.appendChild(_dummyStyle);
+  }
+
+  try {
+    _dummyStyle.sheet.insertRule(ruleText, 0);
+    _dummyStyle.sheet.deleteRule(0);
+  } catch(e) {
+    return false;
+  }
+
+  return true;
+};
+
 export const createNativeStyleFromSheet = (
   sheet,
   factory: DOMFactory,
   resolveUrl: UrlResolver
 ) => {
-  const nativeElement = factory.createElement("style");
-  nativeElement.textContent = stringifyCSSSheet(sheet, { resolveUrl });
+  const nativeElement = factory.createElement("style") as HTMLStyleElement;
+
+  // fix case where certain rules are invalid - e.g: &:within(:not(.on)) does some
+  // funny stuff.
+  const ruleTexts = sheet.rules.map(rule => stringifyCSSRule(rule, { resolveUrl })).map(text => {
+    return ruleIsValid(text) ? text : ".invalid-rule { }";
+  });
+
+  nativeElement.textContent = ruleTexts.join("\n");
+
   return nativeElement as HTMLStyleElement;
 };
 

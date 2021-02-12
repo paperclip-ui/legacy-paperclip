@@ -100,9 +100,10 @@
 <!--
   @frame { title: "Frame", width: 1024, height: 768, x: -759, y: 1217 }
 -->
-<FramesContainer>
+<FramesContainer export component as="Preview">
   <style>
     width: 100vw;
+    height: 100vh;
   </style>
   <Frame>
     <style>

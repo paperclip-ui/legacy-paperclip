@@ -19,7 +19,8 @@ import {
   DiffedDataKind,
   EvaluatedDataKind,
   LoadedPCData,
-  patchCSSSheet
+  patchCSSSheet,
+  stringifyCSSSheet
 } from "paperclip-utils";
 import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
@@ -98,6 +99,7 @@ class FramesProxy implements Patchable {
         : frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
 
       patchCSSOM(styleElement.sheet, mutations, this.resolveUrl);
+      
     }
 
     // note we patch the virt objects here since native styles don't parse text unless
@@ -134,6 +136,7 @@ class FramesProxy implements Patchable {
         this._domFactory,
         this.resolveUrl
       );
+
       this._importedNativeStyles.push(nativeSheet);
       for (const frame of this._frames) {
         frame._importedStylesContainer.appendChild(nativeSheet.cloneNode(true));

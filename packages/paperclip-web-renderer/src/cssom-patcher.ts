@@ -1,6 +1,9 @@
 import { stringifyCSSRule } from "paperclip-utils";
 
 export const patchCSSOM = (sheet: CSSStyleSheet, mutations: any[], resolveUrl: any) => {
+
+  console.log(mutations);
+
   for (const { action } of mutations) {
     switch (action.kind) {
       case "DeleteRule": {
@@ -13,21 +16,21 @@ export const patchCSSOM = (sheet: CSSStyleSheet, mutations: any[], resolveUrl: a
         } catch(e) {
 
           // insert some filler to maintain sync
-          sheet.insertRule("nil {}", action.index);
+          sheet.insertRule(".nil {}", action.index);
           console.warn(e);
         }
         break;
       }
       case "ReplaceRule": {
 
-          sheet.deleteRule(action.index);
 
+        sheet.deleteRule(action.index);
         // defensive against cases where user writes bad selector code that is valid in PC
         try {
           sheet.insertRule(stringifyCSSRule(action.rule, {resolveUrl}), action.index);
         } catch(e) {
           // insert some filler to maintain sync
-          sheet.insertRule("nil {}", action.index);
+          sheet.insertRule(".nil {}", action.index);
           console.warn(e);
         }
         break;
