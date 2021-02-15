@@ -1,7 +1,4 @@
 import {
-  EngineDelegateEvent,
-  EngineDelegateEventKind,
-  EngineErrorEvent,
   stripFileProtocol
 } from "paperclip-utils";
 import { PCMutation } from "paperclip-source-writer";
@@ -19,7 +16,6 @@ import {
   workspace,
   Selection,
   env,
-  TextDocument,
   TextDocumentChangeEvent,
   TextEdit,
   WorkspaceEdit
@@ -32,7 +28,6 @@ import {
   $$ACTION_NOTIFICATION,
   Action,
   ActionType,
-  enhanceCalmRequested,
   Goosefraba,
   goosefraba
 } from "../common/actions";
@@ -41,7 +36,7 @@ const VIEW_TYPE = "paperclip-preview";
 
 import * as ve from "paperclip-designer";
 import { LocationChanged } from "paperclip-designer";
-import { TextDocumentContentChangeEvent } from "vscode-languageserver-textdocument";
+import { fixFileUrlCasing } from "../utils";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -76,7 +71,7 @@ export const activate = (
   let _devServerPort: number;
 
   const openLivePreview = async (editor: TextEditor, sticky: boolean) => {
-    const paperclipUri = String(editor.document.uri);
+    const paperclipUri = fixFileUrlCasing(String(editor.document.uri));
 
     // NOTE - don't get in the way of opening the live preview since
     // there's really no way to tell whether an existing tab is open which will
@@ -110,7 +105,7 @@ export const activate = (
 
   const showTextDocument = async (uri: string) => {
     const sourceEditor = window.visibleTextEditors.find(
-      editor => String(editor.document.uri) === uri
+      editor => fixFileUrlCasing(String(editor.document.uri)) === fixFileUrlCasing(uri)
     );
 
     if (sourceEditor) {
@@ -181,7 +176,7 @@ export const activate = (
     if (!editor) {
       return;
     }
-    const uri = String(editor.document.uri);
+    const uri = fixFileUrlCasing(String(editor.document.uri));
     const stickyWindow = getStickyWindow();
     if (isPaperclipFile(uri)) {
       if (stickyWindow) {
@@ -198,7 +193,7 @@ export const activate = (
   }: TextDocumentChangeEvent) => {
     dispatchClient(
       ve.contentChanged({
-        fileUri: document.uri.toString(),
+        fileUri: fixFileUrlCasing(document.uri.toString()),
         changes: contentChanges.map(({ text, rangeOffset, rangeLength }) => ({
           text,
           rangeLength,
@@ -371,7 +366,7 @@ export const activate = (
 
     const editor =
       window.visibleTextEditors.find(
-        editor => editor.document && String(editor.document.uri) === source.uri
+        editor => editor.document && fixFileUrlCasing(String(editor.document.uri)) === fixFileUrlCasing(source.uri)
       ) || (await window.showTextDocument(textDocument, ViewColumn.One));
     editor.selection = new Selection(
       textDocument.positionAt(source.location.start),

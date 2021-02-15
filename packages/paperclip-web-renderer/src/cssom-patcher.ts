@@ -2,7 +2,6 @@ import { stringifyCSSRule } from "paperclip-utils";
 
 export const patchCSSOM = (sheet: CSSStyleSheet, mutations: any[], resolveUrl: any) => {
 
-  console.log(mutations);
 
   for (const { action } of mutations) {
     switch (action.kind) {
