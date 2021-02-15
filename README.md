@@ -5,7 +5,7 @@
 
 <img src="assets/logo.png" width="230">
 
-**⚠️ I'm polishing up this project, and I'm looking for help on testing & feedback. [Please send me a message if you're interested!](https://forms.gle/FATDYcAVUdRVJvQaA)**
+**⚠️ I'm polishing up this project, and I'm looking for help on testing & feedback. [Please send me a message if you're interested!](https://ntudb0fdlly.typeform.com/to/V8Vur6fY)**
 
 -----
 
