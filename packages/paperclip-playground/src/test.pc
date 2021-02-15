@@ -1,0 +1,3 @@
+<div export component as="Hello">
+  {firstName} {lastName}
+</div>

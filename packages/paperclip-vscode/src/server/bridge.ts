@@ -49,6 +49,7 @@ import {
 import { LanguageServices } from "./services";
 import { stripFileProtocol } from "paperclip";
 import { EngineDelegate } from "paperclip";
+import { fixFileUrlCasing } from "../utils";
 
 const PERSIST_ENGINE_THROTTLE_MS = 100;
 
@@ -86,33 +87,40 @@ export class VSCServiceBridge {
     connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
 
     connection.onDidOpenTextDocument(({ textDocument }) => {
-      this._documents[textDocument.uri] = TextDocument.create(
-        textDocument.uri,
+      const uri = fixFileUrlCasing(textDocument.uri);
+      this._documents[uri] = TextDocument.create(
+        uri,
         textDocument.languageId,
         textDocument.version,
         textDocument.text
       );
+
+      
+
       this._engine.updateVirtualFileContent(
-        textDocument.uri,
+        uri,
         textDocument.text
       );
     });
     connection.onDidCloseTextDocument(params => {
-      delete this._documents[params.textDocument.uri];
+      const uri = fixFileUrlCasing(params.textDocument.uri);
+      delete this._documents[uri];
     });
 
     connection.onDidChangeTextDocument(params => {
-      this._updateTextContent(params.textDocument.uri, params.contentChanges);
+      const uri = fixFileUrlCasing(params.textDocument.uri);
+      this._updateTextContent(uri, params.contentChanges);
     });
   }
 
   private _onDocumentLinkRequest = (params: DocumentLinkParams) => {
-    const document = this._documents[params.textDocument.uri];
-    const service = this._service.getService(document.uri);
+    const uri = fixFileUrlCasing(params.textDocument.uri);
+    const document = this._documents[uri];
+    const service = this._service.getService(uri);
     return (
       service &&
       (service
-        .getLinks(document.uri)
+        .getLinks(uri)
         .map(({ uri, location: { start, end } }) => ({
           target: uri,
           range: {
@@ -154,13 +162,14 @@ export class VSCServiceBridge {
     this._enhanceCalm();
 
     for (const uri in contentChanges) {
-      this._engine.updateVirtualFileContent(uri, contentChanges[uri]);
+      this._engine.updateVirtualFileContent(fixFileUrlCasing(uri), contentChanges[uri]);
     }
   };
 
   private _onDefinitionRequest = (params: DefinitionParams) => {
-    const document = this._documents[params.textDocument.uri];
-    const service = this._service.getService(document.uri);
+    const uri = fixFileUrlCasing(params.textDocument.uri);
+    const document = this._documents[uri];
+    const service = this._service.getService(uri);
     const info =
       service &&
       (service
@@ -212,14 +221,15 @@ export class VSCServiceBridge {
   };
 
   private _onCompletionRequest = (params: CompletionParams) => {
-    const document = this._documents[params.textDocument.uri];
+    const uri = fixFileUrlCasing(params.textDocument.uri);
+    const document = this._documents[uri];
 
     const doc = document.getText();
     const text = doc.substr(0, document.offsetAt(params.position));
 
     const ret = this._service
-      .getService(document.uri)
-      .getCompletionItems(document.uri, text);
+      .getService(uri)
+      .getCompletionItems(uri, text);
 
     return ret;
   };
@@ -229,8 +239,9 @@ export class VSCServiceBridge {
   };
 
   private _onDocumentColorRequest = (params: DocumentColorParams) => {
-    const document = this._documents[params.textDocument.uri];
-    const service = this._service.getService(document.uri);
+    const uri = fixFileUrlCasing(params.textDocument.uri);
+    const document = this._documents[uri];
+    const service = this._service.getService(uri);
     return (
       service &&
       (service
@@ -269,15 +280,16 @@ export class VSCServiceBridge {
 
   private _onColorPresentationRequest = (params: ColorPresentationParams) => {
     const presentation = getColorPresentation(params.color, params.range);
+    const uri = fixFileUrlCasing(params.textDocument.uri);
 
-    const document = this._documents[params.textDocument.uri];
+    const document = this._documents[uri];
 
     const { textEdit } = presentation;
     const source = TextDocument.applyEdits(document, [textEdit]);
 
     // update virtual file content to show preview
     // this._previewEngineContent(params.textDocument.uri, { text: source });
-    this._deferUpdateEngineContent(params.textDocument.uri, source);
+    this._deferUpdateEngineContent(uri, source);
 
     return [presentation];
   };
@@ -401,3 +413,4 @@ const createErrorDiagnostic = (
     source: "ex"
   };
 };
+
