@@ -101,14 +101,7 @@ export const Tools = () => {
     ? virtualNode.preview.children
     : [virtualNode.preview]) as Array<VirtualFrame>;
 
-  const showEmpty =
-    frames.filter(frame => {
-      const annotations: NodeAnnotations =
-        (frame.annotations && computeVirtJSObject(frame.annotations)) ||
-        ({} as any);
-
-      return annotations.frame?.visible !== false;
-    }).length === 0;
+  const showEmpty = frames.length === 0;
 
   return (
     <styles.Tools

@@ -120,6 +120,26 @@ describe(__filename, () => {
           <span />
         `
       }
+    ],
+    [
+      "Maintains frame with previous sibling is hidden",
+      {
+        "entry.pc": `
+          <a />
+          <b />
+          <c />
+        `
+      },
+      {
+        "entry.pc": `
+          <!-- 
+            @frame { visible: false }
+          -->
+          <a />
+          <b />
+          <c />
+        `
+      }
     ]
   ].forEach(([title, initial, ...changes]: any) => {
     it(title, async () => {

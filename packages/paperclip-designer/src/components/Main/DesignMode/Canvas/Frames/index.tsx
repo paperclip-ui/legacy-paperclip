@@ -48,17 +48,19 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   return (
     <>
       {renderer.immutableFrames.map((frame, i) => {
+        const framePreview = getFrameVirtualNode(
+          frame,
+          renderer.immutableFrames,
+          preview
+        );
+
         return (
           <Frame
             key={i}
             onLoad={onFrameLoaded}
             expanded={expandedFrameIndex === i}
             frame={frame}
-            preview={getFrameVirtualNode(
-              frame,
-              renderer.immutableFrames,
-              preview
-            )}
+            preview={framePreview}
           />
         );
       })}
@@ -312,15 +314,10 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
   if (!preview) {
     return null;
   }
-  
+
   const annotations: NodeAnnotations =
     (preview.annotations && computeVirtJSObject(preview.annotations)) ||
     ({} as any);
-
-  // ability to hide
-  if (annotations.frame?.visible === false) {
-    return null;
-  }
 
   const frameStyle = useMemo(() => {
     const bounds = getFrameBounds(preview);
