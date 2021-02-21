@@ -34,6 +34,8 @@ export type BaseNode<TKind extends NodeKind> = {
   kind: TKind;
 };
 
+
+
 // TODO - include location here.
 export type Text = {
   value: string;
@@ -47,7 +49,7 @@ export type Annotation = {
 
 export declare type Comment = {
   value: string;
-  properties: any;
+  annotation: Annotation;
   location: SourceLocation;
 } & BaseNode<NodeKind.Comment>;
 
@@ -348,14 +350,12 @@ export const isVisibleNode = (node: Node): boolean =>
 export const getVisibleChildNodes = (ast: Node): Node[] =>
   getChildren(ast).filter(isVisibleNode);
 
+export const isComponent = (node: Node): node is Element => node.kind === NodeKind.Element &&
+hasAttribute("component", node) &&
+hasAttribute(AS_ATTR_NAME, node)
+
 export const getParts = (ast: Node): Element[] =>
-  getChildren(ast).filter(child => {
-    return (
-      child.kind === NodeKind.Element &&
-      hasAttribute("component", child) &&
-      hasAttribute(AS_ATTR_NAME, child)
-    );
-  }) as Element[];
+  getChildren(ast).filter(isComponent) as Element[];
 
 export const getPartIds = (ast: Node): string[] =>
   getParts(ast)

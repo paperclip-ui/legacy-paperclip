@@ -192,7 +192,6 @@
 <Preview showEditor showNoBrowserSupport  />
 
 
-
 <!--
   @frame { title: "Password Modal", width: 1212, height: 768, x: 434, y: -1892 }
 -->
@@ -266,7 +265,7 @@
 
 
 <!--
-  @frame { title: "Compact / responsive", width: 643, height: 768, x: 519, y: 3446 }
+  @frame { title: "Compact / responsive", width: 578, height: 768, x: 584, y: 3446 }
 -->
 <Preview showEditor />
 

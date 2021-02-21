@@ -1,0 +1,24 @@
+{
+  "name": "paperclip-static-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "paperclip-static-generator": "bin/paperclip-static-generator"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.1.5"
+  },
+  "dependencies": {
+    "glob": "^7.1.6",
+    "paperclip": "^17.6.15",
+    "paperclip-designer": "^17.6.15",
+    "webpack": "^5.23.0"
+  }
+}
