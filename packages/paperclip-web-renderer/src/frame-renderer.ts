@@ -97,7 +97,7 @@ class FramesProxy implements Patchable {
         ? frame._importedStylesContainer.childNodes[styleIndex]
         : frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
 
-      patchCSSOM(styleElement.sheet, mutations, this.resolveUrl);
+      patchCSSOM(styleElement.sheet as any, mutations, this.resolveUrl);
     }
 
     // note we patch the virt objects here since native styles don't parse text unless

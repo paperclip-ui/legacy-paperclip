@@ -31,7 +31,6 @@
     "os-browserify": "^0.3.0",
     "paperclip": "^17.7.0",
     "paperclip-loader": "^17.7.0",
-    "paperclip-playground": "^17.7.0",
     "paperclip-source-writer": "^17.7.0",
     "paperclip-utils": "^17.7.0",
     "paperclip-web-renderer": "^17.7.0",
