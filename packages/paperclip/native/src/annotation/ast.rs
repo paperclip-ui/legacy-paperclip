@@ -9,6 +9,7 @@ pub struct Annotation {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "kind")]
 pub enum AnnotationProperty {
   Declaration(Declaration),
   Text(Text),

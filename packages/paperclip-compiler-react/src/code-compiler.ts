@@ -53,7 +53,7 @@ import {
   strToClassName,
   pascalCase
 } from "./utils";
-import { add, camelCase, uniq } from "lodash";
+import { add, camelCase, isEqual, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import { ClassNameExport } from "paperclip";
@@ -649,12 +649,36 @@ const translateElement = (
     ? getImportTagName(element.tagName, context)
     : JSON.stringify(element.tagName);
 
-  context = addBuffer(
-    `React.createElement(${
-      isComponentInstance ? tag : "props.tagName || " + tag
-    }, `,
-    context
-  );
+  context = addBuffer(`React.createElement(`, context);
+
+  if (!isComponentInstance) {
+    for (const attribute of element.attributes) {
+      if (
+        attribute.kind === AttributeKind.ShorthandAttribute &&
+        attribute.reference.jsKind === JsExpressionKind.Reference &&
+        attribute.reference.path[0]?.name === "tagName"
+      ) {
+        context = addBuffer(`props.tagName`, context);
+        context = addBuffer(` || `, context);
+        break;
+      } else if (
+        attribute.kind === AttributeKind.KeyValueAttribute &&
+        attribute.name === "tagName"
+      ) {
+        context = translateAttributeValue(
+          element,
+          "tagName",
+          attribute.value,
+          false,
+          context
+        );
+        context = addBuffer(` || `, context);
+        break;
+      }
+    }
+  }
+
+  context = addBuffer(tag + ", ", context);
 
   const _containsStyleElement = containsStyleElement(element);
   const shouldAddElementScopeClass =

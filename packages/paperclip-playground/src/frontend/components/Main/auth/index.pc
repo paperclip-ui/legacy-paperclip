@@ -65,7 +65,7 @@
 
   <ConnectServices>
     <ConnectButton big name="github" first>
-      Sign in with Github
+      Sign in with GitHub
     </ConnectButton>
 
     <ConnectButton big name="google">

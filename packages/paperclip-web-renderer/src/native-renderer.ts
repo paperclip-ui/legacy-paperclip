@@ -65,8 +65,8 @@ const ruleIsValid = (ruleText: string) => {
   }
 
   try {
-    _dummyStyle.sheet.insertRule(ruleText, 0);
-    _dummyStyle.sheet.deleteRule(0);
+    (_dummyStyle.sheet as any).insertRule(ruleText, 0);
+    (_dummyStyle.sheet as any).deleteRule(0);
   } catch(e) {
     return false;
   }
