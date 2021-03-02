@@ -611,7 +611,7 @@
         </style>  
         Paperclip is currently in closed beta, but sign up if you're interested and we'll reach out soon!
       </div>
-      <button.Anchor className="$typography.semi-bold" strong href="https://ntudb0fdlly.typeform.com/to/V8Vur6fY">Sign up for early access</button.Anchor>
+      <button.Anchor className="$typography.semi-bold" strong href="https://forms.gle/WJDVJEm9siYatABcA">Sign up for early access</button.Anchor>
     </div>
   </div>
 
