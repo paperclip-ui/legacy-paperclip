@@ -93,7 +93,7 @@ function Home() {
               <>
                 <buttonStyles.Anchor
                   className={typography.classNames["semi-bold"]}
-                  href="https://ntudb0fdlly.typeform.com/to/V8Vur6fY"
+                  href="https://forms.gle/WJDVJEm9siYatABcA"
                   strong
                 >
                   Sign up for early access
