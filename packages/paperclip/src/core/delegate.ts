@@ -52,6 +52,7 @@ const mapResult = result => {
   }
 };
 
+
 export type EngineDelegateEventListener = (event: EngineDelegateEvent) => void;
 
 export enum EngineDelegateEventType {
@@ -121,7 +122,8 @@ export class EngineDelegate {
 
         const addedSheets: SheetInfo[] = [];
 
-        for (const depUri of diffData.allImportedSheetUris) {
+        for (let i = 0, {length} = diffData.allImportedSheetUris; i < length; i++) {
+          const depUri = diffData.allImportedSheetUris[i];
           // Note that we only do this if the sheet is already rendered -- engine
           // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
           // has been added, including the actual sheet object.
@@ -131,10 +133,12 @@ export class EngineDelegate {
           ) {
             addedSheets.push({
               uri: depUri,
+              index: i,
               sheet: this._rendered[depUri].sheet
             });
           }
         }
+
 
         if (addedSheets.length || removedSheetUris.length) {
           this._dispatch({

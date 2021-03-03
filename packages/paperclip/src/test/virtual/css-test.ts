@@ -1622,4 +1622,39 @@ describe(__filename + "#", () => {
     expect(stringifyLoadResult(result)).to.eql("a");
   });
 
+  // TODO - this is broken with CSS patcher
+  it(`styles are  sorted correctly`, async () => {
+
+    const graph = {
+      "/entry.pc": `
+        <import src="./a.pc" />
+        <style>
+          div {
+            color: orange;
+          }
+        </style>
+      `,
+      "/a.pc": `
+        <import src="./b.pc" />
+        <style>
+          div {
+            color: blue;
+          }
+        </style>
+      `,
+      "/b.pc": `
+        <style>
+          div {
+            color: red;
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql(`<style>div[data-pc-8ae793af] { color:red; } div[data-pc-98523c41] { color:blue; } div[data-pc-80f4925f] { color:orange; }</style>`);
+  });
+
 });
