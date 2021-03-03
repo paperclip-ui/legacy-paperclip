@@ -75,6 +75,7 @@ export type DiffedData = DiffedCSSData | DiffedPCData;
 
 export type SheetInfo = {
   sheet: any;
+  index: number;
   uri: string;
 };
 

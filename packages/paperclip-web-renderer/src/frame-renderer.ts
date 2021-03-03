@@ -119,34 +119,42 @@ class FramesProxy implements Patchable {
     for (let i = this._importedStyles.length; i--; ) {
       const style = this._importedStyles[i];
       if (removeStyleUris.includes(style.uri)) {
-        rmIndices.unshift(i);
+        rmIndices.push(i);
         this._importedStyles.splice(i, 1);
         this._importedNativeStyles.splice(i, 1);
       }
     }
-
-    // finally append
-    this._importedStyles.push(...newStyles);
-
-    for (const { sheet, uri } of newStyles) {
-      const nativeSheet = createNativeStyleFromSheet(
-        sheet,
-        this._domFactory,
-        this.resolveUrl
-      );
-
-      this._importedNativeStyles.push(nativeSheet);
-      for (const frame of this._frames) {
-        frame._importedStylesContainer.appendChild(nativeSheet.cloneNode(true));
-      }
-    }
-
     for (const i of rmIndices) {
       for (const frame of this._frames) {
         const nativeSheet = frame._importedStylesContainer.childNodes[i];
         nativeSheet.remove();
       }
     }
+
+    // finally append
+
+    for (const info of newStyles) {
+      const { sheet, index } = info;
+      this._importedStyles.splice(index, 0, info);
+      const nativeSheet = createNativeStyleFromSheet(
+        sheet,
+        this._domFactory,
+        this.resolveUrl
+      );
+
+      this._importedNativeStyles.splice(index, 0, nativeSheet);
+      for (const frame of this._frames) {
+        const beforeChild = frame._importedStylesContainer.childNodes[index];
+        const sheet = nativeSheet.cloneNode(true);
+        if (beforeChild) {
+          frame._importedStylesContainer.insertBefore(sheet, beforeChild);
+        } else {
+          frame._importedStylesContainer.appendChild(sheet);
+        }
+      }
+    }
+
+
   }
   appendChild(child: Node) {
     this.insert(child, this._frames.length);
@@ -301,7 +309,7 @@ export class FramesRenderer {
             this._dependencies = event.data.allImportedSheetUris;
           } else if (this._dependencies.includes(event.uri)) {
             this._framesProxy.updateImportedStyles(
-              [{ uri: event.uri, sheet: event.data.sheet }],
+              [{ uri: event.uri, sheet: event.data.sheet, index: this._dependencies.indexOf(event.uri) }],
               [event.uri]
             );
           }

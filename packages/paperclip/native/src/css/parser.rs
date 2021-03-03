@@ -509,6 +509,13 @@ fn parse_pseudo_element_selector<'a, 'b>(
         selector: Some(Box::new(sel)),
         location: Location::new(start, context.tokenizer.utf16_pos),
       })
+    } else if name == "has" {
+      let sel = parse_pair_selector(context, false)?;
+      Selector::SubElement(SubElementSelector {
+        name,
+        selector: Box::new(sel),
+        location: Location::new(start, context.tokenizer.utf16_pos),
+      })
     } else {
       let param = get_buffer(context.tokenizer, |tokenizer| {
         Ok(tokenizer.peek(1)? != Token::ParenClose)

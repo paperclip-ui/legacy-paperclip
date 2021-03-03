@@ -108,8 +108,10 @@ impl DependencyGraph {
 
       for dep_uri in deps {
         if !all_deps.contains(dep_uri) {
-          all_deps.push(dep_uri.to_string());
           self.flatten_dependencies2(dep_uri, all_deps);
+
+          // this needs to be added _after_ so that it gets higher priority 
+          all_deps.push(dep_uri.to_string());
         } else {
         }
       }
