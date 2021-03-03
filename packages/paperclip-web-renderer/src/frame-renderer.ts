@@ -132,9 +132,10 @@ class FramesProxy implements Patchable {
     }
 
     // finally append
-    this._importedStyles.push(...newStyles);
 
-    for (const { sheet, uri, index } of newStyles) {
+    for (const info of newStyles) {
+      const { sheet, index } = info;
+      this._importedStyles.splice(index, 0, info);
       const nativeSheet = createNativeStyleFromSheet(
         sheet,
         this._domFactory,

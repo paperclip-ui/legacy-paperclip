@@ -225,10 +225,11 @@ const getImportedSheets = (
   // ick, wworks for now.
 
   const deps: SheetInfo[] = [];
-  for (const depUri of allImportedSheetUris) {
+  for (let i = 0, {length} = allImportedSheetUris; i < length; i++) {
+    const depUri = allImportedSheetUris[i];
     const data = allData[depUri];
     if (data) {
-      deps.push({ uri: depUri, sheet: data.sheet });
+      deps.push({ uri: depUri, index: i, sheet: data.sheet });
 
       // scenario won't happen for renderer since renderers are only
       // concerned about the file that's currently opened -- ignore for now. Might

@@ -191,7 +191,7 @@ describe(__filename + "#", () => {
       `<import src="./module2.pc" /><style> a { color: black; } </style>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] {color: black;} </style><style>a[data-pc-11a847ab] {color: orange;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div><style>a[data-pc-11a847ab] {color: orange;} </style><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
     );
   });
 
@@ -277,7 +277,7 @@ describe(__filename + "#", () => {
     );
 
     expect(combineFrameHTML(renderer).replace(/\n/g, "")).to.eql(
-      `<div><style>a[data-pc-7313a8b6] {color: b;} </style><style>a[data-pc-cbafcfd3] {color: c;} </style></div><div><style></style></div><div>a </div>`
+      `<div><style>a[data-pc-7313a8b6] {color: b;} </style><style>a[data-pc-5678f76a] {color: d;} </style></div><div><style></style></div><div>a </div>`
     );
   });
 
