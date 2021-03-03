@@ -288,6 +288,18 @@ describe(__filename + "#", () => {
       true
     ],
 
+    [
+      `&:has(.a) { color: red; }`,
+      `[data-pc-406d2856][data-pc-406d2856]:has([class]._80f4925f_a) { color:red; }`,
+      true
+    ],
+
+    [
+      `&:has(:global(.a)) { color: red; }`,
+      `[data-pc-406d2856][data-pc-406d2856]:has([class].a) { color:red; }`,
+      true
+    ],
+
 
     // group, selector
   ].forEach(([input, output, scoped]) => {

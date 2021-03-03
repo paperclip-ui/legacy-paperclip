@@ -1319,6 +1319,20 @@ fn write_element_selector(
       emitter.push_buffer(")".to_string());
       emitter.persist_buffer();
     }
+    ast::Selector::SubElement(selector) => {
+      // Note that we don't want extra specificty in :not selector since :not
+      // doesn't support things like :not([class].class)
+
+      if include_document_scope {
+        emitter.push_target(get_document_scope_selector(context));
+      }
+
+      emitter.push_buffer(format!(":{}(", selector.name));
+
+      write_element_selector(&selector.selector, true, true, context, emitter);
+      emitter.push_buffer(")".to_string());
+      emitter.persist_buffer();
+    }
     ast::Selector::Combo(combo) => {
       for child in &combo.selectors {
         write_element_selector(child, false, true, context, emitter);

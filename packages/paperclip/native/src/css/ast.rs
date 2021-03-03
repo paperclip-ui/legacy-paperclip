@@ -312,6 +312,7 @@ pub enum Selector {
   Descendent(DescendentSelector),
   PseudoElement(PseudoElementSelector),
   PseudoParamElement(PseudoParamElementSelector),
+  SubElement(SubElementSelector),
   Not(NotSelector),
   Global(GlobalSelector),
   This(SelfSelector),
@@ -352,6 +353,9 @@ impl Selector {
           curr = selector.descendent.as_ref();
         }
         Selector::Not(selector) => {
+          return curr;
+        }
+        Selector::SubElement(selector) => {
           return curr;
         }
         Selector::Within(selector) => {
@@ -408,6 +412,7 @@ impl fmt::Display for Selector {
       Selector::Element(selector) => write!(f, "{}", selector.to_string()),
       Selector::Descendent(selector) => write!(f, "{}", selector.to_string()),
       Selector::Not(selector) => write!(f, "{}", selector.to_string()),
+      Selector::SubElement(selector) => write!(f, "{}", selector.to_string()),
       Selector::Within(selector) => write!(f, "{}", selector.to_string()),
       Selector::Global(selector) => write!(f, "{}", selector.to_string()),
       Selector::This(selector) => write!(f, "{}", selector.to_string()),
@@ -557,6 +562,19 @@ pub struct NotSelector {
 impl fmt::Display for NotSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, ":not({})", self.selector.to_string())
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct SubElementSelector {
+  pub name: String,
+  pub selector: Box<Selector>,
+  pub location: Location,
+}
+
+impl fmt::Display for SubElementSelector {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, ":{}({})", self.name.to_string(), self.selector.to_string())
   }
 }
 
