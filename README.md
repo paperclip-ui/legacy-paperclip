@@ -15,6 +15,7 @@ Other features include:
 - Nearly 100% visual regression coverage.
 - Realtime visual development. No more lag between writing UI code and seeing changes appear in your browser (even for very large projects).
 - Easy integration with other CSS libraries like Tailwind and Bootstrap. Paperclip also keeps them scoped!
+- Browserstack integration so that you can build UIs _live_ across multiple browsers.
 
 
 -----
