@@ -24,8 +24,8 @@ function Home() {
     <div className="home">
       <Layout
         className="dograg"
-        title={`${siteConfig.title} - A hybrid approach to designing & coding UIs`}
-        description="Paperclip is a free & open-source tool that gives you a designer-like experience for creating web interfaces."
+        title={`${siteConfig.title} - Rapidly build web applications at any scale.`}
+        description="Rapidly build user interfaces, all within your existing IDE."
       >
         <styles.Home>
           <styles.Header
@@ -46,8 +46,8 @@ function Home() {
               <>
                 Paperclip is a free and open source template language for
                 presentational components that comes with a designer-like
-                experience for creating user interfaces in realtime, all within
-                your existing IDE.
+                experience for rapidly building user interfaces, all within your
+                existing IDE.
                 {/* Paperclip is a free and open source tool for presentational components that brings web development closer to a designer-like experience. */}
                 {/* Paperclip is a free & open-source tool that gives you a
                 designer-like experience for creating web interfaces. */}
