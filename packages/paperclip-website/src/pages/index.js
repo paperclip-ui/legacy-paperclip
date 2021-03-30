@@ -45,9 +45,8 @@ function Home() {
             - More natural than the current way of building UIs
             */
               <>
-
-                Paperclip is a free & open-source tool that gives you a designer-like experience for creating web interfaces.
-
+                Paperclip is a free & open-source tool that gives you a
+                designer-like experience for creating web interfaces.
                 {/* out UIs faster than ever. */}
                 {/* Paperclip is a fast & intuitive open-source UI tool that works with your existing codebase. */}
                 {/* Build your web interfaces directly within your code editor.   */}
@@ -114,16 +113,21 @@ function Home() {
               </buttonStyles.Anchor> */}
               </>
             }
-            preview={<video src="vid/paperclip-fast-demo.mp4" autoPlay loop />}
+            preview={
+              <video src="vid/paperclip-fast-demo.mp4" autoPlay loop muted />
+            }
           />
 
           <styles.Summary
             title="Build UIs faster, and precisely"
             text={
               <>
-                You shouldn't be bogged down by developer tooling in order to see your UIs. With Paperclip, you see what you're creating <i>as you're typing</i>, no matter
-                how large your project is. Other features such as artboards, measuring tools, and responsive testing tools are there to help you build pixel-perfect UIs in no-time. Your designers will love you. ❤️
-
+                You shouldn't be bogged down by developer tooling in order to
+                see your UIs. With Paperclip, you see what you're creating{" "}
+                <i>as you're typing</i>, no matter how large your project is.
+                Other features such as artboards, measuring tools, and
+                responsive testing tools are there to help you build
+                pixel-perfect UIs in no-time. Your designers will love you. ❤️
                 {/* // Paperclip just covers the <i>appearance</i> of your application, and comes with loads of features to help you do that quickly: realtime previews, artboards, measuring tools, responsive testing tools, visual */}
                 {/* // regression coverage, and more to help you build pixel-perfect UIs in no-time. Your designers will love you. ❤️ */}
                 {/* Paperclip is a template language specifically designed around visual development. This allows for a hybrid approach to building UIs
@@ -145,7 +149,9 @@ function Home() {
               title="Just covers presentational components"
               description={
                 <>
-                  Paperclip focuses purely on your application's appearance using a syntax similar to HTML & CSS. CSS is also scoped so you don't have to worry about it leaking out.
+                  Paperclip focuses purely on your application's appearance
+                  using a syntax similar to HTML & CSS. CSS is also scoped so
+                  you don't have to worry about it leaking out.
                 </>
               }
               example={
@@ -175,7 +181,11 @@ function Home() {
             <styles.VariousFeatureItem
               iconName="link"
               title="Live previews in VS Code"
-              description={["Conveniently build UIs ", <i>live</i>, " within VS Code. No more need to switch back and forth between the browser & your code editor."]}
+              description={[
+                "Conveniently build UIs ",
+                <i>live</i>,
+                " within VS Code. No more need to switch back and forth between the browser & your code editor."
+              ]}
             />
             <styles.VariousFeatureItem
               iconName="grow"
@@ -184,22 +194,36 @@ function Home() {
             />
           </styles.VariousFeatures>
           <styles.BigFeature
-          title="Pairs well with existing CSS"
-          description={["Paperclip enhances your existing CSS by keeping it ", <i>scoped</i>, ", so you have absolute control over how it's used in your app, and never have to worry about styles leaking out."]}
-          preview={<CodeBlock className="language-html">
-          {THIRD_PART_CSS_EXAMPLE}
-        </CodeBlock>}
-        />
+            title="Pairs well with existing CSS"
+            description={[
+              "Paperclip enhances your existing CSS by keeping it ",
+              <i>scoped</i>,
+              ", so you have absolute control over how it's used in your app, and never have to worry about styles leaking out."
+            ]}
+            preview={
+              <CodeBlock className="language-html">
+                {THIRD_PART_CSS_EXAMPLE}
+              </CodeBlock>
+            }
+          />
           <styles.BigFeature
             title="Everything in one spot"
-            description={["Use the birds-eye view to see ", <i>all</i>, " of your components, and find exactly what you're looking for."]}
-            preview={<video src="vid/grid-demo.mp4" autoPlay loop />}
+            description={[
+              "Use the birds-eye view to see ",
+              <i>all</i>,
+              " of your components, and find exactly what you're looking for."
+            ]}
+            preview={<video src="vid/grid-demo.mp4" autoPlay loop muted />}
           />
           <styles.BigFeature
             title="Cross-browser testing made easy"
-            description={["Launch ", <i>any browser</i>, " you want directly from Paperclip to catch those elusive CSS bugs more quickly."]}
+            description={[
+              "Launch ",
+              <i>any browser</i>,
+              " you want directly from Paperclip to catch those elusive CSS bugs more quickly."
+            ]}
             preview={
-              <video src="vid/cross-browser-testing.mp4" autoPlay loop />
+              <video src="vid/cross-browser-testing.mp4" autoPlay loop muted />
             }
           />
 
@@ -207,7 +231,12 @@ function Home() {
             title="Easy visual regression test setup"
             description="Paperclip comes with visual regression tooling that takes less than 10 minutes to setup and gives you nearly 100% visual regression coverage, so you can feel confident about making big style changes in your application without breaking production."
             preview={
-              <video src="vid/visual-regression-testing.mp4" autoPlay loop />
+              <video
+                src="vid/visual-regression-testing.mp4"
+                autoPlay
+                loop
+                muted
+              />
             }
             // ctaText="View the docs"
             // ctaHref={"https://paperclip.dev/docs/configure-percy"}
