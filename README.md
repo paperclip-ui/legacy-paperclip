@@ -5,25 +5,37 @@
 
 <img src="assets/logo.png" width="230">
 
+Paperclip is a tiny template language for presentational components that brings web development closer to a designer-like experience, all within your existing IDE. 
+
+Templates compile down to React code, with more languages and frameworks planned. 
+
+Other features include:
+
+- All CSS is explicit so you don't have to worry about leaky styles.
+- Nearly 100% visual regression coverage.
+- Realtime visual development. No more lag between writing UI code and seeing changes appear in your browser (even for very large projects).
+- Easy integration with other CSS libraries like Tailwind and Bootstrap. Paperclip also keeps them scoped!
+
+
 -----
 
-- Online Playground: http://playground.paperclip.dev
+- [Playground](http://playground.paperclip.dev) - Play around with Paperclip, share, download React code directly from the browser.
+- [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg) - for questions, feedback, help, or whatever! 
 - Installation
   - [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
   - [VSCode Extension](https://paperclip.dev/docs/) - Getting started with the VS Code extension.
   - [Webpack setup](https://paperclip.dev/docs/configure-webpack) - Setting up with Webpack
 - Documentation
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
-  - [React](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
+  - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
 - Example projects
   - [Paperclip website](./packages/paperclip-website)
+  - [Paperclip playground](./packages/paperclip-website)
   - [Todo MVC](./examples/react-todomvc)
 
 
 ---
 
-
-Paperclip provides a hybrid approach to building UIs that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. It also compiles directly into React code (more targets to come). 
 
 Here's a demo of Paperclip's designer app in action:
 
@@ -181,35 +193,6 @@ export const LoginPage = () => {
 };
 ```
 
-
-### What are some features of the DSL?
-
-- **No global CSS** - everything's explicit so you never run into leaky styles.
-- Scoped element styles. Keep your CSS closer to the elements they're styling.
-- Abiltiy to define primitive components that can be imported directly into your app code.
-- Sass-like syntax: nested selectors, mixins, etc.
-- **Generalized for multiple compile targets**. Currently works with React, but other languages & frameworks are planned.
-- **Compiles to strongly typed code**. Currently it outputs typed definition files for React components.
-- **No lock-in**. Swap in and out any similar libraries (styled-components, emotion, etc)
-- **Easy integration with third-party CSS like Tailwind, and Bootstrap. They're all kept scoped too!**
-
-### What can you do with the designer?
-
-- Figma-like canvas that you can zoom in and out of.
-- Measure between elements just like Figma.
-- Meta + select visual elements to reveal source code.
-- **Create different sized frames for responsive testing.**
-- Share your workspace with others & for cross-browser testing.
-- **Browserstack integration** - launch instance directly from designer.
-- Grid view of all of your project UIs so that you can visually find what you're looking for.
-- **VS Code integration - open the designer directly alongside your code editor.**
-
-### What are some other neat Paperclip features?
-
-- **Super easy visual regression coverage** - just plug in Percy, point to Paperclip files, and you're good to go.
-
-
-
 ### Roadmap
 
 Here's a peek at what's planned for Paperclip:
@@ -221,14 +204,6 @@ Here's a peek at what's planned for Paperclip:
 - Zeplin integration
 - Figma export directly to Paperclip UIs
 
-
-# Documentation
-
-🙅‍♂️ Private until I do more user testing. [Let me know if you'd like to help out!](https://forms.gle/FATDYcAVUdRVJvQaA)
-
-# Feature requests & other feedback
-
-Have feedback or would like a feature? Please feel free to add something to the [Canny board](https://paperclip.canny.io/)!
 
 # Sponsors
 

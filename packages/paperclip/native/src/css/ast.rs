@@ -574,7 +574,12 @@ pub struct SubElementSelector {
 
 impl fmt::Display for SubElementSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, ":{}({})", self.name.to_string(), self.selector.to_string())
+    write!(
+      f,
+      ":{}({})",
+      self.name.to_string(),
+      self.selector.to_string()
+    )
   }
 }
 
