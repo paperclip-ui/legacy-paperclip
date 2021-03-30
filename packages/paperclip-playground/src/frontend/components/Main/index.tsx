@@ -46,7 +46,6 @@ export const Main = withAppStore(() => {
           </Route>
         </Switch>
       </Router>
-      <PasswordModal />
       <ProjectLoadingModal />
     </>
   );

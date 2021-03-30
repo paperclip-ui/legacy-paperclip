@@ -5,9 +5,22 @@
 
 <img src="assets/logo.png" width="230">
 
-**⚠️ I'm polishing up this project, and I'm looking for help on testing & feedback. [Please send me a message if you're interested!](https://ntudb0fdlly.typeform.com/to/V8Vur6fY)**
-
 -----
+
+- Online Playground: http://playground.paperclip.dev
+- Installation
+  - [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
+  - [VSCode Extension](https://paperclip.dev/docs/) - Getting started with the VS Code extension.
+  - [Webpack setup](https://paperclip.dev/docs/configure-webpack) - Setting up with Webpack
+- Documentation
+  - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
+  - [React](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
+- Example projects
+  - [Paperclip website](./packages/paperclip-website)
+  - [Todo MVC](./examples/react-todomvc)
+
+
+---
 
 
 Paperclip provides a hybrid approach to building UIs that allows you to design & code in parallel. It focuses _purely_ on the visual aspect of your app - just HTML, CSS, and primitive components. It also compiles directly into React code (more targets to come). 
@@ -168,12 +181,6 @@ export const LoginPage = () => {
 };
 ```
 
-### Why did you build this?
-
-
-I usually split my UI development into two stages: first the HTML & CSS, then wire that up with code. The result of this is a separation between purely visual components & components with logic. Since the visual components don't have any logic in them, I felt that there could be a better & more focused approach to building them.
-
-I also feel like the direction that front-end development needs to head is closer to a designer-like experience. However, I don't think that a _purely_ visual editor cuts it because of the precision needed for creating UIs (that and I don't think that code is really a problem, incidental complexity is). So, I built something in-between code & design that I think gets the job done nicely 👌.  
 
 ### What are some features of the DSL?
 
@@ -201,21 +208,6 @@ I also feel like the direction that front-end development needs to head is close
 
 - **Super easy visual regression coverage** - just plug in Percy, point to Paperclip files, and you're good to go.
 
-
-<!-- Hidden until public beta -->
-<!--# Resources
-
-- Installation
-  - [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
-  - [VSCode Extension](https://paperclip.dev/docs/) - Getting started with the VS Code extension.
-  - [Webpack setup](https://paperclip.dev/docs/configure-webpack) - Setting up with Webpack
-- Documentation
-  - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
-  - [React](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
-- Example projects
-  - [Paperclip website](./packages/paperclip-website)
-  - [Todo MVC](./examples/react-todomvc)
--->
 
 
 ### Roadmap

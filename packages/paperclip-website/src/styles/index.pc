@@ -14,11 +14,6 @@
   :root {
     --row-max-width: 1800px;
   }
-  :global(.home) {
-    :global(.navbar) { 
-      display: none;
-    }
-  }
   @export {
     ._emoji {}
   }
@@ -106,6 +101,7 @@
     <style>
       /* padding: var(--gap-5); */
       padding-top: var(--gap-5);
+      display: none;
     </style>
     <div>
       <style>
