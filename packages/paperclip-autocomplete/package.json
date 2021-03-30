@@ -1,6 +1,6 @@
 {
   "name": "paperclip-autocomplete",
-  "version": "17.6.10",
+  "version": "17.7.3",
   "description": "Internal Autocomplete helper util for language clients",
   "main": "index.js",
   "scripts": {
