@@ -591,6 +591,7 @@
       background: rgb(48, 50, 56);
       padding: 80px;
       text-align: center;
+      display: none;
 
     </style>
     <div>

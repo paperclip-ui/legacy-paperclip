@@ -23,7 +23,6 @@ function Home() {
   return (
     <div className="home">
       <Layout
-        noFooter
         className="dograg"
         title={`${siteConfig.title} - A hybrid approach to designing & coding UIs`}
         description="Paperclip is a free & open-source tool that gives you a designer-like experience for creating web interfaces."
@@ -34,7 +33,7 @@ function Home() {
             // title={<>Live previews for web development</>}
             // title={<>Build web application in no time.</>}
             // title={<>Realtime visual web development.</>}
-            title={<>A hybrid approach to designing & coding UIs</>}
+            title={<>Rapidly build web applications at any scale</>}
             description={
               /* 
 
@@ -45,8 +44,13 @@ function Home() {
             - More natural than the current way of building UIs
             */
               <>
-                Paperclip is a free & open-source tool that gives you a
-                designer-like experience for creating web interfaces.
+                Paperclip is a free and open source template language for
+                presentational components that comes with a designer-like
+                experience for creating user interfaces in realtime, all within
+                your existing IDE.
+                {/* Paperclip is a free and open source tool for presentational components that brings web development closer to a designer-like experience. */}
+                {/* Paperclip is a free & open-source tool that gives you a
+                designer-like experience for creating web interfaces. */}
                 {/* out UIs faster than ever. */}
                 {/* Paperclip is a fast & intuitive open-source UI tool that works with your existing codebase. */}
                 {/* Build your web interfaces directly within your code editor.   */}
@@ -92,10 +96,10 @@ function Home() {
               <>
                 <buttonStyles.Anchor
                   className={typography.classNames["semi-bold"]}
-                  href="https://forms.gle/WJDVJEm9siYatABcA"
+                  href="/docs"
                   strong
                 >
-                  Sign up for early access
+                  Get Started
                 </buttonStyles.Anchor>
                 {/* <buttonStyles.Anchor
                 className={typography.classNames["semi-bold"]}
@@ -119,7 +123,7 @@ function Home() {
           />
 
           <styles.Summary
-            title="Build UIs faster, and precisely"
+            title="Build UIs more quickly, and precisely"
             text={
               <>
                 You shouldn't be bogged down by developer tooling in order to
@@ -190,7 +194,14 @@ function Home() {
             <styles.VariousFeatureItem
               iconName="grow"
               title="Just like CSS-in-JS"
-              description="Try it out! Paperclip works just like other CSS-in-JS libraries such as Emotion, and Styled Components. If you don't like Paperclip, you can easily switch back."
+              description={
+                <>
+                  <a href="https://playground.paperclip.dev">Try it out!</a>{" "}
+                  Paperclip works just like other CSS-in-JS libraries such as
+                  Emotion, and Styled Components. If you don't like Paperclip,
+                  you can easily switch back.
+                </>
+              }
             />
           </styles.VariousFeatures>
           <styles.BigFeature
