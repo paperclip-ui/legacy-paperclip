@@ -10,6 +10,7 @@ export const resolveImportUri = fs => (
   resolveOutput?: boolean
 ) => {
   const filePath = resolveImportFile(fs)(fromPath, toPath, resolveOutput);
+  console.log(fromPath, toPath, filePath);
   return filePath;
 };
 
@@ -31,6 +32,7 @@ export const resolveImportFile = fs => (
       return uri;
     }
 
+    console.log("RESOLVE");
     return url.resolve(fromPath, toPath);
   } catch (e) {
     return null;
@@ -81,10 +83,6 @@ const resolveModule = fs => (
       const modulePath = path.join(moduleDirectory, srcPath);
       const moduleConfigUrl = findPCConfigUrl(fs)(modulePath);
 
-      if (moduleConfigUrl === configUrl) {
-        continue;
-      }
-
       if (fs.existsSync(modulePath)) {
         const moduleConfig: PaperclipConfig = readJSONSync(fs)(
           new URL(moduleConfigUrl) as any
@@ -100,6 +98,7 @@ const resolveModule = fs => (
         const actualPath = resolveOutput
           ? modulePath.replace(sourceDir, outputDir)
           : fs.realpathSync(modulePath);
+
         return url.pathToFileURL(actualPath).href;
       }
     }

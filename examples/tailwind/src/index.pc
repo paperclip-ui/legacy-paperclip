@@ -1,0 +1,1 @@
+ <import src="tailwindcss/dist/tailwind.css" />
