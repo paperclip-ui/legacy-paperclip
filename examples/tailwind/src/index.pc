@@ -1,3 +1,5 @@
- <import src="tailwindcss/dist/tailwind.css" as="tw" />
+ <import src="./tailwind.css" as="tw" />
 
- Hello world 
+<div className="$tw.bg-blue-100 $tw.p-4 $tw.font-bold $tw.from-red-800">
+    Hello world
+</div>
