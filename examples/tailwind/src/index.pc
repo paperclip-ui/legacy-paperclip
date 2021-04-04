@@ -1,9 +1,0 @@
- <import src="./tailwind.css" as="tw" />
-
-
-<!--
-  @frame { width: 694, height: 768, x: 0, y: 0 }
--->
-<div className="$tw.sm:p-2.5">
-    Hello world
-</div>
