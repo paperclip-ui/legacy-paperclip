@@ -30,11 +30,11 @@ export const stringifyCSSRule = (rule, options: StringifySheetOptions = {}) => {
 };
 
 const stringifyConditionRule = (
-  { name, condition_text, rules },
+  { name, conditionText, rules },
   options: StringifySheetOptions
 ) => {
-  return `@${name} ${condition_text} {
-    ${rules.map(style => stringifyStyleRule(style, options)).join("\n")}
+  return `@${name} ${conditionText} {
+    ${rules.map(style => stringifyCSSRule(style, options)).join("\n")}
   }`;
 };
 

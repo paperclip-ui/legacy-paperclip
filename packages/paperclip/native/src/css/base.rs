@@ -4,6 +4,7 @@ use std::fmt;
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ConditionRule<TStyleRule: fmt::Display> {
   pub name: String,
+  #[serde(rename = "conditionText")]
   pub condition_text: String,
   pub rules: Vec<TStyleRule>,
 }

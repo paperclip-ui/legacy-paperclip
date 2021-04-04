@@ -203,8 +203,8 @@ export type KeyframesRule = {
 
 type ConditionShape = {
   name: string;
-  condition_text: string;
-  rules: StyleRule[];
+  conditionText: string;
+  rules: Rule[];
   location: SourceLocation;
   declarations: StyleDeclaration[];
 };

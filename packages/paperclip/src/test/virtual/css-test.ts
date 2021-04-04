@@ -1678,4 +1678,31 @@ describe(__filename + "#", () => {
     expect(stringifyLoadResult(result)).to.eql(`<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div data-pc-80f4925f></div>`);
   });
 
+
+  it(`media rule can have nested media rules`, async () => {
+
+    const graph = {
+      "/entry.pc": `
+        <style>
+          @media screen {
+            .a {
+              color: blue;
+            }
+            @media b {
+              .a {
+                color: blue;
+              }
+            }
+          }
+        </style>
+        <div></div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql(`<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } { } }</style><div data-pc-80f4925f></div>`);
+  });
+
 });
