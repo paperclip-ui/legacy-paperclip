@@ -1779,19 +1779,15 @@ describe(__filename + "#", () => {
   it(`colon can be added on classname`, async () => {
     const graph = {
       "/entry.pc": `
-        <style>
-          @export {
-            .sm\\:-space-1\\.2 {
-              color: red;
-            }
-          }
-        </style>
         <import src="./test.css" as="t" />
-        <div className="$t.test:container"></div>
+        <div className="$t.test:container $t.sm:p-3.5"></div>
       `,
       "/test.css": `
         .test\\:container {
           color: red;
+        }
+        .sm\\:p-3\\.5 {
+          color: blue;
         }
       `
     };
@@ -1799,7 +1795,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>[class]._b8a55827_test\\:container { color:red; } [class]._80f4925f_sm\\:-space-1\\.2 { color:red; }</style><div class="_b8a55827_test:container test:container" data-pc-80f4925f></div>`);
+    expect(stringifyLoadResult(result)).to.eql(`<style>[class]._b8a55827_test\\:container { color:red; } [class]._b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_b8a55827_test:container test:container _b8a55827_sm:p-3.5 sm:p-3.5" data-pc-80f4925f></div>`);
   });
 
 });

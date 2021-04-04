@@ -2,8 +2,8 @@
 
 
 <!--
-  @frame { width: 768, height: 768, x: 0, y: 0 }
+  @frame { width: 694, height: 768, x: 0, y: 0 }
 -->
-<div className="$tw.sm:p-10">
+<div className="$tw.sm:p-2.5">
     Hello world
 </div>

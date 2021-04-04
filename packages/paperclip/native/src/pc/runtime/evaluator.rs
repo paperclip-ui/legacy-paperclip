@@ -1436,14 +1436,10 @@ fn evaluate_attribute_dynamic_string<'a>(
             ));
           };
 
-          let class_name = parts.last().unwrap();
-          // let imports = if let Some(imports) = context.evaluated_graph.get(context.uri) {
-          //   imports
-          // } else {
-          //   return Err(RuntimeError::unknown(context.uri));
-          // };
 
-          // let import_option = imports.get(&import_id);
+          // consider sm:p-3.5. Skip first ref. (BTW this is dirty AF)
+          let class_name = &parts[1..].join(".").to_string();
+
 
           let import_option = get_import(context.uri, &import_id, context);
 
