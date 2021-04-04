@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "yarn build:tailwind",
     "build:tailwind": "tailwindcss build > src/tailwind.css"
   },
   "author": "",

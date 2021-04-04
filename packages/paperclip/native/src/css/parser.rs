@@ -179,6 +179,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
     "include" => Ok(Rule::Include(parse_include(context)?)),
     "export" => Ok(Rule::Export(parse_export_rule(context)?)),
     "keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context)?)),
+    "-webkit-keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context)?)),
     "font-face" => Ok(Rule::FontFace(parse_font_face_rule(context)?)),
     "document" => Ok(Rule::Document(parse_condition_rule(
       name.to_string(),
@@ -700,6 +701,7 @@ fn part_of_selector_name(token: &Token) -> bool {
     | Token::Hash
     | Token::Squiggle
     | Token::Byte(b'>')
+    | Token::Byte(b'-')
     | Token::Byte(b'&')
     | Token::CurlyOpen
     | Token::SquareOpen
@@ -711,7 +713,14 @@ fn part_of_selector_name(token: &Token) -> bool {
 fn parse_selector_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
   eat_superfluous(context)?;
   get_buffer(context.tokenizer, |tokenizer| {
-    let tok = tokenizer.peek(1)?;
+    let mut tok = tokenizer.peek(1)?;
+
+    // skip escape
+    if tok == Token::Byte(b'\\') {
+      tokenizer.next();
+      tok = tokenizer.peek(1)?;
+    }
+
     Ok(part_of_selector_name(&tok))
   })
 }

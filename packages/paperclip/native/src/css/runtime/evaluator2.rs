@@ -914,8 +914,10 @@ fn evaluate_style_rule2(
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
   lazy_static! {
-    static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
+    // static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
+    static ref class_name_re: Regex = Regex::new(r"\.(((\\.)?[\w\-_]+)+)").unwrap();
     static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
+    static ref escape_re: Regex = Regex::new(r"\\").unwrap();
   }
 
   let mut is_global_selector = false;
@@ -936,7 +938,9 @@ fn evaluate_style_rule2(
       // url check
       for caps in class_name_re.captures_iter(selector_context.to_string().as_str()) {
         let scoped_class_name = caps.get(1).unwrap().as_str();
-        let class_name = scope_re.replace(scoped_class_name, "").to_string();
+        let mut class_name = scope_re.replace(scoped_class_name, "").to_string();
+        class_name = escape_re.replace_all(class_name.as_str(), "").to_string();
+        
 
         let existing_option = context.exports.class_names.get(&class_name);
 
@@ -945,7 +949,7 @@ fn evaluate_style_rule2(
             class_name.to_string(),
             ClassNameExport {
               name: class_name.to_string(),
-              scoped_name: scoped_class_name.to_string(),
+              scoped_name: escape_re.replace_all(scoped_class_name, "").to_string(),
               public: context.in_public_scope,
             },
           );

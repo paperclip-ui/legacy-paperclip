@@ -1705,8 +1705,6 @@ describe(__filename + "#", () => {
     expect(stringifyLoadResult(result)).to.eql(`<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } { } }</style><div data-pc-80f4925f></div>`);
   });
 
-
-
   it(`@-webkit-keyframes works`, async () => {
     const graph = {
       "/entry.pc": `
@@ -1725,6 +1723,83 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(`<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div data-pc-80f4925f></div>`);
+  });
+
+
+  it(`can escape class names`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          @export {
+            .a\\:b {
+              color: red;
+            }
+            .a\\/b {
+              color: red;
+            }
+            .a\\.b {
+              color: red;
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(result.exports).to.eql({
+      "style": {
+        "kind": "Exports",
+        "classNames": {
+          "a.b": {
+            "name": "a.b",
+            "scopedName": "_80f4925f_a.b",
+            "public": true
+          },
+          "a/b": {
+            "name": "a/b",
+            "scopedName": "_80f4925f_a/b",
+            "public": true
+          },
+          "a:b": {
+            "name": "a:b",
+            "scopedName": "_80f4925f_a:b",
+            "public": true
+          }
+        },
+        "mixins": {},
+        "variables": {},
+        "keyframes": {}
+      },
+      "components": {}
+    });
+  });
+
+  it(`colon can be added on classname`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          @export {
+            .sm\\:-space-1\\.2 {
+              color: red;
+            }
+          }
+        </style>
+        <import src="./test.css" as="t" />
+        <div className="$t.test:container"></div>
+      `,
+      "/test.css": `
+        .test\\:container {
+          color: red;
+        }
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql(`<style>[class]._b8a55827_test\\:container { color:red; } [class]._80f4925f_sm\\:-space-1\\.2 { color:red; }</style><div class="_b8a55827_test:container test:container" data-pc-80f4925f></div>`);
   });
 
 });
