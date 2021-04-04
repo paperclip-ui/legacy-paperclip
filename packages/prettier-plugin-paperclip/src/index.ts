@@ -8,7 +8,8 @@ export const languages: Partial<SupportLanguage>[] = [
     parsers: ["paperclip"],
 
     // DO NOT SET THIS UNTIL THIS MODULE IS WORKING!!
-    extensions: [".pc"],
+    // extensions: [".pc"],
+    extensions: [],
     vscodeLanguageIds: ["paperclip"]
   }
 ];
