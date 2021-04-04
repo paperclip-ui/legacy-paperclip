@@ -295,7 +295,14 @@ fn parse_keyframes_rule<'a, 'b>(
 fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<KeyframeRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
 
-  let key = parse_selector_name(context)?.to_string();
+  eat_superfluous(context)?;
+
+  // cover 0%, 50%, 75% {
+  let key = get_buffer(context.tokenizer, |tokenizer| {
+    let tok = tokenizer.peek(1)?;
+    Ok(tok != Token::CurlyOpen)
+  })?.to_string();
+
   let (declarations, _children) = parse_declaration_body(context)?;
 
   Ok(KeyframeRule {
@@ -981,6 +988,11 @@ mod tests {
     :global(.test) {}
     .selector {
       &__test {}
+    }
+    @keyframes {
+      0%, 10% {
+
+      }
     }
     // comment
     ";

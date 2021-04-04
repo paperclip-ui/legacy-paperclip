@@ -1657,4 +1657,25 @@ describe(__filename + "#", () => {
     expect(stringifyLoadResult(result)).to.eql(`<style>div[data-pc-8ae793af] { color:red; } div[data-pc-98523c41] { color:blue; } div[data-pc-80f4925f] { color:orange; }</style>`);
   });
 
+  it(`keyframes can have multiple percentages`, async () => {
+
+    const graph = {
+      "/entry.pc": `
+        <style>
+          @keyframes abc {
+            50%, 75%, 100% {
+              color: red;
+            }
+          }
+        </style>
+        <div></div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql(`<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div data-pc-80f4925f></div>`);
+  });
+
 });
