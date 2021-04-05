@@ -39,6 +39,7 @@ pub struct Context<'a> {
   pub import_ids: HashSet<&'a String>,
   pub part_ids: HashSet<&'a String>,
   pub private_scope: String,
+  pub injected_scopes: Vec<String>,
   pub public_scope: String,
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
@@ -513,6 +514,7 @@ fn create_context<'a>(
     render_call_stack,
     evaluated_graph,
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
+    injected_scopes: get_injected_scoped(node_expr, graph.dependencies.get(uri).unwrap()),
     import_scopes: get_import_scopes(graph.dependencies.get(uri).unwrap()),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
     private_scope,
@@ -520,6 +522,18 @@ fn create_context<'a>(
     data,
     mode,
   }
+}
+
+pub fn get_injected_scoped<'a>(root_expr: &'a ast::Node, entry: &Dependency) -> Vec<String> {
+  let mut scopes: Vec<String> = vec![];
+  for import in ast::get_imports(root_expr) {
+    if ast::has_attribute("inject-styles", &import) {
+      if let Some(src) = ast::get_attribute_value("src", &import) {
+        scopes.push(get_document_style_public_scope(entry.dependency_uri_maps.get(src).unwrap()));
+      }
+    }
+  }
+  scopes
 }
 
 pub fn get_import_scopes<'a>(entry: &Dependency) -> BTreeMap<String, String> {
@@ -1220,6 +1234,13 @@ fn evaluate_native_element<'a>(
 
   attributes.insert(public_scope_name.to_string(), None);
 
+  for injected_scope in &context.injected_scopes {
+
+    let scope_attr = format!("data-pc-{}", injected_scope).to_string();
+
+    attributes.insert(scope_attr.to_string(), None);
+  }
+
   // A bit dirty, but we need to quickly scan for style elements so that we can apply
   // let contains_style = element.children.iter().any(|child| match child {
   //   ast::Node::StyleElement(_) => true,
@@ -1583,12 +1604,19 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
 
       // if already scoped, then skip
       if scope_re.is_match(class) {
-        skip = 2;
+        skip = context.injected_scopes.len() + 2;
         return class.to_string();
       }
 
       if class != &"" {
-        format!("_{}_{} _{}_{} {}", context.private_scope, class, context.public_scope, class, class)
+
+        let mut buffer = format!("_{}_{} _{}_{}", context.private_scope, class, context.public_scope, class);
+
+        for scope in &context.injected_scopes {
+          buffer = format!("{} _{}_{}", buffer, scope, class);
+        }
+
+        format!("{} {}", buffer, class)
       } else {
         class.to_string()
       }
