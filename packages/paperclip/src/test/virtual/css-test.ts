@@ -1825,7 +1825,6 @@ describe(__filename + "#", () => {
     );
   });
 
-
   it(`Can inject scopes into the document`, async () => {
     const graph = {
       "/entry.pc": `
@@ -1842,7 +1841,6 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._pub-b8a55827_test { color:red; }</style><div class="_80f4925f_test _pub-80f4925f_test _pub-b8a55827_test test" data-pc-80f4925f data-pc-pub-80f4925f data-pc-pub-b8a55827></div>`
     );
