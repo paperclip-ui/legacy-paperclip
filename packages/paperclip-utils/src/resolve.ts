@@ -10,7 +10,6 @@ export const resolveImportUri = fs => (
   resolveOutput?: boolean
 ) => {
   const filePath = resolveImportFile(fs)(fromPath, toPath, resolveOutput);
-  console.log(fromPath, toPath, filePath);
   return filePath;
 };
 
