@@ -212,6 +212,10 @@ const translateStyleScopeAttributes = (
     `"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`,
     context
   );
+  context = addBuffer(
+    `"data-pc-pub-${getStyleScopeId(context.fileUri)}": true,${newLine}`,
+    context
+  );
   return context;
 };
 
@@ -301,6 +305,8 @@ const translateClassNamesUtil = (context: TranslateContext) => {
   // context = startBlock(context);
   context = addBuffer(
     `return className ? "_${getStyleScopeId(
+      context.fileUri
+    )}_" + className + " _pub-${getStyleScopeId(
       context.fileUri
     )}_" + className + " " + className : "";\n`,
     context
@@ -1081,6 +1087,8 @@ const prefixWthStyleScopes = (
       }
 
       return `_${getStyleScopeId(
+        scopeFilePath
+      )}_${actualClassName} _pub-${getStyleScopeId(
         scopeFilePath
       )}_${actualClassName} ${actualClassName}`;
     })

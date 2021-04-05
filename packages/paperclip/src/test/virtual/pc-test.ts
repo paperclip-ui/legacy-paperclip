@@ -45,7 +45,7 @@ describe(__filename + "#", () => {
     const buffer = `${stringifyVirtualNode(preview)}`;
 
     expect(cleanHTML(buffer)).to.eql(
-      `<div class="_80f4925f_primary primary" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_alt alt _80f4925f_primary primary" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_alt2 alt2 _80f4925f_primary primary" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<div class="_80f4925f_primary _pub-80f4925f_primary primary" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_alt _pub-80f4925f_alt alt _80f4925f_primary _pub-80f4925f_primary primary" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_alt2 _pub-80f4925f_alt2 alt2 _80f4925f_primary _pub-80f4925f_primary primary" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -648,7 +648,7 @@ describe(__filename + "#", () => {
 
     const buffer = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(buffer).to.eql(
-      `<style></style><div class="_80f4925f_ok ok" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style></style><div class="_80f4925f_ok _pub-80f4925f_ok ok" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -665,7 +665,7 @@ describe(__filename + "#", () => {
 
     const buffer = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(buffer).to.eql(
-      `<style></style><div class="_80f4925f_ok ok" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style></style><div class="_80f4925f_ok _pub-80f4925f_ok ok" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -682,7 +682,7 @@ describe(__filename + "#", () => {
 
     const buffer = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(buffer).to.eql(
-      `<style></style><div class="_80f4925f_a a _80f4925f_ok ok" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style></style><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_ok _pub-80f4925f_ok ok" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -702,7 +702,7 @@ describe(__filename + "#", () => {
 
     const buffer = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(buffer).to.eql(
-      `<style></style><div class="_139cec8e_a a _80f4925f_ok ok" data-pc-139cec8e data-pc-pub-139cec8e></div>`
+      `<style></style><div class="_139cec8e_a _pub-139cec8e_a a _80f4925f_ok _pub-80f4925f_ok ok" data-pc-139cec8e data-pc-pub-139cec8e></div>`
     );
   });
 
@@ -744,7 +744,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const buffer = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(buffer).to.eql(
-      `<style>[class]._80f4925f_its_a_match { color:blue; }</style><div class="_80f4925f_its_a_match its_a_match" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._80f4925f_its_a_match { color:blue; }</style><div class="_80f4925f_its_a_match _pub-80f4925f_its_a_match its_a_match" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -954,7 +954,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_139cec8e_test test" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_pub-139cec8e_test test" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -980,7 +980,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-139cec8e_test { color:orange; }</style><div class="_139cec8e_test test" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._pub-139cec8e_test { color:orange; }</style><div class="_pub-139cec8e_test test" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
   it(`Can use a public class pierce on a component`, async () => {
@@ -1006,7 +1006,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-139cec8e_test { background:blue; }</style><div class="_139cec8e_test test" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._pub-139cec8e_test { background:blue; }</style><div class="_pub-139cec8e_test test" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
   it(`Can use a component that's referencing a public class`, async () => {
@@ -1034,7 +1034,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-11a847ab_test { color:blue; }</style><div class="_11a847ab_test test" data-pc-139cec8e data-pc-pub-139cec8e></div>`
+      `<style>[class]._pub-11a847ab_test { color:blue; }</style><div class="_pub-11a847ab_test test" data-pc-139cec8e data-pc-pub-139cec8e></div>`
     );
   });
 
@@ -1061,7 +1061,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_139cec8e_test test _80f4925f_checkbox checkbox" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._pub-139cec8e_test { color:blue; }</style><div class="_pub-139cec8e_test test checkbox" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1356,7 +1356,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f__376a18c0 _376a18c0" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1377,7 +1377,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f_test test _80f4925f__376a18c0 _376a18c0" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._376a18c0 { background:blue; }</style><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1404,7 +1404,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>[class]._376a18c0 { background:blue; } [class]._ae63497a { background:orange; }</style><div class="_80f4925f_test test _80f4925f_test3 test3 _80f4925f__ae63497a _ae63497a _80f4925f__376a18c0 _376a18c0" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._376a18c0 { background:blue; } [class]._ae63497a { background:orange; }</style><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f_test3 _pub-80f4925f_test3 test3 _80f4925f__ae63497a _pub-80f4925f__ae63497a _ae63497a _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1588,7 +1588,7 @@ describe(__filename + "#", () => {
 
     const buffer = `${stringifyLoadResult(result)}`;
     expect(buffer).to.eql(
-      `<style>[data-pc-406d2856][data-pc-406d2856] { display:none; } [class]._376a18c0 { display:block; } [class]._376a18c0 [class]._80f4925f_child { color:red; } [class]._d96479ec { color:orange; }</style><span data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></span><span class="_80f4925f__d96479ec _d96479ec _80f4925f__376a18c0 _376a18c0" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></span>`
+      `<style>[data-pc-406d2856][data-pc-406d2856] { display:none; } [class]._376a18c0 { display:block; } [class]._376a18c0 [class]._80f4925f_child { color:red; } [class]._d96479ec { color:orange; }</style><span data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></span><span class="_80f4925f__d96479ec _pub-80f4925f__d96479ec _d96479ec _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></span>`
     );
   });
 
@@ -1718,7 +1718,7 @@ describe(__filename + "#", () => {
 
     const buffer = `${stringifyLoadResult(result)}`;
     expect(buffer).to.eql(
-      `<style></style><div class="_80f4925f_a a" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_b b" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_c c" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_c c" data-pc-80f4925f data-pc-pub-80f4925f></div><div class data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_a2 a2" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_a a _80f4925f_a2 a2" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style></style><div class="_80f4925f_a _pub-80f4925f_a a" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_b _pub-80f4925f_b b" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_c _pub-80f4925f_c c" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_c _pub-80f4925f_c c" data-pc-80f4925f data-pc-pub-80f4925f></div><div class data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_a2 _pub-80f4925f_a2 a2" data-pc-80f4925f data-pc-pub-80f4925f></div><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_a2 _pub-80f4925f_a2 a2" data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
   it(`Can delete files from the graph`, async () => {

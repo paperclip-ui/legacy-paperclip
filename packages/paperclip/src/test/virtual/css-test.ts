@@ -1031,7 +1031,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_a[class].hover { color:blue; } [class]._80f4925f_a:not(:disabled):not([class].transparent)[class].hover { color:red; }</style><div class="_80f4925f_a a _80f4925f_hover hover" data-pc-80f4925f data-pc-pub-80f4925f>I'm red</div><div class="_80f4925f_a a _80f4925f_transparent transparent _80f4925f_hover hover" data-pc-80f4925f data-pc-pub-80f4925f>I'm blue</div>`
+      `<style>[class]._80f4925f_a[class].hover { color:blue; } [class]._80f4925f_a:not(:disabled):not([class].transparent)[class].hover { color:red; }</style><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_hover _pub-80f4925f_hover hover" data-pc-80f4925f data-pc-pub-80f4925f>I'm red</div><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_transparent _pub-80f4925f_transparent transparent _80f4925f_hover _pub-80f4925f_hover hover" data-pc-80f4925f data-pc-pub-80f4925f>I'm blue</div>`
     );
   });
 
@@ -1058,7 +1058,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856] [class]._80f4925f__button[class]._80f4925f__button[class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f__button _button" data-pc-80f4925f data-pc-pub-80f4925f>I'm a button</div></div>`
+      `<style>[data-pc-406d2856] [class]._80f4925f__button[class]._80f4925f__button[class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f__button _pub-80f4925f__button _button" data-pc-80f4925f data-pc-pub-80f4925f>I'm a button</div></div>`
     );
   });
 
@@ -1088,7 +1088,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856][data-pc-406d2856] { color:blue; } [data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button[data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f__button _button" data-pc-80f4925f data-pc-pub-80f4925f>I'm a button</div></div>`
+      `<style>[data-pc-406d2856][data-pc-406d2856] { color:blue; } [data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button[data-pc-406d2856][data-pc-406d2856] [class]._80f4925f__button { color:red; }</style><div data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f__button _pub-80f4925f__button _button" data-pc-80f4925f data-pc-pub-80f4925f>I'm a button</div></div>`
     );
   });
 
@@ -1167,7 +1167,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a { color:red; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9] [class]._80f4925f_b { color:blue; }</style><div class="_80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
+      `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a { color:red; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9] [class]._80f4925f_b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test _pub-80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
     );
   });
 
@@ -1193,7 +1193,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a { color:blue; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].b { color:blue; }</style><div class="_80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
+      `<style>[class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].a { color:blue; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][class].b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test _pub-80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
     );
   });
 
@@ -1217,7 +1217,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class].variant [data-pc-9e7e6af9][data-pc-9e7e6af9] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
+      `<style>[class].variant [data-pc-9e7e6af9][data-pc-9e7e6af9] { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test _pub-80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
     );
   });
 
@@ -1245,7 +1245,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { display:block; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; }</style><div class="_80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
+      `<style>[class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { display:block; } [class]._80f4925f_variant [data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9][data-pc-9e7e6af9] { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test _pub-80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
     );
   });
 
@@ -1271,7 +1271,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_light [data-pc-9e7e6af9][data-pc-9e7e6af9][class].variant { color:blue; } [class]._80f4925f_light [data-pc-9e7e6af9][data-pc-9e7e6af9][class].variant { color:blue; }</style><div class="_80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
+      `<style>[class]._80f4925f_light [data-pc-9e7e6af9][data-pc-9e7e6af9][class].variant { color:blue; } [class]._80f4925f_light [data-pc-9e7e6af9][data-pc-9e7e6af9][class].variant { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test _pub-80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
     );
   });
 
@@ -1296,7 +1296,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { color:red; }</style><div class="_80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
+      `<style>[data-pc-9e7e6af9][data-pc-9e7e6af9]:empty { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-80f4925f data-pc-pub-80f4925f><div class="_80f4925f_test _pub-80f4925f_test test" data-pc-80f4925f data-pc-9e7e6af9 data-pc-pub-80f4925f></div></div>`
     );
   });
 
@@ -1320,7 +1320,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1343,7 +1343,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856]:empty { color:red; } }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856]:empty { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1366,7 +1366,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { [data-pc-80f4925f]:empty [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>@media screen and (min-width: 100px) { [data-pc-80f4925f]:empty [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1388,7 +1388,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856][class].red { color:blue; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856][class].red { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1409,7 +1409,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856][data-pc-406d2856][data-pc-406d2856][data-pc-406d2856] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[data-pc-406d2856][data-pc-406d2856][data-pc-406d2856][data-pc-406d2856] { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1431,7 +1431,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856] { color:red; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856] { color:red; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1454,7 +1454,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1477,7 +1477,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1498,7 +1498,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856] div[data-pc-80f4925f] { background:url(var(--test)); }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
+      `<style>[data-pc-406d2856] div[data-pc-80f4925f] { background:url(var(--test)); }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1522,7 +1522,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._pub-8f1a5142_test { color:red; }</style><div class="_8f1a5142_test test" data-pc-80f4925f data-pc-pub-80f4925f>Hello world </div>`
+      `<style>[class]._pub-8f1a5142_test { color:red; }</style><div class="_pub-8f1a5142_test test" data-pc-80f4925f data-pc-pub-80f4925f>Hello world </div>`
     );
   });
 
@@ -1795,7 +1795,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_b8a55827_test:container test:container _b8a55827_sm:p-3.5 sm:p-3.5" data-pc-80f4925f data-pc-pub-80f4925f></div>`);
+    expect(stringifyLoadResult(result)).to.eql(`<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_pub-b8a55827_test:container test:container _pub-b8a55827_sm:p-3.5 _80f4925f_sm:p-3.5 _pub-80f4925f_sm:p-3.5 sm:p-3.5" data-pc-80f4925f data-pc-pub-80f4925f></div>`);
   });
 
 

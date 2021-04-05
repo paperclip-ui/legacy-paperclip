@@ -1562,33 +1562,33 @@ fn is_component_instance<'a>(element: &ast::Element, context: &Context<'a>) -> b
 
 fn transform_class_value<'a>(name: &String, value: &String, context: &mut Context) -> String {
   lazy_static! {
-    static ref scope_re: Regex = Regex::new(r"^_\w+_").unwrap();
+    static ref scope_re: Regex = Regex::new(r"^_[-\w]+_").unwrap();
   }
 
   // if scope_re.is_match(value) {
   //   return value.to_string();
   // }
 
-  let mut skip_next = false;
+  let mut skip = 0;
 
   let class_name_parts: Vec<&str> = value.split(" ").collect();
   class_name_parts
     .iter()
     .map(|class| {
       // if previous class is scoped, then skip
-      if skip_next {
-        skip_next = false;
+      if skip > 0 {
+        skip = skip - 1;
         return class.to_string();
       }
 
       // if already scoped, then skip
       if scope_re.is_match(class) {
-        skip_next = true;
+        skip = 2;
         return class.to_string();
       }
 
       if class != &"" {
-        format!("_{}_{} {}", context.private_scope, class, class)
+        format!("_{}_{} _{}_{} {}", context.private_scope, class, context.public_scope, class, class)
       } else {
         class.to_string()
       }
