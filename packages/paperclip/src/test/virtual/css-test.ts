@@ -1604,7 +1604,6 @@ describe(__filename + "#", () => {
 
   // TODO - this is broken with CSS patcher
   xit(`breaks if inline declaration is defined without semicolon`, async () => {
-
     const graph = {
       "/entry.pc": `
         <style>
@@ -1624,7 +1623,6 @@ describe(__filename + "#", () => {
 
   // TODO - this is broken with CSS patcher
   it(`styles are  sorted correctly`, async () => {
-
     const graph = {
       "/entry.pc": `
         <import src="./a.pc" />
@@ -1654,11 +1652,12 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>div[data-pc-8ae793af] { color:red; } div[data-pc-98523c41] { color:blue; } div[data-pc-80f4925f] { color:orange; }</style>`);
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>div[data-pc-8ae793af] { color:red; } div[data-pc-98523c41] { color:blue; } div[data-pc-80f4925f] { color:orange; }</style>`
+    );
   });
 
   it(`keyframes can have multiple percentages`, async () => {
-
     const graph = {
       "/entry.pc": `
         <style>
@@ -1675,12 +1674,12 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div data-pc-80f4925f data-pc-pub-80f4925f></div>`);
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div data-pc-80f4925f data-pc-pub-80f4925f></div>`
+    );
   });
 
-
   it(`media rule can have nested media rules`, async () => {
-
     const graph = {
       "/entry.pc": `
         <style>
@@ -1702,7 +1701,9 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } { } }</style><div data-pc-80f4925f data-pc-pub-80f4925f></div>`);
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } { } }</style><div data-pc-80f4925f data-pc-pub-80f4925f></div>`
+    );
   });
 
   it(`@-webkit-keyframes works`, async () => {
@@ -1722,9 +1723,10 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div data-pc-80f4925f data-pc-pub-80f4925f></div>`);
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>@keyframes _80f4925f_abc { 50%, 75%, 100% { color:red; } }</style><div data-pc-80f4925f data-pc-pub-80f4925f></div>`
+    );
   });
-
 
   it(`can escape class names`, async () => {
     const graph = {
@@ -1749,30 +1751,30 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(result.exports).to.eql({
-      "style": {
-        "kind": "Exports",
-        "classNames": {
+      style: {
+        kind: "Exports",
+        classNames: {
           "a.b": {
-            "name": "a.b",
-            "scopedName": "_pub-80f4925f_a.b",
-            "public": true
+            name: "a.b",
+            scopedName: "_pub-80f4925f_a.b",
+            public: true
           },
           "a/b": {
-            "name": "a/b",
-            "scopedName": "_pub-80f4925f_a/b",
-            "public": true
+            name: "a/b",
+            scopedName: "_pub-80f4925f_a/b",
+            public: true
           },
           "a:b": {
-            "name": "a:b",
-            "scopedName": "_pub-80f4925f_a:b",
-            "public": true
+            name: "a:b",
+            scopedName: "_pub-80f4925f_a:b",
+            public: true
           }
         },
-        "mixins": {},
-        "variables": {},
-        "keyframes": {}
+        mixins: {},
+        variables: {},
+        keyframes: {}
       },
-      "components": {}
+      components: {}
     });
   });
 
@@ -1795,10 +1797,10 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_pub-b8a55827_test:container test:container _pub-b8a55827_sm:p-3.5 _80f4925f_sm:p-3.5 _pub-80f4925f_sm:p-3.5 sm:p-3.5" data-pc-80f4925f data-pc-pub-80f4925f></div>`);
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_pub-b8a55827_test:container test:container _pub-b8a55827_sm:p-3.5 _80f4925f_sm:p-3.5 _pub-80f4925f_sm:p-3.5 sm:p-3.5" data-pc-80f4925f data-pc-pub-80f4925f></div>`
+    );
   });
-
-
 
   it(`keyframes that are exported also include a private scoped one`, async () => {
     const graph = {
@@ -1818,7 +1820,8 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>@keyframes _pub-80f4925f_a { to { color:red; } } @keyframes _80f4925f_a { to { color:red; } }</style>`);
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>@keyframes _pub-80f4925f_a { to { color:red; } } @keyframes _80f4925f_a { to { color:red; } }</style>`
+    );
   });
-
 });

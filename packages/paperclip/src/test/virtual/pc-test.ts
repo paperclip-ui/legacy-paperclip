@@ -384,7 +384,9 @@ describe(__filename + "#", () => {
     engine.updateVirtualFileContent(`/entry.pc`, `<a></a>`);
 
     const result2 = stringifyLoadResult(await engine.open("/entry.pc"));
-    expect(result2).to.eql(`<style></style><a data-pc-80f4925f data-pc-pub-80f4925f></a>`);
+    expect(result2).to.eql(
+      `<style></style><a data-pc-80f4925f data-pc-pub-80f4925f></a>`
+    );
   });
 
   it("Engine can't reload content if module errors", async () => {
