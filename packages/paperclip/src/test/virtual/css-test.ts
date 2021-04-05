@@ -1320,7 +1320,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1343,7 +1343,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856]:empty { color:red; } }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>@media screen and (min-width: 100px) { [data-pc-406d2856][data-pc-406d2856]:empty { color:red; } }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1366,7 +1366,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>@media screen and (min-width: 100px) { [data-pc-80f4925f]:empty [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>@media screen and (min-width: 100px) { [data-pc-80f4925f]:empty [data-pc-406d2856][data-pc-406d2856] { color:red; } }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1388,7 +1388,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856][class].red { color:blue; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856][class].red { color:blue; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1409,7 +1409,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856][data-pc-406d2856][data-pc-406d2856][data-pc-406d2856] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>[data-pc-406d2856][data-pc-406d2856][data-pc-406d2856][data-pc-406d2856] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1431,7 +1431,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856] { color:red; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>[data-pc-406d2856][data-pc-406d2856] { color:orange; } [data-pc-406d2856][data-pc-406d2856] { color:red; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1454,7 +1454,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1477,7 +1477,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>[class]._80f4925f_blue [data-pc-406d2856][data-pc-406d2856][class].variant [data-pc-80f4925f] { color:orange; }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1498,7 +1498,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[data-pc-406d2856] div[data-pc-80f4925f] { background:url(var(--test)); }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f></div>`
+      `<style>[data-pc-406d2856] div[data-pc-80f4925f] { background:url(var(--test)); }</style><div class="_80f4925f_variant variant" data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>`
     );
   });
 
@@ -1522,7 +1522,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._8f1a5142_test { color:red; }</style><div class="_8f1a5142_test test" data-pc-80f4925f>Hello world </div>`
+      `<style>[class]._pub-8f1a5142_test { color:red; }</style><div class="_8f1a5142_test test" data-pc-80f4925f data-pc-pub-80f4925f>Hello world </div>`
     );
   });
 
@@ -1702,7 +1702,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } { } }</style><div data-pc-80f4925f></div>`);
+    expect(stringifyLoadResult(result)).to.eql(`<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } { } }</style><div data-pc-80f4925f data-pc-pub-80f4925f></div>`);
   });
 
   it(`@-webkit-keyframes works`, async () => {
@@ -1754,17 +1754,17 @@ describe(__filename + "#", () => {
         "classNames": {
           "a.b": {
             "name": "a.b",
-            "scopedName": "_80f4925f_a.b",
+            "scopedName": "_pub-80f4925f_a.b",
             "public": true
           },
           "a/b": {
             "name": "a/b",
-            "scopedName": "_80f4925f_a/b",
+            "scopedName": "_pub-80f4925f_a/b",
             "public": true
           },
           "a:b": {
             "name": "a:b",
-            "scopedName": "_80f4925f_a:b",
+            "scopedName": "_pub-80f4925f_a:b",
             "public": true
           }
         },
@@ -1795,7 +1795,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
 
-    expect(stringifyLoadResult(result)).to.eql(`<style>[class]._b8a55827_test\\:container { color:red; } [class]._b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_b8a55827_test:container test:container _b8a55827_sm:p-3.5 sm:p-3.5" data-pc-80f4925f data-pc-pub-80f4925f></div>`);
+    expect(stringifyLoadResult(result)).to.eql(`<style>[class]._pub-b8a55827_test\\:container { color:red; } [class]._pub-b8a55827_sm\\:p-3\\.5 { color:blue; }</style><div class="_b8a55827_test:container test:container _b8a55827_sm:p-3.5 sm:p-3.5" data-pc-80f4925f data-pc-pub-80f4925f></div>`);
   });
 
 
