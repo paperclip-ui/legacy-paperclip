@@ -61,7 +61,9 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `
         <style>
-          @keyframes a {
+          @export {
+            @keyframes a {
+            }
           }
         </style>
       `
@@ -72,7 +74,7 @@ describe(__filename + "#", () => {
     const buffer = `${stringifyLoadResult(result)}`;
 
     expect(cleanHTML(buffer)).to.eql(
-      `<style>@keyframes _139cec8e_a { } [class]._80f4925f_rule { animation:_139cec8e_a 5s; }</style>`
+      `<style>@keyframes _pub-139cec8e_a { } @keyframes _139cec8e_a { } [class]._80f4925f_rule { animation:_pub-139cec8e_a 5s; }</style>`
     );
   });
 

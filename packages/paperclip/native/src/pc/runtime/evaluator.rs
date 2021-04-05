@@ -525,7 +525,7 @@ fn create_context<'a>(
 pub fn get_import_scopes<'a>(entry: &Dependency) -> BTreeMap<String, String> {
   let mut scopes = BTreeMap::new();
   for (id, uri) in &entry.dependencies {
-    scopes.insert(id.to_string(), get_document_style_private_scope(uri));
+    scopes.insert(id.to_string(), get_document_style_public_scope(uri));
   }
   scopes
 }
@@ -1479,7 +1479,7 @@ fn evaluate_attribute_dynamic_string<'a>(
           if class_export.public {
             format!(
               "_{}_{} {}",
-              get_document_style_private_scope(dep_uri),
+              get_document_style_public_scope(dep_uri),
               class_name,
               class_name
             )
@@ -1492,8 +1492,8 @@ fn evaluate_attribute_dynamic_string<'a>(
           }
         } else {
           format!(
-            "_{}_{} {}",
-            context.private_scope, pierce.class_name, pierce.class_name
+            "_{}_{} _{}_{} {}",
+            context.private_scope, pierce.class_name, context.public_scope, pierce.class_name, pierce.class_name
           )
         }
       }
