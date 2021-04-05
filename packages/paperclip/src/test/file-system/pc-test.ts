@@ -17,7 +17,7 @@ describe(__filename + "#", () => {
           .toString()
       )
     );
-    expect(result.replace(/ data-pc-[^>\s]+/, "")).to.eql(
+    expect(result.replace(/ data-pc-[^>\s]+/g, "")).to.eql(
       `<style></style><div>I'm a secret! </div>`
     );
   });

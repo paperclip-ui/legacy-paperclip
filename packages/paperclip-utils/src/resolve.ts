@@ -32,7 +32,6 @@ export const resolveImportFile = fs => (
       return uri;
     }
 
-    console.log("RESOLVE");
     return url.resolve(fromPath, toPath);
   } catch (e) {
     return null;

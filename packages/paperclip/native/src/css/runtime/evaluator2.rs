@@ -30,7 +30,7 @@ use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
-use crate::base::utils::{get_document_style_scope, is_relative_path};
+use crate::base::utils::{get_document_style_private_scope, get_document_style_public_scope, is_relative_path};
 
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
@@ -43,7 +43,8 @@ use std::collections::BTreeMap;
 use std::fmt;
 
 pub struct Context<'a> {
-  document_scope: &'a str,
+  private_scope: &'a str,
+  public_scope: &'a str,
 
   // deprecated
   element_scope: Option<(String, bool)>,
@@ -299,7 +300,8 @@ pub fn evaluate<'a>(
     DependencyContent::StyleSheet(sheet) => evaluate_expr(
       sheet,
       uri,
-      &get_document_style_scope(uri),
+      &get_document_style_private_scope(uri),
+      &get_document_style_public_scope(uri),
       None,
       BTreeMap::new(),
       vfs,
@@ -319,7 +321,8 @@ pub fn evaluate<'a>(
 pub fn evaluate_expr<'a>(
   expr: &ast::Sheet,
   uri: &'a String,
-  document_scope: &'a str,
+  private_scope: &'a str,
+  public_scope: &'a str,
   element_scope: Option<(String, bool)>,
   import_scopes: BTreeMap<String, String>,
   vfs: &'a VirtualFileSystem,
@@ -329,7 +332,8 @@ pub fn evaluate_expr<'a>(
   public: bool,
 ) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
-    document_scope,
+    private_scope,
+    public_scope,
     element_scope,
     uri,
     vfs,
@@ -416,7 +420,6 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
     }
     ast::Rule::Keyframes(rule) => {
       let rule = evaluate_keyframes_rule(rule, context)?;
-      context.all_rules.push(rule);
     }
     ast::Rule::Supports(rule) => {
       let rule = evaluate_supports_rule(rule, context)?;
@@ -550,7 +553,7 @@ fn evaluate_condition_rule(
 fn evaluate_keyframes_rule(
   rule: &ast::KeyframesRule,
   context: &mut Context,
-) -> Result<virt::Rule, RuntimeError> {
+) -> Result<(), RuntimeError> {
   let mut rules = vec![];
 
   for rule in &rule.rules {
@@ -572,10 +575,27 @@ fn evaluate_keyframes_rule(
     },
   );
 
-  Ok(virt::Rule::Keyframes(virt::KeyframesRule {
-    name: format!("_{}_{}", context.document_scope, rule.name.to_string()),
-    rules,
-  }))
+  context.all_rules.push(virt::Rule::Keyframes(virt::KeyframesRule {
+    name: format!("_{}_{}", get_document_scope(context), rule.name.to_string()),
+    rules: rules.clone(),
+  }));  
+
+
+  if context.in_public_scope {
+    context.all_rules.push(virt::Rule::Keyframes(virt::KeyframesRule {
+      name: format!("_{}_{}", context.private_scope, rule.name.to_string()),
+      rules: rules.clone(),
+    }));
+  }
+  Ok(())
+}
+
+fn get_document_scope<'a>(context: &'a Context) -> &'a str {
+  if context.in_public_scope {
+    context.public_scope
+  } else {
+    &context.private_scope
+  }
 }
 
 fn evaluate_keyframe_rule(
@@ -676,7 +696,8 @@ fn get_mixin_from_rules<'a>(
 
 fn create_child_context<'a>(context: &Context<'a>) -> Context<'a> {
   Context {
-    document_scope: context.document_scope,
+    private_scope: context.private_scope,
+    public_scope: context.public_scope,
     element_scope: context.element_scope.clone(),
     uri: context.uri,
     content: context.content.clone(),
@@ -1118,7 +1139,7 @@ impl<'a> Iterator for SelectorEmitterIterator<'a> {
 }
 
 fn get_document_scope_selector(context: &Context) -> String {
-  format!("[data-pc-{}]", context.document_scope)
+  format!("[data-pc-{}]", get_document_scope(context))
 }
 
 fn write_element_selector(
@@ -1359,7 +1380,7 @@ fn write_element_selector(
       let selector_text = if include_document_scope {
         format!(
           "{}._{}_{}",
-          specificty_str, context.document_scope, selector.class_name
+          specificty_str, get_document_scope(context), selector.class_name
         )
       } else {
         format!("{}.{}", specificty_str, selector.class_name)
@@ -1396,7 +1417,7 @@ fn is_reserved_keyframe_word<'a>(word: &'a str) -> bool {
 
 fn format_scoped_reference(value: &str, context: &Context) -> String {
   if !value.contains(".") {
-    format!("_{}_{}", context.document_scope, value)
+    format!("_{}_{}", context.private_scope, value)
   } else {
     let parts: Vec<&str> = value.split(".").collect();
     let scope_option = context

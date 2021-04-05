@@ -5,7 +5,7 @@ use super::virt;
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
-use crate::base::utils::{get_document_style_scope, is_relative_path};
+use crate::base::utils::{get_document_style_private_scope, get_document_style_public_scope, is_relative_path};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
@@ -38,7 +38,8 @@ pub struct Context<'a> {
   pub uri: &'a String,
   pub import_ids: HashSet<&'a String>,
   pub part_ids: HashSet<&'a String>,
-  pub scope: String,
+  pub private_scope: String,
+  pub public_scope: String,
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
@@ -351,7 +352,8 @@ fn evaluate_node_sheet<'a>(
   css_exports: &'a mut css_export::Exports,
   context: &'a mut Context,
 ) -> Result<(), RuntimeError> {
-  let scope = get_document_style_scope(uri);
+  let private_scope = get_document_style_private_scope(uri);
+  let public_scope = get_document_style_public_scope(uri);
 
   let element_scope = if let Some(parent) = parent {
     if let ast::Node::Element(element) = parent {
@@ -370,7 +372,8 @@ fn evaluate_node_sheet<'a>(
     let info = evaluate_css_expr(
       &style_element.sheet,
       uri,
-      &scope,
+      &private_scope,
+      &public_scope,
       element_scope,
       context.import_scopes.clone(),
       context.vfs,
@@ -500,7 +503,8 @@ fn create_context<'a>(
     vec![]
   };
 
-  let scope = get_document_style_scope(uri);
+  let private_scope = get_document_style_private_scope(uri);
+  let public_scope = get_document_style_public_scope(uri);
 
   Context {
     graph,
@@ -511,7 +515,8 @@ fn create_context<'a>(
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
     import_scopes: get_import_scopes(graph.dependencies.get(uri).unwrap()),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
-    scope,
+    private_scope,
+    public_scope,
     data,
     mode,
   }
@@ -520,7 +525,7 @@ fn create_context<'a>(
 pub fn get_import_scopes<'a>(entry: &Dependency) -> BTreeMap<String, String> {
   let mut scopes = BTreeMap::new();
   for (id, uri) in &entry.dependencies {
-    scopes.insert(id.to_string(), get_document_style_scope(uri));
+    scopes.insert(id.to_string(), get_document_style_private_scope(uri));
   }
   scopes
 }
@@ -559,7 +564,7 @@ pub fn evaluate_node<'a>(
 }
 
 pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> String {
-  let buff = format!("{}{}", context.scope, element.id);
+  let buff = format!("{}{}", context.private_scope, element.id);
   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }
 
@@ -1207,9 +1212,13 @@ fn evaluate_native_element<'a>(
     }
   }
 
-  let name = format!("data-pc-{}", context.scope.to_string()).to_string();
+  let private_scope_name = format!("data-pc-{}", context.private_scope.to_string()).to_string();
 
-  attributes.insert(name.to_string(), None);
+  attributes.insert(private_scope_name.to_string(), None);
+
+  let public_scope_name = format!("data-pc-{}", context.public_scope.to_string()).to_string();
+
+  attributes.insert(public_scope_name.to_string(), None);
 
   // A bit dirty, but we need to quickly scan for style elements so that we can apply
   // let contains_style = element.children.iter().any(|child| match child {
@@ -1470,7 +1479,7 @@ fn evaluate_attribute_dynamic_string<'a>(
           if class_export.public {
             format!(
               "_{}_{} {}",
-              get_document_style_scope(dep_uri),
+              get_document_style_private_scope(dep_uri),
               class_name,
               class_name
             )
@@ -1484,7 +1493,7 @@ fn evaluate_attribute_dynamic_string<'a>(
         } else {
           format!(
             "_{}_{} {}",
-            context.scope, pierce.class_name, pierce.class_name
+            context.private_scope, pierce.class_name, pierce.class_name
           )
         }
       }
@@ -1579,7 +1588,7 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
       }
 
       if class != &"" {
-        format!("_{}_{} {}", context.scope, class, class)
+        format!("_{}_{} {}", context.private_scope, class, class)
       } else {
         class.to_string()
       }
