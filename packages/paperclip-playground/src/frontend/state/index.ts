@@ -177,7 +177,7 @@ export const hasUnsavedChanges = (state: AppState, prevState: AppState) => {
   return false;
 };
 
-export const EDITABLE_MIME_TYPES = ["text/plain", "image/svg+xml"];
+export const EDITABLE_MIME_TYPES = ["text/plain", "text/css", "image/svg+xml"];
 
 const MEDIA_MIME_TYPES = [
   "image/png",
