@@ -34,8 +34,6 @@ export type BaseNode<TKind extends NodeKind> = {
   kind: TKind;
 };
 
-
-
 // TODO - include location here.
 export type Text = {
   value: string;
@@ -244,6 +242,11 @@ export const getImportById = (id: string, ast: Node): Element | null =>
     return getAttributeStringValue(AS_ATTR_NAME, imp) === id;
   });
 
+export const getImportBySrc = (src: string, ast: Node): Element | null =>
+  getImports(ast).find(imp => {
+    return getAttributeStringValue("src", imp) === src;
+  });
+
 export const getChildren = (ast: Node): Node[] => {
   if (ast.kind === NodeKind.Element || ast.kind === NodeKind.Fragment) {
     return ast.children;
@@ -350,9 +353,10 @@ export const isVisibleNode = (node: Node): boolean =>
 export const getVisibleChildNodes = (ast: Node): Node[] =>
   getChildren(ast).filter(isVisibleNode);
 
-export const isComponent = (node: Node): node is Element => node.kind === NodeKind.Element &&
-hasAttribute("component", node) &&
-hasAttribute(AS_ATTR_NAME, node)
+export const isComponent = (node: Node): node is Element =>
+  node.kind === NodeKind.Element &&
+  hasAttribute("component", node) &&
+  hasAttribute(AS_ATTR_NAME, node);
 
 export const getParts = (ast: Node): Element[] =>
   getChildren(ast).filter(isComponent) as Element[];

@@ -5,7 +5,9 @@ use super::virt;
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
-use crate::base::utils::{get_document_style_scope, is_relative_path};
+use crate::base::utils::{
+  get_document_style_private_scope, get_document_style_public_scope, is_relative_path,
+};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
@@ -38,7 +40,9 @@ pub struct Context<'a> {
   pub uri: &'a String,
   pub import_ids: HashSet<&'a String>,
   pub part_ids: HashSet<&'a String>,
-  pub scope: String,
+  pub private_scope: String,
+  pub injected_scopes: Vec<String>,
+  pub public_scope: String,
   pub import_scopes: BTreeMap<String, String>,
   pub data: &'a js_virt::JsValue,
   pub render_call_stack: Vec<(String, RenderStrategy)>,
@@ -351,7 +355,8 @@ fn evaluate_node_sheet<'a>(
   css_exports: &'a mut css_export::Exports,
   context: &'a mut Context,
 ) -> Result<(), RuntimeError> {
-  let scope = get_document_style_scope(uri);
+  let private_scope = get_document_style_private_scope(uri);
+  let public_scope = get_document_style_public_scope(uri);
 
   let element_scope = if let Some(parent) = parent {
     if let ast::Node::Element(element) = parent {
@@ -370,7 +375,8 @@ fn evaluate_node_sheet<'a>(
     let info = evaluate_css_expr(
       &style_element.sheet,
       uri,
-      &scope,
+      &private_scope,
+      &public_scope,
       element_scope,
       context.import_scopes.clone(),
       context.vfs,
@@ -500,7 +506,8 @@ fn create_context<'a>(
     vec![]
   };
 
-  let scope = get_document_style_scope(uri);
+  let private_scope = get_document_style_private_scope(uri);
+  let public_scope = get_document_style_public_scope(uri);
 
   Context {
     graph,
@@ -509,18 +516,34 @@ fn create_context<'a>(
     render_call_stack,
     evaluated_graph,
     import_ids: HashSet::from_iter(ast::get_import_ids(node_expr)),
+    injected_scopes: get_injected_scoped(node_expr, graph.dependencies.get(uri).unwrap()),
     import_scopes: get_import_scopes(graph.dependencies.get(uri).unwrap()),
     part_ids: HashSet::from_iter(ast::get_part_ids(node_expr)),
-    scope,
+    private_scope,
+    public_scope,
     data,
     mode,
   }
 }
 
+pub fn get_injected_scoped<'a>(root_expr: &'a ast::Node, entry: &Dependency) -> Vec<String> {
+  let mut scopes: Vec<String> = vec![];
+  for import in ast::get_imports(root_expr) {
+    if ast::has_attribute("inject-styles", &import) {
+      if let Some(src) = ast::get_attribute_value("src", &import) {
+        scopes.push(get_document_style_public_scope(
+          entry.dependency_uri_maps.get(src).unwrap(),
+        ));
+      }
+    }
+  }
+  scopes
+}
+
 pub fn get_import_scopes<'a>(entry: &Dependency) -> BTreeMap<String, String> {
   let mut scopes = BTreeMap::new();
   for (id, uri) in &entry.dependencies {
-    scopes.insert(id.to_string(), get_document_style_scope(uri));
+    scopes.insert(id.to_string(), get_document_style_public_scope(uri));
   }
   scopes
 }
@@ -559,7 +582,7 @@ pub fn evaluate_node<'a>(
 }
 
 pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> String {
-  let buff = format!("{}{}", context.scope, element.id);
+  let buff = format!("{}{}", context.private_scope, element.id);
   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }
 
@@ -1207,9 +1230,19 @@ fn evaluate_native_element<'a>(
     }
   }
 
-  let name = format!("data-pc-{}", context.scope.to_string()).to_string();
+  let private_scope_name = format!("data-pc-{}", context.private_scope.to_string()).to_string();
 
-  attributes.insert(name.to_string(), None);
+  attributes.insert(private_scope_name.to_string(), None);
+
+  let public_scope_name = format!("data-pc-{}", context.public_scope.to_string()).to_string();
+
+  attributes.insert(public_scope_name.to_string(), None);
+
+  for injected_scope in &context.injected_scopes {
+    let scope_attr = format!("data-pc-{}", injected_scope).to_string();
+
+    attributes.insert(scope_attr.to_string(), None);
+  }
 
   // A bit dirty, but we need to quickly scan for style elements so that we can apply
   // let contains_style = element.children.iter().any(|child| match child {
@@ -1436,14 +1469,8 @@ fn evaluate_attribute_dynamic_string<'a>(
             ));
           };
 
-          let class_name = parts.last().unwrap();
-          // let imports = if let Some(imports) = context.evaluated_graph.get(context.uri) {
-          //   imports
-          // } else {
-          //   return Err(RuntimeError::unknown(context.uri));
-          // };
-
-          // let import_option = imports.get(&import_id);
+          // consider sm:p-3.5. Skip first ref. (BTW this is dirty AF)
+          let class_name = &parts[1..].join(".").to_string();
 
           let import_option = get_import(context.uri, &import_id, context);
 
@@ -1474,7 +1501,7 @@ fn evaluate_attribute_dynamic_string<'a>(
           if class_export.public {
             format!(
               "_{}_{} {}",
-              get_document_style_scope(dep_uri),
+              get_document_style_public_scope(dep_uri),
               class_name,
               class_name
             )
@@ -1487,8 +1514,12 @@ fn evaluate_attribute_dynamic_string<'a>(
           }
         } else {
           format!(
-            "_{}_{} {}",
-            context.scope, pierce.class_name, pierce.class_name
+            "_{}_{} _{}_{} {}",
+            context.private_scope,
+            pierce.class_name,
+            context.public_scope,
+            pierce.class_name,
+            pierce.class_name
           )
         }
       }
@@ -1557,33 +1588,42 @@ fn is_component_instance<'a>(element: &ast::Element, context: &Context<'a>) -> b
 
 fn transform_class_value<'a>(name: &String, value: &String, context: &mut Context) -> String {
   lazy_static! {
-    static ref scope_re: Regex = Regex::new(r"^_\w+_").unwrap();
+    static ref scope_re: Regex = Regex::new(r"^_[-\w]+_").unwrap();
   }
 
   // if scope_re.is_match(value) {
   //   return value.to_string();
   // }
 
-  let mut skip_next = false;
+  let mut skip = 0;
 
   let class_name_parts: Vec<&str> = value.split(" ").collect();
   class_name_parts
     .iter()
     .map(|class| {
       // if previous class is scoped, then skip
-      if skip_next {
-        skip_next = false;
+      if skip > 0 {
+        skip = skip - 1;
         return class.to_string();
       }
 
       // if already scoped, then skip
       if scope_re.is_match(class) {
-        skip_next = true;
+        skip = context.injected_scopes.len() + 2;
         return class.to_string();
       }
 
       if class != &"" {
-        format!("_{}_{} {}", context.scope, class, class)
+        let mut buffer = format!(
+          "_{}_{} _{}_{}",
+          context.private_scope, class, context.public_scope, class
+        );
+
+        for scope in &context.injected_scopes {
+          buffer = format!("{} _{}_{}", buffer, scope, class);
+        }
+
+        format!("{} {}", buffer, class)
       } else {
         class.to_string()
       }

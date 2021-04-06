@@ -592,6 +592,61 @@ The `as` keyword is your access point into anything exported by the imported doc
 - [Exporting styles](#export)
 - [Exporting components](#exporting-components)
 
+#### inject-styles
+
+The `inject-styles` props injects all of the import's public styles into the current document. For example:
+
+```html
+<import src="./tailwind.css" inject-styles />
+
+<div class="font-sans">
+  Styles from tailwind.css
+</div>
+```
+
+This is particularly useful for third-party CSS since `inject-styles` includes _all_ CSS selectors (class, ID, element, etc) into the current scope. Note that injected styles are only applied to the current document, so if you're importing components from another file, those components won't be styled. For example:
+
+
+```html live
+<import src="./tailwind.css" inject-styles />
+<import src="./some-module.pc" as="module" />
+
+<div class="font-sans">
+  Styles from tailwind.css
+
+  <!-- injected styles are NOT applied to this element -->
+  <module.Test />
+</div>
+```
+
+Note that `.css` files are a special case since all selectors are automatically exported. If you want to inject styles from a `.pc` file, you'll need to explicitly export the styles that you'd like to inject. For example:
+
+```html
+<style> 
+  @export {
+    * {
+      box-sizing: border-box;
+    }
+
+    .font-large {
+      font-size: 24px;
+    }
+  }
+
+  .this-class-is-not-applied {
+    color: orange;
+  }
+</style>
+```
+
+👆 everything that is defined within `export` can be injected into a document. Here's how you use the above example:
+
+```html
+<import src="./my-module.pc" inject-styles />
+<div class="font-large">
+  I'm large text
+</div>
+```
 
 ## Components
 

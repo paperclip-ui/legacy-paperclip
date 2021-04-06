@@ -36,7 +36,8 @@ import {
   ReferencePart,
   isVisibleElement,
   stringifyCSSSheet,
-  AS_ATTR_NAME
+  AS_ATTR_NAME,
+  INJECT_STYLES_TAG_NAME
 } from "paperclip";
 import {
   createTranslateContext,
@@ -80,10 +81,22 @@ export const compile = (
     }
     return record;
   }, {});
+  const injectScopes = getImports(ast).reduce((records, element) => {
+    const _src = getAttributeStringValue("src", element);
+    if (hasAttribute(INJECT_STYLES_TAG_NAME, element)) {
+      const uri = resolveImportFile(fileSystem)(fileUri, _src, true) || _src;
+      const scope = getStyleScopeId(uri);
+      records.push(scope);
+    }
+
+    return records;
+  }, []);
+
   let context = createTranslateContext(
     fileUri,
     getImportIds(ast),
     imports,
+    injectScopes,
     classNames,
     sheetRelativeFilePath,
     getPartIds(ast),
@@ -204,14 +217,19 @@ const translateStyleScopeAttributes = (
   context: TranslateContext,
   newLine = ""
 ) => {
-  context = addBuffer(
-    `"data-pc-${getElementScopeId(element, context.fileUri)}": true,\n`,
-    context
-  );
-  context = addBuffer(
-    `"data-pc-${getStyleScopeId(context.fileUri)}": true,${newLine}`,
-    context
-  );
+  const scopes = [
+    `data-pc-${getElementScopeId(element, context.fileUri)}`,
+    `data-pc-${getStyleScopeId(context.fileUri)}`,
+    `data-pc-pub-${getStyleScopeId(context.fileUri)}`,
+    ...context.injectScopes.map(scope => {
+      return `data-pc-pub-${scope}`;
+    })
+  ];
+
+  for (const scope of scopes) {
+    context = addBuffer(`"${scope}": true,${newLine}`, context);
+  }
+
   return context;
 };
 
@@ -299,18 +317,31 @@ const translateClassNamesUtil = (context: TranslateContext) => {
   context = startBlock(context);
   // context = addBuffer(`return classNames.map(className => {\n`, context);
   // context = startBlock(context);
-  context = addBuffer(
-    `return className ? "_${getStyleScopeId(
-      context.fileUri
-    )}_" + className + " " + className : "";\n`,
-    context
-  );
-  // context = endBlock(context);
-  // context = addBuffer(`}).join(" ");\n`, context);
+
+  const scopes = getStyleScopes(context);
+
+  context = addBuffer(`return className ? `, context);
+
+  for (const scope of scopes) {
+    context = addBuffer(`"${scope}" + className + " " +`, context);
+  }
+
+  context = addBuffer(`className : "";\n`, context);
+
   context = endBlock(context);
   context = addBuffer(`};\n\n`, context);
 
   return context;
+};
+
+const getStyleScopes = (context: TranslateContext) => {
+  return [
+    `_${getStyleScopeId(context.fileUri)}_`,
+    `_pub-${getStyleScopeId(context.fileUri)}_`,
+    ...context.injectScopes.map(scope => {
+      return `_pub-${scope}_`;
+    })
+  ];
 };
 
 // const translateStyledUtil = (ast: Node, context: TranslateContext) => {
@@ -370,7 +401,6 @@ const stringifyImportDefinition = (
   context: TranslateContext
 ) => {
   const className = strToClassName(imp, context.fileUri);
-
   return `${className}${sep}_${crc32(context.fileUri)}_${prefix}${pascalCase(
     className
   )}`;
@@ -1080,9 +1110,29 @@ const prefixWthStyleScopes = (
         scopeFilePath = context.fileUri;
       }
 
-      return `_${getStyleScopeId(
-        scopeFilePath
-      )}_${actualClassName} ${actualClassName}`;
+      const scopes = [
+        `_${getStyleScopeId(scopeFilePath)}_`,
+        `_pub-${getStyleScopeId(scopeFilePath)}_`
+      ];
+
+      // ignore explicit ref
+      if (className.indexOf(".") === -1) {
+        scopes.push(
+          ...context.injectScopes.map(scope => {
+            return `_pub_` + scope;
+          })
+        );
+      }
+
+      return (
+        scopes
+          .map(scope => {
+            return scope + actualClassName;
+          })
+          .join(" ") +
+        " " +
+        actualClassName
+      );
     })
     .join(" ");
 };
