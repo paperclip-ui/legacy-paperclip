@@ -401,7 +401,6 @@ const stringifyImportDefinition = (
   context: TranslateContext
 ) => {
   const className = strToClassName(imp, context.fileUri);
-
   return `${className}${sep}_${crc32(context.fileUri)}_${prefix}${pascalCase(
     className
   )}`;

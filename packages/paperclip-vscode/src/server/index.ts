@@ -10,7 +10,6 @@ import {
   InitializeResult
 } from "vscode-languageserver";
 
-import * as fs from "fs";
 import * as url from "url";
 import { createServices } from "./services";
 import { VSCServiceBridge } from "./bridge";

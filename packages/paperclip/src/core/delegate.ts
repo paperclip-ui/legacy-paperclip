@@ -9,7 +9,7 @@ import {
   DependencyContent,
   SheetInfo,
   LoadedData,
-  PaperclipSourceWatcher,
+  PaperclipResourceWatcher,
   ChangeKind,
   EvaluatedDataKind,
   DiffedPCData,
@@ -231,7 +231,7 @@ export class EngineDelegate {
 }
 
 export const keepEngineInSyncWithFileSystem2 = (
-  watcher: PaperclipSourceWatcher,
+  watcher: PaperclipResourceWatcher,
   engine: EngineDelegate
 ) => {
   return watcher.onChange((kind, uri) => {
@@ -247,8 +247,8 @@ export const keepEngineInSyncWithFileSystem2 = (
 };
 
 export type LoadedDataDetails = {
-  src: string;
-  injectStyles: boolean;
+  src?: string;
+  injectStyles?: boolean;
 } & LoadedData;
 
 /**
@@ -265,10 +265,10 @@ export const getEngineImports = (
     const ast = delegate.getLoadedAst(uri) as DependencyNodeContent;
     return Object.keys(data.dependencies).reduce((record: any, id: string) => {
       const depUri = data.dependencies[id];
-      const imp = getImportById(id, ast) || getImportBySrc(id, ast);
+      const imp = ast && (getImportById(id, ast) || getImportBySrc(id, ast));
       record[id] = {
-        uri: getAttributeStringValue("src", imp),
-        injectStyles: hasAttribute(INJECT_STYLES_TAG_NAME, imp),
+        uri: imp && getAttributeStringValue("src", imp),
+        injectStyles: imp && hasAttribute(INJECT_STYLES_TAG_NAME, imp),
         ...delegate.getLoadedData(depUri)!
       };
       return record;

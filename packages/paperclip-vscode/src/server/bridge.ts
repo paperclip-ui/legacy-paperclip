@@ -51,8 +51,6 @@ import { stripFileProtocol } from "paperclip";
 import { EngineDelegate } from "paperclip";
 import { fixFileUrlCasing } from "../utils";
 
-const PERSIST_ENGINE_THROTTLE_MS = 100;
-
 type KeyValue<TValue> = {
   [identifier: string]: TValue;
 };
@@ -88,6 +86,7 @@ export class VSCServiceBridge {
 
     connection.onDidOpenTextDocument(({ textDocument }) => {
       const uri = fixFileUrlCasing(textDocument.uri);
+      console.log(uri);
       this._documents[uri] = TextDocument.create(
         uri,
         textDocument.languageId,

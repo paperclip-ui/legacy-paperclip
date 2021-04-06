@@ -219,6 +219,10 @@ const useUrlResolver = () => {
 
   return useCallback(
     url => {
+      if (/^https?:\/\//.test(url)) {
+        return url;
+      }
+
       if (resourceHost) {
         return resourceHost + url.replace("file://", "");
       }

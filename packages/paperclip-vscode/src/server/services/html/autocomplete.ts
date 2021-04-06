@@ -119,8 +119,6 @@ export class PCAutocomplete {
           return this._getCSSFunctionSuggestion(context, uri, data, imports);
         case SuggestContextKind.CSS_CLASS_REFERENCE:
           return this._getCSSClassReferenceSuggestion(data, imports);
-        // case SuggestContextKind.HTML_CLOSE_TAG_NAME:
-        //   return this._getCloseTagSuggestion(context);
       }
     } catch (e) {
       console.error(e.stack);
@@ -406,6 +404,7 @@ export class PCAutocomplete {
     imports: Record<string, LoadedDataDetails>,
     includeImports = true
   ) {
+
     const list: CompletionItem[] = [];
     const styleExports =
       data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;

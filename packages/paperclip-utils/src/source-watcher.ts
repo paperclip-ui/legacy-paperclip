@@ -3,7 +3,7 @@ import * as path from "path";
 import * as url from "url";
 import { EventEmitter } from "events";
 import { PaperclipConfig } from "./config";
-import { paperclipSourceGlobPattern } from "./utils";
+import { paperclipResourceGlobPattern, paperclipSourceGlobPattern } from "./utils";
 
 export enum ChangeKind {
   Removed,
@@ -17,7 +17,7 @@ const CHOKIDAR_EVENT_MAP = {
   change: ChangeKind.Changed
 };
 
-export class PaperclipSourceWatcher {
+export class PaperclipResourceWatcher {
   private _em: EventEmitter;
   private _watcher: chokidar.FSWatcher;
   constructor(readonly config: PaperclipConfig, readonly cwd: string) {
@@ -33,7 +33,7 @@ export class PaperclipSourceWatcher {
   }
   private _init() {
     const watcher = (this._watcher = chokidar.watch(
-      paperclipSourceGlobPattern(this.config.sourceDirectory),
+      paperclipResourceGlobPattern(this.config.sourceDirectory),
       { cwd: this.cwd, ignoreInitial: true }
     ));
     watcher.on("all", (eventName, relativePath) => {
