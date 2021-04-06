@@ -9,10 +9,16 @@ import {
   DependencyContent,
   SheetInfo,
   LoadedData,
-  PaperclipSourceWatcher,
+  PaperclipResourceWatcher,
   ChangeKind,
   EvaluatedDataKind,
-  DiffedPCData
+  DiffedPCData,
+  getImportById,
+  getImportBySrc,
+  DependencyNodeContent,
+  getAttributeStringValue,
+  hasAttribute,
+  INJECT_STYLES_TAG_NAME
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -51,7 +57,6 @@ const mapResult = result => {
     return { error: result.Err };
   }
 };
-
 
 export type EngineDelegateEventListener = (event: EngineDelegateEvent) => void;
 
@@ -122,7 +127,11 @@ export class EngineDelegate {
 
         const addedSheets: SheetInfo[] = [];
 
-        for (let i = 0, {length} = diffData.allImportedSheetUris; i < length; i++) {
+        for (
+          let i = 0, { length } = diffData.allImportedSheetUris;
+          i < length;
+          i++
+        ) {
           const depUri = diffData.allImportedSheetUris[i];
           // Note that we only do this if the sheet is already rendered -- engine
           // doesn't fire an event in that scenario. So we need to notify any listener that a sheet
@@ -138,7 +147,6 @@ export class EngineDelegate {
             });
           }
         }
-
 
         if (addedSheets.length || removedSheetUris.length) {
           this._dispatch({
@@ -222,7 +230,7 @@ export class EngineDelegate {
 }
 
 export const keepEngineInSyncWithFileSystem2 = (
-  watcher: PaperclipSourceWatcher,
+  watcher: PaperclipResourceWatcher,
   engine: EngineDelegate
 ) => {
   return watcher.onChange((kind, uri) => {
@@ -237,6 +245,11 @@ export const keepEngineInSyncWithFileSystem2 = (
   });
 };
 
+export type LoadedDataDetails = {
+  src?: string;
+  injectStyles?: boolean;
+} & LoadedData;
+
 /**
  * Kept separate from the engine since this is more of a util function for ID inspection
  */
@@ -244,12 +257,19 @@ export const keepEngineInSyncWithFileSystem2 = (
 export const getEngineImports = (
   uri: string,
   delegate: EngineDelegate
-): Record<string, LoadedData> => {
+): Record<string, LoadedDataDetails> => {
   const data = delegate.getLoadedData(uri);
 
   if (data.kind === EvaluatedDataKind.PC) {
+    const ast = delegate.getLoadedAst(uri) as DependencyNodeContent;
     return Object.keys(data.dependencies).reduce((record: any, id: string) => {
-      record[id] = delegate.getLoadedData(data.dependencies[id])!;
+      const depUri = data.dependencies[id];
+      const imp = ast && (getImportById(id, ast) || getImportBySrc(id, ast));
+      record[id] = {
+        uri: imp && getAttributeStringValue("src", imp),
+        injectStyles: imp && hasAttribute(INJECT_STYLES_TAG_NAME, imp),
+        ...delegate.getLoadedData(depUri)!
+      };
       return record;
     }, {});
   } else {

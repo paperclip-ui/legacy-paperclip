@@ -81,10 +81,6 @@ const resolveModule = fs => (
       const modulePath = path.join(moduleDirectory, srcPath);
       const moduleConfigUrl = findPCConfigUrl(fs)(modulePath);
 
-      if (moduleConfigUrl === configUrl) {
-        continue;
-      }
-
       if (fs.existsSync(modulePath)) {
         const moduleConfig: PaperclipConfig = readJSONSync(fs)(
           new URL(moduleConfigUrl) as any
@@ -100,6 +96,7 @@ const resolveModule = fs => (
         const actualPath = resolveOutput
           ? modulePath.replace(sourceDir, outputDir)
           : fs.realpathSync(modulePath);
+
         return url.pathToFileURL(actualPath).href;
       }
     }

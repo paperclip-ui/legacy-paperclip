@@ -39,7 +39,7 @@ import { normalize, relative } from "path";
 import { EventEmitter } from "events";
 import { noop } from "lodash";
 import { exec } from "child_process";
-import { EngineMode, PaperclipSourceWatcher } from "paperclip";
+import { EngineMode, PaperclipResourceWatcher } from "paperclip";
 import { isPaperclipFile, PaperclipConfig } from "paperclip";
 import * as ngrok from "ngrok";
 import * as qs from "querystring";
@@ -364,7 +364,7 @@ const watchPaperclipSources = (
   // want to load all PC files within the CWD workspace -- disregard PC configs
 
   const watcher = chokidar.watch(
-    "**/*.pc",
+    "**/*.{pc,css}",
 
     // TODO - ignored - fetch .gitignored
     { cwd: cwd, ignored: ["**/node_modules/**", "node_modules"] }

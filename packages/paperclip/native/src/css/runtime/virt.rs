@@ -70,6 +70,7 @@ impl fmt::Display for FontFaceRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ConditionRule {
   pub name: String,
+  #[serde(rename = "conditionText")]
   pub condition_text: String,
   pub rules: Vec<Rule>,
 }

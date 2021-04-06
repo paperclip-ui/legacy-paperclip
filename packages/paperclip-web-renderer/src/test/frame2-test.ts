@@ -411,7 +411,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><span class="_80f4925f_a a"></span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f_a _pub-80f4925f_a a"></span></div>`
     );
 
     engine.updateVirtualFileContent(
@@ -439,7 +439,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\/g, "/Z/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><span class="_80f4925f_b b"></span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f_b _pub-80f4925f_b b"></span></div>`
     );
   });
 

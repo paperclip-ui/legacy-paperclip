@@ -1,17 +1,21 @@
-- computed style inspector
-  - needs to use getComputedCSSStyle
-  - needs to link declarations with ASTs
-    - on click, go to source code
+IMMEDIATE:
 
-- start on virtual object inspector
-  - start with styles
-    - consider :global, :within, nested &
-      - a { &--b }
-    - come up with list of 
+- tailwind integration
+- prettier plugin (required for UI to write code)
+- CSS shaking (core part of CSS inspector)
 
-  - needs to inspect actual virtual object - engine.inspectNode(uri, nodePath) {
-    styleRules: [
-      { selector: "aa", declarations: [{ name: "a", value: "b" }] },
-      { selector: "a &--b", declarations: [{ name: "a", value: "b" }] }
-    ]
-  }
+OTHER:
+
+- prettier plugin
+
+
+- UI editor prototype (need feedback about this from designers)
+  - MVP - some way to display PC files online (auto-generate playground w/ )
+
+
+- Playground
+  - sync GitHub code
+    - ability to checkout branches
+    - ability to create new branch
+    - ability to create new project
+  

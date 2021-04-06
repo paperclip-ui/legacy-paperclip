@@ -180,10 +180,12 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     }
   }
 
-  private _handleStyleRule(rule: StyleRule, context: HandleContext) {
-    this._handleDeclarations(rule.declarations, context);
-    for (const child of rule.children) {
-      this._handleStyleRule(child, context);
+  private _handleStyleRule(rule: Rule, context: HandleContext) {
+    if (rule.kind === RuleKind.Style) {
+      this._handleDeclarations(rule.declarations, context);
+      for (const child of rule.children) {
+        this._handleStyleRule(child, context);
+      }
     }
   }
   private _handleKeyValueDeclaration(

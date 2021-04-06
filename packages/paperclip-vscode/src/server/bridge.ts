@@ -51,8 +51,6 @@ import { stripFileProtocol } from "paperclip";
 import { EngineDelegate } from "paperclip";
 import { fixFileUrlCasing } from "../utils";
 
-const PERSIST_ENGINE_THROTTLE_MS = 100;
-
 type KeyValue<TValue> = {
   [identifier: string]: TValue;
 };
@@ -88,6 +86,7 @@ export class VSCServiceBridge {
 
     connection.onDidOpenTextDocument(({ textDocument }) => {
       const uri = fixFileUrlCasing(textDocument.uri);
+      console.log(uri);
       this._documents[uri] = TextDocument.create(
         uri,
         textDocument.languageId,
@@ -95,12 +94,7 @@ export class VSCServiceBridge {
         textDocument.text
       );
 
-      
-
-      this._engine.updateVirtualFileContent(
-        uri,
-        textDocument.text
-      );
+      this._engine.updateVirtualFileContent(uri, textDocument.text);
     });
     connection.onDidCloseTextDocument(params => {
       const uri = fixFileUrlCasing(params.textDocument.uri);
@@ -119,15 +113,13 @@ export class VSCServiceBridge {
     const service = this._service.getService(uri);
     return (
       service &&
-      (service
-        .getLinks(uri)
-        .map(({ uri, location: { start, end } }) => ({
-          target: uri,
-          range: {
-            start: document.positionAt(start),
-            end: document.positionAt(end)
-          }
-        })) as DocumentLink[])
+      (service.getLinks(uri).map(({ uri, location: { start, end } }) => ({
+        target: uri,
+        range: {
+          start: document.positionAt(start),
+          end: document.positionAt(end)
+        }
+      })) as DocumentLink[])
     );
   };
 
@@ -162,7 +154,10 @@ export class VSCServiceBridge {
     this._enhanceCalm();
 
     for (const uri in contentChanges) {
-      this._engine.updateVirtualFileContent(fixFileUrlCasing(uri), contentChanges[uri]);
+      this._engine.updateVirtualFileContent(
+        fixFileUrlCasing(uri),
+        contentChanges[uri]
+      );
     }
   };
 
@@ -227,9 +222,7 @@ export class VSCServiceBridge {
     const doc = document.getText();
     const text = doc.substr(0, document.offsetAt(params.position));
 
-    const ret = this._service
-      .getService(uri)
-      .getCompletionItems(uri, text);
+    const ret = this._service.getService(uri).getCompletionItems(uri, text);
 
     return ret;
   };
@@ -413,4 +406,3 @@ const createErrorDiagnostic = (
     source: "ex"
   };
 };
-
