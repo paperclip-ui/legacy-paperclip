@@ -21,7 +21,6 @@ pub fn get_document_style_public_scope<'a>(uri: &String) -> String {
   format!("pub-{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }
 
-
 pub fn is_relative_path(path: &String) -> bool {
   let url_re = Regex::new(r"(https?|data):").unwrap();
   return !url_re.is_match(path.clone().as_str());

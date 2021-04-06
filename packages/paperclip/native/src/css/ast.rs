@@ -218,7 +218,7 @@ impl fmt::Display for ExportRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ConditionRule {
   pub name: String,
-  
+
   #[serde(rename = "conditionText")]
   pub condition_text: String,
   pub rules: Vec<StyleRule>,

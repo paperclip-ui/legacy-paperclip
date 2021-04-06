@@ -302,7 +302,8 @@ fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Keyframe
   let key = get_buffer(context.tokenizer, |tokenizer| {
     let tok = tokenizer.peek(1)?;
     Ok(tok != Token::CurlyOpen)
-  })?.to_string();
+  })?
+  .to_string();
 
   let (declarations, _children) = parse_declaration_body(context)?;
 

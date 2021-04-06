@@ -5,7 +5,9 @@ use super::virt;
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
-use crate::base::utils::{get_document_style_private_scope, get_document_style_public_scope, is_relative_path};
+use crate::base::utils::{
+  get_document_style_private_scope, get_document_style_public_scope, is_relative_path,
+};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
@@ -529,7 +531,9 @@ pub fn get_injected_scoped<'a>(root_expr: &'a ast::Node, entry: &Dependency) -> 
   for import in ast::get_imports(root_expr) {
     if ast::has_attribute("inject-styles", &import) {
       if let Some(src) = ast::get_attribute_value("src", &import) {
-        scopes.push(get_document_style_public_scope(entry.dependency_uri_maps.get(src).unwrap()));
+        scopes.push(get_document_style_public_scope(
+          entry.dependency_uri_maps.get(src).unwrap(),
+        ));
       }
     }
   }
@@ -1235,7 +1239,6 @@ fn evaluate_native_element<'a>(
   attributes.insert(public_scope_name.to_string(), None);
 
   for injected_scope in &context.injected_scopes {
-
     let scope_attr = format!("data-pc-{}", injected_scope).to_string();
 
     attributes.insert(scope_attr.to_string(), None);
@@ -1466,10 +1469,8 @@ fn evaluate_attribute_dynamic_string<'a>(
             ));
           };
 
-
           // consider sm:p-3.5. Skip first ref. (BTW this is dirty AF)
           let class_name = &parts[1..].join(".").to_string();
-
 
           let import_option = get_import(context.uri, &import_id, context);
 
@@ -1514,7 +1515,11 @@ fn evaluate_attribute_dynamic_string<'a>(
         } else {
           format!(
             "_{}_{} _{}_{} {}",
-            context.private_scope, pierce.class_name, context.public_scope, pierce.class_name, pierce.class_name
+            context.private_scope,
+            pierce.class_name,
+            context.public_scope,
+            pierce.class_name,
+            pierce.class_name
           )
         }
       }
@@ -1609,8 +1614,10 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
       }
 
       if class != &"" {
-
-        let mut buffer = format!("_{}_{} _{}_{}", context.private_scope, class, context.public_scope, class);
+        let mut buffer = format!(
+          "_{}_{} _{}_{}",
+          context.private_scope, class, context.public_scope, class
+        );
 
         for scope in &context.injected_scopes {
           buffer = format!("{} _{}_{}", buffer, scope, class);

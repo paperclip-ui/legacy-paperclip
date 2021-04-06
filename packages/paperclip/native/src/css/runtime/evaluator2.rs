@@ -30,7 +30,9 @@ use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
-use crate::base::utils::{get_document_style_private_scope, get_document_style_public_scope, is_relative_path};
+use crate::base::utils::{
+  get_document_style_private_scope, get_document_style_public_scope, is_relative_path,
+};
 
 use crate::base::ast::{ExprSource, Location};
 use crate::base::runtime::RuntimeError;
@@ -575,17 +577,20 @@ fn evaluate_keyframes_rule(
     },
   );
 
-  context.all_rules.push(virt::Rule::Keyframes(virt::KeyframesRule {
-    name: format!("_{}_{}", get_document_scope(context), rule.name.to_string()),
-    rules: rules.clone(),
-  }));  
-
-
-  if context.in_public_scope {
-    context.all_rules.push(virt::Rule::Keyframes(virt::KeyframesRule {
-      name: format!("_{}_{}", context.private_scope, rule.name.to_string()),
+  context
+    .all_rules
+    .push(virt::Rule::Keyframes(virt::KeyframesRule {
+      name: format!("_{}_{}", get_document_scope(context), rule.name.to_string()),
       rules: rules.clone(),
     }));
+
+  if context.in_public_scope {
+    context
+      .all_rules
+      .push(virt::Rule::Keyframes(virt::KeyframesRule {
+        name: format!("_{}_{}", context.private_scope, rule.name.to_string()),
+        rules: rules.clone(),
+      }));
   }
   Ok(())
 }
@@ -961,7 +966,6 @@ fn evaluate_style_rule2(
         let scoped_class_name = caps.get(1).unwrap().as_str();
         let mut class_name = scope_re.replace(scoped_class_name, "").to_string();
         class_name = escape_re.replace_all(class_name.as_str(), "").to_string();
-        
 
         let existing_option = context.exports.class_names.get(&class_name);
 
@@ -1380,7 +1384,9 @@ fn write_element_selector(
       let selector_text = if include_document_scope {
         format!(
           "{}._{}_{}",
-          specificty_str, get_document_scope(context), selector.class_name
+          specificty_str,
+          get_document_scope(context),
+          selector.class_name
         )
       } else {
         format!("{}.{}", specificty_str, selector.class_name)
