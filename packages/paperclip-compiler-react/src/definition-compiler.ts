@@ -42,6 +42,7 @@ export const compile = (
     filePath,
     getImportIds(ast),
     {},
+    [],
     {},
     "",
     getPartIds(ast),
