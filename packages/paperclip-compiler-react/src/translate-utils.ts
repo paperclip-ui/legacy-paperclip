@@ -7,6 +7,7 @@ export type TranslateContext = {
   lineNumber: number;
   currentIndexKey?: string;
   fileSystem: any;
+  injectScopes: string[];
   scopes: {
     [identifier: string]: boolean;
   };
@@ -28,6 +29,7 @@ export const createTranslateContext = (
   fileUri: string,
   importIds: string[],
   imports: Record<string, string>,
+  injectScopes: string[],
   classNames: Record<string, ClassNameExport>,
   sheetRelativeFilePath: string,
   partIds: string[],
@@ -40,6 +42,7 @@ export const createTranslateContext = (
   classNames,
   fileUri,
   importIds,
+  injectScopes,
   partIds,
   scopes: {},
   imports,

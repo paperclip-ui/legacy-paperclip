@@ -431,6 +431,56 @@ describe(__filename + "#", () => {
       {
         Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"></div>`
       }
+    ],
+    [
+      "inject-style prop works",
+      {
+        "/entry.pc": `
+          <import src="/module.pc" inject-styles />
+          <div export component as="Entry" className="abb">
+          </div>
+        `,
+        "/module.pc": `
+        `
+      },
+      {
+        Entry: {
+          tagName: "test"
+        }
+      },
+      {
+        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-pc-pub-139cec8e="true" class="_80f4925f_abb _pub-80f4925f_abb _pub_139cec8eabb abb"></div>`
+      }
+    ],
+    [
+      "explicit reference doesn't get mixed with injected scopes",
+      {
+        "/entry.pc": `
+          <import src="/a.pc" inject-styles />
+          <import src="/b.pc" as="b" />
+          <div export component as="Entry" className="$b.test blah">
+          </div>
+        `,
+        "/a.pc": `
+        `,
+        "/b.pc": `
+          <style>
+            @export {
+              .test {
+                color: red;
+              }
+            }
+          </style>
+        `
+      },
+      {
+        Entry: {
+          tagName: "test"
+        }
+      },
+      {
+        Entry: `<div data-pc-ae63497a="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-pc-pub-98523c41="true" class="_8ae793af_test _pub-8ae793af_test test _80f4925f_blah _pub-80f4925f_blah _pub_98523c41blah blah"></div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {
