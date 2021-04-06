@@ -16,7 +16,6 @@ import {
   getImportById,
   getImportBySrc,
   DependencyNodeContent,
-  getAttribute,
   getAttributeStringValue,
   hasAttribute,
   INJECT_STYLES_TAG_NAME
