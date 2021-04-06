@@ -41,6 +41,7 @@ import {
 import { DEFAULT_PART_ID } from "paperclip";
 import { LoadedData } from "paperclip";
 import { memoize } from "lodash";
+import { LoadedDataDetails } from "paperclip/src/core/delegate";
 
 const EMPTY_ARRAY = [];
 
@@ -52,7 +53,7 @@ export class PCAutocomplete {
     uri: string,
     text: string,
     data: LoadedData,
-    imports: Record<string, LoadedData>
+    imports: Record<string, LoadedDataDetails>
   ): PCCompletionItem[] {
     return this.getSuggestions2(uri, text, data, imports).map(item =>
       addCompletionItemData(item, uri)
@@ -63,7 +64,7 @@ export class PCAutocomplete {
     uri: string,
     text: string,
     data: LoadedData,
-    imports: Record<string, LoadedData>
+    imports: Record<string, LoadedDataDetails>
   ): CompletionItem[] {
     let context;
 
@@ -300,7 +301,7 @@ export class PCAutocomplete {
     uri: string,
     context: HTMLAttributeStringValueContext,
     data: LoadedData,
-    imports: Record<string, LoadedData>
+    imports: Record<string, LoadedDataDetails>
   ) {
     if (context.tagPath.length === 1 && context.tagPath[0] === "import") {
       if (context.attributeName == "src") {
@@ -319,7 +320,7 @@ export class PCAutocomplete {
     const attrName = context.attributeName.split(":").shift();
 
     if (attrName === "className" || attrName === "class") {
-      return this._getCSSClassReferenceSuggestion(data, imports, false);
+      return this._getCSSClassReferenceSuggestion(data, imports);
     }
     return [];
   }
@@ -402,7 +403,7 @@ export class PCAutocomplete {
 
   private _getCSSClassReferenceSuggestion(
     data: LoadedData,
-    imports: Record<string, LoadedData>,
+    imports: Record<string, LoadedDataDetails>,
     includeImports = true
   ) {
     const list: CompletionItem[] = [];
@@ -416,7 +417,8 @@ export class PCAutocomplete {
     }
     if (includeImports) {
       for (const id in imports) {
-        if (/\//.test(id)) {
+        const details = imports[id];
+        if (/\//.test(id) && !details.injectStyles) {
           continue;
         }
 
@@ -427,9 +429,16 @@ export class PCAutocomplete {
           if (!part.public) {
             continue;
           }
-          list.push({
-            label: `${id}.${className}`
-          });
+
+          if (details.injectStyles) {
+            list.push({
+              label: className
+            });
+          } else {
+            list.push({
+              label: `${id}.${className}`
+            });
+          }
         }
       }
     }

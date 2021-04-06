@@ -72,6 +72,15 @@ describe(__filename, () => {
       }
     ],
     [
+      `<div class="a b`,
+      {
+        kind: SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE,
+        tagPath: ["div"],
+        attributeName: "class",
+        attributeValuePrefix: "a b"
+      }
+    ],
+    [
       `<import src="  `,
       {
         kind: SuggestContextKind.HTML_STRING_ATTRIBUTE_VALUE,

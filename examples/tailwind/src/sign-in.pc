@@ -1,4 +1,4 @@
- <import src="./tailwind.css" inject-styles />
+ <import src="./tailwind.css" inject-styles/>
 
 
 <!--
