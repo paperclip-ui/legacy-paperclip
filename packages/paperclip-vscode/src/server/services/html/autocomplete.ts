@@ -404,7 +404,6 @@ export class PCAutocomplete {
     imports: Record<string, LoadedDataDetails>,
     includeImports = true
   ) {
-
     const list: CompletionItem[] = [];
     const styleExports =
       data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;

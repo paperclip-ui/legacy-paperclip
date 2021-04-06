@@ -148,7 +148,10 @@ export const resolveAllPaperclipFiles = findResourcesFromConfig(
     return resolveResources(
       config,
       cwd,
-      filterAllFiles(filePath => path.extname(filePath) === ".pc" ||  path.extname(filePath) === ".css")
+      filterAllFiles(
+        filePath =>
+          path.extname(filePath) === ".pc" || path.extname(filePath) === ".css"
+      )
     );
   }
 );

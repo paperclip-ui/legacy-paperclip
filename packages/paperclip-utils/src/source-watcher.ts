@@ -3,7 +3,10 @@ import * as path from "path";
 import * as url from "url";
 import { EventEmitter } from "events";
 import { PaperclipConfig } from "./config";
-import { paperclipResourceGlobPattern, paperclipSourceGlobPattern } from "./utils";
+import {
+  paperclipResourceGlobPattern,
+  paperclipSourceGlobPattern
+} from "./utils";
 
 export enum ChangeKind {
   Removed,
