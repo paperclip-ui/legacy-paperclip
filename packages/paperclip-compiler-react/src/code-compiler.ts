@@ -217,21 +217,17 @@ const translateStyleScopeAttributes = (
   context: TranslateContext,
   newLine = ""
 ) => {
-
   const scopes = [
     `data-pc-${getElementScopeId(element, context.fileUri)}`,
     `data-pc-${getStyleScopeId(context.fileUri)}`,
     `data-pc-pub-${getStyleScopeId(context.fileUri)}`,
     ...context.injectScopes.map(scope => {
-      return `data-pc-pub-${scope}`
+      return `data-pc-pub-${scope}`;
     })
   ];
 
   for (const scope of scopes) {
-    context = addBuffer(
-      `"${scope}": true,${newLine}`,
-      context
-    );
+    context = addBuffer(`"${scope}": true,${newLine}`, context);
   }
 
   return context;
@@ -323,7 +319,7 @@ const translateClassNamesUtil = (context: TranslateContext) => {
   // context = startBlock(context);
 
   const scopes = getStyleScopes(context);
-  
+
   context = addBuffer(`return className ? `, context);
 
   for (const scope of scopes) {
@@ -339,15 +335,14 @@ const translateClassNamesUtil = (context: TranslateContext) => {
 };
 
 const getStyleScopes = (context: TranslateContext) => {
-
-  return [`_${getStyleScopeId(
-    context.fileUri
-  )}_`, `_pub-${getStyleScopeId(
-    context.fileUri
-  )}_`, ...context.injectScopes.map(scope => {
-    return `_pub-${scope}_`;
-  })];
-}
+  return [
+    `_${getStyleScopeId(context.fileUri)}_`,
+    `_pub-${getStyleScopeId(context.fileUri)}_`,
+    ...context.injectScopes.map(scope => {
+      return `_pub-${scope}_`;
+    })
+  ];
+};
 
 // const translateStyledUtil = (ast: Node, context: TranslateContext) => {
 //   context = addBuffer(
@@ -1092,7 +1087,6 @@ const prefixWthStyleScopes = (
   context: TranslateContext,
   pierced?: boolean
 ) => {
-
   return value
     .split(" ")
     .map(className => {
@@ -1118,24 +1112,28 @@ const prefixWthStyleScopes = (
       }
 
       const scopes = [
-        `_${getStyleScopeId(
-          scopeFilePath
-        )}_`,
-        `_pub-${getStyleScopeId(
-          scopeFilePath
-        )}_`
+        `_${getStyleScopeId(scopeFilePath)}_`,
+        `_pub-${getStyleScopeId(scopeFilePath)}_`
       ];
 
       // ignore explicit ref
       if (className.indexOf(".") === -1) {
-        scopes.push(...context.injectScopes.map(scope => {
-          return `_pub_` + scope;
-        }));
+        scopes.push(
+          ...context.injectScopes.map(scope => {
+            return `_pub_` + scope;
+          })
+        );
       }
 
-      return scopes.map(scope => {
-        return scope + actualClassName;
-      }).join(" ") + " " + actualClassName;
+      return (
+        scopes
+          .map(scope => {
+            return scope + actualClassName;
+          })
+          .join(" ") +
+        " " +
+        actualClassName
+      );
     })
     .join(" ");
 };
