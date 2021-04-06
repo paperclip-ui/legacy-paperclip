@@ -5,6 +5,8 @@
 
 <img src="assets/logo.png" width="230">
 
+✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨
+
 Paperclip is a tiny template language for presentational components that brings web development closer to a designer-like experience, all within your existing IDE. 
 
 Templates compile down to React code, with more languages and frameworks planned. 
