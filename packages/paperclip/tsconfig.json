@@ -6,7 +6,6 @@
     "module": "commonjs",
     "allowSyntheticDefaultImports": true,
     "strict": false /* Enable all strict type-checking options. */
-
   },
   "exclude": [
     "**/*.d.ts",
