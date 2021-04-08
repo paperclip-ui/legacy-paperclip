@@ -10,7 +10,6 @@ tmp/
 *.pc.js
 *.pc.css
 *.vsix
-.husky/
 *.DS_Store
 lerna-debug.log
 paperclip-html.tmLanguage.json
