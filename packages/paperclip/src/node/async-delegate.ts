@@ -8,5 +8,5 @@ export class AsyncEngineDelegate {
   }
 
   // eslint-disable-next-line
-  private _onMessage(message) {}
+  private _onMessage(message: any) {}
 }

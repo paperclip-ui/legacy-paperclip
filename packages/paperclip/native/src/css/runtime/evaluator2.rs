@@ -1177,8 +1177,10 @@ fn write_element_selector(
 
       emitter.fork();
 
+      
       let mut curr = emitter;
       for scope_context in scope.into_iter() {
+
         curr = curr.split();
 
         // :within defined within root style block

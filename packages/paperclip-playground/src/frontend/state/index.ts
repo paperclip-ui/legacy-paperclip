@@ -177,7 +177,7 @@ export const hasUnsavedChanges = (state: AppState, prevState: AppState) => {
   return false;
 };
 
-export const EDITABLE_MIME_TYPES = ["text/plain", "text/css", "image/svg+xml"];
+export const EDITABLE_MIME_TYPES = ["text/plain", "image/svg+xml", "text/css"];
 
 const MEDIA_MIME_TYPES = [
   "image/png",
@@ -187,6 +187,8 @@ const MEDIA_MIME_TYPES = [
   "video/quicktime",
   "video/mp4"
 ];
+const PREVIEW_MIME_TYPES = [...MEDIA_MIME_TYPES, "text/plain", "image/svg+xml"];
+
 
 const ACCEPTED_MIME_TYPES = [...MEDIA_MIME_TYPES, ...EDITABLE_MIME_TYPES];
 
@@ -230,7 +232,7 @@ export const canPreviewFile = (name: string) => {
 
   const type = String(mime.lookup(name));
 
-  return ACCEPTED_MIME_TYPES.includes(type);
+  return PREVIEW_MIME_TYPES.includes(type);
 };
 
 export const cleanupPath = (path: string) => {

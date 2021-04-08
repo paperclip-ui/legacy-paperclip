@@ -4,7 +4,9 @@
     "target": "es5",
     "moduleResolution": "node",
     "module": "commonjs",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "strict": false /* Enable all strict type-checking options. */
+
   },
   "exclude": [
     "**/*.d.ts",

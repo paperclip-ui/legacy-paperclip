@@ -47,7 +47,7 @@ export type EngineOptions = {
   mode?: EngineMode;
 };
 
-const mapResult = result => {
+const mapResult = (result: any) => {
   if (!result) {
     return result;
   }
@@ -76,7 +76,7 @@ export class EngineDelegate {
   private _rendered: Record<string, LoadedData> = {};
   private _documents: Record<string, string> = {};
 
-  constructor(private _native: any, private _onCrash: (err) => void = noop) {
+  constructor(private _native: any, private _onCrash: (err: any) => void = noop) {
     // only one native listener to for buffer performance
     this._native.add_listener(this._dispatch);
 
@@ -260,7 +260,7 @@ export const getEngineImports = (
 ): Record<string, LoadedDataDetails> => {
   const data = delegate.getLoadedData(uri);
 
-  if (data.kind === EvaluatedDataKind.PC) {
+  if (data?.kind === EvaluatedDataKind.PC) {
     const ast = delegate.getLoadedAst(uri) as DependencyNodeContent;
     return Object.keys(data.dependencies).reduce((record: any, id: string) => {
       const depUri = data.dependencies[id];

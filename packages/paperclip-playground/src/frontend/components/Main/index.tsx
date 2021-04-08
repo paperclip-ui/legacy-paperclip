@@ -120,6 +120,8 @@ const Preview = () => {
 
   const [objectUrl, type] = useMemo(() => {
     const type = mime.lookup(currentUri);
+    console.log(type, currentUri);
+
     if (content instanceof Blob) {
       return [
         canPreviewFile(currentUri) &&
@@ -148,6 +150,7 @@ const Preview = () => {
   }
 
   let mediaContent;
+  console.log("TOP");
 
   if (isVideo(type)) {
     mediaContent = <video src={objectUrl} controls />;
