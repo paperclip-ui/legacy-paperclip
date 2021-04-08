@@ -14,7 +14,6 @@ export const languages: Partial<SupportLanguage>[] = [
   }
 ];
 
-
 export const parsers: Record<string, Parser> = {
   paperclip: {
     parse(text) {
