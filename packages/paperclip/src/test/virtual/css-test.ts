@@ -1547,7 +1547,6 @@ describe(__filename + "#", () => {
 
     try {
       const result = await engine.open("/entry.pc");
-      console.log(JSON.stringify(result, null, 2));
     } catch (e) {
       err = e;
     }

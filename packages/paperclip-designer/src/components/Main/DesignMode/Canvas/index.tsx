@@ -53,7 +53,6 @@ export const Canvas = React.memo(() => {
   const canvasRef = useRef<HTMLElement>();
 
   const onWheel = (event: React.WheelEvent<any>) => {
-    event.preventDefault();
     clearTimeout(canvasPanTimer);
     if (!canvasRef.current) {
       return;
