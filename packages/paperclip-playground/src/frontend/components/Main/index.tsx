@@ -120,7 +120,6 @@ const Preview = () => {
 
   const [objectUrl, type] = useMemo(() => {
     const type = mime.lookup(currentUri);
-    console.log(type, currentUri);
 
     if (content instanceof Blob) {
       return [

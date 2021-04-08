@@ -1,7 +1,8 @@
 import produce from "immer";
-import { clamp } from "lodash";
 import { Action, ActionType } from "../actions";
 import { HistState } from "../state";
+
+const MAX_HISTORY_ITEMS = 200;
 
 export const historyReducer = (
   mainReducer: (state: HistState, action: Action) => HistState,
@@ -42,6 +43,11 @@ export const historyReducer = (
           newState = produce(newState, newerState => {
             newerState.history.past.push(prevState.shared);
             newerState.history.future = [];
+
+            // temporary
+            if (newerState.history.past.length > MAX_HISTORY_ITEMS) {
+              newerState.history.past.shift();
+            }
           });
         }
         return newState;

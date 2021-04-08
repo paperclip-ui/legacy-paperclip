@@ -76,7 +76,10 @@ export class EngineDelegate {
   private _rendered: Record<string, LoadedData> = {};
   private _documents: Record<string, string> = {};
 
-  constructor(private _native: any, private _onCrash: (err: any) => void = noop) {
+  constructor(
+    private _native: any,
+    private _onCrash: (err: any) => void = noop
+  ) {
     // only one native listener to for buffer performance
     this._native.add_listener(this._dispatch);
 

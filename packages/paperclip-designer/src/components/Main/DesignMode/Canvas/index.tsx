@@ -112,7 +112,6 @@ export const Canvas = React.memo(() => {
     };
   }, [canvasRef]);
 
-
   return (
     <styles.Canvas ref={canvasRef} onWheel={onWheel}>
       <styles.Inner

@@ -189,7 +189,6 @@ const MEDIA_MIME_TYPES = [
 ];
 const PREVIEW_MIME_TYPES = [...MEDIA_MIME_TYPES, "text/plain", "image/svg+xml"];
 
-
 const ACCEPTED_MIME_TYPES = [...MEDIA_MIME_TYPES, ...EDITABLE_MIME_TYPES];
 
 export const canUpload = (files: FileList) => {

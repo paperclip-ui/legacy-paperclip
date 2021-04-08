@@ -57,7 +57,7 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         return concat(buffer);
       }
       case NodeKind.Text: {
-        return concat([softline, expr.value.trim()]);
+        return concat([softline, expr.value]);
       }
     }
   } else if (isAttribute(expr)) {

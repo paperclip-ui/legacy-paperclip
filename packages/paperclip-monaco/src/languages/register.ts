@@ -37,7 +37,6 @@ export const registerLanguages = (monaco: Monaco, options: Options) => {
   monaco.languages.setLanguageConfiguration("pcs", pcs.config);
   monaco.languages.setMonarchTokensProvider("pcs", pcs.language as any);
 
-
   const service = new PaperclipEngineAsyncInfoProvider();
   const adapter = new PaperclipMonacoServiceAdapter(service, options);
 

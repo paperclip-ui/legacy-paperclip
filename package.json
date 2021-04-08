@@ -31,11 +31,6 @@
   "resolutions": {
     "vscode-languageserver-protocol": "3.15.3"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged && cd packages/paperclip/native && cargo fmt"
-    }
-  },
   "scripts": {
     "test": "lerna run test",
     "build": "lerna run build",
