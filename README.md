@@ -26,7 +26,6 @@ Other features include:
 - Examples
   - [Paperclip website](./packages/paperclip-website)
   - [Paperclip playground](./packages/paperclip-website)
-  - [Todo MVC](./examples/react-todomvc)
   - [Welcome tutorial](https://playground.paperclip.dev/s/Wn28KiQnlJS0alw2gqmem)
   - [Bulma CSS demo](https://playground.paperclip.dev/s/qCTb5bIRINgESxdyMH2tr)
   - [Tailwind CSS demo](https://playground.paperclip.dev/s/BDqOoNKyneeEEyZ3ygi6x)
