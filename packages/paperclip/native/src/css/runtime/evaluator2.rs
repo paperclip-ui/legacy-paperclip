@@ -214,7 +214,7 @@ impl SelectorContext {
 
     self.scope_is_target = true;
   }
-  pub fn append_parent_to_target(&mut self, connected: bool) {
+  pub fn append_parent_to_target(&mut self) {
     if let Some(parent) = &self.parent {
       self.push_target(parent.clone());
     }
@@ -522,7 +522,7 @@ fn evaluate_condition_rule(
     let mut child_selector_context = parent_selector_context.child();
 
     if child_selector_context.parent != None {
-      child_selector_context.append_parent_to_target(false);
+      child_selector_context.append_parent_to_target();
     } else {
       child_selector_context.append_element_scope_to_target(false);
     }
@@ -1053,11 +1053,11 @@ impl SelectorEmitter {
       next.push_target(buffer);
     }
   }
-  pub fn append_parent_to_target(&mut self, connected: bool) {
-    self.context.append_parent_to_target(connected);
+  pub fn append_parent_to_target(&mut self) {
+    self.context.append_parent_to_target();
 
     if let Some(next) = self.next.as_mut() {
-      next.append_parent_to_target(connected);
+      next.append_parent_to_target();
     }
   }
   pub fn push_buffer(&mut self, buffer: String) {
@@ -1201,7 +1201,7 @@ fn write_element_selector(
       let connector = prefixed.connector.trim().to_string();
 
       if emitter.context.parent != None {
-        emitter.append_parent_to_target(connector == "");
+        emitter.append_parent_to_target();
       } else {
         // cover `<style>&.a { }</style>`
         emitter.append_element_scope_to_target(true);
