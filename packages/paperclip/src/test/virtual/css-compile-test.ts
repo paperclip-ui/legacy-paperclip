@@ -300,6 +300,11 @@ describe(__filename + "#", () => {
       true
     ],
 
+    [
+      `a:before { color: red; }`,
+      `[data-pc-406d2856][data-pc-406d2856]:has([class].a) { color:red; }`,
+      true
+    ]
 
     // group, selector
   ].forEach(([input, output, scoped]) => {

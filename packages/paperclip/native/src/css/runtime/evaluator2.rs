@@ -90,12 +90,14 @@ pub struct SelectorContext {
   buffer: Option<String>,
 
   buffer_scope: BufferScope,
+  included_target_scope: bool,
 }
 
 impl SelectorContext {
   pub fn child(&self) -> SelectorContext {
     SelectorContext {
       buffer: None,
+      included_target_scope: false,
       within_scope: self.within_scope.clone(),
       parent_is_target: false,
       scope_is_target: false,
@@ -159,6 +161,14 @@ impl SelectorContext {
       self.append_target(target);
     }
   }
+  pub fn push_target_scope<'a>(&mut self, target: String) {
+    if self.included_target_scope {
+      return;
+    }
+    
+    self.included_target_scope = true;
+    self.push_target(target);
+  }
   fn append_target<'a>(&mut self, target: String) {
     if let Some(existing_target) = &self.target {
       self.buffer_scope = BufferScope::Target;
@@ -194,6 +204,7 @@ impl SelectorContext {
   pub fn nil() -> SelectorContext {
     SelectorContext {
       buffer: None,
+      included_target_scope: false,
       within_scope: None,
       parent_is_target: false,
       scope_is_target: false,
@@ -212,12 +223,14 @@ impl SelectorContext {
       }
     }
 
+    self.included_target_scope = true;
     self.scope_is_target = true;
   }
-  pub fn append_parent_to_target(&mut self) {
+  pub fn append_parent_to_target(&mut self, connected: bool) {
     if let Some(parent) = &self.parent {
       self.push_target(parent.clone());
     }
+    self.included_target_scope = !connected;
     self.parent_is_target = true;
     self.defined_within = self.parent_is_within;
   }
@@ -225,6 +238,7 @@ impl SelectorContext {
     SelectorContext {
       buffer: None,
       within_scope: None,
+      included_target_scope: false,
       parent_is_target: false,
       scope_is_target: false,
       parent_is_within: false,
@@ -249,6 +263,7 @@ impl SelectorContext {
       defined_within: false,
       parent: None,
       target: None,
+      included_target_scope: false,
       buffer: None,
       buffer_scope: BufferScope::Target,
     }
@@ -522,7 +537,7 @@ fn evaluate_condition_rule(
     let mut child_selector_context = parent_selector_context.child();
 
     if child_selector_context.parent != None {
-      child_selector_context.append_parent_to_target();
+      child_selector_context.append_parent_to_target(false);
     } else {
       child_selector_context.append_element_scope_to_target(false);
     }
@@ -1053,11 +1068,20 @@ impl SelectorEmitter {
       next.push_target(buffer);
     }
   }
-  pub fn append_parent_to_target(&mut self) {
-    self.context.append_parent_to_target();
+  pub fn push_target_scope(&mut self, buffer: String) {
+    if self.can_write() {
+      self.context.push_target_scope(buffer.clone());
+    }
 
     if let Some(next) = self.next.as_mut() {
-      next.append_parent_to_target();
+      next.push_target_scope(buffer);
+    }
+  }
+  pub fn append_parent_to_target(&mut self, connected: bool) {
+    self.context.append_parent_to_target(connected);
+
+    if let Some(next) = self.next.as_mut() {
+      next.append_parent_to_target(connected);
     }
   }
   pub fn push_buffer(&mut self, buffer: String) {
@@ -1198,15 +1222,18 @@ fn write_element_selector(
       }
     }
     ast::Selector::Prefixed(prefixed) => {
+
+      let connector = prefixed.connector.trim().to_string();
+
       if emitter.context.parent != None {
-        emitter.append_parent_to_target();
+        emitter.append_parent_to_target(connector == "");
       } else {
         // cover `<style>&.a { }</style>`
         emitter.append_element_scope_to_target(true);
       }
 
       // trimming needs to happen in this case `&& {}`. Still works with `& & {}` since that's a descendent selector
-      emitter.push_target(prefixed.connector.trim().to_string());
+      emitter.push_target(connector);
       if let Some(postfix) = &prefixed.postfix_selector {
         write_element_selector(&postfix, false, true, context, emitter);
       }
@@ -1214,7 +1241,7 @@ fn write_element_selector(
     ast::Selector::Element(element) => {
       emitter.push_target(element.tag_name.to_string());
       if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context))
+        emitter.push_target_scope(get_document_scope_selector(context))
       }
     }
     ast::Selector::Descendent(selector) => {
@@ -1288,42 +1315,33 @@ fn write_element_selector(
     ast::Selector::PseudoElement(selector) => {
       if selector.name == "root" {
         if include_document_scope {
-          emitter.push_target(get_document_scope_selector(context));
+          emitter.push_target_scope(get_document_scope_selector(context));
         } else {
           emitter.push_target(format!("{}{}", selector.separator, selector.name));
         }
       } else {
         if include_document_scope {
-          emitter.push_target(format!(
-            "{}{}{}",
-            get_document_scope_selector(context),
-            selector.separator,
-            selector.name
-          ));
-        } else {
-          emitter.push_target(format!("{}{}", selector.separator, selector.name));
+          emitter.push_target_scope(get_document_scope_selector(context));      
         }
+        emitter.push_target(format!("{}{}", selector.separator, selector.name));
       }
     }
     ast::Selector::AllSelector => {
-      emitter.push_target(format!(
-        "{}",
-        if include_document_scope {
-          get_document_scope_selector(context)
-        } else {
-          "*".to_string()
-        }
-      ));
+      if include_document_scope {
+        emitter.push_target_scope(get_document_scope_selector(context));
+      } else {
+        emitter.push_target("*".to_string());
+      }
     }
     ast::Selector::Id(selector) => {
       emitter.push_target(format!("#{}", selector.id));
       if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context));
+        emitter.push_target_scope(get_document_scope_selector(context));
       }
     }
     ast::Selector::PseudoParamElement(selector) => {
       if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context));
+        emitter.push_target_scope(get_document_scope_selector(context));
       }
       emitter.push_target(format!(":{}({})", selector.name, selector.param));
     }
@@ -1331,7 +1349,7 @@ fn write_element_selector(
     ast::Selector::Attribute(selector) => {
       emitter.push_target(selector.to_string());
       if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context));
+        emitter.push_target_scope(get_document_scope_selector(context));
       }
     }
     ast::Selector::Not(selector) => {
@@ -1339,7 +1357,7 @@ fn write_element_selector(
       // doesn't support things like :not([class].class)
 
       if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context));
+        emitter.push_target_scope(get_document_scope_selector(context));
       }
 
       emitter.push_buffer(":not(".to_string());
@@ -1353,7 +1371,7 @@ fn write_element_selector(
       // doesn't support things like :not([class].class)
 
       if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context));
+        emitter.push_target_scope(get_document_scope_selector(context));
       }
 
       emitter.push_buffer(format!(":{}(", selector.name));
@@ -1367,7 +1385,7 @@ fn write_element_selector(
         write_element_selector(child, false, true, context, emitter);
       }
       if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context))
+        emitter.push_target_scope(get_document_scope_selector(context))
       }
     }
     ast::Selector::Class(selector) => {

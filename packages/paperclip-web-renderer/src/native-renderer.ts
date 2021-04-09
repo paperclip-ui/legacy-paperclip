@@ -67,7 +67,7 @@ const ruleIsValid = (ruleText: string) => {
   try {
     (_dummyStyle.sheet as any).insertRule(ruleText, 0);
     (_dummyStyle.sheet as any).deleteRule(0);
-  } catch(e) {
+  } catch (e) {
     return false;
   }
 
@@ -83,9 +83,16 @@ export const createNativeStyleFromSheet = (
 
   // fix case where certain rules are invalid - e.g: &:within(:not(.on)) does some
   // funny stuff.
-  const ruleTexts = sheet.rules.map(rule => stringifyCSSRule(rule, { resolveUrl })).map(text => {
-    return ruleIsValid(text) ? text : ".invalid-rule { }";
-  });
+  const ruleTexts = sheet.rules
+    .map(rule => stringifyCSSRule(rule, { resolveUrl }))
+    .map(text => {
+      const isValid = ruleIsValid(text);
+
+      if (!isValid) {
+        console.error(`invalid CSS rule: ${text}`);
+      }
+      return isValid ? text : ".invalid-rule { }";
+    });
 
   nativeElement.textContent = ruleTexts.join("\n");
 
