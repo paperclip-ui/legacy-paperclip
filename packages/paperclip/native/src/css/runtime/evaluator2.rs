@@ -1198,6 +1198,8 @@ fn write_element_selector(
       }
     }
     ast::Selector::Prefixed(prefixed) => {
+      let connector = prefixed.connector.trim().to_string();
+
       if emitter.context.parent != None {
         emitter.append_parent_to_target();
       } else {
@@ -1206,7 +1208,7 @@ fn write_element_selector(
       }
 
       // trimming needs to happen in this case `&& {}`. Still works with `& & {}` since that's a descendent selector
-      emitter.push_target(prefixed.connector.trim().to_string());
+      emitter.push_target(connector);
       if let Some(postfix) = &prefixed.postfix_selector {
         write_element_selector(&postfix, false, true, context, emitter);
       }
@@ -1294,6 +1296,7 @@ fn write_element_selector(
         }
       } else {
         if include_document_scope {
+          // emitter.push_target(get_document_scope_selector(context));
           emitter.push_target(format!(
             "{}{}{}",
             get_document_scope_selector(context),
@@ -1306,14 +1309,11 @@ fn write_element_selector(
       }
     }
     ast::Selector::AllSelector => {
-      emitter.push_target(format!(
-        "{}",
-        if include_document_scope {
-          get_document_scope_selector(context)
-        } else {
-          "*".to_string()
-        }
-      ));
+      if include_document_scope {
+        emitter.push_target(get_document_scope_selector(context));
+      } else {
+        emitter.push_target("*".to_string());
+      }
     }
     ast::Selector::Id(selector) => {
       emitter.push_target(format!("#{}", selector.id));
@@ -1363,10 +1363,22 @@ fn write_element_selector(
       emitter.persist_buffer();
     }
     ast::Selector::Combo(combo) => {
+      let mut included_scope = false;
+
       for child in &combo.selectors {
-        write_element_selector(child, false, true, context, emitter);
+        let include_scope = is_pseudo_element(child);
+
+        write_element_selector(
+          child,
+          include_scope && !included_scope,
+          true,
+          context,
+          emitter,
+        );
+        included_scope = included_scope || include_scope;
       }
-      if include_document_scope {
+
+      if include_document_scope && !included_scope {
         emitter.push_target(get_document_scope_selector(context))
       }
     }
@@ -1394,6 +1406,13 @@ fn write_element_selector(
 
       emitter.push_target(selector_text);
     }
+  }
+}
+
+fn is_pseudo_element(child: &ast::Selector) -> bool {
+  match child {
+    ast::Selector::PseudoElement(_) | ast::Selector::PseudoParamElement(_) => true,
+    _ => false,
   }
 }
 

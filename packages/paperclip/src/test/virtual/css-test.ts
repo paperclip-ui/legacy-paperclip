@@ -307,7 +307,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label { background:var(--midnight-darker); } input:checked[data-pc-80f4925f] + [class]._80f4925f_tab-label::after { transform:rotate(90deg); } input:checked[data-pc-80f4925f] ~ [class]._80f4925f_tab-content { max-height:100vh; padding:1em; }</style>`
+      `<style>input[data-pc-80f4925f]:checked + [class]._80f4925f_tab-label { background:var(--midnight-darker); } input[data-pc-80f4925f]:checked + [class]._80f4925f_tab-label::after { transform:rotate(90deg); } input[data-pc-80f4925f]:checked ~ [class]._80f4925f_tab-content { max-height:100vh; padding:1em; }</style>`
     );
   });
 
@@ -442,7 +442,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>a[data-pc-80f4925f] svg:a[data-pc-80f4925f] { margin-right:4px; }</style>`
+      `<style>a[data-pc-80f4925f] svg[data-pc-80f4925f]:a { margin-right:4px; }</style>`
     );
   });
 
@@ -628,7 +628,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      "<style>[class]._80f4925f_parent [class].child:first-child[data-pc-80f4925f] { color:blue ; }</style>"
+      "<style>[class]._80f4925f_parent [class].child[data-pc-80f4925f]:first-child { color:blue ; }</style>"
     );
   });
 

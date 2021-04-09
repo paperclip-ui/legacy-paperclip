@@ -1504,7 +1504,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      "<style>[data-pc-406d2856][data-pc-406d2856][class].a [class].b:hover[data-pc-80f4925f] { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>"
+      "<style>[data-pc-406d2856][data-pc-406d2856][class].a [class].b[data-pc-80f4925f]:hover { color:blue; }</style><div data-pc-406d2856 data-pc-80f4925f data-pc-pub-80f4925f></div>"
     );
   });
 
