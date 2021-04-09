@@ -1368,7 +1368,13 @@ fn write_element_selector(
       for child in &combo.selectors {
         let include_scope = is_pseudo_element(child);
 
-        write_element_selector(child, include_scope && !included_scope, true, context, emitter);
+        write_element_selector(
+          child,
+          include_scope && !included_scope,
+          true,
+          context,
+          emitter,
+        );
         included_scope = included_scope || include_scope;
       }
 
@@ -1405,12 +1411,8 @@ fn write_element_selector(
 
 fn is_pseudo_element(child: &ast::Selector) -> bool {
   match child {
-    ast::Selector::PseudoElement(_) | ast::Selector::PseudoParamElement(_) => {
-      true
-    }
-    _ => {
-      false
-    }
+    ast::Selector::PseudoElement(_) | ast::Selector::PseudoParamElement(_) => true,
+    _ => false,
   }
 }
 
