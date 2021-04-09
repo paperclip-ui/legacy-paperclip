@@ -165,7 +165,7 @@ impl SelectorContext {
     if self.included_target_scope {
       return;
     }
-    
+
     self.included_target_scope = true;
     self.push_target(target);
   }
@@ -1222,7 +1222,6 @@ fn write_element_selector(
       }
     }
     ast::Selector::Prefixed(prefixed) => {
-
       let connector = prefixed.connector.trim().to_string();
 
       if emitter.context.parent != None {
@@ -1321,7 +1320,7 @@ fn write_element_selector(
         }
       } else {
         if include_document_scope {
-          emitter.push_target_scope(get_document_scope_selector(context));      
+          emitter.push_target_scope(get_document_scope_selector(context));
         }
         emitter.push_target(format!("{}{}", selector.separator, selector.name));
       }
