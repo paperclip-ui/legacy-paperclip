@@ -144,7 +144,7 @@ export const Toolbar = () => {
                 <styles.AddDocumentButton
                   media
                   onChange={onUploadChange}
-                  accept=".pc, .jpeg, .jpg, .svg, .png"
+                  accept=".pc, .jpeg, .jpg, .svg, .png, .ttf, .woff, .woff2, .eot"
                 >
                   Upload file
                 </styles.AddDocumentButton>

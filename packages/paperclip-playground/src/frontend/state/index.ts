@@ -179,6 +179,16 @@ export const hasUnsavedChanges = (state: AppState, prevState: AppState) => {
 
 export const EDITABLE_MIME_TYPES = ["text/plain", "image/svg+xml", "text/css"];
 
+const ALT_MIME_TYPES = [
+  "application/vnd.ms-fontobject", // .eot
+  "font/ttf",
+  "font/woff",
+  "font/woff2",
+  "application/font-woff",
+  "application/font-ttf",
+  "application/font-woff2"
+];
+
 const MEDIA_MIME_TYPES = [
   "image/png",
   "image/jpeg",
@@ -189,14 +199,23 @@ const MEDIA_MIME_TYPES = [
 ];
 const PREVIEW_MIME_TYPES = [...MEDIA_MIME_TYPES, "text/plain", "image/svg+xml"];
 
-const ACCEPTED_MIME_TYPES = [...MEDIA_MIME_TYPES, ...EDITABLE_MIME_TYPES];
+const ACCEPTED_MIME_TYPES = [
+  ...ALT_MIME_TYPES,
+  ...MEDIA_MIME_TYPES,
+  ...EDITABLE_MIME_TYPES
+];
 
 export const canUpload = (files: FileList) => {
   return Array.from(files).every(file => {
     if (file.size > MAX_FILE_SIZE) {
       return false;
     }
-    return ACCEPTED_MIME_TYPES.includes(file.type);
+
+    console.log(ACCEPTED_MIME_TYPES, String(mime.lookup(file.name)));
+    console.log(file.type || String(mime.lookup(file.name)));
+    return ACCEPTED_MIME_TYPES.includes(
+      file.type || String(mime.lookup(file.name))
+    );
   });
 };
 
@@ -220,7 +239,6 @@ export const canEditFile = (name: string) => {
     return true;
   }
   const type = String(mime.lookup(name));
-
   return EDITABLE_MIME_TYPES.includes(type);
 };
 
