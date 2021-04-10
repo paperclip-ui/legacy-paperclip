@@ -275,11 +275,14 @@ export const reduceDesigner = (
           newDesigner.currentError = undefined;
         }
 
-        for (const id of newDesigner.mountedRendererIds) {
-          if (!newDesigner.currentEngineEvents[id]) {
-            newDesigner.currentEngineEvents[id] = [];
+        // need to make sure that visible PC file matches event
+        if (action.payload.uri === designer.ui.query.canvasFile) {
+          for (const id of newDesigner.mountedRendererIds) {
+            if (!newDesigner.currentEngineEvents[id]) {
+              newDesigner.currentEngineEvents[id] = [];
+            }
+            newDesigner.currentEngineEvents[id].push(action.payload);
           }
-          newDesigner.currentEngineEvents[id].push(action.payload);
         }
         newDesigner.allLoadedPCFileData = updateAllLoadedData(
           newDesigner.allLoadedPCFileData,
@@ -291,21 +294,6 @@ export const reduceDesigner = (
 
       return designer;
     }
-    // case ActionType.EXPAND_FRAME_BUTTON_CLICKED: {
-    //   return produce(designer, newDesigner => {
-    //     newDesigner.expandedFrameInfo = {
-    //       frameIndex: action.payload.frameIndex,
-    //       previousCanvasTransform: designer.canvas.transform
-    //     };
-
-    //     const frame = getFrameFromIndex(action.payload.frameIndex, designer);
-    //     const frameBounds = getFrameBounds(frame);
-
-    //     newDesigner.canvas.transform.x = -frameBounds.x;
-    //     newDesigner.canvas.transform.y = -frameBounds.y;
-    //     newDesigner.canvas.transform.z = 1;
-    //   });
-    // }
     case ActionType.COLLAPSE_FRAME_BUTTON_CLICKED: {
       return minimizeWindow(designer);
     }
