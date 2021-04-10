@@ -25,7 +25,6 @@ import { SourceLocation } from "paperclip-utils";
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
   const { slim } = state;
-  const [language, setLanguage] = useState<string>();
 
   let content;
 
@@ -36,35 +35,26 @@ export const CodeMode = () => {
     editor: monacoEditor.editor.IStandaloneCodeEditor,
     monaco: Monaco
   ) => {
-    // editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_Z, function() {
-    //   // 🙈
-    //   dispatch(globalZKeyDown(null) as any);
-    // });
-
-    // editor.addCommand(
-    //   monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_Z,
-    //   function() {
-    //     dispatch(globalYKeyDown(null) as any);
-    //   }
-    // );
-
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
       dispatch(globalSaveKeyPress(null) as any);
     });
   };
 
-  const [code, setCode] = useState<string>();
+  // code & uri need to be set at the exact same time so that editor instance
+  const [[code, uri], setCode] = useState<[string, string]>([null, null]);
   const docContent = state.shared.documents[state.currentCodeFilePath];
 
   useEffect(() => {
+    const uri = "file:///" + state.currentCodeFilePath;
+
     if (docContent instanceof File) {
       const reader = new FileReader();
-      reader.onload = () => setCode(String(reader.result));
+      reader.onload = () => setCode([String(reader.result), uri]);
       reader.readAsText(docContent);
     } else {
-      setCode(String(docContent || ""));
+      setCode([String(docContent || ""), uri]);
     }
-  }, [docContent]);
+  }, [docContent, state.currentCodeFilePath]);
 
   if (canEditFile(state.currentCodeFilePath)) {
     content = (
@@ -78,7 +68,7 @@ export const CodeMode = () => {
           />
         ) : (
           <Editor
-            uri={"file:///" + state.currentCodeFilePath}
+            uri={uri}
             value={code}
             highlightLocation={state.highlightLocation}
             onChange={onChange}
@@ -113,10 +103,12 @@ const Editor = ({
   highlightLocation,
   onMount
 }: EditorProps) => {
-  const monacoRef = useRef();
   const editorRef = useRef<HTMLDivElement>();
   const [monaco, setMonaco] = useState<Monaco>();
   const [editor, setEditor] = useState<monacoEditor.editor.ICodeEditor>();
+  const [models, setModels] = useState<
+    Record<string, monacoEditor.editor.ITextModel>
+  >({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -124,10 +116,11 @@ const Editor = ({
       return;
     }
     if (editor.getModel().uri.toString() !== uri) {
-      editor.getModel().dispose();
-      editor.setModel(
-        monaco.editor.createModel(value, undefined, monaco.Uri.parse(uri))
-      );
+      const model =
+        monaco.editor.getModel(monaco.Uri.parse(uri)) ||
+        monaco.editor.createModel(value, undefined, monaco.Uri.parse(uri));
+      editor.setModel(model);
+      editor.saveViewState();
     } else if (editor.getValue() !== value) {
       editor.executeEdits("", [
         {
@@ -175,6 +168,7 @@ const Editor = ({
       }
 
       activatePaperclipExtension(monaco as any, { getCurrentUri: null });
+
       const editor = monaco.editor.create(editorRef.current, {
         language: "paperclip",
         tabSize: 2,

@@ -275,15 +275,13 @@ export const reduceDesigner = (
           newDesigner.currentError = undefined;
         }
 
-        // need to make sure that visible PC file matches event
-        if (action.payload.uri === designer.ui.query.canvasFile) {
-          for (const id of newDesigner.mountedRendererIds) {
-            if (!newDesigner.currentEngineEvents[id]) {
-              newDesigner.currentEngineEvents[id] = [];
-            }
-            newDesigner.currentEngineEvents[id].push(action.payload);
+        for (const id of newDesigner.mountedRendererIds) {
+          if (!newDesigner.currentEngineEvents[id]) {
+            newDesigner.currentEngineEvents[id] = [];
           }
+          newDesigner.currentEngineEvents[id].push(action.payload);
         }
+
         newDesigner.allLoadedPCFileData = updateAllLoadedData(
           newDesigner.allLoadedPCFileData,
           action.payload

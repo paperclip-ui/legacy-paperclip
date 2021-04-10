@@ -153,8 +153,6 @@ class FramesProxy implements Patchable {
         }
       }
     }
-
-
   }
   appendChild(child: Node) {
     this.insert(child, this._frames.length);
@@ -309,7 +307,13 @@ export class FramesRenderer {
             this._dependencies = event.data.allImportedSheetUris;
           } else if (this._dependencies.includes(event.uri)) {
             this._framesProxy.updateImportedStyles(
-              [{ uri: event.uri, sheet: event.data.sheet, index: this._dependencies.indexOf(event.uri) }],
+              [
+                {
+                  uri: event.uri,
+                  sheet: event.data.sheet,
+                  index: this._dependencies.indexOf(event.uri)
+                }
+              ],
               [event.uri]
             );
           }
@@ -318,6 +322,13 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Diffed: {
         if (event.data.kind === DiffedDataKind.PC) {
+          if (
+            this.targetUri !== event.uri &&
+            !this._dependencies.includes(event.uri)
+          ) {
+            break;
+          }
+
           // Style patches need to happen _before_ patching frames since style elements don't have
           // their sheets until their mounted
           this._framesProxy.applyStylePatches(
