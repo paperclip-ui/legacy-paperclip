@@ -62,7 +62,7 @@ describe(__filename + "#", () => {
       "/test.woff": ""
     };
     const engine = await createMockEngine(graph, noop, {
-      resolveFile(url) {
+      resolveFile() {
         return "/test.woooof";
       }
     });
