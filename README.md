@@ -5,6 +5,8 @@
 
 <img src="assets/logo.png" width="230">
 
+✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨
+
 Build UIs at the speed of thought. Paperclip is a template engine that comes with tools for building presentational components in realtime, all within your existing IDE:
 
 
@@ -20,6 +22,12 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
 -----
 
 - [Playground](http://playground.paperclip.dev) - Play around with Paperclip, share, download React code directly from the browser.
+- Examples
+  - [Paperclip website](./packages/paperclip-website)
+  - [Paperclip playground](./packages/paperclip-website)
+  - [Welcome tutorial](https://playground.paperclip.dev/s/Wn28KiQnlJS0alw2gqmem)
+  - [Bulma CSS demo](https://playground.paperclip.dev/s/qCTb5bIRINgESxdyMH2tr)
+  - [Tailwind CSS demo](https://playground.paperclip.dev/s/BDqOoNKyneeEEyZ3ygi6x)
 - [Slack channel](https://join.slack.com/t/paperclipglobal/shared_invite/zt-o6bbeo6d-2zdyFdR5je8PjCp6buF_Gg) - for questions, feedback, help, or whatever! 
 - Installation
   - [Project installation](https://paperclip.dev/docs/) - Basic installation of Paperclip for new and existing projects.
@@ -28,10 +36,6 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
 - Documentation
   - [Syntax](https://paperclip.dev/docs/usage-syntax) - How to write Paperclip documents
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
-- Example projects
-  - [Paperclip website](./packages/paperclip-website)
-  - [Paperclip playground](./packages/paperclip-website)
-  - [Todo MVC](./examples/react-todomvc)
 
 
 ---
