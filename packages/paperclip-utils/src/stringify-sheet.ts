@@ -91,9 +91,17 @@ const stringifyStyle = (
       }
     }
 
-    if (value && value.includes("file:") && resolveUrl) {
-      const url = value.match(/(file:\/\/[^)]+)/)[1];
-      value = value.replace(url, resolveUrl(url));
+    if (value && resolveUrl) {
+      if (value.includes("file:")) {
+        const url = value.match(/(file:\/\/[^)]+)/)[1];
+        value = value.replace(url, resolveUrl(url));
+      } else if (value.includes("url(")) {
+        const parts = value.match(/url\(['"]?(.*?)['"]?\)/);
+        const url = parts && parts[1];
+        if (url && !url.includes("http")) {
+          value = value.replace(url, resolveUrl(url));
+        }
+      }
     }
   }
 

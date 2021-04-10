@@ -231,9 +231,13 @@ export const reducer = historyReducer(
           for (const file of files) {
             const uri = getUniqueUri(
               file.name.replace(/\.\w+$/, ""),
-              mime.extension(file.type) || "text/plain",
+              mime.extension(String(mime.lookup(file.name)) || file.type) ||
+                "text/plain",
               newState.shared.documents
             );
+
+            console.log(file.type, file.type || String(mime.lookup(file.name)));
+
             newState.shared.documents[uri] = file;
 
             // set dropped file as preview

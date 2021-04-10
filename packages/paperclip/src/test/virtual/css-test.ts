@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { createMockEngine, stringifyLoadResult } from "../utils";
 
 import { noop } from "../../core/utils";
-import { LoadedPCData } from "../../core";
+import { LoadedPCData, stringifyCSSSheet } from "../../core";
 
 describe(__filename + "#", () => {
   it("can render a simple style", async () => {
@@ -46,6 +46,31 @@ describe(__filename + "#", () => {
       location: { start: 59, end: 91 },
       message: "Unable to resolve file: /not/found.png from /entry.pc"
     });
+  });
+
+  it("can resolve some relative urls", async () => {
+    const graph = {
+      "/entry.pc": `
+        <style>
+          .rule {
+            background: url('./test.woff');
+            color: url("./test.woff");
+            src: url("http://google.com");
+          }
+        </style>
+      `,
+      "/test.woff": ""
+    };
+    const engine = await createMockEngine(graph, noop, {
+      resolveFile() {
+        return "/test.woooof";
+      }
+    });
+
+    const result = engine.open("/entry.pc");
+    expect(stringifyCSSSheet(result.sheet).replace(/[\n\s]+/g, " ")).to.eql(
+      `[class]._80f4925f_rule { background:url(/test.woooof); color:url(/test.woooof); src:url("http://google.com"); }`
+    );
   });
 
   describe("Mixins", () => {
