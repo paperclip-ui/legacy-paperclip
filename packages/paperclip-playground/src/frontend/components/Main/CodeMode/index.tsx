@@ -36,17 +36,17 @@ export const CodeMode = () => {
     editor: monacoEditor.editor.IStandaloneCodeEditor,
     monaco: Monaco
   ) => {
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_Z, function() {
-      // 🙈
-      dispatch(globalZKeyDown(null) as any);
-    });
+    // editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_Z, function() {
+    //   // 🙈
+    //   dispatch(globalZKeyDown(null) as any);
+    // });
 
-    editor.addCommand(
-      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_Z,
-      function() {
-        dispatch(globalYKeyDown(null) as any);
-      }
-    );
+    // editor.addCommand(
+    //   monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_Z,
+    //   function() {
+    //     dispatch(globalYKeyDown(null) as any);
+    //   }
+    // );
 
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
       dispatch(globalSaveKeyPress(null) as any);
@@ -154,9 +154,7 @@ const Editor = ({
         highlightLocation.start,
         highlightLocation.end
       );
-      editor.setSelection(
-        range
-      );
+      editor.setSelection(range);
 
       editor.revealLine(range.startLineNumber);
     }, 100);
