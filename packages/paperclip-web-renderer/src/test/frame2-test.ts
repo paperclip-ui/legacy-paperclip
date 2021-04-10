@@ -553,6 +553,74 @@ describe(__filename + "#", () => {
       `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: blue;} </style></div><div><div></div></div>`
     );
   });
+
+  it(`Ignores frames from unrelated files`, async () => {
+    const graph = {
+      "file:///main.pc": `
+        <import src="./test.pc" as="test" />
+
+        <style>
+          @font-face {
+            font-family: "Eina";
+            src: url('./Eina03-Regular.woff');
+          }
+        </style>
+        
+        
+        <!--
+          @frame { width: 365, height: 194, x: 0, y: 0 }
+        -->
+        <div>
+          <style>
+            font-family: Eina;
+          </style>
+          Hello dawggg
+          <test.Test>
+            Hello world
+          </test.Test>
+        </div>
+      `,
+      "file:///test.pc": `
+      <!--
+        @frame { visible: false }
+      -->
+      <div export component as="Test">
+        <style>
+          font-family: sans-serif;
+          color: rgb(100, 172, 86);
+          font-size: 24px;
+        </style>
+        {children}
+      </div>
+      
+      
+      <!--
+        @frame { width: 346, height: 203, x: 0, y: 0 }
+      -->
+      <Test>
+        Hello world
+      </Test>
+      `
+    };
+
+    const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
+    const renderer = createMockFramesRenderer("file:///test.pc");
+
+    renderer.initialize((await engine.open("file:///test.pc")) as LoadedPCData);
+    await engine.open("file:///main.pc");
+
+    engine.onEvent(renderer.handleEngineDelegateEvent);
+
+    await engine.updateVirtualFileContent("file:///main.pc", ``);
+
+    expect(
+      combineFrameHTML(renderer)
+        .replace("\n", "")
+        .replace(/\\+/g, "/")
+    ).to.eql(
+      `<div></div><div><style>[data-pc-a0539270][data-pc-a0539270] {font-family: sans-serif; color: rgb(100, 172, 86); font-size: 24px;} </style></div><div><div>Hello world </div></div>`
+    );
+  });
 });
 
 const combineFrameHTML = (renderer: FramesRenderer) => {

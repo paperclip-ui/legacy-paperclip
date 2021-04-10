@@ -7,18 +7,17 @@
 
 ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨
 
-Paperclip is a tiny template language for presentational components that brings web development closer to a designer-like experience, all within your existing IDE. 
+Build UIs at the speed of thought. Paperclip is a template engine that comes with tools for building presentational components in realtime, all within your existing IDE:
 
-Templates compile down to React code, with more languages and frameworks planned. 
 
-Other features include:
+![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif)
 
-- All CSS is explicit so you don't have to worry about leaky styles.
-- Nearly 100% visual regression coverage.
-- Realtime visual development. No more lag between writing UI code and seeing changes appear in your browser (even for very large projects).
-- Easy integration with other CSS libraries like Tailwind and Bootstrap. Paperclip also keeps them scoped!
-- Browserstack integration so that you can build UIs _live_ across multiple browsers.
+## Features
 
+- Templates compile down to plain React code (more targets planned).
+- Scoped CSS. Write styles however you want, without worying about them leaking out.
+- [Percy](https://percy.io) integration for catching visual regressions.
+- Compatible with existing CSS libraries like Tailwind, Bulma, and Bootstrap.
 
 -----
 
@@ -43,8 +42,6 @@ Other features include:
 
 
 Here's a demo of Paperclip's designer app in action:
-
-![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif)
 
 > This took me about 12 minutes to make start to finish.
 
