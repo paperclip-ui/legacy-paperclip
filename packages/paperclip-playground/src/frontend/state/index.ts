@@ -211,8 +211,6 @@ export const canUpload = (files: FileList) => {
       return false;
     }
 
-    console.log(ACCEPTED_MIME_TYPES, String(mime.lookup(file.name)));
-    console.log(file.type || String(mime.lookup(file.name)));
     return ACCEPTED_MIME_TYPES.includes(
       file.type || String(mime.lookup(file.name))
     );
