@@ -5,6 +5,7 @@ import mime from "mime-types";
 import { mapValues, omit, pickBy } from "lodash";
 const ENTRY_URI = "main.pc";
 import bowser from "bowser";
+import { ContentChange } from "paperclip-source-writer";
 
 export type User = {
   avatarUrl?: string;
@@ -83,6 +84,7 @@ export type AppState = {
     pathname: string;
     query: any;
   };
+  currentContentChanges: ContentChange[];
   browserSupported?: boolean;
   progressLoadedPercent?: number;
   highlightLocation?: SourceLocation;
@@ -99,6 +101,7 @@ export type AppState = {
 
 export const INITIAL_STATE: AppState = {
   ...ve.INITIAL_STATE,
+  currentContentChanges: [],
   shared: {
     documents: {
       [ENTRY_URI]: ""

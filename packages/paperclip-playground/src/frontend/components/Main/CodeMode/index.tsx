@@ -125,8 +125,7 @@ const Editor = ({
       editor.executeEdits("", [
         {
           range: editor.getModel().getFullModelRange(),
-          text: value,
-          forceMoveMarkers: true
+          text: value
         }
       ]);
 
