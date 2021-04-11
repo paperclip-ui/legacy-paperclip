@@ -20,7 +20,7 @@ export const ErrorBanner = React.memo(({ error, dispatch }: Props) => {
   const location =
     error.errorKind === EngineErrorKind.Graph ? error.info.location : null;
 
-  const message = `${error.message || (error as any).info?.message}`;
+  let message = `${error.message || (error as any).info?.message}`;
 
   return (
     <styles.ErrorBanner

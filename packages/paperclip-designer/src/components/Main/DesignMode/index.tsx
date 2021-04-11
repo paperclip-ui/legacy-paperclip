@@ -8,6 +8,7 @@ import { Birdseye } from "./Birdseye";
 
 export const DesignMode = () => {
   const { state, dispatch } = useAppStore();
+
   return (
     <styles.Container>
       <Toolbar />
