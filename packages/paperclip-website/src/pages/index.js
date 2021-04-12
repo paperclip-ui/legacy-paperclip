@@ -45,8 +45,7 @@ function Home() {
             - More natural than the current way of building UIs
             */
               <>
-                Paperclip is a template language designed for realtime visual
-                web development, all within your existing IDE.
+                Paperclip is a template language that comes with a visual editor, all within your existing IDE.
                 {/* Paperclip is a free and open source template language for
                 presentational components that comes with a designer-like
                 experience for rapidly building user interfaces, all within your
