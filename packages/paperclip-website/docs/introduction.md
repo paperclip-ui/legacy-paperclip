@@ -43,6 +43,9 @@ The `div { }` selector is only applied to the elements within this document. To 
 
 All previews defined within Paperclip are covered for visual regressions - you can think of this like type safety for UI development. This means that you can easily maintain any HTML & CSS that you write, regardless of how it's all written. 
 
+
+The other goal for Paperclip is to lower the barrier to front-end development for designers that want more control. As the project continues to evolve, there will be more tooling that will enable them to do that (through visual & sync tools).
+
 ---
 
 ## Who is Paperclip intented for?
