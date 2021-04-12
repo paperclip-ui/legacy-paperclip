@@ -33,7 +33,8 @@ function Home() {
             // title={<>Live previews for web development</>}
             // title={<>Build web application in no time.</>}
             // title={<>Realtime visual web development.</>}
-            title={<>Rapidly build web applications at any scale</>}
+            // title={<>Rapidly build web applications at any scale</>}
+            title={<>Build web UIs at the speed of thought.</>}
             description={
               /* 
 
@@ -44,10 +45,12 @@ function Home() {
             - More natural than the current way of building UIs
             */
               <>
-                Paperclip is a free and open source template language for
+                Paperclip is a template language designed for realtime visual
+                web development, all within your existing IDE.
+                {/* Paperclip is a free and open source template language for
                 presentational components that comes with a designer-like
                 experience for rapidly building user interfaces, all within your
-                existing IDE.
+                existing IDE. */}
                 {/* Paperclip is a free and open source tool for presentational components that brings web development closer to a designer-like experience. */}
                 {/* Paperclip is a free & open-source tool that gives you a
                 designer-like experience for creating web interfaces. */}
@@ -126,8 +129,7 @@ function Home() {
             title="Build UIs more quickly, and precisely"
             text={
               <>
-                You shouldn't be bogged down by developer tooling in order to
-                see your UIs. With Paperclip, you see what you're creating{" "}
+                With Paperclip, you see what you're creating{" "}
                 <i>as you're typing</i>, no matter how large your project is.
                 Other features such as artboards, measuring tools, and
                 responsive testing tools are there to help you build
@@ -167,7 +169,7 @@ function Home() {
             <styles.MainFeatureItem
               iconName="reactjs"
               title="Import directly into your React app"
-              description="After you quickly crank out all of your HTML & CSS, you can import your Paperclip files like regular code. No runtime needed."
+              description="Paperclip files compile down to regular, performant code that you can import directly into your React app."
               example={
                 <CodeBlock className="language-jsx">
                   {IMPORT_CODE_DEMO_SOURCE}
@@ -179,16 +181,16 @@ function Home() {
           <styles.VariousFeatures>
             <styles.VariousFeatureItem
               iconName="chaotic-1"
-              title="HTML & CSS however you want"
-              description="Paperclip comes with loads of safety features to make sure that your code stays maintainble, and you can confidently make updates without introducing visual bugs."
+              title="Keeps CSS maintainable"
+              description="Paperclip comes with loads of safety features such as scoped styles, and visual regression testing, to ensure that your HTML & CSS is maintainable as your project grows."
             />
             <styles.VariousFeatureItem
               iconName="link"
-              title="Live previews in VS Code"
+              title="Live previews"
               description={[
                 "Conveniently build UIs ",
                 <i>live</i>,
-                " within VS Code. No more need to switch back and forth between the browser & your code editor."
+                " alongside your code editor and see your changes appear immediately as you're typing, no matter how large your project is."
               ]}
             />
             <styles.VariousFeatureItem

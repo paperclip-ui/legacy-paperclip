@@ -1,9 +1,7 @@
 module.exports = {
   docs: {
     "Getting started": [
-      "getting-started-vscode",
       "getting-started-installation",
-      "getting-started-project-setup",
       "getting-started-first-ui"
     ],
     Guides: [
@@ -13,7 +11,8 @@ module.exports = {
       "guide-third-party-libraries",
       "guide-dynamic-styles",
       "guide-modules",
-      "guide-theming"
+      "guide-theming",
+      "guide-vscode"
     ],
     "API Reference": [
       "usage-syntax",

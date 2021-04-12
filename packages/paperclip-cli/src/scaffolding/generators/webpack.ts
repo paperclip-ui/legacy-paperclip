@@ -32,7 +32,7 @@ export const webpack = {
         scripts: {
           build: ["webpack"],
           "build:watch": ["webpack --watch"],
-          start: ["webpack-dev-server --open"]
+          start: ["webpack serve --open"]
         }
       }
     };

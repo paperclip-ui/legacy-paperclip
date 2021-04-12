@@ -234,7 +234,7 @@
                     box-sizing: border-box;
                     position: absolute;
                     top: 100%;
-                    width: calc(100% - 46px);
+                    width: calc(100% - 48px);
                     transform: translateY(-50%);
             </style>
             <div>
@@ -261,6 +261,6 @@
 
 
 <!--
-  @frame { title: "Airbnb Home / Mobile", width: 373, height: 768, x: 820, y: 920 }
+  @frame { visible: false, title: "Airbnb Home / Mobile", width: 442, height: 768, x: 820, y: 920 }
 -->
 <HomePreview />
