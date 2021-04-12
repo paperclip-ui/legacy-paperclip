@@ -21,7 +21,7 @@ The main issue that Paperclip tries to solve is development speed. Typically you
 
 ### Explicit CSS
 
-One of the problems with CSS is that it's global, and hard to tell what elements its styling. Paperclip aims to solve that by making CSS scoped. This means that CSS defined within each document is only applied to that document. For example:
+One of the problems with CSS is that it's global, and can make it hard to tell what elements are being styled. Paperclip aims to solve that by making CSS scoped. This means that CSS defined or included within each document is only applied to that document. For example:
 
 ```html
 <style>
