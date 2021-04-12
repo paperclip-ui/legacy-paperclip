@@ -97,10 +97,6 @@ module.exports = {
           title: "Integrations",
           items: [
             {
-              label: "Webpack",
-              to: "docs/configure-webpack"
-            },
-            {
               label: "Percy",
               to: "docs/configure-percy"
             },
@@ -178,7 +174,7 @@ module.exports = {
       {
         docs: {
           // It is recommended to set document id as docs home page (`docs/` path).
-          homePageId: "getting-started-vscode",
+          homePageId: "introduction",
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           editUrl:

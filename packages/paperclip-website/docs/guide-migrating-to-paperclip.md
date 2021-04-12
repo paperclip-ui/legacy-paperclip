@@ -4,9 +4,22 @@ title: Migration Code To And From Paperclip
 sidebar_label: Migrating Code
 ---
 
+Migrating to and from Paperclip is easy since most of Paperclip's patterns are shared across different libraries.
+
 ###  Migrating from CSS 
 
-All you need to do is copy & paste CSS into a Paperclip file. Here's an example:
+You have a few options here. The easiest option is to just import CSS files directly into your document, for example:
+
+```html
+<import src="./tailwind.css" inject-styles />
+<div export component as="font-sans">
+  Some TW component
+</div>
+```
+
+This requires _no_ migration effort, and allows you to maintain a boundary between your styles and Paperclip if you want to. You still have all of the benefits of Paperclip (scoped CSS, realtime visual development, visual regesssion tests).
+
+If you want to move from CSS however, it's basically just copying and pasting. For example:
 
 ```css
 .container {
@@ -20,53 +33,30 @@ All you need to do is copy & paste CSS into a Paperclip file. Here's an example:
 }
 ```
 
-☝ After copying, wrap this stuff with `@export`:
+Just paste this like so:
 
 ```html
 <style>
-  @export {
-    .container {
-      font-family: sans-serif;
-      color: #333;
-    }
+  .container {
+    font-family: sans-serif;
+    color: #333;
+  }
 
-    .content {
-      padding: 10px;
-    }
+  .content {
+    padding: 10px;
   }
 </style>
-```
-The `@export` allows for your selectors to be used in other documents. Without it, these styles 
-would only work in the document the document they're defined in. 
 
-From there you can start using your styles:
-
-```html live
-// file: demo.pc
-<import src="./migrated-css.pc" as="migrated-css" />
-
-<div className="$migrated-css.container">
-  <div className="$migrated-css.content"> 
-    Some content!
-  </div>
+<div export component as="Container" class="container">
+  {children}
 </div>
 
-// file: migrated-css.pc
-
-<style>
-  @export {
-    .container {
-      font-family: sans-serif;
-      color: #F60;
-      font-size: 18px;
-    }
-
-    .content {
-      padding: 10px;
-    }
-  }
-</style>
+<div export component as="Content" class="content">
+  {children}
+</div>
 ```
+
+If your CSS selectors are specific to an element, then I'd recommend moving them to a `PC` file and export a component associated with that selector. If your styles are more atomic, then I'd recommend keeping them in a `CSS` file and importing that into your PC documents where they're needed.
 
 ###  Migrating from Styled Components, Emotion, etc
 

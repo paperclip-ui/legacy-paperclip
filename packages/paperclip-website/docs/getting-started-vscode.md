@@ -1,39 +1,39 @@
 ---
 id: getting-started-vscode
-title: Installing the visual editor
-sidebar_label: Visual Tooling setup
+title: Installing the visual tools
+sidebar_label: Installing visual tools
 ---
 
-Paperclip's visual tooling is a good place to start for you to get a good feel for the template language. 
 
-## VS Code
 
-The [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) is a really good place to start since it works out of the box. Just create a new `hello-world.pc` file, and start writing plain HTML & CSS. Play around by creating a style block, use the color pickers.  Get a real good feel for Paperclip. 
+Paperclip comes with visual tooling that eliminiates the compile step so that you can see your changes immediately after you save (or type if you're using VS Code extension). You'll be happy to use them! 
+
+There are two options currently for getting started locally:
+
+1. For VS Code users, you can install the extension.
+1. For non-vscode users, you can install the CLI tools.
+
+
+## VS Code extension
+
+I highly recommend using the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=crcn.paperclip-vscode) since you can launch previews directly from the IDE, and changes appear _as you type_.  
+
 
 ![alt Realtime editing](/img/vscode-measure.gif)
 
-### Tips
+Check out the [VS Code extension guide](guide-vscode) for more info.
 
-- To **Open a live preview**, execute the `Paperclip: Live Preview` while a `*.pc` file is open.
-- To **zoom**, scroll & hold down the `meta` / `ctrl` key.
-- To **measure between elements**, just select an element, then hold `meta` / `ctrl` by hovering over another element.
-- You can **turn off visual tools** by clicking the raindrop. 
-- You can open the **web inspector** by running the command: `Developer: Open Webview Developer tools`.
-- If the extension stops working for whatever reason (might happen during Alpha), then run the `Developer: Reload Window` command. 
+## CLI dev server
 
-## Dev server
-
-If you don't have VS Code, you can install the CLI tool:
+If you don't have VS Code, you can just run the CLI tool:
 
 ```
-npm i paperclip-cli -g
+npx paperclip dev
 ```
 
-After that, create a new `hello-world.pc` and type some HTML into that. Once that's done, open terminal and run:
+This will launch Paperclip's visual tooling in the browser. Changes that are saved locally will appear immediately here. 
 
-```
-paperclip dev
-```
 
-☝🏻 this will start the dev server that will allow you to visually see your frames *live* as you're building them.
+![alt Realtime editing](/img/demo-dev-server.gif)
 
+> Note that there are some limitations to the dev server. For example, you won't be able to move frames around, and you won't be able to jump to source code via `meta + click`. That functionality is only available for the IDE extensions.

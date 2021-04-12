@@ -6,7 +6,8 @@ import {
   previewContent,
   DependencyContent,
   LoadedData,
-  loadedDataRequested
+  loadedDataRequested,
+  LoadedDataEmitted
 } from "paperclip-utils";
 import { collectASTInfo } from "./ast-info";
 import * as channels from "./channel";
@@ -25,7 +26,10 @@ const init = () => {
     channel.postMessage(previewContent({ uri, value }));
   });
   channels.getSuggestions(self).responder(async ({ uri, text }) => {
-    return getSuggestions(text, await getLoadedData(uri));
+    const {
+      payload: { data, imports, ast }
+    } = await getLoadedData(uri);
+    return getSuggestions(text, data, ast, imports);
   });
 
   const waitForAST = (uri: string): Promise<DependencyContent> => {
@@ -39,7 +43,7 @@ const init = () => {
     }
   };
 
-  const getLoadedData = (uri: string): Promise<LoadedData> => {
+  const getLoadedData = (uri: string): Promise<LoadedDataEmitted> => {
     return new Promise(resolve => {
       channel.postMessage(loadedDataRequested({ uri }));
       _resolveLoadedData = resolve;
@@ -50,7 +54,7 @@ const init = () => {
     if (action.type === BasicPaperclipActionType.AST_EMITTED) {
       _resolveAst((asts[action.payload.uri] = action.payload.content));
     } else if (action.type === BasicPaperclipActionType.LOADED_DATA_EMITTED) {
-      _resolveLoadedData(action.payload.data);
+      _resolveLoadedData(action);
     }
   };
 

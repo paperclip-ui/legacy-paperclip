@@ -13,6 +13,8 @@ import * as vea from "paperclip-designer/src/actions";
 import {
   astEmitted,
   BasicPaperclipActionType,
+  EvaluatedDataKind,
+  LoadedData,
   loadedDataEmitted
 } from "paperclip-utils";
 import { AppState, WorkerState } from "../state";
@@ -147,10 +149,25 @@ const init = async () => {
         );
       }
       case BasicPaperclipActionType.LOADED_DATA_REQUESTED: {
+        const data = (await _enginePromise).getLoadedData(action.payload.uri);
+        const ast = (await _enginePromise).getLoadedAst(action.payload.uri);
+
+        const imports: Record<string, LoadedData> = {};
+
+        if (data?.kind === EvaluatedDataKind.PC) {
+          for (const rel in data.dependencies) {
+            imports[rel] = (await _enginePromise).getLoadedData(
+              data.dependencies[rel]
+            );
+          }
+        }
+
         return dispatch(
           loadedDataEmitted({
             uri: action.payload.uri,
-            data: (await _enginePromise).getLoadedData(action.payload.uri)
+            data,
+            imports,
+            ast
           })
         );
       }

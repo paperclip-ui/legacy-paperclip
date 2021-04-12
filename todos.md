@@ -1,8 +1,11 @@
 IMMEDIATE:
 
-- tailwind integration
-- prettier plugin (required for UI to write code)
-- CSS shaking (core part of CSS inspector)
+Goal right now is to get people using Paperclip
+
+- show errors on each line
+- autocomplete for CSS
+- autocomplete for components
+- Playground code sync
 
 OTHER:
 

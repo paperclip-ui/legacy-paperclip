@@ -1,35 +1,47 @@
 ---
 id: getting-started-installation
-title: Installation
-sidebar_label: Installation 
+title: Project Installation
+sidebar_label: Installation
 ---
 
-Paperclip's installation is the same for **new** and **existing** projects. If you're using Paperclip for the first time, I'd recommend starting with a new project _first_ so that you can get a good feel for the tool. It's super quick to set up.
+This guide assumes that you're using **Webpack** and **React**.
 
-### Existing projects
+Go ahead and run this command in your project directory (existing and new):
 
-To install Paperclip in an existing project, `cd` into your project directory, then run:
-
-```bash
+```
 npx paperclip-cli init
 ```
 
-This will install all of the necessary dependencies for Paperclip. After that, you'll need to **manually
-configure your project**. The next page will help you do that. 
+### Webpack Setup
 
-### New projects
+*If you're starting a new project, then you can skip this step*.
 
-For new projects, just run:
+Documentation for this can be found in the [Webpack Integration](getting-started-webpack) page. The only thing you really need to configure is:
 
-```sh
-mkdir my-new-project && cd my-new-project && npx paperclip-cli init
+- `paperclip-loader` - compiles PC files to JSX.
+- `style-loader` - required since Paperclip emits CSS.
+- `css-loader` - required with style-loader.
+- `file-loader` - required for CSS files that have `url()`'s in them & other media. 
+
+
+### Create React App (CRA)
+
+### TypeScript
+
+If you're using TypeScript, you can generate Typed Definitions from Paperclip files by running:
+
+```bash
+yarn paperclip build --definition --write
 ```
 
-You'll be asked some questions, then a new project will be generated for you. After that, just run:
+This will write `*.pc.d.ts` files in in the same directory as their corresponding `*.pc` file. I'd also recommend that you include `*.pc.d.ts` in your `.gitignore` file.
 
-```
-npm start
-```
+☝ This command will generate definitions files based on the compiler you're using. So if you're using `paperclip-compiler-react`, then React
+Typed Definition files will be generated for you. Configuration for the compiler can be found in the `paperclip.config.json`. 
 
-Since you'll have a project that's already configured, you can skip the next page, and jump straight into
-[Using With React](getting-started-first-ui.md).
+<!-- ### NextJS Setup
+
+> ⚠️ WIP ⚠️ -->
+
+
+

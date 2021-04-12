@@ -7,7 +7,6 @@ import {
 } from "monaco-editor-core";
 import { Color, IPaperclipEngineInfoProvider } from "./service/base";
 import * as parseColor from "color";
-import { textSpanIsEmpty } from "typescript";
 
 export type Options = {
   getCurrentUri: () => string;
@@ -76,7 +75,10 @@ export class PaperclipMonacoServiceAdapter
       model.uri.path.substr(1)
     );
 
+    console.log(suggestions);
+
     return {
+      incomplete: true,
       suggestions: suggestions.map(({ label, insertText, location }) => {
         return {
           label,
