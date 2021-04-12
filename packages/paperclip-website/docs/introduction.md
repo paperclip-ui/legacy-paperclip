@@ -67,7 +67,7 @@ If you already have a big project, then the benefits of moving over to Paperclip
 - Paperclip gives developers complete freedom to write HTML & CSS however they want, and without the need for BEM, SMACSS, and other styling patterns.
 
 
-### But I'm already using with Tailwind / Bulma / Bootstrap / etc.
+### I'm already using Tailwind / Bulma / Bootstrap / etc.
 
 Paperclip compliments existing frameworks like Tailwind and Bootstrap by keeping them _scoped_ to the UI you want them applied to. For example:
 
