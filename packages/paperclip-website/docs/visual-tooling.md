@@ -26,7 +26,7 @@ Check out the [VS Code extension guide](guide-vscode) for more info.
 If you don't have VS Code, you can just run the CLI tool:
 
 ```
-npx paperclip dev
+npx paperclip-cli dev
 ```
 
 This will launch Paperclip's visual tooling in the browser. Changes that are saved locally will appear immediately here. 
