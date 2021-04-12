@@ -18,7 +18,7 @@ module.exports = {
       type: "category",
       label: "API Reference",
       collapsed: false,
-      items: ["usage-syntax", "usage-react", "usage-cli", "configure-paperclip"]
+      items: ["usage-react", "usage-syntax", "usage-cli", "configure-paperclip"]
     },
     {
       type: "category",
