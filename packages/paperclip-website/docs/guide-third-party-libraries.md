@@ -8,54 +8,18 @@ sidebar_label: Third-party Libraries
 
 > The ergonomics for this aren't ideal, and I plan on making tooling to make this experiense better.
 
-If you're using third-party CSS such as Bootstrap or Tailwind, you'll need to move the CSS over
-to a `*.pc` file. For example:
-
-```css
-.my-1 {
-  /* tailwind code */
-}
-
-.my-2 {
-  /* tailwind code */
-}
-
-.text-color-black-100 {
-  /* tailwind code */
-}
-```
-
-This must be converted to Paperclip like so:
-
-```css
-<style>
-  @export {
-    .my-1 {
-      /* tailwind code */
-    }
-
-    .my-2 {
-      /* tailwind code */
-    }
-
-    .text-color-black-100 {
-      /* tailwind code */
-    }
-  }
-</style>
-```
-
-> The `@export` block is necessary for CSS that you plan on using in other Paperclip files, since Paperclip requires _explicity_. You can make all selectors global with `:global` if you really want to, but I don't recommend that because you're losing safety in favor of convenience. 
-
-☝ Here's how you can use these styles in another Paperclip file:
+If you're using third-party CSS such as Bootstrap or Tailwind, you can just import them into your PC documents like so:
 
 ```html
-<import src="modules/tailwind.pc" as="tw" />
+<import src="./taiwind.css" inject-styles />
 
-<div className="$tw.text-color-black-100 $tw.my-1">
+<div className="text-color-black-100 my-1">
   Something
 </div>
 ```
+
+The `inject-styles` attribute injects the document that the file is imported into -- it's still scoped. Other files that are imported into the doc are unaffected, which means
+that you'll need to include your third-party CSS in each document that you'd like to style. 
 
 The [Tailwind example](https://github.com/crcn/paperclip/tree/master/examples/tailwind) is a good place to start if you're looking to do this.
 

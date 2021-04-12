@@ -4,30 +4,12 @@ title: Using Paperclip In React Apps
 sidebar_label: React
 ---
 
-## Installation
 
-To use Paperclip in React, you'll need to install the compiler first:
-
-```sh
-npm install paperclip-compiler-react --save-dev
-```
-
-Then in your `paperclip.config.json` file, change `compilerOptions.name` to look like:
-
-```json
-{
-  "compilerOptions": {
-    "name": "paperclip-compiler-react"
-  },
-  "sourceDirectory": "./src"
-}
-```
-
-After that you're good to go! From there you can start importing UI files into your app by either using [Webpack](configure-webpack.md), or by using the [CLI tool](usage-cli.md) to generate JavaScript files. 
+⚠️ This doc assumes that you've already set up Paperclip with your project. If you haven't done that already, check out the [Getting Started](getting-started-webpack) section.
 
 ## Importing *.pc files
 
-Think of `*.pc` files like any other JavaScript file. Just import them directly like so:
+Assuming that you have the correct loaders set up, you can just import `*.pc` files like regular JavaScript modules. For example:
 
 ```tsx
 
@@ -55,21 +37,21 @@ export default () => {
 
 ```html live
 <style>
-   .Container {
+   .container {
      font-family: Helvetica;
      cursor: pointer;
    }
-   .CurrentCount {
+   .current-count {
      font-weight: 400;
    }
 </style>
 
 <!-- Components -->
 
-<div export component as="Container" className="Container">
+<div export component as="Container" className="container">
   Current count: {children}
 </div>
-<div export component as="CurrentCount" className="CurrentCount">
+<div export component as="CurrentCount" className="current-count">
   {children}
 </div>
 
@@ -125,7 +107,7 @@ Props can be defined just like any ordinary React component. Take this template 
 
 In React code, we can define our `onClick` handler like so:
 
-```html
+```javascript
 import * as styles from "./button.pc";
 
 <styles.Button onClick={handleClick} />

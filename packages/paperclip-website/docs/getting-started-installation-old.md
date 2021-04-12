@@ -1,5 +1,5 @@
 ---
-id: getting-started-installation
+id: getting-started-installation-2
 title: Installation
 sidebar_label: Installation 
 ---

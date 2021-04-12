@@ -107,9 +107,7 @@ export const root = {
       console.info(
         chalk.yellowBright(
           "Next, you'll need to configure your project. Instructions for that are here: \n\n" +
-            chalk.underline(
-              `https://paperclip.dev/docs/getting-started-project-setup`
-            )
+            chalk.underline(`https://paperclip.dev/docs/`)
         )
       );
       console.info("");

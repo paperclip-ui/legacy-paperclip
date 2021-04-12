@@ -33,7 +33,7 @@ Let's start off with a simple list UI in Paperclip:
   {children}
 </li>
 
-<!-- Preview -->
+<!-- Preview  -->
 
 <Header />
 <List>

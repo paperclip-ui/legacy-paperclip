@@ -12,7 +12,7 @@ First up, be sure to have run `npx paperclip-cli init` in your existing project 
 
 ### Webpack Setup
 
-Documentation for this can be found in the [Webpack Integration](configure-webpack.md) page. The only thing you really need to configure is:
+Documentation for this can be found in the [Webpack Integration](getting-started-webpack) page. The only thing you really need to configure is:
 
 - `paperclip-loader` - compiles PC files to JSX.
 - `style-loader` - required since Paperclip emits CSS.
