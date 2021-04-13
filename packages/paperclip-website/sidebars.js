@@ -8,7 +8,7 @@ module.exports = {
       type: "category",
       label: "Getting Started",
       collapsed: false,
-      items: ["getting-started-webpack"]
+      items: ["getting-started-webpack", "getting-started-new-project"]
     },
     {
       type: "doc",
