@@ -21,7 +21,7 @@ The main issue that Paperclip tries to solve is development speed. Typically you
 
 ### Explicit CSS
 
-One of the problems with CSS is that it's global, and hard to tell what elements its styling. Paperclip aims to solve that by making CSS scoped. This means that CSS defined within each document is only applied to that document. For example:
+One of the problems with CSS is that it's global, and can make it hard to tell what elements are being styled. Paperclip aims to solve that by making CSS scoped. This means that CSS defined or included within each document is only applied to that document. For example:
 
 ```html
 <style>
@@ -64,10 +64,10 @@ If you already have a big project, then the benefits of moving over to Paperclip
 
 - Paperclip wrangles any messy CSS you have by keeping it scoped, and covered for visual regression tests.
 - Product development moves faster since UI development is faster in Paperclip (developers don't have to wait for their code to compile).
-- Paperclip gives developers complete freedom to write HTML & CSS however they want, and without the need for BEM, SNACSS, and other styling patterns.
+- Paperclip gives developers complete freedom to write HTML & CSS however they want, and without the need for BEM, SMACSS, and other styling patterns.
 
 
-### But I'm already using with Tailwind / Bulma / Bootstrap / etc.
+### I'm already using Tailwind / Bulma / Bootstrap / etc.
 
 Paperclip compliments existing frameworks like Tailwind and Bootstrap by keeping them _scoped_ to the UI you want them applied to. For example:
 
