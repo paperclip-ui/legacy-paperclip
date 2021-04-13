@@ -45,7 +45,7 @@ function Home() {
             - More natural than the current way of building UIs
             */
               <>
-                Paperclip allows you to visualy build presentational components
+                Paperclip allows you to visually build presentational components
                 for React, all within your existing IDE.
                 {/* Paperclip is a template language for presentational components that comes with a visual editor, all within your existing IDE. */}
                 {/* Paperclip is a visual editor for presentational web components, 
