@@ -69,10 +69,10 @@ fn parse_node<'a>(
   let start = tokenizer.get_pos();
 
   // want to maintain new lines so that prettier works
-  tokenizer.eat_whitespace(false);
+  tokenizer.eat_whitespace(true);
 
   // Kinda ick, but cover case where last node is whitespace.
-  let token = tokenizer.peek_eat_whitespace(1, false).or_else(|_| {
+  let token = tokenizer.peek_eat_whitespace(1, true).or_else(|_| {
     tokenizer.set_pos(&start);
     tokenizer.peek(1)
   })?;

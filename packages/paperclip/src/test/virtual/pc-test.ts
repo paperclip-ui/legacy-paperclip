@@ -1772,7 +1772,7 @@ describe(__filename + "#", () => {
 
     const buffer = `${stringifyLoadResult(result)}`;
     expect(buffer).to.eql(
-      `<style>[data-pc-88988c96][data-pc-88988c96] { color:blue; } [data-pc-2ab9259d][data-pc-2ab9259d] { color:red; }</style><div data-pc-80f4925f data-pc-pub-80f4925f><span data-pc-80f4925f data-pc-88988c96 data-pc-pub-80f4925f></span><div data-pc-2ab9259d data-pc-80f4925f data-pc-pub-80f4925f></div></div>`
+      `<style>[data-pc-3024ebf3][data-pc-3024ebf3] { color:blue; } [data-pc-188f471f][data-pc-188f471f] { color:red; }</style><div data-pc-80f4925f data-pc-pub-80f4925f><span data-pc-3024ebf3 data-pc-80f4925f data-pc-pub-80f4925f></span><div data-pc-188f471f data-pc-80f4925f data-pc-pub-80f4925f></div></div>`
     );
   });
   it(`Treats class & className the same`, async () => {
