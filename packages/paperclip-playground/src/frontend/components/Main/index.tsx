@@ -149,7 +149,6 @@ const Preview = () => {
   }
 
   let mediaContent;
-  console.log("TOP");
 
   if (isVideo(type)) {
     mediaContent = <video src={objectUrl} controls />;

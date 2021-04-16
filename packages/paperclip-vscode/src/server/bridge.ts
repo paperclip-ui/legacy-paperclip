@@ -86,7 +86,6 @@ export class VSCServiceBridge {
 
     connection.onDidOpenTextDocument(({ textDocument }) => {
       const uri = fixFileUrlCasing(textDocument.uri);
-      console.log(uri);
       this._documents[uri] = TextDocument.create(
         uri,
         textDocument.languageId,

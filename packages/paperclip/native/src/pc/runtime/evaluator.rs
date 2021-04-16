@@ -12,7 +12,7 @@ use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
-use crate::css::runtime::evaluator2::{
+use crate::css::runtime::evaluator::{
   evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo,
 };
 use crate::css::runtime::export as css_export;
@@ -252,10 +252,26 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
 }
 
 fn add_script_property(script: &js_ast::Expression, properties: &mut BTreeMap<String, Property>) {
-  if let js_ast::Expression::Reference(reference) = script {
-    let part = reference.path.get(0).unwrap();
-    add_property(&part.name, part.optional, properties);
-  }
+
+  match script {
+    js_ast::Expression::Reference(reference) => {
+      let part = reference.path.get(0).unwrap();
+      add_property(&part.name, part.optional, properties);
+    },
+    js_ast::Expression::Conjunction(conjunction) => {
+      add_script_property(&conjunction.left, properties);
+      add_script_property(&conjunction.right, properties);
+    },
+    js_ast::Expression::Group(group) => {
+      add_script_property(&group.expression, properties);
+    },
+    js_ast::Expression::Node(node) => {
+      properties.extend(collect_node_properties(&node));
+    },
+    _ => {
+
+    }
+  };
 }
 
 fn add_property(name: &String, optional: bool, properties: &mut BTreeMap<String, Property>) {

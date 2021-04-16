@@ -3,7 +3,7 @@ use crate::base::ast::Location;
 use crate::base::parser::ParseError;
 // use crate::css::runtime::exports as css_exports;
 // use crate::pc::runtime::exports as pc_exports;
-use crate::css::runtime::evaluator2 as css_eval;
+use crate::css::runtime::evaluator as css_eval;
 use crate::pc::runtime::evaluator as pc_eval;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};

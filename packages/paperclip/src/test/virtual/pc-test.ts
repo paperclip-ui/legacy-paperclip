@@ -9,6 +9,7 @@ import {
 import {
   EngineDelegateEventKind,
   LoadedPCData,
+  PCExports,
   stringifyVirtualNode
 } from "paperclip-utils";
 
@@ -541,6 +542,79 @@ describe(__filename + "#", () => {
         name: "Test2",
         properties: {},
         public: true
+      }
+    });
+  });
+
+  it("Exports are updated", async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test">
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.open("/entry.pc")) as LoadedPCData;
+
+    expect(result.exports.components).to.eql({
+      Test: {
+        name: "Test",
+        properties: {},
+        public: false
+      }
+    });
+
+    await engine.updateVirtualFileContent(
+      "/entry.pc",
+      `<div component as="Test2">
+    </div>`
+    );
+    const result2 = engine.getLoadedData("/entry.pc");
+
+    expect((result2.exports as PCExports).components).to.eql({
+      Test2: {
+        name: "Test2",
+        properties: {},
+        public: false
+      }
+    });
+  });
+
+  it("Conditional blocks are collected in export props", async () => {
+    const graph = {
+      "/entry.pc": `
+        <div component as="Test">
+          {a && b? && (c) && <b>{d}</b>}
+        </div>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = (await engine.open("/entry.pc")) as LoadedPCData;
+
+    expect(result.exports.components).to.eql({
+      Test: {
+        name: "Test",
+        properties: {
+          a: {
+            name: "a",
+            optional: false
+          },
+          b: {
+            name: "b",
+            optional: true
+          },
+          c: {
+            name: "c",
+            optional: false
+          },
+          d: {
+            name: "d",
+            optional: false
+          }
+        },
+        public: false
       }
     });
   });

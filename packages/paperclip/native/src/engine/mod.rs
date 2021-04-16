@@ -5,7 +5,7 @@ use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph, GraphError};
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
 use crate::css::runtime::diff::diff as diff_css;
-use crate::css::runtime::evaluator2::evaluate as evaluate_css;
+use crate::css::runtime::evaluator::evaluate as evaluate_css;
 use crate::css::runtime::mutation as css_mutation;
 use crate::css::runtime::virt as css_virt;
 use crate::pc::ast as pc_ast;
