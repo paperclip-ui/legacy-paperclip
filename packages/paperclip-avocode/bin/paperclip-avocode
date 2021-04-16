@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+const {pull, init} = require("../lib/cli");
+
+const argv = require("yargs")
+.command("pull [figma-url]", "Pull design url", yargs => {
+}, argv => {
+  pull();
+})
+.command("init", "Init avocode project", yargs => {
+}, argv => {
+  init();
+});

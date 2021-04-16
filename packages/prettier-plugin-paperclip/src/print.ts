@@ -29,8 +29,6 @@ const {
 export const print = (path: FastPath, options: Object, print): Doc => {
   const expr: Expression = path.getValue();
 
-  console.log(expr);
-
   if (isNode(expr)) {
     switch (expr.kind) {
       case NodeKind.Fragment: {

@@ -75,8 +75,6 @@ export class PaperclipMonacoServiceAdapter
       model.uri.path.substr(1)
     );
 
-    console.log(suggestions);
-
     return {
       incomplete: true,
       suggestions: suggestions.map(({ label, insertText, location }) => {

@@ -12,9 +12,7 @@ use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
-use crate::css::runtime::evaluator2::{
-  evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo,
-};
+use crate::css::runtime::evaluator::{evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
 use crate::js::ast as js_ast;
@@ -252,10 +250,23 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
 }
 
 fn add_script_property(script: &js_ast::Expression, properties: &mut BTreeMap<String, Property>) {
-  if let js_ast::Expression::Reference(reference) = script {
-    let part = reference.path.get(0).unwrap();
-    add_property(&part.name, part.optional, properties);
-  }
+  match script {
+    js_ast::Expression::Reference(reference) => {
+      let part = reference.path.get(0).unwrap();
+      add_property(&part.name, part.optional, properties);
+    }
+    js_ast::Expression::Conjunction(conjunction) => {
+      add_script_property(&conjunction.left, properties);
+      add_script_property(&conjunction.right, properties);
+    }
+    js_ast::Expression::Group(group) => {
+      add_script_property(&group.expression, properties);
+    }
+    js_ast::Expression::Node(node) => {
+      properties.extend(collect_node_properties(&node));
+    }
+    _ => {}
+  };
 }
 
 fn add_property(name: &String, optional: bool, properties: &mut BTreeMap<String, Property>) {
@@ -567,14 +578,22 @@ pub fn evaluate_node<'a>(
     ast::Node::StyleElement(el) => {
       return evaluate_style_element(&el, context);
     }
-    ast::Node::Text(text) => Ok(Some(virt::Node::Text(virt::Text {
-      annotations: annotations.clone(),
-      source: ExprSource {
-        uri: context.uri.to_string(),
-        location: text.location.clone(),
-      },
-      value: text.value.to_string(),
-    }))),
+    ast::Node::Text(text) => {
+      // skip pure whitespace (this should only happen with new lines). This is necessary
+      // particularly for annotations
+      // if text.value.trim() == "" {
+      //   return Ok(None);
+      // }
+
+      return Ok(Some(virt::Node::Text(virt::Text {
+        annotations: annotations.clone(),
+        source: ExprSource {
+          uri: context.uri.to_string(),
+          location: text.location.clone(),
+        },
+        value: text.value.to_string(),
+      })));
+    }
     ast::Node::Slot(slot) => evaluate_slot(&slot, depth, context),
     ast::Node::Fragment(el) => evaluate_fragment(&el, depth, context),
     ast::Node::Comment(el) => Ok(None),
@@ -1319,7 +1338,7 @@ fn evaluate_children<'a>(
   let mut children: Vec<virt::Node> = vec![];
 
   let mut contains_style = false;
-  let mut metadata: Option<js_virt::JsObject> = None;
+  let mut annotations: Option<js_virt::JsObject> = None;
 
   for child_expr in children_expr {
     match child_expr {
@@ -1327,13 +1346,13 @@ fn evaluate_children<'a>(
         contains_style = true;
       }
       ast::Node::Comment(comment) => {
-        metadata = Some(evaluate_comment(comment, depth, context)?);
+        annotations = Some(evaluate_comment(comment, depth, context)?);
         continue;
       }
       _ => {}
     }
 
-    match evaluate_node(child_expr, false, depth + 1, None, &metadata, context)? {
+    match evaluate_node(child_expr, false, depth + 1, None, &annotations, context)? {
       Some(c) => match c {
         virt::Node::Fragment(mut fragment) => {
           for child in fragment.children.drain(0..) {
@@ -1347,7 +1366,7 @@ fn evaluate_children<'a>(
       None => {}
     }
 
-    metadata = None;
+    annotations = None;
   }
 
   if depth == 0 {

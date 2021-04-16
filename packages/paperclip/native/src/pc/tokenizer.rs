@@ -130,11 +130,16 @@ pub struct Tokenizer<'a> {
 }
 
 impl<'a> Tokenizer<'a> {
-  pub fn eat_whitespace(&mut self) {
+  pub fn eat_whitespace(&mut self, eat_newlines: bool) {
     if self.is_eof() {
       return;
     }
-    let is_whitepace = |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') };
+    let is_whitepace = if eat_newlines {
+      |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') }
+    } else {
+      |c| -> bool { matches!(c, b' ' | b'\t') }
+    };
+
     while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
       self.pos += 1;
       self.utf16_pos += 1;
@@ -161,12 +166,16 @@ impl<'a> Tokenizer<'a> {
     self.set_pos(&pos);
     result
   }
-  pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
+  pub fn peek_eat_whitespace(
+    &mut self,
+    steps: u8,
+    eat_newlines: bool,
+  ) -> Result<Token<'a>, ParseError> {
     let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
-      self.eat_whitespace();
+      self.eat_whitespace(eat_newlines);
       result = self.next();
       i += 1;
     }

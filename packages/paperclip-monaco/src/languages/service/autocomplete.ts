@@ -46,8 +46,6 @@ const getAttrValueSuggestions = (
 };
 
 const getClassNameSuggestions = (content: Content): Suggestion[] => {
-  console.log("AUTO IT");
-
   return [
     {
       label: "A",

@@ -1,4 +1,8 @@
-<import src="./atoms.pc" as="atoms" inject-styles />
+<import src="./atoms.pc" as="atoms" />
+
+<div export component as="Test">
+</div>
+
 
 <!--
   @frame { visible: false }

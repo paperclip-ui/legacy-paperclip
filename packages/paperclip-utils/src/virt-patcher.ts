@@ -192,7 +192,7 @@ const updatePrimary = (
         ...allData,
         [event.uri]: {
           ...existingPCData,
-          exports: existingPCData.exports,
+          exports: event.data.exports,
           importedSheets: getImportedSheets(
             allData,
             event.data.allImportedSheetUris
@@ -225,7 +225,7 @@ const getImportedSheets = (
   // ick, wworks for now.
 
   const deps: SheetInfo[] = [];
-  for (let i = 0, {length} = allImportedSheetUris; i < length; i++) {
+  for (let i = 0, { length } = allImportedSheetUris; i < length; i++) {
     const depUri = allImportedSheetUris[i];
     const data = allData[depUri];
     if (data) {

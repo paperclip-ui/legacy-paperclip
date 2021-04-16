@@ -34,3 +34,6 @@
         }
     }
 </style>
+
+<div export component as="Test">
+</div>
