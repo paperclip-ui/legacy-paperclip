@@ -166,7 +166,11 @@ impl<'a> Tokenizer<'a> {
     self.set_pos(&pos);
     result
   }
-  pub fn peek_eat_whitespace(&mut self, steps: u8, eat_newlines: bool) -> Result<Token<'a>, ParseError> {
+  pub fn peek_eat_whitespace(
+    &mut self,
+    steps: u8,
+    eat_newlines: bool,
+  ) -> Result<Token<'a>, ParseError> {
     let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());

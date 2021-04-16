@@ -67,6 +67,8 @@ fn parse_node<'a>(
   path: Vec<String>,
 ) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.get_pos();
+
+  // want to maintain new lines so that prettier works
   tokenizer.eat_whitespace(false);
 
   // Kinda ick, but cover case where last node is whitespace.

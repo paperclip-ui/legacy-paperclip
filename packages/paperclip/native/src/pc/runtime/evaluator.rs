@@ -579,8 +579,9 @@ pub fn evaluate_node<'a>(
       return evaluate_style_element(&el, context);
     }
     ast::Node::Text(text) => {
-
-      // skip pure whitespace (this should only happen with new lines)
+      
+      // skip pure whitespace (this should only happen with new lines). This is necessary
+      // particularly for annotations
       if text.value.trim() == "" {
         return Ok(None);
       }
@@ -592,8 +593,8 @@ pub fn evaluate_node<'a>(
           location: text.location.clone(),
         },
         value: text.value.to_string(),
-      })))
-    },
+      })));
+    }
     ast::Node::Slot(slot) => evaluate_slot(&slot, depth, context),
     ast::Node::Fragment(el) => evaluate_fragment(&el, depth, context),
     ast::Node::Comment(el) => Ok(None),
