@@ -1,6 +1,6 @@
 {
   "name": "paperclip-avocode",
-  "version": "1.0.0",
+  "version": "17.8.6",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "yargs": "^16.2.0",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "yargs": "^16.2.0"
   }
 }
