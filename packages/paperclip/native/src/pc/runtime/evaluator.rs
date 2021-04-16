@@ -578,14 +578,22 @@ pub fn evaluate_node<'a>(
     ast::Node::StyleElement(el) => {
       return evaluate_style_element(&el, context);
     }
-    ast::Node::Text(text) => Ok(Some(virt::Node::Text(virt::Text {
-      annotations: annotations.clone(),
-      source: ExprSource {
-        uri: context.uri.to_string(),
-        location: text.location.clone(),
-      },
-      value: text.value.to_string(),
-    }))),
+    ast::Node::Text(text) => {
+
+      // skip pure whitespace (this should only happen with new lines)
+      if text.value.trim() == "" {
+        return Ok(None);
+      }
+
+      return Ok(Some(virt::Node::Text(virt::Text {
+        annotations: annotations.clone(),
+        source: ExprSource {
+          uri: context.uri.to_string(),
+          location: text.location.clone(),
+        },
+        value: text.value.to_string(),
+      })))
+    },
     ast::Node::Slot(slot) => evaluate_slot(&slot, depth, context),
     ast::Node::Fragment(el) => evaluate_fragment(&el, depth, context),
     ast::Node::Comment(el) => Ok(None),
@@ -1330,7 +1338,7 @@ fn evaluate_children<'a>(
   let mut children: Vec<virt::Node> = vec![];
 
   let mut contains_style = false;
-  let mut metadata: Option<js_virt::JsObject> = None;
+  let mut annotations: Option<js_virt::JsObject> = None;
 
   for child_expr in children_expr {
     match child_expr {
@@ -1338,13 +1346,13 @@ fn evaluate_children<'a>(
         contains_style = true;
       }
       ast::Node::Comment(comment) => {
-        metadata = Some(evaluate_comment(comment, depth, context)?);
+        annotations = Some(evaluate_comment(comment, depth, context)?);
         continue;
       }
       _ => {}
     }
 
-    match evaluate_node(child_expr, false, depth + 1, None, &metadata, context)? {
+    match evaluate_node(child_expr, false, depth + 1, None, &annotations, context)? {
       Some(c) => match c {
         virt::Node::Fragment(mut fragment) => {
           for child in fragment.children.drain(0..) {
@@ -1355,10 +1363,12 @@ fn evaluate_children<'a>(
           children.push(c);
         }
       },
-      None => {}
+      None => {
+        continue;
+      }
     }
 
-    metadata = None;
+    annotations = None;
   }
 
   if depth == 0 {

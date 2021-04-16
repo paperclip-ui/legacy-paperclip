@@ -67,10 +67,10 @@ fn parse_node<'a>(
   path: Vec<String>,
 ) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.get_pos();
-  tokenizer.eat_whitespace();
+  tokenizer.eat_whitespace(false);
 
   // Kinda ick, but cover case where last node is whitespace.
-  let token = tokenizer.peek_eat_whitespace(1).or_else(|_| {
+  let token = tokenizer.peek_eat_whitespace(1, false).or_else(|_| {
     tokenizer.set_pos(&start);
     tokenizer.peek(1)
   })?;
@@ -232,7 +232,7 @@ fn parse_next_basic_element_parts<'a>(
 ) -> Result<pc_ast::Node, ParseError> {
   let mut children: Vec<pc_ast::Node> = vec![];
 
-  tokenizer.eat_whitespace();
+  tokenizer.eat_whitespace(true);
   let mut end = tokenizer.utf16_pos;
 
   match tokenizer.peek(1)? {
@@ -243,8 +243,8 @@ fn parse_next_basic_element_parts<'a>(
     Token::GreaterThan => {
       tokenizer.next()?;
       end = tokenizer.utf16_pos;
-      tokenizer.eat_whitespace();
-      while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1)? != Token::TagClose {
+      tokenizer.eat_whitespace(true);
+      while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1, true)? != Token::TagClose {
         let mut child_path = path.clone();
         child_path.push(children.len().to_string());
         children.push(parse_node(tokenizer, child_path)?);
@@ -310,7 +310,7 @@ fn parse_close_tag<'a, 'b>(
 ) -> Result<(), ParseError> {
   let end_tag_name_start = tokenizer.utf16_pos;
 
-  tokenizer.eat_whitespace();
+  tokenizer.eat_whitespace(true);
 
   tokenizer
     .next_expect(Token::TagClose)
@@ -405,7 +405,7 @@ fn parse_attributes<'a>(
   let mut attributes: Vec<pc_ast::Attribute> = vec![];
 
   loop {
-    tokenizer.eat_whitespace();
+    tokenizer.eat_whitespace(true);
     match tokenizer.peek(1)? {
       Token::SelfTagClose | Token::GreaterThan => break,
       _ => {
