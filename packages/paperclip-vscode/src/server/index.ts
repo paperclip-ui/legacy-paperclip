@@ -82,6 +82,7 @@ class Server {
   }
 
   private _onConnectionInitialized = async cd => {
+    console.log("INIT", this._workspaceFolders);
     const { port, engine, dispatch } = await startServer({
       localResourceRoots: this._workspaceFolders.map(({ uri }) => {
         return url.fileURLToPath(uri);
@@ -92,6 +93,7 @@ class Server {
         this._dispatch(devServerChanged(action));
       }
     });
+    console.log("INNNN");
 
     this._dispatchDevServer = dispatch;
 

@@ -72,6 +72,9 @@ export const startServer = async ({
   openInitial,
   readonly
 }: ServerOptions) => {
+  console.log("RSS");
+  console.log("RESOURCE", localResourceRoots);
+  
   const engine = await createEngineDelegate(
     {
       mode: EngineMode.MultiFrame
@@ -327,6 +330,7 @@ const startHTTPServer = (
   io: sockjs.Server,
   localResourceRoots: string[]
 ) => {
+  console.log("LOCAL RESOURCE", localResourceRoots);
   const app = express();
 
   const server = app.listen(port);

@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "yarn build:definitions && tsc && webpack",
-    "build:watch": "webpack --watch & tsc --watch & paperclip-minimal build --write --definition --watch",
+    "build:watch": "concurrently \"webpack --watch\" \"tsc --watch\" \"paperclip-minimal build --write --definition --watch\"",
     "build:definitions": "paperclip-minimal build --write --definition"
   },
   "author": "",
@@ -25,6 +25,7 @@
     "mime-types": "^2.1.28",
     "mousetrap": "^1.6.5",
     "ngrok": "^3.4.0",
+    "concurrently": "^5.3.0",
     "os-browserify": "^0.3.0",
     "paperclip": "^17.8.7",
     "paperclip-source-writer": "^17.8.7",

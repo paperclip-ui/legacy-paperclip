@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import * as styles from "./index2.pc";
-import * as path from "path";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import {
   zoomInButtonClicked,
@@ -11,9 +10,10 @@ import {
   zoomInputChanged
 } from "../../../../actions";
 import { useTextInput } from "../../../TextInput";
-import * as qs from "qs";
 import { EnvironmentPopup } from "./EnvironmentPopup";
 import { isExpanded } from "../../../../state";
+
+const WIN_ENV = /^win/i.test(String(window?.navigator?.platform))
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
@@ -103,7 +103,7 @@ export const Toolbar = () => {
             <styles.Tab active={showingBirdsEye} onClick={onGridButtonClick}>
               <styles.GridButton />
             </styles.Tab>
-            {sharable && (
+            {sharable && !WIN_ENV && (
               <styles.Tab
                 active={showEnvironmentPopup}
                 onClick={onPopOutButtonClicked}

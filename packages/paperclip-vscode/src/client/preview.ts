@@ -191,6 +191,10 @@ export const activate = (
     contentChanges,
     document
   }: TextDocumentChangeEvent) => {
+
+    // ignore path: extension-output-#N
+    try {
+
     dispatchClient(
       ve.contentChanged({
         fileUri: fixFileUrlCasing(document.uri.toString()),
@@ -201,6 +205,9 @@ export const activate = (
         }))
       })
     );
+    } catch(e) {
+      console.error(e.stack)
+    }
   };
 
   window.registerWebviewPanelSerializer(VIEW_TYPE, {
