@@ -352,8 +352,9 @@ const startHTTPServer = (
   app.use("/canvas", distHandler);
   app.use("/all", distHandler);
   app.use("/file/*", (req, res, next) => {
-    const filePath = normalize(req.params["0"]);
-    const found = localResourceRoots.some(root => filePath.indexOf(root) === 0);
+    const filePath = URL.fileURLToPath(decodeURIComponent(normalize(req.params["0"])));
+    
+    const found = localResourceRoots.some(root => filePath.toLowerCase().indexOf(root.toLowerCase()) === 0);
     if (!found) {
       return next();
     }
