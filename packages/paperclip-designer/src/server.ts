@@ -72,8 +72,6 @@ export const startServer = async ({
   openInitial,
   readonly
 }: ServerOptions) => {
-  console.log("RSS");
-  console.log("RESOURCE", localResourceRoots);
   
   const engine = await createEngineDelegate(
     {
@@ -94,7 +92,7 @@ export const startServer = async ({
 
   const openURI = uri => {
     const localPath = URL.fileURLToPath(uri);
-    if (!localResourceRoots.some(root => localPath.includes(root))) {
+    if (!localResourceRoots.some(root => localPath.toLowerCase().includes(root.toLowerCase()))) {
       return;
     }
 
@@ -330,7 +328,6 @@ const startHTTPServer = (
   io: sockjs.Server,
   localResourceRoots: string[]
 ) => {
-  console.log("LOCAL RESOURCE", localResourceRoots);
   const app = express();
 
   const server = app.listen(port);
