@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback
+} from "react";
 import * as styles from "./index.pc";
 // import { Preview } from "./Preview";
 import { Tools } from "./Tools";
@@ -53,51 +59,54 @@ export const Canvas = React.memo(() => {
 
   const canvasRef = useRef<HTMLElement>();
 
-  const onWheel = useCallback((event: WheelEvent) => {
-    event.preventDefault();
-    clearTimeout(canvasPanTimer);
+  const onWheel = useCallback(
+    (event: WheelEvent) => {
+      event.preventDefault();
+      clearTimeout(canvasPanTimer);
 
-    let {pixelX, pixelY} = normalizeWheel(event);
-    if (!canvasRef.current) {
-      return;
-    }
-    if (!canvasPanTimer) {
-      dispatch(canvasPanStart(null));
-    }
-    const rect = canvasRef.current.getBoundingClientRect();
+      let { pixelX, pixelY } = normalizeWheel(event);
+      if (!canvasRef.current) {
+        return;
+      }
+      if (!canvasPanTimer) {
+        dispatch(canvasPanStart(null));
+      }
+      const rect = canvasRef.current.getBoundingClientRect();
 
-    // ignore jerky scroll - happens in VM for some reason.
-    if (Math.abs(pixelX) > 100) {
-      pixelX = pixelX / 100;
-    }
+      // ignore jerky scroll - happens in VM for some reason.
+      if (Math.abs(pixelX) > 100) {
+        pixelX = pixelX / 100;
+      }
 
-    dispatch(
-      canvasPanned({
-        delta: {
-          x: pixelX,
-          y: pixelY
-        },
-        mousePosition: {
-          x: event.pageX - rect.left,
-          y: event.pageY - rect.top
-        },
-        metaKey: event.metaKey,
-        ctrlKey: event.ctrlKey,
-        size: {
-          width: rect.width,
-          height: rect.height
-        }
-      })
-    );
-    setCanvasPanTimer(
-      setTimeout(() => {
-        setCanvasPanTimer(null);
-        dispatch(canvasPanEnd(null));
-      }, 100)
-    );
+      dispatch(
+        canvasPanned({
+          delta: {
+            x: pixelX,
+            y: pixelY
+          },
+          mousePosition: {
+            x: event.pageX - rect.left,
+            y: event.pageY - rect.top
+          },
+          metaKey: event.metaKey,
+          ctrlKey: event.ctrlKey,
+          size: {
+            width: rect.width,
+            height: rect.height
+          }
+        })
+      );
+      setCanvasPanTimer(
+        setTimeout(() => {
+          setCanvasPanTimer(null);
+          dispatch(canvasPanEnd(null));
+        }, 100)
+      );
 
-    return false;
-  }, [canvasRef, dispatch, setCanvasPanTimer]);
+      return false;
+    },
+    [canvasRef, dispatch, setCanvasPanTimer]
+  );
 
   useEffect(() => {
     if (!canvasRef.current) {

@@ -14,7 +14,6 @@ import { spawn, fork } from "child_process";
 const selfPkg = require("../../package");
 
 export const activate = async (context: ExtensionContext) => {
-
   // nobody using this, don't do it
   // await installDeps();
   console.log("initializing");
