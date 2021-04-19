@@ -224,7 +224,7 @@ const useUrlResolver = () => {
       }
 
       if (resourceHost) {
-        return resourceHost + url.replace("file://", "");
+        return resourceHost + encodeURIComponent(url);
       }
       const content = documents[url];
 
