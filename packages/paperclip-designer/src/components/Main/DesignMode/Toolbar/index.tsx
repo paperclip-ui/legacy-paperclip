@@ -13,7 +13,7 @@ import { useTextInput } from "../../../TextInput";
 import { EnvironmentPopup } from "./EnvironmentPopup";
 import { isExpanded } from "../../../../state";
 
-const WIN_ENV = /^win/i.test(String(window?.navigator?.platform))
+const WIN_ENV = /^win/i.test(String(window?.navigator?.platform));
 
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();

@@ -72,7 +72,6 @@ export const startServer = async ({
   openInitial,
   readonly
 }: ServerOptions) => {
-  
   const engine = await createEngineDelegate(
     {
       mode: EngineMode.MultiFrame
@@ -92,7 +91,11 @@ export const startServer = async ({
 
   const openURI = uri => {
     const localPath = URL.fileURLToPath(uri);
-    if (!localResourceRoots.some(root => localPath.toLowerCase().includes(root.toLowerCase()))) {
+    if (
+      !localResourceRoots.some(root =>
+        localPath.toLowerCase().includes(root.toLowerCase())
+      )
+    ) {
       return;
     }
 

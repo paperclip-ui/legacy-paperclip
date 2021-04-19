@@ -1,6 +1,4 @@
-import {
-  stripFileProtocol
-} from "paperclip-utils";
+import { stripFileProtocol } from "paperclip-utils";
 import { PCMutation } from "paperclip-source-writer";
 import * as fs from "fs";
 import * as qs from "querystring";
@@ -105,7 +103,8 @@ export const activate = (
 
   const showTextDocument = async (uri: string) => {
     const sourceEditor = window.visibleTextEditors.find(
-      editor => fixFileUrlCasing(String(editor.document.uri)) === fixFileUrlCasing(uri)
+      editor =>
+        fixFileUrlCasing(String(editor.document.uri)) === fixFileUrlCasing(uri)
     );
 
     if (sourceEditor) {
@@ -191,22 +190,20 @@ export const activate = (
     contentChanges,
     document
   }: TextDocumentChangeEvent) => {
-
     // ignore path: extension-output-#N
     try {
-
-    dispatchClient(
-      ve.contentChanged({
-        fileUri: fixFileUrlCasing(document.uri.toString()),
-        changes: contentChanges.map(({ text, rangeOffset, rangeLength }) => ({
-          text,
-          rangeLength,
-          rangeOffset
-        }))
-      })
-    );
-    } catch(e) {
-      console.error(e.stack)
+      dispatchClient(
+        ve.contentChanged({
+          fileUri: fixFileUrlCasing(document.uri.toString()),
+          changes: contentChanges.map(({ text, rangeOffset, rangeLength }) => ({
+            text,
+            rangeLength,
+            rangeOffset
+          }))
+        })
+      );
+    } catch (e) {
+      console.error(e.stack);
     }
   };
 
@@ -373,7 +370,10 @@ export const activate = (
 
     const editor =
       window.visibleTextEditors.find(
-        editor => editor.document && fixFileUrlCasing(String(editor.document.uri)) === fixFileUrlCasing(source.uri)
+        editor =>
+          editor.document &&
+          fixFileUrlCasing(String(editor.document.uri)) ===
+            fixFileUrlCasing(source.uri)
       ) || (await window.showTextDocument(textDocument, ViewColumn.One));
     editor.selection = new Selection(
       textDocument.positionAt(source.location.start),

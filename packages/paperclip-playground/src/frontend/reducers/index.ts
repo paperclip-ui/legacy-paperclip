@@ -233,8 +233,6 @@ export const reducer = (state: AppState, action: Action) => {
             newState.shared.documents
           );
 
-          console.log(file.type, file.type || String(mime.lookup(file.name)));
-
           newState.shared.documents[uri] = file;
 
           // set dropped file as preview

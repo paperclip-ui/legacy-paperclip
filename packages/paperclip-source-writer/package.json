@@ -1,6 +1,6 @@
 {
   "name": "paperclip-source-writer",
-  "version": "17.8.7",
+  "version": "17.8.8",
   "description": "Internal util for writing source code from the designer",
   "main": "lib/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "paperclip": "^17.8.7",
+    "paperclip": "^17.8.8",
     "paperclip-utils": "^17.8.6"
   },
   "devDependencies": {
