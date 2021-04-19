@@ -92,7 +92,6 @@ class Server {
         this._dispatch(devServerChanged(action));
       }
     });
-
     this._dispatchDevServer = dispatch;
 
     this._connection.onNotification(

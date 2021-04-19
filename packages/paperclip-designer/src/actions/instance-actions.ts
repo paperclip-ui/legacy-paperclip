@@ -252,7 +252,7 @@ export type RendererChanged = BaseAction<
 
 export type CanvasMouseUp = BaseAction<
   ActionType.CANVAS_MOUSE_UP,
-  { metaKey: boolean; shiftKey: boolean }
+  { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean }
 >;
 
 export type CanvasMouseLeave = BaseAction<
@@ -262,7 +262,13 @@ export type CanvasMouseLeave = BaseAction<
 
 export type CanvasPanned = BaseAction<
   ActionType.CANVAS_PANNED,
-  { delta: Point; metaKey: boolean; mousePosition: Point; size: Size }
+  {
+    delta: Point;
+    metaKey: boolean;
+    ctrlKey: boolean;
+    mousePosition: Point;
+    size: Size;
+  }
 >;
 export type CanvasPanStart = BaseAction<ActionType.CANVAS_PAN_START>;
 export type CanvasPanEnd = BaseAction<ActionType.CANVAS_PAN_END>;

@@ -91,7 +91,11 @@ export const startServer = async ({
 
   const openURI = uri => {
     const localPath = URL.fileURLToPath(uri);
-    if (!localResourceRoots.some(root => localPath.includes(root))) {
+    if (
+      !localResourceRoots.some(root =>
+        localPath.toLowerCase().includes(root.toLowerCase())
+      )
+    ) {
       return;
     }
 

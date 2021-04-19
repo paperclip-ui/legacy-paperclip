@@ -7,7 +7,7 @@ import { EngineDelegate, EngineMode } from "../core";
 const { resolveImportUri } = require("paperclip-utils");
 
 const existsSyncCaseSensitive = uri => {
-  const pathname = fileURLToPath(uri);
+  const pathname = fileURLToPath(String(uri));
   const dir = path.dirname(pathname);
   const basename = path.basename(pathname);
   if (!fs.existsSync(dir)) {

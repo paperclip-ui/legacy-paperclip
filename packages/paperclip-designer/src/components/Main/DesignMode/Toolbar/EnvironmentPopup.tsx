@@ -29,7 +29,8 @@ export const EnvironmentPopup = memo(({ onBlur }: EnvironmentPopupProps) => {
 
   const options: Option[] = useMemo(() => {
     return [
-      { kind: EnvOptionKind.Public, label: "public" },
+      // off for now until people use PC more. Maybe have a feature flag?
+      //{ kind: EnvOptionKind.Public, label: "public" },
       { kind: EnvOptionKind.Private, label: "localhost" },
       ...(state.designer.availableBrowsers || []).map(browser => {
         return {
