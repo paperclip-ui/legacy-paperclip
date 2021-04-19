@@ -538,6 +538,7 @@ export const reduceDesigner = (
       const {
         delta: { x: deltaX, y: deltaY },
         metaKey,
+        ctrlKey,
         mousePosition,
         size
       } = action.payload;
@@ -548,7 +549,7 @@ export const reduceDesigner = (
       return produce(designer, newDesigner => {
         const transform = newDesigner.canvas.transform;
 
-        if (metaKey) {
+        if (metaKey || ctrlKey) {
           newDesigner.canvas.transform = centerTransformZoom(
             newDesigner.canvas.transform,
             {

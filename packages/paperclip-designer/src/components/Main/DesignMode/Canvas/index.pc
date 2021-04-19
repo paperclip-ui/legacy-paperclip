@@ -11,7 +11,10 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Canvas" {style?} {onMouseMove?} {onWheel?} {onScroll?} {onWheelCapture?} className="canvas $theme.full-wh">
+<div export component as="Canvas" {style?} {onMouseMove?} {onScroll?} {onWheelCapture?} className="canvas $theme.full-wh">
+  <style>
+    // touch-action: none;
+  </style>
   {children}
 </div>
 

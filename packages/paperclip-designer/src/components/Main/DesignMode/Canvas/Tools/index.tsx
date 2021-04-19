@@ -67,6 +67,7 @@ export const Tools = () => {
       dispatch(
         canvasMouseUp({
           metaKey: event.metaKey,
+          ctrlKey: event.ctrlKey,
           shiftKey: event.shiftKey
         })
       );

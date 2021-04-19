@@ -11,8 +11,6 @@ export default (state: AppState, action: Action) => {
   }
 
   state = sharedReducer(state, action);
-  console.log(action);
-
 
   switch (action.type) {
     case ActionType.ACTION_HANDLED: {

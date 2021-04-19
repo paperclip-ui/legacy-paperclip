@@ -1,9 +1,10 @@
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import * as styles from "./index.pc";
-import { Preview } from "./Preview";
+// import { Preview } from "./Preview";
 import { Tools } from "./Tools";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import { Frames } from "./Frames";
+import { normalizeWheel } from "./normalize-wheel";
 import {
   canvasPanEnd,
   canvasPanned,
@@ -52,9 +53,11 @@ export const Canvas = React.memo(() => {
 
   const canvasRef = useRef<HTMLElement>();
 
-  const onWheel = (event: React.WheelEvent<any>) => {
+  const onWheel = useCallback((event: WheelEvent) => {
     event.preventDefault();
     clearTimeout(canvasPanTimer);
+
+    let {pixelX, pixelY} = normalizeWheel(event);
     if (!canvasRef.current) {
       return;
     }
@@ -62,17 +65,24 @@ export const Canvas = React.memo(() => {
       dispatch(canvasPanStart(null));
     }
     const rect = canvasRef.current.getBoundingClientRect();
+
+    // ignore jerky scroll - happens in VM for some reason.
+    if (Math.abs(pixelX) > 100) {
+      pixelX = pixelX / 100;
+    }
+
     dispatch(
       canvasPanned({
         delta: {
-          x: event.deltaX,
-          y: event.deltaY
+          x: pixelX,
+          y: pixelY
         },
         mousePosition: {
           x: event.pageX - rect.left,
           y: event.pageY - rect.top
         },
         metaKey: event.metaKey,
+        ctrlKey: event.ctrlKey,
         size: {
           width: rect.width,
           height: rect.height
@@ -87,7 +97,7 @@ export const Canvas = React.memo(() => {
     );
 
     return false;
-  };
+  }, [canvasRef, dispatch, setCanvasPanTimer]);
 
   useEffect(() => {
     if (!canvasRef.current) {
@@ -103,17 +113,20 @@ export const Canvas = React.memo(() => {
       );
     };
 
+    canvasRef.current.addEventListener("wheel", onWheel, { passive: false });
+
     window.addEventListener("resize", onResize);
 
     requestAnimationFrame(onResize);
 
     return () => {
       window.removeEventListener("resize", onResize);
+      canvasRef.current.removeEventListener("wheel", onWheel);
     };
   }, [canvasRef]);
 
   return (
-    <styles.Canvas ref={canvasRef} onWheel={onWheel}>
+    <styles.Canvas ref={canvasRef}>
       <styles.Inner
         style={{
           transform: `translateX(${actualTransform.x}px) translateY(${actualTransform.y}px) scale(${actualTransform.z}) translateZ(0)`,
