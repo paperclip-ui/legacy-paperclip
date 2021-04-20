@@ -62,36 +62,73 @@ describe(__filename + "#", () => {
       "/entry.pc"
     )) as DependencyNodeContent;
 
-    console.log(JSON.stringify(result, null, 2));
     expect(result).to.eql({
       contentKind: "Node",
       kind: "Fragment",
       location: {
         start: 0,
-        end: 12
+        end: 36
       },
       children: [
         {
-          kind: "Element",
-          id: "0",
-          raws: {
-            before: "\n"
+          kind: "StyleElement",
+          attributes: [],
+          sheet: {
+            raws: {
+              before: "\n",
+              after: null
+            },
+            rules: [
+              {
+                kind: "Style",
+                selector: {
+                  kind: "Element",
+                  tagName: "div",
+                  location: {
+                    start: 9,
+                    end: 12
+                  }
+                },
+                declarations: [
+                  {
+                    declarationKind: "KeyValue",
+                    name: "color",
+                    value: "red",
+                    location: {
+                      start: 15,
+                      end: 26
+                    },
+                    nameLocation: {
+                      start: 15,
+                      end: 20
+                    },
+                    valueLocation: {
+                      start: 22,
+                      end: 25
+                    }
+                  }
+                ],
+                children: [],
+                location: {
+                  start: 9,
+                  end: 28
+                },
+                raws: {
+                  before: "",
+                  after: null
+                }
+              }
+            ],
+            declarations: [],
+            location: {
+              start: 8,
+              end: 28
+            }
           },
           location: {
             start: 1,
-            end: 12
-          },
-          openTagLocation: {
-            start: 1,
-            end: 6
-          },
-          tagNameLocation: {
-            start: 2,
-            end: 5
-          },
-          tagName: "div",
-          attributes: [],
-          children: []
+            end: 36
+          }
         }
       ]
     });

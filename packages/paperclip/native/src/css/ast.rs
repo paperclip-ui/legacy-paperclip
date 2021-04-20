@@ -152,21 +152,30 @@ pub struct Comment {
   pub location: Location,
 }
 
-
 impl fmt::Display for Comment {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "/*{}*/", self.value)
   }
 }
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct StyleRuleRaws {
-  pub before: String
+pub struct BasicRaws {
+  pub before: Option<String>,
+  pub after: Option<String>
 }
 
-impl StyleRuleRaws {
-  pub fn new(before: &[u8]) -> StyleRuleRaws {
-    StyleRuleRaws {
-      before: std::str::from_utf8(before).unwrap().to_string(),
+impl BasicRaws {
+  pub fn new(before: Option<&[u8]>, after: Option<&[u8]>) -> BasicRaws {
+    BasicRaws {
+      before: if let Some(v) = before {
+        Some(std::str::from_utf8(v).unwrap().to_string())
+      } else {
+        None
+      },
+      after: if let Some(v) = after {
+        Some(std::str::from_utf8(v).unwrap().to_string())
+      } else {
+        None
+      }
     }
   }
 }
@@ -176,7 +185,7 @@ pub struct StyleRule {
   pub declarations: Vec<Declaration>,
   pub children: Vec<StyleRule>,
   pub location: Location,
-  pub raws: StyleRuleRaws
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for StyleRule {
@@ -771,6 +780,7 @@ impl fmt::Display for AttributeSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Sheet {
+  pub raws: BasicRaws,
   pub rules: Vec<Rule>,
   pub declarations: Vec<Declaration>,
 

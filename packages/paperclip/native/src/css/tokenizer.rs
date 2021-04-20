@@ -124,14 +124,13 @@ impl<'a> Tokenizer<'a> {
     if self.is_eof() {
       return None;
     }
-    
+
     let is_whitepace = |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') };
     let start = self.pos;
     while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
       self.pos += 1;
       self.utf16_pos += 1;
     }
-
 
     Some(&self.source[start..self.pos])
   }
@@ -211,7 +210,7 @@ impl<'a> Tokenizer<'a> {
           Ok(Token::LineComment(buffer))
         } else if self.starts_with(b"/*") {
           self.forward(2);
-          
+
           let start = self.pos;
 
           while !self.is_eof() {
@@ -226,7 +225,6 @@ impl<'a> Tokenizer<'a> {
           let buffer = std::str::from_utf8(&self.source[start..self.pos]).unwrap();
 
           self.forward(2);
-
 
           Ok(Token::ScriptComment(buffer))
         } else {

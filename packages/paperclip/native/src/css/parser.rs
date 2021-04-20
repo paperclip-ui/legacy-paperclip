@@ -55,8 +55,12 @@ fn eat_comments<'a, 'b>(
 
 fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseError> {
   let start = context.tokenizer.utf16_pos;
+
+  let raw_before = context.tokenizer.eat_whitespace();
+
   let (rules, declarations) = parse_rules_and_declarations(context)?;
   Ok(Sheet {
+    raws: BasicRaws::new(raw_before, None),
     rules,
     declarations,
     location: Location::new(start, context.tokenizer.utf16_pos),
@@ -68,14 +72,17 @@ fn parse_rules_and_declarations<'a, 'b>(
 ) -> Result<(Vec<Rule>, Vec<Declaration>), ParseError> {
   let mut rules = vec![];
   let mut declarations = vec![];
-  eat_superfluous(context)?;
   while !context.ended()? {
     if is_next_key_value_declaration(context)? {
       declarations.push(parse_key_value_declaration(context)?);
     } else {
       rules.push(parse_rule(context)?);
     }
-    eat_superfluous(context)?;
+
+    // defensive coding. rules should be implementing eat_whitespace
+    // themselves so that the ASTs can include raws.
+    // TODO - need to test all cases for this, then remove.
+    context.tokenizer.eat_whitespace();
   }
   Ok((rules, declarations))
 }
@@ -103,15 +110,16 @@ fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
   let buffer = match start_tok {
     Token::LineComment(buffer) => buffer,
     Token::ScriptComment(buffer) => buffer,
-    _ => {
-      return Err(ParseError::unexpected_token(start))
-    }
+    _ => return Err(ParseError::unexpected_token(start)),
   };
 
+  let pos = context.tokenizer.utf16_pos;
+
+  let raws_after = context.tokenizer.eat_whitespace();
 
   Ok(Rule::Comment(Comment {
     value: buffer.to_string(),
-    location: Location::new(start, context.tokenizer.utf16_pos)
+    location: Location::new(start, pos),
   }))
 }
 
@@ -137,7 +145,7 @@ fn parse_style_rule2<'a, 'b>(
   let selector = parse_selector(context, is_child_without_amp_prefix)?;
   let (declarations, children) = parse_declaration_body(context)?;
   Ok(StyleRule {
-    raws: StyleRuleRaws::new(raw_before.unwrap_or(b"")),
+    raws: BasicRaws::new(raw_before, None),
     selector,
     declarations,
     children,
@@ -168,10 +176,11 @@ fn parse_declaration_body<'a, 'b>(
 }
 
 fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
+  let raws_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::At)?;
   let name = parse_selector_name(context)?;
-  eat_superfluous(context)?;
+  context.tokenizer.eat_whitespace();
   match name {
     "charset" => {
       let start = context.tokenizer.utf16_pos;
@@ -773,7 +782,6 @@ fn parse_declarations_and_children<'a, 'b>(
 
     let tok = context.tokenizer.peek_eat_whitespace(1)?;
 
-
     if let Token::Byte(b'&') = tok {
       children.push(parse_style_rule2(context, false)?);
     } else if tok == Token::At {
@@ -820,6 +828,7 @@ fn is_next_key_value_declaration<'a, 'b>(
   let mut found_semicolon = false;
   let mut found_colon = false;
   let mut found_curly_open = false;
+  context.tokenizer.eat_whitespace();
 
   while !context.ended()? {
     let tok = context.tokenizer.next()?;
@@ -913,6 +922,8 @@ fn parse_include_declaration<'a, 'b>(
 fn parse_key_value_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<Declaration, ParseError> {
+  context.tokenizer.eat_whitespace();
+
   let start = context.tokenizer.utf16_pos;
   if let Token::Keyword(keyword) = context.tokenizer.next()? {
     let name = keyword.to_string();
