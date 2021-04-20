@@ -14,7 +14,7 @@ pub struct ElementRaws {
 impl ElementRaws {
   pub fn new(before: &[u8]) -> ElementRaws {
     ElementRaws {
-      before: str::from_utf8(before).unwrap().to_string()
+      before: str::from_utf8(before).unwrap().to_string(),
     }
   }
 }

@@ -139,7 +139,6 @@ impl<'a> Tokenizer<'a> {
     let start = self.pos;
 
     while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
-      
       self.pos += 1;
       self.utf16_pos += 1;
     }
@@ -167,10 +166,7 @@ impl<'a> Tokenizer<'a> {
     self.set_pos(&pos);
     result
   }
-  pub fn peek_eat_whitespace(
-    &mut self,
-    steps: u8
-  ) -> Result<Token<'a>, ParseError> {
+  pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());

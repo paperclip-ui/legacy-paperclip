@@ -1,7 +1,6 @@
 // https://tympanus.net/codrops/css_reference/
 
 use super::ast as pc_ast;
-use std::str;
 use super::tokenizer::{Token, Tokenizer};
 use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tokenizer;
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
@@ -12,6 +11,7 @@ use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
 use crate::js::ast as js_ast;
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
 use crate::js::tokenizer::{Token as JSToken, Tokenizer as JSTokenizer};
+use std::str;
 
 /*
 
@@ -225,7 +225,15 @@ fn parse_element<'a>(
   } else if tag_name == "script" {
     parse_next_script_element_parts(attributes, el_raw_before, tokenizer, path, start)
   } else {
-    parse_next_basic_element_parts(tag_name, tag_name_end, attributes, el_raw_before, tokenizer, path, start)
+    parse_next_basic_element_parts(
+      tag_name,
+      tag_name_end,
+      attributes,
+      el_raw_before,
+      tokenizer,
+      path,
+      start,
+    )
   }
 }
 
