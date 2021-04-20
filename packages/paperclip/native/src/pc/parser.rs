@@ -1,6 +1,7 @@
 // https://tympanus.net/codrops/css_reference/
 
 use super::ast as pc_ast;
+use std::str;
 use super::tokenizer::{Token, Tokenizer};
 use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tokenizer;
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
@@ -68,11 +69,8 @@ fn parse_node<'a>(
 ) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.get_pos();
 
-  // want to maintain new lines so that prettier works
-  tokenizer.eat_whitespace(true);
-
   // Kinda ick, but cover case where last node is whitespace.
-  let token = tokenizer.peek_eat_whitespace(1, true).or_else(|_| {
+  let token = tokenizer.peek_eat_whitespace(1).or_else(|_| {
     tokenizer.set_pos(&start);
     tokenizer.peek(1)
   })?;
@@ -82,6 +80,7 @@ fn parse_node<'a>(
     Token::LessThan => parse_tag(tokenizer, path),
     Token::HtmlCommentOpen => parse_annotation(tokenizer),
     Token::TagClose => {
+      tokenizer.eat_whitespace();
       let start = tokenizer.utf16_pos;
       tokenizer.next_expect(Token::TagClose)?;
       let tag_name = parse_tag_name(tokenizer)?;
@@ -94,6 +93,8 @@ fn parse_node<'a>(
       ))
     }
     _ => {
+      tokenizer.eat_whitespace();
+
       // reset pos to ensure text doesn't get chopped (e.g: `{children} text`)
       tokenizer.set_pos(&start);
       let value = get_buffer(tokenizer, |tokenizer| {
@@ -127,6 +128,7 @@ fn parse_slot<'a>(
   path: &Vec<String>,
   index: usize,
 ) -> Result<pc_ast::Node, ParseError> {
+  let raw_before = tokenizer.eat_whitespace();
   let start = tokenizer.utf16_pos;
   let omit_from_compilation = parse_omit_from_compilation(tokenizer)?;
   tokenizer.next_expect(Token::CurlyOpen)?;
@@ -168,6 +170,7 @@ fn parse_slot_script<'a>(
 }
 
 pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
+  let raw_before = tokenizer.eat_whitespace();
   let start = tokenizer.get_pos();
 
   tokenizer.next()?; // eat HTML comment open
@@ -199,14 +202,16 @@ pub fn parse_tag<'a>(
   tokenizer: &mut Tokenizer<'a>,
   path: Vec<String>,
 ) -> Result<pc_ast::Node, ParseError> {
+  let raw_before = tokenizer.eat_whitespace();
   let start = tokenizer.utf16_pos;
 
   tokenizer.next_expect(Token::LessThan)?;
-  parse_element(tokenizer, path, start)
+  parse_element(tokenizer, raw_before, path, start)
 }
 
 fn parse_element<'a>(
   tokenizer: &mut Tokenizer<'a>,
+  el_raw_before: Option<&'a [u8]>,
   path: Vec<String>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
@@ -216,11 +221,11 @@ fn parse_element<'a>(
   let attributes = parse_attributes(tokenizer, &path)?;
 
   if tag_name == "style" {
-    parse_next_style_element_parts(attributes, tokenizer, start)
+    parse_next_style_element_parts(attributes, el_raw_before, tokenizer, start)
   } else if tag_name == "script" {
-    parse_next_script_element_parts(attributes, tokenizer, path, start)
+    parse_next_script_element_parts(attributes, el_raw_before, tokenizer, path, start)
   } else {
-    parse_next_basic_element_parts(tag_name, tag_name_end, attributes, tokenizer, path, start)
+    parse_next_basic_element_parts(tag_name, tag_name_end, attributes, el_raw_before, tokenizer, path, start)
   }
 }
 
@@ -228,13 +233,14 @@ fn parse_next_basic_element_parts<'a>(
   tag_name: String,
   tag_name_end: usize,
   attributes: Vec<pc_ast::Attribute>,
+  el_raw_before: Option<&'a [u8]>,
   tokenizer: &mut Tokenizer<'a>,
   path: Vec<String>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   let mut children: Vec<pc_ast::Node> = vec![];
 
-  tokenizer.eat_whitespace(true);
+  tokenizer.eat_whitespace();
   let mut end = tokenizer.utf16_pos;
 
   match tokenizer.peek(1)? {
@@ -245,8 +251,8 @@ fn parse_next_basic_element_parts<'a>(
     Token::GreaterThan => {
       tokenizer.next()?;
       end = tokenizer.utf16_pos;
-      tokenizer.eat_whitespace(true);
-      while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1, true)? != Token::TagClose {
+      tokenizer.eat_whitespace();
+      while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1)? != Token::TagClose {
         let mut child_path = path.clone();
         child_path.push(children.len().to_string());
         children.push(parse_node(tokenizer, child_path)?);
@@ -258,6 +264,7 @@ fn parse_next_basic_element_parts<'a>(
   }
 
   let el = pc_ast::Element {
+    raws: pc_ast::ElementRaws::new(el_raw_before.unwrap_or(b"")),
     id: path.join("-"),
     tag_name_location: Location {
       start: start + 1,
@@ -279,6 +286,7 @@ fn parse_next_basic_element_parts<'a>(
 
 fn parse_next_style_element_parts<'a>(
   attributes: Vec<pc_ast::Attribute>,
+  raw_before: Option<&'a [u8]>,
   tokenizer: &mut Tokenizer<'a>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
@@ -312,7 +320,7 @@ fn parse_close_tag<'a, 'b>(
 ) -> Result<(), ParseError> {
   let end_tag_name_start = tokenizer.utf16_pos;
 
-  tokenizer.eat_whitespace(true);
+  tokenizer.eat_whitespace();
 
   tokenizer
     .next_expect(Token::TagClose)
@@ -349,6 +357,7 @@ fn parse_close_tag<'a, 'b>(
 
 fn parse_next_script_element_parts<'a>(
   attributes: Vec<pc_ast::Attribute>,
+  raw_before: Option<&'a [u8]>,
   tokenizer: &mut Tokenizer<'a>,
   path: Vec<String>,
   start: usize,
@@ -363,6 +372,7 @@ fn parse_next_script_element_parts<'a>(
   parse_close_tag("script", tokenizer, start, end)?;
 
   Ok(pc_ast::Node::Element(pc_ast::Element {
+    raws: pc_ast::ElementRaws::new(raw_before.unwrap_or(b"")),
     id: path
       .iter()
       .map(|i| i.to_string())
@@ -407,7 +417,7 @@ fn parse_attributes<'a>(
   let mut attributes: Vec<pc_ast::Attribute> = vec![];
 
   loop {
-    tokenizer.eat_whitespace(true);
+    tokenizer.eat_whitespace();
     match tokenizer.peek(1)? {
       Token::SelfTagClose | Token::GreaterThan => break,
       _ => {

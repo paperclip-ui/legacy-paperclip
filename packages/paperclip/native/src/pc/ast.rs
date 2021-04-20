@@ -4,10 +4,25 @@ use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
 use serde::Serialize;
 use std::fmt;
+use std::str;
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ElementRaws {
+  pub before: String,
+}
+
+impl ElementRaws {
+  pub fn new(before: &[u8]) -> ElementRaws {
+    ElementRaws {
+      before: str::from_utf8(before).unwrap().to_string()
+    }
+  }
+}
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
   pub id: String,
+  pub raws: ElementRaws,
 
   pub location: Location,
 
