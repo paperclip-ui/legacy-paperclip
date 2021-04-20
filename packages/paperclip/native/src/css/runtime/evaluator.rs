@@ -390,6 +390,9 @@ pub fn evaluate_expr<'a>(
 
 fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeError> {
   match rule {
+    ast::Rule::Comment(charset) => {
+      // skip it
+    }
     ast::Rule::Charset(charset) => {
       context
         .all_rules

@@ -83,22 +83,42 @@ fn parse_rules_and_declarations<'a, 'b>(
 fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
   while !context.ended()? {
     let tok = context.tokenizer.peek(1).unwrap();
-    if tok == Token::Whitespace {
-      context.tokenizer.next()?;
-    } else if tok == Token::ScriptCommentOpen {
-      eat_script_comments(context)?;
-    } else if tok == Token::LineCommentOpen {
-      context.tokenizer.next()?;
-    } else {
-      break;
+    match tok {
+      Token::Whitespace | Token::ScriptComment(_) | Token::LineComment(_) => {
+        context.tokenizer.next()?;
+      }
+      _ => {
+        break;
+      }
     }
   }
   Ok(())
 }
 
+fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
+  let raw_before = context.tokenizer.eat_whitespace();
+  let start = context.tokenizer.utf16_pos;
+  let start_tok = context.tokenizer.next()?;
+
+  let buffer = match start_tok {
+    Token::LineComment(buffer) => buffer,
+    Token::ScriptComment(buffer) => buffer,
+    _ => {
+      return Err(ParseError::unexpected_token(start))
+    }
+  };
+
+
+  Ok(Rule::Comment(Comment {
+    value: buffer.to_string(),
+    location: Location::new(start, context.tokenizer.utf16_pos)
+  }))
+}
+
 fn parse_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
-  eat_superfluous(context)?;
   match context.tokenizer.peek(1)? {
+    Token::LineComment(_) => parse_comment(context),
+    Token::ScriptComment(_) => parse_comment(context),
     Token::At => parse_at_rule(context),
     _ => parse_style_rule(context),
   }
@@ -112,10 +132,12 @@ fn parse_style_rule2<'a, 'b>(
   context: &mut Context<'a, 'b>,
   is_child_without_amp_prefix: bool,
 ) -> Result<StyleRule, ParseError> {
+  let raw_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
   let selector = parse_selector(context, is_child_without_amp_prefix)?;
   let (declarations, children) = parse_declaration_body(context)?;
   Ok(StyleRule {
+    raws: StyleRuleRaws::new(raw_before.unwrap_or(b"")),
     selector,
     declarations,
     children,
@@ -741,15 +763,20 @@ fn parse_declarations_and_children<'a, 'b>(
 ) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
   let mut declarations = vec![];
   let mut children = vec![];
+
+  // START HERE - need to remove superfluous
   eat_superfluous(context)?;
   while !context.ended()? {
     if context.tokenizer.peek(1)? == Token::CurlyClose {
       break;
     }
 
-    if let Token::Byte(b'&') = context.tokenizer.peek(1)? {
+    let tok = context.tokenizer.peek_eat_whitespace(1)?;
+
+
+    if let Token::Byte(b'&') = tok {
       children.push(parse_style_rule2(context, false)?);
-    } else if context.tokenizer.peek(1)? == Token::At {
+    } else if tok == Token::At {
       declarations.push(parse_at_declaration(context)?);
     } else {
       if is_next_declaration(context)? {
@@ -811,10 +838,6 @@ fn is_next_key_value_declaration<'a, 'b>(
   context.tokenizer.set_pos(pos);
 
   return Ok((found_colon && found_semicolon) && !(found_curly_open));
-}
-
-fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
-  eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
 }
 
 fn parse_at_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {

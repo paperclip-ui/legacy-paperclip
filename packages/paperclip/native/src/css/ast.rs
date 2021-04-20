@@ -112,6 +112,7 @@ impl fmt::Display for IncludeReferencePart {
 #[serde(tag = "kind")]
 pub enum Rule {
   Style(StyleRule),
+  Comment(Comment),
   Charset(String),
   Namespace(String),
   FontFace(FontFaceRule),
@@ -128,6 +129,7 @@ pub enum Rule {
 impl fmt::Display for Rule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
+      Rule::Comment(rule) => write!(f, "{}", rule.to_string()),
       Rule::Style(rule) => write!(f, "{}", rule.to_string()),
       Rule::Charset(value) => write!(f, "@charset {}", value),
       Rule::Export(export) => write!(f, "{}", export),
@@ -145,11 +147,36 @@ impl fmt::Display for Rule {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Comment {
+  pub value: String,
+  pub location: Location,
+}
+
+
+impl fmt::Display for Comment {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "/*{}*/", self.value)
+  }
+}
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct StyleRuleRaws {
+  pub before: String
+}
+
+impl StyleRuleRaws {
+  pub fn new(before: &[u8]) -> StyleRuleRaws {
+    StyleRuleRaws {
+      before: std::str::from_utf8(before).unwrap().to_string(),
+    }
+  }
+}
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRule {
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
   pub children: Vec<StyleRule>,
   pub location: Location,
+  pub raws: StyleRuleRaws
 }
 
 impl fmt::Display for StyleRule {

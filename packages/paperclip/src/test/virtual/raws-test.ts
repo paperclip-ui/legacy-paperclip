@@ -50,4 +50,50 @@ describe(__filename + "#", () => {
       ]
     });
   });
+
+  it("Maintains raws for style rules", async () => {
+    const graph = {
+      "/entry.pc": `\n<style>\ndiv { color: red; }</style>`
+    };
+    const engine = await createMockEngine(graph);
+    await engine.open("/entry.pc");
+
+    const result = (await engine.getLoadedAst(
+      "/entry.pc"
+    )) as DependencyNodeContent;
+
+    console.log(JSON.stringify(result, null, 2));
+    expect(result).to.eql({
+      contentKind: "Node",
+      kind: "Fragment",
+      location: {
+        start: 0,
+        end: 12
+      },
+      children: [
+        {
+          kind: "Element",
+          id: "0",
+          raws: {
+            before: "\n"
+          },
+          location: {
+            start: 1,
+            end: 12
+          },
+          openTagLocation: {
+            start: 1,
+            end: 6
+          },
+          tagNameLocation: {
+            start: 2,
+            end: 5
+          },
+          tagName: "div",
+          attributes: [],
+          children: []
+        }
+      ]
+    });
+  });
 });
