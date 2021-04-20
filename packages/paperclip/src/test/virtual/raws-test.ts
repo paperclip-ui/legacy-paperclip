@@ -1,9 +1,5 @@
 import { expect } from "chai";
-import {
-  LoadedPCData,
-  PCExports,
-  DependencyNodeContent
-} from "paperclip-utils";
+import { DependencyNodeContent } from "paperclip-utils";
 import { createMockEngine } from "../utils";
 
 describe(__filename + "#", () => {

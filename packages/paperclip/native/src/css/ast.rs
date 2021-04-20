@@ -160,7 +160,7 @@ impl fmt::Display for Comment {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct BasicRaws {
   pub before: Option<String>,
-  pub after: Option<String>
+  pub after: Option<String>,
 }
 
 impl BasicRaws {
@@ -175,7 +175,7 @@ impl BasicRaws {
         Some(std::str::from_utf8(v).unwrap().to_string())
       } else {
         None
-      }
+      },
     }
   }
 }
