@@ -22,3 +22,13 @@ OTHER:
     - ability to create new branch
     - ability to create new project
   
+
+  ROADMAP:
+
+  - prettier (needed for auto-reformatting when UI makes changes)
+  - linter
+    - CSS - find what's used and not (will require CSS engine, needed for UI builder, along with CSS shaking)
+    - HTML - a11y features
+    - error when component isn't previewed in device size
+  - UI tooling (linter & prettier core will help with this)
+    - simple style inspector for devs

@@ -1,4 +1,3 @@
-import { notEqual } from "assert";
 import {
   AttributeKind,
   AttributeValueKind,
@@ -26,8 +25,11 @@ const {
   literalline
 } = doc.builders;
 
+const MAX_LINES = 1;
+
 export const print = (path: FastPath, options: Object, print): Doc => {
   const expr: Expression = path.getValue();
+  console.log(JSON.stringify(expr, null, 2));
 
   if (isNode(expr)) {
     switch (expr.kind) {
@@ -55,7 +57,12 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         return concat(buffer);
       }
       case NodeKind.Text: {
-        return concat([softline, expr.value]);
+        return concat([
+          softline,
+          cleanNewLines(expr.value, true),
+          cleanWhitespace(expr.value),
+          cleanNewLines(expr.value, false)
+        ]);
       }
     }
   } else if (isAttribute(expr)) {
@@ -84,4 +91,20 @@ export const print = (path: FastPath, options: Object, print): Doc => {
   }
 
   return "";
+};
+
+const cleanNewLines = (buffer: string, before: boolean) => {
+  const re = before ? /^[\s\r\n]+/ : /[\s\r\n]+$/;
+  if (before) {
+  }
+  const match = buffer.match(re);
+  return match ? "\n".repeat(Math.min(MAX_LINES, countNewLines(match[0]))) : "";
+};
+
+const countNewLines = (ws: string) => {
+  return (ws.match(/[\n\r]/g) || []).length;
+};
+
+const cleanWhitespace = (buffer: string) => {
+  return buffer.trim().replace(/[\n\r\t\s]+/g, " ");
 };

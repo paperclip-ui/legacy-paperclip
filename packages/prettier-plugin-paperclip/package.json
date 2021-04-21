@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "test": "mocha lib/test"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +16,8 @@
     "prettier": "^2.1.2"
   },
   "dependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^8.3.2",
     "paperclip": "^17.8.9"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d"
