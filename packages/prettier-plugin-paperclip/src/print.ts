@@ -27,9 +27,20 @@ const {
 
 const MAX_LINES = 1;
 
+const groupConcat = (contents: doc.builders.Doc[]): doc.builders.Doc => {
+  return group(concat(contents));
+};
+
 export const print = (path: FastPath, options: Object, print): Doc => {
   const expr: Expression = path.getValue();
-  console.log(JSON.stringify(expr, null, 2));
+
+  return group(
+    concat(["<a>", group(indent(concat([softline, "a", hardline]))), "</a>"])
+  );
+};
+
+export const print2 = (path: FastPath, options: Object, print): Doc => {
+  const expr: Expression = path.getValue();
 
   if (isNode(expr)) {
     switch (expr.kind) {
@@ -37,13 +48,13 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         return group(concat(path.map(print, "children")));
       }
       case NodeKind.Element: {
-        const buffer: Doc[] = [line, "<", expr.tagName];
+        const buffer: Doc[] = ["<", expr.tagName];
         buffer.push(concat(path.map(print, "attributes")));
 
         if (expr.children.length) {
           buffer.push(">");
           buffer.push(indent(concat(path.map(print, "children"))));
-          buffer.push(concat([line, `</${expr.tagName}>`]));
+          buffer.push(concat([softline, `</${expr.tagName}>`]));
         } else {
           buffer.push(" />");
         }
@@ -59,9 +70,9 @@ export const print = (path: FastPath, options: Object, print): Doc => {
       case NodeKind.Text: {
         return concat([
           softline,
-          cleanNewLines(expr.value, true),
+          ...cleanNewLines(expr.value, true),
           cleanWhitespace(expr.value),
-          cleanNewLines(expr.value, false)
+          ...cleanNewLines(expr.value, false)
         ]);
       }
     }
@@ -98,7 +109,12 @@ const cleanNewLines = (buffer: string, before: boolean) => {
   if (before) {
   }
   const match = buffer.match(re);
-  return match ? "\n".repeat(Math.min(MAX_LINES, countNewLines(match[0]))) : "";
+
+  return match
+    ? Array.from({ length: Math.min(MAX_LINES, countNewLines(match[0])) }).map(
+        v => hardline
+      )
+    : [];
 };
 
 const countNewLines = (ws: string) => {
