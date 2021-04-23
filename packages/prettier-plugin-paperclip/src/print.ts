@@ -10,6 +10,7 @@ import {
   NodeKind
 } from "paperclip";
 import { Doc, FastPath, Printer, doc } from "prettier";
+import { isBlockTagName } from "./utils";
 
 const {
   concat,
@@ -38,27 +39,38 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         return join(hardline, path.map(print, "children"));
       }
       case NodeKind.Element: {
-        const buffer: Doc[] = ["<", expr.tagName];
-        buffer.push(concat(path.map(print, "attributes")));
+        let buffer: Doc[] = [];
+
+        let openTag: Doc[] = ["<", expr.tagName];
+
+        openTag.push(
+          indent(group(join(softline, path.map(print, "attributes"))))
+        );
 
         const isEmpty = expr.children.length === 0;
 
         if (!isEmpty) {
-          buffer.push(">");
+          openTag.push(">");
           buffer.push(
-            group(
-              indent(
-                concat([softline, join(hardline, path.map(print, "children"))])
-              )
+            ...openTag,
+            indent(
+              concat([softline, group(join(line, path.map(print, "children")))])
             )
           );
 
           buffer.push(softline, `</${expr.tagName}>`);
         } else {
-          buffer.push(" />");
+          buffer.push(...openTag, " />");
         }
 
-        return groupConcat(buffer);
+        let doc: Doc = groupConcat(buffer);
+
+        // TODO: break all elements option
+        if (isBlockTagName(expr.tagName)) {
+          doc = concat([doc, breakParent]);
+        }
+
+        return doc;
       }
       case NodeKind.StyleElement: {
         const buffer: Doc[] = [line, "<style>"];
