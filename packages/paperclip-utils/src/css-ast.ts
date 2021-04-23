@@ -23,7 +23,7 @@ export enum RuleKind {
 }
 
 type BaseRule<TKind extends RuleKind> = {
-  kind: TKind;
+  ruleKind: TKind;
 };
 
 export enum SelectorKind {
@@ -44,7 +44,7 @@ export enum SelectorKind {
 }
 
 export type BaseSelector<TKind extends SelectorKind> = {
-  kind: TKind;
+  selectorKind: TKind;
 };
 
 type GroupSelector = {
@@ -271,7 +271,7 @@ const getRulesClassNames = (rules: Rule[], allClassNames: string[] = []) => {
 };
 
 export const getRuleClassNames = (rule: Rule, allClassNames: string[] = []) => {
-  switch (rule.kind) {
+  switch (rule.ruleKind) {
     case RuleKind.Media: {
       getRulesClassNames(rule.rules, allClassNames);
       break;
@@ -305,7 +305,7 @@ const traverseStyleExpressions = (
 };
 
 export const isRule = (expression: StyleExpression): expression is Rule => {
-  return RuleKind[(expression as Rule).kind] != null;
+  return RuleKind[(expression as Rule).ruleKind] != null;
 };
 export const isStyleDeclaration = (
   expression: Expression
@@ -348,7 +348,7 @@ export const traverseStyleExpression = (
     return false;
   }
   if (isRule(rule)) {
-    switch (rule.kind) {
+    switch (rule.ruleKind) {
       case RuleKind.Media: {
         return traverseStyleExpressions(rule.rules, each);
       }
@@ -385,7 +385,7 @@ export const getSelectorClassNames = (
   selector: Selector,
   allClassNames: string[] = []
 ) => {
-  switch (selector.kind) {
+  switch (selector.selectorKind) {
     case SelectorKind.Combo:
     case SelectorKind.Group: {
       for (const child of selector.selectors) {

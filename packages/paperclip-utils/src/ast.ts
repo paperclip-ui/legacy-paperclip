@@ -31,7 +31,7 @@ export enum NodeKind {
 }
 
 export type BaseNode<TKind extends NodeKind> = {
-  kind: TKind;
+  nodeKind: TKind;
 };
 
 // TODO - include location here.
@@ -261,7 +261,7 @@ export const getImportBySrc = (src: string, ast: Node): Element | null =>
   });
 
 export const getChildren = (ast: Node): Node[] => {
-  if (ast.kind === NodeKind.Element || ast.kind === NodeKind.Fragment) {
+  if (ast.nodeKind === NodeKind.Element || ast.nodeKind === NodeKind.Fragment) {
     return ast.children;
   }
   return [];
@@ -276,7 +276,7 @@ export const getStyleScopeId = (filePath: string) => {
 
 export const getChildrenByTagName = (tagName: string, parent: Node) =>
   getChildren(parent).filter(child => {
-    return child.kind === NodeKind.Element && child.tagName === tagName;
+    return child.nodeKind === NodeKind.Element && child.tagName === tagName;
   }) as Element[];
 
 export const findByNamespace = (
@@ -284,7 +284,7 @@ export const findByNamespace = (
   current: Node,
   allChildrenByNamespace: Element[] = []
 ) => {
-  if (current.kind === NodeKind.Element) {
+  if (current.nodeKind === NodeKind.Element) {
     if (current.tagName.split(".")[0] === namespace) {
       allChildrenByNamespace.push(current);
     }
@@ -293,7 +293,7 @@ export const findByNamespace = (
     findByNamespace(namespace, child, allChildrenByNamespace);
   }
 
-  if (current.kind === NodeKind.Element) {
+  if (current.nodeKind === NodeKind.Element) {
     for (const attribute of current.attributes) {
       if (
         attribute.kind === AttributeKind.KeyValueAttribute &&
@@ -346,7 +346,7 @@ export const getStyleElements = (ast: Node): StyleElement[] => {
   const styleElements: StyleElement[] = [];
 
   traverseExpression(ast, (node: Node) => {
-    if (node.kind === NodeKind.StyleElement) {
+    if (node.nodeKind === NodeKind.StyleElement) {
       styleElements.push(node);
     }
   });
@@ -358,16 +358,16 @@ export const isVisibleElement = (ast: Element): boolean => {
   return !/^(import|logic|meta|style|part|preview)$/.test(ast.tagName);
 };
 export const isVisibleNode = (node: Node): boolean =>
-  node.kind === NodeKind.Text ||
-  node.kind === NodeKind.Fragment ||
-  node.kind === NodeKind.Slot ||
-  (node.kind === NodeKind.Element && isVisibleElement(node));
+  node.nodeKind === NodeKind.Text ||
+  node.nodeKind === NodeKind.Fragment ||
+  node.nodeKind === NodeKind.Slot ||
+  (node.nodeKind === NodeKind.Element && isVisibleElement(node));
 
 export const getVisibleChildNodes = (ast: Node): Node[] =>
   getChildren(ast).filter(isVisibleNode);
 
 export const isComponent = (node: Node): node is Element =>
-  node.kind === NodeKind.Element &&
+  node.nodeKind === NodeKind.Element &&
   hasAttribute("component", node) &&
   hasAttribute(AS_ATTR_NAME, node);
 
@@ -386,7 +386,8 @@ export const getDefaultPart = (ast: Node): Element =>
 
 export const getLogicElement = (ast: Node): Element | null => {
   return getChildren(ast).find(
-    child => child.kind === NodeKind.Element && child.tagName === LOGIC_TAG_NAME
+    child =>
+      child.nodeKind === NodeKind.Element && child.tagName === LOGIC_TAG_NAME
   ) as Element;
 };
 
@@ -421,8 +422,8 @@ export const getTreeNodeMap = memoize(
       [path]: current
     };
     if (
-      current.kind === NodeKind.Fragment ||
-      current.kind === NodeKind.Element
+      current.nodeKind === NodeKind.Fragment ||
+      current.nodeKind === NodeKind.Element
     ) {
       Object.assign(
         map,
@@ -440,7 +441,7 @@ export const isComponentInstance = (
   importIds: string[]
 ): node is Element => {
   return (
-    node.kind === NodeKind.Element &&
+    node.nodeKind === NodeKind.Element &&
     importIds.indexOf(node.tagName.split(".").shift()) !== -1
   );
 };
@@ -459,7 +460,7 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
   const mixins: Record<string, MixinRule> = {};
   for (const style of styles) {
     traverseSheet(style.sheet, rule => {
-      if (rule && isRule(rule) && rule.kind === RuleKind.Mixin) {
+      if (rule && isRule(rule) && rule.ruleKind === RuleKind.Mixin) {
         mixins[rule.name.value] = rule;
       }
     });
@@ -469,7 +470,7 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
 };
 
 export const isNode = (ast: Expression): ast is Node =>
-  NodeKind[(ast as Node).kind] != null;
+  NodeKind[(ast as Node).nodeKind] != null;
 export const isAttribute = (ast: Expression): ast is Attribute =>
   AttributeKind[(ast as Attribute).kind] != null;
 export const isAttributeValue = (ast: Expression): ast is AttributeValue =>
@@ -492,7 +493,7 @@ export const traverseExpression = (
     return false;
   }
   if (isNode(ast)) {
-    switch (ast.kind) {
+    switch (ast.nodeKind) {
       case NodeKind.Element: {
         return (
           traverseExpressions(ast.attributes, each) &&
@@ -535,10 +536,10 @@ export const getNestedReferences = (
   node: Node,
   _statements: [Reference, string][] = []
 ): [Reference, string][] => {
-  if (node.kind === NodeKind.Slot) {
+  if (node.nodeKind === NodeKind.Slot) {
     maybeAddReference(node.script, _statements);
   } else {
-    if (node.kind === NodeKind.Element) {
+    if (node.nodeKind === NodeKind.Element) {
       for (const attr of node.attributes) {
         if (
           attr.kind == AttributeKind.KeyValueAttribute &&
@@ -566,7 +567,7 @@ export const getNestedReferences = (
 
     for (const child of getChildren(node)) {
       if (
-        child.kind === NodeKind.Element &&
+        child.nodeKind === NodeKind.Element &&
         hasAttribute(PREVIEW_ATTR_NAME, child)
       ) {
         continue;

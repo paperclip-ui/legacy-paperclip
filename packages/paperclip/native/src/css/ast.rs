@@ -109,7 +109,7 @@ impl fmt::Display for IncludeReferencePart {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "kind")]
+#[serde(tag = "ruleKind")]
 pub enum Rule {
   Style(StyleRule),
   Comment(Comment),
@@ -342,7 +342,7 @@ impl fmt::Display for KeyframeRule {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "kind")]
+#[serde(tag = "selectorKind")]
 pub enum Selector {
   Group(GroupSelector),
   Prefixed(PrefixedSelector),

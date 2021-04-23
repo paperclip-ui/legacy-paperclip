@@ -105,7 +105,7 @@
 </div>
 
 <!--
-  @frame { title: "Airbnb Home / Desktop", width: 1624, height: 768, x: 820, y: -8 }
+  @frame { title: "Airbnb Home / Desktop", width: 902, height: 768, x: 1779, y: -725 }
 -->
 <div component as="HomePreview">
     <style>

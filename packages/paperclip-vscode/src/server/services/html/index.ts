@@ -127,7 +127,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
 
   private _handleRules(rules: Rule[], context: HandleContext) {
     for (const rule of rules) {
-      switch (rule.kind) {
+      switch (rule.ruleKind) {
         case RuleKind.Style: {
           this._handleStyleRule(rule, context);
           break;
@@ -181,7 +181,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   }
 
   private _handleStyleRule(rule: Rule, context: HandleContext) {
-    if (rule.kind === RuleKind.Style) {
+    if (rule.ruleKind === RuleKind.Style) {
       this._handleDeclarations(rule.declarations, context);
       for (const child of rule.children) {
         this._handleStyleRule(child, context);
@@ -330,9 +330,9 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   }
 
   private _handleNode(node: Node, context: HandleContext) {
-    if (node.kind === NodeKind.Element) {
+    if (node.nodeKind === NodeKind.Element) {
       this._handleElement(node, context);
-    } else if (node.kind === NodeKind.Slot) {
+    } else if (node.nodeKind === NodeKind.Slot) {
       this._handleJsExpression(node.script, context);
     }
     for (const child of getChildren(node)) {

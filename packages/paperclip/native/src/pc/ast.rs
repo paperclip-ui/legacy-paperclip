@@ -51,7 +51,7 @@ pub struct ValueObject {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "kind")]
+#[serde(tag = "nodeKind")]
 pub enum Node {
   Text(ValueObject),
   Comment(Comment),
@@ -214,7 +214,7 @@ impl fmt::Display for Element {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "kind")]
+#[serde(tag = "attrKind")]
 pub enum Attribute {
   ShorthandAttribute(ShorthandAttribute),
   SpreadAttribute(SpreadAttribute),
