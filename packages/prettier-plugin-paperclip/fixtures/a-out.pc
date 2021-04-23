@@ -12,25 +12,20 @@
     <section>but this should</section>
   </div>
 </div>
-<div a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test"
-   a="test">
+<div a="b" a="b2">something</div>
+<div a="b"
+  a="b2"
+  a="b3"
+  a="b4"
+  a="b5"
+  a="b6"
+  a="b7"
+  a="b8"
+  a="b9"
+  a="b10"
+  a="b11"
+  a="b12"
+  a="b13">
   something
 </div>
+<div className:a="b" />

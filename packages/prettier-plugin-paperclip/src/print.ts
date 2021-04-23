@@ -4,6 +4,8 @@ import {
   Expression,
   isAttribute,
   isAttributeValue,
+  isDynamicStringAttributeValuePart,
+  DynamicStringAttributeValuePartKind,
   isNode,
   isStyleDeclaration,
   Node,
@@ -43,9 +45,12 @@ export const print = (path: FastPath, options: Object, print): Doc => {
 
         let openTag: Doc[] = ["<", expr.tagName];
 
-        openTag.push(
-          indent(group(join(softline, path.map(print, "attributes"))))
-        );
+        if (expr.attributes.length) {
+          openTag.push(
+            " ",
+            indent(group(join(line, path.map(print, "attributes"))))
+          );
+        }
 
         const isEmpty = expr.children.length === 0;
 
@@ -84,24 +89,46 @@ export const print = (path: FastPath, options: Object, print): Doc => {
   } else if (isAttribute(expr)) {
     switch (expr.kind) {
       case AttributeKind.KeyValueAttribute: {
-        const buffer: Doc[] = [" ", expr.name];
+        const buffer: Doc[] = [expr.name];
         if (expr.value) {
           buffer.push("=", path.call(print, "value"));
         }
 
-        return concat(buffer);
+        return groupConcat(buffer);
+      }
+      case AttributeKind.PropertyBoundAttribute: {
+        const buffer: Doc[] = [expr.name, ":", expr.bindingName];
+        buffer.push("=", path.call(print, "value"));
+        console.log(expr.value);
+        return groupConcat(buffer);
       }
     }
   } else if (isAttributeValue(expr)) {
     switch (expr.attrValueKind) {
-      case AttributeValueKind.DyanmicString: {
-        break;
-      }
       case AttributeValueKind.Slot: {
-        return concat(["{", "}"]);
+        return groupConcat(["{", "}"]);
       }
       case AttributeValueKind.String: {
-        return concat(['"', expr.value, '"']);
+        return groupConcat(['"', expr.value, '"']);
+      }
+      case AttributeValueKind.DyanmicString: {
+        const buffer = [];
+        buffer.push('"');
+        buffer.push(join(" ", path.map(print, "values")));
+        buffer.push('"');
+        return groupConcat(buffer);
+      }
+    }
+  } else if (isDynamicStringAttributeValuePart(expr)) {
+    switch (expr.partKind) {
+      case DynamicStringAttributeValuePartKind.Literal: {
+        return groupConcat([expr.value]);
+      }
+      case DynamicStringAttributeValuePartKind.ClassNamePierce: {
+        return groupConcat(["$", expr.className]);
+      }
+      case DynamicStringAttributeValuePartKind.Slot: {
+        return concat(["ok"]);
       }
     }
   }

@@ -164,12 +164,14 @@ type BaseDynamicStringAttributeValuePart<
 };
 
 type DynamicStringLiteralPart = {
+  location: SourceLocation;
   value: string;
 } & BaseDynamicStringAttributeValuePart<
   DynamicStringAttributeValuePartKind.Literal
 >;
 
 type DynamicStringClassNamePiercePart = {
+  location: SourceLocation;
   className: string;
 } & BaseDynamicStringAttributeValuePart<
   DynamicStringAttributeValuePartKind.ClassNamePierce
@@ -217,7 +219,12 @@ export type Node =
   | Slot
   | Annotation
   | Comment;
-export type Expression = Node | Attribute | AttributeValue | StyleExpression;
+export type Expression =
+  | Node
+  | Attribute
+  | AttributeValue
+  | StyleExpression
+  | DynamicStringAttributeValuePart;
 
 const a: AttributeValue = null;
 export const getImports = (ast: Node): Element[] =>
@@ -466,6 +473,12 @@ export const isAttribute = (ast: Expression): ast is Attribute =>
   AttributeKind[(ast as Attribute).kind] != null;
 export const isAttributeValue = (ast: Expression): ast is AttributeValue =>
   AttributeValueKind[(ast as AttributeValue).attrValueKind] != null;
+export const isDynamicStringAttributeValuePart = (
+  ast: Expression
+): ast is DynamicStringAttributeValuePart =>
+  DynamicStringAttributeValuePartKind[
+    (ast as DynamicStringAttributeValuePart).partKind
+  ] != null;
 
 export const traverseExpression = (
   ast: Expression,

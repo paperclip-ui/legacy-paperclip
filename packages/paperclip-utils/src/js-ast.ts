@@ -32,6 +32,7 @@ export enum JsConjunctionOperatorKind {
 
 export type JsConjunction = {
   left: JsExpression;
+  location: SourceLocation;
   right: JsExpression;
   operator: JsConjunctionOperatorKind;
 } & BaseJsExpression<JsExpressionKind.Conjunction>;
