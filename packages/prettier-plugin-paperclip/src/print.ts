@@ -27,53 +27,46 @@ const {
 
 const MAX_LINES = 1;
 
-const groupConcat = (contents: doc.builders.Doc[]): doc.builders.Doc => {
-  return group(concat(contents));
-};
+const groupConcat = (docs: Doc[]) => group(concat(docs));
 
 export const print = (path: FastPath, options: Object, print): Doc => {
-  const expr: Expression = path.getValue();
-
-  return group(
-    concat(["<a>", group(indent(concat([softline, "a", hardline]))), "</a>"])
-  );
-};
-
-export const print2 = (path: FastPath, options: Object, print): Doc => {
   const expr: Expression = path.getValue();
 
   if (isNode(expr)) {
     switch (expr.kind) {
       case NodeKind.Fragment: {
-        return group(concat(path.map(print, "children")));
+        return join(hardline, path.map(print, "children"));
       }
       case NodeKind.Element: {
         const buffer: Doc[] = ["<", expr.tagName];
         buffer.push(concat(path.map(print, "attributes")));
 
-        if (expr.children.length) {
+        const isEmpty = expr.children.length === 0;
+
+        if (!isEmpty) {
           buffer.push(">");
-          buffer.push(indent(concat(path.map(print, "children"))));
-          buffer.push(concat([softline, `</${expr.tagName}>`]));
+          buffer.push(
+            group(
+              indent(
+                concat([softline, join(hardline, path.map(print, "children"))])
+              )
+            )
+          );
+
+          buffer.push(softline, `</${expr.tagName}>`);
         } else {
           buffer.push(" />");
         }
 
-        return concat(buffer);
+        return groupConcat(buffer);
       }
       case NodeKind.StyleElement: {
         const buffer: Doc[] = [line, "<style>"];
-        // buffer.push(concat(path.map(print, "sheet")));
         buffer.push(line, "</style>");
         return concat(buffer);
       }
       case NodeKind.Text: {
-        return concat([
-          softline,
-          ...cleanNewLines(expr.value, true),
-          cleanWhitespace(expr.value),
-          ...cleanNewLines(expr.value, false)
-        ]);
+        return groupConcat([cleanWhitespace(expr.value)]);
       }
     }
   } else if (isAttribute(expr)) {
