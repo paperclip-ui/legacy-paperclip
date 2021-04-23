@@ -253,7 +253,8 @@ export type StyleExpression =
   | Include
   | MixinName
   | IncludePart
-  | IncludeReference;
+  | IncludeReference
+  | StyleDeclaration;
 
 export const getSheetClassNames = (
   sheet: Sheet,
@@ -313,6 +314,24 @@ export const isStyleDeclaration = (
     StyleDeclarationKind[(expression as StyleDeclaration).declarationKind] !=
     null
   );
+};
+
+export const isStyleObject = (
+  expression
+): expression is Rule | Selector | Sheet | StyleDeclaration => {
+  return (
+    expression.rules != null ||
+    isStyleDeclaration(expression) ||
+    isRule(expression)
+  );
+};
+
+export const isSelector = (expression): expression is Selector => {
+  return SelectorKind[expression.kind] != null;
+};
+
+export const isStyleSheet = (expression): expression is Sheet => {
+  return expression.rules && expression.kind == null;
 };
 
 export const isIncludePart = (

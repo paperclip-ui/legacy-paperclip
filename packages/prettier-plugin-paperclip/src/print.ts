@@ -5,6 +5,8 @@ import {
   isAttribute,
   isAttributeValue,
   isDynamicStringAttributeValuePart,
+  isStyleSheet,
+  isStyleObject,
   DynamicStringAttributeValuePartKind,
   DynamicStringAttributeValuePart,
   isNode,
@@ -14,7 +16,10 @@ import {
   NodeKind,
   DynamicStringAttributeValue,
   JsExpressionKind,
-  JsConjunctionOperatorKind
+  JsConjunctionOperatorKind,
+  isRule,
+  RuleKind,
+  StyleDeclarationKind
 } from "paperclip";
 import { Doc, FastPath, Printer, doc } from "prettier";
 import { isBlockTagName } from "./utils";
@@ -45,7 +50,24 @@ const CONJ_OP_MAP = {
 export const print = (path: FastPath, options: Object, print): Doc => {
   const expr: Expression = path.getValue();
 
-  if (isNode(expr)) {
+  if (isStyleObject(expr)) {
+    if (isStyleSheet(expr)) {
+      return group(join(hardline, path.map(print, "rules")));
+    } else if (isRule(expr)) {
+      switch (expr.kind) {
+        case RuleKind.Style: {
+          return printStyleRule(print)(path);
+        }
+      }
+    } else if (isStyleDeclaration(expr)) {
+      switch (expr.declarationKind) {
+        case StyleDeclarationKind.KeyValue: {
+          const buffer = [expr.name, ":", " ", expr.value, ";"];
+          return groupConcat(buffer);
+        }
+      }
+    }
+  } else if (isNode(expr)) {
     switch (expr.kind) {
       case NodeKind.Fragment: {
         return join(hardline, path.map(print, "children"));
@@ -89,8 +111,11 @@ export const print = (path: FastPath, options: Object, print): Doc => {
       }
       case NodeKind.StyleElement: {
         const buffer: Doc[] = [line, "<style>"];
+        buffer.push(
+          indent(group(concat([hardline, path.call(print, "sheet")])))
+        );
         buffer.push(line, "</style>");
-        return concat(buffer);
+        return groupConcat(buffer);
       }
       case NodeKind.Text: {
         return groupConcat([cleanWhitespace(expr.value)]);
@@ -194,6 +219,36 @@ export const printDynamicStringAttribute = print => (
   }
 
   return "";
+};
+
+export const printStyleRule = print => (path: FastPath): Doc => {
+  const expr = path.getValue();
+  const buffer = [];
+  buffer.push("selector", " ", "{");
+  if (expr.declarations.length) {
+    buffer.push(
+      indent(
+        concat([
+          hardline,
+          group(join(hardline, path.map(print, "declarations")))
+        ])
+      )
+    );
+  }
+  if (expr.children.length) {
+    buffer.push(
+      indent(
+        concat([
+          hardline,
+          group(join(hardline, path.map(printStyleRule(print), "children")))
+        ])
+      )
+    );
+  }
+
+  buffer.push(softline, "}");
+
+  return groupConcat(buffer);
 };
 
 const cleanNewLines = (buffer: string, before: boolean) => {
