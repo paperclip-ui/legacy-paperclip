@@ -6,10 +6,15 @@ import {
   isAttributeValue,
   isDynamicStringAttributeValuePart,
   DynamicStringAttributeValuePartKind,
+  DynamicStringAttributeValuePart,
   isNode,
+  isJsExpression,
   isStyleDeclaration,
   Node,
-  NodeKind
+  NodeKind,
+  DynamicStringAttributeValue,
+  JsExpressionKind,
+  JsConjunctionOperatorKind
 } from "paperclip";
 import { Doc, FastPath, Printer, doc } from "prettier";
 import { isBlockTagName } from "./utils";
@@ -31,6 +36,11 @@ const {
 const MAX_LINES = 1;
 
 const groupConcat = (docs: Doc[]) => group(concat(docs));
+
+const CONJ_OP_MAP = {
+  [JsConjunctionOperatorKind.And]: "&&",
+  [JsConjunctionOperatorKind.Or]: "||"
+};
 
 export const print = (path: FastPath, options: Object, print): Doc => {
   const expr: Expression = path.getValue();
@@ -85,6 +95,9 @@ export const print = (path: FastPath, options: Object, print): Doc => {
       case NodeKind.Text: {
         return groupConcat([cleanWhitespace(expr.value)]);
       }
+      case NodeKind.Slot: {
+        return groupConcat(["{", path.call(print, "script"), "}"]);
+      }
     }
   } else if (isAttribute(expr)) {
     switch (expr.kind) {
@@ -99,14 +112,13 @@ export const print = (path: FastPath, options: Object, print): Doc => {
       case AttributeKind.PropertyBoundAttribute: {
         const buffer: Doc[] = [expr.name, ":", expr.bindingName];
         buffer.push("=", path.call(print, "value"));
-        console.log(expr.value);
         return groupConcat(buffer);
       }
     }
   } else if (isAttributeValue(expr)) {
     switch (expr.attrValueKind) {
       case AttributeValueKind.Slot: {
-        return groupConcat(["{", "}"]);
+        return groupConcat(["{", path.call(print, "script"), "}"]);
       }
       case AttributeValueKind.String: {
         return groupConcat(['"', expr.value, '"']);
@@ -114,22 +126,70 @@ export const print = (path: FastPath, options: Object, print): Doc => {
       case AttributeValueKind.DyanmicString: {
         const buffer = [];
         buffer.push('"');
-        buffer.push(join(" ", path.map(print, "values")));
+        buffer.push(
+          groupConcat(path.map(printDynamicStringAttribute(print), "values"))
+        );
         buffer.push('"');
         return groupConcat(buffer);
       }
     }
-  } else if (isDynamicStringAttributeValuePart(expr)) {
-    switch (expr.partKind) {
-      case DynamicStringAttributeValuePartKind.Literal: {
-        return groupConcat([expr.value]);
+  } else if (isJsExpression(expr)) {
+    switch (expr.jsKind) {
+      case JsExpressionKind.Reference: {
+        const buffer = [];
+        buffer.push(
+          expr.path
+            .map(part => {
+              return part.name + (part.optional ? "?" : "");
+            })
+            .join(".")
+        );
+        return groupConcat(buffer);
       }
-      case DynamicStringAttributeValuePartKind.ClassNamePierce: {
-        return groupConcat(["$", expr.className]);
+      case JsExpressionKind.String: {
+        return groupConcat(['"', expr.value, '"']);
       }
-      case DynamicStringAttributeValuePartKind.Slot: {
-        return concat(["ok"]);
+      case JsExpressionKind.Boolean: {
+        return String(expr.value);
       }
+      case JsExpressionKind.Number: {
+        return String(expr.value);
+      }
+      case JsExpressionKind.Group: {
+        return groupConcat(["(", path.call(print, "expression"), ")"]);
+      }
+      case JsExpressionKind.Not: {
+        return concat(["!", path.call(print, "expression")]);
+      }
+      case JsExpressionKind.Conjunction: {
+        return groupConcat([
+          path.call(print, "left"),
+          " ",
+          CONJ_OP_MAP[expr.operator],
+          " ",
+          path.call(print, "right")
+        ]);
+      }
+    }
+  }
+
+  return "";
+};
+
+export const printDynamicStringAttribute = print => (
+  path: FastPath,
+  v: number
+): Doc => {
+  const expr = path.getValue();
+  switch (expr.partKind) {
+    case DynamicStringAttributeValuePartKind.Literal: {
+      return groupConcat([expr.value]);
+    }
+    case DynamicStringAttributeValuePartKind.ClassNamePierce: {
+      return groupConcat(["$", expr.className]);
+    }
+    case DynamicStringAttributeValuePartKind.Slot: {
+      return concat(["{", print(path, v), "}"]);
     }
   }
 

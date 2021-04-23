@@ -37,5 +37,16 @@
 
 <div className:a="b">
 </div>
-<div className:a="b >>>a">
+<div className:a="b >>>a {a?.b.c?}">
 </div>
+<div a={<div>I don't<div>I break</div></div>} b={<div><br /></div>}>
+  <div>
+    <div>okay this</div>
+  </div>
+  {slot && <div>this is some super long text which should cause a break</div> || <span>Something else</span>}
+</div>
+
+<div a={"b"} a={1} a={true} a={!!!true} a={a && b || c} a={a && !(b || c)}>
+</div>
+
+{a && <div>this <br /> breaks</div>}

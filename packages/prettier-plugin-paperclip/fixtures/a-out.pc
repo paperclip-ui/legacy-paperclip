@@ -29,3 +29,15 @@
   something
 </div>
 <div className:a="b" />
+<div className:a="b $a {a?.b.c?}" />
+<div a={<div>
+    I don't
+    <div>I break</div>
+  </div>}
+  b={<div>
+    <br />
+  </div>}>
+  <div>
+    <div>okay this</div>
+  </div>
+</div>

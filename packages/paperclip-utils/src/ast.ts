@@ -180,7 +180,7 @@ type DynamicStringClassNamePiercePart = {
 type DynamicStringSlotPart = JsExpression &
   BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Slot>;
 
-type DynamicStringAttributeValuePart =
+export type DynamicStringAttributeValuePart =
   | DynamicStringLiteralPart
   | DynamicStringClassNamePiercePart
   | DynamicStringSlotPart;
@@ -224,6 +224,7 @@ export type Expression =
   | Attribute
   | AttributeValue
   | StyleExpression
+  | JsExpression
   | DynamicStringAttributeValuePart;
 
 const a: AttributeValue = null;
@@ -473,6 +474,9 @@ export const isAttribute = (ast: Expression): ast is Attribute =>
   AttributeKind[(ast as Attribute).kind] != null;
 export const isAttributeValue = (ast: Expression): ast is AttributeValue =>
   AttributeValueKind[(ast as AttributeValue).attrValueKind] != null;
+
+export const isJsExpression = (ast: Expression): ast is JsExpression =>
+  JsExpressionKind[(ast as JsExpression).jsKind] != null;
 export const isDynamicStringAttributeValuePart = (
   ast: Expression
 ): ast is DynamicStringAttributeValuePart =>
