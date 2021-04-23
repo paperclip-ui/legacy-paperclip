@@ -1,18 +1,71 @@
+<import a="test.pc" inject-styles />
+
 <style>
-  div {
-    background: black;
-    div {
-      color: blue;
+  a {}
+  * {}
+  [a=b] {}
+  [a="d"] {}
+  [a~=d] {}
+  a > b { }
+  .a {}
+  div.a {}
+  div a {}
+  a + b {}
+  a, b {}
+  #a {}
+  :not(a) {}
+  ::after {}
+  :nth-child(2) {}
+  a ~ b {}
+  :within(a) {}
+  &&--a {}
+  &.a[a=b] {}
+</style>
+
+<style>
+  a {
+    color: red;
+    b {
+      color: orange;
+      &.d {
+        color: black;
+      }
     }
-    color: orange;
-  }
-  div {
-    
-  }
-  div {
-    
-  }
-  div {
-    
+    background: green;
   }
 </style>
+
+<!-- TODO -->
+<style>
+  @font-face {
+    family: Hevetica;
+  }
+  @media screen and (max-width: 100px) {
+
+  }
+
+  @mixin abba {
+    div {
+      color: red;
+      @content;
+    }
+  }
+
+  div {
+    @include abba {
+      background: blue;
+    }
+    @media screen and (max-width: 100px) {
+      color: orange;
+    }
+  }
+</style>
+
+<!-- scoped styles -->
+<div>
+  <style>
+    a {
+      color: red;
+    }
+  </style>
+</div>

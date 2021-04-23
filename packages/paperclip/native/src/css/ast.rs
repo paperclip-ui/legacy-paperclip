@@ -472,6 +472,8 @@ impl fmt::Display for Selector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PrefixedSelector {
   pub connector: String,
+
+  #[serde(rename = "postfixSelector")]
   pub postfix_selector: Option<Box<Selector>>,
   pub location: Location,
 }

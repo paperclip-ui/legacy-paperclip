@@ -104,7 +104,7 @@ export enum AttributeKind {
 }
 
 type BaseAttribute<TKind extends AttributeKind> = {
-  kind: TKind;
+  attrKind: TKind;
 };
 
 type ShorthandAttribute = {
@@ -296,7 +296,7 @@ export const findByNamespace = (
   if (current.nodeKind === NodeKind.Element) {
     for (const attribute of current.attributes) {
       if (
-        attribute.kind === AttributeKind.KeyValueAttribute &&
+        attribute.attrKind === AttributeKind.KeyValueAttribute &&
         attribute.value
       ) {
         if (
@@ -327,7 +327,9 @@ export const getMetaValue = (name: string, root: Node) => {
 
 export const getAttribute = (name: string, element: Element) =>
   element.attributes.find(attr => {
-    return attr.kind === AttributeKind.KeyValueAttribute && attr.name === name;
+    return (
+      attr.attrKind === AttributeKind.KeyValueAttribute && attr.name === name
+    );
   }) as KeyValueAttribute;
 
 export const getAttributeValue = (name: string, element: Element) => {
@@ -472,7 +474,7 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
 export const isNode = (ast: Expression): ast is Node =>
   NodeKind[(ast as Node).nodeKind] != null;
 export const isAttribute = (ast: Expression): ast is Attribute =>
-  AttributeKind[(ast as Attribute).kind] != null;
+  AttributeKind[(ast as Attribute).attrKind] != null;
 export const isAttributeValue = (ast: Expression): ast is AttributeValue =>
   AttributeValueKind[(ast as AttributeValue).attrValueKind] != null;
 
@@ -542,7 +544,7 @@ export const getNestedReferences = (
     if (node.nodeKind === NodeKind.Element) {
       for (const attr of node.attributes) {
         if (
-          attr.kind == AttributeKind.KeyValueAttribute &&
+          attr.attrKind == AttributeKind.KeyValueAttribute &&
           attr.value &&
           attr.value.attrValueKind === AttributeValueKind.Slot
         ) {
@@ -552,12 +554,12 @@ export const getNestedReferences = (
             _statements.push([attr.value.script, attr.name]);
           }
         } else if (
-          attr.kind === AttributeKind.ShorthandAttribute &&
+          attr.attrKind === AttributeKind.ShorthandAttribute &&
           attr.reference.jsKind === JsExpressionKind.Reference
         ) {
           _statements.push([attr.reference, attr.reference[0]]);
         } else if (
-          attr.kind === AttributeKind.SpreadAttribute &&
+          attr.attrKind === AttributeKind.SpreadAttribute &&
           attr.script.jsKind === JsExpressionKind.Reference
         ) {
           _statements.push([attr.script, attr.script[0]]);

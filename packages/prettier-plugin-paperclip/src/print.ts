@@ -9,6 +9,7 @@ import {
   isStyleObject,
   DynamicStringAttributeValuePartKind,
   DynamicStringAttributeValuePart,
+  isStyleSelector,
   isNode,
   isJsExpression,
   isStyleDeclaration,
@@ -19,7 +20,8 @@ import {
   JsConjunctionOperatorKind,
   isRule,
   RuleKind,
-  StyleDeclarationKind
+  StyleDeclarationKind,
+  SelectorKind
 } from "paperclip";
 import { Doc, FastPath, Printer, doc } from "prettier";
 import { isBlockTagName } from "./utils";
@@ -54,7 +56,7 @@ export const print = (path: FastPath, options: Object, print): Doc => {
     if (isStyleSheet(expr)) {
       return group(join(hardline, path.map(print, "rules")));
     } else if (isRule(expr)) {
-      switch (expr.kind) {
+      switch (expr.ruleKind) {
         case RuleKind.Style: {
           return printStyleRule(print)(path);
         }
@@ -66,9 +68,83 @@ export const print = (path: FastPath, options: Object, print): Doc => {
           return groupConcat(buffer);
         }
       }
+    } else if (isStyleSelector(expr)) {
+      switch (expr.selectorKind) {
+        case SelectorKind.Adjacent: {
+          return join(" ", [
+            path.call(print, "selector"),
+            "+",
+            path.call(print, "nextSiblingSelector")
+          ]);
+        }
+        case SelectorKind.AllSelector: {
+          return "*";
+        }
+        case SelectorKind.Attribute: {
+          if (!expr.value) {
+            return concat(["[", expr.name, "]"]);
+          }
+
+          return concat(["[", expr.name, expr.operator, expr.value, "]"]);
+        }
+        case SelectorKind.Child: {
+          return join(" ", [
+            path.call(print, "parent"),
+            ">",
+            path.call(print, "child")
+          ]);
+        }
+        case SelectorKind.Class: {
+          return concat([".", expr.className]);
+        }
+        case SelectorKind.Combo: {
+          return concat(path.map(print, "selectors"));
+        }
+        case SelectorKind.Descendent: {
+          return join(" ", [
+            path.call(print, "ancestor"),
+            path.call(print, "descendent")
+          ]);
+        }
+        case SelectorKind.Element: {
+          return expr.tagName;
+        }
+        case SelectorKind.Group: {
+          return join(", ", path.map(print, "selectors"));
+        }
+        case SelectorKind.Id: {
+          return concat(["#", expr.id]);
+        }
+        case SelectorKind.Not: {
+          return concat([":not(", path.call(print, "selector"), ")"]);
+        }
+        case SelectorKind.PseudoElement: {
+          return concat([expr.separator, expr.name]);
+        }
+        case SelectorKind.PseudoParamElement: {
+          return concat([":", expr.name, "(", expr.param, ")"]);
+        }
+        case SelectorKind.Sibling: {
+          return join(" ", [
+            path.call(print, "selector"),
+            "~",
+            path.call(print, "siblingSelector")
+          ]);
+        }
+        case SelectorKind.Within: {
+          return concat([":within(", group(path.call(print, "selector")), ")"]);
+        }
+        case SelectorKind.Prefixed: {
+          const buffer = ["&", expr.connector];
+          if (expr.postfixSelector) {
+            buffer.push(path.call(print, "postfixSelector"));
+          }
+          return concat(buffer);
+        }
+      }
     }
   } else if (isNode(expr)) {
-    switch (expr.kind) {
+    switch (expr.nodeKind) {
       case NodeKind.Fragment: {
         return join(hardline, path.map(print, "children"));
       }
@@ -110,11 +186,11 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         return doc;
       }
       case NodeKind.StyleElement: {
-        const buffer: Doc[] = [line, "<style>"];
+        const buffer: Doc[] = ["<style>"];
         buffer.push(
           indent(group(concat([hardline, path.call(print, "sheet")])))
         );
-        buffer.push(line, "</style>");
+        buffer.push(line, "</style>", breakParent);
         return groupConcat(buffer);
       }
       case NodeKind.Text: {
@@ -125,7 +201,7 @@ export const print = (path: FastPath, options: Object, print): Doc => {
       }
     }
   } else if (isAttribute(expr)) {
-    switch (expr.kind) {
+    switch (expr.attrKind) {
       case AttributeKind.KeyValueAttribute: {
         const buffer: Doc[] = [expr.name];
         if (expr.value) {
@@ -224,7 +300,7 @@ export const printDynamicStringAttribute = print => (
 export const printStyleRule = print => (path: FastPath): Doc => {
   const expr = path.getValue();
   const buffer = [];
-  buffer.push("selector", " ", "{");
+  buffer.push(group(path.call(print, "selector")), " ", "{");
   if (expr.declarations.length) {
     buffer.push(
       indent(

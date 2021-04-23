@@ -30,6 +30,8 @@ export enum SelectorKind {
   Group = "Group",
   Combo = "Combo",
   Descendent = "Descendent",
+  Within = "Within",
+  Prefixed = "Prefixed",
   PseudoElement = "PseudoElement",
   PseudoParamElement = "PseudoParamElement",
   Not = "Not",
@@ -45,11 +47,21 @@ export enum SelectorKind {
 
 export type BaseSelector<TKind extends SelectorKind> = {
   selectorKind: TKind;
+  location: SourceLocation;
 };
 
 type GroupSelector = {
   selectors: Selector[];
 } & BaseSelector<SelectorKind.Group>;
+
+type WithinSelector = {
+  selectors: Selector;
+} & BaseSelector<SelectorKind.Within>;
+
+type PrefixedSelector = {
+  connector: string;
+  postfixSelector?: Selector;
+} & BaseSelector<SelectorKind.Prefixed>;
 
 type ComboSelector = {
   selectors: Selector[];
@@ -61,7 +73,7 @@ type DescendentSelector = {
 } & BaseSelector<SelectorKind.Descendent>;
 
 type PseudoElementSelector = {
-  selector: string;
+  separator: string;
   target: Selector;
   name: string;
 } & BaseSelector<SelectorKind.PseudoElement>;
@@ -100,6 +112,7 @@ type ElementSelector = {
 } & BaseSelector<SelectorKind.Element>;
 
 type AttributeSelector = {
+  operator?: string;
   name: string;
   value?: string;
 } & BaseSelector<SelectorKind.Attribute>;
@@ -112,6 +125,8 @@ type AllSelector = BaseSelector<SelectorKind.AllSelector>;
 
 export type Selector =
   | GroupSelector
+  | WithinSelector
+  | PrefixedSelector
   | ComboSelector
   | DescendentSelector
   | PseudoElementSelector
@@ -254,7 +269,8 @@ export type StyleExpression =
   | MixinName
   | IncludePart
   | IncludeReference
-  | StyleDeclaration;
+  | StyleDeclaration
+  | Selector;
 
 export const getSheetClassNames = (
   sheet: Sheet,
@@ -322,8 +338,13 @@ export const isStyleObject = (
   return (
     expression.rules != null ||
     isStyleDeclaration(expression) ||
-    isRule(expression)
+    isRule(expression) ||
+    isStyleSelector(expression)
   );
+};
+
+export const isStyleSelector = (expression): expression is Selector => {
+  return SelectorKind[(expression as Selector).selectorKind] != null;
 };
 
 export const isSelector = (expression): expression is Selector => {
