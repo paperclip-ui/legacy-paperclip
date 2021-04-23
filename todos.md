@@ -1,4 +1,15 @@
+PRETTIER:
+
+- media queries
+- font family
+
+- declarations: @media, @include, @content
+- maintain whitespace
+
+
 IMMEDIATE:
+
+
 
 Goal right now is to get people using Paperclip
 
@@ -32,3 +43,5 @@ OTHER:
     - error when component isn't previewed in device size
   - UI tooling (linter & prettier core will help with this)
     - simple style inspector for devs
+
+
