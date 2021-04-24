@@ -51,7 +51,6 @@ const CONJ_OP_MAP = {
 
 export const print = (path: FastPath, options: Object, print): Doc => {
   const expr: Expression = path.getValue();
-
   if (isStyleObject(expr)) {
     if (isRule(expr)) {
       switch (expr.ruleKind) {
@@ -224,7 +223,20 @@ export const print = (path: FastPath, options: Object, print): Doc => {
 
       // maybe sheet
     } else if ((expr as any).rules != null) {
-      return group(join(hardline, path.map(print, "rules")));
+      const buffer: Doc[] = [];
+
+      if ((expr as any).declarations?.length) {
+        buffer.push(join(hardline, path.map(print, "declarations")));
+        buffer.push(hardline);
+        if ((expr as any).declarations.length) {
+        }
+      }
+
+      if ((expr as any).rules) {
+        buffer.push(join(hardline, path.map(print, "rules")));
+      }
+
+      return groupConcat(buffer);
     }
   } else if (isNode(expr)) {
     switch (expr.nodeKind) {
