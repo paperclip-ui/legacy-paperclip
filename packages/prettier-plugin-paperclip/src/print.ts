@@ -18,10 +18,14 @@ import {
   JsExpressionKind,
   JsConjunctionOperatorKind,
   isRule,
+  computeVirtJSObject,
   RuleKind,
   StyleDeclarationKind,
   SelectorKind,
-  KeyframeRule
+  KeyframeRule,
+  AnnotationPropertyKind,
+  computeVirtJSValue,
+  JsExpression
 } from "paperclip";
 import { Doc, FastPath, Printer, doc } from "prettier";
 import { isBlockTagName } from "./utils";
@@ -240,6 +244,44 @@ export const print = (path: FastPath, options: Object, print): Doc => {
     }
   } else if (isNode(expr)) {
     switch (expr.nodeKind) {
+      case NodeKind.Comment: {
+        const buffer: Doc[] = ["<!--"];
+
+        const annotations: Doc[] = [];
+
+        for (const property of expr.annotation.properties) {
+          switch (property.kind) {
+            case AnnotationPropertyKind.Text: {
+              annotations.push(property.value.trim());
+              break;
+            }
+            case AnnotationPropertyKind.Declaration: {
+              annotations.push(
+                group(
+                  concat([
+                    `@`,
+                    property.name,
+                    " ",
+                    JSON.stringify(
+                      computeJSExpr(property.value),
+                      null,
+                      2
+                    ).replace(/[\n\s]+/g, " ")
+                  ])
+                )
+              );
+              break;
+            }
+          }
+        }
+
+        buffer.push(
+          indent(concat([hardline, group(join(hardline, annotations))]))
+        );
+
+        buffer.push(softline, "-->");
+        return groupConcat(buffer);
+      }
       case NodeKind.Fragment: {
         return join(hardline, path.map(print, "children"));
       }
@@ -462,4 +504,21 @@ const countNewLines = (ws: string) => {
 
 const cleanWhitespace = (buffer: string) => {
   return buffer.trim().replace(/[\n\r\t\s]+/g, " ");
+};
+
+const computeJSExpr = (expr: JsExpression) => {
+  switch (expr.jsKind) {
+    case JsExpressionKind.Number:
+    case JsExpressionKind.Boolean:
+    case JsExpressionKind.String:
+      return expr.value;
+    case JsExpressionKind.Array:
+      return expr.values.map(computeJSExpr);
+    case JsExpressionKind.Object:
+      return expr.properties.reduce((obj, prop) => {
+        obj[prop.key] = computeJSExpr(prop.value);
+        return obj;
+      }, {});
+  }
+  return "";
 };

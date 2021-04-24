@@ -26,7 +26,7 @@ describe(__dirname + "#", () => {
         tabWidth: 2
       } as any);
 
-      // console.log(output);
+      console.log(output);
 
       expect(output).to.eql(outExpected);
     });
