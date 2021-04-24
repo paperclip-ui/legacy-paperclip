@@ -1,13 +1,14 @@
 <!-- Some comment -->
 <div>
   <style>
-  
+
     /* some comment */
     div {
 
       // another comment
       color: red;
     }
+
   </style>
 </div>
 
