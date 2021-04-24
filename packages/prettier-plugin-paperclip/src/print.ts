@@ -61,6 +61,12 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         case RuleKind.Style: {
           return printStyleRule(print)(path);
         }
+        case RuleKind.Comment: {
+          const buffer: Doc[] = ["/*"];
+          buffer.push(indent(concat([softline, group(expr.value)])), softline);
+          buffer.push("*/");
+          return groupConcat(buffer);
+        }
         case RuleKind.FontFace: {
           const buffer = ["@font-face ", printStyleBody(print)(path)];
           return groupConcat(buffer);
@@ -483,19 +489,6 @@ export const printStyleBody = print => (path: FastPath): Doc => {
   buffer.push(softline, "}");
 
   return groupConcat(buffer);
-};
-
-const cleanNewLines = (buffer: string, before: boolean) => {
-  const re = before ? /^[\s\r\n]+/ : /[\s\r\n]+$/;
-  if (before) {
-  }
-  const match = buffer.match(re);
-
-  return match
-    ? Array.from({ length: Math.min(MAX_LINES, countNewLines(match[0])) }).map(
-        v => hardline
-      )
-    : [];
 };
 
 const countNewLines = (ws: string) => {

@@ -11,6 +11,7 @@ export enum RuleKind {
   Charset = "Charset",
   Namespace = "Namespace",
   Include = "Include",
+  Comment = "Comment",
   FontFace = "FontFace",
   Media = "Media",
   Mixin = "Mixin",
@@ -233,6 +234,9 @@ type BaseConditionRule<TRule extends RuleKind> = ConditionShape &
   BaseRule<TRule>;
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
+export type CommentRule = {
+  value: string;
+} & BaseRule<RuleKind.Comment>;
 type FontFaceRule = {
   declarations: StyleDeclaration[];
 } & BaseRule<RuleKind.FontFace>;
@@ -271,6 +275,7 @@ export type Rule =
   | MixinRule
   | ExportRule
   | CharsetRule
+  | CommentRule
   | MediaRule
   | FontFaceRule
   | IncludeRule

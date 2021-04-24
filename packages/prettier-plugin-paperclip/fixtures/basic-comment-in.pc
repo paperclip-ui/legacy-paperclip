@@ -5,7 +5,7 @@
 <div>
   <style>
 
-    /* some comment */
+    /* some super long text that needs to be dropped to a second line because it is just toooooooo long */
     div {
 
       // another comment
