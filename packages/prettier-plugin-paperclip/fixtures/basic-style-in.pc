@@ -1,12 +1,10 @@
-<import a="test.pc" inject-styles />
-
 <style>
   a {}
   * {}
   [a=b] {}
   [a="d"] {}
   [a~=d] {}
-  a > b { }
+  a > b {}
   .a {}
   div.a {}
   div a {}
@@ -21,39 +19,33 @@
   &&--a {}
   &.a[a=b] {}
 </style>
-
 <style>
   a {
     color: red;
+    background: green;
     b {
       color: orange;
       &.d {
         color: black;
       }
     }
-    background: green;
   }
 </style>
-
-<!-- TODO -->
 <style>
   @font-face {
     family: Hevetica;
   }
-  
-  @media screen and (max-width: 100px) {
+  @media screen and (max-width: 100px)  {
     div {
       color: red;
     }
   }
-
   @mixin abba {
     div {
       color: red;
       @content;
     }
   }
-
   div {
     @include a.b.c.d {
       background: blue;
@@ -61,25 +53,23 @@
         color: orange;
       }
     }
-    @media screen and (max-width: 100px) {
+    @media  screen and (max-width: 100px)  {
       color: orange;
       span {
         color: orange;
-    }
+      }
     }
   }
-
   @keyframes a {
     0% {
       color: orange;
+      @include abba;
     }
     100% {
       color: red;
     }
   }
 </style>
-
-<!-- scoped styles -->
 <div>
   <style>
     a {

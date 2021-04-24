@@ -20,7 +20,8 @@ import {
   isRule,
   RuleKind,
   StyleDeclarationKind,
-  SelectorKind
+  SelectorKind,
+  KeyframeRule
 } from "paperclip";
 import { Doc, FastPath, Printer, doc } from "prettier";
 import { isBlockTagName } from "./utils";
@@ -53,7 +54,6 @@ export const print = (path: FastPath, options: Object, print): Doc => {
 
   if (isStyleObject(expr)) {
     if (isRule(expr)) {
-      console.log(expr);
       switch (expr.ruleKind) {
         case RuleKind.Style: {
           return printStyleRule(print)(path);
@@ -81,13 +81,33 @@ export const print = (path: FastPath, options: Object, print): Doc => {
           return groupConcat(buffer);
         }
         case RuleKind.Keyframes: {
-          console.log(expr);
-          const buffer = [
-            "@keyframes ",
-            expr.name,
-            " ",
-            printStyleBody(print)(path)
-          ];
+          const buffer: Doc[] = ["@keyframes ", expr.name, " ", "{"];
+
+          // eeesh, need to do this since nested keyframes don't have enum
+          // types.
+          buffer.push(
+            indent(
+              concat([
+                hardline,
+                group(
+                  join(
+                    hardline,
+                    path.map((keyframe, index) => {
+                      const expr: KeyframeRule = keyframe.getValue();
+                      const buffer = [
+                        expr.key,
+                        printStyleBody(print)(keyframe)
+                      ];
+                      return groupConcat(buffer);
+                    }, "rules")
+                  )
+                )
+              ])
+            )
+          );
+
+          buffer.push(softline, "}");
+
           return groupConcat(buffer);
         }
         case RuleKind.Keyframe: {
@@ -105,12 +125,18 @@ export const print = (path: FastPath, options: Object, print): Doc => {
           return groupConcat(["@content;"]);
         }
         case StyleDeclarationKind.Include: {
-          return groupConcat([
+          const buffer: Doc[] = [
             "@include ",
-            expr.mixinName.parts.map(part => part.name).join("."),
-            " ",
-            printStyleBody(print)(path)
-          ]);
+            expr.mixinName.parts.map(part => part.name).join(".")
+          ];
+
+          if (expr.declarations.length || expr.rules.length) {
+            buffer.push(" ", printStyleBody(print)(path));
+          } else {
+            buffer.push(";");
+          }
+
+          return groupConcat(buffer);
         }
         case StyleDeclarationKind.Media: {
           return groupConcat([
