@@ -5,7 +5,6 @@ import {
   isAttribute,
   isAttributeValue,
   isDynamicStringAttributeValuePart,
-  isStyleSheet,
   isStyleObject,
   DynamicStringAttributeValuePartKind,
   DynamicStringAttributeValuePart,
@@ -53,12 +52,47 @@ export const print = (path: FastPath, options: Object, print): Doc => {
   const expr: Expression = path.getValue();
 
   if (isStyleObject(expr)) {
-    if (isStyleSheet(expr)) {
-      return group(join(hardline, path.map(print, "rules")));
-    } else if (isRule(expr)) {
+    if (isRule(expr)) {
+      console.log(expr);
       switch (expr.ruleKind) {
         case RuleKind.Style: {
           return printStyleRule(print)(path);
+        }
+        case RuleKind.FontFace: {
+          const buffer = ["@font-face ", printStyleBody(print)(path)];
+          return groupConcat(buffer);
+        }
+        case RuleKind.Media: {
+          const buffer = [
+            "@media ",
+            expr.conditionText,
+            " ",
+            printStyleBody(print)(path)
+          ];
+          return groupConcat(buffer);
+        }
+        case RuleKind.Mixin: {
+          const buffer = [
+            "@mixin ",
+            expr.name.value,
+            " ",
+            printStyleBody(print)(path)
+          ];
+          return groupConcat(buffer);
+        }
+        case RuleKind.Keyframes: {
+          console.log(expr);
+          const buffer = [
+            "@keyframes ",
+            expr.name,
+            " ",
+            printStyleBody(print)(path)
+          ];
+          return groupConcat(buffer);
+        }
+        case RuleKind.Keyframe: {
+          const buffer = [expr.key, " ", printStyleBody(print)(path)];
+          return groupConcat(buffer);
         }
       }
     } else if (isStyleDeclaration(expr)) {
@@ -66,6 +100,25 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         case StyleDeclarationKind.KeyValue: {
           const buffer = [expr.name, ":", " ", expr.value, ";"];
           return groupConcat(buffer);
+        }
+        case StyleDeclarationKind.Content: {
+          return groupConcat(["@content;"]);
+        }
+        case StyleDeclarationKind.Include: {
+          return groupConcat([
+            "@include ",
+            expr.mixinName.parts.map(part => part.name).join("."),
+            " ",
+            printStyleBody(print)(path)
+          ]);
+        }
+        case StyleDeclarationKind.Media: {
+          return groupConcat([
+            "@media ",
+            expr.conditionText,
+            " ",
+            printStyleBody(print)(path)
+          ]);
         }
       }
     } else if (isStyleSelector(expr)) {
@@ -142,6 +195,10 @@ export const print = (path: FastPath, options: Object, print): Doc => {
           return concat(buffer);
         }
       }
+
+      // maybe sheet
+    } else if ((expr as any).rules != null) {
+      return group(join(hardline, path.map(print, "rules")));
     }
   } else if (isNode(expr)) {
     switch (expr.nodeKind) {
@@ -298,10 +355,20 @@ export const printDynamicStringAttribute = print => (
 };
 
 export const printStyleRule = print => (path: FastPath): Doc => {
+  const buffer = [];
+  buffer.push(
+    group(path.call(print, "selector")),
+    " ",
+    printStyleBody(print)(path)
+  );
+  return groupConcat(buffer);
+};
+
+export const printStyleBody = print => (path: FastPath): Doc => {
   const expr = path.getValue();
   const buffer = [];
-  buffer.push(group(path.call(print, "selector")), " ", "{");
-  if (expr.declarations.length) {
+  buffer.push("{");
+  if (expr.declarations?.length) {
     buffer.push(
       indent(
         concat([
@@ -311,12 +378,23 @@ export const printStyleRule = print => (path: FastPath): Doc => {
       )
     );
   }
-  if (expr.children.length) {
+
+  if (expr.children?.length) {
     buffer.push(
       indent(
         concat([
           hardline,
           group(join(hardline, path.map(printStyleRule(print), "children")))
+        ])
+      )
+    );
+  }
+  if (expr.rules?.length) {
+    buffer.push(
+      indent(
+        concat([
+          hardline,
+          group(join(hardline, path.map(printStyleRule(print), "rules")))
         ])
       )
     );

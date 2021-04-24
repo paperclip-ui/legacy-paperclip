@@ -165,6 +165,7 @@ export type MediaDeclaration = ConditionShape &
 
 export type Include = BaseInclude &
   BaseStyleDeclaration<StyleDeclarationKind.Include>;
+export type Content = BaseStyleDeclaration<StyleDeclarationKind.Content>;
 
 export type IncludeReference = {
   parts: IncludePart[];
@@ -176,7 +177,11 @@ export type IncludePart = {
   location: SourceLocation;
 };
 
-export type StyleDeclaration = KeyValueDeclaration | Include | MediaDeclaration;
+export type StyleDeclaration =
+  | KeyValueDeclaration
+  | Include
+  | MediaDeclaration
+  | Content;
 
 export type StyleRule = {
   location: SourceLocation;
@@ -219,7 +224,7 @@ export type KeyframesRule = {
 type ConditionShape = {
   name: string;
   conditionText: string;
-  rules: Rule[];
+  rules: ChildRule[];
   location: SourceLocation;
   declarations: StyleDeclaration[];
 };
@@ -228,6 +233,11 @@ type BaseConditionRule<TRule extends RuleKind> = ConditionShape &
   BaseRule<TRule>;
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
+type FontFaceRule = {
+  declarations: StyleDeclaration[];
+} & BaseRule<RuleKind.FontFace>;
+type CharsetRule = {} & BaseRule<RuleKind.Charset>;
+
 type BaseInclude = {
   mixinName: IncludeReference;
   location: SourceLocation;
@@ -254,11 +264,15 @@ export type ExportRule = {
 } & BaseRule<RuleKind.Export>;
 
 export type ConditionRule = MediaRule;
+export type ChildRule = any;
 export type Rule =
   | StyleRule
   | ConditionRule
   | MixinRule
   | ExportRule
+  | CharsetRule
+  | MediaRule
+  | FontFaceRule
   | IncludeRule
   | KeyframesRule
   | KeyframeRule;
@@ -349,10 +363,6 @@ export const isStyleSelector = (expression): expression is Selector => {
 
 export const isSelector = (expression): expression is Selector => {
   return SelectorKind[expression.kind] != null;
-};
-
-export const isStyleSheet = (expression): expression is Sheet => {
-  return expression.rules && expression.kind == null;
 };
 
 export const isIncludePart = (

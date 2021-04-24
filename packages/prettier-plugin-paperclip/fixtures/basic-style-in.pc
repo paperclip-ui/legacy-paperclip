@@ -40,8 +40,11 @@
   @font-face {
     family: Hevetica;
   }
+  
   @media screen and (max-width: 100px) {
-
+    div {
+      color: red;
+    }
   }
 
   @mixin abba {
@@ -52,11 +55,26 @@
   }
 
   div {
-    @include abba {
+    @include a.b.c.d {
       background: blue;
+      a {
+        color: orange;
+      }
     }
     @media screen and (max-width: 100px) {
       color: orange;
+      span {
+        color: orange;
+    }
+    }
+  }
+
+  @keyframes a {
+    0% {
+      color: orange;
+    }
+    100% {
+      color: red;
     }
   }
 </style>
