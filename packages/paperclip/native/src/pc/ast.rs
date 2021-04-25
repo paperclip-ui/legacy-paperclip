@@ -1,5 +1,5 @@
 use crate::annotation::ast as annotation_ast;
-use crate::base::ast::{Location, BasicRaws};
+use crate::base::ast::{BasicRaws, Location};
 use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
 use serde::Serialize;
@@ -49,7 +49,7 @@ pub struct Comment {
 pub struct ValueObject {
   pub location: Location,
   pub value: String,
-  pub raws: BasicRaws
+  pub raws: BasicRaws,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -96,7 +96,7 @@ pub struct Slot {
   pub omit_from_compilation: bool,
   pub script: js_ast::Expression,
   pub location: Location,
-  pub raws: BasicRaws
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for Node {

@@ -4,7 +4,7 @@ use super::ast as pc_ast;
 use super::tokenizer::{Token, Tokenizer};
 use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tokenizer;
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
-use crate::base::ast::{Location, BasicRaws};
+use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
@@ -55,7 +55,9 @@ fn parse_fragment<'a>(
   while !tokenizer.is_eof() {
     let mut child_path = path.clone();
     child_path.push(children.len().to_string());
-    children.push(parse_include_declaration(tokenizer, child_path, raw_before)?);
+    children.push(parse_include_declaration(
+      tokenizer, child_path, raw_before,
+    )?);
     raw_before = tokenizer.eat_whitespace();
   }
 
@@ -113,7 +115,6 @@ fn parse_include_declaration<'a>(
         Err(ParseError::unexpected_token(tokenizer.utf16_pos))
       } else {
         Ok(pc_ast::Node::Text(pc_ast::ValueObject {
-
           // keep raws on text to make it easier creating printers
           raws: BasicRaws::new(None, None),
 
@@ -181,7 +182,10 @@ fn parse_slot_script<'a>(
   stmt
 }
 
-pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>, raw_before: Option<&'a [u8]>) -> Result<pc_ast::Node, ParseError> {
+pub fn parse_annotation<'a>(
+  tokenizer: &mut Tokenizer<'a>,
+  raw_before: Option<&'a [u8]>,
+) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.get_pos();
 
   tokenizer.next()?; // eat HTML comment open
@@ -213,7 +217,7 @@ pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>, raw_before: Option<&'
 pub fn parse_tag<'a>(
   tokenizer: &mut Tokenizer<'a>,
   path: Vec<String>,
-  raw_before: Option<&'a [u8]>
+  raw_before: Option<&'a [u8]>,
 ) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.utf16_pos;
 
@@ -272,12 +276,12 @@ fn parse_next_basic_element_parts<'a>(
       tokenizer.next()?;
       end = tokenizer.utf16_pos;
       let mut raw_before = tokenizer.eat_whitespace();
-      while !tokenizer.is_eof()
-        && tokenizer.peek_eat_whitespace(1)? != Token::TagClose
-      {
+      while !tokenizer.is_eof() && tokenizer.peek_eat_whitespace(1)? != Token::TagClose {
         let mut child_path = path.clone();
         child_path.push(children.len().to_string());
-        children.push(parse_include_declaration(tokenizer, child_path, raw_before)?);
+        children.push(parse_include_declaration(
+          tokenizer, child_path, raw_before,
+        )?);
         raw_before = tokenizer.eat_whitespace();
       }
 

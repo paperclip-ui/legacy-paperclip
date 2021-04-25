@@ -46,14 +46,16 @@ fn parse_annotation_property<'a, 'b>(
 ) -> Result<ast::AnnotationProperty, ParseError> {
   let raw_before = context.tokenizer.eat_whitespace();
   match context.tokenizer.peek(1)? {
-    Token::Word(_) | Token::Byte(_) | Token::Cluster(_) => parse_text_annotation(context, raw_before),
+    Token::Word(_) | Token::Byte(_) | Token::Cluster(_) => {
+      parse_text_annotation(context, raw_before)
+    }
     Token::At => parse_declaration_property(context, raw_before),
   }
 }
 
 fn parse_text_annotation<'a, 'b>(
   context: &mut Context<'a, 'b>,
-  raw_before: Option<&'a [u8]>
+  raw_before: Option<&'a [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
   let start = context.tokenizer.utf16_pos;
 
@@ -80,7 +82,7 @@ fn parse_text_annotation<'a, 'b>(
 
 fn parse_declaration_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
-  raw_before: Option<&'a [u8]>
+  raw_before: Option<&'a [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
   let start = context.tokenizer.utf16_pos;
 

@@ -1,4 +1,4 @@
-use crate::base::ast::{Location, BasicRaws};
+use crate::base::ast::{BasicRaws, Location};
 use serde::Serialize;
 use std::fmt;
 

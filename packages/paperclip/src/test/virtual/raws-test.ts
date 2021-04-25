@@ -83,6 +83,8 @@ describe(__filename + "#", () => {
           0% {
             color: blue;
           }
+
+          // blah blah
           10% {
             color: red;
           }
@@ -90,15 +92,20 @@ describe(__filename + "#", () => {
         
         div {
           color: blue;
-
+          
+          // bba
           background: orange;
+
+          /*
+            something else
+          */
           @media screen and (max-width: 100%) {
             color: red;
 
             div {
               color: red;
               @include abba {
-                color: orange;
+                color: orange; 
               }
             }
           }

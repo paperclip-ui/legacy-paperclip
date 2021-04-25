@@ -5,7 +5,7 @@
 
 use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
-use crate::base::ast::{Location, BasicRaws};
+use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
@@ -56,7 +56,7 @@ fn eat_comments<'a, 'b>(
 fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseError> {
   let start = context.tokenizer.utf16_pos;
 
-  let raw_before = context.tokenizer.eat_whitespace();
+  let raw_before = eat_superfluous(context)?;
 
   let (rules, declarations) = parse_rules_and_declarations(context)?;
   Ok(Sheet {
@@ -72,7 +72,7 @@ fn parse_rules_and_declarations<'a, 'b>(
 ) -> Result<(Vec<Rule>, Vec<Declaration>), ParseError> {
   let mut rules = vec![];
   let mut declarations = vec![];
-  let raw_before = context.tokenizer.eat_whitespace();
+  let mut raw_before = eat_superfluous(context)?;
 
   while !context.ended()? {
     if is_next_key_value_declaration(context)? {
@@ -84,12 +84,15 @@ fn parse_rules_and_declarations<'a, 'b>(
     // defensive coding. rules should be implementing eat_whitespace
     // themselves so that the ASTs can include raws.
     // TODO - need to test all cases for this, then remove.
-    context.tokenizer.eat_whitespace();
+    raw_before = eat_superfluous(context)?;
   }
   Ok((rules, declarations))
 }
 
-fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
+fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Option<&'a [u8]>, ParseError> {
+  let start = context.tokenizer.pos;
+
+
   while !context.ended()? {
     let tok = context.tokenizer.peek(1).unwrap();
     match tok {
@@ -101,7 +104,7 @@ fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseErr
       }
     }
   }
-  Ok(())
+  Ok(Some(&context.tokenizer.source[start..context.tokenizer.pos]))
 }
 
 fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
@@ -335,9 +338,7 @@ fn parse_keyframes_rule<'a, 'b>(
   context.tokenizer.next_expect(Token::CurlyOpen)?;
 
   while !context.tokenizer.is_eof() {
-    let kf_raw_before = context.tokenizer.eat_whitespace();
-
-    eat_superfluous(context)?;
+    let kf_raw_before = eat_superfluous(context)?;
     if context.tokenizer.peek(1)? == Token::CurlyClose {
       break;
     }
@@ -810,7 +811,7 @@ fn parse_declarations_and_children<'a, 'b>(
   let mut children = vec![];
 
   // START HERE - need to remove superfluous
-  let mut raw_before = context.tokenizer.eat_whitespace();
+  let mut raw_before = eat_superfluous(context)?;
 
   while !context.ended()? {
     if context.tokenizer.peek(1)? == Token::CurlyClose {
@@ -830,7 +831,7 @@ fn parse_declarations_and_children<'a, 'b>(
         children.push(parse_style_rule2(context, raw_before, true)?);
       }
     }
-    raw_before = context.tokenizer.eat_whitespace();
+    raw_before = eat_superfluous(context)?;
   }
 
   Ok((declarations, children))
@@ -971,7 +972,6 @@ fn parse_key_value_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<Declaration, ParseError> {
-  context.tokenizer.eat_whitespace();
 
   let start = context.tokenizer.utf16_pos;
   if let Token::Keyword(keyword) = context.tokenizer.next()? {
@@ -996,7 +996,7 @@ fn parse_key_value_declaration<'a, 'b>(
     }
 
     let end = context.tokenizer.utf16_pos;
-    let raw_after = context.tokenizer.eat_whitespace();
+    let raw_after = eat_superfluous(context)?;
 
     Ok(Declaration::KeyValue(KeyValueDeclaration {
       name,
