@@ -394,7 +394,7 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
 
   private _handleAttributes(element: Element, context: HandleContext) {
     for (const attr of element.attributes) {
-      if (attr.kind === AttributeKind.KeyValueAttribute && attr.value) {
+      if (attr.attrKind === AttributeKind.KeyValueAttribute && attr.value) {
         if (attr.value.attrValueKind === AttributeValueKind.Slot) {
           this._handleJsExpression(attr.value.script, context);
         } else if (

@@ -54,7 +54,7 @@ const CONJ_OP_MAP = {
 };
 
 export const print = (path: FastPath, options: Object, print): Doc => {
-  const expr: Expression = path.getValue();
+  const expr = path.getValue();
   if (isStyleObject(expr)) {
     if (isRule(expr)) {
       switch (expr.ruleKind) {

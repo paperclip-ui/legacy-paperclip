@@ -50,7 +50,7 @@ describe(__filename + "#", () => {
 
     engine.open("/entry.pc");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><div>Hello world </div></div>`
+      `<div></div><div><style></style></div><div><div> Hello world </div></div>`
     );
     engine.updateVirtualFileContent("/entry.pc", "span man");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(

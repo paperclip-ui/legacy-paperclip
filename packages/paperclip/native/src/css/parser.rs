@@ -108,7 +108,8 @@ fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Option<&'a [
     }
   }
   Ok(Some(
-    &context.tokenizer.source[start..std::cmp::min(context.tokenizer.pos, context.tokenizer.source.len() - 1)],
+    &context.tokenizer.source
+      [start..std::cmp::min(context.tokenizer.pos, context.tokenizer.source.len() - 1)],
   ))
 }
 

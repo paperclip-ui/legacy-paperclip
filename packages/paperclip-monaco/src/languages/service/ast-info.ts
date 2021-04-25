@@ -57,14 +57,14 @@ const handleStyle = (style: StyleElement, info: ASTInfo) => {
 
 const handleRules = (rules: Rule[], info: ASTInfo) => {
   for (const rule of rules) {
-    if (rule.kind === RuleKind.Style) {
+    if (rule.ruleKind === RuleKind.Style) {
       handleStyleRule(rule, info);
-    } else if (rule.kind === RuleKind.Mixin) {
+    } else if (rule.ruleKind === RuleKind.Mixin) {
       handleDeclarations(rule.declarations, info);
-    } else if (rule.kind === RuleKind.Media) {
+    } else if (rule.ruleKind === RuleKind.Media) {
       handleRules(rule.rules, info);
       handleDeclarations(rule.declarations, info);
-    } else if (rule.kind === RuleKind.Keyframes) {
+    } else if (rule.ruleKind === RuleKind.Keyframes) {
       // keyframe doesn't have type so need to do this
       rule.rules.forEach(rule => handleDeclarations(rule.declarations, info));
     }

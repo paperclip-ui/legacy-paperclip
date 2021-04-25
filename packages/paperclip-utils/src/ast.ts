@@ -18,7 +18,6 @@ import {
   PREVIEW_ATTR_NAME
 } from "./constants";
 import { memoize } from "./memo";
-import { VirtualElement, VirtualFragment } from "./virt";
 
 export enum NodeKind {
   Fragment = "Fragment",
