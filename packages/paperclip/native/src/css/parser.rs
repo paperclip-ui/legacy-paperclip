@@ -92,6 +92,9 @@ fn parse_rules_and_declarations<'a, 'b>(
 fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Option<&'a [u8]>, ParseError> {
   let start = context.tokenizer.pos;
 
+  if context.ended()? {
+    return Ok(None);
+  }
 
   while !context.ended()? {
     let tok = context.tokenizer.peek(1).unwrap();
@@ -104,7 +107,9 @@ fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Option<&'a [
       }
     }
   }
-  Ok(Some(&context.tokenizer.source[start..context.tokenizer.pos]))
+  Ok(Some(
+    &context.tokenizer.source[start..std::cmp::min(context.tokenizer.pos, context.tokenizer.source.len() - 1)],
+  ))
 }
 
 fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
@@ -972,7 +977,6 @@ fn parse_key_value_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<Declaration, ParseError> {
-
   let start = context.tokenizer.utf16_pos;
   if let Token::Keyword(keyword) = context.tokenizer.next()? {
     let name = keyword.to_string();

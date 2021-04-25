@@ -533,11 +533,12 @@ describe(__filename + "#", () => {
       }
     </style>`
     };
+
     const engine = await createMockEngine(graph);
     await engine.open("/entry.pc");
     const ast = (await engine.getLoadedAst("/entry.pc")) as any;
 
-    expect(ast.children[0].sheet.rules[3].location).to.eql({
+    expect(ast.children[0].sheet.rules[1].location).to.eql({
       start: 88,
       end: 111
     });
