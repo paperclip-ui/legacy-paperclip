@@ -289,7 +289,7 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         return groupConcat(buffer);
       }
       case NodeKind.Fragment: {
-        return join(hardline, path.map(print, "children"));
+        return join(line, path.map(print, "children"));
       }
       case NodeKind.Element: {
         let buffer: Doc[] = [];
@@ -326,7 +326,7 @@ export const print = (path: FastPath, options: Object, print): Doc => {
           doc = concat([doc, breakParent]);
         }
 
-        return doc;
+        return concat([...cleanLines(expr.raws.before), group(doc)]);
       }
       case NodeKind.StyleElement: {
         const buffer: Doc[] = ["<style>"];
@@ -340,7 +340,10 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         return groupConcat([cleanWhitespace(expr.value)]);
       }
       case NodeKind.Slot: {
-        return groupConcat(["{", path.call(print, "script"), "}"]);
+        return concat([
+          ...cleanLines(expr.raws.before),
+          groupConcat(["{", path.call(print, "script"), "}"])
+        ]);
       }
     }
   } else if (isAttribute(expr)) {
@@ -489,6 +492,14 @@ export const printStyleBody = print => (path: FastPath): Doc => {
   buffer.push(softline, "}");
 
   return groupConcat(buffer);
+};
+
+const cleanLines = (ws: string) => {
+  return Array.from({ length: Math.max(countNewLines(ws) - 1, 0) }).map(
+    line => {
+      return hardline;
+    }
+  );
 };
 
 const countNewLines = (ws: string) => {

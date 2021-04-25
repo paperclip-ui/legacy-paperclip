@@ -140,7 +140,6 @@ fn parse_slot<'a>(
   raw_before: Option<&'a [u8]>,
   index: usize,
 ) -> Result<pc_ast::Node, ParseError> {
-  let raw_before = tokenizer.eat_whitespace();
   let start = tokenizer.utf16_pos;
   let omit_from_compilation = parse_omit_from_compilation(tokenizer)?;
   tokenizer.next_expect(Token::CurlyOpen)?;

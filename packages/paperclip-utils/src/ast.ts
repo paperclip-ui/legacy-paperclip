@@ -212,6 +212,7 @@ export type Fragment = {
 export type Slot = {
   script: JsExpression;
   location: SourceLocation;
+  raws: BasicRaws;
 } & BaseNode<NodeKind.Slot>;
 
 export type Node =
