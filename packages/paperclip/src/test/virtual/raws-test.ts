@@ -9,12 +9,9 @@ import {
   StyleRule,
   isStyleSelector,
   NodeKind,
-  Sheet,
   RuleKind,
   SelectorKind,
-  StyleDeclarationKind,
-  ConditionRule,
-  AnnotationPropertyKind
+  StyleDeclarationKind
 } from "paperclip-utils";
 import { createMockEngine } from "../utils";
 
