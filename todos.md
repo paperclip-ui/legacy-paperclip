@@ -1,10 +1,3 @@
-PRETTIER:
-
-- media queries
-- font family
-
-- declarations: @media, @include, @content
-- maintain whitespace
 
 
 IMMEDIATE:
@@ -41,6 +34,9 @@ OTHER:
     - CSS - find what's used and not (will require CSS engine, needed for UI builder, along with CSS shaking)
     - HTML - a11y features
     - error when component isn't previewed in device size
+  - CSS tree shaking
+    - test how accurate CSS engine in is
+  
   - UI tooling (linter & prettier core will help with this)
     - simple style inspector for devs
 

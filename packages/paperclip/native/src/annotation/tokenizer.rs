@@ -9,6 +9,7 @@ pub enum Token<'a> {
   Word(&'a str),
 
   Byte(u8),
+  Escape(u8),
 
   Cluster(&'a [u8]),
 }
@@ -94,6 +95,12 @@ impl<'a> Tokenizer<'a> {
     let c = self.curr_byte()?;
 
     match c {
+      b'\\' => {
+        self.forward(1); // eat slash
+        let c = self.curr_byte()?;
+        self.forward(1); // eat escaped
+        Ok(Token::Escape(c))
+      }
       b'@' => {
         self.forward(1);
         Ok(Token::At)

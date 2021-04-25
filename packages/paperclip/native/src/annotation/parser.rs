@@ -31,8 +31,11 @@ fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annota
   let start = context.tokenizer.utf16_pos;
   let mut properties: Vec<ast::AnnotationProperty> = vec![];
 
+  let mut raw_before = context.tokenizer.eat_whitespace();
+
   while !context.ended()? {
-    properties.push(parse_annotation_property(context)?);
+    properties.push(parse_annotation_property(context, raw_before)?);
+    raw_before = None;
   }
 
   Ok(ast::Annotation {
@@ -43,13 +46,13 @@ fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annota
 
 fn parse_annotation_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>
 ) -> Result<ast::AnnotationProperty, ParseError> {
-  let raw_before = context.tokenizer.eat_whitespace();
   match context.tokenizer.peek(1)? {
-    Token::Word(_) | Token::Byte(_) | Token::Cluster(_) => {
+    Token::At => parse_declaration_property(context, raw_before),
+    _ => {
       parse_text_annotation(context, raw_before)
     }
-    Token::At => parse_declaration_property(context, raw_before),
   }
 }
 
@@ -62,11 +65,9 @@ fn parse_text_annotation<'a, 'b>(
   let start = context.tokenizer.get_pos();
   let start_u8 = context.tokenizer.get_pos().u8_pos;
 
-  while !context.ended()? {
+  // Take everything except @ sign
+  while !context.ended()? && context.tokenizer.peek(1)? != Token::At {
     let token = context.tokenizer.next()?;
-    if token == Token::Byte(b'\n') {
-      break;
-    }
   }
   let end = context.tokenizer.get_pos();
   let end_u8 = context.tokenizer.get_pos().u8_pos;
@@ -94,9 +95,7 @@ fn parse_declaration_property<'a, 'b>(
 
   let mut js_tokenizer =
     JSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
-  let value = parse_js_with_tokenizer(&mut js_tokenizer, "".to_string(), |token| {
-    token != JSToken::CurlyClose
-  })?;
+  let value = parse_js_with_tokenizer(&mut js_tokenizer, "".to_string())?;
 
   context.tokenizer.set_pos(&js_tokenizer.get_pos());
 

@@ -1,6 +1,11 @@
 import { createMockEngine } from "../utils";
 import { expect } from "chai";
-import { computeVirtJSObject } from "paperclip-utils";
+import {
+  Comment,
+  computeVirtJSObject,
+  DependencyNodeContent,
+  Fragment
+} from "paperclip-utils";
 import { EngineMode } from "../../core";
 
 describe(__filename + "#", () => {
@@ -221,5 +226,67 @@ describe(__filename + "#", () => {
     const result = engine.open("/entry.pc");
 
     expect((result as any).preview.children.length).to.eql(1);
+  });
+
+  it("Can escape @ signs", async () => {
+    const graph = {
+      "/entry.pc": `
+
+        <!--\\@frame-->
+        <span component as="Test">
+          Hello
+        </span>
+        
+      `
+    };
+
+    const engine = await createMockEngine(
+      graph,
+      null,
+      {},
+      EngineMode.MultiFrame
+    );
+    const result = engine.open("/entry.pc");
+    const ast = engine.getLoadedAst("/entry.pc") as Fragment;
+    expect((ast.children[0] as Comment).annotation.properties).to.eql([
+      {
+        kind: "Text",
+        raws: { before: "", after: "" },
+        value: "\\@frame",
+        location: { start: 14, end: 21 }
+      }
+    ]);
+  });
+
+  it("Can comment out HTML comments", async () => {
+    const graph = {
+      "/entry.pc": `
+
+        <!--span component as="Test">
+        Hello
+      </span-->
+        <span component as="Test">
+          Hello
+        </span>
+        
+      `
+    };
+
+    const engine = await createMockEngine(
+      graph,
+      null,
+      {},
+      EngineMode.MultiFrame
+    );
+    const result = engine.open("/entry.pc");
+    const ast = engine.getLoadedAst("/entry.pc") as Fragment;
+    expect((ast.children[0] as Comment).annotation.properties).to.eql([
+      {
+        kind: "Text",
+        raws: { before: "", after: "" },
+        value: 'span component as="Test">\n        Hello\n      </span',
+        location: { start: 14, end: 66 }
+      }
+    ]);
   });
 });

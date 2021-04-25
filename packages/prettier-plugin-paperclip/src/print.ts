@@ -27,7 +27,7 @@ import {
   computeVirtJSValue,
   JsExpression
 } from "paperclip";
-import { Doc, FastPath, Printer, doc } from "prettier";
+import { Doc, FastPath, Printer, doc, Options } from "prettier";
 import { isBlockTagName } from "./utils";
 
 const {
@@ -53,8 +53,11 @@ const CONJ_OP_MAP = {
   [JsConjunctionOperatorKind.Or]: "||"
 };
 
-export const print = (path: FastPath, options: Object, print): Doc => {
+export const print = (path: FastPath, options: Options, print): Doc => {
   const expr = path.getValue();
+
+  const { tabWidth, useTabs } = options;
+
   if (isStyleObject(expr)) {
     if (isRule(expr)) {
       switch (expr.ruleKind) {
@@ -258,13 +261,17 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         for (const property of expr.annotation.properties) {
           switch (property.kind) {
             case AnnotationPropertyKind.Text: {
-              annotations.push(property.value.trim());
+              annotations.push(
+                fixIndentation(property.raws.before, tabWidth, useTabs),
+                fixIndentation(property.value, tabWidth, useTabs)
+              );
               break;
             }
             case AnnotationPropertyKind.Declaration: {
               annotations.push(
                 group(
                   concat([
+                    fixIndentation(property.raws.before, tabWidth, useTabs),
                     `@`,
                     property.name,
                     " ",
@@ -281,12 +288,10 @@ export const print = (path: FastPath, options: Object, print): Doc => {
           }
         }
 
-        buffer.push(
-          indent(concat([hardline, group(join(hardline, annotations))]))
-        );
+        buffer.push(group(join("", annotations)));
 
-        buffer.push(softline, "-->");
-        return concat([...cleanLines(expr.raws.before), groupConcat(buffer)]);
+        buffer.push("-->");
+        return concat([groupConcat(buffer)]);
       }
       case NodeKind.Fragment: {
         return join(line, path.map(print, "children"));
@@ -502,12 +507,57 @@ const cleanLines = (ws: string) => {
   );
 };
 
+const startWhitespace = (buffer: string) =>
+  (buffer.match(/^[\r\n\t\s]+/) || [""])[0];
+const endWhitespace = (buffer: string) =>
+  (buffer.match(/[\r\n\t\s]+$/) || [""])[0];
+
+const splitLines = (buffer: string): Doc[] => {
+  return joinArray(
+    buffer
+      .trim()
+      .split("\n")
+      .map(line => {
+        return line.trim();
+      }),
+    hardline
+  );
+};
+
+const joinArray = <TValue, TPart>(
+  array: TValue[],
+  joint: TPart
+): Array<TValue | TPart> => {
+  return array.reduce((buffer, part) => {
+    if (buffer.length === 0) {
+      return [part];
+    }
+    return [...buffer, joint, part];
+  }, []);
+};
+
 const countNewLines = (ws: string) => {
   return (ws.match(/[\n\r]/g) || []).length;
 };
 
 const cleanWhitespace = (buffer: string) => {
   return buffer.trim().replace(/[\n\r\t\s]+/g, " ");
+};
+
+const fixIndentation = (buffer: string, tabWidth: number, useTabs: boolean) => {
+  const tabChar = useTabs ? "\t" : " ";
+  const tabs = tabChar.repeat(tabWidth);
+  return concat(
+    joinArray(
+      buffer.split("\n").map((line, i) => {
+        if (i === 0) {
+          return line;
+        }
+        return line.replace(/^[\s\t]/g, tabs);
+      }),
+      "\n"
+    )
+  );
 };
 
 const computeJSExpr = (expr: JsExpression) => {

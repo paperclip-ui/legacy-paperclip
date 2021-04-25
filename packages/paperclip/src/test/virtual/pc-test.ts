@@ -1678,9 +1678,9 @@ describe(__filename + "#", () => {
       {1 && <div>C</div>}
       {false && <div>D</div>}
       {false && <div>D</div> || <div>E</div>}
-      {false && <div>D</div> || false || 99 }
+      {false && <div>D</div> || false || 99 \n\n}
       {false && <div>D</div> || false || 0 && "blah" }
-      {false || <div>F</div>}
+      {false || <div>F</div> }
       `
     };
 

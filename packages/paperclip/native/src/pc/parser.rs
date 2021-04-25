@@ -164,11 +164,11 @@ fn parse_slot_script<'a>(
     "".to_string()
   };
 
-  let stmt = parse_js_with_tokenizer(&mut js_tokenizer, id_seed, |token| {
-    token != JSToken::CurlyClose
-  })
+  let stmt = parse_js_with_tokenizer(&mut js_tokenizer, id_seed)
   .and_then(|script| {
     tokenizer.set_pos(&js_tokenizer.get_pos());
+    tokenizer.eat_whitespace();
+    
     tokenizer.next_expect(Token::CurlyClose)?;
     Ok(script)
   })

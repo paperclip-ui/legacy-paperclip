@@ -23,7 +23,8 @@ describe(__dirname + "#", () => {
       const output = format(input, {
         parser: "paperclip",
         plugins: [require.resolve("../../lib")],
-        tabWidth: 2
+        tabWidth: 4,
+        useTabs: false
       } as any);
 
       console.log("------------------------------");

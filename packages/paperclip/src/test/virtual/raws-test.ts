@@ -11,7 +11,8 @@ import {
   NodeKind,
   RuleKind,
   SelectorKind,
-  StyleDeclarationKind
+  StyleDeclarationKind,
+  AnnotationPropertyKind
 } from "paperclip-utils";
 import { createMockEngine } from "../utils";
 
@@ -36,7 +37,7 @@ describe(__filename + "#", () => {
     `
       <div></div>
 
-      <!-- -->
+      <!---->
       
       <style>
       </style>
@@ -108,6 +109,14 @@ describe(__filename + "#", () => {
           }
         }
       </style>
+    `,
+    `
+    <!--------
+      a
+
+      
+    ---------->
+    <div></div>
     `
   ].forEach(source => {
     it(`Maintains the whitepsace for ${source.replace(
@@ -156,7 +165,19 @@ const stringifyAST = ast => {
       }
       case NodeKind.Comment: {
         const buffer = [ast.raws.before, `<!--`];
-        buffer.push(` -->`, ast.raws.after);
+        for (const prop of ast.annotation.properties) {
+          switch (prop.kind) {
+            case AnnotationPropertyKind.Declaration: {
+              buffer.push(prop.raws.before);
+              break;
+            }
+            case AnnotationPropertyKind.Text: {
+              buffer.push(prop.raws.before, prop.value, prop.raws.after);
+              break;
+            }
+          }
+        }
+        buffer.push(`-->`, ast.raws.after);
         return buffer.join("");
       }
       case NodeKind.StyleElement: {
