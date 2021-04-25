@@ -74,7 +74,7 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         case RuleKind.Media: {
           const buffer = [
             "@media ",
-            expr.conditionText,
+            expr.conditionText.trim(),
             " ",
             printStyleBody(print)(path)
           ];
@@ -150,7 +150,7 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         case StyleDeclarationKind.Media: {
           return groupConcat([
             "@media ",
-            expr.conditionText,
+            expr.conditionText.trim(),
             " ",
             printStyleBody(print)(path)
           ]);

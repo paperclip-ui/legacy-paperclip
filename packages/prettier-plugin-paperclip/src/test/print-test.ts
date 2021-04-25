@@ -16,7 +16,7 @@ const fixtures = fs
 
 describe(__dirname + "#", () => {
   for (const fixture of fixtures) {
-    xit(`properly formats ${path.basename(fixture)}`, () => {
+    it(`properly formats ${path.basename(fixture)}`, () => {
       const out = fixture.replace("-in.pc", "-out.pc");
       const outExpected = fs.readFileSync(out, "utf-8");
       const input = fs.readFileSync(fixture, "utf-8");
@@ -26,7 +26,7 @@ describe(__dirname + "#", () => {
         tabWidth: 2
       } as any);
 
-      console.log(output);
+      // console.log("------------------------------");
 
       expect(output).to.eql(outExpected);
     });

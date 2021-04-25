@@ -48,7 +48,7 @@
     }
   }
   div {
-    @include a.b.c.d {
+    @include abba {
       background: blue;
       a {
         color: orange;

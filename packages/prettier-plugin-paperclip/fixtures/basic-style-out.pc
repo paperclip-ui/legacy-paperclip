@@ -36,7 +36,7 @@
   @font-face {
     family: Hevetica;
   }
-  @media screen and (max-width: 100px)   {
+  @media screen and (max-width: 100px) {
     div {
       color: red;
     }
@@ -48,13 +48,13 @@
     }
   }
   div {
-    @include a.b.c.d {
+    @include abba {
       background: blue;
       a {
         color: orange;
       }
     }
-    @media   screen and (max-width: 100px)   {
+    @media screen and (max-width: 100px) {
       color: orange;
       span {
         color: orange;
