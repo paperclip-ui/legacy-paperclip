@@ -286,7 +286,7 @@ export const print = (path: FastPath, options: Object, print): Doc => {
         );
 
         buffer.push(softline, "-->");
-        return groupConcat(buffer);
+        return concat([...cleanLines(expr.raws.before), groupConcat(buffer)]);
       }
       case NodeKind.Fragment: {
         return join(line, path.map(print, "children"));
