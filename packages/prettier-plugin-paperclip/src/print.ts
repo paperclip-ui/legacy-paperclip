@@ -261,17 +261,14 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         for (const property of expr.annotation.properties) {
           switch (property.kind) {
             case AnnotationPropertyKind.Text: {
-              annotations.push(
-                fixIndentation(property.raws.before, tabWidth, useTabs),
-                fixIndentation(property.value, tabWidth, useTabs)
-              );
+              annotations.push(property.raws.before, property.value);
               break;
             }
             case AnnotationPropertyKind.Declaration: {
               annotations.push(
                 group(
                   concat([
-                    fixIndentation(property.raws.before, tabWidth, useTabs),
+                    property.raws.before,
                     `@`,
                     property.name,
                     " ",
@@ -291,7 +288,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         buffer.push(group(join("", annotations)));
 
         buffer.push("-->");
-        return concat([groupConcat(buffer)]);
+        return indent(groupConcat(buffer));
       }
       case NodeKind.Fragment: {
         return join(line, path.map(print, "children"));
@@ -553,7 +550,7 @@ const fixIndentation = (buffer: string, tabWidth: number, useTabs: boolean) => {
         if (i === 0) {
           return line;
         }
-        return line.replace(/^[\s\t]/g, tabs);
+        return indent(line);
       }),
       "\n"
     )

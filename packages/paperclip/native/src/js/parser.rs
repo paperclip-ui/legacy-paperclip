@@ -17,7 +17,7 @@ pub fn _parse<'a>(source: &'a str) -> Result<ast::Expression, ParseError> {
 
 pub fn parse_with_tokenizer<'a>(
   tokenizer: &mut Tokenizer<'a>,
-  id_seed: String
+  id_seed: String,
 ) -> Result<ast::Expression, ParseError> {
   let mut context = Context { tokenizer, id_seed };
   parse_top(&mut context)
@@ -41,7 +41,6 @@ fn parse_conjunction<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expre
     Token::LogicalOr => Some(ast::ConjunctionOperatorKind::Or),
     _ => None,
   };
-
 
   if let Some(operator) = operator_option {
     context.tokenizer.eat_whitespace();

@@ -165,18 +165,18 @@ fn parse_slot_script<'a>(
   };
 
   let stmt = parse_js_with_tokenizer(&mut js_tokenizer, id_seed)
-  .and_then(|script| {
-    tokenizer.set_pos(&js_tokenizer.get_pos());
-    tokenizer.eat_whitespace();
-    
-    tokenizer.next_expect(Token::CurlyClose)?;
-    Ok(script)
-  })
-  .or(Err(ParseError::unterminated(
-    "Unterminated slot.".to_string(),
-    start,
-    tokenizer.utf16_pos,
-  )));
+    .and_then(|script| {
+      tokenizer.set_pos(&js_tokenizer.get_pos());
+      tokenizer.eat_whitespace();
+
+      tokenizer.next_expect(Token::CurlyClose)?;
+      Ok(script)
+    })
+    .or(Err(ParseError::unterminated(
+      "Unterminated slot.".to_string(),
+      start,
+      tokenizer.utf16_pos,
+    )));
 
   stmt
 }

@@ -46,13 +46,11 @@ fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annota
 
 fn parse_annotation_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
-  raw_before: Option<&'a [u8]>
+  raw_before: Option<&'a [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
   match context.tokenizer.peek(1)? {
     Token::At => parse_declaration_property(context, raw_before),
-    _ => {
-      parse_text_annotation(context, raw_before)
-    }
+    _ => parse_text_annotation(context, raw_before),
   }
 }
 
