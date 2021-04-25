@@ -536,7 +536,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     await engine.open("/entry.pc");
     const ast = (await engine.getLoadedAst("/entry.pc")) as any;
-    console.log(JSON.stringify(ast, null, 2));
+
     expect(ast.children[0].sheet.rules[3].location).to.eql({
       start: 88,
       end: 111
@@ -1548,7 +1548,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._pub-8f1a5142_test { color:red; }</style><div class="_pub-8f1a5142_test test" data-pc-80f4925f data-pc-pub-80f4925f>Hello world </div>`
+      `<style>[class]._pub-8f1a5142_test { color:red; }</style><div class="_pub-8f1a5142_test test" data-pc-80f4925f data-pc-pub-80f4925f> Hello world </div>`
     );
   });
 

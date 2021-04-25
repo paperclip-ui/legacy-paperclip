@@ -143,9 +143,9 @@ fn parse_style_rule2<'a, 'b>(
   let raw_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
   let selector = parse_selector(context, is_child_without_amp_prefix)?;
-  let (declarations, children) = parse_declaration_body(context)?;
+  let (declarations, children, raw_after) = parse_declaration_body(context)?;
   Ok(StyleRule {
-    raws: BasicRaws::new(raw_before, None),
+    raws: BasicRaws::new(raw_before, raw_after),
     selector,
     declarations,
     children,
@@ -155,11 +155,11 @@ fn parse_style_rule2<'a, 'b>(
 
 fn parse_declaration_body<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<StyleRule>, Option<&'a [u8]>), ParseError> {
   eat_superfluous(context)?;
   let block_start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
-  let declarations = parse_declarations_and_children(context)?;
+  let (declarations, rules) = parse_declarations_and_children(context)?;
 
   eat_superfluous(context)?;
   context
@@ -171,8 +171,9 @@ fn parse_declaration_body<'a, 'b>(
       context.tokenizer.utf16_pos,
     )))?;
 
-  eat_superfluous(context)?;
-  Ok((declarations))
+  let raw_after = context.tokenizer.eat_whitespace();
+
+  Ok((declarations, rules, raw_after))
 }
 
 fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
@@ -250,7 +251,7 @@ fn parse_condition_rule<'a, 'b>(
   })?
   .to_string();
 
-  let (declarations, rules) = parse_declaration_body(context)?;
+  let (declarations, rules, raw_after) = parse_declaration_body(context)?;
 
   Ok(ConditionRule {
     name,
@@ -274,7 +275,7 @@ fn parse_mixin_rule<'a, 'b>(
   };
 
   eat_superfluous(context)?;
-  let (declarations, rules) = parse_declaration_body(context)?;
+  let (declarations, rules, raw_after) = parse_declaration_body(context)?;
   Ok(MixinRule {
     location: Location::new(start, context.tokenizer.utf16_pos),
     name: MixinName {
@@ -288,7 +289,7 @@ fn parse_mixin_rule<'a, 'b>(
 
 fn parse_font_face_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<FontFaceRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
-  let (declarations, _children) = parse_declaration_body(context)?;
+  let (declarations, _children, raw_after) = parse_declaration_body(context)?;
   Ok(FontFaceRule {
     declarations,
     location: Location::new(start, context.tokenizer.utf16_pos),
@@ -336,7 +337,7 @@ fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Keyframe
   })?
   .to_string();
 
-  let (declarations, _children) = parse_declaration_body(context)?;
+  let (declarations, _children, raw_after) = parse_declaration_body(context)?;
 
   Ok(KeyframeRule {
     key,
@@ -896,9 +897,9 @@ fn parse_include<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Include, Parse
 
   eat_superfluous(context);
 
-  let (declarations, rules) = if context.tokenizer.peek(1)? == Token::Semicolon {
+  let (declarations, rules, raw_after) = if context.tokenizer.peek(1)? == Token::Semicolon {
     context.tokenizer.next()?; // eat ;
-    (vec![], vec![])
+    (vec![], vec![], None)
   } else if context.tokenizer.peek(1)? == Token::CurlyOpen {
     parse_declaration_body(context)?
   } else {

@@ -1,8 +1,9 @@
 import { SourceLocation } from "./base-ast";
-import { Expression } from "./ast";
+import { BasicRaws, Expression } from "./ast";
 
 export type Sheet = {
   rules: Rule[];
+  raws: BasicRaws;
   declarations: StyleDeclaration[];
 };
 
@@ -25,6 +26,7 @@ export enum RuleKind {
 
 type BaseRule<TKind extends RuleKind> = {
   ruleKind: TKind;
+  location: SourceLocation;
 };
 
 export enum SelectorKind {
@@ -151,6 +153,7 @@ export enum StyleDeclarationKind {
 
 type BaseStyleDeclaration<TKind extends StyleDeclarationKind> = {
   declarationKind: TKind;
+  location: SourceLocation;
 };
 
 export type KeyValueDeclaration = {
@@ -351,9 +354,12 @@ export const isStyleDeclaration = (
   );
 };
 
-export const isStyleObject = (
-  expression
-): expression is Rule | Selector | Sheet | StyleDeclaration => {
+export const isMaybeStyleSheet = (expression): expression is Sheet =>
+  expression.rules != null &&
+  expression.rules != null &&
+  expression.raws != null;
+
+export const isStyleObject = (expression): expression is StyleExpression => {
   return (
     expression.rules != null ||
     isStyleDeclaration(expression) ||

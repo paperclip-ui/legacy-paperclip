@@ -75,6 +75,11 @@ export type ElementRaws = {
   before: string;
 };
 
+export type BasicRaws = {
+  before: string;
+  after?: string;
+};
+
 export type Element = {
   id: string;
   location: SourceLocation;
@@ -94,6 +99,7 @@ export type Element = {
 export type StyleElement = {
   sheet: Sheet;
   location: SourceLocation;
+  raws: BasicRaws;
 } & BaseNode<NodeKind.StyleElement>;
 
 export enum AttributeKind {

@@ -18,7 +18,7 @@ describe(__filename + "#", () => {
       )
     );
     expect(result.replace(/ data-pc-[^>\s]+/g, "")).to.eql(
-      `<style></style><div>I'm a secret! </div>`
+      `<style></style><div> I'm a secret! </div>`
     );
   });
 
@@ -71,7 +71,7 @@ describe(__filename + "#", () => {
     );
 
     expect(stringifyLoadResult(result).replace(/ data-pc-[^>\s]+/g, "")).to.eql(
-      `<style></style><div>Some Module <div>from test.pc </div></div>`
+      `<style></style><div> Some Module <div> from test.pc </div></div>`
     );
   });
 
@@ -87,7 +87,7 @@ describe(__filename + "#", () => {
     );
 
     expect(stringifyLoadResult(result).replace(/ data-pc-[^>\s]+/g, "")).to.eql(
-      `<style></style><div>Some Module <div>from test.pc </div></div>`
+      `<style></style><div> Some Module <div> from test.pc </div></div>`
     );
   });
 });

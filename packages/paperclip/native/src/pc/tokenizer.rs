@@ -456,6 +456,13 @@ impl<'a> Tokenizer<'a> {
   pub fn is_eof(&mut self) -> bool {
     self.pos >= self.source.len()
   }
+  pub fn peek_eat_whitespace_is_eof(&mut self) -> bool {
+    let start = self.get_pos();
+    self.eat_whitespace();
+    let eof = self.is_eof();
+    self.set_pos(&start);
+    eof
+  }
   pub fn new(source: &'a str) -> Tokenizer {
     Tokenizer {
       source: source.as_bytes(),

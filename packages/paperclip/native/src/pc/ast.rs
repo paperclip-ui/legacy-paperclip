@@ -333,6 +333,7 @@ impl fmt::Display for AttributeValue {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
+  pub raws: ElementRaws,
   pub attributes: Vec<Attribute>,
   pub sheet: css_ast::Sheet,
   pub location: Location,
