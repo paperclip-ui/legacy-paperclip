@@ -46,6 +46,7 @@ export type Annotation = {
 } & BaseNode<NodeKind.Annotation>;
 
 export declare type Comment = {
+  raws: BasicRaws;
   value: string;
   annotation: Annotation;
   location: SourceLocation;
@@ -62,11 +63,13 @@ type BaseAnnotationProperty<TKind extends AnnotationPropertyKind> = {
 
 export type TextAnnotation = {
   value: string;
+  raws: BasicRaws;
 } & BaseAnnotationProperty<AnnotationPropertyKind.Text>;
 
 export type DeclarationAnnotation = {
   name: string;
   value: JsExpression;
+  raws: BasicRaws;
 } & BaseAnnotationProperty<AnnotationPropertyKind.Declaration>;
 
 export type AnnotationProperty = TextAnnotation | DeclarationAnnotation;

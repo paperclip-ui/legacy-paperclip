@@ -4,7 +4,7 @@ use super::ast as pc_ast;
 use super::tokenizer::{Token, Tokenizer};
 use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tokenizer;
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
-use crate::base::ast::Location;
+use crate::base::ast::{Location, BasicRaws};
 use crate::base::parser::{get_buffer, ParseError};
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
@@ -50,11 +50,13 @@ fn parse_fragment<'a>(
 ) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.utf16_pos;
   let mut children: Vec<pc_ast::Node> = vec![];
+  let mut raw_before = tokenizer.eat_whitespace();
 
   while !tokenizer.is_eof() {
     let mut child_path = path.clone();
     child_path.push(children.len().to_string());
-    children.push(parse_node(tokenizer, child_path)?);
+    children.push(parse_include_declaration(tokenizer, child_path, raw_before)?);
+    raw_before = tokenizer.eat_whitespace();
   }
 
   Ok(pc_ast::Node::Fragment(pc_ast::Fragment {
@@ -63,9 +65,10 @@ fn parse_fragment<'a>(
   }))
 }
 
-fn parse_node<'a>(
+fn parse_include_declaration<'a>(
   tokenizer: &mut Tokenizer<'a>,
   path: Vec<String>,
+  raw_before: Option<&'a [u8]>,
 ) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.get_pos();
 
@@ -76,9 +79,9 @@ fn parse_node<'a>(
   })?;
 
   match token {
-    Token::CurlyOpen => parse_slot(tokenizer, &path, 0),
-    Token::LessThan => parse_tag(tokenizer, path),
-    Token::HtmlCommentOpen => parse_annotation(tokenizer),
+    Token::CurlyOpen => parse_slot(tokenizer, &path, raw_before, 0),
+    Token::LessThan => parse_tag(tokenizer, path, raw_before),
+    Token::HtmlCommentOpen => parse_annotation(tokenizer, raw_before),
     Token::TagClose => {
       tokenizer.eat_whitespace();
       let start = tokenizer.utf16_pos;
@@ -110,7 +113,16 @@ fn parse_node<'a>(
         Err(ParseError::unexpected_token(tokenizer.utf16_pos))
       } else {
         Ok(pc_ast::Node::Text(pc_ast::ValueObject {
-          value: value.clone(),
+
+          // keep raws on text to make it easier creating printers
+          raws: BasicRaws::new(None, None),
+
+          // want to include raws with text node to make it easier on rendering
+          value: if let Some(before) = raw_before {
+            format!("{}{}", str::from_utf8(before).unwrap(), value)
+          } else {
+            value.clone()
+          },
           location: Location {
             start: start.u8_pos,
             end: tokenizer.utf16_pos,
@@ -124,6 +136,7 @@ fn parse_node<'a>(
 fn parse_slot<'a>(
   tokenizer: &mut Tokenizer<'a>,
   path: &Vec<String>,
+  raw_before: Option<&'a [u8]>,
   index: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   let raw_before = tokenizer.eat_whitespace();
@@ -133,6 +146,7 @@ fn parse_slot<'a>(
   let script = parse_slot_script(tokenizer, Some((path, index)))?;
   Ok(pc_ast::Node::Slot(pc_ast::Slot {
     omit_from_compilation,
+    raws: BasicRaws::new(raw_before, None),
     script,
     location: Location::new(start, tokenizer.utf16_pos),
   }))
@@ -167,8 +181,7 @@ fn parse_slot_script<'a>(
   stmt
 }
 
-pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Node, ParseError> {
-  let raw_before = tokenizer.eat_whitespace();
+pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>, raw_before: Option<&'a [u8]>) -> Result<pc_ast::Node, ParseError> {
   let start = tokenizer.get_pos();
 
   tokenizer.next()?; // eat HTML comment open
@@ -191,6 +204,7 @@ pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Nod
   tokenizer.next()?; // eat -->
 
   Ok(pc_ast::Node::Comment(pc_ast::Comment {
+    raws: BasicRaws::new(raw_before, None),
     location: Location::new(start.u16_pos, tokenizer.utf16_pos),
     annotation,
   }))
@@ -199,8 +213,8 @@ pub fn parse_annotation<'a>(tokenizer: &mut Tokenizer<'a>) -> Result<pc_ast::Nod
 pub fn parse_tag<'a>(
   tokenizer: &mut Tokenizer<'a>,
   path: Vec<String>,
+  raw_before: Option<&'a [u8]>
 ) -> Result<pc_ast::Node, ParseError> {
-  let raw_before = tokenizer.eat_whitespace();
   let start = tokenizer.utf16_pos;
 
   tokenizer.next_expect(Token::LessThan)?;
@@ -257,12 +271,14 @@ fn parse_next_basic_element_parts<'a>(
     Token::GreaterThan => {
       tokenizer.next()?;
       end = tokenizer.utf16_pos;
-      while !tokenizer.peek_eat_whitespace_is_eof()
+      let mut raw_before = tokenizer.eat_whitespace();
+      while !tokenizer.is_eof()
         && tokenizer.peek_eat_whitespace(1)? != Token::TagClose
       {
         let mut child_path = path.clone();
         child_path.push(children.len().to_string());
-        children.push(parse_node(tokenizer, child_path)?);
+        children.push(parse_include_declaration(tokenizer, child_path, raw_before)?);
+        raw_before = tokenizer.eat_whitespace();
       }
 
       parse_close_tag(&tag_name.as_str(), tokenizer, start, end)?;

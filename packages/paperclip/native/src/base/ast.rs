@@ -7,6 +7,12 @@ pub struct Location {
   pub end: usize,
 }
 
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct BasicRaws {
+  pub before: String,
+  pub after: String,
+}
+
 impl Location {
   pub fn new(start: usize, end: usize) -> Location {
     Location { start, end }

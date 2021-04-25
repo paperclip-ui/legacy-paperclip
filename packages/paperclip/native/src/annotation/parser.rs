@@ -44,15 +44,16 @@ fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annota
 fn parse_annotation_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
-  context.tokenizer.eat_whitespace();
+  let raw_before = context.tokenizer.eat_whitespace();
   match context.tokenizer.peek(1)? {
-    Token::Word(_) | Token::Byte(_) | Token::Cluster(_) => parse_text_annotation(context),
-    Token::At => parse_declaration_property(context),
+    Token::Word(_) | Token::Byte(_) | Token::Cluster(_) => parse_text_annotation(context, raw_before),
+    Token::At => parse_declaration_property(context, raw_before),
   }
 }
 
 fn parse_text_annotation<'a, 'b>(
   context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>
 ) -> Result<ast::AnnotationProperty, ParseError> {
   let start = context.tokenizer.utf16_pos;
 
@@ -71,6 +72,7 @@ fn parse_text_annotation<'a, 'b>(
   let buffer = std::str::from_utf8(&context.tokenizer.source[start_u8..end_u8]).unwrap();
 
   Ok(ast::AnnotationProperty::Text(ast::Text {
+    raws: base_ast::BasicRaws::new(raw_before, None),
     value: buffer.to_string(),
     location: base_ast::Location::new(start.u16_pos, end.u8_pos),
   }))
@@ -78,6 +80,7 @@ fn parse_text_annotation<'a, 'b>(
 
 fn parse_declaration_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>
 ) -> Result<ast::AnnotationProperty, ParseError> {
   let start = context.tokenizer.utf16_pos;
 
@@ -97,6 +100,7 @@ fn parse_declaration_property<'a, 'b>(
 
   Ok(ast::AnnotationProperty::Declaration(ast::Declaration {
     name,
+    raws: base_ast::BasicRaws::new(raw_before, None),
     value,
     location: base_ast::Location::new(start, context.tokenizer.utf16_pos),
   }))

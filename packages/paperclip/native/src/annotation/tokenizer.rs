@@ -20,15 +20,18 @@ pub struct Tokenizer<'a> {
 }
 
 impl<'a> Tokenizer<'a> {
-  pub fn eat_whitespace(&mut self) {
+  pub fn eat_whitespace(&mut self) -> Option<&'a [u8]> {
     if self.is_eof() {
-      return;
+      return None;
     }
     let is_whitepace = |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') };
+    let start = self.pos;
+
     while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
       self.pos += 1;
       self.utf16_pos += 1;
     }
+    Some(&self.source[start..self.pos])
   }
 
   pub fn utf16_pos() {}

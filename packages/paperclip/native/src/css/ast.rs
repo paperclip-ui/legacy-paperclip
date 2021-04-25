@@ -1,4 +1,4 @@
-use crate::base::ast::Location;
+use crate::base::ast::{Location, BasicRaws};
 use serde::Serialize;
 use std::fmt;
 
@@ -56,7 +56,7 @@ pub struct Include {
   pub declarations: Vec<Declaration>,
   pub rules: Vec<StyleRule>,
   pub location: Location,
-  pub raws: BasicRaws
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for Include {
@@ -165,11 +165,6 @@ impl fmt::Display for Comment {
     write!(f, "/*{}*/", self.value)
   }
 }
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct BasicRaws {
-  pub before: String,
-  pub after: String,
-}
 
 impl BasicRaws {
   pub fn new(before: Option<&[u8]>, after: Option<&[u8]>) -> BasicRaws {
@@ -269,7 +264,7 @@ pub struct ConditionRule {
   pub rules: Vec<StyleRule>,
   pub declarations: Vec<Declaration>,
   pub location: Location,
-  pub raws: BasicRaws
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for ConditionRule {
@@ -319,7 +314,7 @@ pub struct KeyframesRule {
   pub name: String,
   pub rules: Vec<KeyframeRule>,
   pub location: Location,
-  pub raws: BasicRaws
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for KeyframesRule {

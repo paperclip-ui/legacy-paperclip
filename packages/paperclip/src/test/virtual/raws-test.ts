@@ -13,7 +13,8 @@ import {
   RuleKind,
   SelectorKind,
   StyleDeclarationKind,
-  ConditionRule
+  ConditionRule,
+  AnnotationPropertyKind
 } from "paperclip-utils";
 import { createMockEngine } from "../utils";
 
@@ -21,6 +22,7 @@ describe(__filename + "#", () => {
   [
     `
       <div></div>
+      <span></span>
     `,
     `
       <div>
@@ -37,6 +39,8 @@ describe(__filename + "#", () => {
     `
       <div></div>
 
+      <!-- -->
+      
       <style>
       </style>
 
@@ -116,7 +120,9 @@ describe(__filename + "#", () => {
 
       const output = stringifyAST(ast);
 
-      expect(output).to.eql(source);
+      // ends may be chopped off (because of text nodes), so
+      // only test inner conten
+      expect(output.trim()).to.eql(source.trim());
     });
   });
 });
@@ -144,6 +150,11 @@ const stringifyAST = ast => {
       case NodeKind.Text: {
         return ast.value;
       }
+      case NodeKind.Comment: {
+        const buffer = [ast.raws.before, `<!--`];
+        buffer.push(` -->`, ast.raws.after);
+        return buffer.join("");
+      }
       case NodeKind.StyleElement: {
         const buffer = [ast.raws?.before];
 
@@ -153,6 +164,9 @@ const stringifyAST = ast => {
 
         buffer.push(ast.raws?.after || "");
         return buffer.join("");
+      }
+      case NodeKind.Slot: {
+        return "";
       }
     }
   } else if (isStyleObject(ast)) {

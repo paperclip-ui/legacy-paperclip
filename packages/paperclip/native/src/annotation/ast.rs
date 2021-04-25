@@ -22,11 +22,13 @@ pub enum AnnotationProperty {
 pub struct Declaration {
   pub name: String,
   pub value: js_ast::Expression,
+  pub raws: base_ast::BasicRaws,
   pub location: base_ast::Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
+  pub raws: base_ast::BasicRaws,
   pub value: String,
   pub location: base_ast::Location,
 }
