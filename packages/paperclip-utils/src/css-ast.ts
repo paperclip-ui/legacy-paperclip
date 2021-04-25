@@ -1,5 +1,5 @@
-import { SourceLocation } from "./base-ast";
-import { BasicRaws, Expression } from "./ast";
+import { BasicRaws, SourceLocation } from "./base-ast";
+import { Expression } from "./ast";
 
 export type Sheet = {
   rules: Rule[];
@@ -162,6 +162,7 @@ export type KeyValueDeclaration = {
   location: SourceLocation;
   nameLocation: SourceLocation;
   valueLocation: SourceLocation;
+  raws: BasicRaws;
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
 export type MediaDeclaration = ConditionShape &
@@ -169,7 +170,9 @@ export type MediaDeclaration = ConditionShape &
 
 export type Include = BaseInclude &
   BaseStyleDeclaration<StyleDeclarationKind.Include>;
-export type Content = BaseStyleDeclaration<StyleDeclarationKind.Content>;
+export type Content = {
+  raws: BasicRaws;
+} & BaseStyleDeclaration<StyleDeclarationKind.Content>;
 
 export type IncludeReference = {
   parts: IncludePart[];
@@ -192,6 +195,7 @@ export type StyleRule = {
   selector: Selector;
   declarations: StyleDeclaration[];
   children: StyleRule[];
+  raws: BasicRaws;
 } & BaseRule<RuleKind.Style>;
 
 /*
@@ -206,6 +210,7 @@ pub struct KeyframeRule {
 
 export type KeyframeRule = {
   key: string;
+  raws: BasicRaws;
   declarations: StyleDeclaration[];
   location: SourceLocation;
 } & BaseRule<RuleKind.Keyframe>;
@@ -222,6 +227,7 @@ pub struct KeyframesRule {
 export type KeyframesRule = {
   name: string;
   rules: KeyframeRule[];
+  raws: BasicRaws;
   location: SourceLocation;
 } & BaseRule<RuleKind.Keyframes>;
 
@@ -229,6 +235,7 @@ type ConditionShape = {
   name: string;
   conditionText: string;
   rules: ChildRule[];
+  raws: BasicRaws;
   location: SourceLocation;
   declarations: StyleDeclaration[];
 };
@@ -242,6 +249,7 @@ export type CommentRule = {
 } & BaseRule<RuleKind.Comment>;
 type FontFaceRule = {
   declarations: StyleDeclaration[];
+  raws: BasicRaws;
 } & BaseRule<RuleKind.FontFace>;
 type CharsetRule = {} & BaseRule<RuleKind.Charset>;
 
@@ -250,14 +258,17 @@ type BaseInclude = {
   location: SourceLocation;
   declarations: StyleDeclaration[];
   rules: StyleRule[];
+  raws: BasicRaws;
 };
 
 type IncludeRule = BaseInclude & BaseRule<RuleKind.Include>;
 
 export type MixinRule = {
   name: MixinName;
+  raws: BasicRaws;
   declarations: StyleDeclaration[];
   location: SourceLocation;
+  rules: StyleRule[];
 } & BaseRule<RuleKind.Mixin>;
 
 export type MixinName = {

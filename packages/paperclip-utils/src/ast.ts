@@ -7,7 +7,7 @@ import {
   isRule,
   StyleExpression
 } from "./css-ast";
-import { SourceLocation } from "./base-ast";
+import { BasicRaws, SourceLocation } from "./base-ast";
 import * as crc32 from "crc32";
 import { resolveImportFile } from "./resolve";
 import * as path from "path";
@@ -73,11 +73,6 @@ export type AnnotationProperty = TextAnnotation | DeclarationAnnotation;
 
 export type ElementRaws = {
   before: string;
-};
-
-export type BasicRaws = {
-  before: string;
-  after?: string;
 };
 
 export type Element = {

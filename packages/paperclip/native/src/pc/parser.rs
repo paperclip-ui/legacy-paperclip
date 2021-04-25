@@ -257,7 +257,9 @@ fn parse_next_basic_element_parts<'a>(
     Token::GreaterThan => {
       tokenizer.next()?;
       end = tokenizer.utf16_pos;
-      while !tokenizer.peek_eat_whitespace_is_eof() && tokenizer.peek_eat_whitespace(1)? != Token::TagClose {
+      while !tokenizer.peek_eat_whitespace_is_eof()
+        && tokenizer.peek_eat_whitespace(1)? != Token::TagClose
+      {
         let mut child_path = path.clone();
         child_path.push(children.len().to_string());
         children.push(parse_node(tokenizer, child_path)?);

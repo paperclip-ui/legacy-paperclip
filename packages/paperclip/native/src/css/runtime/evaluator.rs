@@ -833,7 +833,7 @@ fn evaluate_style_declarations<'a>(
       ast::Declaration::Include(inc) => {
         include_mixin(inc, &mut style, context, selector_context)?;
       }
-      ast::Declaration::Content => {
+      ast::Declaration::Content(_) => {
         include_content(&mut style, context, selector_context)?;
       }
       ast::Declaration::Media(media) => {
