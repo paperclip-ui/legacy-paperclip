@@ -12,6 +12,8 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
 
 ![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif)
 
+> This took me about 12 minutes to make start to finish.
+
 ## Features
 
 - Templates compile down to plain React code (more targets planned).
@@ -40,12 +42,7 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
 
 ---
 
-
-Here's a demo of Paperclip's designer app in action:
-
-> This took me about 12 minutes to make start to finish.
-
-Here's the UI file for the clip above:
+Here's what Paperclip's syntax looks like (from GIF above):
 
 ```html
 
