@@ -192,7 +192,7 @@ export const LoginPage = () => {
 };
 ```
 
-### Roadmap
+## Roadmap
 
 Here's a peek at what's planned for Paperclip:
 
@@ -204,7 +204,7 @@ Here's a peek at what's planned for Paperclip:
 - Figma export directly to Paperclip UIs
 
 
-# Sponsors
+## Sponsors
 
 ![index](https://user-images.githubusercontent.com/757408/105444620-254d8d80-5ca9-11eb-97c8-9c0fd66408d4.png)
 
