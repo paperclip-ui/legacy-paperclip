@@ -196,12 +196,12 @@ export const LoginPage = () => {
 
 Here's a peek at what's planned for Paperclip:
 
-- Multiple compiler targets so that you can re-use your Paperclip UIs in different languages & frameworks
+- Multiple compiler targets: PHP, Ruby, VueJS, Svelte
 - Extension for Atom, Sublime, and other editors
-- More visual editing tools so that you don't have to write code. Possibly more designer-friendly tooling.
-- A11Y & other linting stools
-- Zeplin integration
-- Figma export directly to Paperclip UIs
+- UI Builder (Paperclip is being designed for this use case)
+- Linting tools: A11Y, unused style selectors, markup validation
+- Figma -> Paperclip sync functionality
+- CSS tree shaking
 
 
 ## Sponsors
