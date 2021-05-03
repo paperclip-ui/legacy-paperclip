@@ -21,7 +21,7 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
 - [Percy](https://percy.io) integration for catching visual regressions.
 - Compatible with existing CSS libraries like Tailwind, Bulma, and Bootstrap.
 
------
+## Resources
 
 - [Playground](http://playground.paperclip.dev) - Play around with Paperclip, share, download React code directly from the browser.
 - Examples
@@ -40,7 +40,7 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
 
 
----
+## Example
 
 Here's what Paperclip's syntax looks like (from GIF above):
 
