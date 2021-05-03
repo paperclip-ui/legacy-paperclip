@@ -183,7 +183,7 @@ export const LoginPage = () => {
   return <form onSubmit={onSubmit}>
     <styles.Modal>
       <styles.AuthModal> 
-        <styles.FormTitle>Welcome back!</auth.FormTitle>
+        <styles.FormTitle>Welcome back!</styles.FormTitle>
         <TextInput type="text" {...usernameInputProps} />
         <TextInput type="password" {...passwordInputProps} />
         <styles.FormFooter>
