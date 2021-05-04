@@ -247,7 +247,10 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
   }
 }
 
-fn parse_export_rule<'a, 'b>(context: &mut Context<'a, 'b>, raw_before: Option<&'a [u8]>) -> Result<ExportRule, ParseError> {
+fn parse_export_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
+) -> Result<ExportRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
 

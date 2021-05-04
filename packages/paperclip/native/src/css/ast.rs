@@ -241,7 +241,7 @@ impl fmt::Display for FontFaceRule {
 pub struct ExportRule {
   pub rules: Vec<Rule>,
   pub location: Location,
-  pub raws: BasicRaws
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for ExportRule {

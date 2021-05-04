@@ -8,7 +8,6 @@
   @frame { visible: false }
 -->
 
-
 <button component as="Button" {className?}>
     <style>
         background: transparent;
