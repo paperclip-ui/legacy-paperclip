@@ -37,11 +37,11 @@
 
 
 <!--
-  @frame { "visible": false }
+  @frame { "\"visible\"": false }
 -->
-<div export
+<div as="default"
+  export
   component
-  as="default"
   className="field"
   className:col1="field--col1"
   className:inline="field--inline"
@@ -52,7 +52,7 @@
 
 
 <!--
-  @frame { "visible": false }
+  @frame { "\"visible\"": false }
 -->
 <div className="$theme.font-default">
   <Select />
