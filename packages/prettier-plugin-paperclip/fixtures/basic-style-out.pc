@@ -9,15 +9,18 @@
   div.a {}
   div a {}
   a + b {}
+
   a, b {}
   #a {}
   :not(a) {}
   ::after {}
   :nth-child(2) {}
+
   a ~ b {}
   :within(a) {}
   &&--a {}
   &.a[a=b] {}
+
   @export {
     div {
       color: red;
@@ -38,27 +41,33 @@
   }
 </style>
 <style>
+
   @font-face {
     family: Hevetica;
   }
+
   @media screen and (max-width: 100px) {
     div {
       color: red;
     }
   }
+
   @mixin abba {
     div {
       color: red;
       @content;
     }
   }
+
   div {
+
     @include abba {
       background: blue;
       a {
         color: orange;
       }
     }
+
     @media screen and (max-width: 100px) {
       color: orange;
       span {
@@ -66,6 +75,7 @@
       }
     }
   }
+
   @keyframes a {
     0% {
       color: orange;

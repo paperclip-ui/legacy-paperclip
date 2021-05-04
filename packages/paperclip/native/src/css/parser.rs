@@ -229,7 +229,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       context,
     )?)),
     "include" => Ok(Rule::Include(parse_include(context, raw_before)?)),
-    "export" => Ok(Rule::Export(parse_export_rule(context)?)),
+    "export" => Ok(Rule::Export(parse_export_rule(context, raw_before)?)),
     "keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context, raw_before)?)),
     "-webkit-keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context, raw_before)?)),
     "font-face" => Ok(Rule::FontFace(parse_font_face_rule(context, raw_before)?)),
@@ -247,24 +247,25 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
   }
 }
 
-fn parse_export_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ExportRule, ParseError> {
+fn parse_export_rule<'a, 'b>(context: &mut Context<'a, 'b>, raw_before: Option<&'a [u8]>) -> Result<ExportRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
 
   let mut rules = vec![];
-  let mut raw_before = context.tokenizer.eat_whitespace();
+  let mut raw_nested_before = context.tokenizer.eat_whitespace();
 
   while context.tokenizer.peek(1)? != Token::CurlyClose {
-    rules.push(parse_rule(context, raw_before)?);
+    rules.push(parse_rule(context, raw_nested_before)?);
 
     // set to none since rules define after prop
-    raw_before = None;
+    raw_nested_before = None;
   }
 
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
   Ok(ExportRule {
     rules,
+    raws: BasicRaws::new(raw_before, None),
     location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }

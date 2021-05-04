@@ -291,6 +291,7 @@ export type MixinName = {
 export type ExportRule = {
   rules: Rule[];
   location: SourceLocation;
+  raws: BasicRaws;
 } & BaseRule<RuleKind.Export>;
 
 export type ConditionRule = MediaRule;

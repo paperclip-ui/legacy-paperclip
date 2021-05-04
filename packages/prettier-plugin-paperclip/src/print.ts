@@ -25,7 +25,9 @@ import {
   KeyframeRule,
   AnnotationPropertyKind,
   computeVirtJSValue,
-  JsExpression
+  JsExpression,
+  StyleExpression,
+  StyleRule
 } from "paperclip";
 import { Doc, FastPath, Printer, doc, Options } from "prettier";
 import { isBlockTagName } from "./utils";
@@ -74,20 +76,28 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           return groupConcat(buffer);
         }
         case RuleKind.FontFace: {
-          const buffer = ["@font-face ", printStyleBody(print)(path)];
+          const buffer = [
+            ...cleanLines(expr.raws.before),
+            "@font-face ",
+            printStyleBody(print)(path),
+            ...cleanLines(expr.raws.after)
+          ];
           return groupConcat(buffer);
         }
         case RuleKind.Media: {
           const buffer = [
+            ...cleanLines(expr.raws.before),
             "@media ",
             expr.conditionText.trim(),
             " ",
-            printStyleBody(print)(path)
+            printStyleBody(print)(path),
+            ...cleanLines(expr.raws.after)
           ];
           return groupConcat(buffer);
         }
         case RuleKind.Export: {
           const buffer = [
+            ...cleanLines(expr.raws.before),
             "@export {",
             indent(
               concat([
@@ -96,17 +106,20 @@ export const print = (path: FastPath, options: Options, print): Doc => {
               ])
             ),
             hardline,
-            "}"
+            "}",
+            ...cleanLines(expr.raws.after)
           ];
 
           return groupConcat(buffer);
         }
         case RuleKind.Mixin: {
           const buffer = [
+            ...cleanLines(expr.raws.before),
             "@mixin ",
             expr.name.value,
             " ",
-            printStyleBody(print)(path)
+            printStyleBody(print)(path),
+            ...cleanLines(expr.raws.after)
           ];
           return groupConcat(buffer);
         }
@@ -141,7 +154,14 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           return groupConcat(buffer);
         }
         case RuleKind.Keyframe: {
-          const buffer = [expr.key, " ", printStyleBody(print)(path)];
+          const buffer = [
+            ,
+            ...cleanLines(expr.raws.before),
+            expr.key,
+            " ",
+            printStyleBody(print)(path),
+            ...cleanLines(expr.raws.after)
+          ];
           return groupConcat(buffer);
         }
       }
@@ -156,6 +176,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         }
         case StyleDeclarationKind.Include: {
           const buffer: Doc[] = [
+            ...cleanLines(expr.raws.before),
             "@include ",
             expr.mixinName.parts.map(part => part.name).join(".")
           ];
@@ -165,6 +186,8 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           } else {
             buffer.push(";");
           }
+
+          buffer.push(...cleanLines(expr.raws.after));
 
           return groupConcat(buffer);
         }
@@ -263,14 +286,11 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           }
           return join("", buffer);
         }
-        default: {
-          console.log("UNKN", expr);
-        }
       }
 
       // maybe sheet
     } else if ((expr as any).rules != null) {
-      const buffer: Doc[] = [];
+      const buffer: Doc[] = [...cleanLines((expr as any).raws?.before || "")];
 
       if ((expr as any).declarations?.length) {
         buffer.push(join(hardline, path.map(print, "declarations")));
@@ -491,8 +511,11 @@ export const printDynamicStringAttribute = print => (
 };
 
 export const printStyleRule = print => (path: FastPath): Doc => {
-  const buffer = [];
+  const expr: StyleRule = path.getValue();
+  const buffer: Doc[] = [];
+  buffer.push(...cleanLines(expr.raws.before));
   buffer.push(path.call(print, "selector"), " ", printStyleBody(print)(path));
+  buffer.push(...cleanLines(expr.raws.after));
   return groupConcat(buffer);
 };
 
