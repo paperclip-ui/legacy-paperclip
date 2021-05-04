@@ -33,7 +33,9 @@ export enum SelectorKind {
   Group = "Group",
   Combo = "Combo",
   Descendent = "Descendent",
+  This = "This",
   Within = "Within",
+  Global = "Global",
   Prefixed = "Prefixed",
   PseudoElement = "PseudoElement",
   PseudoParamElement = "PseudoParamElement",
@@ -58,8 +60,16 @@ type GroupSelector = {
 } & BaseSelector<SelectorKind.Group>;
 
 type WithinSelector = {
-  selectors: Selector;
+  selector: Selector;
 } & BaseSelector<SelectorKind.Within>;
+
+type GlobalSelector = {
+  selector: Selector;
+} & BaseSelector<SelectorKind.Global>;
+
+type SelfSelector = {
+  selector: Selector;
+} & BaseSelector<SelectorKind.This>;
 
 type PrefixedSelector = {
   connector: string;
@@ -129,9 +139,11 @@ type AllSelector = BaseSelector<SelectorKind.AllSelector>;
 export type Selector =
   | GroupSelector
   | WithinSelector
+  | GlobalSelector
   | PrefixedSelector
   | ComboSelector
   | DescendentSelector
+  | SelfSelector
   | PseudoElementSelector
   | PseudoParamElementSelector
   | NotSelector

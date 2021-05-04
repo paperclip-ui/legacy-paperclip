@@ -66,7 +66,10 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         }
         case RuleKind.Comment: {
           const buffer: Doc[] = ["/*"];
-          buffer.push(indent(concat([softline, group(expr.value)])), softline);
+          buffer.push(
+            indent(concat([softline, " ", expr.value.trim(), " "])),
+            softline
+          );
           buffer.push("*/");
           return groupConcat(buffer);
         }
@@ -240,6 +243,16 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         case SelectorKind.Within: {
           return concat([":within(", group(path.call(print, "selector")), ")"]);
         }
+        case SelectorKind.Global: {
+          return concat([":global(", group(path.call(print, "selector")), ")"]);
+        }
+        case SelectorKind.This: {
+          if (expr.selector) {
+            return concat([":self(", group(path.call(print, "selector")), ")"]);
+          } else {
+            return ":self";
+          }
+        }
         case SelectorKind.Prefixed: {
           const buffer = ["&"];
           if (expr.connector.trim().length) {
@@ -249,6 +262,9 @@ export const print = (path: FastPath, options: Options, print): Doc => {
             buffer.push(path.call(print, "postfixSelector"));
           }
           return join("", buffer);
+        }
+        default: {
+          console.log("UNKN", expr);
         }
       }
 

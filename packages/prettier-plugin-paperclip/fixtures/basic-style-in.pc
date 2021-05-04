@@ -18,6 +18,12 @@
   :within(a) {}
   &&--a {}
   &.a[a=b] {}
+
+  @export {
+    div {
+      color: red;
+    }
+  }
 </style>
 <style>
   color: red;

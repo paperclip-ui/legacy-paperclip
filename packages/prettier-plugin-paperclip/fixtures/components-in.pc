@@ -5286,6 +5286,7 @@ steps={<ProgressPills>
   </ProgressPills>} title={title || "Keep titles concise"} description={description || "Be considerate of the viewers time and patience. Use short bursts of information. Don't just point out the feature. Why is it important to the user?"}>
 
 </CoachMark>
+
 <!--
   @frame { visible: false }
 -->
@@ -5293,7 +5294,6 @@ steps={<ProgressPills>
   {children}
   <CoachMarkAnchor {style} card={<CoachMarkPreviewLastStep {title?} {description?} />} />
 </fragment>
-
 
 <!--
   @frame { title: "<CoachMark />", width: 1024, height: 797, x: 887, y: 448 }
