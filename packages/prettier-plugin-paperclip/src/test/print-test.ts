@@ -23,11 +23,10 @@ describe(__dirname + "#", () => {
       const output = format(input, {
         parser: "paperclip",
         plugins: [require.resolve("../../lib")],
-        tabWidth: 4,
+        tabWidth: 2,
         useTabs: false
       } as any);
 
-      console.log("------------------------------");
       console.log(output);
 
       expect(output).to.eql(outExpected);

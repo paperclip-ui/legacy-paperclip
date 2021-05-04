@@ -83,6 +83,21 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           ];
           return groupConcat(buffer);
         }
+        case RuleKind.Export: {
+          const buffer = [
+            "@export {",
+            indent(
+              concat([
+                hardline,
+                group(join(hardline, path.map(print, "rules")))
+              ])
+            ),
+            hardline,
+            "}"
+          ];
+
+          return groupConcat(buffer);
+        }
         case RuleKind.Mixin: {
           const buffer = [
             "@mixin ",
@@ -226,11 +241,14 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           return concat([":within(", group(path.call(print, "selector")), ")"]);
         }
         case SelectorKind.Prefixed: {
-          const buffer = ["&", expr.connector];
+          const buffer = ["&"];
+          if (expr.connector.trim().length) {
+            buffer.push(expr.connector);
+          }
           if (expr.postfixSelector) {
             buffer.push(path.call(print, "postfixSelector"));
           }
-          return concat(buffer);
+          return join("", buffer);
         }
       }
 
@@ -254,30 +272,36 @@ export const print = (path: FastPath, options: Options, print): Doc => {
   } else if (isNode(expr)) {
     switch (expr.nodeKind) {
       case NodeKind.Comment: {
-        const buffer: Doc[] = ["<!--"];
+        const buffer: Doc[] = [...cleanLines(expr.raws.before), "<!--"];
 
         const annotations: Doc[] = [];
-
         for (const property of expr.annotation.properties) {
           switch (property.kind) {
             case AnnotationPropertyKind.Text: {
-              annotations.push(property.raws.before, property.value);
+              annotations.push(
+                fixIndentation(
+                  property.raws.before + property.value,
+                  tabWidth,
+                  useTabs
+                )
+              );
               break;
             }
             case AnnotationPropertyKind.Declaration: {
               annotations.push(
-                group(
-                  concat([
+                fixIndentation(
+                  [
                     property.raws.before,
                     `@`,
                     property.name,
                     " ",
-                    JSON.stringify(
-                      computeJSExpr(property.value),
-                      null,
-                      2
-                    ).replace(/[\n\s]+/g, " ")
-                  ])
+                    JSON.stringify(computeJSExpr(property.value), null, 2)
+                      .replace(/[\n\s]+/g, " ")
+                      .trim()
+                  ].join(""),
+                  tabWidth,
+                  useTabs,
+                  false
                 )
               );
               break;
@@ -285,10 +309,11 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           }
         }
 
-        buffer.push(group(join("", annotations)));
+        buffer.push(join("", annotations));
 
+        // note that we don't want soft line here in case
         buffer.push("-->");
-        return indent(groupConcat(buffer));
+        return groupConcat(buffer);
       }
       case NodeKind.Fragment: {
         return join(line, path.map(print, "children"));
@@ -339,7 +364,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         return groupConcat(buffer);
       }
       case NodeKind.Text: {
-        return groupConcat([cleanWhitespace(expr.value)]);
+        return groupConcat([expr.value.trim()]);
       }
       case NodeKind.Slot: {
         return concat([
@@ -361,6 +386,10 @@ export const print = (path: FastPath, options: Options, print): Doc => {
       case AttributeKind.PropertyBoundAttribute: {
         const buffer: Doc[] = [expr.name, ":", expr.bindingName];
         buffer.push("=", path.call(print, "value"));
+        return groupConcat(buffer);
+      }
+      case AttributeKind.ShorthandAttribute: {
+        const buffer: Doc[] = ["{", path.call(print, "reference"), "}"];
         return groupConcat(buffer);
       }
     }
@@ -447,11 +476,7 @@ export const printDynamicStringAttribute = print => (
 
 export const printStyleRule = print => (path: FastPath): Doc => {
   const buffer = [];
-  buffer.push(
-    group(path.call(print, "selector")),
-    " ",
-    printStyleBody(print)(path)
-  );
+  buffer.push(path.call(print, "selector"), " ", printStyleBody(print)(path));
   return groupConcat(buffer);
 };
 
@@ -496,12 +521,12 @@ export const printStyleBody = print => (path: FastPath): Doc => {
   return groupConcat(buffer);
 };
 
-const cleanLines = (ws: string) => {
-  return Array.from({ length: Math.max(countNewLines(ws) - 1, 0) }).map(
-    line => {
-      return hardline;
-    }
-  );
+const cleanLines = (ws: string, max = Infinity) => {
+  return Array.from({
+    length: Math.max(Math.min(countNewLines(ws) - 1, max), 0)
+  }).map(line => {
+    return hardline;
+  });
 };
 
 const startWhitespace = (buffer: string) =>
@@ -521,6 +546,22 @@ const splitLines = (buffer: string): Doc[] => {
   );
 };
 
+const indentNewLines = (buffer: string): Doc[] => {
+  return buffer
+    .split("\n")
+    .map(line => {
+      return line.trim();
+    })
+    .reduce((lines, line, i) => {
+      if (i === 0) {
+        lines.push(line);
+      } else {
+        lines.push(concat([indent(hardline), line.trim()]));
+      }
+      return lines;
+    }, []);
+};
+
 const joinArray = <TValue, TPart>(
   array: TValue[],
   joint: TPart
@@ -533,6 +574,10 @@ const joinArray = <TValue, TPart>(
   }, []);
 };
 
+const removeLeadingWhitespace = (value: string) => {
+  return value.replace(/^[\s\r\n\t]/g, "");
+};
+
 const countNewLines = (ws: string) => {
   return (ws.match(/[\n\r]/g) || []).length;
 };
@@ -541,18 +586,34 @@ const cleanWhitespace = (buffer: string) => {
   return buffer.trim().replace(/[\n\r\t\s]+/g, " ");
 };
 
-const fixIndentation = (buffer: string, tabWidth: number, useTabs: boolean) => {
+const fixIndentation = (
+  buffer: string,
+  tabWidth: number,
+  useTabs: boolean,
+  requireExistingIndentation = true
+) => {
   const tabChar = useTabs ? "\t" : " ";
   const tabs = tabChar.repeat(tabWidth);
+
+  const lines = buffer.split("\n");
+
+  if (lines.length === 1 && requireExistingIndentation) {
+    return buffer;
+  }
+
   return concat(
     joinArray(
-      buffer.split("\n").map((line, i) => {
-        if (i === 0) {
-          return line;
+      lines.map((ln, i) => {
+        if (
+          ln.trim().length === 0 ||
+          (!/^[\s\t]+/.test(ln) && requireExistingIndentation)
+        ) {
+          return ln.trim();
         }
-        return indent(line);
+
+        return indent(tabs + ln.trim());
       }),
-      "\n"
+      hardline
     )
   );
 };
