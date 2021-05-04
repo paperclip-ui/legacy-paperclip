@@ -1,25 +1,22 @@
 <import src="components/Theme/index.pc" as="theme" />
 <import src="components/Select/index.pc" as="Select" />
-
 <style>
   .field {
     display: inline-flex;
     box-sizing: border-box;
     align-items: center;
-    &--inline {
+    &--inline {}
 
-    }
-    
     label {
       white-space: nowrap;
       margin-right: 8px;
     }
     &--col1 {
+      flex-direction: column;
+      align-content: left;
       label {
         margin-bottom: 4px;
       }
-      flex-direction: column;
-      align-content: left;
       & .input {
         width: 100%;
       }
@@ -35,25 +32,27 @@
   .input {
     width: 100%;
   }
-  
+
 </style>
 
 
 <!--
-  @frame { visible: false }
+  @frame { "visible": false }
 -->
-<div export component as="default" className="field" 
-  className:col1="field--col1" 
-  className:inline="field--inline" 
+<div export
+  component
+  as="default"
+  className="field"
+  className:col1="field--col1"
+  className:inline="field--inline"
   className:noLabel="field--noLabel">
   <label>{label}</label>
-  <div className="input">{children}
-  </div>
+  <div className="input">{children}</div>
 </div>
 
 
 <!--
-  @frame { visible: false }
+  @frame { "visible": false }
 -->
 <div className="$theme.font-default">
   <Select />
