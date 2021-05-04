@@ -10,7 +10,6 @@
 
     }
     
-    
     label {
       white-space: nowrap;
       margin-right: 8px;
@@ -48,8 +47,7 @@
   className:inline="field--inline" 
   className:noLabel="field--noLabel">
   <label>{label}</label>
-  <div className="input">
-    {children}
+  <div className="input">{children}
   </div>
 </div>
 
