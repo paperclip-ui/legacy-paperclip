@@ -9,7 +9,9 @@
   @frame { visible: false }
 -->
 <div export component as="Container" className="$theme.full-wh {className?}">
+
   <style>
+
     position: relative;
     display: flex;
     flex-direction: column;
@@ -18,12 +20,13 @@
   {children}
 </div>
 
-
 <!--
   @frame { visible: false }
 -->
 <div export component as="CanvasContainer" className="$theme.full-wh">
+
   <style>
+
     position: relative;
     overflow: hidden;
     width: 100%;
@@ -37,12 +40,17 @@
   @frame { visible: false, width: 1024, height: 768, x: -719, y: 50 }
 -->
 <Container export component as="Preview" className="$theme.font-default">
+
   {v2 && <ToolbarV2.Preview {showGrid} {showEnvPopup} />}
+
   {!v2 && <Toolbar.Preview gridMode {showEnvPopup} />}
+
   {showGrid && <CanvasContainer>
     <Birdseye.Preview {zoom?} />
   </CanvasContainer>}
+
   {showEmpty && <Birdseye.PreviewEmpty />}
+
   {showCanvas && <Canvas.Preview />}
 </Container>
 
@@ -81,7 +89,6 @@
 -->
 <Preview showGrid v2 zoom={1} />
 
-
 <!--
   @frame { title: "Center V2 / Env", width: 1024, height: 768, x: 1073, y: 1621 }
 -->
@@ -102,4 +109,3 @@
   @frame { title: "Center / Empty", width: 1024, height: 768, x: 2558, y: 736 }
 -->
 <Preview showCanvas v2 />
-

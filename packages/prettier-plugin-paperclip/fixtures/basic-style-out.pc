@@ -85,6 +85,10 @@
       color: red;
     }
   }
+
+  @include a {
+    color: red;
+  }
 </style>
 <div>
   <style>
@@ -92,4 +96,15 @@
       color: red;
     }
   </style>
+  <span>
+    <style>
+      color: red;
+      div {
+        color: black;
+        span {
+          background: blue;
+        }
+      }
+    </style>
+  </span>
 </div>

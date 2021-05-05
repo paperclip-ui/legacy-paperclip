@@ -46,7 +46,7 @@
     family: Hevetica;
   }
 
-  @media screen and (max-width: 100px)  {
+  @media screen and (max-width: 100px) {
     div {
       color: red;
     }
@@ -67,8 +67,8 @@
         color: orange;
       }
     }
-    
-    @media  screen and (max-width: 100px)  {
+
+    @media screen and (max-width: 100px) {
       color: orange;
       span {
         color: orange;
@@ -85,6 +85,10 @@
       color: red;
     }
   }
+
+  @include a {
+    color: red;
+  }
 </style>
 <div>
   <style>
@@ -92,4 +96,15 @@
       color: red;
     }
   </style>
+  <span>
+    <style>
+      color: red;
+      div {
+        color: black;
+        span {
+          background: blue;
+        }
+      }
+    </style>
+  </span>
 </div>

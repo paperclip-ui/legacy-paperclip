@@ -2,11 +2,21 @@
 <import src="components/Theme/index.pc" as="theme" />
 <import src="components/TextInput/filter.pc" as="FilterTextInput" />
 
+
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 329, y: 77 }
 -->
-<div export component as="Cell" className="v2 {className?}" className:warn="warn" className:hover="hover" {onClick?} {onMouseDown?}>
+<div export
+  component
+  as="Cell"
+  className="v2 {className?}"
+  className:warn="warn"
+  className:hover="hover"
+  {onClick?}
+  {onMouseDown?}>
+
   <style>
+
     cursor: pointer;
     display: inline-block;
     --cell-margin: 4px;
@@ -23,28 +33,34 @@
       height: 150px;
     }
 
+
     &:within([data-zoom="4"]) {
       --width-percent: 25%;
       height: 250px;
     }
+
 
     &:within([data-zoom="3"]) {
       --width-percent: 33.33333%;
       height: 300px;
     }
 
+
     &:within([data-zoom="2"]) {
       --width-percent: 50%;
       height: 400px;
     }
 
+
     &:within([data-zoom="1"]) {
       --width-percent: 100%;
       height: 600px;
     }
+
     &:hover, &.hover {
       background: var(--grey-50);
     }
+
   </style>
 
 
@@ -52,10 +68,10 @@
   <div>
 
     <style>
-      /* background: rgb(233, 233, 233); */
+
+
       height: 100%;
       border-radius: 2px;
-      /* border: 2px solid rgb(206, 206, 206); */
       box-sizing: border-box;
       overflow: hidden;
       position: relative;
@@ -64,15 +80,17 @@
         max-height: 100%;
         border-radius: 2px;
       }
+
     </style>
-    <div  title={dir}>
+    <div title={dir}>
+
       <style>
-        /* background: rgb(202, 202, 202); */
+
+
         padding-bottom: 10px;
         color: var(--grey-400);
         display: flex;
         white-space: nowrap;
-        /* position: absolute; */
         top: 0;
         width: 100%;
         box-sizing: border-box;
@@ -82,7 +100,9 @@
         width: 100%;
       </style>
       <div>
+
         <style>
+
 
           overflow: hidden;
           text-overflow: ellipsis;
@@ -90,7 +110,9 @@
         {label}
       </div>
       <div>
+
         <style>
+
           margin-left: 10px;
           opacity: 0.4;
           text-overflow: ellipsis;
@@ -99,13 +121,13 @@
         </style>
         {dir}
       </div>
-      <div>
-        {controls}
-      </div>
+      <div>{controls}</div>
     </div>
 
     <div ref={mountRef}>
+
       <style>
+
         opacity: 1;
         position: relative;
         overflow: hidden;
@@ -114,7 +136,9 @@
 
       <!-- overlay to prevent scroll -->
       <div>
+
         <style>
+
 
           position: absolute;
           top: 0;
@@ -125,9 +149,7 @@
         </style>
       </div>
     </div>
-
   </div>
-  
 </div>
 
 
@@ -135,14 +157,17 @@
   @frame { visible: false, width: 1024, height: 768, x: 100, y: 56 }
 -->
 <i component as="WarningIcon" {className?}>
+
   <style>
+
     --size: 1.2em;
     position: relative;
     top: 2px;
-    @include utils.mask;
     color: rgb(255, 174, 0);
     mask-image: url(./warning.svg);
     box-shadow: 0px 0px 2px 0px black;
+    @include utils.mask {}
+
   </style>
 </i>
 
@@ -151,7 +176,9 @@
   @frame { visible: false }
 -->
 <div export component as="Container">
+
   <style>
+
     display: flex;
     flex-shrink: 0;
     flex-direction: column;
@@ -168,11 +195,10 @@
   @frame { visible: false }
 -->
 <div export component as="Header" className="v2">
-  <style>
-    padding: 12px 14px;
 
-    // account for cell margin
-    /* border-bottom: 2px solid var(--grey-200); */
+  <style>
+
+    padding: 12px 14px;
     background: var(--grey-200);
   </style>
   <!-- filter container -->
@@ -185,14 +211,15 @@
   @frame { visible: false }
 -->
 <div export component as="Cells" data-zoom={zoom}>
+
   <style>
+
     flex: 1;
     height: 100%;
     overflow: scroll;
     min-height: 100px;
     padding: 0px 14px;
     padding-top: 8px;
-
     &:empty:before {
       display: block;
       content: "No frames found";
@@ -203,6 +230,7 @@
       margin-top: 20%;
       opacity: 0.2;
     }
+
   </style>
   {children}
 </div>
@@ -213,32 +241,56 @@
 -->
 <Container export component as="Preview">
 
+
   <!-- header -->
   <Header>
     <FilterTextInput.FilterTextInput />
   </Header>
   <div>
+
     <style>
+
       background: red;
     </style>
   </div>
-  
+
 
   <!-- Cells -->
   <Cells {zoom?}>
-    <Cell label="Topbar" dir="src/components/test" warn><img src="./previews/0116800ba0b4383678bf58b68c18e3ec25bf8f2a0f86e02e9eef21182e0b00c9.jpg" /></Cell>
-    <Cell label="Analaytics" hover dir="src/components/test/another"><img src="./previews/1872b7970e0515d14738fc30b340ed3c9bbe5743fc6897d90d2e4b364e27d578.jpg" /></Cell>
-    <Cell label="LinkAccounts"><img src="./previews/2751624e31a0079e58548e88ace6de6e4e844f67a4bd651a996a0fa1d8f49da9.jpg" /></Cell>
-    <Cell label="ButtonGroup"><img src="./previews/29486a432b90d3cc24a18501358a4cdc73cbe9f875738557dff1680a339660cb.jpg" /></Cell>
-    <Cell label="Modal" warn><img src="./previews/493420fe6b2b28bf69d2413ab1211194ec01254209b7dff42510a6b700d65b3b.jpg" /></Cell>
-    <Cell label="Topbar"><img src="./previews/4ef8588d3e22e320ef7ad28a8c2bbf808d2a8c48dc6a9205071f66229eed4b56.jpg" /></Cell>
-    <Cell label="ResetPasswordPreview" warn><img src="./previews/5527651372db1946b99973f3d60148ed9718bf5c68fea4fcd22392d5e0e33b14.jpg" /></Cell>
-    <Cell label="LoginPage"><img src="./previews/57316dacf231109e3c40c3b422dd119c8e268fc8ee71b6ad8b1e641a632396d5.jpg" /></Cell>
-    <Cell label=""><img src="./previews/5f8d7fa9f7f22c7af7daa3b32ffd8a963f87e5cfc09fe49769eab00363b5250c.jpg" /></Cell>
-    <Cell label="Inputs / Text"><img src="./previews/7d0f27f26875a7061dc3dd61e0129585e70e740c62c7d662cabc40ba5ad0c492.jpg" /></Cell>
-    <Cell label="Inputs / Button"><img src="./previews/85b0943f9426ecaee1187137b94283cd8cd8bc8023a3d2290f2f45ba517f07af.jpg" /></Cell>
+    <Cell label="Topbar" dir="src/components/test" warn>
+      <img src="./previews/0116800ba0b4383678bf58b68c18e3ec25bf8f2a0f86e02e9eef21182e0b00c9.jpg" />
+    </Cell>
+    <Cell label="Analaytics" hover dir="src/components/test/another">
+      <img src="./previews/1872b7970e0515d14738fc30b340ed3c9bbe5743fc6897d90d2e4b364e27d578.jpg" />
+    </Cell>
+    <Cell label="LinkAccounts">
+      <img src="./previews/2751624e31a0079e58548e88ace6de6e4e844f67a4bd651a996a0fa1d8f49da9.jpg" />
+    </Cell>
+    <Cell label="ButtonGroup">
+      <img src="./previews/29486a432b90d3cc24a18501358a4cdc73cbe9f875738557dff1680a339660cb.jpg" />
+    </Cell>
+    <Cell label="Modal" warn>
+      <img src="./previews/493420fe6b2b28bf69d2413ab1211194ec01254209b7dff42510a6b700d65b3b.jpg" />
+    </Cell>
+    <Cell label="Topbar">
+      <img src="./previews/4ef8588d3e22e320ef7ad28a8c2bbf808d2a8c48dc6a9205071f66229eed4b56.jpg" />
+    </Cell>
+    <Cell label="ResetPasswordPreview" warn>
+      <img src="./previews/5527651372db1946b99973f3d60148ed9718bf5c68fea4fcd22392d5e0e33b14.jpg" />
+    </Cell>
+    <Cell label="LoginPage">
+      <img src="./previews/57316dacf231109e3c40c3b422dd119c8e268fc8ee71b6ad8b1e641a632396d5.jpg" />
+    </Cell>
+    <Cell label="">
+      <img src="./previews/5f8d7fa9f7f22c7af7daa3b32ffd8a963f87e5cfc09fe49769eab00363b5250c.jpg" />
+    </Cell>
+    <Cell label="Inputs / Text">
+      <img src="./previews/7d0f27f26875a7061dc3dd61e0129585e70e740c62c7d662cabc40ba5ad0c492.jpg" />
+    </Cell>
+    <Cell label="Inputs / Button">
+      <img src="./previews/85b0943f9426ecaee1187137b94283cd8cd8bc8023a3d2290f2f45ba517f07af.jpg" />
+    </Cell>
   </Cells>
-
 </Container>
 
 <!--
@@ -250,5 +302,3 @@
   </Header>
   <Cells />
 </Container>
-
-

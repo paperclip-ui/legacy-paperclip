@@ -1,55 +1,69 @@
+<div>hello</div>
 
-<div>
-  hello
-</div>
+<div>hello</div>
+<div>hello</div>
 
-<div>
-  hello
-</div>
-<div>
-  hello
-</div>
-
-<div>
+<span>
   a super long text string that exceeds the max width of the file here that should be enough to make it super long
-</div>
+</span>
 
 <div>
-  <span>
-    This <i>should all</i> be <strong>inline</strong>
-  </span>
+  <span>This <i>should all</i> be <strong>inline</strong></span>
   <div>
     This should break
-    <span>
-      <i>shouldn't</i> break <strong>at all</strong>
-    </span>
-    <section>
-      but this should
-    </section>
+    <span><i>shouldn't</i> break <strong>at all</strong></span>
+    <section>but this should</section>
   </div>
 </div>
 
-<div a="b" a="b2">
+<div a="b" a="b2">something</div>
+
+<div a="b"
+  a="b2"
+  a="b3"
+  a="b4"
+  a="b5"
+  a="b6"
+  a="b7"
+  a="b8"
+  a="b9"
+  a="b10"
+  a="b11"
+  a="b12"
+  a="b13">
   something
 </div>
 
-<div a="b" a="b2" a="b3" a="b4" a="b5" a="b6" a="b7" a="b8" a="b9" a="b10" a="b11" a="b12" a="b13">
-  something
-</div>
-
-<div className:a="b">
-</div>
-<div className:a="b >>>a {a?.b.c?}">
-</div>
-<div a={<div>I don't<div>I break</div></div>} b={<div><br /></div>}>
+<div className:a="b" />
+<div className:a="b $a {a?.b.c?}" />
+<div a={<div>
+    I don't
+    <div>I break</div>
+  </div>}
+  b={<div>
+    <br />
+  </div>}>
   <div>
     <div>okay this</div>
   </div>
-  {slot && <div>this is some super long text which should cause a break</div> || <span>Something else</span>}
+  {slot && <div>
+    this is some super long text which should cause a break
+  </div> || <span>Something else</span>}
 </div>
 
-<div a={"b"} a={1} a={true} {onClick?} a={!!!true} a={a && b || c} a={a && !(b || c)}>
-</div>
+<div a={"b"}
+  a={1}
+  a={true}
+  {onClick?}
+  a={!!!true}
+  a={a && b || c}
+  a={a && !(b || c)} />
 
 
-{a && <div>this <br /> breaks</div>}
+{a && <div>
+  this
+  <br />
+  breaks
+</div>}
+
+<span>{a}!</span>

@@ -24,8 +24,10 @@ describe(__dirname + "#", () => {
         parser: "paperclip",
         plugins: [require.resolve("../../lib")],
         tabWidth: 2,
-        useTabs: false
+        useTabs: false,
+        printWidth: 80
       } as any);
+      console.log(output);
 
       expect(output).to.eql(outExpected);
     });

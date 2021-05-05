@@ -1,43 +1,53 @@
 <import src="components/Theme/index.pc" as="theme" />
 <import src="components/Select/index.pc" as="Select" />
 <style>
+
   .field {
     display: inline-flex;
     box-sizing: border-box;
     align-items: center;
     &--inline {}
 
+
     label {
       white-space: nowrap;
       margin-right: 8px;
     }
+
     &--col1 {
       flex-direction: column;
       align-content: left;
       label {
         margin-bottom: 4px;
       }
+
       & .input {
         width: 100%;
       }
+
     }
+
 
 
     &--noLabel {
       label {
         display: none;
       }
+
     }
+
   }
+
   .input {
     width: 100%;
   }
+
 
 </style>
 
 
 <!--
-  @frame { "\"visible\"": false }
+  @frame { visible: false }
 -->
 <div as="default"
   export
@@ -52,7 +62,7 @@
 
 
 <!--
-  @frame { "\"visible\"": false }
+  @frame { visible: false }
 -->
 <div className="$theme.font-default">
   <Select />

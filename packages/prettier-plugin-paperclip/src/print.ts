@@ -66,6 +66,19 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         case RuleKind.Style: {
           return printStyleRule(print)(path);
         }
+        case RuleKind.Include: {
+          const buffer: Doc[] = [...cleanLines(expr.raws.before)];
+
+          buffer.push(
+            "@include ",
+            expr.mixinName.parts.map(part => part.name).join("."),
+            " ",
+            printStyleBody(print)(path)
+          );
+
+          buffer.push(...cleanLines(expr.raws.after));
+          return groupConcat(buffer);
+        }
         case RuleKind.Comment: {
           const buffer: Doc[] = ["/*"];
           buffer.push(
@@ -124,7 +137,13 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           return groupConcat(buffer);
         }
         case RuleKind.Keyframes: {
-          const buffer: Doc[] = ["@keyframes ", expr.name, " ", "{"];
+          const buffer: Doc[] = [
+            ...cleanLines(expr.raws.before),
+            "@keyframes ",
+            expr.name,
+            " ",
+            "{"
+          ];
 
           // eeesh, need to do this since nested keyframes don't have enum
           // types.
@@ -149,7 +168,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
             )
           );
 
-          buffer.push(softline, "}");
+          buffer.push(softline, "}", ...cleanLines(expr.raws.after));
 
           return groupConcat(buffer);
         }
@@ -294,7 +313,9 @@ export const print = (path: FastPath, options: Options, print): Doc => {
 
       if ((expr as any).declarations?.length) {
         buffer.push(join(hardline, path.map(print, "declarations")));
-        buffer.push(hardline);
+        if ((expr as any).rules?.length) {
+          buffer.push(hardline);
+        }
         if ((expr as any).declarations.length) {
         }
       }
@@ -306,6 +327,9 @@ export const print = (path: FastPath, options: Options, print): Doc => {
       return groupConcat(buffer);
     }
   } else if (isNode(expr)) {
+    const parent = path.getParentNode() as any;
+    const isFirstChild = parent && parent.children?.indexOf(expr) === 0;
+
     switch (expr.nodeKind) {
       case NodeKind.Comment: {
         const buffer: Doc[] = [...cleanLines(expr.raws.before), "<!--"];
@@ -331,9 +355,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
                     `@`,
                     property.name,
                     " ",
-                    JSON.stringify(computeJSExpr(property.value), null, 2)
-                      .replace(/[\n\s]+/g, " ")
-                      .trim()
+                    stringifyObject(computeJSExpr(property.value))
                   ].join(""),
                   tabWidth,
                   useTabs,
@@ -352,7 +374,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         return groupConcat(buffer);
       }
       case NodeKind.Fragment: {
-        return join(line, path.map(print, "children"));
+        return concat(path.map(print, "children"));
       }
       case NodeKind.Element: {
         let buffer: Doc[] = [];
@@ -373,7 +395,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           buffer.push(
             ...openTag,
             indent(
-              concat([softline, group(join(line, path.map(print, "children")))])
+              concat([softline, group(join("", path.map(print, "children")))])
             )
           );
 
@@ -389,10 +411,18 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           doc = concat([doc, breakParent]);
         }
 
-        return concat([...cleanLines(expr.raws.before), group(doc)]);
+        const main = [];
+
+        if (!isFirstChild) {
+          main.push(...cleanLines(expr.raws.before));
+        }
+
+        main.push(group(doc));
+
+        return concat(main);
       }
       case NodeKind.StyleElement: {
-        const buffer: Doc[] = ["<style>"];
+        const buffer: Doc[] = [hardline, "<style>"];
         buffer.push(
           indent(group(concat([hardline, path.call(print, "sheet")])))
         );
@@ -400,7 +430,18 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         return groupConcat(buffer);
       }
       case NodeKind.Text: {
-        return groupConcat([expr.value.trim()]);
+        let text = expr.value;
+
+        let docs: Doc[] = text.split(/[\t\n\f\r ]+/);
+        docs = join(line, docs).parts.filter(s => s !== "");
+        if (startsWithLine(text)) {
+          docs[0] = hardline;
+        }
+        if (endsWithLine(text)) {
+          docs[docs.length - 1] = hardline;
+        }
+
+        return fill(docs);
       }
       case NodeKind.Slot: {
         return concat([
@@ -562,7 +603,7 @@ export const printStyleBody = print => (path: FastPath): Doc => {
 
 const cleanLines = (ws: string, max = Infinity) => {
   return Array.from({
-    length: Math.max(Math.min(countNewLines(ws) - 1, max), 0)
+    length: Math.max(Math.min(countNewLines(ws), max), 0)
   }).map(line => {
     return hardline;
   });
@@ -657,9 +698,34 @@ const fixIndentation = (
   );
 };
 
+const stringifyObject = (value: any) => {
+  const tov = typeof value;
+  switch (tov) {
+    case "string":
+      return JSON.stringify(value);
+    case "number":
+    case "boolean":
+      return value;
+    case "object": {
+      if (Array.isArray(value)) {
+        return `[${value.map(stringifyObject).join(", ")}]`;
+      } else if (value) {
+        return `{ ${Object.entries(value)
+          .map(([key, value]) => {
+            return `${key}: ${stringifyObject(value)}`;
+          })
+          .join(", ")} }`;
+      } else {
+        return "null";
+      }
+    }
+  }
+};
+
 const computeJSExpr = (expr: JsExpression) => {
   switch (expr.jsKind) {
     case JsExpressionKind.Number:
+      return Number(expr.value);
     case JsExpressionKind.Boolean:
     case JsExpressionKind.String:
       return expr.value;
@@ -667,9 +733,12 @@ const computeJSExpr = (expr: JsExpression) => {
       return expr.values.map(computeJSExpr);
     case JsExpressionKind.Object:
       return expr.properties.reduce((obj, prop) => {
-        obj[prop.key] = computeJSExpr(prop.value);
+        obj[prop.key.replace(/['"]/g, "")] = computeJSExpr(prop.value);
         return obj;
       }, {});
   }
   return "";
 };
+
+const startsWithLine = text => /[\n\r]/.test(startWhitespace(text) || "");
+const endsWithLine = text => /[\n\r]/.test(endWhitespace(text) || "");
