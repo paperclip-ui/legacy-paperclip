@@ -1,11 +1,6 @@
 import { createMockEngine } from "../utils";
 import { expect } from "chai";
-import {
-  Comment,
-  computeVirtJSObject,
-  DependencyNodeContent,
-  Fragment
-} from "paperclip-utils";
+import { Comment, computeVirtJSObject, Fragment } from "paperclip-utils";
 import { EngineMode } from "../../core";
 
 describe(__filename + "#", () => {
@@ -246,7 +241,6 @@ describe(__filename + "#", () => {
       {},
       EngineMode.MultiFrame
     );
-    const result = engine.open("/entry.pc");
     const ast = engine.getLoadedAst("/entry.pc") as Fragment;
     expect((ast.children[0] as Comment).annotation.properties).to.eql([
       {
@@ -278,7 +272,6 @@ describe(__filename + "#", () => {
       {},
       EngineMode.MultiFrame
     );
-    const result = engine.open("/entry.pc");
     const ast = engine.getLoadedAst("/entry.pc") as Fragment;
     expect((ast.children[0] as Comment).annotation.properties).to.eql([
       {
