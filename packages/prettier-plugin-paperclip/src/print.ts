@@ -336,7 +336,11 @@ export const print = (path: FastPath, options: Options, print): Doc => {
 
     switch (expr.nodeKind) {
       case NodeKind.Comment: {
-        const buffer: Doc[] = [...cleanLines(expr.raws.before), "<!--"];
+        const startLine = isFirstChild
+          ? breakParent
+          : concat(cleanLines(expr.raws.before));
+
+        const buffer: Doc[] = [startLine, "<!--"];
 
         const annotations: Doc[] = [];
         for (const property of expr.annotation.properties) {
@@ -434,7 +438,6 @@ export const print = (path: FastPath, options: Options, print): Doc => {
       }
       case NodeKind.Text: {
         let text = expr.value;
-        console.log("TX", text);
 
         let docs: Doc[] = text.split(/[\t\n\f\r ]+/);
         docs = join(line, docs).parts.filter(s => s !== "");
