@@ -198,7 +198,7 @@ What's the future looking like for Paperclip? Here's the tentative plan:
 
 1. Prettier integration
 2. Avocode integration (Figma to design sync)
-3. CSS & HTML linting (a11y, showing unused styles, caniuse integration).
+3. CSS & HTML linting (a11y, showing unused styles, caniuse integration)
 4. CSS tree shaking (removing unused CSS from builds)
 5. Visual builder (no-code like)
 6. Multiple compiler targets: PHP, Ruby, VueJS, Svelte
