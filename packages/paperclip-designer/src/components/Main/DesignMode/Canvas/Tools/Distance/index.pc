@@ -8,7 +8,9 @@
     user-select: none;
     pointer-events: none;
   }
+
   .from-outline {}
+
   .to-outline {
     --zoom: 1px;
     position: absolute;

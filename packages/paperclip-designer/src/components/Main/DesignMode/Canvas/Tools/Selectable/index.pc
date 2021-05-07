@@ -3,9 +3,9 @@
 <!--
   @frame { visible: false }
 -->
-<svg export
+<svg as="Knob"
+  export
   component
-  as="Knob"
   {onMouseDown}
   {className?}
   style="--x: {x}; --y: {y}"
@@ -42,9 +42,9 @@
 <!--
   @frame { visible: false }
 -->
-<div export
+<div as="Overlay"
+  export
   component
-  as="Overlay"
   {onMouseDown?}
   {style?}
   {onClick?}
@@ -122,7 +122,7 @@
 </div>
 
 <!--
-  @frame { title: "With Knobs", width: 332, height: 273, x: 788, y: 1126 }
+  @frame { title: "With Knobs", width: 332, height: 273, x: 796, y: 1152 }
 -->
 <div className="$theme.font-default">
   <PreviewBox style="left: 50px; top: 50px;">
