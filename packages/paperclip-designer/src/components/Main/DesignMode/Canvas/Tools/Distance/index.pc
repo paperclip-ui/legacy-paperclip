@@ -1,6 +1,5 @@
 <import src="components/Theme/index.pc" as="theme" />
 <style>
-
   .container {
     top: 0px;
     left: 0px;
@@ -9,9 +8,7 @@
     user-select: none;
     pointer-events: none;
   }
-
   .from-outline {}
-
   .to-outline {
     --zoom: 1px;
     position: absolute;
@@ -20,7 +17,6 @@
     padding: var(--padding);
     transform: translate(calc(-1 * var(--padding)/2), calc(-1 * var(--padding)/2));
   }
-
 
   .measuring-stick {
     --color: #F0F;
@@ -31,8 +27,6 @@
     color: var(--color);
     box-sizing: border-box;
   }
-
-
   .measuring-label {
     position: absolute;
     left: 50%;
@@ -40,21 +34,16 @@
     &--vertical {
       transform: translateX(4px) translateY(-50%);
     }
-
     &--horizontal {
       transform: translateX(-50%) translateY(4px);
     }
-
     &--horizontal&--flip {
       transform: translateY(calc(-100% - 4px)) translateX(-50%);
     }
-
     &--vertical&--flip {
       transform: translateY(-50%) translateX(calc(-100% - 4px));
     }
-
   }
-
 
   .guide {
     --color: #F0F;
@@ -66,7 +55,6 @@
     color: var(--color);
     border-style: dashed;
   }
-
 
 </style>
 
@@ -99,7 +87,6 @@
     className:vertical="measuring-label--vertical"
     className:horizontal="measuring-label--horizontal"
     className:flipLabel="measuring-label--flip">
-
     {distance}
   </span>
 </div>

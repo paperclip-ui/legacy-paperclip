@@ -2,7 +2,6 @@
 <import src="components/Theme/index.pc" as="theme" />
 <import src="components/TextInput/filter.pc" as="FilterTextInput" />
 
-
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 329, y: 77 }
 -->
@@ -14,9 +13,7 @@
   className:hover="hover"
   {onClick?}
   {onMouseDown?}>
-
   <style>
-
     cursor: pointer;
     display: inline-block;
     --cell-margin: 4px;
@@ -33,42 +30,34 @@
       height: 150px;
     }
 
-
     &:within([data-zoom="4"]) {
       --width-percent: 25%;
       height: 250px;
     }
-
 
     &:within([data-zoom="3"]) {
       --width-percent: 33.33333%;
       height: 300px;
     }
 
-
     &:within([data-zoom="2"]) {
       --width-percent: 50%;
       height: 400px;
     }
 
-
     &:within([data-zoom="1"]) {
       --width-percent: 100%;
       height: 600px;
     }
-
     &:hover, &.hover {
       background: var(--grey-50);
     }
-
   </style>
 
 
   <!-- inner -->
   <div>
-
     <style>
-
 
       height: 100%;
       border-radius: 2px;
@@ -80,12 +69,9 @@
         max-height: 100%;
         border-radius: 2px;
       }
-
     </style>
     <div title={dir}>
-
       <style>
-
 
         padding-bottom: 10px;
         color: var(--grey-400);
@@ -100,9 +86,7 @@
         width: 100%;
       </style>
       <div>
-
         <style>
-
 
           overflow: hidden;
           text-overflow: ellipsis;
@@ -110,9 +94,7 @@
         {label}
       </div>
       <div>
-
         <style>
-
           margin-left: 10px;
           opacity: 0.4;
           text-overflow: ellipsis;
@@ -121,13 +103,14 @@
         </style>
         {dir}
       </div>
-      <div>{controls}</div>
+      <div>
+
+        {controls}
+      </div>
     </div>
 
     <div ref={mountRef}>
-
       <style>
-
         opacity: 1;
         position: relative;
         overflow: hidden;
@@ -136,9 +119,7 @@
 
       <!-- overlay to prevent scroll -->
       <div>
-
         <style>
-
 
           position: absolute;
           top: 0;
@@ -157,9 +138,7 @@
   @frame { visible: false, width: 1024, height: 768, x: 100, y: 56 }
 -->
 <i component as="WarningIcon" {className?}>
-
   <style>
-
     --size: 1.2em;
     position: relative;
     top: 2px;
@@ -167,7 +146,6 @@
     mask-image: url(./warning.svg);
     box-shadow: 0px 0px 2px 0px black;
     @include utils.mask {}
-
   </style>
 </i>
 
@@ -176,9 +154,7 @@
   @frame { visible: false }
 -->
 <div export component as="Container">
-
   <style>
-
     display: flex;
     flex-shrink: 0;
     flex-direction: column;
@@ -195,9 +171,7 @@
   @frame { visible: false }
 -->
 <div export component as="Header" className="v2">
-
   <style>
-
     padding: 12px 14px;
     background: var(--grey-200);
   </style>
@@ -211,9 +185,7 @@
   @frame { visible: false }
 -->
 <div export component as="Cells" data-zoom={zoom}>
-
   <style>
-
     flex: 1;
     height: 100%;
     overflow: scroll;
@@ -230,7 +202,6 @@
       margin-top: 20%;
       opacity: 0.2;
     }
-
   </style>
   {children}
 </div>
@@ -240,16 +211,12 @@
   @frame { title: "Grid" }
 -->
 <Container export component as="Preview">
-
-
   <!-- header -->
   <Header>
     <FilterTextInput.FilterTextInput />
   </Header>
   <div>
-
     <style>
-
       background: red;
     </style>
   </div>

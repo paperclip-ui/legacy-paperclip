@@ -2,17 +2,14 @@
 <import src="components/icons/index.pc" as="icons" />
 <import src="styles/utils.pc" as="utils" />
 <style>
-
   :root {
     --topbar-background-active-1: var(--vscode-activityBar-foreground, var(--background-active-1));
     --toolbar-border-color: var(--border-color-2);
   }
 
-
   :global(.light) {
     --toolbar-border-color: var(--border-color-1);
   }
-
 </style>
 
 
@@ -20,9 +17,7 @@
   @frame { visible: false }
 -->
 <div export component as="Zoom" className="zoom" className:hidden="hidden">
-
   <style>
-
     border-left: 1px solid var(--border-color);
     font-size: 0.8em;
     display: flex;
@@ -31,12 +26,10 @@
       visibility: hidden;
     }
 
-
     span {
       user-select: none;
       position: relative;
     }
-
     button {
       --size: 9px;
       cursor: pointer;
@@ -51,26 +44,22 @@
       &.minus {
         mask-image: url(./minus.svg);
       }
-
       &.plus {
         mask-image: url(./plus.svg);
       }
-
     }
-
   </style>
   <button className="$icons.icon minus" onClick={onMinusClick} />
   <button className="$icons.icon plus" onClick={onPlusClick} />
   <span>{amount}%</span>
 </div>
 
+
 <!--
   @frame { visible: false }
 -->
 <button export component as="PaintButton" {onClick?} className="brush">
-
   <style>
-
     border: none;
     color: inherit;
     padding: 0;
@@ -88,9 +77,7 @@
       &.active {
         color: var(--topbar-background-active-1);
       }
-
     }
-
   </style>
   <i className="$icons.icon" className:active="active" />
 </button>
@@ -100,9 +87,7 @@
   @frame { visible: false }
 -->
 <button export component as="GridButton" {onClick?} className="grid">
-
   <style>
-
     border: none;
     color: inherit;
     outline: none;
@@ -121,9 +106,7 @@
       &.active {
         color: var(--topbar-background-active-1);
       }
-
     }
-
   </style>
   <i className="$icons.icon" className:active="active" />
 </button>
@@ -132,9 +115,7 @@
   @frame { visible: false }
 -->
 <button export component as="MagnifyButton" {onClick?} className="grid">
-
   <style>
-
     border: none;
     color: inherit;
     outline: none;
@@ -152,9 +133,7 @@
       &.active {
         color: var(--topbar-background-active-1);
       }
-
     }
-
   </style>
   <i className="$icons.icon" className:active="active" />
 </button>
@@ -164,9 +143,7 @@
   @frame { visible: false }
 -->
 <div export component as="SearchInput">
-
   <style>
-
     position: relative;
     &:before {
       position: absolute;
@@ -178,12 +155,9 @@
       @include utils.mask;
       mask-image: url(./magnify.svg);
     }
-
   </style>
   <input type="text" ref={inputRef} {onChange} {onBlur?} {defaultValue?}>
-
     <style>
-
       background: transparent;
       border: 1px solid  var(--background-active-1);
       border-radius: 2px;
@@ -206,9 +180,7 @@
   as="CollapseButton"
   {onClick}
   className:active="active">
-
   <style>
-
     border: none;
     color: inherit;
     padding: 0;
@@ -228,9 +200,7 @@
       &.active {
         color: var(--topbar-background-active-1);
       }
-
     }
-
   </style>
   <i className="$icons.icon" className:active="active" />
 </button>
@@ -240,9 +210,7 @@
   @frame { visible: false }
 -->
 <div export component as="Controls" className="controls">
-
   <style>
-
     padding: 4px 14px;
     display: flex;
     z-index: 1;
@@ -255,9 +223,7 @@
         border-left: none;
         margin-left: 0px;
       }
-
     }
-
   </style>
   {children}
 </div>
@@ -271,9 +237,7 @@
   as="Container"
   className="toolbar {className?}"
   className:gridMode="grid-mode">
-
   <style>
-
     --border-color: var(--vscode-editorGroup-border, #777);
     background: var(--vscode-breadcrumb-background, var(--background-2));
     color: var(--vscode-activityBar-inactiveForeground, var(--color-negate-1));
@@ -287,9 +251,7 @@
       & > :last-child {
         visibility: hidden;
       }
-
     }
-
   </style>
   {children}
 </div>
@@ -299,9 +261,7 @@
   @frame { visible: false }
 -->
 <button export component as="PopOutButton" {onClick}>
-
   <style>
-
     border: none;
     color: inherit;
     padding: 0;
@@ -320,9 +280,7 @@
       &.active {
         color: var(--topbar-background-active-1);
       }
-
     }
-
   </style>
   <i className="$icons.icon" />
 </button>
@@ -332,9 +290,7 @@
   @frame { visible: false }
 -->
 <div export component as="ReadOnlyBadge">
-
   <style>
-
     display: flex;
     align-content: center;
     align-items: center;
@@ -343,9 +299,7 @@
     flex-shrink: 0;
   </style>
   <div>
-
     <style>
-
       text-transform: uppercase;
       font-size: 0.7em;
       background: rgb(243, 191, 19);
@@ -357,7 +311,6 @@
       font-weight: 600;
     </style>
     Read-only
-
   </div>
 </div>
 
@@ -387,9 +340,7 @@
   @frame { visible: false }
 -->
 <div export component as="Spacer">
-
   <style>
-
     width: 100%;
   </style>
 </div>
@@ -407,9 +358,7 @@
   @frame { visible: false }
 -->
 <div export component as="Title">
-
   <style>
-
     white-space: nowrap;
     width: 100%;
     overflow: hidden;
@@ -433,9 +382,7 @@
   data-kind={kind}
   className:os="has_os"
   {onClick?}>
-
   <style>
-
     padding: 4px 8px;
     display: flex;
     align-items: center;
@@ -444,12 +391,9 @@
       background: var(--background-active-1);
       color: white;
     }
-
   </style>
   <i>
-
     <style>
-
       mask-image: url('./browser2.svg');
       background: currentColor;
       flex-shrink: 0;
@@ -462,46 +406,35 @@
       &:within([data-kind="public"]) {
         mask-image: url('./world.svg');
       }
-
       &:within([data-kind="private"]) {
         mask-image: url('./home.svg');
       }
-
       &:within([data-kind="chrome"]) {
         mask-image: url('./chrome.svg');
       }
-
       &:within([data-kind="safari"]) {
         mask-image: url('./safari2.svg');
       }
-
       &:within([data-kind="firefox"]) {
         mask-image: url('./firefox.svg');
       }
-
       &:within([data-kind="ie"]) {
         mask-image: url('./ie.svg');
       }
-
       &:within([data-kind="ie"]) {
         mask-image: url('./ie.svg');
       }
-
     </style>
   </i>
   <span>
-
     <style>
-
       width: 100%;
       margin-right: 20px;
     </style>
     {children}
   </span>
   <span>
-
     <style>
-
       opacity: 0.5;
       float: right;
       display: block;
@@ -512,9 +445,7 @@
   </span>
 
   <span>
-
     <style>
-
 
       opacity: 0.5;
       float: right;
@@ -525,7 +456,6 @@
       &:within(.has_os) {
         display: block;
       }
-
 
     </style>
     &dash; {os}&nbsp;{osVersion}
@@ -543,9 +473,7 @@
   as="EnvironmentPopup"
   className="light $theme.font-default"
   className:visible="visible">
-
   <style>
-
     position: absolute;
     background: var(--background-1);
     color: var(--vscode-activityBar-inactiveForeground, var(--color-negate-1));
@@ -564,23 +492,18 @@
       opacity: 1;
       top: 28px;
     }
-
   </style>
 
   <!-- Header -->
   <div>
-
     <style>
-
       padding: 8px;
       padding-bottom: 8px;
     </style>
 
     <!-- Title -->
     <div>
-
       <style>
-
         font-weight: 600;
         margin-bottom: 8px;
         text-transform: uppercase;
@@ -589,7 +512,6 @@
         color: var(--color-negate-1);
       </style>
       Open Environment
-
     </div>
     <input placeholder="Filter..."
       ref={filterInputRef}
@@ -597,9 +519,7 @@
       onChange={onFilterChange}
       onBlur={onFilterBlur}
       autofocus>
-
       <style>
-
         margin: 0px;
         width: 100%;
         box-sizing: border-box;
@@ -612,7 +532,6 @@
         &:focus {
           border-color: var(--background-selected-1);
         }
-
       </style>
     </input>
   </div>
@@ -628,9 +547,7 @@
   as="EnvironmentPopupPreview"
   {visible?}
   options={<div>
-
     <style>
-
       overflow: scroll;
       height: 100%;
       width: 100%;

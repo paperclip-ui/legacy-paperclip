@@ -10,9 +10,7 @@
   as="FramesContainer"
   {style?}
   className="$theme.font-default {className?}">
-
   <style>
-
     width: 100%;
     height: 100%;
     position: relative;
@@ -20,15 +18,14 @@
   {children}
 </div>
 
+
+
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 668, y: 1081 }
 -->
 <div export component as="Frame" {style?} {className?}>
-
-
   <!-- default dimensions -->
   <style>
-
     position: absolute;
   </style>
   {children}
@@ -48,9 +45,7 @@
   className="v2"
   className:editing="editing"
   className:hover="hover">
-
   <style>
-
     transform: translateY(calc(-100% - 6px));
     position: absolute;
     user-select: none;
@@ -65,14 +60,10 @@
       .expand-button {
         visibility: visible;
       }
-
     }
-
   </style>
   <span>
-
     <style>
-
       cursor: default;
       white-space: nowrap;
       overflow: hidden;
@@ -81,7 +72,6 @@
       &:within(.editing) {
         display: none;
       }
-
     </style>
     {value}
   </span>
@@ -91,9 +81,7 @@
     autofocus={editing}
     defaultValue={value}
     {onKeyPress?}>
-
     <style>
-
       border: none;
       display: none;
       color: inherit;
@@ -103,13 +91,10 @@
       &:within(.editing) {
         display: block;
       }
-
     </style>
   </input>
   <i className="expand-button" onClick={onExpandButtonClick}>
-
     <style>
-
       --size: 14px;
       flex-shrink: 0;
       cursor: pointer;
@@ -132,16 +117,12 @@
   @frame { title: "Frame", width: 1024, height: 768, x: -759, y: 1217 }
 -->
 <FramesContainer export component as="Preview">
-
   <style>
-
     width: 100vw;
     height: 100vh;
   </style>
   <Frame>
-
     <style>
-
       position: absolute;
       top: 50%;
       left: 50%;
