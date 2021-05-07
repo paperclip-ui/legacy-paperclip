@@ -46,6 +46,7 @@
   <div>
     <div>okay this</div>
   </div>
+
   {slot && <div>
     this is some super long text which should cause a break
   </div> || <span>Something else</span>}
@@ -60,6 +61,9 @@
   a={a && !(b || c)} />
 
 
+should have liens before and after
+
+
 {a && <div>
   this
   <br />
@@ -67,3 +71,17 @@
 </div>}
 
 <span>{a}!fsdfdsfsdnflltfs dfds fsd fsd fsd fsd fsd fsd fsd fsd fsdfsd fsd fsd fsd fsdf sdf sdfsd fsd fsd fsd f sdf s</span>
+
+<div>
+  {children}
+</div>
+
+{shouldHaveLinesBefore}
+
+<div>
+  style block below should maintain space
+  
+  <style>
+    color: blue;
+  </style>
+</div>

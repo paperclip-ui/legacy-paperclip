@@ -12,7 +12,6 @@
 -->
 
 <button component as="Button" {className?}>
-
   <style>
 
     background: transparent;
@@ -40,7 +39,6 @@
   as="HeaderLink"
   className:active="active"
   className:hover="hover">
-
   <style>
 
     text-decoration: none;
@@ -67,9 +65,7 @@
       &::before {
         width: 4px;
       }
-
     }
-
 
     &.active {
       color: inherit;
@@ -77,9 +73,7 @@
         width: 20px;
         color: currentColor;
       }
-
     }
-
   </style>
   {children}
 </a>
@@ -88,11 +82,8 @@
   @frame { visible: false, width: 1024, height: 768, x: 1728, y: -88 }
 -->
 <div component as="Logo">
-
-
   <!-- big logo -->
   <div>
-
     <style>
 
       display: none;
@@ -108,7 +99,6 @@
 
   <!-- small logo -->
   <div>
-
     <style>
 
       display: none;
@@ -127,7 +117,6 @@
   @frame { title: "Airbnb Home / Desktop", width: 902, height: 768, x: 1779, y: -725 }
 -->
 <div component as="HomePreview">
-
   <style>
 
     font-family: sans-serif;
@@ -136,7 +125,6 @@
 
   <!-- banner -->
   <div>
-
     <style>
 
       background: var(--grey-1);
@@ -146,20 +134,17 @@
       font-size: 14px;
     </style>
     <a href="#">
-
       <style>
 
         color: inherit;
       </style>
       Get the latest on our COVID-19 response
-
     </a>
   </div>
 
 
   <!-- top -->
   <div>
-
     <style>
 
       background: black;
@@ -170,7 +155,6 @@
 
     <!-- nav -->
     <div>
-
       <style>
 
         display: flex;
@@ -181,7 +165,6 @@
 
       <!-- right nav -->
       <div>
-
         <style>
 
           display: flex;
@@ -191,7 +174,6 @@
         <!-- globe button -->
         <Button>
           <div>
-
             <style>
 
               @include atoms.mask {
@@ -204,7 +186,6 @@
 
         <!-- menu -->
         <div>
-
           <style>
 
             margin-left: 8px;
@@ -220,7 +201,6 @@
 
           <!-- burger -->
           <div>
-
             <style>
 
               @include atoms.mask {
@@ -231,7 +211,6 @@
             </style>
           </div>
           <div>
-
             <style>
 
               @include atoms.mask {
@@ -247,7 +226,6 @@
 
     <!-- links -->
     <div>
-
       <style>
 
         text-align: center;
@@ -265,7 +243,6 @@
 
     <!-- search -->
     <div>
-
       <style>
 
         background: red;
@@ -279,42 +256,8 @@
         transform: translateY(-50%);
       </style>
       <div>
-
         fdsfsfsdfsd
-
-        <style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </style>
+        <style></style>
       </div>
       <div />
     </div>

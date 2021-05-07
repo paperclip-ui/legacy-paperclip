@@ -108,3 +108,9 @@
     </style>
   </span>
 </div>
+
+<div>
+  empty style should not add extra lines 
+
+  <style></style>
+</div>

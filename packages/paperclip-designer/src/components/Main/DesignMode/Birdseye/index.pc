@@ -103,10 +103,7 @@
         </style>
         {dir}
       </div>
-      <div>
-
-        {controls}
-      </div>
+      <div>{controls}</div>
     </div>
 
     <div ref={mountRef}>

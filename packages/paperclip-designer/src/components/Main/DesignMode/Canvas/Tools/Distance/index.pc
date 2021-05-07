@@ -61,8 +61,6 @@
   @frame { visible: false }
 -->
 <div export component as="Container" {style?} className="container">
-
-
   {children}
 </div>
 
@@ -87,7 +85,6 @@
     className:vertical="measuring-label--vertical"
     className:horizontal="measuring-label--horizontal"
     className:flipLabel="measuring-label--flip">
-
     {distance}
   </span>
 </div>

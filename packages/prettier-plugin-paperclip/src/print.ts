@@ -309,24 +309,27 @@ export const print = (path: FastPath, options: Options, print): Doc => {
 
       // maybe sheet
     } else if ((expr as any).rules != null) {
-      const buffer: Doc[] = [
-        ...cleanRuleLines((expr as any).raws?.before || "")
-      ];
+      const parts = [];
 
       if ((expr as any).declarations?.length) {
-        buffer.push(join(hardline, path.map(print, "declarations")));
+        parts.push(join(hardline, path.map(print, "declarations")));
         if ((expr as any).rules?.length) {
-          buffer.push(hardline);
-        }
-        if ((expr as any).declarations.length) {
+          parts.push(hardline);
         }
       }
 
-      if ((expr as any).rules) {
-        buffer.push(join(hardline, path.map(print, "rules")));
+      if ((expr as any).rules?.length) {
+        parts.push(join(hardline, path.map(print, "rules")));
       }
 
-      return groupConcat(buffer);
+      if (!parts.length) {
+        return "";
+      }
+
+      return groupConcat([
+        ...cleanLines((expr as any).raws?.before || ""),
+        ...parts
+      ]);
     }
   } else if (isNode(expr)) {
     const parent = path.getParentNode() as any;
@@ -427,44 +430,69 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         return concat(main);
       }
       case NodeKind.StyleElement: {
-        const startLine = isFirstChild ? breakParent : hardline;
+        const startLine = isFirstChild
+          ? breakParent
+          : concat(cleanLines(expr.raws.before));
+
+        const endLine = isLastChild
+          ? ""
+          : concat(cleanLines(expr.raws.after || ""));
 
         const buffer: Doc[] = [startLine, "<style>"];
-        buffer.push(
-          indent(group(concat([hardline, path.call(print, "sheet")])))
-        );
-        buffer.push(line, "</style>", breakParent);
+        buffer.push(indent(group(path.call(print, "sheet"))));
+        buffer.push(softline, "</style>", endLine);
         return groupConcat(buffer);
       }
       case NodeKind.Text: {
         let text = expr.value;
+        if (/^[\s\r\n\t]+$/.test(text)) {
+          return "";
+        }
 
         let docs: Doc[] = text.split(/[\t\n\f\r ]+/);
-        docs = join(line, docs).parts.filter(s => s !== "");
+        docs = join(line, docs).parts.filter(v => v !== "");
+
         if (startsWithLine(text)) {
-          // be careful with extra lines
-          if (isFirstChild) {
-            docs.shift();
-          } else {
-            docs[0] = hardline;
+          docs.shift();
+
+          if (!isFirstChild) {
+            docs.unshift(...cleanLines(startWhitespace(text)));
           }
         }
         if (endsWithLine(text)) {
-          // be careful with extra lines
-          if (isLastChild) {
-            docs.pop();
-          } else {
-            docs[docs.length - 1] = hardline;
+          docs.pop();
+
+          if (!isLastChild) {
+            docs.push(...cleanLines(endWhitespace(text)));
           }
         }
 
         return fill(docs);
       }
       case NodeKind.Slot: {
-        return concat([
-          ...cleanLines(expr.raws.before),
+        const docs: Doc[] = [
           groupConcat(["{", path.call(print, "script"), "}"])
-        ]);
+        ];
+
+        if (containsNewLine(expr.raws.before)) {
+          if (!isFirstChild) {
+            docs.unshift(...cleanLines(expr.raws.before));
+          }
+        }
+        if (endsWithLine(expr.raws.after)) {
+          if (!isLastChild) {
+            docs.push(...cleanLines(expr.raws.after));
+          }
+        }
+
+        return groupConcat(docs);
+
+        // const startline = containsNewLine(expr.raws.before) ? breakParent : '';
+
+        // return concat([
+        //   startline,
+        //   groupConcat(["{", path.call(print, "script"), "}"])
+        // ]);
       }
     }
   } else if (isAttribute(expr)) {
@@ -753,6 +781,8 @@ const stringifyObject = (value: any) => {
     }
   }
 };
+
+const containsNewLine = (ws: string) => /[\n\r]/.test(ws);
 
 const computeJSExpr = (expr: JsExpression) => {
   switch (expr.jsKind) {

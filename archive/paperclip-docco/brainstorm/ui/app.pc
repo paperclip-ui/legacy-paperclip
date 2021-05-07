@@ -6,9 +6,6 @@ https://www.ibm.com/design/language/color
 
 -->
 <style>
-
-
-
   :root {
     --gap: 2px;
     --gap-2: calc(var(--gap) * 2);
@@ -17,7 +14,6 @@ https://www.ibm.com/design/language/color
     --gap-5: calc(var(--gap-4) * 2);
   }
 
-
   :root {
     --color-orange-100: #F60;
     --color-orange-200: rgb(248, 201, 169);
@@ -25,15 +21,12 @@ https://www.ibm.com/design/language/color
     --color-orange-400: rgb(170, 87, 19);
   }
 
-
   :root {
     --color-purple-100: rgb(253, 0, 198);
     --color-purple-200: rgb(212, 0, 255);
     --color-purple-300: rgb(240, 166, 255);
     --color-purple-400: rgb(254, 223, 255);
   }
-
-
 
   :root {
     --color-offwhite-100: rgb(255, 255, 255);
@@ -46,7 +39,6 @@ https://www.ibm.com/design/language/color
     --color-offwhite-800: rgba(255, 255, 255, 0.3);
     --color-offwhite-900: rgba(255, 255, 255, 0.2);
   }
-
 
   :root {
     --color-offblack-100: rgba(0, 0, 0, 1);
@@ -75,11 +67,9 @@ https://www.ibm.com/design/language/color
     --color-grey-800: rgb(29, 29, 29);
   }
 
-
   @mixin col {
     display: inline-block;
   }
-
 
   :global(body) {
     font-family: Helvetica;
@@ -87,13 +77,11 @@ https://www.ibm.com/design/language/color
     letter-spacing: 0.046em;
   }
 
-
   h1, h2, h3, h4 {
     font-weight: 100;
     margin-bottom: var(--gap-4);
     line-height: 1rem;
   }
-
 
   .col-2 {
     width: 50%;
@@ -104,7 +92,6 @@ https://www.ibm.com/design/language/color
     &:last-child {
       padding-right: 0px;
     }
-
   }
 
 
@@ -147,7 +134,6 @@ https://www.ibm.com/design/language/color
         word-break: nobreak;
         white-space: nowrap;
       }
-
     }
 
 
@@ -166,7 +152,6 @@ https://www.ibm.com/design/language/color
     &.light {
       color: var(--color-grey-700);
     }
-
   }
 
 
@@ -194,14 +179,9 @@ https://www.ibm.com/design/language/color
           margin-top: var(--gap-2);
           font-size: 0.9em;
         }
-
       }
-
     }
-
   }
-
-
 </style>
 <style>
 
@@ -292,11 +272,8 @@ https://www.ibm.com/design/language/color
       background-image: url("./feather/feather.svg");
       background-size: 0.8em;
     }
-
   }
-
 </style>
-
 
 <!--
   @frame { visible: false }
@@ -322,10 +299,8 @@ https://www.ibm.com/design/language/color
   @frame { visible: false }
 -->
 <div component as="Title" className="Title" className:selected="selected">
-
   {children}
 </div>
-
 
 <!--
   @frame { visible: false }
@@ -337,7 +312,6 @@ https://www.ibm.com/design/language/color
   @frame { visible: false }
 -->
 <div component as="Subgroup" className="Subgroup" style="--depth:{depth};">
-
   {children}
 </div>
 
@@ -350,13 +324,11 @@ https://www.ibm.com/design/language/color
     <Title>
       <Icon folderOpen />
       Atoms
-
     </Title>
     <Subgroup depth="2">
       <Title selected>
         <Icon folderOpen />
         Colors
-
       </Title>
       <Subgroup depth="3">
         <Title>
@@ -389,7 +361,6 @@ https://www.ibm.com/design/language/color
       <Title>
         <Icon folderOpen />
         Typography
-
       </Title>
       <Subgroup depth="3">
         <Title>
@@ -411,41 +382,35 @@ https://www.ibm.com/design/language/color
     <Title>
       <Icon folderOpen />
       Molecules
-
     </Title>
     <Subgroup depth="2">
       <Title>
         <Icon isComponent />
         Button
-
       </Title>
     </Subgroup>
     <Subgroup depth="2">
       <Title>
         <Icon isComponent />
         ButtonGroup
-
       </Title>
     </Subgroup>
     <Subgroup depth="2">
       <Title>
         <Icon isComponent />
         TextInput
-
       </Title>
     </Subgroup>
     <Subgroup depth="2">
       <Title>
         <Icon isComponent />
         RadioGroup
-
       </Title>
     </Subgroup>
     <Subgroup depth="2">
       <Title>
         <Icon isComponent />
         Tooltip
-
       </Title>
     </Subgroup>
   </Group>
