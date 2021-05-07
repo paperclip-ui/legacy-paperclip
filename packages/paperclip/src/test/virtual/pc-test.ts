@@ -451,7 +451,7 @@ describe(__filename + "#", () => {
 
     const result3 = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(result3).to.eql(
-      `<style></style><div data-pc-139cec8e data-pc-pub-139cec8e>cde defg</div>`
+      `<style></style><div data-pc-139cec8e data-pc-pub-139cec8e> cde defg</div>`
     );
   });
 
@@ -1678,9 +1678,9 @@ describe(__filename + "#", () => {
       {1 && <div>C</div>}
       {false && <div>D</div>}
       {false && <div>D</div> || <div>E</div>}
-      {false && <div>D</div> || false || 99 }
+      {false && <div>D</div> || false || 99 \n\n}
       {false && <div>D</div> || false || 0 && "blah" }
-      {false || <div>F</div>}
+      {false || <div>F</div> }
       `
     };
 

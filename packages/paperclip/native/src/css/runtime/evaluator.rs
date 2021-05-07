@@ -390,6 +390,9 @@ pub fn evaluate_expr<'a>(
 
 fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeError> {
   match rule {
+    ast::Rule::Comment(charset) => {
+      // skip it
+    }
     ast::Rule::Charset(charset) => {
       context
         .all_rules
@@ -830,7 +833,7 @@ fn evaluate_style_declarations<'a>(
       ast::Declaration::Include(inc) => {
         include_mixin(inc, &mut style, context, selector_context)?;
       }
-      ast::Declaration::Content => {
+      ast::Declaration::Content(_) => {
         include_content(&mut style, context, selector_context)?;
       }
       ast::Declaration::Media(media) => {

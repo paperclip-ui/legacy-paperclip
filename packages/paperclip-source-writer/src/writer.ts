@@ -89,7 +89,7 @@ export class PCSourceWriter {
     const beforeChild = childIndex > 0 ? parent.children[childIndex - 1] : null;
 
     // if before child is a comment, then assume it's an annotation
-    if (beforeChild && beforeChild.kind === NodeKind.Comment) {
+    if (beforeChild && beforeChild.nodeKind === NodeKind.Comment) {
       changes.push({
         uri: exprSource.uri,
         start: beforeChild.location.start,

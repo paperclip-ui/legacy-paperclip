@@ -1,4 +1,4 @@
-use crate::base::ast::Location;
+use crate::base::ast::{BasicRaws, Location};
 use serde::Serialize;
 use std::fmt;
 
@@ -7,7 +7,7 @@ use std::fmt;
 pub enum Declaration {
   KeyValue(KeyValueDeclaration),
   Include(Include),
-  Content,
+  Content(Content),
   Media(ConditionRule),
 }
 
@@ -17,7 +17,7 @@ impl fmt::Display for Declaration {
       Declaration::KeyValue(kv) => kv.fmt(f),
       Declaration::Include(inc) => inc.fmt(f),
       Declaration::Media(media) => media.fmt(f),
-      Declaration::Content => writeln!(f, "@content;"),
+      Declaration::Content(_) => writeln!(f, "@content;"),
     }
   }
 }
@@ -27,6 +27,7 @@ pub struct KeyValueDeclaration {
   pub name: String,
   pub value: String,
   pub location: Location,
+  pub raws: BasicRaws,
 
   #[serde(rename = "nameLocation")]
   pub name_location: Location,
@@ -43,12 +44,19 @@ impl fmt::Display for KeyValueDeclaration {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Content {
+  pub raws: BasicRaws,
+  pub location: Location,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Include {
   #[serde(rename = "mixinName")]
   pub mixin_name: IncludeReference,
   pub declarations: Vec<Declaration>,
   pub rules: Vec<StyleRule>,
   pub location: Location,
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for Include {
@@ -109,9 +117,10 @@ impl fmt::Display for IncludeReferencePart {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "kind")]
+#[serde(tag = "ruleKind")]
 pub enum Rule {
   Style(StyleRule),
+  Comment(Comment),
   Charset(String),
   Namespace(String),
   FontFace(FontFaceRule),
@@ -128,6 +137,7 @@ pub enum Rule {
 impl fmt::Display for Rule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
+      Rule::Comment(rule) => write!(f, "{}", rule.to_string()),
       Rule::Style(rule) => write!(f, "{}", rule.to_string()),
       Rule::Charset(value) => write!(f, "@charset {}", value),
       Rule::Export(export) => write!(f, "{}", export),
@@ -145,11 +155,40 @@ impl fmt::Display for Rule {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Comment {
+  pub value: String,
+  pub location: Location,
+}
+
+impl fmt::Display for Comment {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "/*{}*/", self.value)
+  }
+}
+
+impl BasicRaws {
+  pub fn new(before: Option<&[u8]>, after: Option<&[u8]>) -> BasicRaws {
+    BasicRaws {
+      before: if let Some(v) = before {
+        std::str::from_utf8(v).unwrap().to_string()
+      } else {
+        "".to_string()
+      },
+      after: if let Some(v) = after {
+        std::str::from_utf8(v).unwrap().to_string()
+      } else {
+        "".to_string()
+      },
+    }
+  }
+}
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRule {
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
   pub children: Vec<StyleRule>,
   pub location: Location,
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for StyleRule {
@@ -182,6 +221,7 @@ pub struct ChildStyleRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FontFaceRule {
   pub declarations: Vec<Declaration>,
+  pub raws: BasicRaws,
   pub location: Location,
 }
 
@@ -201,6 +241,7 @@ impl fmt::Display for FontFaceRule {
 pub struct ExportRule {
   pub rules: Vec<Rule>,
   pub location: Location,
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for ExportRule {
@@ -224,6 +265,7 @@ pub struct ConditionRule {
   pub rules: Vec<StyleRule>,
   pub declarations: Vec<Declaration>,
   pub location: Location,
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for ConditionRule {
@@ -241,6 +283,7 @@ impl fmt::Display for ConditionRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinRule {
   pub name: MixinName,
+  pub raws: BasicRaws,
   pub location: Location,
   pub declarations: Vec<Declaration>,
   pub rules: Vec<StyleRule>,
@@ -272,6 +315,7 @@ pub struct KeyframesRule {
   pub name: String,
   pub rules: Vec<KeyframeRule>,
   pub location: Location,
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for KeyframesRule {
@@ -289,6 +333,7 @@ impl fmt::Display for KeyframesRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframeRule {
   pub key: String,
+  pub raws: BasicRaws,
   pub declarations: Vec<Declaration>,
   pub location: Location,
 }
@@ -306,7 +351,7 @@ impl fmt::Display for KeyframeRule {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "kind")]
+#[serde(tag = "selectorKind")]
 pub enum Selector {
   Group(GroupSelector),
   Prefixed(PrefixedSelector),
@@ -436,6 +481,8 @@ impl fmt::Display for Selector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PrefixedSelector {
   pub connector: String,
+
+  #[serde(rename = "postfixSelector")]
   pub postfix_selector: Option<Box<Selector>>,
   pub location: Location,
 }
@@ -744,6 +791,7 @@ impl fmt::Display for AttributeSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Sheet {
+  pub raws: BasicRaws,
   pub rules: Vec<Rule>,
   pub declarations: Vec<Declaration>,
 

@@ -1,0 +1,116 @@
+<style>
+  a {}
+  * {}
+  [a=b] {}
+  [a="d"] {}
+  [a~=d] {}
+  a > b {}
+  .a {}
+  div.a {}
+  div a {}
+  a + b {}
+
+  a, b {}
+  #a {}
+  :not(a) {}
+  ::after {}
+  :nth-child(2) {}
+
+  a ~ b {}
+  :within(a) {}
+  &&--a {}
+  &.a[a=b] {}
+
+  @export {
+    div {
+      color: red;
+    }
+  }
+</style>
+<style>
+  color: red;
+  a {
+    color: red;
+    background: green;
+    b {
+      color: orange;
+      &.d {
+        color: black;
+      }
+    }
+  }
+</style>
+<style>
+
+  @font-face {
+    family: Hevetica;
+  }
+
+  @media screen and (max-width: 100px) {
+    div {
+      color: red;
+    }
+  }
+
+  @mixin abba {
+    div {
+      color: red;
+      @content;
+    }
+  }
+
+  div {
+
+    @include abba {
+      background: blue;
+      a {
+        color: orange;
+      }
+    }
+
+    @media screen and (max-width: 100px) {
+      color: orange;
+      span {
+        color: orange;
+      }
+    }
+  }
+
+  @keyframes a {
+    0% {
+      color: orange;
+      @include abba;
+    }
+    100% {
+      color: red;
+    }
+  }
+
+  @include a {
+    color: red;
+  }
+</style>
+<div>
+  <style>
+    a {
+      color: red;
+    }
+  </style>
+  <span>
+    <style>
+      color: red;
+      div {
+        color: black;
+        span {
+          background: blue;
+        }
+      }
+    </style>
+  </span>
+</div>
+
+<div>
+  empty style should not add extra lines
+
+  <style></style>
+</div>

@@ -1,8 +1,9 @@
-import { SourceLocation } from "./base-ast";
+import { BasicRaws, SourceLocation } from "./base-ast";
 import { Expression } from "./ast";
 
 export type Sheet = {
   rules: Rule[];
+  raws: BasicRaws;
   declarations: StyleDeclaration[];
 };
 
@@ -11,6 +12,7 @@ export enum RuleKind {
   Charset = "Charset",
   Namespace = "Namespace",
   Include = "Include",
+  Comment = "Comment",
   FontFace = "FontFace",
   Media = "Media",
   Mixin = "Mixin",
@@ -23,13 +25,18 @@ export enum RuleKind {
 }
 
 type BaseRule<TKind extends RuleKind> = {
-  kind: TKind;
+  ruleKind: TKind;
+  location: SourceLocation;
 };
 
 export enum SelectorKind {
   Group = "Group",
   Combo = "Combo",
   Descendent = "Descendent",
+  This = "This",
+  Within = "Within",
+  Global = "Global",
+  Prefixed = "Prefixed",
   PseudoElement = "PseudoElement",
   PseudoParamElement = "PseudoParamElement",
   Not = "Not",
@@ -44,12 +51,30 @@ export enum SelectorKind {
 }
 
 export type BaseSelector<TKind extends SelectorKind> = {
-  kind: TKind;
+  selectorKind: TKind;
+  location: SourceLocation;
 };
 
 type GroupSelector = {
   selectors: Selector[];
 } & BaseSelector<SelectorKind.Group>;
+
+type WithinSelector = {
+  selector: Selector;
+} & BaseSelector<SelectorKind.Within>;
+
+type GlobalSelector = {
+  selector: Selector;
+} & BaseSelector<SelectorKind.Global>;
+
+type SelfSelector = {
+  selector: Selector;
+} & BaseSelector<SelectorKind.This>;
+
+type PrefixedSelector = {
+  connector: string;
+  postfixSelector?: Selector;
+} & BaseSelector<SelectorKind.Prefixed>;
 
 type ComboSelector = {
   selectors: Selector[];
@@ -61,7 +86,7 @@ type DescendentSelector = {
 } & BaseSelector<SelectorKind.Descendent>;
 
 type PseudoElementSelector = {
-  selector: string;
+  separator: string;
   target: Selector;
   name: string;
 } & BaseSelector<SelectorKind.PseudoElement>;
@@ -100,6 +125,7 @@ type ElementSelector = {
 } & BaseSelector<SelectorKind.Element>;
 
 type AttributeSelector = {
+  operator?: string;
   name: string;
   value?: string;
 } & BaseSelector<SelectorKind.Attribute>;
@@ -112,8 +138,12 @@ type AllSelector = BaseSelector<SelectorKind.AllSelector>;
 
 export type Selector =
   | GroupSelector
+  | WithinSelector
+  | GlobalSelector
+  | PrefixedSelector
   | ComboSelector
   | DescendentSelector
+  | SelfSelector
   | PseudoElementSelector
   | PseudoParamElementSelector
   | NotSelector
@@ -135,6 +165,7 @@ export enum StyleDeclarationKind {
 
 type BaseStyleDeclaration<TKind extends StyleDeclarationKind> = {
   declarationKind: TKind;
+  location: SourceLocation;
 };
 
 export type KeyValueDeclaration = {
@@ -143,6 +174,7 @@ export type KeyValueDeclaration = {
   location: SourceLocation;
   nameLocation: SourceLocation;
   valueLocation: SourceLocation;
+  raws: BasicRaws;
 } & BaseStyleDeclaration<StyleDeclarationKind.KeyValue>;
 
 export type MediaDeclaration = ConditionShape &
@@ -150,6 +182,9 @@ export type MediaDeclaration = ConditionShape &
 
 export type Include = BaseInclude &
   BaseStyleDeclaration<StyleDeclarationKind.Include>;
+export type Content = {
+  raws: BasicRaws;
+} & BaseStyleDeclaration<StyleDeclarationKind.Content>;
 
 export type IncludeReference = {
   parts: IncludePart[];
@@ -161,13 +196,18 @@ export type IncludePart = {
   location: SourceLocation;
 };
 
-export type StyleDeclaration = KeyValueDeclaration | Include | MediaDeclaration;
+export type StyleDeclaration =
+  | KeyValueDeclaration
+  | Include
+  | MediaDeclaration
+  | Content;
 
 export type StyleRule = {
   location: SourceLocation;
   selector: Selector;
   declarations: StyleDeclaration[];
   children: StyleRule[];
+  raws: BasicRaws;
 } & BaseRule<RuleKind.Style>;
 
 /*
@@ -182,6 +222,7 @@ pub struct KeyframeRule {
 
 export type KeyframeRule = {
   key: string;
+  raws: BasicRaws;
   declarations: StyleDeclaration[];
   location: SourceLocation;
 } & BaseRule<RuleKind.Keyframe>;
@@ -198,13 +239,15 @@ pub struct KeyframesRule {
 export type KeyframesRule = {
   name: string;
   rules: KeyframeRule[];
+  raws: BasicRaws;
   location: SourceLocation;
 } & BaseRule<RuleKind.Keyframes>;
 
 type ConditionShape = {
   name: string;
   conditionText: string;
-  rules: Rule[];
+  rules: ChildRule[];
+  raws: BasicRaws;
   location: SourceLocation;
   declarations: StyleDeclaration[];
 };
@@ -213,19 +256,31 @@ type BaseConditionRule<TRule extends RuleKind> = ConditionShape &
   BaseRule<TRule>;
 
 type MediaRule = BaseConditionRule<RuleKind.Media>;
+export type CommentRule = {
+  value: string;
+} & BaseRule<RuleKind.Comment>;
+type FontFaceRule = {
+  declarations: StyleDeclaration[];
+  raws: BasicRaws;
+} & BaseRule<RuleKind.FontFace>;
+type CharsetRule = BaseRule<RuleKind.Charset>;
+
 type BaseInclude = {
   mixinName: IncludeReference;
   location: SourceLocation;
   declarations: StyleDeclaration[];
   rules: StyleRule[];
+  raws: BasicRaws;
 };
 
 type IncludeRule = BaseInclude & BaseRule<RuleKind.Include>;
 
 export type MixinRule = {
   name: MixinName;
+  raws: BasicRaws;
   declarations: StyleDeclaration[];
   location: SourceLocation;
+  rules: StyleRule[];
 } & BaseRule<RuleKind.Mixin>;
 
 export type MixinName = {
@@ -236,14 +291,20 @@ export type MixinName = {
 export type ExportRule = {
   rules: Rule[];
   location: SourceLocation;
+  raws: BasicRaws;
 } & BaseRule<RuleKind.Export>;
 
 export type ConditionRule = MediaRule;
+export type ChildRule = any;
 export type Rule =
   | StyleRule
   | ConditionRule
   | MixinRule
   | ExportRule
+  | CharsetRule
+  | CommentRule
+  | MediaRule
+  | FontFaceRule
   | IncludeRule
   | KeyframesRule
   | KeyframeRule;
@@ -253,7 +314,9 @@ export type StyleExpression =
   | Include
   | MixinName
   | IncludePart
-  | IncludeReference;
+  | IncludeReference
+  | StyleDeclaration
+  | Selector;
 
 export const getSheetClassNames = (
   sheet: Sheet,
@@ -270,7 +333,7 @@ const getRulesClassNames = (rules: Rule[], allClassNames: string[] = []) => {
 };
 
 export const getRuleClassNames = (rule: Rule, allClassNames: string[] = []) => {
-  switch (rule.kind) {
+  switch (rule.ruleKind) {
     case RuleKind.Media: {
       getRulesClassNames(rule.rules, allClassNames);
       break;
@@ -304,7 +367,7 @@ const traverseStyleExpressions = (
 };
 
 export const isRule = (expression: StyleExpression): expression is Rule => {
-  return RuleKind[(expression as Rule).kind] != null;
+  return RuleKind[(expression as Rule).ruleKind] != null;
 };
 export const isStyleDeclaration = (
   expression: Expression
@@ -313,6 +376,28 @@ export const isStyleDeclaration = (
     StyleDeclarationKind[(expression as StyleDeclaration).declarationKind] !=
     null
   );
+};
+
+export const isMaybeStyleSheet = (expression): expression is Sheet =>
+  expression.rules != null &&
+  expression.rules != null &&
+  expression.raws != null;
+
+export const isStyleObject = (expression): expression is StyleExpression => {
+  return (
+    expression.rules != null ||
+    isStyleDeclaration(expression) ||
+    isRule(expression) ||
+    isStyleSelector(expression)
+  );
+};
+
+export const isStyleSelector = (expression): expression is Selector => {
+  return SelectorKind[(expression as Selector).selectorKind] != null;
+};
+
+export const isSelector = (expression): expression is Selector => {
+  return SelectorKind[expression.kind] != null;
 };
 
 export const isIncludePart = (
@@ -329,7 +414,7 @@ export const traverseStyleExpression = (
     return false;
   }
   if (isRule(rule)) {
-    switch (rule.kind) {
+    switch (rule.ruleKind) {
       case RuleKind.Media: {
         return traverseStyleExpressions(rule.rules, each);
       }
@@ -366,7 +451,7 @@ export const getSelectorClassNames = (
   selector: Selector,
   allClassNames: string[] = []
 ) => {
-  switch (selector.kind) {
+  switch (selector.selectorKind) {
     case SelectorKind.Combo:
     case SelectorKind.Group: {
       for (const child of selector.selectors) {

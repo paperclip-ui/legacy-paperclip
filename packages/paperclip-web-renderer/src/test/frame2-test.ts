@@ -618,7 +618,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style>[data-pc-a0539270][data-pc-a0539270] {font-family: sans-serif; color: rgb(100, 172, 86); font-size: 24px;} </style></div><div><div>Hello world </div></div>`
+      `<div></div><div><style>[data-pc-a0539270][data-pc-a0539270] {font-family: sans-serif; color: rgb(100, 172, 86); font-size: 24px;} </style></div><div><div> Hello world </div></div>`
     );
   });
 });

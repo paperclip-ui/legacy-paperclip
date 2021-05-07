@@ -4,14 +4,15 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: -91, y: 84 }
 -->
-<div export component as="Tools" 
-  className="tools" 
+<div export
+  component
+  as="Tools"
+  className="tools"
   {onClick?}
   {onMouseUp?}
   {onMouseMove?}
   {onMouseLeave?}
-  {onWheel?}
-  >
+  {onWheel?}>
   <style>
     position: absolute;
     top: 0px;
@@ -27,6 +28,4 @@
 <!--
   @frame { visible: false, title: "Title me this", width: 798, height: 586, x: 28, y: -178 }
 -->
-<Tools>
-  This is a tool
-</Tools>
+<Tools>This is a tool</Tools>

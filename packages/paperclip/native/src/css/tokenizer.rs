@@ -98,13 +98,10 @@ pub enum Token<'a> {
   Semicolon,
 
   // /*
-  ScriptCommentOpen,
-
-  // */
-  ScriptCommentClose,
+  ScriptComment(&'a str),
 
   // //
-  LineCommentOpen,
+  LineComment(&'a str),
 
   // div, blay
   Keyword(&'a str),
@@ -123,15 +120,19 @@ pub struct Tokenizer<'a> {
 }
 
 impl<'a> Tokenizer<'a> {
-  pub fn eat_whitespace(&mut self) {
+  pub fn eat_whitespace(&mut self) -> Option<&'a [u8]> {
     if self.is_eof() {
-      return;
+      return None;
     }
+
     let is_whitepace = |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') };
+    let start = self.pos;
     while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
       self.pos += 1;
       self.utf16_pos += 1;
     }
+
+    Some(&self.source[start..self.pos])
   }
 
   pub fn utf8_pos() {}
@@ -201,11 +202,16 @@ impl<'a> Tokenizer<'a> {
       b'/' => {
         if self.starts_with(b"//") {
           self.forward(2);
-          self.scan(|c| -> bool { !matches!(c, b'\n' | b'\r') });
+          let start = self.pos;
+          self.scan(|c| -> bool { !matches!(c, b'\n' | b'\r') })?;
+          let buffer = std::str::from_utf8(&self.source[start..self.pos]).unwrap();
+
           self.forward(1);
-          Ok(Token::LineCommentOpen)
+          Ok(Token::LineComment(buffer))
         } else if self.starts_with(b"/*") {
           self.forward(2);
+
+          let start = self.pos;
 
           while !self.is_eof() {
             if self.pos < self.source.len() - 2
@@ -216,10 +222,23 @@ impl<'a> Tokenizer<'a> {
             }
             self.next_utf16_char()?;
           }
-          Ok(Token::ScriptCommentOpen)
+          let buffer = std::str::from_utf8(&self.source[start..self.pos]).unwrap();
+
+          self.forward(2);
+
+          Ok(Token::ScriptComment(buffer))
         } else {
           self.forward(1);
           Ok(Token::Byte(b'/'))
+        }
+      }
+      b'*' => {
+        if self.starts_with(b"*=") {
+          self.forward(2);
+          Ok(Token::StarEqual)
+        } else {
+          self.forward(1);
+          Ok(Token::Star)
         }
       }
       b'-' => {
@@ -228,18 +247,6 @@ impl<'a> Tokenizer<'a> {
           Ok(Token::Minus)
         } else {
           Ok(Token::Keyword(self.search_keyword()))
-        }
-      }
-      b'*' => {
-        if self.starts_with(b"*/") {
-          self.forward(2);
-          Ok(Token::ScriptCommentClose)
-        } else if self.starts_with(b"*=") {
-          self.forward(2);
-          Ok(Token::StarEqual)
-        } else {
-          self.forward(1);
-          Ok(Token::Star)
         }
       }
       b'!' => {

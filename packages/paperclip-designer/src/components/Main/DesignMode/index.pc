@@ -102,4 +102,3 @@
   @frame { title: "Center / Empty", width: 1024, height: 768, x: 2558, y: 736 }
 -->
 <Preview showCanvas v2 />
-

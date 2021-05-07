@@ -214,7 +214,7 @@ export const infer = (ast: Node): ShapeInference => {
 };
 
 const inferNode = (ast: Node, isRoot: boolean, context: Context): Context => {
-  switch (ast.kind) {
+  switch (ast.nodeKind) {
     case NodeKind.Element:
       return inferElement(ast, isRoot, context);
     case NodeKind.Slot:
@@ -234,7 +234,7 @@ const inferElement = (element: Element, isRoot: boolean, context: Context) => {
 };
 
 const inferAttribute = (attribute: Attribute, context: Context) => {
-  switch (attribute.kind) {
+  switch (attribute.attrKind) {
     case AttributeKind.KeyValueAttribute: {
       if (
         attribute.value &&

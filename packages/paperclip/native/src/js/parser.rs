@@ -12,19 +12,14 @@ struct Context<'a, 'b> {
 
 pub fn _parse<'a>(source: &'a str) -> Result<ast::Expression, ParseError> {
   let mut tokenizer = Tokenizer::new(source);
-  parse_with_tokenizer(&mut tokenizer, "".to_string(), |_token| true)
+  parse_with_tokenizer(&mut tokenizer, "".to_string())
 }
 
-pub fn parse_with_tokenizer<'a, FUntil>(
+pub fn parse_with_tokenizer<'a>(
   tokenizer: &mut Tokenizer<'a>,
   id_seed: String,
-  _until: FUntil,
-) -> Result<ast::Expression, ParseError>
-where
-  FUntil: Fn(Token) -> bool,
-{
+) -> Result<ast::Expression, ParseError> {
   let mut context = Context { tokenizer, id_seed };
-
   parse_top(&mut context)
 }
 
@@ -41,13 +36,14 @@ fn parse_conjunction<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expre
     return Ok(left);
   }
 
-  let operator_option = match context.tokenizer.peek(1)? {
+  let operator_option = match context.tokenizer.peek_eat_whitespace(1)? {
     Token::LogicalAnd => Some(ast::ConjunctionOperatorKind::And),
     Token::LogicalOr => Some(ast::ConjunctionOperatorKind::Or),
     _ => None,
   };
 
   if let Some(operator) = operator_option {
+    context.tokenizer.eat_whitespace();
     context.tokenizer.next()?;
     let right = parse_top(context)?;
     Ok(ast::Expression::Conjunction(ast::Conjunction {
@@ -77,7 +73,6 @@ fn parse_expression<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expres
     _ => parse_word(context),
   };
 
-  context.tokenizer.eat_whitespace();
   result
 }
 fn parse_not<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
@@ -95,6 +90,7 @@ fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, 
   let node = ast::Expression::Node(Box::new(parse_tag(
     &mut pc_tokenizer,
     vec![context.id_seed.to_string()],
+    None,
   )?));
   context.tokenizer.set_pos(&pc_tokenizer.get_pos());
   Ok(node)

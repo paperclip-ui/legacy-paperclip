@@ -1,11 +1,15 @@
 <import src="components/Theme/index.pc" as="theme" />
 
-
-
 <!--
   @frame { visible: false }
 -->
-<svg export component as="Knob" {onMouseDown} {className?} style="--x: {x}; --y: {y}" data-id="knob-{x}-{y}">
+<svg as="Knob"
+  export
+  component
+  {onMouseDown}
+  {className?}
+  style="--x: {x}; --y: {y}"
+  data-id="knob-{x}-{y}">
   <style>
     width: var(--knob-size);
     height: var(--knob-size);
@@ -13,7 +17,6 @@
     left: calc(100% * var(--x)/100);
     top: calc(100% * var(--y)/100);
     transform: translateY(-50%) translateX(-50%);
-    
   </style>
   <rect>
     <style>
@@ -36,11 +39,17 @@
   </rect>
 </svg>
 
-
 <!--
   @frame { visible: false }
 -->
-<div export component as="Overlay" {onMouseDown?} {style?} {onClick?}  className:knobs="has-knobs" className="overlay">
+<div as="Overlay"
+  export
+  component
+  {onMouseDown?}
+  {style?}
+  {onClick?}
+  className:knobs="has-knobs"
+  className="overlay">
   <style>
     --background: var(--vscode-button-hoverBackground, rgb(0, 132, 255));
     --foreground: var(--vscode-button-foreground, white);
@@ -64,14 +73,11 @@
       border-radius: 2px;
       padding: 4px 8px;
       left: 0px;
-      :within(.has-knobs) {
-        /* display: none; */
-      }
+      :within(.has-knobs) {}
     </style>
     {size}
   </div>
 </div>
-
 
 <!--
   @frame { visible: false }
@@ -87,28 +93,24 @@
   {children}
 </div>
 
-
 <!--
   @frame { visible: true, title: "With Knobs", width: 299, height: 294, x: 499, y: 1487 }
 -->
 <div className="$theme.font-default">
   <PreviewBox style="left: 50px; top: 50px;">
-    <Overlay size="100 x 10" knobs={<fragment>
-
-    <Knob x={0} y={0} />
-    <Knob x={50} y={0}  />
-    <Knob x={100} y={0}  />
-    <Knob x={100} y={50} />
-    <Knob x={100} y={100} />
-    <Knob x={50} y={100} />
-    <Knob x={0} y={100} />
-    <Knob x={0} y={50} />
-  
-    </fragment>} />
+    <Overlay size="100 x 10"
+      knobs={<fragment>
+        <Knob x={0} y={0} />
+        <Knob x={50} y={0} />
+        <Knob x={100} y={0} />
+        <Knob x={100} y={50} />
+        <Knob x={100} y={100} />
+        <Knob x={50} y={100} />
+        <Knob x={0} y={100} />
+        <Knob x={0} y={50} />
+      </fragment>} />
   </PreviewBox>
 </div>
-
-
 
 <!--
   @frame { title: "Without Knobs", width: 248, height: 247, x: 501, y: 1152 }
@@ -120,22 +122,20 @@
 </div>
 
 <!--
-  @frame { title: "With Knobs", width: 332, height: 273, x: 788, y: 1126 }
+  @frame { title: "With Knobs", width: 332, height: 273, x: 796, y: 1152 }
 -->
 <div className="$theme.font-default">
   <PreviewBox style="left: 50px; top: 50px;">
-    <Overlay size="100 x 1000000000" knobs={<fragment>
-
-    <Knob x={0} y={0} />
-    <Knob x={50} y={0}  />
-    <Knob x={100} y={0}  />
-    <Knob x={100} y={50} />
-    <Knob x={100} y={100} />
-    <Knob x={50} y={100} />
-    <Knob x={0} y={100} />
-    <Knob x={0} y={50} />
-  
-    </fragment>} />
+    <Overlay size="100 x 1000000000"
+      knobs={<fragment>
+        <Knob x={0} y={0} />
+        <Knob x={50} y={0} />
+        <Knob x={100} y={0} />
+        <Knob x={100} y={50} />
+        <Knob x={100} y={100} />
+        <Knob x={50} y={100} />
+        <Knob x={0} y={100} />
+        <Knob x={0} y={50} />
+      </fragment>} />
   </PreviewBox>
 </div>
-

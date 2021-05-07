@@ -7,7 +7,7 @@ import {
   isRule,
   StyleExpression
 } from "./css-ast";
-import { SourceLocation } from "./base-ast";
+import { BasicRaws, SourceLocation } from "./base-ast";
 import * as crc32 from "crc32";
 import { resolveImportFile } from "./resolve";
 import * as path from "path";
@@ -18,7 +18,6 @@ import {
   PREVIEW_ATTR_NAME
 } from "./constants";
 import { memoize } from "./memo";
-import { VirtualElement, VirtualFragment } from "./virt";
 
 export enum NodeKind {
   Fragment = "Fragment",
@@ -31,7 +30,7 @@ export enum NodeKind {
 }
 
 export type BaseNode<TKind extends NodeKind> = {
-  kind: TKind;
+  nodeKind: TKind;
 };
 
 // TODO - include location here.
@@ -46,6 +45,7 @@ export type Annotation = {
 } & BaseNode<NodeKind.Annotation>;
 
 export declare type Comment = {
+  raws: BasicRaws;
   value: string;
   annotation: Annotation;
   location: SourceLocation;
@@ -62,18 +62,25 @@ type BaseAnnotationProperty<TKind extends AnnotationPropertyKind> = {
 
 export type TextAnnotation = {
   value: string;
+  raws: BasicRaws;
 } & BaseAnnotationProperty<AnnotationPropertyKind.Text>;
 
 export type DeclarationAnnotation = {
   name: string;
   value: JsExpression;
+  raws: BasicRaws;
 } & BaseAnnotationProperty<AnnotationPropertyKind.Declaration>;
 
 export type AnnotationProperty = TextAnnotation | DeclarationAnnotation;
 
+export type ElementRaws = {
+  before: string;
+};
+
 export type Element = {
   id: string;
   location: SourceLocation;
+  raws: ElementRaws;
 
   // TODO - change this to OpenTag. Don't keep location here
   openTagLocation: SourceLocation;
@@ -89,6 +96,7 @@ export type Element = {
 export type StyleElement = {
   sheet: Sheet;
   location: SourceLocation;
+  raws: BasicRaws;
 } & BaseNode<NodeKind.StyleElement>;
 
 export enum AttributeKind {
@@ -99,7 +107,7 @@ export enum AttributeKind {
 }
 
 type BaseAttribute<TKind extends AttributeKind> = {
-  kind: TKind;
+  attrKind: TKind;
 };
 
 type ShorthandAttribute = {
@@ -159,12 +167,14 @@ type BaseDynamicStringAttributeValuePart<
 };
 
 type DynamicStringLiteralPart = {
+  location: SourceLocation;
   value: string;
 } & BaseDynamicStringAttributeValuePart<
   DynamicStringAttributeValuePartKind.Literal
 >;
 
 type DynamicStringClassNamePiercePart = {
+  location: SourceLocation;
   className: string;
 } & BaseDynamicStringAttributeValuePart<
   DynamicStringAttributeValuePartKind.ClassNamePierce
@@ -173,7 +183,7 @@ type DynamicStringClassNamePiercePart = {
 type DynamicStringSlotPart = JsExpression &
   BaseDynamicStringAttributeValuePart<DynamicStringAttributeValuePartKind.Slot>;
 
-type DynamicStringAttributeValuePart =
+export type DynamicStringAttributeValuePart =
   | DynamicStringLiteralPart
   | DynamicStringClassNamePiercePart
   | DynamicStringSlotPart;
@@ -202,6 +212,7 @@ export type Fragment = {
 export type Slot = {
   script: JsExpression;
   location: SourceLocation;
+  raws: BasicRaws;
 } & BaseNode<NodeKind.Slot>;
 
 export type Node =
@@ -212,7 +223,13 @@ export type Node =
   | Slot
   | Annotation
   | Comment;
-export type Expression = Node | Attribute | AttributeValue | StyleExpression;
+export type Expression =
+  | Node
+  | Attribute
+  | AttributeValue
+  | StyleExpression
+  | JsExpression
+  | DynamicStringAttributeValuePart;
 
 const a: AttributeValue = null;
 export const getImports = (ast: Node): Element[] =>
@@ -248,7 +265,7 @@ export const getImportBySrc = (src: string, ast: Node): Element | null =>
   });
 
 export const getChildren = (ast: Node): Node[] => {
-  if (ast.kind === NodeKind.Element || ast.kind === NodeKind.Fragment) {
+  if (ast.nodeKind === NodeKind.Element || ast.nodeKind === NodeKind.Fragment) {
     return ast.children;
   }
   return [];
@@ -263,7 +280,7 @@ export const getStyleScopeId = (filePath: string) => {
 
 export const getChildrenByTagName = (tagName: string, parent: Node) =>
   getChildren(parent).filter(child => {
-    return child.kind === NodeKind.Element && child.tagName === tagName;
+    return child.nodeKind === NodeKind.Element && child.tagName === tagName;
   }) as Element[];
 
 export const findByNamespace = (
@@ -271,7 +288,7 @@ export const findByNamespace = (
   current: Node,
   allChildrenByNamespace: Element[] = []
 ) => {
-  if (current.kind === NodeKind.Element) {
+  if (current.nodeKind === NodeKind.Element) {
     if (current.tagName.split(".")[0] === namespace) {
       allChildrenByNamespace.push(current);
     }
@@ -280,10 +297,10 @@ export const findByNamespace = (
     findByNamespace(namespace, child, allChildrenByNamespace);
   }
 
-  if (current.kind === NodeKind.Element) {
+  if (current.nodeKind === NodeKind.Element) {
     for (const attribute of current.attributes) {
       if (
-        attribute.kind === AttributeKind.KeyValueAttribute &&
+        attribute.attrKind === AttributeKind.KeyValueAttribute &&
         attribute.value
       ) {
         if (
@@ -314,7 +331,9 @@ export const getMetaValue = (name: string, root: Node) => {
 
 export const getAttribute = (name: string, element: Element) =>
   element.attributes.find(attr => {
-    return attr.kind === AttributeKind.KeyValueAttribute && attr.name === name;
+    return (
+      attr.attrKind === AttributeKind.KeyValueAttribute && attr.name === name
+    );
   }) as KeyValueAttribute;
 
 export const getAttributeValue = (name: string, element: Element) => {
@@ -333,7 +352,7 @@ export const getStyleElements = (ast: Node): StyleElement[] => {
   const styleElements: StyleElement[] = [];
 
   traverseExpression(ast, (node: Node) => {
-    if (node.kind === NodeKind.StyleElement) {
+    if (node.nodeKind === NodeKind.StyleElement) {
       styleElements.push(node);
     }
   });
@@ -345,16 +364,16 @@ export const isVisibleElement = (ast: Element): boolean => {
   return !/^(import|logic|meta|style|part|preview)$/.test(ast.tagName);
 };
 export const isVisibleNode = (node: Node): boolean =>
-  node.kind === NodeKind.Text ||
-  node.kind === NodeKind.Fragment ||
-  node.kind === NodeKind.Slot ||
-  (node.kind === NodeKind.Element && isVisibleElement(node));
+  node.nodeKind === NodeKind.Text ||
+  node.nodeKind === NodeKind.Fragment ||
+  node.nodeKind === NodeKind.Slot ||
+  (node.nodeKind === NodeKind.Element && isVisibleElement(node));
 
 export const getVisibleChildNodes = (ast: Node): Node[] =>
   getChildren(ast).filter(isVisibleNode);
 
 export const isComponent = (node: Node): node is Element =>
-  node.kind === NodeKind.Element &&
+  node.nodeKind === NodeKind.Element &&
   hasAttribute("component", node) &&
   hasAttribute(AS_ATTR_NAME, node);
 
@@ -373,7 +392,8 @@ export const getDefaultPart = (ast: Node): Element =>
 
 export const getLogicElement = (ast: Node): Element | null => {
   return getChildren(ast).find(
-    child => child.kind === NodeKind.Element && child.tagName === LOGIC_TAG_NAME
+    child =>
+      child.nodeKind === NodeKind.Element && child.tagName === LOGIC_TAG_NAME
   ) as Element;
 };
 
@@ -408,8 +428,8 @@ export const getTreeNodeMap = memoize(
       [path]: current
     };
     if (
-      current.kind === NodeKind.Fragment ||
-      current.kind === NodeKind.Element
+      current.nodeKind === NodeKind.Fragment ||
+      current.nodeKind === NodeKind.Element
     ) {
       Object.assign(
         map,
@@ -427,7 +447,7 @@ export const isComponentInstance = (
   importIds: string[]
 ): node is Element => {
   return (
-    node.kind === NodeKind.Element &&
+    node.nodeKind === NodeKind.Element &&
     importIds.indexOf(node.tagName.split(".").shift()) !== -1
   );
 };
@@ -446,7 +466,7 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
   const mixins: Record<string, MixinRule> = {};
   for (const style of styles) {
     traverseSheet(style.sheet, rule => {
-      if (rule && isRule(rule) && rule.kind === RuleKind.Mixin) {
+      if (rule && isRule(rule) && rule.ruleKind === RuleKind.Mixin) {
         mixins[rule.name.value] = rule;
       }
     });
@@ -456,11 +476,20 @@ export const getMixins = (ast: Node): Record<string, MixinRule> => {
 };
 
 export const isNode = (ast: Expression): ast is Node =>
-  NodeKind[(ast as Node).kind] != null;
+  NodeKind[(ast as Node).nodeKind] != null;
 export const isAttribute = (ast: Expression): ast is Attribute =>
-  AttributeKind[(ast as Attribute).kind] != null;
+  AttributeKind[(ast as Attribute).attrKind] != null;
 export const isAttributeValue = (ast: Expression): ast is AttributeValue =>
   AttributeValueKind[(ast as AttributeValue).attrValueKind] != null;
+
+export const isJsExpression = (ast: Expression): ast is JsExpression =>
+  JsExpressionKind[(ast as JsExpression).jsKind] != null;
+export const isDynamicStringAttributeValuePart = (
+  ast: Expression
+): ast is DynamicStringAttributeValuePart =>
+  DynamicStringAttributeValuePartKind[
+    (ast as DynamicStringAttributeValuePart).partKind
+  ] != null;
 
 export const traverseExpression = (
   ast: Expression,
@@ -470,7 +499,7 @@ export const traverseExpression = (
     return false;
   }
   if (isNode(ast)) {
-    switch (ast.kind) {
+    switch (ast.nodeKind) {
       case NodeKind.Element: {
         return (
           traverseExpressions(ast.attributes, each) &&
@@ -513,13 +542,13 @@ export const getNestedReferences = (
   node: Node,
   _statements: [Reference, string][] = []
 ): [Reference, string][] => {
-  if (node.kind === NodeKind.Slot) {
+  if (node.nodeKind === NodeKind.Slot) {
     maybeAddReference(node.script, _statements);
   } else {
-    if (node.kind === NodeKind.Element) {
+    if (node.nodeKind === NodeKind.Element) {
       for (const attr of node.attributes) {
         if (
-          attr.kind == AttributeKind.KeyValueAttribute &&
+          attr.attrKind == AttributeKind.KeyValueAttribute &&
           attr.value &&
           attr.value.attrValueKind === AttributeValueKind.Slot
         ) {
@@ -529,12 +558,12 @@ export const getNestedReferences = (
             _statements.push([attr.value.script, attr.name]);
           }
         } else if (
-          attr.kind === AttributeKind.ShorthandAttribute &&
+          attr.attrKind === AttributeKind.ShorthandAttribute &&
           attr.reference.jsKind === JsExpressionKind.Reference
         ) {
           _statements.push([attr.reference, attr.reference[0]]);
         } else if (
-          attr.kind === AttributeKind.SpreadAttribute &&
+          attr.attrKind === AttributeKind.SpreadAttribute &&
           attr.script.jsKind === JsExpressionKind.Reference
         ) {
           _statements.push([attr.script, attr.script[0]]);
@@ -544,7 +573,7 @@ export const getNestedReferences = (
 
     for (const child of getChildren(node)) {
       if (
-        child.kind === NodeKind.Element &&
+        child.nodeKind === NodeKind.Element &&
         hasAttribute(PREVIEW_ATTR_NAME, child)
       ) {
         continue;

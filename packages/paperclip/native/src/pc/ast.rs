@@ -1,13 +1,28 @@
 use crate::annotation::ast as annotation_ast;
-use crate::base::ast::Location;
+use crate::base::ast::{BasicRaws, Location};
 use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
 use serde::Serialize;
 use std::fmt;
+use std::str;
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ElementRaws {
+  pub before: String,
+}
+
+impl ElementRaws {
+  pub fn new(before: &[u8]) -> ElementRaws {
+    ElementRaws {
+      before: str::from_utf8(before).unwrap().to_string(),
+    }
+  }
+}
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
   pub id: String,
+  pub raws: ElementRaws,
 
   pub location: Location,
 
@@ -25,6 +40,7 @@ pub struct Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Comment {
+  pub raws: BasicRaws,
   pub location: Location,
   pub annotation: annotation_ast::Annotation,
 }
@@ -33,10 +49,11 @@ pub struct Comment {
 pub struct ValueObject {
   pub location: Location,
   pub value: String,
+  pub raws: BasicRaws,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "kind")]
+#[serde(tag = "nodeKind")]
 pub enum Node {
   Text(ValueObject),
   Comment(Comment),
@@ -79,6 +96,7 @@ pub struct Slot {
   pub omit_from_compilation: bool,
   pub script: js_ast::Expression,
   pub location: Location,
+  pub raws: BasicRaws,
 }
 
 impl fmt::Display for Node {
@@ -199,7 +217,7 @@ impl fmt::Display for Element {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "kind")]
+#[serde(tag = "attrKind")]
 pub enum Attribute {
   ShorthandAttribute(ShorthandAttribute),
   SpreadAttribute(SpreadAttribute),
@@ -318,6 +336,7 @@ impl fmt::Display for AttributeValue {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
+  pub raws: ElementRaws,
   pub attributes: Vec<Attribute>,
   pub sheet: css_ast::Sheet,
   pub location: Location,

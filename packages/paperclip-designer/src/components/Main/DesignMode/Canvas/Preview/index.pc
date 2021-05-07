@@ -1,5 +1,4 @@
 <import src="components/Theme/index.pc" as="theme" />
-
 <style>
   .preview {
     position: absolute;
@@ -14,5 +13,4 @@
 -->
 
 
-<div export component as="Preview" 
-  className="preview $theme.full-wh" />
+<div export component as="Preview" className="preview $theme.full-wh" />

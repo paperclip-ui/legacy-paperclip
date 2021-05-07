@@ -5,7 +5,11 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 1457, y: -176 }
 -->
-<div export component as="FramesContainer" {style?} className="$theme.font-default {className?}">
+<div export
+  component
+  as="FramesContainer"
+  {style?}
+  className="$theme.font-default {className?}">
   <style>
     width: 100%;
     height: 100%;
@@ -20,7 +24,6 @@
   @frame { visible: false, width: 1024, height: 768, x: 668, y: 1081 }
 -->
 <div export component as="Frame" {style?} {className?}>
-
   <!-- default dimensions -->
   <style>
     position: absolute;
@@ -32,23 +35,32 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 91, y: -1397 }
 -->
-<div export component as="FrameTitle" {onDoubleClick} {style?} {onClick?} {onMouseUp?} className="v2" className:editing="editing" className:hover="hover">
+<div export
+  component
+  as="FrameTitle"
+  {onDoubleClick}
+  {style?}
+  {onClick?}
+  {onMouseUp?}
+  className="v2"
+  className:editing="editing"
+  className:hover="hover">
   <style>
-      transform: translateY(calc(-100% - 6px));
-      position: absolute;
-      user-select: none;
-      top: 0px;
-      left: 0px;
-      text-shadow: 1px 1px white;
-      color: var(--grey-300);
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      &:hover, &.hover {
-        .expand-button {
-          visibility: visible;
-        }
+    transform: translateY(calc(-100% - 6px));
+    position: absolute;
+    user-select: none;
+    top: 0px;
+    left: 0px;
+    text-shadow: 1px 1px white;
+    color: var(--grey-300);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    &:hover, &.hover {
+      .expand-button {
+        visibility: visible;
       }
+    }
   </style>
   <span>
     <style>
@@ -63,7 +75,12 @@
     </style>
     {value}
   </span>
-  <input type="text" {onBlur?} ref={inputRef} autofocus={editing} defaultValue={value} {onKeyPress?}>
+  <input type="text"
+    {onBlur?}
+    ref={inputRef}
+    autofocus={editing}
+    defaultValue={value}
+    {onKeyPress?}>
     <style>
       border: none;
       display: none;
@@ -82,7 +99,6 @@
       flex-shrink: 0;
       cursor: pointer;
       background: currentColor;
-      /* background: red; */
       width: var(--size);
       height: var(--size);
       display: block;
@@ -119,4 +135,3 @@
     <FrameBody />
   </Frame>
 </FramesContainer>
-

@@ -1,0 +1,25 @@
+<!-- abba -->
+<div>
+  test
+</div>
+
+<!------------
+  comments are basically maintained without formatting
+-------------->
+
+<!-- 
+  @some "annotation"
+  @frame { width: 100, height: 200 }
+  some text
+-->
+<div>
+  <span>
+    <strong>
+      <!-- 
+        nested comments are maintained
+      -->
+      some text
+    </strong>
+    <span><!-- this should break --> more text</span>
+  </span>
+</div>

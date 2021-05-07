@@ -235,26 +235,32 @@ const translateComponent = (
 const translateParts = (ast: Node, context: TranslateContext) => {
   let currentAnnotation: Annotation;
   for (const child of getChildren(ast)) {
-    if (child.kind === NodeKind.Comment) {
+    if (child.nodeKind === NodeKind.Comment) {
       currentAnnotation = child.annotation;
       continue;
     }
 
     // already translated, so skip.
-    if (!isComponent(child) || getAttributeStringValue(AS_ATTR_NAME, child) === DEFAULT_PART_ID || !hasAttribute(EXPORT_TAG_NAME, child)) {
+    if (
+      !isComponent(child) ||
+      getAttributeStringValue(AS_ATTR_NAME, child) === DEFAULT_PART_ID ||
+      !hasAttribute(EXPORT_TAG_NAME, child)
+    ) {
       currentAnnotation = null;
       continue;
     }
 
-
     context = translatePart(child, currentAnnotation, context);
   }
-  
 
   return context;
 };
 
-const translatePart = (part: Element, annotation: Annotation | undefined, context: TranslateContext) => {
+const translatePart = (
+  part: Element,
+  annotation: Annotation | undefined,
+  context: TranslateContext
+) => {
   const componentName = getPartClassName(part, context.fileUri);
   const propsName = `${componentName}Props`;
   context = translateComponent(part, propsName, context);

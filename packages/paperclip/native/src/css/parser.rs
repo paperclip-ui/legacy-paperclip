@@ -5,7 +5,7 @@
 
 use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
-use crate::base::ast::Location;
+use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
@@ -55,8 +55,12 @@ fn eat_comments<'a, 'b>(
 
 fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseError> {
   let start = context.tokenizer.utf16_pos;
+
+  let raw_before = eat_superfluous(context)?;
+
   let (rules, declarations) = parse_rules_and_declarations(context)?;
   Ok(Sheet {
+    raws: BasicRaws::new(raw_before, None),
     rules,
     declarations,
     location: Location::new(start, context.tokenizer.utf16_pos),
@@ -68,54 +72,98 @@ fn parse_rules_and_declarations<'a, 'b>(
 ) -> Result<(Vec<Rule>, Vec<Declaration>), ParseError> {
   let mut rules = vec![];
   let mut declarations = vec![];
-  eat_superfluous(context)?;
+  let mut raw_before = eat_superfluous(context)?;
+
   while !context.ended()? {
     if is_next_key_value_declaration(context)? {
-      declarations.push(parse_key_value_declaration(context)?);
+      declarations.push(parse_key_value_declaration(context, raw_before)?);
     } else {
-      rules.push(parse_rule(context)?);
+      rules.push(parse_rule(context, raw_before)?);
     }
-    eat_superfluous(context)?;
+
+    // defensive coding. rules should be implementing eat_whitespace
+    // themselves so that the ASTs can include raws.
+    // TODO - need to test all cases for this, then remove.
+    raw_before = eat_superfluous(context)?;
   }
   Ok((rules, declarations))
 }
 
-fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
+fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Option<&'a [u8]>, ParseError> {
+  let start = context.tokenizer.pos;
+
+  if context.ended()? {
+    return Ok(None);
+  }
+
   while !context.ended()? {
     let tok = context.tokenizer.peek(1).unwrap();
-    if tok == Token::Whitespace {
-      context.tokenizer.next()?;
-    } else if tok == Token::ScriptCommentOpen {
-      eat_script_comments(context)?;
-    } else if tok == Token::LineCommentOpen {
-      context.tokenizer.next()?;
-    } else {
-      break;
+    match tok {
+      Token::Whitespace | Token::ScriptComment(_) | Token::LineComment(_) => {
+        context.tokenizer.next()?;
+      }
+      _ => {
+        break;
+      }
     }
   }
-  Ok(())
+  Ok(Some(
+    &context.tokenizer.source
+      [start..std::cmp::min(context.tokenizer.pos, context.tokenizer.source.len() - 1)],
+  ))
 }
 
-fn parse_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
-  eat_superfluous(context)?;
+fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
+  let raw_before = context.tokenizer.eat_whitespace();
+  let start = context.tokenizer.utf16_pos;
+  let start_tok = context.tokenizer.next()?;
+
+  let buffer = match start_tok {
+    Token::LineComment(buffer) => buffer,
+    Token::ScriptComment(buffer) => buffer,
+    _ => return Err(ParseError::unexpected_token(start)),
+  };
+
+  let pos = context.tokenizer.utf16_pos;
+
+  let raws_after = context.tokenizer.eat_whitespace();
+
+  Ok(Rule::Comment(Comment {
+    value: buffer.to_string(),
+    location: Location::new(start, pos),
+  }))
+}
+
+fn parse_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
+) -> Result<Rule, ParseError> {
   match context.tokenizer.peek(1)? {
+    Token::LineComment(_) => parse_comment(context),
+    Token::ScriptComment(_) => parse_comment(context),
     Token::At => parse_at_rule(context),
-    _ => parse_style_rule(context),
+    _ => parse_style_rule(context, raw_before),
   }
 }
 
-fn parse_style_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
-  Ok(Rule::Style(parse_style_rule2(context, false)?))
+fn parse_style_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
+) -> Result<Rule, ParseError> {
+  Ok(Rule::Style(parse_style_rule2(context, raw_before, false)?))
 }
 
 fn parse_style_rule2<'a, 'b>(
   context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
   is_child_without_amp_prefix: bool,
 ) -> Result<StyleRule, ParseError> {
+  let raw_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
   let selector = parse_selector(context, is_child_without_amp_prefix)?;
-  let (declarations, children) = parse_declaration_body(context)?;
+  let (declarations, children, raw_after) = parse_declaration_body(context)?;
   Ok(StyleRule {
+    raws: BasicRaws::new(raw_before, raw_after),
     selector,
     declarations,
     children,
@@ -125,11 +173,11 @@ fn parse_style_rule2<'a, 'b>(
 
 fn parse_declaration_body<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<StyleRule>, Option<&'a [u8]>), ParseError> {
   eat_superfluous(context)?;
   let block_start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
-  let declarations = parse_declarations_and_children(context)?;
+  let (declarations, rules) = parse_declarations_and_children(context)?;
 
   eat_superfluous(context)?;
   context
@@ -141,15 +189,17 @@ fn parse_declaration_body<'a, 'b>(
       context.tokenizer.utf16_pos,
     )))?;
 
-  eat_superfluous(context)?;
-  Ok((declarations))
+  let raw_after = context.tokenizer.eat_whitespace();
+
+  Ok((declarations, rules, raw_after))
 }
 
 fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
+  let raw_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::At)?;
   let name = parse_selector_name(context)?;
-  eat_superfluous(context)?;
+  context.tokenizer.eat_whitespace();
   match name {
     "charset" => {
       let start = context.tokenizer.utf16_pos;
@@ -169,48 +219,63 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
     }
     "supports" => Ok(Rule::Supports(parse_condition_rule(
       name.to_string(),
+      raw_before,
       context,
     )?)),
-    "mixin" => Ok(Rule::Mixin(parse_mixin_rule(start, context)?)),
+    "mixin" => Ok(Rule::Mixin(parse_mixin_rule(start, raw_before, context)?)),
     "media" => Ok(Rule::Media(parse_condition_rule(
       name.to_string(),
+      raw_before,
       context,
     )?)),
-    "include" => Ok(Rule::Include(parse_include(context)?)),
-    "export" => Ok(Rule::Export(parse_export_rule(context)?)),
-    "keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context)?)),
-    "-webkit-keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context)?)),
-    "font-face" => Ok(Rule::FontFace(parse_font_face_rule(context)?)),
+    "include" => Ok(Rule::Include(parse_include(context, raw_before)?)),
+    "export" => Ok(Rule::Export(parse_export_rule(context, raw_before)?)),
+    "keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context, raw_before)?)),
+    "-webkit-keyframes" => Ok(Rule::Keyframes(parse_keyframes_rule(context, raw_before)?)),
+    "font-face" => Ok(Rule::FontFace(parse_font_face_rule(context, raw_before)?)),
     "document" => Ok(Rule::Document(parse_condition_rule(
       name.to_string(),
+      raw_before,
       context,
     )?)),
-    "page" => Ok(Rule::Page(parse_condition_rule(name.to_string(), context)?)),
+    "page" => Ok(Rule::Page(parse_condition_rule(
+      name.to_string(),
+      raw_before,
+      context,
+    )?)),
     _ => Err(ParseError::unexpected_token(context.tokenizer.utf16_pos)),
   }
 }
 
-fn parse_export_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ExportRule, ParseError> {
+fn parse_export_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
+) -> Result<ExportRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
-  eat_superfluous(context)?;
 
   let mut rules = vec![];
+  let mut raw_nested_before = context.tokenizer.eat_whitespace();
 
   while context.tokenizer.peek(1)? != Token::CurlyClose {
-    rules.push(parse_rule(context)?);
+    rules.push(parse_rule(context, raw_nested_before)?);
+
+    // set to none since rules define after prop
+    raw_nested_before = None;
   }
 
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
   Ok(ExportRule {
     rules,
+    raws: BasicRaws::new(raw_before, None),
     location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
 
 fn parse_condition_rule<'a, 'b>(
   name: String,
+  raw_before: Option<&'a [u8]>,
   context: &mut Context<'a, 'b>,
 ) -> Result<ConditionRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
@@ -219,12 +284,13 @@ fn parse_condition_rule<'a, 'b>(
   })?
   .to_string();
 
-  let (declarations, rules) = parse_declaration_body(context)?;
+  let (declarations, rules, raw_after) = parse_declaration_body(context)?;
 
   Ok(ConditionRule {
     name,
     condition_text,
     declarations,
+    raws: BasicRaws::new(raw_before, raw_after),
     rules,
     location: Location::new(start, context.tokenizer.utf16_pos),
   })
@@ -232,6 +298,7 @@ fn parse_condition_rule<'a, 'b>(
 
 fn parse_mixin_rule<'a, 'b>(
   start: usize,
+  raw_start: Option<&'a [u8]>,
   context: &mut Context<'a, 'b>,
 ) -> Result<MixinRule, ParseError> {
   eat_superfluous(context)?;
@@ -243,9 +310,10 @@ fn parse_mixin_rule<'a, 'b>(
   };
 
   eat_superfluous(context)?;
-  let (declarations, rules) = parse_declaration_body(context)?;
+  let (declarations, rules, raw_after) = parse_declaration_body(context)?;
   Ok(MixinRule {
     location: Location::new(start, context.tokenizer.utf16_pos),
+    raws: BasicRaws::new(raw_start, raw_after),
     name: MixinName {
       value: name,
       location: name_location,
@@ -255,10 +323,14 @@ fn parse_mixin_rule<'a, 'b>(
   })
 }
 
-fn parse_font_face_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<FontFaceRule, ParseError> {
+fn parse_font_face_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
+) -> Result<FontFaceRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
-  let (declarations, _children) = parse_declaration_body(context)?;
+  let (declarations, _children, raw_after) = parse_declaration_body(context)?;
   Ok(FontFaceRule {
+    raws: BasicRaws::new(raw_before, raw_after),
     declarations,
     location: Location::new(start, context.tokenizer.utf16_pos),
   })
@@ -266,6 +338,7 @@ fn parse_font_face_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<FontFac
 
 fn parse_keyframes_rule<'a, 'b>(
   context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
 ) -> Result<KeyframesRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
   let name = parse_selector_name(context)?.to_string();
@@ -275,25 +348,29 @@ fn parse_keyframes_rule<'a, 'b>(
   context.tokenizer.next_expect(Token::CurlyOpen)?;
 
   while !context.tokenizer.is_eof() {
-    eat_superfluous(context)?;
+    let kf_raw_before = eat_superfluous(context)?;
     if context.tokenizer.peek(1)? == Token::CurlyClose {
       break;
     }
-    rules.push(parse_keyframe_rule(context)?);
+    rules.push(parse_keyframe_rule(context, kf_raw_before)?);
   }
 
   context.tokenizer.next_expect(Token::CurlyClose)?;
+  let raw_after = context.tokenizer.eat_whitespace();
   eat_superfluous(context)?;
 
   Ok(KeyframesRule {
     name,
     rules,
-
+    raws: BasicRaws::new(raw_before, raw_after),
     location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
 
-fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<KeyframeRule, ParseError> {
+fn parse_keyframe_rule<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
+) -> Result<KeyframeRule, ParseError> {
   let start = context.tokenizer.utf16_pos;
 
   eat_superfluous(context)?;
@@ -305,9 +382,10 @@ fn parse_keyframe_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Keyframe
   })?
   .to_string();
 
-  let (declarations, _children) = parse_declaration_body(context)?;
+  let (declarations, _children, raw_after) = parse_declaration_body(context)?;
 
   Ok(KeyframeRule {
+    raws: BasicRaws::new(raw_before, raw_after),
     key,
     declarations,
     location: Location::new(start, context.tokenizer.utf16_pos),
@@ -741,25 +819,29 @@ fn parse_declarations_and_children<'a, 'b>(
 ) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
   let mut declarations = vec![];
   let mut children = vec![];
-  eat_superfluous(context)?;
+
+  // START HERE - need to remove superfluous
+  let mut raw_before = eat_superfluous(context)?;
+
   while !context.ended()? {
     if context.tokenizer.peek(1)? == Token::CurlyClose {
       break;
     }
 
-    if let Token::Byte(b'&') = context.tokenizer.peek(1)? {
-      children.push(parse_style_rule2(context, false)?);
-    } else if context.tokenizer.peek(1)? == Token::At {
-      declarations.push(parse_at_declaration(context)?);
+    let tok = context.tokenizer.peek(1)?;
+
+    if let Token::Byte(b'&') = tok {
+      children.push(parse_style_rule2(context, raw_before, false)?);
+    } else if tok == Token::At {
+      declarations.push(parse_at_declaration(context, raw_before)?);
     } else {
       if is_next_declaration(context)? {
-        declarations.push(parse_key_value_declaration(context)?);
+        declarations.push(parse_key_value_declaration(context, raw_before)?);
       } else {
-        children.push(parse_style_rule2(context, true)?);
+        children.push(parse_style_rule2(context, raw_before, true)?);
       }
     }
-
-    eat_superfluous(context)?;
+    raw_before = eat_superfluous(context)?;
   }
 
   Ok((declarations, children))
@@ -793,6 +875,7 @@ fn is_next_key_value_declaration<'a, 'b>(
   let mut found_semicolon = false;
   let mut found_colon = false;
   let mut found_curly_open = false;
+  context.tokenizer.eat_whitespace();
 
   while !context.ended()? {
     let tok = context.tokenizer.next()?;
@@ -813,22 +896,31 @@ fn is_next_key_value_declaration<'a, 'b>(
   return Ok((found_colon && found_semicolon) && !(found_curly_open));
 }
 
-fn eat_script_comments<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<(), ParseError> {
-  eat_comments(context, Token::ScriptCommentOpen, Token::ScriptCommentClose)
-}
+fn parse_at_declaration<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
+) -> Result<Declaration, ParseError> {
+  let start = context.tokenizer.utf16_pos;
 
-fn parse_at_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declaration, ParseError> {
   context.tokenizer.next_expect(Token::At)?;
   let keyword = context.tokenizer.next()?;
 
   match keyword {
-    Token::Keyword("include") => Ok((Declaration::Include(parse_include(context)?))),
-    Token::Keyword("media") => {
-      Ok((Declaration::Media(parse_condition_rule("media".to_string(), context)?)))
-    }
+    Token::Keyword("include") => Ok((Declaration::Include(parse_include(context, raw_before)?))),
+    Token::Keyword("media") => Ok(
+      (Declaration::Media(parse_condition_rule(
+        "media".to_string(),
+        raw_before,
+        context,
+      )?)),
+    ),
     Token::Keyword("content") => {
       context.tokenizer.next_expect(Token::Semicolon);
-      Ok(Declaration::Content)
+      let end = context.tokenizer.utf16_pos;
+      Ok(Declaration::Content(Content {
+        raws: BasicRaws::new(raw_before, context.tokenizer.eat_whitespace()),
+        location: Location::new(start, end),
+      }))
     }
     _ => {
       return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos));
@@ -836,7 +928,10 @@ fn parse_at_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Declara
   }
 }
 
-fn parse_include<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Include, ParseError> {
+fn parse_include<'a, 'b>(
+  context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
+) -> Result<Include, ParseError> {
   let start = context.tokenizer.utf16_pos;
   eat_superfluous(context)?;
   let mut mixin_path: Vec<IncludeReferencePart> = vec![];
@@ -857,6 +952,7 @@ fn parse_include<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Include, Parse
       return Err(ParseError::unexpected_token(start.u16_pos));
     }
   }
+
   let mixin_name = IncludeReference {
     parts: mixin_path,
     location: Location::new(ref_start, context.tokenizer.utf16_pos),
@@ -864,9 +960,9 @@ fn parse_include<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Include, Parse
 
   eat_superfluous(context);
 
-  let (declarations, rules) = if context.tokenizer.peek(1)? == Token::Semicolon {
+  let (declarations, rules, raw_after) = if context.tokenizer.peek(1)? == Token::Semicolon {
     context.tokenizer.next()?; // eat ;
-    (vec![], vec![])
+    (vec![], vec![], None)
   } else if context.tokenizer.peek(1)? == Token::CurlyOpen {
     parse_declaration_body(context)?
   } else {
@@ -875,20 +971,16 @@ fn parse_include<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Include, Parse
 
   Ok(Include {
     mixin_name,
+    raws: BasicRaws::new(raw_before, raw_after),
     rules,
     declarations,
     location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
 
-fn parse_include_declaration<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<Declaration, ParseError> {
-  Ok(Declaration::Include(parse_include(context)?))
-}
-
 fn parse_key_value_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
+  raw_before: Option<&'a [u8]>,
 ) -> Result<Declaration, ParseError> {
   let start = context.tokenizer.utf16_pos;
   if let Token::Keyword(keyword) = context.tokenizer.next()? {
@@ -913,10 +1005,12 @@ fn parse_key_value_declaration<'a, 'b>(
     }
 
     let end = context.tokenizer.utf16_pos;
+    let raw_after = eat_superfluous(context)?;
 
     Ok(Declaration::KeyValue(KeyValueDeclaration {
       name,
       value,
+      raws: BasicRaws::new(raw_before, raw_after),
       location: Location { start, end },
       name_location: Location {
         start,

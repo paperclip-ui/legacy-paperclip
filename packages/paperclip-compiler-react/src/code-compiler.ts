@@ -609,8 +609,11 @@ const translateDefaultView = (root: Node, context: TranslateContext) => {
 };
 
 const translateJSXRoot = (node: Node, context: TranslateContext) => {
-  if (node.kind !== NodeKind.Fragment) {
-    if (node.kind === NodeKind.Element && node.tagName === FRAGMENT_TAG_NAME) {
+  if (node.nodeKind !== NodeKind.Fragment) {
+    if (
+      node.nodeKind === NodeKind.Element &&
+      node.tagName === FRAGMENT_TAG_NAME
+    ) {
       return translateFragment(getVisibleChildNodes(node), true, context);
     } else {
       return translateJSXNode(node, true, context);
@@ -640,19 +643,19 @@ const translateJSXNode = (
   context: TranslateContext
 ) => {
   if (
-    node.kind === NodeKind.Fragment ||
-    (node.kind === NodeKind.Element && node.tagName === FRAGMENT_TAG_NAME)
+    node.nodeKind === NodeKind.Fragment ||
+    (node.nodeKind === NodeKind.Element && node.tagName === FRAGMENT_TAG_NAME)
   ) {
     context = translateFragment(node.children, isRoot, context);
-  } else if (node.kind === NodeKind.Element && isVisibleElement(node)) {
+  } else if (node.nodeKind === NodeKind.Element && isVisibleElement(node)) {
     context = translateElement(node, isRoot, context);
-  } else if (node.kind === NodeKind.Text) {
+  } else if (node.nodeKind === NodeKind.Text) {
     let buffer = `${JSON.stringify(entities.decode(node.value))}`;
     if (isRoot) {
       buffer = `React.createElement("span", null, ${buffer})`;
     }
     context = addBuffer(buffer, context);
-  } else if (node.kind === NodeKind.Slot) {
+  } else if (node.nodeKind === NodeKind.Slot) {
     context = translateSlot(node, context);
   }
 
@@ -660,7 +663,7 @@ const translateJSXNode = (
 };
 
 const containsStyleElement = (element: Element) =>
-  element.children.some(child => child.kind === NodeKind.StyleElement);
+  element.children.some(child => child.nodeKind === NodeKind.StyleElement);
 
 const translateElement = (
   element: Element,
@@ -684,7 +687,7 @@ const translateElement = (
   if (!isComponentInstance) {
     for (const attribute of element.attributes) {
       if (
-        attribute.kind === AttributeKind.ShorthandAttribute &&
+        attribute.attrKind === AttributeKind.ShorthandAttribute &&
         attribute.reference.jsKind === JsExpressionKind.Reference &&
         attribute.reference.path[0]?.name === "tagName"
       ) {
@@ -692,7 +695,7 @@ const translateElement = (
         context = addBuffer(` || `, context);
         break;
       } else if (
-        attribute.kind === AttributeKind.KeyValueAttribute &&
+        attribute.attrKind === AttributeKind.KeyValueAttribute &&
         attribute.name === "tagName"
       ) {
         context = translateAttributeValue(
@@ -831,7 +834,7 @@ const isSpecialPropName = (name: string) =>
 
 const collectPropertyBoundAttributes = (element: Element) =>
   element.attributes.reduce((record, attr) => {
-    if (attr.kind === AttributeKind.PropertyBoundAttribute) {
+    if (attr.attrKind === AttributeKind.PropertyBoundAttribute) {
       if (!record[attr.name]) {
         record[attr.name] = [];
       }
@@ -900,7 +903,7 @@ const translateAttribute = (
   context: TranslateContext,
   added: Record<string, boolean>
 ) => {
-  if (attr.kind === AttributeKind.KeyValueAttribute) {
+  if (attr.attrKind === AttributeKind.KeyValueAttribute) {
     const name = isComponentInstance
       ? attr.name
       : RENAME_PROPS[attr.name] || attr.name;
@@ -953,7 +956,7 @@ const translateAttribute = (
     }
 
     context = addBuffer(`,\n`, context);
-  } else if (attr.kind === AttributeKind.ShorthandAttribute) {
+  } else if (attr.attrKind === AttributeKind.ShorthandAttribute) {
     const property = (attr.reference as Reference).path[0];
     added[property.name] = true;
 
@@ -994,7 +997,7 @@ const translateAttribute = (
     );
 
     context = addBuffer(`,\n`, context);
-  } else if (attr.kind === AttributeKind.SpreadAttribute) {
+  } else if (attr.attrKind === AttributeKind.SpreadAttribute) {
     context = addBuffer(`...(`, context);
     context = translateStatment(attr.script, false, false, context);
     context = addBuffer(`)`, context);
