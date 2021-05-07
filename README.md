@@ -194,15 +194,15 @@ export const LoginPage = () => {
 
 ## Roadmap
 
-Here's a peek at what's planned for Paperclip:
+What's the future looking like for Paperclip? Here's the tentative plan:
 
-- Multiple compiler targets: PHP, Ruby, VueJS, Svelte
-- Extension for Atom, Sublime, and other editors
-- UI Builder (Paperclip is being designed for this use case)
-- Linting tools: A11Y, unused style selectors, markup validation
-- Figma -> Paperclip sync functionality
-- CSS tree shaking
-
+1. Prettier integration
+2. Avocode integration (Figma to design sync)
+3. CSS & HTML linting (a11y, showing unused styles, caniuse integration).
+4. CSS tree shaking (removing unused CSS from builds)
+5. Visual builder (no-code like)
+6. Multiple compiler targets: PHP, Ruby, VueJS, Svelte
+7. IDE integrations
 
 ## Sponsors
 
