@@ -67,7 +67,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
           return printStyleRule(print)(path);
         }
         case RuleKind.Include: {
-          const buffer: Doc[] = [...cleanLines(expr.raws.before)];
+          const buffer: Doc[] = [...cleanRuleLines(expr.raws.before)];
 
           buffer.push(
             "@include ",
@@ -76,7 +76,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
             printStyleBody(print)(path)
           );
 
-          buffer.push(...cleanLines(expr.raws.after));
+          buffer.push(...cleanRuleLines(expr.raws.after));
           return groupConcat(buffer);
         }
         case RuleKind.Comment: {
@@ -90,27 +90,27 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         }
         case RuleKind.FontFace: {
           const buffer = [
-            ...cleanLines(expr.raws.before),
+            ...cleanRuleLines(expr.raws.before),
             "@font-face ",
             printStyleBody(print)(path),
-            ...cleanLines(expr.raws.after)
+            ...cleanRuleLines(expr.raws.after)
           ];
           return groupConcat(buffer);
         }
         case RuleKind.Media: {
           const buffer = [
-            ...cleanLines(expr.raws.before),
+            ...cleanRuleLines(expr.raws.before),
             "@media ",
             expr.conditionText.trim(),
             " ",
             printStyleBody(print)(path),
-            ...cleanLines(expr.raws.after)
+            ...cleanRuleLines(expr.raws.after)
           ];
           return groupConcat(buffer);
         }
         case RuleKind.Export: {
           const buffer = [
-            ...cleanLines(expr.raws.before),
+            ...cleanRuleLines(expr.raws.before),
             "@export {",
             indent(
               concat([
@@ -120,25 +120,25 @@ export const print = (path: FastPath, options: Options, print): Doc => {
             ),
             hardline,
             "}",
-            ...cleanLines(expr.raws.after)
+            ...cleanRuleLines(expr.raws.after)
           ];
 
           return groupConcat(buffer);
         }
         case RuleKind.Mixin: {
           const buffer = [
-            ...cleanLines(expr.raws.before),
+            ...cleanRuleLines(expr.raws.before),
             "@mixin ",
             expr.name.value,
             " ",
             printStyleBody(print)(path),
-            ...cleanLines(expr.raws.after)
+            ...cleanRuleLines(expr.raws.after)
           ];
           return groupConcat(buffer);
         }
         case RuleKind.Keyframes: {
           const buffer: Doc[] = [
-            ...cleanLines(expr.raws.before),
+            ...cleanRuleLines(expr.raws.before),
             "@keyframes ",
             expr.name,
             " ",
@@ -168,18 +168,18 @@ export const print = (path: FastPath, options: Options, print): Doc => {
             )
           );
 
-          buffer.push(softline, "}", ...cleanLines(expr.raws.after));
+          buffer.push(softline, "}", ...cleanRuleLines(expr.raws.after));
 
           return groupConcat(buffer);
         }
         case RuleKind.Keyframe: {
           const buffer = [
             ,
-            ...cleanLines(expr.raws.before),
+            ...cleanRuleLines(expr.raws.before),
             expr.key,
             " ",
             printStyleBody(print)(path),
-            ...cleanLines(expr.raws.after)
+            ...cleanRuleLines(expr.raws.after)
           ];
           return groupConcat(buffer);
         }
@@ -195,7 +195,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         }
         case StyleDeclarationKind.Include: {
           const buffer: Doc[] = [
-            ...cleanLines(expr.raws.before),
+            ...cleanRuleLines(expr.raws.before),
             "@include ",
             expr.mixinName.parts.map(part => part.name).join(".")
           ];
@@ -206,7 +206,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
             buffer.push(";");
           }
 
-          buffer.push(...cleanLines(expr.raws.after));
+          buffer.push(...cleanRuleLines(expr.raws.after));
 
           return groupConcat(buffer);
         }
@@ -309,7 +309,9 @@ export const print = (path: FastPath, options: Options, print): Doc => {
 
       // maybe sheet
     } else if ((expr as any).rules != null) {
-      const buffer: Doc[] = [...cleanLines((expr as any).raws?.before || "")];
+      const buffer: Doc[] = [
+        ...cleanRuleLines((expr as any).raws?.before || "")
+      ];
 
       if ((expr as any).declarations?.length) {
         buffer.push(join(hardline, path.map(print, "declarations")));
@@ -421,7 +423,9 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         return concat(main);
       }
       case NodeKind.StyleElement: {
-        const buffer: Doc[] = [hardline, "<style>"];
+        const startLine = isFirstChild ? breakParent : hardline;
+
+        const buffer: Doc[] = [startLine, "<style>"];
         buffer.push(
           indent(group(concat([hardline, path.call(print, "sheet")])))
         );
@@ -430,6 +434,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
       }
       case NodeKind.Text: {
         let text = expr.value;
+        console.log("TX", text);
 
         let docs: Doc[] = text.split(/[\t\n\f\r ]+/);
         docs = join(line, docs).parts.filter(s => s !== "");
@@ -563,9 +568,9 @@ export const printDynamicStringAttribute = print => (
 export const printStyleRule = print => (path: FastPath): Doc => {
   const expr: StyleRule = path.getValue();
   const buffer: Doc[] = [];
-  buffer.push(...cleanLines(expr.raws.before));
+  buffer.push(...cleanRuleLines(expr.raws.before));
   buffer.push(path.call(print, "selector"), " ", printStyleBody(print)(path));
-  buffer.push(...cleanLines(expr.raws.after));
+  buffer.push(...cleanRuleLines(expr.raws.after));
   return groupConcat(buffer);
 };
 
@@ -610,12 +615,23 @@ export const printStyleBody = print => (path: FastPath): Doc => {
   return groupConcat(buffer);
 };
 
-const cleanLines = (ws: string, max = Infinity) => {
+const cleanLines = (
+  ws: string,
+  max = Infinity,
+  parentBreaksChildren = false
+) => {
   return Array.from({
-    length: Math.max(Math.min(countNewLines(ws), max), 0)
+    length: Math.max(
+      Math.min(countNewLines(ws) - (parentBreaksChildren ? 1 : 0), max),
+      0
+    )
   }).map(line => {
     return hardline;
   });
+};
+
+const cleanRuleLines = (ws: string, max = Infinity) => {
+  return cleanLines(ws, max, true);
 };
 
 const startWhitespace = (buffer: string) =>

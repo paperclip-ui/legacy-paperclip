@@ -27,8 +27,6 @@ describe(__dirname + "#", () => {
         useTabs: false,
         printWidth: 80
       } as any);
-      console.log(output);
-
       expect(output).to.eql(outExpected);
     });
   }

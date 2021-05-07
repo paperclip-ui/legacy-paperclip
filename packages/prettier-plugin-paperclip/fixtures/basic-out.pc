@@ -3,9 +3,10 @@
 <div>hello</div>
 <div>hello</div>
 
-<div>
-  a super long text string that exceeds the max width of the file here that should be enough to make it super long
-</div>
+<span>
+  a super long text string that exceeds the max width of the file here that
+  should be enough to make it super long
+</span>
 
 <div>
   <span>This <i>should all</i> be <strong>inline</strong></span>
@@ -65,3 +66,8 @@
   <br />
   breaks
 </div>}
+
+<span>
+  {a}!fsdfdsfsdnflltfs dfds fsd fsd fsd fsd fsd fsd fsd fsd fsdfsd fsd fsd fsd
+  fsdf sdf sdfsd fsd fsd fsd f sdf s
+</span>
