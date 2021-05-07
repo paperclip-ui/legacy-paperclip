@@ -329,6 +329,8 @@ export const print = (path: FastPath, options: Options, print): Doc => {
   } else if (isNode(expr)) {
     const parent = path.getParentNode() as any;
     const isFirstChild = parent && parent.children?.indexOf(expr) === 0;
+    const isLastChild =
+      parent && parent.children?.indexOf(expr) === parent.children?.length - 1;
 
     switch (expr.nodeKind) {
       case NodeKind.Comment: {
@@ -392,13 +394,10 @@ export const print = (path: FastPath, options: Options, print): Doc => {
 
         if (!isEmpty) {
           openTag.push(">");
+          buffer.push(...openTag);
           buffer.push(
-            ...openTag,
-            indent(
-              concat([softline, group(join("", path.map(print, "children")))])
-            )
+            indent(concat([softline, group(printChildren(path, print))]))
           );
-
           buffer.push(softline, `</${expr.tagName}>`);
         } else {
           buffer.push(...openTag, " />");
@@ -435,10 +434,20 @@ export const print = (path: FastPath, options: Options, print): Doc => {
         let docs: Doc[] = text.split(/[\t\n\f\r ]+/);
         docs = join(line, docs).parts.filter(s => s !== "");
         if (startsWithLine(text)) {
-          docs[0] = hardline;
+          // be careful with extra lines
+          if (isFirstChild) {
+            docs.shift();
+          } else {
+            docs[0] = hardline;
+          }
         }
         if (endsWithLine(text)) {
-          docs[docs.length - 1] = hardline;
+          // be careful with extra lines
+          if (isLastChild) {
+            docs.pop();
+          } else {
+            docs[docs.length - 1] = hardline;
+          }
         }
 
         return fill(docs);
@@ -696,6 +705,10 @@ const fixIndentation = (
       hardline
     )
   );
+};
+
+const printChildren = (path, print) => {
+  return concat(path.map(print, "children"));
 };
 
 const stringifyObject = (value: any) => {
