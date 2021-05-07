@@ -1,47 +1,9 @@
-
-
 IMMEDIATE:
 
-
-
-Goal right now is to get people using Paperclip
-
-- show errors on each line
-- autocomplete for CSS
-- autocomplete for components
-- Playground code sync
-
-OTHER:
-
-- prettier plugin
-
-
-- UI editor prototype (need feedback about this from designers)
-  - MVP - some way to display PC files online (auto-generate playground w/ )
-
-
-- Playground
-  - sync GitHub code
-    - ability to checkout branches
-    - ability to create new branch
-    - ability to create new project
-  
-
-  ROADMAP:
-
-  - prettier (needed for auto-reformatting when UI makes changes)
-  - avocode sync
-  - CSS Engine
-  - linter
-    - CSS - find what's used and not (will require CSS engine, needed for UI builder, along with CSS shaking)
-    - HTML - a11y features
-    - error when component isn't previewed in device size
-  - CSS tree shaking
-    - test how accurate CSS engine in is
-  - AST manipulation tooling
-    - needed for actual tools
-  
-  - UI tooling (linter & prettier core will help with this)
-    - simple style inspector for devs
-
-
+- avocode sync
+- support spread operators  
+  - update inferencing
+    - need to just include props that aren't already defined
+  - update react compiler
+- css linting
+- css shaking
