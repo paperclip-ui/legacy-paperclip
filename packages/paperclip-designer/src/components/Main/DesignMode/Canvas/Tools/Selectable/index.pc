@@ -1,7 +1,5 @@
 <import src="components/Theme/index.pc" as="theme" />
 
-
-
 <!--
   @frame { visible: false }
 -->
@@ -40,7 +38,6 @@
     </style>
   </rect>
 </svg>
-
 
 <!--
   @frame { visible: false }
@@ -82,7 +79,6 @@
   </div>
 </div>
 
-
 <!--
   @frame { visible: false }
 -->
@@ -96,7 +92,6 @@
   </style>
   {children}
 </div>
-
 
 <!--
   @frame { visible: true, title: "With Knobs", width: 299, height: 294, x: 499, y: 1487 }
@@ -116,8 +111,6 @@
       </fragment>} />
   </PreviewBox>
 </div>
-
-
 
 <!--
   @frame { title: "Without Knobs", width: 248, height: 247, x: 501, y: 1152 }

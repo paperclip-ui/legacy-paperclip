@@ -1,8 +1,6 @@
 <import src="components/Theme/index.pc" as="theme" />
 <import src="components/Theme/open-sans/font-face.pc" as="" />
 
-
-
 <!--
   @frame { visible: false }
 -->
@@ -18,8 +16,6 @@
   </style>
   {children}
 </div>
-
-
 
 <!--
   @frame { visible: false }

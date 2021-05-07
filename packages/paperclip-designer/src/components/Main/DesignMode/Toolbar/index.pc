@@ -12,7 +12,6 @@
   }
 </style>
 
-
 <!--
   @frame { visible: false }
 -->
@@ -54,7 +53,6 @@
   <span>{amount}%</span>
 </div>
 
-
 <!--
   @frame { visible: false }
 -->
@@ -81,7 +79,6 @@
   </style>
   <i className="$icons.icon" className:active="active" />
 </button>
-
 
 <!--
   @frame { visible: false }
@@ -137,7 +134,6 @@
   </style>
   <i className="$icons.icon" className:active="active" />
 </button>
-
 
 <!--
   @frame { visible: false }
@@ -205,7 +201,6 @@
   <i className="$icons.icon" className:active="active" />
 </button>
 
-
 <!--
   @frame { visible: false }
 -->
@@ -227,7 +222,6 @@
   </style>
   {children}
 </div>
-
 
 <!--
   @frame { visible: false }
@@ -255,7 +249,6 @@
   </style>
   {children}
 </div>
-
 
 <!--
   @frame { visible: false }
@@ -285,7 +278,6 @@
   <i className="$icons.icon" />
 </button>
 
-
 <!--
   @frame { visible: false }
 -->
@@ -314,7 +306,6 @@
   </div>
 </div>
 
-
 <!--
   @frame { visible: false }
 -->
@@ -331,10 +322,8 @@
     </Controls>
     <ReadOnlyBadge />
   </Container>
-
   <EnvironmentPopupPreview visible={showEnvPopup?} />
 </fragment>
-
 
 <!--
   @frame { visible: false }
@@ -351,8 +340,6 @@
 -->
 
 <Preview className="$theme.font-default" />
-
-
 
 <!--
   @frame { visible: false }
@@ -371,7 +358,6 @@
   </style>
   {children}
 </div>
-
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 188, y: 251 }
@@ -462,12 +448,9 @@
   </span>
 </div>
 
-
 <!--
   @frame { visible: false, title: "Environment Popup", width: 237, height: 321, x: 1252, y: -78 }
 -->
-
-
 <div export
   component
   as="EnvironmentPopup"
@@ -538,11 +521,9 @@
   {options}
 </div>
 
-
 <!--
   @frame { visible: false, width: 603, height: 504, x: 1158, y: -436 }
 -->
-
 <EnvironmentPopup component
   as="EnvironmentPopupPreview"
   {visible?}

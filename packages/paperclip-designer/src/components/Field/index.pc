@@ -48,7 +48,6 @@
   <label>{label}</label>
   <div className="input">
 
-
     {children}
   </div>
 </div>
