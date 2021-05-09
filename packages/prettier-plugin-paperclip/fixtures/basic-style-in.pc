@@ -25,6 +25,9 @@
     div {
       color: red;
     }
+    span {
+      should-add-semicolon-to-end: red
+  }
   }
 </style>
 <style>

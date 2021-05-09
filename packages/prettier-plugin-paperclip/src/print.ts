@@ -187,7 +187,7 @@ export const print = (path: FastPath, options: Options, print): Doc => {
     } else if (isStyleDeclaration(expr)) {
       switch (expr.declarationKind) {
         case StyleDeclarationKind.KeyValue: {
-          const buffer = [expr.name, ":", " ", expr.value, ";"];
+          const buffer = [expr.name, ":", " ", expr.value.trim(), ";"];
           return groupConcat(buffer);
         }
         case StyleDeclarationKind.Content: {

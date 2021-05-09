@@ -36,7 +36,6 @@ pub enum Rule {
   Keyframes(KeyframesRule),
 }
 
-
 impl fmt::Display for Rule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
@@ -52,7 +51,6 @@ impl fmt::Display for Rule {
     }
   }
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct CharsetRule {

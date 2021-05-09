@@ -397,7 +397,7 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
       context
         .all_rules
         .push(virt::Rule::Charset(virt::CharsetRule {
-          value: charset.value.clone()
+          value: charset.value.clone(),
         }));
     }
     ast::Rule::Mixin(mixin) => {

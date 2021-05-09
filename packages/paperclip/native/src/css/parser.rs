@@ -208,7 +208,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
         let raw_after = context.tokenizer.eat_whitespace();
         Ok(Rule::Charset(CharsetRule {
           value: value.to_string(),
-          raws: BasicRaws::new(raw_before, raw_after)
+          raws: BasicRaws::new(raw_before, raw_after),
         }))
       } else {
         Err(ParseError::unexpected_token(start))

@@ -119,7 +119,7 @@ impl fmt::Display for IncludeReferencePart {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct CharsetRule {
   pub raws: BasicRaws,
-  pub value: String
+  pub value: String,
 }
 
 impl fmt::Display for CharsetRule {
