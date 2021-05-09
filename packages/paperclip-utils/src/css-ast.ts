@@ -263,7 +263,10 @@ type FontFaceRule = {
   declarations: StyleDeclaration[];
   raws: BasicRaws;
 } & BaseRule<RuleKind.FontFace>;
-type CharsetRule = BaseRule<RuleKind.Charset>;
+type CharsetRule = {
+  value: string;
+  raws: BasicRaws;
+} & BaseRule<RuleKind.Charset>;
 
 type BaseInclude = {
   mixinName: IncludeReference;

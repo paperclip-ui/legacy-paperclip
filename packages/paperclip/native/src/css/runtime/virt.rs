@@ -26,7 +26,7 @@ impl fmt::Display for CSSSheet {
 #[serde(tag = "kind")]
 pub enum Rule {
   Style(StyleRule),
-  Charset(String),
+  Charset(CharsetRule),
   Namespace(String),
   FontFace(FontFaceRule),
   Media(ConditionRule),
@@ -35,6 +35,7 @@ pub enum Rule {
   Document(ConditionRule),
   Keyframes(KeyframesRule),
 }
+
 
 impl fmt::Display for Rule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -49,6 +50,19 @@ impl fmt::Display for Rule {
       Rule::Supports(rule) => write!(f, "{}", rule.to_string()),
       Rule::Keyframes(rule) => write!(f, "{}", rule.to_string()),
     }
+  }
+}
+
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct CharsetRule {
+  pub value: String,
+}
+
+impl fmt::Display for CharsetRule {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "@charset \"{}\"", self.value)?;
+    Ok(())
   }
 }
 

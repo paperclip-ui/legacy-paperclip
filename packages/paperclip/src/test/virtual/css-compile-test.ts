@@ -309,6 +309,12 @@ describe(__filename + "#", () => {
       `a:before { color: red; }`,
       `[data-pc-406d2856] a[data-pc-80f4925f]:before { color:red; }`,
       true
+    ],
+
+    [
+      `@charset "utf-8"; div { color: red; }`,
+      `@charset "utf-8"; div[data-pc-80f4925f] { color:red; }`,
+      false
     ]
 
     // group, selector

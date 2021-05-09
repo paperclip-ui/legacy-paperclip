@@ -140,6 +140,28 @@ describe(__filename, () => {
           <c />
         `
       }
+    ],
+    [
+      "Can handle charset",
+      {
+        "entry.pc": `
+          <style>
+            @charset "utf-8";
+            div {
+              color: red;
+            }
+          </style>
+        `
+      },
+      {
+        "entry.pc": `
+          <style>
+            div {
+              color: red;
+            }
+          </style>
+        `
+      }
     ]
   ].forEach(([title, initial, ...changes]: any) => {
     it(title, async () => {
