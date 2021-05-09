@@ -25,6 +25,9 @@
     div {
       color: red;
     }
+    span {
+      should-add-semicolon-to-end: red;
+    }
   }
 </style>
 <style>
@@ -82,6 +85,12 @@
       @include abba;
     }
     100% {
+      color: red;
+    }
+  }
+
+  @export {
+    div {
       color: red;
     }
   }

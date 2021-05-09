@@ -16,6 +16,8 @@ export const stringifyCSSSheet = (
 
 export const stringifyCSSRule = (rule, options: StringifySheetOptions = {}) => {
   switch (rule.kind) {
+    case "Charset":
+      return `@charset "${rule.value}"; `;
     case "Style":
       return stringifyStyleRule(rule, options);
     case "Page":

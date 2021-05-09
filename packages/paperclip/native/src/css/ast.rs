@@ -117,11 +117,24 @@ impl fmt::Display for IncludeReferencePart {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct CharsetRule {
+  pub raws: BasicRaws,
+  pub value: String,
+}
+
+impl fmt::Display for CharsetRule {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    writeln!(f, "charset \"{}\";", &self.value)?;
+    Ok(())
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "ruleKind")]
 pub enum Rule {
   Style(StyleRule),
   Comment(Comment),
-  Charset(String),
+  Charset(CharsetRule),
   Namespace(String),
   FontFace(FontFaceRule),
   Media(ConditionRule),
