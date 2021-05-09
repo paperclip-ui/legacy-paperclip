@@ -29,6 +29,8 @@
 </style>
 <style>
   color: red;
+
+  // comment
   a {
     color: red;
     background: green;
@@ -82,6 +84,12 @@
       @include abba;
     }
     100% {
+      color: red;
+    }
+  }
+  
+  @export {
+    div {
       color: red;
     }
   }

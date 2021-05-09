@@ -266,9 +266,11 @@ fn parse_export_rule<'a, 'b>(
 
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
+  let raw_after = context.tokenizer.eat_whitespace();
+
   Ok(ExportRule {
     rules,
-    raws: BasicRaws::new(raw_before, None),
+    raws: BasicRaws::new(raw_before, raw_after),
     location: Location::new(start, context.tokenizer.utf16_pos),
   })
 }
