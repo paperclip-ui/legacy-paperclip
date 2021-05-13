@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const {pull, init} = require("../lib");
+const path = require("path");
 
 const argv = require("yargs")
 .command("pull", "Pull latest designs", yargs => {
@@ -8,20 +9,17 @@ const argv = require("yargs")
   .option("open-design-token", { description: "your Open Design token", required: true })
   .option("figma-token", { description: "your Figma token", required: true })
   .option("url", { description: "the Figma design url", required: true })
+  .option("dir", { description: "Directory to download files into", default: "designs" })
 }, argv => {  
+  const cwd = process.cwd();
   pull({
-    cwd: process.cwd(),
+    cwd,
     openDesignToken: argv.openDesignToken,
     figmaToken: argv.figmaToken,
-    url: argv.url
+    url: argv.url,
+    dir: path.join(cwd, argv.dir)
   });
-})
-.command("init", "Init Open Design project", yargs => {
-}, argv => {
-  init({
-    cwd: process.cwd()
-  });
-}).argv
+}).argv;
 
 
 function desc(description) {

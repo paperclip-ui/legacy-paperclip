@@ -1,9 +1,13 @@
 import { createSdk } from "@opendesign/sdk";
 import { FigmaApi } from "./figma/api";
-import { extractSourceUrlInfo } from "./figma/utils";
-import { readConfig, readJSON, resolveConfigPath } from "./utils";
+import { getFigmaUrlFileKeys } from "./figma/utils";
+import { readConfig, readJSON, logInfo, resolveConfigPath } from "./utils";
 import * as plimit from "p-limit";
+import * as fsa from "fs-extra";
 import * as path from "path";
+import { DesignFacade } from "@opendesign/sdk/dist/design-facade";
+import { kebabCase } from "lodash";
+import { translateDesign } from "./translate";
 
 const HTTP_LIMIT = 6;
 
@@ -12,66 +16,56 @@ type PullOptions = {
   openDesignToken: string;
   figmaToken: string;
   url: string;
+  dir: string;
 };
 
 export const pull = async ({
   cwd,
   openDesignToken,
   figmaToken,
-  url
+  url,
+  dir
 }: PullOptions) => {
-  const configPath = resolveConfigPath(cwd);
-
   const figmaApi = new FigmaApi(figmaToken);
-
-  const limit = plimit(HTTP_LIMIT);
 
   const fileKeys = await getFigmaUrlFileKeys(url, figmaApi);
 
   const od = createSdk({ token: openDesignToken });
+  const limit = plimit(6);
 
-  for (const figmaFileKey of fileKeys) {
-    const design = await od.importFigmaDesign({
-      figmaFileKey,
-      figmaToken
-    });
+  const designs = (await Promise.all(
+    fileKeys.map(figmaFileKey =>
+      limit(() =>
+        od.importFigmaDesign({
+          figmaFileKey,
+          figmaToken
+        })
+      )
+    )
+  )) as DesignFacade[];
 
-    const name = path.basename(design.octopusFilename).replace(/.octopus$/, "");
-
-    console.log(name);
+  for (const design of designs) {
+    await generateDesignFile(design, dir);
   }
 
-  // const pages = design.getPages();
-  // console.log(pages);
-  // for (const page of pages) {
-  // }
+  logInfo(`Done!`);
+
+  od.destroy();
 };
 
-const getFigmaUrlFileKeys = async (url: string, api: FigmaApi) => {
-  const urlInfo = extractSourceUrlInfo(url);
+const generateDesignFile = async (design: DesignFacade, dir: string) => {
+  const name = path.basename(design.octopusFilename).replace(/.octopus$/, "");
+  const projectDir = path.join(dir, kebabCase(name));
+  fsa.mkdirpSync(projectDir);
 
-  if (urlInfo.fileKey) {
-    return [urlInfo.fileKey];
-  }
+  const { files } = await translateDesign(design);
 
-  const limit = plimit(HTTP_LIMIT);
+  for (const { relativePath, content } of files) {
+    const filePath = path.join(dir, relativePath);
 
-  if (urlInfo.teamId) {
-    const { projects } = await api.getTeamProjects(urlInfo.teamId);
-
-    const fileKeys = Array.prototype.concat
-      .call(
-        [],
-        ...(
-          await Promise.all(
-            projects.map(project =>
-              limit(() => api.getProjectFiles(project.id))
-            )
-          )
-        ).map(info => (info as any).files)
-      )
-      .map(file => file.key);
-
-    return fileKeys;
+    fsa.mkdirpSync(path.dirname(filePath));
+    logInfo(`Writing ${relativePath}`);
+    fsa.writeFileSync(filePath, content);
+    console.log(content);
   }
 };

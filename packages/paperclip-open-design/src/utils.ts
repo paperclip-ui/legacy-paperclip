@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
+import * as chalk from "chalk";
 import { PaperclipOpenDesignConfig } from "./base";
 
 export const CONFIG_FILE_NAME = "paperclip-open-design.config.json";
@@ -14,3 +15,18 @@ export const readConfig = (cwd: string): PaperclipOpenDesignConfig => {
 
 export const readJSON = (path: string) =>
   JSON.parse(fs.readFileSync(path, "utf-8"));
+
+export const logWarn = (message: string) => {
+  console.warn(chalk.yellow(`warning`) + " " + message);
+};
+
+export const logInfo = (message: string) => {
+  console.warn(chalk.blue(`info`) + " " + message);
+};
+export const logSuccess = (message: string) => {
+  console.warn(chalk.green(`success`) + " " + message);
+};
+
+export const logError = (message: string) => {
+  console.warn(chalk.red(`error`) + " " + message);
+};
