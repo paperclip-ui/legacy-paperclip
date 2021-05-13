@@ -139,8 +139,7 @@ export const Canvas = React.memo(() => {
       <styles.Inner
         style={{
           transform: `translateX(${actualTransform.x}px) translateY(${actualTransform.y}px) scale(${actualTransform.z}) translateZ(0)`,
-          transformOrigin: "top left",
-          willChange: "transform"
+          transformOrigin: "top left"
         }}
       >
         <Frames
