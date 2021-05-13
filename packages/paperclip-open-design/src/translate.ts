@@ -57,18 +57,40 @@ export const translateArtboard = async (
   artboard: ArtboardFacade,
   context: TranslateContext
 ): Promise<TranslateContext> => {
+  const bounds = await artboard.getBounds();
+  context = addBuffer(`<!--\n`, context);
+  context = startBlock(context);
+  context = addBuffer(
+    `@frame { title: ${JSON.stringify(artboard.name)}, width: ${
+      bounds.width
+    }, height: ${bounds.height}, x: ${bounds.left}, y: ${bounds.top}}\n`,
+    context
+  );
+  context = endBlock(context);
+  context = addBuffer(`-->\n`, context);
+  context = addBuffer("<div>\n", context);
+  context = startBlock(context);
+
   const rootLayers = await artboard.getRootLayers();
-  return rootLayers.reduce((context, layer) => {
+  context = rootLayers.reduce((context, layer) => {
     context = translateLayer(layer, context);
     return context;
   }, context);
+
+  context = endBlock(context);
+
+  context = addBuffer(`</div>\n\n`, context);
+  return context;
 };
 
 const translateLayer = (layer: LayerFacade, context: TranslateContext) => {
-  context = addBuffer(`<div>\n`, context);
+  context = addBuffer(
+    `<div aria-label=${JSON.stringify(layer.name)}>\n`,
+    context
+  );
   context = startBlock(context);
   context = endBlock(context);
-  context = addBuffer(`\n</div>`, context);
+  context = addBuffer(`</div>\n`, context);
 
   return context;
 };
