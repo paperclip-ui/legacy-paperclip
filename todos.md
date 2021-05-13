@@ -1,3 +1,10 @@
+Avocode sync:
+  - convert artboard to PC
+  - export mixins
+  - export tokens
+  - download vectors
+  - 
+
 IMMEDIATE:
 
 - avocode sync

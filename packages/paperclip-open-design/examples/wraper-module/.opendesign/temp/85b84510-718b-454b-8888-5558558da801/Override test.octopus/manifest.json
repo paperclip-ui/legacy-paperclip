@@ -1,0 +1,16 @@
+{
+  "pages": { "0:1": "Page 1" },
+  "artboards": [
+    {
+      "artboard_original_id": "57:8",
+      "artboard_name": "Nested variant demo",
+      "failed": false,
+      "url": "https://opendesign.avocode.com/api/designs/32165363-5124-4791-882e-d1d703795044/artboards/57:8/content",
+      "preview_url": null,
+      "is_symbol": false,
+      "symbol_id": null,
+      "page_original_id": "0:1",
+      "page_name": "Page 1"
+    }
+  ]
+}

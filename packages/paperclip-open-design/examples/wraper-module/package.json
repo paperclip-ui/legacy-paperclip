@@ -1,0 +1,11 @@
+{
+  "name": "wraper-module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "../../bin/paperclip-open-design pull --open-design-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjA1OTA4MTIsInYiOjAsImV4cCI6MzMxNDU5NjM2MTIsImlzcyI6ImF2b2NvZGUtbWFuYWdlciIsImQiOnsiaWQiOjExNTk0MzMsImNvbnRleHQiOiJvZC1hcGkiLCJ0b2tlbl9pZCI6MjEzOTcyNiwiZ3JhbnRfaWQiOjg5MDEyNjF9fQ.dFLeuFDzCfU5njfJFgEW_6yrtTCrqUvJ5yyuPHAtp-4 --figma-token=188743-c3f2d073-26b0-4a0e-83ff-7dfe4e14f20e --url=https://www.figma.com/files/team/842804427190189344/Figmark-test?fuid=348356356997603324"
+  },
+  "author": "",
+  "license": "ISC"
+}

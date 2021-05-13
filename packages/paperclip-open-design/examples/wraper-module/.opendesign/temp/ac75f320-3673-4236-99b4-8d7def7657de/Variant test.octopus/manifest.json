@@ -1,0 +1,27 @@
+{
+  "pages": { "0:1": "Page 1" },
+  "artboards": [
+    {
+      "artboard_original_id": "11:18",
+      "artboard_name": "Button",
+      "failed": false,
+      "url": "https://opendesign.avocode.com/api/designs/6df6dd02-9a12-4148-bee7-7190e94d047a/artboards/11:18/content",
+      "preview_url": null,
+      "is_symbol": false,
+      "symbol_id": null,
+      "page_original_id": "0:1",
+      "page_name": "Page 1"
+    },
+    {
+      "artboard_original_id": "16:22",
+      "artboard_name": "Rectangle 3",
+      "failed": false,
+      "url": "https://opendesign.avocode.com/api/designs/6df6dd02-9a12-4148-bee7-7190e94d047a/artboards/16:22/content",
+      "preview_url": null,
+      "is_symbol": false,
+      "symbol_id": null,
+      "page_original_id": "0:1",
+      "page_name": "Page 1"
+    }
+  ]
+}

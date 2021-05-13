@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+const {pull, init} = require("../lib");
+
+const argv = require("yargs")
+.command("pull", "Pull latest designs", yargs => {
+  yargs
+  .option("open-design-token", { description: "your Open Design token", required: true })
+  .option("figma-token", { description: "your Figma token", required: true })
+  .option("url", { description: "the Figma design url", required: true })
+}, argv => {  
+  pull({
+    cwd: process.cwd(),
+    openDesignToken: argv.openDesignToken,
+    figmaToken: argv.figmaToken,
+    url: argv.url
+  });
+})
+.command("init", "Init Open Design project", yargs => {
+}, argv => {
+  init({
+    cwd: process.cwd()
+  });
+}).argv
+
+
+function desc(description) {
+  return {
+    description
+  }
+}
