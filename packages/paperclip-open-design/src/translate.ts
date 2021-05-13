@@ -12,6 +12,13 @@ type TranslateContext = {
   indent: string;
 };
 
+type Color = {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+};
+
 type FileOutput = {
   relativePath: string;
   content: string;
@@ -19,6 +26,13 @@ type FileOutput = {
 
 type TranslateDesignOutput = {
   files: FileOutput[];
+};
+
+const VALUE_ALIASES = {
+  baseline: {
+    superScript: "super",
+    subScript: "sub"
+  }
 };
 
 export const translateDesign = async (
@@ -72,10 +86,14 @@ export const translateArtboard = async (
   context = startBlock(context);
 
   const rootLayers = await artboard.getRootLayers();
-  context = rootLayers.reduce((context, layer) => {
-    context = translateLayer(layer, context);
-    return context;
-  }, context);
+
+  const children = [];
+
+  rootLayers.forEach(child => {
+    children.unshift(child);
+  });
+
+  children.forEach(child => (context = translateLayer(child, context)));
 
   context = endBlock(context);
 
@@ -88,11 +106,134 @@ const translateLayer = (layer: LayerFacade, context: TranslateContext) => {
     `<div aria-label=${JSON.stringify(layer.name)}>\n`,
     context
   );
+
   context = startBlock(context);
+  context = translateLayerStyle(layer, context);
+
+  const children = [];
+
+  layer.getNestedLayers().forEach(child => {
+    children.unshift(child);
+  });
+  children.forEach(child => (context = translateLayer(child, context)));
+
+  if (layer.type === "textLayer") {
+    const text = layer.getText();
+    context = addBuffer(`${text.getTextContent()}\n`, context);
+  }
   context = endBlock(context);
   context = addBuffer(`</div>\n`, context);
 
   return context;
+};
+
+const translateLayerStyle = (
+  layer: LayerFacade,
+  context: TranslateContext
+): TranslateContext => {
+  const style = getLayerStyle(layer);
+
+  context = addBuffer("<style>\n", context);
+  context = startBlock(context);
+  for (const name in style) {
+    let value = style[name];
+    if (typeof value === "number") {
+      value = `${value}px`;
+    }
+    context = addCSSDeclaration(kebabCase(name), value, context);
+  }
+  context = endBlock(context);
+  context = addBuffer("</style>\n", context);
+
+  return context;
+};
+
+const getLayerStyle = (layer: LayerFacade) => {
+  const { bounds, visible, effects, text } = layer.octopus;
+
+  const style: any = {
+    position: "fixed",
+    left: bounds.left,
+    top: bounds.top,
+    width: bounds.width,
+    height: bounds.height
+  };
+
+  if (!visible) {
+    style.display = "none";
+  }
+
+  if (effects) {
+    if (effects.fills) {
+      const background = effects.fills
+        .map(fill => {
+          return translateColor(fill.color);
+        })
+        .join(", ");
+
+      style.background = background;
+    }
+  }
+
+  if (text) {
+    const { color, font = {} } = text.defaultStyle || {};
+    if (color) {
+      style.color = translateColor(color);
+    }
+    if (font.align) {
+      style.textAlign = font.align;
+    }
+    if (font.baseline) {
+      style.verticalAlign = getAlias("baseline", font.baseline);
+    }
+    if (font.bold) {
+      style.fontWeight = "bold";
+    }
+    if (font.italic) {
+      style.fontStyle = "italic";
+    }
+    if (font.kerning) {
+      style.fontKerning = "normal";
+    }
+    if (font.letterSpacing) {
+      style.letterSpacing = font.letterSpacing;
+    }
+    // TODO
+    // if (font.ligatures) {
+    //   font.ligatures
+    // }
+
+    if (font.lineHeight) {
+      style.lineHeight = font.lineHeight;
+    }
+    if (font.size) {
+      style.fontFamily = font.name;
+    }
+    // if (font.postScriptName)
+    // if (font.smallcaps)
+    // if (font.syntheticPostScriptName)
+    // if (font.underline) {}
+    // if (font.uppercase)
+    if (font.size) {
+      style.fontSize = font.size + "px";
+    }
+  }
+
+  return style;
+};
+
+const getAlias = (name: string, value: string) => {
+  return (VALUE_ALIASES[name] && VALUE_ALIASES[name][value]) || value;
+};
+
+const translateColor = ({ r, g, b, a }: Color) =>
+  `rgba(${r}, ${g}, ${b}, ${a})`;
+const addCSSDeclaration = (
+  name: string,
+  value: string,
+  context: TranslateContext
+) => {
+  return addBuffer(`${name}: ${value};\n`, context);
 };
 
 const createContext = (): TranslateContext => ({
