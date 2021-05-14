@@ -29,9 +29,9 @@ export const pull = async ({
   const figmaApi = new FigmaApi(figmaToken);
 
   logInfo(`Finding design files`);
-  const fileKeys = await getFigmaUrlFileKeys(url, figmaApi);
+  const fileKeys: string[] = await getFigmaUrlFileKeys(url, figmaApi);
 
-  logInfo(`Importing designs (this might take a while)`);
+  logInfo(`Importing ${fileKeys.length} designs (this might take a while)`);
 
   const od = createSdk({ token: openDesignToken });
   const limit = plimit(6);
