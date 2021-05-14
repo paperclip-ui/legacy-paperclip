@@ -5,6 +5,11 @@ import { PageFacade } from "@opendesign/sdk/dist/page-facade";
 import { kebabCase } from "lodash";
 import * as path from "path";
 
+type Point = {
+  x: number;
+  y: number;
+};
+
 type TranslateContext = {
   content: string;
   lineNumber: number;
@@ -93,7 +98,9 @@ export const translateArtboard = async (
     children.unshift(child);
   });
 
-  children.forEach(child => (context = translateLayer(child, context)));
+  children.forEach(
+    child => (context = translateLayer(child, context, { x: 0, y: 0 }))
+  );
 
   context = endBlock(context);
 
@@ -101,24 +108,38 @@ export const translateArtboard = async (
   return context;
 };
 
-const translateLayer = (layer: LayerFacade, context: TranslateContext) => {
+const translateLayer = (
+  layer: LayerFacade,
+  context: TranslateContext,
+  offset: Point
+) => {
+  const bounds = layer.octopus.bounds;
+
   context = addBuffer(
     `<div aria-label=${JSON.stringify(layer.name)}>\n`,
     context
   );
 
   context = startBlock(context);
-  context = translateLayerStyle(layer, context);
+  context = translateLayerStyle(layer, context, offset);
 
   const children = [];
 
   layer.getNestedLayers().forEach(child => {
     children.unshift(child);
   });
-  children.forEach(child => (context = translateLayer(child, context)));
+
+  children.forEach(
+    child =>
+      (context = translateLayer(child, context, {
+        x: bounds.left,
+        y: bounds.top
+      }))
+  );
 
   if (layer.type === "textLayer") {
     const text = layer.getText();
+    console.log("TEXT IT", JSON.stringify(text, null, 2));
     context = addBuffer(
       `${text.getTextContent().replace(/[^\w\s]/g, "")}\n`,
       context
@@ -132,16 +153,17 @@ const translateLayer = (layer: LayerFacade, context: TranslateContext) => {
 
 const translateLayerStyle = (
   layer: LayerFacade,
-  context: TranslateContext
+  context: TranslateContext,
+  offset: Point
 ): TranslateContext => {
-  const style = getLayerStyle(layer);
+  const style = getLayerStyle(layer, context, offset);
 
   context = addBuffer("<style>\n", context);
   context = startBlock(context);
   for (const name in style) {
     let value = style[name];
     if (typeof value === "number") {
-      value = `${parseFloat(value.toFixed(2))}`;
+      value = `${parseFloat(value.toFixed(2))}px`;
     }
     context = addCSSDeclaration(kebabCase(name), value, context);
   }
@@ -151,15 +173,20 @@ const translateLayerStyle = (
   return context;
 };
 
-const getLayerStyle = (layer: LayerFacade) => {
+const getLayerStyle = (
+  layer: LayerFacade,
+  context: TranslateContext,
+  offset: Point
+) => {
   const { bounds, visible, effects, text } = layer.octopus;
 
   const style: any = {
-    position: "fixed",
-    left: bounds.left,
-    top: bounds.top,
+    position: "absolute",
+    left: bounds.left - offset.x,
+    top: bounds.top - offset.y,
     width: bounds.width,
-    height: bounds.height
+    height: bounds.height,
+    overflow: "hidden"
   };
 
   if (!visible) {
