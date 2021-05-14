@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "../../bin/paperclip-open-design pull --open-design-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjA1OTA4MTIsInYiOjAsImV4cCI6MzMxNDU5NjM2MTIsImlzcyI6ImF2b2NvZGUtbWFuYWdlciIsImQiOnsiaWQiOjExNTk0MzMsImNvbnRleHQiOiJvZC1hcGkiLCJ0b2tlbl9pZCI6MjEzOTcyNiwiZ3JhbnRfaWQiOjg5MDEyNjF9fQ.dFLeuFDzCfU5njfJFgEW_6yrtTCrqUvJ5yyuPHAtp-4 --figma-token=188989-bb98a69b-3189-482d-9793-26f2f2bc81a3 --url=\"https://www.figma.com/files/project/9094675/test\""
+    "postinstall": "../../bin/paperclip-open-design pull --open-design-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjA1OTA4MTIsInYiOjAsImV4cCI6MzMxNDU5NjM2MTIsImlzcyI6ImF2b2NvZGUtbWFuYWdlciIsImQiOnsiaWQiOjExNTk0MzMsImNvbnRleHQiOiJvZC1hcGkiLCJ0b2tlbl9pZCI6MjEzOTcyNiwiZ3JhbnRfaWQiOjg5MDEyNjF9fQ.dFLeuFDzCfU5njfJFgEW_6yrtTCrqUvJ5yyuPHAtp-4 --figma-token=189002-e914f56e-8dbd-4dcd-98c9-f3bb6c7fcbaf --url=\"https://www.figma.com/files/project/9094675/test\""
   },
   "author": "",
   "license": "ISC"

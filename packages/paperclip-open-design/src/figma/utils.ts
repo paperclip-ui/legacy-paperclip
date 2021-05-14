@@ -12,6 +12,7 @@ export type SourceUrlInfo = Partial<{
   fileKey?: string;
   name?: string;
   teamId?: string;
+  projectId?: number;
 }>;
 
 export const extractSourceUrlInfo = (url: string): SourceUrlInfo => {
@@ -21,6 +22,7 @@ export const extractSourceUrlInfo = (url: string): SourceUrlInfo => {
   let fileKey: string;
   let teamId: string;
   let name: string;
+  let projectId: number;
   if (matches1) {
     // projectId = matches1[1];
     teamId = matches1[2];
@@ -38,7 +40,7 @@ export const extractSourceUrlInfo = (url: string): SourceUrlInfo => {
     /https:\/\/www.figma.com\/files\/project\/(.*?)\/(.*?)/
   );
   if (matches3) {
-    fileKey = matches3[1];
+    projectId = Number(matches3[1]);
     name = matches3[2];
   }
 
@@ -61,6 +63,7 @@ export const extractSourceUrlInfo = (url: string): SourceUrlInfo => {
 
   return {
     fileKey,
+    projectId,
     name,
     teamId
   };
@@ -94,19 +97,21 @@ export const getFigmaUrlFileKeys = async (url: string, api: FigmaApi) => {
   if (urlInfo.teamId) {
     const { projects } = await api.getTeamProjects(urlInfo.teamId);
 
-    const fileKeys = Array.prototype.concat
-      .call(
-        [],
-        ...(
-          await Promise.all(
-            projects.map(project =>
-              limit(() => api.getProjectFiles(project.id))
-            )
-          )
-        ).map(info => (info as any).files)
-      )
-      .map(file => file.key);
+    const fileKeys = Array.prototype.concat.call(
+      [],
+      ...(await Promise.all(
+        projects.map(project => limit(() => getProjectFiles(project.id, api)))
+      ))
+    );
 
     return fileKeys;
   }
+
+  if (urlInfo.projectId) {
+    return await getProjectFiles(urlInfo.projectId, api);
+  }
+};
+
+const getProjectFiles = async (projectId: number, api: FigmaApi) => {
+  return (await api.getProjectFiles(projectId)).files.map(file => file.key);
 };
