@@ -119,7 +119,10 @@ const translateLayer = (layer: LayerFacade, context: TranslateContext) => {
 
   if (layer.type === "textLayer") {
     const text = layer.getText();
-    context = addBuffer(`${text.getTextContent()}\n`, context);
+    context = addBuffer(
+      `${text.getTextContent().replace(/[^\w\s]/g, "")}\n`,
+      context
+    );
   }
   context = endBlock(context);
   context = addBuffer(`</div>\n`, context);
@@ -138,7 +141,7 @@ const translateLayerStyle = (
   for (const name in style) {
     let value = style[name];
     if (typeof value === "number") {
-      value = `${value}px`;
+      value = `${parseFloat(value.toFixed(2))}`;
     }
     context = addCSSDeclaration(kebabCase(name), value, context);
   }
@@ -167,7 +170,13 @@ const getLayerStyle = (layer: LayerFacade) => {
     if (effects.fills) {
       const background = effects.fills
         .map(fill => {
-          return translateColor(fill.color);
+          if (fill.color) {
+            return translateColor(fill.color);
+          }
+          if (fill.pattern) {
+            // TODO - need to download this resource
+            return `url("${fill.pattern.filename}")`;
+          }
         })
         .join(", ");
 

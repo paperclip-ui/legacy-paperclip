@@ -1,7 +1,7 @@
 import { createSdk } from "@opendesign/sdk";
 import { FigmaApi } from "./figma/api";
 import { getFigmaUrlFileKeys } from "./figma/utils";
-import { readConfig, readJSON, logInfo, resolveConfigPath } from "./utils";
+import { readConfig, readJSON, logInfo, resolveConfigPath, md5 } from "./utils";
 import * as plimit from "p-limit";
 import * as fsa from "fs-extra";
 import * as path from "path";
@@ -33,19 +33,48 @@ export const pull = async ({
 
   logInfo(`Importing ${fileKeys.length} designs (this might take a while)`);
 
-  const od = createSdk({ token: openDesignToken });
+  const od = createSdk({
+    token: openDesignToken,
+    cached: true,
+    console: {
+      level: "error"
+    }
+  });
   const limit = plimit(6);
 
   const designs = (await Promise.all(
     fileKeys.map(figmaFileKey =>
-      limit(() =>
-        od.importFigmaDesign({
+      limit(async () => {
+        const cacheFileDir = path.join(
+          cwd,
+          ".paperclip-open-design",
+          figmaFileKey
+        );
+
+        if (fsa.existsSync(cacheFileDir)) {
+          const fileName = fsa
+            .readdirSync(cacheFileDir)
+            .find(name => /\.octopus$/.test(name));
+          return od.openOctopusFile(path.join(cacheFileDir, fileName));
+        }
+
+        const design = await od.importFigmaDesign({
           figmaFileKey,
           figmaToken
-        })
-      )
+        });
+        fsa.mkdirpSync(cacheFileDir);
+        await design.saveOctopusFile({
+          filePath: path.join(
+            cacheFileDir,
+            path.basename(design.octopusFilename)
+          )
+        });
+        return design;
+      })
     )
   )) as DesignFacade[];
+
+  // designs[0].saveOctopusFile()
 
   logInfo(`Generting code`);
 

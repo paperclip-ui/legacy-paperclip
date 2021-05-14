@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "../../bin/paperclip-open-design pull --open-design-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjA1OTA4MTIsInYiOjAsImV4cCI6MzMxNDU5NjM2MTIsImlzcyI6ImF2b2NvZGUtbWFuYWdlciIsImQiOnsiaWQiOjExNTk0MzMsImNvbnRleHQiOiJvZC1hcGkiLCJ0b2tlbl9pZCI6MjEzOTcyNiwiZ3JhbnRfaWQiOjg5MDEyNjF9fQ.dFLeuFDzCfU5njfJFgEW_6yrtTCrqUvJ5yyuPHAtp-4 --figma-token=189151-da8b54f8-2ebe-4dd0-9b8b-731ceaf7a536 --url=\"https://www.figma.com/file/K8sPyiVZGi3LiQ5GfAKjvm/Onboarding-(activation)?node-id=0%3A1\""
+    "postinstall": "../../bin/paperclip-open-design pull --open-design-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjA1OTA4MTIsInYiOjAsImV4cCI6MzMxNDU5NjM2MTIsImlzcyI6ImF2b2NvZGUtbWFuYWdlciIsImQiOnsiaWQiOjExNTk0MzMsImNvbnRleHQiOiJvZC1hcGkiLCJ0b2tlbl9pZCI6MjEzOTcyNiwiZ3JhbnRfaWQiOjg5MDEyNjF9fQ.dFLeuFDzCfU5njfJFgEW_6yrtTCrqUvJ5yyuPHAtp-4 --figma-token=189151-da8b54f8-2ebe-4dd0-9b8b-731ceaf7a536 --url=\"https://www.figma.com/file/BYGpVDR0ZcbAXnHi9SSoU3/Prototyping-in-Figma\""
   },
   "author": "",
   "license": "ISC"

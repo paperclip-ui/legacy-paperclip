@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as chalk from "chalk";
+import * as crypto from "crypto";
 import { PaperclipOpenDesignConfig } from "./base";
 
 export const CONFIG_FILE_NAME = "paperclip-open-design.config.json";
@@ -29,4 +30,11 @@ export const logSuccess = (message: string) => {
 
 export const logError = (message: string) => {
   console.warn(chalk.red(`error`) + " " + message);
+};
+
+export const md5 = (value: string) => {
+  return crypto
+    .createHash("md5")
+    .update(value)
+    .digest("hex");
 };
