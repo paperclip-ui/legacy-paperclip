@@ -50,7 +50,7 @@ pub struct Context<'a> {
 
   // deprecated
   element_scope: Option<(String, bool)>,
-  content: Option<&'a ast::Include>,
+  content: Option<(String, &'a ast::Include)>,
   vfs: &'a VirtualFileSystem,
   graph: &'a DependencyGraph,
   uri: &'a String,
@@ -792,7 +792,7 @@ fn include_mixin<'a>(
   let (declarations, child_rules) = evaluate_mixin(
     mixin,
     dependency_uri,
-    Some(inc),
+    Some((context.uri.to_string(), inc)),
     context,
     parent_selector_context,
   )?;
@@ -808,12 +808,12 @@ fn include_content<'a>(
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
   if let Some(inc) = &context.content {
-    let inc2 = inc.clone();
-
+    let (uri, inc2) = inc.clone();
+    let mut child_context = fork_context(&uri, context);
     evaluate_style_rules(&inc2.rules, context, &parent_selector_context)?;
     all_styles.extend(evaluate_style_declarations(
       &inc2.declarations,
-      context,
+      &mut child_context,
       parent_selector_context,
     )?);
   }
@@ -908,7 +908,7 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
 fn evaluate_mixin<'a, 'b>(
   expr: &ast::MixinRule,
   owner_uri: &'a String,
-  content: Option<&'b ast::Include>,
+  content: Option<(String, &'b ast::Include)>,
   context: &mut Context<'a>,
   parent_selector_context: &SelectorContext,
 ) -> Result<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>), RuntimeError> {
@@ -932,7 +932,7 @@ fn evaluate_include_rule<'a>(
 ) -> Result<(), RuntimeError> {
   let (mixin, dep_uri) = assert_get_mixin(&expr.mixin_name, context)?;
   let (declarations, rules) =
-    evaluate_mixin(mixin, dep_uri, Some(expr), context, selector_context)?;
+    evaluate_mixin(mixin, dep_uri, Some((context.uri.to_string(), expr)), context, selector_context)?;
   context.all_rules.extend(rules);
   context.inc_declarations.extend(declarations);
 
