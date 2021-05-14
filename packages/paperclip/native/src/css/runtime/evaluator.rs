@@ -931,8 +931,13 @@ fn evaluate_include_rule<'a>(
   selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
   let (mixin, dep_uri) = assert_get_mixin(&expr.mixin_name, context)?;
-  let (declarations, rules) =
-    evaluate_mixin(mixin, dep_uri, Some((context.uri.to_string(), expr)), context, selector_context)?;
+  let (declarations, rules) = evaluate_mixin(
+    mixin,
+    dep_uri,
+    Some((context.uri.to_string(), expr)),
+    context,
+    selector_context,
+  )?;
   context.all_rules.extend(rules);
   context.inc_declarations.extend(declarations);
 
