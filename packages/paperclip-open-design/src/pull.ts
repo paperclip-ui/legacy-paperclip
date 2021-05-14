@@ -28,7 +28,10 @@ export const pull = async ({
 }: PullOptions) => {
   const figmaApi = new FigmaApi(figmaToken);
 
+  logInfo(`Finding design files`);
   const fileKeys = await getFigmaUrlFileKeys(url, figmaApi);
+
+  logInfo(`Importing designs (this might take a while)`);
 
   const od = createSdk({ token: openDesignToken });
   const limit = plimit(6);
@@ -43,6 +46,8 @@ export const pull = async ({
       )
     )
   )) as DesignFacade[];
+
+  logInfo(`Generting code`);
 
   for (const design of designs) {
     await generateDesignFile(design, dir);
