@@ -1,0 +1,128 @@
+<!--
+  @frame { title: "Breadcrumb", width: 273, height: 20, x: 817, y: 893 }
+-->
+<div aria-label="Breadcrumb">
+  <style>
+  </style>
+  <div aria-label="chevron-left">
+    <style>
+      position: fixed;
+      width: 16px;
+      height: 16px;
+      left: 0px;
+      top: 2px;
+    </style>
+  </div>
+  <div aria-label="Frame 30">
+    <style>
+      position: fixed;
+      width: 69px;
+      height: 16px;
+      left: 24px;
+      top: 2px;
+    </style>
+    <div aria-label="chevron-left">
+      <style>
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        left: 24px;
+        top: 2px;
+      </style>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 16px;
+        left: 24px;
+        top: 2px;
+        color: #c6ad52;
+        line-height: 133.33%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 12;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Breadcrumb
+    </span>
+  </div>
+  <span>
+    <style>
+      position: fixed;
+      width: 5px;
+      height: 16px;
+      left: 101px;
+      top: 2px;
+      color: #c6ad52;
+      line-height: 133.33%;
+      font-family: Inter;
+      font-weight: 400;
+      font-size: 12;
+      text-align: LEFT;
+      letter-spacing: 0;
+    </style>
+    /
+  </span>
+  <div aria-label="Frame 29">
+    <style>
+      position: fixed;
+      width: 69px;
+      height: 16px;
+      left: 114px;
+      top: 2px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 16px;
+        left: 114px;
+        top: 2px;
+        color: #c6ad52;
+        line-height: 133.33%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 12;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Breadcrumb
+    </span>
+  </div>
+  <span>
+    <style>
+      position: fixed;
+      width: 5px;
+      height: 16px;
+      left: 191px;
+      top: 2px;
+      color: #c6ad52;
+      line-height: 133.33%;
+      font-family: Inter;
+      font-weight: 400;
+      font-size: 12;
+      text-align: LEFT;
+      letter-spacing: 0;
+    </style>
+    /
+  </span>
+  <span>
+    <style>
+      position: fixed;
+      width: 69px;
+      height: 16px;
+      left: 204px;
+      top: 2px;
+      color: #a2a2a2;
+      line-height: 133.33%;
+      font-family: Inter;
+      font-weight: 400;
+      font-size: 12;
+      text-align: LEFT;
+      letter-spacing: 0;
+    </style>
+    Breadcrumb
+  </span>
+</div>

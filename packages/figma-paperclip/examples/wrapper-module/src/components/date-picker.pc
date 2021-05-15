@@ -1,0 +1,1552 @@
+<!--
+  @frame { title: "Date", width: 128, height: 172, x: -168, y: 261 }
+-->
+<div aria-label="Date">
+  <style>
+  </style>
+  <div aria-label="Property 1=Base, Property 2=Rest">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 20px;
+      top: 20px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 20px;
+        height: 16px;
+        left: 22px;
+        top: 23px;
+        color: #a2a2a2;
+        line-height: 133.33%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 12;
+        text-align: CENTER;
+        letter-spacing: 0;
+      </style>
+      31
+    </span>
+  </div>
+  <div aria-label="Property 1=Base, Property 2=Hover">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 52px;
+      top: 20px;
+    </style>
+    <div aria-label="Rectangle 1">
+      <style>
+        position: fixed;
+        width: 22px;
+        height: 22px;
+        left: 53px;
+        top: 21px;
+        background: #ffffff;
+        border-radius: 2px;
+      </style>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 20px;
+        height: 16px;
+        left: 54px;
+        top: 23px;
+        color: #a2a2a2;
+        line-height: 133.33%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 12;
+        text-align: CENTER;
+        letter-spacing: 0;
+      </style>
+      31
+    </span>
+  </div>
+  <div aria-label="Property 1=Base, Property 2=Focus">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 84px;
+      top: 20px;
+    </style>
+    <div aria-label="Rectangle 1">
+      <style>
+        position: fixed;
+        width: 22px;
+        height: 22px;
+        left: 85px;
+        top: 21px;
+        background: #ffffff;
+        border-radius: 2px;
+      </style>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 20px;
+        height: 16px;
+        left: 86px;
+        top: 23px;
+        color: #ecedee;
+        line-height: 133.33%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 12;
+        text-align: CENTER;
+        letter-spacing: 0;
+      </style>
+      31
+    </span>
+  </div>
+  <div aria-label="Property 1=Current, Property 2=Rest">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 20px;
+      top: 52px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 20px;
+        height: 16px;
+        left: 22px;
+        top: 55px;
+        color: #ecedee;
+        line-height: 133.33%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 12;
+        text-align: CENTER;
+        letter-spacing: 0;
+      </style>
+      31
+    </span>
+    <div aria-label="Line 1">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 0px;
+        left: 24px;
+        top: 73px;
+      </style>
+    </div>
+  </div>
+  <div aria-label="Property 1=Icon, Property 2=Rest">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 20px;
+      top: 86px;
+    </style>
+    <div aria-label="chevron-left">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 16px;
+        left: 24px;
+        top: 90px;
+      </style>
+    </div>
+  </div>
+  <div aria-label="Property 1=Icon, Property 2=Hover">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 52px;
+      top: 86px;
+    </style>
+    <div aria-label="Rectangle 1">
+      <style>
+        position: fixed;
+        width: 22px;
+        height: 22px;
+        left: 53px;
+        top: 87px;
+        background: #ffffff;
+        border-radius: 2px;
+      </style>
+    </div>
+    <div aria-label="chevron-left">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 16px;
+        left: 56px;
+        top: 90px;
+      </style>
+    </div>
+  </div>
+  <div aria-label="Property 1=Icon, Property 2=Focus">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 84px;
+      top: 86px;
+    </style>
+    <div aria-label="Rectangle 1">
+      <style>
+        position: fixed;
+        width: 22px;
+        height: 22px;
+        left: 85px;
+        top: 87px;
+        background: #ffffff;
+        border-radius: 2px;
+      </style>
+    </div>
+    <div aria-label="chevron-left">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 16px;
+        left: 88px;
+        top: 90px;
+      </style>
+    </div>
+  </div>
+  <div aria-label="Property 1=Current, Property 2=Hover">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 52px;
+      top: 52px;
+    </style>
+    <div aria-label="Rectangle 1">
+      <style>
+        position: fixed;
+        width: 22px;
+        height: 22px;
+        left: 53px;
+        top: 53px;
+        background: #ffffff;
+        border-radius: 2px;
+      </style>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 20px;
+        height: 16px;
+        left: 54px;
+        top: 55px;
+        color: #ecedee;
+        line-height: 133.33%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 12;
+        text-align: CENTER;
+        letter-spacing: 0;
+      </style>
+      31
+    </span>
+    <div aria-label="Line 1">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 0px;
+        left: 56px;
+        top: 73px;
+      </style>
+    </div>
+  </div>
+  <div aria-label="Property 1=Current, Property 2=Focus">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 84px;
+      top: 52px;
+    </style>
+    <div aria-label="Rectangle 1">
+      <style>
+        position: fixed;
+        width: 22px;
+        height: 22px;
+        left: 85px;
+        top: 53px;
+        background: #ffffff;
+        border-radius: 2px;
+      </style>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 20px;
+        height: 16px;
+        left: 86px;
+        top: 55px;
+        color: #ecedee;
+        line-height: 133.33%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 12;
+        text-align: CENTER;
+        letter-spacing: 0;
+      </style>
+      31
+    </span>
+    <div aria-label="Line 1">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 0px;
+        left: 88px;
+        top: 73px;
+      </style>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Date picker", width: 248, height: 264, x: 11, y: 261 }
+-->
+<div aria-label="Date picker">
+  <style>
+  </style>
+  <div aria-label="Tip">
+    <style>
+      position: fixed;
+      width: 248px;
+      height: 8px;
+      left: 0px;
+      top: 0px;
+    </style>
+  </div>
+  <div aria-label="Containter">
+    <style>
+      position: fixed;
+      width: 248px;
+      height: 256px;
+      left: 0px;
+      top: 8px;
+      background: #282828;
+      border-radius: 2px;
+    </style>
+    <div aria-label="Frame 1">
+      <style>
+        position: fixed;
+        width: 216px;
+        height: 24px;
+        left: 16px;
+        top: 24px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 136px;
+          height: 24px;
+          left: 16px;
+          top: 24px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        April 2021
+      </span>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 168px;
+          top: 24px;
+        </style>
+        <div aria-label="chevron-left">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 172px;
+            top: 28px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 208px;
+          top: 24px;
+        </style>
+        <div aria-label="chevron-right">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 212px;
+            top: 28px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="Frame 3">
+      <style>
+        position: fixed;
+        width: 216px;
+        height: 32px;
+        left: 16px;
+        top: 56px;
+      </style>
+      <div aria-label="Frame 2">
+        <style>
+          position: fixed;
+          width: 216px;
+          height: 24px;
+          left: 16px;
+          top: 56px;
+        </style>
+        <div aria-label="Date">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 56px;
+          </style>
+          <span>
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 16px;
+              left: 18px;
+              top: 59px;
+              color: #7c7c7c;
+              line-height: 133.33%;
+              font-family: Inter;
+              font-weight: 400;
+              font-size: 12;
+              text-align: CENTER;
+              letter-spacing: 0;
+            </style>
+            Su
+          </span>
+        </div>
+        <div aria-label="Date">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 48px;
+            top: 56px;
+          </style>
+          <span>
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 16px;
+              left: 50px;
+              top: 59px;
+              color: #7c7c7c;
+              line-height: 133.33%;
+              font-family: Inter;
+              font-weight: 400;
+              font-size: 12;
+              text-align: CENTER;
+              letter-spacing: 0;
+            </style>
+            Mo
+          </span>
+        </div>
+        <div aria-label="Date">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 80px;
+            top: 56px;
+          </style>
+          <span>
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 16px;
+              left: 82px;
+              top: 59px;
+              color: #7c7c7c;
+              line-height: 133.33%;
+              font-family: Inter;
+              font-weight: 400;
+              font-size: 12;
+              text-align: CENTER;
+              letter-spacing: 0;
+            </style>
+            Tu
+          </span>
+        </div>
+        <div aria-label="Date">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 112px;
+            top: 56px;
+          </style>
+          <span>
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 16px;
+              left: 114px;
+              top: 59px;
+              color: #7c7c7c;
+              line-height: 133.33%;
+              font-family: Inter;
+              font-weight: 400;
+              font-size: 12;
+              text-align: CENTER;
+              letter-spacing: 0;
+            </style>
+            We
+          </span>
+        </div>
+        <div aria-label="Date">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 144px;
+            top: 56px;
+          </style>
+          <span>
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 16px;
+              left: 146px;
+              top: 59px;
+              color: #7c7c7c;
+              line-height: 133.33%;
+              font-family: Inter;
+              font-weight: 400;
+              font-size: 12;
+              text-align: CENTER;
+              letter-spacing: 0;
+            </style>
+            Th
+          </span>
+        </div>
+        <div aria-label="Date">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 176px;
+            top: 56px;
+          </style>
+          <span>
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 16px;
+              left: 178px;
+              top: 59px;
+              color: #7c7c7c;
+              line-height: 133.33%;
+              font-family: Inter;
+              font-weight: 400;
+              font-size: 12;
+              text-align: CENTER;
+              letter-spacing: 0;
+            </style>
+            Fr
+          </span>
+        </div>
+        <div aria-label="Date">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 208px;
+            top: 56px;
+          </style>
+          <span>
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 16px;
+              left: 210px;
+              top: 59px;
+              color: #7c7c7c;
+              line-height: 133.33%;
+              font-family: Inter;
+              font-weight: 400;
+              font-size: 12;
+              text-align: CENTER;
+              letter-spacing: 0;
+            </style>
+            Sa
+          </span>
+        </div>
+      </div>
+      <div aria-label="Divider">
+        <style>
+          position: fixed;
+          width: 216px;
+          height: 8px;
+          left: 16px;
+          top: 80px;
+        </style>
+        <div aria-label="Line 29">
+          <style>
+            position: fixed;
+            width: 216px;
+            height: 0px;
+            left: 16px;
+            top: 84px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="Group 2">
+      <style>
+        position: fixed;
+        width: 216px;
+        height: 152px;
+        left: 16px;
+        top: 96px;
+      </style>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 96px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 18px;
+            top: 99px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 48px;
+          top: 96px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 50px;
+            top: 99px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 80px;
+          top: 96px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 82px;
+            top: 99px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 112px;
+          top: 96px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 114px;
+            top: 99px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 144px;
+          top: 96px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 146px;
+            top: 99px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          1
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 176px;
+          top: 96px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 178px;
+            top: 99px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          2
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 208px;
+          top: 96px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 210px;
+            top: 99px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          3
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 128px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 18px;
+            top: 131px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          4
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 48px;
+          top: 128px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 50px;
+            top: 131px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          5
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 80px;
+          top: 128px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 82px;
+            top: 131px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          6
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 112px;
+          top: 128px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 114px;
+            top: 131px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          7
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 144px;
+          top: 128px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 146px;
+            top: 131px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 176px;
+          top: 128px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 178px;
+            top: 131px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          9
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 208px;
+          top: 128px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 210px;
+            top: 131px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          10
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 160px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 18px;
+            top: 163px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          11
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 48px;
+          top: 160px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 50px;
+            top: 163px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          12
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 80px;
+          top: 160px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 82px;
+            top: 163px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          13
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 112px;
+          top: 160px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 114px;
+            top: 163px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          14
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 144px;
+          top: 160px;
+        </style>
+        <div aria-label="Rectangle 1">
+          <style>
+            position: fixed;
+            width: 22px;
+            height: 22px;
+            left: 145px;
+            top: 161px;
+            background: #ffffff;
+            border-radius: 2px;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 146px;
+            top: 163px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          15
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 176px;
+          top: 160px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 178px;
+            top: 163px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          16
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 208px;
+          top: 160px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 210px;
+            top: 163px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          17
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 192px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 18px;
+            top: 195px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          18
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 48px;
+          top: 192px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 50px;
+            top: 195px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          19
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 80px;
+          top: 192px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 82px;
+            top: 195px;
+            color: #ecedee;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          20
+        </span>
+        <div aria-label="Line 1">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 0px;
+            left: 84px;
+            top: 213px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 112px;
+          top: 192px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 114px;
+            top: 195px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          21
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 144px;
+          top: 192px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 146px;
+            top: 195px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          22
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 176px;
+          top: 192px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 178px;
+            top: 195px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          23
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 208px;
+          top: 192px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 210px;
+            top: 195px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          24
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 224px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 18px;
+            top: 227px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          25
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 48px;
+          top: 224px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 50px;
+            top: 227px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          26
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 80px;
+          top: 224px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 82px;
+            top: 227px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          27
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 112px;
+          top: 224px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 114px;
+            top: 227px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          28
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 144px;
+          top: 224px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 146px;
+            top: 227px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          29
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 176px;
+          top: 224px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 178px;
+            top: 227px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          30
+        </span>
+      </div>
+      <div aria-label="Date">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 208px;
+          top: 224px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 16px;
+            left: 210px;
+            top: 227px;
+            color: #a2a2a2;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 12;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

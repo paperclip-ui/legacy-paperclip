@@ -1,0 +1,171 @@
+<!--
+  @frame { title: "coachMark", width: 384, height: 256, x: -91, y: -128 }
+-->
+<div aria-label="coachMark">
+  <style>
+    background: #393939;
+    border-radius: 2px;
+  </style>
+  <div aria-label="Progress tracker">
+    <style>
+      position: fixed;
+      width: 112px;
+      height: 8px;
+      left: 32px;
+      top: 32px;
+    </style>
+    <div aria-label="unselected">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 2px;
+        left: 32px;
+        top: 35px;
+        background: #ecedee;
+        border-radius: 2px;
+      </style>
+    </div>
+    <div aria-label="selected">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 2px;
+        left: 56px;
+        top: 35px;
+        background: #b7972f;
+        border-radius: 2px;
+      </style>
+    </div>
+    <div aria-label="unselected">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 2px;
+        left: 104px;
+        top: 35px;
+        background: #ecedee;
+        border-radius: 2px;
+      </style>
+    </div>
+    <div aria-label="unselected">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 2px;
+        left: 128px;
+        top: 35px;
+        background: #ecedee;
+        border-radius: 2px;
+      </style>
+    </div>
+  </div>
+  <div aria-label="Content">
+    <style>
+      position: fixed;
+      width: 320px;
+      height: 88px;
+      left: 32px;
+      top: 72px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 320px;
+        height: 20px;
+        left: 32px;
+        top: 72px;
+        color: #ecedee;
+        line-height: 142.86%;
+        font-family: Inter;
+        font-weight: 600;
+        font-size: 14;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Keep titles concise
+    </span>
+    <span>
+      <style>
+        position: fixed;
+        width: 320px;
+        height: 60px;
+        left: 32px;
+        top: 100px;
+        color: #a2a2a2;
+        line-height: 142.86%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 14;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Be considerate of the viewers time and patience. Use short bursts of information.
+      Don't just point out the feature. Why is it important to the user?
+    </span>
+  </div>
+  <div aria-label="Action">
+    <style>
+      position: fixed;
+      width: 320px;
+      height: 32px;
+      left: 32px;
+      top: 192px;
+    </style>
+    <div aria-label="button">
+      <style>
+        position: fixed;
+        width: 86.73px;
+        height: 32px;
+        left: 32px;
+        top: 192px;
+        background: #494949;
+        border-radius: 2px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 60px;
+          height: 24px;
+          left: 45.37px;
+          top: 196px;
+          color: #ffffff;
+          line-height: 171.43%;
+          font-family: Inter;
+          font-weight: 500;
+          font-size: 14;
+          text-align: CENTER;
+          letter-spacing: 0;
+        </style>
+        Skip tour
+      </span>
+    </div>
+    <div aria-label="button">
+      <style>
+        position: fixed;
+        width: 56.48px;
+        height: 32px;
+        left: 296px;
+        top: 192px;
+        background: #a38427;
+        border-radius: 2px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 32px;
+          height: 24px;
+          left: 308.24px;
+          top: 196px;
+          color: #ffffff;
+          line-height: 171.43%;
+          font-family: Inter;
+          font-weight: 500;
+          font-size: 14;
+          text-align: CENTER;
+          letter-spacing: 0;
+        </style>
+        Next
+      </span>
+    </div>
+  </div>
+</div>

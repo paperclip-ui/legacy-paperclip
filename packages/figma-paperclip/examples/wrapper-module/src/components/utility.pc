@@ -1,0 +1,187 @@
+<!--
+  @frame { title: "$spacing-02px", width: 2, height: 2, x: -100, y: -20 }
+-->
+<div aria-label="$spacing-02px">
+  <style>
+  </style>
+  <div aria-label="$spacing">
+    <style>
+      position: fixed;
+      width: 2px;
+      height: 2px;
+      left: 0px;
+      top: 0px;
+      background: #ff007a;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "$spacing-04px", width: 4, height: 4, x: -87, y: -20 }
+-->
+<div aria-label="$spacing-04px">
+  <style>
+  </style>
+  <div aria-label="$spacing">
+    <style>
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      left: 0px;
+      top: 0px;
+      background: #1400fe;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "$spacing-08px", width: 8, height: 8, x: -75, y: -20 }
+-->
+<div aria-label="$spacing-08px">
+  <style>
+  </style>
+  <div aria-label="$spacing">
+    <style>
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      left: 0px;
+      top: 0px;
+      background: #24fe00;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "$spacing-12px", width: 12, height: 12, x: -59, y: -20 }
+-->
+<div aria-label="$spacing-12px">
+  <style>
+  </style>
+  <div aria-label="$spacing">
+    <style>
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      left: 0px;
+      top: 0px;
+      background: #fb38ff;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "$spacing-16px", width: 16, height: 16, x: -39, y: -20 }
+-->
+<div aria-label="$spacing-16px">
+  <style>
+  </style>
+  <div aria-label="$spacing">
+    <style>
+      position: fixed;
+      width: 16px;
+      height: 16px;
+      left: 0px;
+      top: 0px;
+      background: #00f0ff;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "$spacing-24px", width: 24, height: 24, x: -15, y: -20 }
+-->
+<div aria-label="$spacing-24px">
+  <style>
+  </style>
+  <div aria-label="$spacing">
+    <style>
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      left: 0px;
+      top: 0px;
+      background: #ffb800;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "$spacing-32px", width: 32, height: 32, x: 17, y: -20 }
+-->
+<div aria-label="$spacing-32px">
+  <style>
+  </style>
+  <div aria-label="$spacing">
+    <style>
+      position: fixed;
+      width: 32px;
+      height: 32px;
+      left: 0px;
+      top: 0px;
+      background: #ff5c00;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "$spacing-40px", width: 40, height: 40, x: 57, y: -20 }
+-->
+<div aria-label="$spacing-40px">
+  <style>
+  </style>
+  <div aria-label="$spacing">
+    <style>
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      left: 0px;
+      top: 0px;
+      background: #0085ff;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "$spacing-48px", width: 48, height: 48, x: 105, y: -20 }
+-->
+<div aria-label="$spacing-48px">
+  <style>
+  </style>
+  <div aria-label="48px">
+    <style>
+      position: fixed;
+      width: 48px;
+      height: 48px;
+      left: 0px;
+      top: 0px;
+      background: #cc00ff;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "default", width: 12, height: 19, x: 19, y: 19 }
+-->
+<div aria-label="default">
+  <style>
+  </style>
+  <div aria-label="cursor / default">
+    <style>
+      position: fixed;
+      width: 12px;
+      height: 19px;
+      left: 0px;
+      top: 0px;
+    </style>
+    <div aria-label="cursor / default">
+      <style>
+        position: fixed;
+        width: 11.59px;
+        height: 18.22px;
+        left: 0px;
+        top: 0px;
+      </style>
+    </div>
+  </div>
+</div>

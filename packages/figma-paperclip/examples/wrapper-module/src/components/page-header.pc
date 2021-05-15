@@ -1,0 +1,264 @@
+<!--
+  @frame { title: "Page header", width: 640, height: 567, x: 778, y: -387 }
+-->
+<div aria-label="Page header">
+  <style>
+  </style>
+  <div aria-label="Link Definition=False">
+    <style>
+      position: fixed;
+      width: 608px;
+      height: 136px;
+      left: 16px;
+      top: 16px;
+    </style>
+    <div aria-label="8px">
+      <style>
+        position: fixed;
+        width: 608px;
+        height: 8px;
+        left: 16px;
+        top: 48px;
+      </style>
+      <div aria-label="8px">
+        <style>
+          position: fixed;
+          width: 608px;
+          height: 8px;
+          left: 16px;
+          top: 48px;
+          background: #24fe00;
+        </style>
+      </div>
+    </div>
+    <div aria-label="Content">
+      <style>
+        position: fixed;
+        width: 608px;
+        height: 64px;
+        left: 16px;
+        top: 56px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 608px;
+          height: 32px;
+          left: 16px;
+          top: 56px;
+          color: #ecedee;
+          line-height: 133.33%;
+          font-family: Supera Gothic;
+          font-weight: 800;
+          font-size: 24;
+          text-align: LEFT;
+          letter-spacing: 0.03839999914169312;
+        </style>
+        Page header
+      </span>
+      <span>
+        <style>
+          position: fixed;
+          width: 608px;
+          height: 24px;
+          left: 16px;
+          top: 96px;
+          color: #a2a2a2;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Brief description
+      </span>
+    </div>
+  </div>
+  <div aria-label="Link Definition=True">
+    <style>
+      position: fixed;
+      width: 608px;
+      height: 128px;
+      left: 16px;
+      top: 179px;
+    </style>
+    <div aria-label="Content">
+      <style>
+        position: fixed;
+        width: 608px;
+        height: 64px;
+        left: 16px;
+        top: 211px;
+      </style>
+      <div aria-label="Link">
+        <style>
+          position: fixed;
+          width: 262px;
+          height: 32px;
+          left: 16px;
+          top: 211px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 262px;
+            height: 32px;
+            left: 16px;
+            top: 211px;
+            color: #ecedee;
+            line-height: 133.33%;
+            font-family: Supera Gothic;
+            font-weight: 800;
+            font-size: 24;
+            text-align: LEFT;
+            letter-spacing: 0.03839999914169312;
+          </style>
+          Page header definition
+        </span>
+        <div aria-label="line">
+          <style>
+            position: fixed;
+            width: 262px;
+            height: 0px;
+            left: 16px;
+            top: 243px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 608px;
+          height: 24px;
+          left: 16px;
+          top: 251px;
+          color: #a2a2a2;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Brief description
+      </span>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Frame 1", width: 608, height: 128, x: 794, y: -1270 }
+-->
+<div aria-label="Frame 1">
+  <style>
+  </style>
+  <div aria-label="Content">
+    <style>
+      position: fixed;
+      width: 408px;
+      height: 64px;
+      left: 0px;
+      top: 32px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 408px;
+        height: 32px;
+        left: 0px;
+        top: 32px;
+        color: #ecedee;
+        line-height: 133.33%;
+        font-family: Supera Gothic;
+        font-weight: 800;
+        font-size: 24;
+        text-align: LEFT;
+        letter-spacing: 0.03839999914169312;
+      </style>
+      Page header
+    </span>
+    <span>
+      <style>
+        position: fixed;
+        width: 408px;
+        height: 24px;
+        left: 0px;
+        top: 72px;
+        color: #a2a2a2;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Brief description
+    </span>
+  </div>
+  <div aria-label="Actions">
+    <style>
+      position: fixed;
+      width: 168px;
+      height: 40px;
+      left: 440px;
+      top: 44px;
+    </style>
+    <div aria-label="button">
+      <style>
+        position: fixed;
+        width: 76px;
+        height: 40px;
+        left: 440px;
+        top: 44px;
+        background: #494949;
+        border-radius: 2px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 44px;
+          height: 24px;
+          left: 456px;
+          top: 52px;
+          color: #ffffff;
+          line-height: 171.43%;
+          font-family: Inter;
+          font-weight: 500;
+          font-size: 14;
+          text-align: CENTER;
+          letter-spacing: 0;
+        </style>
+        Action
+      </span>
+    </div>
+    <div aria-label="button">
+      <style>
+        position: fixed;
+        width: 76px;
+        height: 40px;
+        left: 532px;
+        top: 44px;
+        background: #a38427;
+        border-radius: 2px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 44px;
+          height: 24px;
+          left: 548px;
+          top: 52px;
+          color: #ffffff;
+          line-height: 171.43%;
+          font-family: Inter;
+          font-weight: 500;
+          font-size: 14;
+          text-align: CENTER;
+          letter-spacing: 0;
+        </style>
+        Action
+      </span>
+    </div>
+  </div>
+</div>

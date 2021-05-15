@@ -4,4 +4,11 @@ export type Config = {
 
   // pc files to include
   includes?: string[];
+
+  outputDir: string;
+};
+
+export type OutputFile = {
+  path: string;
+  content: string;
 };

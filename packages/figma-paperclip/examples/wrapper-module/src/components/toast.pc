@@ -1,0 +1,44 @@
+<!--
+  @frame { title: "Toast", width: 439, height: 48, x: -118, y: -357 }
+-->
+<div aria-label="Toast">
+  <style>
+    background: #393939;
+    border-radius: 2px;
+  </style>
+  <div aria-label="alert-triangle">
+    <style>
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      left: 0px;
+      top: 0px;
+    </style>
+  </div>
+  <span>
+    <style>
+      position: fixed;
+      width: 375px;
+      height: 20px;
+      left: 14px;
+      top: 14px;
+      color: #ecedee;
+      line-height: 142.86%;
+      font-family: Inter;
+      font-weight: 400;
+      font-size: 14;
+      text-align: LEFT;
+      letter-spacing: 0;
+    </style>
+    Short messages to confirm an action - less than 3 words
+  </span>
+  <div aria-label="x">
+    <style>
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      left: 405px;
+      top: 14px;
+    </style>
+  </div>
+</div>

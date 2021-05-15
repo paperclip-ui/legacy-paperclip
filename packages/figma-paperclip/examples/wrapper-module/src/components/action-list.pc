@@ -1,0 +1,4858 @@
+<!--
+  @frame { title: "List / Loose", width: 268, height: 64, x: 150, y: 102 }
+-->
+<div aria-label="List / Loose">
+  <style>
+  </style>
+  <div aria-label="List with brand">
+    <style>
+      position: fixed;
+      width: 137px;
+      height: 40px;
+      left: 0px;
+      top: 12px;
+    </style>
+    <div aria-label="shopify">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 40px;
+        left: 16px;
+        top: 12px;
+        border-radius: 2px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 22.94px;
+          height: 26px;
+          left: 25px;
+          top: 19px;
+        </style>
+      </div>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 49px;
+        height: 24px;
+        left: 72px;
+        top: 20px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Option
+    </span>
+  </div>
+  <div aria-label="List with icon">
+    <style>
+      position: fixed;
+      width: 129px;
+      height: 40px;
+      left: 0px;
+      top: 12px;
+    </style>
+    <div aria-label="shopify">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 40px;
+        left: 8px;
+        top: 24px;
+        border-radius: 2px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 22.94px;
+          height: 26px;
+          left: 17px;
+          top: 31px;
+        </style>
+      </div>
+    </div>
+    <div aria-label="Trailing">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 40px;
+        left: 16px;
+        top: 16px;
+      </style>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 24px;
+          top: 24px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 26px;
+            top: 26px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 28px;
+            top: 28px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 49px;
+        height: 24px;
+        left: 64px;
+        top: 24px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Option
+    </span>
+  </div>
+  <span>
+    <style>
+      position: fixed;
+      width: 49px;
+      height: 24px;
+      left: 16px;
+      top: 20px;
+      color: #ecedee;
+      line-height: 150%;
+      font-family: Inter;
+      font-weight: 400;
+      font-size: 16;
+      text-align: LEFT;
+      letter-spacing: 0;
+    </style>
+    Option
+  </span>
+  <div aria-label="Action">
+    <style>
+      position: fixed;
+      width: 40px;
+      height: 24px;
+      left: 220px;
+      top: 20px;
+    </style>
+    <div aria-label="8px spacer_">
+      <style>
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        left: 220px;
+        top: 32px;
+      </style>
+      <div aria-label="shape_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 32px;
+          background: #fae3ff;
+        </style>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 4px;
+          height: 7px;
+          left: 222px;
+          top: 32.5px;
+          color: #cc00ff;
+          font-family: Roboto;
+          font-weight: 400;
+          font-size: 6;
+          text-align: LEFT;
+          letter-spacing: -0.30000000000000004;
+        </style>
+        8
+      </span>
+    </div>
+    <div aria-label="Checkbox">
+      <style>
+        position: fixed;
+        width: 24px;
+        height: 24px;
+        left: 228px;
+        top: 24px;
+      </style>
+      <div aria-label="Outline">
+        <style>
+          position: fixed;
+          width: 20px;
+          height: 20px;
+          left: 230px;
+          top: 26px;
+          background: #ffffff;
+          border-radius: 4px;
+        </style>
+      </div>
+      <div aria-label="Shape">
+        <style>
+          position: fixed;
+          width: 16px;
+          height: 16px;
+          left: 232px;
+          top: 28px;
+          border-radius: 2px;
+        </style>
+      </div>
+    </div>
+    <div aria-label="8px spacer_">
+      <style>
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        left: 252px;
+        top: 32px;
+      </style>
+      <div aria-label="shape_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 32px;
+          background: #fae3ff;
+        </style>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 4px;
+          height: 7px;
+          left: 254px;
+          top: 32.5px;
+          color: #cc00ff;
+          font-family: Roboto;
+          font-weight: 400;
+          font-size: 6;
+          text-align: LEFT;
+          letter-spacing: -0.30000000000000004;
+        </style>
+        8
+      </span>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "List", width: 300, height: 484, x: 150, y: 219 }
+-->
+<div aria-label="List">
+  <style>
+  </style>
+  <div aria-label="Type=Compact, Icon=None, State=Default, Section=On">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 16px;
+      top: 72px;
+    </style>
+    <div aria-label="List / Compact / None">
+      <style>
+        position: fixed;
+        width: 268px;
+        height: 40px;
+        left: 16px;
+        top: 72px;
+      </style>
+      <div aria-label="List with brand">
+        <style>
+          position: fixed;
+          width: 129px;
+          height: 40px;
+          left: 16px;
+          top: 72px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 32px;
+            top: 72px;
+            border-radius: 2px;
+          </style>
+          <div aria-label="shopify">
+            <style>
+              position: fixed;
+              width: 22.94px;
+              height: 26px;
+              left: 41px;
+              top: 79px;
+            </style>
+          </div>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 51px;
+            height: 24px;
+            left: 80px;
+            top: 80px;
+            color: #ecedee;
+            line-height: 150%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 16;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Option
+        </span>
+      </div>
+      <div aria-label="List with icon">
+        <style>
+          position: fixed;
+          width: 115px;
+          height: 40px;
+          left: 16px;
+          top: 72px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 24px;
+            top: 80px;
+            border-radius: 2px;
+          </style>
+          <div aria-label="shopify">
+            <style>
+              position: fixed;
+              width: 22.94px;
+              height: 26px;
+              left: 33px;
+              top: 87px;
+            </style>
+          </div>
+        </div>
+        <div aria-label="Trailing">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 24px;
+            top: 72px;
+          </style>
+          <div aria-label="Checkbox">
+            <style>
+              position: fixed;
+              width: 24px;
+              height: 24px;
+              left: 32px;
+              top: 80px;
+            </style>
+            <div aria-label="Outline">
+              <style>
+                position: fixed;
+                width: 20px;
+                height: 20px;
+                left: 34px;
+                top: 82px;
+                background: #ffffff;
+                border-radius: 4px;
+              </style>
+            </div>
+            <div aria-label="Shape">
+              <style>
+                position: fixed;
+                width: 16px;
+                height: 16px;
+                left: 36px;
+                top: 84px;
+                border-radius: 2px;
+              </style>
+            </div>
+          </div>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 51px;
+            height: 24px;
+            left: 72px;
+            top: 80px;
+            color: #ecedee;
+            line-height: 150%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 16;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Option
+        </span>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 32px;
+          top: 80px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+      <div aria-label="Action">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 24px;
+          left: 236px;
+          top: 80px;
+        </style>
+        <div aria-label="8px spacer_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 236px;
+            top: 88px;
+          </style>
+          <div aria-label="shape_">
+            <style>
+              position: fixed;
+              width: 8px;
+              height: 8px;
+              left: 236px;
+              top: 88px;
+              background: #fae3ff;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 4px;
+              height: 7px;
+              left: 238px;
+              top: 88.5px;
+              color: #cc00ff;
+              font-family: Roboto;
+              font-weight: 400;
+              font-size: 6;
+              text-align: LEFT;
+              letter-spacing: -0.30000000000000004;
+            </style>
+            8
+          </span>
+        </div>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 244px;
+            top: 80px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 246px;
+              top: 82px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 248px;
+              top: 84px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+        <div aria-label="8px spacer_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 268px;
+            top: 88px;
+          </style>
+          <div aria-label="shape_">
+            <style>
+              position: fixed;
+              width: 8px;
+              height: 8px;
+              left: 268px;
+              top: 88px;
+              background: #fae3ff;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 4px;
+              height: 7px;
+              left: 270px;
+              top: 88.5px;
+              color: #cc00ff;
+              font-family: Roboto;
+              font-weight: 400;
+              font-size: 6;
+              text-align: LEFT;
+              letter-spacing: -0.30000000000000004;
+            </style>
+            8
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Type=Compact, Icon=None, State=Hover, Section=On">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 16px;
+      top: 239px;
+      background: #1a1a1a;
+    </style>
+    <div aria-label="List / Compact / None">
+      <style>
+        position: fixed;
+        width: 268px;
+        height: 40px;
+        left: 16px;
+        top: 239px;
+        background: #ffffff;
+      </style>
+      <div aria-label="List with brand">
+        <style>
+          position: fixed;
+          width: 129px;
+          height: 40px;
+          left: 16px;
+          top: 239px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 32px;
+            top: 239px;
+            border-radius: 2px;
+          </style>
+          <div aria-label="shopify">
+            <style>
+              position: fixed;
+              width: 22.94px;
+              height: 26px;
+              left: 41px;
+              top: 246px;
+            </style>
+          </div>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 51px;
+            height: 24px;
+            left: 80px;
+            top: 247px;
+            color: #ecedee;
+            line-height: 150%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 16;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Option
+        </span>
+      </div>
+      <div aria-label="List with icon">
+        <style>
+          position: fixed;
+          width: 115px;
+          height: 40px;
+          left: 16px;
+          top: 239px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 24px;
+            top: 247px;
+            border-radius: 2px;
+          </style>
+          <div aria-label="shopify">
+            <style>
+              position: fixed;
+              width: 22.94px;
+              height: 26px;
+              left: 33px;
+              top: 254px;
+            </style>
+          </div>
+        </div>
+        <div aria-label="Trailing">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 24px;
+            top: 239px;
+          </style>
+          <div aria-label="Checkbox">
+            <style>
+              position: fixed;
+              width: 24px;
+              height: 24px;
+              left: 32px;
+              top: 247px;
+            </style>
+            <div aria-label="Outline">
+              <style>
+                position: fixed;
+                width: 20px;
+                height: 20px;
+                left: 34px;
+                top: 249px;
+                background: #ffffff;
+                border-radius: 4px;
+              </style>
+            </div>
+            <div aria-label="Shape">
+              <style>
+                position: fixed;
+                width: 16px;
+                height: 16px;
+                left: 36px;
+                top: 251px;
+                border-radius: 2px;
+              </style>
+            </div>
+          </div>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 51px;
+            height: 24px;
+            left: 72px;
+            top: 247px;
+            color: #ecedee;
+            line-height: 150%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 16;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Option
+        </span>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 32px;
+          top: 247px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+      <div aria-label="Action">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 24px;
+          left: 236px;
+          top: 247px;
+        </style>
+        <div aria-label="8px spacer_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 236px;
+            top: 255px;
+          </style>
+          <div aria-label="shape_">
+            <style>
+              position: fixed;
+              width: 8px;
+              height: 8px;
+              left: 236px;
+              top: 255px;
+              background: #fae3ff;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 4px;
+              height: 7px;
+              left: 238px;
+              top: 255.5px;
+              color: #cc00ff;
+              font-family: Roboto;
+              font-weight: 400;
+              font-size: 6;
+              text-align: LEFT;
+              letter-spacing: -0.30000000000000004;
+            </style>
+            8
+          </span>
+        </div>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 244px;
+            top: 247px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 246px;
+              top: 249px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 248px;
+              top: 251px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+        <div aria-label="8px spacer_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 268px;
+            top: 255px;
+          </style>
+          <div aria-label="shape_">
+            <style>
+              position: fixed;
+              width: 8px;
+              height: 8px;
+              left: 268px;
+              top: 255px;
+              background: #fae3ff;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 4px;
+              height: 7px;
+              left: 270px;
+              top: 255.5px;
+              color: #cc00ff;
+              font-family: Roboto;
+              font-weight: 400;
+              font-size: 6;
+              text-align: LEFT;
+              letter-spacing: -0.30000000000000004;
+            </style>
+            8
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Type=Compact, Icon=Trailing, State=Default, Section=On">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 16px;
+      top: 133px;
+    </style>
+    <div aria-label="List / Compact / Trailing">
+      <style>
+        position: fixed;
+        width: 268px;
+        height: 40px;
+        left: 16px;
+        top: 133px;
+      </style>
+      <div aria-label="List with brand">
+        <style>
+          position: fixed;
+          width: 129px;
+          height: 40px;
+          left: 16px;
+          top: 133px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 32px;
+            top: 133px;
+            border-radius: 2px;
+          </style>
+          <div aria-label="shopify">
+            <style>
+              position: fixed;
+              width: 22.94px;
+              height: 26px;
+              left: 41px;
+              top: 140px;
+            </style>
+          </div>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 51px;
+            height: 24px;
+            left: 80px;
+            top: 141px;
+            color: #ecedee;
+            line-height: 150%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 16;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Option
+        </span>
+      </div>
+      <div aria-label="List with icon">
+        <style>
+          position: fixed;
+          width: 115px;
+          height: 40px;
+          left: 16px;
+          top: 133px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 24px;
+            top: 141px;
+            border-radius: 2px;
+          </style>
+          <div aria-label="shopify">
+            <style>
+              position: fixed;
+              width: 22.94px;
+              height: 26px;
+              left: 33px;
+              top: 148px;
+            </style>
+          </div>
+        </div>
+        <div aria-label="Trailing">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 24px;
+            top: 133px;
+          </style>
+          <div aria-label="Checkbox">
+            <style>
+              position: fixed;
+              width: 24px;
+              height: 24px;
+              left: 32px;
+              top: 141px;
+            </style>
+            <div aria-label="Outline">
+              <style>
+                position: fixed;
+                width: 20px;
+                height: 20px;
+                left: 34px;
+                top: 143px;
+                background: #ffffff;
+                border-radius: 4px;
+              </style>
+            </div>
+            <div aria-label="Shape">
+              <style>
+                position: fixed;
+                width: 16px;
+                height: 16px;
+                left: 36px;
+                top: 145px;
+                border-radius: 2px;
+              </style>
+            </div>
+          </div>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 51px;
+            height: 24px;
+            left: 72px;
+            top: 141px;
+            color: #ecedee;
+            line-height: 150%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 16;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Option
+        </span>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 32px;
+          top: 141px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+      <div aria-label="Action">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 24px;
+          left: 236px;
+          top: 141px;
+        </style>
+        <div aria-label="8px spacer_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 236px;
+            top: 149px;
+          </style>
+          <div aria-label="shape_">
+            <style>
+              position: fixed;
+              width: 8px;
+              height: 8px;
+              left: 236px;
+              top: 149px;
+              background: #fae3ff;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 4px;
+              height: 7px;
+              left: 238px;
+              top: 149.5px;
+              color: #cc00ff;
+              font-family: Roboto;
+              font-weight: 400;
+              font-size: 6;
+              text-align: LEFT;
+              letter-spacing: -0.30000000000000004;
+            </style>
+            8
+          </span>
+        </div>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 244px;
+            top: 141px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 246px;
+              top: 143px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 248px;
+              top: 145px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+        <div aria-label="8px spacer_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 268px;
+            top: 149px;
+          </style>
+          <div aria-label="shape_">
+            <style>
+              position: fixed;
+              width: 8px;
+              height: 8px;
+              left: 268px;
+              top: 149px;
+              background: #fae3ff;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 4px;
+              height: 7px;
+              left: 270px;
+              top: 149.5px;
+              color: #cc00ff;
+              font-family: Roboto;
+              font-weight: 400;
+              font-size: 6;
+              text-align: LEFT;
+              letter-spacing: -0.30000000000000004;
+            </style>
+            8
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Type=Compact, Icon=Trailing, State=Hover, Section=On">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 16px;
+      top: 300px;
+      background: #ffffff;
+    </style>
+    <div aria-label="List / Compact / Trailing">
+      <style>
+        position: fixed;
+        width: 268px;
+        height: 40px;
+        left: 16px;
+        top: 300px;
+        background: #1a1a1a;
+      </style>
+      <div aria-label="List with brand">
+        <style>
+          position: fixed;
+          width: 129px;
+          height: 40px;
+          left: 16px;
+          top: 300px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 32px;
+            top: 300px;
+            border-radius: 2px;
+          </style>
+          <div aria-label="shopify">
+            <style>
+              position: fixed;
+              width: 22.94px;
+              height: 26px;
+              left: 41px;
+              top: 307px;
+            </style>
+          </div>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 51px;
+            height: 24px;
+            left: 80px;
+            top: 308px;
+            color: #ecedee;
+            line-height: 150%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 16;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Option
+        </span>
+      </div>
+      <div aria-label="List with icon">
+        <style>
+          position: fixed;
+          width: 115px;
+          height: 40px;
+          left: 16px;
+          top: 300px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 24px;
+            top: 308px;
+            border-radius: 2px;
+          </style>
+          <div aria-label="shopify">
+            <style>
+              position: fixed;
+              width: 22.94px;
+              height: 26px;
+              left: 33px;
+              top: 315px;
+            </style>
+          </div>
+        </div>
+        <div aria-label="Trailing">
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            left: 24px;
+            top: 300px;
+          </style>
+          <div aria-label="Checkbox">
+            <style>
+              position: fixed;
+              width: 24px;
+              height: 24px;
+              left: 32px;
+              top: 308px;
+            </style>
+            <div aria-label="Outline">
+              <style>
+                position: fixed;
+                width: 20px;
+                height: 20px;
+                left: 34px;
+                top: 310px;
+                background: #ffffff;
+                border-radius: 4px;
+              </style>
+            </div>
+            <div aria-label="Shape">
+              <style>
+                position: fixed;
+                width: 16px;
+                height: 16px;
+                left: 36px;
+                top: 312px;
+                border-radius: 2px;
+              </style>
+            </div>
+          </div>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 51px;
+            height: 24px;
+            left: 72px;
+            top: 308px;
+            color: #ecedee;
+            line-height: 150%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 16;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Option
+        </span>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 32px;
+          top: 308px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+      <div aria-label="Action">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 24px;
+          left: 236px;
+          top: 308px;
+        </style>
+        <div aria-label="8px spacer_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 236px;
+            top: 316px;
+          </style>
+          <div aria-label="shape_">
+            <style>
+              position: fixed;
+              width: 8px;
+              height: 8px;
+              left: 236px;
+              top: 316px;
+              background: #fae3ff;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 4px;
+              height: 7px;
+              left: 238px;
+              top: 316.5px;
+              color: #cc00ff;
+              font-family: Roboto;
+              font-weight: 400;
+              font-size: 6;
+              text-align: LEFT;
+              letter-spacing: -0.30000000000000004;
+            </style>
+            8
+          </span>
+        </div>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 244px;
+            top: 308px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 246px;
+              top: 310px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 248px;
+              top: 312px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+        <div aria-label="8px spacer_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 268px;
+            top: 316px;
+          </style>
+          <div aria-label="shape_">
+            <style>
+              position: fixed;
+              width: 8px;
+              height: 8px;
+              left: 268px;
+              top: 316px;
+              background: #fae3ff;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 4px;
+              height: 7px;
+              left: 270px;
+              top: 316.5px;
+              color: #cc00ff;
+              font-family: Roboto;
+              font-weight: 400;
+              font-size: 6;
+              text-align: LEFT;
+              letter-spacing: -0.30000000000000004;
+            </style>
+            8
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Type=Compact, Icon=Leading, State=Default, Section=On">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 16px;
+      top: 16px;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 16px;
+        top: 16px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 32px;
+          top: 16px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 41px;
+            top: 23px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 49px;
+          height: 24px;
+          left: 80px;
+          top: 24px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 115px;
+        height: 40px;
+        left: 16px;
+        top: 16px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 24px;
+          top: 24px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 33px;
+            top: 31px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 24px;
+          top: 16px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 32px;
+            top: 24px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 34px;
+              top: 26px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 36px;
+              top: 28px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 72px;
+          top: 24px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 49px;
+        height: 24px;
+        left: 32px;
+        top: 24px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Option
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 236px;
+        top: 24px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 236px;
+          top: 32px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 236px;
+            top: 32px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 238px;
+            top: 32.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 244px;
+          top: 24px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 246px;
+            top: 26px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 248px;
+            top: 28px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 268px;
+          top: 32px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 268px;
+            top: 32px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 270px;
+            top: 32.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Type=Editable, Icon=Leading, State=Typing, Section=On">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 16px;
+      top: 361px;
+    </style>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 268px;
+        height: 40px;
+        left: 16px;
+        top: 361px;
+      </style>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 24px;
+          top: 361px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 32px;
+            top: 369px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 34px;
+              top: 371px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 36px;
+              top: 373px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <div aria-label="Auto-added frame">
+        <style>
+          position: fixed;
+          width: 212px;
+          height: 40px;
+          left: 72px;
+          top: 361px;
+        </style>
+        <div aria-label="Line 3">
+          <style>
+            position: fixed;
+            width: 212px;
+            height: 0px;
+            left: 72px;
+            top: 361px;
+          </style>
+        </div>
+        <div aria-label="_Input">
+          <style>
+            position: fixed;
+            width: 33px;
+            height: 24px;
+            left: 72px;
+            top: 369px;
+          </style>
+          <div aria-label="_Text">
+            <style>
+              position: fixed;
+              width: 33px;
+              height: 24px;
+              left: 72px;
+              top: 369px;
+            </style>
+            <div aria-label="Typing">
+              <style>
+                position: fixed;
+                width: 1px;
+                height: 24px;
+                left: 72px;
+                top: 369px;
+              </style>
+              <div aria-label="Caret (16px)">
+                <style>
+                  position: fixed;
+                  width: 1px;
+                  height: 24px;
+                  left: 72px;
+                  top: 369px;
+                  background: #ffffff;
+                </style>
+              </div>
+            </div>
+            <span>
+              <style>
+                position: fixed;
+                width: 46px;
+                height: 24px;
+                left: 72px;
+                top: 369px;
+                color: #7c7c7c;
+                line-height: 150%;
+                font-family: Inter;
+                font-weight: 400;
+                font-size: 16;
+                text-align: LEFT;
+                letter-spacing: 0;
+              </style>
+              Other
+            </span>
+          </div>
+        </div>
+        <div aria-label="Line 2">
+          <style>
+            position: fixed;
+            width: 212px;
+            height: 0px;
+            left: 72px;
+            top: 401px;
+          </style>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Type=Editable, Icon=Leading, State=Hover, Section=On">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 16px;
+      top: 422px;
+      background: #ffffff;
+    </style>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 268px;
+        height: 40px;
+        left: 16px;
+        top: 422px;
+      </style>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 24px;
+          top: 422px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 32px;
+            top: 430px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 34px;
+              top: 432px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 36px;
+              top: 434px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <div aria-label="Auto-added frame">
+        <style>
+          position: fixed;
+          width: 212px;
+          height: 40px;
+          left: 72px;
+          top: 422px;
+        </style>
+        <div aria-label="Line 3">
+          <style>
+            position: fixed;
+            width: 212px;
+            height: 0px;
+            left: 72px;
+            top: 422px;
+          </style>
+        </div>
+        <div aria-label="_Input">
+          <style>
+            position: fixed;
+            width: 33px;
+            height: 24px;
+            left: 72px;
+            top: 430px;
+          </style>
+          <div aria-label="_Text">
+            <style>
+              position: fixed;
+              width: 33px;
+              height: 24px;
+              left: 72px;
+              top: 430px;
+            </style>
+            <div aria-label="Typing">
+              <style>
+                position: fixed;
+                width: 1px;
+                height: 24px;
+                left: 72px;
+                top: 430px;
+              </style>
+              <div aria-label="Caret (16px)">
+                <style>
+                  position: fixed;
+                  width: 1px;
+                  height: 24px;
+                  left: 72px;
+                  top: 430px;
+                  background: #ffffff;
+                </style>
+              </div>
+            </div>
+            <span>
+              <style>
+                position: fixed;
+                width: 48px;
+                height: 24px;
+                left: 72px;
+                top: 430px;
+                color: #7c7c7c;
+                line-height: 150%;
+                font-family: Inter;
+                font-weight: 400;
+                font-size: 16;
+                text-align: LEFT;
+                letter-spacing: 0;
+              </style>
+              Other
+            </span>
+          </div>
+        </div>
+        <div aria-label="Line 2">
+          <style>
+            position: fixed;
+            width: 212px;
+            height: 0px;
+            left: 72px;
+            top: 462px;
+          </style>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Type=Compact, Icon=Leading, State=Hover, Section=On">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 16px;
+      top: 183px;
+      background: #ffffff;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 16px;
+        top: 183px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 32px;
+          top: 183px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 41px;
+            top: 190px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 49px;
+          height: 24px;
+          left: 80px;
+          top: 191px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 113px;
+        height: 40px;
+        left: 16px;
+        top: 183px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 24px;
+          top: 191px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 33px;
+            top: 198px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 24px;
+          top: 183px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 32px;
+            top: 191px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 34px;
+              top: 193px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 36px;
+              top: 195px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 49px;
+          height: 24px;
+          left: 72px;
+          top: 191px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 51px;
+        height: 24px;
+        left: 32px;
+        top: 191px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Option
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 236px;
+        top: 191px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 236px;
+          top: 199px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 236px;
+            top: 199px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 238px;
+            top: 199.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 244px;
+          top: 191px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 246px;
+            top: 193px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 248px;
+            top: 195px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 268px;
+          top: 199px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 268px;
+            top: 199px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 270px;
+            top: 199.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Action list", width: 268, height: 208, x: 483, y: 219 }
+-->
+<div aria-label="Action list">
+  <style>
+    background: #393939;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+  </style>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 4px;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 4px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 4px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 11px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 12px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 115px;
+        height: 40px;
+        left: 0px;
+        top: 4px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 12px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 19px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 4px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 12px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 14px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 16px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 12px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 12px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 12px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 20px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 20px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 20.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 12px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 14px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 16px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 20px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 20px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 20.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 44px;
+      background: #ffffff;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 44px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 44px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 51px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 52px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 113px;
+        height: 40px;
+        left: 0px;
+        top: 44px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 52px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 59px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 44px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 52px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 54px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 56px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 52px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 52px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 52px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 60px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 60px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 60.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 52px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 54px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 56px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 60px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 60px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 60.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 84px;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 84px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 84px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 91px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 92px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 115px;
+        height: 40px;
+        left: 0px;
+        top: 84px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 92px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 99px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 84px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 92px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 94px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 96px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 92px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 92px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 92px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 100px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 100px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 100.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 92px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 94px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 96px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 100px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 100px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 100.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 124px;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 124px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 124px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 131px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 132px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 115px;
+        height: 40px;
+        left: 0px;
+        top: 124px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 132px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 139px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 124px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 132px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 134px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 136px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 132px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 132px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 132px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 140px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 140px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 140.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 132px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 134px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 136px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 140px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 140px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 140.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 164px;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 164px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 164px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 171px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 172px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 115px;
+        height: 40px;
+        left: 0px;
+        top: 164px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 172px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 179px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 164px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 172px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 174px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 176px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 172px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 172px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 172px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 180px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 180px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 180.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 172px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 174px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 176px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 180px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 180px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 180.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Dropdown / section (wip)", width: 268, height: 216, x: 797, y: 219 }
+-->
+<div aria-label="Dropdown / section (wip)">
+  <style>
+    background: #393939;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+  </style>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 4px;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 4px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 4px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 11px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 12px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 115px;
+        height: 40px;
+        left: 0px;
+        top: 4px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 12px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 19px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 4px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 12px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 14px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 16px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 12px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 12px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 12px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 20px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 20px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 20.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 12px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 14px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 16px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 20px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 20px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 20.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 44px;
+      background: #ffffff;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 44px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 44px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 51px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 52px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 113px;
+        height: 40px;
+        left: 0px;
+        top: 44px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 52px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 59px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 44px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 52px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 54px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 56px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 52px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 52px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 52px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 60px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 60px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 60.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 52px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 54px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 56px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 60px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 60px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 60.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 84px;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 84px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 84px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 91px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 92px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 115px;
+        height: 40px;
+        left: 0px;
+        top: 84px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 92px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 99px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 84px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 92px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 94px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 96px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 92px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 92px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 92px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 100px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 100px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 100.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 92px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 94px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 96px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 100px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 100px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 100.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 124px;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 124px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 124px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 131px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 132px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 115px;
+        height: 40px;
+        left: 0px;
+        top: 124px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 132px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 139px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 124px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 132px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 134px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 136px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 132px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 132px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 132px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 140px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 140px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 140.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 132px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 134px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 136px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 140px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 140px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 140.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+  <div aria-label="divider">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 8px;
+      left: 0px;
+      top: 164px;
+    </style>
+    <div aria-label="Line 1">
+      <style>
+        position: fixed;
+        width: 268px;
+        height: 0px;
+        left: 0px;
+        top: 168px;
+      </style>
+    </div>
+  </div>
+  <div aria-label="List">
+    <style>
+      position: fixed;
+      width: 268px;
+      height: 40px;
+      left: 0px;
+      top: 172px;
+    </style>
+    <div aria-label="List with brand">
+      <style>
+        position: fixed;
+        width: 129px;
+        height: 40px;
+        left: 0px;
+        top: 172px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 16px;
+          top: 172px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 25px;
+            top: 179px;
+          </style>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 64px;
+          top: 180px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <div aria-label="List with icon">
+      <style>
+        position: fixed;
+        width: 115px;
+        height: 40px;
+        left: 0px;
+        top: 172px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 180px;
+          border-radius: 2px;
+        </style>
+        <div aria-label="shopify">
+          <style>
+            position: fixed;
+            width: 22.94px;
+            height: 26px;
+            left: 17px;
+            top: 187px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="Trailing">
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 40px;
+          left: 8px;
+          top: 172px;
+        </style>
+        <div aria-label="Checkbox">
+          <style>
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            left: 16px;
+            top: 180px;
+          </style>
+          <div aria-label="Outline">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 18px;
+              top: 182px;
+              background: #ffffff;
+              border-radius: 4px;
+            </style>
+          </div>
+          <div aria-label="Shape">
+            <style>
+              position: fixed;
+              width: 16px;
+              height: 16px;
+              left: 20px;
+              top: 184px;
+              border-radius: 2px;
+            </style>
+          </div>
+        </div>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 51px;
+          height: 24px;
+          left: 56px;
+          top: 180px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Option
+      </span>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 69px;
+        height: 24px;
+        left: 16px;
+        top: 180px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Text only
+    </span>
+    <div aria-label="Action">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 24px;
+        left: 220px;
+        top: 180px;
+      </style>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 220px;
+          top: 188px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 220px;
+            top: 188px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 222px;
+            top: 188.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 228px;
+          top: 180px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 230px;
+            top: 182px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 232px;
+            top: 184px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+      <div aria-label="8px spacer_">
+        <style>
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          left: 252px;
+          top: 188px;
+        </style>
+        <div aria-label="shape_">
+          <style>
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            left: 252px;
+            top: 188px;
+            background: #fae3ff;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 4px;
+            height: 7px;
+            left: 254px;
+            top: 188.5px;
+            color: #cc00ff;
+            font-family: Roboto;
+            font-weight: 400;
+            font-size: 6;
+            text-align: LEFT;
+            letter-spacing: -0.30000000000000004;
+          </style>
+          8
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -11,10 +11,7 @@ const argv = require("yargs")
   const cwd = process.cwd();
   pull({
     cwd,
-    openDesignToken: argv.openDesignToken,
-    figmaToken: argv.figmaToken,
-    url: argv.url,
-    dir: path.join(cwd, argv.dir)
+    token: argv.token
   });
 }).command("init", "Init Paperclip Figma project", yargs => {
 }, argv => {  

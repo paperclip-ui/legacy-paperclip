@@ -1,0 +1,512 @@
+<!--
+  @frame { title: "Dual / Informative", width: 686, height: 72, x: -343, y: -536 }
+-->
+<div aria-label="Dual / Informative">
+  <style>
+    background: #e6effc;
+    border-radius: 2px;
+  </style>
+  <span>
+    <style>
+      position: fixed;
+      width: 590px;
+      height: 20px;
+      left: 52px;
+      top: 14px;
+      color: #00538a;
+      line-height: 142.86%;
+      font-family: Inter;
+      font-weight: 600;
+      font-size: 14;
+      text-align: LEFT;
+      letter-spacing: 0;
+    </style>
+    Hey did you know...
+  </span>
+  <div aria-label="x">
+    <style>
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      left: 650px;
+      top: 14px;
+    </style>
+  </div>
+  <div aria-label="info">
+    <style>
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      left: 16px;
+      top: 14px;
+    </style>
+  </div>
+  <span>
+    <style>
+      position: fixed;
+      width: 590px;
+      height: 20px;
+      left: 52px;
+      top: 38px;
+      color: #00538a;
+      line-height: 142.86%;
+      font-family: Inter;
+      font-weight: 400;
+      font-size: 14;
+      text-align: LEFT;
+      letter-spacing: 0;
+    </style>
+    This alert needs your attention but it’s not super important
+  </span>
+</div>
+
+<!--
+  @frame { title: "Expand", width: 686, height: 92, x: -343, y: -416 }
+-->
+<div aria-label="Expand">
+  <style>
+    background: #e6effc;
+  </style>
+  <div aria-label="Frame 1">
+    <style>
+      position: fixed;
+      width: 395.9px;
+      height: 20px;
+      left: 52px;
+      top: 12px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 395.9px;
+        height: 20px;
+        left: 44px;
+        top: 12px;
+        color: #00538a;
+        line-height: 142.86%;
+        font-family: Inter;
+        font-weight: 600;
+        font-size: 14;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Hey did you know
+    </span>
+    <span>
+      <style>
+        position: fixed;
+        width: 582px;
+        height: 20px;
+        left: 44px;
+        top: 36px;
+        color: #00538a;
+        line-height: 142.86%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 14;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      This alert needs your attention but it’s not super important
+    </span>
+    <div aria-label="Link">
+      <style>
+        position: fixed;
+        width: 28px;
+        height: 20px;
+        left: 44px;
+        top: 60px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 28px;
+          height: 20px;
+          left: 44px;
+          top: 60px;
+          color: #7a5e19;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Link
+      </span>
+    </div>
+  </div>
+  <div aria-label="info">
+    <style>
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      left: 12px;
+      top: 12px;
+    </style>
+  </div>
+  <div aria-label="chevron-down">
+    <style>
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      left: 650px;
+      top: 16px;
+    </style>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Single", width: 718, height: 411, x: -359, y: -214 }
+-->
+<div aria-label="Single">
+  <style>
+  </style>
+  <div aria-label="Property 1=Informative">
+    <style>
+      position: fixed;
+      width: 686px;
+      height: 48px;
+      left: 16px;
+      top: 102px;
+      background: #e6effc;
+      border-radius: 2px;
+    </style>
+    <div aria-label="Content">
+      <style>
+        position: fixed;
+        width: 618px;
+        height: 20px;
+        left: 32px;
+        top: 116px;
+      </style>
+      <div aria-label="info">
+        <style>
+          position: fixed;
+          width: 20px;
+          height: 20px;
+          left: 32px;
+          top: 116px;
+        </style>
+      </div>
+      <span>
+        <style>
+          position: fixed;
+          width: 582px;
+          height: 20px;
+          left: 68px;
+          top: 116px;
+          color: #00538a;
+          line-height: 142.86%;
+          font-family: IBM Plex Sans;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Your message – make it short & clear.
+      </span>
+    </div>
+    <div aria-label="x">
+      <style>
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        left: 666px;
+        top: 116px;
+      </style>
+    </div>
+  </div>
+  <div aria-label="Property 1=Error">
+    <style>
+      position: fixed;
+      width: 686px;
+      height: 48px;
+      left: 16px;
+      top: 182px;
+    </style>
+    <div aria-label="Single">
+      <style>
+        position: fixed;
+        width: 686px;
+        height: 48px;
+        left: 16px;
+        top: 182px;
+        background: #fce9e7;
+        border-radius: 2px;
+      </style>
+      <div aria-label="Content">
+        <style>
+          position: fixed;
+          width: 618px;
+          height: 20px;
+          left: 32px;
+          top: 196px;
+        </style>
+        <div aria-label="alert-triangle">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 32px;
+            top: 196px;
+          </style>
+        </div>
+        <span>
+          <style>
+            position: fixed;
+            width: 582px;
+            height: 20px;
+            left: 68px;
+            top: 196px;
+            color: #8d0b13;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Your message – make it short & clear.
+        </span>
+      </div>
+      <div aria-label="x">
+        <style>
+          position: fixed;
+          width: 20px;
+          height: 20px;
+          left: 666px;
+          top: 196px;
+        </style>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Property 1=Success">
+    <style>
+      position: fixed;
+      width: 686px;
+      height: 48px;
+      left: 16px;
+      top: 262px;
+    </style>
+    <div aria-label="Single">
+      <style>
+        position: fixed;
+        width: 686px;
+        height: 48px;
+        left: 16px;
+        top: 262px;
+      </style>
+      <div aria-label="Single">
+        <style>
+          position: fixed;
+          width: 686px;
+          height: 48px;
+          left: 16px;
+          top: 262px;
+          background: #e8f7ec;
+          border-radius: 2px;
+        </style>
+        <div aria-label="Content">
+          <style>
+            position: fixed;
+            width: 618px;
+            height: 20px;
+            left: 32px;
+            top: 276px;
+          </style>
+          <div aria-label="alert-triangle">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 32px;
+              top: 276px;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 582px;
+              height: 20px;
+              left: 68px;
+              top: 276px;
+              color: #18741f;
+              line-height: 142.86%;
+              font-family: Inter;
+              font-weight: 400;
+              font-size: 14;
+              text-align: LEFT;
+              letter-spacing: 0;
+            </style>
+            Your message – make it short & clear.
+          </span>
+        </div>
+        <div aria-label="x">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 666px;
+            top: 276px;
+          </style>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Property 1=Notice">
+    <style>
+      position: fixed;
+      width: 686px;
+      height: 48px;
+      left: 16px;
+      top: 342px;
+    </style>
+    <div aria-label="Single / Notice">
+      <style>
+        position: fixed;
+        width: 686px;
+        height: 48px;
+        left: 16px;
+        top: 342px;
+      </style>
+      <div aria-label="Single">
+        <style>
+          position: fixed;
+          width: 686px;
+          height: 48px;
+          left: 16px;
+          top: 342px;
+        </style>
+        <div aria-label="Single">
+          <style>
+            position: fixed;
+            width: 686px;
+            height: 48px;
+            left: 16px;
+            top: 342px;
+            background: #fff2d5;
+            border-radius: 2px;
+          </style>
+          <div aria-label="Content">
+            <style>
+              position: fixed;
+              width: 618px;
+              height: 20px;
+              left: 32px;
+              top: 356px;
+            </style>
+            <div aria-label="alert-triangle">
+              <style>
+                position: fixed;
+                width: 20px;
+                height: 20px;
+                left: 32px;
+                top: 356px;
+              </style>
+            </div>
+            <span>
+              <style>
+                position: fixed;
+                width: 582px;
+                height: 20px;
+                left: 68px;
+                top: 356px;
+                color: #b36b27;
+                line-height: 142.86%;
+                font-family: Inter;
+                font-weight: 400;
+                font-size: 14;
+                text-align: LEFT;
+                letter-spacing: 0;
+              </style>
+              Your message – make it short & clear.
+            </span>
+          </div>
+          <div aria-label="x">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 666px;
+              top: 356px;
+            </style>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Property 1=Default">
+    <style>
+      position: fixed;
+      width: 686px;
+      height: 48px;
+      left: 16px;
+      top: 22px;
+    </style>
+    <div aria-label="Single / Default">
+      <style>
+        position: fixed;
+        width: 686px;
+        height: 48px;
+        left: 16px;
+        top: 22px;
+      </style>
+      <div aria-label="Single">
+        <style>
+          position: fixed;
+          width: 686px;
+          height: 48px;
+          left: 16px;
+          top: 22px;
+          background: #282828;
+          border-radius: 2px;
+        </style>
+        <div aria-label="Content">
+          <style>
+            position: fixed;
+            width: 582px;
+            height: 20px;
+            left: 32px;
+            top: 36px;
+          </style>
+          <div aria-label="alert-triangle">
+            <style>
+              position: fixed;
+              width: 20px;
+              height: 20px;
+              left: 32px;
+              top: 36px;
+            </style>
+          </div>
+          <span>
+            <style>
+              position: fixed;
+              width: 582px;
+              height: 20px;
+              left: 32px;
+              top: 36px;
+              color: #ecedee;
+              line-height: 142.86%;
+              font-family: Inter;
+              font-weight: 400;
+              font-size: 14;
+              text-align: LEFT;
+              letter-spacing: 0;
+            </style>
+            Your message – make it short & clear.
+          </span>
+        </div>
+        <div aria-label="x">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 666px;
+            top: 36px;
+          </style>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

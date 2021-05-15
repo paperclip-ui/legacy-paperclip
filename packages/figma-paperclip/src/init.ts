@@ -14,16 +14,23 @@ export type InitOptions = {
 };
 
 export const init = async ({ cwd }: InitOptions) => {
-  const { url } = await inquirer.prompt([
+  const { url, outputDir } = await inquirer.prompt([
     {
       type: "input",
       name: "url",
       message: "What's the Figma url that you'd like to import?"
+    },
+    {
+      type: "input",
+      name: "outputDir",
+      default: "src",
+      message: "Where would you like your designs to be saved to?"
     }
   ]);
 
   const config: Config = {
-    sources: [url]
+    sources: [url],
+    outputDir
   };
 
   logInfo(

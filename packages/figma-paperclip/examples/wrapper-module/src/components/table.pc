@@ -1,0 +1,1402 @@
+<!--
+  @frame { title: "Status / Active", width: 16, height: 16, x: -76, y: -162 }
+-->
+<div aria-label="Status / Active">
+  <style>
+  </style>
+</div>
+
+<!--
+  @frame { title: "Collapse", width: 736, height: 64, x: -92, y: -323 }
+-->
+<div aria-label="Collapse">
+  <style>
+  </style>
+  <div aria-label="surface">
+    <style>
+      position: fixed;
+      width: 736px;
+      height: 64px;
+      left: 0px;
+      top: 0px;
+      background: #282828;
+      border-radius: 2px;
+    </style>
+  </div>
+  <div aria-label="Icon">
+    <style>
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      left: 680px;
+      top: 12px;
+      border-radius: 2px;
+    </style>
+    <div aria-label="chevron-down">
+      <style>
+        position: fixed;
+        width: 24px;
+        height: 24px;
+        left: 688px;
+        top: 20px;
+      </style>
+    </div>
+  </div>
+  <div aria-label="List with brand">
+    <style>
+      position: fixed;
+      width: 172px;
+      height: 40px;
+      left: 0px;
+      top: 12px;
+    </style>
+    <div aria-label="shopify">
+      <style>
+        position: fixed;
+        width: 40px;
+        height: 40px;
+        left: 16px;
+        top: 12px;
+        border-radius: 2px;
+      </style>
+      <div aria-label="shopify">
+        <style>
+          position: fixed;
+          width: 22.94px;
+          height: 26px;
+          left: 25px;
+          top: 19px;
+        </style>
+      </div>
+    </div>
+    <span>
+      <style>
+        position: fixed;
+        width: 84px;
+        height: 24px;
+        left: 72px;
+        top: 20px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Shopify (2)
+    </span>
+    <div aria-label="Link">
+      <style>
+        position: fixed;
+        width: 156px;
+        height: 48px;
+        left: 168px;
+        top: 20px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 156px;
+          height: 48px;
+          left: 168px;
+          top: 20px;
+          color: #ecedee;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Cash Flow Statement
+      </span>
+      <div aria-label="line">
+        <style>
+          position: fixed;
+          width: 156px;
+          height: 0px;
+          left: 168px;
+          top: 68px;
+        </style>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "header", width: 140, height: 239, x: 241, y: -190 }
+-->
+<div aria-label="header">
+  <style>
+  </style>
+  <div aria-label="Icon=True, Type=Default">
+    <style>
+      position: fixed;
+      width: 110px;
+      height: 56px;
+      left: 16px;
+      top: 16px;
+    </style>
+    <div aria-label="Frame 1">
+      <style>
+        position: fixed;
+        width: 110px;
+        height: 56px;
+        left: 16px;
+        top: 16px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 54px;
+          height: 16px;
+          left: 32px;
+          top: 36px;
+          color: #ecedee;
+          line-height: 133.33%;
+          font-family: Inter;
+          font-weight: 500;
+          font-size: 12;
+          text-align: LEFT;
+          letter-spacing: 1;
+        </style>
+        Header
+      </span>
+      <div aria-label="arrow-down">
+        <style>
+          position: fixed;
+          width: 16px;
+          height: 16px;
+          left: 94px;
+          top: 36px;
+        </style>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Icon=False, Type=Default">
+    <style>
+      position: fixed;
+      width: 84px;
+      height: 56px;
+      left: 16px;
+      top: 87px;
+    </style>
+    <div aria-label="Frame 1">
+      <style>
+        position: fixed;
+        width: 84px;
+        height: 56px;
+        left: 16px;
+        top: 87px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 54px;
+          height: 16px;
+          left: 32px;
+          top: 107px;
+          color: #ecedee;
+          line-height: 133.33%;
+          font-family: Inter;
+          font-weight: 500;
+          font-size: 12;
+          text-align: LEFT;
+          letter-spacing: 1;
+        </style>
+        Header
+      </span>
+      <div aria-label="arrow-down">
+        <style>
+          position: fixed;
+          width: 16px;
+          height: 16px;
+          left: 92px;
+          top: 107px;
+        </style>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Icon=False, Type=First row">
+    <style>
+      position: fixed;
+      width: 68px;
+      height: 56px;
+      left: 16px;
+      top: 169px;
+    </style>
+    <div aria-label="Frame 1">
+      <style>
+        position: fixed;
+        width: 68px;
+        height: 56px;
+        left: 16px;
+        top: 169px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 54px;
+          height: 16px;
+          left: 16px;
+          top: 189px;
+          color: #ecedee;
+          line-height: 133.33%;
+          font-family: Inter;
+          font-weight: 500;
+          font-size: 12;
+          text-align: LEFT;
+          letter-spacing: 1;
+        </style>
+        Header
+      </span>
+      <div aria-label="arrow-down">
+        <style>
+          position: fixed;
+          width: 16px;
+          height: 16px;
+          left: 92px;
+          top: 189px;
+        </style>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "cell", width: 232, height: 384, x: 416, y: -190 }
+-->
+<div aria-label="cell">
+  <style>
+  </style>
+  <div aria-label="Type=text-multi">
+    <style>
+      position: fixed;
+      width: 200px;
+      height: 56px;
+      left: 16px;
+      top: 160px;
+    </style>
+    <div aria-label="Frame 6">
+      <style>
+        position: fixed;
+        width: 168px;
+        height: 40px;
+        left: 32px;
+        top: 168px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 168px;
+          height: 20px;
+          left: 32px;
+          top: 168px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+      <span>
+        <style>
+          position: fixed;
+          width: 168px;
+          height: 20px;
+          left: 32px;
+          top: 188px;
+          color: #a2a2a2;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+  </div>
+  <div aria-label="Type=label">
+    <style>
+      position: fixed;
+      width: 200px;
+      height: 48px;
+      left: 16px;
+      top: 232px;
+    </style>
+    <div aria-label="Subtle">
+      <style>
+        position: fixed;
+        width: 58px;
+        height: 16px;
+        left: 32px;
+        top: 248px;
+      </style>
+      <div aria-label="Subtle / Infomative">
+        <style>
+          position: fixed;
+          width: 58px;
+          height: 16px;
+          left: 32px;
+          top: 248px;
+        </style>
+        <div aria-label="Subtle">
+          <style>
+            position: fixed;
+            width: 58px;
+            height: 16px;
+            left: 32px;
+            top: 248px;
+            background: #fafafa;
+            border-radius: 2px;
+          </style>
+          <span>
+            <style>
+              position: fixed;
+              width: 50px;
+              height: 16px;
+              left: 36px;
+              top: 248px;
+              color: #282828;
+              line-height: 145.45%;
+              font-family: Inter;
+              font-weight: 500;
+              font-size: 11;
+              text-align: LEFT;
+              letter-spacing: 0.1599999964237213;
+            </style>
+            Default
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Type=text-single">
+    <style>
+      position: fixed;
+      width: 55px;
+      height: 56px;
+      left: 16px;
+      top: 88px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 23px;
+        height: 20px;
+        left: 32px;
+        top: 106px;
+        color: #ecedee;
+        line-height: 142.86%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 14;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      cell
+    </span>
+  </div>
+  <div aria-label="Type=First row">
+    <style>
+      position: fixed;
+      width: 39px;
+      height: 56px;
+      left: 16px;
+      top: 32px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 23px;
+        height: 20px;
+        left: 16px;
+        top: 50px;
+        color: #ecedee;
+        line-height: 142.86%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 14;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      cell
+    </span>
+  </div>
+  <div aria-label="Type=icon">
+    <style>
+      position: fixed;
+      width: 56px;
+      height: 56px;
+      left: 16px;
+      top: 304px;
+    </style>
+    <div aria-label="Checkbox">
+      <style>
+        position: fixed;
+        width: 24px;
+        height: 24px;
+        left: 32px;
+        top: 320px;
+      </style>
+      <div aria-label="Outline">
+        <style>
+          position: fixed;
+          width: 20px;
+          height: 20px;
+          left: 34px;
+          top: 322px;
+          background: #ffffff;
+          border-radius: 4px;
+        </style>
+      </div>
+      <div aria-label="Shape">
+        <style>
+          position: fixed;
+          width: 16px;
+          height: 16px;
+          left: 36px;
+          top: 324px;
+          border-radius: 2px;
+        </style>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Table", width: 444, height: 336, x: 360, y: 477 }
+-->
+<div aria-label="Table">
+  <style>
+    background: #282828;
+  </style>
+  <div aria-label="Frame 2">
+    <style>
+      position: fixed;
+      width: 56px;
+      height: 336px;
+      left: 0px;
+      top: 0px;
+    </style>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 56px;
+        height: 56px;
+        left: 0px;
+        top: 0px;
+      </style>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 16px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 18px;
+            top: 18px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 20px;
+            top: 20px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 56px;
+        height: 56px;
+        left: 0px;
+        top: 56px;
+      </style>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 72px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 18px;
+            top: 74px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 20px;
+            top: 76px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 56px;
+        height: 56px;
+        left: 0px;
+        top: 112px;
+      </style>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 128px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 18px;
+            top: 130px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 20px;
+            top: 132px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 56px;
+        height: 56px;
+        left: 0px;
+        top: 168px;
+      </style>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 184px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 18px;
+            top: 186px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 20px;
+            top: 188px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 56px;
+        height: 56px;
+        left: 0px;
+        top: 224px;
+      </style>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 240px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 18px;
+            top: 242px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 20px;
+            top: 244px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 56px;
+        height: 56px;
+        left: 0px;
+        top: 280px;
+      </style>
+      <div aria-label="Checkbox">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 16px;
+          top: 296px;
+        </style>
+        <div aria-label="Outline">
+          <style>
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            left: 18px;
+            top: 298px;
+            background: #ffffff;
+            border-radius: 4px;
+          </style>
+        </div>
+        <div aria-label="Shape">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 20px;
+            top: 300px;
+            border-radius: 2px;
+          </style>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Frame 3">
+    <style>
+      position: fixed;
+      width: 104px;
+      height: 336px;
+      left: 56px;
+      top: 0px;
+    </style>
+    <div aria-label="header">
+      <style>
+        position: fixed;
+        width: 104px;
+        height: 56px;
+        left: 56px;
+        top: 0px;
+      </style>
+      <div aria-label="Frame 1">
+        <style>
+          position: fixed;
+          width: 104px;
+          height: 56px;
+          left: 56px;
+          top: 0px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 54px;
+            height: 16px;
+            left: 56px;
+            top: 20px;
+            color: #ecedee;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 500;
+            font-size: 12;
+            text-align: LEFT;
+            letter-spacing: 1;
+          </style>
+          Header
+        </span>
+        <div aria-label="arrow-down">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 132px;
+            top: 20px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 104px;
+        height: 56px;
+        left: 56px;
+        top: 56px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 56px;
+          top: 74px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 104px;
+        height: 56px;
+        left: 56px;
+        top: 112px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 56px;
+          top: 130px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 104px;
+        height: 56px;
+        left: 56px;
+        top: 168px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 56px;
+          top: 186px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 104px;
+        height: 56px;
+        left: 56px;
+        top: 224px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 56px;
+          top: 242px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 104px;
+        height: 56px;
+        left: 56px;
+        top: 280px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 56px;
+          top: 298px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+  </div>
+  <div aria-label="Frame 4">
+    <style>
+      position: fixed;
+      width: 84px;
+      height: 336px;
+      left: 160px;
+      top: 0px;
+    </style>
+    <div aria-label="header">
+      <style>
+        position: fixed;
+        width: 84px;
+        height: 56px;
+        left: 160px;
+        top: 0px;
+      </style>
+      <div aria-label="Frame 1">
+        <style>
+          position: fixed;
+          width: 84px;
+          height: 56px;
+          left: 160px;
+          top: 0px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 54px;
+            height: 16px;
+            left: 176px;
+            top: 20px;
+            color: #ecedee;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 500;
+            font-size: 12;
+            text-align: LEFT;
+            letter-spacing: 1;
+          </style>
+          Header
+        </span>
+        <div aria-label="arrow-down">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 236px;
+            top: 20px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 84px;
+        height: 56px;
+        left: 160px;
+        top: 56px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 176px;
+          top: 74px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 84px;
+        height: 56px;
+        left: 160px;
+        top: 112px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 176px;
+          top: 130px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 84px;
+        height: 56px;
+        left: 160px;
+        top: 168px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 176px;
+          top: 186px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 84px;
+        height: 56px;
+        left: 160px;
+        top: 224px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 176px;
+          top: 242px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 84px;
+        height: 56px;
+        left: 160px;
+        top: 280px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 23px;
+          height: 20px;
+          left: 176px;
+          top: 298px;
+          color: #ecedee;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        cell
+      </span>
+    </div>
+  </div>
+  <div aria-label="Frame 5">
+    <style>
+      position: fixed;
+      width: 200px;
+      height: 336px;
+      left: 244px;
+      top: 0px;
+    </style>
+    <div aria-label="header">
+      <style>
+        position: fixed;
+        width: 200px;
+        height: 56px;
+        left: 244px;
+        top: 0px;
+      </style>
+      <div aria-label="Frame 1">
+        <style>
+          position: fixed;
+          width: 84px;
+          height: 56px;
+          left: 244px;
+          top: 0px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 54px;
+            height: 16px;
+            left: 260px;
+            top: 20px;
+            color: #ecedee;
+            line-height: 133.33%;
+            font-family: Inter;
+            font-weight: 500;
+            font-size: 12;
+            text-align: LEFT;
+            letter-spacing: 1;
+          </style>
+          Header
+        </span>
+        <div aria-label="arrow-down">
+          <style>
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            left: 320px;
+            top: 20px;
+          </style>
+        </div>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 200px;
+        height: 56px;
+        left: 244px;
+        top: 56px;
+      </style>
+      <div aria-label="Frame 6">
+        <style>
+          position: fixed;
+          width: 168px;
+          height: 40px;
+          left: 260px;
+          top: 64px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 64px;
+            color: #ecedee;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 84px;
+            color: #a2a2a2;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 200px;
+        height: 56px;
+        left: 244px;
+        top: 112px;
+      </style>
+      <div aria-label="Frame 6">
+        <style>
+          position: fixed;
+          width: 168px;
+          height: 40px;
+          left: 260px;
+          top: 120px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 120px;
+            color: #ecedee;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 140px;
+            color: #a2a2a2;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 200px;
+        height: 56px;
+        left: 244px;
+        top: 168px;
+      </style>
+      <div aria-label="Frame 6">
+        <style>
+          position: fixed;
+          width: 168px;
+          height: 40px;
+          left: 260px;
+          top: 176px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 176px;
+            color: #ecedee;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 196px;
+            color: #a2a2a2;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 200px;
+        height: 56px;
+        left: 244px;
+        top: 224px;
+      </style>
+      <div aria-label="Frame 6">
+        <style>
+          position: fixed;
+          width: 168px;
+          height: 40px;
+          left: 260px;
+          top: 232px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 232px;
+            color: #ecedee;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 252px;
+            color: #a2a2a2;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+      </div>
+    </div>
+    <div aria-label="cell">
+      <style>
+        position: fixed;
+        width: 200px;
+        height: 56px;
+        left: 244px;
+        top: 280px;
+      </style>
+      <div aria-label="Frame 6">
+        <style>
+          position: fixed;
+          width: 168px;
+          height: 40px;
+          left: 260px;
+          top: 288px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 288px;
+            color: #ecedee;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+        <span>
+          <style>
+            position: fixed;
+            width: 168px;
+            height: 20px;
+            left: 260px;
+            top: 308px;
+            color: #a2a2a2;
+            line-height: 142.86%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 14;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          cell
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

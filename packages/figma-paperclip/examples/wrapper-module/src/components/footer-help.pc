@@ -1,0 +1,160 @@
+<!--
+  @frame { title: "Footer help container", width: 420, height: 152, x: 14831, y: 14740 }
+-->
+<div aria-label="Footer help container">
+  <style>
+  </style>
+  <div aria-label="Footer help">
+    <style>
+      position: fixed;
+      width: 420px;
+      height: 72px;
+      left: 0px;
+      top: 40px;
+      border-radius: 100px;
+    </style>
+    <div aria-label="Code / Info-circle">
+      <style>
+        position: fixed;
+        width: 24px;
+        height: 24px;
+        left: 24px;
+        top: 64px;
+      </style>
+      <div aria-label="bound">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 24px;
+          top: 64px;
+        </style>
+      </div>
+      <div aria-label="Rectangle 9">
+        <style>
+          position: fixed;
+          width: 2px;
+          height: 7px;
+          left: 35px;
+          top: 74px;
+          background: #c6ad52;
+        </style>
+      </div>
+      <div aria-label="Rectangle 9 Copy">
+        <style>
+          position: fixed;
+          width: 2px;
+          height: 2px;
+          left: 35px;
+          top: 71px;
+          background: #c6ad52;
+        </style>
+      </div>
+    </div>
+    <div aria-label="content">
+      <style>
+        position: fixed;
+        width: 340px;
+        height: 20px;
+        left: 56px;
+        top: 66px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 340px;
+          height: 20px;
+          left: 56px;
+          top: 66px;
+          color: #c6ad52;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Lorem ipsom dolor ask a question • provide feedback
+      </span>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Footer help container", width: 333, height: 152, x: 14831, y: 14924 }
+-->
+<div aria-label="Footer help container">
+  <style>
+  </style>
+  <div aria-label="Footer help">
+    <style>
+      position: fixed;
+      width: 333px;
+      height: 72px;
+      left: 0px;
+      top: 40px;
+      border-radius: 100px;
+    </style>
+    <div aria-label="General / Shield-check">
+      <style>
+        position: fixed;
+        width: 24px;
+        height: 24px;
+        left: 24px;
+        top: 64px;
+      </style>
+      <div aria-label="bound">
+        <style>
+          position: fixed;
+          width: 24px;
+          height: 24px;
+          left: 24px;
+          top: 64px;
+        </style>
+      </div>
+    </div>
+    <div aria-label="content">
+      <style>
+        position: fixed;
+        width: 253px;
+        height: 20px;
+        left: 56px;
+        top: 66px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 176px;
+          height: 20px;
+          left: 56px;
+          top: 66px;
+          color: #a2a2a2;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Lorem ipsom dolor sit amit.
+      </span>
+      <span>
+        <style>
+          position: fixed;
+          width: 73px;
+          height: 20px;
+          left: 236px;
+          top: 66px;
+          color: #c6ad52;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Learn more
+      </span>
+    </div>
+  </div>
+</div>

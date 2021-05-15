@@ -1,0 +1,246 @@
+<!--
+  @frame { title: "Tab / Default", width: 86, height: 48, x: -43, y: -24 }
+-->
+<div aria-label="Tab / Default">
+  <style>
+    background: #1a1a1a;
+  </style>
+  <span>
+    <style>
+      position: fixed;
+      width: 54px;
+      height: 24px;
+      left: 16px;
+      top: 12px;
+      color: #a2a2a2;
+      line-height: 150%;
+      font-family: Inter;
+      font-weight: 400;
+      font-size: 16;
+      text-align: LEFT;
+      letter-spacing: 0;
+    </style>
+    Default
+  </span>
+</div>
+
+<!--
+  @frame { title: "Tab / Selected", width: 99, height: 48, x: 91, y: -24 }
+-->
+<div aria-label="Tab / Selected">
+  <style>
+  </style>
+  <div aria-label="Tab / Selected">
+    <style>
+      position: fixed;
+      width: 96px;
+      height: 48px;
+      left: 0px;
+      top: 0px;
+      background: #1a1a1a;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 64px;
+        height: 24px;
+        left: 16px;
+        top: 12px;
+        color: #ecedee;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Selected
+    </span>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Tab / Hover", width: 77, height: 48, x: 235, y: -24 }
+-->
+<div aria-label="Tab / Hover">
+  <style>
+  </style>
+  <div aria-label="Tab / Hover">
+    <style>
+      position: fixed;
+      width: 76px;
+      height: 48px;
+      left: 0px;
+      top: 0px;
+      background: #ffffff;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 44px;
+        height: 24px;
+        left: 16px;
+        top: 12px;
+        color: #a2a2a2;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Hover
+    </span>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Tab / Focus", width: 76, height: 48, x: 359, y: -24 }
+-->
+<div aria-label="Tab / Focus">
+  <style>
+  </style>
+  <div aria-label="Tab / Focus">
+    <style>
+      position: fixed;
+      width: 76px;
+      height: 48px;
+      left: 0px;
+      top: 0px;
+      background: #ffffff;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 44px;
+        height: 24px;
+        left: 16px;
+        top: 12px;
+        color: #a2a2a2;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Focus
+    </span>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Tab / Group", width: 478, height: 48, x: -43, y: 98 }
+-->
+<div aria-label="Tab / Group">
+  <style>
+  </style>
+  <div aria-label="bottom-line">
+    <style>
+      position: fixed;
+      width: 478px;
+      height: 0px;
+      left: 0px;
+      top: 48px;
+    </style>
+  </div>
+  <div aria-label="Content">
+    <style>
+      position: fixed;
+      width: 206px;
+      height: 48px;
+      left: 0px;
+      top: 0px;
+    </style>
+    <div aria-label="Tab 1">
+      <style>
+        position: fixed;
+        width: 56px;
+        height: 48px;
+        left: 0px;
+        top: 0px;
+      </style>
+      <div aria-label="Tab / Selected">
+        <style>
+          position: fixed;
+          width: 56px;
+          height: 48px;
+          left: 0px;
+          top: 0px;
+          background: #1a1a1a;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 40px;
+            height: 24px;
+            left: 0px;
+            top: 12px;
+            color: #ecedee;
+            line-height: 150%;
+            font-family: Inter;
+            font-weight: 400;
+            font-size: 16;
+            text-align: LEFT;
+            letter-spacing: 0;
+          </style>
+          Tab 1
+        </span>
+      </div>
+    </div>
+    <div aria-label="Tab 2">
+      <style>
+        position: fixed;
+        width: 72px;
+        height: 48px;
+        left: 56px;
+        top: 0px;
+        background: #1a1a1a;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 24px;
+          left: 72px;
+          top: 12px;
+          color: #a2a2a2;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Tab 2
+      </span>
+    </div>
+    <div aria-label="Tab 3">
+      <style>
+        position: fixed;
+        width: 72px;
+        height: 48px;
+        left: 131px;
+        top: 0px;
+        background: #1a1a1a;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 40px;
+          height: 24px;
+          left: 147px;
+          top: 12px;
+          color: #a2a2a2;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Tab 3
+      </span>
+    </div>
+  </div>
+</div>

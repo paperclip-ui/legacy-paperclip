@@ -1,0 +1,420 @@
+<!--
+  @frame { title: "Blankstate", width: 512, height: 144, x: 405, y: 418 }
+-->
+<div aria-label="Blankstate">
+  <style>
+  </style>
+  <div aria-label="content">
+    <style>
+      position: fixed;
+      width: 512px;
+      height: 72px;
+      left: 0px;
+      top: 0px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 512px;
+        height: 32px;
+        left: 0px;
+        top: 0px;
+        color: #ecedee;
+        line-height: 160%;
+        font-family: Supera Gothic;
+        font-weight: 800;
+        font-size: 20;
+        text-align: CENTER;
+        letter-spacing: 0.031999999284744264;
+      </style>
+      Blankstate header
+    </span>
+    <span>
+      <style>
+        position: fixed;
+        width: 512px;
+        height: 24px;
+        left: 0px;
+        top: 48px;
+        color: #a2a2a2;
+        line-height: 150%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 16;
+        text-align: CENTER;
+        letter-spacing: 0;
+      </style>
+      Use it to provide information when no dynamic information exisits
+    </span>
+  </div>
+  <div aria-label="action">
+    <style>
+      position: fixed;
+      width: 163px;
+      height: 40px;
+      left: 174.5px;
+      top: 104px;
+    </style>
+    <div aria-label="button">
+      <style>
+        position: fixed;
+        width: 163px;
+        height: 40px;
+        left: 174.5px;
+        top: 104px;
+        background: #a38427;
+        border-radius: 2px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 131px;
+          height: 24px;
+          left: 190.5px;
+          top: 112px;
+          color: #ffffff;
+          line-height: 171.43%;
+          font-family: Inter;
+          font-weight: 500;
+          font-size: 14;
+          text-align: CENTER;
+          letter-spacing: 0;
+        </style>
+        Manage companies
+      </span>
+    </div>
+    <div aria-label="button">
+      <style>
+        position: fixed;
+        width: 76px;
+        height: 40px;
+        left: 329.5px;
+        top: 104px;
+        background: #494949;
+        border-radius: 2px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 77px;
+          height: 24px;
+          left: 329.5px;
+          top: 112px;
+          color: #ffffff;
+          line-height: 171.43%;
+          font-family: Inter;
+          font-weight: 500;
+          font-size: 14;
+          text-align: CENTER;
+          letter-spacing: 0;
+        </style>
+        Bulk import
+      </span>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "Blankslate / Illustration", width: 512, height: 324, x: 405, y: -102 }
+-->
+<div aria-label="Blankslate / Illustration">
+  <style>
+  </style>
+  <div aria-label="Blankstate">
+    <style>
+      position: fixed;
+      width: 512px;
+      height: 324px;
+      left: 0px;
+      top: 0px;
+    </style>
+    <div aria-label="Mailbox 2">
+      <style>
+        position: fixed;
+        width: 192px;
+        height: 148px;
+        left: 160px;
+        top: 0px;
+        background: #1a1a1a;
+      </style>
+      <div aria-label="Layer 1">
+        <style>
+          position: fixed;
+          width: 135.15px;
+          height: 117.45px;
+          left: 183.34px;
+          top: 0.32px;
+        </style>
+        <div aria-label="Group">
+          <style>
+            position: fixed;
+            width: 85.67px;
+            height: 46.75px;
+            left: 183.57px;
+            top: 71.02px;
+          </style>
+          <div aria-label="Group">
+            <style>
+              position: fixed;
+              width: 85.67px;
+              height: 46.75px;
+              left: 183.57px;
+              top: 71.02px;
+            </style>
+            <div aria-label="Rectangle">
+              <style>
+                position: fixed;
+                width: 85.67px;
+                height: 46.75px;
+                left: 183.57px;
+                top: 71.02px;
+                background: url("./fff0e4af638e8e18163e2733f2153221dddee5d6.png");
+              </style>
+            </div>
+          </div>
+        </div>
+        <div aria-label="Group">
+          <style>
+            position: fixed;
+            width: 86.82px;
+            height: 42.37px;
+            left: 193.42px;
+            top: 50.99px;
+          </style>
+          <div aria-label="Rectangle">
+            <style>
+              position: fixed;
+              width: 86.82px;
+              height: 42.37px;
+              left: 193.42px;
+              top: 50.99px;
+              background: url("./defcf11356e91a3e13f779d7a28f858aa5569f0f.png");
+            </style>
+          </div>
+        </div>
+        <div aria-label="Group">
+          <style>
+            position: fixed;
+            width: 125.53px;
+            height: 115.61px;
+            left: 192.97px;
+            top: 0.32px;
+          </style>
+          <div aria-label="Rectangle">
+            <style>
+              position: fixed;
+              width: 125.53px;
+              height: 115.61px;
+              left: 192.97px;
+              top: 0.32px;
+              background: url("./a355a1acdee2db2c3e29c758af87eb13ac2f908c.png");
+            </style>
+          </div>
+        </div>
+        <div aria-label="Group">
+          <style>
+            position: fixed;
+            width: 54.52px;
+            height: 87.74px;
+            left: 263.29px;
+            top: 0.78px;
+          </style>
+          <div aria-label="Rectangle">
+            <style>
+              position: fixed;
+              width: 54.52px;
+              height: 87.74px;
+              left: 263.29px;
+              top: 0.78px;
+              background: url("./798760f618198e1d4f8d86ade10944ca5c3898e8.png");
+            </style>
+          </div>
+        </div>
+        <div aria-label="Group">
+          <style>
+            position: fixed;
+            width: 48.1px;
+            height: 78.3px;
+            left: 196.63px;
+            top: 29.8px;
+          </style>
+          <div aria-label="Rectangle">
+            <style>
+              position: fixed;
+              width: 48.1px;
+              height: 78.3px;
+              left: 196.63px;
+              top: 29.8px;
+              background: url("./19d1e000a77896bae5c40ea3d0b999f589be6dd3.png");
+            </style>
+          </div>
+        </div>
+        <div aria-label="Group">
+          <style>
+            position: fixed;
+            width: 90.71px;
+            height: 65.17px;
+            left: 227.1px;
+            top: 20.82px;
+          </style>
+          <div aria-label="Rectangle">
+            <style>
+              position: fixed;
+              width: 90.71px;
+              height: 65.17px;
+              left: 227.1px;
+              top: 20.82px;
+              background: url("./bffd0e151c761b193d7b8327cda5cfba9889a906.png");
+            </style>
+          </div>
+        </div>
+        <div aria-label="Group">
+          <style>
+            position: fixed;
+            width: 31.15px;
+            height: 50.9px;
+            left: 241.3px;
+            top: 17.59px;
+          </style>
+          <div aria-label="Rectangle">
+            <style>
+              position: fixed;
+              width: 31.15px;
+              height: 50.9px;
+              left: 241.3px;
+              top: 17.59px;
+              background: url("./29a365e79d07ad9ee01413537b2d59c0621bdc53.png");
+            </style>
+          </div>
+        </div>
+        <div aria-label="Group">
+          <style>
+            position: fixed;
+            width: 86.13px;
+            height: 46.98px;
+            left: 183.34px;
+            top: 66.42px;
+          </style>
+          <div aria-label="Rectangle">
+            <style>
+              position: fixed;
+              width: 86.13px;
+              height: 46.98px;
+              left: 183.34px;
+              top: 66.42px;
+              background: url("./3c537c1255fa850fc305b541c7672ae3eb05f141.png");
+            </style>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div aria-label="content">
+      <style>
+        position: fixed;
+        width: 512px;
+        height: 72px;
+        left: 0px;
+        top: 180px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 512px;
+          height: 32px;
+          left: 0px;
+          top: 180px;
+          color: #ecedee;
+          line-height: 160%;
+          font-family: Eina 03;
+          font-weight: 600;
+          font-size: 20;
+          text-align: CENTER;
+          letter-spacing: 0.031999999284744264;
+        </style>
+        Blankslate header
+      </span>
+      <span>
+        <style>
+          position: fixed;
+          width: 512px;
+          height: 24px;
+          left: 0px;
+          top: 228px;
+          color: #a2a2a2;
+          line-height: 150%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 16;
+          text-align: CENTER;
+          letter-spacing: 0;
+        </style>
+        Use it to provide information when no dynamic information exisits
+      </span>
+    </div>
+    <div aria-label="action">
+      <style>
+        position: fixed;
+        width: 84px;
+        height: 40px;
+        left: 214px;
+        top: 284px;
+      </style>
+      <div aria-label="button">
+        <style>
+          position: fixed;
+          width: 84px;
+          height: 40px;
+          left: 214px;
+          top: 284px;
+          background: #a38427;
+          border-radius: 2px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 52px;
+            height: 24px;
+            left: 230px;
+            top: 292px;
+            color: #ffffff;
+            line-height: 171.43%;
+            font-family: Inter;
+            font-weight: 500;
+            font-size: 14;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          Primary
+        </span>
+      </div>
+      <div aria-label="button">
+        <style>
+          position: fixed;
+          width: 76px;
+          height: 40px;
+          left: 369px;
+          top: 284px;
+          background: #494949;
+          border-radius: 2px;
+        </style>
+        <span>
+          <style>
+            position: fixed;
+            width: 77px;
+            height: 24px;
+            left: 369px;
+            top: 292px;
+            color: #ffffff;
+            line-height: 171.43%;
+            font-family: Inter;
+            font-weight: 500;
+            font-size: 14;
+            text-align: CENTER;
+            letter-spacing: 0;
+          </style>
+          Bulk import
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

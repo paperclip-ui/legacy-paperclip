@@ -1,0 +1,25 @@
+<!--
+  @frame { title: "Cover", width: 620, height: 320, x: -310, y: -160 }
+-->
+<div aria-label="Cover">
+  <style>
+    background: #080808;
+  </style>
+  <span>
+    <style>
+      position: fixed;
+      width: 492px;
+      height: 80px;
+      left: 64px;
+      top: 120px;
+      color: #ffffff;
+      line-height: 125%;
+      font-family: Supera Gothic;
+      font-weight: 800;
+      font-size: 64;
+      text-align: CENTER;
+      letter-spacing: 0;
+    </style>
+    Components
+  </span>
+</div>

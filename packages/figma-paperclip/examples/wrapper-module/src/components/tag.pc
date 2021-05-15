@@ -1,0 +1,126 @@
+<!--
+  @frame { title: "Tag", width: 176, height: 60, x: -1366, y: -372 }
+-->
+<div aria-label="Tag">
+  <style>
+  </style>
+  <div aria-label="Hover=true">
+    <style>
+      position: fixed;
+      width: 67px;
+      height: 28px;
+      left: 95px;
+      top: 16px;
+    </style>
+    <div aria-label="_base">
+      <style>
+        position: fixed;
+        width: 67px;
+        height: 28px;
+        left: 95px;
+        top: 16px;
+        background: #ffffff;
+        border-radius: 2px;
+      </style>
+      <span>
+        <style>
+          position: fixed;
+          width: 31px;
+          height: 20px;
+          left: 103px;
+          top: 20px;
+          color: #a2a2a2;
+          line-height: 142.86%;
+          font-family: Inter;
+          font-weight: 400;
+          font-size: 14;
+          text-align: LEFT;
+          letter-spacing: 0;
+        </style>
+        Item
+      </span>
+      <div aria-label="x">
+        <style>
+          position: fixed;
+          width: 16px;
+          height: 16px;
+          left: 138px;
+          top: 22px;
+        </style>
+      </div>
+    </div>
+  </div>
+  <div aria-label="Hover=false">
+    <style>
+      position: fixed;
+      width: 67px;
+      height: 28px;
+      left: 12px;
+      top: 16px;
+      background: #ffffff;
+      border-radius: 2px;
+    </style>
+    <span>
+      <style>
+        position: fixed;
+        width: 31px;
+        height: 20px;
+        left: 20px;
+        top: 20px;
+        color: #a2a2a2;
+        line-height: 142.86%;
+        font-family: Inter;
+        font-weight: 400;
+        font-size: 14;
+        text-align: LEFT;
+        letter-spacing: 0;
+      </style>
+      Item
+    </span>
+    <div aria-label="x">
+      <style>
+        position: fixed;
+        width: 16px;
+        height: 16px;
+        left: 55px;
+        top: 22px;
+      </style>
+    </div>
+  </div>
+</div>
+
+<!--
+  @frame { title: "_base", width: 67, height: 28, x: -1366, y: -425 }
+-->
+<div aria-label="_base">
+  <style>
+    background: #ffffff;
+    border-radius: 2px;
+  </style>
+  <span>
+    <style>
+      position: fixed;
+      width: 31px;
+      height: 20px;
+      left: 8px;
+      top: 4px;
+      color: #a2a2a2;
+      line-height: 142.86%;
+      font-family: Inter;
+      font-weight: 400;
+      font-size: 14;
+      text-align: LEFT;
+      letter-spacing: 0;
+    </style>
+    Item
+  </span>
+  <div aria-label="x">
+    <style>
+      position: fixed;
+      width: 16px;
+      height: 16px;
+      left: 43px;
+      top: 6px;
+    </style>
+  </div>
+</div>
