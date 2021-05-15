@@ -2,7 +2,8 @@ import { ArtboardFacade } from "@opendesign/sdk/dist/artboard-facade";
 import { DesignFacade } from "@opendesign/sdk/dist/design-facade";
 import { LayerFacade } from "@opendesign/sdk/dist/layer-facade";
 import { PageFacade } from "@opendesign/sdk/dist/page-facade";
-import { kebabCase } from "lodash";
+import { IText } from "@opendesign/octopus-reader/dist/types/text.iface";
+import { add, kebabCase } from "lodash";
 import * as path from "path";
 
 type Point = {
@@ -12,6 +13,7 @@ type Point = {
 
 type TranslateContext = {
   content: string;
+  options: TranslateOptions;
   lineNumber: number;
   isNewLine: boolean;
   indent: string;
@@ -40,8 +42,13 @@ const VALUE_ALIASES = {
   }
 };
 
+type TranslateOptions = {
+  includes: string[];
+};
+
 export const translateDesign = async (
-  design: DesignFacade
+  design: DesignFacade,
+  options: TranslateOptions
 ): Promise<TranslateDesignOutput> => {
   const projectName = kebabCase(
     path.basename(design.octopusFilename).replace(/.octopus$/, "")
@@ -55,7 +62,7 @@ export const translateDesign = async (
   for (const page of pages) {
     const relativePath = path.join(projectName, kebabCase(page.name)) + ".pc";
     files.push({
-      content: await translatePage(page),
+      content: await translatePage(page, options),
       relativePath
     });
   }
@@ -63,8 +70,15 @@ export const translateDesign = async (
   return { files };
 };
 
-const translatePage = async (page: PageFacade) => {
-  let context = createContext();
+const translatePage = async (page: PageFacade, options: TranslateOptions) => {
+  let context = createContext(options);
+
+  for (const include of options.includes) {
+    context = addBuffer(`<import src="${include}" inject-styles />\n`, context);
+  }
+  if (options.includes.length) {
+    context = addBuffer("\n", context);
+  }
   for (const artboard of page.getArtboards()) {
     context = await translateArtboard(artboard, context);
   }
@@ -139,16 +153,98 @@ const translateLayer = (
 
   if (layer.type === "textLayer") {
     const text = layer.getText();
-    console.log("TEXT IT", JSON.stringify(text, null, 2));
-    context = addBuffer(
-      `${text.getTextContent().replace(/[^\w\s]/g, "")}\n`,
-      context
-    );
+    context = translateText(text, context);
   }
   context = endBlock(context);
   context = addBuffer(`</div>\n`, context);
 
   return context;
+};
+
+const translateText = (text: IText, context: TranslateContext) => {
+  context = addBuffer("<span>\n", context);
+  context = startBlock(context);
+  const { styles } = text.octopus;
+
+  context = addBuffer("<style>\n", context);
+  context = startBlock(context);
+  const defaultStyleObj = getTextStyle(text.octopus.defaultStyle || {});
+  context = translateStyles(defaultStyleObj, context);
+
+  for (const style of styles) {
+    const styleObj = getTextStyle(style);
+    const selectorText = style.ranges
+      .map(range => `._${range.from}-${range.to}`)
+      .join(", ");
+    context = addBuffer("\n", context);
+    context = addBuffer(`${selectorText} {\n`, context);
+    context = startBlock(context);
+    context = translateStyles(styleObj, context);
+    context = endBlock(context);
+    context = addBuffer("}\n", context);
+  }
+  context = endBlock(context);
+  context = addBuffer("</style>\n", context);
+
+  const value = text.getTextContent();
+  let currRange;
+  let prevRange;
+
+  for (let i = 0, { length } = value; i < length; i++) {
+    for (const style of styles) {
+      for (const range of style.ranges) {
+        if (range.from <= i && range.to > i) {
+          currRange = range;
+          break;
+        }
+      }
+    }
+    if (currRange && currRange !== prevRange) {
+      if (prevRange) {
+        const closeTagName = rangeContainsParagraphChar(value, prevRange)
+          ? "span"
+          : "span";
+        context = addBuffer(`</${closeTagName}>\n`, context);
+      }
+
+      const openTagName = rangeContainsParagraphChar(value, currRange)
+        ? "span"
+        : "span";
+
+      context = addBuffer(
+        `<${openTagName} class="_${currRange.from}-${currRange.to}">`,
+        context
+      );
+    }
+
+    context = addBuffer(convertChar(value.charAt(i)), context);
+
+    prevRange = currRange;
+  }
+
+  if (prevRange) {
+    const closeTagName = rangeContainsParagraphChar(value, prevRange)
+      ? "span"
+      : "span";
+    context = addBuffer(`</${closeTagName}>`, context);
+  }
+  context = endBlock(context);
+  context = addBuffer("\n", context);
+  context = addBuffer("</span>\n", context);
+
+  return context;
+};
+
+const rangeContainsParagraphChar = (value: string, range: any) => {
+  const chunk = value.substr(range.from, range.to);
+  return chunk.includes("\u2029");
+};
+
+const convertChar = (c: string) => {
+  if (c === "\u2029") {
+    return "<br /><br />";
+  }
+  return c;
 };
 
 const translateLayerStyle = (
@@ -160,16 +256,73 @@ const translateLayerStyle = (
 
   context = addBuffer("<style>\n", context);
   context = startBlock(context);
-  for (const name in style) {
-    let value = style[name];
-    if (typeof value === "number") {
-      value = `${parseFloat(value.toFixed(2))}px`;
-    }
-    context = addCSSDeclaration(kebabCase(name), value, context);
-  }
+  context = translateStyles(style, context);
   context = endBlock(context);
   context = addBuffer("</style>\n", context);
 
+  return context;
+};
+
+const getTextStyle = ({ color, font }: any) => {
+  const style: any = {};
+
+  if (color) {
+    style.color = translateColor(color);
+  }
+  if (font.align) {
+    style.textAlign = font.align;
+  }
+  if (font.baseline) {
+    style.verticalAlign = getAlias("baseline", font.baseline);
+  }
+  if (font.weight) {
+    style.fontWeight = font.weight;
+  }
+  if (font.italic) {
+    style.fontStyle = "italic";
+  }
+  if (font.kerning) {
+    style.fontKerning = "normal";
+  }
+
+  if (font.letterSpacing) {
+    style.letterSpacing = px(parseFloat(font.letterSpacing.toFixed(2)));
+  }
+
+  if (font.align) {
+    font.textAlign = font.align;
+  }
+  // TODO
+  // if (font.ligatures) {
+  //   font.ligatures
+  // }
+
+  if (font.lineHeight) {
+    style.lineHeight = px(parseFloat(font.lineHeight));
+  }
+  if (font.name) {
+    style.fontFamily = font.name;
+  }
+  // if (font.postScriptName)
+  // if (font.smallcaps)
+  // if (font.syntheticPostScriptName)
+  // if (font.underline) {}
+  // if (font.uppercase)
+  if (font.size) {
+    style.fontSize = font.size + "px";
+  }
+
+  return style;
+};
+
+const translateStyles = (style: any, context: TranslateContext) => {
+  for (const name in style) {
+    let value = style[name];
+    if (typeof value === "number") {
+      value = parseFloat(value.toFixed(2));
+    }
+    context = addCSSDeclaration(kebabCase(name), value, context);
+  }
   return context;
 };
 
@@ -178,14 +331,14 @@ const getLayerStyle = (
   context: TranslateContext,
   offset: Point
 ) => {
-  const { bounds, visible, effects, text } = layer.octopus;
+  const { bounds, visible, effects } = layer.octopus;
 
   const style: any = {
     position: "absolute",
-    left: bounds.left - offset.x,
-    top: bounds.top - offset.y,
-    width: bounds.width,
-    height: bounds.height,
+    left: px(bounds.left - offset.x),
+    top: px(bounds.top - offset.y),
+    width: px(bounds.width),
+    height: px(bounds.height),
     overflow: "hidden"
   };
 
@@ -211,49 +364,9 @@ const getLayerStyle = (
     }
   }
 
-  if (text) {
-    const { color, font = {} } = text.defaultStyle || {};
-    if (color) {
-      style.color = translateColor(color);
-    }
-    if (font.align) {
-      style.textAlign = font.align;
-    }
-    if (font.baseline) {
-      style.verticalAlign = getAlias("baseline", font.baseline);
-    }
-    if (font.bold) {
-      style.fontWeight = "bold";
-    }
-    if (font.italic) {
-      style.fontStyle = "italic";
-    }
-    if (font.kerning) {
-      style.fontKerning = "normal";
-    }
-    if (font.letterSpacing) {
-      style.letterSpacing = font.letterSpacing;
-    }
-    // TODO
-    // if (font.ligatures) {
-    //   font.ligatures
-    // }
-
-    if (font.lineHeight) {
-      style.lineHeight = font.lineHeight;
-    }
-    if (font.size) {
-      style.fontFamily = font.name;
-    }
-    // if (font.postScriptName)
-    // if (font.smallcaps)
-    // if (font.syntheticPostScriptName)
-    // if (font.underline) {}
-    // if (font.uppercase)
-    if (font.size) {
-      style.fontSize = font.size + "px";
-    }
-  }
+  // if (text) {
+  //   // Object.assign(style, getTextStyle(text.defaultStyle || {}));
+  // }
 
   return style;
 };
@@ -272,9 +385,10 @@ const addCSSDeclaration = (
   return addBuffer(`${name}: ${value};\n`, context);
 };
 
-const createContext = (): TranslateContext => ({
+const createContext = (options: TranslateOptions): TranslateContext => ({
   content: "",
   lineNumber: 0,
+  options,
   isNewLine: false,
   indent: "  "
 });
@@ -287,6 +401,8 @@ export const addBuffer = (buffer: string, context: TranslateContext) => ({
     buffer,
   isNewLine: buffer.lastIndexOf("\n") === buffer.length - 1
 });
+
+const px = (v: any) => `${v}px`;
 
 export const startBlock = (context: TranslateContext) => ({
   ...context,

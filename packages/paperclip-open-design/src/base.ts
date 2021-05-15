@@ -1,3 +1,4 @@
 export type PaperclipOpenDesignConfig = {
-  token: string;
+  useGoogleFonts?: boolean;
+  include?: string[];
 };

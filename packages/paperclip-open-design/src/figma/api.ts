@@ -1,5 +1,6 @@
 import * as https from "https";
 import * as qs from "querystring";
+import { httpGet } from "../utils";
 
 export class FigmaApi {
   constructor(readonly personalAccessToken: string) {}
@@ -28,33 +29,12 @@ export class FigmaApi {
 
   private _get(pathname: string, query: Record<string, string> = {}) {
     const search = Object.keys(query).length ? "?" + qs.stringify(query) : "";
-    return new Promise<any>((resolve, reject) => {
-      https.get(
-        {
-          headers: {
-            "X-FIGMA-TOKEN": this.personalAccessToken
-          },
-          hostname: "api.figma.com",
-          path: pathname + search
-        },
-        res => {
-          let buffer = "";
-
-          res.on("data", chunk => (buffer += String(chunk)));
-          res.on("end", () => {
-            if (res.statusCode === 200) {
-              const result = JSON.parse(buffer);
-              resolve(result);
-            } else {
-              try {
-                reject(JSON.parse(buffer));
-              } catch (e) {
-                reject(buffer);
-              }
-            }
-          });
-        }
-      );
+    return httpGet({
+      headers: {
+        "X-FIGMA-TOKEN": this.personalAccessToken
+      },
+      hostname: "api.figma.com",
+      path: pathname + search
     });
   }
 }

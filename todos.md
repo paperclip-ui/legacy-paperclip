@@ -1,6 +1,5 @@
 IMMEDIATE:
 
-- render text with ranges
 - get fonts to work properly (via config)
 - warning if font not found
 

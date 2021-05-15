@@ -9,7 +9,7 @@ const argv = require("yargs")
   .option("open-design-token", { description: "your Open Design token", required: true })
   .option("figma-token", { description: "your Figma token", required: true })
   .option("url", { description: "the Figma design url", required: true })
-  .option("dir", { description: "Directory to download files into", default: "designs" })
+  .option("dir", { description: "Directory to download files into", required: true })
 }, argv => {  
   const cwd = process.cwd();
   pull({
@@ -18,6 +18,12 @@ const argv = require("yargs")
     figmaToken: argv.figmaToken,
     url: argv.url,
     dir: path.join(cwd, argv.dir)
+  });
+}).command("init", "Init Paperclip Open Design project", yargs => {
+}, argv => {  
+  const cwd = process.cwd();
+  init({
+    cwd
   });
 }).argv;
 

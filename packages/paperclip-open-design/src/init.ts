@@ -11,26 +11,23 @@ export type InitOptions = {
 
 export const init = async ({ cwd }: InitOptions) => {
   const configPath = resolveConfigPath(cwd);
-  if (fs.existsSync(configPath)) {
-    return console.error(
-      `Config file already exists! Go ahead and run ${chalk.bold(
-        `yarn paperclip-open-design pull`
-      )}`
-    );
-  }
 
   // 1. ask for token =
 
-  const { token } = await inquirer.prompt([
+  const { useGoogleFonts } = await inquirer.prompt([
     {
-      type: "input",
-      name: "token",
-      message: "What's your Open Design token?"
+      type: "list",
+      name: "useGoogleFonts",
+      message: "Would you like to use Google Fonts?",
+      choices: [
+        { name: "yes", value: true },
+        { name: "no", value: false }
+      ]
     }
   ]);
 
   const config: PaperclipOpenDesignConfig = {
-    token
+    useGoogleFonts
   };
 
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
