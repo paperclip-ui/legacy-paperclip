@@ -121,6 +121,8 @@ const generateGoogleFontsFile = async (
 
   fonts = uniq(fonts);
 
+  const includes = [];
+
   let buffer = "<style>";
 
   for (const font of fonts) {
@@ -129,10 +131,18 @@ const generateGoogleFontsFile = async (
         host: `fonts.googleapis.com`,
         path: `/css?family=${font}:100,200,300,400,500,600,700`
       });
+
       css = css.replace(/url\((.*?)\)/g, (_, url, ...args) => {
         return `url("${url}")`;
       });
-      buffer += `${css}\n\n`;
+
+      const buffer = "<style>\n" + css + "\n\n</style>";
+      const filePath = path.join(dir, "typography", font + ".pc");
+
+      fsa.mkdirp(path.dirname(filePath));
+      fsa.writeFileSync(filePath, buffer);
+
+      includes.push(filePath);
     } catch (e) {
       logError(
         `Google font ${chalk.bold(
@@ -144,9 +154,7 @@ const generateGoogleFontsFile = async (
 
   buffer += "</style>";
 
-  fsa.writeFileSync(path.join(dir, "google-fonts.pc"), buffer);
-
-  return ["../../google-fonts.pc"];
+  return includes;
 };
 
 const generateDesignFile = async (
@@ -158,13 +166,14 @@ const generateDesignFile = async (
   const projectDir = path.join(dir, "designs", kebabCase(name));
   fsa.mkdirpSync(projectDir);
 
-  const { files } = await translateDesign(design, { includes });
+  const { files } = await translateDesign(design, {
+    includes,
+    dir: path.join(dir, "designs")
+  });
 
-  for (const { relativePath, content } of files) {
-    const filePath = path.join(dir, "designs", relativePath);
-
+  for (const { filePath, content } of files) {
     fsa.mkdirpSync(path.dirname(filePath));
-    logInfo(`Writing ${relativePath}`);
+    logInfo(`Writing ${path.relative(process.cwd(), filePath)}`);
     fsa.writeFileSync(filePath, content);
   }
 };

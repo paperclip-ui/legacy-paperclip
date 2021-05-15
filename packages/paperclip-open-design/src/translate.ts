@@ -3,7 +3,7 @@ import { DesignFacade } from "@opendesign/sdk/dist/design-facade";
 import { LayerFacade } from "@opendesign/sdk/dist/layer-facade";
 import { PageFacade } from "@opendesign/sdk/dist/page-facade";
 import { IText } from "@opendesign/octopus-reader/dist/types/text.iface";
-import { add, kebabCase } from "lodash";
+import { add, kebabCase, uniq } from "lodash";
 import * as path from "path";
 
 type Point = {
@@ -27,7 +27,7 @@ type Color = {
 };
 
 type FileOutput = {
-  relativePath: string;
+  filePath: string;
   content: string;
 };
 
@@ -43,6 +43,7 @@ const VALUE_ALIASES = {
 };
 
 type TranslateOptions = {
+  dir: string;
   includes: string[];
 };
 
@@ -54,6 +55,8 @@ export const translateDesign = async (
     path.basename(design.octopusFilename).replace(/.octopus$/, "")
   );
 
+  design.setFallbackFonts(["sans-serif"]);
+
   const pages = design.getPages();
 
   // TODO: include assets too
@@ -61,20 +64,31 @@ export const translateDesign = async (
 
   for (const page of pages) {
     const relativePath = path.join(projectName, kebabCase(page.name)) + ".pc";
+    const filePath = path.join(options.dir, relativePath);
     files.push({
-      content: await translatePage(page, options),
-      relativePath
+      content: await translatePage(page, filePath, options),
+      filePath
     });
   }
 
   return { files };
 };
 
-const translatePage = async (page: PageFacade, options: TranslateOptions) => {
+const translatePage = async (
+  page: PageFacade,
+  filePath: string,
+  options: TranslateOptions
+) => {
   let context = createContext(options);
 
   for (const include of options.includes) {
-    context = addBuffer(`<import src="${include}" inject-styles />\n`, context);
+    context = addBuffer(
+      `<import src="${path.relative(
+        path.dirname(filePath),
+        include
+      )}" inject-styles />\n`,
+      context
+    );
   }
   if (options.includes.length) {
     context = addBuffer("\n", context);
@@ -133,6 +147,14 @@ const translateLayer = (
     `<div aria-label=${JSON.stringify(layer.name)}>\n`,
     context
   );
+
+  if (layer.type === "shapeLayer") {
+    // console.log(JSON.stringify(layer.octopus, null, 2));
+    const ab = layer.getComponentArtboard();
+    // console.log("AB", ab);
+    const shape = layer.getShape();
+    // console.log("SHP", shape);
+  }
 
   context = startBlock(context);
   context = translateLayerStyle(layer, context, offset);
@@ -333,6 +355,13 @@ const getLayerStyle = (
 ) => {
   const { bounds, visible, effects } = layer.octopus;
 
+  // if (px(bounds.left - offset.x) === "348px" && effects?.fills) {
+  // }
+  // console.log(JSON.stringify(layer.octopus, null, 2));
+
+  // some props not part of typed definition
+  const { shapeRadius, isSymbolMaster } = layer.octopus as any;
+
   const style: any = {
     position: "absolute",
     left: px(bounds.left - offset.x),
@@ -346,7 +375,8 @@ const getLayerStyle = (
     style.display = "none";
   }
 
-  if (effects) {
+  // if isSymbolMaster then background already exists as child (isVirtual)
+  if (effects && !isSymbolMaster) {
     if (effects.fills) {
       const background = effects.fills
         .map(fill => {
@@ -361,6 +391,12 @@ const getLayerStyle = (
         .join(", ");
 
       style.background = background;
+    }
+  }
+
+  if (shapeRadius) {
+    if (uniq(shapeRadius).length === 1) {
+      style.borderRadius = px(shapeRadius[0]);
     }
   }
 
