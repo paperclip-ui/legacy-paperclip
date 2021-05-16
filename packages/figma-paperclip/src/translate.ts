@@ -1,11 +1,13 @@
 import { OutputFile } from "./base";
 import * as path from "path";
-import { kebabCase, uniq } from "lodash";
+import { kebabCase, uniq, snakeCase, isEqual } from "lodash";
 import * as chalk from "chalk";
 import { logWarn } from "./utils";
+import { flattenNodes } from "./state";
 
 type TranslateOptions = {
   cwd: string;
+  includes: string[];
 };
 
 type TranslateContext = {
@@ -14,6 +16,7 @@ type TranslateContext = {
   lineNumber: number;
   isNewLine: boolean;
   indent: string;
+  mixins: Record<string, string>;
   isFrame: boolean;
   framePosition?: Point;
 };
@@ -48,6 +51,8 @@ export const translate = (
 
   const files: OutputFile[] = [];
 
+  context = translateIncludes(options.includes, context);
+  context = translateExports(page, context);
   context = translateCanvas(page, context);
 
   // TODO - include dependencies
@@ -57,6 +62,86 @@ export const translate = (
       content: context.content
     }
   ];
+};
+
+const translateIncludes = (includes: string[], context: TranslateContext) => {
+  for (const inc of includes) {
+    let relPath = path.relative(context.options.cwd, inc);
+    if (relPath.charAt(0) !== ".") {
+      relPath = "./" + relPath;
+    }
+    context = addBuffer(`<import src="${relPath}" inject-styles />\n`, context);
+  }
+
+  if (includes.length) {
+    context = addBuffer("\n", context);
+  }
+
+  return context;
+};
+
+const translateExports = (canvas: any, context: TranslateContext) => {
+  const allLayers = flattenNodes(canvas);
+  const existingStyles = {};
+  const mixins = {};
+  context = addBuffer(`<style>\n`, context);
+  context = startBlock(context);
+  context = addBuffer(`@export {\n`, context);
+  context = startBlock(context);
+  for (const layer of allLayers) {
+    if (layer.type === "CANVAS") {
+      continue;
+    }
+    let name = snakeCase(layer.name);
+
+    // refs are invalid if starting with 0-9, so prefix with something
+    // safe
+    if (!isNaN(Number(name.charAt(0)))) {
+      name = "_" + name;
+    }
+
+    const refName = snakeCase(name + "_" + layer.id);
+
+    const style = getLayerStyle(layer, context);
+
+    if (!Object.keys(style).length) {
+      continue;
+    }
+
+    let existingRefName: string;
+
+    if (!existingStyles[name]) {
+      existingStyles[name] = [];
+    }
+
+    for (let i = 0, { length } = existingStyles[name]; i < length; i++) {
+      const [ref, existingStyle] = existingStyles[name][i];
+      if (isEqual(style, existingStyle)) {
+        existingRefName = ref;
+        break;
+      }
+    }
+    if (!existingRefName) {
+      existingStyles[name].push([refName, style]);
+    }
+
+    mixins[layer.id] = existingRefName || refName;
+    if (!existingRefName) {
+      context = addBuffer(`@mixin ${refName} {\n`, context);
+      context = startBlock(context);
+      context = translateStyleDeclarations(style, context);
+      context = endBlock(context);
+      context = addBuffer(`}\n\n`, context);
+    }
+  }
+
+  context = endBlock(context);
+  context = addBuffer(`}\n`, context);
+  context = endBlock(context);
+  context = addBuffer(`</style>\n`, context);
+
+  context = { ...context, mixins };
+  return context;
 };
 
 const translateCanvas = (canvas: any, context: TranslateContext) => {
@@ -180,19 +265,25 @@ const translateLayerStyleElement = (
 ) => {
   context = addBuffer(`<style>\n`, context);
   context = startBlock(context);
-  const style = getLayerStyle(layer, point, context);
+  const style = getInlineStyle(layer, context);
   context = translateStyleDeclarations(style, context);
+  if (context.mixins[layer.id]) {
+    context = addBuffer(`@include ${context.mixins[layer.id]};\n`, context);
+  }
   context = endBlock(context);
   context = addBuffer(`</style>\n`, context);
   return context;
 };
 
-const getLayerStyle = (layer: any, point: Point, context: TranslateContext) => {
+const getInlineStyle = (layer: any, context: TranslateContext) => {
   const { absoluteBoundingBox } = layer;
-
   const style: any = {};
-
-  if (!context.isFrame) {
+  if (context.isFrame) {
+    Object.assign(style, {
+      width: `100vw`,
+      height: `100vh`
+    });
+  } else {
     Object.assign(style, {
       position: "fixed",
       width: px(absoluteBoundingBox.width),
@@ -201,6 +292,16 @@ const getLayerStyle = (layer: any, point: Point, context: TranslateContext) => {
       top: px(absoluteBoundingBox.y - context.framePosition.y)
     });
   }
+
+  if (!context.mixins[layer.id]) {
+    Object.assign(style, getLayerStyle(layer, context));
+  }
+
+  return style;
+};
+
+const getLayerStyle = (layer: any, context: TranslateContext) => {
+  const style: any = {};
 
   if (layer.type !== "TEXT") {
     if (layer.fills) {
@@ -213,7 +314,7 @@ const getLayerStyle = (layer: any, point: Point, context: TranslateContext) => {
         });
 
         if (containsBlendModes) {
-          style["background-blend-mode"] = layer.fills
+          style.backgroundBlendMode = layer.fills
             .map(fill => {
               return BLEND_MODE_MAP[fill.blendMode];
             })
@@ -222,16 +323,17 @@ const getLayerStyle = (layer: any, point: Point, context: TranslateContext) => {
       }
     }
 
+    if (layer.effects) {
+    }
+
     if (layer.rectangleCornerRadii) {
       if (uniq(layer.rectangleCornerRadii).length === 1) {
         style.borderRadius = px(layer.rectangleCornerRadii[0]);
       } else {
-        style["border-top-left-radius"] = layer.rectangleCornerRadii[0] + "px";
-        style["border-top-right-radius"] = layer.rectangleCornerRadii[1] + "px";
-        style["border-bottom-left-radius"] =
-          layer.rectangleCornerRadii[2] + "px";
-        style["border-bottom-right-radius"] =
-          layer.rectangleCornerRadii[3] + "px";
+        style.borderTopLeftRadius = layer.rectangleCornerRadii[0] + "px";
+        style.borderTopRightRadius = layer.rectangleCornerRadii[1] + "px";
+        style.borderBottomLeftRadius = layer.rectangleCornerRadii[2] + "px";
+        style.borderBottomRightRadius = layer.rectangleCornerRadii[3] + "px";
       }
     }
   }
@@ -243,14 +345,11 @@ const getLayerStyle = (layer: any, point: Point, context: TranslateContext) => {
       style.color = getCSSRGBAColor(solidFill.color);
     }
 
-    if (layer.style.lineHeightPercentFontSize) {
-      style.lineHeight = `${round(layer.style.lineHeightPercentFontSize, 2)}%`;
-    }
-
-    style.fontFamily = layer.style.fontFamily;
+    style.lineHeight = px(layer.style.lineHeightPx);
+    style.fontFamily = layer.style.fontFamily + ", sans-serif";
     style.fontWeight = layer.style.fontWeight;
-    style.fontSize = layer.style.fontSize;
-    style.textAlign = layer.style.textAlignHorizontal;
+    style.fontSize = px(layer.style.fontSize);
+    style.textAlign = layer.style.textAlignHorizontal.toLowerCase();
     style.letterSpacing = layer.style.letterSpacing;
   }
 
@@ -365,6 +464,7 @@ const createContext = (options: TranslateOptions): TranslateContext => ({
   content: "",
   lineNumber: 0,
   options,
+  mixins: {},
   isNewLine: false,
   indent: "  ",
   isFrame: false

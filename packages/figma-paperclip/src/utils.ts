@@ -100,3 +100,41 @@ export const extractSourceUrlInfo = (url: string): SourceUrlInfo => {
     teamId
   };
 };
+
+export const findLayer = (layer: any, filter: (layer: any) => boolean) => {
+  if (filter(layer)) {
+    return layer;
+  }
+  if (layer.children) {
+    for (const child of layer.children) {
+      const found = findLayer(child, filter);
+      if (found) return found;
+    }
+  }
+};
+
+export const httpGet = (options: https.RequestOptions): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    https.get(options, res => {
+      let buffer = "";
+
+      res.on("data", chunk => (buffer += String(chunk)));
+      res.on("end", () => {
+        if (res.statusCode === 200) {
+          try {
+            const result = JSON.parse(buffer);
+            resolve(result);
+          } catch (e) {
+            resolve(buffer);
+          }
+        } else {
+          try {
+            reject(JSON.parse(buffer));
+          } catch (e) {
+            reject(buffer);
+          }
+        }
+      });
+    });
+  });
+};

@@ -1,7 +1,11 @@
 IMMEDIATE:
 
-- get fonts to work properly (via config)
-- warning if font not found
+- download atoms
+  - typography
+  - shadows
+
+- layers shouldn't use mixins - should use atoms instead 
+- download assets
 
 
 Avocode sync:
