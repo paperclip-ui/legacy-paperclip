@@ -141,6 +141,11 @@ const loadDependency = async (
         const style = file.styles[id];
         try {
           const info = await api.getStyle(style.key);
+
+          if (info.meta.file_key === fileKey) {
+            return;
+          }
+
           imports[id] = {
             nodeId: info.meta.node_id,
             fileKey: info.meta.file_key
@@ -148,7 +153,7 @@ const loadDependency = async (
           await loadDependency(info.meta.file_key, api, graph);
         } catch (e) {
           logWarn(`Can't load style info for ${chalk.bold(style.name)}`);
-          console.log(e);
+          // console.log(e);
         }
       })
     )

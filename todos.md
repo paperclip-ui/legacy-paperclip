@@ -1,5 +1,11 @@
 IMMEDIATE:
 
+- atoms
+  - co-locate into atoms.pc
+  - atoms.pc should be included wherever colors are used (check styles)
+  
+- Need to consider other entry points into DS
+
 - download atoms
   - typography
   - shadows

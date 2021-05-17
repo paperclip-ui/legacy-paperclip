@@ -1,6 +1,6 @@
 import { OutputFile } from "./base";
 import * as path from "path";
-import { kebabCase, uniq, snakeCase, isEqual, flatten } from "lodash";
+import { kebabCase, uniq, snakeCase, isEqual, flatten, pick } from "lodash";
 import * as chalk from "chalk";
 import { logWarn } from "./utils";
 import {
@@ -104,7 +104,6 @@ const translateExports = (canvas: any, context: TranslateContext) => {
     if (layer.type === "CANVAS") {
       continue;
     }
-
     context = translateMixin(layer, context, existingStyles, mixins);
   }
 
@@ -116,21 +115,30 @@ const translateExports = (canvas: any, context: TranslateContext) => {
   context = { ...context, mixins };
   return context;
 };
+
 const translateReusableStyles = (context: TranslateContext) => {
   const dep = context.graph[context.fileKey];
 
-  for (const styleId in dep.styles) {
-    const style = dep.styles[styleId];
-    const styleDep = context.graph[styleId];
+  const mixins = {};
+  const vars = {};
 
-    // must be same, otherwise it's an external dependency that must be imported in
-    if (styleDep !== dep) {
+  for (const styleId in dep.styles) {
+    // skip imports
+    if (dep.imports[styleId]) {
       continue;
     }
-    console.log("FLAT");
+
+    const style = dep.styles[styleId];
+
+    // const styleDep = context.graph[styleId];
+
+    // must be same, otherwise it's an external dependency that must be imported in
+    // if (styleDep !== dep) {
+    //   continue;
+    // }
 
     // note that contains the actual styles
-    const modelNode = flattenNodes(styleDep.document).find(
+    const modelNode = flattenNodes(dep.document).find(
       (node: any) =>
         node.styles &&
         node.styles[style && style.styleType.toLowerCase()] === styleId
@@ -141,7 +149,44 @@ const translateReusableStyles = (context: TranslateContext) => {
       continue;
     }
 
-    console.log(modelNode);
+    const modelStyle = getLayerStyle(modelNode, context);
+
+    const name = kebabCase(style.name);
+
+    if (style.styleType === "FILL") {
+      const color =
+        modelNode.type === "TEXT" ? modelStyle.color : modelStyle.background;
+      vars[name] = color;
+    } else if (style.styleType === "TEXT") {
+      mixins[name] = pick(modelStyle, [
+        "lineHeight",
+        "fontFamily",
+        "fontWeight",
+        "fontSize",
+        "textAlign",
+        "letterSpacing"
+      ]);
+    } else if (style.styleType === "EFFECT") {
+      console.log("EFFECT");
+    } else {
+      console.log("TYPE", style.styleType);
+    }
+  }
+
+  context = addBuffer(":root {\n", context);
+  context = startBlock(context);
+  for (const name in vars) {
+    context = addBuffer(`--${name}: ${vars[name]};\n`, context);
+  }
+  context = endBlock(context);
+  context = addBuffer("}\n\n", context);
+
+  for (const name in mixins) {
+    context = addBuffer(`@mixin ${name} {\n`, context);
+    context = startBlock(context);
+    context = translateStyleDeclarations(mixins[name], context);
+    context = endBlock(context);
+    context = addBuffer("}\n\n", context);
   }
 
   return context;

@@ -593,13 +593,6 @@ export const getMixinStyles = memoize(
     const imp = dep.imports[mixinId];
     const mixinDep = graph[imp?.fileKey || fileKey];
     const mixinNode = getNodeById(imp?.nodeId || mixinId, mixinDep.document);
-
-    if (imp) {
-      console.log(
-        JSON.stringify(mixinDep.document).includes(imp.nodeId),
-        !!mixinNode
-      );
-    }
   }
 );
 
