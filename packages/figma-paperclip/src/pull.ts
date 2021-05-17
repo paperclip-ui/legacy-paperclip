@@ -79,14 +79,16 @@ const loadDependency = async (
     imports,
     name: null,
     fileKey,
-    document: null
+    document: null,
+    styles: null
   });
 
   const file = await api.getFile(fileKey);
 
   Object.assign(dep, {
     name: file.name,
-    document: file.document
+    document: file.document,
+    styles: file.styles
   });
 
   logInfo(`Loading ${file.name}`);
@@ -139,9 +141,14 @@ const loadDependency = async (
         const style = file.styles[id];
         try {
           const info = await api.getStyle(style.key);
+          imports[id] = {
+            nodeId: info.meta.node_id,
+            fileKey: info.meta.file_key
+          };
           await loadDependency(info.meta.file_key, api, graph);
         } catch (e) {
           logWarn(`Can't load style info for ${chalk.bold(style.name)}`);
+          console.log(e);
         }
       })
     )
@@ -183,8 +190,6 @@ const downloadExports = async (graph: DependencyGraph, api: FigmaApi) => {
       for (let i = 0, { length } = nodeIds; i < length; i += chunkSize) {
         const chunk = nodeIds.slice(i, i + chunkSize);
 
-        console.log(chunk);
-
         try {
           const result = await api.getImage(design.fileKey, {
             ids: chunk.join(","),
@@ -192,7 +197,6 @@ const downloadExports = async (graph: DependencyGraph, api: FigmaApi) => {
             scale: settings.constraint.value
           });
           for (const nodeId in result.images) {
-            console.log(result.images[nodeId]);
             // await downloadImageRef(
             //   client,
             //   destPath,
@@ -204,7 +208,6 @@ const downloadExports = async (graph: DependencyGraph, api: FigmaApi) => {
           }
         } catch (e) {
           logError(`Could not download exports for ${chunk.join(", ")}`);
-          console.log(e);
         }
       }
     }
@@ -272,8 +275,6 @@ const downloadFonts = async (graph: DependencyGraph, cwd: string) => {
       })
     )
   );
-  for (const font of fonts) {
-  }
 
   return files;
 };
@@ -294,19 +295,21 @@ const translateDesigns = (
 ) => {
   const files: OutputFile[] = [];
   for (const dep of Object.values(graph)) {
-    files.push(...translateDesign(dep, outputDir, includes));
+    files.push(...translateDesign(dep.fileKey, graph, outputDir, includes));
   }
   return files;
 };
 
 const translateDesign = (
-  dep: Dependency2,
+  fileKey: string,
+  graph: DependencyGraph,
   outputDir: string,
   includes: string[]
 ) => {
   const files: OutputFile[] = [];
+  const dep = graph[fileKey];
   for (const page of dep.document.children) {
-    files.push(...translatePage(page, dep.name, outputDir, includes));
+    files.push(...translatePage(page, fileKey, graph, outputDir, includes));
   }
   return files;
 };
@@ -327,14 +330,16 @@ const getDesignFonts = (graph: DependencyGraph) => {
 
 const translatePage = (
   page: any,
-  designName: string,
+  fileKey: string,
+  graph: DependencyGraph,
   cwd: string,
   includes: string[]
 ) => {
   // const filePath = path.join(cwd, kebabCase(designName), kebabCase(page.name) + ".pc");
+  const dep = graph[fileKey];
 
-  const content = translate(page, {
-    cwd: path.join(cwd, kebabCase(designName)),
+  const content = translate(page, fileKey, graph, {
+    cwd: path.join(cwd, kebabCase(dep.name)),
     includes
   });
 

@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { CONFIG_FILE_NAME } from "./constants";
 import { memoize } from "./memo";
-import { camelCase } from "lodash";
+import { camelCase, mixin } from "lodash";
 // _7113_testB3_testA24
 
 const MAX_LABEL_NAME_LENGTH = 40;
@@ -27,7 +27,7 @@ export type Dependency = {
 
 export type Import = {
   nodeId: string;
-  filePath: string;
+  fileKey: string;
 };
 
 export type Dependency2 = {
@@ -35,6 +35,7 @@ export type Dependency2 = {
   fileKey: string;
   imports: Record<string, Import>;
   document: Document;
+  styles: any;
 };
 
 export type DependencyGraph = Record<string, Dependency2>;
@@ -584,3 +585,26 @@ export const getAllComponentSets = memoize((document: Document) => {
 export const getNodeParent = memoize((node: Node, document: Document) => {
   return getChildParentMap(document)[node.id];
 });
+
+export const getMixinStyles = memoize(
+  (mixinId: string, fileKey: string, graph: DependencyGraph) => {
+    const dep = graph[fileKey];
+    // const styleType = dep.styles[mixinId].styleType;
+    const imp = dep.imports[mixinId];
+    const mixinDep = graph[imp?.fileKey || fileKey];
+    const mixinNode = getNodeById(imp?.nodeId || mixinId, mixinDep.document);
+
+    if (imp) {
+      console.log(
+        JSON.stringify(mixinDep.document).includes(imp.nodeId),
+        !!mixinNode
+      );
+    }
+  }
+);
+
+export const getLayerMixins = memoize(
+  (node: Node, fileKey: string, graph: DependencyGraph) => {
+    const dep = graph[fileKey];
+  }
+);

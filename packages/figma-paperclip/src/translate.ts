@@ -1,9 +1,15 @@
 import { OutputFile } from "./base";
 import * as path from "path";
-import { kebabCase, uniq, snakeCase, isEqual } from "lodash";
+import { kebabCase, uniq, snakeCase, isEqual, flatten } from "lodash";
 import * as chalk from "chalk";
 import { logWarn } from "./utils";
-import { flattenNodes } from "./state";
+import {
+  Dependency2,
+  flattenNodes,
+  getMixinStyles,
+  DependencyGraph,
+  getNodeById
+} from "./state";
 
 type TranslateOptions = {
   cwd: string;
@@ -13,9 +19,11 @@ type TranslateOptions = {
 type TranslateContext = {
   content: string;
   options: TranslateOptions;
+  graph: DependencyGraph;
   lineNumber: number;
   isNewLine: boolean;
   indent: string;
+  fileKey: string;
   mixins: Record<string, string>;
   isFrame: boolean;
   framePosition?: Point;
@@ -44,10 +52,12 @@ const BLEND_MODE_MAP = {
 
 export const translate = (
   page: any,
+  fileKey: string,
+  graph: DependencyGraph,
   options: TranslateOptions
 ): OutputFile[] => {
   const pagePath = path.join(options.cwd, kebabCase(page.name) + ".pc");
-  let context = createContext(options);
+  let context = createContext(fileKey, graph, options);
 
   const files: OutputFile[] = [];
 
@@ -81,58 +91,21 @@ const translateIncludes = (includes: string[], context: TranslateContext) => {
 };
 
 const translateExports = (canvas: any, context: TranslateContext) => {
-  const allLayers = flattenNodes(canvas);
+  const allLayers = flattenNodes(canvas) as any;
   const existingStyles = {};
   const mixins = {};
   context = addBuffer(`<style>\n`, context);
   context = startBlock(context);
   context = addBuffer(`@export {\n`, context);
   context = startBlock(context);
+  context = translateReusableStyles(context);
+
   for (const layer of allLayers) {
     if (layer.type === "CANVAS") {
       continue;
     }
-    let name = snakeCase(layer.name);
 
-    // refs are invalid if starting with 0-9, so prefix with something
-    // safe
-    if (!isNaN(Number(name.charAt(0)))) {
-      name = "_" + name;
-    }
-
-    const refName = snakeCase(name + "_" + layer.id);
-
-    const style = getLayerStyle(layer, context);
-
-    if (!Object.keys(style).length) {
-      continue;
-    }
-
-    let existingRefName: string;
-
-    if (!existingStyles[name]) {
-      existingStyles[name] = [];
-    }
-
-    for (let i = 0, { length } = existingStyles[name]; i < length; i++) {
-      const [ref, existingStyle] = existingStyles[name][i];
-      if (isEqual(style, existingStyle)) {
-        existingRefName = ref;
-        break;
-      }
-    }
-    if (!existingRefName) {
-      existingStyles[name].push([refName, style]);
-    }
-
-    mixins[layer.id] = existingRefName || refName;
-    if (!existingRefName) {
-      context = addBuffer(`@mixin ${refName} {\n`, context);
-      context = startBlock(context);
-      context = translateStyleDeclarations(style, context);
-      context = endBlock(context);
-      context = addBuffer(`}\n\n`, context);
-    }
+    context = translateMixin(layer, context, existingStyles, mixins);
   }
 
   context = endBlock(context);
@@ -141,6 +114,94 @@ const translateExports = (canvas: any, context: TranslateContext) => {
   context = addBuffer(`</style>\n`, context);
 
   context = { ...context, mixins };
+  return context;
+};
+const translateReusableStyles = (context: TranslateContext) => {
+  const dep = context.graph[context.fileKey];
+
+  for (const styleId in dep.styles) {
+    const style = dep.styles[styleId];
+    const styleDep = context.graph[styleId];
+
+    // must be same, otherwise it's an external dependency that must be imported in
+    if (styleDep !== dep) {
+      continue;
+    }
+    console.log("FLAT");
+
+    // note that contains the actual styles
+    const modelNode = flattenNodes(styleDep.document).find(
+      (node: any) =>
+        node.styles &&
+        node.styles[style && style.styleType.toLowerCase()] === styleId
+    );
+
+    // Style that's not used
+    if (!modelNode) {
+      continue;
+    }
+
+    console.log(modelNode);
+  }
+
+  return context;
+};
+
+const translateMixin = (
+  layer: any,
+  context: TranslateContext,
+  existingStyles: any = {},
+  mixins: any = {}
+) => {
+  let name = snakeCase(layer.name);
+
+  if (layer.styles) {
+    for (const type in layer.styles) {
+      const id = layer.styles[type];
+      getMixinStyles(id, context.fileKey, context.graph);
+    }
+  }
+
+  // refs are invalid if starting with 0-9, so prefix with something
+  // safe
+  if (!isNaN(Number(name.charAt(0)))) {
+    name = "_" + name;
+  }
+
+  const refName = snakeCase(name + "_" + layer.id);
+
+  const style = getLayerStyle(layer, context);
+
+  if (!Object.keys(style).length) {
+    return context;
+  }
+
+  let existingRefName: string;
+
+  if (!existingStyles[name]) {
+    existingStyles[name] = [];
+  }
+
+  for (let i = 0, { length } = existingStyles[name]; i < length; i++) {
+    const [ref, existingStyle] = existingStyles[name][i];
+    if (isEqual(style, existingStyle)) {
+      existingRefName = ref;
+      break;
+    }
+  }
+  if (!existingRefName) {
+    existingStyles[name].push([refName, style]);
+  }
+
+  mixins[layer.id] = existingRefName || refName;
+  if (!existingRefName) {
+    context = addBuffer(`@mixin ${refName} {\n`, context);
+    context = startBlock(context);
+    context = translateStyleDeclarations(style, context);
+    context = endBlock(context);
+    context = addBuffer(`}\n\n`, context);
+  }
+
   return context;
 };
 
@@ -460,9 +521,15 @@ const translateStyleDeclaration = (
   context: TranslateContext
 ) => addBuffer(`${kebabCase(name)}: ${value};\n`, context);
 
-const createContext = (options: TranslateOptions): TranslateContext => ({
+const createContext = (
+  fileKey: string,
+  graph: DependencyGraph,
+  options: TranslateOptions
+): TranslateContext => ({
   content: "",
   lineNumber: 0,
+  fileKey,
+  graph,
   options,
   mixins: {},
   isNewLine: false,
