@@ -62,6 +62,7 @@ export const translate = (
   const files: OutputFile[] = [];
 
   context = translateIncludes(options.includes, context);
+  context = translateImports(context);
   context = translateExports(page, context);
   context = translateCanvas(page, context);
 
@@ -87,6 +88,21 @@ const translateIncludes = (includes: string[], context: TranslateContext) => {
     context = addBuffer("\n", context);
   }
 
+  return context;
+};
+
+const translateImports = (context: TranslateContext) => {
+  const module = context.graph[context.fileKey];
+  const imported = {};
+  for (const importId in module.imports) {
+    const imp = module.imports[importId];
+    if (imported[imp.fileKey]) {
+      continue;
+    }
+    imported[imp.fileKey] = true;
+    const dep = context.graph[imp.fileKey];
+    // context = addBuffer(`<import src="${path.relative(context.options.cwd, )}`)
+  }
   return context;
 };
 

@@ -1,8 +1,11 @@
 IMMEDIATE:
+  - load atoms into other pages (corresponding atoms.pc file that's shared)
 
-- atoms
-  - co-locate into atoms.pc
-  - atoms.pc should be included wherever colors are used (check styles)
+
+  - project name directory
+    /project-name/design-file/page.pc
+
+
   
 - Need to consider other entry points into DS
 

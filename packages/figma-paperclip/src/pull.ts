@@ -42,7 +42,7 @@ export const pull = async ({ cwd, token }: PullOptions) => {
 
   const outputDir = path.join(cwd, config.outputDir);
 
-  const graph = await loadDependencies(fileKeys, api);
+  const graph = await loadDependencies(fileKeys, cwd, api);
   const fontFiles: OutputFile[] = await downloadFonts(graph, outputDir);
   // const exportFiles: OutputFile[] = await downloadExports(graph, api);
   const pcFiles: OutputFile[] = await translateDesigns(graph, outputDir, [
@@ -56,16 +56,21 @@ export const pull = async ({ cwd, token }: PullOptions) => {
   }
 };
 
-const loadDependencies = async (fileKeys: string[], api: FigmaApi) => {
+const loadDependencies = async (
+  fileKeys: string[],
+  cwd: string,
+  api: FigmaApi
+) => {
   const graph: DependencyGraph = {};
   for (const fileKey of fileKeys) {
-    await loadDependency(fileKey, api, graph);
+    await loadDependency(fileKey, cwd, api, graph);
   }
   return graph;
 };
 
 const loadDependency = async (
   fileKey: string,
+  cwd: string,
   api: FigmaApi,
   graph: DependencyGraph = {}
 ): Promise<DependencyGraph> => {
