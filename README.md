@@ -12,6 +12,8 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
 
 ![demo 2021-01-22 10_24_37](https://user-images.githubusercontent.com/757408/105437454-13b1b900-5c9c-11eb-8754-3769658180a1.gif)
 
+> This took me about 12 minutes to make start to finish.
+
 ## Features
 
 - Templates compile down to plain React code (more targets planned).
@@ -19,7 +21,7 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
 - [Percy](https://percy.io) integration for catching visual regressions.
 - Compatible with existing CSS libraries like Tailwind, Bulma, and Bootstrap.
 
------
+## Resources
 
 - [Playground](http://playground.paperclip.dev) - Play around with Paperclip, share, download React code directly from the browser.
 - Examples
@@ -38,14 +40,9 @@ Build UIs at the speed of thought. Paperclip is a template engine that comes wit
   - [React usage](https://paperclip.dev/docs/usage-react) - Using Paperclip UIs in your React code
 
 
----
+## Example
 
-
-Here's a demo of Paperclip's designer app in action:
-
-> This took me about 12 minutes to make start to finish.
-
-Here's the UI file for the clip above:
+Here's what Paperclip's syntax looks like (from GIF above):
 
 ```html
 
@@ -183,7 +180,7 @@ export const LoginPage = () => {
   return <form onSubmit={onSubmit}>
     <styles.Modal>
       <styles.AuthModal> 
-        <styles.FormTitle>Welcome back!</auth.FormTitle>
+        <styles.FormTitle>Welcome back!</styles.FormTitle>
         <TextInput type="text" {...usernameInputProps} />
         <TextInput type="password" {...passwordInputProps} />
         <styles.FormFooter>
@@ -195,19 +192,19 @@ export const LoginPage = () => {
 };
 ```
 
-### Roadmap
+## Roadmap
 
-Here's a peek at what's planned for Paperclip:
+What's the future looking like for Paperclip? Here's the tentative plan:
 
-- Multiple compiler targets so that you can re-use your Paperclip UIs in different languages & frameworks
-- Extension for Atom, Sublime, and other editors
-- More visual editing tools so that you don't have to write code. Possibly more designer-friendly tooling.
-- A11Y & other linting stools
-- Zeplin integration
-- Figma export directly to Paperclip UIs
+1. ✅ Prettier integration
+2. 🔲 Avocode integration (Figma to design sync)
+3. 🔲 CSS & HTML linting (a11y, showing unused styles, caniuse integration)
+4. 🔲 CSS tree shaking (removing unused CSS from builds)
+5. 🔲 Visual builder (no-code like)
+6. 🔲 Multiple compiler targets: PHP, Ruby, VueJS, Svelte
+7. 🔲 IDE integrations
 
-
-# Sponsors
+## Sponsors
 
 ![index](https://user-images.githubusercontent.com/757408/105444620-254d8d80-5ca9-11eb-97c8-9c0fd66408d4.png)
 
