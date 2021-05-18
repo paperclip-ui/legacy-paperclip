@@ -1122,7 +1122,7 @@ const prefixWthStyleScopes = (
       if (className.indexOf(".") === -1) {
         scopes.push(
           ...context.injectScopes.map(scope => {
-            return `_pub_` + scope;
+            return `_pub-` + scope + "_";
           })
         );
       }
