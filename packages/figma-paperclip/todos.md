@@ -1,0 +1,3 @@
+- define components
+- get UI to be 1:1 map
+  - load SVGs

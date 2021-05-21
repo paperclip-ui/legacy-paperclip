@@ -16,9 +16,10 @@ import * as fsa from "fs-extra";
 import * as plimit from "p-limit";
 import { FigmaApi } from "./api";
 import { kebabCase, uniq } from "lodash";
-import { translate } from "./translate";
+import { translatePage as translatePCPage } from "./translate-page";
 import { OutputFile } from "./base";
-import { Dependency2, DependencyGraph, getNodeById, NodeType } from "./state";
+import { DependencyGraph, getNodeById, NodeType } from "./state";
+import { translatePCAtoms } from "./translate-atoms";
 
 export type PullOptions = {
   cwd: string;
@@ -45,9 +46,11 @@ export const pull = async ({ cwd, token }: PullOptions) => {
   const graph = await loadDependencies(fileKeys, cwd, api);
   const fontFiles: OutputFile[] = await downloadFonts(graph, outputDir);
   // const exportFiles: OutputFile[] = await downloadExports(graph, api);
-  const pcFiles: OutputFile[] = await translateDesigns(graph, outputDir, [
-    ...fontFiles.map(file => file.path)
-  ]);
+  const pcFiles: OutputFile[] = await translateDesigns(
+    graph,
+    path.join(outputDir, "designs"),
+    [...fontFiles.map(file => file.path)]
+  );
 
   const allFiles = [...fontFiles, ...pcFiles];
 
@@ -135,7 +138,7 @@ const loadDependency = async (
           fileKey: componentInfo.meta.file_key
         };
 
-        await loadDependency(componentInfo.meta.file_key, api, graph);
+        await loadDependency(componentInfo.meta.file_key, cwd, api, graph);
       });
     })
   );
@@ -155,7 +158,7 @@ const loadDependency = async (
             nodeId: info.meta.node_id,
             fileKey: info.meta.file_key
           };
-          await loadDependency(info.meta.file_key, api, graph);
+          await loadDependency(info.meta.file_key, cwd, api, graph);
         } catch (e) {
           logWarn(`Can't load style info for ${chalk.bold(style.name)}`);
           // console.log(e);
@@ -316,12 +319,44 @@ const translateDesign = (
   outputDir: string,
   includes: string[]
 ) => {
-  const files: OutputFile[] = [];
   const dep = graph[fileKey];
+  const designDir = path.join(outputDir, kebabCase(dep.name));
+  const pageFiles: OutputFile[] = [];
+  const atomFiles = translateAtoms(fileKey, graph, designDir);
+  const pageIncludes = [...atomFiles.map(file => file.path), ...includes];
   for (const page of dep.document.children) {
-    files.push(...translatePage(page, fileKey, graph, outputDir, includes));
+    pageFiles.push(
+      ...translatePage(page, fileKey, graph, designDir, pageIncludes)
+    );
   }
-  return files;
+  return [...atomFiles, ...pageFiles];
+};
+
+const translateAtoms = (
+  fileKey: string,
+  graph: DependencyGraph,
+  cwd: string
+) => {
+  return translatePCAtoms(fileKey, graph, { cwd, includes: [] });
+};
+
+const translatePage = (
+  page: any,
+  fileKey: string,
+  graph: DependencyGraph,
+  cwd: string,
+  includes: string[]
+) => {
+  // const filePath = path.join(cwd, kebabCase(designName), kebabCase(page.name) + ".pc");
+  const dep = graph[fileKey];
+
+  const content = translatePCPage(page, fileKey, graph, {
+    cwd: path.join(cwd, "pages"),
+    includes
+  });
+
+  // return [{ path: filePath, content }]
+  return content;
 };
 
 const getDesignFonts = (graph: DependencyGraph) => {
@@ -336,25 +371,6 @@ const getDesignFonts = (graph: DependencyGraph) => {
   }
   fonts = uniq(fonts);
   return fonts;
-};
-
-const translatePage = (
-  page: any,
-  fileKey: string,
-  graph: DependencyGraph,
-  cwd: string,
-  includes: string[]
-) => {
-  // const filePath = path.join(cwd, kebabCase(designName), kebabCase(page.name) + ".pc");
-  const dep = graph[fileKey];
-
-  const content = translate(page, fileKey, graph, {
-    cwd: path.join(cwd, kebabCase(dep.name)),
-    includes
-  });
-
-  // return [{ path: filePath, content }]
-  return content;
 };
 
 const getFileKeys = async (

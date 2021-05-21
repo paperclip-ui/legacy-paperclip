@@ -6,6 +6,7 @@ import * as fs from "fs";
 import * as chalk from "chalk";
 import * as crypto from "crypto";
 import { Config } from "./base";
+import { camelCase } from "lodash";
 export const CONFIG_FILE_NAME = "figma-paperclip.json";
 export const COMMAND_NAME = "figma-paperclip";
 
@@ -32,6 +33,9 @@ export const logSuccess = (message: string) => {
 export const logError = (message: string) => {
   console.warn(chalk.red(`error`) + " " + message);
 };
+
+export const pascalCase = (value: string) =>
+  value.charAt(0).toUpperCase() + camelCase(value.substr(1));
 
 export const md5 = (value: string) => {
   return crypto

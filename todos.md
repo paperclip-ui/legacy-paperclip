@@ -1,5 +1,8 @@
 IMMEDIATE:
-  - load atoms into other pages (corresponding atoms.pc file that's shared)
+  - get UI as close to 1:1 map with Figma
+    - load exported SVGs
+  - define components
+  - re-use global vars & mixins
 
 
   - project name directory

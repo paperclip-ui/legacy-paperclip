@@ -30,10 +30,11 @@ export type Import = {
   fileKey: string;
 };
 
+export type Point = { x: number; y: number };
+
 export type Dependency2 = {
   name: string;
   fileKey: string;
-  filePath: string;
   imports: Record<string, Import>;
   document: Document;
   styles: any;
