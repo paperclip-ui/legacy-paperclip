@@ -1,6 +1,6 @@
 {
   "name": "jest-paperclip",
-  "version": "17.9.2",
+  "version": "17.9.4",
   "description": "Jest Paperclip plugin",
   "main": "lib/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "dependencies": {
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
-    "paperclip": "^17.9.2",
+    "paperclip": "^17.9.4",
     "resolve": "^1.17.0"
   },
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d"
