@@ -3,7 +3,7 @@ import * as path from "path";
 import * as chalk from "chalk";
 import { OutputFile } from "./base";
 import { memoize } from "./memo";
-import { DependencyGraph } from "./state";
+import { DependencyGraph, extractMixedInSyles } from "./state";
 import {
   TranslateOptions,
   TranslateContext,
@@ -126,7 +126,12 @@ const translateRootVar = (
   const mixedInStyles = extractMixedInSyles(modelLayer);
   const value = mixedInStyles[styleId];
   if (styleMixin.styleType === "FILL") {
-    context = writeStyleDeclaration(name, value as string, context, false);
+    context = writeStyleDeclaration(
+      name,
+      value.color || value.background || value.borderColor,
+      context,
+      false
+    );
   }
 
   return context;
@@ -155,35 +160,6 @@ const translateMixin = (
 
   return context;
 };
-
-const extractMixedInSyles = memoize(
-  (layer: any): Record<string, any> => {
-    const style = getLayerStyle(layer);
-    const ret = {};
-    for (const type in layer.styles) {
-      const mixinId = layer.styles[type];
-      if (type === "fill" || type === "fills") {
-        ret[mixinId] = style.color || style.background;
-      } else if (type === "effect") {
-        ret[mixinId] = pick(style, "boxShadow");
-      } else if (type === "text") {
-        ret[mixinId] = pick(
-          style,
-          "fontFamily",
-          "letterSpacing",
-          "lineHeight",
-          "fontWeight",
-          "fontSize",
-          "textAlign"
-        );
-      } else {
-        logError(`Unknown layer type ${chalk.bold(type)}`);
-      }
-    }
-
-    return ret;
-  }
-);
 
 const getMixedInStyles = memoize((layer: any) => {
   const style = getLayerStyle(layer);

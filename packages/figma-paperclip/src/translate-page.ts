@@ -1,6 +1,15 @@
 import { OutputFile } from "./base";
 import * as path from "path";
-import { kebabCase, uniq, snakeCase, isEqual, flatten, pick } from "lodash";
+import {
+  kebabCase,
+  uniq,
+  snakeCase,
+  isEqual,
+  flatten,
+  pick,
+  camelCase,
+  omit
+} from "lodash";
 import * as chalk from "chalk";
 import { logWarn, pascalCase } from "./utils";
 import {
@@ -10,7 +19,13 @@ import {
   DependencyGraph,
   getNodeById,
   Point,
-  getNodeParent
+  getNodeParent,
+  getComponentName,
+  getInstanceComponent,
+  getAllComponents,
+  getOwnerComponent,
+  getLayerMixins,
+  extractMixedInSyles
 } from "./state";
 
 import {
@@ -26,7 +41,8 @@ import {
   writeStyleDeclarations,
   getLayerStyle,
   writeElementBlock,
-  writeFrameComment
+  writeFrameComment,
+  writeStyleBlock
 } from "./translate-utils";
 
 export const translatePage = (
@@ -41,8 +57,9 @@ export const translatePage = (
   const files: OutputFile[] = [];
 
   context = translateIncludes(options.includes, context);
-  context = translateComponentSets(page, context);
-  context = translateComponents(page, context);
+  // context = translateStyles(page, context);
+  // context = translateComponentSets(page, context);
+  // context = translateComponents(page, context);
   context = translateImports(context);
   context = translateCanvas(page, context);
 
@@ -71,6 +88,64 @@ const translateIncludes = (includes: string[], context: TranslateContext) => {
   return context;
 };
 
+const translateStyles = (page: any, context: TranslateContext) => {
+  context = writeElementBlock(
+    { tagName: "style" },
+    context => {
+      context = translateMixins(page, context);
+      return context;
+    },
+    context
+  );
+  return context;
+};
+
+const translateMixins = (page: any, context: TranslateContext) => {
+  const components = getAllComponents(page);
+
+  context = writeStyleBlock(
+    "@export",
+    context => {
+      for (const component of components) {
+        const layers = flattenNodes(component);
+
+        for (const layer of layers) {
+          // skip instances since they're already exported
+          if (layer.type === "INSTANCE" || layer.id.charAt(0) === "I") {
+            continue;
+          }
+
+          const parent = getNodeParent(layer, page);
+          const name =
+            camelCase(
+              parent?.type === "COMPONENT_SET" ? parent.name : layer.name
+            ) +
+            "_" +
+            snakeCase(layer.id);
+          const style = getLayerStyle(layer);
+
+          if (!Object.keys(style).length) {
+            continue;
+          }
+          context = writeStyleBlock(
+            `@mixin ${name}`,
+            context => {
+              context = writeStyleDeclarations(style, context);
+              return context;
+            },
+            context
+          );
+        }
+      }
+
+      return context;
+    },
+    context
+  );
+
+  return context;
+};
+
 const translateComponentSets = (page: any, context: TranslateContext) => {
   const dep = context.graph[context.fileKey];
   const componentSets = flattenNodes(page).filter(
@@ -86,8 +161,8 @@ const translateComponentSet = (
   componentSet: any,
   context: TranslateContext
 ) => {
-  context = writeFrameComment(componentSet, context, true);
-  const attributes = `export component as="${pascalCase(componentSet.name)}"`;
+  context = writeFrameComment(componentSet, context, false);
+  const attributes = `export component as="${getComponentName(componentSet)}"`;
 
   return writeElementBlock(
     { tagName: "div", attributes },
@@ -106,13 +181,35 @@ const translateComponents = (page: any, context: TranslateContext) => {
       getNodeParent(layer, dep.document).type !== "COMPONENT_SET"
   );
 
-  console.log("COMPONENTS", components);
+  for (const component of components) {
+    context = translateComponent(component, context);
+  }
+  return context;
+};
+
+const translateComponent = (component: any, context: TranslateContext) => {
+  context = writeFrameComment(component, context, false);
+  const attributes = `export component as="${getComponentName(component)}"`;
+
+  return writeElementBlock(
+    { tagName: "div", attributes },
+    context => {
+      context = translateBasicLayer(component, { x: 0, y: 0 }, context);
+      return context;
+    },
+    context
+  );
   return context;
 };
 
 const translateImports = (context: TranslateContext) => {
   const module = context.graph[context.fileKey];
   const imported = {};
+  context = addBuffer(
+    `<import src="../atoms.pc" as="atoms" inject-styles />\n`,
+    context
+  );
+
   for (const importId in module.imports) {
     const imp = module.imports[importId];
     if (imported[imp.fileKey]) {
@@ -120,7 +217,12 @@ const translateImports = (context: TranslateContext) => {
     }
     imported[imp.fileKey] = true;
     const dep = context.graph[imp.fileKey];
-    // context = addBuffer(`<import src="${path.relative(context.options.cwd, )}`)
+    context = addBuffer(
+      `<import src="../../${kebabCase(dep.name)}/atoms.pc" as="${camelCase(
+        dep.name
+      )}Atoms" inject-styles />\n`,
+      context
+    );
   }
   return context;
 };
@@ -134,12 +236,6 @@ const translateCanvas = (canvas: any, context: TranslateContext) => {
 };
 
 const translateArtboard = (artboard: any, context: TranslateContext) => {
-  context = {
-    ...context,
-    isFrame: true,
-    framePosition: artboard.absoluteBoundingBox
-  };
-
   context = writeFrameComment(artboard, context);
   context = translateLayer(artboard, { x: 0, y: 0 }, context);
   context = addBuffer(`\n`, context);
@@ -155,24 +251,34 @@ const translateLayer = (
       return translateTextLayer(layer, context);
     case "VECTOR":
       return translateVectorLayer(layer, context);
-    case "INSTANCE":
-      return translateInstance(layer, context);
-
-    // NOOP
-    case "COMPONENT":
-    case "COMPONENT_SET": {
-      return translateComponentSetAsInstance(layer, context);
-    }
+    // case "INSTANCE":
+    //   return translateInstance(layer, context);
+    // case "COMPONENT": {
+    //   return translateComponentAsInstance(layer, context);
+    // }
+    //  {
+    //   return translateComponentSetAsInstance(layer, context);
+    // }
+    // case "COMPONENT_SET":
     default: {
       return translateBasicLayer(layer, point, context);
     }
   }
 };
 
+const translateComponentAsInstance = (
+  layer: any,
+  context: TranslateContext
+) => {
+  context = addBuffer(`<${getComponentName(layer)} />\n`, context);
+  return context;
+};
+
 const translateComponentSetAsInstance = (
   layer: any,
   context: TranslateContext
 ) => {
+  context = addBuffer(`<${getComponentName(layer)} />\n`, context);
   return context;
 };
 
@@ -191,7 +297,13 @@ const translateVectorLayer = (layer: any, context: TranslateContext) => {
 };
 
 const translateInstance = (layer: any, context: TranslateContext) => {
-  context = addBuffer("INST", context);
+  const component = getInstanceComponent(layer, context.fileKey, context.graph);
+  if (component) {
+    context = addBuffer(`<${getComponentName(component)} />\n`, context);
+  } else {
+    console.log("COMPONENT NOT FOUND");
+  }
+
   return context;
 };
 
@@ -266,6 +378,7 @@ const translateLayerStyleElement = (
 const getInlineStyle = (layer: any, context: TranslateContext) => {
   const { absoluteBoundingBox } = layer;
   const style: any = {};
+  const dep = context.graph[context.fileKey];
   if (context.isFrame) {
     Object.assign(style, {
       width: `100vw`,
@@ -280,8 +393,35 @@ const getInlineStyle = (layer: any, context: TranslateContext) => {
       top: px(absoluteBoundingBox.y - context.framePosition.y)
     });
   }
+  const mixedInStyles = extractMixedInSyles(layer);
+  let layerStyle = getLayerStyle(layer);
 
-  Object.assign(style, getLayerStyle(layer));
+  for (const mixinId in mixedInStyles) {
+    const mixedInStyle = mixedInStyles[mixinId];
+    const mixin = dep.styles[mixinId];
+
+    let ns;
+    if (!dep.imports[mixinId]) {
+      ns = "atoms";
+    } else {
+      const mixinDep = context.graph[dep.imports[mixinId].fileKey];
+      ns = camelCase(mixinDep.name) + "Atoms";
+    }
+
+    if (mixin.styleType === "FILL") {
+      for (const key in mixedInStyle) {
+        layerStyle[key] = `var(--${kebabCase(mixin.name)})`;
+      }
+    } else if (mixin.styleType === "TEXT" || mixin.styleType === "EFFECT") {
+      layerStyle = omit(style, Object.keys(mixedInStyle));
+      if (!layerStyle["@include"]) {
+        layerStyle["@include"] = [];
+      }
+      layerStyle["@include"].push(`${ns}.${kebabCase(mixin.name)}`);
+    }
+  }
+
+  Object.assign(style, layerStyle);
 
   return style;
 };

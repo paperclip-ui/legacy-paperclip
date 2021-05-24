@@ -1,8 +1,11 @@
 import * as fs from "fs";
+import * as chalk from "chalk";
 import * as path from "path";
 import { CONFIG_FILE_NAME } from "./constants";
 import { memoize } from "./memo";
-import { camelCase, mixin } from "lodash";
+import { camelCase, pick } from "lodash";
+import { logError, pascalCase } from "./utils";
+import { getLayerStyle } from "./translate-utils";
 // _7113_testB3_testA24
 
 const MAX_LABEL_NAME_LENGTH = 40;
@@ -519,6 +522,45 @@ export const getOwnerInstance = (node: Node, document: Document) => {
   return null;
 };
 
+export const getInstanceComponent = (
+  node: any,
+  fileKey: string,
+  graph: DependencyGraph
+) => {
+  const dep = graph[fileKey];
+
+  if (node.type === "COMPONENT_SET") {
+    return node;
+  }
+
+  if (node.type === "COMPONENT") {
+    const parent = getNodeParent(node, dep.document);
+    if (parent.type === "COMPONENT_SET") {
+      return parent;
+    }
+    return node;
+  }
+
+  const component = getNodeById(node.componentId, dep.document);
+
+  if (component) {
+    // TODO
+    const componentDep = dep.document;
+    const parent = getNodeParent(component, componentDep);
+    if (parent.type === "COMPONENT_SET") {
+      return parent;
+    } else {
+      return component;
+    }
+  }
+
+  // TODO - look for instance
+};
+
+export const getComponentName = (componentOrSet: any) => {
+  return pascalCase(componentOrSet.name);
+};
+
 export const cleanupNodeId = (nodeId: string) => nodeId.replace(/[:;]/g, "");
 
 export const getNodeAncestors = (node: Node, document: Document): Node[] => {
@@ -601,5 +643,36 @@ export const getMixinStyles = memoize(
 export const getLayerMixins = memoize(
   (node: Node, fileKey: string, graph: DependencyGraph) => {
     const dep = graph[fileKey];
+  }
+);
+
+export const extractMixedInSyles = memoize(
+  (layer: any): Record<string, any> => {
+    const style = getLayerStyle(layer);
+    const ret = {};
+    for (const type in layer.styles) {
+      const mixinId = layer.styles[type];
+      if (type === "stroke" || type === "strokes") {
+        ret[mixinId] = pick(style, "borderColor");
+      } else if (type === "fill" || type === "fills") {
+        ret[mixinId] = pick(style, "color", "background");
+      } else if (type === "effect") {
+        ret[mixinId] = pick(style, "boxShadow");
+      } else if (type === "text") {
+        ret[mixinId] = pick(
+          style,
+          "fontFamily",
+          "letterSpacing",
+          "lineHeight",
+          "fontWeight",
+          "fontSize",
+          "textAlign"
+        );
+      } else {
+        logError(`Unknown layer type ${chalk.bold(type)}`);
+      }
+    }
+
+    return ret;
   }
 );

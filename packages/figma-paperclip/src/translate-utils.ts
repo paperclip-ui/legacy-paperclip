@@ -116,16 +116,22 @@ export const writeElementBlock = (
 export const writeFrameComment = (
   layer: any,
   context: TranslateContext,
-  hidden = false
+  visible = true
 ) => {
   const { width, height, x, y } = layer.absoluteBoundingBox;
+
+  context = {
+    ...context,
+    isFrame: true,
+    framePosition: layer.absoluteBoundingBox
+  };
 
   context = addBuffer(`<!--\n`, context);
   context = startBlock(context);
   context = addBuffer(
     `@frame { title: ${JSON.stringify(
       layer.name
-    )}, width: ${width}, height: ${height}, x: ${x}, y: ${y}, hidden: ${hidden} }\n`,
+    )}, width: ${width}, height: ${height}, x: ${x}, y: ${y}, visible: ${visible} }\n`,
     context
   );
   context = endBlock(context);
@@ -151,14 +157,30 @@ export const writeStyleDeclaration = (
   value: string,
   context: TranslateContext,
   format = true
-) => addBuffer(`${format ? kebabCase(name) : name}: ${value};\n`, context);
+) => {
+  if (name === "@include") {
+    return addBuffer(`@include ${value};\n`, context);
+  } else {
+    return addBuffer(
+      `${format ? kebabCase(name) : name}: ${value};\n`,
+      context
+    );
+  }
+};
 
 export const writeStyleDeclarations = (
   style: any,
   context: TranslateContext
 ) => {
-  for (const property in style) {
-    context = writeStyleDeclaration(property, style[property], context);
+  for (const propertyName in style) {
+    const value = style[propertyName];
+    if (Array.isArray(value)) {
+      for (const part of value) {
+        context = writeStyleDeclaration(propertyName, part, context);
+      }
+    } else {
+      context = writeStyleDeclaration(propertyName, value, context);
+    }
   }
   return context;
 };
@@ -245,6 +267,13 @@ export const getLayerStyle = memoize((layer: any) => {
     style.fontSize = px(layer.style.fontSize);
     style.textAlign = layer.style.textAlignHorizontal.toLowerCase();
     style.letterSpacing = round(layer.style.letterSpacing, 2);
+  }
+
+  if (layer.strokes?.length) {
+    const [stroke] = layer.strokes;
+    style.borderColor = getCSSRGBAColor(stroke.color);
+    style.borderSyyle = stroke.type.toLowerCase();
+    style.borderWidth = layer.strokeWeight;
   }
 
   return style;

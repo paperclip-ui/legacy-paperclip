@@ -323,7 +323,7 @@ const translateDesign = (
   const designDir = path.join(outputDir, kebabCase(dep.name));
   const pageFiles: OutputFile[] = [];
   const atomFiles = translateAtoms(fileKey, graph, designDir);
-  const pageIncludes = [...atomFiles.map(file => file.path), ...includes];
+  const pageIncludes = [...includes];
   for (const page of dep.document.children) {
     pageFiles.push(
       ...translatePage(page, fileKey, graph, designDir, pageIncludes)
