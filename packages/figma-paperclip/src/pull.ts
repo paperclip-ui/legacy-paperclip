@@ -111,6 +111,8 @@ const loadDependency = async (
     return true;
   });
 
+  console.log("DEP");
+
   await Promise.all(
     foreignComponentIds.map(importId => {
       return limit(async () => {
@@ -142,6 +144,8 @@ const loadDependency = async (
       });
     })
   );
+
+  console.log("NEX");
 
   await Promise.all(
     Object.keys(file.styles).map(id =>
@@ -347,7 +351,6 @@ const translatePage = (
   cwd: string,
   includes: string[]
 ) => {
-  // const filePath = path.join(cwd, kebabCase(designName), kebabCase(page.name) + ".pc");
   const dep = graph[fileKey];
 
   const content = translatePCPage(page, fileKey, graph, {
@@ -355,7 +358,6 @@ const translatePage = (
     includes
   });
 
-  // return [{ path: filePath, content }]
   return content;
 };
 

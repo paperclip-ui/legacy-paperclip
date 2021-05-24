@@ -401,10 +401,11 @@ const getInlineStyle = (layer: any, context: TranslateContext) => {
     const mixin = dep.styles[mixinId];
 
     let ns;
+    let mixinDep = dep;
     if (!dep.imports[mixinId]) {
       ns = "atoms";
     } else {
-      const mixinDep = context.graph[dep.imports[mixinId].fileKey];
+      mixinDep = context.graph[dep.imports[mixinId].fileKey];
       ns = camelCase(mixinDep.name) + "Atoms";
     }
 
@@ -413,6 +414,21 @@ const getInlineStyle = (layer: any, context: TranslateContext) => {
         layerStyle[key] = `var(--${kebabCase(mixin.name)})`;
       }
     } else if (mixin.styleType === "TEXT" || mixin.styleType === "EFFECT") {
+      // possibly dealing with detached mixin
+      const mixinExists = Object.values(mixinDep.styles).some(style => {
+        return (style as any).name === mixin.name;
+      });
+
+      if (!mixinExists) {
+        logWarn(
+          `Mixin ${chalk.bold(mixin.name)} does't exist for ${chalk.bold(
+            dep.name
+          )}`
+        );
+        continue;
+      }
+
+      // TODO - need to figure out whether the style exists
       layerStyle = omit(style, Object.keys(mixedInStyle));
       if (!layerStyle["@include"]) {
         layerStyle["@include"] = [];

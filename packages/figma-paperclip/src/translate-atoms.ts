@@ -81,10 +81,6 @@ const translateRootVars = (context: TranslateContext) => {
       }
     });
 
-    if (!modelLayer) {
-      continue;
-    }
-
     vars[styleId] = modelLayer;
   }
 
@@ -123,9 +119,15 @@ const translateRootVar = (
   context: TranslateContext
 ) => {
   const name = "--" + kebabCase(styleMixin.name);
-  const mixedInStyles = extractMixedInSyles(modelLayer);
-  const value = mixedInStyles[styleId];
+  const mixedInStyles = (modelLayer && extractMixedInSyles(modelLayer)) || {};
+  const value = mixedInStyles[styleId] || {};
   if (styleMixin.styleType === "FILL") {
+    const actualValue = value.color || value.background || value.borderColor;
+
+    if (actualValue == null) {
+      console.log(getLayerStyle(modelLayer), modelLayer);
+    }
+
     context = writeStyleDeclaration(
       name,
       value.color || value.background || value.borderColor,
@@ -144,8 +146,8 @@ const translateMixin = (
   context: TranslateContext
 ) => {
   const name = kebabCase(styleMixin.name);
-  const mixedInStyles = extractMixedInSyles(modelLayer);
-  const value = mixedInStyles[styleId];
+  const mixedInStyles = (modelLayer && extractMixedInSyles(modelLayer)) || {};
+  const value = mixedInStyles[styleId] || {};
   if (styleMixin.styleType === "EFFECT" || styleMixin.styleType === "TEXT") {
     context = writeStyleBlock(
       `@mixin ${name}`,
