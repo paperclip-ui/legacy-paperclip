@@ -39,6 +39,7 @@ import {
   AS_ATTR_NAME,
   INJECT_STYLES_TAG_NAME
 } from "paperclip";
+import * as URL from "url";
 import {
   createTranslateContext,
   TranslateContext,
@@ -85,7 +86,7 @@ export const compile = (
     const _src = getAttributeStringValue("src", element);
     if (hasAttribute(INJECT_STYLES_TAG_NAME, element)) {
       const uri = resolveImportFile(fileSystem)(fileUri, _src, true) || _src;
-      const scope = getStyleScopeId(uri);
+      const scope = getStyleScopeId(resolveFileUri(uri, fileSystem));
       records.push(scope);
     }
 
@@ -394,6 +395,16 @@ const addNSImport = (
   return context;
 };
 
+// const resolveFileUri = (uri: string, fs: any) => {
+//   let filePath = URL.fileURLToPath(uri);
+
+//   if (fs.lstatSync(filePath).isSymbolicLink()) {
+//     filePath = fs.readlinkSync(filePath);
+//   }
+
+//   return URL.pathToFileURL(filePath);
+// }
+
 const stringifyImportDefinition = (
   imp: string,
   sep: string,
@@ -401,6 +412,7 @@ const stringifyImportDefinition = (
   context: TranslateContext
 ) => {
   const className = strToClassName(imp, context.fileUri);
+
   return `${className}${sep}_${crc32(context.fileUri)}_${prefix}${pascalCase(
     className
   )}`;
@@ -632,6 +644,11 @@ const translateJSXRoot = (node: Node, context: TranslateContext) => {
 
 const getImportTagName = (tagName: string, context: TranslateContext) => {
   const parts = tagName.split(".").map(pascalCase);
+
+  if (parts.length === 0) {
+    return parts[0];
+  }
+
   return parts.length > 1
     ? `_${crc32(context.fileUri)}_${parts.join("")}`
     : `${parts[0]}`;
@@ -1084,6 +1101,14 @@ const translateAttributeValue = (
   return context;
 };
 
+const resolveFileUri = (uri: string, fs: any) => {
+  // in testing env
+  if (uri.indexOf("file://") === -1) {
+    return uri;
+  }
+  return URL.pathToFileURL(fs.realpathSync(URL.fileURLToPath(uri))).href;
+};
+
 const prefixWthStyleScopes = (
   value: string,
   context: TranslateContext,
@@ -1095,27 +1120,27 @@ const prefixWthStyleScopes = (
       // skip just whitespace
       if (!/\w+/.test(className)) return className;
 
-      let scopeFilePath: string;
+      let scopeFileUri: string;
       let actualClassName = className;
 
       if (pierced && className.indexOf(".") > -1) {
         const [importId, importClassName] = className.split(".");
         actualClassName = importClassName;
-        scopeFilePath = context.imports[importId];
+        scopeFileUri = context.imports[importId];
 
-        if (!scopeFilePath) {
+        if (!scopeFileUri) {
           // Just some information to communicate that the class doesn't do anything.
-          scopeFilePath = "noop";
+          scopeFileUri = "noop";
 
           console.warn(`import "${importId}" is not defined`);
         }
       } else {
-        scopeFilePath = context.fileUri;
+        scopeFileUri = context.fileUri;
       }
 
       const scopes = [
-        `_${getStyleScopeId(scopeFilePath)}_`,
-        `_pub-${getStyleScopeId(scopeFilePath)}_`
+        `_${getStyleScopeId(scopeFileUri)}_`,
+        `_pub-${getStyleScopeId(scopeFileUri)}_`
       ];
 
       // ignore explicit ref
