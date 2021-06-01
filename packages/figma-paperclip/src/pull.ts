@@ -6,14 +6,15 @@ import {
   readConfig,
   SourceUrlInfo,
   logInfo,
-  httpGet,
-  findLayer,
-  logWarn
+  logVerb
 } from "./utils";
 import * as chalk from "chalk";
 import * as path from "path";
+import * as fsa from "fs-extra";
 import { FigmaApi } from "./api";
 import { loadDependencies } from "./graph";
+import { translateFigmaGraph } from "./translate-pc";
+import { OutputFile } from "./state";
 
 export type PullOptions = {
   cwd: string;
@@ -34,7 +35,6 @@ export const pull = async ({ cwd, token }: PullOptions) => {
   const api = new FigmaApi(token);
   const sourceInfo = config.sources.map(extractSourceUrlInfo);
   const fileKeys = await getFileKeys(sourceInfo, api);
-  const outputDir = path.join(cwd, config.outputDir);
 
   logInfo(chalk.bold(`Loading dependency graph 🌎`));
 
@@ -44,85 +44,25 @@ export const pull = async ({ cwd, token }: PullOptions) => {
   logInfo(chalk.bold(`Translating Designs into code 🔨`));
 
   // 2. translate graph into files
+  const files = translateFigmaGraph(graph, {
+    includes: config.includes || []
+  });
 
-  // const fontFiles: OutputFile[] = await downloadFonts(graph, outputDir);
-  // const pcFiles: OutputFile[] = await translateDesigns(
-  //   graph,
-  //   path.join(outputDir, "designs"),
-  //   [...fontFiles.map(file => file.path)]
-  // );
+  logInfo(chalk.bold(`Saving files 💾`));
 
-  // const allFiles = [...fontFiles, ...pcFiles];
-
-  // for (const file of allFiles) {
-  //   await writeFile(file, api);
-  // }
+  // 3. write files
+  writeFiles(files, cwd, config.outputDir);
 };
 
-// const writeFile = (file: OutputFile, api: FigmaApi) => {
-//   fsa.mkdirpSync(path.dirname(file.path));
+const writeFiles = (files: OutputFile[], cwd: string, outputDir: string) => {
+  for (const file of files) {
+    const absoluePath = path.join(cwd, outputDir, file.relativePath);
+    fsa.mkdirpSync(path.dirname(absoluePath));
 
-//   if (file.content) {
-//     fsa.writeFileSync(file.path, file.content);
-//     logInfo(`Write ${path.relative(process.cwd(), file.path)}`);
-//   }
-// };
-
-// const translateDesigns = (
-//   graph: DependencyGraph,
-//   outputDir: string,
-//   includes: string[]
-// ) => {
-//   const files: OutputFile[] = [];
-//   for (const dep of Object.values(graph)) {
-//     files.push(...translateDesign(dep.fileKey, graph, outputDir, includes));
-//   }
-//   return files;
-// };
-
-// const translateDesign = (
-//   fileKey: string,
-//   graph: DependencyGraph,
-//   outputDir: string,
-//   includes: string[]
-// ) => {
-//   const dep = graph[fileKey];
-//   const designDir = path.join(outputDir, kebabCase(dep.name));
-//   const pageFiles: OutputFile[] = [];
-//   const atomFiles = translateAtoms(fileKey, graph, designDir);
-//   const pageIncludes = [...includes];
-//   for (const page of dep.document.children) {
-//     pageFiles.push(
-//       ...translatePage(page, fileKey, graph, designDir, pageIncludes)
-//     );
-//   }
-//   return [...atomFiles, ...pageFiles];
-// };
-
-// const translateAtoms = (
-//   fileKey: string,
-//   graph: DependencyGraph,
-//   cwd: string
-// ) => {
-//   return translatePCAtoms(fileKey, graph, { cwd, includes: [] });
-// };
-
-// const translatePage = (
-//   page: any,
-//   fileKey: string,
-//   graph: DependencyGraph,
-//   cwd: string,
-//   includes: string[]
-// ) => {
-//   const dep = graph[fileKey];
-
-//   const content = translatePCPage(page, fileKey, graph, {
-//     cwd: path.join(cwd, "pages"),
-//     includes
-//   });
-
-//   return content;
-// };
+    logVerb(`Write ${absoluePath.replace(cwd + "/", "")}`);
+    fsa.writeFileSync(absoluePath, file.content);
+  }
+};
 
 const getFileKeys = async (
   info: SourceUrlInfo[],

@@ -6,6 +6,17 @@ import { memoize } from "./memo";
 import { camelCase, pick } from "lodash";
 import { logError, pascalCase } from "./utils";
 import { getLayerStyle } from "./translate-utils";
+
+export type Config = {
+  // project urls
+  sources: string[];
+
+  // pc files to include
+  includes?: string[];
+
+  outputDir: string;
+};
+
 // _7113_testB3_testA24
 
 const MAX_LABEL_NAME_LENGTH = 40;
@@ -71,14 +82,9 @@ export type Dependency = FontDependency | DesignDependency;
 
 export type DependencyGraph = Record<string, Dependency>;
 
-export type Config = {
-  fileNameFormat?: FileNameFormat;
-  sourceUrl?: string;
-  personalAccessToken: string;
-  dest: string;
-  fileVersions?: Record<string, string>;
-  compilerOptions: CompilerOptions;
-  compileOnPull?: boolean;
+export type OutputFile = {
+  relativePath: string;
+  content: string;
 };
 
 export type Project = {

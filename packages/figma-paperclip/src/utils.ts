@@ -2,10 +2,9 @@ import * as path from "path";
 import * as fsa from "fs-extra";
 
 import * as https from "https";
-import * as fs from "fs";
 import * as chalk from "chalk";
 import * as crypto from "crypto";
-import { Config } from "./base";
+import { Config } from "./state";
 import { camelCase } from "lodash";
 export const CONFIG_FILE_NAME = "figma-paperclip.json";
 export const COMMAND_NAME = "figma-paperclip";

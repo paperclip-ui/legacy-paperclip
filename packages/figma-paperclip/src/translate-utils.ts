@@ -1,7 +1,8 @@
 import { kebabCase, uniq } from "lodash";
-import { DependencyGraph, Point } from "./state";
+import { DependencyGraph, OutputFile, Point } from "./state";
 import { logWarn } from "./utils";
 import * as chalk from "chalk";
+import * as path from "path";
 import { memoize } from "./memo";
 
 export const BLEND_MODE_MAP = {
@@ -24,7 +25,6 @@ export const BLEND_MODE_MAP = {
 };
 
 export type TranslateOptions = {
-  cwd: string;
   includes: string[];
 };
 
@@ -52,7 +52,7 @@ export type TranslateContext2 = {
   mixins: Record<string, string>;
   isFrame: boolean;
   framePosition?: Point;
-  files: TranslateContextFileInfo[];
+  files: OutputFile[];
 };
 
 export const ontext = (
@@ -71,7 +71,7 @@ export const ontext = (
   isFrame: false
 });
 
-export const addBuffer = (buffer: string, context: TranslateContext) => ({
+export const addBuffer = (buffer: string, context: TranslateContext2) => ({
   ...context,
   content:
     context.content +
@@ -80,12 +80,12 @@ export const addBuffer = (buffer: string, context: TranslateContext) => ({
   isNewLine: buffer.lastIndexOf("\n") === buffer.length - 1
 });
 
-export const startBlock = (context: TranslateContext) => ({
+export const startBlock = (context: TranslateContext2) => ({
   ...context,
   lineNumber: context.lineNumber + 1
 });
 
-export const endBlock = (context: TranslateContext) => ({
+export const endBlock = (context: TranslateContext2) => ({
   ...context,
   lineNumber: context.lineNumber - 1
 });
@@ -105,11 +105,6 @@ export const createContext = (
   indent: "  ",
   isFrame: false
 });
-
-type TranslateContextFileInfo = {
-  relativePath: string;
-  content: string;
-};
 
 export const createContext2 = (
   graph: DependencyGraph,
@@ -131,7 +126,7 @@ type WriteElementBlockParts = {
   attributes?: string;
 };
 
-export const addFileToContext = (
+export const addFile = (
   relativePath: string,
   context: TranslateContext2
 ): TranslateContext2 => {
@@ -153,8 +148,8 @@ export const addFileToContext = (
 
 export const writeElementBlock = (
   { tagName, attributes }: WriteElementBlockParts,
-  writeBody: (context: TranslateContext) => TranslateContext,
-  context: TranslateContext
+  writeBody: (context: TranslateContext2) => TranslateContext2,
+  context: TranslateContext2
 ) => {
   context = addBuffer(
     `<${tagName}${attributes ? " " + attributes : ""}>\n`,
@@ -169,7 +164,7 @@ export const writeElementBlock = (
 
 export const writeFrameComment = (
   layer: any,
-  context: TranslateContext,
+  context: TranslateContext2,
   visible = true
 ) => {
   const { width, height, x, y } = layer.absoluteBoundingBox;
@@ -195,8 +190,8 @@ export const writeFrameComment = (
 
 export const writeStyleBlock = (
   selector: string,
-  writeBody: (context: TranslateContext) => TranslateContext,
-  context: TranslateContext
+  writeBody: (context: TranslateContext2) => TranslateContext2,
+  context: TranslateContext2
 ) => {
   context = addBuffer(`${selector} {\n`, context);
   context = startBlock(context);
@@ -209,7 +204,7 @@ export const writeStyleBlock = (
 export const writeStyleDeclaration = (
   name: string,
   value: string,
-  context: TranslateContext,
+  context: TranslateContext2,
   format = true
 ) => {
   if (name === "@include") {
@@ -224,7 +219,7 @@ export const writeStyleDeclaration = (
 
 export const writeStyleDeclarations = (
   style: any,
-  context: TranslateContext
+  context: TranslateContext2
 ) => {
   for (const propertyName in style) {
     const value = style[propertyName];

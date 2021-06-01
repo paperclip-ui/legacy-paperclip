@@ -1,5 +1,11 @@
-import { DependencyGraph } from "./state";
-import { createContext2, TranslateOptions } from "./translate-utils";
+import { DependencyGraph, DependencyKind, FontDependency } from "./state";
+import {
+  addBuffer,
+  addFile,
+  createContext2,
+  TranslateContext2,
+  TranslateOptions
+} from "./translate-utils";
 
 /*
 
@@ -33,9 +39,39 @@ export const translateFigmaGraph = (
   graph: DependencyGraph,
   options: TranslateOptions
 ) => {
-  const context = createContext2(graph, options);
+  let context = createContext2(graph, options);
+  context = translateAtoms(graph, context);
+  context = translatePreviews(graph, context);
 
-  // 1. download globals
-  // 2. translate pages
-  // 3. t
+  return context.files;
 };
+
+const translateAtoms = (graph: DependencyGraph, context: TranslateContext2) => {
+  context = translateFonts(graph, context);
+  return context;
+};
+
+const translatePreviews = (
+  graph: DependencyGraph,
+  context: TranslateContext2
+) => {
+  return context;
+};
+
+const translateFonts = (graph: DependencyGraph, context: TranslateContext2) => {
+  for (const key in graph) {
+    const dep = graph[key];
+
+    // content may be NULL if there is an error
+    if (dep.kind !== DependencyKind.Font || !dep.content) {
+      continue;
+    }
+
+    context = addBuffer(dep.content, context);
+    context = addFile(getFontFile(dep), context);
+  }
+
+  return context;
+};
+
+const getFontFile = (dep: FontDependency) => `atoms/${dep.fileKey}.pc`;
