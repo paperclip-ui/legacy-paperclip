@@ -1,13 +1,16 @@
 import * as plimit from "p-limit";
 import * as chalk from "chalk";
+import * as path from "path";
 import { FigmaApi } from "./api";
+import * as fsa from "fs-extra";
 import {
   findLayer,
   httpGet,
   logError,
   logVerb,
   logInfo,
-  logWarn
+  logWarn,
+  md5
 } from "./utils";
 import {
   DependencyGraph,
@@ -27,11 +30,23 @@ export const loadDependencies = async (
   cwd: string,
   api: FigmaApi
 ) => {
-  const graph: DependencyGraph = {};
+  let graph: DependencyGraph = {};
 
-  // load all
-  for (const fileKey of fileKeys) {
-    await loadDesignFile(fileKey, cwd, api, graph);
+  // for TESTING only!
+
+  const cacheFile = path.join(cwd, `${md5(JSON.stringify(fileKeys))}.cache`);
+
+  if (fsa.existsSync(cacheFile)) {
+    graph = JSON.parse(fsa.readFileSync(cacheFile, "utf-8"));
+  } else {
+    // load all
+    for (const fileKey of fileKeys) {
+      await loadDesignFile(fileKey, cwd, api, graph);
+    }
+
+    if (process.env.CACHE_GRAPH) {
+      fsa.writeFileSync(cacheFile, JSON.stringify(graph, null, 2));
+    }
   }
 
   return graph;

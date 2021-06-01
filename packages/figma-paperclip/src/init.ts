@@ -1,4 +1,4 @@
-import { Config } from "./base";
+import { Config } from "./state";
 import * as inquirer from "inquirer";
 import * as chalk from "chalk";
 import * as fsa from "fs-extra";

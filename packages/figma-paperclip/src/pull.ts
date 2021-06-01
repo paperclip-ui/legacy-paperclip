@@ -14,7 +14,7 @@ import * as fsa from "fs-extra";
 import { FigmaApi } from "./api";
 import { loadDependencies } from "./graph";
 import { translateFigmaGraph } from "./translate-pc";
-import { OutputFile } from "./state";
+import { DependencyGraph, DependencyKind, OutputFile } from "./state";
 
 export type PullOptions = {
   cwd: string;
@@ -38,8 +38,7 @@ export const pull = async ({ cwd, token }: PullOptions) => {
 
   logInfo(chalk.bold(`Loading dependency graph 🌎`));
 
-  // 1. Load all dependencies, including
-  const graph = await loadDependencies(fileKeys, cwd, api);
+  const graph: DependencyGraph = await loadDependencies(fileKeys, cwd, api);
 
   logInfo(chalk.bold(`Translating Designs into code 🔨`));
 
