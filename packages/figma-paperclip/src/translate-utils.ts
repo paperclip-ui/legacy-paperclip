@@ -41,6 +41,20 @@ export type TranslateContext = {
   framePosition?: Point;
 };
 
+export type TranslateContext2 = {
+  content: string;
+  options: TranslateOptions;
+  graph: DependencyGraph;
+  lineNumber: number;
+  isNewLine: boolean;
+  indent: string;
+  currentFileKey?: string;
+  mixins: Record<string, string>;
+  isFrame: boolean;
+  framePosition?: Point;
+  files: TranslateContextFileInfo[];
+};
+
 export const ontext = (
   fileKey: string,
   graph: DependencyGraph,
@@ -92,9 +106,49 @@ export const createContext = (
   isFrame: false
 });
 
+type TranslateContextFileInfo = {
+  relativePath: string;
+  content: string;
+};
+
+export const createContext2 = (
+  graph: DependencyGraph,
+  options: TranslateOptions
+): TranslateContext2 => ({
+  content: "",
+  lineNumber: 0,
+  graph,
+  files: [],
+  options,
+  mixins: {},
+  isNewLine: false,
+  indent: "  ",
+  isFrame: false
+});
+
 type WriteElementBlockParts = {
   tagName: string;
   attributes?: string;
+};
+
+export const addFileToContext = (
+  relativePath: string,
+  context: TranslateContext2
+): TranslateContext2 => {
+  return {
+    ...context,
+    content: "",
+    lineNumber: 0,
+    isNewLine: false,
+    isFrame: false,
+    files: [
+      ...context.files,
+      {
+        relativePath,
+        content: context.content
+      }
+    ]
+  };
 };
 
 export const writeElementBlock = (

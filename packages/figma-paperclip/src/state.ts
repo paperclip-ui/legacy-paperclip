@@ -21,29 +21,55 @@ export type CompilerOptions = {
   includePreviews?: boolean;
 };
 
-export type DependencyMap = Record<string, Dependency>;
+export enum DesignFileImportKind {
+  Font = "Font",
+  Design = "Design"
+}
 
-export type Dependency = {
-  idAliases: Record<string, string>;
-  document: Document;
-};
-
-export type Import = {
-  nodeId: string;
+export type BaseDesignFileImport<TKind = DesignFileImportKind> = {
+  kind: TKind;
   fileKey: string;
 };
+
+export type DesignFileFontImport = BaseDesignFileImport<
+  DesignFileImportKind.Font
+>;
+
+export type DesignFileDesignImport = BaseDesignFileImport<
+  DesignFileImportKind.Design
+> & {
+  nodeId: string;
+};
+
+export type DesignFileImport = DesignFileDesignImport | DesignFileFontImport;
 
 export type Point = { x: number; y: number };
 
-export type Dependency2 = {
-  name: string;
+export enum DependencyKind {
+  Font,
+  DesignFile
+}
+
+export type BaseDependency<TKind extends DependencyKind> = {
+  kind: TKind;
   fileKey: string;
-  imports: Record<string, Import>;
-  document: Document;
-  styles: any;
 };
 
-export type DependencyGraph = Record<string, Dependency2>;
+export type DesignDependency = {
+  name: string;
+  fileKey: string;
+  imports: Record<string, DesignFileImport>;
+  document: Document;
+  styles: any;
+} & BaseDependency<DependencyKind.DesignFile>;
+
+export type FontDependency = {
+  content: string;
+} & BaseDependency<DependencyKind.Font>;
+
+export type Dependency = FontDependency | DesignDependency;
+
+export type DependencyGraph = Record<string, Dependency>;
 
 export type Config = {
   fileNameFormat?: FileNameFormat;
@@ -529,6 +555,10 @@ export const getInstanceComponent = (
 ) => {
   const dep = graph[fileKey];
 
+  if (dep.kind !== DependencyKind.DesignFile) {
+    return null;
+  }
+
   if (node.type === "COMPONENT_SET") {
     return node;
   }
@@ -633,9 +663,12 @@ export const getNodeParent = memoize((node: Node, document: Document) => {
 export const getMixinStyles = memoize(
   (mixinId: string, fileKey: string, graph: DependencyGraph) => {
     const dep = graph[fileKey];
-    // const styleType = dep.styles[mixinId].styleType;
-    const imp = dep.imports[mixinId];
-    const mixinDep = graph[imp?.fileKey || fileKey];
+
+    if (dep.kind !== DependencyKind.DesignFile) {
+      return null;
+    }
+    const imp = dep.imports[mixinId] as DesignFileDesignImport;
+    const mixinDep = graph[imp?.fileKey || fileKey] as DesignDependency;
     const mixinNode = getNodeById(imp?.nodeId || mixinId, mixinDep.document);
   }
 );
