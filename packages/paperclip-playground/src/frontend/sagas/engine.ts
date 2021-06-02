@@ -1,14 +1,5 @@
 import { eventChannel } from "redux-saga";
-import {
-  call,
-  cancel,
-  cancelled,
-  fork,
-  put,
-  select,
-  take,
-  takeEvery
-} from "redux-saga/effects";
+import { fork, put, select, take, takeEvery } from "redux-saga/effects";
 import { AppState, WorkerState, getWorkerState } from "../state";
 import { compare } from "fast-json-patch";
 import {

@@ -603,6 +603,25 @@ export const getNodeAncestors = (node: Node, document: Document): Node[] => {
   return filterTreeNodeParents(node, document, () => true);
 };
 
+export const getNodeFrame = (node: Node, document: Document): Frame => {
+  const nodePath = getNodePath(node, document);
+  let current: Parent = document;
+
+  return getNodeByPath(nodePath.slice(0, 2), document);
+};
+
+export const getNodeDependency = (node: Node, graph: DependencyGraph) => {
+  for (const fileKey in graph) {
+    const dep = graph[fileKey];
+    if (
+      dep.kind === DependencyKind.DesignFile &&
+      containsNode(node, dep.document)
+    ) {
+      return dep;
+    }
+  }
+};
+
 export const filterTreeNodeParents = (
   node: Node,
   root: Node,
@@ -713,5 +732,18 @@ export const extractMixedInSyles = memoize(
     }
 
     return ret;
+  }
+);
+
+export const getImports = memoize(
+  (entry: Dependency, graph: DependencyGraph) => {
+    const deps: Dependency[] = [];
+    if (entry.kind === DependencyKind.DesignFile) {
+      for (const refId in entry.imports) {
+        const imp = entry.imports[refId];
+        deps.push(graph[imp.fileKey]);
+      }
+    }
+    return deps;
   }
 );

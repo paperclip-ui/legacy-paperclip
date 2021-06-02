@@ -46,6 +46,7 @@ export type TranslateContext2 = {
   options: TranslateOptions;
   graph: DependencyGraph;
   lineNumber: number;
+  currentRelativeFilePath?: string;
   isNewLine: boolean;
   indent: string;
   currentFileKey?: string;
@@ -69,6 +70,16 @@ export const ontext = (
   isNewLine: false,
   indent: "  ",
   isFrame: false
+});
+
+export const startFile = (
+  currentRelativeFilePath: string,
+  currentFileKey: string,
+  context: TranslateContext2
+) => ({
+  ...context,
+  currentFileKey,
+  currentRelativeFilePath
 });
 
 export const addBuffer = (buffer: string, context: TranslateContext2) => ({
@@ -121,117 +132,23 @@ export const createContext2 = (
   isFrame: false
 });
 
-type WriteElementBlockParts = {
-  tagName: string;
-  attributes?: string;
-};
-
-export const addFile = (
-  relativePath: string,
-  context: TranslateContext2
-): TranslateContext2 => {
+export const addFile = (context: TranslateContext2): TranslateContext2 => {
   return {
     ...context,
     content: "",
     lineNumber: 0,
     isNewLine: false,
     isFrame: false,
+    currentRelativeFilePath: null,
+    currentFileKey: null,
     files: [
       ...context.files,
       {
-        relativePath,
+        relativePath: context.currentRelativeFilePath,
         content: context.content
       }
     ]
   };
-};
-
-export const writeElementBlock = (
-  { tagName, attributes }: WriteElementBlockParts,
-  writeBody: (context: TranslateContext2) => TranslateContext2,
-  context: TranslateContext2
-) => {
-  context = addBuffer(
-    `<${tagName}${attributes ? " " + attributes : ""}>\n`,
-    context
-  );
-  context = startBlock(context);
-  context = writeBody(context);
-  context = endBlock(context);
-  context = addBuffer(`</${tagName}>\n`, context);
-  return context;
-};
-
-export const writeFrameComment = (
-  layer: any,
-  context: TranslateContext2,
-  visible = true
-) => {
-  const { width, height, x, y } = layer.absoluteBoundingBox;
-
-  context = {
-    ...context,
-    isFrame: true,
-    framePosition: layer.absoluteBoundingBox
-  };
-
-  context = addBuffer(`<!--\n`, context);
-  context = startBlock(context);
-  context = addBuffer(
-    `@frame { title: ${JSON.stringify(
-      layer.name
-    )}, width: ${width}, height: ${height}, x: ${x}, y: ${y}, visible: ${visible} }\n`,
-    context
-  );
-  context = endBlock(context);
-  context = addBuffer(`-->\n`, context);
-  return context;
-};
-
-export const writeStyleBlock = (
-  selector: string,
-  writeBody: (context: TranslateContext2) => TranslateContext2,
-  context: TranslateContext2
-) => {
-  context = addBuffer(`${selector} {\n`, context);
-  context = startBlock(context);
-  context = writeBody(context);
-  context = endBlock(context);
-  context = addBuffer(`}\n`, context);
-  return context;
-};
-
-export const writeStyleDeclaration = (
-  name: string,
-  value: string,
-  context: TranslateContext2,
-  format = true
-) => {
-  if (name === "@include") {
-    return addBuffer(`@include ${value};\n`, context);
-  } else {
-    return addBuffer(
-      `${format ? kebabCase(name) : name}: ${value};\n`,
-      context
-    );
-  }
-};
-
-export const writeStyleDeclarations = (
-  style: any,
-  context: TranslateContext2
-) => {
-  for (const propertyName in style) {
-    const value = style[propertyName];
-    if (Array.isArray(value)) {
-      for (const part of value) {
-        context = writeStyleDeclaration(propertyName, part, context);
-      }
-    } else {
-      context = writeStyleDeclaration(propertyName, value, context);
-    }
-  }
-  return context;
 };
 
 export const px = (value: number) => round(value, 2) + "px";
