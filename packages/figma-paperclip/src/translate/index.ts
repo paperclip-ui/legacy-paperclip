@@ -1,30 +1,13 @@
-import { camelCase, kebabCase, omit } from "lodash";
-import { memoize } from "../memo";
-import * as path from "path";
-import {
-  Dependency,
-  DependencyGraph,
-  DependencyKind,
-  DesignDependency,
-  extractMixedInSyles,
-  FontDependency,
-  getNodeDependency,
-  getNodeFrame,
-  getNodeParent
-} from "../state";
+import { DependencyGraph, DependencyKind } from "../state";
 import {
   addBuffer,
   addFile,
   createContext2,
-  endBlock,
-  getLayerStyle,
-  px,
-  startBlock,
   startFile,
   TranslateContext2,
   TranslateOptions
 } from "./context";
-import { getDesignModulesFile, getDesignPageFile, getFontFile } from "./utils";
+import { getFontFile } from "./utils";
 import { writeDesignModules } from "./modules";
 import { writeDesignPages } from "./pages";
 
@@ -73,7 +56,7 @@ export const translateFigmaGraph = (
 const writeDesigns = (context: TranslateContext2) => {
   for (const fileKey in context.graph) {
     const dep = context.graph[fileKey];
-    if (dep.kind === DependencyKind.DesignFile) {
+    if (dep.kind === DependencyKind.Design) {
       context = writeDesignModules(dep, context);
       context = writeDesignPages(dep, context);
     }

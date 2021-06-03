@@ -58,7 +58,8 @@ export type Point = { x: number; y: number };
 
 export enum DependencyKind {
   Font,
-  DesignFile
+  Design,
+  Media
 }
 
 export type BaseDependency<TKind extends DependencyKind> = {
@@ -72,7 +73,7 @@ export type DesignDependency = {
   imports: Record<string, DesignFileImport>;
   document: Document;
   styles: any;
-} & BaseDependency<DependencyKind.DesignFile>;
+} & BaseDependency<DependencyKind.Design>;
 
 export type FontDependency = {
   content: string;
@@ -561,7 +562,7 @@ export const getInstanceComponent = (
 ) => {
   const dep = graph[fileKey];
 
-  if (dep.kind !== DependencyKind.DesignFile) {
+  if (dep.kind !== DependencyKind.Design) {
     return null;
   }
 
@@ -614,7 +615,7 @@ export const getNodeDependency = (node: Node, graph: DependencyGraph) => {
   for (const fileKey in graph) {
     const dep = graph[fileKey];
     if (
-      dep.kind === DependencyKind.DesignFile &&
+      dep.kind === DependencyKind.Design &&
       containsNode(node, dep.document)
     ) {
       return dep;
@@ -689,7 +690,7 @@ export const getMixinStyles = memoize(
   (mixinId: string, fileKey: string, graph: DependencyGraph) => {
     const dep = graph[fileKey];
 
-    if (dep.kind !== DependencyKind.DesignFile) {
+    if (dep.kind !== DependencyKind.Design) {
       return null;
     }
     const imp = dep.imports[mixinId] as DesignFileDesignImport;
@@ -730,7 +731,7 @@ export const extractMixedInSyles = memoize(
 export const getImports = memoize(
   (entry: Dependency, graph: DependencyGraph) => {
     const deps: Dependency[] = [];
-    if (entry.kind === DependencyKind.DesignFile) {
+    if (entry.kind === DependencyKind.Design) {
       for (const refId in entry.imports) {
         const imp = entry.imports[refId];
         deps.push(graph[imp.fileKey]);

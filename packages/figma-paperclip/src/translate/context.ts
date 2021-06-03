@@ -1,8 +1,7 @@
-import { kebabCase, uniq } from "lodash";
+import { uniq } from "lodash";
 import { DependencyGraph, OutputFile, Point } from "../state";
 import { logWarn } from "../utils";
 import * as chalk from "chalk";
-import * as path from "path";
 import { memoize } from "../memo";
 
 export const BLEND_MODE_MAP = {

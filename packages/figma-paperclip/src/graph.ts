@@ -3,15 +3,7 @@ import * as chalk from "chalk";
 import * as path from "path";
 import { FigmaApi } from "./api";
 import * as fsa from "fs-extra";
-import {
-  findLayer,
-  httpGet,
-  logError,
-  logVerb,
-  logInfo,
-  logWarn,
-  md5
-} from "./utils";
+import { findLayer, httpGet, logVerb, logWarn, md5 } from "./utils";
 import {
   DependencyGraph,
   DependencyKind,
@@ -33,7 +25,6 @@ export const loadDependencies = async (
   let graph: DependencyGraph = {};
 
   // for TESTING only!
-
   const cacheFile = path.join(cwd, `${md5(JSON.stringify(fileKeys))}.cache`);
 
   if (fsa.existsSync(cacheFile)) {
@@ -65,7 +56,7 @@ const loadDesignFile = async (
   const imports: Record<string, DesignFileImport> = {};
 
   const dep = (graph[fileKey] = {
-    kind: DependencyKind.DesignFile,
+    kind: DependencyKind.Design,
     imports,
     name: null,
     fileKey,
