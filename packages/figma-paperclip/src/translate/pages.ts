@@ -1,92 +1,35 @@
-import { camelCase, kebabCase, omit } from "lodash";
-import { memoize } from "./memo";
 import * as path from "path";
 import {
   DependencyGraph,
   DependencyKind,
   DesignDependency,
   extractMixedInSyles,
-  FontDependency,
-  Frame,
-  getNodeAncestors,
   getNodeDependency,
-  getNodeFrame
-} from "./state";
+  getNodeFrame,
+  getNodeParent
+} from "../state";
 import {
   addBuffer,
   addFile,
-  createContext2,
   endBlock,
   getLayerStyle,
   px,
   startBlock,
   startFile,
-  TranslateContext2,
-  TranslateOptions
-} from "./translate-utils";
-import { logWarn } from "./utils";
+  TranslateContext2
+} from "./context";
+import {
+  getDesignModulesFile,
+  getDesignPageFile,
+  getFontFile,
+  writeElementBlock,
+  writeStyleDeclarations
+} from "./utils";
 
-/*
-
-Generates design files with the following folder structure:
-
-atoms.pc
-figma/
-  atoms/
-    colors.pc
-    typography.pc
-    shadows.pc
-  assets/
-    something.svg
-  designs/
-    my-design-file-name/
-      page1.pc
-      page2.pc
-    components/
-      page.pc
-      page2.pc
-    onboarding-activation/
-      dev-ready-version-2.pc
-
-
-pseudocode:
-
-<import src="@captec/design/"
-*/
-
-export const translateFigmaGraph = (
-  graph: DependencyGraph,
-  options: TranslateOptions
+export const writeDesignPages = (
+  dep: DesignDependency,
+  context: TranslateContext2
 ) => {
-  let context = createContext2(graph, options);
-
-  // atoms are the publicly available pieces
-  context = translateAtoms(context);
-
-  // previews are private and should not be directly referenced
-  context = writePreviews(context);
-
-  return context.files;
-};
-
-const translateAtoms = (context: TranslateContext2) => {
-  context = writeFonts(context);
-  return context;
-};
-
-const writePreviews = (context: TranslateContext2) => {
-  for (const fileKey in context.graph) {
-    const dep = context.graph[fileKey];
-    if (dep.kind !== DependencyKind.DesignFile) {
-      continue;
-    }
-    context = writeDesign(dep, context);
-  }
-
-  return context;
-};
-
-const writeDesign = (dep: DesignDependency, context: TranslateContext2) => {
   for (const page of dep.document.children) {
     context = writePage(page, dep, context);
   }
@@ -188,10 +131,16 @@ const writePageImports = (
   entry: DesignDependency,
   context: TranslateContext2
 ) => {
-  const importFilePaths = getDependencyImportFilePaths(entry, context.graph);
+  const importFilePaths = {};
+  Object.assign(
+    importFilePaths,
+    getDependencyImportFilePaths(entry, context.graph)
+  );
+  importFilePaths[getDesignModulesFile(entry)] = 1;
+
   for (const relativePath in importFilePaths) {
     context = addBuffer(
-      `<import src="${resolvePath(relativePath, context)}" />\n`,
+      `<import src="${resolvePath(relativePath, context)}" inject-styles />\n`,
       context
     );
   }
@@ -208,43 +157,6 @@ const resolvePath = (to: string, context: TranslateContext2) => {
     relative = "./" + relative;
   }
   return relative;
-};
-
-const writeFonts = (context: TranslateContext2) => {
-  for (const key in context.graph) {
-    const dep = context.graph[key];
-
-    // content may be NULL if there is an error
-    if (dep.kind !== DependencyKind.Font || !dep.content) {
-      continue;
-    }
-
-    context = startFile(getFontFile(dep), dep.fileKey, context);
-    context = addBuffer(dep.content, context);
-    context = addFile(context);
-  }
-
-  return context;
-};
-type WriteElementBlockParts = {
-  tagName: string;
-  attributes?: string;
-};
-
-const writeElementBlock = (
-  { tagName, attributes }: WriteElementBlockParts,
-  writeBody: (context: TranslateContext2) => TranslateContext2,
-  context: TranslateContext2
-) => {
-  context = addBuffer(
-    `<${tagName}${attributes ? " " + attributes : ""}>\n`,
-    context
-  );
-  context = startBlock(context);
-  context = writeBody(context);
-  context = endBlock(context);
-  context = addBuffer(`</${tagName}>\n`, context);
-  return context;
 };
 
 const writeFrameComment = (
@@ -273,52 +185,6 @@ const writeFrameComment = (
   return context;
 };
 
-const writeStyleBlock = (
-  selector: string,
-  writeBody: (context: TranslateContext2) => TranslateContext2,
-  context: TranslateContext2
-) => {
-  context = addBuffer(`${selector} {\n`, context);
-  context = startBlock(context);
-  context = writeBody(context);
-  context = endBlock(context);
-  context = addBuffer(`}\n`, context);
-  return context;
-};
-
-const writeStyleDeclaration = (
-  name: string,
-  value: string,
-  context: TranslateContext2,
-  format = true
-) => {
-  if (name === "@include") {
-    return addBuffer(`@include ${value};\n`, context);
-  } else {
-    return addBuffer(
-      `${format ? kebabCase(name) : name}: ${value};\n`,
-      context
-    );
-  }
-};
-
-const writeStyleDeclarations = (style: any, context: TranslateContext2) => {
-  for (const propertyName in style) {
-    const value = style[propertyName];
-    if (Array.isArray(value)) {
-      for (const part of value) {
-        context = writeStyleDeclaration(propertyName, part, context);
-      }
-    } else {
-      context = writeStyleDeclaration(propertyName, value, context);
-    }
-  }
-  return context;
-};
-
-const getFontFile = (dep: FontDependency) => `atoms/${dep.fileKey}.pc`;
-const getDesignPageFile = (page: any, dep: DesignDependency) =>
-  `previews/${kebabCase(dep.name)}/${kebabCase(page.name)}.pc`;
 const getDependencyImportFilePaths = (
   entry: DesignDependency,
   graph: DependencyGraph
@@ -332,28 +198,22 @@ const getDependencyImportFilePaths = (
         filePaths[getFontFile(dep)] = 1;
       }
     } else {
-      // Object.assign(filePaths, getDesignFileImportPaths(dep, graph));
+      filePaths[getDesignModulesFile(dep)] = 1;
     }
   }
 
   return filePaths;
 };
 
-const getDesignFileImportPaths = memoize(
-  (entry: DesignDependency, graph: DependencyGraph) => {
-    const filePaths = {};
-    for (const canvas of entry.document.children) {
-      filePaths[getDesignPageFile(canvas, entry)] = 1;
-    }
-    return filePaths;
-  }
-);
-
 const getInlineStyle = (layer: any, context: TranslateContext2) => {
   const { absoluteBoundingBox } = layer;
-  const style: any = {};
+  const parent = getNodeParent(
+    layer,
+    getNodeDependency(layer, context.graph).document
+  );
+  let style: any = {};
 
-  if (layer.type === "FRAME") {
+  if (parent.type === "CANVAS") {
     Object.assign(style, {
       width: `100vw`,
       height: `100vh`
@@ -373,6 +233,20 @@ const getInlineStyle = (layer: any, context: TranslateContext2) => {
   }
 
   Object.assign(style, getLayerStyle(layer));
+  style = addStyleMixins(layer, style, context);
 
   return style;
+};
+
+const addStyleMixins = (layer: any, style: any, context: TranslateContext2) => {
+  const dep = context.graph[context.currentFileKey] as DesignDependency;
+  let newStyle = { ...style };
+  const mixedInStyles = extractMixedInSyles(layer);
+  for (const refId in mixedInStyles) {
+    const imp = dep.imports[refId] as any;
+    const mixinId = imp?.nodeId || refId;
+    const impDep = (imp ? context.graph[imp.fileKey] : dep) as DesignDependency;
+    const mixin = impDep.styles[mixinId];
+  }
+  return newStyle;
 };

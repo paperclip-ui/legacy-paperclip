@@ -5,7 +5,7 @@ import { CONFIG_FILE_NAME } from "./constants";
 import { memoize } from "./memo";
 import { camelCase, pick } from "lodash";
 import { logError, pascalCase } from "./utils";
-import { getLayerStyle } from "./translate-utils";
+import { getLayerStyle } from "./translate/context";
 
 export type Config = {
   // project urls
@@ -698,12 +698,6 @@ export const getMixinStyles = memoize(
   }
 );
 
-export const getLayerMixins = memoize(
-  (node: Node, fileKey: string, graph: DependencyGraph) => {
-    const dep = graph[fileKey];
-  }
-);
-
 export const extractMixedInSyles = memoize(
   (layer: any): Record<string, any> => {
     const style = getLayerStyle(layer);
@@ -726,8 +720,6 @@ export const extractMixedInSyles = memoize(
           "fontSize",
           "textAlign"
         );
-      } else {
-        logError(`Unknown layer type ${chalk.bold(type)}`);
       }
     }
 

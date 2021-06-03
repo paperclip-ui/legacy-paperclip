@@ -13,7 +13,7 @@ import * as path from "path";
 import * as fsa from "fs-extra";
 import { FigmaApi } from "./api";
 import { loadDependencies } from "./graph";
-import { translateFigmaGraph } from "./translate-pc";
+import { translateFigmaGraph } from "./translate";
 import { DependencyGraph, DependencyKind, OutputFile } from "./state";
 
 export type PullOptions = {
