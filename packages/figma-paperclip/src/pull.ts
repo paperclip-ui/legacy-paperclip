@@ -47,7 +47,7 @@ export const pull = async ({ cwd, token }: PullOptions) => {
     includes: config.includes || []
   });
 
-  logInfo(chalk.bold(`Saving files 💾`));
+  logInfo(chalk.bold(`Compiling to Paperclip code 💾`));
 
   // 3. write files
   writeFiles(files, cwd, config.outputDir);

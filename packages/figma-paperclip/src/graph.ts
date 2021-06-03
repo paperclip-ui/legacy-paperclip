@@ -11,11 +11,12 @@ import {
   DesignFileFontImport,
   DesignFileImport,
   DesignFileImportKind,
+  flattenNodes,
   FontDependency,
   getNodeById,
   NodeType
 } from "./state";
-import { kebabCase, uniq } from "lodash";
+import { flatten, kebabCase, uniq } from "lodash";
 
 export const loadDependencies = async (
   fileKeys: string[],
@@ -27,7 +28,7 @@ export const loadDependencies = async (
   // for TESTING only!
   const cacheFile = path.join(cwd, `${md5(JSON.stringify(fileKeys))}.cache`);
 
-  if (fsa.existsSync(cacheFile)) {
+  if (fsa.existsSync(cacheFile) && !process.env.NO_CACHE) {
     graph = JSON.parse(fsa.readFileSync(cacheFile, "utf-8"));
   } else {
     // load all
@@ -78,6 +79,8 @@ const loadDesignFile = async (
 
   const fonts = await loadFonts(dep, graph);
   Object.assign(imports, fonts);
+
+  const media = await loadMedia(dep, graph);
 
   const foreignComponentIds = Object.keys(file.components).filter(importId => {
     const node = getNodeById(importId, file.document);
@@ -203,6 +206,15 @@ const loadFonts = async (dep: DesignDependency, graph: DependencyGraph) => {
   );
 
   return deps;
+};
+
+const loadMedia = (dep: DesignDependency, graph: DependencyGraph) => {
+  const media = {};
+  const exportedLayers = flattenNodes(dep.document).filter((layer: any) => {
+    return layer.exportSettings && layer.exportSettings.length > 0;
+  });
+
+  return media;
 };
 
 const getFontKey = font => kebabCase(font);
