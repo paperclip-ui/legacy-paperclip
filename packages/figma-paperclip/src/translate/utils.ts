@@ -62,3 +62,27 @@ export const writeStyleDeclarations = (
   }
   return context;
 };
+
+export const getStyleVarName = ({ name }) => {
+  return `--${kebabCase(name)}`;
+};
+
+export const getStyleMixinName = ({ name }) => {
+  let varName = kebabCase(name);
+  if (!isNaN(Number(varName.charAt(0)))) {
+    varName = "_" + varName;
+  }
+  return varName;
+};
+
+export const getStyleName = (style: any) => {
+  return isStyleVar(style) ? getStyleVarName(style) : getStyleMixinName(style);
+};
+
+export const isStyleVar = (mixin: any) => {
+  return mixin.styleType === "FILL";
+};
+
+export const isStyleMixin = (mixin: any) => {
+  return mixin.styleType === "TEXT" || mixin.styleType === "EFFECT";
+};

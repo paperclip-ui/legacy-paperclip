@@ -1,9 +1,13 @@
+import { camelCase, kebabCase, map, omit } from "lodash";
 import * as path from "path";
+import * as chalk from "chalk";
 import {
+  Dependency,
   DependencyGraph,
   DependencyKind,
   DesignDependency,
-  extractMixedInSyles,
+  extractMixedInStyles,
+  getImports,
   getNodeDependency,
   getNodeFrame,
   getNodeParent
@@ -13,18 +17,26 @@ import {
   addFile,
   endBlock,
   getLayerStyle,
+  logContextWarn,
   px,
   startBlock,
   startFile,
+  startPageFile,
   TranslateContext2
 } from "./context";
 import {
   getDesignModulesFile,
   getDesignPageFile,
   getFontFile,
+  getStyleMixinName,
+  getStyleName,
+  getStyleVarName,
+  isStyleMixin,
+  isStyleVar,
   writeElementBlock,
   writeStyleDeclarations
 } from "./utils";
+import { getAtoms } from "./modules";
 
 export const writeDesignPages = (
   dep: DesignDependency,
@@ -41,7 +53,12 @@ const writePage = (
   dep: DesignDependency,
   context: TranslateContext2
 ) => {
-  context = startFile(getDesignPageFile(page, dep), dep.fileKey, context);
+  context = startPageFile(
+    getDesignPageFile(page, dep),
+    dep.fileKey,
+    page.name,
+    context
+  );
   context = writePageImports(dep, context);
   context = writePageFrames(page, context);
   context = addFile(context);
@@ -102,7 +119,8 @@ const writeElementLayer = (layer: any, context: TranslateContext2) => {
 };
 
 const writeLayerStyle = (layer: any, context: TranslateContext2) => {
-  const style = getInlineStyle(layer, context);
+  let style;
+  [style, context] = getInlineStyle(layer, context);
   context = writeElementBlock(
     { tagName: "style" },
     context => {
@@ -140,7 +158,9 @@ const writePageImports = (
 
   for (const relativePath in importFilePaths) {
     context = addBuffer(
-      `<import src="${resolvePath(relativePath, context)}" inject-styles />\n`,
+      `<import src="${resolvePath(relativePath, context)}" as="${getImportId(
+        relativePath
+      )}" inject-styles />\n`,
       context
     );
   }
@@ -233,20 +253,64 @@ const getInlineStyle = (layer: any, context: TranslateContext2) => {
   }
 
   Object.assign(style, getLayerStyle(layer));
-  style = addStyleMixins(layer, style, context);
+  [style, context] = addStyleMixins(layer, style, context);
 
-  return style;
+  return [style, context];
 };
 
 const addStyleMixins = (layer: any, style: any, context: TranslateContext2) => {
   const dep = context.graph[context.currentFileKey] as DesignDependency;
   let newStyle = { ...style };
-  const mixedInStyles = extractMixedInSyles(layer);
+
+  // { mixinId: styleObject }
+  const mixedInStyles = extractMixedInStyles(layer);
   for (const refId in mixedInStyles) {
     const imp = dep.imports[refId] as any;
     const mixinId = imp?.nodeId || refId;
     const impDep = (imp ? context.graph[imp.fileKey] : dep) as DesignDependency;
     const mixin = impDep.styles[mixinId];
+    const mixedInStyle = mixedInStyles[refId];
+    const atoms = getAtoms(impDep, context.graph);
+    const mixinName = getStyleName(mixin);
+
+    if (!atoms.mixins[mixinName] && !atoms.vars[mixinName]) {
+      context = logContextWarn(
+        `Could not find style ${chalk.bold(mixin.name)} in design ${chalk.bold(
+          `${dep.name} / ${context.currentPageName}`
+        )}`,
+        context
+      );
+      continue;
+    }
+
+    if (isStyleMixin(mixin)) {
+      newStyle = omit(newStyle, Object.keys(mixedInStyle));
+
+      const path = [getDependencyImportId(impDep), mixinName];
+
+      newStyle = addInclude(path.join("."), newStyle);
+    } else if (isStyleVar(mixin)) {
+      for (const key in mixedInStyle) {
+        newStyle[key] = `var(${mixinName})`;
+      }
+    }
   }
+  return [newStyle, context];
+};
+
+const addInclude = (value: string, style: any) => {
+  let newStyle = { ...style };
+  if (!newStyle["@include"]) {
+    newStyle["@include"] = [];
+  }
+  newStyle["@include"].push(value);
   return newStyle;
+};
+
+const getDependencyImportId = (dep: DesignDependency) => {
+  return getImportId(getDesignModulesFile(dep));
+};
+
+const getImportId = (relativePath: string) => {
+  return camelCase(relativePath.replace(/\.pc$/, "").replace("/index", ""));
 };

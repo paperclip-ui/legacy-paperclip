@@ -699,7 +699,7 @@ export const getMixinStyles = memoize(
   }
 );
 
-export const extractMixedInSyles = memoize(
+export const extractMixedInStyles = memoize(
   (layer: any): Record<string, any> => {
     const style = getLayerStyle(layer);
     const ret = {};

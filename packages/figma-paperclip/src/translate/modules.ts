@@ -5,7 +5,7 @@ import {
   DesignDependency,
   DesignFileDesignImport,
   DesignFileImportKind,
-  extractMixedInSyles,
+  extractMixedInStyles,
   flattenNodes
 } from "../state";
 import { logWarn } from "../utils";
@@ -19,6 +19,10 @@ import {
 } from "./context";
 import {
   getDesignModulesFile,
+  getStyleMixinName,
+  getStyleVarName,
+  isStyleMixin,
+  isStyleVar,
   writeElementBlock,
   writeStyleDeclaration,
   writeStyleDeclarations
@@ -71,12 +75,7 @@ const writeVars = (
     ":root",
     context => {
       for (const name in vars) {
-        context = writeStyleDeclaration(
-          `--${name}`,
-          vars[name],
-          context,
-          false
-        );
+        context = writeStyleDeclaration(name, vars[name], context, false);
       }
       return context;
     },
@@ -100,36 +99,38 @@ const writeMixins = (
   return context;
 };
 
-const getAtoms = memoize((dep: DesignDependency, graph: DependencyGraph) => {
-  const vars = {};
-  const mixins = {};
+export const getAtoms = memoize(
+  (dep: DesignDependency, graph: DependencyGraph) => {
+    const vars = {};
+    const mixins = {};
 
-  for (const mixinId in dep.styles) {
-    const mixin = dep.styles[mixinId];
-    const mixinName = kebabCase(mixin.name);
-    const modelLayer = getGlobalMixinModelLayer(mixinId, dep.fileKey, graph);
+    for (const mixinId in dep.styles) {
+      const mixin = dep.styles[mixinId];
+      const modelLayer = getGlobalMixinModelLayer(mixinId, dep.fileKey, graph);
 
-    if (!modelLayer) {
-      logWarn(`Could not find styles for ${chalk.bold(mixinName)}`);
-      continue;
+      if (!modelLayer) {
+        logWarn(`Could not find styles for "${chalk.bold(mixin.name)}"`);
+        continue;
+      }
+
+      const style = extractMixedInStyles(modelLayer)[mixinId];
+
+      // should be grid
+      if (!style) {
+        continue;
+      }
+
+      if (isStyleMixin(mixin)) {
+        mixins[getStyleMixinName(mixin)] = style;
+      } else if (isStyleVar(mixin)) {
+        vars[getStyleVarName(mixin)] =
+          style.color || style.background || style.borderColor;
+      }
     }
 
-    const style = extractMixedInSyles(modelLayer)[mixinId];
-
-    // should be grid
-    if (!style) {
-      continue;
-    }
-
-    if (mixin.styleType === "TEXT" || mixin.styleType === "EFFECT") {
-      mixins[mixinName] = style;
-    } else if (mixin.styleType === "FILL") {
-      vars[mixinName] = style.color || style.background || style.borderColor;
-    }
+    return { vars, mixins };
   }
-
-  return { vars, mixins };
-});
+);
 
 const writeStyleBlock = (
   selector: string,

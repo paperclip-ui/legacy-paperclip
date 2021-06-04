@@ -33,6 +33,7 @@ export type TranslateContext = {
   graph: DependencyGraph;
   lineNumber: number;
   isNewLine: boolean;
+  logs: string[];
   indent: string;
   fileKey: string;
   mixins: Record<string, string>;
@@ -48,7 +49,9 @@ export type TranslateContext2 = {
   currentRelativeFilePath?: string;
   isNewLine: boolean;
   indent: string;
+  logs: string[];
   currentFileKey?: string;
+  currentPageName?: string;
   mixins: Record<string, string>;
   isFrame: boolean;
   framePosition?: Point;
@@ -63,6 +66,7 @@ export const ontext = (
   content: "",
   lineNumber: 0,
   fileKey,
+  logs: [],
   graph,
   options,
   mixins: {},
@@ -79,6 +83,16 @@ export const startFile = (
   ...context,
   currentFileKey,
   currentRelativeFilePath
+});
+
+export const startPageFile = (
+  currentRelativeFilePath: string,
+  currentFileKey: string,
+  currentPageName: string,
+  context: TranslateContext2
+): TranslateContext2 => ({
+  ...startFile(currentRelativeFilePath, currentFileKey, context),
+  currentPageName
 });
 
 export const addBuffer = (buffer: string, context: TranslateContext2) => ({
@@ -109,6 +123,7 @@ export const createContext = (
   lineNumber: 0,
   fileKey,
   graph,
+  logs: [],
   options,
   mixins: {},
   isNewLine: false,
@@ -122,6 +137,7 @@ export const createContext2 = (
 ): TranslateContext2 => ({
   content: "",
   lineNumber: 0,
+  logs: [],
   graph,
   files: [],
   options,
@@ -139,6 +155,7 @@ export const addFile = (context: TranslateContext2): TranslateContext2 => {
     isNewLine: false,
     isFrame: false,
     currentRelativeFilePath: null,
+    currentPageName: null,
     currentFileKey: null,
     files: [
       ...context.files,
@@ -329,4 +346,16 @@ const calcGradiantHandleRadians = ([first, second]: any) => {
   const xdiff = first.x - second.x;
   const radians = Math.atan2(-xdiff, -ydiff);
   return Number(radians.toFixed(3));
+};
+
+export const logContextWarn = (text: string, context: TranslateContext2) => {
+  if (context.logs.includes(text)) {
+    return context;
+  }
+  context = {
+    ...context,
+    logs: [...context.logs, text]
+  };
+  logWarn(text);
+  return context;
 };
