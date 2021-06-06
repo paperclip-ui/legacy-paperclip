@@ -3,7 +3,7 @@ import * as chalk from "chalk";
 import * as path from "path";
 import { CONFIG_FILE_NAME } from "./constants";
 import { memoize } from "./memo";
-import { camelCase, pick } from "lodash";
+import { camelCase, kebabCase, pick } from "lodash";
 import { logError, pascalCase } from "./utils";
 import { getLayerStyle } from "./translate/context";
 
@@ -361,7 +361,7 @@ export const hasVectorProps = (node: Node): node is VectorLikeNode => {
 };
 
 export const isExported = (node: Node): node is Exportable => {
-  return node.type !== NodeType.Document && node.exportSettings?.length > 0;
+  return node?.type !== NodeType.Document && node?.exportSettings?.length > 0;
 };
 
 export const isVectorLike = (node: Node): node is VectorLikeNode => {
@@ -424,7 +424,7 @@ export const getNodeExportFileName = (
     throw new Error(`document doesn't contain node`);
   }
 
-  return `${getUniqueNodeName(node, document)}@${
+  return `${kebabCase(getUniqueNodeName(node, document))}@${
     settings.constraint.value
   }.${settings.format.toLowerCase()}`;
 };
@@ -598,12 +598,20 @@ export const getInstanceComponent = (
     return node;
   }
 
-  const component = getNodeById(node.componentId, dep.document);
+  let component;
+  let componentDep;
+  const imp = dep.imports[node.componentId] as any;
+
+  if (imp) {
+    componentDep = graph[imp.fileKey] as DesignDependency;
+    component = getNodeById(imp.nodeId, componentDep.document);
+  } else {
+    componentDep = dep;
+    component = getNodeById(node.componentId, dep.document);
+  }
 
   if (component) {
-    // TODO
-    const componentDep = dep.document;
-    const parent = getNodeParent(component, componentDep);
+    const parent = getNodeParent(component, componentDep.document);
     if (parent.type === "COMPONENT_SET") {
       return parent;
     } else {

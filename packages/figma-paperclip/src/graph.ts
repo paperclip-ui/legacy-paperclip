@@ -247,18 +247,6 @@ const loadMedia = async (
         mediaCount++;
       }
     }
-
-    // export all SVG-like nodes
-    // DON'T do this, otherwise we'll be in a world of pain with super large files.
-    // if (isVectorLike(child)) {
-    //   const key = getSettingKey(DEFAULT_EXPORT_SETTINGS);
-    //   nodeIdsByExport = addNodeToDownload(
-    //     child,
-    //     nodeIdsByExport,
-    //     DEFAULT_EXPORT_SETTINGS
-    //   );
-    //   nodeIdsByExport[key].nodes[child.id] = child;
-    // }
   }
 
   if (mediaCount === 0) {

@@ -6,9 +6,12 @@ import {
   DependencyKind,
   DesignDependency,
   extractMixedInStyles,
+  getInstanceComponent,
   getNodeDependency,
+  getNodeExportFileName,
   getNodeFrame,
-  getNodeParent
+  getNodeParent,
+  isExported
 } from "../state";
 import {
   addBuffer,
@@ -25,6 +28,7 @@ import {
   getDesignModulesFile,
   getDesignPageFile,
   getFontFile,
+  getLayerMediaPath,
   getStyleName,
   isStyleMixin,
   isStyleVar,
@@ -73,14 +77,19 @@ const writePageFrame = (frame: any, context: TranslateContext2) => {
 };
 
 const writeLayer = (layer: any, context: TranslateContext2) => {
+  if (isExported(layer)) {
+    return writeExportedLayer(layer, context);
+  }
+
   switch (layer.type) {
     case "COMPONENT_SET":
     case "GROUP":
     case "COMPONENT":
-    case "INSTANCE":
     case "FRAME":
     case "RECTANGLE":
       return writeElementLayer(layer, context);
+    case "INSTANCE":
+      return writeInstanceLayer(layer, context);
     case "TEXT":
       return writeTextLayer(layer, context);
     case "ELLIPSE":
@@ -90,6 +99,49 @@ const writeLayer = (layer: any, context: TranslateContext2) => {
       return writeVectorLayer(layer, context);
   }
   return context;
+};
+
+const writeExportedLayer = (
+  layer: any,
+  context: TranslateContext2,
+  instance = layer
+) => {
+  const assetPath = getLayerMediaPath(
+    layer,
+    getNodeDependency(layer, context.graph),
+    layer.exportSettings[0]
+  );
+
+  const attributes = `src="${path.relative(
+    path.dirname(context.currentRelativeFilePath),
+    assetPath
+  )}"`;
+
+  context = writeElementBlock(
+    { tagName: "img", attributes },
+    context => {
+      context = writeLayerStyle(
+        instance,
+        context,
+        WriteLayerStyleMode.Position
+      );
+      return context;
+    },
+    context
+  );
+  return context;
+};
+
+const writeInstanceLayer = (layer: any, context: TranslateContext2) => {
+  const component = getInstanceComponent(
+    layer,
+    getNodeDependency(layer, context.graph).fileKey,
+    context.graph
+  );
+  if (!component || !isExported(component)) {
+    return writeElementLayer(layer, context);
+  }
+  return writeExportedLayer(component, context, layer);
 };
 
 const writeVectorLayer = (layer: any, context: TranslateContext2) => {
@@ -113,9 +165,19 @@ const writeElementLayer = (layer: any, context: TranslateContext2) => {
   return context;
 };
 
-const writeLayerStyle = (layer: any, context: TranslateContext2) => {
+enum WriteLayerStyleMode {
+  Position = 1 << 2,
+  Style = 2 << 2,
+  Everything = (1 << 2) | (2 << 2)
+}
+
+const writeLayerStyle = (
+  layer: any,
+  context: TranslateContext2,
+  mode: WriteLayerStyleMode = WriteLayerStyleMode.Everything
+) => {
   let style;
-  [style, context] = getInlineStyle(layer, context);
+  [style, context] = getInlineStyle(layer, context, mode);
   context = writeElementBlock(
     { tagName: "style" },
     context => {
@@ -220,7 +282,11 @@ const getDependencyImportFilePaths = (
   return filePaths;
 };
 
-const getInlineStyle = (layer: any, context: TranslateContext2) => {
+const getInlineStyle = (
+  layer: any,
+  context: TranslateContext2,
+  mode: WriteLayerStyleMode = WriteLayerStyleMode.Everything
+) => {
   const { absoluteBoundingBox } = layer;
   const parent = getNodeParent(
     layer,
@@ -228,7 +294,7 @@ const getInlineStyle = (layer: any, context: TranslateContext2) => {
   );
   let style: any = {};
 
-  if (parent.type === "CANVAS") {
+  if (parent.type === "CANVAS" && mode & WriteLayerStyleMode.Position) {
     Object.assign(style, {
       width: `100vw`,
       height: `100vh`
@@ -247,14 +313,16 @@ const getInlineStyle = (layer: any, context: TranslateContext2) => {
     });
   }
 
-  Object.assign(style, getLayerStyle(layer));
-  [style, context] = addStyleMixins(layer, style, context);
+  if (mode & WriteLayerStyleMode.Style) {
+    Object.assign(style, getLayerStyle(layer));
+    [style, context] = addStyleMixins(layer, style, context);
+  }
 
   return [style, context];
 };
 
 const addStyleMixins = (layer: any, style: any, context: TranslateContext2) => {
-  const dep = context.graph[context.currentFileKey] as DesignDependency;
+  const dep = getNodeDependency(layer, context.graph) as DesignDependency;
   let newStyle = { ...style };
 
   // { mixinId: styleObject }
