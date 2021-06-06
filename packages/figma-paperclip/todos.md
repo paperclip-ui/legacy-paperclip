@@ -1,3 +1,4 @@
-- define components
-- get UI to be 1:1 map
-  - load SVGs
+- download assets
+- add Figma link to design files
+- hard-coded version? 
+  - version tagging? Use semver

@@ -6,15 +6,23 @@ import {
   readConfig,
   SourceUrlInfo,
   logInfo,
-  logVerb
+  logVerb,
+  logWarn
 } from "./utils";
 import * as chalk from "chalk";
 import * as path from "path";
 import * as fsa from "fs-extra";
+import * as https from "https";
+import * as plimit from "p-limit";
 import { FigmaApi } from "./api";
 import { loadDependencies } from "./graph";
 import { translateFigmaGraph } from "./translate";
-import { DependencyGraph, DependencyKind, OutputFile } from "./state";
+import {
+  DependencyGraph,
+  DependencyKind,
+  OutputFile,
+  OutputFileKind
+} from "./state";
 
 export type PullOptions = {
   cwd: string;
@@ -53,14 +61,52 @@ export const pull = async ({ cwd, token }: PullOptions) => {
   writeFiles(files, cwd, config.outputDir);
 };
 
-const writeFiles = (files: OutputFile[], cwd: string, outputDir: string) => {
+const writeFiles = async (
+  files: OutputFile[],
+  cwd: string,
+  outputDir: string
+) => {
+  const promises = [];
+  const limit = plimit(10);
+
   for (const file of files) {
     const absoluePath = path.join(cwd, outputDir, file.relativePath);
     fsa.mkdirpSync(path.dirname(absoluePath));
 
-    logVerb(`Write ${absoluePath.replace(cwd + "/", "")}`);
-    fsa.writeFileSync(absoluePath, file.content);
+    if (file.kind === OutputFileKind.Buffer) {
+      logVerb(`Write ${absoluePath.replace(cwd + "/", "")}`);
+      fsa.writeFileSync(absoluePath, file.content);
+    } else if (file.kind === OutputFileKind.Remote) {
+      promises.push(downloadFile(file.url, absoluePath, cwd, limit));
+    }
   }
+
+  await Promise.all(promises);
+};
+
+const downloadFile = async (
+  url: string,
+  absoluePath: string,
+  cwd: string,
+  limit: any
+) => {
+  if (fsa.existsSync(absoluePath)) {
+    return;
+  }
+
+  const relativePath = chalk.bold(absoluePath.replace(cwd + "/", ""));
+
+  return limit(() => {
+    logVerb(`Download ${url} -> ${relativePath}`);
+    https.get(url, response => {
+      if (response.statusCode !== 200) {
+        logWarn(`Could not download asset ${chalk.bold(relativePath)}`);
+        return;
+      }
+
+      response.pipe(fsa.createWriteStream(absoluePath));
+    });
+  });
 };
 
 const getFileKeys = async (

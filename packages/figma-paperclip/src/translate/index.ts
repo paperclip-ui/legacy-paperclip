@@ -1,13 +1,21 @@
-import { DependencyGraph, DependencyKind } from "../state";
+import {
+  DependencyGraph,
+  DependencyKind,
+  getNodeById,
+  getNodeDependency,
+  getNodeDependencyById,
+  getNodeExportFileName
+} from "../state";
 import {
   addBuffer,
   addFile,
+  addRemoteFile,
   createContext2,
   startFile,
   TranslateContext2,
   TranslateOptions
 } from "./context";
-import { getFontFile } from "./utils";
+import { getFontFile, getLayerMediaPath } from "./utils";
 import { writeDesignModules } from "./modules";
 import { writeDesignPages } from "./pages";
 
@@ -50,6 +58,8 @@ export const translateFigmaGraph = (
   // previews are private and should not be directly referenced
   context = writeDesigns(context);
 
+  context = writeMedia(context);
+
   return context.files;
 };
 
@@ -79,5 +89,22 @@ const writeFonts = (context: TranslateContext2) => {
     context = addFile(context);
   }
 
+  return context;
+};
+
+const writeMedia = (context: TranslateContext2) => {
+  for (const key in context.graph) {
+    const dep = context.graph[key];
+    if (dep.kind === DependencyKind.Media) {
+      const nodeDep = getNodeDependencyById(dep.nodeId, context.graph);
+      const node = getNodeById(dep.nodeId, nodeDep.document);
+      context = startFile(
+        getLayerMediaPath(node, nodeDep, dep.settings),
+        key,
+        context
+      );
+      context = addRemoteFile(dep.url, context);
+    }
+  }
   return context;
 };

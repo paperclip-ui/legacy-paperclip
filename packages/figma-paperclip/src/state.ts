@@ -78,15 +78,35 @@ export type DesignDependency = {
 export type FontDependency = {
   content: string;
 } & BaseDependency<DependencyKind.Font>;
+export type MediaDependency = {
+  url: string;
+  nodeId: any;
+  settings: ExportSettings;
+} & BaseDependency<DependencyKind.Media>;
 
-export type Dependency = FontDependency | DesignDependency;
+export type Dependency = FontDependency | DesignDependency | MediaDependency;
 
 export type DependencyGraph = Record<string, Dependency>;
 
-export type OutputFile = {
+export enum OutputFileKind {
+  Buffer,
+  Remote
+}
+
+export type BaseOutputFile<TKind extends OutputFileKind> = {
   relativePath: string;
-  content: string;
+  kind: TKind;
 };
+
+export type BufferOutputFile = {
+  content: string;
+} & BaseOutputFile<OutputFileKind.Buffer>;
+
+export type RemoteOutputFile = {
+  url: string;
+} & BaseOutputFile<OutputFileKind.Remote>;
+
+export type OutputFile = BufferOutputFile | RemoteOutputFile;
 
 export type Project = {
   id: number;
@@ -404,7 +424,7 @@ export const getNodeExportFileName = (
     throw new Error(`document doesn't contain node`);
   }
 
-  return `node-${getUniqueNodeName(node, document)}@${
+  return `${getUniqueNodeName(node, document)}@${
     settings.constraint.value
   }.${settings.format.toLowerCase()}`;
 };
@@ -618,6 +638,22 @@ export const getNodeDependency = (node: Node, graph: DependencyGraph) => {
       dep.kind === DependencyKind.Design &&
       containsNode(node, dep.document)
     ) {
+      return dep;
+    }
+  }
+};
+
+export const getNodeDependencyById = (
+  nodeId: string,
+  graph: DependencyGraph
+): DesignDependency => {
+  for (const fileKey in graph) {
+    const dep = graph[fileKey];
+    if (dep.kind !== DependencyKind.Design) {
+      continue;
+    }
+    const node = getNodeById(nodeId, dep.document);
+    if (node) {
       return dep;
     }
   }

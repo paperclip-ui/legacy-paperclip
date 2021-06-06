@@ -1,5 +1,5 @@
 import { uniq } from "lodash";
-import { DependencyGraph, OutputFile, Point } from "../state";
+import { DependencyGraph, OutputFile, OutputFileKind, Point } from "../state";
 import { logWarn } from "../utils";
 import * as chalk from "chalk";
 import { memoize } from "../memo";
@@ -160,8 +160,33 @@ export const addFile = (context: TranslateContext2): TranslateContext2 => {
     files: [
       ...context.files,
       {
+        kind: OutputFileKind.Buffer,
         relativePath: context.currentRelativeFilePath,
         content: context.content
+      }
+    ]
+  };
+};
+
+export const addRemoteFile = (
+  url: string,
+  context: TranslateContext2
+): TranslateContext2 => {
+  return {
+    ...context,
+    content: "",
+    lineNumber: 0,
+    isNewLine: false,
+    isFrame: false,
+    currentRelativeFilePath: null,
+    currentPageName: null,
+    currentFileKey: null,
+    files: [
+      ...context.files,
+      {
+        kind: OutputFileKind.Remote,
+        relativePath: context.currentRelativeFilePath,
+        url
       }
     ]
   };
@@ -253,9 +278,11 @@ export const getLayerStyle = memoize((layer: any) => {
 
   if (layer.strokes?.length) {
     const [stroke] = layer.strokes;
-    style.borderColor = getCSSRGBAColor(stroke.color);
-    style.borderSyyle = stroke.type.toLowerCase();
-    style.borderWidth = layer.strokeWeight;
+    if (stroke.color) {
+      style.borderColor = getCSSRGBAColor(stroke.color);
+      style.borderSyyle = stroke.type.toLowerCase();
+      style.borderWidth = layer.strokeWeight;
+    }
   }
 
   return style;

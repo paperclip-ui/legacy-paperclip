@@ -1,5 +1,10 @@
 import { kebabCase } from "lodash";
-import { DesignDependency, FontDependency } from "../state";
+import {
+  DesignDependency,
+  ExportSettings,
+  FontDependency,
+  getNodeExportFileName
+} from "../state";
 import { addBuffer, endBlock, startBlock, TranslateContext2 } from "./context";
 
 export const getFontFile = (dep: FontDependency) =>
@@ -8,7 +13,13 @@ export const getDesignPageFile = (page: any, dep: DesignDependency) =>
   `designs/${kebabCase(dep.name)}/pages/${kebabCase(page.name)}.pc`;
 export const getDesignModulesFile = (dep: DesignDependency) =>
   `designs/${kebabCase(dep.name)}/index.pc`;
-
+export const getLayerMediaPath = (
+  node,
+  dep: DesignDependency,
+  settings: ExportSettings
+) => {
+  return `assets/${getNodeExportFileName(node, dep.document, settings)}`;
+};
 export type WriteElementBlockParts = {
   tagName: string;
   attributes?: string;

@@ -1,13 +1,11 @@
-import { camelCase, kebabCase, map, omit } from "lodash";
+import { camelCase, omit } from "lodash";
 import * as path from "path";
 import * as chalk from "chalk";
 import {
-  Dependency,
   DependencyGraph,
   DependencyKind,
   DesignDependency,
   extractMixedInStyles,
-  getImports,
   getNodeDependency,
   getNodeFrame,
   getNodeParent
@@ -20,7 +18,6 @@ import {
   logContextWarn,
   px,
   startBlock,
-  startFile,
   startPageFile,
   TranslateContext2
 } from "./context";
@@ -28,9 +25,7 @@ import {
   getDesignModulesFile,
   getDesignPageFile,
   getFontFile,
-  getStyleMixinName,
   getStyleName,
-  getStyleVarName,
   isStyleMixin,
   isStyleVar,
   writeElementBlock,
@@ -217,7 +212,7 @@ const getDependencyImportFilePaths = (
       if (dep.content) {
         filePaths[getFontFile(dep)] = 1;
       }
-    } else {
+    } else if (dep.kind === DependencyKind.Design) {
       filePaths[getDesignModulesFile(dep)] = 1;
     }
   }

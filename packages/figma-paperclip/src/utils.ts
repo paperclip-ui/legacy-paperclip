@@ -4,7 +4,7 @@ import * as fsa from "fs-extra";
 import * as https from "https";
 import * as chalk from "chalk";
 import * as crypto from "crypto";
-import { Config } from "./state";
+import { Config, Exportable, Node, NodeType } from "./state";
 import { camelCase } from "lodash";
 export const CONFIG_FILE_NAME = "figma-paperclip.json";
 export const COMMAND_NAME = "figma-paperclip";
@@ -143,4 +143,8 @@ export const httpGet = (options: https.RequestOptions): Promise<any> => {
       });
     });
   });
+};
+
+export const isExported = (node: Node): node is Exportable => {
+  return node.type !== NodeType.Document && node.exportSettings?.length > 0;
 };

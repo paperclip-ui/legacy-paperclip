@@ -4,6 +4,7 @@ import * as path from "path";
 import { FigmaApi } from "./api";
 import * as fsa from "fs-extra";
 import { findLayer, httpGet, logVerb, logWarn, md5 } from "./utils";
+import * as https from "https";
 import {
   DependencyGraph,
   DependencyKind,
@@ -11,12 +12,14 @@ import {
   DesignFileFontImport,
   DesignFileImport,
   DesignFileImportKind,
+  ExportSettings,
   flattenNodes,
-  FontDependency,
   getNodeById,
+  getNodeExportFileName,
+  isExported,
   NodeType
 } from "./state";
-import { flatten, kebabCase, uniq } from "lodash";
+import { kebabCase, uniq } from "lodash";
 
 export const loadDependencies = async (
   fileKeys: string[],
@@ -80,7 +83,7 @@ const loadDesignFile = async (
   const fonts = await loadFonts(dep, graph);
   Object.assign(imports, fonts);
 
-  const media = await loadMedia(dep, graph);
+  await loadMedia(dep, graph, api);
 
   const foreignComponentIds = Object.keys(file.components).filter(importId => {
     const node = getNodeById(importId, file.document);
@@ -208,13 +211,101 @@ const loadFonts = async (dep: DesignDependency, graph: DependencyGraph) => {
   return deps;
 };
 
-const loadMedia = (dep: DesignDependency, graph: DependencyGraph) => {
-  const media = {};
-  const exportedLayers = flattenNodes(dep.document).filter((layer: any) => {
-    return layer.exportSettings && layer.exportSettings.length > 0;
-  });
+const loadMedia = async (
+  dep: DesignDependency,
+  graph: DependencyGraph,
+  api: FigmaApi
+) => {
+  const allNodes = flattenNodes(dep.document);
 
-  return media;
+  let nodeIdsByExport: Record<
+    string,
+    {
+      settings: ExportSettings;
+      nodes: Record<string, Node>;
+    }
+  > = {};
+
+  let mediaCount = 0;
+
+  for (const child of allNodes) {
+    if (isExported(child)) {
+      for (const setting of child.exportSettings) {
+        if (setting.format === "PDF") {
+          logWarn(`Cannot download PDF for layer: "${child.name}"`);
+          continue;
+        }
+
+        if (setting.constraint.type !== "SCALE") {
+          logWarn(
+            `Cannot download "${child.name}" export since it doesn't have SCALE constraint.`
+          );
+          continue;
+        }
+
+        nodeIdsByExport = addNodeToDownload(child, nodeIdsByExport, setting);
+        mediaCount++;
+      }
+    }
+
+    // export all SVG-like nodes
+    // DON'T do this, otherwise we'll be in a world of pain with super large files.
+    // if (isVectorLike(child)) {
+    //   const key = getSettingKey(DEFAULT_EXPORT_SETTINGS);
+    //   nodeIdsByExport = addNodeToDownload(
+    //     child,
+    //     nodeIdsByExport,
+    //     DEFAULT_EXPORT_SETTINGS
+    //   );
+    //   nodeIdsByExport[key].nodes[child.id] = child;
+    // }
+  }
+
+  if (mediaCount === 0) {
+    return;
+  }
+
+  logVerb(`Loading media for ${chalk.bold(dep.name)} (${mediaCount} assets)`);
+
+  const limit = plimit(10);
+
+  await Promise.all(
+    Object.keys(nodeIdsByExport).map(key =>
+      limit(async () => {
+        const { settings, nodes } = nodeIdsByExport[key];
+        const result = await api.getImage(dep.fileKey, {
+          ids: Object.keys(nodes).join(","),
+          format: settings.format.toLowerCase() as any,
+          scale: settings.constraint.value
+        });
+
+        for (const nodeId in result.images) {
+          const url = result.images[nodeId];
+
+          if (!url) {
+            const node = getNodeById(nodeId, dep.document);
+            logWarn(
+              `Could not fetch asset for ${chalk.bold(
+                dep.document.name
+              )} / ${chalk.bold(node.name)}`
+            );
+            continue;
+          }
+          graph[nodeId] = {
+            nodeId,
+            settings,
+            fileKey: getNodeExportFileName(
+              nodes[nodeId] as any,
+              dep.document,
+              settings
+            ),
+            kind: DependencyKind.Media,
+            url: result.images[nodeId]
+          };
+        }
+      })
+    )
+  );
 };
 
 const getFontKey = font => kebabCase(font);
@@ -232,3 +323,23 @@ const getDesignFonts = (dep: DesignDependency) => {
   fonts = uniq(fonts);
   return fonts;
 };
+
+const EXTENSIONS = {
+  "image/png": ".png",
+  "image/svg+xml": ".svg",
+  "image/jpeg": ".jpg"
+};
+
+const addNodeToDownload = (child, rec, setting: any): any => {
+  const key = getSettingKey(setting);
+
+  if (!rec[key]) {
+    rec[key] = { settings: setting, nodes: {} };
+  }
+  rec[key].nodes[child.id] = child;
+
+  return rec;
+};
+
+const getSettingKey = setting =>
+  setting.format + setting.constraint.type + setting.constraint.value;
