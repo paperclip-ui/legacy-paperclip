@@ -285,35 +285,45 @@ export const getChildrenByTagName = (tagName: string, parent: Node) =>
 
 export const findByNamespace = (
   namespace: string,
-  current: Node,
+  current: Node | JsExpression,
   allChildrenByNamespace: Element[] = []
 ) => {
-  if (current.nodeKind === NodeKind.Element) {
-    if (current.tagName.split(".")[0] === namespace) {
-      allChildrenByNamespace.push(current);
+  if (isNode(current)) {
+    if (current.nodeKind === NodeKind.Element) {
+      if (current.tagName.split(".")[0] === namespace) {
+        allChildrenByNamespace.push(current);
+      }
     }
-  }
-  for (const child of getChildren(current)) {
-    findByNamespace(namespace, child, allChildrenByNamespace);
-  }
+    for (const child of getChildren(current)) {
+      findByNamespace(namespace, child, allChildrenByNamespace);
+    }
 
-  if (current.nodeKind === NodeKind.Element) {
-    for (const attribute of current.attributes) {
-      if (
-        attribute.attrKind === AttributeKind.KeyValueAttribute &&
-        attribute.value
-      ) {
+    if (current.nodeKind === NodeKind.Element) {
+      for (const attribute of current.attributes) {
         if (
-          attribute.value.attrValueKind === AttributeValueKind.Slot &&
-          attribute.value.script.jsKind === JsExpressionKind.Node
+          attribute.attrKind === AttributeKind.KeyValueAttribute &&
+          attribute.value
         ) {
-          findByNamespace(
-            namespace,
-            attribute.value.script,
-            allChildrenByNamespace
-          );
+          if (
+            attribute.value.attrValueKind === AttributeValueKind.Slot &&
+            attribute.value.script.jsKind === JsExpressionKind.Node
+          ) {
+            findByNamespace(
+              namespace,
+              attribute.value.script,
+              allChildrenByNamespace
+            );
+          }
         }
       }
+    }
+    if (current.nodeKind === NodeKind.Slot) {
+      findByNamespace(namespace, current.script, allChildrenByNamespace);
+    }
+  } else if (isJsExpression(current)) {
+    if (current.jsKind === JsExpressionKind.Conjunction) {
+      findByNamespace(namespace, current.left, allChildrenByNamespace);
+      findByNamespace(namespace, current.right, allChildrenByNamespace);
     }
   }
 
