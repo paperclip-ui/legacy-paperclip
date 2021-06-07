@@ -14,6 +14,7 @@ import {
   DesignFileImportKind,
   ExportSettings,
   flattenNodes,
+  ExcludeRule,
   FRAME_EXPORT_SETTINGS,
   getNodeById,
   getNodeExportFileName,
@@ -23,22 +24,30 @@ import {
 } from "./state";
 import { kebabCase, uniq } from "lodash";
 
+type LoadDependenciesOptions = {
+  exclude: ExcludeRule[];
+  cwd: string;
+};
+
 export const loadDependencies = async (
   fileKeys: string[],
-  cwd: string,
-  api: FigmaApi
+  api: FigmaApi,
+  options: LoadDependenciesOptions
 ) => {
   let graph: DependencyGraph = {};
 
   // for TESTING only!
-  const cacheFile = path.join(cwd, `${md5(JSON.stringify(fileKeys))}.cache`);
+  const cacheFile = path.join(
+    options.cwd,
+    `${md5(JSON.stringify(fileKeys))}.cache`
+  );
 
   if (fsa.existsSync(cacheFile) && !process.env.REFETCH) {
     graph = JSON.parse(fsa.readFileSync(cacheFile, "utf-8"));
   } else {
     // load all
     for (const fileKey of fileKeys) {
-      await loadDesignFile(fileKey, cwd, api, graph);
+      await loadDesignFile(fileKey, api, options, graph);
     }
 
     if (process.env.CACHE) {
@@ -51,8 +60,8 @@ export const loadDependencies = async (
 
 const loadDesignFile = async (
   fileKey: string,
-  cwd: string,
   api: FigmaApi,
+  options: LoadDependenciesOptions,
   graph: DependencyGraph = {}
 ): Promise<DependencyGraph> => {
   if (graph[fileKey]) {
@@ -126,7 +135,7 @@ const loadDesignFile = async (
           fileKey: componentInfo.meta.file_key
         };
 
-        await loadDesignFile(componentInfo.meta.file_key, cwd, api, graph);
+        await loadDesignFile(componentInfo.meta.file_key, api, options, graph);
       });
     })
   );
@@ -147,7 +156,7 @@ const loadDesignFile = async (
             nodeId: info.meta.node_id,
             fileKey: info.meta.file_key
           };
-          await loadDesignFile(info.meta.file_key, cwd, api, graph);
+          await loadDesignFile(info.meta.file_key, api, options, graph);
         } catch (e) {
           logWarn(`Can't load style info for ${chalk.bold(style.name)}`);
           // console.log(e);
@@ -341,12 +350,6 @@ const getDesignFonts = (dep: DesignDependency) => {
 
   fonts = uniq(fonts);
   return fonts;
-};
-
-const EXTENSIONS = {
-  "image/png": ".png",
-  "image/svg+xml": ".svg",
-  "image/jpeg": ".jpg"
 };
 
 const addNodeToDownload = (child, rec, setting: any): any => {

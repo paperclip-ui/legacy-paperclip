@@ -6,11 +6,11 @@ import * as chalk from "chalk";
 import * as crypto from "crypto";
 import { Config, Exportable, Node, NodeType } from "./state";
 import { camelCase } from "lodash";
-export const CONFIG_FILE_NAME = "figma-paperclip.json";
+export const CONFIG_FILE_NAME = "figma-paperclip.config.js";
 export const COMMAND_NAME = "figma-paperclip";
 
 export const readConfig = (cwd: string): Config => {
-  return JSON.parse(fsa.readFileSync(getConfigPath(cwd), "utf8"));
+  return require(getConfigPath(cwd));
 };
 
 export const getConfigPath = (cwd: string) => path.join(cwd, CONFIG_FILE_NAME);

@@ -46,13 +46,17 @@ export const pull = async ({ cwd, token }: PullOptions) => {
 
   logInfo(chalk.bold(`Loading dependency graph 🌎`));
 
-  const graph: DependencyGraph = await loadDependencies(fileKeys, cwd, api);
+  const graph: DependencyGraph = await loadDependencies(fileKeys, api, {
+    cwd,
+    exclude: config.exclude || []
+  });
 
   logInfo(chalk.bold(`Translating Designs into code 🔨`));
 
   // 2. translate graph into files
   const files = translateFigmaGraph(graph, {
-    includes: config.includes || []
+    includes: config.inject || [],
+    exclude: config.exclude || []
   });
 
   logInfo(chalk.bold(`Compiling to Paperclip code 💾`));

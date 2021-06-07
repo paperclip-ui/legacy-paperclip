@@ -1,5 +1,11 @@
 import { uniq } from "lodash";
-import { DependencyGraph, OutputFile, OutputFileKind, Point } from "../state";
+import {
+  DependencyGraph,
+  ExcludeRule,
+  OutputFile,
+  OutputFileKind,
+  Point
+} from "../state";
 import { logWarn } from "../utils";
 import * as chalk from "chalk";
 import { memoize } from "../memo";
@@ -25,6 +31,7 @@ export const BLEND_MODE_MAP = {
 
 export type TranslateOptions = {
   includes: string[];
+  exclude: ExcludeRule[];
 };
 
 export type TranslateContext = {

@@ -12,12 +12,23 @@ export type Config = {
   sources: string[];
 
   // pc files to include
-  includes?: string[];
+  inject?: string[];
+
+  exclude?: ExcludeRule[];
 
   outputDir: string;
 };
 
+export type ExcludeRule = {
+  pattern: RegExp;
+};
+
 // _7113_testB3_testA24
+
+export const cleanLabel = (name: string) => {
+  // remove emojis
+  return name.replace(/[^a-zA-Z0-9\-\_\s]/g, "");
+};
 
 const MAX_LABEL_NAME_LENGTH = 40;
 
@@ -196,7 +207,7 @@ export const FRAME_EXPORT_SETTINGS: ExportSettings = {
   format: "png",
   constraint: {
     type: "SCALE",
-    value: 1
+    value: 3
   }
 };
 
@@ -424,6 +435,7 @@ const getCleanedName = (name: string) => {
 };
 const exceedsMaxLabelName = (name: string) =>
   name.length > MAX_LABEL_NAME_LENGTH;
+
 export const getNodeExportFileName = (
   node: Node,
   document: Document,
@@ -433,9 +445,10 @@ export const getNodeExportFileName = (
     throw new Error(`document doesn't contain node`);
   }
 
-  return `${kebabCase(getUniqueNodeName(node, document))}@${
-    settings.constraint.value
-  }.${settings.format.toLowerCase()}`;
+  // want to include document name to make sure that there's no clashing between assets
+  return `${kebabCase(
+    cleanLabel(document.name) + "-" + getUniqueNodeName(node, document)
+  )}@${settings.constraint.value}.${settings.format.toLowerCase()}`;
 };
 
 export const getOriginalNode = (nodeId: string, document: Document) => {
@@ -484,8 +497,11 @@ export const getUniqueNodeName = memoize((node: Node, document: Document) => {
       return getNodeName(node, document) === nodeName;
     });
   } else {
-    nodesThatShareName = flattenComponentNodes(document).filter(child => {
-      return nodeName === getNodeName(child, document);
+    nodesThatShareName = flattenNodes(document).filter(child => {
+      return (
+        child.type !== NodeType.Document &&
+        nodeName === getNodeName(child, document)
+      );
     });
   }
 

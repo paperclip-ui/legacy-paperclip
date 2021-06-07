@@ -6,6 +6,7 @@ import {
   DependencyKind,
   DesignDependency,
   extractMixedInStyles,
+  FRAME_EXPORT_SETTINGS,
   getInstanceComponent,
   getNodeDependency,
   getNodeExportFileName,
@@ -58,6 +59,11 @@ const writePage = (
     page.name,
     context
   );
+
+  // skip altogether if relative path is null
+  if (context.currentRelativeFilePath == null) {
+    return context;
+  }
   context = writePageImports(dep, context);
   context = writePageFrames(page, context);
   context = addFile(context);
@@ -72,7 +78,43 @@ const writePageFrames = (page: any, context: TranslateContext2) => {
 };
 const writePageFrame = (frame: any, context: TranslateContext2) => {
   context = writeFrameComment(frame, context);
-  context = writeLayer(frame, context);
+  // context = writeLayer(frame, context);
+  context = writeFrameSummary(frame, context);
+  return context;
+};
+
+const writeFrameSummary = (frame: any, context: TranslateContext2) => {
+  const framePreviewAssetPath = getLayerMediaPath(
+    frame,
+    context.graph[context.currentFileKey] as DesignDependency,
+    FRAME_EXPORT_SETTINGS
+  );
+
+  // Just want to display the frame preview and not the whole thing
+  context = writeElementBlock(
+    {
+      tagName: "img",
+      attributes: `src="${resolvePath(framePreviewAssetPath, context)}"`
+    },
+    context => {
+      context = writeElementBlock(
+        { tagName: "style" },
+        context => {
+          context = writeStyleDeclarations(
+            {
+              width: "100vw"
+            },
+            context
+          );
+          return context;
+        },
+        context
+      );
+      return context;
+    },
+    context
+  );
+
   return context;
 };
 
@@ -256,6 +298,14 @@ const writeFrameComment = (
     `@frame { title: ${JSON.stringify(
       layer.name
     )}, width: ${width}, height: ${height}, x: ${x}, y: ${y}, visible: ${visible} }\n`,
+    context
+  );
+  context = addBuffer(
+    `@source ${JSON.stringify(
+      `https://www.figma.com/file/${
+        context.currentFileKey
+      }?node-id=${encodeURIComponent(layer.id)}`
+    )}\n`,
     context
   );
   context = endBlock(context);

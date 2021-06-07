@@ -33,11 +33,13 @@ export const init = async ({ cwd }: InitOptions) => {
     outputDir
   };
 
+  const source = `module.exports = ${JSON.stringify(config, null, 2)};`;
+
   logInfo(
     `Wrote ${CONFIG_FILE_NAME}, you can now run ${chalk.bold(
       `${COMMAND_NAME} pull`
     )}.`
   );
 
-  fsa.writeFileSync(getConfigPath(cwd), JSON.stringify(config, null, 2));
+  fsa.writeFileSync(getConfigPath(cwd), source);
 };

@@ -1,5 +1,6 @@
 import { kebabCase } from "lodash";
 import {
+  cleanLabel,
   DesignDependency,
   ExportSettings,
   FontDependency,
@@ -9,17 +10,25 @@ import { addBuffer, endBlock, startBlock, TranslateContext2 } from "./context";
 
 export const getFontFile = (dep: FontDependency) =>
   `typography/${dep.fileKey}.pc`;
-export const getDesignPageFile = (page: any, dep: DesignDependency) =>
-  `designs/${kebabCase(cleanLabel(dep.name))}/pages/${kebabCase(
-    cleanLabel(page.name)
-  )}.pc`;
-export const getDesignModulesFile = (dep: DesignDependency) =>
-  `designs/${kebabCase(cleanLabel(dep.name))}/index.pc`;
+export const getDesignPageFile = (page: any, dep: DesignDependency) => {
+  const name = kebabCase(cleanLabel(page.name));
+  // non-ascii chars, so ignore
+  if (!name) {
+    return null;
+  }
 
-const cleanLabel = (name: string) => {
-  // remove emojis
-  return name.replace(/[^a-zA-Z0-9\-\_\s]/g, "");
+  return `designs/${kebabCase(cleanLabel(dep.name))}/pages/${name}.pc`;
 };
+export const getDesignModulesFile = (dep: DesignDependency) => {
+  const name = kebabCase(cleanLabel(dep.name));
+
+  // non-ascii chars, so ignore
+  if (!name) {
+    return null;
+  }
+  return `designs/${name}/index.pc`;
+};
+
 export const getLayerMediaPath = (
   node,
   dep: DesignDependency,
