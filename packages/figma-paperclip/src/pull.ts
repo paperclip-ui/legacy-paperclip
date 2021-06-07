@@ -51,7 +51,7 @@ export const pull = async ({ cwd, token }: PullOptions) => {
     exclude: config.exclude || []
   });
 
-  logInfo(chalk.bold(`Translating Designs into code 🔨`));
+  logInfo(chalk.bold(`Building Paperclip files 🔨`));
 
   // 2. translate graph into files
   const files = translateFigmaGraph(graph, {
@@ -59,7 +59,7 @@ export const pull = async ({ cwd, token }: PullOptions) => {
     exclude: config.exclude || []
   });
 
-  logInfo(chalk.bold(`Compiling to Paperclip code 💾`));
+  logInfo(chalk.bold(`Writing files 💾`));
 
   // 3. write files
   writeFiles(files, cwd, config.outputDir);
