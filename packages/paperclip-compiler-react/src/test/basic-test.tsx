@@ -508,6 +508,40 @@ describe(__filename + "#", () => {
       {
         Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-pc-pub-98523c41="true" class="_80f4925f_a _pub-80f4925f_a _pub-98523c41_a a _80f4925f_test _pub-80f4925f_test _pub-98523c41_test test"></div>`
       }
+    ],
+    [
+      "Can render an import within a block",
+      {
+        "/entry.pc": `
+          <import src="/module.pc" as="mod" />
+          <div export component as="Entry">
+            {<mod.Test />}
+            {a && <mod.Test />}
+            {!b? && <mod.Test />}
+          </div>
+        `,
+        "/module.pc": `
+          <div export component as="Test">Hello</div>
+        `,
+        "/a.pc": `
+          <style>
+            @export {
+              .test {
+                color: red;
+              }
+            }
+          </style>
+        `
+      },
+      {
+        Entry: {
+          a: true,
+          b: false
+        }
+      },
+      {
+        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><div data-pc-bf0b262="true" data-pc-139cec8e="true" data-pc-pub-139cec8e="true">Hello</div><div data-pc-bf0b262="true" data-pc-139cec8e="true" data-pc-pub-139cec8e="true">Hello</div><div data-pc-bf0b262="true" data-pc-139cec8e="true" data-pc-pub-139cec8e="true">Hello</div></div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {
