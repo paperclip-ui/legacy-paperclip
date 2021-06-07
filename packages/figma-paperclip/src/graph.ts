@@ -14,8 +14,10 @@ import {
   DesignFileImportKind,
   ExportSettings,
   flattenNodes,
+  FRAME_EXPORT_SETTINGS,
   getNodeById,
   getNodeExportFileName,
+  getNodeParent,
   isExported,
   NodeType
 } from "./state";
@@ -31,7 +33,7 @@ export const loadDependencies = async (
   // for TESTING only!
   const cacheFile = path.join(cwd, `${md5(JSON.stringify(fileKeys))}.cache`);
 
-  if (fsa.existsSync(cacheFile) && !process.env.NO_CACHE) {
+  if (fsa.existsSync(cacheFile) && !process.env.REFETCH) {
     graph = JSON.parse(fsa.readFileSync(cacheFile, "utf-8"));
   } else {
     // load all
@@ -39,7 +41,7 @@ export const loadDependencies = async (
       await loadDesignFile(fileKey, cwd, api, graph);
     }
 
-    if (process.env.CACHE_GRAPH) {
+    if (process.env.CACHE) {
       fsa.writeFileSync(cacheFile, JSON.stringify(graph, null, 2));
     }
   }
@@ -83,6 +85,7 @@ const loadDesignFile = async (
   const fonts = await loadFonts(dep, graph);
   Object.assign(imports, fonts);
 
+  await loadFramePreviews(dep, graph, api);
   await loadMedia(dep, graph, api);
 
   const foreignComponentIds = Object.keys(file.components).filter(importId => {
@@ -110,7 +113,7 @@ const loadDesignFile = async (
             return;
           }
 
-          throw e;
+          return;
         }
 
         if (componentInfo.meta.file_key === fileKey) {
@@ -261,6 +264,7 @@ const loadMedia = async (
     Object.keys(nodeIdsByExport).map(key =>
       limit(async () => {
         const { settings, nodes } = nodeIdsByExport[key];
+
         const result = await api.getImage(dep.fileKey, {
           ids: Object.keys(nodes).join(","),
           format: settings.format.toLowerCase() as any,
@@ -294,6 +298,44 @@ const loadMedia = async (
       })
     )
   );
+};
+
+const loadFramePreviews = async (
+  dep: DesignDependency,
+  graph: DependencyGraph,
+  api: FigmaApi
+) => {
+  const frames = [];
+  logVerb(`Loading previews for ${chalk.bold(dep.name)}`);
+  for (const canvas of dep.document.children) {
+    if (canvas.type === NodeType.Canvas) {
+      for (const frame of canvas.children) {
+        frames.push(frame);
+      }
+    }
+  }
+
+  const result = await api.getImage(dep.fileKey, {
+    ids: frames.map(frame => frame.id).join(","),
+    format: FRAME_EXPORT_SETTINGS.format.toLowerCase() as any,
+    scale: FRAME_EXPORT_SETTINGS.constraint.value
+  });
+
+  for (const nodeId in result.images) {
+    graph[nodeId] = {
+      nodeId,
+      settings: FRAME_EXPORT_SETTINGS,
+      fileKey: getNodeExportFileName(
+        frames.find(frame => frame.id === nodeId),
+        dep.document,
+        FRAME_EXPORT_SETTINGS
+      ),
+      kind: DependencyKind.Media,
+      url: result.images[nodeId]
+    };
+  }
+
+  return frames;
 };
 
 const getFontKey = font => kebabCase(font);

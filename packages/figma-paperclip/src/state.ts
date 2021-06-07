@@ -191,6 +191,15 @@ export type ExportSettings = {
   constraint: Constraint;
 };
 
+export const FRAME_EXPORT_SETTINGS: ExportSettings = {
+  suffix: null,
+  format: "png",
+  constraint: {
+    type: "SCALE",
+    value: 1
+  }
+};
+
 export enum FillType {
   SOLID = "SOLID",
   GRADIENT_LINEAR = "GRADIENT_LINEAR",

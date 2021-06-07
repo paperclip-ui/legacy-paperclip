@@ -10,9 +10,16 @@ import { addBuffer, endBlock, startBlock, TranslateContext2 } from "./context";
 export const getFontFile = (dep: FontDependency) =>
   `typography/${dep.fileKey}.pc`;
 export const getDesignPageFile = (page: any, dep: DesignDependency) =>
-  `designs/${kebabCase(dep.name)}/pages/${kebabCase(page.name)}.pc`;
+  `designs/${kebabCase(cleanLabel(dep.name))}/pages/${kebabCase(
+    cleanLabel(page.name)
+  )}.pc`;
 export const getDesignModulesFile = (dep: DesignDependency) =>
-  `designs/${kebabCase(dep.name)}/index.pc`;
+  `designs/${kebabCase(cleanLabel(dep.name))}/index.pc`;
+
+const cleanLabel = (name: string) => {
+  // remove emojis
+  return name.replace(/[^a-zA-Z0-9\-\_\s]/g, "");
+};
 export const getLayerMediaPath = (
   node,
   dep: DesignDependency,

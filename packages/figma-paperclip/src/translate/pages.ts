@@ -194,7 +194,8 @@ const writeTextLayer = (layer: any, context: TranslateContext2) => {
     { tagName: "span" },
     context => {
       context = writeLayerStyle(layer, context);
-      context = addBuffer(layer.characters + "\n", context);
+
+      context = addBuffer(encodeURIComponent(layer.characters) + "\n", context);
       return context;
     },
     context

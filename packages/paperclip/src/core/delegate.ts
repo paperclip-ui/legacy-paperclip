@@ -111,6 +111,7 @@ export class EngineDelegate {
         data: this._rendered[event.uri]
       });
     } else if (event.kind === EngineDelegateEventKind.Diffed) {
+      // console.log("EV", event.uri, event.kind, event.data);
       const existingData = this._rendered[event.uri];
       this._rendered = updateAllLoadedData(this._rendered, event);
       const newData = this._rendered[event.uri];
@@ -188,9 +189,11 @@ export class EngineDelegate {
   updateVirtualFileContent(uri: string, content: string) {
     this._documents[uri] = content;
     return this._tryCatch(() => {
+      const now = Date.now();
       const ret = mapResult(
         this._native.update_virtual_file_content(uri, content)
       );
+      console.log(`updateVirtualFileContent MS: ${Date.now() - now}`);
       return ret;
     });
   }

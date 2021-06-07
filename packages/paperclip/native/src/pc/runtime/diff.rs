@@ -78,6 +78,8 @@ fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
     return;
   }
 
+  // TODO: this is _expensive_ and eventually we want to replace this
+  // with an engine.inspect(virtualNodePath) which returns the location of it
   if a.source != b.source {
     context.mutations.push(Mutation::new(
       context.node_path.clone(),
