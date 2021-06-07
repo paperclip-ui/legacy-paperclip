@@ -34,6 +34,7 @@ import {
   isStyleMixin,
   isStyleVar,
   writeElementBlock,
+  writeStyleBlock,
   writeStyleDeclarations
 } from "./utils";
 import { getAtoms } from "./modules";
@@ -65,8 +66,33 @@ const writePage = (
     return context;
   }
   context = writePageImports(dep, context);
+  context = writeGenericStyles(context);
   context = writePageFrames(page, context);
   context = addFile(context);
+  return context;
+};
+
+const writeGenericStyles = (context: TranslateContext2) => {
+  // style reset to make sure guides look good
+  context = writeElementBlock(
+    { tagName: "style" },
+    context => {
+      context = writeStyleBlock(
+        "h1, h2, h3, h4",
+        context => {
+          return writeStyleDeclarations(
+            {
+              fontFamily: `sans-serif`
+            },
+            context
+          );
+        },
+        context
+      );
+      return context;
+    },
+    context
+  );
   return context;
 };
 
@@ -84,6 +110,28 @@ const writePageFrame = (frame: any, context: TranslateContext2) => {
 };
 
 const writeFrameSummary = (frame: any, context: TranslateContext2) => {
+  return writeFrameSummaryOuter(frame, context);
+};
+
+const writeFrameSummaryOuter = (frame: any, context: TranslateContext2) => {
+  return writeElementBlock(
+    { tagName: "div" },
+    context => {
+      return writeFrameSummaryInner(frame, context);
+    },
+    context
+  );
+};
+
+const writeFrameSummaryInner = (frame: any, context: TranslateContext2) => {
+  context = writeFramePreview(frame, context);
+  context = writeFrameColors(frame, context);
+  context = writeFrameTypography(frame, context);
+  context = writeFrameShadows(frame, context);
+  return context;
+};
+
+const writeFramePreview = (frame: any, context: TranslateContext2) => {
   const framePreviewAssetPath = getLayerMediaPath(
     frame,
     context.graph[context.currentFileKey] as DesignDependency,
@@ -115,6 +163,46 @@ const writeFrameSummary = (frame: any, context: TranslateContext2) => {
     context
   );
 
+  return context;
+};
+
+const writeFrameColors = (frame: any, context: TranslateContext2) => {
+  return writeInfoSection(
+    `Colors`,
+    context => {
+      return context;
+    },
+    context
+  );
+};
+
+const writeFrameTypography = (frame: any, context: TranslateContext2) => {
+  return writeInfoSection(
+    `Typography`,
+    context => {
+      return context;
+    },
+    context
+  );
+};
+
+const writeFrameShadows = (frame: any, context: TranslateContext2) => {
+  return writeInfoSection(
+    `Shadows`,
+    context => {
+      return context;
+    },
+    context
+  );
+};
+
+const writeInfoSection = (
+  label: string,
+  write: (context: TranslateContext2) => TranslateContext2,
+  context: TranslateContext2
+) => {
+  context = addBuffer(`<h1>${label}</h1>\n`, context);
+  context = write(context);
   return context;
 };
 

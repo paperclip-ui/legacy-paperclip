@@ -90,6 +90,19 @@ export const writeStyleDeclarations = (
   return context;
 };
 
+export const writeStyleBlock = (
+  selector: string,
+  writeBody: (context: TranslateContext2) => TranslateContext2,
+  context: TranslateContext2
+) => {
+  context = addBuffer(`${selector} {\n`, context);
+  context = startBlock(context);
+  context = writeBody(context);
+  context = endBlock(context);
+  context = addBuffer(`}\n`, context);
+  return context;
+};
+
 export const getStyleVarName = ({ name }) => {
   return `--${kebabCase(name)}`;
 };

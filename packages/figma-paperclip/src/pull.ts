@@ -101,7 +101,7 @@ const downloadFile = async (
   const relativePath = chalk.bold(absoluePath.replace(cwd + "/", ""));
 
   return limit(() => {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       logVerb(`Download ${url} -> ${relativePath}`);
       https.get(url, response => {
         if (response.statusCode !== 200) {
@@ -111,6 +111,10 @@ const downloadFile = async (
 
         response.pipe(fsa.createWriteStream(absoluePath));
         response.on("close", () => resolve(null));
+        response.on("error", () => {
+          logError(`Unable to download ${url}`);
+          return reject();
+        });
       });
     });
   });

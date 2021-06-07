@@ -3,7 +3,7 @@ import * as chalk from "chalk";
 import * as path from "path";
 import { FigmaApi } from "./api";
 import * as fsa from "fs-extra";
-import { findLayer, httpGet, logVerb, logWarn, md5 } from "./utils";
+import { findLayer, httpGet, logError, logVerb, logWarn, md5 } from "./utils";
 import * as https from "https";
 import {
   DependencyGraph,
@@ -50,7 +50,7 @@ export const loadDependencies = async (
       await loadDesignFile(fileKey, api, options, graph);
     }
 
-    if (process.env.CACHE) {
+    if (process.env.CACHE || process.env.REFETCH) {
       fsa.writeFileSync(cacheFile, JSON.stringify(graph, null, 2));
     }
   }
@@ -297,7 +297,7 @@ const loadImages = async (
 
     if (!url) {
       const node = getNodeById(nodeId, dep.document);
-      logWarn(
+      logError(
         `Could not fetch asset for ${chalk.bold(
           dep.document.name
         )} / ${chalk.bold(node.name)}`

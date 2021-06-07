@@ -24,6 +24,7 @@ import {
   isStyleMixin,
   isStyleVar,
   writeElementBlock,
+  writeStyleBlock,
   writeStyleDeclaration,
   writeStyleDeclarations
 } from "./utils";
@@ -131,19 +132,6 @@ export const getAtoms = memoize(
     return { vars, mixins };
   }
 );
-
-const writeStyleBlock = (
-  selector: string,
-  writeBody: (context: TranslateContext2) => TranslateContext2,
-  context: TranslateContext2
-) => {
-  context = addBuffer(`${selector} {\n`, context);
-  context = startBlock(context);
-  context = writeBody(context);
-  context = endBlock(context);
-  context = addBuffer(`}\n`, context);
-  return context;
-};
 
 const getGlobalMixinModelLayer = (
   mixinId: string,
