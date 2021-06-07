@@ -264,40 +264,49 @@ const loadMedia = async (
     Object.keys(nodeIdsByExport).map(key =>
       limit(async () => {
         const { settings, nodes } = nodeIdsByExport[key];
-
-        const result = await api.getImage(dep.fileKey, {
-          ids: Object.keys(nodes).join(","),
-          format: settings.format.toLowerCase() as any,
-          scale: settings.constraint.value
-        });
-
-        for (const nodeId in result.images) {
-          const url = result.images[nodeId];
-
-          if (!url) {
-            const node = getNodeById(nodeId, dep.document);
-            logWarn(
-              `Could not fetch asset for ${chalk.bold(
-                dep.document.name
-              )} / ${chalk.bold(node.name)}`
-            );
-            continue;
-          }
-          graph[nodeId] = {
-            nodeId,
-            settings,
-            fileKey: getNodeExportFileName(
-              nodes[nodeId] as any,
-              dep.document,
-              settings
-            ),
-            kind: DependencyKind.Media,
-            url: result.images[nodeId]
-          };
-        }
+        loadImages(nodes, settings, graph, dep, api);
       })
     )
   );
+};
+
+const loadImages = async (
+  nodes,
+  settings: ExportSettings,
+  graph: DependencyGraph,
+  dep: DesignDependency,
+  api: FigmaApi
+) => {
+  const result = await api.getImage(dep.fileKey, {
+    ids: Object.keys(nodes).join(","),
+    format: settings.format.toLowerCase() as any,
+    scale: settings.constraint.value
+  });
+
+  for (const nodeId in result.images) {
+    const url = result.images[nodeId];
+
+    if (!url) {
+      const node = getNodeById(nodeId, dep.document);
+      logWarn(
+        `Could not fetch asset for ${chalk.bold(
+          dep.document.name
+        )} / ${chalk.bold(node.name)}`
+      );
+      continue;
+    }
+    graph[nodeId] = {
+      nodeId,
+      settings,
+      fileKey: getNodeExportFileName(
+        nodes[nodeId] as any,
+        dep.document,
+        settings
+      ),
+      kind: DependencyKind.Media,
+      url: result.images[nodeId]
+    };
+  }
 };
 
 const loadFramePreviews = async (
@@ -305,37 +314,17 @@ const loadFramePreviews = async (
   graph: DependencyGraph,
   api: FigmaApi
 ) => {
-  const frames = [];
+  const frames = {};
   logVerb(`Loading previews for ${chalk.bold(dep.name)}`);
   for (const canvas of dep.document.children) {
     if (canvas.type === NodeType.Canvas) {
       for (const frame of canvas.children) {
-        frames.push(frame);
+        frames[frame.id] = frame;
       }
     }
   }
 
-  const result = await api.getImage(dep.fileKey, {
-    ids: frames.map(frame => frame.id).join(","),
-    format: FRAME_EXPORT_SETTINGS.format.toLowerCase() as any,
-    scale: FRAME_EXPORT_SETTINGS.constraint.value
-  });
-
-  for (const nodeId in result.images) {
-    graph[nodeId] = {
-      nodeId,
-      settings: FRAME_EXPORT_SETTINGS,
-      fileKey: getNodeExportFileName(
-        frames.find(frame => frame.id === nodeId),
-        dep.document,
-        FRAME_EXPORT_SETTINGS
-      ),
-      kind: DependencyKind.Media,
-      url: result.images[nodeId]
-    };
-  }
-
-  return frames;
+  loadImages(frames, FRAME_EXPORT_SETTINGS, graph, dep, api);
 };
 
 const getFontKey = font => kebabCase(font);

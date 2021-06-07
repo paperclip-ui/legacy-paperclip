@@ -97,14 +97,17 @@ const downloadFile = async (
   const relativePath = chalk.bold(absoluePath.replace(cwd + "/", ""));
 
   return limit(() => {
-    logVerb(`Download ${url} -> ${relativePath}`);
-    https.get(url, response => {
-      if (response.statusCode !== 200) {
-        logWarn(`Could not download asset ${chalk.bold(relativePath)}`);
-        return;
-      }
+    return new Promise(resolve => {
+      logVerb(`Download ${url} -> ${relativePath}`);
+      https.get(url, response => {
+        if (response.statusCode !== 200) {
+          logWarn(`Could not download asset ${chalk.bold(relativePath)}`);
+          return;
+        }
 
-      response.pipe(fsa.createWriteStream(absoluePath));
+        response.pipe(fsa.createWriteStream(absoluePath));
+        response.on("close", () => resolve(null));
+      });
     });
   });
 };
