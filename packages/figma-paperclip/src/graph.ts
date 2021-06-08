@@ -25,7 +25,7 @@ import {
 } from "./state";
 import { kebabCase, uniq } from "lodash";
 
-const LOAD_CHUNK_SIZE = 5;
+const LOAD_CHUNK_SIZE = 50;
 
 type LoadDependenciesOptions = {
   exclude: ExcludeRule[];
@@ -291,9 +291,12 @@ const loadImages = async (
 ) => {
   const nodeIds = Object.keys(nodes);
 
+  // Need to chunk these assets, otherwise we may hug Figma to death.
+  // let prog = 0;
   for (let i = 0, { length } = nodeIds; i < length; i += LOAD_CHUNK_SIZE) {
     const chunkIds = nodeIds.slice(i, i + LOAD_CHUNK_SIZE);
-    console.log(chunkIds);
+    // prog += chunkIds.length;
+    // console.log((prog / length) * 100);
     try {
       const result = await api.getImage(dep.fileKey, {
         ids: chunkIds.join(","),
@@ -327,7 +330,7 @@ const loadImages = async (
       }
     } catch (e) {
       logError(`Can't fetch assets: ${chunkIds.join(", ")}`);
-      console.warn(e);
+      logError(JSON.stringify(e));
     }
   }
 };

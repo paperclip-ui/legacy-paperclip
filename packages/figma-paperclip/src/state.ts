@@ -600,6 +600,21 @@ export const getOwnerInstance = (node: Node, document: Document) => {
   return null;
 };
 
+export const getMixin = memoize(
+  (mixinId: string, dep: DesignDependency, graph: DependencyGraph) => {
+    let mixin;
+    const imp = dep.imports[mixinId] as DesignFileDesignImport;
+
+    if (imp) {
+      mixin = (graph[imp.fileKey] as DesignDependency).styles[imp.nodeId];
+    } else {
+      mixin = dep.styles[mixinId];
+    }
+
+    return mixin;
+  }
+);
+
 export const getInstanceComponent = (
   node: any,
   fileKey: string,

@@ -6,8 +6,10 @@ import {
   DependencyKind,
   DesignDependency,
   extractMixedInStyles,
+  flattenNodes,
   FRAME_EXPORT_SETTINGS,
   getInstanceComponent,
+  getMixin,
   getNodeDependency,
   getNodeExportFileName,
   getNodeFrame,
@@ -31,6 +33,7 @@ import {
   getFontFile,
   getLayerMediaPath,
   getStyleName,
+  getStyleVarName,
   isStyleMixin,
   isStyleVar,
   writeElementBlock,
@@ -38,6 +41,7 @@ import {
   writeStyleDeclarations
 } from "./utils";
 import { getAtoms } from "./modules";
+import { memoize } from "../memo";
 
 export const writeDesignPages = (
   dep: DesignDependency,
@@ -67,6 +71,7 @@ const writePage = (
   }
   context = writePageImports(dep, context);
   context = writeGenericStyles(context);
+  context = writeGenericComponents(context);
   context = writePageFrames(page, context);
   context = addFile(context);
   return context;
@@ -78,7 +83,7 @@ const writeGenericStyles = (context: TranslateContext2) => {
     { tagName: "style" },
     context => {
       context = writeStyleBlock(
-        "h1, h2, h3, h4",
+        "*",
         context => {
           return writeStyleDeclarations(
             {
@@ -89,10 +94,57 @@ const writeGenericStyles = (context: TranslateContext2) => {
         },
         context
       );
+      context = writeStyleBlock(
+        ".color-blocks",
+        context => {
+          context = writeStyleDeclarations(
+            {
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gridColumnGap: px(16),
+              gridRowGap: px(16)
+            },
+            context
+          );
+          return context;
+        },
+        context
+      );
+      context = writeStyleBlock(
+        ".color-block",
+        context => {
+          context = writeStyleDeclarations(
+            {
+              padding: px(20)
+            },
+            context
+          );
+          context = writeStyleBlock(
+            "span",
+            context => {
+              context = writeStyleDeclarations(
+                {
+                  filter: "invert(90%)"
+                },
+                context
+              );
+              return context;
+            },
+            context
+          );
+          return context;
+        },
+        context
+      );
       return context;
     },
     context
   );
+  return context;
+};
+
+const writeGenericComponents = (context: TranslateContext2) => {
   return context;
 };
 
@@ -125,6 +177,7 @@ const writeFrameSummaryOuter = (frame: any, context: TranslateContext2) => {
 
 const writeFrameSummaryInner = (frame: any, context: TranslateContext2) => {
   context = writeFramePreview(frame, context);
+  context = writeFrameInstances(frame, context);
   context = writeFrameColors(frame, context);
   context = writeFrameTypography(frame, context);
   context = writeFrameShadows(frame, context);
@@ -166,14 +219,82 @@ const writeFramePreview = (frame: any, context: TranslateContext2) => {
   return context;
 };
 
-const writeFrameColors = (frame: any, context: TranslateContext2) => {
+const writeFrameInstances = (frame: any, context: TranslateContext2) => {
+  // TODO - render out actual instances of component so that person can go back to it
+  // in document.
   return writeInfoSection(
-    `Colors`,
+    `Component Instances`,
     context => {
       return context;
     },
     context
   );
+  return context;
+};
+
+const writeFrameColors = (frame: any, context: TranslateContext2) => {
+  const dep = context.graph[context.currentFileKey] as DesignDependency;
+  return writeInfoSection(
+    `Colors`,
+    context => {
+      const colors = getFrameMixins(frame, "FILL", context);
+      context = writeColorBlocks(colors, context);
+      return context;
+    },
+    context
+  );
+};
+
+const writeColorBlocks = (colors: string[], context: TranslateContext2) => {
+  context = writeElementBlock(
+    { tagName: "div", attributes: `className="color-blocks"` },
+    context => {
+      for (const color of colors) {
+        context = writeColorBlock(`var(${color})`, context);
+      }
+      return context;
+    },
+    context
+  );
+  return context;
+};
+
+const writeColorBlock = (color: string, context: TranslateContext2) => {
+  context = writeElementBlock(
+    {
+      tagName: "div",
+      attributes: `className="color-block" style="background-color: ${color}"`
+    },
+    context => {
+      context = addBuffer(`<span>${color}</span>\n`, context);
+      return context;
+    },
+    context
+  );
+  return context;
+};
+
+const getFrameMixins = (
+  frame: any,
+  styleType: string,
+  context: TranslateContext2
+) => {
+  const dep = context.graph[context.currentFileKey] as DesignDependency;
+  const layersWithMixins = getLayersWithMixins(dep, context.graph) as any[];
+
+  const info = {};
+
+  for (const layer of layersWithMixins) {
+    for (const fillType in layer.styles) {
+      const mixinId = layer.styles[fillType];
+      const mixin = getMixin(mixinId, dep, context.graph);
+      if (mixin.styleType === styleType) {
+        info[getStyleVarName(mixin)] = 1;
+      }
+    }
+  }
+
+  return Object.keys(info);
 };
 
 const writeFrameTypography = (frame: any, context: TranslateContext2) => {
@@ -195,6 +316,14 @@ const writeFrameShadows = (frame: any, context: TranslateContext2) => {
     context
   );
 };
+
+const getLayersWithMixins = memoize(
+  (dep: DesignDependency, graph: DependencyGraph) => {
+    return flattenNodes(dep.document).filter(node =>
+      extractMixedInStyles(node)
+    );
+  }
+);
 
 const writeInfoSection = (
   label: string,
