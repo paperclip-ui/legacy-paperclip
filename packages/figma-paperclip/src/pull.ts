@@ -62,7 +62,9 @@ export const pull = async ({ cwd, token }: PullOptions) => {
   logInfo(chalk.bold(`Writing files 💾`));
 
   // 3. write files
-  writeFiles(files, cwd, config.outputDir);
+  await writeFiles(files, cwd, config.outputDir);
+  console.log("Done! 🎉");
+  process.exit();
 };
 
 const writeFiles = async (
@@ -71,7 +73,7 @@ const writeFiles = async (
   outputDir: string
 ) => {
   const promises = [];
-  const limit = plimit(10);
+  const limit = plimit(20);
 
   for (const file of files) {
     const absoluePath = path.join(cwd, outputDir, file.relativePath);
@@ -103,19 +105,33 @@ const downloadFile = async (
   return limit(() => {
     return new Promise((resolve, reject) => {
       logVerb(`Download ${url} -> ${relativePath}`);
-      https.get(url, response => {
-        if (response.statusCode !== 200) {
-          logWarn(`Could not download asset ${chalk.bold(relativePath)}`);
-          return;
-        }
 
-        response.pipe(fsa.createWriteStream(absoluePath));
-        response.on("close", () => resolve(null));
-        response.on("error", () => {
-          logError(`Unable to download ${url}`);
-          return reject();
-        });
-      });
+      const onError = () => {
+        logError(`Unable to download ${url}`);
+        ws.close();
+        reject();
+      };
+      const ws = fsa.createWriteStream(absoluePath);
+
+      try {
+        https
+          .get(url, response => {
+            if (response.statusCode !== 200) {
+              logWarn(`Could not download asset ${chalk.bold(relativePath)}`);
+              return reject();
+            }
+
+            ws.on("finish", function() {
+              resolve(null);
+            });
+
+            response.pipe(ws, { end: true });
+            response.on("error", onError);
+          })
+          .on("error", onError);
+      } catch (e) {
+        onError();
+      }
     });
   });
 };

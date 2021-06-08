@@ -20,9 +20,12 @@ import {
   getNodeExportFileName,
   getNodeParent,
   isExported,
-  NodeType
+  NodeType,
+  getUniqueNodeName
 } from "./state";
 import { kebabCase, uniq } from "lodash";
+
+const LOAD_CHUNK_SIZE = 5;
 
 type LoadDependenciesOptions = {
   exclude: ExcludeRule[];
@@ -273,7 +276,7 @@ const loadMedia = async (
     Object.keys(nodeIdsByExport).map(key =>
       limit(async () => {
         const { settings, nodes } = nodeIdsByExport[key];
-        loadImages(nodes, settings, graph, dep, api);
+        await loadImages(nodes, settings, graph, dep, api);
       })
     )
   );
@@ -286,35 +289,46 @@ const loadImages = async (
   dep: DesignDependency,
   api: FigmaApi
 ) => {
-  const result = await api.getImage(dep.fileKey, {
-    ids: Object.keys(nodes).join(","),
-    format: settings.format.toLowerCase() as any,
-    scale: settings.constraint.value
-  });
+  const nodeIds = Object.keys(nodes);
 
-  for (const nodeId in result.images) {
-    const url = result.images[nodeId];
+  for (let i = 0, { length } = nodeIds; i < length; i += LOAD_CHUNK_SIZE) {
+    const chunkIds = nodeIds.slice(i, i + LOAD_CHUNK_SIZE);
+    console.log(chunkIds);
+    try {
+      const result = await api.getImage(dep.fileKey, {
+        ids: chunkIds.join(","),
+        format: settings.format.toLowerCase() as any,
+        scale: settings.constraint.value
+      });
 
-    if (!url) {
-      const node = getNodeById(nodeId, dep.document);
-      logError(
-        `Could not fetch asset for ${chalk.bold(
-          dep.document.name
-        )} / ${chalk.bold(node.name)}`
-      );
-      continue;
+      for (const nodeId in result.images) {
+        const url = result.images[nodeId];
+
+        if (!url) {
+          const node = getNodeById(nodeId, dep.document);
+          logError(
+            `Could not fetch asset for ${chalk.bold(
+              dep.document.name
+            )} / ${chalk.bold(node.name)}`
+          );
+          continue;
+        }
+        graph[nodeId] = {
+          nodeId,
+          settings,
+          fileKey: getNodeExportFileName(
+            nodes[nodeId] as any,
+            dep.document,
+            settings
+          ),
+          kind: DependencyKind.Media,
+          url: result.images[nodeId]
+        };
+      }
+    } catch (e) {
+      logError(`Can't fetch assets: ${chunkIds.join(", ")}`);
+      console.warn(e);
     }
-    graph[nodeId] = {
-      nodeId,
-      settings,
-      fileKey: getNodeExportFileName(
-        nodes[nodeId] as any,
-        dep.document,
-        settings
-      ),
-      kind: DependencyKind.Media,
-      url: result.images[nodeId]
-    };
   }
 };
 
@@ -329,11 +343,16 @@ const loadFramePreviews = async (
     if (canvas.type === NodeType.Canvas) {
       for (const frame of canvas.children) {
         frames[frame.id] = frame;
+        console.log(
+          getNodeExportFileName(frame, dep.document, FRAME_EXPORT_SETTINGS)
+        );
       }
+    } else {
+      console.log("WHAA?");
     }
   }
 
-  loadImages(frames, FRAME_EXPORT_SETTINGS, graph, dep, api);
+  await loadImages(frames, FRAME_EXPORT_SETTINGS, graph, dep, api);
 };
 
 const getFontKey = font => kebabCase(font);
