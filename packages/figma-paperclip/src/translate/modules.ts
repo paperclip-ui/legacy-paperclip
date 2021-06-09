@@ -19,7 +19,9 @@ import {
 } from "./context";
 import {
   getDesignModulesFile,
+  getMixinValue,
   getStyleMixinName,
+  getMixinName,
   getStyleVarName,
   isStyleMixin,
   isStyleVar,
@@ -121,11 +123,13 @@ export const getAtoms = memoize(
         continue;
       }
 
-      if (isStyleMixin(mixin)) {
-        mixins[getStyleMixinName(mixin)] = style;
-      } else if (isStyleVar(mixin)) {
-        vars[getStyleVarName(mixin)] =
-          style.color || style.background || style.borderColor;
+      const name = getMixinName(mixin);
+      const value = getMixinValue(mixin, style);
+
+      if (isStyleVar(mixin)) {
+        vars[name] = value;
+      } else {
+        mixin[name] = value;
       }
     }
 

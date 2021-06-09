@@ -29,6 +29,14 @@ export const getDesignModulesFile = (dep: DesignDependency) => {
   return `designs/${name}/index.pc`;
 };
 
+export const getMixinValue = (mixin: any, style: any) => {
+  if (isStyleMixin(mixin)) {
+    return style;
+  } else if (isStyleVar(mixin)) {
+    return style.color || style.background || style.borderColor;
+  }
+};
+
 const getColorContrast = hexcolor => {
   // If a leading # is provided, remove it
   if (hexcolor.slice(0, 1) === "#") {
@@ -143,7 +151,7 @@ export const getStyleMixinName = ({ name }) => {
   return varName;
 };
 
-export const getStyleName = (style: any) => {
+export const getMixinName = (style: any) => {
   return isStyleVar(style) ? getStyleVarName(style) : getStyleMixinName(style);
 };
 

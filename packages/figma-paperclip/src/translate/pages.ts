@@ -1,6 +1,7 @@
 import { camelCase, omit } from "lodash";
 import * as path from "path";
 import * as chalk from "chalk";
+import * as tc from "tinycolor2";
 import {
   DependencyGraph,
   DependencyKind,
@@ -32,7 +33,8 @@ import {
   getDesignPageFile,
   getFontFile,
   getLayerMediaPath,
-  getStyleName,
+  getMixinName,
+  getMixinValue,
   getStyleVarName,
   isStyleMixin,
   isStyleVar,
@@ -116,20 +118,8 @@ const writeGenericStyles = (context: TranslateContext2) => {
         context => {
           context = writeStyleDeclarations(
             {
-              padding: px(20)
-            },
-            context
-          );
-          context = writeStyleBlock(
-            "span",
-            context => {
-              context = writeStyleDeclarations(
-                {
-                  filter: "invert(90%)"
-                },
-                context
-              );
-              return context;
+              padding: px(20),
+              fontWeight: 500
             },
             context
           );
@@ -177,10 +167,7 @@ const writeFrameSummaryOuter = (frame: any, context: TranslateContext2) => {
 
 const writeFrameSummaryInner = (frame: any, context: TranslateContext2) => {
   context = writeFramePreview(frame, context);
-  context = writeFrameInstances(frame, context);
-  context = writeFrameColors(frame, context);
-  context = writeFrameTypography(frame, context);
-  context = writeFrameShadows(frame, context);
+  context = writeFrameAtomInfo(frame, context);
   return context;
 };
 
@@ -219,12 +206,32 @@ const writeFramePreview = (frame: any, context: TranslateContext2) => {
   return context;
 };
 
-const writeFrameInstances = (frame: any, context: TranslateContext2) => {
-  // TODO - render out actual instances of component so that person can go back to it
-  // in document.
-  return writeInfoSection(
+const writeFrameAtomInfo = (frame: any, context: TranslateContext2) => {
+  const colors = getFrameMixins(frame, "FILL", context);
+  const typography = getFrameMixins(frame, "TEXT", context);
+  context = writeInfoSection(
     `Component Instances`,
     context => {
+      return context;
+    },
+    context
+  );
+
+  if (Object.keys(colors).length) {
+    context = writeInfoSection(
+      `Colors`,
+      context => {
+        context = writeColorBlocks(colors, context);
+        return context;
+      },
+      context
+    );
+  }
+
+  writeInfoSection(
+    `Typography`,
+    context => {
+      context = writeColorBlocks(colors, context);
       return context;
     },
     context
@@ -232,25 +239,15 @@ const writeFrameInstances = (frame: any, context: TranslateContext2) => {
   return context;
 };
 
-const writeFrameColors = (frame: any, context: TranslateContext2) => {
-  const dep = context.graph[context.currentFileKey] as DesignDependency;
-  return writeInfoSection(
-    `Colors`,
-    context => {
-      const colors = getFrameMixins(frame, "FILL", context);
-      context = writeColorBlocks(colors, context);
-      return context;
-    },
-    context
-  );
-};
-
-const writeColorBlocks = (colors: string[], context: TranslateContext2) => {
+const writeColorBlocks = (
+  colors: Record<string, string>,
+  context: TranslateContext2
+) => {
   context = writeElementBlock(
     { tagName: "div", attributes: `className="color-blocks"` },
     context => {
-      for (const color of colors) {
-        context = writeColorBlock(`var(${color})`, context);
+      for (const name in colors) {
+        context = writeColorBlock(name, colors[name], context);
       }
       return context;
     },
@@ -259,14 +256,20 @@ const writeColorBlocks = (colors: string[], context: TranslateContext2) => {
   return context;
 };
 
-const writeColorBlock = (color: string, context: TranslateContext2) => {
+const writeColorBlock = (
+  name: string,
+  value: string,
+  context: TranslateContext2
+) => {
+  const color = tc(value);
+  const contrastedColor = color.isDark() ? "white" : "black";
   context = writeElementBlock(
     {
       tagName: "div",
-      attributes: `className="color-block" style="background-color: ${color}"`
+      attributes: `className="color-block" style="background-color: var(${name}); color: ${contrastedColor}"`
     },
     context => {
-      context = addBuffer(`<span>${color}</span>\n`, context);
+      context = addBuffer(`var(${name})\n`, context);
       return context;
     },
     context
@@ -280,50 +283,42 @@ const getFrameMixins = (
   context: TranslateContext2
 ) => {
   const dep = context.graph[context.currentFileKey] as DesignDependency;
-  const layersWithMixins = getLayersWithMixins(dep, context.graph) as any[];
+  const layersWithMixins = getLayersWithMixins(frame) as any[];
 
   const info = {};
 
   for (const layer of layersWithMixins) {
-    for (const fillType in layer.styles) {
-      const mixinId = layer.styles[fillType];
+    const mixedInStyled = extractMixedInStyles(layer);
+    for (const mixinId in mixedInStyled) {
       const mixin = getMixin(mixinId, dep, context.graph);
       if (mixin.styleType === styleType) {
-        info[getStyleVarName(mixin)] = 1;
+        info[getMixinName(mixin)] = getMixinValue(
+          mixin,
+          mixedInStyled[mixinId]
+        );
       }
     }
   }
 
-  return Object.keys(info);
+  return info;
 };
 
-const writeFrameTypography = (frame: any, context: TranslateContext2) => {
-  return writeInfoSection(
-    `Typography`,
-    context => {
-      return context;
-    },
-    context
-  );
-};
-
-const writeFrameShadows = (frame: any, context: TranslateContext2) => {
-  return writeInfoSection(
-    `Shadows`,
-    context => {
-      return context;
-    },
-    context
-  );
-};
-
-const getLayersWithMixins = memoize(
-  (dep: DesignDependency, graph: DependencyGraph) => {
-    return flattenNodes(dep.document).filter(node =>
-      extractMixedInStyles(node)
-    );
-  }
-);
+const getLayersWithMixins = memoize((node: any) => {
+  const flattened = [];
+  const walk = (node: any) => {
+    if (/^(INSTANCE|ELLIPSE|LINE|BOOLEAN_OPERATION|VECTOR)$/.test(node.type)) {
+      return;
+    }
+    if (node.styles && Object.keys(node.styles).length) {
+      flattened.push(node);
+    }
+    if (node.children) {
+      node.children.forEach(walk);
+    }
+  };
+  walk(node);
+  return flattened;
+});
 
 const writeInfoSection = (
   label: string,
@@ -602,7 +597,7 @@ const addStyleMixins = (layer: any, style: any, context: TranslateContext2) => {
     const mixin = impDep.styles[mixinId];
     const mixedInStyle = mixedInStyles[refId];
     const atoms = getAtoms(impDep, context.graph);
-    const mixinName = getStyleName(mixin);
+    const mixinName = getMixinName(mixin);
 
     if (!atoms.mixins[mixinName] && !atoms.vars[mixinName]) {
       context = logContextWarn(
