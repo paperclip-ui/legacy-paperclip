@@ -211,6 +211,15 @@ export const FRAME_EXPORT_SETTINGS: ExportSettings = {
   }
 };
 
+export const DEFAULT_SHAPE_EXPORT_SETTINGS: ExportSettings = {
+  suffix: null,
+  format: "svg",
+  constraint: {
+    type: "SCALE",
+    value: 1
+  }
+};
+
 export enum FillType {
   SOLID = "SOLID",
   GRADIENT_LINEAR = "GRADIENT_LINEAR",
@@ -381,7 +390,15 @@ export const hasVectorProps = (node: Node): node is VectorLikeNode => {
 };
 
 export const isExported = (node: Node): node is Exportable => {
-  return node?.type !== NodeType.Document && node?.exportSettings?.length > 0;
+  return (
+    node?.type !== NodeType.Document &&
+    node?.exportSettings?.length > 0 &&
+    (node as any).visible !== false
+  );
+};
+
+export const shouldExport = (node: Node) => {
+  return isExported(node) || isVectorLike(node);
 };
 
 export const isVectorLike = (node: Node): node is VectorLikeNode => {
@@ -402,15 +419,15 @@ export const flattenNodes = memoize((node: Node): Node[] => {
 
 export const getNodeById = memoize(
   (nodeId: string, document: Document): Node => {
-    return getTreeNodeIdMap(document)[nodeId];
+    const d = Date.now();
+    const map = getTreeNodeIdMap(document);
+    return map[nodeId];
   }
 );
 
-export const containsNode = memoize(
-  (node: Node, document: Document): boolean => {
-    return flattenNodes(document).indexOf(node) !== -1;
-  }
-);
+export const containsNode = memoize((node: Node, parent: Node): boolean => {
+  return flattenNodes(parent).indexOf(node) !== -1;
+});
 
 export const getAllTextNodes = memoize((parent: Node): Text[] => {
   return flattenNodes(parent).filter(
@@ -424,14 +441,14 @@ export const hasChildren = (node: Node): node is Parent => {
 
 const getCleanedName = (name: string) => {
   // remove certain chars
-  let newName = camelCase(
+  let newName = kebabCase(
     name.replace(/[\\/\-\s]/g, "_").replace(/[^_\w\d]/g, "")
   );
   newName = exceedsMaxLabelName(newName)
     ? newName.substr(0, MAX_LABEL_NAME_LENGTH)
     : newName;
 
-  return camelCase(newName);
+  return kebabCase(newName);
 };
 const exceedsMaxLabelName = (name: string) =>
   name.length > MAX_LABEL_NAME_LENGTH;
@@ -446,9 +463,9 @@ export const getNodeExportFileName = (
   }
 
   // want to include document name to make sure that there's no clashing between assets
-  return `${kebabCase(
-    cleanLabel(document.name) + "-" + getUniqueNodeName(node, document)
-  )}@${settings.constraint.value}.${settings.format.toLowerCase()}`;
+  return `${getUniqueNodeName(node, document)}@${
+    settings.constraint.value
+  }.${settings.format.toLowerCase()}`;
 };
 
 export const getOriginalNode = (nodeId: string, document: Document) => {
@@ -468,84 +485,13 @@ const flattenComponentNodes = memoize((document: Document) => {
   }
   return allChildren;
 });
-
-const getNodeName = memoize((node: Node, document: Document) => {
-  let prefix = "";
-  const ownerComponent = getOwnerComponent(node, document);
-
-  if (ownerComponent) {
-    prefix = getUniqueNodeName(ownerComponent, document) + "_";
-  }
-
-  const nodeName = getCleanedName(node.name);
-
-  // don't allow numbers in node names
-  prefix += !node.name || isNaN(Number(nodeName.charAt(0))) ? "" : "_";
-
-  return prefix + nodeName;
-});
-
 //
-export const getUniqueNodeName = memoize((node: Node, document: Document) => {
-  // let nodesThatShareName;
-  let nodeName = getNodeName(node, document);
-
-  let nodesThatShareName = [];
-
-  if (node.type === NodeType.Component) {
-    nodesThatShareName = getAllComponents(document).filter(node => {
-      return getNodeName(node, document) === nodeName;
-    });
-  } else {
-    nodesThatShareName = flattenNodes(document).filter(child => {
-      return (
-        child.type !== NodeType.Document &&
-        nodeName === getNodeName(child, document)
-      );
-    });
-  }
-
-  return nodeName + nodesThatShareName.indexOf(node);
-
-  // while (1) {
-  //   if (node.type === NodeType.Component) {
-  //     nodesThatShareName = flattenComponentNodes(document)
-  //       .filter(component => {
-  //         return getCleanedName(component.name) === nodeName;
-  //       })
-  //       .sort((a, b) => {
-  //         if (a.type == NodeType.Component) return -1;
-  //         if (b.type == NodeType.Component) return 1;
-  //         return 0;
-  //       });
-  //   } else {
-  //     nodesThatShareName = flattenComponentNodes(document)
-  //       .filter(child => {
-  //         return nodeName === getNodeName(child, document);
-  //       })
-  //       .sort((a, b) => {
-  //         if (a.type == NodeType.Component) return -1;
-  //         if (b.type == NodeType.Component) return 1;
-  //         return 0;
-  //       });
-  //   }
-
-  //   if (nodesThatShareName.length < 2 || nodesThatShareName[0] == node) {
-  //     break;
-  //   }
-
-  //   nodeName += nodesThatShareName.indexOf(node) + 1;
-  // }
-
-  // const postfix =
-  //   nodesThatShareName.length > 1 && nodesThatShareName[0] !== node
-  //     ? "i" + nodesThatShareName.indexOf(node) + 1
-  //     : "";
-
-  // // nodeName += postfix;
-
-  return nodeName;
-});
+export const getUniqueNodeName = (node: Node, document: Document) => {
+  // Note that it's tempting to use a prettier name for assets, such as the _actual_ label, but we
+  // don't want to allow designers to accidentally change assets out from underneath us. Keeping the ID within the
+  // label itself is a bit more defensive.
+  return getCleanedName(node.name + "-" + node.id);
+};
 
 export const getNodePath = memoize((node: Node, root: Node) => {
   const childParentMap = getChildParentMap(root);
@@ -572,6 +518,15 @@ export const getNodeByPath = (path: number[], root: any) => {
     }
   }
   return curr;
+};
+
+export const getNodePage = (nodeId: string, document: Document) => {
+  for (const page of document.children) {
+    if (containsNode(getNodeById(nodeId, document), page)) {
+      return page;
+    }
+  }
+  return null;
 };
 
 export const getOwnerComponent = (node: Node, document: Document) => {

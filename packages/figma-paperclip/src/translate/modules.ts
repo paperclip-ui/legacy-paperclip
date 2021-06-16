@@ -98,6 +98,14 @@ const writeMixins = (
       },
       context
     );
+
+    context = writeStyleBlock(
+      `.${name}`,
+      context => {
+        return writeStyleDeclarations(mixins[name], context);
+      },
+      context
+    );
   }
   return context;
 };
@@ -129,7 +137,7 @@ export const getAtoms = memoize(
       if (isStyleVar(mixin)) {
         vars[name] = value;
       } else {
-        mixin[name] = value;
+        mixins[name] = value;
       }
     }
 

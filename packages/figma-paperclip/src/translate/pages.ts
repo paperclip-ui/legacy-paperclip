@@ -1,4 +1,4 @@
-import { camelCase, omit } from "lodash";
+import { camelCase, curry, omit } from "lodash";
 import * as path from "path";
 import * as chalk from "chalk";
 import * as tc from "tinycolor2";
@@ -9,13 +9,18 @@ import {
   extractMixedInStyles,
   flattenNodes,
   FRAME_EXPORT_SETTINGS,
+  DEFAULT_SHAPE_EXPORT_SETTINGS,
   getInstanceComponent,
   getMixin,
   getNodeDependency,
   getNodeExportFileName,
   getNodeFrame,
   getNodeParent,
-  isExported
+  isExported,
+  shouldExport,
+  DesignFileDesignImport,
+  getUniqueNodeName,
+  getNodeById
 } from "../state";
 import {
   addBuffer,
@@ -97,6 +102,45 @@ const writeGenericStyles = (context: TranslateContext2) => {
         context
       );
       context = writeStyleBlock(
+        "hr",
+        context => {
+          return writeStyleDeclarations(
+            {
+              opacity: 0.5
+            },
+            context
+          );
+        },
+        context
+      );
+      context = writeStyleBlock(
+        ".asset-info",
+        context => {
+          return writeStyleDeclarations(
+            {
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap"
+            },
+            context
+          );
+        },
+        context
+      );
+      context = writeStyleBlock(
+        ".frame-atom-info",
+        context => {
+          context = writeStyleDeclarations(
+            {
+              padding: "32px"
+            },
+            context
+          );
+          return context;
+        },
+        context
+      );
+      context = writeStyleBlock(
         ".color-blocks",
         context => {
           context = writeStyleDeclarations(
@@ -146,7 +190,6 @@ const writePageFrames = (page: any, context: TranslateContext2) => {
 };
 const writePageFrame = (frame: any, context: TranslateContext2) => {
   context = writeFrameComment(frame, context);
-  // context = writeLayer(frame, context);
   context = writeFrameSummary(frame, context);
   return context;
 };
@@ -207,11 +250,26 @@ const writeFramePreview = (frame: any, context: TranslateContext2) => {
 };
 
 const writeFrameAtomInfo = (frame: any, context: TranslateContext2) => {
+  return writeElementBlock(
+    { tagName: "div", attributes: `className="frame-atom-info"` },
+    context => {
+      return writeFrameAtomInfoInner(frame, context);
+    },
+    context
+  );
+};
+
+const writeFrameAtomInfoInner = (frame: any, context: TranslateContext2) => {
   const colors = getFrameMixins(frame, "FILL", context);
   const typography = getFrameMixins(frame, "TEXT", context);
+  const assets = getFrameAssets(
+    frame,
+    context.graph[context.currentFileKey] as DesignDependency
+  );
   context = writeInfoSection(
     `Component Instances`,
     context => {
+      context = writeInstancePreviews(frame, context);
       return context;
     },
     context
@@ -227,16 +285,125 @@ const writeFrameAtomInfo = (frame: any, context: TranslateContext2) => {
       context
     );
   }
+  if (Object.keys(typography).length) {
+    context = writeInfoSection(
+      `Typography`,
+      context => {
+        context = writeTypographyInfo(typography, context);
+        return context;
+      },
+      context
+    );
+  }
 
-  writeInfoSection(
-    `Typography`,
+  if (assets.length) {
+    context = writeInfoSection(
+      `Assets`,
+      context => {
+        context = writeAssetInfo(assets, context);
+        return context;
+      },
+      context
+    );
+  }
+
+  return context;
+};
+
+const writeInstancePreviews = (frame: any, context: TranslateContext2) => {
+  const dep = context.graph[context.currentFileKey] as DesignDependency;
+  const instances = flattenNodes(frame).filter(
+    layer => layer.type === "INSTANCE"
+  ) as any;
+
+  const used = {};
+
+  for (const instance of instances) {
+    context = writeInstancePreview(instance, dep, used, context);
+  }
+
+  return context;
+};
+
+const writeInstancePreview = (
+  instance: any,
+  dep: DesignDependency,
+  used: any,
+  context: TranslateContext2
+) => {
+  const imp = dep.imports[instance.componentId] as DesignFileDesignImport;
+
+  let impDep;
+  let component;
+
+  if (imp) {
+    impDep = context.graph[imp.fileKey] as DesignDependency;
+    component = getNodeById(imp.nodeId, impDep.document);
+  } else {
+    impDep = dep;
+    component = getNodeById(instance.componentId, dep.document);
+  }
+
+  if (!component || used[component.id]) {
+    // console.log("SKIP", instance.componentId, !!imp);
+    return context;
+  }
+
+  used[component.id] = 1;
+
+  const path = [];
+
+  if (impDep !== dep) {
+    path.push(getDependencyImportId(impDep));
+  }
+
+  path.push(camelCase(getUniqueNodeName(component, impDep)));
+
+  context = writeElementBlock(
+    { tagName: "div" },
     context => {
-      context = writeColorBlocks(colors, context);
+      context = addBuffer(
+        `<img src="${resolvePath(
+          getLayerMediaPath(component, impDep, FRAME_EXPORT_SETTINGS),
+          context
+        )}" />\n`,
+        context
+      );
       return context;
     },
     context
   );
+
   return context;
+};
+
+const getFrameAssets = (frame: any, dep: DesignDependency) => {
+  const exports = [];
+  const walk = (node: any) => {
+    if (node.type === "INSTANCE") {
+      return;
+    }
+
+    if (isExported(node)) {
+      exports.push(node);
+    }
+
+    if (node.children) {
+      for (const child of node.children) {
+        walk(child);
+      }
+    }
+  };
+
+  walk(frame);
+
+  return exports.map(exp =>
+    getLayerMediaPath(
+      exp,
+      dep,
+      isExported(exp) ? exp.exportSettings[0] : DEFAULT_SHAPE_EXPORT_SETTINGS
+    )
+  );
 };
 
 const writeColorBlocks = (
@@ -254,6 +421,44 @@ const writeColorBlocks = (
     context
   );
   return context;
+};
+
+const writeTypographyInfo = (
+  typography: Record<string, any>,
+  context: TranslateContext2
+) => {
+  for (const name in typography) {
+    context = addBuffer(`<div className="${name}">.${name}</div>\n`, context);
+  }
+  return context;
+};
+
+const writeAssetInfo = (assets: string[], context: TranslateContext2) => {
+  return writeElementBlock(
+    { tagName: "div", attributes: "asset-info" },
+    context => {
+      for (const asset of assets) {
+        context = writeAssetInfoItem(asset, context);
+      }
+      return context;
+    },
+    context
+  );
+};
+
+const writeAssetInfoItem = (asset: string, context: TranslateContext2) => {
+  return writeElementBlock(
+    { tagName: "div", attributes: "asset-info-item" },
+    context => {
+      context = addBuffer(
+        `<img src="${resolvePath(asset, context)}" />`,
+        context
+      );
+      context = addBuffer(`<label>${asset}</label>`, context);
+      return context;
+    },
+    context
+  );
 };
 
 const writeColorBlock = (
@@ -326,6 +531,7 @@ const writeInfoSection = (
   context: TranslateContext2
 ) => {
   context = addBuffer(`<h1>${label}</h1>\n`, context);
+  context = addBuffer(`<hr />\n`, context);
   context = write(context);
   return context;
 };

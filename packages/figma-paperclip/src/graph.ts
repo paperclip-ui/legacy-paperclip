@@ -21,11 +21,14 @@ import {
   getNodeParent,
   isExported,
   NodeType,
-  getUniqueNodeName
+  getUniqueNodeName,
+  shouldExport,
+  getNodePage
 } from "./state";
 import { kebabCase, uniq } from "lodash";
+import { DEFAULT_EXPORT_SETTINGS } from "./constants";
 
-const LOAD_CHUNK_SIZE = 50;
+const LOAD_CHUNK_SIZE = 100;
 
 type LoadDependenciesOptions = {
   exclude: ExcludeRule[];
@@ -231,8 +234,6 @@ const loadMedia = async (
   graph: DependencyGraph,
   api: FigmaApi
 ) => {
-  const allNodes = flattenNodes(dep.document);
-
   let nodeIdsByExport: Record<
     string,
     {
@@ -243,9 +244,25 @@ const loadMedia = async (
 
   let mediaCount = 0;
 
-  for (const child of allNodes) {
+  const walk = (node: any, each: any) => {
+    if (node.type === "INSTANCE") {
+      return;
+    }
+    each(node);
+    if (node.children) {
+      for (const child of node.children) {
+        walk(child, each);
+      }
+    }
+  };
+
+  walk(dep.document, child => {
     if (isExported(child)) {
-      for (const setting of child.exportSettings) {
+      const exportSettings = (child as any).exportSettings || [
+        DEFAULT_EXPORT_SETTINGS
+      ];
+
+      for (const setting of exportSettings) {
         if (setting.format === "PDF") {
           logWarn(`Cannot download PDF for layer: "${child.name}"`);
           continue;
@@ -262,7 +279,7 @@ const loadMedia = async (
         mediaCount++;
       }
     }
-  }
+  });
 
   if (mediaCount === 0) {
     return;
@@ -290,49 +307,62 @@ const loadImages = async (
   api: FigmaApi
 ) => {
   const nodeIds = Object.keys(nodes);
+  const limit = plimit(3);
 
   // Need to chunk these assets, otherwise we may hug Figma to death.
   // let prog = 0;
+  const promises = [];
+
   for (let i = 0, { length } = nodeIds; i < length; i += LOAD_CHUNK_SIZE) {
     const chunkIds = nodeIds.slice(i, i + LOAD_CHUNK_SIZE);
     // prog += chunkIds.length;
     // console.log((prog / length) * 100);
-    try {
-      const result = await api.getImage(dep.fileKey, {
-        ids: chunkIds.join(","),
-        format: settings.format.toLowerCase() as any,
-        scale: settings.constraint.value
-      });
+    promises.push(
+      limit(async () => {
+        try {
+          const result = await api.getImage(dep.fileKey, {
+            ids: chunkIds.join(","),
+            format: settings.format.toLowerCase() as any,
+            scale: settings.constraint.value
+          });
 
-      for (const nodeId in result.images) {
-        const url = result.images[nodeId];
+          for (const nodeId in result.images) {
+            const url = result.images[nodeId];
 
-        if (!url) {
-          const node = getNodeById(nodeId, dep.document);
-          logError(
-            `Could not fetch asset for ${chalk.bold(
-              dep.document.name
-            )} / ${chalk.bold(node.name)}`
-          );
-          continue;
+            if (!url) {
+              const node = getNodeById(nodeId, dep.document);
+              logError(
+                `Could not fetch asset for ${chalk.bold(
+                  String(dep.name) +
+                    " / " +
+                    getNodePage(nodeId, dep.document).name +
+                    " / " +
+                    node.name
+                )}`
+              );
+              continue;
+            }
+            graph[nodeId] = {
+              nodeId,
+              settings,
+              fileKey: getNodeExportFileName(
+                nodes[nodeId] as any,
+                dep.document,
+                settings
+              ),
+              kind: DependencyKind.Media,
+              url: result.images[nodeId]
+            };
+          }
+        } catch (e) {
+          logError(`Can't fetch assets: ${chunkIds.join(", ")}`);
+          logError(JSON.stringify(e));
         }
-        graph[nodeId] = {
-          nodeId,
-          settings,
-          fileKey: getNodeExportFileName(
-            nodes[nodeId] as any,
-            dep.document,
-            settings
-          ),
-          kind: DependencyKind.Media,
-          url: result.images[nodeId]
-        };
-      }
-    } catch (e) {
-      logError(`Can't fetch assets: ${chunkIds.join(", ")}`);
-      logError(JSON.stringify(e));
-    }
+      })
+    );
   }
+
+  await Promise.all(promises);
 };
 
 const loadFramePreviews = async (
@@ -345,13 +375,10 @@ const loadFramePreviews = async (
   for (const canvas of dep.document.children) {
     if (canvas.type === NodeType.Canvas) {
       for (const frame of canvas.children) {
-        frames[frame.id] = frame;
-        console.log(
-          getNodeExportFileName(frame, dep.document, FRAME_EXPORT_SETTINGS)
-        );
+        if ((frame as any).visible !== false) {
+          frames[frame.id] = frame;
+        }
       }
-    } else {
-      console.log("WHAA?");
     }
   }
 
