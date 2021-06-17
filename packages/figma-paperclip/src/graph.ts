@@ -1,4 +1,3 @@
-import * as plimit from "p-limit";
 import * as chalk from "chalk";
 import * as path from "path";
 import { FigmaApi } from "./api";
@@ -28,7 +27,7 @@ import {
 import { kebabCase, uniq } from "lodash";
 import { DEFAULT_EXPORT_SETTINGS } from "./constants";
 
-const LOAD_CHUNK_SIZE = 100;
+const LOAD_CHUNK_SIZE = 50;
 
 type LoadDependenciesOptions = {
   exclude: ExcludeRule[];
@@ -95,8 +94,6 @@ const loadDesignFile = async (
 
   logVerb(`Loading design ${chalk.bold(file.name)}`);
 
-  const limit = plimit(10);
-
   const fonts = await loadFonts(dep, graph);
   Object.assign(imports, fonts);
 
@@ -112,63 +109,54 @@ const loadDesignFile = async (
   });
 
   await Promise.all(
-    foreignComponentIds.map(importId => {
-      return limit(async () => {
-        const componentRef = file.components[importId];
+    foreignComponentIds.map(async importId => {
+      let componentInfo: any;
 
-        let componentInfo: any;
-
-        try {
-          componentInfo = (await api.getComponent(componentRef.key)) as any;
-        } catch (e) {
-          if (e.status === 404) {
-            logWarn(
-              `Unable to find component ${chalk.bold(componentRef.name)}`
-            );
-            return;
-          }
-
+      const componentRef = file.components[importId];
+      try {
+        componentInfo = (await api.getComponent(componentRef.key)) as any;
+      } catch (e) {
+        if (e.status === 404) {
+          logWarn(`Unable to find component ${chalk.bold(componentRef.name)}`);
           return;
         }
+        return;
+      }
+      if (componentInfo.meta.file_key === fileKey) {
+        return;
+      }
 
-        if (componentInfo.meta.file_key === fileKey) {
-          return;
-        }
+      imports[importId] = {
+        kind: DesignFileImportKind.Design,
+        nodeId: componentInfo.meta.node_id,
+        fileKey: componentInfo.meta.file_key
+      };
 
-        imports[importId] = {
-          kind: DesignFileImportKind.Design,
-          nodeId: componentInfo.meta.node_id,
-          fileKey: componentInfo.meta.file_key
-        };
-
-        await loadDesignFile(componentInfo.meta.file_key, api, options, graph);
-      });
+      await loadDesignFile(componentInfo.meta.file_key, api, options, graph);
     })
   );
 
   await Promise.all(
-    Object.keys(file.styles).map(id =>
-      limit(async () => {
-        const style = file.styles[id];
-        try {
-          const info = await api.getStyle(style.key);
+    Object.keys(file.styles).map(async id => {
+      const style = file.styles[id];
+      try {
+        const info = await api.getStyle(style.key);
 
-          if (info.meta.file_key === fileKey) {
-            return;
-          }
-
-          imports[id] = {
-            kind: DesignFileImportKind.Design,
-            nodeId: info.meta.node_id,
-            fileKey: info.meta.file_key
-          };
-          await loadDesignFile(info.meta.file_key, api, options, graph);
-        } catch (e) {
-          logWarn(`Can't load style info for ${chalk.bold(style.name)}`);
-          // console.log(e);
+        if (info.meta.file_key === fileKey) {
+          return;
         }
-      })
-    )
+
+        imports[id] = {
+          kind: DesignFileImportKind.Design,
+          nodeId: info.meta.node_id,
+          fileKey: info.meta.file_key
+        };
+        await loadDesignFile(info.meta.file_key, api, options, graph);
+      } catch (e) {
+        logWarn(`Can't load style info for ${chalk.bold(style.name)}`);
+        // console.log(e);
+      }
+    })
   );
 
   return graph;
@@ -178,10 +166,8 @@ const loadFonts = async (dep: DesignDependency, graph: DependencyGraph) => {
   const deps: Record<string, DesignFileFontImport> = {};
   const fonts = getDesignFonts(dep);
 
-  const limit = plimit(6);
-
   await Promise.all(
-    fonts.map(font => {
+    fonts.map(async font => {
       const fileKey = getFontKey(font);
       deps[font] = {
         kind: DesignFileImportKind.Font,
@@ -198,31 +184,29 @@ const loadFonts = async (dep: DesignDependency, graph: DependencyGraph) => {
         content: null
       });
 
-      return limit(async () => {
-        try {
-          logVerb(`Loading font ${chalk.bold(font)}`);
+      try {
+        logVerb(`Loading font ${chalk.bold(font)}`);
 
-          let css = await httpGet({
-            host: `fonts.googleapis.com`,
-            path: `/css?family=${encodeURIComponent(
-              font
-            )}:100,200,300,400,500,600,700`
-          });
+        let css = await httpGet({
+          host: `fonts.googleapis.com`,
+          path: `/css?family=${encodeURIComponent(
+            font
+          )}:100,200,300,400,500,600,700`
+        });
 
-          // PC doesn't support urls without "
-          css = css.replace(/url\((.*?)\)/g, (_, url, ...args) => {
-            return `url("${url}")`;
-          });
+        // PC doesn't support urls without "
+        css = css.replace(/url\((.*?)\)/g, (_, url, ...args) => {
+          return `url("${url}")`;
+        });
 
-          dep.content = "<style>\n" + css + "</style>";
-        } catch (e) {
-          logWarn(
-            `Could not download ${chalk.bold(
-              font
-            )} font, you'll need to do it manually.`
-          );
-        }
-      });
+        dep.content = "<style>\n" + css + "</style>";
+      } catch (e) {
+        logWarn(
+          `Could not download ${chalk.bold(
+            font
+          )} font, you'll need to do it manually.`
+        );
+      }
     })
   );
 
@@ -287,15 +271,11 @@ const loadMedia = async (
 
   logVerb(`Loading media for ${chalk.bold(dep.name)} (${mediaCount} assets)`);
 
-  const limit = plimit(10);
-
   await Promise.all(
-    Object.keys(nodeIdsByExport).map(key =>
-      limit(async () => {
-        const { settings, nodes } = nodeIdsByExport[key];
-        await loadImages(nodes, settings, graph, dep, api);
-      })
-    )
+    Object.keys(nodeIdsByExport).map(async key => {
+      const { settings, nodes } = nodeIdsByExport[key];
+      await loadImages(nodes, settings, graph, dep, api);
+    })
   );
 };
 
@@ -307,7 +287,6 @@ const loadImages = async (
   api: FigmaApi
 ) => {
   const nodeIds = Object.keys(nodes);
-  const limit = plimit(3);
 
   // Need to chunk these assets, otherwise we may hug Figma to death.
   // let prog = 0;
@@ -317,49 +296,47 @@ const loadImages = async (
     const chunkIds = nodeIds.slice(i, i + LOAD_CHUNK_SIZE);
     // prog += chunkIds.length;
     // console.log((prog / length) * 100);
-    promises.push(
-      limit(async () => {
-        try {
-          const result = await api.getImage(dep.fileKey, {
-            ids: chunkIds.join(","),
-            format: settings.format.toLowerCase() as any,
-            scale: settings.constraint.value
-          });
+    promises.push(async () => {
+      try {
+        const result = await api.getImage(dep.fileKey, {
+          ids: chunkIds.join(","),
+          format: settings.format.toLowerCase() as any,
+          scale: settings.constraint.value
+        });
 
-          for (const nodeId in result.images) {
-            const url = result.images[nodeId];
+        for (const nodeId in result.images) {
+          const url = result.images[nodeId];
 
-            if (!url) {
-              const node = getNodeById(nodeId, dep.document);
-              logError(
-                `Could not fetch asset for ${chalk.bold(
-                  String(dep.name) +
-                    " / " +
-                    getNodePage(nodeId, dep.document).name +
-                    " / " +
-                    node.name
-                )}`
-              );
-              continue;
-            }
-            graph[nodeId] = {
-              nodeId,
-              settings,
-              fileKey: getNodeExportFileName(
-                nodes[nodeId] as any,
-                dep.document,
-                settings
-              ),
-              kind: DependencyKind.Media,
-              url: result.images[nodeId]
-            };
+          if (!url) {
+            const node = getNodeById(nodeId, dep.document);
+            logError(
+              `Could not fetch asset for ${chalk.bold(
+                String(dep.name) +
+                  " / " +
+                  getNodePage(nodeId, dep.document).name +
+                  " / " +
+                  node.name
+              )}`
+            );
+            continue;
           }
-        } catch (e) {
-          logError(`Can't fetch assets: ${chunkIds.join(", ")}`);
-          logError(JSON.stringify(e));
+          graph[nodeId] = {
+            nodeId,
+            settings,
+            fileKey: getNodeExportFileName(
+              nodes[nodeId] as any,
+              dep.document,
+              settings
+            ),
+            kind: DependencyKind.Media,
+            url: result.images[nodeId]
+          };
         }
-      })
-    );
+      } catch (e) {
+        logError(`Can't fetch assets: ${chunkIds.join(", ")}`);
+        logError(JSON.stringify(e));
+      }
+    });
   }
 
   await Promise.all(promises);
