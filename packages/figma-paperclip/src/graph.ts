@@ -329,8 +329,6 @@ const loadImages = async (
               settings
             );
 
-            console.log("EXP", fileKey);
-
             graph[fileKey] = {
               nodeId,
               settings,
