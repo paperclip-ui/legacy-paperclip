@@ -97,7 +97,7 @@ const loadDesignFile = async (
   const fonts = await loadFonts(dep, graph);
   Object.assign(imports, fonts);
 
-  await loadFramePreviews(dep, graph, api);
+  // await loadFramePreviews(dep, graph, api);
   await loadMedia(dep, graph, api);
 
   const foreignComponentIds = Object.keys(file.components).filter(importId => {
