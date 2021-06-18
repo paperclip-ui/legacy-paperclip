@@ -61,8 +61,7 @@ export class FigmaApi {
         });
       } catch (e) {
         if (e.status === 429) {
-          console.log("limiting...");
-          retry();
+          return await retry();
         } else {
           throw e;
         }
@@ -72,52 +71,21 @@ export class FigmaApi {
 }
 
 const figmaRateLimiter = () => {
-  const queue = [];
-  let throttled = false;
-
-  const next = async () => {
-    if (throttled || !queue.length) {
-      return;
-    }
-
-    const [cb, retry, resolve, reject] = queue.shift();
-
-    cb(retry).then(resolve, reject);
-    next();
-  };
-
-  let _currentThrottle;
-
-  const run = (cb: () => Promise<any>) => {
+  const run = (cb: (retry) => Promise<any>) => {
     const retry = () => {
-      if (_currentThrottle) {
-        clearTimeout(_currentThrottle);
-      }
-      throttled = true;
-      _currentThrottle = setTimeout(() => {
-        throttled = false;
-        call();
-      }, 1000 * 60);
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          call().then(resolve, reject);
+        }, 1000 * 60);
+      });
     };
 
     const call = () =>
       new Promise((resolve, reject) => {
-        queue.push([cb, retry, resolve, reject]);
-        next();
+        cb(retry).then(resolve, reject);
       });
 
     return call();
-  };
-
-  run.throttle = () => {
-    if (_currentThrottle) {
-      clearTimeout(_currentThrottle);
-    }
-    throttled = true;
-    _currentThrottle = setTimeout(() => {
-      throttled = false;
-      next();
-    }, 1000 * 60);
   };
 
   return run;

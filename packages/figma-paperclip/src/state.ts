@@ -398,7 +398,10 @@ export const isExported = (node: Node): node is Exportable => {
 };
 
 export const shouldExport = (node: Node) => {
-  return isExported(node) || isVectorLike(node);
+  return (
+    (node as any).visible !== false &&
+    (isExported(node) || node.type === "COMPONENT")
+  );
 };
 
 export const isVectorLike = (node: Node): node is VectorLikeNode => {
@@ -439,7 +442,7 @@ export const hasChildren = (node: Node): node is Parent => {
   return (node as any).children?.length > 0;
 };
 
-const getCleanedName = (name: string) => {
+export const getCleanedName = (name: string) => {
   // remove certain chars
   let newName = kebabCase(
     name.replace(/[\\/\-\s]/g, "_").replace(/[^_\w\d]/g, "")
@@ -463,7 +466,7 @@ export const getNodeExportFileName = (
   }
 
   // want to include document name to make sure that there's no clashing between assets
-  return `${getUniqueNodeName(node, document)}@${
+  return `${getCleanedName(node.name)}@${
     settings.constraint.value
   }.${settings.format.toLowerCase()}`;
 };
@@ -490,7 +493,7 @@ export const getUniqueNodeName = (node: Node, document: Document) => {
   // Note that it's tempting to use a prettier name for assets, such as the _actual_ label, but we
   // don't want to allow designers to accidentally change assets out from underneath us. Keeping the ID within the
   // label itself is a bit more defensive.
-  return getCleanedName(node.name + "-" + node.id);
+  return getCleanedName(node.name) + "-" + kebabCase(node.id);
 };
 
 export const getNodePath = memoize((node: Node, root: Node) => {
@@ -586,10 +589,10 @@ export const getInstanceComponent = (
   }
 
   if (node.type === "COMPONENT") {
-    const parent = getNodeParent(node, dep.document);
-    if (parent.type === "COMPONENT_SET") {
-      return parent;
-    }
+    // const parent = getNodeParent(node, dep.document);
+    // if (parent.type === "COMPONENT_SET") {
+    //   return parent;
+    // }
     return node;
   }
 
@@ -607,11 +610,11 @@ export const getInstanceComponent = (
 
   if (component) {
     const parent = getNodeParent(component, componentDep.document);
-    if (parent.type === "COMPONENT_SET") {
-      return parent;
-    } else {
-      return component;
-    }
+    // if (parent.type === "COMPONENT_SET") {
+    //   return parent;
+    // } else {
+    return component;
+    // }
   }
 
   // TODO - look for instance
@@ -634,17 +637,19 @@ export const getNodeFrame = (node: Node, document: Document): Frame => {
   return getNodeByPath(nodePath.slice(0, 2), document);
 };
 
-export const getNodeDependency = (node: Node, graph: DependencyGraph) => {
-  for (const fileKey in graph) {
-    const dep = graph[fileKey];
-    if (
-      dep.kind === DependencyKind.Design &&
-      containsNode(node, dep.document)
-    ) {
-      return dep;
+export const getNodeDependency = memoize(
+  (node: Node, graph: DependencyGraph) => {
+    for (const fileKey in graph) {
+      const dep = graph[fileKey];
+      if (
+        dep.kind === DependencyKind.Design &&
+        containsNode(node, dep.document)
+      ) {
+        return dep;
+      }
     }
   }
-};
+);
 
 export const getNodeDependencyById = (
   nodeId: string,
@@ -709,8 +714,8 @@ export const getTreeNodeIdMap = memoize(
   }
 );
 
-export const getAllComponents = memoize((document: Document) => {
-  return flattenNodes(document).filter(
+export const getAllComponents = memoize((node: any) => {
+  return flattenNodes(node).filter(
     node => node.type === NodeType.Component
   ) as Component[];
 });

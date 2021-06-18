@@ -68,7 +68,7 @@ const writeDesigns = (context: TranslateContext2) => {
     const dep = context.graph[fileKey];
     if (dep.kind === DependencyKind.Design) {
       context = writeDesignModules(dep, context);
-      context = writeDesignPages(dep, context);
+      // context = writeDesignPages(dep, context);
     }
   }
 
@@ -93,11 +93,9 @@ const writeFonts = (context: TranslateContext2) => {
 };
 
 const writeMedia = (context: TranslateContext2) => {
-  let i = 0;
   for (const key in context.graph) {
     const dep = context.graph[key];
     if (dep.kind === DependencyKind.Media) {
-      i++;
       const nodeDep = getNodeDependencyById(dep.nodeId, context.graph);
       const node = getNodeById(dep.nodeId, nodeDep.document);
       context = startFile(
@@ -108,6 +106,5 @@ const writeMedia = (context: TranslateContext2) => {
       context = addRemoteFile(dep.url, context);
     }
   }
-  console.log(i);
   return context;
 };

@@ -1,10 +1,13 @@
 import { kebabCase } from "lodash";
 import {
   cleanLabel,
+  containsNode,
   DesignDependency,
   ExportSettings,
   FontDependency,
-  getNodeExportFileName
+  getCleanedName,
+  getNodeExportFileName,
+  getNodePage
 } from "../state";
 import { addBuffer, endBlock, startBlock, TranslateContext2 } from "./context";
 
@@ -26,7 +29,7 @@ export const getDesignModulesFile = (dep: DesignDependency) => {
   if (!name) {
     return null;
   }
-  return `designs/${name}/index.pc`;
+  return `designs/${name}/atoms.pc`;
 };
 
 export const getMixinValue = (mixin: any, style: any) => {
@@ -70,7 +73,9 @@ export const getLayerMediaPath = (
   dep: DesignDependency,
   settings: ExportSettings
 ) => {
-  return `assets/${getNodeExportFileName(node, dep.document, settings)}`;
+  return `designs/${getCleanedName(dep.name)}/${getCleanedName(
+    getNodePage(node.id, dep.document).name
+  )}/${getNodeExportFileName(node, dep.document, settings)}`;
 };
 export type WriteElementBlockParts = {
   tagName: string;

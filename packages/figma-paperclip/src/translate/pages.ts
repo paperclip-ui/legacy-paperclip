@@ -1,4 +1,4 @@
-import { camelCase, curry, omit } from "lodash";
+import { add, camelCase, curry, omit, uniq } from "lodash";
 import * as path from "path";
 import * as chalk from "chalk";
 import * as tc from "tinycolor2";
@@ -20,7 +20,8 @@ import {
   shouldExport,
   DesignFileDesignImport,
   getUniqueNodeName,
-  getNodeById
+  getNodeById,
+  getAllComponents
 } from "../state";
 import {
   addBuffer,
@@ -49,6 +50,7 @@ import {
 } from "./utils";
 import { getAtoms } from "./modules";
 import { memoize } from "../memo";
+import { pascalCase } from "../utils";
 
 export const writeDesignPages = (
   dep: DesignDependency,
@@ -80,6 +82,7 @@ const writePage = (
   context = writeGenericStyles(context);
   context = writeGenericComponents(context);
   context = writePageFrames(page, context);
+  context = writePageComponents(page, context);
   context = addFile(context);
   return context;
 };
@@ -116,14 +119,39 @@ const writeGenericStyles = (context: TranslateContext2) => {
       context = writeStyleBlock(
         ".asset-info",
         context => {
-          return writeStyleDeclarations(
+          context = writeStyleDeclarations(
             {
               display: "flex",
               flexDirection: "row",
-              flexWrap: "wrap"
+              flexWrap: "wrap",
+              gridColumnGap: `16px`,
+              gridRowGap: `16px`
             },
             context
           );
+
+          context = writeStyleBlock(
+            ".asset-info-item",
+            context => {
+              // context = writeStyleBlock("&:hover", context => {
+              // }, context);
+              context = writeStyleBlock(
+                "img",
+                context => {
+                  context = writeStyleDeclarations(
+                    { maxWidth: `200px` },
+                    context
+                  );
+                  return context;
+                },
+                context
+              );
+              return context;
+            },
+            context
+          );
+
+          return context;
         },
         context
       );
@@ -184,10 +212,23 @@ const writeGenericComponents = (context: TranslateContext2) => {
 
 const writePageFrames = (page: any, context: TranslateContext2) => {
   for (const frame of page.children) {
-    context = writePageFrame(frame, context);
+    if (frame.type !== "COMPONENT") {
+      context = writePageFrame(frame, context);
+    }
   }
   return context;
 };
+
+const writePageComponents = (page: any, context: TranslateContext2) => {
+  const components = getAllComponents(page) as any[];
+  for (const frame of components) {
+    if (frame.visible !== false) {
+      context = writePageFrame(frame, context);
+    }
+  }
+  return context;
+};
+
 const writePageFrame = (frame: any, context: TranslateContext2) => {
   context = writeFrameComment(frame, context);
   context = writeFrameSummary(frame, context);
@@ -200,7 +241,15 @@ const writeFrameSummary = (frame: any, context: TranslateContext2) => {
 
 const writeFrameSummaryOuter = (frame: any, context: TranslateContext2) => {
   return writeElementBlock(
-    { tagName: "div" },
+    {
+      tagName: "div",
+      attributes: `export component as="${pascalCase(
+        getUniqueNodeName(
+          frame,
+          (context.graph[context.currentFileKey] as DesignDependency).document
+        )
+      )}"`
+    },
     context => {
       return writeFrameSummaryInner(frame, context);
     },
@@ -250,13 +299,22 @@ const writeFramePreview = (frame: any, context: TranslateContext2) => {
 };
 
 const writeFrameAtomInfo = (frame: any, context: TranslateContext2) => {
-  return writeElementBlock(
+  context = addBuffer(`{!hideAtoms? && `, context);
+  context = startBlock(context);
+
+  context = writeElementBlock(
     { tagName: "div", attributes: `className="frame-atom-info"` },
     context => {
       return writeFrameAtomInfoInner(frame, context);
     },
     context
   );
+
+  context = endBlock(context);
+
+  context = addBuffer("}\n", context);
+
+  return context;
 };
 
 const writeFrameAtomInfoInner = (frame: any, context: TranslateContext2) => {
@@ -264,16 +322,17 @@ const writeFrameAtomInfoInner = (frame: any, context: TranslateContext2) => {
   const typography = getFrameMixins(frame, "TEXT", context);
   const assets = getFrameAssets(
     frame,
-    context.graph[context.currentFileKey] as DesignDependency
+    context.graph[context.currentFileKey] as DesignDependency,
+    context.graph
   );
-  context = writeInfoSection(
-    `Component Instances`,
-    context => {
-      context = writeInstancePreviews(frame, context);
-      return context;
-    },
-    context
-  );
+  // context = writeInfoSection(
+  //   `Component Instances`,
+  //   context => {
+  //     context = writeInstancePreviews(frame, context);
+  //     return context;
+  //   },
+  //   context
+  // );
 
   if (Object.keys(colors).length) {
     context = writeInfoSection(
@@ -318,9 +377,16 @@ const writeInstancePreviews = (frame: any, context: TranslateContext2) => {
 
   const used = {};
 
-  for (const instance of instances) {
-    context = writeInstancePreview(instance, dep, used, context);
-  }
+  context = writeElementBlock(
+    { tagName: "div", attributes: `className="asset-info"` },
+    context => {
+      for (const instance of instances) {
+        context = writeInstancePreview(instance, dep, used, context);
+      }
+      return context;
+    },
+    context
+  );
 
   return context;
 };
@@ -331,6 +397,9 @@ const writeInstancePreview = (
   used: any,
   context: TranslateContext2
 ) => {
+  if (instance.visible === false) {
+    return context;
+  }
   const imp = dep.imports[instance.componentId] as DesignFileDesignImport;
 
   let impDep;
@@ -345,7 +414,6 @@ const writeInstancePreview = (
   }
 
   if (!component || used[component.id]) {
-    // console.log("SKIP", instance.componentId, !!imp);
     return context;
   }
 
@@ -357,31 +425,48 @@ const writeInstancePreview = (
     path.push(getDependencyImportId(impDep));
   }
 
-  path.push(camelCase(getUniqueNodeName(component, impDep)));
+  path.push(pascalCase(getUniqueNodeName(component, impDep)));
 
-  context = writeElementBlock(
-    { tagName: "div" },
-    context => {
-      context = addBuffer(
-        `<img src="${resolvePath(
-          getLayerMediaPath(component, impDep, FRAME_EXPORT_SETTINGS),
-          context
-        )}" />\n`,
-        context
-      );
-      return context;
-    },
-    context
-  );
+  if (component.visible === false) {
+    return context;
+  }
+
+  // const exp = (component.exportSettings?.length && component.exportSettings || [FRAME_EXPORT_SETTINGS])[0];
+
+  // context = writeElementBlock(
+  //   { tagName: "div", attributes: `className="asset-info-item"` },
+  //   context => {
+  //     context = addBuffer(
+  //       `<img src="${resolvePath(
+  //         getLayerMediaPath(component, impDep, exp),
+  //         context
+  //       )}" />\n`,
+  //       context
+  //     );
+  //     return context;
+  //   },
+  //   context
+  // );
+
+  context = addBuffer(`<${path.join(".")} hideAtoms />`, context);
 
   return context;
 };
 
-const getFrameAssets = (frame: any, dep: DesignDependency) => {
+const getFrameAssets = (
+  frame: any,
+  dep: DesignDependency,
+  graph: DependencyGraph
+) => {
   const exports = [];
-  const walk = (node: any) => {
+
+  const walk = (node: any, dep: DesignDependency) => {
     if (node.type === "INSTANCE") {
-      return;
+      const component = getInstanceComponent(node, dep.fileKey, graph);
+      if (component) {
+        const componentDep = getNodeDependency(component, graph);
+        walk(component, componentDep);
+      }
     }
 
     if (isExported(node)) {
@@ -390,18 +475,20 @@ const getFrameAssets = (frame: any, dep: DesignDependency) => {
 
     if (node.children) {
       for (const child of node.children) {
-        walk(child);
+        walk(child, dep);
       }
     }
   };
 
-  walk(frame);
+  walk(frame, dep);
 
-  return exports.map(exp =>
-    getLayerMediaPath(
-      exp,
-      dep,
-      isExported(exp) ? exp.exportSettings[0] : DEFAULT_SHAPE_EXPORT_SETTINGS
+  return uniq(
+    exports.map(exp =>
+      getLayerMediaPath(
+        exp,
+        getNodeDependency(exp, graph),
+        isExported(exp) ? exp.exportSettings[0] : DEFAULT_SHAPE_EXPORT_SETTINGS
+      )
     )
   );
 };
@@ -435,7 +522,7 @@ const writeTypographyInfo = (
 
 const writeAssetInfo = (assets: string[], context: TranslateContext2) => {
   return writeElementBlock(
-    { tagName: "div", attributes: "asset-info" },
+    { tagName: "div", attributes: `className="asset-info"` },
     context => {
       for (const asset of assets) {
         context = writeAssetInfoItem(asset, context);
@@ -448,13 +535,13 @@ const writeAssetInfo = (assets: string[], context: TranslateContext2) => {
 
 const writeAssetInfoItem = (asset: string, context: TranslateContext2) => {
   return writeElementBlock(
-    { tagName: "div", attributes: "asset-info-item" },
+    { tagName: "div", attributes: `className="asset-info-item"` },
     context => {
       context = addBuffer(
         `<img src="${resolvePath(asset, context)}" />`,
         context
       );
-      context = addBuffer(`<label>${asset}</label>`, context);
+      // context = addBuffer(`<label>${asset}</label>`, context);
       return context;
     },
     context
@@ -496,7 +583,7 @@ const getFrameMixins = (
     const mixedInStyled = extractMixedInStyles(layer);
     for (const mixinId in mixedInStyled) {
       const mixin = getMixin(mixinId, dep, context.graph);
-      if (mixin.styleType === styleType) {
+      if (mixin?.styleType === styleType) {
         info[getMixinName(mixin)] = getMixinValue(
           mixin,
           mixedInStyled[mixinId]

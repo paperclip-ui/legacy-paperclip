@@ -96,7 +96,7 @@ const downloadFile = async (
   cwd: string,
   limit: any
 ) => {
-  if (fsa.existsSync(absoluePath)) {
+  if (fsa.existsSync(absoluePath) && fsa.lstatSync(absoluePath).size) {
     return;
   }
 

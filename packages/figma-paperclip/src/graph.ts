@@ -241,9 +241,11 @@ const loadMedia = async (
   };
 
   walk(dep.document, child => {
-    if (isExported(child)) {
-      const exportSettings = (child as any).exportSettings || [
-        DEFAULT_EXPORT_SETTINGS
+    if (shouldExport(child)) {
+      const exportSettings = ((child as any).exportSettings?.length &&
+        (child as any).exportSettings) || [
+        DEFAULT_EXPORT_SETTINGS,
+        FRAME_EXPORT_SETTINGS
       ];
 
       for (const setting of exportSettings) {
@@ -296,47 +298,53 @@ const loadImages = async (
     const chunkIds = nodeIds.slice(i, i + LOAD_CHUNK_SIZE);
     // prog += chunkIds.length;
     // console.log((prog / length) * 100);
-    promises.push(async () => {
-      try {
-        const result = await api.getImage(dep.fileKey, {
-          ids: chunkIds.join(","),
-          format: settings.format.toLowerCase() as any,
-          scale: settings.constraint.value
-        });
+    promises.push(
+      (async () => {
+        try {
+          const result = await api.getImage(dep.fileKey, {
+            ids: chunkIds.join(","),
+            format: settings.format.toLowerCase() as any,
+            scale: settings.constraint.value
+          });
 
-        for (const nodeId in result.images) {
-          const url = result.images[nodeId];
-
-          if (!url) {
+          for (const nodeId in result.images) {
+            const url = result.images[nodeId];
             const node = getNodeById(nodeId, dep.document);
-            logError(
-              `Could not fetch asset for ${chalk.bold(
-                String(dep.name) +
-                  " / " +
-                  getNodePage(nodeId, dep.document).name +
-                  " / " +
-                  node.name
-              )}`
-            );
-            continue;
-          }
-          graph[nodeId] = {
-            nodeId,
-            settings,
-            fileKey: getNodeExportFileName(
+
+            if (!url) {
+              logError(
+                `Could not fetch asset for ${chalk.bold(
+                  String(dep.name) +
+                    " / " +
+                    getNodePage(nodeId, dep.document).name +
+                    " / " +
+                    node.name
+                )}`
+              );
+              continue;
+            }
+            const fileKey = getNodeExportFileName(
               nodes[nodeId] as any,
               dep.document,
               settings
-            ),
-            kind: DependencyKind.Media,
-            url: result.images[nodeId]
-          };
+            );
+
+            console.log("EXP", fileKey);
+
+            graph[fileKey] = {
+              nodeId,
+              settings,
+              fileKey,
+              kind: DependencyKind.Media,
+              url: result.images[nodeId]
+            };
+          }
+        } catch (e) {
+          logError(`Can't fetch assets: ${chunkIds.join(", ")}`);
+          logError(JSON.stringify(e));
         }
-      } catch (e) {
-        logError(`Can't fetch assets: ${chunkIds.join(", ")}`);
-        logError(JSON.stringify(e));
-      }
-    });
+      })()
+    );
   }
 
   await Promise.all(promises);
