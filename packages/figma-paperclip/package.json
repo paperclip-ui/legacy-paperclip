@@ -3,6 +3,9 @@
   "version": "17.9.7",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "figma-paperclip": "./bin/figma-paperclip"
+  },
   "scripts": {
     "build:watch": "tsc --watch",
     "build": "tsc"
