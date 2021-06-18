@@ -315,6 +315,12 @@ describe(__filename + "#", () => {
       `@charset "utf-8"; div { color: red; }`,
       `@charset "utf-8"; div[data-pc-80f4925f] { color:red; }`,
       false
+    ],
+
+    [
+      `@export { :root { color: red; }}`,
+      `[data-pc-pub-80f4925f] { color:red; }`,
+      false
     ]
 
     // group, selector

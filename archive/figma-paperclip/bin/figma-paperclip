@@ -1,13 +1,34 @@
 #!/usr/bin/env node
-const {Client, cli: {init, pull}, CONFIG_FILE_NAME} = require('../');
-const fs = require("fs");
-const yargs = require('yargs');
+
+const {pull, init} = require("../lib");
+const path = require("path");
+
+const argv = require("yargs")
+.command("pull", "Pull latest designs", yargs => {
+  yargs
+  .option("token", { description: "your Figma token", required: true })
+  .option("url", { description: "the Figma design url", required: true })
+  .option("dir", { description: "Directory to download files into", required: true })
+}, argv => {  
+  const cwd = process.cwd();
+  pull({
+    cwd,
+    openDesignToken: argv.openDesignToken,
+    figmaToken: argv.figmaToken,
+    url: argv.url,
+    dir: path.join(cwd, argv.dir)
+  });
+}).command("init", "Init Paperclip Open Design project", yargs => {
+}, argv => {  
+  const cwd = process.cwd();
+  init({
+    cwd
+  });
+}).argv;
 
 
-yargs
-.scriptName('figma-paperclip')
-.usage('$0 <cmd> [args]')
-.command(`init`, 'initialize figmark for this project', () => {},  init)
-.command(`pull [watch]`, 'Downloads designs from Figma', () => {}, pull)
-.help()
-.argv
+function desc(description) {
+  return {
+    description
+  }
+}

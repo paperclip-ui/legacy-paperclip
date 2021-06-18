@@ -39,7 +39,12 @@ module.exports = {
       type: "category",
       label: "Integrations",
       collapsed: false,
-      items: ["configure-typescript", "configure-percy", "configure-jest"]
+      items: [
+        "configure-typescript",
+        "configure-percy",
+        "configure-jest",
+        "configure-prettier"
+      ]
     }
   ]
 };

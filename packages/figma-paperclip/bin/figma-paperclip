@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+const {pull, init} = require("../lib");
+const path = require("path");
+
+const argv = require("yargs")
+.command("pull", "Pull latest designs", yargs => {
+  yargs
+  .option("token", { description: "your Figma token", required: true })
+}, argv => {  
+  const cwd = process.cwd();
+  pull({
+    cwd,
+    token: argv.token
+  });
+}).command("init", "Init Paperclip Figma project", yargs => {
+}, argv => {  
+  const cwd = process.cwd();
+  init({
+    cwd
+  });
+}).argv;
+

@@ -1592,42 +1592,6 @@ describe(__filename + "#", () => {
     });
   });
 
-  // don't need to solve this right now
-  xit(`Can include mixins in mixins`, async () => {
-    const graph = {
-      "/entry.pc": `
-        <import src="/breakpoints.pc" as="breakpoints" />
-        <style>
-          @mixin b {
-            color: red;
-          }
-
-          div {
-            @include breakpoints.medium {
-              @include b;
-            }
-          }
-        </style>
-      `,
-      "/breakpoints.pc": `
-        <style>
-          @export {
-            @mixin medium {
-              @media screen and (max-width: 500px) {
-                @content;
-              }
-            }
-          }
-        </style>
-      `
-    };
-
-    const engine = await createMockEngine(graph);
-    const result = await engine.open("/entry.pc");
-
-    expect(stringifyLoadResult(result)).to.eql("a");
-  });
-
   // TODO - this is broken with CSS patcher
   xit(`breaks if inline declaration is defined without semicolon`, async () => {
     const graph = {
@@ -1869,6 +1833,47 @@ describe(__filename + "#", () => {
 
     expect(stringifyLoadResult(result)).to.eql(
       `<style>[class]._pub-b8a55827_test { color:red; }</style><div class="_80f4925f_test _pub-80f4925f_test _pub-b8a55827_test test" data-pc-80f4925f data-pc-pub-80f4925f data-pc-pub-b8a55827></div>`
+    );
+  });
+
+  // fixes https://github.com/crcn/paperclip/issues/644
+  it(`Can include mixins in mixins`, async () => {
+    const graph = {
+      "/entry.pc": `
+        <import src="./breakpoints.pc" as="bp" />
+        <style>
+
+        @mixin mini {
+          width: 100%;
+        }
+        </style>
+        <div>
+          <style>
+          display: flex;  
+          @include bp.mobile {
+            @include mini;
+          }
+          </style>
+        </div>
+      `,
+      "/breakpoints.pc": `
+        <style>
+          @export {
+            @mixin mobile {
+              @media screen and (max-width: 500px) {
+                @content;
+              }
+            }
+          }
+        </style>
+      `
+    };
+
+    const engine = await createMockEngine(graph);
+    const result = await engine.open("/entry.pc");
+
+    expect(stringifyLoadResult(result)).to.eql(
+      `<style>[data-pc-ae63497a][data-pc-ae63497a] { display:flex; } @media screen and (max-width: 500px) { [data-pc-ae63497a][data-pc-ae63497a] { width:100%; } }</style><div data-pc-80f4925f data-pc-ae63497a data-pc-pub-80f4925f></div>`
     );
   });
 });

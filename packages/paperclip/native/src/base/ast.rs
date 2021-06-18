@@ -7,6 +7,12 @@ pub struct Location {
   pub end: usize,
 }
 
+// impl Eq for Location {
+//   fn eq(&self, other: &Self) -> bool {
+//     self.start == other.start && self.end == other.end
+//   }
+// }
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct BasicRaws {
   pub before: String,
@@ -40,6 +46,11 @@ impl ExprSource {
   }
 }
 
+// impl Eq for ExprSource {
+//   fn eq(&self, other: &Self) -> bool {
+//     self.uri == other.uri && self.location == self.location
+//   }
+// }
 // TODO - change to trait
 #[derive(Debug, PartialEq, Serialize)]
 pub struct Expression<TItem> {

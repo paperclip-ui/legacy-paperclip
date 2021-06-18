@@ -1,0 +1,2 @@
+- render actual instances
+- enable meta click on expanded preview
