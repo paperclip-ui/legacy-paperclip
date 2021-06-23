@@ -29,6 +29,9 @@ export type RunOptions = {
 
 const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
 
+// max size for frame
+const MAX_FRAME_WIDTH = 2000;
+
 export const run = async (
   sourceDirectory: string,
   {
@@ -128,7 +131,9 @@ export const run = async (
 
       agent.snapshot(snapshotName, {
         document,
-        widths: annotations.frame?.width ? [annotations.frame.width] : null
+        widths: annotations.frame?.width
+          ? [Math.min(annotations.frame.width, MAX_FRAME_WIDTH)]
+          : null
       });
     }
   }
