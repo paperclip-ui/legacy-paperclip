@@ -19,6 +19,8 @@ import {
   EvaluatedDataKind
 } from "paperclip";
 import { PCDocument } from "./pc-document";
+import { startStaticServer } from "./static-server";
+import { timeout } from "./utils";
 
 export type RunOptions = {
   cwd: string;
@@ -28,6 +30,9 @@ export type RunOptions = {
 };
 
 const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
+
+// max size for frame
+const MAX_FRAME_WIDTH = 2000;
 
 export const run = async (
   sourceDirectory: string,
@@ -46,15 +51,15 @@ export const run = async (
   const engine = await createEngineDelegate({
     mode: EngineMode.MultiFrame
   });
+  const server = await startStaticServer();
+
   const agent = new PercyAgent({
     xhr: XMLHttpRequest,
     domTransformation
   });
 
   // // wait for the agent to do a quick health check (needed so that the agent doesn't display "not connected" error)
-  await new Promise(resolve => {
-    setTimeout(resolve, 1000);
-  });
+  await timeout(1000);
 
   for (const filePath of paperclipFilePaths) {
     const relativePath = path.relative(cwd, filePath);
@@ -93,7 +98,7 @@ export const run = async (
         kind: VirtualNodeKind.Fragment
       };
 
-      const document = new PCDocument(root) as any;
+      const document = new PCDocument(root, server.allowFile) as any;
       const frameLabel = annotations.frame?.title || `Untitled ${i}`;
 
       if (skipHidden && annotations.frame?.visible === false) {
@@ -128,10 +133,15 @@ export const run = async (
 
       agent.snapshot(snapshotName, {
         document,
-        widths: annotations.frame?.width ? [annotations.frame.width] : null
+        widths: annotations.frame?.width
+          ? [Math.min(annotations.frame.width, MAX_FRAME_WIDTH)]
+          : null
       });
     }
   }
+
+  await server.finished();
+  server.dispose();
 };
 
 const isEmpty = (source: string) => {

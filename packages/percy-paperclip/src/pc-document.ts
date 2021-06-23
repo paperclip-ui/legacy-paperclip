@@ -3,12 +3,16 @@ import { memoize } from "lodash";
 import * as mime from "mime";
 import * as url from "url";
 import { VirtualFragment, stringifyVirtualNode } from "paperclip";
+import { StaticServer } from "./static-server";
 
 export class PCDocument {
   styleSheets = [];
   documentElement;
   URL;
-  constructor(readonly root: VirtualFragment) {
+  constructor(
+    readonly root: VirtualFragment,
+    private _serializeFilePath: (value: string) => string
+  ) {
     this.documentElement = this;
 
     // surpress percy warn
@@ -19,7 +23,8 @@ export class PCDocument {
     return embedAssets(
       `<html><head><meta charset="utf-8"></head><body><style>body { margin: 0px; padding: 0px }</style>${stringifyVirtualNode(
         this.root
-      )}</body></html>`.replace(/className/g, "class")
+      )}</body></html>`,
+      this._serializeFilePath
     );
   }
   querySelectorAll() {
@@ -30,7 +35,10 @@ export class PCDocument {
   }
 }
 
-const embedAssets = memoize((source: string) => {
+const embedAssets = (
+  source: string,
+  serializeFilePath: (value: string) => string
+) => {
   let newSource = source;
   const re = `([\\('"])(file://.*?)([\\)'"])`;
   const global = new RegExp(re, "g");
@@ -44,12 +52,8 @@ const embedAssets = memoize((source: string) => {
     try {
       const pathname = url.fileURLToPath(uri);
       if (fs.existsSync(pathname)) {
-        const body = fs.readFileSync(pathname, "base64");
-        const contentType = mime.getType(pathname);
-
-        const src = `data:${contentType};base64,${body}`;
-
-        newSource = newSource.replace(uri, src);
+        const newUrl = serializeFilePath(pathname);
+        newSource = newSource.replace(uri, newUrl);
       }
     } catch (e) {
       console.error(e);
@@ -57,4 +61,4 @@ const embedAssets = memoize((source: string) => {
   }
 
   return newSource;
-});
+};
