@@ -40,7 +40,7 @@ export const startStaticServer = async (): Promise<StaticServer> => {
     },
     async finished() {
       while (1) {
-        await timeout(1000 * 3);
+        await timeout(1000 * 10);
         if (!requestCount) {
           break;
         }
