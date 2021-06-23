@@ -1,6 +1,6 @@
 {
   "name": "percy-paperclip",
-  "version": "17.9.7",
+  "version": "17.9.8",
   "description": "Percy integration for Paperclip",
   "main": "index.js",
   "bin": {
