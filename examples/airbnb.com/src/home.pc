@@ -106,7 +106,7 @@
 <!--
   @frame { title: "Airbnb Home / Desktop", width: 902, height: 768, x: 1779, y: -725 }
 -->
-<div component as="HomePreview" className="OKOK">
+<div component as="HomePreview">
   <style>
 
     font-family: sans-serif;

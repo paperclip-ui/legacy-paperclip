@@ -373,7 +373,7 @@ export const reduceDesigner = (
       if (designer.resizerMoving) {
         return designer;
       }
-      if (!designer.canvas.transform.x) {
+      if (!designer.canvas.transform.x || !designer.canvas.mousePosition?.x) {
         return designer;
       }
       // Don't do this until deselecting can be handled properly
