@@ -1,6 +1,6 @@
 {
   "name": "paperclip-designer",
-  "version": "17.9.10",
+  "version": "17.9.11",
   "description": "Visual designer for Paperclip files",
   "main": "lib/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "paperclip": "^17.9.10",
     "paperclip-source-writer": "^17.9.10",
     "paperclip-utils": "^17.9.10",
-    "paperclip-web-renderer": "^17.9.10",
+    "paperclip-web-renderer": "^17.9.11",
     "path": "^0.12.7",
     "process": "^0.11.10",
     "react": "^17.0.0",
