@@ -1,6 +1,7 @@
 import { kebabCase } from "lodash";
 import {
   cleanLabel,
+  Config,
   containsNode,
   DesignDependency,
   ExportSettings,
@@ -144,20 +145,30 @@ export const writeStyleBlock = (
   return context;
 };
 
-export const getStyleVarName = ({ name }) => {
+export const getStyleVarName = ({ name }, config: Config) => {
+  if (config.atoms?.typePrefix) {
+    name = `color-` + name;
+  }
   return `--${kebabCase(name)}`;
 };
 
-export const getStyleMixinName = ({ name }) => {
+export const getStyleMixinName = ({ name, styleType }, config: Config) => {
+  if (config.atoms?.typePrefix) {
+    name = `${styleType}-` + name;
+  }
+
   let varName = kebabCase(name);
+
   if (!isNaN(Number(varName.charAt(0)))) {
     varName = "_" + varName;
   }
   return varName;
 };
 
-export const getMixinName = (style: any) => {
-  return isStyleVar(style) ? getStyleVarName(style) : getStyleMixinName(style);
+export const getMixinName = (style: any, config: Config) => {
+  return isStyleVar(style)
+    ? getStyleVarName(style, config)
+    : getStyleMixinName(style, config);
 };
 
 export const isStyleVar = (mixin: any) => {

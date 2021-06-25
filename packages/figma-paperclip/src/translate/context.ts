@@ -1,5 +1,6 @@
 import { uniq } from "lodash";
 import {
+  Config,
   DependencyGraph,
   ExcludeRule,
   OutputFile,
@@ -32,6 +33,7 @@ export const BLEND_MODE_MAP = {
 export type TranslateOptions = {
   includes: string[];
   exclude: ExcludeRule[];
+  config: Config;
 };
 
 export type TranslateContext = {

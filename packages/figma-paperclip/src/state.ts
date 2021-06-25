@@ -7,6 +7,11 @@ import { camelCase, kebabCase, pick } from "lodash";
 import { logError, pascalCase } from "./utils";
 import { getLayerStyle } from "./translate/context";
 
+export type AtomsConfig = {
+  globalVars: true;
+  typePrefix: true;
+};
+
 export type Config = {
   // project urls
   sources: string[];
@@ -15,6 +20,7 @@ export type Config = {
   inject?: string[];
 
   exclude?: ExcludeRule[];
+  atoms?: AtomsConfig;
 
   outputDir: string;
 };

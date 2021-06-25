@@ -1,10 +1,9 @@
 import {
-  Dependency,
+  Config,
   DependencyGraph,
   DependencyKind,
   DesignDependency,
   DesignFileDesignImport,
-  DesignFileImportKind,
   extractMixedInStyles,
   flattenNodes
 } from "../state";
@@ -20,10 +19,7 @@ import {
 import {
   getDesignModulesFile,
   getMixinValue,
-  getStyleMixinName,
   getMixinName,
-  getStyleVarName,
-  isStyleMixin,
   isStyleVar,
   writeElementBlock,
   writeStyleBlock,
@@ -31,7 +27,6 @@ import {
   writeStyleDeclarations
 } from "./utils";
 import * as chalk from "chalk";
-import { kebabCase } from "lodash";
 import { memoize } from "../memo";
 
 export const writeDesignModules = (
@@ -57,7 +52,11 @@ const writeAtoms = (dep: DesignDependency, context: TranslateContext2) => {
 };
 
 const writeMixinsBody = (dep: DesignDependency, context: TranslateContext2) => {
-  const { vars, mixins } = getAtoms(dep, context.graph) as any;
+  const { vars, mixins } = getAtoms(
+    dep,
+    context.graph,
+    context.options.config
+  ) as any;
   context = writeStyleBlock(
     "@export",
     context => {
@@ -74,8 +73,14 @@ const writeVars = (
   vars: Record<string, string>,
   context: TranslateContext2
 ) => {
+  let selector = ":root";
+
+  if (context.options.config.atoms?.globalVars) {
+    selector = `:global(${selector})`;
+  }
+
   return writeStyleBlock(
-    ":root",
+    selector,
     context => {
       for (const name in vars) {
         context = writeStyleDeclaration(name, vars[name], context, false);
@@ -111,7 +116,7 @@ const writeMixins = (
 };
 
 export const getAtoms = memoize(
-  (dep: DesignDependency, graph: DependencyGraph) => {
+  (dep: DesignDependency, graph: DependencyGraph, config: Config) => {
     const vars = {};
     const mixins = {};
 
@@ -131,7 +136,7 @@ export const getAtoms = memoize(
         continue;
       }
 
-      const name = getMixinName(mixin);
+      const name = getMixinName(mixin, config);
       const value = getMixinValue(mixin, style);
 
       if (isStyleVar(mixin)) {
