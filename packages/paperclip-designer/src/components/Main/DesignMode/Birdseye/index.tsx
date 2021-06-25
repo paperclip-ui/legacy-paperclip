@@ -184,7 +184,7 @@ const Cell = ({
     <styles.Cell
       mountRef={mountRef}
       label={label}
-      onMouseDown={onClick}
+      onClick={onClick}
       dir={relativePath}
       controls={null}
     >

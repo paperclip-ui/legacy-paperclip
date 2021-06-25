@@ -56,7 +56,8 @@ export const pull = async ({ cwd, token }: PullOptions) => {
   // 2. translate graph into files
   const files = translateFigmaGraph(graph, {
     includes: config.inject || [],
-    exclude: config.exclude || []
+    exclude: config.exclude || [],
+    config
   });
 
   logInfo(chalk.bold(`Writing files 💾`));

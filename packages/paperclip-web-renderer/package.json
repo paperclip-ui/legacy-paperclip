@@ -1,6 +1,6 @@
 {
   "name": "paperclip-web-renderer",
-  "version": "17.9.10",
+  "version": "17.9.11",
   "description": "Internal web renderer for Paperclip designer",
   "main": "index.js",
   "scripts": {

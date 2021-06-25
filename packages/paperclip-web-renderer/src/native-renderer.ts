@@ -88,9 +88,9 @@ export const createNativeStyleFromSheet = (
     .map(text => {
       const isValid = ruleIsValid(text);
 
-      if (!isValid) {
-        console.error(`invalid CSS rule: ${text}`);
-      }
+      // if (!isValid) {
+      //   console.error(`invalid CSS rule: ${text}`);
+      // }
       return isValid ? text : ".invalid-rule { }";
     });
 

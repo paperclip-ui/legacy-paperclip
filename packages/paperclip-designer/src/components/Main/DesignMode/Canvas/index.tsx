@@ -109,11 +109,13 @@ export const Canvas = React.memo(() => {
   );
 
   useEffect(() => {
-    if (!canvasRef.current) {
+    const ref = canvasRef.current;
+    if (!ref) {
       return;
     }
+
     const onResize = () => {
-      const { width, height } = canvasRef.current.getBoundingClientRect();
+      const { width, height } = ref.getBoundingClientRect();
       dispatch(
         canvasResized({
           width,
@@ -122,7 +124,7 @@ export const Canvas = React.memo(() => {
       );
     };
 
-    canvasRef.current.addEventListener("wheel", onWheel, { passive: false });
+    ref.addEventListener("wheel", onWheel, { passive: false });
 
     window.addEventListener("resize", onResize);
 
@@ -130,7 +132,7 @@ export const Canvas = React.memo(() => {
 
     return () => {
       window.removeEventListener("resize", onResize);
-      canvasRef.current.removeEventListener("wheel", onWheel);
+      ref.removeEventListener("wheel", onWheel);
     };
   }, [canvasRef]);
 

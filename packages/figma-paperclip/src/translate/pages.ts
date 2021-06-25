@@ -584,7 +584,7 @@ const getFrameMixins = (
     for (const mixinId in mixedInStyled) {
       const mixin = getMixin(mixinId, dep, context.graph);
       if (mixin?.styleType === styleType) {
-        info[getMixinName(mixin)] = getMixinValue(
+        info[getMixinName(mixin, context.options.config)] = getMixinValue(
           mixin,
           mixedInStyled[mixinId]
         );
@@ -889,8 +889,8 @@ const addStyleMixins = (layer: any, style: any, context: TranslateContext2) => {
     const impDep = (imp ? context.graph[imp.fileKey] : dep) as DesignDependency;
     const mixin = impDep.styles[mixinId];
     const mixedInStyle = mixedInStyles[refId];
-    const atoms = getAtoms(impDep, context.graph);
-    const mixinName = getMixinName(mixin);
+    const atoms = getAtoms(impDep, context.graph, context.options.config);
+    const mixinName = getMixinName(mixin, context.options.config);
 
     if (!atoms.mixins[mixinName] && !atoms.vars[mixinName]) {
       context = logContextWarn(
