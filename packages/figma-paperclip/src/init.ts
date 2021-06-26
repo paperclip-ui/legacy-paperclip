@@ -2,6 +2,7 @@ import { Config } from "./state";
 import * as inquirer from "inquirer";
 import * as chalk from "chalk";
 import * as fsa from "fs-extra";
+import { merge } from "lodash";
 import {
   CONFIG_FILE_NAME,
   getConfigPath,
@@ -11,6 +12,14 @@ import {
 
 export type InitOptions = {
   cwd: string;
+};
+
+const DEFAULT_CONFIG: Config = {
+  sources: [],
+  outputDir: null,
+  atoms: {
+    prefix: "$"
+  }
 };
 
 export const init = async ({ cwd }: InitOptions) => {
@@ -28,10 +37,10 @@ export const init = async ({ cwd }: InitOptions) => {
     }
   ]);
 
-  const config: Config = {
+  const config: Config = merge({}, DEFAULT_CONFIG, {
     sources: [url],
     outputDir
-  };
+  });
 
   const source = `module.exports = ${JSON.stringify(config, null, 2)};`;
 

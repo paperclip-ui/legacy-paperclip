@@ -23,6 +23,7 @@ import {
   OutputFile,
   OutputFileKind
 } from "./state";
+import { translateFigmaGraph2 } from "./translate2";
 
 export type PullOptions = {
   cwd: string;
@@ -54,7 +55,7 @@ export const pull = async ({ cwd, token }: PullOptions) => {
   logInfo(chalk.bold(`Building Paperclip files 🔨`));
 
   // 2. translate graph into files
-  const files = translateFigmaGraph(graph, {
+  const files = translateFigmaGraph2(graph, {
     includes: config.inject || [],
     exclude: config.exclude || [],
     config
