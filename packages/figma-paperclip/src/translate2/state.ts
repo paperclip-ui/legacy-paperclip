@@ -1,3 +1,4 @@
+import { pick } from "lodash";
 import { memoize } from "../memo";
 import {
   Canvas,
@@ -9,6 +10,7 @@ import {
   isVectorLike,
   Node
 } from "../state";
+import { getLayerStyle } from "../translate/context";
 
 export enum AtomType {
   Color = "Color",
@@ -27,6 +29,7 @@ export enum Category {
 
 export type BaseAtom<TType extends AtomType> = {
   type: TType;
+  name: string;
 };
 
 export type Asset = BaseAtom<AtomType.Asset> & {
@@ -46,24 +49,20 @@ export type Typography = BaseAtom<AtomType.Typography> & {
 };
 
 export type AtomGroup = BaseAtom<AtomType.Group> & {
-  name: string;
   children: Atom[];
 };
 
-export type AtomRoot = BaseAtom<AtomType.Root> & {
-  children: Atom[];
+export type AtomRoot = {
+  dependencyAtoms: Record<string, Atom>;
 };
 
-export type Atom = AtomRoot | AtomGroup | Asset | Color | Shadow | Typography;
+export type Atom = AtomGroup | Asset | Color | Shadow | Typography;
 
 type GenerateOptions = {
   prefix: string;
 };
 
-export const createAtoms = (
-  graph: DependencyGraph,
-  config: Config
-): AtomRoot => {
+export const createAtoms = (graph: DependencyGraph, config: Config) => {
   return createAtomRoot(graph, {
     prefix: config.atoms?.prefix || ""
   });
@@ -72,43 +71,54 @@ export const createAtoms = (
 const createAtomRoot = (
   graph: DependencyGraph,
   options: GenerateOptions
-): AtomRoot => {
-  const children: Atom[] = [];
+): AtomGroup[] => {
+  const atoms: AtomGroup[] = [];
   for (const uri in graph) {
     const dep = graph[uri];
     if (dep.kind === DependencyKind.Design) {
-      children.push(...createAtomsFromDesign(dep, options));
+      atoms.push(...createAtomsFromDesign(dep, options));
     }
-  }
-  return { type: AtomType.Root, children };
-};
-
-const createAtomsFromDesign = (
-  design: DesignDependency,
-  options: GenerateOptions
-) => {
-  const atoms: Atom[] = [];
-  for (const page of design.document.children) {
-    atoms.push(...createAtomsFromPage(page, options));
   }
   return atoms;
 };
 
-const createAtomsFromPage = (page: any, options: GenerateOptions) => {
-  const atoms: Atom[] = [];
+export const createAtomsFromDesign = (
+  design: DesignDependency,
+  options: GenerateOptions
+) => {
+  const atoms: AtomGroup[] = [];
+  for (const page of design.document.children) {
+    atoms.push(...createAtomsFromPage2(page, options));
+  }
+  return atoms;
+};
+
+export const createAtomsFromPage = (page: any, config: Config) =>
+  createAtomsFromPage2(page, {
+    prefix: config.atoms?.prefix || ""
+  });
+
+const createAtomsFromPage2 = (
+  page: any,
+  options: GenerateOptions
+): AtomGroup[] => {
+  const atoms: AtomGroup[] = [];
   for (const canvas of page.children) {
     const atom = createAtomFromCanvas(canvas, options);
     if (!atom) {
       continue;
     }
 
-    // atoms.push(createAtomFromCanvas(canvas));
+    atoms.push(atom);
   }
 
   return atoms;
 };
 
-const createAtomFromCanvas = (canvas: Canvas, options: GenerateOptions) => {
+const createAtomFromCanvas = (
+  canvas: Canvas,
+  options: GenerateOptions
+): AtomGroup => {
   const category = getCanvasCategory(canvas, options);
   if (!category || !canvas.children) {
     return null;
@@ -129,42 +139,82 @@ const createAtomGroupChildren = (
   if (index === nameParts.length) {
     return createCanvasAtoms(canvas, options);
   } else {
-    return {
-      type: AtomType.Group,
-      name: nameParts[index],
-      children: createAtomGroupChildren(index + 1, canvas, options)
-    };
+    return [
+      {
+        type: AtomType.Group,
+        name: nameParts[index],
+        children: createAtomGroupChildren(index + 1, canvas, options)
+      }
+    ];
   }
 };
 
 const createCanvasAtoms = (canvas: Canvas, options: GenerateOptions) => {
-  return canvas.children.filter(isAtom(options)).map(node => {
-    return createAtom(node, getCanvasCategory(canvas, options));
-  });
+  return canvas.children
+    .filter(isAtom(options))
+    .map(node => {
+      const category = getCanvasCategory(canvas, options);
+      const model = getAtomModel(node, category);
+      return (
+        model &&
+        createAtom(
+          stripPrefix(node.name, options.prefix),
+          getLayerStyle(model),
+          category
+        )
+      );
+    })
+    .filter(Boolean);
 };
 
-const createAtom = (node: Node, category: Category) => {
+const createAtom = (name: string, style: any, category: Category): Atom => {
   switch (category) {
     case Category.Colors: {
-      return createColorAtom(node);
+      return {
+        type: AtomType.Color,
+        name,
+        value: style.backgroundColor || "invalid"
+      };
     }
     case Category.Shadows: {
-      return createShadowAsset(node);
+      return {
+        type: AtomType.Shadow,
+        name,
+        value: style.boxShadow || "invalid"
+      };
     }
     case Category.Typography: {
-      return createTypographyAsset(node);
+      return {
+        type: AtomType.Typography,
+        name,
+        properties: pick(
+          style,
+          "fontFamily",
+          "letterSpacing",
+          "lineHeight",
+          "fontWeight",
+          "fontSize",
+          "textAlign"
+        )
+      };
     }
   }
 };
 
-const createColorAtom = (node: Node) => {
-  const shape = flattenNodes(node).filter(node => {
-    return isVectorLike(node) || node.type === "RECTANGLE";
-  });
-  console.log("COLOR", shape);
-};
-const createShadowAsset = (node: Node) => {};
-const createTypographyAsset = (node: Node) => {};
+const getAtomModel = memoize((node: Node, category: Category) => {
+  let filter;
+  if (category === Category.Colors || category === Category.Shadows) {
+    filter = node => {
+      return isVectorLike(node) || node.type === "RECTANGLE";
+    };
+  } else if (category === Category.Typography) {
+    filter = node => {
+      return node.type === "TEXT";
+    };
+  }
+
+  return flattenNodes(node).find(filter);
+});
 
 const isAtom = memoize((options: GenerateOptions) =>
   memoize((node: Node) => {
