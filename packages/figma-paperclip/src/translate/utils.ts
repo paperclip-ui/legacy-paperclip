@@ -21,7 +21,16 @@ export const getDesignPageFile = (page: any, dep: DesignDependency) => {
     return null;
   }
 
-  return `designs/${kebabCase(cleanLabel(dep.name))}/pages/${name}.pc`;
+  return `${kebabCase(cleanLabel(dep.name))}/${name}.pc`;
+};
+export const getPageAtomsFile = (page: any, dep: DesignDependency) => {
+  const name = kebabCase(cleanLabel(page.name));
+  // non-ascii chars, so ignore
+  if (!name) {
+    return null;
+  }
+
+  return `${kebabCase(cleanLabel(dep.name))}/${name}/index.pc`;
 };
 export const getDesignModulesFile = (dep: DesignDependency) => {
   const name = kebabCase(cleanLabel(dep.name));
@@ -30,7 +39,7 @@ export const getDesignModulesFile = (dep: DesignDependency) => {
   if (!name) {
     return null;
   }
-  return `designs/${name}/atoms.pc`;
+  return `${name}/index.pc`;
 };
 
 export const getMixinValue = (mixin: any, style: any) => {

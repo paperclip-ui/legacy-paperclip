@@ -17,7 +17,6 @@ import * as mime from "mime";
 import { camelCase, kebabCase, snakeCase } from "lodash";
 import * as crypto from "crypto";
 import plimit from "p-limit";
-import * as Progress from "progress";
 import {
   Config,
   readConfigSync,

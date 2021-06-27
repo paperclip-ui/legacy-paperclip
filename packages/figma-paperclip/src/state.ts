@@ -8,13 +8,16 @@ import { logError, pascalCase } from "./utils";
 import { getLayerStyle } from "./translate/context";
 
 export type AtomsConfig = {
-  globalVars: true;
-  typePrefix: true;
+  globalVars?: boolean;
+  typePrefix?: boolean;
+  prefix?: string;
 };
 
 export type Config = {
   // project urls
   sources: string[];
+
+  namespace?: string;
 
   // pc files to include
   inject?: string[];
