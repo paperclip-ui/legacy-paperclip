@@ -131,7 +131,7 @@ const writeAtom = (
     }
     case AtomType.Color: {
       return writeStyleDeclaration(
-        `--color-${kebabCase(atom.name)}`,
+        `--${kebabCase(atom.name)}`,
         atom.value,
         context,
         false
@@ -139,7 +139,7 @@ const writeAtom = (
     }
     case AtomType.Shadow: {
       return writeStyleDeclaration(
-        `--shadow-${kebabCase(atom.name)}`,
+        `--${kebabCase(atom.name)}`,
         atom.value,
         context,
         false
