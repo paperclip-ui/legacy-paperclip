@@ -83,7 +83,7 @@ export const getLayerMediaPath = (
   dep: DesignDependency,
   settings: ExportSettings
 ) => {
-  return `designs/${getCleanedName(dep.name)}/${getCleanedName(
+  return `${getCleanedName(dep.name)}/${getCleanedName(
     getNodePage(node.id, dep.document).name
   )}/${getNodeExportFileName(node, dep.document, settings)}`;
 };
