@@ -150,7 +150,7 @@ const createAtomGroupChildren = (
 };
 
 const createCanvasAtoms = (canvas: Canvas, options: GenerateOptions) => {
-  return canvas.children
+  return flattenNodes(canvas)
     .filter(isAtom(options))
     .map(node => {
       const category = getCanvasCategory(canvas, options);
