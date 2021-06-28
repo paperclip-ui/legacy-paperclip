@@ -64,7 +64,7 @@ type GenerateOptions = {
 
 export const createAtoms = (graph: DependencyGraph, config: Config) => {
   return createAtomRoot(graph, {
-    prefix: config.atoms?.prefix || ""
+    prefix: config.atoms?.prefix || "$"
   });
 };
 
@@ -150,7 +150,7 @@ const createAtomGroupChildren = (
 };
 
 const createCanvasAtoms = (canvas: Canvas, options: GenerateOptions) => {
-  return canvas.children
+  return flattenNodes(canvas)
     .filter(isAtom(options))
     .map(node => {
       const category = getCanvasCategory(canvas, options);
@@ -173,7 +173,7 @@ const createAtom = (name: string, style: any, category: Category): Atom => {
       return {
         type: AtomType.Color,
         name,
-        value: style.backgroundColor || "invalid"
+        value: style.background || "invalid"
       };
     }
     case Category.Shadows: {
