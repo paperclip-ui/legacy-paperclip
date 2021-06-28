@@ -64,7 +64,7 @@ type GenerateOptions = {
 
 export const createAtoms = (graph: DependencyGraph, config: Config) => {
   return createAtomRoot(graph, {
-    prefix: config.atoms?.prefix || ""
+    prefix: config.atoms?.prefix || "$"
   });
 };
 
