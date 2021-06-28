@@ -173,7 +173,7 @@ const createAtom = (name: string, style: any, category: Category): Atom => {
       return {
         type: AtomType.Color,
         name,
-        value: style.backgroundColor || "invalid"
+        value: style.background || "invalid"
       };
     }
     case Category.Shadows: {
