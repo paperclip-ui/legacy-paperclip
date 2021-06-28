@@ -119,13 +119,8 @@ const writeAtom = (
       if (depth === 0) {
         selector = ":root";
 
-        if (context.options.config.atoms?.globalVars) {
-          if (
-            atom.children.length &&
-            atom.children[0].type === AtomType.Group
-          ) {
-            selector = "*";
-          }
+        if (atom.children.length && atom.children[0].type === AtomType.Group) {
+          selector = "*";
         }
       } else {
         selector = "&." + kebabCase(atom.name);
