@@ -150,21 +150,25 @@ const createAtomGroupChildren = (
 };
 
 const createCanvasAtoms = (canvas: Canvas, options: GenerateOptions) => {
-  return flattenNodes(canvas)
-    .filter(isAtom(options))
-    .map(node => {
-      const category = getCanvasCategory(canvas, options);
-      const model = getAtomModel(node, category);
-      return (
-        model &&
-        createAtom(
-          stripPrefix(node.name, options.prefix),
-          getLayerStyle(model),
-          category
-        )
-      );
-    })
-    .filter(Boolean);
+  return (
+    flattenNodes(canvas)
+      // first child is the canvas, skip that.
+      .slice(1)
+      .filter(isAtom(options))
+      .map(node => {
+        const category = getCanvasCategory(canvas, options);
+        const model = getAtomModel(node, category);
+        return (
+          model &&
+          createAtom(
+            stripPrefix(node.name, options.prefix),
+            getLayerStyle(model),
+            category
+          )
+        );
+      })
+      .filter(Boolean)
+  );
 };
 
 const createAtom = (name: string, style: any, category: Category): Atom => {
@@ -218,7 +222,8 @@ const getAtomModel = memoize((node: Node, category: Category) => {
 
 const isAtom = memoize((options: GenerateOptions) =>
   memoize((node: Node) => {
-    return stripPrefix(node.name, options.prefix) != null;
+    const name = stripPrefix(node.name, options.prefix);
+    return name != null;
   })
 );
 
