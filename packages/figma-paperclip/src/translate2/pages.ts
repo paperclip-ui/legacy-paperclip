@@ -80,23 +80,11 @@ const writeAtomStyleBlock = (atomGroups: any, context: TranslateContext2) => {
 
 const writeAtomGroup = (group: AtomGroup, context: TranslateContext2) => {
   const category = group.name as Category;
-  let selector;
-  if (category === Category.Colors) {
-    selector = ":root";
-    if (context.options.config.atoms?.globalVars) {
-      selector = `:global(${selector})`;
-    }
-  } else {
-    selector = "@export";
-  }
 
   context = writeStyleBlock(
-    selector,
+    "@export",
     context => {
-      for (const child of group.children) {
-        context = writeAtom(0, category, child, context);
-      }
-      return context;
+      return writeAtom(0, category, group, context);
     },
     context
   );
@@ -114,20 +102,40 @@ const writeAtom = (
 ) => {
   switch (atom.type) {
     case AtomType.Group: {
-      let selector = "." + kebabCase(atom.name);
-      if (depth > 0) {
-        selector = "&" + selector;
+      const writeChildren = (context: TranslateContext2) =>
+        atom.children.reduce(
+          (context, child) => writeAtom(depth + 1, category, child, context),
+          context
+        );
+
+      // don't allow for variants for typography since Mixins can't
+      // be nested with style rules.
+      if (category === Category.Typography) {
+        return writeChildren(context);
       }
-      return writeStyleBlock(
-        selector,
-        context => {
-          return atom.children.reduce(
-            (context, child) => writeAtom(depth + 1, category, child, context),
-            context
-          );
-        },
-        context
-      );
+
+      let selector: string;
+
+      if (depth === 0) {
+        selector = ":root";
+
+        if (context.options.config.atoms?.globalVars) {
+          if (
+            atom.children.length &&
+            atom.children[0].type === AtomType.Group
+          ) {
+            selector = "*";
+          }
+        }
+      } else {
+        selector = "&." + kebabCase(atom.name);
+      }
+
+      if (context.options.config.atoms.globalVars) {
+        selector = `:global(${selector})`;
+      }
+
+      return writeStyleBlock(selector, writeChildren, context);
     }
     case AtomType.Color: {
       return writeStyleDeclaration(
