@@ -197,7 +197,7 @@ export const LoginPage = () => {
 What's the future looking like for Paperclip? Here's the tentative plan:
 
 1. ✅ Prettier integration
-2. 🔲 Avocode integration (Figma to design sync)
+2. ✅ Avocode / Figma integration (Figma to design sync)
 3. 🔲 CSS & HTML linting (a11y, showing unused styles, caniuse integration)
 4. 🔲 CSS tree shaking (removing unused CSS from builds)
 5. 🔲 Visual builder (no-code like)
