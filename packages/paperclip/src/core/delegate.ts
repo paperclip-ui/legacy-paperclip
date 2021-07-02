@@ -189,11 +189,9 @@ export class EngineDelegate {
   updateVirtualFileContent(uri: string, content: string) {
     this._documents[uri] = content;
     return this._tryCatch(() => {
-      const now = Date.now();
       const ret = mapResult(
         this._native.update_virtual_file_content(uri, content)
       );
-      console.log(`updateVirtualFileContent MS: ${Date.now() - now}`);
       return ret;
     });
   }

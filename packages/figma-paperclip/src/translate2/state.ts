@@ -103,13 +103,21 @@ const createAtomsFromPage2 = (
   options: GenerateOptions
 ): AtomGroup[] => {
   const atoms: AtomGroup[] = [];
-  for (const canvas of page.children) {
-    const atom = createAtomFromCanvas(canvas, options);
-    if (!atom) {
-      continue;
+  if (hasCanvasCategory(page, options)) {
+    const atom = createAtomFromCanvas(page, options);
+    if (atom) {
+      console.log(JSON.stringify(atom, null, 2));
+      atoms.push(atom);
     }
+  } else {
+    for (const canvas of page.children) {
+      const atom = createAtomFromCanvas(canvas, options);
+      if (!atom) {
+        continue;
+      }
 
-    atoms.push(atom);
+      atoms.push(atom);
+    }
   }
 
   return atoms;
@@ -238,6 +246,9 @@ const getCanvasCategory = memoize(
     return category;
   }
 );
+
+export const hasCanvasCategory = (canvas: Node, options: GenerateOptions) =>
+  Boolean(getCanvasCategory(canvas, options));
 
 const getCanvasNameParts = memoize((canvas: Node) => {
   return canvas.name.toLowerCase().split(/\s*\/\s*/);
