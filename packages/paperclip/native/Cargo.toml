@@ -17,6 +17,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 matches = "0.1.8"
+rand_chacha = "0.3.1"
+rand = "0.8.4"
 serde = { version = "1.0.104", features = ["derive"] }
 serde_json = { version = "1.0.44" }
 crc = "1.8.1"

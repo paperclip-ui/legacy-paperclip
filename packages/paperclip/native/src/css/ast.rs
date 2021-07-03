@@ -197,6 +197,7 @@ impl BasicRaws {
 }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRule {
+  pub id: String,
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
   pub children: Vec<StyleRule>,
@@ -271,6 +272,7 @@ impl fmt::Display for ExportRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ConditionRule {
+  pub id: String,
   pub name: String,
 
   #[serde(rename = "conditionText")]

@@ -21,6 +21,7 @@ use crate::js::runtime::virt as js_virt;
 use crc::crc32;
 use regex::Regex;
 use serde::Serialize;
+use crate::core::id_generator::{generate_seed};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::iter::FromIterator;
 
@@ -1803,7 +1804,7 @@ mod tests {
   #[test]
   fn can_evaluate_a_style() {
     let case = "<style>div { color: red; } a, b { & c { color: blue }}</style><div></div>";
-    let ast = parse(case).unwrap();
+    let ast = parse(case, generate_seed().as_str()).unwrap();
     let graph = DependencyGraph::new();
     let vfs = VirtualFileSystem::new(
       Box::new(|_| "".to_string()),

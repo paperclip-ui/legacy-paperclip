@@ -103,6 +103,7 @@ use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast as css_ast;
 use crate::css::parser::parse as parse_css;
 use crate::pc::parser::parse as parse_pc;
+use crate::core::id_generator::{generate_seed};
 
 #[derive(Debug)]
 struct Context<'a> {
@@ -159,31 +160,62 @@ pub fn get_matching_elements<'a, 'b>(
 
   let mut matching_elements: Vec<&'a VirtElement> = Vec::new();
 
-  add_matching_elements(&selector, document, Context::new(), &mut matching_elements);
+
+  traverse_tree(&selector, document, Context::new(), &mut |child, context| {
+    if selector_matches_element2(&selector, child, context) {
+      matching_elements.push(child);
+    }
+    true
+  });
 
   return matching_elements;
 }
 
-fn add_matching_elements<'a, 'b>(
+
+pub fn find_one_matching_element<'a, 'b>(
+  selector_text: &'b str,
+  document: &'a VirtNode
+) -> Option<&'a VirtElement> {
+
+  
+  let selector = parse_css_selector(selector_text).unwrap();
+  let mut found: Option<&'a VirtElement> = None;
+  traverse_tree(&selector, document, Context::new(), &mut |child, context| {
+    if selector_matches_element2(&selector, child, context) {
+      found = Some(child);
+      false
+    } else {
+      true
+    }
+  });
+
+  return found;
+}
+
+
+fn traverse_tree<'a>(
   selector: &css_ast::Selector,
   node: &'a VirtNode,
   context: Context,
-  matching_elements: &'b mut Vec<&'a VirtElement>,
-) {
+  each: &mut FnMut(&'a VirtElement, &Context) -> bool
+) -> bool {
   if let VirtNode::Element(element) = node {
-    if selector_matches_element(selector, element, &context) {
-      matching_elements.push(element);
+    if !each(element, &context) {
+      return false;
     }
   }
 
   if let Some(children) = node.get_children() {
     for (i, child) in children.iter().enumerate() {
-      add_matching_elements(selector, child, context.child(i, node), matching_elements);
+      if !traverse_tree(selector, child, context.child(i, node), each) {
+        return false;
+      }
     }
   }
+  return true;
 }
 
-fn selector_matches_element<'a, 'b>(
+fn selector_matches_element2<'a, 'b>(
   selector: &css_ast::Selector,
   element: &'a VirtElement,
   context: &'a Context,
@@ -192,7 +224,7 @@ fn selector_matches_element<'a, 'b>(
     // a, b, c
     css_ast::Selector::Group(sel) => {
       for selector in &sel.selectors {
-        if selector_matches_element(&selector, element, context) {
+        if selector_matches_element2(&selector, element, context) {
           return true;
         }
       }
@@ -201,7 +233,7 @@ fn selector_matches_element<'a, 'b>(
     // a[b]
     css_ast::Selector::Combo(sel) => {
       for selector in &sel.selectors {
-        if !selector_matches_element(selector, element, context) {
+        if !selector_matches_element2(selector, element, context) {
           return false;
         }
       }
@@ -225,7 +257,7 @@ fn selector_matches_element<'a, 'b>(
     // ancestor selectors along the way. Ancestor selectors are always _leaf_ selectors.
     css_ast::Selector::Descendent(sel) => {
       // _may_ be a descendent element
-      if !selector_matches_element(&sel.descendent, element, context) {
+      if !selector_matches_element2(&sel.descendent, element, context) {
         return false;
       }
 
@@ -236,7 +268,7 @@ fn selector_matches_element<'a, 'b>(
         if let Some(ancestor_target) = ancestor_context.target() {
           if let VirtNode::Element(ancestor_element) = ancestor_target {
             // this will *always* be a leaf selector
-            if selector_matches_element(&sel.ancestor, ancestor_element, &ancestor_context) {
+            if selector_matches_element2(&sel.ancestor, ancestor_element, &ancestor_context) {
               return true;
             }
           }
@@ -274,12 +306,12 @@ fn selector_matches_element<'a, 'b>(
 
     // :not(a)
     css_ast::Selector::Not(not) => {
-      return !selector_matches_element(&not.selector, element, context);
+      return !selector_matches_element2(&not.selector, element, context);
     }
 
     // a > b
     css_ast::Selector::Child(sel) => {
-      if !selector_matches_element(&sel.child, element, context) {
+      if !selector_matches_element2(&sel.child, element, context) {
         return false;
       }
 
@@ -288,7 +320,7 @@ fn selector_matches_element<'a, 'b>(
         .and_then(|parent_context| {
           return parent_context.target().and_then(|parent_node| {
             if let VirtNode::Element(parent_element) = parent_node {
-              Some(selector_matches_element(
+              Some(selector_matches_element2(
                 &sel.parent,
                 &parent_element,
                 &parent_context,
@@ -302,7 +334,7 @@ fn selector_matches_element<'a, 'b>(
     }
     // a + b
     css_ast::Selector::Adjacent(sel) => {
-      if !selector_matches_element(&sel.next_sibling_selector, element, context) {
+      if !selector_matches_element2(&sel.next_sibling_selector, element, context) {
         return false;
       }
 
@@ -317,7 +349,7 @@ fn selector_matches_element<'a, 'b>(
             let sibling = children.get(i);
             if let Some(node) = sibling {
               if let VirtNode::Element(element) = node {
-                if selector_matches_element(
+                if selector_matches_element2(
                   &sel.selector,
                   &element,
                   &context.parent_context().unwrap().child(i, node),
@@ -336,7 +368,7 @@ fn selector_matches_element<'a, 'b>(
     }
     // a ~ b
     css_ast::Selector::Sibling(sel) => {
-      if !selector_matches_element(&sel.sibling_selector, element, context) {
+      if !selector_matches_element2(&sel.sibling_selector, element, context) {
         return false;
       }
 
@@ -351,7 +383,7 @@ fn selector_matches_element<'a, 'b>(
             let sibling = children.get(i);
             if let Some(node) = sibling {
               if let VirtNode::Element(element) = node {
-                if selector_matches_element(
+                if selector_matches_element2(
                   &sel.selector,
                   &element,
                   &context.parent_context().unwrap().child(i, node),
@@ -443,7 +475,7 @@ fn selector_matches_nested_element<'a>(
   if let Some(children) = parent.get_children() {
     for (i, child) in children.iter().enumerate() {
       if let VirtNode::Element(child_element) = child {
-        if selector_matches_element(selector, child_element, &context.child(i, parent)) {
+        if selector_matches_element2(selector, child_element, &context.child(i, parent)) {
           return true;
         }
       }
@@ -576,7 +608,7 @@ mod tests {
 
 fn parse_css_selector<'a>(selector: &'a str) -> Option<css_ast::Selector> {
   let rule = format!("{}{{}}", selector);
-  let ast: css_ast::Sheet = parse_css(&rule).unwrap();
+  let ast: css_ast::Sheet = parse_css(&rule, generate_seed().as_str()).unwrap();
   let rule = ast.rules.get(0).unwrap();
   match rule {
     css_ast::Rule::Style(style) => {

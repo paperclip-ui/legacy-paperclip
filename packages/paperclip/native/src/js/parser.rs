@@ -4,6 +4,7 @@ use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
 use crate::pc::parser::parse_tag;
 use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
+use crate::pc::runtime::{Context as PCContext};
 
 struct Context<'a, 'b> {
   tokenizer: &'b mut Tokenizer<'a>,
@@ -87,8 +88,12 @@ fn parse_not<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, P
 fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
   let mut pc_tokenizer =
     PCTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+  let mut pc_context = PCContext {
+    tokenizer: pc_tokenizer
+  };
+
   let node = ast::Expression::Node(Box::new(parse_tag(
-    &mut pc_tokenizer,
+    &mut pc_context,
     vec![context.id_seed.to_string()],
     None,
   )?));

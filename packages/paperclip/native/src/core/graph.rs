@@ -3,6 +3,7 @@ use crate::base::ast::Location;
 use crate::base::parser::ParseError;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
+use crate::core::id_generator::{generate_seed};
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};
 
@@ -241,7 +242,7 @@ impl<'a> Dependency {
   }
 
   fn from_css_source(source: String, uri: &String) -> Result<Dependency, ParseError> {
-    let expression_result = css_parser::parse(source.as_str());
+    let expression_result = css_parser::parse(source.as_str(), generate_seed().as_str());
     if let Err(err) = expression_result {
       return Err(err);
     }
@@ -260,7 +261,7 @@ impl<'a> Dependency {
     uri: &String,
     vfs: &VirtualFileSystem,
   ) -> Result<Dependency, ParseError> {
-    let expression_result = pc_parser::parse(source.as_str());
+    let expression_result = pc_parser::parse(source.as_str(), generate_seed().as_str());
 
     if let Err(err) = expression_result {
       return Err(err);

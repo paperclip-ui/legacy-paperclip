@@ -57,7 +57,7 @@ pub struct Context<'a> {
   exports: Exports,
   in_public_scope: bool,
   all_rules: Vec<virt::Rule>,
-  inc_declarations: Vec<virt::CSSStyleProperty>,
+  inc_declarations: Vec<virt::CSSStyleProperty>
 }
 
 #[derive(Clone, PartialEq)]
@@ -344,7 +344,7 @@ pub fn evaluate_expr<'a>(
     in_public_scope: public,
     exports: Exports::new(),
     all_rules: vec![],
-    inc_declarations: vec![],
+    inc_declarations: vec![]
   };
 
   if let Some(existing_exports) = existing_exports {
@@ -358,7 +358,7 @@ pub fn evaluate_expr<'a>(
   if expr.declarations.len() > 0 || context.inc_declarations.len() > 0 {
     // if element scope is provided, then the style block is inline, so we need to
     // insert a rule
-    if context.element_scope != None {
+    if let Some((id, _)) = context.element_scope {
       let selector_context = SelectorContext::from_context(&context);
       let mut style =
         evaluate_style_declarations(&expr.declarations, &mut context, &selector_context)?;
@@ -371,6 +371,7 @@ pub fn evaluate_expr<'a>(
       context.all_rules.insert(
         0,
         virt::Rule::Style(virt::StyleRule {
+          source_id: id.to_string(),
           selector_text: get_element_scope_selector(&context, true),
           style,
         }),
@@ -541,6 +542,7 @@ fn evaluate_condition_rule(
     child_context
       .all_rules
       .push(virt::Rule::Style(virt::StyleRule {
+        source_id: rule.id.to_string(),
         selector_text,
         style,
       }))
@@ -1001,6 +1003,7 @@ fn evaluate_style_rule2(
       context.all_rules.insert(
         rule_len,
         virt::Rule::Style(virt::StyleRule {
+          source_id: expr.id.to_string(),
           selector_text: selector_context.to_string(),
           style,
         }),

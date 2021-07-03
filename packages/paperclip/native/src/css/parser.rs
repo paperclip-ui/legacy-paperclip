@@ -7,12 +7,14 @@ use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::core::id_generator::{IDGenerator};
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
 pub struct Context<'a, 'b> {
   tokenizer: &'b mut Tokenizer<'a>,
   until: FUntil<'a>,
+  id_generator: IDGenerator
 }
 
 impl<'a, 'b> Context<'a, 'b> {
@@ -21,16 +23,17 @@ impl<'a, 'b> Context<'a, 'b> {
   }
 }
 
-pub fn parse<'a>(source: &'a str) -> Result<Sheet, ParseError> {
+pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Sheet, ParseError> {
   let mut tokenizer = Tokenizer::new(&source);
-  parse_with_tokenizer(&mut tokenizer, |_token| Ok(false))
+  parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
 }
 
 pub fn parse_with_tokenizer<'a>(
   tokenizer: &mut Tokenizer<'a>,
+  id_seed: &'a str,
   until: FUntil<'a>,
 ) -> Result<Sheet, ParseError> {
-  let mut context = Context { tokenizer, until };
+  let mut context = Context { tokenizer, until, id_generator: IDGenerator::new(id_seed.to_string()) };
 
   parse_sheet(&mut context)
 }
@@ -163,6 +166,7 @@ fn parse_style_rule2<'a, 'b>(
   let selector = parse_selector(context, is_child_without_amp_prefix)?;
   let (declarations, children, raw_after) = parse_declaration_body(context)?;
   Ok(StyleRule {
+    id: context.id_generator.new_id(),
     raws: BasicRaws::new(raw_before, raw_after),
     selector,
     declarations,
@@ -294,6 +298,7 @@ fn parse_condition_rule<'a, 'b>(
 
   Ok(ConditionRule {
     name,
+    id: context.id_generator.new_id(),
     condition_text,
     declarations,
     raws: BasicRaws::new(raw_before, raw_after),
@@ -1107,7 +1112,7 @@ mod tests {
     // comment
     ";
 
-    parse(source).unwrap();
+    parse(source, "id").unwrap();
   }
 
   #[test]
@@ -1197,7 +1202,7 @@ mod tests {
       }
     ";
 
-    parse(source).unwrap();
+    parse(source, "id").unwrap();
   }
 
   ///
@@ -1207,7 +1212,7 @@ mod tests {
   #[test]
   fn displays_an_error_for_unterminated_curly_bracket() {
     assert_eq!(
-      parse("div { "),
+      parse("div { ", "id"),
       Err(ParseError::unterminated(
         "Unterminated bracket.".to_string(),
         4,

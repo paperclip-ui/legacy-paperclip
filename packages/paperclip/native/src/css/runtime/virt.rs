@@ -137,6 +137,7 @@ impl fmt::Display for KeyframeRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRule {
+  pub source_id: String,
   pub selector_text: String,
   pub style: Vec<CSSStyleProperty>,
 }
