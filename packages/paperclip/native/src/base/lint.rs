@@ -1,8 +1,8 @@
-use super::ast::{Location};
+use super::ast::Location;
 
 pub enum Notice<'a> {
   Warning(Info<'a>),
-  Error(Info<'a>)
+  Error(Info<'a>),
 }
 
 pub struct Info<'a> {

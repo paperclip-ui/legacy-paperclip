@@ -73,7 +73,7 @@ impl Element {
   pub fn get_attribute<'a>(&self, name: &'a str) -> Option<Option<String>> {
     for (key, value) in &self.attributes {
       if (key == name) {
-        return Some(value.clone())
+        return Some(value.clone());
       }
     }
     None

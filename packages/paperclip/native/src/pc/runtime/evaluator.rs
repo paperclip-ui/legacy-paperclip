@@ -1881,7 +1881,6 @@ mod tests {
     .unwrap();
   }
 
-
   #[test]
   fn can_evaluate_class_pierce() {
     let result = __test__evaluate_source(
@@ -1892,7 +1891,6 @@ mod tests {
     .unwrap();
   }
 }
-
 
 pub fn __test__evaluate_source<'a>(code: &'a str) -> Result<EvalInfo, RuntimeError> {
   let mut graph = DependencyGraph::new();
