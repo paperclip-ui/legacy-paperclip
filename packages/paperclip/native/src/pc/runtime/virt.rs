@@ -73,7 +73,7 @@ impl Element {
   pub fn get_attribute<'a>(&self, name: &'a str) -> Option<Option<String>> {
     for (key, value) in &self.attributes {
       if (key == name) {
-        return Some(value.clone())
+        return Some(value.clone());
       }
     }
     None
@@ -129,15 +129,9 @@ impl Node {
   }
   pub fn get_children<'a>(&'a self) -> Option<&'a Vec<Node>> {
     match self {
-      Node::Element(value) => {
-        Some(&value.children)
-      }
-      Node::Fragment(value) => {
-        Some(&value.children)
-      }
-      _ => {
-        None
-      }
+      Node::Element(value) => Some(&value.children),
+      Node::Fragment(value) => Some(&value.children),
+      _ => None,
     }
   }
 }

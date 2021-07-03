@@ -18,7 +18,7 @@ a b {
 
 
 <a>
-  <a> 
+  <a>
     <b />
   </a>
   <b>
@@ -38,7 +38,7 @@ need to traverse _down_ from the outermost selector ast. For example "a b" can b
 If we're applying logic via `matches_element("a b", b, b_path, root)`, then we have 2 options:
 
 
-1. match specific leafs and traverse _up_ to make sure the selector matches with ancestors. 
+1. match specific leafs and traverse _up_ to make sure the selector matches with ancestors.
 2. traverse starting from ancestors - this will cause duplicate items to be added to the matched selectors (see above). Very expensive since this demands extra
 recursion: `a b -> <a><a><b /></a></a>` would match b _twice_
 
@@ -82,7 +82,7 @@ Doubly nested selectors? `a > b[href] c` would yield:
   }
 }
 
-Combo selectors? `a b, c > d` would yield: 
+Combo selectors? `a b, c > d` would yield:
 
 {
   type: "Combo",
@@ -106,32 +106,26 @@ use crate::pc::parser::parse as parse_pc;
 
 #[derive(Debug)]
 struct Context<'a> {
-  path: Vec<(usize, &'a VirtNode)>
+  path: Vec<(usize, &'a VirtNode)>,
 }
 
 impl<'a> Context<'a> {
   fn new() -> Context<'a> {
-    Context {
-      path: Vec::new()
-    }
+    Context { path: Vec::new() }
   }
-  fn child(&self, index: usize, parent:&'a VirtNode) -> Context<'a> {
+  fn child(&self, index: usize, parent: &'a VirtNode) -> Context<'a> {
     let mut path = self.path.clone();
     path.push((index, parent));
-    Context {
-      path
-    }
+    Context { path }
   }
   fn parent_context(&self) -> Option<Context<'a>> {
     if self.path.len() == 0 {
-      return None
+      return None;
     }
     let mut path = self.path.clone();
     path.pop();
 
-    Some(Context {
-      path
-    })
+    Some(Context { path })
   }
   fn parent_element(&self) -> Option<&'a VirtNode> {
     if let Some((index, parent)) = self.path.last() {
@@ -140,15 +134,13 @@ impl<'a> Context<'a> {
     return None;
   }
   fn index(&self) -> Option<usize> {
-    return self.path.last().and_then(|(index, _)| {
-      return Some(*index)
-    })
+    return self.path.last().and_then(|(index, _)| return Some(*index));
   }
   fn target(&self) -> Option<&'a VirtNode> {
     if let Some((index, parent)) = self.path.last() {
-      return parent.get_children().and_then(|children| {
-        children.get(*index)
-      })
+      return parent
+        .get_children()
+        .and_then(|children| children.get(*index));
     }
     return None;
   }
@@ -178,7 +170,6 @@ fn add_matching_elements<'a, 'b>(
   context: Context,
   matching_elements: &'b mut Vec<&'a VirtElement>,
 ) {
-
   if let VirtNode::Element(element) = node {
     if selector_matches_element(selector, element, &context) {
       matching_elements.push(element);
@@ -190,13 +181,12 @@ fn add_matching_elements<'a, 'b>(
       add_matching_elements(selector, child, context.child(i, node), matching_elements);
     }
   }
-
 }
 
 fn selector_matches_element<'a, 'b>(
   selector: &css_ast::Selector,
   element: &'a VirtElement,
-  context: &'a Context
+  context: &'a Context,
 ) -> bool {
   match selector {
     // a, b, c
@@ -225,8 +215,6 @@ fn selector_matches_element<'a, 'b>(
 
     // :nth-child(2n)
     css_ast::Selector::PseudoParamElement(sel) => {
-
-
       // TODO - need to do simple parse logic
       return true;
     }
@@ -236,7 +224,6 @@ fn selector_matches_element<'a, 'b>(
     // starting from the right-most descendent -- that recursively looks up using corresponding
     // ancestor selectors along the way. Ancestor selectors are always _leaf_ selectors.
     css_ast::Selector::Descendent(sel) => {
-
       // _may_ be a descendent element
       if !selector_matches_element(&sel.descendent, element, context) {
         return false;
@@ -248,7 +235,6 @@ fn selector_matches_element<'a, 'b>(
       while let Some(ancestor_context) = ancestor_context_option {
         if let Some(ancestor_target) = ancestor_context.target() {
           if let VirtNode::Element(ancestor_element) = ancestor_target {
-
             // this will *always* be a leaf selector
             if selector_matches_element(&sel.ancestor, ancestor_element, &ancestor_context) {
               return true;
@@ -265,11 +251,17 @@ fn selector_matches_element<'a, 'b>(
 
     // :has
     css_ast::Selector::SubElement(sel) => {
-      return context.target().and_then(|self_context| {
-        Some(selector_matches_nested_element(&sel.selector, self_context, &context))
-      }).unwrap_or(false);
+      return context
+        .target()
+        .and_then(|self_context| {
+          Some(selector_matches_nested_element(
+            &sel.selector,
+            self_context,
+            &context,
+          ))
+        })
+        .unwrap_or(false);
     }
-
 
     // :global(a)
     css_ast::Selector::Global(_)
@@ -291,16 +283,22 @@ fn selector_matches_element<'a, 'b>(
         return false;
       }
 
-      return context.parent_context()
-      .and_then(|parent_context| {
-        return parent_context.target().and_then(|parent_node| {
-          if let VirtNode::Element(parent_element) = parent_node {
-            Some(selector_matches_element(&sel.parent, &parent_element, &parent_context))
-          } else {
-            None
-          }
-        });
-      }).unwrap_or(false);
+      return context
+        .parent_context()
+        .and_then(|parent_context| {
+          return parent_context.target().and_then(|parent_node| {
+            if let VirtNode::Element(parent_element) = parent_node {
+              Some(selector_matches_element(
+                &sel.parent,
+                &parent_element,
+                &parent_context,
+              ))
+            } else {
+              None
+            }
+          });
+        })
+        .unwrap_or(false);
     }
     // a + b
     css_ast::Selector::Adjacent(sel) => {
@@ -308,30 +306,33 @@ fn selector_matches_element<'a, 'b>(
         return false;
       }
 
-      return context.parent_element().and_then(|parent| {
-        parent.get_children()
-      })
-      .and_then(|children| {
+      return context
+        .parent_element()
+        .and_then(|parent| parent.get_children())
+        .and_then(|children| {
+          let index = context.index().unwrap();
 
-        
-        let index = context.index().unwrap();
+          // <a />ff<b /> is totally valid - just find next adjascent element
+          for i in (0..index).rev() {
+            let sibling = children.get(i);
+            if let Some(node) = sibling {
+              if let VirtNode::Element(element) = node {
+                if selector_matches_element(
+                  &sel.selector,
+                  &element,
+                  &context.parent_context().unwrap().child(i, node),
+                ) {
+                  return Some(true);
+                }
 
-        // <a />ff<b /> is totally valid - just find next adjascent element
-        for i in (0..index).rev() {
-          let sibling = children.get(i);
-          if let Some(node) = sibling {
-            if let VirtNode::Element(element) = node {
-              if selector_matches_element(&sel.selector, &element, &context.parent_context().unwrap().child(i, node)) {
-                return Some(true);
+                return Some(false);
               }
-
-              return Some(false);
             }
           }
-        }
 
-        Some(false)
-      }).unwrap_or(false);
+          Some(false)
+        })
+        .unwrap_or(false);
     }
     // a ~ b
     css_ast::Selector::Sibling(sel) => {
@@ -339,50 +340,56 @@ fn selector_matches_element<'a, 'b>(
         return false;
       }
 
-      return context.parent_element().and_then(|parent| {
-        parent.get_children()
-      })
-      .and_then(|children| {
+      return context
+        .parent_element()
+        .and_then(|parent| parent.get_children())
+        .and_then(|children| {
+          let index = context.index().unwrap();
 
-        let index = context.index().unwrap();
-
-        // <a />ff<b /> is totally valid - just find next adjascent element
-        for i in (0..index).rev() {
-          let sibling = children.get(i);
-          if let Some(node) = sibling {
-            if let VirtNode::Element(element) = node {
-              if selector_matches_element(&sel.selector, &element, &context.parent_context().unwrap().child(i, node)) {
-                return Some(true);
+          // <a />ff<b /> is totally valid - just find next adjascent element
+          for i in (0..index).rev() {
+            let sibling = children.get(i);
+            if let Some(node) = sibling {
+              if let VirtNode::Element(element) = node {
+                if selector_matches_element(
+                  &sel.selector,
+                  &element,
+                  &context.parent_context().unwrap().child(i, node),
+                ) {
+                  return Some(true);
+                }
               }
             }
           }
-        }
 
-        Some(false)
-      }).unwrap_or(false);
+          Some(false)
+        })
+        .unwrap_or(false);
     }
     // #id
     css_ast::Selector::Id(sel) => {
-      return element.get_attribute("id").and_then(|id_attr| {
-        return id_attr;
-      }).and_then(|id| {
-        Some(id == sel.id)
-      }).unwrap_or(false);
+      return element
+        .get_attribute("id")
+        .and_then(|id_attr| {
+          return id_attr;
+        })
+        .and_then(|id| Some(id == sel.id))
+        .unwrap_or(false);
     }
     // .class
     css_ast::Selector::Class(sel) => {
-      return element.get_attribute("class").
-      and_then(|value_option| {
-        value_option
-      })
-      .and_then(|classes| {
-        for class in classes.split(" ").into_iter() {
-          if class == sel.class_name {
-            return Some(true);
+      return element
+        .get_attribute("class")
+        .and_then(|value_option| value_option)
+        .and_then(|classes| {
+          for class in classes.split(" ").into_iter() {
+            if class == sel.class_name {
+              return Some(true);
+            }
           }
-        }
-        Some(false)
-      }).unwrap_or(false);
+          Some(false)
+        })
+        .unwrap_or(false);
     }
     // *
     css_ast::Selector::AllSelector => {
@@ -415,7 +422,8 @@ fn selector_matches_element<'a, 'b>(
               _ => {}
             }
             return Some(false);
-          }).unwrap_or(false);
+          })
+          .unwrap_or(false);
       } else {
         if element.get_attribute(&sel.name) != None {
           return true;
@@ -427,7 +435,11 @@ fn selector_matches_element<'a, 'b>(
   false
 }
 
-fn selector_matches_nested_element<'a>(selector: &css_ast::Selector, parent: &'a VirtNode, context: &'a Context) -> bool {
+fn selector_matches_nested_element<'a>(
+  selector: &css_ast::Selector,
+  parent: &'a VirtNode,
+  context: &'a Context,
+) -> bool {
   if let Some(children) = parent.get_children() {
     for (i, child) in children.iter().enumerate() {
       if let VirtNode::Element(child_element) = child {
@@ -493,7 +505,6 @@ mod tests {
     assert_eq!(elements.len(), 1);
   }
 
-
   #[test]
   fn can_match_nested_adj_selector() {
     let selector_source = "a + b";
@@ -523,12 +534,9 @@ mod tests {
     assert_eq!(elements.len(), 1);
   }
 
-
   #[test]
   fn can_match_various_selectors() {
-
     let cases = [
-
       // element selectors
       ("div", "<div /><span />", 1),
       (".div", "<div class='div b c' /><div class='div2' />", 1),
@@ -537,12 +545,24 @@ mod tests {
       ("a[href]", "<a href='#' /><a href /><div />", 2),
       ("a:before", "<a href='#' />", 1),
       ("div:nth-child(2)", "<div /><div /><div /><div />", 4),
-      ("div:not(.a)", "<div class='a' /><div class='b c' /><div class='b a' />" , 1),
-      ("a b c", "<a><b><c /></b></a>" , 1),
-      ("a c", "<a><b><c /></b><c /></a>" , 2),
-      ("a > c", "<a><b><c /></b><c /></a>" , 1),
-      (".a, .b", "<div class='a' /><div class='b c' /><div class='b a' />" , 3),
-      ("*", "<div class='a' /><div class='b c' /><div class='b a' />" , 3)
+      (
+        "div:not(.a)",
+        "<div class='a' /><div class='b c' /><div class='b a' />",
+        1,
+      ),
+      ("a b c", "<a><b><c /></b></a>", 1),
+      ("a c", "<a><b><c /></b><c /></a>", 2),
+      ("a > c", "<a><b><c /></b><c /></a>", 1),
+      (
+        ".a, .b",
+        "<div class='a' /><div class='b c' /><div class='b a' />",
+        3,
+      ),
+      (
+        "*",
+        "<div class='a' /><div class='b c' /><div class='b a' />",
+        3,
+      ),
     ];
 
     for (selector, html, count) in cases.iter() {
