@@ -31,7 +31,7 @@ use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
 use crate::base::utils::{
-  get_document_style_private_scope, get_document_style_public_scope, is_relative_path,
+  get_document_style_private_scope, get_document_style_public_scope,
 };
 
 use crate::base::ast::{ExprSource, Location};

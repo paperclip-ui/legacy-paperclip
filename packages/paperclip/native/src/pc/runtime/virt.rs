@@ -69,6 +69,17 @@ impl fmt::Display for Element {
   }
 }
 
+impl Element {
+  pub fn get_attribute<'a>(&self, name: &'a str) -> Option<Option<String>> {
+    for (key, value) in &self.attributes {
+      if (key == name) {
+        return Some(value.clone())
+      }
+    }
+    None
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
   pub annotations: Option<js_virt::JsObject>,

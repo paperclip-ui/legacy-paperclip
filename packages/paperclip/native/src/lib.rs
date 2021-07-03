@@ -20,7 +20,7 @@ mod pc;
 
 use crate::pc::runtime::evaluator::EngineMode;
 use ::futures::executor::block_on;
-use engine::{Engine, EngineError};
+use engine::{Engine};
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
@@ -101,9 +101,9 @@ impl NativeEngine {
       listener.call1(&this, &arg).unwrap();
     }));
   }
-  // pub fn inspect_node(&mut self, node_path: Vec<i32>, document_uri: String) -> JsValue {
+  pub fn lint(&mut self, uri: String) {
 
-  // }
+  }
   pub fn get_loaded_ast(&mut self, uri: String) -> JsValue {
     console_error_panic_hook::set_once();
     let result = self.target.get_loaded_ast(&uri);

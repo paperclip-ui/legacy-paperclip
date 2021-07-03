@@ -26,6 +26,7 @@ const getEngine = async (): Promise<EngineDelegate> => {
   if (_engine) {
     return _engine;
   }
+  console.log("ENG");
   return (_engine = await createEngineDelegate({}));
 };
 
@@ -127,6 +128,7 @@ module.exports = function(source: string) {
 };
 
 const activatePlugin = (plugin, compiler) => {
+  console.log("ACTIVATE");
   const { inputFileSystem, name, context, hooks } = compiler;
   plugin.apply({
     inputFileSystem,

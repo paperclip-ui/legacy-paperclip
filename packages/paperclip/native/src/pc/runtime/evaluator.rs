@@ -1810,12 +1810,12 @@ mod tests {
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
     );
-    let _node = evaluate_source(case);
+    let _node = __test__evaluate_source(case);
   }
 
   #[test]
   fn catches_infinite_part_loop() {
-    let result = evaluate_source(
+    let result = __test__evaluate_source(
       "
       <fragment component as='test'>
         <div>
@@ -1840,7 +1840,7 @@ mod tests {
 
   #[test]
   fn catches_recursion_in_multiple_parts() {
-    let result = evaluate_source(
+    let result = __test__evaluate_source(
       "
       <fragment component as='test2'>
         <div>
@@ -1870,7 +1870,7 @@ mod tests {
 
   #[test]
   fn allows_self_to_be_called_in_preview() {
-    evaluate_source(
+    __test__evaluate_source(
       "
       Hello
       <preview>
@@ -1881,35 +1881,37 @@ mod tests {
     .unwrap();
   }
 
-  fn evaluate_source<'a>(code: &'a str) -> Result<EvalInfo, RuntimeError> {
-    let mut graph = DependencyGraph::new();
-    let uri = "some-file.pc".to_string();
-    let vfs = VirtualFileSystem::new(
-      Box::new(|_| "".to_string()),
-      Box::new(|_| true),
-      Box::new(|_, uri| Some(uri.to_string())),
-    );
-    graph.dependencies.insert(
-      uri.clone(),
-      Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
-    );
-
-    evaluate(
-      &uri,
-      &graph,
-      &vfs,
-      &BTreeMap::new(),
-      &EngineMode::SingleFrame,
-    )
-  }
 
   #[test]
   fn can_evaluate_class_pierce() {
-    let result = evaluate_source(
+    let result = __test__evaluate_source(
       "
       <div something='$something $that' />
     ",
     )
     .unwrap();
   }
+}
+
+
+pub fn __test__evaluate_source<'a>(code: &'a str) -> Result<EvalInfo, RuntimeError> {
+  let mut graph = DependencyGraph::new();
+  let uri = "some-file.pc".to_string();
+  let vfs = VirtualFileSystem::new(
+    Box::new(|_| "".to_string()),
+    Box::new(|_| true),
+    Box::new(|_, uri| Some(uri.to_string())),
+  );
+  graph.dependencies.insert(
+    uri.clone(),
+    Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
+  );
+
+  evaluate(
+    &uri,
+    &graph,
+    &vfs,
+    &BTreeMap::new(),
+    &EngineMode::SingleFrame,
+  )
 }

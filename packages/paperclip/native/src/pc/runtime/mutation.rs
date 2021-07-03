@@ -1,6 +1,5 @@
 use super::virt::Node;
 use crate::base::ast::ExprSource;
-use crate::base::ast::Location;
 use crate::css::runtime::mutation as css_mutation;
 use crate::js::runtime::virt as js_virt;
 use serde::Serialize;

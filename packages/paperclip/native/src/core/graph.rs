@@ -103,7 +103,7 @@ impl DependencyGraph {
       let deps = dep
         .dependencies
         .iter()
-        .map(|(id, uri)| uri)
+        .map(|(_, uri)| uri)
         .collect::<Vec<&String>>();
 
       for dep_uri in deps {
