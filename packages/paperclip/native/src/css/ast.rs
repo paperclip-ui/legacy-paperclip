@@ -23,6 +23,14 @@ impl fmt::Display for Declaration {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "cssObjectKind")]
+pub enum CSSObject {
+  Declaration(Declaration),
+  Rule(Rule),
+  Sheet(Sheet)
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyValueDeclaration {
   pub name: String,
   pub value: String,
@@ -51,6 +59,7 @@ pub struct Content {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Include {
+  pub id: String,
   #[serde(rename = "mixinName")]
   pub mixin_name: IncludeReference,
   pub declarations: Vec<Declaration>,
@@ -118,6 +127,7 @@ impl fmt::Display for IncludeReferencePart {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct CharsetRule {
+  pub id: String,
   pub raws: BasicRaws,
   pub value: String,
 }
@@ -147,6 +157,26 @@ pub enum Rule {
   Keyframes(KeyframesRule),
 }
 
+impl Rule {
+  pub fn get_id(&self) -> &String {
+    match self {
+      Rule::Comment(rule) => &rule.id,
+      Rule::Style(rule) => &rule.id,
+      Rule::Charset(value) => &value.id,
+      Rule::Export(export) => &export.id,
+      Rule::FontFace(rule) => &rule.id,
+      Rule::Media(rule) => &rule.id,
+      Rule::Mixin(rule) => &rule.id,
+      Rule::Include(rule) => &rule.id,
+      Rule::Namespace(value) => &value,
+      Rule::Supports(value) => &value.id,
+      Rule::Keyframes(rule) => &rule.id,
+      Rule::Document(rule) => &rule.id,
+      Rule::Page(rule) => &rule.id,
+    }
+  }
+}
+
 impl fmt::Display for Rule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
@@ -169,6 +199,7 @@ impl fmt::Display for Rule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Comment {
+  pub id: String,
   pub value: String,
   pub location: Location,
 }
@@ -234,6 +265,7 @@ pub struct ChildStyleRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FontFaceRule {
+  pub id: String,
   pub declarations: Vec<Declaration>,
   pub raws: BasicRaws,
   pub location: Location,
@@ -253,6 +285,7 @@ impl fmt::Display for FontFaceRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ExportRule {
+  pub id: String,
   pub rules: Vec<Rule>,
   pub location: Location,
   pub raws: BasicRaws,
@@ -297,6 +330,7 @@ impl fmt::Display for ConditionRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinRule {
+  pub id: String,
   pub name: MixinName,
   pub raws: BasicRaws,
   pub location: Location,
@@ -327,6 +361,7 @@ pub struct MixinName {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframesRule {
+  pub id: String,
   pub name: String,
   pub rules: Vec<KeyframeRule>,
   pub location: Location,

@@ -1,32 +1,30 @@
-use serde::Serialize;
 use super::ast::Location;
+use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub enum NoticeLevel {
   Warning,
-  Error
+  Error,
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Notice {
-
   // level of warning
   level: NoticeLevel,
 
   // source where the error is
-  source_location: Location,
+  source_id: String,
 
   // message to the user
   message: String,
 }
 
 impl Notice {
-  pub fn new_warning<'a>(message: &'a str, source_location: Location) -> Notice {
+  pub fn new_warning<'a>(message: &'a str, source_id: String) -> Notice {
     Notice {
       level: NoticeLevel::Warning,
-      source_location,
-      message: message.to_string()
+      source_id,
+      message: message.to_string(),
     }
   }
 }

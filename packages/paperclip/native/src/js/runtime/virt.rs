@@ -46,6 +46,17 @@ impl JsValue {
       JsValue::JsArray(value) => &value.source,
     }
   }
+  pub fn get_source_id(&self) -> &String {
+    match self {
+      JsValue::JsUndefined(value) => &value.source_id,
+      JsValue::JsNode(value) => &value.get_source_id(),
+      JsValue::JsBoolean(value) => &value.source_id,
+      JsValue::JsNumber(value) => &value.source_id,
+      JsValue::JsString(value) => &value.source_id,
+      JsValue::JsObject(value) => &value.source_id,
+      JsValue::JsArray(value) => &value.source_id,
+    }
+  }
 }
 
 impl fmt::Display for JsValue {
@@ -64,36 +75,42 @@ impl fmt::Display for JsValue {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsString {
+  pub source_id: String,
   pub source: ExprSource,
   pub value: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsBoolean {
+  pub source_id: String,
   pub source: ExprSource,
   pub value: bool,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsNumber {
+  pub source_id: String,
   pub source: ExprSource,
   pub value: f64,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsUndefined {
+  pub source_id: String,
   pub source: ExprSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsObject {
+  pub source_id: String,
   pub source: ExprSource,
   pub values: HashMap<String, JsValue>,
 }
 
 impl JsObject {
-  pub fn new(source: ExprSource) -> JsObject {
+  pub fn new(source_id: String, source: ExprSource) -> JsObject {
     JsObject {
+      source_id,
       values: HashMap::new(),
       source,
     }
@@ -102,13 +119,15 @@ impl JsObject {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsArray {
+  pub source_id: String,
   pub source: ExprSource,
   pub values: Vec<JsValue>,
 }
 
 impl JsArray {
-  pub fn new(source: ExprSource) -> JsArray {
+  pub fn new(source_id: String, source: ExprSource) -> JsArray {
     JsArray {
+      source_id,
       values: vec![],
       source,
     }

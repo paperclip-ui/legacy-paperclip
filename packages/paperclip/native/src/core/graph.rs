@@ -1,9 +1,9 @@
 use super::vfs::VirtualFileSystem;
 use crate::base::ast::Location;
 use crate::base::parser::ParseError;
+use crate::core::id_generator::generate_seed;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
-use crate::core::id_generator::{generate_seed};
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};
 

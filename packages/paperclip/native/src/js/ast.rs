@@ -20,18 +20,21 @@ pub enum Expression {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Str {
+  pub id: String,
   pub value: String,
   pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Number {
+  pub id: String,
   pub value: String,
   pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Boolean {
+  pub id: String,
   pub value: bool,
   pub location: Location,
 }
@@ -68,10 +71,25 @@ impl Expression {
       Expression::Object(expr) => &expr.location,
     }
   }
+  pub fn get_id(&self) -> &String {
+    match self {
+      Expression::Reference(expr) => &expr.id,
+      Expression::Conjunction(expr) => &expr.id,
+      Expression::Group(expr) => &expr.id,
+      Expression::Not(expr) => &expr.id,
+      Expression::Node(expr) => expr.get_id(),
+      Expression::String(expr) => &expr.id,
+      Expression::Boolean(expr) => &expr.id,
+      Expression::Number(expr) => &expr.id,
+      Expression::Array(expr) => &expr.id,
+      Expression::Object(expr) => &expr.id,
+    }
+  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Group {
+  pub id: String,
   pub location: Location,
   pub expression: Box<Expression>,
 }
@@ -84,6 +102,7 @@ impl fmt::Display for Group {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Not {
+  pub id: String,
   pub location: Location,
   pub expression: Box<Expression>,
 }
@@ -96,6 +115,7 @@ impl fmt::Display for Not {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Conjunction {
+  pub id: String,
   pub location: Location,
   pub left: Box<Expression>,
   pub operator: ConjunctionOperatorKind,
@@ -126,6 +146,7 @@ impl fmt::Display for Conjunction {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Array {
+  pub id: String,
   pub values: Vec<Expression>,
   pub location: Location,
 }
@@ -139,6 +160,7 @@ impl fmt::Display for Array {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Object {
+  pub id: String,
   pub properties: Vec<Property>,
   pub location: Location,
 }
@@ -172,6 +194,7 @@ impl fmt::Display for Property {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Reference {
+  pub id: String,
   pub location: Location,
   pub path: Vec<ReferencePart>,
 }

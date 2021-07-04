@@ -99,11 +99,11 @@ use super::evaluator::{
 };
 use super::virt::{Element as VirtElement, Node as VirtNode};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
+use crate::core::id_generator::generate_seed;
 use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast as css_ast;
 use crate::css::parser::parse as parse_css;
 use crate::pc::parser::parse as parse_pc;
-use crate::core::id_generator::{generate_seed};
 
 #[derive(Debug)]
 struct Context<'a> {
@@ -160,44 +160,49 @@ pub fn get_matching_elements<'a, 'b>(
 
   let mut matching_elements: Vec<&'a VirtElement> = Vec::new();
 
-
-  traverse_tree(&selector, document, Context::new(), &mut |child, context| {
-    if selector_matches_element2(&selector, child, context) {
-      matching_elements.push(child);
-    }
-    true
-  });
+  traverse_tree(
+    &selector,
+    document,
+    Context::new(),
+    &mut |child, context| {
+      if selector_matches_element2(&selector, child, context) {
+        matching_elements.push(child);
+      }
+      true
+    },
+  );
 
   return matching_elements;
 }
 
-
 pub fn find_one_matching_element<'a, 'b>(
   selector_text: &'b str,
-  document: &'a VirtNode
+  document: &'a VirtNode,
 ) -> Option<&'a VirtElement> {
-
-  
   let selector = parse_css_selector(selector_text).unwrap();
   let mut found: Option<&'a VirtElement> = None;
-  traverse_tree(&selector, document, Context::new(), &mut |child, context| {
-    if selector_matches_element2(&selector, child, context) {
-      found = Some(child);
-      false
-    } else {
-      true
-    }
-  });
+  traverse_tree(
+    &selector,
+    document,
+    Context::new(),
+    &mut |child, context| {
+      if selector_matches_element2(&selector, child, context) {
+        found = Some(child);
+        false
+      } else {
+        true
+      }
+    },
+  );
 
   return found;
 }
-
 
 fn traverse_tree<'a>(
   selector: &css_ast::Selector,
   node: &'a VirtNode,
   context: Context,
-  each: &mut FnMut(&'a VirtElement, &Context) -> bool
+  each: &mut FnMut(&'a VirtElement, &Context) -> bool,
 ) -> bool {
   if let VirtNode::Element(element) = node {
     if !each(element, &context) {

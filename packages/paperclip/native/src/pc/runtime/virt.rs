@@ -7,6 +7,7 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
+  pub source_id: String,
   pub source: ExprSource,
   pub children: Vec<Node>,
 }
@@ -22,7 +23,12 @@ impl fmt::Display for Fragment {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
+
+  pub source_id: String,
+
   #[serde(rename = "source")]
+  
+  // Deprecated, use source_id instead
   pub source: ExprSource,
   pub annotations: Option<js_virt::JsObject>,
 
@@ -34,6 +40,9 @@ pub struct Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
+  pub source_id: String,
+
+  // Deprecated, use source_id instead
   pub source: ExprSource,
   pub sheet: css_virt::CSSSheet,
 }
@@ -82,7 +91,10 @@ impl Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
+  pub source_id: String,
   pub annotations: Option<js_virt::JsObject>,
+
+  // Deprecated, use source_id instead
   pub source: ExprSource,
   pub value: String,
 }
@@ -127,6 +139,15 @@ impl Node {
       Node::StyleElement(value) => &value.source,
     }
   }
+  pub fn get_source_id(&self) -> &String {
+    match self {
+      Node::Element(value) => &value.source_id,
+      Node::Text(value) => &value.source_id,
+      Node::Fragment(value) => &value.source_id,
+      Node::StyleElement(value) => &value.source_id,
+    }
+  }
+  
   pub fn get_children<'a>(&'a self) -> Option<&'a Vec<Node>> {
     match self {
       Node::Element(value) => Some(&value.children),

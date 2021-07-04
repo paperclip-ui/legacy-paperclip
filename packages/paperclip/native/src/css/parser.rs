@@ -7,14 +7,14 @@ use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
-use crate::core::id_generator::{IDGenerator};
+use crate::core::id_generator::IDGenerator;
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
 pub struct Context<'a, 'b> {
   tokenizer: &'b mut Tokenizer<'a>,
   until: FUntil<'a>,
-  id_generator: IDGenerator
+  id_generator: IDGenerator,
 }
 
 impl<'a, 'b> Context<'a, 'b> {
@@ -33,7 +33,11 @@ pub fn parse_with_tokenizer<'a>(
   id_seed: &'a str,
   until: FUntil<'a>,
 ) -> Result<Sheet, ParseError> {
-  let mut context = Context { tokenizer, until, id_generator: IDGenerator::new(id_seed.to_string()) };
+  let mut context = Context {
+    tokenizer,
+    until,
+    id_generator: IDGenerator::new(id_seed.to_string()),
+  };
 
   parse_sheet(&mut context)
 }
@@ -132,6 +136,7 @@ fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
   let raws_after = context.tokenizer.eat_whitespace();
 
   Ok(Rule::Comment(Comment {
+    id: context.id_generator.new_id(),
     value: buffer.to_string(),
     location: Location::new(start, pos),
   }))
@@ -211,6 +216,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
         context.tokenizer.next_expect(Token::Semicolon)?;
         let raw_after = context.tokenizer.eat_whitespace();
         Ok(Rule::Charset(CharsetRule {
+          id: context.id_generator.new_id(),
           value: value.to_string(),
           raws: BasicRaws::new(raw_before, raw_after),
         }))
@@ -277,6 +283,7 @@ fn parse_export_rule<'a, 'b>(
   let raw_after = context.tokenizer.eat_whitespace();
 
   Ok(ExportRule {
+    id: context.id_generator.new_id(),
     rules,
     raws: BasicRaws::new(raw_before, raw_after),
     location: Location::new(start, context.tokenizer.utf16_pos),
@@ -323,6 +330,7 @@ fn parse_mixin_rule<'a, 'b>(
   eat_superfluous(context)?;
   let (declarations, rules, raw_after) = parse_declaration_body(context)?;
   Ok(MixinRule {
+    id: context.id_generator.new_id(),
     location: Location::new(start, context.tokenizer.utf16_pos),
     raws: BasicRaws::new(raw_start, raw_after),
     name: MixinName {
@@ -341,6 +349,7 @@ fn parse_font_face_rule<'a, 'b>(
   let start = context.tokenizer.utf16_pos;
   let (declarations, _children, raw_after) = parse_declaration_body(context)?;
   Ok(FontFaceRule {
+    id: context.id_generator.new_id(),
     raws: BasicRaws::new(raw_before, raw_after),
     declarations,
     location: Location::new(start, context.tokenizer.utf16_pos),
@@ -371,6 +380,7 @@ fn parse_keyframes_rule<'a, 'b>(
   eat_superfluous(context)?;
 
   Ok(KeyframesRule {
+    id: context.id_generator.new_id(),
     name,
     rules,
     raws: BasicRaws::new(raw_before, raw_after),
@@ -981,6 +991,7 @@ fn parse_include<'a, 'b>(
   };
 
   Ok(Include {
+    id: context.id_generator.new_id(),
     mixin_name,
     raws: BasicRaws::new(raw_before, raw_after),
     rules,

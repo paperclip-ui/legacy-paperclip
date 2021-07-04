@@ -3,6 +3,7 @@ use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph, GraphError};
+use crate::core::id_generator::generate_seed;
 use crate::core::vfs::{FileExistsFn, FileReaderFn, FileResolverFn, VirtualFileSystem};
 use crate::css::runtime::diff::diff as diff_css;
 use crate::css::runtime::evaluator::evaluate as evaluate_css;
@@ -15,7 +16,6 @@ use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
-use crate::core::id_generator::{generate_seed};
 use ::futures::executor::block_on;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
@@ -120,7 +120,7 @@ pub struct Engine {
   pub needs_reval: BTreeMap<String, bool>,
   // pub import_graph: HashMap<String, BTreeMap<String, DependencyExport>>,
   pub dependency_graph: DependencyGraph,
-  pub mode: EngineMode
+  pub mode: EngineMode,
 }
 
 impl Engine {
@@ -136,7 +136,7 @@ impl Engine {
       needs_reval: BTreeMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
       dependency_graph: DependencyGraph::new(),
-      mode
+      mode,
     }
   }
 
