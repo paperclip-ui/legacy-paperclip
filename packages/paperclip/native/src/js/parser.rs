@@ -2,9 +2,9 @@ use super::ast;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
+use crate::core::id_generator::IDGenerator;
 use crate::pc::parser::parse_tag;
 use crate::pc::parser::Context as PCContext;
-use crate::core::id_generator::{IDGenerator};
 use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
 
 struct Context<'a, 'b> {
@@ -21,7 +21,10 @@ pub fn parse_with_tokenizer<'a>(
   tokenizer: &mut Tokenizer<'a>,
   id_seed: String,
 ) -> Result<ast::Expression, ParseError> {
-  let mut context = Context { tokenizer, id_generator: IDGenerator::new(id_seed) };
+  let mut context = Context {
+    tokenizer,
+    id_generator: IDGenerator::new(id_seed),
+  };
   parse_top(&mut context)
 }
 
@@ -89,22 +92,16 @@ fn parse_not<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, P
 }
 
 fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
-
   let seed = context.id_generator.new_seed();
-
 
   let mut pc_tokenizer =
     PCTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
   let mut pc_context = PCContext {
     tokenizer: pc_tokenizer,
-    id_generator: IDGenerator::new(seed.to_string())
+    id_generator: IDGenerator::new(seed.to_string()),
   };
 
-  let node = ast::Expression::Node(Box::new(parse_tag(
-    &mut pc_context,
-    vec![seed],
-    None,
-  )?));
+  let node = ast::Expression::Node(Box::new(parse_tag(&mut pc_context, vec![seed], None)?));
   context.tokenizer.set_pos(&pc_context.tokenizer.get_pos());
   Ok(node)
 }

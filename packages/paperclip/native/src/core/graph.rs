@@ -74,6 +74,26 @@ impl DependencyGraph {
       .collect::<Vec<String>>();
   }
 
+  pub fn get_expression_by_id<'a>(&'a self, source_id: &String) -> Option<(String, pc_ast::PCObject<'a>)> {
+    for (uri, dep) in self.dependencies.iter() {
+      let option: Option<pc_ast::PCObject<'a>> = match &dep.content {
+        DependencyContent::StyleSheet(sheet) => {
+          sheet.get_object_by_id(source_id).and_then(|css_object| {
+            Some(pc_ast::PCObject::CSSObject(css_object))
+          })
+        },
+        DependencyContent::Node(node) => {
+          node.get_object_by_id(source_id)
+        }
+      };
+
+      if let Some(obj) = option {
+        return Some((uri.to_string(), obj))
+      }
+    }
+
+    None
+  }
   fn flatten_dependents2<'a>(&'a self, entry_uri: &String, all_deps: &mut HashSet<String>) {
     let entry_option = self.dependencies.get(entry_uri);
 
@@ -305,3 +325,4 @@ impl<'a> Dependency {
     })
   }
 }
+

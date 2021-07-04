@@ -66,11 +66,23 @@ pub enum Node {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-enum PCObject<'a> {
+pub enum PCObject<'a> {
   Node(&'a Node),
-  CSSObject(&'a css_ast::CSSObject),
+  CSSObject(css_ast::CSSObject<'a>),
 }
 
+impl<'a> PCObject<'a> {
+  pub fn get_location(&'a self) -> &'a Location {
+    match self {
+      PCObject::Node(node) => {
+        node.get_location()
+      }
+      PCObject::CSSObject(css) => {
+        css.get_location()
+      }
+    }
+  }
+}
 
 impl Node {
   pub fn get_location(&self) -> &Location {
@@ -112,11 +124,12 @@ impl Node {
     }
 
     if let Node::StyleElement(style_element) = self {
-      // TODO - check for cssom object
+      return style_element.sheet.get_object_by_id(id).and_then(|obj| {
+        Some(PCObject::CSSObject(obj))
+      });
     }
 
-    get_children(self)
-    .and_then(|children| {
+    get_children(self).and_then(|children| {
       for child in children {
         let nested = child.get_object_by_id(id);
         if nested != None {

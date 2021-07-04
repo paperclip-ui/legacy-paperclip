@@ -148,7 +148,10 @@ fn evaluate_array<'a>(
   depth: u32,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  let mut js_array = virt::JsArray::new(ary.id.to_string(), ExprSource::new(context.uri.clone(), ary.location.clone()));
+  let mut js_array = virt::JsArray::new(
+    ary.id.to_string(),
+    ExprSource::new(context.uri.clone(), ary.location.clone()),
+  );
   for value in &ary.values {
     js_array
       .values
@@ -162,8 +165,10 @@ fn evaluate_object<'a>(
   depth: u32,
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
-  let mut js_object =
-    virt::JsObject::new(obj.id.to_string(), ExprSource::new(context.uri.clone(), obj.location.clone()));
+  let mut js_object = virt::JsObject::new(
+    obj.id.to_string(),
+    ExprSource::new(context.uri.clone(), obj.location.clone()),
+  );
   for property in &obj.properties {
     js_object.values.insert(
       property.key.to_string(),

@@ -67,6 +67,7 @@ fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseErro
 
   let (rules, declarations) = parse_rules_and_declarations(context)?;
   Ok(Sheet {
+    id: context.id_generator.new_id(),
     raws: BasicRaws::new(raw_before, None),
     rules,
     declarations,
@@ -219,18 +220,19 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
           id: context.id_generator.new_id(),
           value: value.to_string(),
           raws: BasicRaws::new(raw_before, raw_after),
+          location: Location::new(start, context.tokenizer.utf16_pos)
         }))
       } else {
         Err(ParseError::unexpected_token(start))
       }
     }
-    "namespace" => {
-      let value = get_buffer(context.tokenizer, |tokenizer| {
-        Ok(tokenizer.peek(1)? != Token::Semicolon)
-      })?;
-      context.tokenizer.next_expect(Token::Semicolon)?;
-      Ok(Rule::Namespace(value.to_string()))
-    }
+    // "namespace" => {
+    //   let value = get_buffer(context.tokenizer, |tokenizer| {
+    //     Ok(tokenizer.peek(1)? != Token::Semicolon)
+    //   })?;
+    //   context.tokenizer.next_expect(Token::Semicolon)?;
+    //   Ok(Rule::Namespace(value.to_string()))
+    // }
     "supports" => Ok(Rule::Supports(parse_condition_rule(
       name.to_string(),
       raw_before,

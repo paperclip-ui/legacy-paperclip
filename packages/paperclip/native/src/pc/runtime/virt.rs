@@ -23,11 +23,9 @@ impl fmt::Display for Fragment {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
-
   pub source_id: String,
 
   #[serde(rename = "source")]
-  
   // Deprecated, use source_id instead
   pub source: ExprSource,
   pub annotations: Option<js_virt::JsObject>,
@@ -147,7 +145,7 @@ impl Node {
       Node::StyleElement(value) => &value.source_id,
     }
   }
-  
+
   pub fn get_children<'a>(&'a self) -> Option<&'a Vec<Node>> {
     match self {
       Node::Element(value) => Some(&value.children),

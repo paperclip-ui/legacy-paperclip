@@ -371,6 +371,7 @@ pub fn evaluate_expr<'a>(
       context.all_rules.insert(
         0,
         virt::Rule::Style(virt::StyleRule {
+          exported: context.in_public_scope,
           source_id: get_context_id(&context).to_string(),
           selector_text: get_element_scope_selector(&context, true),
           style,
@@ -413,11 +414,11 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
     ast::Rule::Include(mixin) => {
       evaluate_include_rule(mixin, context, &SelectorContext::from_context(context))?;
     }
-    ast::Rule::Namespace(namespace) => {
-      context
-        .all_rules
-        .push(virt::Rule::Namespace(namespace.to_string()));
-    }
+    // ast::Rule::Namespace(namespace) => {
+    //   context
+    //     .all_rules
+    //     .push(virt::Rule::Namespace(namespace.to_string()));
+    // }
     ast::Rule::Export(export) => {
       evaluate_export_rule(export, context)?;
     }
@@ -550,6 +551,7 @@ fn evaluate_condition_rule(
     child_context
       .all_rules
       .push(virt::Rule::Style(virt::StyleRule {
+        exported: context.in_public_scope,
         source_id: rule.id.to_string(),
         selector_text,
         style,
@@ -1011,6 +1013,7 @@ fn evaluate_style_rule2(
       context.all_rules.insert(
         rule_len,
         virt::Rule::Style(virt::StyleRule {
+          exported: context.in_public_scope,
           source_id: expr.id.to_string(),
           selector_text: selector_context.to_string(),
           style,
