@@ -220,7 +220,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
           id: context.id_generator.new_id(),
           value: value.to_string(),
           raws: BasicRaws::new(raw_before, raw_after),
-          location: Location::new(start, context.tokenizer.utf16_pos)
+          location: Location::new(start, context.tokenizer.utf16_pos),
         }))
       } else {
         Err(ParseError::unexpected_token(start))

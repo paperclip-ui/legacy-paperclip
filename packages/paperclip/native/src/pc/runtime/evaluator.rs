@@ -1928,7 +1928,9 @@ mod tests {
   }
 }
 
-pub fn __test__evaluate_source<'a>(code: &'a str) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
+pub fn __test__evaluate_source<'a>(
+  code: &'a str,
+) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
   let mut graph = DependencyGraph::new();
   let uri = "some-file.pc".to_string();
   let vfs = VirtualFileSystem::new(
@@ -1941,11 +1943,14 @@ pub fn __test__evaluate_source<'a>(code: &'a str) -> (Result<EvalInfo, RuntimeEr
     Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
   );
 
-  (evaluate(
-    &uri,
-    &graph,
-    &vfs,
-    &BTreeMap::new(),
-    &EngineMode::SingleFrame,
-  ), graph)
+  (
+    evaluate(
+      &uri,
+      &graph,
+      &vfs,
+      &BTreeMap::new(),
+      &EngineMode::SingleFrame,
+    ),
+    graph,
+  )
 }

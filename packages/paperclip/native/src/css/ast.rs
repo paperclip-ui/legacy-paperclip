@@ -12,12 +12,12 @@ pub enum Declaration {
 }
 
 impl Declaration {
-  pub fn get_location(&self)-> &Location {
+  pub fn get_location(&self) -> &Location {
     match self {
-      Declaration::KeyValue(kv) =>  &kv.location,
-      Declaration::Include(kv) =>  &kv.location,
-      Declaration::Content(kv) =>  &kv.location,
-      Declaration::Media(kv) =>  &kv.location
+      Declaration::KeyValue(kv) => &kv.location,
+      Declaration::Include(kv) => &kv.location,
+      Declaration::Content(kv) => &kv.location,
+      Declaration::Media(kv) => &kv.location,
     }
   }
 }
@@ -151,7 +151,7 @@ pub struct CharsetRule {
   pub id: String,
   pub raws: BasicRaws,
   pub value: String,
-  pub location: Location
+  pub location: Location,
 }
 
 impl fmt::Display for CharsetRule {
@@ -199,10 +199,10 @@ impl Rule {
   }
   pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
     if self.get_id() == id {
-      return Some(CSSObject::Rule(self))
+      return Some(CSSObject::Rule(self));
     }
 
-    return None
+    return None;
   }
   pub fn get_location(&self) -> &Location {
     match self {
@@ -221,7 +221,6 @@ impl Rule {
     }
   }
 }
-
 
 impl fmt::Display for Rule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -550,16 +549,23 @@ impl Selector {
     }
 
     match self {
-      Selector::PseudoElement(_) | Selector::Attribute(_) | Selector::Element(_) | Selector::AllSelector |  Selector::None | Selector::PseudoParamElement(_) | Selector::Id(_) | Selector::Class(_) => {
-        return true; 
+      Selector::PseudoElement(_)
+      | Selector::Attribute(_)
+      | Selector::Element(_)
+      | Selector::AllSelector
+      | Selector::None
+      | Selector::PseudoParamElement(_)
+      | Selector::Id(_)
+      | Selector::Class(_) => {
+        return true;
       }
       Selector::Child(sel) => {
-        if !each(&sel.parent)  || !each(&sel.child) {
+        if !each(&sel.parent) || !each(&sel.child) {
           return false;
         }
       }
       Selector::Sibling(sel) => {
-        if !each(&sel.selector)  || !each(&sel.sibling_selector) {
+        if !each(&sel.selector) || !each(&sel.sibling_selector) {
           return false;
         }
       }
@@ -569,55 +575,55 @@ impl Selector {
             return false;
           }
         }
-      },
+      }
       Selector::Combo(selector) => {
         for part in &selector.selectors {
           if !part.walk(each) {
             return false;
           }
         }
-      },
+      }
       Selector::Prefixed(selector) => {
-        if let Some(sel)  = &selector.postfix_selector {
+        if let Some(sel) = &selector.postfix_selector {
           if !sel.walk(each) {
             return false;
           }
         }
-      },
+      }
       Selector::Descendent(selector) => {
-        if !each(&selector.ancestor)  || !each(&selector.descendent) {
+        if !each(&selector.ancestor) || !each(&selector.descendent) {
           return false;
         }
-      },
+      }
       Selector::Not(selector) => {
         if !each(&selector.selector) {
           return false;
         }
-      },
+      }
       Selector::SubElement(selector) => {
         if !each(&selector.selector) {
           return false;
         }
-      },
+      }
       Selector::Within(selector) => {
         if !each(&selector.selector) {
           return false;
         }
-      },
+      }
       Selector::Global(selector) => {
         if !each(&selector.selector) {
           return false;
         }
-      },
+      }
       Selector::This(selector) => {
-        if let Some(sel)  = &selector.selector {
+        if let Some(sel) = &selector.selector {
           if !sel.walk(each) {
             return false;
           }
         }
-      },
+      }
       Selector::Adjacent(selector) => {
-        if !each(&selector.selector)  || !each(&selector.next_sibling_selector) {
+        if !each(&selector.selector) || !each(&selector.next_sibling_selector) {
           return false;
         }
       }
@@ -636,7 +642,6 @@ impl Selector {
 
     return is_global;
   }
-
 }
 
 impl fmt::Display for Selector {
@@ -1005,7 +1010,7 @@ impl Sheet {
     for rule in &self.rules {
       let nested_object = rule.get_object_by_id(id);
       if nested_object != None {
-        return nested_object
+        return nested_object;
       }
     }
 

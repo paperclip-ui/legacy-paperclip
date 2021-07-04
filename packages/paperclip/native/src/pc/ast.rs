@@ -74,12 +74,8 @@ pub enum PCObject<'a> {
 impl<'a> PCObject<'a> {
   pub fn get_location(&'a self) -> &'a Location {
     match self {
-      PCObject::Node(node) => {
-        node.get_location()
-      }
-      PCObject::CSSObject(css) => {
-        css.get_location()
-      }
+      PCObject::Node(node) => node.get_location(),
+      PCObject::CSSObject(css) => css.get_location(),
     }
   }
 }
@@ -124,9 +120,10 @@ impl Node {
     }
 
     if let Node::StyleElement(style_element) = self {
-      return style_element.sheet.get_object_by_id(id).and_then(|obj| {
-        Some(PCObject::CSSObject(obj))
-      });
+      return style_element
+        .sheet
+        .get_object_by_id(id)
+        .and_then(|obj| Some(PCObject::CSSObject(obj)));
     }
 
     get_children(self).and_then(|children| {
