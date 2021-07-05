@@ -1,5 +1,5 @@
+use crate::base::parser::ParseError;
 use crate::base::tokenizer::{BaseTokenizer, Position};
-use crate::core::diagnostics::{Diagnostic, SyntaxDiagnosticInfo};
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
@@ -64,7 +64,6 @@ pub enum Token<'a> {
 
 pub struct Tokenizer<'a> {
   pub source: &'a [u8],
-  pub source_uri: &'a str,
   pub pos: usize,
   pub utf16_pos: usize,
 }
@@ -92,59 +91,52 @@ impl<'a> Tokenizer<'a> {
     self.utf16_pos = pos.u16_pos;
   }
 
-  pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, Diagnostic> {
+  pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.get_pos();
     let mut i = 0;
-    while i < steps - 1 {
-      self.next();
+    let mut result = Err(ParseError::unknown());
+    while i < steps {
+      result = self.next();
       i += 1;
     }
-    let result = self.next();
     self.set_pos(&pos);
     result
   }
-  pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, Diagnostic> {
+  pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.get_pos();
     let mut i = 0;
-    while i < steps - 1 {
+    let mut result = Err(ParseError::unknown());
+    while i < steps {
       self.eat_whitespace();
-      self.next();
+      result = self.next();
       i += 1;
     }
     self.set_pos(&pos);
-    self.peek(1)
+    result
   }
 
-  pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'a>, Diagnostic> {
+  pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'a>, ParseError> {
     let utf16_pos = self.utf16_pos;
     let token = self.next()?;
     if token == expected_token {
       return Ok(token);
     } else {
-      return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
-        self.source_uri,
-        utf16_pos,
-      ));
+      return Err(ParseError::unexpected_token(utf16_pos));
     }
   }
 
-  pub fn next_word_value(&mut self) -> Result<String, Diagnostic> {
+  pub fn next_word_value(&mut self) -> Result<String, ParseError> {
     let pos = self.pos;
     if let Token::Word(value) = self.next()? {
       Ok(value.to_string())
     } else {
-      Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
-        self.source_uri,
-        pos,
-      ))
+      Err(ParseError::unexpected_token(pos))
     }
   }
 
-  pub fn next(&mut self) -> Result<Token<'a>, Diagnostic> {
+  pub fn next(&mut self) -> Result<Token<'a>, ParseError> {
     if self.is_eof() {
-      return Err(SyntaxDiagnosticInfo::new_eof_error_diagnostic(
-        self.source_uri,
-      ));
+      return Err(ParseError::eof());
     }
 
     let c = self.curr_byte()?;
@@ -291,11 +283,9 @@ impl<'a> Tokenizer<'a> {
     self.pos += pos;
     self.utf16_pos += pos;
   }
-  pub fn curr_byte(&mut self) -> Result<u8, Diagnostic> {
+  pub fn curr_byte(&mut self) -> Result<u8, ParseError> {
     if self.is_eof() {
-      return Err(SyntaxDiagnosticInfo::new_eof_error_diagnostic(
-        self.source_uri,
-      ));
+      Err(ParseError::eof())
     } else {
       Ok(self.source[self.pos])
     }
@@ -331,18 +321,16 @@ impl<'a> Tokenizer<'a> {
   pub fn is_eof(&mut self) -> bool {
     self.pos >= self.source.len()
   }
-  pub fn new(source: &'a str, source_uri: &'a str) -> Tokenizer<'a> {
+  pub fn new(source: &'a str) -> Tokenizer {
     Tokenizer {
       source: source.as_bytes(),
-      source_uri,
       pos: 0,
       utf16_pos: 0,
     }
   }
-  pub fn new_from_bytes(source: &'a [u8], source_uri: &'a str, pos: Position) -> Tokenizer<'a> {
+  pub fn new_from_bytes(source: &'a [u8], pos: Position) -> Tokenizer {
     Tokenizer {
-      source,
-      source_uri,
+      source: source,
       pos: pos.u8_pos,
       utf16_pos: pos.u16_pos,
     }
@@ -353,7 +341,7 @@ impl<'a> BaseTokenizer<'a> for Tokenizer<'a> {
   fn is_eof(&self) -> bool {
     self.pos >= self.source.len()
   }
-  fn skip(&mut self) -> Result<(), Diagnostic> {
+  fn skip(&mut self) -> Result<(), ParseError> {
     self.next()?;
     Ok(())
   }

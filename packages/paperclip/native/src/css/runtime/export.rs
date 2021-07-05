@@ -1,5 +1,5 @@
 use super::virt;
-use crate::base::ast::ExprSource;
+use crate::base::ast::ExprTextSource;
 use serde::Serialize;
 use std::collections::BTreeMap;
 
@@ -25,14 +25,14 @@ pub struct ClassNameExport {
 pub struct VarExport {
   pub name: String,
   pub value: String,
-  pub source: ExprSource,
+  pub source: ExprTextSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframesExport {
   pub name: String,
   pub public: bool,
-  pub source: ExprSource,
+  pub source: ExprTextSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

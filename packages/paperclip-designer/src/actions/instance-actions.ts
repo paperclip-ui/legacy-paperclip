@@ -6,7 +6,7 @@ import {
   EngineErrorEvent,
   EngineDelegateEvent,
   LoadedData,
-  ExprSource,
+  ExprTextSource,
   Action
 } from "paperclip-utils";
 import { Box, Directory, EnvOption, FSItemKind, Point, Size } from "../state";
@@ -127,7 +127,7 @@ export type EnvOptionClicked = BaseAction<
 export type MetaClicked = BaseAction<
   ActionType.META_CLICKED,
   {
-    source: ExprSource;
+    source: ExprTextSource;
   }
 >;
 export type BirdseyeFilterChanged = BaseAction<

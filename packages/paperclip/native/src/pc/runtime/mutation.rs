@@ -1,5 +1,5 @@
 use super::virt::Node;
-use crate::base::ast::ExprSource;
+use crate::base::ast::ExprTextSource;
 use crate::css::runtime::mutation as css_mutation;
 use crate::js::runtime::virt as js_virt;
 use serde::Serialize;
@@ -21,7 +21,7 @@ pub struct SourceChanged {
   pub property_name: String,
 
   #[serde(rename = "newSource")]
-  pub new_source: ExprSource,
+  pub new_source: ExprTextSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

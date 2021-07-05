@@ -1,4 +1,4 @@
-use crate::base::ast::ExprSource;
+use crate::base::ast::ExprTextSource;
 use crate::pc::runtime::virt::Node;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -35,7 +35,7 @@ impl JsValue {
       _ => false,
     }
   }
-  pub fn get_source(&self) -> &ExprSource {
+  pub fn get_source(&self) -> &ExprTextSource {
     match self {
       JsValue::JsUndefined(value) => &value.source,
       JsValue::JsNode(value) => &value.get_source(),
@@ -76,39 +76,39 @@ impl fmt::Display for JsValue {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsString {
   pub source_id: String,
-  pub source: ExprSource,
+  pub source: ExprTextSource,
   pub value: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsBoolean {
   pub source_id: String,
-  pub source: ExprSource,
+  pub source: ExprTextSource,
   pub value: bool,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsNumber {
   pub source_id: String,
-  pub source: ExprSource,
+  pub source: ExprTextSource,
   pub value: f64,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsUndefined {
   pub source_id: String,
-  pub source: ExprSource,
+  pub source: ExprTextSource,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsObject {
   pub source_id: String,
-  pub source: ExprSource,
+  pub source: ExprTextSource,
   pub values: HashMap<String, JsValue>,
 }
 
 impl JsObject {
-  pub fn new(source_id: String, source: ExprSource) -> JsObject {
+  pub fn new(source_id: String, source: ExprTextSource) -> JsObject {
     JsObject {
       source_id,
       values: HashMap::new(),
@@ -120,12 +120,12 @@ impl JsObject {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsArray {
   pub source_id: String,
-  pub source: ExprSource,
+  pub source: ExprTextSource,
   pub values: Vec<JsValue>,
 }
 
 impl JsArray {
-  pub fn new(source_id: String, source: ExprSource) -> JsArray {
+  pub fn new(source_id: String, source: ExprTextSource) -> JsArray {
     JsArray {
       source_id,
       values: vec![],

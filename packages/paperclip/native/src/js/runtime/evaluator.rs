@@ -1,7 +1,7 @@
 use super::super::ast;
 use super::virt;
-use crate::base::ast::{ExprSource, Location};
-use crate::base::runtime::Diagnostic;
+use crate::base::ast::{ExprTextSource, Location};
+use crate::base::runtime::RuntimeError;
 use crate::pc::ast as pc_ast;
 use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext};
 
@@ -9,14 +9,14 @@ pub fn evaluate<'a>(
   expr: &ast::Expression,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   evaluate_expression(&expr, depth, context)
 }
 fn evaluate_expression<'a>(
   expression: &ast::Expression,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   match expression {
     ast::Expression::Reference(reference) => evaluate_reference(reference, context),
     ast::Expression::Conjunction(conjunction) => evaluate_conjuction(conjunction, depth, context),
@@ -34,7 +34,7 @@ fn evaluate_group<'a>(
   group: &ast::Group,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   evaluate_expression(&group.expression, depth, context)
 }
 
@@ -42,7 +42,7 @@ fn evaluate_conjuction<'a>(
   conjunction: &ast::Conjunction,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   let left = evaluate_expression(&conjunction.left, depth, context)?;
 
   match conjunction.operator {
@@ -76,10 +76,10 @@ fn evaluate_not<'a>(
   not: &ast::Not,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
     source_id: not.id.to_string(),
-    source: ExprSource::new(context.uri.clone(), not.location.clone()),
+    source: ExprTextSource::new(context.uri.clone(), not.location.clone()),
     value: !evaluate_expression(&not.expression, depth, context)?.truthy(),
   }))
 }
@@ -88,14 +88,14 @@ fn evaluate_node<'a>(
   node: &Box<pc_ast::Node>,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   let node_option = evaluate_pc_node(node, false, depth, None, &None, context)?;
   if let Some(node) = node_option {
     Ok(virt::JsValue::JsNode(node))
   } else {
     Ok(virt::JsValue::JsUndefined(virt::JsUndefined {
       source_id: node.get_id().to_string(),
-      source: ExprSource::new(context.uri.clone(), node.get_location().clone()),
+      source: ExprTextSource::new(context.uri.clone(), node.get_location().clone()),
     }))
   }
 }
@@ -103,39 +103,39 @@ fn evaluate_node<'a>(
 fn evaluate_string<'a>(
   value: &ast::Str,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsString(virt::JsString {
     source_id: value.id.to_string(),
     value: value.value.to_string(),
-    source: ExprSource::new(context.uri.clone(), value.location.clone()),
+    source: ExprTextSource::new(context.uri.clone(), value.location.clone()),
   }))
 }
 
 fn evaluate_boolean<'a>(
   value: &ast::Boolean,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
     source_id: value.id.to_string(),
     value: value.value,
-    source: ExprSource::new(context.uri.clone(), value.location.clone()),
+    source: ExprTextSource::new(context.uri.clone(), value.location.clone()),
   }))
 }
 
 fn evaluate_number<'a>(
   value: &ast::Number,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   let value_result = value.value.parse::<f64>();
 
   if let Ok(number) = value_result {
     Ok(virt::JsValue::JsNumber(virt::JsNumber {
       source_id: value.id.to_string(),
       value: number,
-      source: ExprSource::new(context.uri.clone(), value.location.clone()),
+      source: ExprTextSource::new(context.uri.clone(), value.location.clone()),
     }))
   } else {
-    Err(Diagnostic::new(
+    Err(RuntimeError::new(
       "Invalid number.".to_string(),
       context.uri,
       &value.location,
@@ -147,10 +147,10 @@ fn evaluate_array<'a>(
   ary: &ast::Array,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   let mut js_array = virt::JsArray::new(
     ary.id.to_string(),
-    ExprSource::new(context.uri.clone(), ary.location.clone()),
+    ExprTextSource::new(context.uri.clone(), ary.location.clone()),
   );
   for value in &ary.values {
     js_array
@@ -164,10 +164,10 @@ fn evaluate_object<'a>(
   obj: &ast::Object,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   let mut js_object = virt::JsObject::new(
     obj.id.to_string(),
-    ExprSource::new(context.uri.clone(), obj.location.clone()),
+    ExprTextSource::new(context.uri.clone(), obj.location.clone()),
   );
   for property in &obj.properties {
     js_object.values.insert(
@@ -181,14 +181,14 @@ fn evaluate_object<'a>(
 fn evaluate_reference<'a>(
   reference: &ast::Reference,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, Diagnostic> {
+) -> Result<virt::JsValue, RuntimeError> {
   let mut curr = Some(context.data);
 
   for part in &reference.path {
     if let Some(object) = &curr {
       curr = virt::get_js_value_property(&object, &part.name);
     } else {
-      return Err(Diagnostic {
+      return Err(RuntimeError {
         uri: context.uri.to_string(),
         message: "Cannot access property of undefined".to_string(),
         location: Location { start: 0, end: 1 },
@@ -201,7 +201,7 @@ fn evaluate_reference<'a>(
   } else {
     Ok(virt::JsValue::JsUndefined(virt::JsUndefined {
       source_id: reference.id.to_string(),
-      source: ExprSource::new(context.uri.clone(), reference.location.clone()),
+      source: ExprTextSource::new(context.uri.clone(), reference.location.clone()),
     }))
   }
 }

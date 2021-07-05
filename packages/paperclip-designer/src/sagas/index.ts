@@ -148,7 +148,7 @@ function* handleRenderer(getState: AppStateSelector) {
         pcVirtObjectEdited({
           mutations: getSelectedFrames(state.designer).map(frame => {
             return {
-              exprSource: frame.source,
+              ExprTextSource: frame.source,
               action: {
                 kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
                 annotationsSource: frame.annotations.source,
@@ -172,7 +172,7 @@ function* handleRenderer(getState: AppStateSelector) {
       pcVirtObjectEdited({
         mutations: getSelectedFrames(state.designer).map(frame => {
           return {
-            exprSource: frame.source,
+            ExprTextSource: frame.source,
             action: {
               kind: PCMutationActionKind.EXPRESSION_DELETED
             }

@@ -1,4 +1,4 @@
-use crate::base::ast::ExprSource;
+use crate::base::ast::ExprTextSource;
 use crate::css::runtime::virt as css_virt;
 use crate::js::runtime::virt as js_virt;
 use serde::Serialize;
@@ -8,7 +8,7 @@ use std::fmt;
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
   pub source_id: String,
-  pub source: ExprSource,
+  pub source: ExprTextSource,
   pub children: Vec<Node>,
 }
 
@@ -27,7 +27,7 @@ pub struct Element {
 
   #[serde(rename = "source")]
   // Deprecated, use source_id instead
-  pub source: ExprSource,
+  pub source: ExprTextSource,
   pub annotations: Option<js_virt::JsObject>,
 
   #[serde(rename = "tagName")]
@@ -41,7 +41,7 @@ pub struct StyleElement {
   pub source_id: String,
 
   // Deprecated, use source_id instead
-  pub source: ExprSource,
+  pub source: ExprTextSource,
   pub sheet: css_virt::CSSSheet,
 }
 
@@ -93,7 +93,7 @@ pub struct Text {
   pub annotations: Option<js_virt::JsObject>,
 
   // Deprecated, use source_id instead
-  pub source: ExprSource,
+  pub source: ExprTextSource,
   pub value: String,
 }
 
@@ -129,7 +129,7 @@ impl Node {
       _ => {}
     }
   }
-  pub fn get_source(&self) -> &ExprSource {
+  pub fn get_source(&self) -> &ExprTextSource {
     match self {
       Node::Element(value) => &value.source,
       Node::Text(value) => &value.source,

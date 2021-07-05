@@ -4,7 +4,7 @@ Diagnostics are error types for helping the user debug their program. Anything t
 report diagnostics. All other parts of the app can use regular error handling.
 */
 
-use crate::base::ast::ExprSource;
+use crate::base::ast::ExprTextSource;
 use crate::base::ast::Location;
 use serde::Serialize;
 
@@ -22,11 +22,14 @@ pub struct DiagnosticSourceInfo {
 
   // This may not exist if we're dealing with just the AST
   #[serde(rename = "textSource")]
-  text_source: Option<ExprSource>,
+  text_source: Option<ExprTextSource>,
 }
 
 impl DiagnosticSourceInfo {
-  pub fn new<'a>(expression_id: &'a str, text_source: Option<&ExprSource>) -> DiagnosticSourceInfo {
+  pub fn new<'a>(
+    expression_id: &'a str,
+    text_source: Option<&ExprTextSource>,
+  ) -> DiagnosticSourceInfo {
     DiagnosticSourceInfo {
       expression_id: expression_id.to_string(),
       text_source: text_source.and_then(|text_source| Some(text_source.clone())),
@@ -50,7 +53,7 @@ pub enum SyntaxDiagnosticInfoCode {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "syntaxDiagnosticInfoKind")]
 pub struct SyntaxDiagnosticInfo {
-  source: ExprSource,
+  source: ExprTextSource,
   code: SyntaxDiagnosticInfoCode,
 }
 
@@ -66,7 +69,7 @@ impl SyntaxDiagnosticInfo {
       message,
       DiagnosticInfo::Syntax(SyntaxDiagnosticInfo {
         code,
-        source: ExprSource::new(uri.to_string(), Location::new(start, end)),
+        source: ExprTextSource::new(uri.to_string(), Location::new(start, end)),
       }),
     )
   }
@@ -101,7 +104,7 @@ impl SyntaxDiagnosticInfo {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ImportNotFoundInfo {
-  source: ExprSource,
+  source: ExprTextSource,
   link_uri: String,
 }
 
@@ -113,9 +116,9 @@ pub enum DiagnosticInfo {
   UnableToParseFile(DiagnosticSourceInfo),
   FileNotFound(FileNotFoundInfo),
   UnusedStyleRule(DiagnosticSourceInfo),
-  CircularDependencyDetected(ExprSource),
-  DependencyNotLoaded(ExprSource),
-  IncorectFileType(ExprSource)
+  CircularDependencyDetected(ExprTextSource),
+  DependencyNotLoaded(ExprTextSource),
+  IncorectFileType(ExprTextSource),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

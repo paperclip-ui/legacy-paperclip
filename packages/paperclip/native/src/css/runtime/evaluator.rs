@@ -31,13 +31,9 @@ use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
 use crate::base::utils::{get_document_style_private_scope, get_document_style_public_scope};
-use crate::core::diagnostics::{
-  Diagnostic, DiagnosticInfo, FileNotFoundInfo, ImportNotFoundInfo, SyntaxDiagnosticInfo,
-  SyntaxDiagnosticInfoCode,
-};
 
-use crate::base::ast::{ExprSource, Location};
-use crate::base::runtime::Diagnostic;
+use crate::base::ast::{ExprTextSource, Location};
+use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
@@ -298,7 +294,7 @@ pub fn evaluate<'a>(
   graph: &'a DependencyGraph,
   vfs: &'a VirtualFileSystem,
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
-) -> Result<EvalInfo, Diagnostic> {
+) -> Result<EvalInfo, RuntimeError> {
   let dep = graph.dependencies.get(uri).unwrap();
   match &dep.content {
     DependencyContent::StyleSheet(sheet) => evaluate_expr(
@@ -314,7 +310,7 @@ pub fn evaluate<'a>(
       None,
       true,
     ),
-    _ => Err(Diagnostic::new(
+    _ => Err(RuntimeError::new(
       "Incorrect file type".to_string(),
       uri,
       &Location { start: 0, end: 0 },
@@ -334,7 +330,7 @@ pub fn evaluate_expr<'a>(
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   existing_exports: Option<&Exports>,
   public: bool,
-) -> Result<EvalInfo, Diagnostic> {
+) -> Result<EvalInfo, RuntimeError> {
   let mut context = Context {
     private_scope,
     public_scope,
@@ -400,7 +396,7 @@ fn get_context_id(context: &Context) -> String {
   }
 }
 
-fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), Diagnostic> {
+fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeError> {
   match rule {
     ast::Rule::Comment(charset) => {
       // skip it
@@ -461,7 +457,7 @@ pub fn evaluate_style_rules<'a>(
   rules: &Vec<ast::StyleRule>,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   for rule in rules {
     evaluate_style_rule2(&rule, context, parent_selector_context)?;
   }
@@ -471,7 +467,7 @@ pub fn evaluate_style_rules<'a>(
 fn evaluate_font_family_rule(
   font_family: &ast::FontFaceRule,
   context: &mut Context,
-) -> Result<virt::Rule, Diagnostic> {
+) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::FontFace(virt::FontFaceRule {
     style: evaluate_style_declarations(
       &font_family.declarations,
@@ -484,7 +480,7 @@ fn evaluate_font_family_rule(
 fn evaluate_media_rule(
   rule: &ast::ConditionRule,
   context: &mut Context,
-) -> Result<virt::Rule, Diagnostic> {
+) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Media(evaluate_condition_rule(
     rule,
     context,
@@ -495,7 +491,7 @@ fn evaluate_media_rule(
 fn evaluate_supports_rule(
   rule: &ast::ConditionRule,
   context: &mut Context,
-) -> Result<virt::Rule, Diagnostic> {
+) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Supports(evaluate_condition_rule(
     rule,
     context,
@@ -506,7 +502,7 @@ fn evaluate_page_rule(
   rule: &ast::ConditionRule,
 
   context: &mut Context,
-) -> Result<virt::Rule, Diagnostic> {
+) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Page(evaluate_condition_rule(
     rule,
     context,
@@ -518,7 +514,7 @@ fn evaluate_document_rule(
   rule: &ast::ConditionRule,
 
   context: &mut Context,
-) -> Result<virt::Rule, Diagnostic> {
+) -> Result<virt::Rule, RuntimeError> {
   Ok(virt::Rule::Document(evaluate_condition_rule(
     rule,
     context,
@@ -530,7 +526,7 @@ fn evaluate_condition_rule(
   rule: &ast::ConditionRule,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
-) -> Result<virt::ConditionRule, Diagnostic> {
+) -> Result<virt::ConditionRule, RuntimeError> {
   let mut child_context = create_child_context(context);
 
   evaluate_style_rules(&rule.rules, &mut child_context, &parent_selector_context)?;
@@ -574,7 +570,7 @@ fn evaluate_condition_rule(
 fn evaluate_keyframes_rule(
   rule: &ast::KeyframesRule,
   context: &mut Context,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   let mut rules = vec![];
 
   for rule in &rule.rules {
@@ -592,7 +588,7 @@ fn evaluate_keyframes_rule(
     KeyframesExport {
       name: rule.name.to_string(),
       public,
-      source: ExprSource::new(context.uri.to_string(), rule.location.clone()),
+      source: ExprTextSource::new(context.uri.to_string(), rule.location.clone()),
     },
   );
 
@@ -625,7 +621,7 @@ fn get_document_scope<'a>(context: &'a Context) -> &'a str {
 fn evaluate_keyframe_rule(
   rule: &ast::KeyframeRule,
   context: &mut Context,
-) -> Result<virt::KeyframeRule, Diagnostic> {
+) -> Result<virt::KeyframeRule, RuntimeError> {
   let style = evaluate_style_declarations(&rule.declarations, context, &SelectorContext::nil())?;
   Ok(virt::KeyframeRule {
     key: rule.key.to_string(),
@@ -636,7 +632,7 @@ fn evaluate_keyframe_rule(
 fn get_mixin<'a>(
   iref: &ast::IncludeReference,
   context: &mut Context<'a>,
-) -> Result<(Option<&'a ast::MixinRule>, &'a String), Diagnostic> {
+) -> Result<(Option<&'a ast::MixinRule>, &'a String), RuntimeError> {
   let self_dep = context.graph.dependencies.get(context.uri).unwrap();
 
   let dep = if iref.parts.len() == 1 {
@@ -648,7 +644,7 @@ fn get_mixin<'a>(
     if let Some(dep_uri) = dep_uri_option {
       context.graph.dependencies.get(dep_uri).unwrap()
     } else {
-      return Err(Diagnostic::new(
+      return Err(RuntimeError::new(
         "Reference not found.".to_string(),
         &context.uri,
         &inc_part.location,
@@ -766,7 +762,7 @@ fn get_style_import<'a, 'b>(
 fn assert_get_mixin<'a>(
   iref: &ast::IncludeReference,
   context: &mut Context<'a>,
-) -> Result<(&'a ast::MixinRule, &'a String), Diagnostic> {
+) -> Result<(&'a ast::MixinRule, &'a String), RuntimeError> {
   let (mixin_option, dependency_uri) = get_mixin(&iref, context)?;
   if let Some(mixin) = mixin_option {
     // make sure it's public
@@ -777,7 +773,7 @@ fn assert_get_mixin<'a>(
       if let Some(import) = style_import_option {
         let export = import.mixins.get(&iref.parts.last().unwrap().name).unwrap();
         if !export.public {
-          return Err(Diagnostic::new(
+          return Err(RuntimeError::new(
             "This mixin is private.".to_string(),
             context.uri,
             &iref.parts.last().unwrap().location,
@@ -788,7 +784,7 @@ fn assert_get_mixin<'a>(
 
     return Ok((mixin, dependency_uri));
   } else {
-    return Err(Diagnostic::new(
+    return Err(RuntimeError::new(
       "Reference not found.".to_string(),
       context.uri,
       &iref.parts.last().unwrap().location,
@@ -801,7 +797,7 @@ fn include_mixin<'a>(
   style: &mut Vec<virt::CSSStyleProperty>,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   let (mixin, dependency_uri) = assert_get_mixin(&inc.mixin_name, context)?;
   let (declarations, child_rules) = evaluate_mixin(
     mixin,
@@ -820,7 +816,7 @@ fn include_content<'a>(
   all_styles: &mut Vec<virt::CSSStyleProperty>,
   context: &mut Context<'a>,
   parent_selector_context: &SelectorContext,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   if let Some(inc) = &context.content {
     let (uri, inc2) = inc.clone();
     let mut child_context = fork_context(&uri, context);
@@ -839,7 +835,7 @@ fn evaluate_style_declarations<'a>(
   declarations: &Vec<ast::Declaration>,
   context: &mut Context<'a>,
   selector_context: &SelectorContext,
-) -> Result<Vec<virt::CSSStyleProperty>, Diagnostic> {
+) -> Result<Vec<virt::CSSStyleProperty>, RuntimeError> {
   let mut style = vec![];
   for property in declarations {
     match property {
@@ -867,12 +863,12 @@ fn evaluate_style_rule(
   expr: &ast::StyleRule,
   context: &mut Context,
   selector_context: &SelectorContext,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   evaluate_style_rule2(expr, context, selector_context)?;
   Ok(())
 }
 
-fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result<(), Diagnostic> {
+fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result<(), RuntimeError> {
   let mut exports = Exports::new();
   let in_public_scope = context.in_public_scope;
   context.in_public_scope = true;
@@ -899,7 +895,7 @@ fn evaluate_export_rule(expr: &ast::ExportRule, context: &mut Context) -> Result
 
   Ok(())
 }
-fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(), Diagnostic> {
+fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(), RuntimeError> {
   if None == context.exports.mixins.get(&expr.name.value) {
     context.exports.mixins.insert(
       expr.name.value.to_string(),
@@ -909,7 +905,7 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
       },
     );
   } else {
-    return Err(Diagnostic::new(
+    return Err(RuntimeError::new(
       "This mixin is already declared in the upper scope.".to_string(),
       context.uri,
       &expr.name.location,
@@ -925,7 +921,7 @@ fn evaluate_mixin<'a, 'b>(
   content: Option<(String, &'b ast::Include)>,
   context: &mut Context<'a>,
   parent_selector_context: &SelectorContext,
-) -> Result<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>), Diagnostic> {
+) -> Result<(Vec<virt::CSSStyleProperty>, Vec<virt::Rule>), RuntimeError> {
   let mut child_context = fork_context(owner_uri, context);
   child_context.content = content;
   let declarations = evaluate_style_declarations(
@@ -943,7 +939,7 @@ fn evaluate_include_rule<'a>(
   expr: &ast::Include,
   context: &mut Context<'a>,
   selector_context: &SelectorContext,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   let (mixin, dep_uri) = assert_get_mixin(&expr.mixin_name, context)?;
   let (declarations, rules) = evaluate_mixin(
     mixin,
@@ -962,7 +958,7 @@ fn evaluate_style_rule2(
   expr: &ast::StyleRule,
   context: &mut Context,
   parent_selector_context: &SelectorContext,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   lazy_static! {
     // static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
     static ref class_name_re: Regex = Regex::new(r"\.(((\\.)?[\w\-_]+)+)").unwrap();
@@ -1486,7 +1482,7 @@ fn evaluate_style_key_value_declaration<'a>(
   expr: &'a ast::KeyValueDeclaration,
   declarations: &mut Vec<virt::CSSStyleProperty>,
   context: &mut Context,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   let mut value = expr.value.to_string();
 
   lazy_static! {
@@ -1543,7 +1539,7 @@ fn evaluate_style_key_value_declaration<'a>(
           .replace(url_fn, format!("url({})", full_path).as_str())
           .to_string();
       } else {
-        return Err(Diagnostic::new(
+        return Err(RuntimeError::new(
           format!(
             "Unable to resolve file: {} from {}",
             relative_path, context.uri
@@ -1561,7 +1557,7 @@ fn evaluate_style_key_value_declaration<'a>(
       VarExport {
         name: expr.name.to_string(),
         value: value.to_string(),
-        source: ExprSource::new(context.uri.to_string(), expr.location.clone()),
+        source: ExprTextSource::new(context.uri.to_string(), expr.location.clone()),
       },
     );
   }

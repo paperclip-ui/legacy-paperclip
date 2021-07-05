@@ -20,7 +20,7 @@ mod pc;
 
 use crate::pc::runtime::evaluator::EngineMode;
 use ::futures::executor::block_on;
-use engine::Engine;
+use engine::engine::Engine;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]

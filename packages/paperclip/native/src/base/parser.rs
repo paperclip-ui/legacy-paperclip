@@ -1,6 +1,5 @@
 use super::tokenizer::*;
 use crate::base::ast::Location;
-use crate::core::diagnostics::Diagnostic;
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -56,10 +55,10 @@ impl ParseError {
 pub fn get_buffer<'a, TTokenizer, FF>(
   tokenizer: &mut TTokenizer,
   until: FF,
-) -> Result<&'a str, Diagnostic>
+) -> Result<&'a str, ParseError>
 where
   TTokenizer: BaseTokenizer<'a>,
-  FF: Fn(&mut TTokenizer) -> Result<bool, Diagnostic>,
+  FF: Fn(&mut TTokenizer) -> Result<bool, ParseError>,
 {
   let start = tokenizer.get_pos();
   let mut end = start;

@@ -14,22 +14,45 @@ use super::evaluator::{
 };
 use super::selector_match::find_one_matching_element;
 use super::virt::Node as VirtNode;
-use crate::base::ast::ExprSource;
-use crate::core::diagnostics::{Diagnostic, DiagnosticInfo, DiagnosticLevel, DiagnosticSourceInfo};
+use serde::Serialize;
+use crate::base::ast::{ExprSource, ExprTextSource};
+// use crate::core::diagnostics::{Diagnostic, DiagnosticInfo, DiagnosticLevel, DiagnosticSourceInfo};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
+use crate::core::eval::{DependencyEvalInfo};
 use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast::{CSSObject, Rule};
 use crate::css::runtime::virt::{CSSSheet, Rule as VirtRule};
 use crate::pc::ast::PCObject;
 use crate::pc::parser::parse;
 
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct LintWarningInfo {
+  message: String,
+  source: ExprSource,
+}
+
+impl LintWarningInfo {
+  pub fn new<'a>(message: &'a str, source: &ExprSource) -> LintWarningInfo {
+    LintWarningInfo {
+      message: message.to_string(),
+      source: source.clone(),
+    }
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "warningKind")]
+pub enum LintWarning {
+  UnusedStyleRule(LintWarningInfo),
+}
+
 pub struct LintOptions {
-  no_unused_css: Option<bool>,
+  pub no_unused_css: Option<bool>,
 
   // TODO: ["background-color", "padding", "background"]. Need to be contextually aware for cases like (background: #ab repeat)
-  enforce_refs: Option<Vec<String>>,
+  pub enforce_refs: Option<Vec<String>>,
 
-  enforce_previews: Option<bool>,
+  pub enforce_previews: Option<bool>,
 }
 
 struct Context {}
@@ -38,8 +61,8 @@ pub fn lint(
   eval_info: &EvalInfo,
   graph: &DependencyGraph,
   options: LintOptions,
-) -> Vec<Diagnostic> {
-  let mut notices: Vec<Diagnostic> = Vec::new();
+) -> Vec<LintWarning> {
+  let mut notices: Vec<LintWarning> = Vec::new();
   lint_css(eval_info, graph, &options, &mut notices);
   notices
 }
@@ -48,7 +71,7 @@ fn lint_css(
   eval_info: &EvalInfo,
   graph: &DependencyGraph,
   options: &LintOptions,
-  diagnostics: &mut Vec<Diagnostic>,
+  diagnostics: &mut Vec<LintWarning>,
 ) {
   // TODO - media rules and such
   lint_css_rules(
@@ -65,9 +88,10 @@ fn lint_css_rules(
   document: &VirtNode,
   graph: &DependencyGraph,
   options: &LintOptions,
-  diagnostics: &mut Vec<Diagnostic>,
+  diagnostics: &mut Vec<LintWarning>,
 ) {
   // TODO - media rules and such
+
   for rule in rules {
     match rule {
       VirtRule::Style(style_rule) => {
@@ -89,13 +113,13 @@ fn lint_css_rules(
               }
             }
 
-            diagnostics.push(Diagnostic::new_warning(
+            diagnostics.push(LintWarning::UnusedStyleRule(LintWarningInfo::new(
               "Unused style rule",
-              DiagnosticInfo::UnusedStyleRule(DiagnosticSourceInfo::new(
+              &ExprSource::new(
                 style_rule.source_id.as_str(),
-                Some(&ExprSource::new(uri, expr.get_location().clone())),
-              )),
-            ));
+                Some(&ExprTextSource::new(uri, expr.get_location().clone())),
+              ),
+            )));
           }
         }
       }

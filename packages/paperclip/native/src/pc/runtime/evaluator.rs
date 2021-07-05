@@ -3,8 +3,8 @@ use super::cache::Cache;
 use super::export::{ComponentExport, Exports, Property};
 use super::virt;
 use crate::annotation::ast as annotation_ast;
-use crate::base::ast::{ExprSource, Location};
-use crate::base::runtime::Diagnostic;
+use crate::base::ast::{ExprTextSource, Location};
+use crate::base::runtime::RuntimeError;
 use crate::base::utils::{
   get_document_style_private_scope, get_document_style_public_scope, is_relative_path,
 };
@@ -12,7 +12,7 @@ use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
-use crate::core::id_generator::generate_seed;
+use crate::core::id_generator::IDGenerator;
 use crate::css::runtime::evaluator::{evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
@@ -86,8 +86,8 @@ pub fn evaluate<'a>(
   vfs: &'a VirtualFileSystem,
   evaluated_graph: &'a BTreeMap<String, DependencyEvalInfo>,
   mode: &EngineMode,
-) -> Result<EvalInfo, Diagnostic> {
-  let dep: &Dependency = graph.dependencies.get(uri).ok_or(Diagnostic::new(
+) -> Result<EvalInfo, RuntimeError> {
+  let dep: &Dependency = graph.dependencies.get(uri).ok_or(RuntimeError::new(
     "URI not loaded".to_string(),
     uri,
     &Location { start: 0, end: 0 },
@@ -96,7 +96,7 @@ pub fn evaluate<'a>(
   if let DependencyContent::Node(node_expr) = &dep.content {
     let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(
       node_expr.get_id().to_string(),
-      ExprSource::new(uri.clone(), node_expr.get_location().clone()),
+      ExprTextSource::new(uri.clone(), node_expr.get_location().clone()),
     ));
     let mut context = create_context(
       node_expr,
@@ -135,7 +135,7 @@ pub fn evaluate<'a>(
       },
     })
   } else {
-    Err(Diagnostic::new(
+    Err(RuntimeError::new(
       "Incorrect file type".to_string(),
       uri,
       &Location { start: 0, end: 0 },
@@ -146,7 +146,7 @@ pub fn evaluate<'a>(
 fn collect_component_exports<'a>(
   root: &ast::Node,
   context: &Context,
-) -> Result<BTreeMap<String, ComponentExport>, Diagnostic> {
+) -> Result<BTreeMap<String, ComponentExport>, RuntimeError> {
   let mut exports: BTreeMap<String, ComponentExport> = BTreeMap::new();
 
   let children = ast::get_children(root);
@@ -157,7 +157,7 @@ fn collect_component_exports<'a>(
         if ast::has_attribute("component", element)
           && ast::get_attribute_value("as", element) != None
         {
-          let id = ast::get_attribute_value("as", element).ok_or(Diagnostic::new(
+          let id = ast::get_attribute_value("as", element).ok_or(RuntimeError::new(
             "As must be present".to_string(),
             context.uri,
             &Location { start: 0, end: 0 },
@@ -166,7 +166,7 @@ fn collect_component_exports<'a>(
           let properties = collect_node_properties(child);
 
           if exports.contains_key(id) {
-            return Err(Diagnostic::new(
+            return Err(RuntimeError::new(
               "Component name is already declared.".to_string(),
               context.uri,
               &element.location,
@@ -300,7 +300,7 @@ fn wrap_as_fragment(node_option: Option<virt::Node>, context: &Context) -> virt:
     virt::Node::Fragment(virt::Fragment {
       source_id: "".to_string(),
       children: vec![],
-      source: ExprSource::virt(context.uri.clone()),
+      source: ExprTextSource::virt(context.uri.clone()),
     })
   }
 }
@@ -351,7 +351,7 @@ fn evaluate_document_sheet<'a>(
   uri: &String,
   entry_expr: &ast::Node,
   context: &'a mut Context,
-) -> Result<(css_virt::CSSSheet, css_export::Exports), Diagnostic> {
+) -> Result<(css_virt::CSSSheet, css_export::Exports), RuntimeError> {
   let mut sheet = css_virt::CSSSheet { rules: vec![] };
 
   let mut css_exports: css_export::Exports = css_export::Exports::new();
@@ -368,7 +368,7 @@ fn evaluate_node_sheet<'a>(
   sheet: &'a mut css_virt::CSSSheet,
   css_exports: &'a mut css_export::Exports,
   context: &'a mut Context,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   let private_scope = get_document_style_private_scope(uri);
   let public_scope = get_document_style_public_scope(uri);
 
@@ -451,9 +451,9 @@ fn evaluate_node_sheet<'a>(
 pub fn traverse_js_expr_css<TEach>(
   current: &js_ast::Expression,
   each: &mut TEach,
-) -> Result<(), Diagnostic>
+) -> Result<(), RuntimeError>
 where
-  TEach: FnMut(&js_ast::Expression) -> Result<(), Diagnostic>,
+  TEach: FnMut(&js_ast::Expression) -> Result<(), RuntimeError>,
 {
   each(current)?;
 
@@ -491,8 +491,8 @@ pub fn evaluate_instance_node<'a>(
   imported: bool,
   depth: u32,
   annotations: &Option<js_virt::JsObject>,
-  instance_source: Option<ExprSource>,
-) -> Result<Option<virt::Node>, Diagnostic> {
+  instance_source: Option<ExprTextSource>,
+) -> Result<Option<virt::Node>, RuntimeError> {
   context
     .render_call_stack
     .push((context.uri.to_string(), render_strategy.clone()));
@@ -566,10 +566,10 @@ pub fn evaluate_node<'a>(
   node_expr: &ast::Node,
   is_root: bool,
   depth: u32,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   if context.mode == &EngineMode::MultiFrame && !is_frame_visible(annotations) {
     return Ok(None);
   }
@@ -591,7 +591,7 @@ pub fn evaluate_node<'a>(
       return Ok(Some(virt::Node::Text(virt::Text {
         source_id: node_expr.get_id().to_string(),
         annotations: annotations.clone(),
-        source: ExprSource {
+        source: ExprTextSource {
           uri: context.uri.to_string(),
           location: text.location.clone(),
         },
@@ -630,10 +630,10 @@ fn evaluate_element<'a>(
   element: &ast::Element,
   is_root: bool,
   depth: u32,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   match element.tag_name.as_str() {
     "import" => evaluate_import_element(element, context),
     "script" | "property" | "logic" => Ok(None),
@@ -647,7 +647,7 @@ fn evaluate_element<'a>(
             )
           {
             if depth != 1 {
-              return Err(Diagnostic::new(
+              return Err(RuntimeError::new(
                 "Components need to be defined at the root.".to_string(),
                 context.uri,
                 &element.location,
@@ -668,7 +668,7 @@ fn evaluate_element<'a>(
         let result = evaluate_imported_component(element, source, depth, annotations, context);
 
         if Ok(None) == result {
-          return Err(Diagnostic::new(
+          return Err(RuntimeError::new(
             "Unable to find component, or it's not exported.".to_string(),
             &context.uri,
             &element.open_tag_location,
@@ -700,12 +700,12 @@ fn evaluate_element<'a>(
 fn instance_or_element_source<'a>(
   element: &ast::Element,
   dep_uri: &String,
-  source_option: Option<ExprSource>,
-) -> Option<ExprSource> {
+  source_option: Option<ExprTextSource>,
+) -> Option<ExprTextSource> {
   if let Some(source) = source_option {
     Some(source)
   } else {
-    Some(ExprSource {
+    Some(ExprTextSource {
       uri: dep_uri.clone(),
       location: element.location.clone(),
     })
@@ -716,7 +716,7 @@ fn evaluate_slot<'a>(
   slot: &ast::Slot,
   depth: u32,
   context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   assert_slot_restrictions(&slot.location, context)?;
 
   let script = &slot.script;
@@ -761,11 +761,11 @@ fn evaluate_slot<'a>(
 
 pub fn evaluate_imported_component<'a>(
   element: &ast::Element,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   depth: u32,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
 
   let dep_uri = &self_dep
@@ -800,7 +800,7 @@ fn check_instance_loop<'a>(
   strategy: &RenderStrategy,
   element: &ast::Element,
   context: &'a mut Context,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   let tag_option = match strategy {
     RenderStrategy::Part(id) => Some(id.to_string()),
     RenderStrategy::Preview | RenderStrategy::Auto => None,
@@ -808,7 +808,7 @@ fn check_instance_loop<'a>(
 
   if let Some(tag) = tag_option {
     if in_render_stack(strategy, context) {
-      return Err(Diagnostic {
+      return Err(RuntimeError {
         uri: context.uri.to_string(),
         message: format!(
           "Can't call <{} /> here since this causes an infinite loop!",
@@ -827,11 +827,11 @@ fn check_instance_loop<'a>(
 
 fn evaluate_part_instance_element<'a>(
   element: &ast::Element,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   depth: u32,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
 
   if let DependencyContent::Node(_root_node) = &self_dep.content {
@@ -847,7 +847,7 @@ fn evaluate_part_instance_element<'a>(
     )
   } else {
     // This should _never_ happen
-    Err(Diagnostic::unknown(context.uri))
+    Err(RuntimeError::unknown(context.uri))
   }
 }
 
@@ -855,10 +855,10 @@ fn create_component_instance_data<'a>(
   instance_element: &ast::Element,
   depth: u32,
   context: &'a mut Context,
-) -> Result<js_virt::JsValue, Diagnostic> {
+) -> Result<js_virt::JsValue, RuntimeError> {
   let mut data = js_virt::JsObject::new(
     instance_element.id.to_string(),
-    ExprSource {
+    ExprTextSource {
       uri: context.uri.clone(),
       location: instance_element.location.clone(),
     },
@@ -876,7 +876,7 @@ fn create_component_instance_data<'a>(
             js_virt::JsValue::JsBoolean(js_virt::JsBoolean {
               source_id: kv_attr.id.to_string(),
               value: true,
-              source: ExprSource::new(context.uri.clone(), kv_attr.location.clone()),
+              source: ExprTextSource::new(context.uri.clone(), kv_attr.location.clone()),
             }),
           );
         } else {
@@ -902,7 +902,7 @@ fn create_component_instance_data<'a>(
             }
           }
           _ => {
-            return Err(Diagnostic::new(
+            return Err(RuntimeError::new(
               "Spread value must be an object.".to_string(),
               context.uri,
               &instance_element.location,
@@ -911,7 +911,7 @@ fn create_component_instance_data<'a>(
         };
       }
       ast::Attribute::ShorthandAttribute(sh_attr) => {
-        let name = sh_attr.get_name().map_err(|message| Diagnostic {
+        let name = sh_attr.get_name().map_err(|message| RuntimeError {
           uri: context.uri.to_string(),
           message: message.to_string(),
           location: Location { start: 0, end: 0 },
@@ -977,7 +977,7 @@ fn create_component_instance_data<'a>(
                     stringify_attribute_value(&kv_attr.name, existing_value),
                     value.to_string()
                   ),
-                  source: ExprSource::new(context.uri.clone(), kv_attr.location.clone()),
+                  source: ExprTextSource::new(context.uri.clone(), kv_attr.location.clone()),
                 })
               } else {
                 value
@@ -994,7 +994,7 @@ fn create_component_instance_data<'a>(
 
   let mut js_children = js_virt::JsArray::new(
     instance_element.id.to_string(),
-    ExprSource::new(context.uri.clone(), instance_element.location.clone()),
+    ExprTextSource::new(context.uri.clone(), instance_element.location.clone()),
   );
 
   let (ret_children, contains_style) =
@@ -1023,7 +1023,7 @@ fn create_component_instance_data<'a>(
     let new_class_name_value = js_virt::JsValue::JsString(js_virt::JsString {
       source_id: "".to_string(),
       value: new_class_name,
-      source: ExprSource {
+      source: ExprTextSource {
         uri: context.uri.clone(),
         location: Location { start: 0, end: 0 },
       },
@@ -1071,11 +1071,11 @@ fn evaluate_component_instance<'a>(
   render_strategy: RenderStrategy,
   imported: bool,
   depth: u32,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   annotations: &Option<js_virt::JsObject>,
   dep_uri: &String,
   context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   if let Some(dep) = &context.graph.dependencies.get(&dep_uri.to_string()) {
     let data = create_component_instance_data(instance_element, depth, context)?;
 
@@ -1096,7 +1096,7 @@ fn evaluate_component_instance<'a>(
       let source = if let Some(source) = instance_source {
         source.clone()
       } else {
-        ExprSource {
+        ExprTextSource {
           uri: dep_uri.to_string(),
           location: instance_element.location.clone(),
         }
@@ -1112,10 +1112,10 @@ fn evaluate_component_instance<'a>(
         Some(source),
       )
     } else {
-      Err(Diagnostic::unknown(context.uri))
+      Err(RuntimeError::unknown(context.uri))
     }
   } else {
-    Err(Diagnostic::new(
+    Err(RuntimeError::new(
       format!("Dependency {} not found", dep_uri),
       context.uri,
       &Location::new(0, 0),
@@ -1135,10 +1135,10 @@ fn evaluate_native_element<'a>(
   element: &ast::Element,
   is_root: bool,
   depth: u32,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   let mut attributes: BTreeMap<String, Option<String>> = BTreeMap::new();
 
   let mut tag_name = ast::get_tag_name(element);
@@ -1196,7 +1196,7 @@ fn evaluate_native_element<'a>(
             }
           }
           _ => {
-            return Err(Diagnostic::new(
+            return Err(RuntimeError::new(
               "Spread value must be an object.".to_string(),
               context.uri,
               &element.location,
@@ -1205,7 +1205,7 @@ fn evaluate_native_element<'a>(
         };
       }
       ast::Attribute::ShorthandAttribute(sh_attr) => {
-        let name = sh_attr.get_name().map_err(|message| Diagnostic {
+        let name = sh_attr.get_name().map_err(|message| RuntimeError {
           uri: context.uri.to_string(),
           message: message.to_string(),
           location: Location { start: 0, end: 0 },
@@ -1313,7 +1313,7 @@ fn evaluate_native_element<'a>(
     source: if let Some(source) = &instance_source {
       source.clone()
     } else {
-      ExprSource {
+      ExprTextSource {
         uri: context.uri.to_string(),
         location: element.location.clone(),
       }
@@ -1341,14 +1341,14 @@ fn stringify_attribute_value(key: &String, value: &js_virt::JsValue) -> String {
 fn evaluate_import_element<'a>(
   _element: &ast::Element,
   _context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   Ok(None)
 }
 
 fn evaluate_style_element<'a>(
   _element: &ast::StyleElement,
   _context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   Ok(None)
 }
 
@@ -1356,7 +1356,7 @@ fn evaluate_children<'a>(
   children_expr: &Vec<ast::Node>,
   depth: u32,
   context: &'a mut Context,
-) -> Result<(Vec<virt::Node>, bool), Diagnostic> {
+) -> Result<(Vec<virt::Node>, bool), RuntimeError> {
   let mut children: Vec<virt::Node> = vec![];
 
   let mut contains_style = false;
@@ -1409,10 +1409,10 @@ fn evaluate_comment<'a>(
   comment: &ast::Comment,
   depth: u32,
   context: &'a mut Context,
-) -> Result<js_virt::JsObject, Diagnostic> {
+) -> Result<js_virt::JsObject, RuntimeError> {
   let mut data = js_virt::JsObject::new(
     comment.id.to_string(),
-    ExprSource::new(context.uri.clone(), comment.location.clone()),
+    ExprTextSource::new(context.uri.clone(), comment.location.clone()),
   );
 
   for property in &comment.annotation.properties {
@@ -1434,7 +1434,7 @@ fn evaluate_fragment<'a>(
   fragment: &ast::Fragment,
   depth: u32,
   context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   evaluate_children_as_fragment(
     &fragment.children,
     depth,
@@ -1450,12 +1450,12 @@ fn evaluate_children_as_fragment<'a>(
   source_id: &String,
   location: &Location,
   context: &'a mut Context,
-) -> Result<Option<virt::Node>, Diagnostic> {
+) -> Result<Option<virt::Node>, RuntimeError> {
   let (mut children, _) = evaluate_children(&children, depth, context)?;
   Ok(Some(virt::Node::Fragment(virt::Fragment {
     source_id: source_id.to_string(),
     children,
-    source: ExprSource {
+    source: ExprTextSource {
       uri: context.uri.clone(),
       location: location.clone(),
     },
@@ -1469,7 +1469,7 @@ fn evaluate_attribute_value<'a>(
   is_native: bool,
   depth: u32,
   context: &mut Context,
-) -> Result<js_virt::JsValue, Diagnostic> {
+) -> Result<js_virt::JsValue, RuntimeError> {
   match value {
     ast::AttributeValue::DyanmicString(st) => {
       evaluate_attribute_dynamic_string(name, st, &st.id, &st.location, is_native, depth, context)
@@ -1493,7 +1493,7 @@ fn evaluate_attribute_dynamic_string<'a>(
   is_native: bool,
   depth: u32,
   context: &mut Context,
-) -> Result<js_virt::JsValue, Diagnostic> {
+) -> Result<js_virt::JsValue, RuntimeError> {
   let mut buffer = vec![];
 
   for part in value.values.iter() {
@@ -1512,7 +1512,7 @@ fn evaluate_attribute_dynamic_string<'a>(
           let dep_uri = if let Some(dep_uri) = dep_option {
             dep_uri
           } else {
-            return Err(Diagnostic::new(
+            return Err(RuntimeError::new(
               "Reference not found.".to_string(),
               context.uri,
               &pierce.location,
@@ -1527,7 +1527,7 @@ fn evaluate_attribute_dynamic_string<'a>(
           let import = if let Some(import) = import_option {
             import
           } else {
-            return Err(Diagnostic::new(
+            return Err(RuntimeError::new(
               "Reference not found.".to_string(),
               context.uri,
               &pierce.location,
@@ -1541,7 +1541,7 @@ fn evaluate_attribute_dynamic_string<'a>(
           let class_export = if let Some(class_export) = class_export_option {
             class_export
           } else {
-            return Err(Diagnostic::new(
+            return Err(RuntimeError::new(
               "Class name not found.".to_string(),
               context.uri,
               &pierce.location,
@@ -1556,7 +1556,7 @@ fn evaluate_attribute_dynamic_string<'a>(
               class_name
             )
           } else {
-            return Err(Diagnostic::new(
+            return Err(RuntimeError::new(
               "This class reference is private.".to_string(),
               context.uri,
               &pierce.location,
@@ -1593,7 +1593,7 @@ fn evaluate_attribute_dynamic_string<'a>(
   let js_value = js_virt::JsValue::JsString(js_virt::JsString {
     source_id: source_id.clone(),
     value: val.to_string(),
-    source: ExprSource {
+    source: ExprTextSource {
       uri: context.uri.clone(),
       location: location.clone(),
     },
@@ -1750,7 +1750,7 @@ fn evaluate_attribute_key_value_string<'a>(
   location: &Location,
   is_native: bool,
   context: &mut Context,
-) -> Result<js_virt::JsValue, Diagnostic> {
+) -> Result<js_virt::JsValue, RuntimeError> {
   let mut val = value.clone();
 
   if let Some(casted_value) = cast_attribute_value(name, value, is_native, context) {
@@ -1761,7 +1761,7 @@ fn evaluate_attribute_key_value_string<'a>(
       if let Some(value) = &value_option {
         val = value.to_string();
       } else {
-        return Err(Diagnostic::new(
+        return Err(RuntimeError::new(
           format!("Unable to resolve file: {} from {}", value, context.uri),
           context.uri,
           location,
@@ -1773,7 +1773,7 @@ fn evaluate_attribute_key_value_string<'a>(
   Ok(js_virt::JsValue::JsString(js_virt::JsString {
     value: val.clone(),
     source_id: source_id.to_string(),
-    source: ExprSource {
+    source: ExprTextSource {
       uri: context.uri.to_string(),
       location: location.clone(),
     },
@@ -1784,7 +1784,7 @@ fn evaluate_attribute_slot<'a>(
   script: &js_ast::Expression,
   depth: u32,
   context: &'a mut Context,
-) -> Result<js_virt::JsValue, Diagnostic> {
+) -> Result<js_virt::JsValue, RuntimeError> {
   evaluate_js(script, depth + 1, context)
 }
 
@@ -1793,11 +1793,11 @@ fn assert_attr_slot_restrictions(
   attr_name: &String,
   location: &Location,
   context: &Context,
-) -> Result<(), Diagnostic> {
+) -> Result<(), RuntimeError> {
   // if tag_name == "component" {
   //   match attr_name.as_str() {
   //     "component" | "export" | "as" => {
-  //       return Err(Diagnostic::new("Cannot bind to reserved attribute name.".to_string(), context.uri, location));
+  //       return Err(RuntimeError::new("Cannot bind to reserved attribute name.".to_string(), context.uri, location));
   //     },
   //     _ => {
 
@@ -1809,9 +1809,9 @@ fn assert_attr_slot_restrictions(
   return Ok(());
 }
 
-fn assert_slot_restrictions(location: &Location, context: &Context) -> Result<(), Diagnostic> {
+fn assert_slot_restrictions(location: &Location, context: &Context) -> Result<(), RuntimeError> {
   // if !in_instance(context) {
-  //   return Err(Diagnostic::new(
+  //   return Err(RuntimeError::new(
   //     "Bindings can only be defined within components.".to_string(),
   //     context.uri,
   //     location,
@@ -1838,7 +1838,7 @@ mod tests {
   #[test]
   fn can_evaluate_a_style() {
     let case = "<style>div { color: red; } a, b { & c { color: blue }}</style><div></div>";
-    let ast = parse(case, generate_seed().as_str(), "").unwrap();
+    let ast = parse(case, "sed").unwrap();
     let graph = DependencyGraph::new();
     let vfs = VirtualFileSystem::new(
       Box::new(|_| "".to_string()),
@@ -1865,7 +1865,7 @@ mod tests {
 
     assert_eq!(
       result,
-      Err(Diagnostic::new(
+      Err(RuntimeError::new(
         "Can't call <test /> here since this causes an infinite loop!".to_string(),
         &"some-file.pc".to_string(),
         &Location { start: 62, end: 72 }
@@ -1895,7 +1895,7 @@ mod tests {
 
     assert_eq!(
       result,
-      Err(Diagnostic::new(
+      Err(RuntimeError::new(
         "Can't call <test /> here since this causes an infinite loop!".to_string(),
         &"some-file.pc".to_string(),
         &Location { start: 63, end: 71 }
@@ -1930,7 +1930,7 @@ mod tests {
 
 pub fn __test__evaluate_source<'a>(
   code: &'a str,
-) -> (Result<EvalInfo, Diagnostic>, DependencyGraph) {
+) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
   let mut graph = DependencyGraph::new();
   let uri = "some-file.pc".to_string();
   let vfs = VirtualFileSystem::new(
