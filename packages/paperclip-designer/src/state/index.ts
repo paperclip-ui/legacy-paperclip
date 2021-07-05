@@ -25,8 +25,6 @@ import {
   getScaledPoint
 } from "./geom";
 import * as os from "os";
-import { Frame } from "paperclip-web-renderer";
-import { Action } from "../actions";
 
 export const DEFAULT_FRAME_BOX = {
   width: 1024,

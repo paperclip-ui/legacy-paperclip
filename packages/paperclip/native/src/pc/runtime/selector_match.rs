@@ -621,7 +621,7 @@ mod tests {
 
 fn parse_css_selector<'a>(selector: &'a str) -> Option<css_ast::Selector> {
   let rule = format!("{}{{}}", selector);
-  let ast: css_ast::Sheet = parse_css(&rule, generate_seed().as_str()).unwrap();
+  let ast: css_ast::Sheet = parse_css(&rule, "uri", generate_seed().as_str()).unwrap();
   let rule = ast.rules.get(0).unwrap();
   match rule {
     css_ast::Rule::Style(style) => {

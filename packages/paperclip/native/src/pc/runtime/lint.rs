@@ -15,7 +15,7 @@ use super::evaluator::{
 use super::selector_match::find_one_matching_element;
 use super::virt::Node as VirtNode;
 use crate::base::ast::ExprSource;
-use crate::base::lint::{Notice, NoticeLevel};
+use crate::core::diagnostics::{Diagnostic, DiagnosticInfo, DiagnosticLevel, DiagnosticSourceInfo};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast::{CSSObject, Rule};
@@ -29,13 +29,17 @@ pub struct LintOptions {
   // TODO: ["background-color", "padding", "background"]. Need to be contextually aware for cases like (background: #ab repeat)
   enforce_refs: Option<Vec<String>>,
 
-  enforce_previews: Option<bool>
+  enforce_previews: Option<bool>,
 }
 
 struct Context {}
 
-pub fn lint(eval_info: &EvalInfo, graph: &DependencyGraph, options: LintOptions) -> Vec<Notice> {
-  let mut notices: Vec<Notice> = Vec::new();
+pub fn lint(
+  eval_info: &EvalInfo,
+  graph: &DependencyGraph,
+  options: LintOptions,
+) -> Vec<Diagnostic> {
+  let mut notices: Vec<Diagnostic> = Vec::new();
   lint_css(eval_info, graph, &options, &mut notices);
   notices
 }
@@ -44,7 +48,7 @@ fn lint_css(
   eval_info: &EvalInfo,
   graph: &DependencyGraph,
   options: &LintOptions,
-  notices: &mut Vec<Notice>,
+  diagnostics: &mut Vec<Diagnostic>,
 ) {
   // TODO - media rules and such
   lint_css_rules(
@@ -52,7 +56,7 @@ fn lint_css(
     &eval_info.preview,
     graph,
     options,
-    notices,
+    diagnostics,
   )
 }
 
@@ -61,10 +65,9 @@ fn lint_css_rules(
   document: &VirtNode,
   graph: &DependencyGraph,
   options: &LintOptions,
-  notices: &mut Vec<Notice>,
+  diagnostics: &mut Vec<Diagnostic>,
 ) {
   // TODO - media rules and such
-
   for rule in rules {
     match rule {
       VirtRule::Style(style_rule) => {
@@ -86,15 +89,17 @@ fn lint_css_rules(
               }
             }
 
-            notices.push(Notice::new_warning(
+            diagnostics.push(Diagnostic::new_warning(
               "Unused style rule",
-              style_rule.source_id.to_string(),
-              Some(ExprSource::new(uri, expr.get_location().clone())),
+              DiagnosticInfo::UnusedStyleRule(DiagnosticSourceInfo::new(
+                style_rule.source_id.as_str(),
+                Some(&ExprSource::new(uri, expr.get_location().clone())),
+              )),
             ));
           }
         }
       }
-      VirtRule::Media(media) => lint_css_rules(&media.rules, document, graph, options, notices),
+      VirtRule::Media(media) => lint_css_rules(&media.rules, document, graph, options, diagnostics),
       // TODO - look for keyframes
       _ => {}
     }

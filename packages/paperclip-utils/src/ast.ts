@@ -8,6 +8,7 @@ import {
   StyleExpression
 } from "./css-ast";
 import { BasicRaws, SourceLocation } from "./base-ast";
+import { getTreeNodeMap } from "./tree";
 import * as crc32 from "crc32";
 import { resolveImportFile } from "./resolve";
 import * as path from "path";
@@ -411,6 +412,8 @@ export const hasAttribute = (name: string, element: Element) =>
   getAttribute(name, element) != null;
 
 // https://github.com/crcn/tandem/blob/10.0.0/packages/common/src/state/tree.ts#L137
+
+// DEPRECATED, use tree.ts
 export const flattenTreeNode = memoize((current: Node): Node[] => {
   const treeNodeMap = getTreeNodeMap(current);
   return Object.values(treeNodeMap) as Node[];
@@ -431,26 +434,6 @@ export const getParentNode = (node: Node, root: Node) => {
   const map = getTreeNodeMap(root);
   return map[nodePath.join(".")] as Fragment | Element;
 };
-
-export const getTreeNodeMap = memoize(
-  (current: Node, path = "0"): Record<string, Node> => {
-    const map = {
-      [path]: current
-    };
-    if (
-      current.nodeKind === NodeKind.Fragment ||
-      current.nodeKind === NodeKind.Element
-    ) {
-      Object.assign(
-        map,
-        ...current.children.map((child, i) =>
-          getTreeNodeMap(child, path + "." + i)
-        )
-      );
-    }
-    return map;
-  }
-);
 
 export const isComponentInstance = (
   node: Node,

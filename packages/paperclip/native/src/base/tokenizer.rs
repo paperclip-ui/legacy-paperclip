@@ -1,11 +1,11 @@
-use super::parser::ParseError;
+use crate::core::diagnostics::Diagnostic;
 
 pub trait BaseToken {}
 
 pub trait BaseTokenizer<'a> {
   // Static method signature; `Self` refers to the implementor type.
   fn is_eof(&self) -> bool;
-  fn skip(&mut self) -> Result<(), ParseError>;
+  fn skip(&mut self) -> Result<(), Diagnostic>;
   fn get_pos(&self) -> usize;
   fn get_source(&self) -> &'a [u8];
 }

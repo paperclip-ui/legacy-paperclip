@@ -1,6 +1,7 @@
 use crate::base::ast;
 use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
+use crate::core::diagnostics::{Diagnostic, DiagnosticInfo};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph, GraphError};
 use crate::core::id_generator::generate_seed;
@@ -104,7 +105,7 @@ pub enum EngineDelegateEvent<'a> {
   Deleted(DeletedFileEvent),
   Diffed(DiffedEvent<'a>),
   NodeParsed(NodeParsedEvent),
-  Error(EngineError),
+  Error(Diagnostic),
 }
 
 pub struct EvalOptions {
@@ -121,6 +122,9 @@ pub struct Engine {
   // pub import_graph: HashMap<String, BTreeMap<String, DependencyExport>>,
   pub dependency_graph: DependencyGraph,
   pub mode: EngineMode,
+
+  // keeping tabs of diagnostics
+  pub diagnostics: BTreeMap<String, Vec<Diagnostic>>,
 }
 
 impl Engine {
@@ -136,11 +140,12 @@ impl Engine {
       needs_reval: BTreeMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
       dependency_graph: DependencyGraph::new(),
+      diagnostics: BTreeMap::new(),
       mode,
     }
   }
 
-  pub async fn run(&mut self, uri: &String) -> Result<(), EngineError> {
+  pub async fn run(&mut self, uri: &String) -> Result<(), Diagnostic> {
     self.load(uri).await?;
     Ok(())
   }
@@ -182,7 +187,7 @@ impl Engine {
       .and_then(|dep| Some(&dep.content))
   }
 
-  pub async fn load(&mut self, uri: &String) -> Result<(), EngineError> {
+  pub async fn load(&mut self, uri: &String) -> Result<(), Diagnostic> {
     let load_result = self
       .dependency_graph
       .load_dependency(uri, &mut self.vfs)
@@ -192,9 +197,7 @@ impl Engine {
       Ok(loaded_uris) => {
         let mut stack = HashSet::new();
 
-        self
-          .evaluate(uri, &mut stack)
-          .or_else(|e| Err(EngineError::Runtime(e)))?;
+        self.evaluate(uri, &mut stack)?;
 
         Ok(())
       }
@@ -205,21 +208,21 @@ impl Engine {
         // from dispatching an Evaluated event after error which
         // stops a flash from happening: https://github.com/crcn/paperclip/issues/604
         // self.evaluated_data.remove(uri);
-        self.dispatch(EngineDelegateEvent::Error(EngineError::Graph(
-          error.clone(),
-        )));
-        Err(EngineError::Graph(error))
+        self.dispatch(EngineDelegateEvent::Error(error.clone()));
+        Err(error)
       }
     }
   }
 
-  pub async fn parse_file(&mut self, uri: &String) -> Result<pc_ast::Node, ParseError> {
+  pub fn get_file_diagnostics(&mut self, uri: &String) {}
+
+  pub async fn parse_file(&mut self, uri: &String) -> Result<pc_ast::Node, Diagnostic> {
     let content = self.vfs.reload(uri).await.unwrap();
-    parse_pc(content, generate_seed().as_str())
+    parse_pc(content, uri.as_str(), generate_seed().as_str())
   }
 
-  pub async fn parse_content(&mut self, content: &String) -> Result<pc_ast::Node, ParseError> {
-    parse_pc(content, generate_seed().as_str())
+  pub async fn parse_content(&mut self, content: &String) -> Result<pc_ast::Node, Diagnostic> {
+    parse_pc(content, "<virt>", generate_seed().as_str())
   }
 
   // Called when files are deleted
@@ -249,7 +252,7 @@ impl Engine {
     &mut self,
     uri: &String,
     content: &String,
-  ) -> Result<(), EngineError> {
+  ) -> Result<(), Diagnostic> {
     self.vfs.update(uri, content).await;
     self.run(uri).await?;
 
@@ -263,21 +266,18 @@ impl Engine {
     Ok(())
   }
 
-  fn evaluate<'a>(
-    &mut self,
-    uri: &String,
-    stack: &mut HashSet<String>,
-  ) -> Result<(), RuntimeError> {
+  fn evaluate<'a>(&mut self, uri: &String, stack: &mut HashSet<String>) -> Result<(), Diagnostic> {
     // prevent infinite loop
     if stack.contains(uri) {
-      let err = RuntimeError::new(
-        "Circular dependencies are not supported".to_string(),
-        uri,
-        &ast::Location { start: 0, end: 1 },
+      let err = Diagnostic::new_error(
+        "Circular dependencies are not supported",
+        DiagnosticInfo::CircularDependencyDetected(ast::ExprSource::new(
+          uri.to_string(),
+          ast::Location { start: 0, end: 1 },
+        )),
       );
-      self.dispatch(EngineDelegateEvent::Error(EngineError::Runtime(
-        err.clone(),
-      )));
+
+      self.dispatch(EngineDelegateEvent::Error(err));
       return Err(err);
     }
 
@@ -287,10 +287,12 @@ impl Engine {
     let dependency = if let Some(dep) = dependency_option {
       dep
     } else {
-      return Err(RuntimeError::new(
-        "dependency not loaded.".to_string(),
-        uri,
-        &ast::Location::new(0, 0),
+      return Err(Diagnostic::new_error(
+        "Dependency not loaded",
+        DiagnosticInfo::DependencyNotLoaded(ast::ExprSource::new(
+          uri.to_string(),
+          ast::Location { start: 0, end: 1 },
+        )),
       ));
     };
 
@@ -321,7 +323,7 @@ impl Engine {
 
     let dependency = self.dependency_graph.dependencies.get(uri).unwrap();
 
-    let eval_result: Result<DependencyEvalInfo, RuntimeError> = match &dependency.content {
+    let eval_result: Result<DependencyEvalInfo, Diagnostic> = match &dependency.content {
       DependencyContent::StyleSheet(sheet) => {
         evaluate_css(uri, &self.dependency_graph, &self.vfs, &self.evaluated_data)
           .and_then(|info| Ok(DependencyEvalInfo::CSS(info)))
@@ -338,13 +340,11 @@ impl Engine {
     };
 
     let eval = eval_result.or_else(|err| {
-      let e = EngineError::Runtime(err.clone());
-
       // need to re-eval so that any diagnostics or state get reset
       // if rendering resumes but there are no changes
 
       self.needs_reval.insert(uri.to_string(), true);
-      self.dispatch(EngineDelegateEvent::Error(e));
+      self.dispatch(EngineDelegateEvent::Error(err.clone()));
       Err(err)
     })?;
 

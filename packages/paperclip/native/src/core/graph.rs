@@ -1,6 +1,10 @@
 use super::vfs::VirtualFileSystem;
-use crate::base::ast::Location;
+use crate::base::ast::{ExprSource, Location};
 use crate::base::parser::ParseError;
+use crate::core::diagnostics::{
+  Diagnostic, DiagnosticInfo, FileNotFoundInfo, ImportNotFoundInfo, SyntaxDiagnosticInfo,
+  SyntaxDiagnosticInfoCode,
+};
 use crate::core::id_generator::generate_seed;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
@@ -12,9 +16,7 @@ use std::collections::{BTreeMap, HashSet};
 pub enum GraphErrorInfo {
   // <import  />, <img />, <logic />
   IncludeNotFound(IncludeNodeFoundError),
-
   Syntax(ParseError),
-
   NotFound,
 }
 
@@ -142,7 +144,7 @@ impl DependencyGraph {
     &mut self,
     uri: &String,
     vfs: &mut VirtualFileSystem,
-  ) -> Result<Vec<String>, GraphError> {
+  ) -> Result<Vec<String>, Diagnostic> {
     let mut loaded_deps = vec![];
     loaded_deps.push(uri.to_string());
 
@@ -154,7 +156,7 @@ impl DependencyGraph {
         .load(&curr_uri)
         .await
         .or_else(|_| {
-          let err: GraphError = match import {
+          let err: Diagnostic = match import {
             Some((origin_uri, relative_uri)) => {
               if let Some(origin_dep) = self.dependencies.get(&origin_uri) {
                 let location = match &origin_dep.content {
@@ -168,27 +170,28 @@ impl DependencyGraph {
                   }
                 };
 
-                let info = GraphErrorInfo::IncludeNotFound(IncludeNodeFoundError {
-                  message: "import not found".to_string(),
-                  uri: curr_uri.to_string(),
-                  location,
-                });
-
-                GraphError {
-                  uri: origin_uri.to_string(),
-                  info,
-                }
+                Diagnostic::new_error(
+                  "Import not found",
+                  DiagnosticInfo::ImportNotFound(ImportNotFoundInfo {
+                    link_uri: curr_uri.to_string(),
+                    source: ExprSource::new(origin_uri.to_string(), location),
+                  }),
+                )
               } else {
-                GraphError {
-                  uri: curr_uri.to_string(),
-                  info: GraphErrorInfo::NotFound,
-                }
+                Diagnostic::new_error(
+                  "File not found",
+                  DiagnosticInfo::FileNotFound(FileNotFoundInfo {
+                    uri: curr_uri.to_string(),
+                  }),
+                )
               }
             }
-            None => GraphError {
-              uri: curr_uri.to_string(),
-              info: GraphErrorInfo::NotFound,
-            },
+            None => Diagnostic::new_error(
+              "File not found",
+              DiagnosticInfo::FileNotFound(FileNotFoundInfo {
+                uri: curr_uri.to_string(),
+              }),
+            ),
           };
 
           Err(err)
@@ -196,12 +199,7 @@ impl DependencyGraph {
         .to_string();
 
       // TODO - check if content matches old content.
-      let dependency_option = Dependency::from_source(source, &curr_uri, vfs).or_else(|error| {
-        Err(GraphError {
-          uri: curr_uri.to_string(),
-          info: GraphErrorInfo::Syntax(error),
-        })
-      });
+      let dependency_option = Dependency::from_source(source, &curr_uri, vfs);
 
       match dependency_option {
         Ok(dependency) => {
@@ -252,7 +250,7 @@ impl<'a> Dependency {
     source: String,
     uri: &String,
     vfs: &VirtualFileSystem,
-  ) -> Result<Dependency, ParseError> {
+  ) -> Result<Dependency, Diagnostic> {
     if uri.ends_with(".css") {
       Dependency::from_css_source(source, uri)
     } else {
@@ -260,8 +258,9 @@ impl<'a> Dependency {
     }
   }
 
-  fn from_css_source(source: String, uri: &String) -> Result<Dependency, ParseError> {
-    let expression_result = css_parser::parse(source.as_str(), generate_seed().as_str());
+  fn from_css_source(source: String, uri: &String) -> Result<Dependency, Diagnostic> {
+    let expression_result =
+      css_parser::parse(source.as_str(), uri.as_str(), generate_seed().as_str());
     if let Err(err) = expression_result {
       return Err(err);
     }
@@ -279,8 +278,9 @@ impl<'a> Dependency {
     source: String,
     uri: &String,
     vfs: &VirtualFileSystem,
-  ) -> Result<Dependency, ParseError> {
-    let expression_result = pc_parser::parse(source.as_str(), generate_seed().as_str());
+  ) -> Result<Dependency, Diagnostic> {
+    let expression_result =
+      pc_parser::parse(source.as_str(), uri.as_str(), generate_seed().as_str());
 
     if let Err(err) = expression_result {
       return Err(err);
@@ -308,11 +308,19 @@ impl<'a> Dependency {
 
         dependency_uri_maps.insert(src.to_string(), resolved_src.to_string());
       } else {
-        return Err(ParseError::unexpected(
-          format!("Unable to resolve path: {} from {}", src, uri),
+        return Err(SyntaxDiagnosticInfo::new_error_dignostic(
+          SyntaxDiagnosticInfoCode::Unexpected,
+          format!("Unable to resolve path: {} from {}", src, uri).as_str(),
+          uri,
           0,
           0,
         ));
+
+        // return Err(ParseError::unexpected(
+        //   format!("Unable to resolve path: {} from {}", src, uri),
+        //   0,
+        //   0,
+        // ));
       }
     }
 

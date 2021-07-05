@@ -28,8 +28,6 @@ import {
   LoadedEvent
 } from "paperclip";
 
-import { throttle } from "lodash";
-
 import * as parseColor from "color";
 import * as fs from "fs";
 import * as url from "url";

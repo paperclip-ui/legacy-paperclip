@@ -1,7 +1,7 @@
 use super::super::ast;
 use super::virt;
 use crate::base::ast::{ExprSource, Location};
-use crate::base::runtime::RuntimeError;
+use crate::base::runtime::Diagnostic;
 use crate::pc::ast as pc_ast;
 use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext};
 
@@ -9,14 +9,14 @@ pub fn evaluate<'a>(
   expr: &ast::Expression,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   evaluate_expression(&expr, depth, context)
 }
 fn evaluate_expression<'a>(
   expression: &ast::Expression,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   match expression {
     ast::Expression::Reference(reference) => evaluate_reference(reference, context),
     ast::Expression::Conjunction(conjunction) => evaluate_conjuction(conjunction, depth, context),
@@ -34,7 +34,7 @@ fn evaluate_group<'a>(
   group: &ast::Group,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   evaluate_expression(&group.expression, depth, context)
 }
 
@@ -42,7 +42,7 @@ fn evaluate_conjuction<'a>(
   conjunction: &ast::Conjunction,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   let left = evaluate_expression(&conjunction.left, depth, context)?;
 
   match conjunction.operator {
@@ -76,7 +76,7 @@ fn evaluate_not<'a>(
   not: &ast::Not,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
     source_id: not.id.to_string(),
     source: ExprSource::new(context.uri.clone(), not.location.clone()),
@@ -88,7 +88,7 @@ fn evaluate_node<'a>(
   node: &Box<pc_ast::Node>,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   let node_option = evaluate_pc_node(node, false, depth, None, &None, context)?;
   if let Some(node) = node_option {
     Ok(virt::JsValue::JsNode(node))
@@ -103,7 +103,7 @@ fn evaluate_node<'a>(
 fn evaluate_string<'a>(
   value: &ast::Str,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   Ok(virt::JsValue::JsString(virt::JsString {
     source_id: value.id.to_string(),
     value: value.value.to_string(),
@@ -114,7 +114,7 @@ fn evaluate_string<'a>(
 fn evaluate_boolean<'a>(
   value: &ast::Boolean,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
     source_id: value.id.to_string(),
     value: value.value,
@@ -125,7 +125,7 @@ fn evaluate_boolean<'a>(
 fn evaluate_number<'a>(
   value: &ast::Number,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   let value_result = value.value.parse::<f64>();
 
   if let Ok(number) = value_result {
@@ -135,7 +135,7 @@ fn evaluate_number<'a>(
       source: ExprSource::new(context.uri.clone(), value.location.clone()),
     }))
   } else {
-    Err(RuntimeError::new(
+    Err(Diagnostic::new(
       "Invalid number.".to_string(),
       context.uri,
       &value.location,
@@ -147,7 +147,7 @@ fn evaluate_array<'a>(
   ary: &ast::Array,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   let mut js_array = virt::JsArray::new(
     ary.id.to_string(),
     ExprSource::new(context.uri.clone(), ary.location.clone()),
@@ -164,7 +164,7 @@ fn evaluate_object<'a>(
   obj: &ast::Object,
   depth: u32,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   let mut js_object = virt::JsObject::new(
     obj.id.to_string(),
     ExprSource::new(context.uri.clone(), obj.location.clone()),
@@ -181,14 +181,14 @@ fn evaluate_object<'a>(
 fn evaluate_reference<'a>(
   reference: &ast::Reference,
   context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+) -> Result<virt::JsValue, Diagnostic> {
   let mut curr = Some(context.data);
 
   for part in &reference.path {
     if let Some(object) = &curr {
       curr = virt::get_js_value_property(&object, &part.name);
     } else {
-      return Err(RuntimeError {
+      return Err(Diagnostic {
         uri: context.uri.to_string(),
         message: "Cannot access property of undefined".to_string(),
         location: Location { start: 0, end: 1 },

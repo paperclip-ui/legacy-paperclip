@@ -111,7 +111,6 @@ export class EngineDelegate {
         data: this._rendered[event.uri]
       });
     } else if (event.kind === EngineDelegateEventKind.Diffed) {
-      // console.log("EV", event.uri, event.kind, event.data);
       const existingData = this._rendered[event.uri];
       this._rendered = updateAllLoadedData(this._rendered, event);
       const newData = this._rendered[event.uri];
@@ -177,6 +176,7 @@ export class EngineDelegate {
   parseContent(content: string) {
     return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }
+  getFileDiagnostics(uri: string) {}
   purgeUnlinkedFiles() {
     return this._tryCatch(() => {
       const ret = mapResult(this._native.purge_unlinked_files());

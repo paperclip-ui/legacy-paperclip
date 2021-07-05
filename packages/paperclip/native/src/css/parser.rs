@@ -6,10 +6,11 @@
 use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Location};
-use crate::base::parser::{get_buffer, ParseError};
+use crate::base::parser::get_buffer;
+use crate::core::diagnostics::{Diagnostic, SyntaxDiagnosticInfo, SyntaxDiagnosticInfoCode};
 use crate::core::id_generator::IDGenerator;
 
-type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
+type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, Diagnostic>;
 
 pub struct Context<'a, 'b> {
   tokenizer: &'b mut Tokenizer<'a>,
@@ -18,13 +19,17 @@ pub struct Context<'a, 'b> {
 }
 
 impl<'a, 'b> Context<'a, 'b> {
-  pub fn ended(&mut self) -> Result<bool, ParseError> {
+  pub fn ended(&mut self) -> Result<bool, Diagnostic> {
     Ok(self.tokenizer.is_eof() || (self.until)(self.tokenizer)?)
   }
 }
 
-pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Sheet, ParseError> {
-  let mut tokenizer = Tokenizer::new(&source);
+pub fn parse<'a>(
+  source: &'a str,
+  source_uri: &'a str,
+  id_seed: &'a str,
+) -> Result<Sheet, Diagnostic> {
+  let mut tokenizer = Tokenizer::new(source, source_uri);
   parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
 }
 
@@ -32,7 +37,7 @@ pub fn parse_with_tokenizer<'a>(
   tokenizer: &mut Tokenizer<'a>,
   id_seed: &'a str,
   until: FUntil<'a>,
-) -> Result<Sheet, ParseError> {
+) -> Result<Sheet, Diagnostic> {
   let mut context = Context {
     tokenizer,
     until,
@@ -46,7 +51,7 @@ fn eat_comments<'a, 'b>(
   context: &mut Context<'a, 'b>,
   start: Token,
   end: Token,
-) -> Result<(), ParseError> {
+) -> Result<(), Diagnostic> {
   if context.ended()? || context.tokenizer.peek(1)? != start {
     return Ok(());
   }
@@ -60,7 +65,7 @@ fn eat_comments<'a, 'b>(
   Ok(())
 }
 
-fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseError> {
+fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
 
   let raw_before = eat_superfluous(context)?;
@@ -77,7 +82,7 @@ fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseErro
 
 fn parse_rules_and_declarations<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Rule>, Vec<Declaration>), ParseError> {
+) -> Result<(Vec<Rule>, Vec<Declaration>), Diagnostic> {
   let mut rules = vec![];
   let mut declarations = vec![];
   let mut raw_before = eat_superfluous(context)?;
@@ -97,7 +102,7 @@ fn parse_rules_and_declarations<'a, 'b>(
   Ok((rules, declarations))
 }
 
-fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Option<&'a [u8]>, ParseError> {
+fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Option<&'a [u8]>, Diagnostic> {
   let start = context.tokenizer.pos;
 
   if context.ended()? {
@@ -121,7 +126,7 @@ fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Option<&'a [
   ))
 }
 
-fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
+fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, Diagnostic> {
   let raw_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
   let start_tok = context.tokenizer.next()?;
@@ -129,7 +134,12 @@ fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
   let buffer = match start_tok {
     Token::LineComment(buffer) => buffer,
     Token::ScriptComment(buffer) => buffer,
-    _ => return Err(ParseError::unexpected_token(start)),
+    _ => {
+      return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+        &context.tokenizer.source_uri,
+        start,
+      ))
+    }
   };
 
   let pos = context.tokenizer.utf16_pos;
@@ -146,7 +156,7 @@ fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
 fn parse_rule<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
-) -> Result<Rule, ParseError> {
+) -> Result<Rule, Diagnostic> {
   match context.tokenizer.peek(1)? {
     Token::LineComment(_) => parse_comment(context),
     Token::ScriptComment(_) => parse_comment(context),
@@ -158,7 +168,7 @@ fn parse_rule<'a, 'b>(
 fn parse_style_rule<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
-) -> Result<Rule, ParseError> {
+) -> Result<Rule, Diagnostic> {
   Ok(Rule::Style(parse_style_rule2(context, raw_before, false)?))
 }
 
@@ -166,7 +176,7 @@ fn parse_style_rule2<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
   is_child_without_amp_prefix: bool,
-) -> Result<StyleRule, ParseError> {
+) -> Result<StyleRule, Diagnostic> {
   let raw_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
   let selector = parse_selector(context, is_child_without_amp_prefix)?;
@@ -183,28 +193,29 @@ fn parse_style_rule2<'a, 'b>(
 
 fn parse_declaration_body<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<StyleRule>, Option<&'a [u8]>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<StyleRule>, Option<&'a [u8]>), Diagnostic> {
   eat_superfluous(context)?;
   let block_start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?; // eat {
   let (declarations, rules) = parse_declarations_and_children(context)?;
 
   eat_superfluous(context)?;
-  context
-    .tokenizer
-    .next_expect(Token::CurlyClose)
-    .or(Err(ParseError::unterminated(
-      "Unterminated bracket.".to_string(),
+  context.tokenizer.next_expect(Token::CurlyClose).or(Err(
+    SyntaxDiagnosticInfo::new_error_dignostic(
+      SyntaxDiagnosticInfoCode::Unterminated,
+      "Unterminated bracket.",
+      &context.tokenizer.source_uri,
       block_start,
       context.tokenizer.utf16_pos,
-    )))?;
+    ),
+  ))?;
 
   let raw_after = context.tokenizer.eat_whitespace();
 
   Ok((declarations, rules, raw_after))
 }
 
-fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseError> {
+fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, Diagnostic> {
   let raw_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::At)?;
@@ -223,7 +234,10 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
           location: Location::new(start, context.tokenizer.utf16_pos),
         }))
       } else {
-        Err(ParseError::unexpected_token(start))
+        Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+          &context.tokenizer.source_uri,
+          start,
+        ))
       }
     }
     // "namespace" => {
@@ -259,14 +273,17 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       raw_before,
       context,
     )?)),
-    _ => Err(ParseError::unexpected_token(context.tokenizer.utf16_pos)),
+    _ => Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+      context.tokenizer.source_uri,
+      context.tokenizer.utf16_pos,
+    )),
   }
 }
 
 fn parse_export_rule<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
-) -> Result<ExportRule, ParseError> {
+) -> Result<ExportRule, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
 
@@ -296,7 +313,7 @@ fn parse_condition_rule<'a, 'b>(
   name: String,
   raw_before: Option<&'a [u8]>,
   context: &mut Context<'a, 'b>,
-) -> Result<ConditionRule, ParseError> {
+) -> Result<ConditionRule, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   let condition_text = get_buffer(context.tokenizer, |tokenizer| {
     Ok(tokenizer.peek(1)? != Token::CurlyOpen)
@@ -320,7 +337,7 @@ fn parse_mixin_rule<'a, 'b>(
   start: usize,
   raw_start: Option<&'a [u8]>,
   context: &mut Context<'a, 'b>,
-) -> Result<MixinRule, ParseError> {
+) -> Result<MixinRule, Diagnostic> {
   eat_superfluous(context)?;
   let name_start = context.tokenizer.utf16_pos;
   let name = parse_selector_name(context)?.to_string();
@@ -347,7 +364,7 @@ fn parse_mixin_rule<'a, 'b>(
 fn parse_font_face_rule<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
-) -> Result<FontFaceRule, ParseError> {
+) -> Result<FontFaceRule, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   let (declarations, _children, raw_after) = parse_declaration_body(context)?;
   Ok(FontFaceRule {
@@ -361,7 +378,7 @@ fn parse_font_face_rule<'a, 'b>(
 fn parse_keyframes_rule<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
-) -> Result<KeyframesRule, ParseError> {
+) -> Result<KeyframesRule, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   let name = parse_selector_name(context)?.to_string();
 
@@ -393,7 +410,7 @@ fn parse_keyframes_rule<'a, 'b>(
 fn parse_keyframe_rule<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
-) -> Result<KeyframeRule, ParseError> {
+) -> Result<KeyframeRule, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
 
   eat_superfluous(context)?;
@@ -418,7 +435,7 @@ fn parse_keyframe_rule<'a, 'b>(
 fn parse_selector<'a, 'b>(
   context: &mut Context<'a, 'b>,
   is_child_without_amp_prefix: bool,
-) -> Result<Selector, ParseError> {
+) -> Result<Selector, Diagnostic> {
   parse_group_selector(context, is_child_without_amp_prefix)
 }
 
@@ -426,7 +443,7 @@ fn parse_selector<'a, 'b>(
 fn parse_group_selector<'a, 'b>(
   context: &mut Context<'a, 'b>,
   is_child_without_amp_prefix: bool,
-) -> Result<Selector, ParseError> {
+) -> Result<Selector, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
 
   let mut selectors: Vec<Selector> = vec![];
@@ -465,7 +482,7 @@ fn parse_group_selector<'a, 'b>(
 fn parse_pair_selector<'a, 'b>(
   context: &mut Context<'a, 'b>,
   is_child_without_amp_prefix: bool,
-) -> Result<Selector, ParseError> {
+) -> Result<Selector, Diagnostic> {
   let selector = if is_child_without_amp_prefix
     && matches!(
       context.tokenizer.peek(1)?,
@@ -488,7 +505,7 @@ fn parse_pair_selector<'a, 'b>(
 fn parse_next_pair_selector<'a, 'b>(
   selector: Selector,
   context: &mut Context<'a, 'b>,
-) -> Result<Selector, ParseError> {
+) -> Result<Selector, Diagnostic> {
   eat_superfluous(context)?;
   let start = context.tokenizer.utf16_pos;
   let delim = context.tokenizer.peek(1)?;
@@ -541,7 +558,7 @@ fn parse_next_pair_selector<'a, 'b>(
 }
 
 // div.combo[attr][another]
-fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
+fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, Diagnostic> {
   let pos = context.tokenizer.utf16_pos;
   let mut selectors = vec![];
   loop {
@@ -553,7 +570,10 @@ fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
     }
   }
   if selectors.len() == 0 {
-    return Err(ParseError::unexpected_token(pos));
+    return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+      context.tokenizer.source_uri,
+      pos,
+    ));
   }
 
   if selectors.len() == 1 {
@@ -567,7 +587,7 @@ fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
 }
 fn parse_combo_selector_selectors<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<Vec<Selector>, ParseError> {
+) -> Result<Vec<Selector>, Diagnostic> {
   let pos = context.tokenizer.utf16_pos;
   let mut selectors = vec![];
   loop {
@@ -583,7 +603,7 @@ fn parse_combo_selector_selectors<'a, 'b>(
 
 fn parse_pseudo_element_selector<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<Selector, ParseError> {
+) -> Result<Selector, Diagnostic> {
   let mut colon_count = 1;
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::Colon)?;
@@ -659,7 +679,7 @@ fn parse_pseudo_element_selector<'a, 'b>(
   Ok(selector)
 }
 
-fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
+fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, Diagnostic> {
   let pos = context.tokenizer.utf16_pos;
   let token = context.tokenizer.peek(1)?;
   let selector: Selector = match token {
@@ -724,13 +744,16 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
       location: Location::new(pos, context.tokenizer.utf16_pos),
     }),
     _ => {
-      return Err(ParseError::unexpected_token(pos));
+      return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+        context.tokenizer.source_uri,
+        pos,
+      ));
     }
   };
   Ok(selector)
 }
 
-fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
+fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, Diagnostic> {
   let name = parse_attribute_name(context)?.to_string();
   let mut value = None;
 
@@ -759,7 +782,10 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
       // do nothing
     }
     _ => {
-      return Err(ParseError::unexpected_token(start));
+      return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+        context.tokenizer.source_uri,
+        start,
+      ));
     }
   };
 
@@ -775,7 +801,7 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
 
 fn parse_attribute_selector_value<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<String, ParseError> {
+) -> Result<String, Diagnostic> {
   let initial = context.tokenizer.peek(1)?;
   let value = if let Token::Str((value, boundary)) = initial {
     context.tokenizer.next()?;
@@ -812,7 +838,7 @@ fn part_of_selector_name(token: &Token) -> bool {
   }
 }
 
-fn parse_selector_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
+fn parse_selector_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, Diagnostic> {
   eat_superfluous(context)?;
   get_buffer(context.tokenizer, |tokenizer| {
     let mut tok = tokenizer.peek(1)?;
@@ -827,7 +853,7 @@ fn parse_selector_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str,
   })
 }
 
-fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
+fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, Diagnostic> {
   get_buffer(context.tokenizer, |tokenizer| {
     let tok = tokenizer.peek(1)?;
     Ok(match tok {
@@ -839,7 +865,7 @@ fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str
 
 fn parse_declarations_and_children<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<(Vec<Declaration>, Vec<StyleRule>), ParseError> {
+) -> Result<(Vec<Declaration>, Vec<StyleRule>), Diagnostic> {
   let mut declarations = vec![];
   let mut children = vec![];
 
@@ -870,7 +896,7 @@ fn parse_declarations_and_children<'a, 'b>(
   Ok((declarations, children))
 }
 
-fn is_next_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<bool, ParseError> {
+fn is_next_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<bool, Diagnostic> {
   let pos = context.tokenizer.get_pos();
   let mut is_declaration = true;
 
@@ -886,14 +912,14 @@ fn is_next_declaration<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<bool, Pa
     }
   }
 
-  context.tokenizer.set_pos(pos);
+  context.tokenizer.set_pos(&pos);
 
   return Ok(is_declaration);
 }
 
 fn is_next_key_value_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
-) -> Result<bool, ParseError> {
+) -> Result<bool, Diagnostic> {
   let pos = context.tokenizer.get_pos();
   let mut found_semicolon = false;
   let mut found_colon = false;
@@ -914,7 +940,7 @@ fn is_next_key_value_declaration<'a, 'b>(
     }
   }
 
-  context.tokenizer.set_pos(pos);
+  context.tokenizer.set_pos(&pos);
 
   return Ok((found_colon && found_semicolon) && !(found_curly_open));
 }
@@ -922,7 +948,7 @@ fn is_next_key_value_declaration<'a, 'b>(
 fn parse_at_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
-) -> Result<Declaration, ParseError> {
+) -> Result<Declaration, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
 
   context.tokenizer.next_expect(Token::At)?;
@@ -946,7 +972,10 @@ fn parse_at_declaration<'a, 'b>(
       }))
     }
     _ => {
-      return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos));
+      return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+        context.tokenizer.source_uri,
+        context.tokenizer.utf16_pos,
+      ));
     }
   }
 }
@@ -954,7 +983,7 @@ fn parse_at_declaration<'a, 'b>(
 fn parse_include<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
-) -> Result<Include, ParseError> {
+) -> Result<Include, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   eat_superfluous(context)?;
   let mut mixin_path: Vec<IncludeReferencePart> = vec![];
@@ -972,7 +1001,10 @@ fn parse_include<'a, 'b>(
       }
       context.tokenizer.next();
     } else {
-      return Err(ParseError::unexpected_token(start.u16_pos));
+      return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+        context.tokenizer.source_uri,
+        start.u16_pos,
+      ));
     }
   }
 
@@ -989,7 +1021,10 @@ fn parse_include<'a, 'b>(
   } else if context.tokenizer.peek(1)? == Token::CurlyOpen {
     parse_declaration_body(context)?
   } else {
-    return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos));
+    return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+      context.tokenizer.source_uri,
+      context.tokenizer.utf16_pos,
+    ));
   };
 
   Ok(Include {
@@ -1005,7 +1040,7 @@ fn parse_include<'a, 'b>(
 fn parse_key_value_declaration<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
-) -> Result<Declaration, ParseError> {
+) -> Result<Declaration, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   if let Token::Keyword(keyword) = context.tokenizer.next()? {
     let name = keyword.to_string();
@@ -1025,7 +1060,10 @@ fn parse_key_value_declaration<'a, 'b>(
 
     // check for { color: red }, if not, then probably dealing with this: { color: red background: blue; }
     } else if context.tokenizer.peek(1)? != Token::CurlyClose {
-      return Err(ParseError::unexpected_token(context.tokenizer.pos));
+      return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+        context.tokenizer.source_uri,
+        context.tokenizer.pos,
+      ));
     }
 
     let end = context.tokenizer.utf16_pos;
@@ -1046,11 +1084,14 @@ fn parse_key_value_declaration<'a, 'b>(
       },
     }))
   } else {
-    return Err(ParseError::unexpected_token(start));
+    return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+      context.tokenizer.source_uri,
+      start,
+    ));
   }
 }
 
-fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
+fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, Diagnostic> {
   let mut buffer = String::new();
   while !context.tokenizer.is_eof() {
     match context.tokenizer.peek(1)? {
@@ -1125,7 +1166,7 @@ mod tests {
     // comment
     ";
 
-    parse(source, "id").unwrap();
+    parse(source, "id", "uri").unwrap();
   }
 
   #[test]
@@ -1215,7 +1256,7 @@ mod tests {
       }
     ";
 
-    parse(source, "id").unwrap();
+    parse(source, "uri", "id").unwrap();
   }
 
   ///
@@ -1225,9 +1266,11 @@ mod tests {
   #[test]
   fn displays_an_error_for_unterminated_curly_bracket() {
     assert_eq!(
-      parse("div { ", "id"),
-      Err(ParseError::unterminated(
-        "Unterminated bracket.".to_string(),
+      parse("div { ", "id", "uri"),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unterminated,
+        "Unterminated bracket.",
+        "uri",
         4,
         6
       ))

@@ -6,6 +6,9 @@ use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tok
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::core::diagnostics::{
+  Diagnostic, DiagnosticInfo, SyntaxDiagnosticInfo, SyntaxDiagnosticInfoCode,
+};
 use crate::core::id_generator::IDGenerator;
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
@@ -41,10 +44,15 @@ void elements: [ 'area',
   'wbr' ]
 */
 
-pub fn parse<'a, 'b>(source: &'a str, id_seed: &'b str) -> Result<pc_ast::Node, ParseError> {
+pub fn parse<'a, 'b>(
+  source: &'a str,
+  source_uri: &'a str,
+  id_seed: &'b str,
+) -> Result<pc_ast::Node, Diagnostic> {
   parse_fragment(
     &mut Context {
-      tokenizer: Tokenizer::new(source),
+      source_uri,
+      tokenizer: Tokenizer::new(source, source_uri),
       id_generator: IDGenerator::new(id_seed.to_string()),
     },
     vec![id_seed.to_string()],
@@ -52,6 +60,7 @@ pub fn parse<'a, 'b>(source: &'a str, id_seed: &'b str) -> Result<pc_ast::Node, 
 }
 
 pub struct Context<'a> {
+  pub source_uri: &'a str,
   pub tokenizer: Tokenizer<'a>,
   pub id_generator: IDGenerator,
 }
@@ -59,7 +68,7 @@ pub struct Context<'a> {
 fn parse_fragment<'a>(
   context: &mut Context<'a>,
   path: Vec<String>,
-) -> Result<pc_ast::Node, ParseError> {
+) -> Result<pc_ast::Node, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   let mut children: Vec<pc_ast::Node> = vec![];
   let mut raw_before = context.tokenizer.eat_whitespace();
@@ -82,7 +91,7 @@ fn parse_include_declaration<'a>(
   context: &mut Context<'a>,
   path: Vec<String>,
   raw_before: Option<&'a [u8]>,
-) -> Result<pc_ast::Node, ParseError> {
+) -> Result<pc_ast::Node, Diagnostic> {
   let start = context.tokenizer.get_pos();
 
   // Kinda ick, but cover case where last node is whitespace.
@@ -102,11 +111,21 @@ fn parse_include_declaration<'a>(
       let tag_name = parse_tag_name(context)?;
       context.tokenizer.next_expect(Token::GreaterThan)?;
 
-      Err(ParseError::unexpected(
-        "Closing tag doesn't have an open tag.".to_string(),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unexpected,
+        "Closing tag doesn't have an open tag.",
+        context.source_uri,
         start,
         context.tokenizer.utf16_pos,
       ))
+
+      // Err(Diagnostic::new_error("Closing tag doesn't have an open tag.", DiagnosticInfo::Syntax(SyntaxDiagnosticInfo::unexpected(context.source_uri.as_str(), start, context.tokenizer.utf16_pos))))
+
+      // Err(ParseError::unexpected(
+      //   "Closing tag doesn't have an open tag.".to_string(),
+      //   start,
+      //   context.tokenizer.utf16_pos,
+      // ))
     }
     _ => {
       // reset pos to ensure text doesn't get chopped (e.g: `{children} text`)
@@ -123,7 +142,10 @@ fn parse_include_declaration<'a>(
       .to_string();
 
       if value.len() == 0 {
-        Err(ParseError::unexpected_token(context.tokenizer.utf16_pos))
+        Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+          context.source_uri,
+          context.tokenizer.utf16_pos,
+        ))
       } else {
         Ok(pc_ast::Node::Text(pc_ast::ValueObject {
           id: context.id_generator.new_id(),
@@ -151,7 +173,7 @@ fn parse_slot<'a>(
   path: &Vec<String>,
   raw_before: Option<&'a [u8]>,
   index: usize,
-) -> Result<pc_ast::Node, ParseError> {
+) -> Result<pc_ast::Node, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   let omit_from_compilation = parse_omit_from_compilation(context)?;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
@@ -168,10 +190,13 @@ fn parse_slot<'a>(
 fn parse_slot_script<'a>(
   context: &mut Context<'a>,
   id_seed_info_option: Option<(&Vec<String>, usize)>,
-) -> Result<js_ast::Expression, ParseError> {
+) -> Result<js_ast::Expression, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
-  let mut js_tokenizer =
-    JSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+  let mut js_tokenizer = JSTokenizer::new_from_bytes(
+    &context.tokenizer.source,
+    context.source_uri,
+    context.tokenizer.get_pos(),
+  );
   let id_seed = if let Some((path, index)) = id_seed_info_option {
     format!("{}{}", path.join("-"), index)
   } else {
@@ -198,16 +223,19 @@ fn parse_slot_script<'a>(
 pub fn parse_annotation<'a>(
   context: &mut Context<'a>,
   raw_before: Option<&'a [u8]>,
-) -> Result<pc_ast::Node, ParseError> {
+) -> Result<pc_ast::Node, Diagnostic> {
   let start = context.tokenizer.get_pos();
 
   context.tokenizer.next()?; // eat HTML comment open
-  let mut annotation_tokenizer =
-    AnnotationTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+  let mut annotation_tokenizer = AnnotationTokenizer::new_from_bytes(
+    &context.tokenizer.source,
+    &context.tokenizer.source_uri,
+    context.tokenizer.get_pos(),
+  );
 
   let annotation = parse_annotation_with_tokenizer(
     &mut annotation_tokenizer,
-    |tokenizer| -> Result<bool, ParseError> {
+    |tokenizer| -> Result<bool, Diagnostic> {
       Ok(
         tokenizer.peek(1)? == AnnotationToken::Byte(b'-')
           && tokenizer.peek(2)? == AnnotationToken::Byte(b'-')
@@ -232,7 +260,7 @@ pub fn parse_tag<'a>(
   context: &mut Context<'a>,
   path: Vec<String>,
   raw_before: Option<&'a [u8]>,
-) -> Result<pc_ast::Node, ParseError> {
+) -> Result<pc_ast::Node, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
 
   context.tokenizer.next_expect(Token::LessThan)?;
@@ -244,7 +272,7 @@ fn parse_element<'a>(
   el_raw_before: Option<&'a [u8]>,
   path: Vec<String>,
   start: usize,
-) -> Result<pc_ast::Node, ParseError> {
+) -> Result<pc_ast::Node, Diagnostic> {
   let tag_name = parse_tag_name(context)?;
   let tag_name_end = context.tokenizer.utf16_pos;
 
@@ -275,7 +303,7 @@ fn parse_next_basic_element_parts<'a>(
   context: &mut Context<'a>,
   path: Vec<String>,
   start: usize,
-) -> Result<pc_ast::Node, ParseError> {
+) -> Result<pc_ast::Node, Diagnostic> {
   let mut children: Vec<pc_ast::Node> = vec![];
 
   context.tokenizer.eat_whitespace();
@@ -301,7 +329,12 @@ fn parse_next_basic_element_parts<'a>(
 
       parse_close_tag(tag_name.as_str(), context, start, end)?;
     }
-    _ => return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos)),
+    _ => {
+      return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+        &context.source_uri,
+        context.tokenizer.utf16_pos,
+      ))
+    }
   }
 
   let el = pc_ast::Element {
@@ -330,17 +363,20 @@ fn parse_next_style_element_parts<'a>(
   raw_before: Option<&'a [u8]>,
   context: &mut Context<'a>,
   start: usize,
-) -> Result<pc_ast::Node, ParseError> {
+) -> Result<pc_ast::Node, Diagnostic> {
   context.tokenizer.next_expect(Token::GreaterThan)?; // eat >
   let end = context.tokenizer.utf16_pos;
-  let mut css_tokenizer =
-    CSSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+  let mut css_tokenizer = CSSTokenizer::new_from_bytes(
+    &context.tokenizer.source,
+    &context.tokenizer.source_uri,
+    context.tokenizer.get_pos(),
+  );
 
   let seed = context.id_generator.new_seed();
   let sheet = parse_css_with_tokenizer(
     &mut css_tokenizer,
     seed.as_str(),
-    |tokenizer| -> Result<bool, ParseError> {
+    |tokenizer| -> Result<bool, Diagnostic> {
       Ok(tokenizer.peek(1)? == CSSToken::Byte(b'<') && tokenizer.peek(2)? == CSSToken::Byte(b'/'))
     },
   )?;
@@ -363,26 +399,29 @@ fn parse_close_tag<'a, 'b>(
   context: &mut Context<'b>,
   start: usize,
   end: usize,
-) -> Result<(), ParseError> {
+) -> Result<(), Diagnostic> {
   let end_tag_name_start = context.tokenizer.utf16_pos;
 
   context.tokenizer.eat_whitespace();
 
-  context
-    .tokenizer
-    .next_expect(Token::TagClose)
-    .or(Err(ParseError::unterminated(
-      "Unterminated element.".to_string(),
+  context.tokenizer.next_expect(Token::TagClose).or(Err(
+    SyntaxDiagnosticInfo::new_error_dignostic(
+      SyntaxDiagnosticInfoCode::Unterminated,
+      "Unterminated element.",
+      &context.source_uri,
       start,
       end,
-    )))?;
+    ),
+  ))?;
 
   parse_tag_name(context)
     // TODO - assert tag name
     .and_then(|end_tag_name| {
       if tag_name != end_tag_name {
-        Err(ParseError::unterminated(
-          "Incorrect closing tag.".to_string(),
+        Err(SyntaxDiagnosticInfo::new_error_dignostic(
+          SyntaxDiagnosticInfoCode::Unterminated,
+          "Incorrect closing tag.",
+          context.source_uri,
           end_tag_name_start,
           context.tokenizer.utf16_pos,
         ))
@@ -391,14 +430,15 @@ fn parse_close_tag<'a, 'b>(
       }
     })?;
 
-  context
-    .tokenizer
-    .next_expect(Token::GreaterThan)
-    .or(Err(ParseError::unterminated(
-      "Unterminated element.".to_string(),
+  context.tokenizer.next_expect(Token::GreaterThan).or(Err(
+    SyntaxDiagnosticInfo::new_error_dignostic(
+      SyntaxDiagnosticInfoCode::Unterminated,
+      "Unterminated element.",
+      &context.source_uri,
       start,
       end,
-    )))?;
+    ),
+  ))?;
 
   Ok(())
 }
@@ -409,7 +449,7 @@ fn parse_next_script_element_parts<'a>(
   context: &mut Context<'a>,
   path: Vec<String>,
   start: usize,
-) -> Result<pc_ast::Node, ParseError> {
+) -> Result<pc_ast::Node, Diagnostic> {
   context.tokenizer.next_expect(Token::GreaterThan)?; // eat >
   let end = context.tokenizer.utf16_pos;
 
@@ -441,7 +481,7 @@ fn parse_next_script_element_parts<'a>(
   }))
 }
 
-fn parse_tag_name<'a>(context: &mut Context<'a>) -> Result<String, ParseError> {
+fn parse_tag_name<'a>(context: &mut Context<'a>) -> Result<String, Diagnostic> {
   Ok(
     get_buffer(&mut context.tokenizer, |tokenizer| {
       Ok(matches!(
@@ -461,7 +501,7 @@ fn parse_tag_name<'a>(context: &mut Context<'a>) -> Result<String, ParseError> {
 fn parse_attributes<'a>(
   context: &mut Context<'a>,
   path: &Vec<String>,
-) -> Result<Vec<pc_ast::Attribute>, ParseError> {
+) -> Result<Vec<pc_ast::Attribute>, Diagnostic> {
   let mut attributes: Vec<pc_ast::Attribute> = vec![];
 
   loop {
@@ -481,7 +521,7 @@ fn parse_attribute<'a>(
   context: &mut Context<'a>,
   path: &Vec<String>,
   index: usize,
-) -> Result<pc_ast::Attribute, ParseError> {
+) -> Result<pc_ast::Attribute, Diagnostic> {
   if context.tokenizer.peek(1)? == Token::CurlyOpen {
     parse_shorthand_attribute(context)
   } else {
@@ -489,7 +529,7 @@ fn parse_attribute<'a>(
   }
 }
 
-fn parse_omit_from_compilation<'a>(context: &mut Context<'a>) -> Result<bool, ParseError> {
+fn parse_omit_from_compilation<'a>(context: &mut Context<'a>) -> Result<bool, Diagnostic> {
   Ok(if context.tokenizer.peek(1)? == Token::Bang {
     context.tokenizer.next()?;
     true
@@ -500,7 +540,7 @@ fn parse_omit_from_compilation<'a>(context: &mut Context<'a>) -> Result<bool, Pa
 
 fn parse_shorthand_attribute<'a>(
   context: &mut Context<'a>,
-) -> Result<pc_ast::Attribute, ParseError> {
+) -> Result<pc_ast::Attribute, Diagnostic> {
   let omit_from_compilation = parse_omit_from_compilation(context)?;
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
@@ -529,12 +569,15 @@ fn parse_key_value_attribute<'a>(
   context: &mut Context<'a>,
   path: &Vec<String>,
   index: usize,
-) -> Result<pc_ast::Attribute, ParseError> {
+) -> Result<pc_ast::Attribute, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   let name = parse_tag_name(context)?;
 
   if name.len() == 0 {
-    return Err(ParseError::unexpected_token(start));
+    return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+      context.source_uri,
+      start,
+    ));
   }
 
   if context.tokenizer.peek(1)? == Token::Colon {
@@ -550,7 +593,10 @@ fn parse_key_value_attribute<'a>(
     // Fix https://github.com/crcn/paperclip/issues/306
     // Keep in case we want to turn this back on.
     } else {
-      return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos));
+      return Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+        context.source_uri,
+        context.tokenizer.utf16_pos,
+      ));
     }
 
     Ok(pc_ast::Attribute::PropertyBoundAttribute(
@@ -597,7 +643,10 @@ fn parse_key_value_attribute<'a>(
       },
     ))
   } else {
-    Err(ParseError::unexpected_token(context.tokenizer.utf16_pos))
+    Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+      context.source_uri,
+      context.tokenizer.utf16_pos,
+    ))
   }
 }
 
@@ -605,20 +654,23 @@ fn parse_attribute_value<'a>(
   context: &mut Context<'a>,
   path: &Vec<String>,
   index: usize,
-) -> Result<pc_ast::AttributeValue, ParseError> {
+) -> Result<pc_ast::AttributeValue, Diagnostic> {
   let pos = context.tokenizer.utf16_pos;
   let parts: Vec<pc_ast::AttributeDynamicStringPart> = vec![];
 
   match context.tokenizer.peek(1)? {
     Token::SingleQuote | Token::DoubleQuote => parse_attribute_string_value(context),
     Token::CurlyOpen => parse_attribute_slot(context, path, index),
-    _ => Err(ParseError::unexpected_token(pos)),
+    _ => Err(SyntaxDiagnosticInfo::new_unexpected_token_error_diagnostic(
+      context.source_uri,
+      pos,
+    )),
   }
 }
 
 fn parse_attribute_string_value<'a>(
   context: &mut Context<'a>,
-) -> Result<pc_ast::AttributeValue, ParseError> {
+) -> Result<pc_ast::AttributeValue, Diagnostic> {
   let pos = context.tokenizer.utf16_pos;
   let mut parts: Vec<pc_ast::AttributeDynamicStringPart> = vec![];
 
@@ -673,8 +725,10 @@ fn parse_attribute_string_value<'a>(
   context
     .tokenizer
     .next_expect(quote)
-    .or(Err(ParseError::unterminated(
-      "Unterminated string literal.".to_string(),
+    .or(Err(SyntaxDiagnosticInfo::new_error_dignostic(
+      SyntaxDiagnosticInfoCode::Unterminated,
+      "Unterminated string literal.",
+      context.source_uri,
       pos,
       context.tokenizer.utf16_pos,
     )))?;
@@ -716,7 +770,7 @@ fn parse_attribute_slot<'a>(
   context: &mut Context<'a>,
   path: &Vec<String>,
   index: usize,
-) -> Result<pc_ast::AttributeValue, ParseError> {
+) -> Result<pc_ast::AttributeValue, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
   let script = parse_slot_script(context, Some((path, index)))?;
@@ -729,7 +783,7 @@ fn parse_attribute_slot<'a>(
 
 fn parse_attribute_string<'a>(
   context: &mut Context<'a>,
-) -> Result<pc_ast::AttributeValue, ParseError> {
+) -> Result<pc_ast::AttributeValue, Diagnostic> {
   let start = context.tokenizer.utf16_pos;
   let quote = context.tokenizer.next()?;
 
@@ -740,8 +794,10 @@ fn parse_attribute_string<'a>(
     context.tokenizer.next_expect(quote)?;
     Ok(value)
   })
-  .or(Err(ParseError::unterminated(
-    "Unterminated string literal.".to_string(),
+  .or(Err(SyntaxDiagnosticInfo::new_error_dignostic(
+    SyntaxDiagnosticInfoCode::Unterminated,
+    "Unterminated string literal.",
+    context.source_uri,
     start,
     context.tokenizer.utf16_pos,
   )))
@@ -795,7 +851,7 @@ mod tests {
       </div>
     ";
 
-    parse(source, "id").unwrap();
+    parse(source, "id", "uri").unwrap();
   }
 
   // #[test]
@@ -842,9 +898,11 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_element() {
     assert_eq!(
-      parse("<div>", "id"),
-      Err(ParseError::unterminated(
-        "Unterminated element.".to_string(),
+      parse("<div>", "id", "uri"),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unterminated,
+        "Unterminated element.",
+        "uri",
         0,
         5
       ))
@@ -854,9 +912,11 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_style_element() {
     assert_eq!(
-      parse("<style>", "id"),
-      Err(ParseError::unterminated(
-        "Unterminated element.".to_string(),
+      parse("<style>", "id", "uri"),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unterminated,
+        "Unterminated element.",
+        "uri",
         0,
         7
       ))
@@ -866,9 +926,11 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_script_element() {
     assert_eq!(
-      parse("<script>", "id"),
-      Err(ParseError::unterminated(
-        "Unterminated element.".to_string(),
+      parse("<script>", "id", "uri"),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unterminated,
+        "Unterminated element.",
+        "uri",
         0,
         8
       ))
@@ -878,9 +940,11 @@ mod tests {
   #[test]
   fn displays_error_for_incorrect_close_tag() {
     assert_eq!(
-      parse("<style></script>", "id"),
-      Err(ParseError::unterminated(
-        "Incorrect closing tag.".to_string(),
+      parse("<style></script>", "id", "uri"),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unterminated,
+        "Incorrect closing tag.",
+        "uri",
         7,
         15
       ))
@@ -890,9 +954,11 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_attribute_string() {
     assert_eq!(
-      parse("<div a=\"b>", "id"),
-      Err(ParseError::unterminated(
-        "Unterminated string literal.".to_string(),
+      parse("<div a=\"b>", "id", "uri"),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unterminated,
+        "Unterminated string literal.",
+        "uri",
         7,
         10
       ))
@@ -902,10 +968,12 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_slot() {
     assert_eq!(
-      parse("{ab", "id"),
-      Err(ParseError::unterminated(
-        "Unterminated slot.".to_string(),
-        1,
+      parse("{ab", "id", "uri"),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unterminated,
+        "Unterminated slot.",
+        "uri",
+        0,
         3
       ))
     );
@@ -914,9 +982,11 @@ mod tests {
   #[test]
   fn displays_css_errors() {
     assert_eq!(
-      parse("<style>div { color: red; </style>", "id"),
-      Err(ParseError::unterminated(
-        "Unterminated bracket.".to_string(),
+      parse("<style>div { color: red; </style>", "id", "uri"),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unterminated,
+        "Unterminated bracket.",
+        "uri",
         11,
         26
       ))
@@ -926,9 +996,11 @@ mod tests {
   #[test]
   fn display_error_for_close_tag_without_open() {
     assert_eq!(
-      parse("</div>", "id"),
-      Err(ParseError::unexpected(
-        "Closing tag doesn't have an open tag.".to_string(),
+      parse("</div>", "id", "uri"),
+      Err(SyntaxDiagnosticInfo::new_error_dignostic(
+        SyntaxDiagnosticInfoCode::Unterminated,
+        "Closing tag doesn't have an open tag.",
+        "uri",
         0,
         6
       ))
@@ -943,6 +1015,7 @@ mod tests {
       <div />
     </fragment>} />",
       "id",
+      "uri",
     )
     .unwrap();
   }

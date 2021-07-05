@@ -94,7 +94,6 @@ export const run = async (
           createStyle(sheet),
           frame
         ],
-        source: null,
         kind: VirtualNodeKind.Fragment
       };
 
@@ -154,7 +153,6 @@ const isEmpty = (source: string) => {
 const createStyle = (sheet: any): VirtualStyleElement => {
   return {
     sheet,
-    source: null,
     kind: VirtualNodeKind.StyleElement
   };
 };
