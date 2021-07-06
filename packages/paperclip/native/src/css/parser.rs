@@ -666,9 +666,8 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
     Token::Star => {
       context.tokenizer.next()?; // eat *
       Selector::AllSelector(AllSelector {
-        location: Location::new(pos, pos + 1)
+        location: Location::new(pos, pos + 1),
       })
-      
     }
     Token::Colon => parse_pseudo_element_selector(context)?,
     Token::Byte(b'&') => {

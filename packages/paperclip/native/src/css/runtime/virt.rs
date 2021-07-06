@@ -22,7 +22,7 @@ impl fmt::Display for CSSSheet {
   }
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub enum Rule {
   Style(StyleRule),
@@ -34,6 +34,26 @@ pub enum Rule {
   Page(ConditionRule),
   Document(ConditionRule),
   Keyframes(KeyframesRule),
+}
+
+// need to implement partialeq here like so since PartialEq trait
+// does not check custom implementations for enums
+impl PartialEq for Rule {
+  fn eq(&self, other: &Self) -> bool {
+    
+    match (self, other) {
+      (Rule::Style(a), Rule::Style(b)) => a == b,
+      (Rule::Charset(a), Rule::Charset(b)) => a == b,
+      (Rule::Namespace(a), Rule::Namespace(b)) => a == b,
+      (Rule::FontFace(a), Rule::FontFace(b)) => a == b,
+      (Rule::Media(a), Rule::Media(b)) => a == b,
+      (Rule::Supports(a), Rule::Supports(b)) => a == b,
+      (Rule::Page(a), Rule::Page(b)) => a == b,
+      (Rule::Document(a), Rule::Document(b)) => a == b,
+      (Rule::Keyframes(a), Rule::Keyframes(b)) => a == b,
+      _ => false
+    }
+  }
 }
 
 impl fmt::Display for Rule {
@@ -79,12 +99,36 @@ impl fmt::Display for FontFaceRule {
     Ok(())
   }
 }
-#[derive(Debug, PartialEq, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone)]
 pub struct ConditionRule {
   pub name: String,
   #[serde(rename = "conditionText")]
   pub condition_text: String,
   pub rules: Vec<Rule>,
+}
+
+impl PartialEq for ConditionRule {
+  fn eq(&self, other: &Self) -> bool {
+    if self.name != other.name {
+      return false;
+    }
+
+    if self.condition_text != other.condition_text {
+      return false;
+    }
+
+    if self.rules.len() != other.rules.len() {
+      return false;
+    }
+
+    for i in 0..self.rules.len() {
+      if self.rules.get(i) != other.rules.get(i) {
+        return false;
+      }
+    }
+
+    true
+  }
 }
 
 impl fmt::Display for ConditionRule {
@@ -135,12 +179,22 @@ impl fmt::Display for KeyframeRule {
   }
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone)]
 pub struct StyleRule {
   pub exported: bool,
+
+  #[serde(rename = "sourceId")]
   pub source_id: String,
+
+  #[serde(rename = "selectorText")]
   pub selector_text: String,
   pub style: Vec<CSSStyleProperty>,
+}
+
+impl PartialEq for StyleRule {
+  fn eq(&self, other: &Self) -> bool {
+    self.exported == other.exported && self.selector_text == other.selector_text && self.style == other.style
+  }
 }
 
 impl fmt::Display for StyleRule {

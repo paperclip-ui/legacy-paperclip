@@ -164,9 +164,8 @@ impl Engine {
   }
 
   pub async fn load(&mut self, uri: &String) -> Result<(), EngineError> {
-
     self.remove_diagnostic_error(uri);
-    
+
     let load_result = self
       .dependency_graph
       .load_dependency(uri, &mut self.vfs)
@@ -199,14 +198,12 @@ impl Engine {
   }
 
   pub fn lint_file(&mut self, uri: &String) -> Option<Vec<Diagnostic>> {
-
     let existing_diagnostics = self
-    .diagnostics
-    .get(uri)
-    .or(Some(&(vec![] as Vec<Diagnostic>)))
-    .unwrap()
-    .clone();
-
+      .diagnostics
+      .get(uri)
+      .or(Some(&(vec![] as Vec<Diagnostic>)))
+      .unwrap()
+      .clone();
 
     self
       .evaluated_data

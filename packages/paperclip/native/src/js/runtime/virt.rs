@@ -75,6 +75,7 @@ impl fmt::Display for JsValue {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsString {
+  #[serde(rename = "sourceId")]
   pub source_id: String,
   pub source: ExprTextSource,
   pub value: String,
@@ -82,6 +83,7 @@ pub struct JsString {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsBoolean {
+  #[serde(rename = "sourceId")]
   pub source_id: String,
   pub source: ExprTextSource,
   pub value: bool,
@@ -89,6 +91,7 @@ pub struct JsBoolean {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsNumber {
+  #[serde(rename = "sourceId")]
   pub source_id: String,
   pub source: ExprTextSource,
   pub value: f64,
@@ -96,12 +99,14 @@ pub struct JsNumber {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsUndefined {
+  #[serde(rename = "sourceId")]
   pub source_id: String,
   pub source: ExprTextSource,
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone)]
 pub struct JsObject {
+  #[serde(rename = "sourceId")]
   pub source_id: String,
   pub source: ExprTextSource,
   pub values: HashMap<String, JsValue>,
@@ -114,6 +119,12 @@ impl JsObject {
       values: HashMap::new(),
       source,
     }
+  }
+}
+
+impl PartialEq for JsObject {
+  fn eq(&self, other: &Self) -> bool {
+    self.source == other.source && self.values == other.values
   }
 }
 

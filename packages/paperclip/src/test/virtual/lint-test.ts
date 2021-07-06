@@ -3,11 +3,28 @@ import { createMockEngine } from "../utils";
 
 describe(__filename + "#", () => {
   [
-    [`<style>div { color: red }</style>`, 1],
-    [`<style>div { color: red }</style><div />`, 0],
-    [`<style>div { color: red }</style><div>`, 1]
-  ].forEach(([source, len]: [string, string]) => {
-    it(`Can lint ${source}`, () => {
+    [
+      `shows warning for simple style rule without target`,
+      `<style>div { color: red }</style>`,
+      1
+    ],
+    [
+      `does not display warning for style rule if applied`,
+      `<style>div { color: red }</style><div />`,
+      0
+    ],
+    [
+      `shows lint diagnostics if there's a syntax error`,
+      `<style>div { color: red }</style><div>`,
+      1
+    ],
+    [
+      `works for attribute equalities`,
+      `<style>[href="test"] { color: red }</style><div href="test" />`,
+      0
+    ]
+  ].forEach(([title, source, len]: [string, string, number]) => {
+    it(title, () => {
       const engine = createMockEngine({
         "entry.pc": source
       });

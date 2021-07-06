@@ -101,7 +101,11 @@ fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, 
     id_generator: IDGenerator::new(seed.to_string()),
   };
 
-  let node = ast::Expression::Node(Box::new(parse_tag(&mut pc_context, vec![context.id_generator.seed.to_string()], None)?));
+  let node = ast::Expression::Node(Box::new(parse_tag(
+    &mut pc_context,
+    vec![context.id_generator.seed.to_string()],
+    None,
+  )?));
   context.tokenizer.set_pos(&pc_context.tokenizer.get_pos());
   Ok(node)
 }

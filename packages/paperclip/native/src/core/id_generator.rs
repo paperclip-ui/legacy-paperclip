@@ -1,4 +1,4 @@
-
+use uuid::Uuid;
 
 pub struct IDGenerator {
   pub seed: String,
@@ -21,7 +21,5 @@ impl IDGenerator {
 }
 
 pub fn generate_seed() -> String {
-
-  // TODO
-  "".to_string()
+  Uuid::new_v4().to_string()
 }

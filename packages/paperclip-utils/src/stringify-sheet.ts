@@ -65,10 +65,10 @@ const stringifyFontFaceRule = ({ style }, options: StringifySheetOptions) => {
 };
 
 const stringifyStyleRule = (
-  { selector_text, style },
+  { selectorText, style },
   options: StringifySheetOptions
 ) => {
-  return `${selector_text} {
+  return `${selectorText} {
     ${style.map(style => stringifyStyle(style, options)).join("\n")}
   }`;
 };

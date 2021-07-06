@@ -487,7 +487,7 @@ pub enum Selector {
   Element(ElementSelector),
   Attribute(AttributeSelector),
   Class(ClassSelector),
-  AllSelector(AllSelector)
+  AllSelector(AllSelector),
 }
 
 impl Selector {
@@ -663,11 +663,11 @@ impl Selector {
       Selector::Group(selector) => &selector.location,
       Selector::Combo(selector) => &selector.location,
       Selector::Prefixed(selector) => &selector.location,
-      Selector::Element(selector) =>  &selector.location,
+      Selector::Element(selector) => &selector.location,
       Selector::Descendent(selector) => &selector.location,
       Selector::Not(selector) => &selector.location,
       Selector::SubElement(selector) => &selector.location,
-      Selector::Within(selector) =>&selector.location,
+      Selector::Within(selector) => &selector.location,
       Selector::Global(selector) => &selector.location,
       Selector::This(selector) => &selector.location,
       Selector::Adjacent(selector) => &selector.location,
@@ -678,7 +678,7 @@ impl Selector {
       Selector::Class(selector) => &selector.location,
       Selector::Id(selector) => &selector.location,
       Selector::Attribute(selector) => &selector.location,
-      Selector::AllSelector(selector) => &selector.location
+      Selector::AllSelector(selector) => &selector.location,
     }
   }
 }

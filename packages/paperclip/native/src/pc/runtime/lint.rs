@@ -55,7 +55,6 @@ pub struct LintOptions {
   pub enforce_previews: Option<bool>,
 }
 
-
 pub fn lint(
   eval_info: &EvalInfo,
   graph: &DependencyGraph,
@@ -101,7 +100,6 @@ fn lint_css_rules(
           let expr_option = graph.get_expression_by_id(&style_rule.source_id);
 
           if let Some((uri, expr)) = expr_option {
-
             let mut expr_location: &Location = expr.get_location();
 
             // check for :global
