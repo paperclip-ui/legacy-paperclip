@@ -247,6 +247,9 @@ fn selector_matches_element2<'a, 'b>(
 
     // :hover
     css_ast::Selector::PseudoElement(sel) => {
+      if sel.name == "disabled" {
+        return element.get_attribute("disabled") != None;
+      }
       return true;
     }
 
@@ -593,6 +596,9 @@ mod tests {
       ("a[href='#']", "<a href='#' /><a href /><div />", 1),
       ("a:before", "<a href='#' />", 1),
       ("div:nth-child(2)", "<div /><div /><div /><div />", 4),
+      (":disabled", "<button></button>", 0),
+      (":disabled", "<button disabled></button>", 1),
+      (":not(:disabled)", "<button></button>", 1),
       (
         "div:not(.a)",
         "<div class='a' /><div class='b c' /><div class='b a' />",
