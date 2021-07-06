@@ -7,7 +7,7 @@ import {
   PCMutationActionKind
 } from "./mutations";
 import {
-  ExprSource,
+  ExprTextSource,
   SourceLocation,
   VirtJsObject,
   NodeKind,
@@ -41,16 +41,16 @@ export class PCSourceWriter {
   ): Promise<Record<string, ContentChange[]>> {
     const changes: ContentChange[] = [];
     const engine = this._options.engine;
-    for (const { exprSource, action } of mutations) {
+    for (const { ExprTextSource, action } of mutations) {
       const ast = engine.parseContent(
-        await this._options.getContent(exprSource.uri)
+        await this._options.getContent(ExprTextSource.uri)
       );
 
       switch (action.kind) {
         case PCMutationActionKind.ANNOTATIONS_CHANGED: {
           changes.push(
             this._getAnnotationChange(
-              exprSource,
+              ExprTextSource,
               action.annotationsSource,
               action.annotations
             )
@@ -58,7 +58,9 @@ export class PCSourceWriter {
           break;
         }
         case PCMutationActionKind.EXPRESSION_DELETED: {
-          changes.push(...this._getExpressionDeletedChanged(exprSource, ast));
+          changes.push(
+            ...this._getExpressionDeletedChanged(ExprTextSource, ast)
+          );
           break;
         }
       }
@@ -77,10 +79,10 @@ export class PCSourceWriter {
   }
 
   private _getExpressionDeletedChanged(
-    exprSource: ExprSource,
+    ExprTextSource: ExprTextSource,
     ast: Node
   ): ContentChange[] {
-    const node = getAssocNode(exprSource, ast);
+    const node = getAssocNode(ExprTextSource, ast);
     const parent = getParentNode(node, ast);
     const childIndex = parent.children.findIndex(child => child === node);
 
@@ -91,7 +93,7 @@ export class PCSourceWriter {
     // if before child is a comment, then assume it's an annotation
     if (beforeChild && beforeChild.nodeKind === NodeKind.Comment) {
       changes.push({
-        uri: exprSource.uri,
+        uri: ExprTextSource.uri,
         start: beforeChild.location.start,
         end: beforeChild.location.end,
         value: ""
@@ -99,9 +101,9 @@ export class PCSourceWriter {
     }
 
     changes.push({
-      uri: exprSource.uri,
-      start: exprSource.location.start,
-      end: exprSource.location.end,
+      uri: ExprTextSource.uri,
+      start: ExprTextSource.location.start,
+      end: ExprTextSource.location.end,
       value: ""
     });
 
@@ -109,8 +111,8 @@ export class PCSourceWriter {
   }
 
   private _getAnnotationChange(
-    exprSource: ExprSource,
-    annotationsSource: ExprSource | null,
+    ExprTextSource: ExprTextSource,
+    annotationsSource: ExprTextSource | null,
     annotations: Object | null
   ): ContentChange {
     const buffer = ["<!--\n"];
@@ -151,13 +153,13 @@ export class PCSourceWriter {
     }
 
     return {
-      uri: exprSource.uri,
+      uri: ExprTextSource.uri,
       start: annotationsSource
         ? annotationsSource.location.start
-        : exprSource.location.start,
+        : ExprTextSource.location.start,
       end: annotationsSource
         ? annotationsSource.location.end
-        : exprSource.location.start,
+        : ExprTextSource.location.start,
 
       // newline may have been clipped off, so re-add if that happens
       value: buffer.join("")
@@ -165,12 +167,12 @@ export class PCSourceWriter {
   }
 }
 
-const getAssocNode = (exprSource: ExprSource, root: Node): Node => {
+const getAssocNode = (ExprTextSource: ExprTextSource, root: Node): Node => {
   let foundExpr: Expression;
   traverseExpression(root, node => {
     if (
-      node.location.start === exprSource.location.start &&
-      node.location.end === exprSource.location.end
+      node.location.start === ExprTextSource.location.start &&
+      node.location.end === ExprTextSource.location.end
     ) {
       foundExpr = node;
       return false;

@@ -32,21 +32,41 @@ impl fmt::Display for Location {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct ExprSource {
+pub struct ExprTextSource {
   pub uri: String,
   pub location: Location,
 }
 
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ExprSource {
+  // source where the error is. Might not exist
+  #[serde(rename = "sourceId")]
+  id: String,
+
+  // This may not exist if we're dealing with just the AST
+  #[serde(rename = "textSource")]
+  text_source: Option<ExprTextSource>,
+}
+
 impl ExprSource {
-  pub fn new(uri: String, location: Location) -> ExprSource {
-    ExprSource { uri, location }
-  }
-  pub fn virt(uri: String) -> ExprSource {
-    ExprSource::new(uri, Location::new(0, 0))
+  pub fn new<'a>(id: &'a str, text_source: Option<&ExprTextSource>) -> ExprSource {
+    ExprSource {
+      id: id.to_string(),
+      text_source: text_source.and_then(|source| Some(source.clone())),
+    }
   }
 }
 
-// impl Eq for ExprSource {
+impl ExprTextSource {
+  pub fn new(uri: String, location: Location) -> ExprTextSource {
+    ExprTextSource { uri, location }
+  }
+  pub fn virt(uri: String) -> ExprTextSource {
+    ExprTextSource::new(uri, Location::new(0, 0))
+  }
+}
+
+// impl Eq for ExprTextSource {
 //   fn eq(&self, other: &Self) -> bool {
 //     self.uri == other.uri && self.location == self.location
 //   }

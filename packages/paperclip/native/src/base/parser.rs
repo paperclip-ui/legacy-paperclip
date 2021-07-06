@@ -73,19 +73,3 @@ where
 
   Ok(std::str::from_utf8(&tokenizer.get_source()[start..end]).unwrap())
 }
-
-// pub fn expect_token(a: Token, b: Token) -> Result<(), ParseError<'a>> {
-//   if a != b {
-//     Err("Unexpected token")
-//   } else {
-//     Ok(())
-//   }
-// }
-
-// pub fn expect_token2(a: Token, b: Token) -> Result<(), &'static str> {
-//   if a != b {
-//     Err("Unexpected token")
-//   } else {
-//     Ok(())
-//   }
-// }

@@ -1,5 +1,7 @@
 import { CSSExports, PCExports } from "./exports";
+import { DependencyContent } from "./graph";
 import { VirtJsObject } from "./js-virt";
+import { containsNode, flattenTreeNode, getNodePath } from "./tree";
 import { Mutation } from "./virt-mtuation";
 
 export enum VirtualNodeKind {
@@ -8,6 +10,11 @@ export enum VirtualNodeKind {
   Fragment = "Fragment",
   StyleElement = "StyleElement"
 }
+
+export type VirtNodeSource = {
+  uri: string;
+  path: number[];
+};
 
 export type FrameAnnotation = {
   width?: number;
@@ -124,3 +131,17 @@ export type VirtualFrame = VirtualElement | VirtualText;
 
 export const getStyleExports = (data: LoadedData) =>
   data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+
+// export const createVirtNodeSource = (path: number[], uri: string): VirtNodeSource => ({
+//   uri,
+//   path
+// });
+
+// export const createVirtNodeSourceFromInstance = (instance: VirtualNode, rendered: Record<string, LoadedData>) => {
+//   for (const uri in rendered) {
+//     const data = rendered[uri];
+//     if (data.kind === EvaluatedDataKind.PC && containsNode(instance, data.preview)) {
+//       return createVirtNodeSource(getNodePath(instance, data.preview).split(".").map(Number), uri);
+//     }
+//   }
+// };

@@ -3,6 +3,7 @@
 
 import { Node } from "./ast";
 import { SourceLocation } from "./base-ast";
+import { EngineErrorKind, GraphErrorInfo } from "./errors";
 import { EvaluatedData, DiffedData, LoadedData, SheetInfo } from "./virt";
 
 export enum EngineDelegateEventKind {
@@ -15,15 +16,6 @@ export enum EngineDelegateEventKind {
   NodeParsed = "NodeParsed",
   Diffed = "Diffed",
   ChangedSheets = "ChangedSheets"
-}
-
-export enum EngineErrorKind {
-  Graph = "Graph",
-  Runtime = "Runtime"
-}
-
-export enum ParseErrorKind {
-  EndOfFile = "EndOfFile"
 }
 
 type BaseEngineDelegateEvent<KKind extends EngineDelegateEventKind> = {
@@ -64,30 +56,6 @@ export type BaseEngineErrorEvent<TErrorType extends EngineErrorKind> = {
   uri: string;
   errorKind: TErrorType;
 } & BaseEngineDelegateEvent<EngineDelegateEventKind.Error>;
-
-export enum GraphErrorInfoType {
-  Syntax = "Syntax",
-  IncludeNotFound = "IncludeNotFound",
-  NotFound = "NotFound"
-}
-
-type BaseGraphErrorInfo<KKind extends GraphErrorInfoType> = {
-  kind: KKind;
-};
-
-export type SyntaxGraphErrorInfo = {
-  kind: ParseErrorKind;
-  message: string;
-  location: SourceLocation;
-} & BaseGraphErrorInfo<GraphErrorInfoType.Syntax>;
-
-export type IncludNotFoundErrorInfo = {
-  uri: string;
-  message: string;
-  location: SourceLocation;
-} & BaseGraphErrorInfo<GraphErrorInfoType.IncludeNotFound>;
-
-export type GraphErrorInfo = SyntaxGraphErrorInfo | IncludNotFoundErrorInfo;
 
 export type GraphErrorEvent = {
   info: GraphErrorInfo;

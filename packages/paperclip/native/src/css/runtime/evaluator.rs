@@ -30,11 +30,9 @@ use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
-use crate::base::utils::{
-  get_document_style_private_scope, get_document_style_public_scope, is_relative_path,
-};
+use crate::base::utils::{get_document_style_private_scope, get_document_style_public_scope};
 
-use crate::base::ast::{ExprSource, Location};
+use crate::base::ast::{ExprTextSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
@@ -373,6 +371,8 @@ pub fn evaluate_expr<'a>(
       context.all_rules.insert(
         0,
         virt::Rule::Style(virt::StyleRule {
+          exported: context.in_public_scope,
+          source_id: get_context_id(&context).to_string(),
           selector_text: get_element_scope_selector(&context, true),
           style,
         }),
@@ -386,6 +386,14 @@ pub fn evaluate_expr<'a>(
     },
     exports: context.exports,
   })
+}
+
+fn get_context_id(context: &Context) -> String {
+  if let Some((id, _)) = &context.element_scope {
+    id.to_string()
+  } else {
+    "".to_string()
+  }
 }
 
 fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeError> {
@@ -406,11 +414,11 @@ fn evaluate_rule(rule: &ast::Rule, context: &mut Context) -> Result<(), RuntimeE
     ast::Rule::Include(mixin) => {
       evaluate_include_rule(mixin, context, &SelectorContext::from_context(context))?;
     }
-    ast::Rule::Namespace(namespace) => {
-      context
-        .all_rules
-        .push(virt::Rule::Namespace(namespace.to_string()));
-    }
+    // ast::Rule::Namespace(namespace) => {
+    //   context
+    //     .all_rules
+    //     .push(virt::Rule::Namespace(namespace.to_string()));
+    // }
     ast::Rule::Export(export) => {
       evaluate_export_rule(export, context)?;
     }
@@ -543,6 +551,8 @@ fn evaluate_condition_rule(
     child_context
       .all_rules
       .push(virt::Rule::Style(virt::StyleRule {
+        exported: context.in_public_scope,
+        source_id: rule.id.to_string(),
         selector_text,
         style,
       }))
@@ -578,7 +588,7 @@ fn evaluate_keyframes_rule(
     KeyframesExport {
       name: rule.name.to_string(),
       public,
-      source: ExprSource::new(context.uri.to_string(), rule.location.clone()),
+      source: ExprTextSource::new(context.uri.to_string(), rule.location.clone()),
     },
   );
 
@@ -1003,6 +1013,8 @@ fn evaluate_style_rule2(
       context.all_rules.insert(
         rule_len,
         virt::Rule::Style(virt::StyleRule {
+          exported: context.in_public_scope,
+          source_id: expr.id.to_string(),
           selector_text: selector_context.to_string(),
           style,
         }),
@@ -1318,7 +1330,7 @@ fn write_element_selector(
         }
       }
     }
-    ast::Selector::AllSelector => {
+    ast::Selector::AllSelector(_) => {
       if include_document_scope {
         emitter.push_target(get_document_scope_selector(context));
       } else {
@@ -1337,7 +1349,6 @@ fn write_element_selector(
       }
       emitter.push_target(format!(":{}({})", selector.name, selector.param));
     }
-    ast::Selector::None => {}
     ast::Selector::Attribute(selector) => {
       emitter.push_target(selector.to_string());
       if include_document_scope {
@@ -1545,7 +1556,7 @@ fn evaluate_style_key_value_declaration<'a>(
       VarExport {
         name: expr.name.to_string(),
         value: value.to_string(),
-        source: ExprSource::new(context.uri.to_string(), expr.location.clone()),
+        source: ExprTextSource::new(context.uri.to_string(), expr.location.clone()),
       },
     );
   }

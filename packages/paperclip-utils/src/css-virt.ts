@@ -12,7 +12,7 @@ export type BaseVirtRule<TKind extends VirtRuleKind> = {
 };
 
 export type VirtStyleRule = {
-  selector_text: string;
+  selectorText: string;
 } & BaseVirtRule<VirtRuleKind.Style>;
 
 export type MediaRule = {

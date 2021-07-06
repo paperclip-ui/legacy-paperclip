@@ -1,4 +1,4 @@
-use crate::base::ast::ExprSource;
+use crate::base::ast::ExprTextSource;
 use crate::css::runtime::virt as css_virt;
 use crate::js::runtime::virt as js_virt;
 use serde::Serialize;
@@ -7,7 +7,8 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
-  pub source: ExprSource,
+  pub source_id: String,
+  pub source: ExprTextSource,
   pub children: Vec<Node>,
 }
 
@@ -22,8 +23,11 @@ impl fmt::Display for Fragment {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
+  pub source_id: String,
+
   #[serde(rename = "source")]
-  pub source: ExprSource,
+  // Deprecated, use source_id instead
+  pub source: ExprTextSource,
   pub annotations: Option<js_virt::JsObject>,
 
   #[serde(rename = "tagName")]
@@ -34,7 +38,10 @@ pub struct Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
-  pub source: ExprSource,
+  pub source_id: String,
+
+  // Deprecated, use source_id instead
+  pub source: ExprTextSource,
   pub sheet: css_virt::CSSSheet,
 }
 
@@ -69,10 +76,24 @@ impl fmt::Display for Element {
   }
 }
 
+impl Element {
+  pub fn get_attribute<'a>(&self, name: &'a str) -> Option<Option<String>> {
+    for (key, value) in &self.attributes {
+      if (key == name) {
+        return Some(value.clone());
+      }
+    }
+    None
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
+  pub source_id: String,
   pub annotations: Option<js_virt::JsObject>,
-  pub source: ExprSource,
+
+  // Deprecated, use source_id instead
+  pub source: ExprTextSource,
   pub value: String,
 }
 
@@ -108,12 +129,28 @@ impl Node {
       _ => {}
     }
   }
-  pub fn get_source(&self) -> &ExprSource {
+  pub fn get_source(&self) -> &ExprTextSource {
     match self {
       Node::Element(value) => &value.source,
       Node::Text(value) => &value.source,
       Node::Fragment(value) => &value.source,
       Node::StyleElement(value) => &value.source,
+    }
+  }
+  pub fn get_source_id(&self) -> &String {
+    match self {
+      Node::Element(value) => &value.source_id,
+      Node::Text(value) => &value.source_id,
+      Node::Fragment(value) => &value.source_id,
+      Node::StyleElement(value) => &value.source_id,
+    }
+  }
+
+  pub fn get_children<'a>(&'a self) -> Option<&'a Vec<Node>> {
+    match self {
+      Node::Element(value) => Some(&value.children),
+      Node::Fragment(value) => Some(&value.children),
+      _ => None,
     }
   }
 }

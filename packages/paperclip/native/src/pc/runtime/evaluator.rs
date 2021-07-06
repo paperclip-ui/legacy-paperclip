@@ -3,7 +3,7 @@ use super::cache::Cache;
 use super::export::{ComponentExport, Exports, Property};
 use super::virt;
 use crate::annotation::ast as annotation_ast;
-use crate::base::ast::{ExprSource, Location};
+use crate::base::ast::{ExprTextSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{
   get_document_style_private_scope, get_document_style_public_scope, is_relative_path,
@@ -12,6 +12,7 @@ use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 // use crate::css::runtime::evaluator::{evaluate as evaluate_css, EvalInfo as CSSEvalInfo};
+use crate::core::id_generator::IDGenerator;
 use crate::css::runtime::evaluator::{evaluate_expr as evaluate_css_expr, EvalInfo as CSSEvalInfo};
 use crate::css::runtime::export as css_export;
 use crate::css::runtime::virt as css_virt;
@@ -93,10 +94,10 @@ pub fn evaluate<'a>(
   ))?;
 
   if let DependencyContent::Node(node_expr) = &dep.content {
-    let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(ExprSource::new(
-      uri.clone(),
-      node_expr.get_location().clone(),
-    )));
+    let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(
+      node_expr.get_id().to_string(),
+      ExprTextSource::new(uri.clone(), node_expr.get_location().clone()),
+    ));
     let mut context = create_context(
       node_expr,
       uri,
@@ -290,14 +291,16 @@ fn wrap_as_fragment(node_option: Option<virt::Node>, context: &Context) -> virt:
     match node {
       virt::Node::Fragment(fragment) => virt::Node::Fragment(fragment),
       _ => virt::Node::Fragment(virt::Fragment {
+        source_id: node.get_source_id().to_string(),
         source: node.get_source().clone(),
         children: vec![node],
       }),
     }
   } else {
     virt::Node::Fragment(virt::Fragment {
+      source_id: "".to_string(),
       children: vec![],
-      source: ExprSource::virt(context.uri.clone()),
+      source: ExprTextSource::virt(context.uri.clone()),
     })
   }
 }
@@ -488,7 +491,7 @@ pub fn evaluate_instance_node<'a>(
   imported: bool,
   depth: u32,
   annotations: &Option<js_virt::JsObject>,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   context
     .render_call_stack
@@ -563,7 +566,7 @@ pub fn evaluate_node<'a>(
   node_expr: &ast::Node,
   is_root: bool,
   depth: u32,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -586,8 +589,9 @@ pub fn evaluate_node<'a>(
       // }
 
       return Ok(Some(virt::Node::Text(virt::Text {
+        source_id: node_expr.get_id().to_string(),
         annotations: annotations.clone(),
-        source: ExprSource {
+        source: ExprTextSource {
           uri: context.uri.to_string(),
           location: text.location.clone(),
         },
@@ -626,7 +630,7 @@ fn evaluate_element<'a>(
   element: &ast::Element,
   is_root: bool,
   depth: u32,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -678,7 +682,13 @@ fn evaluate_element<'a>(
         // fragments should be preserved if in multi frame mode if root
         if element.tag_name == "fragment" && (context.mode != &EngineMode::MultiFrame || depth > 1)
         {
-          evaluate_children_as_fragment(&element.children, depth, &element.location, context)
+          evaluate_children_as_fragment(
+            &element.children,
+            depth,
+            &element.id,
+            &element.location,
+            context,
+          )
         } else {
           evaluate_native_element(element, is_root, depth, source, annotations, context)
         }
@@ -690,12 +700,12 @@ fn evaluate_element<'a>(
 fn instance_or_element_source<'a>(
   element: &ast::Element,
   dep_uri: &String,
-  source_option: Option<ExprSource>,
-) -> Option<ExprSource> {
+  source_option: Option<ExprTextSource>,
+) -> Option<ExprTextSource> {
   if let Some(source) = source_option {
     Some(source)
   } else {
-    Some(ExprSource {
+    Some(ExprTextSource {
       uri: dep_uri.clone(),
       location: element.location.clone(),
     })
@@ -720,6 +730,7 @@ fn evaluate_slot<'a>(
         children.push(child);
       } else {
         children.push(virt::Node::Text(virt::Text {
+          source_id: item.get_source_id().to_string(),
           annotations: None,
           source: item.get_source().clone(),
           value: item.to_string(),
@@ -728,6 +739,7 @@ fn evaluate_slot<'a>(
     }
 
     return Ok(Some(virt::Node::Fragment(virt::Fragment {
+      source_id: ary.source_id.to_string(),
       children,
       source: ary.source.clone(),
     })));
@@ -736,6 +748,7 @@ fn evaluate_slot<'a>(
   }
 
   Ok(Some(virt::Node::Text(virt::Text {
+    source_id: script.get_id().to_string(),
     annotations: None,
     source: js_value.get_source().clone(),
     value: if js_value.truthy() || js_value.is_number() {
@@ -748,7 +761,7 @@ fn evaluate_slot<'a>(
 
 pub fn evaluate_imported_component<'a>(
   element: &ast::Element,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   depth: u32,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
@@ -814,7 +827,7 @@ fn check_instance_loop<'a>(
 
 fn evaluate_part_instance_element<'a>(
   element: &ast::Element,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   depth: u32,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
@@ -843,10 +856,13 @@ fn create_component_instance_data<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
-  let mut data = js_virt::JsObject::new(ExprSource {
-    uri: context.uri.clone(),
-    location: instance_element.location.clone(),
-  });
+  let mut data = js_virt::JsObject::new(
+    instance_element.id.to_string(),
+    ExprTextSource {
+      uri: context.uri.clone(),
+      location: instance_element.location.clone(),
+    },
+  );
 
   let mut property_bound_attrs: Vec<&ast::PropertyBoundAttribute> = vec![];
 
@@ -858,8 +874,9 @@ fn create_component_instance_data<'a>(
           data.values.insert(
             kv_attr.name.to_string(),
             js_virt::JsValue::JsBoolean(js_virt::JsBoolean {
+              source_id: kv_attr.id.to_string(),
               value: true,
-              source: ExprSource::new(context.uri.clone(), kv_attr.location.clone()),
+              source: ExprTextSource::new(context.uri.clone(), kv_attr.location.clone()),
             }),
           );
         } else {
@@ -945,6 +962,7 @@ fn create_component_instance_data<'a>(
                 evaluate_attribute_key_value_string(
                   &kv_attr.name,
                   &kv_attr.binding_name,
+                  &kv_attr.id.to_string(),
                   &kv_attr.location,
                   false,
                   context,
@@ -953,12 +971,13 @@ fn create_component_instance_data<'a>(
 
               let combined_value = if let Some(existing_value) = data.values.get(&kv_attr.name) {
                 js_virt::JsValue::JsString(js_virt::JsString {
+                  source_id: kv_attr.id.to_string(),
                   value: format!(
                     "{} {}",
                     stringify_attribute_value(&kv_attr.name, existing_value),
                     value.to_string()
                   ),
-                  source: ExprSource::new(context.uri.clone(), kv_attr.location.clone()),
+                  source: ExprTextSource::new(context.uri.clone(), kv_attr.location.clone()),
                 })
               } else {
                 value
@@ -973,10 +992,10 @@ fn create_component_instance_data<'a>(
     }
   }
 
-  let mut js_children = js_virt::JsArray::new(ExprSource::new(
-    context.uri.clone(),
-    instance_element.location.clone(),
-  ));
+  let mut js_children = js_virt::JsArray::new(
+    instance_element.id.to_string(),
+    ExprTextSource::new(context.uri.clone(), instance_element.location.clone()),
+  );
 
   let (ret_children, contains_style) =
     evaluate_children(&instance_element.children, depth, context)?;
@@ -1002,8 +1021,9 @@ fn create_component_instance_data<'a>(
     };
 
     let new_class_name_value = js_virt::JsValue::JsString(js_virt::JsString {
+      source_id: "".to_string(),
       value: new_class_name,
-      source: ExprSource {
+      source: ExprTextSource {
         uri: context.uri.clone(),
         location: Location { start: 0, end: 0 },
       },
@@ -1051,7 +1071,7 @@ fn evaluate_component_instance<'a>(
   render_strategy: RenderStrategy,
   imported: bool,
   depth: u32,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   annotations: &Option<js_virt::JsObject>,
   dep_uri: &String,
   context: &'a mut Context,
@@ -1076,7 +1096,7 @@ fn evaluate_component_instance<'a>(
       let source = if let Some(source) = instance_source {
         source.clone()
       } else {
-        ExprSource {
+        ExprTextSource {
           uri: dep_uri.to_string(),
           location: instance_element.location.clone(),
         }
@@ -1115,7 +1135,7 @@ fn evaluate_native_element<'a>(
   element: &ast::Element,
   is_root: bool,
   depth: u32,
-  instance_source: Option<ExprSource>,
+  instance_source: Option<ExprTextSource>,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -1228,6 +1248,7 @@ fn evaluate_native_element<'a>(
                 evaluate_attribute_key_value_string(
                   &actual_name,
                   &kv_attr.binding_name,
+                  &kv_attr.id,
                   &kv_attr.location,
                   true,
                   context,
@@ -1287,11 +1308,12 @@ fn evaluate_native_element<'a>(
   }
 
   Ok(Some(virt::Node::Element(virt::Element {
+    source_id: element.id.to_string(),
     annotations: annotations.clone(),
     source: if let Some(source) = &instance_source {
       source.clone()
     } else {
-      ExprSource {
+      ExprTextSource {
         uri: context.uri.to_string(),
         location: element.location.clone(),
       }
@@ -1388,10 +1410,10 @@ fn evaluate_comment<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsObject, RuntimeError> {
-  let mut data = js_virt::JsObject::new(ExprSource::new(
-    context.uri.clone(),
-    comment.location.clone(),
-  ));
+  let mut data = js_virt::JsObject::new(
+    comment.id.to_string(),
+    ExprTextSource::new(context.uri.clone(), comment.location.clone()),
+  );
 
   for property in &comment.annotation.properties {
     match property {
@@ -1413,19 +1435,27 @@ fn evaluate_fragment<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
-  evaluate_children_as_fragment(&fragment.children, depth, &fragment.location, context)
+  evaluate_children_as_fragment(
+    &fragment.children,
+    depth,
+    &fragment.id,
+    &fragment.location,
+    context,
+  )
 }
 
 fn evaluate_children_as_fragment<'a>(
   children: &Vec<ast::Node>,
   depth: u32,
+  source_id: &String,
   location: &Location,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let (mut children, _) = evaluate_children(&children, depth, context)?;
   Ok(Some(virt::Node::Fragment(virt::Fragment {
+    source_id: source_id.to_string(),
     children,
-    source: ExprSource {
+    source: ExprTextSource {
       uri: context.uri.clone(),
       location: location.clone(),
     },
@@ -1442,10 +1472,10 @@ fn evaluate_attribute_value<'a>(
 ) -> Result<js_virt::JsValue, RuntimeError> {
   match value {
     ast::AttributeValue::DyanmicString(st) => {
-      evaluate_attribute_dynamic_string(name, st, &st.location, is_native, depth, context)
+      evaluate_attribute_dynamic_string(name, st, &st.id, &st.location, is_native, depth, context)
     }
     ast::AttributeValue::String(st) => {
-      evaluate_attribute_key_value_string(name, &st.value, &st.location, is_native, context)
+      evaluate_attribute_key_value_string(name, &st.value, &st.id, &st.location, is_native, context)
     }
     ast::AttributeValue::Slot(value) => {
       assert_attr_slot_restrictions(tag_name, name, &value.location, context)?;
@@ -1458,6 +1488,7 @@ fn evaluate_attribute_value<'a>(
 fn evaluate_attribute_dynamic_string<'a>(
   name: &String,
   value: &ast::AttributeDynamicStringValue,
+  source_id: &String,
   location: &Location,
   is_native: bool,
   depth: u32,
@@ -1560,8 +1591,9 @@ fn evaluate_attribute_dynamic_string<'a>(
   //   .join("");
 
   let js_value = js_virt::JsValue::JsString(js_virt::JsString {
+    source_id: source_id.clone(),
     value: val.to_string(),
-    source: ExprSource {
+    source: ExprTextSource {
       uri: context.uri.clone(),
       location: location.clone(),
     },
@@ -1702,6 +1734,7 @@ fn maybe_cast_attribute_js_value<'a>(
 
   if let Some(casted_value) = cast_attribute_value(name, &str_value, is_native, context) {
     js_virt::JsValue::JsString(js_virt::JsString {
+      source_id: value.get_source_id().to_string(),
       value: casted_value.to_string(),
       source: value.get_source().clone(),
     })
@@ -1713,6 +1746,7 @@ fn maybe_cast_attribute_js_value<'a>(
 fn evaluate_attribute_key_value_string<'a>(
   name: &String,
   value: &String,
+  source_id: &String,
   location: &Location,
   is_native: bool,
   context: &mut Context,
@@ -1738,7 +1772,8 @@ fn evaluate_attribute_key_value_string<'a>(
 
   Ok(js_virt::JsValue::JsString(js_virt::JsString {
     value: val.clone(),
-    source: ExprSource {
+    source_id: source_id.to_string(),
+    source: ExprTextSource {
       uri: context.uri.to_string(),
       location: location.clone(),
     },
@@ -1803,19 +1838,19 @@ mod tests {
   #[test]
   fn can_evaluate_a_style() {
     let case = "<style>div { color: red; } a, b { & c { color: blue }}</style><div></div>";
-    let ast = parse(case).unwrap();
+    let ast = parse(case, "sed").unwrap();
     let graph = DependencyGraph::new();
     let vfs = VirtualFileSystem::new(
       Box::new(|_| "".to_string()),
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
     );
-    let _node = evaluate_source(case);
+    __test__evaluate_source(case);
   }
 
   #[test]
   fn catches_infinite_part_loop() {
-    let result = evaluate_source(
+    let (result, _) = __test__evaluate_source(
       "
       <fragment component as='test'>
         <div>
@@ -1840,7 +1875,7 @@ mod tests {
 
   #[test]
   fn catches_recursion_in_multiple_parts() {
-    let result = evaluate_source(
+    let (result, _) = __test__evaluate_source(
       "
       <fragment component as='test2'>
         <div>
@@ -1870,46 +1905,52 @@ mod tests {
 
   #[test]
   fn allows_self_to_be_called_in_preview() {
-    evaluate_source(
+    let (result, _) = __test__evaluate_source(
       "
       Hello
       <preview>
         <self />
       </preview>
     ",
-    )
-    .unwrap();
+    );
+    result.unwrap();
   }
 
-  fn evaluate_source<'a>(code: &'a str) -> Result<EvalInfo, RuntimeError> {
-    let mut graph = DependencyGraph::new();
-    let uri = "some-file.pc".to_string();
-    let vfs = VirtualFileSystem::new(
-      Box::new(|_| "".to_string()),
-      Box::new(|_| true),
-      Box::new(|_, uri| Some(uri.to_string())),
-    );
-    graph.dependencies.insert(
-      uri.clone(),
-      Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
+  #[test]
+  fn can_evaluate_class_pierce() {
+    let (result, _) = __test__evaluate_source(
+      "
+      <div something='$something $that' />
+    ",
     );
 
+    result.unwrap();
+  }
+}
+
+pub fn __test__evaluate_source<'a>(
+  code: &'a str,
+) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
+  let mut graph = DependencyGraph::new();
+  let uri = "some-file.pc".to_string();
+  let vfs = VirtualFileSystem::new(
+    Box::new(|_| "".to_string()),
+    Box::new(|_| true),
+    Box::new(|_, uri| Some(uri.to_string())),
+  );
+  graph.dependencies.insert(
+    uri.clone(),
+    Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
+  );
+
+  (
     evaluate(
       &uri,
       &graph,
       &vfs,
       &BTreeMap::new(),
       &EngineMode::SingleFrame,
-    )
-  }
-
-  #[test]
-  fn can_evaluate_class_pierce() {
-    let result = evaluate_source(
-      "
-      <div something='$something $that' />
-    ",
-    )
-    .unwrap();
-  }
+    ),
+    graph,
+  )
 }

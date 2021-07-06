@@ -7,12 +7,14 @@ use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::core::id_generator::IDGenerator;
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
 pub struct Context<'a, 'b> {
   tokenizer: &'b mut Tokenizer<'a>,
   until: FUntil<'a>,
+  id_generator: IDGenerator,
 }
 
 impl<'a, 'b> Context<'a, 'b> {
@@ -21,16 +23,21 @@ impl<'a, 'b> Context<'a, 'b> {
   }
 }
 
-pub fn parse<'a>(source: &'a str) -> Result<Sheet, ParseError> {
+pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Sheet, ParseError> {
   let mut tokenizer = Tokenizer::new(&source);
-  parse_with_tokenizer(&mut tokenizer, |_token| Ok(false))
+  parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
 }
 
 pub fn parse_with_tokenizer<'a>(
   tokenizer: &mut Tokenizer<'a>,
+  id_seed: &'a str,
   until: FUntil<'a>,
 ) -> Result<Sheet, ParseError> {
-  let mut context = Context { tokenizer, until };
+  let mut context = Context {
+    tokenizer,
+    until,
+    id_generator: IDGenerator::new(id_seed.to_string()),
+  };
 
   parse_sheet(&mut context)
 }
@@ -60,6 +67,7 @@ fn parse_sheet<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sheet, ParseErro
 
   let (rules, declarations) = parse_rules_and_declarations(context)?;
   Ok(Sheet {
+    id: context.id_generator.new_id(),
     raws: BasicRaws::new(raw_before, None),
     rules,
     declarations,
@@ -129,6 +137,7 @@ fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
   let raws_after = context.tokenizer.eat_whitespace();
 
   Ok(Rule::Comment(Comment {
+    id: context.id_generator.new_id(),
     value: buffer.to_string(),
     location: Location::new(start, pos),
   }))
@@ -163,6 +172,7 @@ fn parse_style_rule2<'a, 'b>(
   let selector = parse_selector(context, is_child_without_amp_prefix)?;
   let (declarations, children, raw_after) = parse_declaration_body(context)?;
   Ok(StyleRule {
+    id: context.id_generator.new_id(),
     raws: BasicRaws::new(raw_before, raw_after),
     selector,
     declarations,
@@ -207,20 +217,22 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
         context.tokenizer.next_expect(Token::Semicolon)?;
         let raw_after = context.tokenizer.eat_whitespace();
         Ok(Rule::Charset(CharsetRule {
+          id: context.id_generator.new_id(),
           value: value.to_string(),
           raws: BasicRaws::new(raw_before, raw_after),
+          location: Location::new(start, context.tokenizer.utf16_pos),
         }))
       } else {
         Err(ParseError::unexpected_token(start))
       }
     }
-    "namespace" => {
-      let value = get_buffer(context.tokenizer, |tokenizer| {
-        Ok(tokenizer.peek(1)? != Token::Semicolon)
-      })?;
-      context.tokenizer.next_expect(Token::Semicolon)?;
-      Ok(Rule::Namespace(value.to_string()))
-    }
+    // "namespace" => {
+    //   let value = get_buffer(context.tokenizer, |tokenizer| {
+    //     Ok(tokenizer.peek(1)? != Token::Semicolon)
+    //   })?;
+    //   context.tokenizer.next_expect(Token::Semicolon)?;
+    //   Ok(Rule::Namespace(value.to_string()))
+    // }
     "supports" => Ok(Rule::Supports(parse_condition_rule(
       name.to_string(),
       raw_before,
@@ -273,6 +285,7 @@ fn parse_export_rule<'a, 'b>(
   let raw_after = context.tokenizer.eat_whitespace();
 
   Ok(ExportRule {
+    id: context.id_generator.new_id(),
     rules,
     raws: BasicRaws::new(raw_before, raw_after),
     location: Location::new(start, context.tokenizer.utf16_pos),
@@ -294,6 +307,7 @@ fn parse_condition_rule<'a, 'b>(
 
   Ok(ConditionRule {
     name,
+    id: context.id_generator.new_id(),
     condition_text,
     declarations,
     raws: BasicRaws::new(raw_before, raw_after),
@@ -318,6 +332,7 @@ fn parse_mixin_rule<'a, 'b>(
   eat_superfluous(context)?;
   let (declarations, rules, raw_after) = parse_declaration_body(context)?;
   Ok(MixinRule {
+    id: context.id_generator.new_id(),
     location: Location::new(start, context.tokenizer.utf16_pos),
     raws: BasicRaws::new(raw_start, raw_after),
     name: MixinName {
@@ -336,6 +351,7 @@ fn parse_font_face_rule<'a, 'b>(
   let start = context.tokenizer.utf16_pos;
   let (declarations, _children, raw_after) = parse_declaration_body(context)?;
   Ok(FontFaceRule {
+    id: context.id_generator.new_id(),
     raws: BasicRaws::new(raw_before, raw_after),
     declarations,
     location: Location::new(start, context.tokenizer.utf16_pos),
@@ -366,6 +382,7 @@ fn parse_keyframes_rule<'a, 'b>(
   eat_superfluous(context)?;
 
   Ok(KeyframesRule {
+    id: context.id_generator.new_id(),
     name,
     rules,
     raws: BasicRaws::new(raw_before, raw_after),
@@ -648,7 +665,9 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
   let selector: Selector = match token {
     Token::Star => {
       context.tokenizer.next()?; // eat *
-      Selector::AllSelector
+      Selector::AllSelector(AllSelector {
+        location: Location::new(pos, pos + 1),
+      })
     }
     Token::Colon => parse_pseudo_element_selector(context)?,
     Token::Byte(b'&') => {
@@ -976,6 +995,7 @@ fn parse_include<'a, 'b>(
   };
 
   Ok(Include {
+    id: context.id_generator.new_id(),
     mixin_name,
     raws: BasicRaws::new(raw_before, raw_after),
     rules,
@@ -1107,7 +1127,7 @@ mod tests {
     // comment
     ";
 
-    parse(source).unwrap();
+    parse(source, "id").unwrap();
   }
 
   #[test]
@@ -1197,7 +1217,7 @@ mod tests {
       }
     ";
 
-    parse(source).unwrap();
+    parse(source, "id").unwrap();
   }
 
   ///
@@ -1207,7 +1227,7 @@ mod tests {
   #[test]
   fn displays_an_error_for_unterminated_curly_bracket() {
     assert_eq!(
-      parse("div { "),
+      parse("div { ", "id"),
       Err(ParseError::unterminated(
         "Unterminated bracket.".to_string(),
         4,

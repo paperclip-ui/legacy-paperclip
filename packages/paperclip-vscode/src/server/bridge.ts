@@ -28,8 +28,6 @@ import {
   LoadedEvent
 } from "paperclip";
 
-import { throttle } from "lodash";
-
 import * as parseColor from "color";
 import * as fs from "fs";
 import * as url from "url";
@@ -50,6 +48,7 @@ import { LanguageServices } from "./services";
 import { stripFileProtocol } from "paperclip";
 import { EngineDelegate } from "paperclip";
 import { fixFileUrlCasing } from "../utils";
+import { DiagnosticKind } from "../../../paperclip-utils";
 
 type KeyValue<TValue> = {
   [identifier: string]: TValue;
@@ -320,10 +319,11 @@ export class VSCServiceBridge {
   private _onEngineEvaluatedEvent(
     event: DiffedEvent | EvaluatedEvent | LoadedEvent | ChangedSheetsEvent
   ) {
-    // reset error diagnostics
-    this.connection.sendDiagnostics({
-      uri: event.uri,
-      diagnostics: []
+    setTimeout(() => {
+      this.connection.sendDiagnostics({
+        uri: event.uri,
+        diagnostics: this._lint(event.uri, true)
+      });
     });
   }
 
@@ -342,17 +342,14 @@ export class VSCServiceBridge {
     }
   }
 
-  private _handleGraphError({
-    uri,
-    info: { message, location }
-  }: GraphErrorEvent) {
-    this._sendError(uri, message, location);
+  private _handleGraphError({ uri }: GraphErrorEvent) {
+    this._sendLints(uri);
   }
-  private _handleRuntimeError({ uri, message, location }: RuntimeErrorEvent) {
-    this._sendError(uri, message, location);
+  private _handleRuntimeError({ uri }: RuntimeErrorEvent) {
+    this._sendLints(uri);
   }
 
-  private _sendError(uri: string, message: string, location: SourceLocation) {
+  private _sendLints(uri: string) {
     let textDocument = this._documents[uri];
 
     if (!textDocument) {
@@ -364,14 +361,64 @@ export class VSCServiceBridge {
       );
     }
 
-    const diagnostics: Diagnostic[] = [
-      createErrorDiagnostic(message, textDocument, location)
-    ];
-
-    this.connection.sendDiagnostics({
-      uri,
-      diagnostics
+    // fix wasm loop
+    setTimeout(() => {
+      this.connection.sendDiagnostics({
+        uri,
+        diagnostics: this._lint(uri)
+      });
     });
+  }
+
+  private _lint(uri: string, createDocument = false): Diagnostic[] {
+    let textDocument = this._documents[uri];
+
+    if (!textDocument && createDocument) {
+      textDocument = TextDocument.create(
+        uri,
+        "paperclip",
+        0,
+        fs.readFileSync(url.fileURLToPath(uri), "utf8")
+      );
+    }
+
+    if (!textDocument) {
+      return [];
+    }
+
+    return this._engine
+      .lint(uri)
+      .map(diag => {
+        switch (diag.diagnosticKind) {
+          case DiagnosticKind.EngineError: {
+            if (diag.errorKind === EngineErrorKind.Graph) {
+              return createDiagnostic(
+                DiagnosticSeverity.Error,
+                diag.info.message,
+                textDocument,
+                diag.info.location
+              );
+            } else if (diag.errorKind === EngineErrorKind.Runtime) {
+              return createDiagnostic(
+                DiagnosticSeverity.Error,
+                diag.message,
+                textDocument,
+                diag.location
+              );
+            }
+            return null;
+          }
+          case DiagnosticKind.LintWarning: {
+            return createDiagnostic(
+              DiagnosticSeverity.Warning,
+              diag.message,
+              textDocument,
+              diag.source.textSource!.location
+            );
+          }
+        }
+      })
+      .filter(Boolean);
   }
 }
 
@@ -390,13 +437,14 @@ const getColorPresentation = (
   return { label, textEdit: TextEdit.replace(range, label) };
 };
 
-const createErrorDiagnostic = (
+const createDiagnostic = (
+  severity: DiagnosticSeverity,
   message: string,
   textDocument: TextDocument,
   location: SourceLocation
 ) => {
   return {
-    severity: DiagnosticSeverity.Error,
+    severity,
     range: {
       start: textDocument.positionAt(location.start),
       end: textDocument.positionAt(location.end)

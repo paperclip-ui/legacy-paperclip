@@ -1,6 +1,7 @@
 use super::vfs::VirtualFileSystem;
 use crate::base::ast::Location;
 use crate::base::parser::ParseError;
+use crate::core::id_generator::generate_seed;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use serde::Serialize;
@@ -13,7 +14,6 @@ pub enum GraphErrorInfo {
   IncludeNotFound(IncludeNodeFoundError),
 
   Syntax(ParseError),
-
   NotFound,
 }
 
@@ -73,6 +73,25 @@ impl DependencyGraph {
       .collect::<Vec<String>>();
   }
 
+  pub fn get_expression_by_id<'a>(
+    &'a self,
+    source_id: &String,
+  ) -> Option<(String, pc_ast::PCObject<'a>)> {
+    for (uri, dep) in self.dependencies.iter() {
+      let option: Option<pc_ast::PCObject<'a>> = match &dep.content {
+        DependencyContent::StyleSheet(sheet) => sheet
+          .get_object_by_id(source_id)
+          .and_then(|css_object| Some(pc_ast::PCObject::CSSObject(css_object))),
+        DependencyContent::Node(node) => node.get_object_by_id(source_id),
+      };
+
+      if let Some(obj) = option {
+        return Some((uri.to_string(), obj));
+      }
+    }
+
+    None
+  }
   fn flatten_dependents2<'a>(&'a self, entry_uri: &String, all_deps: &mut HashSet<String>) {
     let entry_option = self.dependencies.get(entry_uri);
 
@@ -103,7 +122,7 @@ impl DependencyGraph {
       let deps = dep
         .dependencies
         .iter()
-        .map(|(id, uri)| uri)
+        .map(|(_, uri)| uri)
         .collect::<Vec<&String>>();
 
       for dep_uri in deps {
@@ -241,7 +260,7 @@ impl<'a> Dependency {
   }
 
   fn from_css_source(source: String, uri: &String) -> Result<Dependency, ParseError> {
-    let expression_result = css_parser::parse(source.as_str());
+    let expression_result = css_parser::parse(source.as_str(), generate_seed().as_str());
     if let Err(err) = expression_result {
       return Err(err);
     }
@@ -260,7 +279,7 @@ impl<'a> Dependency {
     uri: &String,
     vfs: &VirtualFileSystem,
   ) -> Result<Dependency, ParseError> {
-    let expression_result = pc_parser::parse(source.as_str());
+    let expression_result = pc_parser::parse(source.as_str(), generate_seed().as_str());
 
     if let Err(err) = expression_result {
       return Err(err);

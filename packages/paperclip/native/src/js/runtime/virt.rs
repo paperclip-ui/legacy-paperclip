@@ -1,4 +1,4 @@
-use crate::base::ast::ExprSource;
+use crate::base::ast::ExprTextSource;
 use crate::pc::runtime::virt::Node;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -35,7 +35,7 @@ impl JsValue {
       _ => false,
     }
   }
-  pub fn get_source(&self) -> &ExprSource {
+  pub fn get_source(&self) -> &ExprTextSource {
     match self {
       JsValue::JsUndefined(value) => &value.source,
       JsValue::JsNode(value) => &value.get_source(),
@@ -44,6 +44,17 @@ impl JsValue {
       JsValue::JsString(value) => &value.source,
       JsValue::JsObject(value) => &value.source,
       JsValue::JsArray(value) => &value.source,
+    }
+  }
+  pub fn get_source_id(&self) -> &String {
+    match self {
+      JsValue::JsUndefined(value) => &value.source_id,
+      JsValue::JsNode(value) => &value.get_source_id(),
+      JsValue::JsBoolean(value) => &value.source_id,
+      JsValue::JsNumber(value) => &value.source_id,
+      JsValue::JsString(value) => &value.source_id,
+      JsValue::JsObject(value) => &value.source_id,
+      JsValue::JsArray(value) => &value.source_id,
     }
   }
 }
@@ -64,51 +75,70 @@ impl fmt::Display for JsValue {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsString {
-  pub source: ExprSource,
+  #[serde(rename = "sourceId")]
+  pub source_id: String,
+  pub source: ExprTextSource,
   pub value: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsBoolean {
-  pub source: ExprSource,
+  #[serde(rename = "sourceId")]
+  pub source_id: String,
+  pub source: ExprTextSource,
   pub value: bool,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsNumber {
-  pub source: ExprSource,
+  #[serde(rename = "sourceId")]
+  pub source_id: String,
+  pub source: ExprTextSource,
   pub value: f64,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsUndefined {
-  pub source: ExprSource,
+  #[serde(rename = "sourceId")]
+  pub source_id: String,
+  pub source: ExprTextSource,
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone)]
 pub struct JsObject {
-  pub source: ExprSource,
+  #[serde(rename = "sourceId")]
+  pub source_id: String,
+  pub source: ExprTextSource,
   pub values: HashMap<String, JsValue>,
 }
 
 impl JsObject {
-  pub fn new(source: ExprSource) -> JsObject {
+  pub fn new(source_id: String, source: ExprTextSource) -> JsObject {
     JsObject {
+      source_id,
       values: HashMap::new(),
       source,
     }
   }
 }
 
+impl PartialEq for JsObject {
+  fn eq(&self, other: &Self) -> bool {
+    self.source == other.source && self.values == other.values
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsArray {
-  pub source: ExprSource,
+  pub source_id: String,
+  pub source: ExprTextSource,
   pub values: Vec<JsValue>,
 }
 
 impl JsArray {
-  pub fn new(source: ExprSource) -> JsArray {
+  pub fn new(source_id: String, source: ExprTextSource) -> JsArray {
     JsArray {
+      source_id,
       values: vec![],
       source,
     }

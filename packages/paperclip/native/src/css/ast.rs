@@ -11,6 +11,17 @@ pub enum Declaration {
   Media(ConditionRule),
 }
 
+impl Declaration {
+  pub fn get_location(&self) -> &Location {
+    match self {
+      Declaration::KeyValue(kv) => &kv.location,
+      Declaration::Include(kv) => &kv.location,
+      Declaration::Content(kv) => &kv.location,
+      Declaration::Media(kv) => &kv.location,
+    }
+  }
+}
+
 impl fmt::Display for Declaration {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
@@ -18,6 +29,26 @@ impl fmt::Display for Declaration {
       Declaration::Include(inc) => inc.fmt(f),
       Declaration::Media(media) => media.fmt(f),
       Declaration::Content(_) => writeln!(f, "@content;"),
+    }
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "cssObjectKind")]
+pub enum CSSObject<'a> {
+  Declaration(&'a Declaration),
+  Rule(&'a Rule),
+  StyleRule(&'a StyleRule),
+  Sheet(&'a Sheet),
+}
+
+impl<'a> CSSObject<'a> {
+  pub fn get_location(&self) -> &Location {
+    match self {
+      CSSObject::Declaration(decl) => decl.get_location(),
+      CSSObject::Rule(rule) => rule.get_location(),
+      CSSObject::Sheet(rule) => &rule.location,
+      CSSObject::StyleRule(rule) => &rule.location,
     }
   }
 }
@@ -51,6 +82,7 @@ pub struct Content {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Include {
+  pub id: String,
   #[serde(rename = "mixinName")]
   pub mixin_name: IncludeReference,
   pub declarations: Vec<Declaration>,
@@ -118,8 +150,10 @@ impl fmt::Display for IncludeReferencePart {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct CharsetRule {
+  pub id: String,
   pub raws: BasicRaws,
   pub value: String,
+  pub location: Location,
 }
 
 impl fmt::Display for CharsetRule {
@@ -135,7 +169,7 @@ pub enum Rule {
   Style(StyleRule),
   Comment(Comment),
   Charset(CharsetRule),
-  Namespace(String),
+  // Namespace(String),
   FontFace(FontFaceRule),
   Media(ConditionRule),
   Export(ExportRule),
@@ -147,6 +181,53 @@ pub enum Rule {
   Keyframes(KeyframesRule),
 }
 
+impl Rule {
+  pub fn get_id(&self) -> &String {
+    match self {
+      Rule::Comment(rule) => &rule.id,
+      Rule::Style(rule) => &rule.id,
+      Rule::Charset(value) => &value.id,
+      Rule::Export(export) => &export.id,
+      Rule::FontFace(rule) => &rule.id,
+      Rule::Media(rule) => &rule.id,
+      Rule::Mixin(rule) => &rule.id,
+      Rule::Include(rule) => &rule.id,
+      // Rule::Namespace(value) => &value,
+      Rule::Supports(value) => &value.id,
+      Rule::Keyframes(rule) => &rule.id,
+      Rule::Document(rule) => &rule.id,
+      Rule::Page(rule) => &rule.id,
+    }
+  }
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    if self.get_id() == id {
+      return Some(CSSObject::Rule(self));
+    }
+
+    if let Rule::Style(rule) = self {
+      return rule.get_object_by_id(id);
+    }
+
+    return None;
+  }
+  pub fn get_location(&self) -> &Location {
+    match self {
+      Rule::Comment(rule) => &rule.location,
+      Rule::Style(rule) => &rule.location,
+      Rule::Charset(value) => &value.location,
+      Rule::Export(export) => &export.location,
+      Rule::FontFace(rule) => &rule.location,
+      Rule::Media(rule) => &rule.location,
+      Rule::Mixin(rule) => &rule.location,
+      Rule::Include(rule) => &rule.location,
+      Rule::Supports(value) => &value.location,
+      Rule::Keyframes(rule) => &rule.location,
+      Rule::Document(rule) => &rule.location,
+      Rule::Page(rule) => &rule.location,
+    }
+  }
+}
+
 impl fmt::Display for Rule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match self {
@@ -154,7 +235,7 @@ impl fmt::Display for Rule {
       Rule::Style(rule) => write!(f, "{}", rule.to_string()),
       Rule::Charset(value) => write!(f, "@charset {}", value),
       Rule::Export(export) => write!(f, "{}", export),
-      Rule::Namespace(value) => write!(f, "@namespace {}", value),
+      // Rule::Namespace(value) => write!(f, "@namespace {}", value),
       Rule::FontFace(rule) => write!(f, "{}", rule.to_string()),
       Rule::Media(rule) => write!(f, "{}", rule.to_string()),
       Rule::Mixin(rule) => write!(f, "{}", rule.to_string()),
@@ -169,6 +250,7 @@ impl fmt::Display for Rule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Comment {
+  pub id: String,
   pub value: String,
   pub location: Location,
 }
@@ -197,11 +279,27 @@ impl BasicRaws {
 }
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRule {
+  pub id: String,
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
   pub children: Vec<StyleRule>,
   pub location: Location,
   pub raws: BasicRaws,
+}
+
+impl StyleRule {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    if (&self.id == id) {
+      return Some(CSSObject::StyleRule(&self));
+    }
+    for child in &self.children {
+      let sub = child.get_object_by_id(id);
+      if sub != None {
+        return sub;
+      }
+    }
+    return None;
+  }
 }
 
 impl fmt::Display for StyleRule {
@@ -233,6 +331,7 @@ pub struct ChildStyleRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FontFaceRule {
+  pub id: String,
   pub declarations: Vec<Declaration>,
   pub raws: BasicRaws,
   pub location: Location,
@@ -252,6 +351,7 @@ impl fmt::Display for FontFaceRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ExportRule {
+  pub id: String,
   pub rules: Vec<Rule>,
   pub location: Location,
   pub raws: BasicRaws,
@@ -271,6 +371,7 @@ impl fmt::Display for ExportRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ConditionRule {
+  pub id: String,
   pub name: String,
 
   #[serde(rename = "conditionText")]
@@ -295,6 +396,7 @@ impl fmt::Display for ConditionRule {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinRule {
+  pub id: String,
   pub name: MixinName,
   pub raws: BasicRaws,
   pub location: Location,
@@ -325,6 +427,7 @@ pub struct MixinName {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyframesRule {
+  pub id: String,
   pub name: String,
   pub rules: Vec<KeyframeRule>,
   pub location: Location,
@@ -384,8 +487,7 @@ pub enum Selector {
   Element(ElementSelector),
   Attribute(AttributeSelector),
   Class(ClassSelector),
-  AllSelector,
-  None,
+  AllSelector(AllSelector),
 }
 
 impl Selector {
@@ -451,15 +553,133 @@ impl Selector {
         Selector::Attribute(selector) => {
           return curr;
         }
-        Selector::None => {
-          return curr;
-        }
-        Selector::AllSelector => {
+        Selector::AllSelector(selector) => {
           return curr;
         }
       }
     }
     return curr;
+  }
+  pub fn walk(&self, each: &mut FnMut(&Selector) -> bool) -> bool {
+    if each(self) == false {
+      return false;
+    }
+
+    match self {
+      Selector::PseudoElement(_)
+      | Selector::Attribute(_)
+      | Selector::Element(_)
+      | Selector::AllSelector(_)
+      | Selector::PseudoParamElement(_)
+      | Selector::Id(_)
+      | Selector::Class(_) => {
+        return true;
+      }
+      Selector::Child(sel) => {
+        if !each(&sel.parent) || !each(&sel.child) {
+          return false;
+        }
+      }
+      Selector::Sibling(sel) => {
+        if !each(&sel.selector) || !each(&sel.sibling_selector) {
+          return false;
+        }
+      }
+      Selector::Group(selector) => {
+        for child in &selector.selectors {
+          if !child.walk(each) {
+            return false;
+          }
+        }
+      }
+      Selector::Combo(selector) => {
+        for part in &selector.selectors {
+          if !part.walk(each) {
+            return false;
+          }
+        }
+      }
+      Selector::Prefixed(selector) => {
+        if let Some(sel) = &selector.postfix_selector {
+          if !sel.walk(each) {
+            return false;
+          }
+        }
+      }
+      Selector::Descendent(selector) => {
+        if !each(&selector.ancestor) || !each(&selector.descendent) {
+          return false;
+        }
+      }
+      Selector::Not(selector) => {
+        if !each(&selector.selector) {
+          return false;
+        }
+      }
+      Selector::SubElement(selector) => {
+        if !each(&selector.selector) {
+          return false;
+        }
+      }
+      Selector::Within(selector) => {
+        if !each(&selector.selector) {
+          return false;
+        }
+      }
+      Selector::Global(selector) => {
+        if !each(&selector.selector) {
+          return false;
+        }
+      }
+      Selector::This(selector) => {
+        if let Some(sel) = &selector.selector {
+          if !sel.walk(each) {
+            return false;
+          }
+        }
+      }
+      Selector::Adjacent(selector) => {
+        if !each(&selector.selector) || !each(&selector.next_sibling_selector) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  pub fn is_global(&self) -> bool {
+    let mut is_global = false;
+    self.walk(&mut |descendent| {
+      if let Selector::Global(_) = descendent {
+        is_global = true;
+        return false;
+      }
+      return true;
+    });
+
+    return is_global;
+  }
+  pub fn get_location(&self) -> &Location {
+    match self {
+      Selector::Group(selector) => &selector.location,
+      Selector::Combo(selector) => &selector.location,
+      Selector::Prefixed(selector) => &selector.location,
+      Selector::Element(selector) => &selector.location,
+      Selector::Descendent(selector) => &selector.location,
+      Selector::Not(selector) => &selector.location,
+      Selector::SubElement(selector) => &selector.location,
+      Selector::Within(selector) => &selector.location,
+      Selector::Global(selector) => &selector.location,
+      Selector::This(selector) => &selector.location,
+      Selector::Adjacent(selector) => &selector.location,
+      Selector::PseudoElement(selector) => &selector.location,
+      Selector::PseudoParamElement(selector) => &selector.location,
+      Selector::Sibling(selector) => &selector.location,
+      Selector::Child(selector) => &selector.location,
+      Selector::Class(selector) => &selector.location,
+      Selector::Id(selector) => &selector.location,
+      Selector::Attribute(selector) => &selector.location,
+      Selector::AllSelector(selector) => &selector.location,
+    }
   }
 }
 
@@ -484,8 +704,7 @@ impl fmt::Display for Selector {
       Selector::Class(selector) => write!(f, "{}", selector.to_string()),
       Selector::Id(selector) => write!(f, "{}", selector.to_string()),
       Selector::Attribute(selector) => write!(f, "{}", selector.to_string()),
-      Selector::None => write!(f, ""),
-      Selector::AllSelector => write!(f, "*"),
+      Selector::AllSelector(_) => write!(f, "*"),
     }
   }
 }
@@ -759,6 +978,11 @@ pub struct ClassSelector {
   pub location: Location,
 }
 
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct AllSelector {
+  pub location: Location,
+}
+
 impl fmt::Display for ClassSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, ".{}", &self.class_name)?;
@@ -804,10 +1028,10 @@ impl fmt::Display for AttributeSelector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Sheet {
+  pub id: String,
   pub raws: BasicRaws,
   pub rules: Vec<Rule>,
   pub declarations: Vec<Declaration>,
-
   pub location: Location,
 }
 
@@ -817,5 +1041,22 @@ impl fmt::Display for Sheet {
       write!(f, "{}", &rule.to_string())?;
     }
     Ok(())
+  }
+}
+
+impl Sheet {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    if &self.id == id {
+      return Some(CSSObject::Sheet(&self));
+    }
+
+    for rule in &self.rules {
+      let nested_object = rule.get_object_by_id(id);
+      if nested_object != None {
+        return nested_object;
+      }
+    }
+
+    return None;
   }
 }

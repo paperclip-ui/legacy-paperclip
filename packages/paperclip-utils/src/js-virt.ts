@@ -1,4 +1,4 @@
-import { ExprSource } from "./base-virt";
+import { ExprTextSource } from "./base-virt";
 import { memoize } from "./memo";
 
 export enum VirtJsObjectKind {
@@ -15,7 +15,7 @@ type BaseVirtJsObject<TKind extends VirtJsObjectKind> = {
 
 export type VirtJsObject = {
   values: Record<string, VirtJsValue>;
-  source: ExprSource;
+  source: ExprTextSource;
 } & BaseVirtJsObject<VirtJsObjectKind.JsObject>;
 export type VirtJsArray = {
   values: VirtJsValue[];

@@ -40,6 +40,7 @@ pub struct Element {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Comment {
+  pub id: String,
   pub raws: BasicRaws,
   pub location: Location,
   pub annotation: annotation_ast::Annotation,
@@ -47,6 +48,7 @@ pub struct Comment {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ValueObject {
+  pub id: String,
   pub location: Location,
   pub value: String,
   pub raws: BasicRaws,
@@ -61,6 +63,21 @@ pub enum Node {
   Fragment(Fragment),
   StyleElement(StyleElement),
   Slot(Slot),
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub enum PCObject<'a> {
+  Node(&'a Node),
+  CSSObject(css_ast::CSSObject<'a>),
+}
+
+impl<'a> PCObject<'a> {
+  pub fn get_location(&'a self) -> &'a Location {
+    match self {
+      PCObject::Node(node) => node.get_location(),
+      PCObject::CSSObject(css) => css.get_location(),
+    }
+  }
 }
 
 impl Node {
@@ -87,10 +104,43 @@ impl Node {
     }
     return true;
   }
+  pub fn get_id(&self) -> &String {
+    match self {
+      Node::Text(value) => &value.id,
+      Node::Comment(value) => &value.id,
+      Node::Element(value) => &value.id,
+      Node::Fragment(value) => &value.id,
+      Node::StyleElement(value) => &value.id,
+      Node::Slot(value) => &value.id,
+    }
+  }
+  pub fn get_object_by_id<'a>(&self, id: &String) -> Option<PCObject> {
+    if self.get_id() == id {
+      return Some(PCObject::Node(self));
+    }
+
+    if let Node::StyleElement(style_element) = self {
+      return style_element
+        .sheet
+        .get_object_by_id(id)
+        .and_then(|obj| Some(PCObject::CSSObject(obj)));
+    }
+
+    get_children(self).and_then(|children| {
+      for child in children {
+        let nested = child.get_object_by_id(id);
+        if nested != None {
+          return nested;
+        }
+      }
+      None
+    })
+  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Slot {
+  pub id: String,
   // !{slot}
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
@@ -114,18 +164,21 @@ impl fmt::Display for Node {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeStringValue {
+  pub id: String,
   pub value: String,
   pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeSlotValue {
+  pub id: String,
   pub script: js_ast::Expression,
   pub location: Location,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringValue {
+  pub id: String,
   pub values: Vec<AttributeDynamicStringPart>,
   pub location: Location,
 }
@@ -280,6 +333,7 @@ impl fmt::Display for ShorthandAttribute {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct PropertyBoundAttribute {
+  pub id: String,
   #[serde(rename = "bindingName")]
   pub binding_name: String,
   pub name: String,
@@ -300,6 +354,7 @@ impl fmt::Display for PropertyBoundAttribute {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyValueAttribute {
+  pub id: String,
   pub name: String,
   pub location: Location,
   pub value: Option<AttributeValue>,
@@ -336,6 +391,7 @@ impl fmt::Display for AttributeValue {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
+  pub id: String,
   pub raws: ElementRaws,
   pub attributes: Vec<Attribute>,
   pub sheet: css_ast::Sheet,
@@ -353,6 +409,7 @@ impl fmt::Display for StyleElement {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
+  pub id: String,
   pub location: Location,
   pub children: Vec<Node>,
 }

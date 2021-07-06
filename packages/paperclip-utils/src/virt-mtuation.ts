@@ -1,4 +1,4 @@
-import { ExprSource } from "./base-virt";
+import { ExprTextSource } from "./base-virt";
 import { VirtJsObject } from "./js-virt";
 import { VirtualNode } from "./virt";
 
@@ -46,7 +46,7 @@ export type SourceUriChanged = {
 } & BaseAction<ActionKind.SourceUriChanged>;
 export type SourceChanged = {
   propertyName: string;
-  newSource: ExprSource;
+  newSource: ExprTextSource;
 } & BaseAction<ActionKind.SourceChanged>;
 
 export type Action =

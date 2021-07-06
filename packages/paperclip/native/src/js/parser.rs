@@ -2,12 +2,14 @@ use super::ast;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::Location;
 use crate::base::parser::{get_buffer, ParseError};
+use crate::core::id_generator::IDGenerator;
 use crate::pc::parser::parse_tag;
+use crate::pc::parser::Context as PCContext;
 use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
 
 struct Context<'a, 'b> {
   tokenizer: &'b mut Tokenizer<'a>,
-  id_seed: String,
+  id_generator: IDGenerator,
 }
 
 pub fn _parse<'a>(source: &'a str) -> Result<ast::Expression, ParseError> {
@@ -19,7 +21,10 @@ pub fn parse_with_tokenizer<'a>(
   tokenizer: &mut Tokenizer<'a>,
   id_seed: String,
 ) -> Result<ast::Expression, ParseError> {
-  let mut context = Context { tokenizer, id_seed };
+  let mut context = Context {
+    tokenizer,
+    id_generator: IDGenerator::new(id_seed),
+  };
   parse_top(&mut context)
 }
 
@@ -47,6 +52,7 @@ fn parse_conjunction<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expre
     context.tokenizer.next()?;
     let right = parse_top(context)?;
     Ok(ast::Expression::Conjunction(ast::Conjunction {
+      id: context.id_generator.new_id(),
       left: Box::new(left),
       operator,
       right: Box::new(right),
@@ -79,20 +85,28 @@ fn parse_not<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, P
   let start = context.tokenizer.utf16_pos;
   context.tokenizer.next()?;
   Ok(ast::Expression::Not(ast::Not {
+    id: context.id_generator.new_id(),
     location: Location::new(start, context.tokenizer.utf16_pos),
     expression: Box::new(parse_expression(context)?),
   }))
 }
 
 fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, ParseError> {
+  let seed = context.id_generator.new_seed();
+
   let mut pc_tokenizer =
     PCTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+  let mut pc_context = PCContext {
+    tokenizer: pc_tokenizer,
+    id_generator: IDGenerator::new(seed.to_string()),
+  };
+
   let node = ast::Expression::Node(Box::new(parse_tag(
-    &mut pc_tokenizer,
-    vec![context.id_seed.to_string()],
+    &mut pc_context,
+    vec![context.id_generator.seed.to_string()],
     None,
   )?));
-  context.tokenizer.set_pos(&pc_tokenizer.get_pos());
+  context.tokenizer.set_pos(&pc_context.tokenizer.get_pos());
   Ok(node)
 }
 
@@ -101,6 +115,7 @@ fn parse_number<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression
   let buffer = get_number_buffer(context)?;
 
   Ok(ast::Expression::Number(ast::Number {
+    id: context.id_generator.new_id(),
     value: buffer,
     location: Location::new(start, context.tokenizer.utf16_pos),
   }))
@@ -114,6 +129,7 @@ fn parse_negative_number<'a, 'b>(
   let num_buffer = get_number_buffer(context)?;
 
   Ok(ast::Expression::Number(ast::Number {
+    id: context.id_generator.new_id(),
     value: format!("-{}", num_buffer),
     location: Location::new(start, context.tokenizer.utf16_pos),
   }))
@@ -146,6 +162,7 @@ fn parse_string<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression
   .to_string();
   context.tokenizer.next_expect(start)?;
   Ok(ast::Expression::String(ast::Str {
+    id: context.id_generator.new_id(),
     value,
     location: Location::new(start_pos, context.tokenizer.utf16_pos),
   }))
@@ -159,6 +176,7 @@ fn parse_group<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression,
   context.tokenizer.next_expect(Token::ParenClose)?; // eat )
 
   Ok(ast::Expression::Group(ast::Group {
+    id: context.id_generator.new_id(),
     location: Location::new(start, context.tokenizer.utf16_pos),
     expression: Box::new(expression),
   }))
@@ -183,6 +201,7 @@ fn parse_array<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression,
   context.tokenizer.next_expect(Token::SquareClose)?;
 
   Ok(ast::Expression::Array(ast::Array {
+    id: context.id_generator.new_id(),
     values,
     location: Location::new(start, context.tokenizer.utf16_pos),
   }))
@@ -224,6 +243,7 @@ fn parse_object<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression
   context.tokenizer.next_expect(Token::CurlyClose)?;
 
   Ok(ast::Expression::Object(ast::Object {
+    id: context.id_generator.new_id(),
     properties,
     location: Location::new(start, context.tokenizer.utf16_pos),
   }))
@@ -234,6 +254,7 @@ fn parse_boolean<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expressio
   if let Token::Word(name) = context.tokenizer.next()? {
     if name == "true" || name == "false" {
       return Ok(ast::Expression::Boolean(ast::Boolean {
+        id: context.id_generator.new_id(),
         value: name == "true",
         location: Location::new(pos, context.tokenizer.utf16_pos),
       }));
@@ -282,6 +303,7 @@ fn parse_reference<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Express
     }
   }
   Ok(ast::Expression::Reference(ast::Reference {
+    id: context.id_generator.new_id(),
     path,
     location: Location::new(pos, context.tokenizer.utf16_pos),
   }))

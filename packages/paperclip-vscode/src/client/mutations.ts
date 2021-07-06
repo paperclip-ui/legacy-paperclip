@@ -1,7 +1,5 @@
 import { PCMutation, PCSourceWriter } from "paperclip-source-writer";
 import * as vscode from "vscode";
-import * as fs from "fs";
-import { worker } from "cluster";
 import * as url from "url";
 import { createEngineDelegate } from "paperclip";
 

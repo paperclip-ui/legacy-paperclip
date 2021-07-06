@@ -1,4 +1,4 @@
-import { SourceLocation, VirtJsObject, ExprSource } from "paperclip-utils";
+import { SourceLocation, VirtJsObject, ExprTextSource } from "paperclip-utils";
 
 export enum PCMutationActionKind {
   ANNOTATIONS_CHANGED = "ANNOTATIONS_CHANGED",
@@ -11,7 +11,7 @@ type BaseAction<TKind extends PCMutationActionKind> = {
 
 export type AnnotationsChanged = {
   annotations?: Record<string, any>;
-  annotationsSource?: ExprSource;
+  annotationsSource?: ExprTextSource;
 } & BaseAction<PCMutationActionKind.ANNOTATIONS_CHANGED>;
 
 export type ExpressionDeleted = {} & BaseAction<
@@ -21,6 +21,6 @@ export type ExpressionDeleted = {} & BaseAction<
 export type PCMutationAction = AnnotationsChanged | ExpressionDeleted;
 
 export type PCMutation = {
-  exprSource: ExprSource;
+  ExprTextSource: ExprTextSource;
   action: PCMutationAction;
 };
