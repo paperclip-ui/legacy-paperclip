@@ -31,6 +31,7 @@ describe(__filename + "#", () => {
 
       try {
         engine.open("entry.pc");
+        // eslint-disable-next-line
       } catch (e) {}
 
       expect(engine.lint("entry.pc").length).to.eql(len);

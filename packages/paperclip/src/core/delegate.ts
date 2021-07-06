@@ -180,7 +180,6 @@ export class EngineDelegate {
   parseContent(content: string) {
     return this._tryCatch(() => mapResult(this._native.parse_content(content)));
   }
-  getFileDiagnostics(uri: string) {}
   purgeUnlinkedFiles() {
     return this._tryCatch(() => {
       const ret = mapResult(this._native.purge_unlinked_files());

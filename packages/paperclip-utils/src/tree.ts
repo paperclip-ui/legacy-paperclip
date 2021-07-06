@@ -2,6 +2,7 @@ import { memoize } from "./memo";
 
 // core tree utils
 
+// eslint-disable-next-line
 export type BaseNode = {};
 
 export type BaseParentNode = {
