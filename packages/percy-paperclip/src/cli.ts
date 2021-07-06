@@ -89,6 +89,7 @@ export const run = async (
         (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
 
       const root: VirtualFragment = {
+        source: null,
         children: [
           ...importedSheets.map(({ sheet }) => createStyle(sheet)),
           createStyle(sheet),
