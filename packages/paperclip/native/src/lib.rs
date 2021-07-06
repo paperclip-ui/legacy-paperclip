@@ -101,7 +101,9 @@ impl NativeEngine {
       listener.call1(&this, &arg).unwrap();
     }));
   }
-  pub fn lint(&mut self, uri: String) {}
+  pub fn lint_file(&mut self, uri: String) -> JsValue {
+    JsValue::from_serde(&self.target.lint_file(&uri)).unwrap()
+  }
   pub fn get_loaded_ast(&mut self, uri: String) -> JsValue {
     console_error_panic_hook::set_once();
     let result = self.target.get_loaded_ast(&uri);

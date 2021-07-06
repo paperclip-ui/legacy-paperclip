@@ -339,7 +339,7 @@ describe(__filename + "#", () => {
       const text = stringifyLoadResult(await engine.open("/entry.pc")).match(
         /<style>(.*?)<\/style>/
       )[1];
-      expect(text).to.eql(output);
+      expect(text).to.eql(String(output).trim());
     });
   });
 });

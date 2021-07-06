@@ -47,7 +47,7 @@ pub fn parse<'a, 'b>(source: &'a str, id_seed: &'b str) -> Result<pc_ast::Node, 
       tokenizer: Tokenizer::new(source),
       id_generator: IDGenerator::new(id_seed.to_string()),
     },
-    vec![id_seed.to_string()],
+    vec![],
   )
 }
 

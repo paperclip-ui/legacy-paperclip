@@ -38,6 +38,7 @@ impl fmt::Display for Declaration {
 pub enum CSSObject<'a> {
   Declaration(&'a Declaration),
   Rule(&'a Rule),
+  StyleRule(&'a StyleRule),
   Sheet(&'a Sheet),
 }
 
@@ -47,6 +48,7 @@ impl<'a> CSSObject<'a> {
       CSSObject::Declaration(decl) => decl.get_location(),
       CSSObject::Rule(rule) => rule.get_location(),
       CSSObject::Sheet(rule) => &rule.location,
+      CSSObject::StyleRule(rule) => &rule.location,
     }
   }
 }
@@ -202,6 +204,10 @@ impl Rule {
       return Some(CSSObject::Rule(self));
     }
 
+    if let Rule::Style(rule) = self {
+      return rule.get_object_by_id(id);
+    }
+
     return None;
   }
   pub fn get_location(&self) -> &Location {
@@ -279,6 +285,21 @@ pub struct StyleRule {
   pub children: Vec<StyleRule>,
   pub location: Location,
   pub raws: BasicRaws,
+}
+
+impl StyleRule {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    if (&self.id == id) {
+      return Some(CSSObject::StyleRule(&self));
+    }
+    for child in &self.children {
+      let sub = child.get_object_by_id(id);
+      if sub != None {
+        return sub;
+      }
+    }
+    return None;
+  }
 }
 
 impl fmt::Display for StyleRule {
@@ -466,8 +487,7 @@ pub enum Selector {
   Element(ElementSelector),
   Attribute(AttributeSelector),
   Class(ClassSelector),
-  AllSelector,
-  None,
+  AllSelector(AllSelector)
 }
 
 impl Selector {
@@ -533,10 +553,7 @@ impl Selector {
         Selector::Attribute(selector) => {
           return curr;
         }
-        Selector::None => {
-          return curr;
-        }
-        Selector::AllSelector => {
+        Selector::AllSelector(selector) => {
           return curr;
         }
       }
@@ -552,8 +569,7 @@ impl Selector {
       Selector::PseudoElement(_)
       | Selector::Attribute(_)
       | Selector::Element(_)
-      | Selector::AllSelector
-      | Selector::None
+      | Selector::AllSelector(_)
       | Selector::PseudoParamElement(_)
       | Selector::Id(_)
       | Selector::Class(_) => {
@@ -642,6 +658,29 @@ impl Selector {
 
     return is_global;
   }
+  pub fn get_location(&self) -> &Location {
+    match self {
+      Selector::Group(selector) => &selector.location,
+      Selector::Combo(selector) => &selector.location,
+      Selector::Prefixed(selector) => &selector.location,
+      Selector::Element(selector) =>  &selector.location,
+      Selector::Descendent(selector) => &selector.location,
+      Selector::Not(selector) => &selector.location,
+      Selector::SubElement(selector) => &selector.location,
+      Selector::Within(selector) =>&selector.location,
+      Selector::Global(selector) => &selector.location,
+      Selector::This(selector) => &selector.location,
+      Selector::Adjacent(selector) => &selector.location,
+      Selector::PseudoElement(selector) => &selector.location,
+      Selector::PseudoParamElement(selector) => &selector.location,
+      Selector::Sibling(selector) => &selector.location,
+      Selector::Child(selector) => &selector.location,
+      Selector::Class(selector) => &selector.location,
+      Selector::Id(selector) => &selector.location,
+      Selector::Attribute(selector) => &selector.location,
+      Selector::AllSelector(selector) => &selector.location
+    }
+  }
 }
 
 impl fmt::Display for Selector {
@@ -665,8 +704,7 @@ impl fmt::Display for Selector {
       Selector::Class(selector) => write!(f, "{}", selector.to_string()),
       Selector::Id(selector) => write!(f, "{}", selector.to_string()),
       Selector::Attribute(selector) => write!(f, "{}", selector.to_string()),
-      Selector::None => write!(f, ""),
-      Selector::AllSelector => write!(f, "*"),
+      Selector::AllSelector(_) => write!(f, "*"),
     }
   }
 }
@@ -937,6 +975,11 @@ impl fmt::Display for ElementSelector {
 pub struct ClassSelector {
   #[serde(rename = "className")]
   pub class_name: String,
+  pub location: Location,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct AllSelector {
   pub location: Location,
 }
 

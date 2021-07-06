@@ -1,8 +1,8 @@
-use nanoid::nanoid;
+
 
 pub struct IDGenerator {
-  seed: String,
-  count: u32,
+  pub seed: String,
+  pub count: u32,
 }
 
 impl IDGenerator {
@@ -21,5 +21,7 @@ impl IDGenerator {
 }
 
 pub fn generate_seed() -> String {
-  nanoid!()
+
+  // TODO
+  "".to_string()
 }

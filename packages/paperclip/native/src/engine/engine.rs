@@ -1,3 +1,5 @@
+use super::diagnostics::Diagnostic;
+use super::errors::EngineError;
 use crate::base::ast;
 use crate::base::parser::ParseError;
 use crate::base::runtime::RuntimeError;
@@ -14,15 +16,12 @@ use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
+use crate::pc::runtime::lint::{lint as lint_pc, LintOptions};
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
-use crate::pc::runtime::lint::{lint as lint_pc, LintOptions};
 use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
-use super::errors::EngineError;
-use super::diagnostics::Diagnostic;
-
 
 #[derive(Debug, PartialEq, Serialize)]
 pub struct EvaluatedEvent<'a> {
@@ -107,7 +106,7 @@ pub struct Engine {
   pub dependency_graph: DependencyGraph,
   pub mode: EngineMode,
   // keeping tabs of
-  pub diagnostics: BTreeMap<String, Vec<Diagnostic>>
+  pub diagnostics: BTreeMap<String, Vec<Diagnostic>>,
 }
 
 impl Engine {
@@ -129,7 +128,6 @@ impl Engine {
 
     engine
   }
-
 
   pub async fn run(&mut self, uri: &String) -> Result<(), EngineError> {
     self.load(uri).await?;
@@ -166,6 +164,9 @@ impl Engine {
   }
 
   pub async fn load(&mut self, uri: &String) -> Result<(), EngineError> {
+
+    self.remove_diagnostic_error(uri);
+    
     let load_result = self
       .dependency_graph
       .load_dependency(uri, &mut self.vfs)
@@ -184,43 +185,58 @@ impl Engine {
       Err(error) => {
         self.needs_reval.insert(uri.to_string(), true);
 
-
-        let engine_error = EngineError::Graph(
-          error.clone(),
-        );
+        let engine_error = EngineError::Graph(error.clone());
 
         // Note - this was removed to prevent the engine
         // from dispatching an Evaluated event after error which
         // stops a flash from happening: https://github.com/crcn/paperclip/issues/604
         // self.evaluated_data.remove(uri);
         self.set_diagnostic_error(uri, engine_error.clone());
-        
+
         Err(engine_error)
       }
     }
   }
 
   pub fn lint_file(&mut self, uri: &String) -> Option<Vec<Diagnostic>> {
-    self.evaluated_data.get(uri).and_then(|dep_eval_info| {
-      match dep_eval_info {
+
+    let existing_diagnostics = self
+    .diagnostics
+    .get(uri)
+    .or(Some(&(vec![] as Vec<Diagnostic>)))
+    .unwrap()
+    .clone();
+
+
+    self
+      .evaluated_data
+      .get(uri)
+      .and_then(|dep_eval_info| match dep_eval_info {
         DependencyEvalInfo::PC(pc) => Some(pc),
-        _ => None
-      }
-    }).and_then(|eval_info| {
-      Some(lint_pc(eval_info, &self.dependency_graph, LintOptions {
-        no_unused_css: Some(true),
-        enforce_refs: None,
-        enforce_previews: None
-      }))
-    }).and_then(|lint_diagnostics| {
-      let mut diagnostics: Vec<Diagnostic> = vec![];
-      let existing_diagnostics = self.diagnostics.get(uri).or(Some(&(vec![] as Vec<Diagnostic>))).unwrap().clone();
-      diagnostics.extend(existing_diagnostics);
-      diagnostics.extend(lint_diagnostics.into_iter().map(|warn| {
-        Diagnostic::LintWarning(warn)
-      }));
-      Some(diagnostics)
-    })
+        _ => None,
+      })
+      .and_then(|eval_info| {
+        Some(lint_pc(
+          eval_info,
+          &self.dependency_graph,
+          LintOptions {
+            no_unused_css: Some(true),
+            enforce_refs: None,
+            enforce_previews: None,
+          },
+        ))
+      })
+      .and_then(|lint_diagnostics| {
+        let mut diagnostics: Vec<Diagnostic> = vec![];
+        diagnostics.extend(existing_diagnostics.clone());
+        diagnostics.extend(
+          lint_diagnostics
+            .into_iter()
+            .map(|warn| Diagnostic::LintWarning(warn)),
+        );
+        Some(diagnostics)
+      })
+      .or(Some(existing_diagnostics))
   }
 
   pub async fn parse_file(&mut self, uri: &String) -> Result<pc_ast::Node, ParseError> {
@@ -273,10 +289,16 @@ impl Engine {
     Ok(())
   }
 
-
   fn set_diagnostic_error<'a>(&mut self, uri: &String, error: EngineError) {
-    self.diagnostics.insert(uri.to_string(), vec![Diagnostic::EngineError(error.clone())]);
+    self.diagnostics.insert(
+      uri.to_string(),
+      vec![Diagnostic::EngineError(error.clone())],
+    );
     self.dispatch(EngineEvent::Error(error));
+  }
+
+  fn remove_diagnostic_error<'a>(&mut self, uri: &String) {
+    self.diagnostics.remove(uri);
   }
 
   fn evaluate<'a>(
@@ -284,6 +306,8 @@ impl Engine {
     uri: &String,
     stack: &mut HashSet<String>,
   ) -> Result<(), RuntimeError> {
+    self.remove_diagnostic_error(uri);
+
     // prevent infinite loop
     if stack.contains(uri) {
       let err = RuntimeError::new(
@@ -292,9 +316,7 @@ impl Engine {
         &ast::Location { start: 0, end: 1 },
       );
 
-      self.set_diagnostic_error(uri, EngineError::Runtime(
-        err.clone(),
-      ));
+      self.set_diagnostic_error(uri, EngineError::Runtime(err.clone()));
       return Err(err);
     }
 
@@ -346,7 +368,6 @@ impl Engine {
     };
 
     let eval = eval_result.or_else(|err| {
-
       // need to re-eval so that any diagnostics or state get reset
       // if rendering resumes but there are no changes
 
@@ -366,7 +387,6 @@ impl Engine {
       match &existing_info {
         DependencyEvalInfo::PC(existing_details) => {
           if let DependencyEvalInfo::PC(new_details) = &data {
-
             let sheet_mutations = diff_css(&existing_details.sheet, &new_details.sheet);
             let mutations = diff_pc(&existing_details.preview, &new_details.preview);
 
@@ -414,7 +434,6 @@ mod tests {
 
   #[test]
   fn can_smoke_parse_various_nodes() {
-
     let mut engine = Engine::new(
       Box::new(|_| "".to_string()),
       Box::new(|_| true),

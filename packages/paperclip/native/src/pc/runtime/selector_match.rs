@@ -303,7 +303,6 @@ fn selector_matches_element2<'a, 'b>(
     // :global(a)
     css_ast::Selector::Global(_)
     | css_ast::Selector::Prefixed(_)
-    | css_ast::Selector::None
     | css_ast::Selector::This(_)
     | css_ast::Selector::Within(_) => {
       panic!("Unsupported selector for match.");
@@ -429,7 +428,7 @@ fn selector_matches_element2<'a, 'b>(
         .unwrap_or(false);
     }
     // *
-    css_ast::Selector::AllSelector => {
+    css_ast::Selector::AllSelector(_) => {
       return true;
     }
     css_ast::Selector::Element(sel) => {

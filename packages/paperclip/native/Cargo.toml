@@ -17,7 +17,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 matches = "0.1.8"
-nanoid = "0.4.0"
+uuid = { version = "0.8", features = ["serde", "v4", "wasm-bindgen"] }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_json = { version = "1.0.44" }
 crc = "1.8.1"

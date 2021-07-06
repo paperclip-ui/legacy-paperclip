@@ -14,11 +14,11 @@ use super::evaluator::{
 };
 use super::selector_match::find_one_matching_element;
 use super::virt::Node as VirtNode;
+use crate::base::ast::{ExprSource, ExprTextSource, Location};
 use serde::Serialize;
-use crate::base::ast::{ExprSource, ExprTextSource};
 // use crate::core::diagnostics::{Diagnostic, DiagnosticInfo, DiagnosticLevel, DiagnosticSourceInfo};
+use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
-use crate::core::eval::{DependencyEvalInfo};
 use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast::{CSSObject, Rule};
 use crate::css::runtime::virt::{CSSSheet, Rule as VirtRule};
@@ -55,7 +55,6 @@ pub struct LintOptions {
   pub enforce_previews: Option<bool>,
 }
 
-struct Context {}
 
 pub fn lint(
   eval_info: &EvalInfo,
@@ -102,10 +101,21 @@ fn lint_css_rules(
           let expr_option = graph.get_expression_by_id(&style_rule.source_id);
 
           if let Some((uri, expr)) = expr_option {
+
+            let mut expr_location: &Location = expr.get_location();
+
             // check for :global
             if let PCObject::CSSObject(cssobject) = &expr {
+              if let CSSObject::StyleRule(style) = cssobject {
+                expr_location = style.selector.get_location();
+                if style.selector.is_global() {
+                  continue;
+                }
+              }
+
               if let CSSObject::Rule(rule) = cssobject {
                 if let Rule::Style(style) = rule {
+                  expr_location = style.selector.get_location();
                   if style.selector.is_global() {
                     continue;
                   }
@@ -117,7 +127,7 @@ fn lint_css_rules(
               "Unused style rule",
               &ExprSource::new(
                 style_rule.source_id.as_str(),
-                Some(&ExprTextSource::new(uri, expr.get_location().clone())),
+                Some(&ExprTextSource::new(uri, expr_location.clone())),
               ),
             )));
           }

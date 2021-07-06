@@ -1330,7 +1330,7 @@ fn write_element_selector(
         }
       }
     }
-    ast::Selector::AllSelector => {
+    ast::Selector::AllSelector(_) => {
       if include_document_scope {
         emitter.push_target(get_document_scope_selector(context));
       } else {
@@ -1349,7 +1349,6 @@ fn write_element_selector(
       }
       emitter.push_target(format!(":{}({})", selector.name, selector.param));
     }
-    ast::Selector::None => {}
     ast::Selector::Attribute(selector) => {
       emitter.push_target(selector.to_string());
       if include_document_scope {

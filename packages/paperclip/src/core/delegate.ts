@@ -18,6 +18,7 @@ import {
   DependencyNodeContent,
   getAttributeStringValue,
   hasAttribute,
+  Diagnostic,
   INJECT_STYLES_TAG_NAME
 } from "paperclip-utils";
 import { noop } from "./utils";
@@ -169,6 +170,9 @@ export class EngineDelegate {
   };
   parseFile(uri: string) {
     return mapResult(this._native.parse_file(uri));
+  }
+  lint(uri: string): Diagnostic[] {
+    return this._native.lint_file(uri);
   }
   getLoadedAst(uri: string): DependencyContent {
     return this._tryCatch(() => this._native.get_loaded_ast(uri));

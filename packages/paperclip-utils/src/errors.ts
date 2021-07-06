@@ -1,64 +1,61 @@
-// import * as path from "path";
-// import url from "url";
-// import chalk from "chalk";
-// import dedent from "dedent";
-// import { SourceLocation } from "./base-ast";
+import { SourceLocation } from "./base-ast";
 
-// type Details = {
-//   location: SourceLocation;
-//   message: string;
-// };
+export enum ParseErrorKind {
+  EndOfFile = "EndOfFile",
+  Unknown = "Unknown",
+  Unexpected = "Unexpected",
+  Unterminated = "Unterminated"
+}
 
-// export const getPrettyMessage = (
-//   { location, message }: Details,
-//   code: string,
-//   uri: string,
-//   cwd: string
-// ) => {
-//   const beforeLines = code.substr(0, location.start).split("\n");
-//   const startLinePrefix = beforeLines[beforeLines.length - 1];
-//   const startLineNumber = beforeLines.length;
-//   const start = code.substr(location.start);
-//   const chunk = start.substr(0, location.end - location.start);
+export type ParseError = {
+  kind: ParseErrorKind;
+  message: string;
+  location: SourceLocation;
+};
 
-//   const highlightedLines =
-//     startLinePrefix +
-//     chunk
-//       .split("\n")
-//       .reduce((highlight, line, index) => {
-//         highlight.push(line);
-//         const prefix = index === 0 ? " ".repeat(startLinePrefix.length) : "";
-//         highlight.push(prefix + chalk.red("^".repeat(line.length)));
-//         return highlight;
-//       }, [])
-//       .join("\n");
+export enum GraphErrorInfoKind {
+  IncludeNotFound = "IncludeNotFound",
+  Syntax = "Syntax"
+}
 
-//   const buffer = dedent`
-//   \n
-//   ${chalk.cyan(path.relative(cwd, url.fileURLToPath(uri)))}:${chalk.yellow(
-//     startLineNumber
-//   )} - ${chalk.red("error")}: ${message}
+export type BaseGraphErrorInfo<TKind extends GraphErrorInfoKind> = {
+  kind: TKind;
+};
 
-//   ${addLineNumbers(highlightedLines, startLineNumber)}\n
+export type IncludeNotFoundErrorInfo = {
+  uri: string;
+  location: SourceLocation;
+  message: string;
+} & BaseGraphErrorInfo<GraphErrorInfoKind.IncludeNotFound>;
 
-//   `;
+export type SyntaxErrorInfo = ParseError &
+  BaseGraphErrorInfo<GraphErrorInfoKind.Syntax>;
 
-//   // return addLineNumbers(highlightedLines.join("\n"), startLine);
+export type GraphErrorInfo = IncludeNotFoundErrorInfo | SyntaxErrorInfo;
 
-//   return buffer;
-// };
+export type GraphError = {
+  uri: string;
+  info: GraphErrorInfo;
+};
 
-// const addLineNumbers = (buffer: string, start: number) => {
-//   return buffer
-//     .split("\n")
-//     .map((line, index) => {
-//       const num = start + index;
-//       const prefix =
-//         `${num}` +
-//         " ".repeat(Math.max(0, String(start).length + 2 - String(num).length)) +
-//         "| ";
-//       const buffer = chalk.grey(prefix) + line;
-//       return buffer;
-//     })
-//     .join("\n");
-// };
+export type RuntimeError = {
+  uri: string;
+  location: SourceLocation;
+  message: string;
+};
+
+export enum EngineErrorKind {
+  Graph = "Graph",
+  Runtime = "Runtime"
+}
+
+export type BaseEngineError<TKind = EngineErrorKind> = {
+  errorKind: TKind;
+};
+
+export type RuntimeEngineError = RuntimeError &
+  BaseEngineError<EngineErrorKind.Runtime>;
+export type GraphEngineError = GraphError &
+  BaseEngineError<EngineErrorKind.Graph>;
+
+export type EngineError = RuntimeEngineError | GraphEngineError;
