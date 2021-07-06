@@ -451,7 +451,10 @@ fn selector_matches_element2<'a, 'b>(
           .and_then(|(attr_value, value)| {
             match operator.as_str() {
               "=" => {
-                if attr_value == &value || attr_value == &format!("\"{}\"", value) ||  attr_value == &format!("'{}'", value) {
+                if attr_value == &value
+                  || attr_value == &format!("\"{}\"", value)
+                  || attr_value == &format!("'{}'", value)
+                {
                   return Some(true);
                 }
               }

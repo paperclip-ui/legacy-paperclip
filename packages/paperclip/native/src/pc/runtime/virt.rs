@@ -36,7 +36,6 @@ pub struct Element {
   pub children: Vec<Node>,
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
   pub source_id: String,

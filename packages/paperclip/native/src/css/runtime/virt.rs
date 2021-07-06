@@ -40,7 +40,6 @@ pub enum Rule {
 // does not check custom implementations for enums
 impl PartialEq for Rule {
   fn eq(&self, other: &Self) -> bool {
-    
     match (self, other) {
       (Rule::Style(a), Rule::Style(b)) => a == b,
       (Rule::Charset(a), Rule::Charset(b)) => a == b,
@@ -51,7 +50,7 @@ impl PartialEq for Rule {
       (Rule::Page(a), Rule::Page(b)) => a == b,
       (Rule::Document(a), Rule::Document(b)) => a == b,
       (Rule::Keyframes(a), Rule::Keyframes(b)) => a == b,
-      _ => false
+      _ => false,
     }
   }
 }
@@ -193,7 +192,9 @@ pub struct StyleRule {
 
 impl PartialEq for StyleRule {
   fn eq(&self, other: &Self) -> bool {
-    self.exported == other.exported && self.selector_text == other.selector_text && self.style == other.style
+    self.exported == other.exported
+      && self.selector_text == other.selector_text
+      && self.style == other.style
   }
 }
 
