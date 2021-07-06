@@ -122,7 +122,7 @@ fn lint_css_rules(
             }
 
             diagnostics.push(LintWarning::UnusedStyleRule(LintWarningInfo::new(
-              "Unused style rule",
+              "Unused style rule in preview",
               &ExprSource::new(
                 style_rule.source_id.as_str(),
                 Some(&ExprTextSource::new(uri, expr_location.clone())),

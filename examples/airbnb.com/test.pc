@@ -1,4 +1,12 @@
-<div export component as="Test2">
-  {a && <b>{c}</b>}
-</div>
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -52, y: 78 }
+-->
+<div export component as="Test2">{a && <b>{c}</b>}</div>
 
+<style>
+  a[href] {
+    color: red;
+  }
+</style>
+
+<a href="#">som</a>
