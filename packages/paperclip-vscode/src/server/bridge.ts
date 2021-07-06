@@ -48,7 +48,7 @@ import { LanguageServices } from "./services";
 import { stripFileProtocol } from "paperclip";
 import { EngineDelegate } from "paperclip";
 import { fixFileUrlCasing } from "../utils";
-import { DiagnosticKind } from "../../../paperclip-utils";
+import { DiagnosticKind } from "paperclip-utils";
 
 type KeyValue<TValue> = {
   [identifier: string]: TValue;
