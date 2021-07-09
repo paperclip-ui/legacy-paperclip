@@ -7,9 +7,18 @@ import {
   EngineDelegateEvent,
   LoadedData,
   ExprTextSource,
-  Action
+  Action,
+  ExprSource
 } from "paperclip-utils";
-import { Box, Directory, EnvOption, FSItemKind, Point, Size } from "../state";
+import {
+  Box,
+  Directory,
+  EnvOption,
+  FSItemKind,
+  Point,
+  Size,
+  VirtualNodeSourceInfo
+} from "../state";
 
 export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
@@ -40,6 +49,7 @@ export enum ActionType {
   TITLE_DOUBLE_CLICKED = "TITLE_DOUBLE_CLICKED",
   DIR_LOADED = "DIR_LOADED",
   FS_ITEM_CLICKED = "FS_ITEM_CLICKED",
+  VIRTUAL_NODES_SELECTED = "VIRTUAL_NODES_SELECTED",
   CANVAS_PAN_START = "CANVAS_PAN_START",
   CANVAS_PAN_END = "CANVAS_PAN_END",
   CANVAS_PANNED = "CANVAS_PANNED",
@@ -124,10 +134,19 @@ export type EnvOptionClicked = BaseAction<
     path: string;
   }
 >;
+export type VirtualNodesSelected = BaseAction<
+  ActionType.VIRTUAL_NODES_SELECTED,
+  Array<{
+    nodePath: number[];
+    nodeUri: string;
+  }>
+>;
+
 export type MetaClicked = BaseAction<
   ActionType.META_CLICKED,
   {
-    source: ExprTextSource;
+    nodePath: number[];
+    nodeUri: string;
   }
 >;
 export type BirdseyeFilterChanged = BaseAction<
@@ -492,11 +511,16 @@ export const zoomOutKeyPressed = actionCreator<
   KeyComboPressed<ActionType.ZOOM_OUT_KEY_PRESSED>
 >(ActionType.ZOOM_OUT_KEY_PRESSED);
 
+export const virtualNodesSelected = actionCreator<VirtualNodesSelected>(
+  ActionType.VIRTUAL_NODES_SELECTED
+);
+
 export type InstanceAction =
   // | RendererInitialized
   | RectsCaptured
   | CanvasMouseUp
   | ResizerPathMoved
+  | VirtualNodesSelected
   | ResizerPathStoppedMoving
   | Pasted
   | RendererMounted

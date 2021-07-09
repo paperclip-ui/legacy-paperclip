@@ -279,7 +279,7 @@ impl<'a> Dependency {
     uri: &String,
     vfs: &VirtualFileSystem,
   ) -> Result<Dependency, ParseError> {
-    let expression_result = pc_parser::parse(source.as_str(), generate_seed().as_str());
+    let expression_result = pc_parser::parse(source.as_str(), uri.as_str(), generate_seed().as_str());
 
     if let Err(err) = expression_result {
       return Err(err);

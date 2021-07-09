@@ -1,7 +1,8 @@
 import { stripFileProtocol } from "paperclip-utils";
-import { PCMutation } from "paperclip-source-writer";
 import * as fs from "fs";
 import * as qs from "querystring";
+import * as vscode from "vscode";
+import * as url from "url";
 import {
   Uri,
   window,
@@ -60,8 +61,7 @@ type LivePreviewState = {
 
 export const activate = (
   client: LanguageClient,
-  context: ExtensionContext,
-  onPCMutations: (mutation: PCMutation[]) => void
+  context: ExtensionContext
 ): void => {
   const _previews: LivePreview[] = [];
 
@@ -275,18 +275,19 @@ export const activate = (
             "Paperclip crashed - you'll need to reload this window."
           );
         } else if (
+          action.payload.type ===
+          ve.ServerActionType.REVEAL_EXPRESSION_SOURCE_REQUESTED
+        ) {
+          handleRevealExpressionSourceRequested(action.payload);
+        } else if (
+          action.payload.type === ve.ServerActionType.PC_SOURCE_EDITED
+        ) {
+          handlePCSourceEdited(action.payload);
+        } else if (
           action.payload.type === ve.ServerActionType.INSTANCE_CHANGED
         ) {
           // oh boy 🙈
           switch (action.payload.payload.action.type) {
-            case ve.ActionType.PC_VIRT_OBJECT_EDITED: {
-              onPCMutations(action.payload.payload.action.payload.mutations);
-              break;
-            }
-            case ve.ActionType.META_CLICKED: {
-              handleMetaClicked(action.payload.payload.action);
-              break;
-            }
             case ve.ActionType.ERROR_BANNER_CLICKED: {
               handleErrorBannerClicked(action.payload.payload.action);
               break;
@@ -364,20 +365,27 @@ export const activate = (
     );
   };
 
-  const handleMetaClicked = async ({ payload: { source } }: ve.MetaClicked) => {
+  const handleRevealExpressionSourceRequested = async ({
+    payload: { textSource }
+  }: ve.RevealExpressionSourceRequested) => {
+    // shouldn't happen, but might if text isn't loaded
+    if (!textSource) {
+      return;
+    }
+
     // TODO - no globals here
-    const textDocument = await openDoc(source.uri);
+    const textDocument = await openDoc(textSource.uri);
 
     const editor =
       window.visibleTextEditors.find(
         editor =>
           editor.document &&
           fixFileUrlCasing(String(editor.document.uri)) ===
-            fixFileUrlCasing(source.uri)
+            fixFileUrlCasing(textSource.uri)
       ) || (await window.showTextDocument(textDocument, ViewColumn.One));
     editor.selection = new Selection(
-      textDocument.positionAt(source.location.start),
-      textDocument.positionAt(source.location.end)
+      textDocument.positionAt(textSource.location.start),
+      textDocument.positionAt(textSource.location.end)
     );
     editor.revealRange(editor.selection);
   };
@@ -388,6 +396,28 @@ export const activate = (
     const doc = await openDoc(error.uri);
     await window.showTextDocument(doc, ViewColumn.One);
   };
+};
+
+const handlePCSourceEdited = async ({
+  payload: changesByUri
+}: ve.PCSourceEdited) => {
+  for (const uri in changesByUri) {
+    const changes = changesByUri[uri];
+    const filePath = url.fileURLToPath(uri);
+    const doc = await vscode.workspace.openTextDocument(filePath);
+    const tedits = changes.map(change => {
+      return new vscode.TextEdit(
+        new vscode.Range(
+          doc.positionAt(change.start),
+          doc.positionAt(change.end)
+        ),
+        change.value
+      );
+    });
+    const wsEdit = new vscode.WorkspaceEdit();
+    wsEdit.set(vscode.Uri.parse(uri), tedits);
+    await vscode.workspace.applyEdit(wsEdit);
+  }
 };
 
 class LivePreview {

@@ -41,7 +41,7 @@ module.exports = {
       basedir: path.dirname(fullPath)
     }));
 
-    const ast = engine.parseContent(content);
+    const ast = engine.parseContent(content, fileUri);
 
     const es6 = compile({ ast, classNames }, fileUri, {});
 

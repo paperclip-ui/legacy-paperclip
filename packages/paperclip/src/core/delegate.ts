@@ -174,11 +174,16 @@ export class EngineDelegate {
   lint(uri: string): Diagnostic[] {
     return this._native.lint_file(uri);
   }
+  getVirtualNodeSourceInfo(nodePath: number[], uri: string) {
+    return this._native.get_virtual_node_source_info(nodePath, uri);
+  }
   getLoadedAst(uri: string): DependencyContent {
     return this._tryCatch(() => this._native.get_loaded_ast(uri));
   }
-  parseContent(content: string) {
-    return this._tryCatch(() => mapResult(this._native.parse_content(content)));
+  parseContent(content: string, uri: string) {
+    return this._tryCatch(() =>
+      mapResult(this._native.parse_content(content, uri))
+    );
   }
   purgeUnlinkedFiles() {
     return this._tryCatch(() => {
@@ -190,11 +195,13 @@ export class EngineDelegate {
     return this._documents[uri];
   }
   updateVirtualFileContent(uri: string, content: string) {
-    this._documents[uri] = content;
     return this._tryCatch(() => {
       const ret = mapResult(
         this._native.update_virtual_file_content(uri, content)
       );
+
+      // only define if successfuly loaded
+      this._documents[uri] = content;
       return ret;
     });
   }

@@ -375,7 +375,7 @@ fn evaluate_node_sheet<'a>(
   let element_scope = if let Some(parent) = parent {
     if let ast::Node::Element(element) = parent {
       Some((
-        get_element_scope(element, context),
+        element.id.to_string(),
         is_component_instance(element, context),
       ))
     } else {
@@ -604,10 +604,10 @@ pub fn evaluate_node<'a>(
   }
 }
 
-pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> String {
-  let buff = format!("{}{}", context.private_scope, element.id);
-  format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
-}
+// pub fn get_element_scope<'a>(element: &ast::Element, context: &mut Context) -> String {
+//   let buff = format!("{}{}", element.id);
+//   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
+// }
 
 fn is_frame_visible(annotations: &Option<js_virt::JsObject>) -> bool {
   let visible = annotations
@@ -1012,7 +1012,7 @@ fn create_component_instance_data<'a>(
       "".to_string()
     };
 
-    let scope_class_name = get_element_scope(instance_element, context);
+    let scope_class_name = &instance_element.id;
 
     let new_class_name = if let Some(class_name) = class_name_option {
       format!("{} _{}", class_name.to_string(), scope_class_name)
@@ -1302,7 +1302,7 @@ fn evaluate_native_element<'a>(
 
   if contains_style {
     // TODO - this needs to be scoped
-    let element_scope = get_element_scope(element, context);
+    let element_scope = &element.id;
     let scope_name = format!("data-pc-{}", element_scope).to_string();
     attributes.insert(scope_name.to_string(), None);
   }
@@ -1838,7 +1838,7 @@ mod tests {
   #[test]
   fn can_evaluate_a_style() {
     let case = "<style>div { color: red; } a, b { & c { color: blue }}</style><div></div>";
-    let ast = parse(case, "sed").unwrap();
+    let ast = parse(case, "sed", "uri").unwrap();
     let graph = DependencyGraph::new();
     let vfs = VirtualFileSystem::new(
       Box::new(|_| "".to_string()),

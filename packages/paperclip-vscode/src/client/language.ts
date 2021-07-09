@@ -9,7 +9,7 @@ import {
   LanguageClientOptions
 } from "vscode-languageclient";
 import { activate as activatePreview } from "./preview";
-import { activate as activateMutationHandler } from "./mutations";
+// import { activate as activateMutationHandler } from "./mutations";
 
 let client: LanguageClient;
 
@@ -18,8 +18,8 @@ export const activate = (context: ExtensionContext) => {
 
   const init = async () => {
     await client.onReady();
-    const mut = activateMutationHandler();
-    activatePreview(client, context, mut.handleMutations);
+    // const mut = activateMutationHandler();
+    activatePreview(client, context);
   };
 
   init();

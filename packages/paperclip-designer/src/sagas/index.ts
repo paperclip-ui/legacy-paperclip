@@ -31,11 +31,13 @@ import {
   globalOptionKeyDown,
   globalOptionKeyUp,
   actionHandled,
-  redirectRequest
+  redirectRequest,
+  virtualNodesSelected
 } from "../actions";
 import {
   AppState,
   getActiveFrameIndex,
+  getFrameFromIndex,
   getNodeInfoAtPoint,
   getSelectedFrames,
   isExpanded,
@@ -64,10 +66,11 @@ export default function* mainSaga(
   yield fork(handleKeyCommands, mount);
   yield fork(handleDocumentEvents);
   yield fork(handleCanvas, getState);
-  yield fork(handleClipboard, getState);
+  // yield fork(handleClipboard, getState);
   yield fork(handleLocationChanged);
   yield fork(handleLocation, getState);
   yield fork(handleActions, getState);
+  yield fork(handleVirtualObjectSelected, getState);
 }
 
 function handleSock(onMessage, onClient) {
@@ -144,14 +147,16 @@ function* handleRenderer(getState: AppStateSelector) {
     ],
     function*() {
       const state: AppState = yield select(getState);
+
       yield put(
         pcVirtObjectEdited({
-          mutations: getSelectedFrames(state.designer).map(frame => {
+          mutations: state.designer.selectedNodePaths.map(info => {
+            const frame = getFrameFromIndex(Number(info), state.designer);
             return {
-              ExprTextSource: frame.source,
+              nodePath: [Number(info)],
+              nodeUri: state.designer.ui.query.canvasFile,
               action: {
                 kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
-                annotationsSource: frame.annotations.source,
                 annotations: computeVirtJSObject(frame.annotations)
               }
             };
@@ -170,9 +175,10 @@ function* handleRenderer(getState: AppStateSelector) {
 
     yield put(
       pcVirtObjectEdited({
-        mutations: getSelectedFrames(state.designer).map(frame => {
+        mutations: state.designer.selectedNodePaths.map(index => {
           return {
-            ExprTextSource: frame.source,
+            nodePath: [Number(index)],
+            nodeUri: state.designer.ui.query.canvasFile,
             action: {
               kind: PCMutationActionKind.EXPRESSION_DELETED
             }
@@ -296,14 +302,19 @@ function* handleMetaKeyClick(
 
   const nodePathParts = nodeInfo.nodePath.split(".").map(Number);
 
-  const virtualNode = getVirtTarget(
-    (state.designer.allLoadedPCFileData[
-      state.designer.ui.query.canvasFile
-    ] as LoadedPCData).preview,
-    nodePathParts
-  );
+  // const virtualNode = getVirtTarget(
+  //   (state.designer.allLoadedPCFileData[
+  //     state.designer.ui.query.canvasFile
+  //   ] as LoadedPCData).preview,
+  //   nodePathParts
+  // );
 
-  yield put(metaClicked({ source: virtualNode.source }));
+  yield put(
+    metaClicked({
+      nodePath: nodePathParts,
+      nodeUri: state.designer.ui.query.canvasFile
+    })
+  );
 }
 
 function* handleKeyCommands(mount: HTMLElement) {
@@ -400,82 +411,82 @@ function* handleKeyCommands(mount: HTMLElement) {
 const isInput = (node: HTMLElement) =>
   /textarea|input/.test(node.tagName.toLowerCase());
 
-function* handleClipboard(getState: AppStateSelector) {
-  yield fork(handleCopy, getState);
-  yield fork(handlePaste, getState);
-}
-function* handleCopy(getState: AppStateSelector) {
-  const ev = eventChannel(emit => {
-    window.document.addEventListener("copy", emit);
-    return () => {
-      window.document.removeEventListener("copy", emit);
-    };
-  });
+// function* handleClipboard(getState: AppStateSelector) {
+//   yield fork(handleCopy, getState);
+//   yield fork(handlePaste, getState);
+// }
+// function* handleCopy(getState: AppStateSelector) {
+//   const ev = eventChannel(emit => {
+//     window.document.addEventListener("copy", emit);
+//     return () => {
+//       window.document.removeEventListener("copy", emit);
+//     };
+//   });
 
-  yield takeEvery(ev, function*(event: ClipboardEvent) {
-    if (isInput(event.target as any)) {
-      return;
-    }
+//   yield takeEvery(ev, function*(event: ClipboardEvent) {
+//     if (isInput(event.target as any)) {
+//       return;
+//     }
 
-    const state: AppState = yield select(getState);
-    const frames = getSelectedFrames(state.designer);
+//     const state: AppState = yield select(getState);
+//     const frames = getSelectedFrames(state.designer);
 
-    if (!frames.length) {
-      return;
-    }
+//     if (!frames.length) {
+//       return;
+//     }
 
-    const buffer = ["\n"];
+//     const buffer = ["\n"];
 
-    for (const frame of frames) {
-      if (!state.shared.documents[frame.source.uri]) {
-        console.warn(`document content doesn't exist`);
-        return;
-      }
+//     for (const frame of frames) {
+//       if (!state.shared.documents[frame.source.uri]) {
+//         console.warn(`document content doesn't exist`);
+//         return;
+//       }
 
-      const start =
-        frame.annotations?.source.location.start || frame.source.location.start;
-      const end = frame.source.location.end;
+//       const start =
+//         frame.annotations?.source.location.start || frame.source.location.start;
+//       const end = frame.source.location.end;
 
-      buffer.push(
-        state.shared.documents[frame.source.uri].toString().slice(start, end),
-        "\n"
-      );
-    }
+//       buffer.push(
+//         state.shared.documents[frame.source.uri].toString().slice(start, end),
+//         "\n"
+//       );
+//     }
 
-    event.clipboardData.setData("text/plain", buffer.join("\n"));
-    event.preventDefault();
-  });
-}
+//     event.clipboardData.setData("text/plain", buffer.join("\n"));
+//     event.preventDefault();
+//   });
+// }
 
-function* handlePaste(getState: AppStateSelector) {
-  const ev = eventChannel(emit => {
-    window.document.addEventListener("paste", emit);
-    return () => {
-      window.document.removeEventListener("paste", emit);
-    };
-  });
+// function* handlePaste(getState: AppStateSelector) {
+//   const ev = eventChannel(emit => {
+//     window.document.addEventListener("paste", emit);
+//     return () => {
+//       window.document.removeEventListener("paste", emit);
+//     };
+//   });
 
-  yield takeEvery(ev, function*(event: ClipboardEvent) {
-    const state: AppState = yield select(getState);
-    if (state.designer.readonly) {
-      return;
-    }
-    const content = event.clipboardData.getData("text/plain");
-    event.preventDefault();
-    if (content) {
-      yield put(
-        pasted({
-          clipboardData: [
-            {
-              type: "text/plain",
-              content
-            }
-          ]
-        })
-      );
-    }
-  });
-}
+//   yield takeEvery(ev, function*(event: ClipboardEvent) {
+//     const state: AppState = yield select(getState);
+//     if (state.designer.readonly) {
+//       return;
+//     }
+//     const content = event.clipboardData.getData("text/plain");
+//     event.preventDefault();
+//     if (content) {
+//       yield put(
+//         pasted({
+//           clipboardData: [
+//             {
+//               type: "text/plain",
+//               content
+//             }
+//           ]
+//         })
+//       );
+//     }
+//   });
+// }
 
 function* handleDocumentEvents() {
   yield fork(function*() {
@@ -553,4 +564,24 @@ function* handleActions(getState: AppStateSelector) {
       yield put(JSON.parse(JSON.stringify(state.actions[0])));
     }
   }
+}
+
+function* handleVirtualObjectSelected(getState: AppStateSelector) {
+  yield takeEvery(ActionType.CANVAS_MOUSE_UP, function*() {
+    const state: AppState = yield select(getState);
+    if (!state.designer.selectedNodePaths.length) {
+      return;
+    }
+
+    yield put(
+      virtualNodesSelected(
+        state.designer.selectedNodePaths.map(nodePath => {
+          return {
+            nodePath: nodePath.split(".").map(Number),
+            nodeUri: state.designer.ui.query.canvasFile!
+          };
+        })
+      )
+    );
+  });
 }

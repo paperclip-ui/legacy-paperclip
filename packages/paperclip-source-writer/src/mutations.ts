@@ -11,7 +11,6 @@ type BaseAction<TKind extends PCMutationActionKind> = {
 
 export type AnnotationsChanged = {
   annotations?: Record<string, any>;
-  annotationsSource?: ExprTextSource;
 } & BaseAction<PCMutationActionKind.ANNOTATIONS_CHANGED>;
 
 export type ExpressionDeleted = {} & BaseAction<
@@ -21,6 +20,7 @@ export type ExpressionDeleted = {} & BaseAction<
 export type PCMutationAction = AnnotationsChanged | ExpressionDeleted;
 
 export type PCMutation = {
-  ExprTextSource: ExprTextSource;
+  nodePath: number[];
+  nodeUri: string;
   action: PCMutationAction;
 };

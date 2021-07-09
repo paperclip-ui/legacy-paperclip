@@ -80,15 +80,15 @@ fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
 
   // TODO: this is _expensive_ and eventually we want to replace this
   // with an engine.inspect(virtualNodePath) which returns the location of it
-  if a.source != b.source {
-    context.mutations.push(Mutation::new(
-      context.node_path.clone(),
-      Action::SourceChanged(SourceChanged {
-        property_name: "source".to_string(),
-        new_source: b.source.clone(),
-      }),
-    ));
-  }
+  // if a.source != b.source {
+  //   context.mutations.push(Mutation::new(
+  //     context.node_path.clone(),
+  //     Action::SourceChanged(SourceChanged {
+  //       property_name: "source".to_string(),
+  //       new_source: b.source.clone(),
+  //     }),
+  //   ));
+  // }
 
   for (name, value) in a.attributes.iter() {
     let value2_option = b.attributes.get(name);
@@ -146,15 +146,15 @@ fn diff_text<'a>(a: &Text, b: &Text, context: &mut Context<'a>) {
     ));
   }
 
-  if a.source != b.source {
-    context.mutations.push(Mutation::new(
-      context.node_path.clone(),
-      Action::SourceChanged(SourceChanged {
-        property_name: "source".to_string(),
-        new_source: b.source.clone(),
-      }),
-    ));
-  }
+  // if a.source != b.source {
+  //   context.mutations.push(Mutation::new(
+  //     context.node_path.clone(),
+  //     Action::SourceChanged(SourceChanged {
+  //       property_name: "source".to_string(),
+  //       new_source: b.source.clone(),
+  //     }),
+  //   ));
+  // }
 
   if a.value != b.value {
     context.mutations.push(Mutation::new(
@@ -200,19 +200,19 @@ fn diff_children<'a>(a: &Vec<Node>, b: &Vec<Node>, context: &mut Context<'a>) {
 
 fn diff_style_element<'a>(a: &StyleElement, b: &StyleElement, context: &mut Context<'a>) {
   // skip if sheet is the same
-  if (a.sheet == b.sheet) {
-    if (a.source != b.source) {
-      context.mutations.push(Mutation::new(
-        context.node_path.clone(),
-        Action::SourceChanged(SourceChanged {
-          property_name: "source".to_string(),
-          new_source: b.source.clone(),
-        }),
-      ));
-    }
+  // if (a.sheet == b.sheet) {
+  //   if (a.source != b.source) {
+  //     context.mutations.push(Mutation::new(
+  //       context.node_path.clone(),
+  //       Action::SourceChanged(SourceChanged {
+  //         property_name: "source".to_string(),
+  //         new_source: b.source.clone(),
+  //       }),
+  //     ));
+  //   }
 
-    return;
-  }
+  //   return;
+  // }
   // let mutations = diff_css(&a.sheet, &b.sheet);
 
   // if (mutations.len() > 0) {

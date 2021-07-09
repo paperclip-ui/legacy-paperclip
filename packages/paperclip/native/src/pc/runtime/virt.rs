@@ -153,4 +153,19 @@ impl Node {
       _ => None,
     }
   }
+
+  pub fn get_descendent<'a>(&'a self, path: &Vec<usize>) -> Option<&'a Node> {
+    let mut curr = Some(self);
+    for i in path {
+      curr = curr
+        .and_then(|node| node.get_children())
+        .and_then(|children| children.get(*i));
+
+      if curr == None {
+        break;
+      }
+    }
+
+    curr
+  }
 }

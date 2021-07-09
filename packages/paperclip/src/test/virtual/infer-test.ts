@@ -286,7 +286,7 @@ describe(__filename + "#", async () => {
   const engine = await createEngineDelegate({});
   for (const [source, inference] of cases) {
     it(`can infer ${source}`, async () => {
-      const ast = await engine.parseContent(String(source));
+      const ast = await engine.parseContent(String(source), "");
       expect(infer(ast)).to.eql(inference);
     });
   }

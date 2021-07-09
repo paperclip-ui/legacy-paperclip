@@ -4,7 +4,7 @@ use regex::Regex;
 pub fn get_document_style_private_scope<'a>(uri: &String) -> String {
   let mut buff = uri.clone();
 
-  if (!uri.starts_with("file://")) {
+  if !uri.starts_with("file://") {
     buff = format!("file://{}", buff);
   }
 
@@ -14,7 +14,7 @@ pub fn get_document_style_private_scope<'a>(uri: &String) -> String {
 pub fn get_document_style_public_scope<'a>(uri: &String) -> String {
   let mut buff = uri.clone();
 
-  if (!uri.starts_with("file://")) {
+  if !uri.starts_with("file://") {
     buff = format!("file://{}", buff);
   }
 

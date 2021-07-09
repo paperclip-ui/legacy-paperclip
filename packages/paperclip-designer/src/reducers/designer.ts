@@ -134,6 +134,7 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
 const selectNode = (
   nodePath: string,
   shiftKey: boolean,
+  metaKey: boolean,
   designer: DesignerState
 ) => {
   return produce(designer, newDesigner => {
@@ -200,8 +201,14 @@ export const reduceDesigner = (
       return selectNode(
         String(action.payload.frameIndex),
         action.payload.shiftKey,
+        false,
         designer
       );
+    }
+    case ServerActionType.VIRTUAL_NODE_SOURCES_LOADED: {
+      return produce(designer, newDesigner => {
+        newDesigner.selectedNodeSources = action.payload;
+      });
     }
     case ActionType.BIRDSEYE_FILTER_CHANGED: {
       return produce(designer, newDesigner => {
@@ -383,7 +390,12 @@ export const reduceDesigner = (
         designer.boxes,
         isExpanded(designer) ? getActiveFrameIndex(designer) : null
       )?.nodePath;
-      return selectNode(nodePath, action.payload.shiftKey, designer);
+      return selectNode(
+        nodePath,
+        action.payload.shiftKey,
+        action.payload.metaKey,
+        designer
+      );
     }
     case ActionType.ZOOM_INPUT_CHANGED: {
       return produce(designer, newDesigner => {

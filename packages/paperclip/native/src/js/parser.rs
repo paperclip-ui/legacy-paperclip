@@ -9,20 +9,23 @@ use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
 
 struct Context<'a, 'b> {
   tokenizer: &'b mut Tokenizer<'a>,
+  scope_id: String,
   id_generator: IDGenerator,
 }
 
-pub fn _parse<'a>(source: &'a str) -> Result<ast::Expression, ParseError> {
+pub fn _parse<'a>(source: &'a str, scope_id: &'a str) -> Result<ast::Expression, ParseError> {
   let mut tokenizer = Tokenizer::new(source);
-  parse_with_tokenizer(&mut tokenizer, "".to_string())
+  parse_with_tokenizer(&mut tokenizer, "".to_string(), scope_id)
 }
 
 pub fn parse_with_tokenizer<'a>(
   tokenizer: &mut Tokenizer<'a>,
   id_seed: String,
+  scope_id: &'a str,
 ) -> Result<ast::Expression, ParseError> {
   let mut context = Context {
     tokenizer,
+    scope_id: scope_id.to_string(),
     id_generator: IDGenerator::new(id_seed),
   };
   parse_top(&mut context)
@@ -97,6 +100,7 @@ fn parse_node<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, 
   let mut pc_tokenizer =
     PCTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
   let mut pc_context = PCContext {
+    scope_id: context.scope_id.to_string(),
     tokenizer: pc_tokenizer,
     id_generator: IDGenerator::new(seed.to_string()),
   };
@@ -375,7 +379,7 @@ mod tests {
     ];
 
     for case in cases {
-      let _ast = _parse(case).unwrap();
+      let _ast = _parse(case, "").unwrap();
       println!("{:?}", _ast);
     }
   }

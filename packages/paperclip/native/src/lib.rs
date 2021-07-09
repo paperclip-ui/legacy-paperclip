@@ -104,14 +104,17 @@ impl NativeEngine {
   pub fn lint_file(&mut self, uri: String) -> JsValue {
     JsValue::from_serde(&self.target.lint_file(&uri)).unwrap()
   }
+  pub fn get_virtual_node_source_info(&mut self, path: Vec<usize>, uri: String) -> JsValue {
+    JsValue::from_serde(&self.target.get_virtual_node_source_info(&path, &uri)).unwrap()
+  }
   pub fn get_loaded_ast(&mut self, uri: String) -> JsValue {
     console_error_panic_hook::set_once();
     let result = self.target.get_loaded_ast(&uri);
     JsValue::from_serde(&result).unwrap()
   }
-  pub fn parse_content(&mut self, content: String) -> JsValue {
+  pub fn parse_content(&mut self, content: String, uri: String) -> JsValue {
     console_error_panic_hook::set_once();
-    let result = block_on(self.target.parse_content(&content));
+    let result = block_on(self.target.parse_content(&content, &uri));
     JsValue::from_serde(&result).unwrap()
   }
   pub fn parse_file(&mut self, uri: String) -> JsValue {

@@ -60,8 +60,7 @@ const init = async () => {
 
   const onEngineInit = () => {
     _writer = new PCSourceWriter({
-      engine: _engine,
-      getContent: uri => String(_state.documents[uri])
+      engine: _engine
     });
     dispatch(engineLoaded(null));
     tryOpeningCurrentFile();
