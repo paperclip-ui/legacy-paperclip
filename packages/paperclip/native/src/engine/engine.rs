@@ -271,7 +271,11 @@ impl Engine {
     parse_pc(content, uri, generate_seed().as_str())
   }
 
-  pub async fn parse_content(&mut self, content: &String, uri: &String) -> Result<pc_ast::Node, ParseError> {
+  pub async fn parse_content(
+    &mut self,
+    content: &String,
+    uri: &String,
+  ) -> Result<pc_ast::Node, ParseError> {
     parse_pc(content, uri.as_str(), generate_seed().as_str())
   }
 

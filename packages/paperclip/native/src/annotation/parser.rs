@@ -24,7 +24,11 @@ pub fn parse_with_tokenizer<'a>(
   scope_id: &String,
   until: FUntil<'a>,
 ) -> Result<ast::Annotation, ParseError> {
-  let mut context = Context { tokenizer, until, scope_id: scope_id.to_string() };
+  let mut context = Context {
+    tokenizer,
+    until,
+    scope_id: scope_id.to_string(),
+  };
 
   parse_annotation(&mut context)
 }
@@ -95,7 +99,8 @@ fn parse_declaration_property<'a, 'b>(
 
   let mut js_tokenizer =
     JSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
-  let value = parse_js_with_tokenizer(&mut js_tokenizer, "".to_string(), context.scope_id.as_str())?;
+  let value =
+    parse_js_with_tokenizer(&mut js_tokenizer, "".to_string(), context.scope_id.as_str())?;
 
   context.tokenizer.set_pos(&js_tokenizer.get_pos());
 

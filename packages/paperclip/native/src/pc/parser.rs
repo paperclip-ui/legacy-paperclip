@@ -1,7 +1,6 @@
 // https://tympanus.net/codrops/css_reference/
 
 use super::ast as pc_ast;
-use crc::crc32;
 use super::tokenizer::{Token, Tokenizer};
 use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tokenizer;
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
@@ -14,6 +13,7 @@ use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
 use crate::js::ast as js_ast;
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
 use crate::js::tokenizer::{Token as JSToken, Tokenizer as JSTokenizer};
+use crc::crc32;
 use std::str;
 
 /*
@@ -43,7 +43,11 @@ void elements: [ 'area',
   'wbr' ]
 */
 
-pub fn parse<'a, 'b>(source: &'a str, source_uri: &'a str, id_seed: &'b str) -> Result<pc_ast::Node, ParseError> {
+pub fn parse<'a, 'b>(
+  source: &'a str,
+  source_uri: &'a str,
+  id_seed: &'b str,
+) -> Result<pc_ast::Node, ParseError> {
   parse_fragment(
     &mut Context {
       tokenizer: Tokenizer::new(source),
@@ -182,19 +186,23 @@ fn parse_slot_script<'a>(
     "".to_string()
   };
 
-  let stmt = parse_js_with_tokenizer(&mut js_tokenizer, id_seed, context.scope_id.to_string().as_str())
-    .and_then(|script| {
-      context.tokenizer.set_pos(&js_tokenizer.get_pos());
-      context.tokenizer.eat_whitespace();
+  let stmt = parse_js_with_tokenizer(
+    &mut js_tokenizer,
+    id_seed,
+    context.scope_id.to_string().as_str(),
+  )
+  .and_then(|script| {
+    context.tokenizer.set_pos(&js_tokenizer.get_pos());
+    context.tokenizer.eat_whitespace();
 
-      context.tokenizer.next_expect(Token::CurlyClose)?;
-      Ok(script)
-    })
-    .or(Err(ParseError::unterminated(
-      "Unterminated slot.".to_string(),
-      start,
-      context.tokenizer.utf16_pos,
-    )));
+    context.tokenizer.next_expect(Token::CurlyClose)?;
+    Ok(script)
+  })
+  .or(Err(ParseError::unterminated(
+    "Unterminated slot.".to_string(),
+    start,
+    context.tokenizer.utf16_pos,
+  )));
 
   stmt
 }
@@ -951,7 +959,7 @@ mod tests {
       <div />
     </fragment>} />",
       "id",
-      "url"
+      "url",
     )
     .unwrap();
   }
