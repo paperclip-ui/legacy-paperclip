@@ -94,9 +94,7 @@ pub fn evaluate<'a>(
   ))?;
 
   if let DependencyContent::Node(node_expr) = &dep.content {
-    let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(
-      node_expr.get_id().to_string()
-    ));
+    let data = js_virt::JsValue::JsObject(js_virt::JsObject::new(node_expr.get_id().to_string()));
     let mut context = create_context(
       node_expr,
       uri,
@@ -297,7 +295,7 @@ fn wrap_as_fragment(node_option: Option<virt::Node>, context: &Context) -> virt:
   } else {
     virt::Node::Fragment(virt::Fragment {
       source_id: "".to_string(),
-      children: vec![]
+      children: vec![],
     })
   }
 }
@@ -729,7 +727,7 @@ fn evaluate_slot<'a>(
 
     return Ok(Some(virt::Node::Fragment(virt::Fragment {
       source_id: ary.source_id.to_string(),
-      children
+      children,
     })));
   } else if let js_virt::JsValue::JsNode(node) = js_value {
     return Ok(Some(node));
@@ -843,9 +841,7 @@ fn create_component_instance_data<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsValue, RuntimeError> {
-  let mut data = js_virt::JsObject::new(
-    instance_element.id.to_string()
-  );
+  let mut data = js_virt::JsObject::new(instance_element.id.to_string());
 
   let mut property_bound_attrs: Vec<&ast::PropertyBoundAttribute> = vec![];
 
@@ -858,7 +854,7 @@ fn create_component_instance_data<'a>(
             kv_attr.name.to_string(),
             js_virt::JsValue::JsBoolean(js_virt::JsBoolean {
               source_id: kv_attr.id.to_string(),
-              value: true
+              value: true,
             }),
           );
         } else {
@@ -958,7 +954,7 @@ fn create_component_instance_data<'a>(
                     "{} {}",
                     stringify_attribute_value(&kv_attr.name, existing_value),
                     value.to_string()
-                  )
+                  ),
                 })
               } else {
                 value
@@ -973,9 +969,7 @@ fn create_component_instance_data<'a>(
     }
   }
 
-  let mut js_children = js_virt::JsArray::new(
-    instance_element.id.to_string()
-  );
+  let mut js_children = js_virt::JsArray::new(instance_element.id.to_string());
 
   let (ret_children, contains_style) =
     evaluate_children(&instance_element.children, depth, context)?;
@@ -1002,7 +996,7 @@ fn create_component_instance_data<'a>(
 
     let new_class_name_value = js_virt::JsValue::JsString(js_virt::JsString {
       source_id: "".to_string(),
-      value: new_class_name
+      value: new_class_name,
     });
 
     data
@@ -1280,13 +1274,12 @@ fn evaluate_native_element<'a>(
     attributes.insert(scope_name.to_string(), None);
   }
 
-
   Ok(Some(virt::Node::Element(virt::Element {
     source_id: if let Some(source_id) = instance_source {
       source_id.clone()
     } else {
       element.id.to_string()
-    }, 
+    },
     annotations: annotations.clone(),
     tag_name: tag_name,
     attributes,
@@ -1380,9 +1373,7 @@ fn evaluate_comment<'a>(
   depth: u32,
   context: &'a mut Context,
 ) -> Result<js_virt::JsObject, RuntimeError> {
-  let mut data = js_virt::JsObject::new(
-    comment.id.to_string()
-  );
+  let mut data = js_virt::JsObject::new(comment.id.to_string());
 
   for property in &comment.annotation.properties {
     match property {
@@ -1423,7 +1414,7 @@ fn evaluate_children_as_fragment<'a>(
   let (mut children, _) = evaluate_children(&children, depth, context)?;
   Ok(Some(virt::Node::Fragment(virt::Fragment {
     source_id: source_id.to_string(),
-    children
+    children,
   })))
 }
 
@@ -1557,7 +1548,7 @@ fn evaluate_attribute_dynamic_string<'a>(
 
   let js_value = js_virt::JsValue::JsString(js_virt::JsString {
     source_id: source_id.clone(),
-    value: val.to_string()
+    value: val.to_string(),
   });
 
   Ok(maybe_cast_attribute_js_value(
@@ -1696,7 +1687,7 @@ fn maybe_cast_attribute_js_value<'a>(
   if let Some(casted_value) = cast_attribute_value(name, &str_value, is_native, context) {
     js_virt::JsValue::JsString(js_virt::JsString {
       source_id: value.get_source_id().to_string(),
-      value: casted_value.to_string()
+      value: casted_value.to_string(),
     })
   } else {
     value
@@ -1732,7 +1723,7 @@ fn evaluate_attribute_key_value_string<'a>(
 
   Ok(js_virt::JsValue::JsString(js_virt::JsString {
     value: val.clone(),
-    source_id: source_id.to_string()
+    source_id: source_id.to_string(),
   }))
 }
 

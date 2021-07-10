@@ -100,7 +100,7 @@ impl JsObject {
   pub fn new(source_id: String) -> JsObject {
     JsObject {
       source_id,
-      values: HashMap::new()
+      values: HashMap::new(),
     }
   }
 }
@@ -121,7 +121,7 @@ impl JsArray {
   pub fn new(source_id: String) -> JsArray {
     JsArray {
       source_id,
-      values: vec![]
+      values: vec![],
     }
   }
 }
