@@ -15,14 +15,6 @@ pub struct DeleteChild {
   pub index: usize,
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct SourceChanged {
-  #[serde(rename = "propertyName")]
-  pub property_name: String,
-
-  #[serde(rename = "newSource")]
-  pub new_source: ExprTextSource,
-}
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SetAttribute {
@@ -62,7 +54,6 @@ pub enum Action {
   InsertChild(InsertChild),
   DeleteChild(DeleteChild),
   SetAttribute(SetAttribute),
-  SourceChanged(SourceChanged),
   SetText(SetText),
   SetAnnotations(SetAnnotations),
   RemoveAttribute(RemoveAttribute),

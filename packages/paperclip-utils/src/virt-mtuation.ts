@@ -8,7 +8,6 @@ export enum ActionKind {
   DeleteChild = "DeleteChild",
   SetAttribute = "SetAttribute",
   SetAnnotations = "SetAnnotations",
-  SourceChanged = "SourceChanged",
   SourceUriChanged = "SourceUriChanged",
   SetText = "SetText",
   RemoveAttribute = "RemoveAttribute"
@@ -41,22 +40,13 @@ export type RemoveAttribute = {
 export type SetText = {
   value: string;
 } & BaseAction<ActionKind.SetText>;
-export type SourceUriChanged = {
-  newUri: string;
-} & BaseAction<ActionKind.SourceUriChanged>;
-export type SourceChanged = {
-  propertyName: string;
-  newSource: ExprTextSource;
-} & BaseAction<ActionKind.SourceChanged>;
 
 export type Action =
   | ReplaceNode
   | InsertChild
   | DeleteChild
   | SetAttribute
-  | SourceChanged
   | SetAnnotations
-  | SourceUriChanged
   | SetText
   | RemoveAttribute;
 

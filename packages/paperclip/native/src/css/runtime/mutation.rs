@@ -31,14 +31,6 @@ pub struct SetDeclaration {
   pub value: String,
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct SourceChanged {
-  #[serde(rename = "propertyName")]
-  pub property_name: String,
-
-  #[serde(rename = "newSouroce")]
-  pub new_source: ExprTextSource,
-}
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
@@ -46,7 +38,6 @@ pub enum Action {
   InsertRule(InsertRule),
   DeleteRule(DeleteRule),
   ReplaceRule(ReplaceRule),
-  SourceChanged(SourceChanged),
   SetDeclaration(SetDeclaration),
   SetSelectorText(SetSelectorText),
 }
