@@ -3,24 +3,24 @@ import { memoize } from "./memo";
 // core tree utils
 
 // eslint-disable-next-line
-export type BaseNode = {};
+export type BaseTreeNode = {};
 
 export type BaseParentNode = {
-  children: BaseNode[];
-} & BaseNode;
+  children: BaseTreeNode[];
+} & BaseTreeNode;
 
-export const isNodeParent = (node: BaseNode): node is BaseParentNode =>
+export const isNodeParent = (node: BaseTreeNode): node is BaseParentNode =>
   (node as any).children != null;
 
 export const flattenTreeNode = memoize(
-  <TNode extends BaseNode>(current: TNode): TNode[] => {
+  <TNode extends BaseTreeNode>(current: TNode): TNode[] => {
     const treeNodeMap = getTreeNodeMap(current);
     return Object.values(treeNodeMap);
   }
 );
 
 export const getNodePath = memoize(
-  <TNode extends BaseNode>(node: TNode, root: TNode) => {
+  <TNode extends BaseTreeNode>(node: TNode, root: TNode) => {
     const map = getTreeNodeMap(root);
     for (const path in map) {
       const c = map[path];
@@ -29,13 +29,19 @@ export const getNodePath = memoize(
   }
 );
 
-export const containsNode = <TNode extends BaseNode>(
+export const getNodeByPath = memoize(
+  <TNode extends BaseTreeNode>(nodePath: number[], root: TNode) => {
+    return getTreeNodeMap(root)[nodePath.join(".")];
+  }
+);
+
+export const containsNode = <TNode extends BaseTreeNode>(
   node: TNode,
   root: TNode
 ) => getNodePath(node, root) != null;
 
 export const getTreeNodeMap = memoize(
-  <TNode extends BaseNode>(
+  <TNode extends BaseTreeNode>(
     current: TNode,
     path = "0"
   ): Record<string, TNode> => {

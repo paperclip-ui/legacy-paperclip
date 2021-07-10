@@ -1,6 +1,6 @@
 {
   "name": "paperclip-utils",
-  "version": "17.10.1",
+  "version": "17.10.2",
   "description": "Internal utils for Paperclip",
   "main": "index.js",
   "scripts": {

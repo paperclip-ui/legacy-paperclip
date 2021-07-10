@@ -6,12 +6,14 @@ use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tok
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::base::utils::get_document_style_private_scope;
 use crate::core::id_generator::IDGenerator;
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
 use crate::js::ast as js_ast;
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
 use crate::js::tokenizer::{Token as JSToken, Tokenizer as JSTokenizer};
+use crc::crc32;
 use std::str;
 
 /*
@@ -41,10 +43,15 @@ void elements: [ 'area',
   'wbr' ]
 */
 
-pub fn parse<'a, 'b>(source: &'a str, id_seed: &'b str) -> Result<pc_ast::Node, ParseError> {
+pub fn parse<'a, 'b>(
+  source: &'a str,
+  source_uri: &'a str,
+  id_seed: &'b str,
+) -> Result<pc_ast::Node, ParseError> {
   parse_fragment(
     &mut Context {
       tokenizer: Tokenizer::new(source),
+      scope_id: get_document_style_private_scope(&source_uri.to_string()),
       id_generator: IDGenerator::new(id_seed.to_string()),
     },
     vec![],
@@ -53,6 +60,7 @@ pub fn parse<'a, 'b>(source: &'a str, id_seed: &'b str) -> Result<pc_ast::Node, 
 
 pub struct Context<'a> {
   pub tokenizer: Tokenizer<'a>,
+  pub scope_id: String,
   pub id_generator: IDGenerator,
 }
 
@@ -178,19 +186,23 @@ fn parse_slot_script<'a>(
     "".to_string()
   };
 
-  let stmt = parse_js_with_tokenizer(&mut js_tokenizer, id_seed)
-    .and_then(|script| {
-      context.tokenizer.set_pos(&js_tokenizer.get_pos());
-      context.tokenizer.eat_whitespace();
+  let stmt = parse_js_with_tokenizer(
+    &mut js_tokenizer,
+    id_seed,
+    context.scope_id.to_string().as_str(),
+  )
+  .and_then(|script| {
+    context.tokenizer.set_pos(&js_tokenizer.get_pos());
+    context.tokenizer.eat_whitespace();
 
-      context.tokenizer.next_expect(Token::CurlyClose)?;
-      Ok(script)
-    })
-    .or(Err(ParseError::unterminated(
-      "Unterminated slot.".to_string(),
-      start,
-      context.tokenizer.utf16_pos,
-    )));
+    context.tokenizer.next_expect(Token::CurlyClose)?;
+    Ok(script)
+  })
+  .or(Err(ParseError::unterminated(
+    "Unterminated slot.".to_string(),
+    start,
+    context.tokenizer.utf16_pos,
+  )));
 
   stmt
 }
@@ -207,6 +219,7 @@ pub fn parse_annotation<'a>(
 
   let annotation = parse_annotation_with_tokenizer(
     &mut annotation_tokenizer,
+    &context.scope_id,
     |tokenizer| -> Result<bool, ParseError> {
       Ok(
         tokenizer.peek(1)? == AnnotationToken::Byte(b'-')
@@ -306,7 +319,7 @@ fn parse_next_basic_element_parts<'a>(
 
   let el = pc_ast::Element {
     raws: pc_ast::ElementRaws::new(el_raw_before.unwrap_or(b"")),
-    id: path.join("-"),
+    id: get_element_id(context, path),
     tag_name_location: Location {
       start: start + 1,
       end: tag_name_end,
@@ -323,7 +336,10 @@ fn parse_next_basic_element_parts<'a>(
   Ok(pc_ast::Node::Element(el))
 }
 
-// fn pase_annotation<'a>(toenizer: &mut Tokenizer<'a>) -> Result<
+fn get_element_id(context: &Context, path: Vec<String>) -> String {
+  let buff = format!("{}{}", context.scope_id, path.join("-"));
+  format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
+}
 
 fn parse_next_style_element_parts<'a>(
   attributes: Vec<pc_ast::Attribute>,
@@ -795,7 +811,7 @@ mod tests {
       </div>
     ";
 
-    parse(source, "id").unwrap();
+    parse(source, "id", "url").unwrap();
   }
 
   // #[test]
@@ -842,7 +858,7 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_element() {
     assert_eq!(
-      parse("<div>", "id"),
+      parse("<div>", "id", "url"),
       Err(ParseError::unterminated(
         "Unterminated element.".to_string(),
         0,
@@ -854,7 +870,7 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_style_element() {
     assert_eq!(
-      parse("<style>", "id"),
+      parse("<style>", "id", "url"),
       Err(ParseError::unterminated(
         "Unterminated element.".to_string(),
         0,
@@ -866,7 +882,7 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_script_element() {
     assert_eq!(
-      parse("<script>", "id"),
+      parse("<script>", "id", "url"),
       Err(ParseError::unterminated(
         "Unterminated element.".to_string(),
         0,
@@ -878,7 +894,7 @@ mod tests {
   #[test]
   fn displays_error_for_incorrect_close_tag() {
     assert_eq!(
-      parse("<style></script>", "id"),
+      parse("<style></script>", "id", "url"),
       Err(ParseError::unterminated(
         "Incorrect closing tag.".to_string(),
         7,
@@ -890,7 +906,7 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_attribute_string() {
     assert_eq!(
-      parse("<div a=\"b>", "id"),
+      parse("<div a=\"b>", "id", "url"),
       Err(ParseError::unterminated(
         "Unterminated string literal.".to_string(),
         7,
@@ -902,7 +918,7 @@ mod tests {
   #[test]
   fn displays_error_for_unterminated_slot() {
     assert_eq!(
-      parse("{ab", "id"),
+      parse("{ab", "id", "url"),
       Err(ParseError::unterminated(
         "Unterminated slot.".to_string(),
         1,
@@ -914,7 +930,7 @@ mod tests {
   #[test]
   fn displays_css_errors() {
     assert_eq!(
-      parse("<style>div { color: red; </style>", "id"),
+      parse("<style>div { color: red; </style>", "id", "url"),
       Err(ParseError::unterminated(
         "Unterminated bracket.".to_string(),
         11,
@@ -926,7 +942,7 @@ mod tests {
   #[test]
   fn display_error_for_close_tag_without_open() {
     assert_eq!(
-      parse("</div>", "id"),
+      parse("</div>", "id", "url"),
       Err(ParseError::unexpected(
         "Closing tag doesn't have an open tag.".to_string(),
         0,
@@ -943,6 +959,7 @@ mod tests {
       <div />
     </fragment>} />",
       "id",
+      "url",
     )
     .unwrap();
   }

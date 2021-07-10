@@ -75,10 +75,6 @@ export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
         target = { ...target, value: action.value } as VirtualText;
         break;
       }
-      case ActionKind.SourceChanged: {
-        target = { ...target, source: action.newSource };
-        break;
-      }
     }
 
     root = updateNode(root, mutation.nodePath, target) as VirtualElement;

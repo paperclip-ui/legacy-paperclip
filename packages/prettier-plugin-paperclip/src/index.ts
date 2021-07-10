@@ -18,7 +18,7 @@ export const parsers: Record<string, Parser> = {
   paperclip: {
     parse(text) {
       const engine = createEngineDelegate();
-      return engine.parseContent(text);
+      return engine.parseContent(text, "<virt>");
     },
     preprocess(text) {
       return text;

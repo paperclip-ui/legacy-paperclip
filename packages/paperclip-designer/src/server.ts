@@ -26,7 +26,13 @@ import {
   browserstackBrowsersLoaded,
   ServerAction,
   TitleDoubleClicked,
-  openedDocument
+  openedDocument,
+  VirtualNodesSelected,
+  virtualNodeSourcesLoaded,
+  MetaClicked,
+  revealExpressionSourceRequested,
+  PCVirtObjectEdited,
+  pcSourceEdited
 } from "./actions";
 import {
   AvailableBrowser,
@@ -35,16 +41,17 @@ import {
   FSItemKind
 } from "./state";
 import express from "express";
-import { normalize, relative } from "path";
+import { normalize } from "path";
 import { EventEmitter } from "events";
 import { noop } from "lodash";
 import { exec } from "child_process";
-import { EngineMode, PaperclipResourceWatcher } from "paperclip";
-import { isPaperclipFile, PaperclipConfig } from "paperclip";
+import { EngineMode } from "paperclip";
+import { isPaperclipFile } from "paperclip";
 import * as ngrok from "ngrok";
 import * as qs from "querystring";
 import * as bs from "browserstack";
 import { engineDelegateChanged } from "paperclip-utils";
+import { PCSourceWriter } from "paperclip-source-writer";
 
 type BrowserstackCredentials = {
   username: string;
@@ -81,6 +88,7 @@ export const startServer = async ({
     }
   );
   watchPaperclipSources(engine, cwd);
+  const textSourceWriter = new PCSourceWriter({ engine });
 
   const port = await getPort({ port: defaultPort });
 
@@ -129,8 +137,14 @@ export const startServer = async ({
         case ActionType.FS_ITEM_CLICKED: {
           return onFSItemClicked(action);
         }
+        case ActionType.VIRTUAL_NODES_SELECTED: {
+          return onVirtualNodeSelected(action);
+        }
         case ActionType.FILE_OPENED: {
           return onFileOpened(action);
+        }
+        case ActionType.META_CLICKED: {
+          return handleMetaClickVirtualNode(action);
         }
         case ActionType.GET_ALL_SCREENS_REQUESTED: {
           return handleGetAllScreens();
@@ -140,6 +154,9 @@ export const startServer = async ({
         }
         case ActionType.TITLE_DOUBLE_CLICKED: {
           return handleTitleDoubleClicked(action);
+        }
+        case ActionType.PC_VIRT_OBJECT_EDITED: {
+          return handleVirtObjectEdited(action);
         }
       }
       emitExternal(instanceChanged({ targetPCFileUri: targetUri, action }));
@@ -200,11 +217,39 @@ export const startServer = async ({
       }
     };
 
+    const onVirtualNodeSelected = (action: VirtualNodesSelected) => {
+      const sources = action.payload.map(info => {
+        return {
+          virtualNodePath: info.nodePath,
+          source: engine.getVirtualNodeSourceInfo(info.nodePath, info.nodeUri)
+        };
+      });
+      emit(virtualNodeSourcesLoaded(sources));
+    };
+
     const onFileOpened = async (action: FileOpened) => {
       if (/\.pc$/.test(action.payload.uri)) {
         targetUri = URL.parse(action.payload.uri).href;
         handleOpen(targetUri);
       }
+    };
+
+    const handleMetaClickVirtualNode = ({
+      payload: { nodeUri, nodePath }
+    }: MetaClicked) => {
+      const info = engine.getVirtualNodeSourceInfo(nodePath, nodeUri);
+      console.log(nodePath, nodeUri, info);
+      if (info) {
+        emitExternal(revealExpressionSourceRequested(info));
+      }
+    };
+
+    const handleVirtObjectEdited = async (action: PCVirtObjectEdited) => {
+      emitExternal(
+        pcSourceEdited(
+          await textSourceWriter.getContentChanges(action.payload.mutations)
+        )
+      );
     };
 
     const handleOpen = (uri: string) => {
@@ -214,13 +259,6 @@ export const startServer = async ({
         fs.readFileSync(new URL.URL(uri), "utf8");
       emit(pcFileLoaded({ uri, document, data }));
     };
-
-    // const onPopoutWindowRequested = async ({
-    //   payload: { uri }
-    // }: PopoutWindowRequested) => {
-    //   const shareHost = await getShareHost();
-    //   exec(`open ${shareHost}/canvas?canvasFile=${encodeURIComponent(uri)}`);
-    // };
 
     const loadDirectory = (dirPath: string, isRoot = false) => {
       fs.readdir(dirPath, (err, basenames) => {
@@ -352,9 +390,13 @@ const startHTTPServer = (
   app.use("/canvas", distHandler);
   app.use("/all", distHandler);
   app.use("/file/*", (req, res, next) => {
-    const filePath = URL.fileURLToPath(decodeURIComponent(normalize(req.params["0"])));
-    
-    const found = localResourceRoots.some(root => filePath.toLowerCase().indexOf(root.toLowerCase()) === 0);
+    const filePath = URL.fileURLToPath(
+      decodeURIComponent(normalize(req.params["0"]))
+    );
+
+    const found = localResourceRoots.some(
+      root => filePath.toLowerCase().indexOf(root.toLowerCase()) === 0
+    );
     if (!found) {
       return next();
     }

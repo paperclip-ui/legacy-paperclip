@@ -197,6 +197,36 @@ impl Engine {
     }
   }
 
+  pub fn get_virtual_node_source_info(
+    &self,
+    node_path: &Vec<usize>,
+    uri: &String,
+  ) -> Option<ast::ExprSource> {
+    self
+      .evaluated_data
+      .get(uri)
+      .and_then(|eval_info| match eval_info {
+        DependencyEvalInfo::PC(pc_eval_info) => Some(pc_eval_info),
+        _ => None,
+      })
+      .and_then(|pc_eval_info| pc_eval_info.preview.get_descendent(node_path))
+      .and_then(|descendent| {
+        self
+          .dependency_graph
+          .get_expression_by_id(descendent.get_source_id())
+      })
+      .and_then(|(uri, expr)| match expr {
+        pc_ast::PCObject::Node(pc_node) => Some((uri, pc_node)),
+        _ => None,
+      })
+      .and_then(|(uri, ast)| {
+        Some(ast::ExprSource::new(
+          ast.get_id(),
+          Some(&ast::ExprTextSource::new(uri, ast.get_location().clone())),
+        ))
+      })
+  }
+
   pub fn lint_file(&mut self, uri: &String) -> Option<Vec<Diagnostic>> {
     let existing_diagnostics = self
       .diagnostics
@@ -238,11 +268,15 @@ impl Engine {
 
   pub async fn parse_file(&mut self, uri: &String) -> Result<pc_ast::Node, ParseError> {
     let content = self.vfs.reload(uri).await.unwrap();
-    parse_pc(content, generate_seed().as_str())
+    parse_pc(content, uri, generate_seed().as_str())
   }
 
-  pub async fn parse_content(&mut self, content: &String) -> Result<pc_ast::Node, ParseError> {
-    parse_pc(content, generate_seed().as_str())
+  pub async fn parse_content(
+    &mut self,
+    content: &String,
+    uri: &String,
+  ) -> Result<pc_ast::Node, ParseError> {
+    parse_pc(content, uri.as_str(), generate_seed().as_str())
   }
 
   // Called when files are deleted
@@ -438,6 +472,6 @@ mod tests {
       EngineMode::SingleFrame,
     );
 
-    let result = block_on(engine.parse_content(&"{'a'}".to_string())).unwrap();
+    let result = block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
   }
 }

@@ -63,7 +63,7 @@ async function pcLoader(
   try {
     // need to update virtual content to bust the cache
     await engine.updateVirtualFileContent(resourceUrl, source);
-    ast = engine.parseContent(source);
+    ast = engine.parseContent(source, resourceUrl);
 
     info = await engine.open(resourceUrl);
   } catch (e) {

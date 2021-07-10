@@ -35,17 +35,6 @@ impl JsValue {
       _ => false,
     }
   }
-  pub fn get_source(&self) -> &ExprTextSource {
-    match self {
-      JsValue::JsUndefined(value) => &value.source,
-      JsValue::JsNode(value) => &value.get_source(),
-      JsValue::JsBoolean(value) => &value.source,
-      JsValue::JsNumber(value) => &value.source,
-      JsValue::JsString(value) => &value.source,
-      JsValue::JsObject(value) => &value.source,
-      JsValue::JsArray(value) => &value.source,
-    }
-  }
   pub fn get_source_id(&self) -> &String {
     match self {
       JsValue::JsUndefined(value) => &value.source_id,
@@ -77,7 +66,6 @@ impl fmt::Display for JsValue {
 pub struct JsString {
   #[serde(rename = "sourceId")]
   pub source_id: String,
-  pub source: ExprTextSource,
   pub value: String,
 }
 
@@ -85,7 +73,6 @@ pub struct JsString {
 pub struct JsBoolean {
   #[serde(rename = "sourceId")]
   pub source_id: String,
-  pub source: ExprTextSource,
   pub value: bool,
 }
 
@@ -93,7 +80,6 @@ pub struct JsBoolean {
 pub struct JsNumber {
   #[serde(rename = "sourceId")]
   pub source_id: String,
-  pub source: ExprTextSource,
   pub value: f64,
 }
 
@@ -101,46 +87,41 @@ pub struct JsNumber {
 pub struct JsUndefined {
   #[serde(rename = "sourceId")]
   pub source_id: String,
-  pub source: ExprTextSource,
 }
 
 #[derive(Debug, Serialize, Clone)]
 pub struct JsObject {
   #[serde(rename = "sourceId")]
   pub source_id: String,
-  pub source: ExprTextSource,
   pub values: HashMap<String, JsValue>,
 }
 
 impl JsObject {
-  pub fn new(source_id: String, source: ExprTextSource) -> JsObject {
+  pub fn new(source_id: String) -> JsObject {
     JsObject {
       source_id,
       values: HashMap::new(),
-      source,
     }
   }
 }
 
 impl PartialEq for JsObject {
   fn eq(&self, other: &Self) -> bool {
-    self.source == other.source && self.values == other.values
+    self.values == other.values
   }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct JsArray {
   pub source_id: String,
-  pub source: ExprTextSource,
   pub values: Vec<JsValue>,
 }
 
 impl JsArray {
-  pub fn new(source_id: String, source: ExprTextSource) -> JsArray {
+  pub fn new(source_id: String) -> JsArray {
     JsArray {
       source_id,
       values: vec![],
-      source,
     }
   }
 }

@@ -8,7 +8,7 @@ import {
   StyleExpression
 } from "./css-ast";
 import { BasicRaws, SourceLocation } from "./base-ast";
-import { getTreeNodeMap } from "./tree";
+import { flattenTreeNode, getNodePath, getTreeNodeMap } from "./tree";
 import * as crc32 from "crc32";
 import { resolveImportFile } from "./resolve";
 import * as path from "path";
@@ -31,6 +31,7 @@ export enum NodeKind {
 }
 
 export type BaseNode<TKind extends NodeKind> = {
+  id: string;
   nodeKind: TKind;
 };
 
@@ -413,20 +414,6 @@ export const hasAttribute = (name: string, element: Element) =>
 
 // https://github.com/crcn/tandem/blob/10.0.0/packages/common/src/state/tree.ts#L137
 
-// DEPRECATED, use tree.ts
-export const flattenTreeNode = memoize((current: Node): Node[] => {
-  const treeNodeMap = getTreeNodeMap(current);
-  return Object.values(treeNodeMap) as Node[];
-});
-
-export const getNodePath = memoize((node: Node, root: Node) => {
-  const map = getTreeNodeMap(root);
-  for (const path in map) {
-    const c = map[path];
-    if (c === node) return path;
-  }
-});
-
 // TODO
 export const getParentNode = (node: Node, root: Node) => {
   const nodePath = getNodePath(node, root).split(".");
@@ -434,6 +421,21 @@ export const getParentNode = (node: Node, root: Node) => {
   const map = getTreeNodeMap(root);
   return map[nodePath.join(".")] as Fragment | Element;
 };
+
+export const getPCNodeAnnotations = (node: Node, root: Node) => {
+  const parent = getParentNode(node, root);
+  const prevChild = parent.children[parent.children.indexOf(node) - 1];
+
+  if (prevChild.nodeKind === NodeKind.Comment) {
+    return prevChild;
+  }
+
+  return null;
+};
+
+export const getNodeById = memoize((nodeId: string, root: Node) => {
+  return flattenTreeNode(root).find(desc => desc.id === nodeId);
+});
 
 export const isComponentInstance = (
   node: Node,

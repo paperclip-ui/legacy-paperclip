@@ -339,6 +339,13 @@ describe(__filename + "#", () => {
       const text = stringifyLoadResult(await engine.open("/entry.pc")).match(
         /<style>(.*?)<\/style>/
       )[1];
+
+      const ast = engine.parseFile("/entry.pc");
+
+      console.log(ast);
+
+      console.log(stringifyLoadResult(await engine.open("/entry.pc")));
+
       expect(text).to.eql(String(output).trim());
     });
   });

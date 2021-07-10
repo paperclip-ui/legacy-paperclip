@@ -1,4 +1,0 @@
-<div export component as="Test2">
-  {a && <b>{c}</b>}
-</div>
-

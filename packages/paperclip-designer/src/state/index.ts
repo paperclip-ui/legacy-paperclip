@@ -3,6 +3,7 @@ import { isEqual, pick, pickBy } from "lodash";
 import Automerge from "automerge";
 import {
   computeVirtJSObject,
+  ExprSource,
   LoadedPCData,
   memoize,
   NodeAnnotations,
@@ -103,6 +104,10 @@ export enum SyncLocationMode {
   Location = 1 << 1
 }
 
+export type VirtualNodeSourceInfo = {
+  virtualNodePath: number[];
+  source: ExprSource;
+};
 export type DesignerState = {
   syncLocationMode?: number;
   ui: UIState;
@@ -123,6 +128,7 @@ export type DesignerState = {
   availableBrowsers: AvailableBrowser[];
   resourceHost: string;
   selectedNodePaths: string[];
+  selectedNodeSources: VirtualNodeSourceInfo[];
   projectDirectory?: Directory;
   metaKeyDown?: boolean;
   optionKeyDown?: boolean;
@@ -184,6 +190,7 @@ export const INITIAL_STATE: AppState = {
   },
   designer: {
     readonly: false,
+    selectedNodeSources: [],
     syncLocationMode: SyncLocationMode.Location | SyncLocationMode.Query,
     sharable: true,
     ui: {
