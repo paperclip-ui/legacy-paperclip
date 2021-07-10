@@ -78,7 +78,6 @@ fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
     return;
   }
 
-
   for (name, value) in a.attributes.iter() {
     let value2_option = b.attributes.get(name);
 
@@ -178,7 +177,6 @@ fn diff_children<'a>(a: &Vec<Node>, b: &Vec<Node>, context: &mut Context<'a>) {
 }
 
 fn diff_style_element<'a>(a: &StyleElement, b: &StyleElement, context: &mut Context<'a>) {
- 
   // will want to diff & patch styles later on
   context.mutations.push(Mutation::new(
     context.node_path.clone(),

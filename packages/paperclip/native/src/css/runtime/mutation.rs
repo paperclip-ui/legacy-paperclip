@@ -31,7 +31,6 @@ pub struct SetDeclaration {
   pub value: String,
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub enum Action {

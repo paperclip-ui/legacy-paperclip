@@ -15,7 +15,6 @@ pub struct DeleteChild {
   pub index: usize,
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SetAttribute {
   pub name: String,
