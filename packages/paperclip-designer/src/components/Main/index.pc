@@ -4,20 +4,21 @@ TODOS:
 
 - Position
   - Display
-  - 
+  -
 -->
 
 <import src="components/Theme/index.pc" as="theme" />
-<import src="./RightSidebar/index.pc" as="RightSidebar" />
 <import src="./DesignMode/index.pc" as="DesignMode" />
 <import src="./LeftSidebar/index.pc" as="LeftSidebar" />
-<import src="./RightSidebar/index.pc" as="RightSidebar" />
 
 
 <!--
   @frame { visible: false, title: "Container", width: 1024, height: 768, x: -3, y: -73 }
 -->
-<div export component as="Container" className="editor $theme.font-default $theme.full-wh {className?}">
+<div export
+  component
+  as="Container"
+  className="editor $theme.font-default $theme.full-wh {className?}">
   <style>
     width: 100%;
     height: var(--designer-mode-height, 100%);
@@ -32,15 +33,14 @@ TODOS:
   @frame { visible: false }
 -->
 <Container export component as="Preview" className="$theme.font-default">
-  
-  {showLeftSidebar? && <LeftSidebar.Preview/>}
+  {showLeftSidebar? && <LeftSidebar.Preview />}
   {designer? && <DesignMode.Preview v2 {dark?} {showEnvPopup?} {showGrid?} />}
 </Container>
 
 <!--
   @frame { title: "Grid View / Large", width: 1864, height: 1050, x: 2345, y: -86 }
 -->
-<Preview designer showGrid showLeftSidebar  />
+<Preview designer showGrid showLeftSidebar />
 
 <!--
   @frame { title: "Grid View / Large", width: 999, height: 737, x: 1219, y: -93 }
@@ -55,15 +55,15 @@ TODOS:
 <!--
   @frame { title: " Grid View / Medium", width: 686, height: 737, x: 441, y: -107 }
 -->
-<Preview  dark  designer showGrid  />
+<Preview dark designer showGrid />
 
 
 <!--
   @frame { title: "Code Mode / Desktop", width: 1867, height: 1084, x: 2345, y: 1257 }
 -->
-<Preview  dark codeMode designer showGrid  />
+<Preview dark codeMode designer showGrid />
 
 <!--
   @frame { title: "Code Mode / Big", width: 3364, height: 1685, x: 2339, y: 2677 }
 -->
-<Preview  dark codeMode designer showGrid  />
+<Preview dark codeMode designer showGrid />

@@ -7,7 +7,10 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="default" className="$theme.font-default $theme.background-1">
+<div export
+  component
+  as="default"
+  className="$theme.font-default $theme.background-1">
   <Pane title="More" noMore>
     <List>
       <List.Item>font-family: Helvetica</List.Item>

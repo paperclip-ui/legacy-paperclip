@@ -6,11 +6,9 @@
   @frame { visible: false }
 -->
 <div export component as="Preview">
-  
   <div>
     <style>
       padding: 10px;
-
     </style>
     <Select.Preview placeholder="div" />
   </div>
@@ -31,18 +29,17 @@
       <i>
         <style>
           --size: 1em;
-          @include utils.mask;
           mask-image: url(./plus.svg);
+          @include utils.mask {}
         </style>
       </i>
     </div>
-      
+
     <PropertyList>
       <PropertyItem name="background" value="rgba(0,0,0)" />
       <PropertyItem name="color" value="blue" />
       <PropertyItem name="display" value="inline-block" />
     </PropertyList>
-
   </div>
 </div>
 
@@ -78,10 +75,6 @@
       width: 100%;
     }
   </style>
-  <span className="name">
-    {name}
-  </span>
-  <span className="value">
-    {value}
-  </span>
+  <span className="name">{name}</span>
+  <span className="value">{value}</span>
 </li>

@@ -1,0 +1,76 @@
+<!-- TODO - values should be based on polaris -->
+<style>
+  @export {
+    * {
+      font-family: sans-serif;
+    }
+
+    :root {
+      --gray-gray-50: red;
+    }
+
+    :root {
+      --spacing-1: 2px;
+      --spacing-2: 4px;
+      --spacing-3: 8px;
+      --spacing-4: 12px;
+      --spacing-5: 16px;
+      --spacing-6: 24px;
+      --spacing-7: 32px;
+      --spacing-8: 40px;
+      --spacing-9: 48px;
+      --spacing-10: 64px;
+      --spacing-11: 80px;
+      --spacing-12: 96px;
+      --spacing-13: 160px;
+    }
+
+    :root {
+      --radius-1: var(--spacing-1);
+      --radius-2: var(--spacing-2);
+      --radius-3: var(--spacing-3);
+      --raduis-4: var(--spacing-4);
+    }
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="Color" style="--value: {value}">
+  <style>
+    border-radius: var(--radius-3);
+    background-color: var(--value);
+    width: 50px;
+    height: 50px;
+  </style>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="Section">
+  <h4>{title}</h4>
+  <div>
+    <style>
+      display: flex;
+      grid-column-gap: var(--spacing-5);
+    </style>
+    {children}
+  </div>
+</div>
+
+<!--
+  @frame { title: "DS", width: 1024, height: 768, x: 1306, y: -7 }
+-->
+<div>
+  <style>
+    padding: var(--spacing-5);
+  </style>
+  <Section title="Colors">
+    <Color value="var(--gray-gray-50)" />
+    <Color value="var(--gray-gray-50)" />
+    <Color value="var(--gray-gray-50)" />
+  </Section>
+</div>

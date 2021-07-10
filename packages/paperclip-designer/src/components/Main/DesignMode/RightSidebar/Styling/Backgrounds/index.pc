@@ -5,8 +5,8 @@
   @frame { visible: false }
 -->
 <div export component as="Preview">
-  <Pane title="Backgrounds" controls={
-    <button>
+  <Pane title="Backgrounds"
+    controls={<button>
       <style>
         --size: 1.2em;
         color: inherit;
@@ -18,9 +18,7 @@
         width: var(--size);
         height: var(--size);
       </style>
-    </button>
-  }>
-
+    </button>}>
     <ul>
       <style>
         list-style-type: none;
@@ -32,7 +30,6 @@
       <Item selected>Item</Item>
       <Item>Item</Item>
     </ul>
-    
   </Pane>
 </div>
 
@@ -40,7 +37,7 @@
 <!--
   @frame { visible: false }
 -->
-<li export component as="Item" className:selected="selected"> 
+<li export component as="Item" className:selected="selected">
   <style>
     padding: 5px 10px;
     :self(.selected) {

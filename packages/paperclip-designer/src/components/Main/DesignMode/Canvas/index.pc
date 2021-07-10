@@ -11,9 +11,18 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Canvas" {style?} {onMouseMove?} {onScroll?} {onWheelCapture?} className="canvas $theme.full-wh">
+<div export
+  component
+  as="Canvas"
+  {style?}
+  {onMouseMove?}
+  {onScroll?}
+  {onWheelCapture?}
+  className="canvas $theme.full-wh">
   <style>
-    // touch-action: none;
+
+    width: 100%;
+    height: 100%;
   </style>
   {children}
 </div>
@@ -36,4 +45,3 @@
 <Canvas export component as="Preview">
   <Frames.Preview />
 </Canvas>
-

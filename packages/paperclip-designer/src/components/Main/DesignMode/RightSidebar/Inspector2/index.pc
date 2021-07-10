@@ -1,0 +1,162 @@
+<import src="styles/atoms.pc" inject-styles />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="StyleRule">
+  <div>
+    <style>
+      background: rgb(197, 197, 197);
+      padding: var(--spacing-4) var(--spacing-5);
+    </style>
+    {header}
+  </div>
+  <div>
+    <style>
+      padding: var(--spacing-2) 0px;
+    </style>
+    {properties}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="StyleRuleProperty">
+  <style>
+    display: flex;
+    grid-column-gap: 16px;
+    font-size: 14px;
+    padding: var(--spacing-3) var(--spacing-5);
+    border-bottom: 1px solid rgb(233, 233, 233);
+    &:last-child {
+      border-bottom-color: transparent;
+    }
+  </style>
+  <div>
+    <style>
+      width: 120px;
+      flex-shrink: 0;
+    </style>
+    {name}
+  </div>
+  <div>
+    <style>
+    </style>
+    {value}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="StyleRulePropertyRichValue">
+  <style>
+    display: flex;
+    grid-column-gap: var(--spacing-3);
+    flex-wrap: wrap;
+    grid-row-gap: var(--spacing-3);
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="UnitPart">
+  <style>
+    background: rgb(223, 223, 223);
+    border-radius: var(--radius-1);
+    padding: 0 var(--spacing-2);
+    color: rgb(75, 75, 75);
+  </style>
+  {value}
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="KeywordPart">
+  <style>
+    background: rgb(223, 223, 223);
+    border-radius: var(--radius-1);
+    padding: 0 var(--spacing-2);
+    color: rgb(75, 75, 75);
+  </style>
+  {value}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div component as="ColorPropertyPart" style="--value: {value}">
+  <style>
+    display: flex;
+    grid-column-gap: var(--spacing-2);
+    align-items: center;
+  </style>
+  <div>
+    <style>
+      --size: 0.8em;
+      background: var(--value);
+      width: var(--size);
+      height: var(--size);
+      border-radius: var(--radius-1);
+    </style>
+  </div>
+  <div>
+    <style>
+      white-space: nowrap;
+    </style>
+    {value}
+  </div>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="SelectorInfo">
+  <div>{computedText}</div>
+</div>
+
+<!--
+  @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
+-->
+<div export component as="Preview">
+  <StyleRule header={<SelectorInfo computedText=".div.div" source={"SOURCE"} />}
+    properties={<fragment>
+      <StyleRuleProperty name="background-color"
+        value={<StyleRulePropertyRichValue>
+          <ColorPropertyPart value="#333" />
+        </StyleRulePropertyRichValue>} />
+      <StyleRuleProperty name="font-family"
+        value={<StyleRulePropertyRichValue>
+          <KeywordPart value="sans-serif" />
+        </StyleRulePropertyRichValue>} />
+      <StyleRuleProperty name="box-shadow"
+        value={<StyleRulePropertyRichValue>
+          <UnitPart value="2px" /><UnitPart value="0px" /><UnitPart value="0px" /><ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
+        </StyleRulePropertyRichValue>} />
+    </fragment>} />
+  <StyleRule header={<SelectorInfo computedText="*:nth-child(2n)"
+      source={"SOURCE"} />}
+    properties={<fragment>
+      <StyleRuleProperty name="background-color"
+        value={<StyleRulePropertyRichValue>
+          <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
+        </StyleRulePropertyRichValue>} />
+    </fragment>} />
+</div>
+
+
+<!--
+  @frame { title: "Inspector", width: 337, height: 768, x: 364, y: 49 }
+-->
+<Preview />

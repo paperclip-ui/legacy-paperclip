@@ -5,6 +5,5 @@
   @frame { visible: false, width: 1024, height: 768, x: -2, y: -2 }
 -->
 <div export component as="Preview">
-  <Pane title="Filters">
-  </Pane>
+  <Pane title="Filters" />
 </div>
