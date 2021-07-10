@@ -96,7 +96,6 @@ export type LoadedData = LoadedPCData | LoadedCSSData;
 
 type VirtualBaseNode<KKind extends VirtualNodeKind> = {
   kind: KKind;
-  source: any;
 };
 
 export type VirtualStyleElement = {

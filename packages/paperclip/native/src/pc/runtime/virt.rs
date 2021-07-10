@@ -8,7 +8,6 @@ use std::fmt;
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
   pub source_id: String,
-  pub source: ExprTextSource,
   pub children: Vec<Node>,
 }
 
@@ -25,9 +24,7 @@ impl fmt::Display for Fragment {
 pub struct Element {
   pub source_id: String,
 
-  #[serde(rename = "source")]
   // Deprecated, use source_id instead
-  pub source: ExprTextSource,
   pub annotations: Option<js_virt::JsObject>,
 
   #[serde(rename = "tagName")]
@@ -39,9 +36,6 @@ pub struct Element {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
   pub source_id: String,
-
-  // Deprecated, use source_id instead
-  pub source: ExprTextSource,
   pub sheet: css_virt::CSSSheet,
 }
 
@@ -91,9 +85,6 @@ impl Element {
 pub struct Text {
   pub source_id: String,
   pub annotations: Option<js_virt::JsObject>,
-
-  // Deprecated, use source_id instead
-  pub source: ExprTextSource,
   pub value: String,
 }
 
@@ -129,14 +120,14 @@ impl Node {
       _ => {}
     }
   }
-  pub fn get_source(&self) -> &ExprTextSource {
-    match self {
-      Node::Element(value) => &value.source,
-      Node::Text(value) => &value.source,
-      Node::Fragment(value) => &value.source,
-      Node::StyleElement(value) => &value.source,
-    }
-  }
+  // pub fn get_source(&self) -> &ExprTextSource {
+  //   match self {
+  //     Node::Element(value) => &value.source,
+  //     Node::Text(value) => &value.source,
+  //     Node::Fragment(value) => &value.source,
+  //     Node::StyleElement(value) => &value.source,
+  //   }
+  // }
   pub fn get_source_id(&self) -> &String {
     match self {
       Node::Element(value) => &value.source_id,

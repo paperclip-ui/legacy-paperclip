@@ -79,7 +79,6 @@ fn evaluate_not<'a>(
 ) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
     source_id: not.id.to_string(),
-    source: ExprTextSource::new(context.uri.clone(), not.location.clone()),
     value: !evaluate_expression(&not.expression, depth, context)?.truthy(),
   }))
 }
@@ -94,8 +93,7 @@ fn evaluate_node<'a>(
     Ok(virt::JsValue::JsNode(node))
   } else {
     Ok(virt::JsValue::JsUndefined(virt::JsUndefined {
-      source_id: node.get_id().to_string(),
-      source: ExprTextSource::new(context.uri.clone(), node.get_location().clone()),
+      source_id: node.get_id().to_string()
     }))
   }
 }
@@ -106,8 +104,7 @@ fn evaluate_string<'a>(
 ) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsString(virt::JsString {
     source_id: value.id.to_string(),
-    value: value.value.to_string(),
-    source: ExprTextSource::new(context.uri.clone(), value.location.clone()),
+    value: value.value.to_string()
   }))
 }
 
@@ -117,8 +114,7 @@ fn evaluate_boolean<'a>(
 ) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
     source_id: value.id.to_string(),
-    value: value.value,
-    source: ExprTextSource::new(context.uri.clone(), value.location.clone()),
+    value: value.value
   }))
 }
 
@@ -131,8 +127,7 @@ fn evaluate_number<'a>(
   if let Ok(number) = value_result {
     Ok(virt::JsValue::JsNumber(virt::JsNumber {
       source_id: value.id.to_string(),
-      value: number,
-      source: ExprTextSource::new(context.uri.clone(), value.location.clone()),
+      value: number
     }))
   } else {
     Err(RuntimeError::new(
@@ -149,8 +144,7 @@ fn evaluate_array<'a>(
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
   let mut js_array = virt::JsArray::new(
-    ary.id.to_string(),
-    ExprTextSource::new(context.uri.clone(), ary.location.clone()),
+    ary.id.to_string()
   );
   for value in &ary.values {
     js_array
@@ -166,8 +160,7 @@ fn evaluate_object<'a>(
   context: &'a mut PCContext,
 ) -> Result<virt::JsValue, RuntimeError> {
   let mut js_object = virt::JsObject::new(
-    obj.id.to_string(),
-    ExprTextSource::new(context.uri.clone(), obj.location.clone()),
+    obj.id.to_string()
   );
   for property in &obj.properties {
     js_object.values.insert(
@@ -200,8 +193,7 @@ fn evaluate_reference<'a>(
     Ok(js_value.clone())
   } else {
     Ok(virt::JsValue::JsUndefined(virt::JsUndefined {
-      source_id: reference.id.to_string(),
-      source: ExprTextSource::new(context.uri.clone(), reference.location.clone()),
+      source_id: reference.id.to_string()
     }))
   }
 }

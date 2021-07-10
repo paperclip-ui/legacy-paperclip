@@ -219,7 +219,7 @@ const translateStyleScopeAttributes = (
   newLine = ""
 ) => {
   const scopes = [
-    `data-pc-${getElementScopeId(element, context.fileUri)}`,
+    `data-pc-${getElementScopeId(element)}`,
     `data-pc-${getStyleScopeId(context.fileUri)}`,
     `data-pc-pub-${getStyleScopeId(context.fileUri)}`,
     ...context.injectScopes.map(scope => {
@@ -234,8 +234,7 @@ const translateStyleScopeAttributes = (
   return context;
 };
 
-const getElementScopeId = (element: Element, contextUri: string) =>
-  crc32(`${getStyleScopeId(contextUri)}${element.id}`);
+const getElementScopeId = (element: Element) => element.id;
 const translateExtendsPropsUtil = (ast: Node, context: TranslateContext) => {
   context = addBuffer(
     `const extendProps = (defaultProps, extender) => {\n`,
@@ -737,10 +736,7 @@ const translateElement = (
   // a wee-bit easier to use a utility class for attaching classes since it doesn't require any fancy logic to handle
   // things like spread operators
   if (shouldAddElementScopeClass) {
-    context = addBuffer(
-      `addClass("_${getElementScopeId(element, context.fileUri)}",`,
-      context
-    );
+    context = addBuffer(`addClass("_${getElementScopeId(element)}",`, context);
   }
 
   context = addBuffer(`{\n`, context);
@@ -751,7 +747,7 @@ const translateElement = (
     context = addBuffer(`"ref": ref,\n`, context);
   }
   context = addBuffer(
-    `"key": ${JSON.stringify(getElementScopeId(element, context.fileUri))}${
+    `"key": ${JSON.stringify(getElementScopeId(element))}${
       context.currentIndexKey ? ` + ${context.currentIndexKey}` : ""
     },\n`,
     context
