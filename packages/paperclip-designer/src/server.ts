@@ -88,7 +88,6 @@ export const startServer = async ({
     }
   );
   watchPaperclipSources(engine, cwd);
-  console.log("WRRR");
   const textSourceWriter = new PCSourceWriter({ engine });
 
   const port = await getPort({ port: defaultPort });
