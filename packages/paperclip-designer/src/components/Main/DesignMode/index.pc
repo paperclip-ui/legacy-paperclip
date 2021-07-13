@@ -108,6 +108,6 @@
 
 
 <!--
-  @frame { title: "Center / Canvas", width: 1024, height: 768, x: 2558, y: 736 }
+  @frame { title: "Center / Canvas", width: 936, height: 768, x: 2558, y: 736 }
 -->
 <Preview showCanvas v2 />

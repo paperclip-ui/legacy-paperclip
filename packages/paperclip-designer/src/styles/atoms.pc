@@ -5,8 +5,104 @@
       font-family: sans-serif;
     }
 
+    /*
+       https://www.figma.com/file/dOQZzseI3v7LUEwXjAKw4I/Polaris-for-Admin%3A-Colors-(Community)?node-id=2989%3A2
+    */
     :root {
-      --gray-gray-50: red;
+      --surface-default: transparent;
+      --surface-subdued: transparent;
+      --surface-hovered: transparent;
+      --surface-pressed: transparent;
+      --surface-depressed: transparent;
+      --surface-disabled: transparent;
+      --surface-selected-default: transparent;
+      --surface-selected-hovered: transparent;
+      --surface-selected-pressed: transparent;
+      --surface-warning-default: transparent;
+      --surface-warning-subdued: transparent;
+      --surface-warning-hovered: transparent;
+      --surface-warning-pressed: transparent;
+      --surface-critical-default: transparent;
+      --surface-critical-subdued: transparent;
+      --surface-critical-hovered: transparent;
+      --surface-critical-pressed: transparent;
+      --surface-critical-depressed: transparent;
+      --surface-success-default: transparent;
+      --surface-success-subdued: transparent;
+      --surface-success-hovered: transparent;
+      --surface-success-pressed: transparent;
+      --surface-highlight-default: transparent;
+      --surface-highlight-subdued: transparent;
+      --surface-highlight-hovered: transparent;
+      --surface-highlight-pressed: transparent;
+      --surface-neutral-default: transparent;
+      --surface-neutral-subdued: transparent;
+      --surface-neutral-hovered: transparent;
+      --surface-neutral-pressed: transparent;
+      --surface-neutral-depressed: transparent;
+      --surface-neutral-disabled: transparent;
+      --surface-primary-selected: transparent;
+      --surface-primary-hovered: transparent;
+      --surface-primary-pressed: transparent;
+    }
+
+    :root {
+      --text-default: black;
+      --text-subdued: black;
+      --text-disabled: black;
+      --text-critical: black;
+      --text-warning: black;
+      --text-success: black;
+      --text-highlight: black;
+      --text-on-interactive: white;
+      --text-on-primary: white;
+      --text-on-critical: white;
+    }
+
+    :root {
+      --icon-default: black;
+      --icon-subdued: black;
+      --icon-hovered: black;
+      --icon-pressed: black;
+      --icon-disabled: black;
+      --icon-critical: black;
+      --icon-warning: black;
+      --icon-success: black;
+      --icon-highlight: black;
+      --icon-on-interactive: black;
+      --icon-on-primary: black;
+      --icon-on-critical: black;
+    }
+
+    :root {
+      --interactive-default: black;
+      --interactive-hovered: black;
+      --interactive-depressed: black;
+      --interactive-disabled: black;
+      --interactive-critical: black;
+      --interactive-critical-hovered: black;
+      --interactive-critical-depresed: black;
+      --interactive-critical-disabled: black;
+    }
+
+    :root {
+      --border-default: black;
+      --border-subdued: black;
+      --border-hovered: black;
+      --border-depressed: black;
+      --border-disabled: black;
+      --border-box-subdued: black;
+      --border-critical-default: black;
+      --border-critical-subdued: black;
+      --border-critical-disabled: black;
+      --border-success-default: black;
+      --border-success-subdued: black;
+      --border-highlight-default: black;
+      --border-highlight-subdued: black;
+    }
+
+    :root {
+      --focused-default: black;
     }
 
     :root {
@@ -74,3 +170,9 @@
     <Color value="var(--gray-gray-50)" />
   </Section>
 </div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 128, y: -66 }
+-->
+fddsfs

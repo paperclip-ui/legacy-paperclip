@@ -960,8 +960,8 @@ fn evaluate_style_rule2(
   parent_selector_context: &SelectorContext,
 ) -> Result<(), RuntimeError> {
   lazy_static! {
-    // static ref class_name_re: Regex = Regex::new(r"\.([\w\-_]+)").unwrap();
     static ref class_name_re: Regex = Regex::new(r"\.(((\\.)?[\w\-_]+)+)").unwrap();
+    static ref private_class_name_re: Regex = Regex::new(r"^_[^_]+$").unwrap();
     static ref scope_re: Regex = Regex::new(r"^_[^_]+_").unwrap();
     static ref escape_re: Regex = Regex::new(r"\\").unwrap();
   }
@@ -979,11 +979,23 @@ fn evaluate_style_rule2(
   write_element_selector(&expr.selector, true, true, context, &mut emitter);
 
   for selector_context in emitter.into_iter() {
+
+    let selector_text = selector_context.to_string();
+
+
     // Note that this is necessary for this case: .a { &--b { color: red; }}
-    if class_name_re.is_match(selector_context.to_string().as_ref()) {
+    if class_name_re.is_match(selector_text.as_ref()) {
       // url check
-      for caps in class_name_re.captures_iter(selector_context.to_string().as_str()) {
+      for caps in class_name_re.captures_iter(selector_text.as_str()) {
+
+
         let scoped_class_name = caps.get(1).unwrap().as_str();
+
+        // skip ._93aa0a { } selectors. A bit hacky since this also captures selector names
+        // with ._ prefix (._header or smth). Will want to fix this later
+        if private_class_name_re.is_match(scoped_class_name) {
+          continue;
+        }
         let mut class_name = scope_re.replace(scoped_class_name, "").to_string();
         class_name = escape_re.replace_all(class_name.as_str(), "").to_string();
 
@@ -1030,7 +1042,7 @@ fn get_element_scope_selector(context: &Context, extra_specificity: bool) -> Str
     if *is_instance {
       format!("[class]._{}", scope)
     } else {
-      let selector = format!("[data-pc-{}]", scope);
+      let selector = format!("._{}", scope);
       if extra_specificity {
         format!("{}{}", selector, selector)
       } else {
@@ -1165,7 +1177,7 @@ impl<'a> Iterator for SelectorEmitterIterator<'a> {
 }
 
 fn get_document_scope_selector(context: &Context) -> String {
-  format!("[data-pc-{}]", get_document_scope(context))
+  format!("._{}", get_document_scope(context))
 }
 
 fn write_element_selector(

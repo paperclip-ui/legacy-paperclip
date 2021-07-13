@@ -213,6 +213,22 @@ const translateUtils = (ast: Node, context: TranslateContext) => {
   return context;
 };
 
+const getScopedStyleClassname = (
+  element: Element,
+  context: TranslateContext
+) => {
+  const scopes = [
+    `_${getElementScopeId(element)}`,
+    `_${getStyleScopeId(context.fileUri)}`,
+    `_pub-${getStyleScopeId(context.fileUri)}`,
+    ...context.injectScopes.map(scope => {
+      return `_pub-${scope}`;
+    })
+  ];
+
+  return scopes.join(" ");
+};
+
 const translateStyleScopeAttributes = (
   element: Element,
   context: TranslateContext,
@@ -742,7 +758,7 @@ const translateElement = (
   context = addBuffer(`{\n`, context);
   context = startBlock(context);
   context = startBlock(context);
-  context = translateStyleScopeAttributes(element, context, "\n");
+  // context = translateStyleScopeAttributes(element, context, "\n");
   if (isRoot) {
     context = addBuffer(`"ref": ref,\n`, context);
   }

@@ -17,7 +17,7 @@ describe(__filename + "#", () => {
           .toString()
       )
     );
-    expect(result.replace(/ data-pc-[^>\s]+/g, "")).to.eql(
+    expect(result.replace(/ class=".*?"/g, "")).to.eql(
       `<style></style><div> I'm a secret! </div>`
     );
   });
@@ -70,7 +70,7 @@ describe(__filename + "#", () => {
         .toString()
     );
 
-    expect(stringifyLoadResult(result).replace(/ data-pc-[^>\s]+/g, "")).to.eql(
+    expect(stringifyLoadResult(result).replace(/ class=".*?"/g, "")).to.eql(
       `<style></style><div> Some Module <div> from test.pc </div></div>`
     );
   });
@@ -86,7 +86,7 @@ describe(__filename + "#", () => {
         .toString()
     );
 
-    expect(stringifyLoadResult(result).replace(/ data-pc-[^>\s]+/g, "")).to.eql(
+    expect(stringifyLoadResult(result).replace(/ class=".*?"/g, "")).to.eql(
       `<style></style><div> Some Module <div> from test.pc </div></div>`
     );
   });

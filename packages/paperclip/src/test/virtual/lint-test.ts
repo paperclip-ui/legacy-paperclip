@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { createMockEngine } from "../utils";
+import { createMockEngine, stringifyLoadResult } from "../utils";
 
 describe(__filename + "#", () => {
   [
@@ -30,7 +30,7 @@ describe(__filename + "#", () => {
       });
 
       try {
-        engine.open("entry.pc");
+        const result = engine.open("entry.pc");
         // eslint-disable-next-line
       } catch (e) {}
 

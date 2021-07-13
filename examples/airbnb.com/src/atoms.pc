@@ -35,4 +35,8 @@
   }
 </style>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Test" />
