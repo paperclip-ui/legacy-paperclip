@@ -3,6 +3,8 @@
 <import src="./Toolbar/index2.pc" as="ToolbarV2" />
 <import src="./Birdseye/index.pc" as="Birdseye" />
 <import src="./Canvas/index.pc" as="Canvas" />
+<import src="./RightSidebar/index.pc" as="RightSidebar" />
+
 
 
 <!--
@@ -13,7 +15,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 100vw;
+    height: 100vh;
   </style>
   {children}
 </div>
@@ -24,6 +27,7 @@
 -->
 <div export component as="CanvasContainer" className="$theme.full-wh">
   <style>
+    display: flex;
     position: relative;
     overflow: hidden;
     width: 100%;
@@ -32,6 +36,15 @@
   {children}
 </div>
 
+<CanvasContainer component as="CanvasContainerPreview">
+  {showGrid && <Birdseye.Preview {zoom?} />}
+  {showEmpty && <Birdseye.PreviewEmpty />}
+  {showCanvas && <fragment>
+    <Canvas.Preview />
+    <RightSidebar.Preview />
+  </fragment>}
+</CanvasContainer>
+
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: -719, y: 50 }
@@ -39,11 +52,7 @@
 <Container export component as="Preview" className="$theme.font-default">
   {v2 && <ToolbarV2.Preview {showGrid} {showEnvPopup} />}
   {!v2 && <Toolbar.Preview gridMode {showEnvPopup} />}
-  {showGrid && <CanvasContainer>
-    <Birdseye.Preview {zoom?} />
-  </CanvasContainer>}
-  {showEmpty && <Birdseye.PreviewEmpty />}
-  {showCanvas && <Canvas.Preview />}
+  <CanvasContainerPreview {showCanvas?} {showEmpty?} {showGrid?} />
 </Container>
 
 <!--
@@ -99,6 +108,6 @@
 
 
 <!--
-  @frame { title: "Center / Empty", width: 1024, height: 768, x: 2558, y: 736 }
+  @frame { title: "Center / Canvas", width: 936, height: 768, x: 2558, y: 736 }
 -->
 <Preview showCanvas v2 />

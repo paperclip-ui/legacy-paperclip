@@ -18,7 +18,7 @@ describe(__filename + "#", () => {
         HelloWorld: {}
       },
       {
-        HelloWorld: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true">Hello</div>`
+        HelloWorld: `<div class="_406d2856 _80f4925f _pub-80f4925f">Hello</div>`
       }
     ],
     [
@@ -34,11 +34,11 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" class=" _80f4925f_b _pub-80f4925f_b b">bbb</div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f  _80f4925f_b _pub-80f4925f_b b">bbb</div>`
       }
     ],
     [
-      "Can include style from other another module",
+      "Can include style from another module",
       {
         "/entry.pc": `
           <import src="/colors.pc" as="colors" />
@@ -58,7 +58,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" class="_e05e7926_text-red _pub-e05e7926_text-red text-red"></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f _e05e7926_text-red _pub-e05e7926_text-red text-red"></div>`
       }
     ],
     [
@@ -75,7 +75,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true">b</div></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f">b</div></div>`
       }
     ],
     [
@@ -91,7 +91,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" style="color:red"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="color:red"></div>`
       }
     ],
     [
@@ -107,7 +107,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" style="color:red"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="color:red"></div>`
       }
     ],
     [
@@ -123,7 +123,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" style="color:red"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="color:red"></div>`
       }
     ],
     [
@@ -139,7 +139,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" style="color:red"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="color:red"></div>`
       }
     ],
     [
@@ -155,7 +155,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" style="a:red"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="a:red"></div>`
       }
     ],
     [
@@ -172,7 +172,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" class="_80f4925f_ab _pub-80f4925f_ab ab"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ab _pub-80f4925f_ab ab"></div>`
       }
     ],
     [
@@ -189,7 +189,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" class="_80f4925f_ab _pub-80f4925f_ab ab"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ab _pub-80f4925f_ab ab"></div>`
       }
     ],
     [
@@ -206,7 +206,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" class="_80f4925f_ab _pub-80f4925f_ab ab"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ab _pub-80f4925f_ab ab"></div>`
       }
     ],
     [
@@ -223,7 +223,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" class="_80f4925f_ab _pub-80f4925f_ab ab"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ab _pub-80f4925f_ab ab"></div>`
       }
     ],
     [
@@ -248,7 +248,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><span data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"></span><h1 data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"></h1><div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"></div></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><span class="_406d2856 _80f4925f _pub-80f4925f"></span><h1 class="_406d2856 _80f4925f _pub-80f4925f"></h1><div class="_406d2856 _80f4925f _pub-80f4925f"></div></div>`
       }
     ],
     [
@@ -272,7 +272,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" class="_80f4925f__9fbc00ce _pub-80f4925f__9fbc00ce _9fbc00ce"></div></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f__9fbc00ce _pub-80f4925f__9fbc00ce _9fbc00ce"></div></div>`
       }
     ],
     [
@@ -296,7 +296,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" class="_80f4925f__80f4925f_another-test _pub-80f4925f_another-test another-test _9fbc00ce _pub-80f4925f__80f4925f_another-test _pub-80f4925f_another-test another-test _9fbc00ce _80f4925f_another-test _pub-80f4925f_another-test another-test _9fbc00ce"></div></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_another-test _pub-80f4925f_another-test another-test _80f4925f__9fbc00ce _pub-80f4925f__9fbc00ce _9fbc00ce"></div></div>`
       }
     ],
     [
@@ -306,6 +306,7 @@ describe(__filename + "#", () => {
 
           <div export component as="Test" {className?}>
           </div>
+
           <Test component as="Test2" className="blaaaa {className?}">
             <style>
               color: orange;
@@ -325,7 +326,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div data-pc-ae63497a="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" class="_80f4925f__80f4925f_blaaaa _pub-80f4925f_blaaaa blaaaa _80f4925f__80f4925f_another-test _pub-80f4925f_another-test another-test _9dfabe97 _pub-80f4925f__80f4925f_another-test _pub-80f4925f_another-test another-test _9dfabe97 _80f4925f_another-test _pub-80f4925f_another-test another-test _9dfabe97 _376a18c0 _pub-80f4925f__80f4925f_blaaaa _pub-80f4925f_blaaaa blaaaa _80f4925f__80f4925f_another-test _pub-80f4925f_another-test another-test _9dfabe97 _pub-80f4925f__80f4925f_another-test _pub-80f4925f_another-test another-test _9dfabe97 _80f4925f_another-test _pub-80f4925f_another-test another-test _9dfabe97 _376a18c0 _80f4925f_blaaaa _pub-80f4925f_blaaaa blaaaa _80f4925f__80f4925f_another-test _pub-80f4925f_another-test another-test _9dfabe97 _pub-80f4925f__80f4925f_another-test _pub-80f4925f_another-test another-test _9dfabe97 _80f4925f_another-test _pub-80f4925f_another-test another-test _9dfabe97 _376a18c0"></div></div>`
+        Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_blaaaa _pub-80f4925f_blaaaa blaaaa _80f4925f_another-test _pub-80f4925f_another-test another-test _80f4925f__9dfabe97 _pub-80f4925f__9dfabe97 _9dfabe97 _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0"></div></div>`
       }
     ],
     [
@@ -347,7 +348,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><div data-pc-348c8067="true" data-pc-1d7dbc06="true" data-pc-pub-1d7dbc06="true">click me!</div></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_348c8067 _1d7dbc06 _pub-1d7dbc06">click me!</div></div>`
       }
     ],
     [
@@ -375,7 +376,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><span data-pc-3024ebf3="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true">A</span><span data-pc-1b09b830="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true">D</span><span data-pc-54482ef7="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true">E</span>0<span data-pc-667e4c75="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true">H</span><span data-pc-7f657d34="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true">I</span><span data-pc-f8fd61fb="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true">J</span><span data-pc-e1e650ba="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true">K</span></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f"><span class="_3024ebf3 _80f4925f _pub-80f4925f">A</span><span class="_1b09b830 _80f4925f _pub-80f4925f">D</span><span class="_54482ef7 _80f4925f _pub-80f4925f">E</span>0<span class="_667e4c75 _80f4925f _pub-80f4925f">H</span><span class="_7f657d34 _80f4925f _pub-80f4925f">I</span><span class="_f8fd61fb _80f4925f _pub-80f4925f">J</span><span class="_e1e650ba _80f4925f _pub-80f4925f">K</span></div>`
       }
     ],
     [
@@ -397,7 +398,7 @@ describe(__filename + "#", () => {
         Test: {}
       },
       {
-        Test: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-a="te&#x27;s&#x27;a&#x27;dfds" c="d"></div><div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-a="true" c="e"></div></div>`
+        Test: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f" data-a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div class="_406d2856 _80f4925f _pub-80f4925f" data-a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div class="_406d2856 _80f4925f _pub-80f4925f" data-a="te&#x27;s&#x27;a&#x27;dfds" c="d"></div><div class="_406d2856 _80f4925f _pub-80f4925f" data-a="true" c="e"></div></div>`
       }
     ],
     [
@@ -412,7 +413,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" allow-1password="no"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" allow-1password="no"></div>`
       }
     ],
     [
@@ -429,7 +430,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-406d2856="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f"></div>`
       }
     ],
     [
@@ -449,7 +450,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-pc-pub-139cec8e="true" class="_80f4925f_abb _pub-80f4925f_abb _pub-139cec8e_abb abb"></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f _pub-139cec8e _80f4925f_abb _pub-80f4925f_abb _pub-139cec8e_abb abb"></div>`
       }
     ],
     [
@@ -479,7 +480,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-ae63497a="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-pc-pub-98523c41="true" class="_8ae793af_test _pub-8ae793af_test test _80f4925f_blah _pub-80f4925f_blah _pub-98523c41_blah blah"></div>`
+        Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f _pub-98523c41 _8ae793af_test _pub-8ae793af_test test _80f4925f_blah _pub-80f4925f_blah _pub-98523c41_blah blah"></div>`
       }
     ],
     [
@@ -506,7 +507,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true" data-pc-pub-98523c41="true" class="_80f4925f_a _pub-80f4925f_a _pub-98523c41_a a _80f4925f_test _pub-80f4925f_test _pub-98523c41_test test"></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f _pub-98523c41 _80f4925f_a _pub-80f4925f_a _pub-98523c41_a a _376a18c0 _80f4925f _pub-80f4925f _pub-98523c41 _80f4925f_test _pub-80f4925f_test _pub-98523c41_test test"></div>`
       }
     ],
     [
@@ -540,7 +541,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div data-pc-376a18c0="true" data-pc-80f4925f="true" data-pc-pub-80f4925f="true"><div data-pc-bf0b262="true" data-pc-139cec8e="true" data-pc-pub-139cec8e="true">Hello</div><div data-pc-bf0b262="true" data-pc-139cec8e="true" data-pc-pub-139cec8e="true">Hello</div><div data-pc-bf0b262="true" data-pc-139cec8e="true" data-pc-pub-139cec8e="true">Hello</div></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_bf0b262 _139cec8e _pub-139cec8e">Hello</div><div class="_bf0b262 _139cec8e _pub-139cec8e">Hello</div><div class="_bf0b262 _139cec8e _pub-139cec8e">Hello</div></div>`
       }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {

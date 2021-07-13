@@ -28,7 +28,7 @@ describe(__filename + "#", () => {
 
     engine.open("/entry.pc");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style>[data-pc-406d2856][data-pc-406d2856] {color: red;} </style></div><div><div> Hello world </div></div>`
+      `<div></div><div><style>._406d2856._406d2856 {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f _406d2856"> Hello world </div></div>`
     );
   });
 
@@ -50,7 +50,7 @@ describe(__filename + "#", () => {
 
     engine.open("/entry.pc");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><div> Hello world </div></div>`
+      `<div></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"> Hello world </div></div>`
     );
     engine.updateVirtualFileContent("/entry.pc", "span man");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
@@ -71,7 +71,7 @@ describe(__filename + "#", () => {
       `<div></div><div><style></style></div><div>a</div>`
     );
     expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><span>b</span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f">b</span></div>`
     );
 
     // test update
@@ -80,7 +80,7 @@ describe(__filename + "#", () => {
       `<div></div><div><style></style></div><div>a</div>`
     );
     expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><span>c</span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f">c</span></div>`
     );
   });
 
@@ -95,10 +95,10 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     engine.open("/entry.pc");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style>div[data-pc-80f4925f] {color: red;} </style></div><div><div>a</div></div>`
+      `<div></div><div><style>div._80f4925f {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f">a</div></div>`
     );
     expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
-      `<div></div><div><style>div[data-pc-80f4925f] {color: red;} </style></div><div><div>b</div></div>`
+      `<div></div><div><style>div._80f4925f {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f">b</div></div>`
     );
   });
 
@@ -122,7 +122,7 @@ describe(__filename + "#", () => {
     await engine.open("file:///entry.pc");
     expect(renderer.immutableFrames.length).to.eql(1);
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><img src="blah:///file.jpeg"></img></div>`
+      `<div></div><div><style></style></div><div><img class="_80f4925f _pub-80f4925f" src="blah:///file.jpeg"></img></div>`
     );
   });
 
@@ -137,7 +137,7 @@ describe(__filename + "#", () => {
 
     expect(renderer.immutableFrames.length).to.eql(1);
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><fragment>a<span>b</span></fragment></div>`
+      `<div></div><div><style></style></div><div><fragment class="_80f4925f _pub-80f4925f">a<span class="_80f4925f _pub-80f4925f">b</span></fragment></div>`
     );
   });
 
@@ -152,7 +152,7 @@ describe(__filename + "#", () => {
 
     expect(renderer.immutableFrames.length).to.eql(1);
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><fragment>a<span>b</span></fragment></div>`
+      `<div></div><div><style></style></div><div><fragment class="_80f4925f _pub-80f4925f">a<span class="_80f4925f _pub-80f4925f">b</span></fragment></div>`
     );
   });
 
@@ -165,7 +165,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><span></span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
     engine.updateVirtualFileContent("/entry.pc", "b");
 
@@ -174,7 +174,7 @@ describe(__filename + "#", () => {
     );
     engine.updateVirtualFileContent("/entry.pc", "<span />b");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div></div><div><style></style></div><div><span></span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
 
@@ -188,14 +188,14 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
-      `<div><style>a[data-pc-c938aea3] {color: blue;} </style></div><div><style></style></div><div>a</div>`
+      `<div><style>a._c938aea3 {color: blue;} </style></div><div><style></style></div><div>a</div>`
     );
     engine.updateVirtualFileContent(
       "/entry.pc",
       `<import src="/mod.pc" /><span /><!-- @frame { } --><div />`
     );
     expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
-      `<div><style>a[data-pc-c938aea3] {color: blue;} </style></div><div><style></style></div><div><div></div></div>`
+      `<div><style>a._c938aea3 {color: blue;} </style></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
   });
 });

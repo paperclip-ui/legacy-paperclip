@@ -23,7 +23,6 @@ describe(__filename + "#", () => {
     };
     const engine = await createMockEngine(graph);
     const result = engine.open("/entry.pc");
-    console.log((result as any).preview.children);
     expect(
       (result as any).preview.children[0].annotations.values.desc.value
     ).to.eql("some description");

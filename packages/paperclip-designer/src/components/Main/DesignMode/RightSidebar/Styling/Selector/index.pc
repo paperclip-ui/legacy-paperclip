@@ -5,9 +5,7 @@
 <!--
   @frame { visible: false }
 -->
-<div component as="Pill" className="pill">  
-  PILL
-</div>
+<div component as="Pill" className="pill">PILL</div>
 
 
 <!--

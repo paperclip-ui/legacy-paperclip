@@ -15,4 +15,3 @@
   <Background.Preview />
   <Filters.Preview />
 </div>
-

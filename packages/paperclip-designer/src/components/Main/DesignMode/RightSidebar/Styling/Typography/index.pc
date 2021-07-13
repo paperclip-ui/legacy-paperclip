@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 TODO:
 
@@ -28,13 +28,13 @@ TODO:
     background-color: currentColor;
     margin-right: 4px;
     &.text-left {
-       mask-image: url(./text-left-5.svg);
+      mask-image: url(./text-left-5.svg);
     }
     &.text-center {
-       mask-image: url(./text-center-4.svg);
+      mask-image: url(./text-center-4.svg);
     }
     &.text-right {
-       mask-image: url(./text-right-4.svg);
+      mask-image: url(./text-right-4.svg);
     }
     &.line-height {
       mask-image: url(./line-height-1.svg);
@@ -50,10 +50,12 @@ TODO:
   @frame { visible: false, width: 1024, height: 768, x: 4, y: 52 }
 -->
 <div export component as="Preview" className="$theme.font-default">
-  <Pane title="Typography" controls={<fragment><icons.Icon dots /></fragment>}>
+  <Pane title="Typography"
+    controls={<fragment>
+      <icons.Icon dots />
+    </fragment>}>
     <Pane.Content>
       <Grid.Container columns="1fr 1fr">
-
         <!-- font family -->
         <Field noLabel>
           <Select.Preview placeholder="Open Sans" />
@@ -67,15 +69,9 @@ TODO:
         <!-- text align -->
         <Field noLabel>
           <Toggle.ButtonGroup>
-            <Toggle.Button>
-              <i className="icon text-left" />
-            </Toggle.Button>
-            <Toggle.Button>
-              <i className="icon text-center" />
-            </Toggle.Button>
-            <Toggle.Button>
-              <i className="icon text-right" />
-            </Toggle.Button>
+            <Toggle.Button><i className="icon text-left" /></Toggle.Button>
+            <Toggle.Button><i className="icon text-center" /></Toggle.Button>
+            <Toggle.Button><i className="icon text-right" /></Toggle.Button>
           </Toggle.ButtonGroup>
         </Field>
 
