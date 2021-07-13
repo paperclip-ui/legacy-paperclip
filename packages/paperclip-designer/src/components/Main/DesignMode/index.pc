@@ -36,6 +36,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <CanvasContainer component as="CanvasContainerPreview">
   {showGrid && <Birdseye.Preview {zoom?} />}
   {showEmpty && <Birdseye.PreviewEmpty />}

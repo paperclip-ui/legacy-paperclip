@@ -775,7 +775,14 @@ const translateElement = (
   for (const attrName in propertyBoundAttributes) {
     if (!addedAttrs[attrName] && !addedAttrs[RENAME_PROPS[attrName]]) {
       const name = RENAME_PROPS[attrName] || attrName;
-      context = addBuffer(`"${name}": ""`, context);
+
+      context = addBuffer(`"${name}": `, context);
+
+      if (name === "className" && !isComponentInstance) {
+        context = translateStyleScopesValue(element, false, context);
+      } else {
+        context = addBuffer(`""`, context);
+      }
 
       context = addPropertyBoundAttribute(
         element,

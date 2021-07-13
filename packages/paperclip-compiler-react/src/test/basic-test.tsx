@@ -543,6 +543,52 @@ describe(__filename + "#", () => {
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_bf0b262 _139cec8e _pub-139cec8e">Hello</div><div class="_bf0b262 _139cec8e _pub-139cec8e">Hello</div><div class="_bf0b262 _139cec8e _pub-139cec8e">Hello</div></div>`
       }
+    ],
+    [
+      "Can define styles on component with prop bound class and no class binding",
+      {
+        "/entry.pc": `
+          <div export component as="Entry" className:active="active">
+            <style>
+              color: red;
+            </style>
+          </div>
+        `
+      },
+      {
+        Entry: {
+          a: true,
+          b: false
+        }
+      },
+      {
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f "></div>`
+      }
+    ],
+    [
+      "Can pass propery bound attributes to components",
+      {
+        "/entry.pc": `
+          <div component as="Test" {className?}>
+            <style>
+              color: blue;
+            </style>
+          </div>
+          <Test export component as="Entry" className:active="active">
+            <style>
+              color: red;
+            </style>
+          </Test>
+        `
+      },
+      {
+        Entry: {
+          active: true
+        }
+      },
+      {
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ _pub-80f4925f_  _80f4925f_active _pub-80f4925f_active active _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0"></div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {

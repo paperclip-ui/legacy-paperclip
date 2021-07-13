@@ -52,7 +52,6 @@
   @frame { visible: false }
 -->
 <div export component as="Toolbar" className="v2 {className?}">
-
   <style>
     background: var(--grey-100);
     color: var(--text-color);
@@ -70,7 +69,7 @@
   <div>
     <style>
       display: flex;
-    width: 100%;
+      width: 100%;
     </style>
     {leftControls}
   </div>
@@ -81,13 +80,11 @@
       width: 100%;
       justify-content: center;
     </style>
-    <div>
-      {title?}
-    </div>
+    <div>{title?}</div>
     {readOnly? && <ReadOnlyPill />}
   </div>
   <div>
-    <style> 
+    <style>
       display: flex;
       margin-right: 28px;
       width: 100%;
@@ -103,11 +100,11 @@
 -->
 <i export component as="GridButton" className:selected="selected">
   <style>
-    @include utils.mask;
-    @include utils.mask-button;
     --size: var(--icon-size);
     mask-image: url('./gridv2.svg');
     outline: none;
+    @include utils.mask {}
+    @include utils.mask-button {}
     &.selected {
       background: red;
     }
@@ -138,13 +135,12 @@
   @frame { visible: false }
 -->
 <i export component as="EnvButton">
-  
   <style>
-    @include utils.mask;
-    @include utils.mask-button;
     --size: var(--icon-size);
     mask-image: url('./safari2.svg');
     outline: none;
+    @include utils.mask {}
+    @include utils.mask-button {}
   </style>
 </i>
 
@@ -153,15 +149,14 @@
   @frame { visible: false }
 -->
 <i export component as="CollapseButton">
-  
   <style>
-    @include utils.mask;
-    @include utils.mask-button;
     --size: calc(var(--icon-size) - 1px);
     mask-image: url('./collapse.svg');
     outline: none;
-    position:relative;
+    position: relative;
     top: 1px;
+    @include utils.mask {}
+    @include utils.mask-button {}
   </style>
 </i>
 
@@ -226,25 +221,28 @@
       {osVersion}
     </span>
   </div>
-
 </Select.MenuItem>
 
 <!--
   @frame { visible: false }
 -->
-<div export component as="EnvPopup" className="light" className:visible="visible">
+<div export
+  component
+  as="EnvPopup"
+  className="light"
+  className:visible="visible">
   <style>
-      transition: 0.2s;
-      opacity: 0;
-      position: relative;
-      top: -5px;
-      &.visible {
-        opacity: 1;
-        top: 0px;
-      }
+    transition: 0.2s;
+    opacity: 0;
+    position: relative;
+    top: -5px;
+    &.visible {
+      opacity: 1;
+      top: 0px;
+    }
   </style>
   <Select.Menu light>
-    <style> 
+    <style>
       left: 60px;
     </style>
     {children}
@@ -255,7 +253,19 @@
 <!--
   @frame { visible: false }
 -->
-<input export type="text" component as="ZoomInput" {autoFocus} {defaultValue?} {onFocus} {onKeyPress} {onBlur} {onClick?} {onDoubleClick?} {onChange?} className:focus="focus">
+<input export
+  type="text"
+  component
+  as="ZoomInput"
+  {autoFocus}
+  {defaultValue?}
+  {onFocus}
+  {onKeyPress}
+  {onBlur}
+  {onClick?}
+  {onDoubleClick?}
+  {onChange?}
+  className:focus="focus">
   <style>
     width: 33px;
     border: none;
@@ -266,10 +276,9 @@
     margin: 0;
     background: transparent;
     outline: none;
-      background: var(--grey-200);
-      color: var(--grey-400);
-    &:focus, &.focus {
-    }
+    background: var(--grey-200);
+    color: var(--grey-400);
+    &:focus, &.focus {}
   </style>
 </input>
 
@@ -282,7 +291,6 @@
     padding: 0px 4px;
     width: 35px;
     position: relative;
-    // wierd line-height issue with with text input - 4px seems to fix this.
     left: 2px;
   </style>
   {children}
@@ -306,7 +314,6 @@
   <style>
     display: flex;
     align-items: center;
-
   </style>
   {children}
 </div>
@@ -327,36 +334,51 @@
   @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
 -->
 <Container export component as="Preview">
-  <Toolbar 
-    title="Entry.pc"
+  <Toolbar title="Entry.pc"
     {readOnly?}
-    leftControls={
-      <fragment>
-        <Tab active={showGrid}><GridButton /></Tab>
-        <Tab active={showEnvPopup}><EnvButton /></Tab>
-      </fragment>
-    }
-    rightControls={
-      !showGrid && <fragment> 
-        <Tab>
-          <CollapseButton />
-        </Tab>
-        <ZoomContainer>
-          {enterZoom && <ZoomInput value="100" focus={enterZoom} />}
-          {!enterZoom && <ZoomLabel>100%</ZoomLabel>}
-        </ZoomContainer>
-      </fragment> || <Spacer />
-    }
-    />
+    leftControls={<fragment>
+      <Tab active={showGrid}>
+        <GridButton />
+      </Tab>
+      <Tab active={showEnvPopup}>
+        <EnvButton />
+      </Tab>
+    </fragment>}
+    rightControls={!showGrid && <fragment>
+      <Tab>
+        <CollapseButton />
+      </Tab>
+      <ZoomContainer>
+        {enterZoom && <ZoomInput value="100" focus={enterZoom} />}
+        {!enterZoom && <ZoomLabel>100%</ZoomLabel>}
+      </ZoomContainer>
+    </fragment> || <Spacer />} />
 
   <EnvPopup visible={showEnvPopup}>
     <Select.MenuItem noFocus>
       <TextInput placeholder="filter environment..." />
     </Select.MenuItem>
-    <SerivceMenuItem browserName="safari" kind="safari" browserVersion="12" osName="Windows" osVersion="XP" />
-    <SerivceMenuItem browserName="chrome" kind="chrome" browserVersion="49" osName="OS X" osVersion="Catalina" active />
-    <SerivceMenuItem browserName="Internet Explorer" browserVersion="9" kind="ie" osName="Windows" osVersion="XP" />
-    <SerivceMenuItem browserName="Internet Explorer" browserVersion="8" kind="ie" osName="Windows" osVersion="XP" />
+    <SerivceMenuItem browserName="safari"
+      kind="safari"
+      browserVersion="12"
+      osName="Windows"
+      osVersion="XP" />
+    <SerivceMenuItem browserName="chrome"
+      kind="chrome"
+      browserVersion="49"
+      osName="OS X"
+      osVersion="Catalina"
+      active />
+    <SerivceMenuItem browserName="Internet Explorer"
+      browserVersion="9"
+      kind="ie"
+      osName="Windows"
+      osVersion="XP" />
+    <SerivceMenuItem browserName="Internet Explorer"
+      browserVersion="8"
+      kind="ie"
+      osName="Windows"
+      osVersion="XP" />
   </EnvPopup>
 </Container>
 
@@ -364,7 +386,7 @@
 <!--
   @frame { title: "Toolbar v2", width: 1024, height: 56, x: 24, y: -28 }
 -->
-<Preview  />
+<Preview />
 
 
 <!--
