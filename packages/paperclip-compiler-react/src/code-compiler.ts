@@ -55,7 +55,7 @@ import {
   strToClassName,
   pascalCase
 } from "./utils";
-import { add, camelCase, isEqual, uniq } from "lodash";
+import { add, at, camelCase, isEqual, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import { ClassNameExport } from "paperclip";
@@ -201,8 +201,6 @@ const translateClassNames = (
 };
 
 const translateUtils = (ast: Node, context: TranslateContext) => {
-  // context = translateStyleDataAttributes(context);
-  // context = translateStyledUtil(ast, context);
   context = translateGetDefaultUtil(context);
   context = translateAddClassUtil(context);
   context = translateCastStyleUtil(context);
@@ -227,27 +225,6 @@ const getScopedStyleClassname = (
   ];
 
   return scopes.join(" ");
-};
-
-const translateStyleScopeAttributes = (
-  element: Element,
-  context: TranslateContext,
-  newLine = ""
-) => {
-  const scopes = [
-    `data-pc-${getElementScopeId(element)}`,
-    `data-pc-${getStyleScopeId(context.fileUri)}`,
-    `data-pc-pub-${getStyleScopeId(context.fileUri)}`,
-    ...context.injectScopes.map(scope => {
-      return `data-pc-pub-${scope}`;
-    })
-  ];
-
-  for (const scope of scopes) {
-    context = addBuffer(`"${scope}": true,${newLine}`, context);
-  }
-
-  return context;
 };
 
 const getElementScopeId = (element: Element) => element.id;
@@ -338,11 +315,16 @@ const translateClassNamesUtil = (context: TranslateContext) => {
 
   context = addBuffer(`return className ? `, context);
 
+  context = addBuffer(`className.split(" ").map(part => (\n`, context);
+  context = startBlock(context);
+
   for (const scope of scopes) {
-    context = addBuffer(`"${scope}" + className + " " +`, context);
+    context = addBuffer(`"${scope}" + part + " " +`, context);
   }
 
-  context = addBuffer(`className : "";\n`, context);
+  context = addBuffer(`part\n`, context);
+  context = endBlock(context);
+  context = addBuffer(`)).join(" ") : "";\n`, context);
 
   context = endBlock(context);
   context = addBuffer(`};\n\n`, context);
@@ -704,8 +686,9 @@ const translateElement = (
 ) => {
   const [namespace] = element.tagName.split(".");
 
-  const isImportComponentInstance = context.importIds.indexOf(namespace) !== -1;
-  const isPartComponentInstance = context.partIds.indexOf(namespace) !== -1;
+  const isImportComponentInstance = context.importIds.includes(namespace);
+  const isPartComponentInstance = context.partIds.includes(namespace);
+
   const isComponentInstance =
     isImportComponentInstance || isPartComponentInstance;
   const tag = isPartComponentInstance
@@ -758,6 +741,14 @@ const translateElement = (
   context = addBuffer(`{\n`, context);
   context = startBlock(context);
   context = startBlock(context);
+
+  // if class name is already present then scopes will be added where translation happens.
+  if (!containsClassName(element) && !isComponentInstance) {
+    context = addBuffer(
+      `className: "${getScopedStyleClassname(element, context)}", \n`,
+      context
+    );
+  }
   // context = translateStyleScopeAttributes(element, context, "\n");
   if (isRoot) {
     context = addBuffer(`"ref": ref,\n`, context);
@@ -811,6 +802,30 @@ const translateElement = (
   }
   context = addBuffer(`)`, context);
   return context;
+};
+
+const containsClassName = (element: Element) => {
+  return element.attributes.some(attribute => {
+    switch (attribute.attrKind) {
+      case AttributeKind.PropertyBoundAttribute:
+      case AttributeKind.KeyValueAttribute: {
+        return (attribute.name || RENAME_PROPS[attribute.name]) === "className";
+      }
+      case AttributeKind.ShorthandAttribute: {
+        const name = (attribute.reference as Reference).path[0].name;
+        return (
+          (RENAME_PROPS[(attribute.reference as Reference).path[0].name] ||
+            name) === "className"
+        );
+      }
+      case AttributeKind.SpreadAttribute: {
+        return false;
+      }
+      default: {
+        throw new Error(`Unknown case`);
+      }
+    }
+  });
 };
 
 const translateFragment = (
@@ -1009,12 +1024,13 @@ const translateAttribute = (
 
     const name = RENAME_PROPS[property.name] || property.name;
 
-    if (name === "className") {
+    if (name === "className" && !isComponentInstance) {
+      context = translateStyleScopesValue(element, true, context);
       context = addBuffer("getClassName(", context);
     }
 
     context = addBuffer(`${value}`, context);
-    if (name === "className") {
+    if (name === "className" && !isComponentInstance) {
       context = addBuffer(")", context);
     }
     context = addPropertyBoundAttribute(
@@ -1037,6 +1053,19 @@ const translateAttribute = (
   return context;
 };
 
+const translateStyleScopesValue = (
+  element: Element,
+  includePlus: boolean,
+  context: TranslateContext
+) => {
+  const scopes = getScopedStyleClassname(element, context);
+  context = addBuffer(`"${scopes} "`, context);
+  if (includePlus) {
+    context = addBuffer(` + `, context);
+  }
+  return context;
+};
+
 const translateAttributeValue = (
   element: Element,
   name: string,
@@ -1047,8 +1076,13 @@ const translateAttributeValue = (
   if (!value) {
     return addBuffer("true", context);
   }
+
+  if (name === "className" && isPropOnNativeElement) {
+    context = translateStyleScopesValue(element, true, context);
+  }
+
   if (value.attrValueKind === AttributeValueKind.Slot) {
-    if (name === "className") {
+    if (name === "className" && isPropOnNativeElement) {
       context = addBuffer("getClassName(", context);
     }
     context = translateStatment(
@@ -1057,7 +1091,7 @@ const translateAttributeValue = (
       isPropOnNativeElement && !isSpecialPropName(name),
       context
     );
-    if (name === "className") {
+    if (name === "className" && isPropOnNativeElement) {
       context = addBuffer(")", context);
     }
 
@@ -1068,7 +1102,7 @@ const translateAttributeValue = (
       strValue = `getDefault(require(${strValue}))`;
     }
 
-    if (name === "className") {
+    if (name === "className" && isPropOnNativeElement) {
       strValue = prefixWthStyleScopes(value.value, context);
       strValue = JSON.stringify(strValue);
     }
@@ -1079,7 +1113,7 @@ const translateAttributeValue = (
       if (part.partKind === DynamicStringAttributeValuePartKind.Literal) {
         context = addBuffer(
           JSON.stringify(
-            name === "className"
+            name === "className" && isPropOnNativeElement
               ? prefixWthStyleScopes(part.value, context)
               : part.value
           ),
@@ -1093,11 +1127,11 @@ const translateAttributeValue = (
           context
         );
       } else if (part.partKind === DynamicStringAttributeValuePartKind.Slot) {
-        if (name === "className") {
+        if (name === "className" && isPropOnNativeElement) {
           context = addBuffer(`getClassName(`, context);
         }
         context = translateStatment(part, false, false, context);
-        if (name === "className") {
+        if (name === "className" && isPropOnNativeElement) {
           context = addBuffer(`)`, context);
         }
       }

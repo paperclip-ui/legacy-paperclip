@@ -1098,15 +1098,16 @@ fn get_actual_attribute_name(name: &String) -> String {
   }
 }
 
-fn append_attribute<'a>(attributes: &mut BTreeMap<String, Option<String>>, key: &'a str, value: String) {
-
-  let new_value = attributes.get(key).and_then(|existing_value_option| {
-    existing_value_option.clone()
-  }).and_then(|existing_value| {
-    Some(format!("{} {}", existing_value, value))
-  }).or_else(|| {
-    Some(value)
-  });
+fn append_attribute<'a>(
+  attributes: &mut BTreeMap<String, Option<String>>,
+  key: &'a str,
+  value: String,
+) {
+  let new_value = attributes
+    .get(key)
+    .and_then(|existing_value_option| existing_value_option.clone())
+    .and_then(|existing_value| Some(format!("{} {}", existing_value, value)))
+    .or_else(|| Some(value));
 
   attributes.insert(key.to_string(), new_value);
 }
@@ -1250,28 +1251,21 @@ fn evaluate_native_element<'a>(
     }
   }
 
-  // let private_scope_name = format!("data-pc-{}", context.private_scope.to_string()).to_string();
+  append_attribute(
+    &mut attributes,
+    "class",
+    format!("_{}", context.private_scope.as_str()),
+  );
 
-  // attributes.insert(private_scope_name.to_string(), None);
-  append_attribute(&mut attributes, "class", format!("_{}", context.private_scope.as_str()));
-
-  // let public_scope_name = format!("data-pc-{}", context.public_scope.to_string()).to_string();
-
-  // attributes.insert(public_scope_name.to_string(), None);
-  append_attribute(&mut attributes, "class", format!("_{}", context.public_scope.as_str()));
+  append_attribute(
+    &mut attributes,
+    "class",
+    format!("_{}", context.public_scope.as_str()),
+  );
 
   for injected_scope in &context.injected_scopes {
-    // let scope_attr = format!("data-pc-{}", injected_scope).to_string();
-
-    // attributes.insert(scope_attr.to_string(), None);
     append_attribute(&mut attributes, "class", format!("_{}", injected_scope));
   }
-
-  // A bit dirty, but we need to quickly scan for style elements so that we can apply
-  // let contains_style = element.children.iter().any(|child| match child {
-  //   ast::Node::StyleElement(_) => true,
-  //   _ => false,
-  // });
 
   // allow for tag name to be dynamically changed.
   if let Some(tag_name_attr_value_option) = attributes.get("tagName") {

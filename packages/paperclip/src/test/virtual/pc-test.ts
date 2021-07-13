@@ -201,24 +201,6 @@ describe(__filename + "#", () => {
         `<div a="[Object object]" class="_80f4925f _pub-80f4925f"></div>`
       );
     });
-    xit("Can render text bindings", async () => {
-      const graph = {
-        "/entry.pc": `
-          <div component as="Component" {class}>
-            {children}
-          </div>
-  
-          <Component class="a">b</Component>
-        `
-      };
-      const engine = await createMockEngine(graph);
-      const { preview } = (await engine.open("/entry.pc")) as LoadedPCData;
-      const buffer = `${stringifyVirtualNode(preview)}`;
-
-      expect(cleanHTML(buffer)).to.eql(
-        `<div class="a" data-pc-80f4925f data-pc-pub-80f4925f>b</div>`
-      );
-    });
     it(`Can render a slot with a negative number`, async () => {
       const graph = {
         "/entry.pc": `<span>{-1}</span>`

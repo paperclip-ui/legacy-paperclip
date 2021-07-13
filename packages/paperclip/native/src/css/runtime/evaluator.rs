@@ -979,16 +979,12 @@ fn evaluate_style_rule2(
   write_element_selector(&expr.selector, true, true, context, &mut emitter);
 
   for selector_context in emitter.into_iter() {
-
     let selector_text = selector_context.to_string();
-
 
     // Note that this is necessary for this case: .a { &--b { color: red; }}
     if class_name_re.is_match(selector_text.as_ref()) {
       // url check
       for caps in class_name_re.captures_iter(selector_text.as_str()) {
-
-
         let scoped_class_name = caps.get(1).unwrap().as_str();
 
         // skip ._93aa0a { } selectors. A bit hacky since this also captures selector names
@@ -1417,7 +1413,7 @@ fn write_element_selector(
     }
     ast::Selector::Class(selector) => {
       // Don't hate me for adding [class] -- it's the browsers fault, I promise. Each
-      // selector other than class has a [data-pc-*] attribute, and that gives priority over
+      // selector other than class has a scope class, and that gives priority over
       // any class. So to counter-balance that, we need to add [class] so that classes take priority, again.
 
       let specificty_str = if extra_specificity {

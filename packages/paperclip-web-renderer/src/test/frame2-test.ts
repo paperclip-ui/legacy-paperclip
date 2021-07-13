@@ -29,7 +29,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style></style></div><div><a href="#">abc</a></div>`
+      `<div></div><div><style></style></div><div><a class="_80f4925f _pub-80f4925f" href="#">abc</a></div>`
     );
   });
 
@@ -61,14 +61,14 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style></style></div><div><span><div a="b"></div></span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"><div a="b" class="_80f4925f _pub-80f4925f"></div></span></div>`
     );
     await engine.updateVirtualFileContent(
       "/entry.pc",
       `<span><div a="c"></div></span>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style></style></div><div><span><div a="c"></div></span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"><div a="c" class="_80f4925f _pub-80f4925f"></div></span></div>`
     );
   });
 
@@ -82,7 +82,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
 
@@ -97,7 +97,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div><style>a._139cec8e {color: black;} </style></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
 
@@ -112,7 +112,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div><style>a._139cec8e {color: black;} </style></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
 
     await engine.updateVirtualFileContent(
@@ -120,7 +120,7 @@ describe(__filename + "#", () => {
       `<style> a { color: blue; } </style><span></span>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
 
@@ -135,14 +135,14 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("file:///entry.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
     await engine.updateVirtualFileContent(
       "file:///entry.pc",
       `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div><style>a._139cec8e {color: black;} </style></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
   it("Adds styles if import is added of module that is already loaded", async () => {
@@ -157,14 +157,14 @@ describe(__filename + "#", () => {
     await engine.open("/entry.pc");
     await engine.open("/module.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
     await engine.updateVirtualFileContent(
       "/entry.pc",
       `<import src="./module.pc" /><style> a { color: blue; } </style><span></span>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div><style>a._139cec8e {color: black;} </style></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
   it("Adds styles from dependency dependency", async () => {
@@ -180,7 +180,7 @@ describe(__filename + "#", () => {
     await engine.open("/entry.pc");
     await engine.open("/module.pc");
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div>a</div>`
+      `<div></div><div><style>a._80f4925f {color: blue;} </style></div><div>a</div>`
     );
     await engine.updateVirtualFileContent(
       "/entry.pc",
@@ -191,7 +191,7 @@ describe(__filename + "#", () => {
       `<import src="./module2.pc" /><style> a { color: black; } </style>`
     );
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-11a847ab] {color: orange;} </style><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div><style>a._11a847ab {color: orange;} </style><style>a._139cec8e {color: black;} </style></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
 
@@ -214,7 +214,7 @@ describe(__filename + "#", () => {
     renderer.initialize((await engine.open("/entry.pc")) as LoadedPCData);
 
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div><style>a[data-pc-139cec8e] {color: black;} </style></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div><style>a._139cec8e {color: black;} </style></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
 
@@ -238,7 +238,7 @@ describe(__filename + "#", () => {
     renderer.initialize((await engine.open("/entry.pc")) as LoadedPCData);
 
     expect(combineFrameHTML(renderer)).to.eql(
-      `<div></div><div><style>a[data-pc-80f4925f] {color: blue;} </style></div><div><span></span></div>`
+      `<div></div><div><style>a._80f4925f {color: blue;} </style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
 
@@ -265,7 +265,7 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
 
     expect(combineFrameHTML(renderer).replace(/\n/g, "")).to.eql(
-      `<div><style>a[data-pc-61a60758] {color: a;} </style><style>a[data-pc-7313a8b6] {color: b;} </style><style>a[data-pc-cbafcfd3] {color: c;} </style><style>a[data-pc-5678f76a] {color: d;} </style></div><div><style></style></div><div> a </div>`
+      `<div><style>a._61a60758 {color: a;} </style><style>a._7313a8b6 {color: b;} </style><style>a._cbafcfd3 {color: c;} </style><style>a._5678f76a {color: d;} </style></div><div><style></style></div><div> a </div>`
     );
 
     await engine.updateVirtualFileContent(
@@ -277,7 +277,7 @@ describe(__filename + "#", () => {
     );
 
     expect(combineFrameHTML(renderer).replace(/\n/g, "")).to.eql(
-      `<div><style>a[data-pc-7313a8b6] {color: b;} </style><style>a[data-pc-5678f76a] {color: d;} </style></div><div><style></style></div><div>a </div>`
+      `<div><style>a._7313a8b6 {color: b;} </style><style>a._5678f76a {color: d;} </style></div><div><style></style></div><div>a </div>`
     );
   });
 
@@ -369,7 +369,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><img src="blah:///file.jpg"></img></div>`
+      `<div></div><div><style></style></div><div><img class="_80f4925f _pub-80f4925f" src="blah:///file.jpg"></img></div>`
     );
 
     engine.updateVirtualFileContent(
@@ -384,7 +384,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\/g, "/Z/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><img src="blah:///something-else.jpg"></img></div>`
+      `<div></div><div><style></style></div><div><img class="_80f4925f _pub-80f4925f" src="blah:///something-else.jpg"></img></div>`
     );
   });
 
@@ -411,7 +411,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><span class="_80f4925f_a _pub-80f4925f_a a"></span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f_a _pub-80f4925f_a a _80f4925f _pub-80f4925f"></span></div>`
     );
 
     engine.updateVirtualFileContent(
@@ -425,7 +425,9 @@ describe(__filename + "#", () => {
       combineFrameHTML(renderer)
         .replace("\n", "")
         .replace(/\\/g, "/Z/")
-    ).to.eql(`<div></div><div><style></style></div><div><span></span></div>`);
+    ).to.eql(
+      `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
+    );
 
     engine.updateVirtualFileContent(
       "file:///entry.pc",
@@ -439,7 +441,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\/g, "/Z/")
     ).to.eql(
-      `<div></div><div><style></style></div><div><span class="_80f4925f_b _pub-80f4925f_b b"></span></div>`
+      `<div></div><div><style></style></div><div><span class="_80f4925f_b _pub-80f4925f_b b _80f4925f _pub-80f4925f"></span></div>`
     );
   });
 
@@ -482,7 +484,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: orange;} @media screen and (max-width: 100px) {[class]._80f4925f_b {color: blue;}} @keyframes _80f4925f_ {    0% {color: blue;}    100% {color: black;}  } </style></div><div><div></div></div>`
+      `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: orange;} @media screen and (max-width: 100px) {[class]._80f4925f_b {color: blue;}} @keyframes _80f4925f_ {    0% {color: blue;}    100% {color: black;}  } </style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
 
     engine.updateVirtualFileContent(
@@ -500,7 +502,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style>[class]._80f4925f_d {color: orange;} </style></div><div><div></div></div>`
+      `<div></div><div><style>[class]._80f4925f_d {color: orange;} </style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
   });
 
@@ -529,7 +531,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style>[class]._80f4925f_a {color: red;} </style></div><div><div></div></div>`
+      `<div></div><div><style>[class]._80f4925f_a {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
 
     engine.updateVirtualFileContent(
@@ -550,7 +552,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: blue;} </style></div><div><div></div></div>`
+      `<div></div><div><style>[class]._80f4925f_a {color: red;} [class]._80f4925f_b {color: blue;} </style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
   });
 
@@ -618,7 +620,7 @@ describe(__filename + "#", () => {
         .replace("\n", "")
         .replace(/\\+/g, "/")
     ).to.eql(
-      `<div></div><div><style>[data-pc-a0539270][data-pc-a0539270] {font-family: sans-serif; color: rgb(100, 172, 86); font-size: 24px;} </style></div><div><div> Hello world </div></div>`
+      `<div></div><div><style>._a0539270._a0539270 {font-family: sans-serif; color: rgb(100, 172, 86); font-size: 24px;} </style></div><div><div class="_6bcf0994 _pub-6bcf0994 _a0539270"> Hello world </div></div>`
     );
   });
 });
