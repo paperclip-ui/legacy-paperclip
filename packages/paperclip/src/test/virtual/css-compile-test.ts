@@ -324,8 +324,6 @@ describe(__filename + "#", () => {
         /<style>(.*?)<\/style>/
       )[1];
 
-      const ast = engine.parseFile("/entry.pc");
-
       expect(text).to.eql(String(output).trim());
     });
   });
