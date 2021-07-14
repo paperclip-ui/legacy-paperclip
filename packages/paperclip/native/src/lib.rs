@@ -21,6 +21,7 @@ mod pc;
 use crate::pc::runtime::evaluator::EngineMode;
 use ::futures::executor::block_on;
 use engine::engine::Engine;
+use crate::pc::runtime::virt as pc_virt;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
@@ -105,7 +106,11 @@ impl NativeEngine {
     JsValue::from_serde(&self.target.lint_file(&uri)).unwrap()
   }
   pub fn get_virtual_node_source_info(&mut self, path: Vec<usize>, uri: String) -> JsValue {
-    JsValue::from_serde(&self.target.get_virtual_node_source_info(&path, &uri)).unwrap()
+
+    JsValue::from_serde(&self.target.get_virtual_node_source_info(&pc_virt::NodeSource {
+      path,
+      document_uri: uri
+    })).unwrap()
   }
   pub fn get_loaded_ast(&mut self, uri: String) -> JsValue {
     console_error_panic_hook::set_once();

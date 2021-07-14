@@ -144,6 +144,8 @@
         value={<StyleRulePropertyRichValue>
           <UnitPart value="2px" /><UnitPart value="0px" /><UnitPart value="0px" /><ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
         </StyleRulePropertyRichValue>} />
+      <StyleRuleProperty name="box-shadow"
+        value={<fragment>2px 0px rgba(0, 0, 0, 0.2)</fragment>} />
     </fragment>} />
   <StyleRule header={<SelectorInfo computedText="*:nth-child(2n)"
       source={"SOURCE"} />}

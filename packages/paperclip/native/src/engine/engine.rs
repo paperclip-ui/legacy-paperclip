@@ -199,17 +199,16 @@ impl Engine {
 
   pub fn get_virtual_node_source_info(
     &self,
-    node_path: &Vec<usize>,
-    uri: &String,
+    source: &pc_virt::NodeSource
   ) -> Option<ast::ExprSource> {
     self
       .evaluated_data
-      .get(uri)
+      .get(&source.document_uri)
       .and_then(|eval_info| match eval_info {
         DependencyEvalInfo::PC(pc_eval_info) => Some(pc_eval_info),
         _ => None,
       })
-      .and_then(|pc_eval_info| pc_eval_info.preview.get_descendent(node_path))
+      .and_then(|pc_eval_info| pc_eval_info.preview.get_descendent(&source.path))
       .and_then(|descendent| {
         self
           .dependency_graph
@@ -225,6 +224,10 @@ impl Engine {
           Some(&ast::ExprTextSource::new(uri, ast.get_location().clone())),
         ))
       })
+  }
+
+  pub fn inspect_node_styles(&mut self, source: &pc_virt::NodeSource) {
+    // TODO
   }
 
   pub fn lint_file(&mut self, uri: &String) -> Option<Vec<Diagnostic>> {

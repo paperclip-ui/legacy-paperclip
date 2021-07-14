@@ -1,6 +1,6 @@
 use super::super::ast;
 use super::virt;
-use crate::base::ast::{Location};
+use crate::base::ast::Location;
 use crate::base::runtime::RuntimeError;
 use crate::pc::ast as pc_ast;
 use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext};
@@ -98,18 +98,14 @@ fn evaluate_node<'a>(
   }
 }
 
-fn evaluate_string<'a>(
-  value: &ast::Str
-) -> Result<virt::JsValue, RuntimeError> {
+fn evaluate_string<'a>(value: &ast::Str) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsString(virt::JsString {
     source_id: value.id.to_string(),
     value: value.value.to_string(),
   }))
 }
 
-fn evaluate_boolean<'a>(
-  value: &ast::Boolean
-) -> Result<virt::JsValue, RuntimeError> {
+fn evaluate_boolean<'a>(value: &ast::Boolean) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
     source_id: value.id.to_string(),
     value: value.value,
