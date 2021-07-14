@@ -3,7 +3,10 @@ pub struct StyleDeclarationDetails {
 
   // TODO - should parse this out and provide AST here. For 
   // MVP this is fine however.
-  pub value: String
+  pub value: String,
+
+  // true / false if being used. Needs to be here in case of !important flag
+  pub applied: bool
 }
 
 
@@ -17,7 +20,10 @@ pub struct StyleRuleDetails {
   media: Option<String>,
 
 
-  declarations: Vec<StyleDeclarationDetails>
+  declarations: Vec<StyleDeclarationDetails>,
+
+  // need to do docs for this
+  priority: i32
 }
 
 pub struct InspectionOptions {
@@ -35,6 +41,7 @@ pub fn inspect_node_styles(
   - scan all style selectors loaded in eval info
   - include triggers for media queries
   - parse declaration values (AST code should be coming in from CSS)
+  - need to sort based on selector priority! 
 
   */
 }

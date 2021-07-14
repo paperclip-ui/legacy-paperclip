@@ -2,10 +2,12 @@
 
 TODO:
 
-caniuse
-a11y
-/*lint-disable-next-line*/
-enforce previews*
+- caniuse
+- a11y
+- /*lint-disable-next-line*/
+- enforce previews*
+- declaration linting
+  - noImportant
 */
 
 use super::evaluator::EvalInfo;
