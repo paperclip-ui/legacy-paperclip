@@ -114,6 +114,26 @@ impl<'a> Context<'a> {
   fn new() -> Context<'a> {
     Context { path: Vec::new() }
   }
+  fn new_from_path(node_path: &Vec<usize>, document: &'a VirtNode) -> Option<Context<'a>> {
+    let mut curr = Context::new();
+    let mut parent = document;
+
+    for i in 0..node_path.len() {
+      let curr_option = parent
+        .get_children()
+        .and_then(|children| children.get(i))
+        .and_then(|child| Some(curr.child(i, parent)));
+
+      if let Some(new_curr) = curr_option {
+        curr = new_curr;
+        parent = curr.parent_element().unwrap();
+      } else {
+        return None;
+      }
+    }
+
+    Some(curr)
+  }
   fn child(&self, index: usize, parent: &'a VirtNode) -> Context<'a> {
     let mut path = self.path.clone();
     path.push((index, parent));
@@ -145,6 +165,26 @@ impl<'a> Context<'a> {
     }
     return None;
   }
+}
+
+pub fn selector_text_matches_element<'a, 'b>(
+  selector_text: &'b str,
+  element_path: &'a Vec<usize>,
+  document: &'a VirtNode,
+) -> bool {
+  let selector = parse_css_selector(selector_text).unwrap();
+
+  Context::new_from_path(element_path, document)
+    .and_then(|context| {
+      context
+        .target()
+        .and_then(|node| match node {
+          VirtNode::Element(el) => Some(el),
+          _ => None,
+        })
+        .and_then(|element| Some(selector_matches_element2(&selector, element, &context)))
+    })
+    .unwrap_or(false)
 }
 
 // Note that we
