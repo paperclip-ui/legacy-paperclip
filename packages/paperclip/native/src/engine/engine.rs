@@ -199,7 +199,7 @@ impl Engine {
 
   pub fn get_virtual_node_source_info(
     &self,
-    source: &pc_virt::NodeSource
+    source: &pc_virt::NodeSource,
   ) -> Option<ast::ExprSource> {
     self
       .evaluated_data

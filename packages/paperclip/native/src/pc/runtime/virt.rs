@@ -1,7 +1,6 @@
 extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
 
-
 use crate::base::ast::ExprTextSource;
 use crate::css::runtime::virt as css_virt;
 use crate::js::runtime::virt as js_virt;
@@ -14,7 +13,7 @@ pub struct NodeSource {
   pub path: Vec<usize>,
 
   #[serde(rename = "documentUri")]
-  pub document_uri: String
+  pub document_uri: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
