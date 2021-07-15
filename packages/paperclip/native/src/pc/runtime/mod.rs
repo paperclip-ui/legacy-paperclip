@@ -6,3 +6,4 @@ pub mod lint;
 pub mod mutation;
 pub mod selector_match;
 pub mod virt;
+pub mod inspect_node_styles;

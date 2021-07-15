@@ -7,6 +7,7 @@ use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::core::id_generator::generate_seed;
 use crate::core::id_generator::IDGenerator;
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
@@ -26,6 +27,20 @@ impl<'a, 'b> Context<'a, 'b> {
 pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Sheet, ParseError> {
   let mut tokenizer = Tokenizer::new(&source);
   parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
+}
+
+pub fn parse_selector<'a>(selector: &'a str) -> Option<Selector> {
+  let rule = format!("{}{{}}", selector);
+  let ast: Sheet = parse(&rule, generate_seed().as_str()).unwrap();
+  let rule = ast.rules.get(0).unwrap();
+  match rule {
+    Rule::Style(style) => {
+      return Some(style.selector.clone());
+    }
+    _ => {
+      return None;
+    }
+  }
 }
 
 pub fn parse_with_tokenizer<'a>(
@@ -169,7 +184,7 @@ fn parse_style_rule2<'a, 'b>(
 ) -> Result<StyleRule, ParseError> {
   let raw_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
-  let selector = parse_selector(context, is_child_without_amp_prefix)?;
+  let selector = parse_selector2(context, is_child_without_amp_prefix)?;
   let (declarations, children, raw_after) = parse_declaration_body(context)?;
   Ok(StyleRule {
     id: context.id_generator.new_id(),
@@ -415,7 +430,7 @@ fn parse_keyframe_rule<'a, 'b>(
   })
 }
 
-fn parse_selector<'a, 'b>(
+fn parse_selector2<'a, 'b>(
   context: &mut Context<'a, 'b>,
   is_child_without_amp_prefix: bool,
 ) -> Result<Selector, ParseError> {

@@ -102,7 +102,7 @@ use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::id_generator::generate_seed;
 use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast as css_ast;
-use crate::css::parser::parse as parse_css;
+use crate::css::parser::{parse as parse_css, parse_selector as parse_css_selector};
 use crate::pc::parser::parse as parse_pc;
 
 #[derive(Debug)]
