@@ -2,7 +2,8 @@ use crate::css::ast::Selector;
 use crate::css::parser::parse_selector;
 
 pub fn get_selector_text_specificity(selector: &Selector) -> i32 {
-  calc_specificity(selector)
+  let specificity = calc_specificity(selector);
+  specificity
 }
 
 // https://specificity.keegan.st/
@@ -83,7 +84,7 @@ mod tests {
     ];
 
     for (selector_text, expected_specificity) in cases.iter() {
-      let selector = parse_selector(selector_text).unwrap();
+      let selector = parse_selector(selector_text, None).unwrap();
       let specificity = calc_specificity(&selector);
       assert_eq!(specificity, *expected_specificity);
     }

@@ -29,9 +29,11 @@ pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Sheet, ParseError>
   parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
 }
 
-pub fn parse_selector<'a>(selector: &'a str) -> Option<Selector> {
+pub fn parse_selector<'a>(selector: &'a str, id_seed: Option<String>) -> Option<Selector> {
   let rule = format!("{}{{}}", selector);
-  let ast: Sheet = parse(&rule, generate_seed().as_str()).unwrap();
+
+  let id_seed2 = id_seed.unwrap_or(generate_seed());
+  let ast: Sheet = parse(&rule, id_seed2.as_str()).unwrap();
   let rule = ast.rules.get(0).unwrap();
   match rule {
     Rule::Style(style) => {

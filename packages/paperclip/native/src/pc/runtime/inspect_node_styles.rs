@@ -6,10 +6,10 @@ use super::selector_match::get_selector_text_matching_sub_selector;
 use crate::core::graph::DependencyGraph;
 use crate::css::ast::Selector;
 use crate::css::runtime::specificity::get_selector_text_specificity;
-use crate::css::runtime::virt::{Rule, StyleRule};
+use crate::css::runtime::virt::{Rule, StyleRule, CSSStyleProperty};
 use serde::Serialize;
 use std::cmp::Ordering;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleDeclarationInfo {
@@ -23,45 +23,142 @@ pub struct StyleDeclarationInfo {
   pub active: bool,
 }
 
+impl StyleDeclarationInfo {
+  pub fn new(source: &CSSStyleProperty) -> StyleDeclarationInfo {
+    StyleDeclarationInfo {
+      name: source.name.to_string(),
+      value: source.value.to_string(),
+      active: true
+    }
+  }
+  pub fn important(&self) -> bool {
+    self.value.contains(" !important")
+  }
+  pub fn overrides(&mut self, other: &mut StyleDeclarationInfo) {
+    if other.important() && !self.important() {
+      self.active = false;
+    } else {
+      other.active = false;
+    }
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MediaInfo {
+  #[serde(rename = "conditionText")]
   pub condition_text: String,
   pub active: bool,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRuleInfo {
-  // computed style info. TODO: include scopes for this?
+
+  #[serde(rename = "selectorText")]
   pub selector_text: String,
 
+  // before, after
+  #[serde(rename = "pseudoElementName")]
+  pub pseudo_element_name: Option<String>,
+
   // AST source information
+  #[serde(rename = "sourceId")]
   pub source_id: String,
   pub media: Option<MediaInfo>,
 
   declarations: Vec<StyleDeclarationInfo>,
 
   // need to do docs for this
-  pub specificity: i32,
-
-  // index in the document
-  pub index: i32,
+  pub specificity: i32
 }
 
 impl StyleRuleInfo {
   pub fn new(
     rule: &StyleRule,
     media: Option<MediaInfo>,
-    specificity: i32,
-    index: i32,
+    matching_sub_selector: &Selector,
   ) -> StyleRuleInfo {
-    StyleRuleInfo {
+
+
+    let mut rule_info = StyleRuleInfo {
       selector_text: rule.selector_text.to_string(),
       media: media.clone(),
       source_id: rule.source_id.clone(),
       declarations: vec![],
-      specificity: specificity,
-      index,
+      pseudo_element_name: matching_sub_selector.get_pseudo_element_name(),
+      specificity: get_selector_text_specificity(&matching_sub_selector)
+    };
+
+
+    for declaration in &rule.style {
+      rule_info.push_declaration(StyleDeclarationInfo::new(declaration));
     }
+
+
+    return rule_info;
+  }
+  pub fn push_declaration(&mut self, mut declaration: StyleDeclarationInfo) {
+    if let Some(existing_decl) = self.get_declaration(&declaration.name) {
+      declaration.overrides(existing_decl);
+    }
+
+    self.declarations.push(declaration);
+  }
+  pub fn get_declaration(&mut self, name: &String) -> Option<&mut StyleDeclarationInfo> {
+    for existing_decl in &mut self.declarations {
+      if &existing_decl.name == name {
+        return Some(existing_decl);
+      }
+    }
+    return None;
+  }
+  pub fn overrides(&mut self, other: &mut StyleRuleInfo) {
+    if self.pseudo_element_name != other.pseudo_element_name {
+      return;
+    }
+
+    for other_decl in &mut other.declarations {
+      if let Some(self_decl) = self.get_declaration(&other_decl.name) {
+        self_decl.overrides(other_decl);
+      }
+    }
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct NodeInspectionInfo {
+  pub style_rules: Vec<StyleRuleInfo>
+}
+
+impl NodeInspectionInfo {
+  pub fn new() -> NodeInspectionInfo {
+    NodeInspectionInfo {
+      style_rules: vec![]
+    }
+  }
+  pub fn insert_style_rule(&mut self, mut rule: StyleRuleInfo) {
+
+    let mut insert_index: usize = 0;
+
+    // first find the right index
+    for (i, existing_rule) in &mut self.style_rules.iter().enumerate() {
+
+      // higher priority = lower index
+      if rule.specificity >= existing_rule.specificity {
+        break;
+      }
+
+      // keep climbing until we have a higher specificity or same
+      insert_index = i + 1;
+    }
+
+    // starting at the insertion index, override all existing declarations
+    for i in insert_index..self.style_rules.len() {
+      let existing_rule = self.style_rules.get_mut(i).unwrap();
+      rule.overrides(existing_rule);
+    }
+
+    self.style_rules.insert(insert_index, rule);
+
   }
 }
 
@@ -74,12 +171,11 @@ pub fn inspect_node_styles(
   eval_info: &EvalInfo,
   graph: &DependencyGraph,
   options: &InspectionOptions,
-) -> Vec<StyleRuleInfo> {
+) -> NodeInspectionInfo {
   let mut matching_selectors: Vec<(&StyleRule, i32, i32, Option<MediaInfo>)> = vec![];
 
   let style_rules = get_eval_info_selectors(eval_info, graph, options);
-
-  let mut index = 0;
+  let mut inspection_info = NodeInspectionInfo::new();
 
   for (style_rule, media_option) in style_rules {
     // TODO - matches should return some result instead of boolean
@@ -88,58 +184,10 @@ pub fn inspect_node_styles(
       element_path,
       &eval_info.preview,
     ) {
-      matching_selectors.push((
-        style_rule,
-        get_selector_text_specificity(&matching_sub_selector),
-        index,
-        media_option.clone(),
-      ));
 
-      // items.push(StyleRuleInfo::new(
-      //   style_rule,
-      //   &matching_sub_selector,
-      //   &media_option,
-      //   index
-      // ))
+      let rule = StyleRuleInfo::new(style_rule, media_option.clone(), &matching_sub_selector);
+      inspection_info.insert_style_rule(rule);
     }
-    index += 1;
-  }
-
-  // sort by specificity & index
-  matching_selectors.sort_by(|(_, a_s, a_i, _), (_, b_s, b_i, _)| {
-    if a_s > b_s {
-      return Ordering::Less;
-    } else if a_i > b_i {
-      return Ordering::Less;
-    }
-    return Ordering::Equal;
-  });
-
-  let mut declared: BTreeMap<String, bool> = BTreeMap::new();
-  let mut importants: BTreeMap<String, bool> = BTreeMap::new();
-  let mut items: Vec<StyleRuleInfo> = vec![];
-
-  // next adding the style rule info + declarations and whether they're
-  // active.
-  for (rule, specificity, index, media) in matching_selectors {
-    let mut style_info = StyleRuleInfo::new(&rule, media, specificity, index);
-
-    for decl in &rule.style {
-      let active = declared.get(&decl.name) == None;
-      declared.insert(decl.name.to_string(), true);
-
-      if decl.value.contains("!important") {
-        importants.insert(decl.name.to_string(), true);
-      }
-
-      style_info.declarations.push(StyleDeclarationInfo {
-        name: decl.name.to_string(),
-        value: decl.value.to_string(),
-        active,
-      });
-    }
-
-    items.push(style_info);
   }
 
   /*
@@ -152,7 +200,7 @@ pub fn inspect_node_styles(
 
   */
 
-  items
+  inspection_info
 }
 
 fn get_eval_info_selectors<'a>(
@@ -200,16 +248,257 @@ mod tests {
   use super::*;
 
   #[test]
-  fn can_inspect_various_selectors() {
-    let source = "<style>a > b { color: red; } b.b { color: blue !important; } b:active { color: red; } </style><a><b class='b' /></a>";
+  fn can_inspect_a_simple_selector() {
+    let source = r#"
+      <style>
+        a > b { color: red; }
+      </style>
+      <a><b class='b' /></a>
+    "#;
+
+    test_source(source, vec![0, 0], NodeInspectionInfo {
+      style_rules: vec![
+        StyleRuleInfo {
+          selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
+          source_id: "0-1-1-1".to_string(),
+          pseudo_element_name: None,
+          media: None,
+          declarations: vec![StyleDeclarationInfo {
+            name: "color".to_string(),
+            value: "red".to_string(),
+            active: true,
+          }],
+          specificity: 4
+        }
+      ]
+    })
+  }
+
+
+  #[test]
+  fn sets_first_declaration_as_inactive_if_overriden_in_same_rule() {
+    let source = r#"
+      <style>
+        a > b { color: red; color: blue; }
+      </style>
+      <a><b class='b' /></a>
+    "#;
+
+    test_source(source, vec![0, 0], NodeInspectionInfo {
+      style_rules: vec![
+        StyleRuleInfo {
+          selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
+          source_id: "0-1-1-1".to_string(),
+          media: None,
+          pseudo_element_name: None,
+          declarations: vec![
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "red".to_string(),
+              active: false,
+            },
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "blue".to_string(),
+              active: true,
+            }
+          ],
+          specificity: 4
+        }
+      ]
+    })
+  }
+
+  #[test]
+  fn sorts_style_rule_info_based_on_specificity() {
+    let source = r#"
+      <style>
+        a b { color: red; }
+        b.b.b { color: blue; }
+      </style>
+      <a><b class='b' /></a>
+    "#;
+
+    test_source(source, vec![0, 0], NodeInspectionInfo {
+      style_rules: vec![
+        StyleRuleInfo {
+          selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+          source_id: "0-1-1-2".to_string(),
+          media: None,
+          pseudo_element_name: None,
+          declarations: vec![
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "blue".to_string(),
+              active: true,
+            }
+          ],
+          specificity: 6
+        },
+        StyleRuleInfo {
+          selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
+          source_id: "0-1-1-1".to_string(),
+          media: None,
+          pseudo_element_name: None,
+          declarations: vec![
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "red".to_string(),
+              active: false,
+            }
+          ],
+          specificity: 4
+        }
+      ]
+    })
+  }
+
+  #[test]
+  fn important_props_get_prioity_in_other_style_rules() {
+    let source = r#"
+      <style>
+        a b { color: red !important; }
+        b.b.b { color: blue; }
+      </style>
+      <a><b class='b' /></a>
+    "#;
+
+    test_source(source, vec![0, 0], NodeInspectionInfo {
+      style_rules: vec![
+        StyleRuleInfo {
+          selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+          source_id: "0-1-1-2".to_string(),
+          media: None,
+          pseudo_element_name: None,
+          declarations: vec![
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "blue".to_string(),
+              active: false,
+            }
+          ],
+          specificity: 6
+        },
+        StyleRuleInfo {
+          selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
+          source_id: "0-1-1-1".to_string(),
+          media: None,
+          pseudo_element_name: None,
+          declarations: vec![
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "red !important".to_string(),
+              active: true,
+            }
+          ],
+          specificity: 4
+        }
+      ]
+    })
+  }
+
+
+  #[test]
+  fn if_two_importants_then_lower_index_wins() {
+    let source = r#"
+      <style>
+        b.b.b { color: red !important; }
+        b.b.b { color: blue !important; }
+      </style>
+      <a><b class='b' /></a>
+    "#;
+
+    test_source(source, vec![0, 0], NodeInspectionInfo {
+      style_rules: vec![
+        StyleRuleInfo {
+          selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+          source_id: "0-1-1-2".to_string(),
+          media: None,
+          pseudo_element_name: None,
+          declarations: vec![
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "blue !important".to_string(),
+              active: true,
+            }
+          ],
+          specificity: 6
+        },
+        StyleRuleInfo {
+          selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+          source_id: "0-1-1-1".to_string(),
+          media: None,
+          pseudo_element_name: None,
+          declarations: vec![
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "red !important".to_string(),
+              active: false,
+            }
+          ],
+          specificity: 6
+        }
+      ]
+    })
+  }
+
+
+  #[test]
+  fn pseudo_element_declarations_arent_touched() {
+    let source = r#"
+      <style>
+        a { color: red; }
+        a:before { color: blue; }
+      </style>
+      <a />
+    "#;
+
+    test_source(source, vec![0], NodeInspectionInfo {
+      style_rules: vec![
+        StyleRuleInfo {
+          selector_text: "a._acb5fc82:before".to_string(),
+          source_id: "0-1-1-2".to_string(),
+          media: None,
+          pseudo_element_name: Some("before".to_string()),
+          declarations: vec![
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "blue".to_string(),
+              active: true,
+            }
+          ],
+          specificity: 3
+        },
+        StyleRuleInfo {
+          selector_text: "a._acb5fc82".to_string(),
+          source_id: "0-1-1-1".to_string(),
+          media: None,
+          pseudo_element_name: None,
+          declarations: vec![
+            StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "red".to_string(),
+              active: true,
+            }
+          ],
+          specificity: 2
+        }
+      ]
+    })
+  }
+  
+
+  fn test_source<'a>(source: &'a str, node_path: Vec<usize>, expected_info: NodeInspectionInfo) {
     let (eval_info, graph) = __test__evaluate_pc_source(source);
     let info = inspect_node_styles(
-      &vec![0, 0],
+      &node_path,
       &eval_info.unwrap(),
       &graph,
       &InspectionOptions { screen_width: None },
     );
-    println!("{:?}", info);
-    assert_eq!(info.len(), 2);
+    assert_eq!(
+      info,
+      expected_info
+    );
   }
 }

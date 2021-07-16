@@ -681,6 +681,19 @@ impl Selector {
       Selector::AllSelector(selector) => &selector.location,
     }
   }
+  pub fn get_pseudo_element_name(&self) -> Option<String> {
+    let mut pseudo_element_name = None;
+
+    self.walk(&mut |descendent| {
+      if let Selector::PseudoElement(pseudo_element) = descendent {
+        pseudo_element_name = Some(pseudo_element.name.to_string());
+        return false;
+      }
+      return true;
+    });
+    
+    pseudo_element_name
+  }
 }
 
 impl fmt::Display for Selector {

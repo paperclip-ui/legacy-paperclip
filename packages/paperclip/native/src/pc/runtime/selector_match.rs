@@ -180,7 +180,7 @@ pub fn get_selector_text_matching_sub_selector<'a, 'b>(
   element_path: &'a Vec<usize>,
   document: &'a VirtNode,
 ) -> Option<css_ast::Selector> {
-  let selector = parse_css_selector(selector_text).unwrap();
+  let selector = parse_css_selector(selector_text, None).unwrap();
 
   Context::new_from_path(element_path, document).and_then(|context| {
     context
@@ -203,7 +203,7 @@ pub fn get_matching_elements<'a, 'b>(
   // since we may be dealing with nested styles and such -- that information is included in the style selector, but is
   // lost within the CSS AST (unless parent el or scope is provided for context - that's just too cumbersome). We can
   // deal with the performance penalty 😭
-  let selector = parse_css_selector(selector_text).unwrap();
+  let selector = parse_css_selector(selector_text, None).unwrap();
 
   let mut matching_elements: Vec<&'a VirtElement> = Vec::new();
 
@@ -226,7 +226,7 @@ pub fn find_one_matching_element<'a, 'b>(
   selector_text: &'b str,
   document: &'a VirtNode,
 ) -> Option<&'a VirtElement> {
-  let selector = parse_css_selector(selector_text).unwrap();
+  let selector = parse_css_selector(selector_text, None).unwrap();
   let mut found: Option<&'a VirtElement> = None;
   traverse_tree(
     &selector,

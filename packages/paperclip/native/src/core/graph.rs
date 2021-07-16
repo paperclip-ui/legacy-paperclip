@@ -1,7 +1,7 @@
 use super::vfs::VirtualFileSystem;
 use crate::base::ast::Location;
 use crate::base::parser::ParseError;
-use crate::core::id_generator::generate_seed;
+use crate::core::id_generator::{generate_seed, IDGenerator};
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use serde::Serialize;
@@ -32,6 +32,7 @@ pub struct GraphError {
 
 pub struct DependencyGraph {
   pub dependencies: BTreeMap<String, Dependency>,
+  pub seed_id_generator: IDGenerator,
 }
 
 #[allow(dead_code)]
@@ -39,6 +40,7 @@ impl DependencyGraph {
   pub fn new() -> DependencyGraph {
     DependencyGraph {
       dependencies: BTreeMap::new(),
+      seed_id_generator: IDGenerator::new("0".to_string()),
     }
   }
   pub fn flatten<'a>(&'a self, entry_uri: &String) -> Vec<(&Dependency, Option<&Dependency>)> {
@@ -195,7 +197,13 @@ impl DependencyGraph {
         .to_string();
 
       // TODO - check if content matches old content.
-      let dependency_option = Dependency::from_source(source, &curr_uri, vfs).or_else(|error| {
+      let dependency_option = Dependency::from_source(
+        source,
+        &curr_uri,
+        vfs,
+        self.seed_id_generator.new_seed().as_str(),
+      )
+      .or_else(|error| {
         Err(GraphError {
           uri: curr_uri.to_string(),
           info: GraphErrorInfo::Syntax(error),
@@ -247,20 +255,25 @@ pub struct Dependency {
 }
 
 impl<'a> Dependency {
-  pub fn from_source(
+  pub fn from_source<'b>(
     source: String,
     uri: &String,
     vfs: &VirtualFileSystem,
+    id_seed: &'b str,
   ) -> Result<Dependency, ParseError> {
     if uri.ends_with(".css") {
-      Dependency::from_css_source(source, uri)
+      Dependency::from_css_source(source, uri, id_seed)
     } else {
-      Dependency::from_pc_source(source, uri, vfs)
+      Dependency::from_pc_source(source, uri, vfs, id_seed)
     }
   }
 
-  fn from_css_source(source: String, uri: &String) -> Result<Dependency, ParseError> {
-    let expression_result = css_parser::parse(source.as_str(), generate_seed().as_str());
+  fn from_css_source<'b>(
+    source: String,
+    uri: &String,
+    id_seed: &'b str,
+  ) -> Result<Dependency, ParseError> {
+    let expression_result = css_parser::parse(source.as_str(), id_seed);
     if let Err(err) = expression_result {
       return Err(err);
     }
@@ -274,13 +287,13 @@ impl<'a> Dependency {
     })
   }
 
-  fn from_pc_source(
+  fn from_pc_source<'b>(
     source: String,
     uri: &String,
     vfs: &VirtualFileSystem,
+    id_seed: &'b str,
   ) -> Result<Dependency, ParseError> {
-    let expression_result =
-      pc_parser::parse(source.as_str(), uri.as_str(), generate_seed().as_str());
+    let expression_result = pc_parser::parse(source.as_str(), uri.as_str(), id_seed);
 
     if let Err(err) = expression_result {
       return Err(err);

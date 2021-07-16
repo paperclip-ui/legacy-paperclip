@@ -1898,7 +1898,13 @@ pub fn __test__evaluate_source<'a>(
   );
   graph.dependencies.insert(
     uri.clone(),
-    Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
+    Dependency::from_source(
+      code.to_string(),
+      &uri,
+      &vfs,
+      graph.seed_id_generator.new_seed().as_str(),
+    )
+    .unwrap(),
   );
 
   (
