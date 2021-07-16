@@ -6,7 +6,7 @@ use super::selector_match::get_selector_text_matching_sub_selector;
 use crate::core::graph::DependencyGraph;
 use crate::css::ast::Selector;
 use crate::css::runtime::specificity::get_selector_text_specificity;
-use crate::css::runtime::virt::{Rule, StyleRule, CSSStyleProperty};
+use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
 use serde::Serialize;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashSet};
@@ -28,7 +28,7 @@ impl StyleDeclarationInfo {
     StyleDeclarationInfo {
       name: source.name.to_string(),
       value: source.value.to_string(),
-      active: true
+      active: true,
     }
   }
   pub fn important(&self) -> bool {
@@ -52,7 +52,6 @@ pub struct MediaInfo {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRuleInfo {
-
   #[serde(rename = "selectorText")]
   pub selector_text: String,
 
@@ -68,7 +67,7 @@ pub struct StyleRuleInfo {
   declarations: Vec<StyleDeclarationInfo>,
 
   // need to do docs for this
-  pub specificity: i32
+  pub specificity: i32,
 }
 
 impl StyleRuleInfo {
@@ -77,22 +76,18 @@ impl StyleRuleInfo {
     media: Option<MediaInfo>,
     matching_sub_selector: &Selector,
   ) -> StyleRuleInfo {
-
-
     let mut rule_info = StyleRuleInfo {
       selector_text: rule.selector_text.to_string(),
       media: media.clone(),
       source_id: rule.source_id.clone(),
       declarations: vec![],
       pseudo_element_name: matching_sub_selector.get_pseudo_element_name(),
-      specificity: get_selector_text_specificity(&matching_sub_selector)
+      specificity: get_selector_text_specificity(&matching_sub_selector),
     };
-
 
     for declaration in &rule.style {
       rule_info.push_declaration(StyleDeclarationInfo::new(declaration));
     }
-
 
     return rule_info;
   }
@@ -126,22 +121,20 @@ impl StyleRuleInfo {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NodeInspectionInfo {
-  pub style_rules: Vec<StyleRuleInfo>
+  pub style_rules: Vec<StyleRuleInfo>,
 }
 
 impl NodeInspectionInfo {
   pub fn new() -> NodeInspectionInfo {
     NodeInspectionInfo {
-      style_rules: vec![]
+      style_rules: vec![],
     }
   }
   pub fn insert_style_rule(&mut self, mut rule: StyleRuleInfo) {
-
     let mut insert_index: usize = 0;
 
     // first find the right index
     for (i, existing_rule) in &mut self.style_rules.iter().enumerate() {
-
       // higher priority = lower index
       if rule.specificity >= existing_rule.specificity {
         break;
@@ -158,7 +151,6 @@ impl NodeInspectionInfo {
     }
 
     self.style_rules.insert(insert_index, rule);
-
   }
 }
 
@@ -184,7 +176,6 @@ pub fn inspect_node_styles(
       element_path,
       &eval_info.preview,
     ) {
-
       let rule = StyleRuleInfo::new(style_rule, media_option.clone(), &matching_sub_selector);
       inspection_info.insert_style_rule(rule);
     }
@@ -256,9 +247,11 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(source, vec![0, 0], NodeInspectionInfo {
-      style_rules: vec![
-        StyleRuleInfo {
+    test_source(
+      source,
+      vec![0, 0],
+      NodeInspectionInfo {
+        style_rules: vec![StyleRuleInfo {
           selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
           source_id: "0-1-1-1".to_string(),
           pseudo_element_name: None,
@@ -268,12 +261,11 @@ mod tests {
             value: "red".to_string(),
             active: true,
           }],
-          specificity: 4
-        }
-      ]
-    })
+          specificity: 4,
+        }],
+      },
+    )
   }
-
 
   #[test]
   fn sets_first_declaration_as_inactive_if_overriden_in_same_rule() {
@@ -284,9 +276,11 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(source, vec![0, 0], NodeInspectionInfo {
-      style_rules: vec![
-        StyleRuleInfo {
+    test_source(
+      source,
+      vec![0, 0],
+      NodeInspectionInfo {
+        style_rules: vec![StyleRuleInfo {
           selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
           source_id: "0-1-1-1".to_string(),
           media: None,
@@ -301,12 +295,12 @@ mod tests {
               name: "color".to_string(),
               value: "blue".to_string(),
               active: true,
-            }
+            },
           ],
-          specificity: 4
-        }
-      ]
-    })
+          specificity: 4,
+        }],
+      },
+    )
   }
 
   #[test]
@@ -319,38 +313,38 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(source, vec![0, 0], NodeInspectionInfo {
-      style_rules: vec![
-        StyleRuleInfo {
-          selector_text: "b[class].b[class].b._acb5fc82".to_string(),
-          source_id: "0-1-1-2".to_string(),
-          media: None,
-          pseudo_element_name: None,
-          declarations: vec![
-            StyleDeclarationInfo {
+    test_source(
+      source,
+      vec![0, 0],
+      NodeInspectionInfo {
+        style_rules: vec![
+          StyleRuleInfo {
+            selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+            source_id: "0-1-1-2".to_string(),
+            media: None,
+            pseudo_element_name: None,
+            declarations: vec![StyleDeclarationInfo {
               name: "color".to_string(),
               value: "blue".to_string(),
               active: true,
-            }
-          ],
-          specificity: 6
-        },
-        StyleRuleInfo {
-          selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
-          source_id: "0-1-1-1".to_string(),
-          media: None,
-          pseudo_element_name: None,
-          declarations: vec![
-            StyleDeclarationInfo {
+            }],
+            specificity: 6,
+          },
+          StyleRuleInfo {
+            selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
+            source_id: "0-1-1-1".to_string(),
+            media: None,
+            pseudo_element_name: None,
+            declarations: vec![StyleDeclarationInfo {
               name: "color".to_string(),
               value: "red".to_string(),
               active: false,
-            }
-          ],
-          specificity: 4
-        }
-      ]
-    })
+            }],
+            specificity: 4,
+          },
+        ],
+      },
+    )
   }
 
   #[test]
@@ -363,40 +357,39 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(source, vec![0, 0], NodeInspectionInfo {
-      style_rules: vec![
-        StyleRuleInfo {
-          selector_text: "b[class].b[class].b._acb5fc82".to_string(),
-          source_id: "0-1-1-2".to_string(),
-          media: None,
-          pseudo_element_name: None,
-          declarations: vec![
-            StyleDeclarationInfo {
+    test_source(
+      source,
+      vec![0, 0],
+      NodeInspectionInfo {
+        style_rules: vec![
+          StyleRuleInfo {
+            selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+            source_id: "0-1-1-2".to_string(),
+            media: None,
+            pseudo_element_name: None,
+            declarations: vec![StyleDeclarationInfo {
               name: "color".to_string(),
               value: "blue".to_string(),
               active: false,
-            }
-          ],
-          specificity: 6
-        },
-        StyleRuleInfo {
-          selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
-          source_id: "0-1-1-1".to_string(),
-          media: None,
-          pseudo_element_name: None,
-          declarations: vec![
-            StyleDeclarationInfo {
+            }],
+            specificity: 6,
+          },
+          StyleRuleInfo {
+            selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
+            source_id: "0-1-1-1".to_string(),
+            media: None,
+            pseudo_element_name: None,
+            declarations: vec![StyleDeclarationInfo {
               name: "color".to_string(),
               value: "red !important".to_string(),
               active: true,
-            }
-          ],
-          specificity: 4
-        }
-      ]
-    })
+            }],
+            specificity: 4,
+          },
+        ],
+      },
+    )
   }
-
 
   #[test]
   fn if_two_importants_then_lower_index_wins() {
@@ -408,40 +401,39 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(source, vec![0, 0], NodeInspectionInfo {
-      style_rules: vec![
-        StyleRuleInfo {
-          selector_text: "b[class].b[class].b._acb5fc82".to_string(),
-          source_id: "0-1-1-2".to_string(),
-          media: None,
-          pseudo_element_name: None,
-          declarations: vec![
-            StyleDeclarationInfo {
+    test_source(
+      source,
+      vec![0, 0],
+      NodeInspectionInfo {
+        style_rules: vec![
+          StyleRuleInfo {
+            selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+            source_id: "0-1-1-2".to_string(),
+            media: None,
+            pseudo_element_name: None,
+            declarations: vec![StyleDeclarationInfo {
               name: "color".to_string(),
               value: "blue !important".to_string(),
               active: true,
-            }
-          ],
-          specificity: 6
-        },
-        StyleRuleInfo {
-          selector_text: "b[class].b[class].b._acb5fc82".to_string(),
-          source_id: "0-1-1-1".to_string(),
-          media: None,
-          pseudo_element_name: None,
-          declarations: vec![
-            StyleDeclarationInfo {
+            }],
+            specificity: 6,
+          },
+          StyleRuleInfo {
+            selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+            source_id: "0-1-1-1".to_string(),
+            media: None,
+            pseudo_element_name: None,
+            declarations: vec![StyleDeclarationInfo {
               name: "color".to_string(),
               value: "red !important".to_string(),
               active: false,
-            }
-          ],
-          specificity: 6
-        }
-      ]
-    })
+            }],
+            specificity: 6,
+          },
+        ],
+      },
+    )
   }
-
 
   #[test]
   fn pseudo_element_declarations_arent_touched() {
@@ -453,40 +445,83 @@ mod tests {
       <a />
     "#;
 
-    test_source(source, vec![0], NodeInspectionInfo {
-      style_rules: vec![
-        StyleRuleInfo {
-          selector_text: "a._acb5fc82:before".to_string(),
-          source_id: "0-1-1-2".to_string(),
-          media: None,
-          pseudo_element_name: Some("before".to_string()),
-          declarations: vec![
-            StyleDeclarationInfo {
+    test_source(
+      source,
+      vec![0],
+      NodeInspectionInfo {
+        style_rules: vec![
+          StyleRuleInfo {
+            selector_text: "a._acb5fc82:before".to_string(),
+            source_id: "0-1-1-2".to_string(),
+            media: None,
+            pseudo_element_name: Some("before".to_string()),
+            declarations: vec![StyleDeclarationInfo {
               name: "color".to_string(),
               value: "blue".to_string(),
               active: true,
-            }
-          ],
-          specificity: 3
-        },
-        StyleRuleInfo {
-          selector_text: "a._acb5fc82".to_string(),
-          source_id: "0-1-1-1".to_string(),
-          media: None,
-          pseudo_element_name: None,
-          declarations: vec![
-            StyleDeclarationInfo {
+            }],
+            specificity: 3,
+          },
+          StyleRuleInfo {
+            selector_text: "a._acb5fc82".to_string(),
+            source_id: "0-1-1-1".to_string(),
+            media: None,
+            pseudo_element_name: None,
+            declarations: vec![StyleDeclarationInfo {
               name: "color".to_string(),
               value: "red".to_string(),
               active: true,
-            }
-          ],
-          specificity: 2
-        }
-      ]
-    })
+            }],
+            specificity: 2,
+          },
+        ],
+      },
+    )
   }
-  
+
+  #[test]
+  fn decl_is_overridden_if_shared_with_same_pseudo_element() {
+    let source = r#"
+      <style>
+        a:before { color: red; }
+        a:before { color: blue; }
+      </style>
+      <a />
+    "#;
+
+    test_source(
+      source,
+      vec![0],
+      NodeInspectionInfo {
+        style_rules: vec![
+          StyleRuleInfo {
+            selector_text: "a._acb5fc82:before".to_string(),
+            source_id: "0-1-1-2".to_string(),
+            media: None,
+            pseudo_element_name: Some("before".to_string()),
+            declarations: vec![StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "blue".to_string(),
+              active: true,
+            }],
+            specificity: 3,
+          },
+          StyleRuleInfo {
+            selector_text: "a._acb5fc82:before".to_string(),
+            source_id: "0-1-1-1".to_string(),
+            media: None,
+            pseudo_element_name: Some("before".to_string()),
+            declarations: vec![StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "red".to_string(),
+              active: false,
+            }],
+            specificity: 3,
+          },
+        ],
+      },
+    )
+  }
 
   fn test_source<'a>(source: &'a str, node_path: Vec<usize>, expected_info: NodeInspectionInfo) {
     let (eval_info, graph) = __test__evaluate_pc_source(source);
@@ -496,9 +531,6 @@ mod tests {
       &graph,
       &InspectionOptions { screen_width: None },
     );
-    assert_eq!(
-      info,
-      expected_info
-    );
+    assert_eq!(info, expected_info);
   }
 }
