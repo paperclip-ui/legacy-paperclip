@@ -173,6 +173,7 @@ impl NodeInspectionInfo {
   }
 }
 
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct InspectionOptions {
   screen_width: Option<u32>,
 }
@@ -237,6 +238,8 @@ fn collect_style_rules<'a, 'b>(
         style_rules.push((&style, media.clone()));
       }
       Rule::Media(media) => {
+
+
         collect_style_rules(
           style_rules,
           &media.rules,
@@ -554,8 +557,49 @@ mod tests {
     )
   }
 
-  // #[test]
-  fn activates_style_rule_if_media_matches() {
+  #[test]
+  fn ignores_media_rule_if_media_doesnt_match() {
+    let source = r#"
+      <style>
+        @media screen and (max-width: 400px) {
+          a {
+            color: red;
+          }
+        }
+      </style>
+      <a />
+    "#;
+
+    test_source(
+      source,
+      vec![0],
+      InspectionOptions {
+        screen_width: Some(600),
+      },
+      NodeInspectionInfo {
+        style_rules: vec![StyleRuleInfo {
+          selector_text: "a._acb5fc82".to_string(),
+          source_id: "0-1-1-1".to_string(),
+          media: Some(MediaInfo {
+            condition_text: "screen and (max-width: 400px)".to_string(),
+            active: false,
+          }),
+          pseudo_element_name: None,
+          declarations: vec![StyleDeclarationInfo {
+            name: "color".to_string(),
+            value: "red".to_string(),
+            active: true,
+          }],
+          specificity: 2,
+        }],
+      },
+    )
+  }
+
+
+
+  #[test]
+  fn activates_media_if_screen_matches() {
     let source = r#"
       <style>
         @media screen and (max-width: 400px) {
@@ -604,7 +648,7 @@ mod tests {
       &node_path,
       &eval_info.unwrap(),
       &graph,
-      &InspectionOptions { screen_width: None },
+      &options
     );
     assert_eq!(info, expected_info);
   }

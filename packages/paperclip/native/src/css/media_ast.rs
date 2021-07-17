@@ -1,57 +1,54 @@
+// https://developer.mozilla.org/en-US/docs/Web/CSS/@media#media-query-list
+
 use crate::base::ast::{BasicRaws, Location};
+use super::declaration_value_ast as decl_ast;
 use serde::Serialize;
 use std::fmt;
 
-// https://developer.mozilla.org/en-US/docs/Web/CSS/@media#media-query-list
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MediaQueryList {
-  pub queries: Vec<MediaQuery>
+  pub queries: Vec<MediaQuery>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "mediaQueryKind")]
 pub enum MediaQuery {
   // Condition(MediaCondition),
-  Ident(MediaIdent)
+  Ident(MediaIdent),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MediaIdent {
   pub only: Option<bool>, // not | only,
   pub media_type: String, // screen, print
-  pub and_condition: Option<MediaConditionWithoutOr>
+  pub and_condition: Option<MediaConditionWithoutOr>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "mediaConditionWithoutOrKind")]
 pub enum MediaConditionWithoutOr {
   MediaNot(MediaNot),
-  MediaAnd(MediaAnd),
-  InParens(MediaInParens)
+  MediaAnd(MediaCompound),
+  InParens(MediaInParens),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MediaNot {
-  pub media: Box<MediaInParens>
+  pub condition: Box<MediaInParens>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct MediaAnd {
-  pub left: Box<MediaInParens>,
-  pub right: Box<MediaInParens>
+pub struct MediaCompound {
+  pub condition: Box<MediaInParens>,
+  pub rest: Vec<MediaInParens>,
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct MediaOr {
-  pub left: Box<MediaInParens>,
-  pub right: Box<MediaInParens>
-}
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "mediaInParensKind")]
 pub enum MediaInParens {
   Condition(MediaCondition),
-  Feature(MediaFeature)
+  Feature(MediaFeature),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -66,13 +63,13 @@ pub enum MediaFeature {
 #[serde(tag = "mediaFeatureKind")]
 pub struct MFPlain {
   pub name: String,
-  pub value: String
+  pub value: decl_ast::Expression,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "mediaConditionKind")]
 pub enum MediaCondition {
   MediaNot(MediaNot),
-  MediaAnd(MediaAnd),
-  MediaOr(MediaOr),
+  MediaAnd(MediaCompound),
+  MediaOr(MediaCompound),
 }

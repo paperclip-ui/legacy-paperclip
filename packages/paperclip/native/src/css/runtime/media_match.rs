@@ -1,33 +1,34 @@
-use crate::base::parser::ParseError;
-use super::super::media_parser::{parse as parse_media};
 use super::super::media_ast::*;
+use super::super::declaration_value_ast as decl_ast;
+use super::super::media_parser::parse as parse_media;
+use crate::base::parser::ParseError;
 
 pub struct Options {
-  pub screen_width: u32
+  pub screen_width: u32,
 }
 
 pub fn media_matches<'a>(condition_text: &'a str, screen_width: u32) -> bool {
   let options = Options { screen_width };
 
+  println!("MATCH {}", condition_text);
+
   if let Ok(query_list) = parse_media(condition_text, "") {
+    println!("{:?}", condition_text);
     for query in &query_list.queries {
       if media_matches_query(query, &options) {
         return true;
       }
     }
+  } else {
+    println!("FAILL");
   }
   return false;
 }
 
 fn media_matches_query(query: &MediaQuery, options: &Options) -> bool {
-  println!("{:?}", query);
   match query {
-    MediaQuery::Ident(ident) => {
-      match_ident(ident, options)
-    },
-    _ => {
-      false
-    }
+    MediaQuery::Ident(ident) => match_ident(ident, options),
+    _ => false,
   }
 }
 
@@ -49,22 +50,24 @@ fn match_condition_without_or(ast: &MediaConditionWithoutOr, options: &Options) 
   }
 }
 
-fn match_and(ast: &MediaAnd, options: &Options) -> bool {
-  false
+fn match_and(ast: &MediaCompound, options: &Options) -> bool {
+  match_in_parens(ast.condition.as_ref(), options) && ast.rest.iter().all(|condition| {
+    match_in_parens(condition, options)
+  })
 }
 
 fn match_not(ast: &MediaNot, options: &Options) -> bool {
   false
 }
 
-fn match_or(ast: &MediaOr, options: &Options) -> bool {
+fn match_or(ast: &MediaCompound, options: &Options) -> bool {
   false
 }
 
 fn match_in_parens(ast: &MediaInParens, options: &Options) -> bool {
   match ast {
     MediaInParens::Condition(condition) => match_condition(condition, options),
-    MediaInParens::Feature(feature) => match_feature(feature, options)
+    MediaInParens::Feature(feature) => match_feature(feature, options),
   }
 }
 
@@ -72,21 +75,63 @@ fn match_condition(ast: &MediaCondition, options: &Options) -> bool {
   match ast {
     MediaCondition::MediaAnd(and) => match_and(and, options),
     MediaCondition::MediaOr(or) => match_or(or, options),
-    MediaCondition::MediaNot(not) => match_not(not, options)
+    MediaCondition::MediaNot(not) => match_not(not, options),
   }
 }
 
 fn match_feature(ast: &MediaFeature, options: &Options) -> bool {
   match ast {
-    MediaFeature::Plain(plain) => match_mf_plain(plain, options)
+    MediaFeature::Plain(plain) => match_mf_plain(plain, options),
   }
 }
 
 fn match_mf_plain(ast: &MFPlain, options: &Options) -> bool {
-  false
+  if let Some(unit_value) = get_mf_plain_unit_value(&ast.value, options) {
+    return if ast.name == "min-width" {
+      options.screen_width >= unit_value
+    } else if ast.name == "max-width" {
+      options.screen_width <= unit_value
+    } else {
+      false
+    };
+  } else {
+    println!("FAL");
+    false
+  }
 }
 
+fn get_mf_plain_unit_value(ast: &decl_ast::Expression, options: &Options) -> Option<u32> {
+  match ast {
+    decl_ast::Expression::Value(value) => {
+      match value {
+        decl_ast::Value::Dimension(dim) => {
+          if let Ok(number) = dim.value.to_u32() {
 
+            // TODO, rem, em, etc
+            if dim.unit == "px" {
+              Some(number)
+            } else {
+              None
+            }
+          } else {
+            None
+          }
+        }
+        decl_ast::Value::Number(value) => {
+          if let Ok(number) = value.to_u32() {
+            Some(number)
+          } else {
+            None
+          }
+        },
+        _ => None
+      }
+    }
+    _ => {
+      None
+    }
+  }
+}
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -98,7 +143,9 @@ mod tests {
       ("screen", 0, true),
       ("screen, print", 0, true),
       ("screen and (max-width: 500px)", 0, true),
-      ("screen and (max-width: 500px)", 600, false)
+      ("screen and (max-width: 500px)", 600, false),
+      ("screen and (min-width: 100px) and (max-width: 500px)", 300, true),
+      ("screen and (min-width: 100px) and (max-width: 500px)", 600, false),
     ];
 
     for (condition, screen_width, matches) in cases.iter() {
