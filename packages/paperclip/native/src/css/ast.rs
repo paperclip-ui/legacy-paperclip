@@ -394,6 +394,7 @@ impl fmt::Display for ConditionRule {
   }
 }
 
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinRule {
   pub id: String,

@@ -15,9 +15,9 @@ use super::evaluator::{
 use super::selector_match::get_selector_text_matching_sub_selector;
 use crate::core::graph::DependencyGraph;
 use crate::css::ast::Selector;
+use crate::css::runtime::media_match::media_matches;
 use crate::css::runtime::specificity::get_selector_text_specificity;
 use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
-use crate::css::runtime::media_match::{media_matches};
 use serde::Serialize;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashSet};
@@ -229,7 +229,7 @@ fn collect_style_rules<'a, 'b>(
   style_rules: &'b mut Vec<(&'a StyleRule, Option<MediaInfo>)>,
   rules: &'a Vec<Rule>,
   media: Option<MediaInfo>,
-  options: &InspectionOptions
+  options: &InspectionOptions,
 ) {
   for rule in rules {
     match rule {
@@ -244,11 +244,12 @@ fn collect_style_rules<'a, 'b>(
             condition_text: media.condition_text.trim().to_string(),
 
             // TODO - need to set this
-            active: options.screen_width.and_then(|screen_width| {
-              Some(media_matches(&media.condition_text, screen_width))
-            }).unwrap_or(false),
+            active: options
+              .screen_width
+              .and_then(|screen_width| Some(media_matches(&media.condition_text, screen_width)))
+              .unwrap_or(false),
           }),
-          options
+          options,
         );
       }
       _ => {}
@@ -273,9 +274,7 @@ mod tests {
     test_source(
       source,
       vec![0, 0],
-      InspectionOptions {
-        screen_width: None
-      },
+      InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![StyleRuleInfo {
           selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
@@ -305,9 +304,7 @@ mod tests {
     test_source(
       source,
       vec![0, 0],
-      InspectionOptions {
-        screen_width: None
-      },
+      InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![StyleRuleInfo {
           selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
@@ -345,9 +342,7 @@ mod tests {
     test_source(
       source,
       vec![0, 0],
-      InspectionOptions {
-        screen_width: None
-      },
+      InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![
           StyleRuleInfo {
@@ -392,9 +387,7 @@ mod tests {
     test_source(
       source,
       vec![0, 0],
-      InspectionOptions {
-        screen_width: None
-      },
+      InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![
           StyleRuleInfo {
@@ -439,9 +432,7 @@ mod tests {
     test_source(
       source,
       vec![0, 0],
-      InspectionOptions {
-        screen_width: None
-      },
+      InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![
           StyleRuleInfo {
@@ -486,9 +477,7 @@ mod tests {
     test_source(
       source,
       vec![0],
-      InspectionOptions {
-        screen_width: None
-      },
+      InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![
           StyleRuleInfo {
@@ -533,9 +522,7 @@ mod tests {
     test_source(
       source,
       vec![0],
-      InspectionOptions {
-        screen_width: None
-      },
+      InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![
           StyleRuleInfo {
@@ -567,7 +554,7 @@ mod tests {
     )
   }
 
-  #[test]
+  // #[test]
   fn activates_style_rule_if_media_matches() {
     let source = r#"
       <style>
@@ -584,31 +571,34 @@ mod tests {
       source,
       vec![0],
       InspectionOptions {
-        screen_width: Some(100)
+        screen_width: Some(100),
       },
       NodeInspectionInfo {
-        style_rules: vec![
-          StyleRuleInfo {
-            selector_text: "a._acb5fc82".to_string(),
-            source_id: "0-1-1-1".to_string(),
-            media: Some(MediaInfo {
-              condition_text: "screen and (max-width: 400px)".to_string(),
-              active: true
-            }),
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              name: "color".to_string(),
-              value: "red".to_string(),
-              active: true,
-            }],
-            specificity: 2,
-          }
-        ],
+        style_rules: vec![StyleRuleInfo {
+          selector_text: "a._acb5fc82".to_string(),
+          source_id: "0-1-1-1".to_string(),
+          media: Some(MediaInfo {
+            condition_text: "screen and (max-width: 400px)".to_string(),
+            active: true,
+          }),
+          pseudo_element_name: None,
+          declarations: vec![StyleDeclarationInfo {
+            name: "color".to_string(),
+            value: "red".to_string(),
+            active: true,
+          }],
+          specificity: 2,
+        }],
       },
     )
   }
 
-  fn test_source<'a>(source: &'a str, node_path: Vec<usize>, options: InspectionOptions, expected_info: NodeInspectionInfo) {
+  fn test_source<'a>(
+    source: &'a str,
+    node_path: Vec<usize>,
+    options: InspectionOptions,
+    expected_info: NodeInspectionInfo,
+  ) {
     let (eval_info, graph) = __test__evaluate_pc_source(source);
     let info = inspect_node_styles(
       &node_path,
