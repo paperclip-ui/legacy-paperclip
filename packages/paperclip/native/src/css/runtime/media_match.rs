@@ -1,5 +1,5 @@
-use super::super::media_ast::*;
 use super::super::declaration_value_ast as decl_ast;
+use super::super::media_ast::*;
 use super::super::media_parser::parse as parse_media;
 use crate::base::parser::ParseError;
 
@@ -9,18 +9,12 @@ pub struct Options {
 
 pub fn media_matches<'a>(condition_text: &'a str, screen_width: u32) -> bool {
   let options = Options { screen_width };
-
-  println!("MATCH {}", condition_text);
-
   if let Ok(query_list) = parse_media(condition_text, "") {
-    println!("{:?}", condition_text);
     for query in &query_list.queries {
       if media_matches_query(query, &options) {
         return true;
       }
     }
-  } else {
-    println!("FAILL");
   }
   return false;
 }
@@ -51,9 +45,11 @@ fn match_condition_without_or(ast: &MediaConditionWithoutOr, options: &Options) 
 }
 
 fn match_and(ast: &MediaCompound, options: &Options) -> bool {
-  match_in_parens(ast.condition.as_ref(), options) && ast.rest.iter().all(|condition| {
-    match_in_parens(condition, options)
-  })
+  match_in_parens(ast.condition.as_ref(), options)
+    && ast
+      .rest
+      .iter()
+      .all(|condition| match_in_parens(condition, options))
 }
 
 fn match_not(ast: &MediaNot, options: &Options) -> bool {
@@ -106,7 +102,6 @@ fn get_mf_plain_unit_value(ast: &decl_ast::Expression, options: &Options) -> Opt
       match value {
         decl_ast::Value::Dimension(dim) => {
           if let Ok(number) = dim.value.to_u32() {
-
             // TODO, rem, em, etc
             if dim.unit == "px" {
               Some(number)
@@ -123,13 +118,11 @@ fn get_mf_plain_unit_value(ast: &decl_ast::Expression, options: &Options) -> Opt
           } else {
             None
           }
-        },
-        _ => None
+        }
+        _ => None,
       }
     }
-    _ => {
-      None
-    }
+    _ => None,
   }
 }
 #[cfg(test)]
@@ -144,8 +137,16 @@ mod tests {
       ("screen, print", 0, true),
       ("screen and (max-width: 500px)", 0, true),
       ("screen and (max-width: 500px)", 600, false),
-      ("screen and (min-width: 100px) and (max-width: 500px)", 300, true),
-      ("screen and (min-width: 100px) and (max-width: 500px)", 600, false),
+      (
+        "screen and (min-width: 100px) and (max-width: 500px)",
+        300,
+        true,
+      ),
+      (
+        "screen and (min-width: 100px) and (max-width: 500px)",
+        600,
+        false,
+      ),
     ];
 
     for (condition, screen_width, matches) in cases.iter() {

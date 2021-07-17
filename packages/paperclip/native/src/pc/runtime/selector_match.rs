@@ -95,7 +95,7 @@ Combo selectors? `a b, c > d` would yield:
 */
 
 use super::evaluator::{
-  evaluate as evaluate_pc, EngineMode, __test__evaluate_source as __test__evaluate_pc_source,
+  evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code,
 };
 use super::virt::{Element as VirtElement, Node as VirtNode};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
@@ -546,7 +546,7 @@ mod tests {
   fn can_match_tag_name_selector() {
     let selector_source = "div";
     let pc_source = "<div /><span />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -556,7 +556,7 @@ mod tests {
   fn can_match_attr() {
     let selector_source = "[href]";
     let pc_source = "<a href='#' /> <a />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -566,7 +566,7 @@ mod tests {
   fn can_match_attr_with_value() {
     let selector_source = "[href=#]";
     let pc_source = "<a href='#' /><a href='##' />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -576,7 +576,7 @@ mod tests {
   fn can_match_id_selector() {
     let selector_source = "#a";
     let pc_source = "<div id='a' /><div id='b' />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -586,7 +586,7 @@ mod tests {
   fn can_match_adj_selector() {
     let selector_source = "a + b";
     let pc_source = "<a /><b />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -596,7 +596,7 @@ mod tests {
   fn can_match_nested_adj_selector() {
     let selector_source = "a + b";
     let pc_source = "<div><a /><b /></div>";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -606,7 +606,7 @@ mod tests {
   fn can_match_sib_selector() {
     let selector_source = "a ~ b";
     let pc_source = "<div><a /><c /><b /></div>";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -618,7 +618,7 @@ mod tests {
   fn can_match_ancestor_selector() {
     let selector_source = "[href=#]";
     let pc_source = "<a href='#' /><a href='##' />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -660,7 +660,7 @@ mod tests {
     ];
 
     for (selector, html, count) in cases.iter() {
-      let (result, _) = __test__evaluate_pc_source(html);
+      let (result, _) = __test__evaluate_pc_code(html);
       let eval_info = &result.unwrap();
       let elements = get_matching_elements(&selector, &eval_info.preview);
       assert_eq!(elements.len() as i32, *count);

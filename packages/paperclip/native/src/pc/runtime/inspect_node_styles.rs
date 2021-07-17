@@ -10,10 +10,12 @@ TODO:
 
 use super::evaluator::EvalInfo;
 use super::evaluator::{
-  evaluate as evaluate_pc, EngineMode, __test__evaluate_source as __test__evaluate_pc_source,
+  evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code,
 };
+use crate::engine::engine::{__test__evaluate_pc_files};
 use super::selector_match::get_selector_text_matching_sub_selector;
-use crate::core::graph::DependencyGraph;
+use crate::core::graph::{DependencyGraph};
+use crate::core::eval::DependencyEvalInfo;
 use crate::css::ast::Selector;
 use crate::css::runtime::media_match::media_matches;
 use crate::css::runtime::specificity::get_selector_text_specificity;
@@ -180,26 +182,23 @@ pub struct InspectionOptions {
 
 pub fn inspect_node_styles(
   element_path: &Vec<usize>,
-  eval_info: &EvalInfo,
+  document_uri: &String,
+  all_eval_info: &BTreeMap<String, DependencyEvalInfo>,
   graph: &DependencyGraph,
   options: &InspectionOptions,
 ) -> NodeInspectionInfo {
-  let mut matching_selectors: Vec<(&StyleRule, i32, i32, Option<MediaInfo>)> = vec![];
-
-  let style_rules = get_eval_info_selectors(eval_info, graph, options);
   let mut inspection_info = NodeInspectionInfo::new();
 
-  for (style_rule, media_option) in style_rules {
-    // TODO - matches should return some result instead of boolean
-    if let Some(matching_sub_selector) = get_selector_text_matching_sub_selector(
-      &style_rule.selector_text,
-      element_path,
-      &eval_info.preview,
-    ) {
-      let rule = StyleRuleInfo::new(style_rule, media_option.clone(), &matching_sub_selector);
-      inspection_info.insert_style_rule(rule);
+  if let Some(main_eval_info) = get_pc_info(document_uri, all_eval_info) {
+    add_inspection_info(&mut inspection_info, element_path, main_eval_info, document_uri, all_eval_info, graph, options);
+
+    for dep_uri in &main_eval_info.all_imported_sheet_uris {
+      add_inspection_info(&mut inspection_info, element_path, main_eval_info, dep_uri, all_eval_info, graph, options);
     }
   }
+
+  // if let Some(eval_info) = 
+  
 
   /*
   TODO:
@@ -207,11 +206,44 @@ pub fn inspect_node_styles(
   - scan all style selectors loaded in eval info
   - include triggers for media queries
   - parse declaration values (AST code should be coming in from CSS)
-  - need to sort based on selector priority!
 
   */
 
   inspection_info
+}
+
+fn get_pc_info<'a>(uri: &String, all_eval_info: &'a BTreeMap<String, DependencyEvalInfo>) -> Option<&'a EvalInfo> {
+  all_eval_info.get(uri).and_then(|info| {
+    match info {
+      DependencyEvalInfo::PC(pc) => {
+        Some(pc)
+      },
+      _ => {
+        None
+      }
+    }
+  })
+}
+
+fn add_inspection_info(inspection_info: &mut NodeInspectionInfo, element_path: &Vec<usize>, main_eval_info: &EvalInfo, uri: &String, all_eval_info: &BTreeMap<String, DependencyEvalInfo>, graph: &DependencyGraph,
+  options: &InspectionOptions) {
+  if let Some(dep_eval_info) = get_pc_info(uri, all_eval_info) {
+    let style_rules = get_eval_info_selectors(dep_eval_info, graph, options);
+
+    for (style_rule, media_option) in style_rules {
+      // TODO - matches should return some result instead of boolean
+
+      
+      if let Some(matching_sub_selector) = get_selector_text_matching_sub_selector(
+        &style_rule.selector_text,
+        element_path,
+        &main_eval_info.preview,
+      ) {
+        let rule = StyleRuleInfo::new(style_rule, media_option.clone(), &matching_sub_selector);
+        inspection_info.insert_style_rule(rule);
+      }
+    }
+  }
 }
 
 fn get_eval_info_selectors<'a>(
@@ -238,8 +270,6 @@ fn collect_style_rules<'a, 'b>(
         style_rules.push((&style, media.clone()));
       }
       Rule::Media(media) => {
-
-
         collect_style_rules(
           style_rules,
           &media.rules,
@@ -274,7 +304,7 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(
+    test_pc_code(
       source,
       vec![0, 0],
       InspectionOptions { screen_width: None },
@@ -304,7 +334,7 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(
+    test_pc_code(
       source,
       vec![0, 0],
       InspectionOptions { screen_width: None },
@@ -342,7 +372,7 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(
+    test_pc_code(
       source,
       vec![0, 0],
       InspectionOptions { screen_width: None },
@@ -387,7 +417,7 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(
+    test_pc_code(
       source,
       vec![0, 0],
       InspectionOptions { screen_width: None },
@@ -432,7 +462,7 @@ mod tests {
       <a><b class='b' /></a>
     "#;
 
-    test_source(
+    test_pc_code(
       source,
       vec![0, 0],
       InspectionOptions { screen_width: None },
@@ -477,7 +507,7 @@ mod tests {
       <a />
     "#;
 
-    test_source(
+    test_pc_code(
       source,
       vec![0],
       InspectionOptions { screen_width: None },
@@ -522,7 +552,7 @@ mod tests {
       <a />
     "#;
 
-    test_source(
+    test_pc_code(
       source,
       vec![0],
       InspectionOptions { screen_width: None },
@@ -570,7 +600,7 @@ mod tests {
       <a />
     "#;
 
-    test_source(
+    test_pc_code(
       source,
       vec![0],
       InspectionOptions {
@@ -596,8 +626,6 @@ mod tests {
     )
   }
 
-
-
   #[test]
   fn activates_media_if_screen_matches() {
     let source = r#"
@@ -611,7 +639,7 @@ mod tests {
       <a />
     "#;
 
-    test_source(
+    test_pc_code(
       source,
       vec![0],
       InspectionOptions {
@@ -637,19 +665,90 @@ mod tests {
     )
   }
 
-  fn test_source<'a>(
+  #[test]
+  fn gathers_inspected_styles_from_other_files() {
+    let mut files: BTreeMap<String, String> = BTreeMap::new();
+    files.insert("entry.pc".to_string(), r"
+      <import src='dep.pc' inject-styles />
+      <div className='item'>
+        <style>
+          color: blue;
+        </style>
+        Hello world
+      </div>
+    ".to_string());
+
+    files.insert("dep.pc".to_string(), r"
+      <style>
+        @export {
+          .item {
+            && {
+              color: red;
+            }
+          }
+        }
+      </style>
+    ".to_string());
+
+
+    test_files(
+      files,
+      vec![0],
+      InspectionOptions {
+        screen_width: Some(100),
+      },
+      NodeInspectionInfo {
+        style_rules: vec![
+          StyleRuleInfo {
+            selector_text: "[class]._pub-bbfa9a83_item[class]._pub-bbfa9a83_item".to_string(),
+            source_id: "0-2-1-1".to_string(),
+            media: None,
+            pseudo_element_name: None,
+            declarations: vec![StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "red".to_string(),
+              active: true,
+            }],
+            specificity: 4,
+          },
+          StyleRuleInfo {
+            selector_text: "._c782daaa._c782daaa".to_string(),
+            source_id: "c782daaa".to_string(),
+            media: None,
+            pseudo_element_name: None,
+            declarations: vec![StyleDeclarationInfo {
+              name: "color".to_string(),
+              value: "blue".to_string(),
+              active: false,
+            }],
+            specificity: 2,
+          }
+        ],
+      },
+    )
+  }
+
+  fn test_pc_code<'a>(
     source: &'a str,
     node_path: Vec<usize>,
     options: InspectionOptions,
     expected_info: NodeInspectionInfo,
   ) {
-    let (eval_info, graph) = __test__evaluate_pc_source(source);
-    let info = inspect_node_styles(
-      &node_path,
-      &eval_info.unwrap(),
-      &graph,
-      &options
-    );
+    let (eval_info, graph) = __test__evaluate_pc_code(source);
+    let mut eval_info_map:BTreeMap<String, DependencyEvalInfo> = BTreeMap::new();
+    eval_info_map.insert("entry.pc".to_string(), DependencyEvalInfo::PC(eval_info.unwrap()));
+    let info = inspect_node_styles(&node_path, &"entry.pc".to_string(), &eval_info_map, &graph, &options);
+    assert_eq!(info, expected_info);
+  }
+
+  fn test_files<'a>(
+    files: BTreeMap<String, String>,
+    node_path: Vec<usize>,
+    options: InspectionOptions,
+    expected_info: NodeInspectionInfo,
+  ) {
+    let (eval_info, graph) = __test__evaluate_pc_files(files, "entry.pc");
+    let info = inspect_node_styles(&node_path, &"entry.pc".to_string(), &eval_info, &graph, &options);
     assert_eq!(info, expected_info);
   }
 }

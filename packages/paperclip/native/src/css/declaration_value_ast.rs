@@ -7,28 +7,27 @@ use std::fmt;
 pub enum Expression {
   List(List),
   Group(Group),
-  Value(Value)
+  Value(Value),
 }
 
 // red, blue
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct List {
-  pub items: Vec<ListItem>
+  pub items: Vec<ListItem>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "listItemKind")]
 pub enum ListItem {
   Group(Group),
-  Value(Value)
+  Value(Value),
 }
 
 // 0px -10px repeat
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Group {
-  pub parameters: Vec<Value>
+  pub parameters: Vec<Value>,
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "valueKind")]
@@ -38,9 +37,8 @@ pub enum Value {
   String(Str),
   Hex(Hex),
   Keyword(Keyword),
-  FunctionCall(FunctionCall)
+  FunctionCall(FunctionCall),
 }
-
 
 // 10px, 100em
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -52,29 +50,29 @@ pub struct Dimension {
 // #F60
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Hex {
-  pub value: String
+  pub value: String,
 }
 
 // 'aab'
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Str {
-  pub value: String
+  pub value: String,
 }
 
 // 100
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Number {
-  pub value: String
+  pub value: String,
 }
 
 impl Number {
-  pub fn to_f64(&self) -> Result<f64, std::num::ParseFloatError>  {
+  pub fn to_f64(&self) -> Result<f64, std::num::ParseFloatError> {
     self.value.as_str().parse::<f64>()
   }
-  pub fn to_f32(&self) -> Result<f32, std::num::ParseFloatError>  {
+  pub fn to_f32(&self) -> Result<f32, std::num::ParseFloatError> {
     self.value.as_str().parse::<f32>()
   }
-  pub fn to_u32(&self) -> Result<u32, std::num::ParseIntError>  {
+  pub fn to_u32(&self) -> Result<u32, std::num::ParseIntError> {
     self.value.as_str().parse::<u32>()
   }
 }
@@ -82,12 +80,12 @@ impl Number {
 // repeat, no-repeat, red
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Keyword {
-  pub value: String
-} 
+  pub value: String,
+}
 
 // rgba(0, 0, 100, 150px)
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct FunctionCall {
   name: String,
-  parameters: Vec<Value>
+  parameters: Vec<Value>,
 }

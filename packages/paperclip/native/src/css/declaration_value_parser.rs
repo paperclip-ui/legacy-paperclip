@@ -45,33 +45,23 @@ pub fn parse_with_tokenizer<'a>(
 }
 
 // red, blue
-fn parse_expression<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<Expression, ParseError> {
+fn parse_expression<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Expression, ParseError> {
   let mut list = parse_list(context)?;
   if list.items.len() == 1 {
     match list.items.pop().unwrap() {
-      ListItem::Group(group) => {
-        Ok(Expression::Group(group))
-      },
-      ListItem::Value(value) => {
-        Ok(Expression::Value(value))
-      }
+      ListItem::Group(group) => Ok(Expression::Group(group)),
+      ListItem::Value(value) => Ok(Expression::Value(value)),
     }
   } else {
     Ok(Expression::List(list))
   }
 }
 
-
 // red, blue
-fn parse_list<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<List, ParseError> {
+fn parse_list<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<List, ParseError> {
   let mut items: Vec<ListItem> = vec![];
 
   loop {
-
     items.push(parse_list_item(context)?);
 
     if context.ended()? {
@@ -87,12 +77,9 @@ fn parse_list<'a, 'b>(
   Ok(List { items })
 }
 
-fn parse_list_item<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<ListItem, ParseError> {
+fn parse_list_item<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ListItem, ParseError> {
   let mut parameters: Vec<Value> = vec![];
   while !context.ended()? && context.tokenizer.peek(1)? != Token::Comma {
-    
     parameters.push(parse_value(context)?);
   }
 
@@ -103,55 +90,43 @@ fn parse_list_item<'a, 'b>(
   }
 }
 
-
-fn parse_value<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<Value, ParseError> {
+fn parse_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Value, ParseError> {
   context.tokenizer.eat_whitespace();
   let pos = context.tokenizer.utf16_pos;
 
   match context.tokenizer.next()? {
-
     // 10px, 10%, 10em
     Token::Number(value) => {
       let number = Number {
-        value: value.to_string()
+        value: value.to_string(),
       };
-
 
       context.tokenizer.eat_whitespace();
       if !context.ended()? {
         let next = context.tokenizer.peek(1)?;
 
-
-
         let unit_option = match next {
           Token::Keyword(keyword) => Some(keyword.to_string()),
           Token::Byte(b'%') => Some("%".to_string()),
-          _ => {
-            None
-          }
+          _ => None,
         };
 
         if let Some(unit) = unit_option {
           context.tokenizer.next()?;
           return Ok(Value::Dimension(Dimension {
             value: number,
-            unit
+            unit,
           }));
         }
       }
-      
 
       return Ok(Value::Number(number));
-    },
-    _ => {
     }
+    _ => {}
   }
 
   return Err(ParseError::unexpected_token(pos));
 }
-
 
 #[cfg(test)]
 mod tests {

@@ -3,13 +3,13 @@
 // https://www.w3schools.com/cssref/css3_pr_animation-keyframes.asp
 // https://www.w3schools.com/cssref/pr_charset_rule.asp
 
+use super::declaration_value_parser::parse_with_tokenizer as parse_decl_value_with_tokenizer;
 use super::media_ast::*;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
 use crate::core::id_generator::generate_seed;
 use crate::core::id_generator::IDGenerator;
-use super::declaration_value_parser::parse_with_tokenizer as parse_decl_value_with_tokenizer;
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
@@ -128,12 +128,12 @@ fn parse_media_condition_without_or<'a, 'b>(
   } else {
     false
   };
-  
+
   let left = parse_media_in_parens(context)?;
 
   if not {
     return Ok(MediaConditionWithoutOr::MediaNot(MediaNot {
-      condition: Box::new(left)
+      condition: Box::new(left),
     }));
   }
 
@@ -142,7 +142,7 @@ fn parse_media_condition_without_or<'a, 'b>(
   if !context.ended()? {
     Ok(MediaConditionWithoutOr::MediaAnd(MediaCompound {
       condition: Box::new(left),
-      rest: parse_media_condition_rest("and", context)?
+      rest: parse_media_condition_rest("and", context)?,
     }))
   } else {
     Ok(MediaConditionWithoutOr::InParens(left))
@@ -153,7 +153,6 @@ fn parse_media_condition_rest<'a, 'b, 'c>(
   keyword: &'a str,
   context: &mut Context<'a, 'b>,
 ) -> Result<Vec<MediaInParens>, ParseError> {
-  
   let mut rest: Vec<MediaInParens> = vec![];
   loop {
     context.tokenizer.eat_whitespace();
@@ -167,7 +166,6 @@ fn parse_media_condition_rest<'a, 'b, 'c>(
 
   Ok(rest)
 }
-
 
 fn parse_media_in_parens<'a, 'b>(
   context: &mut Context<'a, 'b>,
@@ -203,7 +201,10 @@ fn parse_media_feature<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MediaFea
   context.tokenizer.next_expect(Token::Colon)?;
   context.tokenizer.eat_whitespace();
   let value = parse_decl_value_with_tokenizer(context.tokenizer, "", |tokenizer| {
-    Ok(matches!(tokenizer.peek(1)?, Token::Whitespace|Token::ParenClose))
+    Ok(matches!(
+      tokenizer.peek(1)?,
+      Token::Whitespace | Token::ParenClose
+    ))
   })?;
   Ok(MediaFeature::Plain(MFPlain { name, value }))
 }

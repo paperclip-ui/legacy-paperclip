@@ -1803,12 +1803,12 @@ mod tests {
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
     );
-    __test__evaluate_source(case);
+    __test__evaluate_pc_code(case);
   }
 
   #[test]
   fn catches_infinite_part_loop() {
-    let (result, _) = __test__evaluate_source(
+    let (result, _) = __test__evaluate_pc_code(
       "
       <fragment component as='test'>
         <div>
@@ -1833,7 +1833,7 @@ mod tests {
 
   #[test]
   fn catches_recursion_in_multiple_parts() {
-    let (result, _) = __test__evaluate_source(
+    let (result, _) = __test__evaluate_pc_code(
       "
       <fragment component as='test2'>
         <div>
@@ -1863,7 +1863,7 @@ mod tests {
 
   #[test]
   fn allows_self_to_be_called_in_preview() {
-    let (result, _) = __test__evaluate_source(
+    let (result, _) = __test__evaluate_pc_code(
       "
       Hello
       <preview>
@@ -1876,7 +1876,7 @@ mod tests {
 
   #[test]
   fn can_evaluate_class_pierce() {
-    let (result, _) = __test__evaluate_source(
+    let (result, _) = __test__evaluate_pc_code(
       "
       <div something='$something $that' />
     ",
@@ -1886,26 +1886,39 @@ mod tests {
   }
 }
 
-pub fn __test__evaluate_source<'a>(
-  code: &'a str,
+pub fn __test__evaluate_pc_code<'a>(
+  code: &'a str
 ) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
+  let mut files: BTreeMap<String, String> = BTreeMap::new();
+  files.insert("some-file.pc".to_string(), code.to_string());
+  __test__evaluate_pc_files(files, "some-file.pc")
+}
+
+pub fn __test__evaluate_pc_files<'a>(
+  files: BTreeMap<String, String>,
+  main_file_name: &'a str
+) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
+
   let mut graph = DependencyGraph::new();
-  let uri = "some-file.pc".to_string();
+  let uri = main_file_name.to_string();
   let vfs = VirtualFileSystem::new(
     Box::new(|_| "".to_string()),
     Box::new(|_| true),
     Box::new(|_, uri| Some(uri.to_string())),
   );
-  graph.dependencies.insert(
-    uri.clone(),
-    Dependency::from_source(
-      code.to_string(),
-      &uri,
-      &vfs,
-      graph.seed_id_generator.new_seed().as_str(),
-    )
-    .unwrap(),
-  );
+
+  for (file_name, content) in files {
+    graph.dependencies.insert(
+      file_name.clone(),
+      Dependency::from_source(
+        content.to_string(),
+        &file_name,
+        &vfs,
+        graph.seed_id_generator.new_seed().as_str(),
+      )
+      .unwrap(),
+    );
+  }
 
   (
     evaluate(

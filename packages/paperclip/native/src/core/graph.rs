@@ -30,6 +30,7 @@ pub struct GraphError {
   info: GraphErrorInfo,
 }
 
+#[derive(Debug, Clone)]
 pub struct DependencyGraph {
   pub dependencies: BTreeMap<String, Dependency>,
   pub seed_id_generator: IDGenerator,
@@ -239,14 +240,14 @@ impl DependencyGraph {
   }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 #[serde(tag = "contentKind")]
 pub enum DependencyContent {
   Node(pc_ast::Node),
   StyleSheet(css_ast::Sheet),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Dependency {
   pub uri: String,
   pub dependencies: BTreeMap<String, String>,

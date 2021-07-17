@@ -12,7 +12,7 @@ TODO:
 
 use super::evaluator::EvalInfo;
 use super::evaluator::{
-  evaluate as evaluate_pc, EngineMode, __test__evaluate_source as __test__evaluate_pc_source,
+  evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code,
 };
 use super::selector_match::find_one_matching_element;
 use super::virt::Node as VirtNode;
@@ -148,7 +148,7 @@ mod tests {
   #[test]
   fn generates_warning_when_simple_style_not_found() {
     let source = "<style>a { color: red; }</style><div></div>";
-    let (eval_info, graph) = __test__evaluate_pc_source(source);
+    let (eval_info, graph) = __test__evaluate_pc_code(source);
     let notices = lint(
       &eval_info.unwrap(),
       &graph,
@@ -178,7 +178,8 @@ mod tests {
     ];
 
     for (source, warning_count) in cases.iter() {
-      let (eval_info, graph) = __test__evaluate_pc_source(source);
+
+      let (eval_info, graph) = __test__evaluate_pc_code(source);
       let notices = lint(
         &eval_info.unwrap(),
         &graph,

@@ -1,7 +1,7 @@
 // https://developer.mozilla.org/en-US/docs/Web/CSS/@media#media-query-list
 
-use crate::base::ast::{BasicRaws, Location};
 use super::declaration_value_ast as decl_ast;
+use crate::base::ast::{BasicRaws, Location};
 use serde::Serialize;
 use std::fmt;
 
@@ -42,7 +42,6 @@ pub struct MediaCompound {
   pub condition: Box<MediaInParens>,
   pub rest: Vec<MediaInParens>,
 }
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "mediaInParensKind")]

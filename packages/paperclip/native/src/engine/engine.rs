@@ -478,3 +478,24 @@ mod tests {
     let result = block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
   }
 }
+
+
+pub fn __test__evaluate_pc_files<'a>(
+  files: BTreeMap<String, String>,
+  main_file_name: &'a str
+) -> (BTreeMap<String, DependencyEvalInfo>, DependencyGraph) {
+
+  let f1 = files.clone();
+  let f2 = files.clone();
+
+  let mut engine = Engine::new(
+    Box::new(move |uri| f1.get(uri).unwrap().clone()),
+    Box::new(move |uri| f2.get(uri) != None),
+    Box::new(|_, uri| Some(uri.to_string())),
+    EngineMode::SingleFrame,
+  );
+
+  block_on(engine.run(&main_file_name.to_string()));
+
+  (engine.evaluated_data.clone(), engine.dependency_graph.clone())
+}
