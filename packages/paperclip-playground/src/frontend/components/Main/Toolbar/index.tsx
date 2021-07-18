@@ -1,7 +1,7 @@
 import { APP_LOCATIONS } from "../../../state";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
-import { useSelect } from "../../../../../../paperclip-designer/src/components/Select";
+import { useSelect } from "paperclip-designer/src/components/Select";
 import {
   logoutButtonClicked,
   saveButtonClicked,
@@ -113,9 +113,7 @@ export const MainToolbar = () => {
   } else {
     leftControls = (
       <Button primary onClick={onSignInClick}>
-        {state.user && !state.user.done
-          ? "Loading..."
-          : "Sign in to save"}
+        {state.user && !state.user.done ? "Loading..." : "Sign in to save"}
       </Button>
     );
   }

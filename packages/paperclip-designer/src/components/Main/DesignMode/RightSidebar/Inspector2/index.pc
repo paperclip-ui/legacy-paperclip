@@ -1,6 +1,14 @@
 <import src="styles/atoms.pc" inject-styles />
 
 
+<div export component as="Container">
+  <style>
+    width: 350px;
+    overflow-y: scroll;
+  </style>
+  {children}
+</div>
+
 <!--
   @frame { visible: false }
 -->
@@ -123,14 +131,33 @@
   @frame { visible: false }
 -->
 <div export component as="SelectorInfo">
-  <div>{computedText}</div>
+  <style>
+    display: flex;
+    justify-content: space-between;
+  </style>
+  <div>
+    <style>
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    </style>
+    {computedText}
+  </div>
+  <div>
+    <style>
+      opacity: 0.5;
+    </style>
+    {fileName}
+  </div>
 </div>
 
 <!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
-<div export component as="Preview">
-  <StyleRule header={<SelectorInfo computedText=".div.div" source={"SOURCE"} />}
+<Container export component as="Preview">
+  <StyleRule header={<SelectorInfo computedText=".div.div.fds.fdsf.dsf.sdfsdfs.dfds.fsd.fsd.fsd."
+      source={"SOURCE"}
+      fileName="file.pc" />}
     properties={<fragment>
       <StyleRuleProperty name="background-color"
         value={<StyleRulePropertyRichValue>
@@ -155,7 +182,7 @@
           <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
         </StyleRulePropertyRichValue>} />
     </fragment>} />
-</div>
+</Container>
 
 
 <!--

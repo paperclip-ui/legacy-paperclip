@@ -19,7 +19,9 @@ import {
   getAttributeStringValue,
   hasAttribute,
   Diagnostic,
-  INJECT_STYLES_TAG_NAME
+  INJECT_STYLES_TAG_NAME,
+  NodeStyleInspection,
+  VirtNodeSource
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -206,8 +208,15 @@ export class EngineDelegate {
     });
   }
 
-  public inspectNodeStyles(path: number[], uri: String, screenWidth: number) {
-    return this._native.inspect_node_styles(path, uri, screenWidth);
+  public inspectNodeStyles(
+    source: VirtNodeSource,
+    screenWidth: number
+  ): NodeStyleInspection {
+    return this._native.inspect_node_styles(
+      source.path,
+      source.uri,
+      screenWidth
+    );
   }
 
   public getLoadedData(uri: string): LoadedData | null {

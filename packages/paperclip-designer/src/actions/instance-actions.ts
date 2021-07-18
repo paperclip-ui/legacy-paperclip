@@ -8,7 +8,8 @@ import {
   LoadedData,
   ExprTextSource,
   Action,
-  ExprSource
+  ExprSource,
+  VirtNodeSource
 } from "paperclip-utils";
 import {
   Box,
@@ -136,10 +137,7 @@ export type EnvOptionClicked = BaseAction<
 >;
 export type VirtualNodesSelected = BaseAction<
   ActionType.VIRTUAL_NODES_SELECTED,
-  Array<{
-    nodePath: number[];
-    nodeUri: string;
-  }>
+  { sources: Array<VirtNodeSource>; screenWidth: number }
 >;
 
 export type MetaClicked = BaseAction<

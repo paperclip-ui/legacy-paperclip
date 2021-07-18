@@ -221,6 +221,7 @@ function* handleRenderer(getState: AppStateSelector) {
       ActionType.GLOBAL_Y_KEY_DOWN,
       ActionType.GLOBAL_SAVE_KEY_DOWN,
       ActionType.GET_ALL_SCREENS_REQUESTED,
+      ActionType.VIRTUAL_NODES_SELECTED,
       ActionType.PASTED,
       ActionType.FS_ITEM_CLICKED,
       ActionType.TITLE_DOUBLE_CLICKED,
@@ -243,6 +244,8 @@ function* handleCanvasMouseUp(
 ) {
   yield fork(handleMetaKeyClick, action, getState);
   yield fork(handleSyncFrameToLocation);
+
+  const state: AppState = yield select();
 }
 
 function* handleSyncFrameToLocation() {
@@ -574,14 +577,15 @@ function* handleVirtualObjectSelected(getState: AppStateSelector) {
     }
 
     yield put(
-      virtualNodesSelected(
-        state.designer.selectedNodePaths.map(nodePath => {
+      virtualNodesSelected({
+        sources: state.designer.selectedNodePaths.map(nodePath => {
           return {
-            nodePath: nodePath.split(".").map(Number),
-            nodeUri: state.designer.ui.query.canvasFile!
+            path: nodePath.split(".").map(Number),
+            uri: state.designer.ui.query.canvasFile!
           };
-        })
-      )
+        }),
+        screenWidth: window.screenX
+      })
     );
   });
 }

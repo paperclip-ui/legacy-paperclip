@@ -1,4 +1,8 @@
 <import src="./Inspector2/index.pc" as="Inspector" />
+
+<!--
+  @frame { width: 447, height: 768, x: 0, y: 0 }
+-->
 <div export component as="Preview">
   <Inspector.Preview />
 </div>

@@ -1,0 +1,123 @@
+// 1:1 with Rust
+
+export enum SelectorScopeKind {
+  Element = "Element",
+  Document = "Document"
+}
+
+type BaseSelectorScope<TKind extends SelectorScopeKind> = {
+  kind: TKind;
+};
+
+export type ElementSelectorScope = BaseSelectorScope<SelectorScopeKind.Element>;
+export type DocumentSelectorScope = BaseSelectorScope<
+  SelectorScopeKind.Document
+>;
+
+export type SelectorScope = ElementSelectorScope | DocumentSelectorScope;
+
+export enum SelectorInfoKind {
+  List = "list",
+  All = "All",
+  Element = "Element",
+  PseudoElement = "PseudoElement",
+  PsuedoParamElement = "PseudoParamElement",
+  Attribute = "Attribute",
+  Not = "Not",
+  Id = "Id",
+  Class = "Class",
+  Combo = "Combo",
+  Child = "Child",
+  Descendent = "Descendent",
+  Adjacent = "Adjacent",
+  Sibling = "Sibling"
+}
+
+type BaseSelectorInfo<TKind extends SelectorInfoKind> = {
+  kind: TKind;
+};
+
+export type GroupSelectorInfo<TKind extends SelectorInfoKind> = {
+  selectors: Array<BaseSelectorInfo<SelectorInfoKind>>;
+} & BaseSelectorInfo<TKind>;
+
+export type TargetSelectorInfo<TKind extends SelectorInfoKind> = {
+  value: string;
+} & BaseSelectorInfo<TKind>;
+
+export type WrapperSelectorInfo<TKind extends SelectorInfoKind> = {
+  selector: BaseSelectorInfo<SelectorInfoKind>;
+} & BaseSelectorInfo<TKind>;
+
+export type ListSelectorInfo = GroupSelectorInfo<SelectorInfoKind.List>;
+export type ElementSelectorInfo = GroupSelectorInfo<SelectorInfoKind.Element>;
+export type AllSelectorInfo = GroupSelectorInfo<SelectorInfoKind.All>;
+export type PseudoElementSelectorInfo = TargetSelectorInfo<
+  SelectorInfoKind.PseudoElement
+>;
+export type PseudoParamElementSelectorInfo = TargetSelectorInfo<
+  SelectorInfoKind.PsuedoParamElement
+>;
+export type AttributeSelectorInfo = TargetSelectorInfo<
+  SelectorInfoKind.Attribute
+>;
+export type NotSelectorInfo = WrapperSelectorInfo<SelectorInfoKind.Not>;
+export type IdSelectorInfo = TargetSelectorInfo<SelectorInfoKind.Id>;
+
+export type ClassSelectorInfo = {
+  name: string;
+  value: string;
+  scope: SelectorScope;
+} & BaseSelectorInfo<SelectorInfoKind.Class>;
+
+export type ComboSelectorInfo = GroupSelectorInfo<SelectorInfoKind.Combo>;
+export type ChildSelectorInfo = WrapperSelectorInfo<SelectorInfoKind.Child>;
+export type DescendentSelectorInfo = WrapperSelectorInfo<
+  SelectorInfoKind.Descendent
+>;
+export type AdjacentSelectorInfo = WrapperSelectorInfo<
+  SelectorInfoKind.Adjacent
+>;
+export type SiblingSelectorInfo = WrapperSelectorInfo<SelectorInfoKind.Sibling>;
+
+export type SelectorInfo =
+  | ListSelectorInfo
+  | ElementSelectorInfo
+  | AllSelectorInfo
+  | PseudoElementSelectorInfo
+  | PseudoParamElementSelectorInfo
+  | AttributeSelectorInfo
+  | NotSelectorInfo
+  | IdSelectorInfo
+  | ClassSelectorInfo
+  | ComboSelectorInfo
+  | ChildSelectorInfo
+  | DescendentSelectorInfo
+  | AdjacentSelectorInfo
+  | SiblingSelectorInfo;
+
+export type StyleDeclarationInfo = {
+  name: string;
+  value: string;
+  active: boolean;
+};
+
+export type MediaInfo = {
+  conditionText: string;
+  active: boolean;
+};
+
+export type StyleRuleInfo = {
+  selectorText: string;
+  selectorInfo: SelectorInfo;
+  pseudoElementName?: string;
+  sourceId: string;
+  sourceUri: string;
+  media?: MediaInfo;
+  declarations: StyleDeclarationInfo[];
+  specificity: number;
+};
+
+export type NodeStyleInspection = {
+  styleRules: StyleRuleInfo[];
+};

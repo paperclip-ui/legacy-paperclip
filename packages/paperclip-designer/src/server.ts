@@ -32,7 +32,8 @@ import {
   MetaClicked,
   revealExpressionSourceRequested,
   PCVirtObjectEdited,
-  pcSourceEdited
+  pcSourceEdited,
+  virtualNodeStylesInspected
 } from "./actions";
 import {
   AvailableBrowser,
@@ -50,7 +51,11 @@ import { isPaperclipFile } from "paperclip";
 import * as ngrok from "ngrok";
 import * as qs from "querystring";
 import * as bs from "browserstack";
-import { engineDelegateChanged } from "paperclip-utils";
+import {
+  engineDelegateChanged,
+  NodeStyleInspection,
+  VirtNodeSource
+} from "paperclip-utils";
 import { PCSourceWriter } from "paperclip-source-writer";
 
 type BrowserstackCredentials = {
@@ -163,7 +168,6 @@ export const startServer = async ({
     });
 
     const handleTitleDoubleClicked = (action: TitleDoubleClicked) => {
-      console.log("title double clicked: ", action.payload.uri);
       if (action.payload.uri) {
         exec(`open "${URL.fileURLToPath(action.payload.uri)}"`);
       }
@@ -190,7 +194,6 @@ export const startServer = async ({
         url = getBrowserstackUrl(url, option);
       }
 
-      console.log(`opening ${url}`);
       exec(`open "${url}"`);
     };
 
@@ -218,13 +221,36 @@ export const startServer = async ({
     };
 
     const onVirtualNodeSelected = (action: VirtualNodesSelected) => {
-      const sources = action.payload.map(info => {
+      loadVirtualNodeSources(action.payload.sources);
+      inspectVirtuaNodeSources(
+        action.payload.sources,
+        action.payload.screenWidth
+      );
+    };
+
+    const loadVirtualNodeSources = (virstSources: VirtNodeSource[]) => {
+      const sources = virstSources.map(info => {
         return {
-          virtualNodePath: info.nodePath,
-          source: engine.getVirtualNodeSourceInfo(info.nodePath, info.nodeUri)
+          virtualNodePath: info.path,
+          source: engine.getVirtualNodeSourceInfo(info.path, info.uri)
         };
       });
       emit(virtualNodeSourcesLoaded(sources));
+    };
+
+    const inspectVirtuaNodeSources = (
+      virtSources: VirtNodeSource[],
+      screenWidth: number
+    ) => {
+      const now = Date.now();
+      const inspections: Array<[
+        VirtNodeSource,
+        NodeStyleInspection
+      ]> = virtSources.map(source => [
+        source,
+        engine.inspectNodeStyles(source, screenWidth)
+      ]);
+      emit(virtualNodeStylesInspected(inspections));
     };
 
     const onFileOpened = async (action: FileOpened) => {
@@ -238,7 +264,6 @@ export const startServer = async ({
       payload: { nodeUri, nodePath }
     }: MetaClicked) => {
       const info = engine.getVirtualNodeSourceInfo(nodePath, nodeUri);
-      console.log(nodePath, nodeUri, info);
       if (info) {
         emitExternal(revealExpressionSourceRequested(info));
       }

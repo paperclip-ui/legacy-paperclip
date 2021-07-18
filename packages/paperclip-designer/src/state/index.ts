@@ -7,6 +7,7 @@ import {
   LoadedPCData,
   memoize,
   NodeAnnotations,
+  NodeStyleInspection,
   VirtualFrame,
   VirtualNodeKind
 } from "paperclip-utils";
@@ -129,6 +130,7 @@ export type DesignerState = {
   resourceHost: string;
   selectedNodePaths: string[];
   selectedNodeSources: VirtualNodeSourceInfo[];
+  selectedNodeStyleInspections: NodeStyleInspection[];
   projectDirectory?: Directory;
   metaKeyDown?: boolean;
   optionKeyDown?: boolean;
@@ -191,6 +193,7 @@ export const INITIAL_STATE: AppState = {
   designer: {
     readonly: false,
     selectedNodeSources: [],
+    selectedNodeStyleInspections: [],
     syncLocationMode: SyncLocationMode.Location | SyncLocationMode.Query,
     sharable: true,
     ui: {

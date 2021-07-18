@@ -138,6 +138,9 @@ const selectNode = (
   designer: DesignerState
 ) => {
   return produce(designer, newDesigner => {
+    newDesigner.selectedNodeStyleInspections = [];
+    newDesigner.selectedNodeSources = [];
+
     if (nodePath == null) {
       newDesigner.selectedNodePaths = [];
       return;
@@ -208,6 +211,13 @@ export const reduceDesigner = (
     case ServerActionType.VIRTUAL_NODE_SOURCES_LOADED: {
       return produce(designer, newDesigner => {
         newDesigner.selectedNodeSources = action.payload;
+      });
+    }
+    case ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED: {
+      return produce(designer, newDesigner => {
+        newDesigner.selectedNodeStyleInspections = action.payload.map(
+          info => info[1]
+        );
       });
     }
     case ActionType.BIRDSEYE_FILTER_CHANGED: {
