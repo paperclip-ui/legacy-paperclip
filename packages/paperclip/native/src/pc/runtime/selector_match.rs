@@ -94,9 +94,7 @@ Combo selectors? `a b, c > d` would yield:
 
 */
 
-use super::evaluator::{
-  evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code,
-};
+use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::virt::{Element as VirtElement, Node as VirtNode};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::id_generator::generate_seed;
@@ -179,7 +177,7 @@ pub fn get_selector_text_matching_sub_selector<'a, 'b>(
   selector_text: &'b str,
   element_path: &'a Vec<usize>,
   document: &'a VirtNode,
-) -> Option<css_ast::Selector> {
+) -> Option<(css_ast::Selector, css_ast::Selector)> {
   let selector = parse_css_selector(selector_text, None).unwrap();
 
   Context::new_from_path(element_path, document).and_then(|context| {
@@ -191,6 +189,8 @@ pub fn get_selector_text_matching_sub_selector<'a, 'b>(
       })
       .and_then(|element| get_matching_sub_selector(&selector, element, &context))
       .and_then(|sub_selector| Some(sub_selector.clone()))
+  }).and_then(|sub_selector| {
+    Some((sub_selector, selector))
   })
 }
 

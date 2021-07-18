@@ -6,7 +6,7 @@ use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, ExprTextSource, Location};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{
-  get_document_style_private_scope, get_document_style_public_scope, is_relative_path,
+  get_document_id, get_document_style_public_scope, is_relative_path,
 };
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
@@ -364,7 +364,7 @@ fn evaluate_node_sheet<'a>(
   css_exports: &'a mut css_export::Exports,
   context: &'a mut Context,
 ) -> Result<(), RuntimeError> {
-  let private_scope = get_document_style_private_scope(uri);
+  let private_scope = get_document_id(uri);
   let public_scope = get_document_style_public_scope(uri);
 
   let element_scope = if let Some(parent) = parent {
@@ -515,7 +515,7 @@ fn create_context<'a>(
     vec![]
   };
 
-  let private_scope = get_document_style_private_scope(uri);
+  let private_scope = get_document_id(uri);
   let public_scope = get_document_style_public_scope(uri);
 
   Context {
@@ -1604,10 +1604,10 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
   lazy_static! {
     static ref scope_re: Regex = Regex::new(r"^_[-\w]+_").unwrap();
   }
+  
 
-  // if scope_re.is_match(value) {
-  //   return value.to_string();
-  // }
+  
+  
 
   let mut skip = 0;
 
@@ -1887,7 +1887,7 @@ mod tests {
 }
 
 pub fn __test__evaluate_pc_code<'a>(
-  code: &'a str
+  code: &'a str,
 ) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
   let mut files: BTreeMap<String, String> = BTreeMap::new();
   files.insert("some-file.pc".to_string(), code.to_string());
@@ -1896,9 +1896,8 @@ pub fn __test__evaluate_pc_code<'a>(
 
 pub fn __test__evaluate_pc_files<'a>(
   files: BTreeMap<String, String>,
-  main_file_name: &'a str
+  main_file_name: &'a str,
 ) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
-
   let mut graph = DependencyGraph::new();
   let uri = main_file_name.to_string();
   let vfs = VirtualFileSystem::new(

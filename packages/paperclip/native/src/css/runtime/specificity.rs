@@ -12,8 +12,8 @@ fn calc_specificity(selector: &Selector) -> i32 {
     Selector::Element(_) => 1,
     Selector::Global(_) => 0,
 
-    // TODO
-    Selector::Id(_) => 1,
+    // ID overrides everything, so just give a really high number
+    Selector::Id(_) => 9999,
 
     // :not
     Selector::Not(not) => calc_specificity(&not.selector),
@@ -52,7 +52,7 @@ fn calc_specificity(selector: &Selector) -> i32 {
     }
 
     // TODO
-    Selector::Class(_) => 0,
+    Selector::Class(_) => 2,
 
     // TODO
     Selector::Combo(selector) => selector.selectors.len() as i32,
@@ -61,7 +61,7 @@ fn calc_specificity(selector: &Selector) -> i32 {
     Selector::AllSelector(_) => 1,
 
     // TODO
-    Selector::Attribute(_) => 1,
+    Selector::Attribute(_) => 2,
   }
 }
 

@@ -996,6 +996,12 @@ pub struct AllSelector {
   pub location: Location,
 }
 
+impl fmt::Display for AllSelector {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "*")
+  }
+}
+
 impl fmt::Display for ClassSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, ".{}", &self.class_name)?;

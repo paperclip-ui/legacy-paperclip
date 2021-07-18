@@ -1,7 +1,9 @@
+use crc::crc32;
 use super::vfs::VirtualFileSystem;
 use crate::base::ast::Location;
 use crate::base::parser::ParseError;
 use crate::core::id_generator::{generate_seed, IDGenerator};
+use crate::base::utils::{get_document_id};
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use serde::Serialize;
@@ -247,6 +249,7 @@ pub enum DependencyContent {
   StyleSheet(css_ast::Sheet),
 }
 
+
 #[derive(Debug, Clone)]
 pub struct Dependency {
   pub uri: String,
@@ -267,6 +270,10 @@ impl<'a> Dependency {
     } else {
       Dependency::from_pc_source(source, uri, vfs, id_seed)
     }
+  }
+
+  pub fn get_id(&self) -> String {
+    get_document_id(&self.uri).to_string()
   }
 
   fn from_css_source<'b>(

@@ -1244,7 +1244,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856 { color:blue; } ._406d2856._406d2856[class].test { color:red; } ._406d2856 #test2._80f4925f { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:blue; } ._406d2856._406d2856._80f4925f_test { color:red; } ._406d2856 #test2._80f4925f { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1290,7 +1290,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856 { color:red; background:url(/path.png); } ._406d2856._406d2856[class].variant { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:red; background:url(/path.png); } ._406d2856._406d2856._80f4925f_variant { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1516,7 +1516,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856 { color:red; } ._406d2856 a._80f4925f { background:blue; } ._406d2856 a._80f4925f[class].b { opacity:1; } ._406d2856 a._80f4925f[class].c { opacity:1; } ._406d2856 a._80f4925f e._80f4925f { color:orange; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:red; } ._406d2856 a._80f4925f { background:blue; } ._406d2856 a._80f4925f._80f4925f_b { opacity:1; } ._406d2856 a._80f4925f._80f4925f_c { opacity:1; } ._406d2856 a._80f4925f e._80f4925f { color:orange; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1560,7 +1560,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>._406d2856._406d2856[class].a [class].b._80f4925f:hover { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856._80f4925f_a ._80f4925f_b._80f4925f:hover { color:blue; }</style><div class="_80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1580,7 +1580,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      "<style>[class]._80f4925f_a[class].b[class].c { color:blue; }</style>"
+      "<style>[class]._80f4925f_a._80f4925f_b._80f4925f_c { color:blue; }</style>"
     );
   });
 

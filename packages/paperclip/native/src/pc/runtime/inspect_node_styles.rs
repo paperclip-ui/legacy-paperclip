@@ -9,17 +9,16 @@ TODO:
 */
 
 use super::evaluator::EvalInfo;
-use super::evaluator::{
-  evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code,
-};
-use crate::engine::engine::{__test__evaluate_pc_files};
+use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::selector_match::get_selector_text_matching_sub_selector;
-use crate::core::graph::{DependencyGraph};
 use crate::core::eval::DependencyEvalInfo;
-use crate::css::ast::Selector;
+use crate::core::graph::DependencyGraph;
+use crate::css::ast as css_ast;
 use crate::css::runtime::media_match::media_matches;
+use super::inspect_selector_info as iso;
 use crate::css::runtime::specificity::get_selector_text_specificity;
 use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
+use crate::engine::engine::__test__evaluate_pc_files;
 use serde::Serialize;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashSet};
@@ -68,6 +67,10 @@ pub struct StyleRuleInfo {
   #[serde(rename = "selectorText")]
   pub selector_text: String,
 
+  // info about the selector including scope stuff
+  #[serde(rename = "selectorInfo")]
+  pub selector_info: iso::Selector,
+
   // before, after
   #[serde(rename = "pseudoElementName")]
   pub pseudo_element_name: Option<String>,
@@ -75,6 +78,10 @@ pub struct StyleRuleInfo {
   // AST source information
   #[serde(rename = "sourceId")]
   pub source_id: String,
+
+  // keep this here because it'll likely be displayed to the user. 
+  #[serde(rename = "sourceUri")]
+  pub source_uri: String,
   pub media: Option<MediaInfo>,
 
   declarations: Vec<StyleDeclarationInfo>,
@@ -83,14 +90,20 @@ pub struct StyleRuleInfo {
   pub specificity: i32,
 }
 
+
+
 impl StyleRuleInfo {
   pub fn new(
     rule: &StyleRule,
+    source_uri: &String,
     media: Option<MediaInfo>,
-    matching_sub_selector: &Selector,
+    matching_sub_selector: &css_ast::Selector,
+    selector_info: iso::Selector
   ) -> StyleRuleInfo {
     let mut rule_info = StyleRuleInfo {
       selector_text: rule.selector_text.to_string(),
+      selector_info,
+      source_uri: source_uri.to_string(),
       media: media.clone(),
       source_id: rule.source_id.clone(),
       declarations: vec![],
@@ -137,6 +150,7 @@ impl StyleRuleInfo {
     return true;
   }
 }
+
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NodeInspectionInfo {
@@ -190,15 +204,30 @@ pub fn inspect_node_styles(
   let mut inspection_info = NodeInspectionInfo::new();
 
   if let Some(main_eval_info) = get_pc_info(document_uri, all_eval_info) {
-    add_inspection_info(&mut inspection_info, element_path, main_eval_info, document_uri, all_eval_info, graph, options);
+    add_inspection_info(
+      &mut inspection_info,
+      element_path,
+      main_eval_info,
+      document_uri,
+      all_eval_info,
+      graph,
+      options,
+    );
 
     for dep_uri in &main_eval_info.all_imported_sheet_uris {
-      add_inspection_info(&mut inspection_info, element_path, main_eval_info, dep_uri, all_eval_info, graph, options);
+      add_inspection_info(
+        &mut inspection_info,
+        element_path,
+        main_eval_info,
+        dep_uri,
+        all_eval_info,
+        graph,
+        options,
+      );
     }
   }
 
-  // if let Some(eval_info) = 
-  
+  // if let Some(eval_info) =
 
   /*
   TODO:
@@ -212,35 +241,40 @@ pub fn inspect_node_styles(
   inspection_info
 }
 
-fn get_pc_info<'a>(uri: &String, all_eval_info: &'a BTreeMap<String, DependencyEvalInfo>) -> Option<&'a EvalInfo> {
-  all_eval_info.get(uri).and_then(|info| {
-    match info {
-      DependencyEvalInfo::PC(pc) => {
-        Some(pc)
-      },
-      _ => {
-        None
-      }
-    }
+fn get_pc_info<'a>(
+  uri: &String,
+  all_eval_info: &'a BTreeMap<String, DependencyEvalInfo>,
+) -> Option<&'a EvalInfo> {
+  all_eval_info.get(uri).and_then(|info| match info {
+    DependencyEvalInfo::PC(pc) => Some(pc),
+    _ => None,
   })
 }
 
-fn add_inspection_info(inspection_info: &mut NodeInspectionInfo, element_path: &Vec<usize>, main_eval_info: &EvalInfo, uri: &String, all_eval_info: &BTreeMap<String, DependencyEvalInfo>, graph: &DependencyGraph,
-  options: &InspectionOptions) {
+fn add_inspection_info(
+  inspection_info: &mut NodeInspectionInfo,
+  element_path: &Vec<usize>,
+  main_eval_info: &EvalInfo,
+  uri: &String,
+  all_eval_info: &BTreeMap<String, DependencyEvalInfo>,
+  graph: &DependencyGraph,
+  options: &InspectionOptions,
+) {
   if let Some(dep_eval_info) = get_pc_info(uri, all_eval_info) {
     let style_rules = get_eval_info_selectors(dep_eval_info, graph, options);
 
     for (style_rule, media_option) in style_rules {
       // TODO - matches should return some result instead of boolean
 
-      
-      if let Some(matching_sub_selector) = get_selector_text_matching_sub_selector(
+      if let Some((matching_sub_selector, entire_selector)) = get_selector_text_matching_sub_selector(
         &style_rule.selector_text,
         element_path,
         &main_eval_info.preview,
       ) {
-        let rule = StyleRuleInfo::new(style_rule, media_option.clone(), &matching_sub_selector);
-        inspection_info.insert_style_rule(rule);
+        if let Ok(selector_info) = iso::Selector::from_ast(&entire_selector) {
+          let rule = StyleRuleInfo::new(style_rule, uri, media_option.clone(), &matching_sub_selector, selector_info);
+          inspection_info.insert_style_rule(rule);
+        }
       }
     }
   }
@@ -311,7 +345,11 @@ mod tests {
       NodeInspectionInfo {
         style_rules: vec![StyleRuleInfo {
           selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
+          selector_info: iso::Selector::Element(iso::TargetSelector {
+            value: "a".to_string()
+          }),
           source_id: "0-1-1-1".to_string(),
+          source_uri: "entry.pc".to_string(),
           pseudo_element_name: None,
           media: None,
           declarations: vec![StyleDeclarationInfo {
@@ -340,8 +378,12 @@ mod tests {
       InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![StyleRuleInfo {
+          selector_info: iso::Selector::Element(iso::TargetSelector {
+            value: "a".to_string()
+          }),
           selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
           source_id: "0-1-1-1".to_string(),
+          source_uri: "entry.pc".to_string(),
           media: None,
           pseudo_element_name: None,
           declarations: vec![
@@ -380,7 +422,11 @@ mod tests {
         style_rules: vec![
           StyleRuleInfo {
             selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-2".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
@@ -392,7 +438,11 @@ mod tests {
           },
           StyleRuleInfo {
             selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-1".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
@@ -425,7 +475,11 @@ mod tests {
         style_rules: vec![
           StyleRuleInfo {
             selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-2".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
@@ -437,7 +491,11 @@ mod tests {
           },
           StyleRuleInfo {
             selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-1".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
@@ -470,7 +528,11 @@ mod tests {
         style_rules: vec![
           StyleRuleInfo {
             selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-2".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
@@ -482,7 +544,11 @@ mod tests {
           },
           StyleRuleInfo {
             selector_text: "b[class].b[class].b._acb5fc82".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-1".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
@@ -515,7 +581,11 @@ mod tests {
         style_rules: vec![
           StyleRuleInfo {
             selector_text: "a._acb5fc82:before".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-2".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: Some("before".to_string()),
             declarations: vec![StyleDeclarationInfo {
@@ -527,7 +597,11 @@ mod tests {
           },
           StyleRuleInfo {
             selector_text: "a._acb5fc82".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-1".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
@@ -560,7 +634,11 @@ mod tests {
         style_rules: vec![
           StyleRuleInfo {
             selector_text: "a._acb5fc82:before".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-2".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: Some("before".to_string()),
             declarations: vec![StyleDeclarationInfo {
@@ -572,7 +650,11 @@ mod tests {
           },
           StyleRuleInfo {
             selector_text: "a._acb5fc82:before".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-1-1-1".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: Some("before".to_string()),
             declarations: vec![StyleDeclarationInfo {
@@ -609,7 +691,11 @@ mod tests {
       NodeInspectionInfo {
         style_rules: vec![StyleRuleInfo {
           selector_text: "a._acb5fc82".to_string(),
+          selector_info: iso::Selector::Element(iso::TargetSelector {
+            value: "a".to_string()
+          }),
           source_id: "0-1-1-1".to_string(),
+          source_uri: "entry.pc".to_string(),
           media: Some(MediaInfo {
             condition_text: "screen and (max-width: 400px)".to_string(),
             active: false,
@@ -648,7 +734,11 @@ mod tests {
       NodeInspectionInfo {
         style_rules: vec![StyleRuleInfo {
           selector_text: "a._acb5fc82".to_string(),
+          selector_info: iso::Selector::Element(iso::TargetSelector {
+            value: "a".to_string()
+          }),
           source_id: "0-1-1-1".to_string(),
+          source_uri: "entry.pc".to_string(),
           media: Some(MediaInfo {
             condition_text: "screen and (max-width: 400px)".to_string(),
             active: true,
@@ -668,17 +758,28 @@ mod tests {
   #[test]
   fn gathers_inspected_styles_from_other_files() {
     let mut files: BTreeMap<String, String> = BTreeMap::new();
-    files.insert("entry.pc".to_string(), r"
+    files.insert(
+      "entry.pc".to_string(),
+      r"
       <import src='dep.pc' inject-styles />
+      <style>
+        .item {
+          background: red;
+        }
+      </style>
       <div className='item'>
         <style>
           color: blue;
         </style>
         Hello world
       </div>
-    ".to_string());
+    "
+      .to_string(),
+    );
 
-    files.insert("dep.pc".to_string(), r"
+    files.insert(
+      "dep.pc".to_string(),
+      r"
       <style>
         @export {
           .item {
@@ -686,10 +787,14 @@ mod tests {
               color: red;
             }
           }
+          :global(div) {
+            color: red;
+          }
         }
       </style>
-    ".to_string());
-
+    "
+      .to_string(),
+    );
 
     test_files(
       files,
@@ -701,7 +806,11 @@ mod tests {
         style_rules: vec![
           StyleRuleInfo {
             selector_text: "[class]._pub-bbfa9a83_item[class]._pub-bbfa9a83_item".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "0-2-1-1".to_string(),
+            source_uri: "dep.pc".to_string(),
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
@@ -713,7 +822,11 @@ mod tests {
           },
           StyleRuleInfo {
             selector_text: "._c782daaa._c782daaa".to_string(),
+            selector_info: iso::Selector::Element(iso::TargetSelector {
+              value: "a".to_string()
+            }),
             source_id: "c782daaa".to_string(),
+            source_uri: "entry.pc".to_string(),
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
@@ -722,7 +835,7 @@ mod tests {
               active: false,
             }],
             specificity: 2,
-          }
+          },
         ],
       },
     )
@@ -735,9 +848,18 @@ mod tests {
     expected_info: NodeInspectionInfo,
   ) {
     let (eval_info, graph) = __test__evaluate_pc_code(source);
-    let mut eval_info_map:BTreeMap<String, DependencyEvalInfo> = BTreeMap::new();
-    eval_info_map.insert("entry.pc".to_string(), DependencyEvalInfo::PC(eval_info.unwrap()));
-    let info = inspect_node_styles(&node_path, &"entry.pc".to_string(), &eval_info_map, &graph, &options);
+    let mut eval_info_map: BTreeMap<String, DependencyEvalInfo> = BTreeMap::new();
+    eval_info_map.insert(
+      "entry.pc".to_string(),
+      DependencyEvalInfo::PC(eval_info.unwrap()),
+    );
+    let info = inspect_node_styles(
+      &node_path,
+      &"entry.pc".to_string(),
+      &eval_info_map,
+      &graph,
+      &options,
+    );
     assert_eq!(info, expected_info);
   }
 
@@ -748,7 +870,13 @@ mod tests {
     expected_info: NodeInspectionInfo,
   ) {
     let (eval_info, graph) = __test__evaluate_pc_files(files, "entry.pc");
-    let info = inspect_node_styles(&node_path, &"entry.pc".to_string(), &eval_info, &graph, &options);
+    let info = inspect_node_styles(
+      &node_path,
+      &"entry.pc".to_string(),
+      &eval_info,
+      &graph,
+      &options,
+    );
     assert_eq!(info, expected_info);
   }
 }

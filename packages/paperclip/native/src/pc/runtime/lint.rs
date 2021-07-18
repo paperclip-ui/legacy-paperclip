@@ -11,9 +11,7 @@ TODO:
 */
 
 use super::evaluator::EvalInfo;
-use super::evaluator::{
-  evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code,
-};
+use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::selector_match::find_one_matching_element;
 use super::virt::Node as VirtNode;
 use crate::base::ast::{ExprSource, ExprTextSource, Location};
@@ -178,7 +176,6 @@ mod tests {
     ];
 
     for (source, warning_count) in cases.iter() {
-
       let (eval_info, graph) = __test__evaluate_pc_code(source);
       let notices = lint(
         &eval_info.unwrap(),

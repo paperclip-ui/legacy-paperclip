@@ -479,12 +479,10 @@ mod tests {
   }
 }
 
-
 pub fn __test__evaluate_pc_files<'a>(
   files: BTreeMap<String, String>,
-  main_file_name: &'a str
+  main_file_name: &'a str,
 ) -> (BTreeMap<String, DependencyEvalInfo>, DependencyGraph) {
-
   let f1 = files.clone();
   let f2 = files.clone();
 
@@ -497,5 +495,8 @@ pub fn __test__evaluate_pc_files<'a>(
 
   block_on(engine.run(&main_file_name.to_string()));
 
-  (engine.evaluated_data.clone(), engine.dependency_graph.clone())
+  (
+    engine.evaluated_data.clone(),
+    engine.dependency_graph.clone(),
+  )
 }

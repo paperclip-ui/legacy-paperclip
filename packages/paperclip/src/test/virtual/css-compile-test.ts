@@ -12,7 +12,7 @@ describe(__filename + "#", () => {
     ],
     [
       `.a.b { color: red; }`,
-      `[class].a[class].b._80f4925f { color:red; }`,
+      `._80f4925f_a._80f4925f_b._80f4925f { color:red; }`,
       false
     ],
     [
@@ -43,17 +43,17 @@ describe(__filename + "#", () => {
     ],
     [
       `.c:within(.b) { color: red; }`,
-      `[class]._80f4925f_b [class].c._80f4925f { color:red; }`,
+      `[class]._80f4925f_b ._80f4925f_c._80f4925f { color:red; }`,
       false
     ],
     [
       `.c:within(.b, .d) { color: red; }`,
-      `[class]._80f4925f_b [class].c._80f4925f { color:red; } [class]._80f4925f_d [class].c._80f4925f { color:red; }`,
+      `[class]._80f4925f_b ._80f4925f_c._80f4925f { color:red; } [class]._80f4925f_d ._80f4925f_c._80f4925f { color:red; }`,
       false
     ],
     [
       `.c:within(.b, .d) { color: red; }`,
-      `[class]._80f4925f_b ._406d2856 [class].c._80f4925f { color:red; } [class]._80f4925f_d ._406d2856 [class].c._80f4925f { color:red; }`,
+      `[class]._80f4925f_b ._406d2856 ._80f4925f_c._80f4925f { color:red; } [class]._80f4925f_d ._406d2856 ._80f4925f_c._80f4925f { color:red; }`,
       true
     ],
     [
@@ -98,7 +98,7 @@ describe(__filename + "#", () => {
     ],
     [
       `.a { &.b { color: blue; }}`,
-      `[class]._80f4925f_a[class].b { color:blue; }`,
+      `[class]._80f4925f_a._80f4925f_b { color:blue; }`,
       false
     ],
     [
@@ -108,7 +108,7 @@ describe(__filename + "#", () => {
     ],
     [
       `.a { & & { &.test { color: blue; } }}`,
-      `[class]._80f4925f_a [class]._80f4925f_a[class].test { color:blue; }`,
+      `[class]._80f4925f_a [class]._80f4925f_a._80f4925f_test { color:blue; }`,
       false
     ],
     [
@@ -118,12 +118,12 @@ describe(__filename + "#", () => {
     ],
     [
       `element.a { color: red; }`,
-      `element[class].a._80f4925f { color:red; }`,
+      `element._80f4925f_a._80f4925f { color:red; }`,
       false
     ],
     [
       `:global(element.b) { color: red; }`,
-      `element[class].b { color:red; }`,
+      `element.b[class] { color:red; }`,
       false
     ],
     [
@@ -157,7 +157,7 @@ describe(__filename + "#", () => {
     ],
     [
       `:within(:not(.a)) { color: red; }`,
-      `._80f4925f:not([class].a) ._80f4925f { color:red; }`,
+      `._80f4925f:not(._80f4925f_a) ._80f4925f { color:red; }`,
       false
     ],
     [
@@ -191,7 +191,7 @@ describe(__filename + "#", () => {
       false
     ],
     [`#id { color: red; }`, `#id._80f4925f { color:red; }`, false],
-    [`:global(#id) { color: red; }`, `#id { color:red; }`, false],
+    [`:global(#id) { color: red; }`, `#id#id { color:red; }`, false],
     // needs to emit 4 selectors
     [
       `&:within(a, b):within(c, d) { color: orange; }`,
@@ -200,21 +200,25 @@ describe(__filename + "#", () => {
     ],
     [
       `a.b.c:within(:global(d, e)) { color: orange; }`,
-      `d ._406d2856 a[class].b[class].c._80f4925f { color:orange; } e ._406d2856 a[class].b[class].c._80f4925f { color:orange; }`,
+      `d[class] ._406d2856 a._80f4925f_b._80f4925f_c._80f4925f { color:orange; } e[class] ._406d2856 a._80f4925f_b._80f4925f_c._80f4925f { color:orange; }`,
       true
     ],
-    [`&.a { color: red}`, `._406d2856._406d2856[class].a { color:red; }`, true],
+    [
+      `&.a { color: red}`,
+      `._406d2856._406d2856._80f4925f_a { color:red; }`,
+      true
+    ],
 
     [
       `:global(a, &:within(b, c, d)) { color: orange; }`,
-      `._406d2856 a { color:orange; } b._80f4925f ._406d2856._406d2856 { color:orange; } c._80f4925f ._406d2856._406d2856 { color:orange; } d._80f4925f ._406d2856._406d2856 { color:orange; }`,
+      `._406d2856 a[class] { color:orange; } b._80f4925f ._406d2856._406d2856 { color:orange; } c._80f4925f ._406d2856._406d2856 { color:orange; } d._80f4925f ._406d2856._406d2856 { color:orange; }`,
       true
     ],
 
     // https://github.com/crcn/paperclip/issues/547
     [
       `:self(.a) { &&& { color: red; &:checked { color: blue; }}}`,
-      `._406d2856._406d2856[class].a._406d2856._406d2856[class].a._406d2856._406d2856[class].a { color:red; } ._406d2856._406d2856[class].a._406d2856._406d2856[class].a._406d2856._406d2856[class].a:checked { color:blue; }`,
+      `._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a { color:red; } ._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a:checked { color:blue; }`,
       true
     ],
 
@@ -237,7 +241,7 @@ describe(__filename + "#", () => {
     // https://github.com/crcn/paperclip/issues/573
     [
       `:self(.variant) { @media screen and (max-width: 400px) { color: red; }}`,
-      `@media screen and (max-width: 400px) { ._406d2856._406d2856[class].variant { color:red; } }`,
+      `@media screen and (max-width: 400px) { ._406d2856._406d2856._80f4925f_variant { color:red; } }`,
       true
     ],
 
