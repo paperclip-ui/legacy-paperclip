@@ -180,18 +180,18 @@ pub fn get_selector_text_matching_sub_selector<'a, 'b>(
 ) -> Option<(css_ast::Selector, css_ast::Selector)> {
   let selector = parse_css_selector(selector_text, None).unwrap();
 
-  Context::new_from_path(element_path, document).and_then(|context| {
-    context
-      .target()
-      .and_then(|node| match node {
-        VirtNode::Element(el) => Some(el),
-        _ => None,
-      })
-      .and_then(|element| get_matching_sub_selector(&selector, element, &context))
-      .and_then(|sub_selector| Some(sub_selector.clone()))
-  }).and_then(|sub_selector| {
-    Some((sub_selector, selector))
-  })
+  Context::new_from_path(element_path, document)
+    .and_then(|context| {
+      context
+        .target()
+        .and_then(|node| match node {
+          VirtNode::Element(el) => Some(el),
+          _ => None,
+        })
+        .and_then(|element| get_matching_sub_selector(&selector, element, &context))
+        .and_then(|sub_selector| Some(sub_selector.clone()))
+    })
+    .and_then(|sub_selector| Some((sub_selector, selector)))
 }
 
 // Note that we

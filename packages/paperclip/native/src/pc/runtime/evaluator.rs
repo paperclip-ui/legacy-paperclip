@@ -5,9 +5,7 @@ use super::virt;
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, ExprTextSource, Location};
 use crate::base::runtime::RuntimeError;
-use crate::base::utils::{
-  get_document_id, get_document_style_public_scope, is_relative_path,
-};
+use crate::base::utils::{get_document_id, get_document_style_public_scope, is_relative_path};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
@@ -1604,10 +1602,6 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
   lazy_static! {
     static ref scope_re: Regex = Regex::new(r"^_[-\w]+_").unwrap();
   }
-  
-
-  
-  
 
   let mut skip = 0;
 

@@ -1,11 +1,11 @@
-use crc::crc32;
 use super::vfs::VirtualFileSystem;
 use crate::base::ast::Location;
 use crate::base::parser::ParseError;
+use crate::base::utils::get_document_id;
 use crate::core::id_generator::{generate_seed, IDGenerator};
-use crate::base::utils::{get_document_id};
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
+use crc::crc32;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};
 
@@ -36,6 +36,11 @@ pub struct GraphError {
 pub struct DependencyGraph {
   pub dependencies: BTreeMap<String, Dependency>,
   pub seed_id_generator: IDGenerator,
+}
+
+pub enum DependencyObject<'a> {
+  Dependency(&'a Dependency),
+  PCObject(pc_ast::PCObject<'a>),
 }
 
 #[allow(dead_code)]
@@ -113,6 +118,17 @@ impl DependencyGraph {
     }
 
     return;
+  }
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<(String, DependencyObject<'a>)> {
+    for (uri, dependency) in &self.dependencies {
+      if &dependency.get_id() == id {
+        return Some((uri.to_string(), DependencyObject::Dependency(&dependency)));
+      }
+    }
+
+    self
+      .get_expression_by_id(id)
+      .and_then(|(uri, object)| return Some((uri, DependencyObject::PCObject(object))))
   }
   pub fn flatten_dependencies<'a>(&'a self, entry_uri: &String) -> Vec<String> {
     let mut all_deps: Vec<String> = vec![];
@@ -248,7 +264,6 @@ pub enum DependencyContent {
   Node(pc_ast::Node),
   StyleSheet(css_ast::Sheet),
 }
-
 
 #[derive(Debug, Clone)]
 pub struct Dependency {

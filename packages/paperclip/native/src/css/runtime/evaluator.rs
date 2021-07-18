@@ -1176,7 +1176,6 @@ fn get_document_scope_selector(context: &Context) -> String {
   format!("._{}", get_document_scope(context))
 }
 
-
 fn get_scope_selector(context: &Context, is_global: bool) -> String {
   if is_global {
     "[class]".to_string()
@@ -1198,13 +1197,7 @@ fn write_element_selector(
       let mut curr = emitter;
       for selector in &group.selectors {
         curr = curr.split();
-        write_element_selector(
-          selector,
-          is_target,
-          is_global,
-          context,
-          curr,
-        );
+        write_element_selector(selector, is_target, is_global, context, curr);
       }
     }
     ast::Selector::Global(selector) => {
@@ -1253,7 +1246,6 @@ fn write_element_selector(
       // trimming needs to happen in this case `&& {}`. Still works with `& & {}` since that's a descendent selector
       emitter.push_target(connector);
       if let Some(postfix) = &prefixed.postfix_selector {
-
         // target already came from parent, so ignore
         write_element_selector(&postfix, false, is_global, context, emitter);
       }
@@ -1265,47 +1257,17 @@ fn write_element_selector(
       }
     }
     ast::Selector::Descendent(selector) => {
-      write_element_selector(
-        &selector.ancestor,
-        is_target,
-        is_global,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.ancestor, is_target, is_global, context, emitter);
       emitter.push_target(" ".to_string());
-      write_element_selector(
-        &selector.descendent,
-        is_target,
-        is_global,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.descendent, is_target, is_global, context, emitter);
     }
     ast::Selector::Child(selector) => {
-      write_element_selector(
-        &selector.parent,
-        is_target,
-        is_global,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.parent, is_target, is_global, context, emitter);
       emitter.push_target(" > ".to_string());
-      write_element_selector(
-        &selector.child,
-        is_target,
-        is_global,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.child, is_target, is_global, context, emitter);
     }
     ast::Selector::Sibling(selector) => {
-      write_element_selector(
-        &selector.selector,
-        is_target,
-        is_global,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.selector, is_target, is_global, context, emitter);
       emitter.push_target(" ~ ".to_string());
       write_element_selector(
         &selector.sibling_selector,
@@ -1316,13 +1278,7 @@ fn write_element_selector(
       );
     }
     ast::Selector::Adjacent(selector) => {
-      write_element_selector(
-        &selector.selector,
-        is_target,
-        is_global,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.selector, is_target, is_global, context, emitter);
       emitter.push_target(" + ".to_string());
       write_element_selector(
         &selector.next_sibling_selector,
@@ -1353,7 +1309,6 @@ fn write_element_selector(
       }
     }
     ast::Selector::AllSelector(_) => {
-
       // need to make sure it's not part of combo
       if is_global {
         emitter.push_target("*".to_string())
@@ -1387,7 +1342,6 @@ fn write_element_selector(
       }
     }
     ast::Selector::Not(selector) => {
-
       if is_target {
         emitter.push_target(get_document_scope_selector(context));
       }
@@ -1420,12 +1374,10 @@ fn write_element_selector(
       let mut found_pseudo = false;
 
       for child in &combo.selectors {
-
         let is_pseudo = is_pseudo_element(child);
 
         write_element_selector(
           child,
-
           // This is _very_ redundant, but we want to pass down extra_specificity
           // and extra_specificity since things like class names need to remain injectible
           // in other docs. This particular case happens with .a:within(.b)
@@ -1443,23 +1395,20 @@ fn write_element_selector(
       }
     }
 
-    // NOTE that classes behave differently than other selectors since they can be 
+    // NOTE that classes behave differently than other selectors since they can be
     // injected into other documents via $. Because of this, the document scope is included in the selector
     ast::Selector::Class(selector) => {
-
       // Don't hate me for adding [class] -- it's the browsers fault, I promise. Each
       // selector other than class has a scope class, and that gives priority over
       // any class. So to counter-balance that, we need to add [class] so that classes take priority, again.
 
-      let new_class_name = if is_global {      
+      let new_class_name = if is_global {
         format!(".{}", selector.class_name)
       } else {
-        format!("._{}_{}", get_document_scope(context),
-        selector.class_name)
+        format!("._{}_{}", get_document_scope(context), selector.class_name)
       };
 
       let mut selector_text = new_class_name.to_string();
-
 
       // specificity needs to be same as other selectors that include document
       // scope class, so just double-up class name

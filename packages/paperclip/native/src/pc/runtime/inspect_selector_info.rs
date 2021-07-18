@@ -1,18 +1,18 @@
-
-use serde::Serialize;
-use regex::Regex;
+use crate::core::graph::{DependencyGraph, DependencyObject};
 use crate::css::ast as css_ast;
+use regex::Regex;
+use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SelectorScopeInfo {
-  id: String
+  pub id: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub enum SelectorScope {
   Element(SelectorScopeInfo),
-  Document(SelectorScopeInfo)
+  Document(SelectorScopeInfo),
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -22,6 +22,9 @@ pub enum Selector {
 
   // a
   Element(TargetSelector),
+
+  // *
+  All(TargetSelector),
 
   // a:before
   PseudoElement(TargetSelector),
@@ -38,7 +41,7 @@ pub enum Selector {
   Id(TargetSelector),
 
   // .a
-  Class(TargetSelector),
+  Class(ClassSelector),
 
   // a[b]
   Combo(GroupSelector),
@@ -58,161 +61,164 @@ pub enum Selector {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GroupSelector {
-  pub selectors: Vec<Selector>
+  pub selectors: Vec<Selector>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct BinarySelector {
   pub left: Box<Selector>,
-  pub right: Box<Selector>
+  pub right: Box<Selector>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct WrapperSelector {
-  pub selector: Box<Selector>
+  pub selector: Box<Selector>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct TargetSelector {
   pub value: String,
-  // pub raw_value: String,
-  // pub scope: SelectorScope
 }
 
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ClassSelector {
+  pub name: Option<String>,
+  pub value: String,
+  pub scope: Option<SelectorScope>,
+}
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Error {
-  message: String
+  message: String,
 }
 
 impl Selector {
-  pub fn from_ast(selector: &css_ast::Selector) -> Result<Selector, Error> {
-    get_selector_info(selector)
+  pub fn from_ast(
+    selector: &css_ast::Selector,
+    graph: &DependencyGraph,
+  ) -> Result<Selector, Error> {
+    get_selector_info(selector, graph)
   }
 }
 
-fn get_selector_info(ast: &css_ast::Selector) -> Result<Selector, Error>  {
+fn get_selector_info(ast: &css_ast::Selector, graph: &DependencyGraph) -> Result<Selector, Error> {
   match ast {
-    css_ast::Selector::Adjacent(ast) => {
-      Ok(Selector::Adjacent(BinarySelector {
-        left: Box::new(get_selector_info(&ast.selector)?),
-        right: Box::new(get_selector_info(&ast.next_sibling_selector)?)
-      }))
-    },
-    css_ast::Selector::Sibling(ast) => {
-      Ok(Selector::Adjacent(BinarySelector {
-        left: Box::new(get_selector_info(&ast.selector)?),
-        right: Box::new(get_selector_info(&ast.sibling_selector)?)
-      }))
-    },
-    css_ast::Selector::Descendent(ast) => {
-      Ok(Selector::Descendent(BinarySelector {
-        left: Box::new(get_selector_info(&ast.ancestor)?),
-        right: Box::new(get_selector_info(&ast.descendent)?)
-      }))
-    },
-    css_ast::Selector::Child(ast) => {
-      Ok(Selector::Descendent(BinarySelector {
-        left: Box::new(get_selector_info(&ast.parent)?),
-        right: Box::new(get_selector_info(&ast.child)?)
-      }))
-    },
+    css_ast::Selector::Adjacent(ast) => Ok(Selector::Adjacent(BinarySelector {
+      left: Box::new(get_selector_info(&ast.selector, graph)?),
+      right: Box::new(get_selector_info(&ast.next_sibling_selector, graph)?),
+    })),
+    css_ast::Selector::Sibling(ast) => Ok(Selector::Sibling(BinarySelector {
+      left: Box::new(get_selector_info(&ast.selector, graph)?),
+      right: Box::new(get_selector_info(&ast.sibling_selector, graph)?),
+    })),
+    css_ast::Selector::Descendent(ast) => Ok(Selector::Descendent(BinarySelector {
+      left: Box::new(get_selector_info(&ast.ancestor, graph)?),
+      right: Box::new(get_selector_info(&ast.descendent, graph)?),
+    })),
+    css_ast::Selector::Child(ast) => Ok(Selector::Child(BinarySelector {
+      left: Box::new(get_selector_info(&ast.parent, graph)?),
+      right: Box::new(get_selector_info(&ast.child, graph)?),
+    })),
     css_ast::Selector::Combo(ast) => {
       let mut selectors: Vec<Selector> = vec![];
 
-      // step by 2 because we're stripping out extra specificity (which is scope). 
-      for i in (0..ast.selectors.len()).step_by(2) {
-        let scope_selector = ast.selectors.get(i).unwrap();
-        let target_selector = ast.selectors.get(i + 1).unwrap();
-
-        let scope: Option<(String, Option<String>)> = if scope_selector.to_string() == "[class]" {
-          extract_scope(&target_selector.to_string())
-        } else {
-          extract_scope(&scope_selector.to_string())
-        };
-
-        println!("{:?}", scope);
-
-        selectors.push(get_selector_info(target_selector)?);
+      for child in &ast.selectors {
+        selectors.push(get_selector_info(child, graph)?);
       }
 
-      Ok(Selector::Combo(GroupSelector {
-        selectors
-      }))
-    },
+      Ok(Selector::Combo(GroupSelector { selectors }))
+    }
     css_ast::Selector::Group(ast) => {
       let mut selectors: Vec<Selector> = vec![];
       for child in &ast.selectors {
-        selectors.push(get_selector_info(child)?);
+        selectors.push(get_selector_info(child, graph)?);
       }
 
-      Ok(Selector::List(GroupSelector {
-        selectors
-      }))
-    },
-    css_ast::Selector::PseudoElement(ast) => {
-      Ok(Selector::PseudoElement(TargetSelector {
-        value: ast.to_string(),
-      }))
-    },
+      Ok(Selector::List(GroupSelector { selectors }))
+    }
+    css_ast::Selector::PseudoElement(ast) => Ok(Selector::PseudoElement(TargetSelector {
+      value: ast.to_string(),
+    })),
     css_ast::Selector::PseudoParamElement(ast) => {
-      Ok(Selector::PseudoElement(TargetSelector {
+      Ok(Selector::PseudoParamElement(TargetSelector {
         value: ast.to_string(),
       }))
-    },
-    css_ast::Selector::Element(ast) => {
-      Ok(Selector::PseudoElement(TargetSelector {
-        value: ast.to_string(),
-      }))
-    },
+    }
+    css_ast::Selector::Element(ast) => Ok(Selector::Element(TargetSelector {
+      value: ast.to_string(),
+    })),
     css_ast::Selector::Class(ast) => {
-      Ok(Selector::PseudoElement(TargetSelector {
+      let scope_parts = split_scope_parts(&ast.to_string());
+
+      let scope_id = scope_parts.first().unwrap();
+      let scope = graph.get_object_by_id(&scope_id).and_then(|(uri, obj)| {
+        Some(match obj {
+          DependencyObject::Dependency(dep) => SelectorScope::Document(SelectorScopeInfo {
+            id: scope_id.to_string(),
+          }),
+          DependencyObject::PCObject(dep) => SelectorScope::Element(SelectorScopeInfo {
+            id: scope_id.to_string(),
+          }),
+        })
+      });
+
+      let cleaned_value = if let Some(class_name) = scope_parts.last() {
+        if class_name != scope_id {
+          Some(class_name.to_string())
+        } else {
+          None
+        }
+      } else {
+        None
+      };
+
+      return Ok(Selector::Class(ClassSelector {
+        name: cleaned_value,
         value: ast.to_string(),
-      }))
-    },
-    css_ast::Selector::Attribute(ast) => {
-      Ok(Selector::PseudoElement(TargetSelector {
-        value: ast.to_string(),
-      }))
-    },
-    css_ast::Selector::AllSelector(ast) => {
-      Ok(Selector::PseudoElement(TargetSelector {
-        value: ast.to_string(),
-      }))
-    },
-    css_ast::Selector::Id(ast) => {
-      Ok(Selector::PseudoElement(TargetSelector {
-        value: ast.to_string(),
-      }))
-    },
-    css_ast::Selector::Not(ast) => {
-      Ok(Selector::Not(WrapperSelector {
-        selector: Box::new(get_selector_info(&ast.selector)?)
-      }))
-    },
-    css_ast::Selector::Prefixed(_) | css_ast::Selector::This(_) | css_ast::Selector::SubElement(_) | css_ast::Selector::Within(_) | css_ast::Selector::Global(_) => {
-      return Err(Error { message: "invalid".to_string() })
+        scope,
+      }));
+    }
+    css_ast::Selector::Attribute(ast) => Ok(Selector::Attribute(TargetSelector {
+      value: ast.to_string(),
+    })),
+    css_ast::Selector::AllSelector(ast) => Ok(Selector::PseudoElement(TargetSelector {
+      value: ast.to_string(),
+    })),
+    css_ast::Selector::Id(ast) => Ok(Selector::Id(TargetSelector {
+      value: ast.to_string(),
+    })),
+    css_ast::Selector::Not(ast) => Ok(Selector::Not(WrapperSelector {
+      selector: Box::new(get_selector_info(&ast.selector, graph)?),
+    })),
+    css_ast::Selector::Prefixed(_)
+    | css_ast::Selector::This(_)
+    | css_ast::Selector::SubElement(_)
+    | css_ast::Selector::Within(_)
+    | css_ast::Selector::Global(_) => {
+      return Err(Error {
+        message: "invalid".to_string(),
+      })
     }
   }
 }
 
-fn extract_scope(target_selector_text: &String) -> Option<(String, Option<String>)> {
+fn split_scope_parts(target_selector_text: &String) -> Vec<String> {
   lazy_static! {
-    static ref scope_name_re: Regex = Regex::new(r"_(pub-)?(\w+)(_.+)?\b").unwrap();
+    static ref scope_name_re: Regex = Regex::new(r"_(pub-)?([^_]+)(_(.+))?\b").unwrap();
   }
 
-  println!("{}", target_selector_text);
+  let mut scope_name_parts: Vec<String> = vec![];
 
   if scope_name_re.is_match(target_selector_text) {
-    println!("MATCH");
     for caps in scope_name_re.captures_iter(target_selector_text) {
-      let scope_id = caps.get(1).unwrap().as_str();
-      let target_name_option = caps.get(2);
+      let scope_id = caps.get(2).unwrap().as_str();
+      scope_name_parts.push(scope_id.to_string());
 
-
-      println!("{:?} {:?}", scope_id, target_name_option);
+      if let Some(target_name) = caps.get(4) {
+        scope_name_parts.push(target_name.as_str().to_string())
+      }
     }
   }
 
-  None
+  scope_name_parts
 }
