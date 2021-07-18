@@ -206,6 +206,10 @@ export class EngineDelegate {
     });
   }
 
+  public inspectNodeStyles(path: number[], uri: String, screenWidth: number) {
+    return this._native.inspect_node_styles(path, uri, screenWidth);
+  }
+
   public getLoadedData(uri: string): LoadedData | null {
     return this._rendered[uri];
   }

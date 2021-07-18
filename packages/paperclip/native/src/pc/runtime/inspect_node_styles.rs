@@ -151,6 +151,7 @@ impl StyleRuleInfo {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NodeInspectionInfo {
+  #[serde(rename = "styleRules")]
   pub style_rules: Vec<StyleRuleInfo>,
 }
 
@@ -188,7 +189,7 @@ impl NodeInspectionInfo {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct InspectionOptions {
-  screen_width: Option<u32>,
+  pub screen_width: Option<u32>,
 }
 
 pub fn inspect_node_styles(
@@ -472,21 +473,29 @@ mod tests {
             selector_text: "b[class].b[class].b._acb5fc82".to_string(),
             selector_info: iso::Selector::Combo(iso::GroupSelector {
               selectors: vec![
-                iso::Selector::Element(iso::TargetSelector { value: "b".to_string() }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: Some("b".to_string()),
-                  value: "._acb5fc82_b".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo { id: "acb5fc82".to_string() })),
+                iso::Selector::Element(iso::TargetSelector {
+                  value: "b".to_string(),
                 }),
                 iso::Selector::Class(iso::ClassSelector {
                   name: Some("b".to_string()),
                   value: "._acb5fc82_b".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo { id: "acb5fc82".to_string() })),
+                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
+                    id: "acb5fc82".to_string(),
+                  })),
+                }),
+                iso::Selector::Class(iso::ClassSelector {
+                  name: Some("b".to_string()),
+                  value: "._acb5fc82_b".to_string(),
+                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
+                    id: "acb5fc82".to_string(),
+                  })),
                 }),
                 iso::Selector::Class(iso::ClassSelector {
                   name: None,
                   value: "._acb5fc82".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo { id: "acb5fc82".to_string() })),
+                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
+                    id: "acb5fc82".to_string(),
+                  })),
                 }),
               ],
             }),
@@ -506,21 +515,29 @@ mod tests {
             selector_info: iso::Selector::Descendent(iso::BinarySelector {
               left: Box::new(iso::Selector::Combo(iso::GroupSelector {
                 selectors: vec![
-                  iso::Selector::Element(iso::TargetSelector { value: "a".to_string() }),
+                  iso::Selector::Element(iso::TargetSelector {
+                    value: "a".to_string(),
+                  }),
                   iso::Selector::Class(iso::ClassSelector {
                     name: None,
                     value: "._acb5fc82".to_string(),
-                    scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo { id: "acb5fc82".to_string() })),
+                    scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
+                      id: "acb5fc82".to_string(),
+                    })),
                   }),
                 ],
               })),
               right: Box::new(iso::Selector::Combo(iso::GroupSelector {
                 selectors: vec![
-                  iso::Selector::Element(iso::TargetSelector { value: "b".to_string() }),
+                  iso::Selector::Element(iso::TargetSelector {
+                    value: "b".to_string(),
+                  }),
                   iso::Selector::Class(iso::ClassSelector {
                     name: None,
                     value: "._acb5fc82".to_string(),
-                    scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo { id: "acb5fc82".to_string() })),
+                    scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
+                      id: "acb5fc82".to_string(),
+                    })),
                   }),
                 ],
               })),

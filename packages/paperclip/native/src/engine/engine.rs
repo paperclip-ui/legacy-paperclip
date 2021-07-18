@@ -19,6 +19,7 @@ use crate::pc::runtime::export as pc_export;
 use crate::pc::runtime::lint::{lint as lint_pc, LintOptions};
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
+use crate::pc::runtime::inspect_node_styles::{inspect_node_styles, NodeInspectionInfo, InspectionOptions};
 use ::futures::executor::block_on;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashMap, HashSet};
@@ -226,8 +227,8 @@ impl Engine {
       })
   }
 
-  pub fn inspect_node_styles(&mut self, source: &pc_virt::NodeSource) {
-    // TODO
+  pub fn inspect_node_styles(&mut self, source: &pc_virt::NodeSource, options: &InspectionOptions) -> NodeInspectionInfo {
+    inspect_node_styles(&source.path, &source.document_uri, &self.evaluated_data, &self.dependency_graph, options)
   }
 
   pub fn lint_file(&mut self, uri: &String) -> Option<Vec<Diagnostic>> {
