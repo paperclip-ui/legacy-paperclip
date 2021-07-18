@@ -1,6 +1,5 @@
-import { createMockEngine, stringifyLoadResult } from "../utils";
+import { createMockEngine } from "../utils";
 import { expect } from "chai";
-import { inspect } from "util";
 
 describe(__filename + "#", () => {
   const cases = [
@@ -157,8 +156,7 @@ describe(__filename + "#", () => {
       const engine = await createMockEngine(graph);
       await engine.open("/entry.pc");
       const inspection = engine.inspectNodeStyles(
-        [0],
-        "/entry.pc",
+        { path: [0], uri: "/entry.pc" },
         screenWidth
       );
 
