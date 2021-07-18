@@ -19,8 +19,8 @@ mod js;
 mod pc;
 
 use crate::pc::runtime::evaluator::EngineMode;
+use crate::pc::runtime::inspect_node_styles::InspectionOptions;
 use crate::pc::runtime::virt as pc_virt;
-use crate::pc::runtime::inspect_node_styles::{InspectionOptions};
 use ::futures::executor::block_on;
 use engine::engine::Engine;
 
@@ -136,13 +136,21 @@ impl NativeEngine {
     console_error_panic_hook::set_once();
     block_on(self.target.purge_unlinked_files());
   }
-  pub fn inspect_node_styles(&mut self,  path: Vec<usize>, uri: String, screen_width: u32) -> JsValue {
-    let result = self.target.inspect_node_styles(&pc_virt::NodeSource {
-      path,
-      document_uri: uri
-    }, &InspectionOptions {
-      screen_width: Some(screen_width)
-    });
+  pub fn inspect_node_styles(
+    &mut self,
+    path: Vec<usize>,
+    uri: String,
+    screen_width: u32,
+  ) -> JsValue {
+    let result = self.target.inspect_node_styles(
+      &pc_virt::NodeSource {
+        path,
+        document_uri: uri,
+      },
+      &InspectionOptions {
+        screen_width: Some(screen_width),
+      },
+    );
 
     JsValue::from_serde(&result).unwrap()
   }
