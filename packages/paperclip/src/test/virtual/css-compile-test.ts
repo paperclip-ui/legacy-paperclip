@@ -20,15 +20,15 @@ describe(__filename + "#", () => {
       `[class]._80f4925f_a [class]._80f4925f_b { color:red; }`,
       false
     ],
-    [`:global(.a) { color: red; }`, `[class].a { color:red; }`, false],
+    [`:global(.a) { color: red; }`, `.a { color:red; }`, false],
     [
       `:global(.a, .b) .c { color: red; }`,
-      `[class].a [class]._80f4925f_c { color:red; } [class].b [class]._80f4925f_c { color:red; }`,
+      `.a [class]._80f4925f_c { color:red; } .b [class]._80f4925f_c { color:red; }`,
       false
     ],
     [
       `.c :global(.a, .b) { color: red; }`,
-      `[class]._80f4925f_c [class].a { color:red; } [class]._80f4925f_c [class].b { color:red; }`,
+      `[class]._80f4925f_c .a { color:red; } [class]._80f4925f_c .b { color:red; }`,
       false
     ],
     [
@@ -38,7 +38,7 @@ describe(__filename + "#", () => {
     ],
     [
       `.c :global(.a, :global(.a1, .a2), .b) { color: red; }`,
-      `[class]._80f4925f_c [class].a { color:red; } [class]._80f4925f_c [class].a1 { color:red; } [class]._80f4925f_c [class].a2 { color:red; } [class]._80f4925f_c [class].b { color:red; }`,
+      `[class]._80f4925f_c .a { color:red; } [class]._80f4925f_c .a1 { color:red; } [class]._80f4925f_c .a2 { color:red; } [class]._80f4925f_c .b { color:red; }`,
       false
     ],
     [
@@ -121,11 +121,7 @@ describe(__filename + "#", () => {
       `element._80f4925f_a._80f4925f { color:red; }`,
       false
     ],
-    [
-      `:global(element.b) { color: red; }`,
-      `element.b[class] { color:red; }`,
-      false
-    ],
+    [`:global(element.b) { color: red; }`, `element.b { color:red; }`, false],
     [
       `a ~ b { color: red; }`,
       `a._80f4925f ~ b._80f4925f { color:red; }`,
@@ -152,7 +148,7 @@ describe(__filename + "#", () => {
     ],
     [
       `:not(:within(:global(.a, .b))) { color: red; }`,
-      `:not([class].a) ._80f4925f { color:red; } :not([class].b) ._80f4925f { color:red; }`,
+      `:not(.a) ._80f4925f { color:red; } :not(.b) ._80f4925f { color:red; }`,
       false
     ],
     [
@@ -191,7 +187,7 @@ describe(__filename + "#", () => {
       false
     ],
     [`#id { color: red; }`, `#id._80f4925f { color:red; }`, false],
-    [`:global(#id) { color: red; }`, `#id#id { color:red; }`, false],
+    [`:global(#id) { color: red; }`, `#id { color:red; }`, false],
     // needs to emit 4 selectors
     [
       `&:within(a, b):within(c, d) { color: orange; }`,
@@ -200,7 +196,7 @@ describe(__filename + "#", () => {
     ],
     [
       `a.b.c:within(:global(d, e)) { color: orange; }`,
-      `d[class] ._406d2856 a._80f4925f_b._80f4925f_c._80f4925f { color:orange; } e[class] ._406d2856 a._80f4925f_b._80f4925f_c._80f4925f { color:orange; }`,
+      `d ._406d2856 a._80f4925f_b._80f4925f_c._80f4925f { color:orange; } e ._406d2856 a._80f4925f_b._80f4925f_c._80f4925f { color:orange; }`,
       true
     ],
     [
@@ -211,7 +207,7 @@ describe(__filename + "#", () => {
 
     [
       `:global(a, &:within(b, c, d)) { color: orange; }`,
-      `._406d2856 a[class] { color:orange; } b._80f4925f ._406d2856._406d2856 { color:orange; } c._80f4925f ._406d2856._406d2856 { color:orange; } d._80f4925f ._406d2856._406d2856 { color:orange; }`,
+      `._406d2856 a { color:orange; } b._80f4925f ._406d2856._406d2856 { color:orange; } c._80f4925f ._406d2856._406d2856 { color:orange; } d._80f4925f ._406d2856._406d2856 { color:orange; }`,
       true
     ],
 
@@ -293,7 +289,7 @@ describe(__filename + "#", () => {
 
     [
       `&:has(:global(.a)) { color: red; }`,
-      `._406d2856._406d2856:has([class].a) { color:red; }`,
+      `._406d2856._406d2856:has(.a) { color:red; }`,
       true
     ],
 

@@ -1201,7 +1201,11 @@ fn write_element_selector(
       }
     }
     ast::Selector::Global(selector) => {
-      write_element_selector(&selector.selector, is_target, true, context, emitter);
+
+      // note that we don't want to include extra specificity for global
+      // selectors since they're outside of PC context -- extra specificty demands at _minimum_ [class]
+      // and not every element will have that outside of PC.
+      write_element_selector(&selector.selector, false, true, context, emitter);
     }
     ast::Selector::Within(selector) => {
       let mut scope = SelectorEmitter::new(SelectorContext::nil());

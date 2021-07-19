@@ -33,7 +33,8 @@ import {
   revealExpressionSourceRequested,
   PCVirtObjectEdited,
   pcSourceEdited,
-  virtualNodeStylesInspected
+  virtualNodeStylesInspected,
+  VirtualStyleDeclarationValueChanged
 } from "./actions";
 import {
   AvailableBrowser,
@@ -142,6 +143,9 @@ export const startServer = async ({
         case ActionType.FS_ITEM_CLICKED: {
           return onFSItemClicked(action);
         }
+        case ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED: {
+          return onVirtualStyleDeclarationValueChanged(action);
+        }
         case ActionType.VIRTUAL_NODES_SELECTED: {
           return onVirtualNodeSelected(action);
         }
@@ -218,6 +222,12 @@ export const startServer = async ({
       if (action.payload.kind === FSItemKind.DIRECTORY) {
         loadDirectory(action.payload.absolutePath);
       }
+    };
+
+    const onVirtualStyleDeclarationValueChanged = (
+      action: VirtualStyleDeclarationValueChanged
+    ) => {
+      console.log("CHANGED", action);
     };
 
     const onVirtualNodeSelected = (action: VirtualNodesSelected) => {

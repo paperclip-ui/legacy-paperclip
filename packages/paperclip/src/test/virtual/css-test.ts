@@ -1238,7 +1238,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class].variant ._9e7e6af9._9e7e6af9 { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>.variant ._9e7e6af9._9e7e6af9 { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 

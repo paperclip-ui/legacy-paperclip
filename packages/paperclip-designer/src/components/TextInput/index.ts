@@ -1,10 +1,4 @@
-import {
-  ChangeEvent,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import { noop } from "lodash";
 
 type UseTextInputProps = {
@@ -34,9 +28,8 @@ export const useTextInput = ({
     }
   }, [ref.current, value, internalValue]);
 
-  const onChange = (event: React.KeyboardEvent) => {
+  const onChange = (event: any) => {
     const value = (event.target as HTMLInputElement).value;
-    setInternalValue(value);
     onValueChange(value);
   };
 
@@ -50,7 +43,7 @@ export const useTextInput = ({
     onSave(internalValue);
   };
 
-  const onKeyPress = (event: KeyboardEvent) => {
+  const onKeyPress = (event: any) => {
     if (event.key === "Enter") {
       onSave(internalValue);
     } else if (event.key === "Escape") {

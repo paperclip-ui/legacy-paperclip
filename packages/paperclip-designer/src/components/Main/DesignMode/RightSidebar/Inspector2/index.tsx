@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import * as styles from "./index.pc";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import { StyleRule } from "./StyleRule";

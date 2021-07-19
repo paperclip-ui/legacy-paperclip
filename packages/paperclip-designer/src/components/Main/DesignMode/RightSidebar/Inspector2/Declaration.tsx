@@ -1,12 +1,23 @@
 import React from "react";
 import { StyleDeclarationInfo } from "paperclip-utils";
 import * as styles from "./index.pc";
+import { useTextInput } from "../../../../TextInput";
 
 export type StyleRuleProps = {
   info: StyleDeclarationInfo;
+  onValueChange: (value) => void;
 };
 
-export const StyleDeclaration = React.memo(({ info }: StyleRuleProps) => {
-  console.log(info);
-  return <styles.StyleRuleProperty name={info.name} value={info.value} />;
-});
+export const StyleDeclaration = ({ info, onValueChange }: StyleRuleProps) => {
+  const { inputProps } = useTextInput({
+    value: info.value,
+    onValueChange
+  });
+
+  return (
+    <styles.StyleRuleProperty
+      name={info.name}
+      value={<input {...inputProps} />}
+    />
+  );
+};
