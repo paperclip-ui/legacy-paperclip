@@ -136,6 +136,9 @@ impl NativeEngine {
     console_error_panic_hook::set_once();
     block_on(self.target.purge_unlinked_files());
   }
+  pub fn get_expression_by_id(&self, id: String) -> JsValue {
+    JsValue::from_serde(&self.target.get_expression_by_id(&id)).unwrap()
+  }
   pub fn inspect_node_styles(
     &mut self,
     path: Vec<usize>,

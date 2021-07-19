@@ -1201,7 +1201,6 @@ fn write_element_selector(
       }
     }
     ast::Selector::Global(selector) => {
-
       // note that we don't want to include extra specificity for global
       // selectors since they're outside of PC context -- extra specificty demands at _minimum_ [class]
       // and not every element will have that outside of PC.
@@ -1559,6 +1558,7 @@ fn evaluate_style_key_value_declaration<'a>(
   }
 
   declarations.push(virt::CSSStyleProperty {
+    source_id: expr.id.to_string(),
     name: expr.name.to_string(),
     value: value.to_string(),
   });
@@ -1567,6 +1567,7 @@ fn evaluate_style_key_value_declaration<'a>(
     if expr.name.starts_with(start) {
       for prefix in css3_prefixes.iter() {
         declarations.push(virt::CSSStyleProperty {
+          source_id: expr.id.to_string(),
           name: format!("{}{}", prefix, expr.name.to_string()),
           value: value.to_string(),
         });

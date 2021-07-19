@@ -223,6 +223,10 @@ export class EngineDelegate {
     return this._rendered[uri];
   }
 
+  public getExpressionById(id: string): [string, any] {
+    return this._native.get_expression_by_id(id);
+  }
+
   public getAllLoadedData(): Record<string, LoadedData> {
     return this._rendered;
   }

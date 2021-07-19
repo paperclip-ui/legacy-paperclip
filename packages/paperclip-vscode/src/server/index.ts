@@ -25,7 +25,6 @@ import {
 } from "../common/actions";
 import {
   startServer,
-  Action as VsualEditorAction,
   ServerAction,
   ExternalAction,
   configChanged

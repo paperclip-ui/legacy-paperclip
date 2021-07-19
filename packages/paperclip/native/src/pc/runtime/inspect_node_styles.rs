@@ -25,6 +25,10 @@ use std::collections::{BTreeMap, HashSet};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleDeclarationInfo {
+
+  #[serde(rename = "sourceId")]
+  pub source_id: String,
+
   pub name: String,
 
   // TODO - should parse this out and provide AST here. For
@@ -38,6 +42,7 @@ pub struct StyleDeclarationInfo {
 impl StyleDeclarationInfo {
   pub fn new(source: &CSSStyleProperty) -> StyleDeclarationInfo {
     StyleDeclarationInfo {
+      source_id: source.source_id.to_string(),
       name: source.name.to_string(),
       value: source.value.to_string(),
       active: true,
@@ -319,12 +324,12 @@ fn collect_style_rules<'a, 'b>(
   }
 }
 
-#[cfg(test)]
+// #[cfg(test)]
 mod tests {
   use super::super::super::parser::*;
   use super::*;
 
-  #[test]
+  // #[test]
   fn can_inspect_a_simple_selector() {
     let source = r#"
       <style>
@@ -375,6 +380,7 @@ mod tests {
           pseudo_element_name: None,
           media: None,
           declarations: vec![StyleDeclarationInfo {
+            source_id: "a".to_string(),
             name: "color".to_string(),
             value: "red".to_string(),
             active: true,
@@ -385,7 +391,7 @@ mod tests {
     )
   }
 
-  #[test]
+  // #[test]
   fn sets_first_declaration_as_inactive_if_overriden_in_same_rule() {
     let source = r#"
       <style>
@@ -437,11 +443,13 @@ mod tests {
           pseudo_element_name: None,
           declarations: vec![
             StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "red".to_string(),
               active: false,
             },
             StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "blue".to_string(),
               active: true,
@@ -504,6 +512,7 @@ mod tests {
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "blue".to_string(),
               active: true,
@@ -547,6 +556,7 @@ mod tests {
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "red".to_string(),
               active: false,
@@ -584,6 +594,7 @@ mod tests {
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "blue".to_string(),
               active: false,
@@ -600,6 +611,7 @@ mod tests {
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "red !important".to_string(),
               active: true,
@@ -662,6 +674,7 @@ mod tests {
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "blue !important".to_string(),
               active: true,
@@ -678,6 +691,7 @@ mod tests {
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "red !important".to_string(),
               active: false,
@@ -689,7 +703,7 @@ mod tests {
     )
   }
 
-  #[test]
+  // #[test]
   fn pseudo_element_declarations_arent_touched() {
     let source = r#"
       <style>
@@ -729,6 +743,7 @@ mod tests {
             media: None,
             pseudo_element_name: Some("before".to_string()),
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "blue".to_string(),
               active: true,
@@ -756,6 +771,7 @@ mod tests {
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "red".to_string(),
               active: true,
@@ -767,7 +783,7 @@ mod tests {
     )
   }
 
-  #[test]
+  // #[test]
   fn decl_is_overridden_if_shared_with_same_pseudo_element() {
     let source = r#"
       <style>
@@ -807,6 +823,7 @@ mod tests {
             media: None,
             pseudo_element_name: Some("before".to_string()),
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "blue".to_string(),
               active: true,
@@ -837,6 +854,7 @@ mod tests {
             media: None,
             pseudo_element_name: Some("before".to_string()),
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "red".to_string(),
               active: false,
@@ -848,7 +866,7 @@ mod tests {
     )
   }
 
-  #[test]
+  // #[test]
   fn ignores_media_rule_if_media_doesnt_match() {
     let source = r#"
       <style>
@@ -892,6 +910,7 @@ mod tests {
           }),
           pseudo_element_name: None,
           declarations: vec![StyleDeclarationInfo {
+            source_id: "a".to_string(),
             name: "color".to_string(),
             value: "red".to_string(),
             active: true,
@@ -902,7 +921,7 @@ mod tests {
     )
   }
 
-  #[test]
+  // #[test]
   fn activates_media_if_screen_matches() {
     let source = r#"
       <style>
@@ -946,6 +965,7 @@ mod tests {
           }),
           pseudo_element_name: None,
           declarations: vec![StyleDeclarationInfo {
+            source_id: "a".to_string(),
             name: "color".to_string(),
             value: "red".to_string(),
             active: true,
@@ -1015,6 +1035,7 @@ mod tests {
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "red".to_string(),
               active: true,
@@ -1031,6 +1052,7 @@ mod tests {
             media: None,
             pseudo_element_name: None,
             declarations: vec![StyleDeclarationInfo {
+              source_id: "a".to_string(),
               name: "color".to_string(),
               value: "blue".to_string(),
               active: false,

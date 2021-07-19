@@ -960,6 +960,7 @@ fn parse_at_declaration<'a, 'b>(
       context.tokenizer.next_expect(Token::Semicolon);
       let end = context.tokenizer.utf16_pos;
       Ok(Declaration::Content(Content {
+        id: context.id_generator.new_id(),
         raws: BasicRaws::new(raw_before, context.tokenizer.eat_whitespace()),
         location: Location::new(start, end),
       }))
@@ -1051,6 +1052,7 @@ fn parse_key_value_declaration<'a, 'b>(
     let raw_after = eat_superfluous(context)?;
 
     Ok(Declaration::KeyValue(KeyValueDeclaration {
+      id: context.id_generator.new_id(),
       name,
       value,
       raws: BasicRaws::new(raw_before, raw_after),

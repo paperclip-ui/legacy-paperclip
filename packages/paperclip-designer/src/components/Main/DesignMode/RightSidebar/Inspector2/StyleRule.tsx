@@ -13,11 +13,15 @@ export type StyleRuleProps = {
 export const StyleRule = React.memo(({ info }: StyleRuleProps) => {
   const { dispatch } = useAppStore();
 
-  const onDeclarationValueChange = (index: number, value: string) => {
+  const onDeclarationValueChange = (
+    declarationId: string,
+    name: string,
+    value: string
+  ) => {
     dispatch(
       virtualStyleDeclarationValueChanged({
-        styleId: info.sourceId,
-        index,
+        declarationId,
+        name,
         value
       })
     );
@@ -32,7 +36,11 @@ export const StyleRule = React.memo(({ info }: StyleRuleProps) => {
             key={i}
             info={declaration}
             onValueChange={value => {
-              onDeclarationValueChange(i, value);
+              onDeclarationValueChange(
+                declaration.sourceId,
+                declaration.name,
+                value
+              );
             }}
           />
         );

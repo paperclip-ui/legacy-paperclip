@@ -209,8 +209,17 @@ impl fmt::Display for StyleRule {
   }
 }
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone)]
 pub struct CSSStyleProperty {
   pub name: String,
   pub value: String,
+  
+  #[serde(rename = "sourceId")]
+  pub source_id: String
+}
+
+impl PartialEq for CSSStyleProperty {
+  fn eq(&self, other: &Self) -> bool {
+    self.name == other.name && self.value == other.value
+  }
 }

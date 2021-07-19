@@ -66,6 +66,7 @@ pub enum Node {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "pcObjectKind")]
 pub enum PCObject<'a> {
   Node(&'a Node),
   CSSObject(css_ast::CSSObject<'a>),

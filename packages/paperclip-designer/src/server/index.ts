@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
-import * as chokidar from "chokidar";
 
+import * as chokidar from "chokidar";
 import sockjs from "sockjs";
 import getPort from "get-port";
 import { createEngineDelegate, EngineDelegate } from "paperclip";
@@ -13,7 +13,6 @@ import {
   FSItemClicked,
   Action,
   ExternalAction,
-  PopoutWindowRequested,
   pcFileLoaded,
   instanceChanged,
   InstanceAction,
@@ -26,22 +25,19 @@ import {
   browserstackBrowsersLoaded,
   ServerAction,
   TitleDoubleClicked,
-  openedDocument,
   VirtualNodesSelected,
   virtualNodeSourcesLoaded,
   MetaClicked,
   revealExpressionSourceRequested,
-  PCVirtObjectEdited,
-  pcSourceEdited,
   virtualNodeStylesInspected,
   VirtualStyleDeclarationValueChanged
-} from "./actions";
+} from "../actions";
 import {
   AvailableBrowser,
   EnvOption,
   EnvOptionKind,
   FSItemKind
-} from "./state";
+} from "../state";
 import express from "express";
 import { normalize } from "path";
 import { EventEmitter } from "events";
@@ -58,6 +54,8 @@ import {
   VirtNodeSource
 } from "paperclip-utils";
 import { PCSourceWriter } from "paperclip-source-writer";
+import { sourceWriterPlugin } from "./plugins/source-writer";
+import { fileWatcherPlugin } from "./plugins/file-watcher";
 
 type BrowserstackCredentials = {
   username: string;
@@ -93,14 +91,16 @@ export const startServer = async ({
       emitExternal(crashed(null));
     }
   );
-  watchPaperclipSources(engine, cwd);
-  const textSourceWriter = new PCSourceWriter({ engine });
+
+  const plugins = [
+    sourceWriterPlugin(engine, emitExternal),
+    fileWatcherPlugin(engine, cwd, emitExternal)
+  ];
 
   const port = await getPort({ port: defaultPort });
 
   const io = sockjs.createServer();
 
-  let _watcher: chokidar.FSWatcher;
   const em = new EventEmitter();
 
   const openURI = uri => {
@@ -139,12 +139,16 @@ export const startServer = async ({
 
     conn.on("data", data => {
       const action: InstanceAction = JSON.parse(data) as any;
+
+      // pass action handling to plugins
+      for (const handleAction of plugins) {
+        handleAction(action);
+      }
+
+      // LEGACY
       switch (action.type) {
         case ActionType.FS_ITEM_CLICKED: {
           return onFSItemClicked(action);
-        }
-        case ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED: {
-          return onVirtualStyleDeclarationValueChanged(action);
         }
         case ActionType.VIRTUAL_NODES_SELECTED: {
           return onVirtualNodeSelected(action);
@@ -163,9 +167,6 @@ export const startServer = async ({
         }
         case ActionType.TITLE_DOUBLE_CLICKED: {
           return handleTitleDoubleClicked(action);
-        }
-        case ActionType.PC_VIRT_OBJECT_EDITED: {
-          return handleVirtObjectEdited(action);
         }
       }
       emitExternal(instanceChanged({ targetPCFileUri: targetUri, action }));
@@ -224,12 +225,6 @@ export const startServer = async ({
       }
     };
 
-    const onVirtualStyleDeclarationValueChanged = (
-      action: VirtualStyleDeclarationValueChanged
-    ) => {
-      console.log("CHANGED", action);
-    };
-
     const onVirtualNodeSelected = (action: VirtualNodesSelected) => {
       loadVirtualNodeSources(action.payload.sources);
       inspectVirtuaNodeSources(
@@ -277,14 +272,6 @@ export const startServer = async ({
       if (info) {
         emitExternal(revealExpressionSourceRequested(info));
       }
-    };
-
-    const handleVirtObjectEdited = async (action: PCVirtObjectEdited) => {
-      emitExternal(
-        pcSourceEdited(
-          await textSourceWriter.getContentChanges(action.payload.mutations)
-        )
-      );
     };
 
     const handleOpen = (uri: string) => {
@@ -409,7 +396,7 @@ const startHTTPServer = (
   const server = app.listen(port);
   io.installHandlers(server, { prefix: "/rt" });
 
-  const distHandler = express.static(path.join(__dirname, "..", "dist"));
+  const distHandler = express.static(path.join(__dirname, "..", "..", "dist"));
 
   // cors to enable iframe embed
   app.use(function(req, res, next) {

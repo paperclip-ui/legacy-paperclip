@@ -150,8 +150,8 @@ export type BirdseyeFilterChanged = BaseAction<
 export type VirtualStyleDeclarationValueChanged = BaseAction<
   ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED,
   {
-    styleId: string;
-    index: number;
+    declarationId: string;
+    name: string;
     value: string;
   }
 >;

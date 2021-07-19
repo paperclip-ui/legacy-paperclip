@@ -46,6 +46,7 @@ describe(__filename + "#", () => {
             media: null,
             declarations: [
               {
+                sourceId: "80f4925f-1-1",
                 name: "color",
                 value: "red",
                 active: true
@@ -106,6 +107,7 @@ describe(__filename + "#", () => {
             media: null,
             declarations: [
               {
+                sourceId: "80f4925f-5-1",
                 name: "color",
                 value: "red",
                 active: true
@@ -134,11 +136,12 @@ describe(__filename + "#", () => {
               ]
             },
             pseudoElementName: null,
-            sourceId: "0-1-1-1",
+            sourceId: "80f4925f-1-2",
             sourceUri: "/entry.pc",
             media: null,
             declarations: [
               {
+                sourceId: "80f4925f-1-1",
                 name: "color",
                 value: "blue",
                 active: false
@@ -160,7 +163,7 @@ describe(__filename + "#", () => {
         screenWidth
       );
 
-      // console.log(JSON.stringify(inspection, null, 2));
+      console.log(JSON.stringify(inspection, null, 2));
 
       expect(inspection).to.eql(result);
     });

@@ -97,6 +97,7 @@ export type SelectorInfo =
   | SiblingSelectorInfo;
 
 export type StyleDeclarationInfo = {
+  sourceId: string;
   name: string;
   value: string;
   active: boolean;

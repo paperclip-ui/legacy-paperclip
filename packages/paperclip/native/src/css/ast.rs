@@ -20,6 +20,27 @@ impl Declaration {
       Declaration::Media(kv) => &kv.location,
     }
   }
+
+  pub fn get_id(&self) -> &String {
+    match self {
+      Declaration::KeyValue(kv) => &kv.id,
+      Declaration::Include(kv) => &kv.id,
+      Declaration::Content(kv) => &kv.id,
+      Declaration::Media(kv) => &kv.id,
+    }
+  }
+  
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    if self.get_id() == id {
+      return Some(CSSObject::Declaration(self));
+    }
+
+    match self {
+      Declaration::Include(kv) => kv.get_object_by_id(id),
+      Declaration::Media(kv) => kv.get_object_by_id(id),
+      _ => None
+    }
+  }
 }
 
 impl fmt::Display for Declaration {
@@ -55,6 +76,7 @@ impl<'a> CSSObject<'a> {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyValueDeclaration {
+  pub id: String,
   pub name: String,
   pub value: String,
   pub location: Location,
@@ -67,6 +89,7 @@ pub struct KeyValueDeclaration {
   pub value_location: Location,
 }
 
+
 impl fmt::Display for KeyValueDeclaration {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     writeln!(f, "{}:{};", &self.name, &self.value)?;
@@ -76,6 +99,7 @@ impl fmt::Display for KeyValueDeclaration {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Content {
+  pub id: String,
   pub raws: BasicRaws,
   pub location: Location,
 }
@@ -89,6 +113,12 @@ pub struct Include {
   pub rules: Vec<StyleRule>,
   pub location: Location,
   pub raws: BasicRaws,
+}
+
+impl Include {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
+  }
 }
 
 impl fmt::Display for Include {
@@ -292,13 +322,7 @@ impl StyleRule {
     if (&self.id == id) {
       return Some(CSSObject::StyleRule(&self));
     }
-    for child in &self.children {
-      let sub = child.get_object_by_id(id);
-      if sub != None {
-        return sub;
-      }
-    }
-    return None;
+    get_object_by_id_in_style_rules_or_declarations(&self.children, &self.declarations, id)
   }
 }
 
@@ -380,6 +404,12 @@ pub struct ConditionRule {
   pub declarations: Vec<Declaration>,
   pub location: Location,
   pub raws: BasicRaws,
+}
+
+impl ConditionRule {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
+  }
 }
 
 impl fmt::Display for ConditionRule {
@@ -1069,13 +1099,47 @@ impl Sheet {
       return Some(CSSObject::Sheet(&self));
     }
 
-    for rule in &self.rules {
-      let nested_object = rule.get_object_by_id(id);
-      if nested_object != None {
-        return nested_object;
-      }
-    }
-
-    return None;
+    get_object_by_id_in_rules_or_declarations(&self.rules, &self.declarations, id)
   }
+}
+
+fn get_object_by_id_in_rules_or_declarations<'a>(rules: &'a Vec<Rule>, decls: &'a Vec<Declaration>, id: &String) -> Option<CSSObject<'a>> {
+  get_object_by_id_in_rules(rules, id).or_else(|| {
+    get_object_by_id_in_declarations(decls, id)
+  })
+}
+fn get_object_by_id_in_style_rules_or_declarations<'a>(rules: &'a Vec<StyleRule>, decls: &'a Vec<Declaration>, id: &String) -> Option<CSSObject<'a>> {
+  get_object_by_id_in_style_rules(rules, id).or_else(|| {
+    get_object_by_id_in_declarations(decls, id)
+  })
+}
+
+fn get_object_by_id_in_style_rules<'a>(rules: &'a Vec<StyleRule>, id: &String) -> Option<CSSObject<'a>> {
+  for rule in rules {
+    let nested_object = rule.get_object_by_id(id);
+    if nested_object != None {
+      return nested_object;
+    }
+  }
+  return None;
+}
+
+fn get_object_by_id_in_rules<'a>(rules: &'a Vec<Rule>, id: &String) -> Option<CSSObject<'a>> {
+  for rule in rules {
+    let nested_object = rule.get_object_by_id(id);
+    if nested_object != None {
+      return nested_object;
+    }
+  }
+  return None;
+}
+
+fn get_object_by_id_in_declarations<'a>(decls: &'a Vec<Declaration>, id: &String) -> Option<CSSObject<'a>> {
+  for decl in decls {
+    let nested_object = decl.get_object_by_id(id);
+    if nested_object != None {
+      return nested_object;
+    }
+  }
+  return None;
 }

@@ -2,7 +2,7 @@ use super::vfs::VirtualFileSystem;
 use crate::base::ast::Location;
 use crate::base::parser::ParseError;
 use crate::base::utils::get_document_id;
-use crate::core::id_generator::{generate_seed, IDGenerator};
+use crate::core::id_generator::{IDGenerator};
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use crc::crc32;
@@ -34,8 +34,7 @@ pub struct GraphError {
 
 #[derive(Debug, Clone)]
 pub struct DependencyGraph {
-  pub dependencies: BTreeMap<String, Dependency>,
-  pub seed_id_generator: IDGenerator,
+  pub dependencies: BTreeMap<String, Dependency>
 }
 
 pub enum DependencyObject<'a> {
@@ -47,8 +46,7 @@ pub enum DependencyObject<'a> {
 impl DependencyGraph {
   pub fn new() -> DependencyGraph {
     DependencyGraph {
-      dependencies: BTreeMap::new(),
-      seed_id_generator: IDGenerator::new("0".to_string()),
+      dependencies: BTreeMap::new()
     }
   }
   pub fn flatten<'a>(&'a self, entry_uri: &String) -> Vec<(&Dependency, Option<&Dependency>)> {
@@ -220,7 +218,7 @@ impl DependencyGraph {
         source,
         &curr_uri,
         vfs,
-        self.seed_id_generator.new_seed().as_str(),
+        get_document_id(&curr_uri).as_str()
       )
       .or_else(|error| {
         Err(GraphError {

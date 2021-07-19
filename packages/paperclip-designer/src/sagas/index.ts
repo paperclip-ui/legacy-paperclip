@@ -147,14 +147,14 @@ function* handleRenderer(getState: AppStateSelector) {
     ],
     function*() {
       const state: AppState = yield select(getState);
+      console.log(state.designer.selectedNodeSources);
 
       yield put(
         pcVirtObjectEdited({
-          mutations: state.designer.selectedNodePaths.map(info => {
+          mutations: state.designer.selectedNodePaths.map((info, i) => {
             const frame = getFrameFromIndex(Number(info), state.designer);
             return {
-              nodePath: [Number(info)],
-              nodeUri: state.designer.ui.query.canvasFile,
+              targetId: state.designer.selectedNodeSources[i].source.sourceId,
               action: {
                 kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
                 annotations: computeVirtJSObject(frame.annotations)
@@ -177,8 +177,7 @@ function* handleRenderer(getState: AppStateSelector) {
       pcVirtObjectEdited({
         mutations: state.designer.selectedNodePaths.map(index => {
           return {
-            nodePath: [Number(index)],
-            nodeUri: state.designer.ui.query.canvasFile,
+            targetId: state.designer.selectedNodeSources[index].source.sourceId,
             action: {
               kind: PCMutationActionKind.EXPRESSION_DELETED
             }
@@ -571,22 +570,25 @@ function* handleActions(getState: AppStateSelector) {
 }
 
 function* handleVirtualObjectSelected(getState: AppStateSelector) {
-  yield takeEvery(ActionType.CANVAS_MOUSE_UP, function*() {
-    const state: AppState = yield select(getState);
-    if (!state.designer.selectedNodePaths.length) {
-      return;
-    }
+  yield takeEvery(
+    [ActionType.CANVAS_MOUSE_UP, ActionType.FRAME_TITLE_CLICKED],
+    function*() {
+      const state: AppState = yield select(getState);
+      if (!state.designer.selectedNodePaths.length) {
+        return;
+      }
 
-    yield put(
-      virtualNodesSelected({
-        sources: state.designer.selectedNodePaths.map(nodePath => {
-          return {
-            path: nodePath.split(".").map(Number),
-            uri: state.designer.ui.query.canvasFile!
-          };
-        }),
-        screenWidth: window.screenX
-      })
-    );
-  });
+      yield put(
+        virtualNodesSelected({
+          sources: state.designer.selectedNodePaths.map(nodePath => {
+            return {
+              path: nodePath.split(".").map(Number),
+              uri: state.designer.ui.query.canvasFile!
+            };
+          }),
+          screenWidth: window.screenX
+        })
+      );
+    }
+  );
 }
