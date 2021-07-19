@@ -58,6 +58,7 @@ export class VSCServiceBridge {
   private _documents: KeyValue<TextDocument> = {};
   private _contentChanges: Record<string, string> = {};
   private _waitingForCalm = false;
+  private _updateSkips: Record<string, number> = {};
 
   constructor(
     private _engine: EngineDelegate,
@@ -101,6 +102,14 @@ export class VSCServiceBridge {
 
     connection.onDidChangeTextDocument(params => {
       const uri = fixFileUrlCasing(params.textDocument.uri);
+
+      // this is a bit janky, but we need to temporarily turn off listening for cases
+      // where changes are coming from the preview.
+      if (this._updateSkips[uri]) {
+        this._updateSkips[uri]--;
+        return;
+      }
+
       this._updateTextContent(uri, params.contentChanges);
     });
   }
@@ -124,6 +133,13 @@ export class VSCServiceBridge {
   goAheadNowYaHear() {
     this._waitingForCalm = false;
     this._maybePersistContentChanges();
+  }
+
+  skipChanges(uri: string) {
+    if (!this._updateSkips[uri]) {
+      this._updateSkips[uri] = 0;
+    }
+    this._updateSkips[uri]++;
   }
 
   private _deferUpdateEngineContent = (uri: string, content: string) => {

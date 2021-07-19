@@ -2,7 +2,7 @@ use super::vfs::VirtualFileSystem;
 use crate::base::ast::Location;
 use crate::base::parser::ParseError;
 use crate::base::utils::get_document_id;
-use crate::core::id_generator::{IDGenerator};
+use crate::core::id_generator::IDGenerator;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
 use crc::crc32;
@@ -34,7 +34,7 @@ pub struct GraphError {
 
 #[derive(Debug, Clone)]
 pub struct DependencyGraph {
-  pub dependencies: BTreeMap<String, Dependency>
+  pub dependencies: BTreeMap<String, Dependency>,
 }
 
 pub enum DependencyObject<'a> {
@@ -46,7 +46,7 @@ pub enum DependencyObject<'a> {
 impl DependencyGraph {
   pub fn new() -> DependencyGraph {
     DependencyGraph {
-      dependencies: BTreeMap::new()
+      dependencies: BTreeMap::new(),
     }
   }
   pub fn flatten<'a>(&'a self, entry_uri: &String) -> Vec<(&Dependency, Option<&Dependency>)> {
@@ -214,18 +214,14 @@ impl DependencyGraph {
         .to_string();
 
       // TODO - check if content matches old content.
-      let dependency_option = Dependency::from_source(
-        source,
-        &curr_uri,
-        vfs,
-        get_document_id(&curr_uri).as_str()
-      )
-      .or_else(|error| {
-        Err(GraphError {
-          uri: curr_uri.to_string(),
-          info: GraphErrorInfo::Syntax(error),
-        })
-      });
+      let dependency_option =
+        Dependency::from_source(source, &curr_uri, vfs, get_document_id(&curr_uri).as_str())
+          .or_else(|error| {
+            Err(GraphError {
+              uri: curr_uri.to_string(),
+              info: GraphErrorInfo::Syntax(error),
+            })
+          });
 
       match dependency_option {
         Ok(dependency) => {

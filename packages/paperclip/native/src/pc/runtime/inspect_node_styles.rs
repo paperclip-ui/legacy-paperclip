@@ -25,7 +25,6 @@ use std::collections::{BTreeMap, HashSet};
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleDeclarationInfo {
-
   #[serde(rename = "sourceId")]
   pub source_id: String,
 

@@ -16,6 +16,7 @@ export const StyleDeclaration = ({ info, onValueChange }: StyleRuleProps) => {
 
   return (
     <styles.StyleRuleProperty
+      disabled={!info.active}
       name={info.name}
       value={<input {...inputProps} />}
     />

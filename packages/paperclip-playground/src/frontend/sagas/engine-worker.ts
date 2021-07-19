@@ -59,9 +59,7 @@ const init = async () => {
   };
 
   const onEngineInit = () => {
-    _writer = new PCSourceWriter({
-      engine: _engine
-    });
+    _writer = new PCSourceWriter(_engine);
     dispatch(engineLoaded(null));
     tryOpeningCurrentFile();
   };
@@ -115,7 +113,7 @@ const init = async () => {
   const handleVirtObjectEdited = async (action: vea.PCVirtObjectEdited) => {
     dispatch(
       contentChangesCreated({
-        changes: await _writer.getContentChanges(action.payload.mutations)
+        changes: _writer.apply(action.payload.mutations)
       })
     );
   };

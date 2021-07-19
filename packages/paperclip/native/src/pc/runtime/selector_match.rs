@@ -297,6 +297,13 @@ fn get_matching_sub_selector<'a, 'b, 'c>(
       if sel.name == "disabled" && element.get_attribute("disabled") == None {
         return None;
       }
+
+      // TODO - need to have flag for states like this. For now, ignore
+      // https://www.w3schools.com/css/css_pseudo_classes.asp
+      if matches!(sel.name.as_str(), "hover" | "active" | "visited" | "link") {
+        return None;
+      }
+
       return Some(&selector);
     }
 

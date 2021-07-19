@@ -255,6 +255,7 @@ export const startServer = async ({
         source,
         engine.inspectNodeStyles(source, screenWidth)
       ]);
+      console.log("Inspected in %d ms", Date.now() - now);
       emit(virtualNodeStylesInspected(inspections));
     };
 

@@ -24,6 +24,7 @@ export type DevServerChanged = BaseAction<
   ActionType.DEV_SERVER_CHANGED,
   ve.ServerAction
 >;
+
 export type Goosefraba = BaseAction<ActionType.GOOSEFRABA>;
 export type EnhanceCalmRequested = BaseAction<
   ActionType.ENHANCE_CALM_REQUESTED

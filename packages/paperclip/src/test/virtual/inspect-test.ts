@@ -52,7 +52,7 @@ describe(__filename + "#", () => {
                 active: true
               }
             ],
-            specificity: 2
+            specificity: 4
           }
         ]
       }
@@ -113,7 +113,7 @@ describe(__filename + "#", () => {
                 active: true
               }
             ],
-            specificity: 2
+            specificity: 4
           },
           {
             selectorText: "[class]._80f4925f_item",
@@ -147,6 +147,208 @@ describe(__filename + "#", () => {
                 active: false
               }
             ],
+            specificity: 4
+          }
+        ]
+      }
+    ],
+    [
+      "Ignores :hover selector",
+      {
+        "/entry.pc": `
+          <div className:hover="hover">
+            <style>
+              color: red;
+              &:hover {
+                color: red;
+              }
+            </style>
+          </div>
+        `
+      },
+      100,
+      {
+        styleRules: [
+          {
+            selectorText: "._406d2856._406d2856",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "406d2856",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-3-1",
+                name: "color",
+                value: "red",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
+    ],
+    [
+      "Combo has different specificity than class",
+      {
+        "/entry.pc": `
+          <style>
+            .a {
+              color: red;
+            }
+            .a.b {
+              color: blue;
+            }
+          </style>
+          <div class="a b" />
+        `
+      },
+      100,
+      {
+        styleRules: [
+          {
+            selectorText: "._80f4925f_a._80f4925f_b._80f4925f",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: "a",
+                  value: "._80f4925f_a",
+                  scope: {
+                    kind: "Document",
+                    id: "80f4925f"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: "b",
+                  value: "._80f4925f_b",
+                  scope: {
+                    kind: "Document",
+                    id: "80f4925f"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._80f4925f",
+                  scope: {
+                    kind: "Document",
+                    id: "80f4925f"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-1-4",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-3",
+                name: "color",
+                value: "blue",
+                active: true
+              }
+            ],
+            specificity: 6
+          },
+          {
+            selectorText: "[class]._80f4925f_a",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Attribute",
+                  value: "[class]"
+                },
+                {
+                  kind: "Class",
+                  name: "a",
+                  value: "._80f4925f_a",
+                  scope: {
+                    kind: "Document",
+                    id: "80f4925f"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-1-2",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-1",
+                name: "color",
+                value: "red",
+                active: false
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
+    ],
+    [
+      "Can inspect global styles",
+      {
+        "/entry.pc": `
+          <style>
+            :global(.a) {
+              color: red;
+            }
+          </style>
+          <div class="a b" />
+        `
+      },
+      100,
+      {
+        styleRules: [
+          {
+            selectorText: ".a",
+            selectorInfo: {
+              kind: "Class",
+              name: "a",
+              value: ".a",
+              scope: null
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-1-2",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-1",
+                name: "color",
+                value: "red",
+                active: true
+              }
+            ],
             specificity: 2
           }
         ]
@@ -162,8 +364,6 @@ describe(__filename + "#", () => {
         { path: [0], uri: "/entry.pc" },
         screenWidth
       );
-
-      console.log(JSON.stringify(inspection, null, 2));
 
       expect(inspection).to.eql(result);
     });

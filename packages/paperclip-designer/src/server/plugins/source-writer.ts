@@ -16,14 +16,14 @@ export const sourceWriterPlugin = (
   engine: EngineDelegate,
   dispatch: (action: Action) => void
 ) => {
-  const textSourceWriter = new PCSourceWriter({ engine });
+  const textSourceWriter = new PCSourceWriter(engine);
 
   const onVirtualStyleDeclarationValueChanged = (
     action: VirtualStyleDeclarationValueChanged
   ) => {
     dispatch(
       pcSourceEdited(
-        textSourceWriter.getContentChanges([
+        textSourceWriter.apply([
           {
             targetId: action.payload.declarationId,
             action: {
@@ -38,11 +38,7 @@ export const sourceWriterPlugin = (
   };
 
   const handleVirtObjectEdited = async (action: PCVirtObjectEdited) => {
-    dispatch(
-      pcSourceEdited(
-        textSourceWriter.getContentChanges(action.payload.mutations)
-      )
-    );
+    dispatch(pcSourceEdited(textSourceWriter.apply(action.payload.mutations)));
   };
 
   return (action: Action) => {

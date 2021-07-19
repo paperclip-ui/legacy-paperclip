@@ -55,7 +55,7 @@ fn calc_specificity(selector: &Selector) -> i32 {
     Selector::Class(_) => 2,
 
     // TODO
-    Selector::Combo(selector) => selector.selectors.len() as i32,
+    Selector::Combo(selector) => selector.selectors.iter().fold(0, |sum, child| sum + calc_specificity(child)),
 
     // TODO
     Selector::AllSelector(_) => 1,
@@ -74,7 +74,7 @@ mod tests {
   fn can_calc_specificity_for_various_selectors() {
     let cases = [
       ("div", 1),
-      (".a.b.c.d[a=b]", 5),
+      (".a.b.c.d[a=b]", 10),
       ("a > b", 2),
       ("a b", 2),
       ("a ~ b", 2),

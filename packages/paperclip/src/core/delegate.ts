@@ -197,13 +197,18 @@ export class EngineDelegate {
     return this._documents[uri];
   }
   updateVirtualFileContent(uri: string, content: string) {
+    if (this._documents[uri] === content) {
+      return;
+    }
+
+    // only define if successfuly loaded
+    this._documents[uri] = content;
+
     return this._tryCatch(() => {
       const ret = mapResult(
         this._native.update_virtual_file_content(uri, content)
       );
 
-      // only define if successfuly loaded
-      this._documents[uri] = content;
       return ret;
     });
   }

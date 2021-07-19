@@ -213,9 +213,9 @@ impl fmt::Display for StyleRule {
 pub struct CSSStyleProperty {
   pub name: String,
   pub value: String,
-  
+
   #[serde(rename = "sourceId")]
-  pub source_id: String
+  pub source_id: String,
 }
 
 impl PartialEq for CSSStyleProperty {

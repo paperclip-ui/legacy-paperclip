@@ -148,9 +148,8 @@ fn get_selector_info(ast: &css_ast::Selector, graph: &DependencyGraph) -> Result
       value: ast.to_string(),
     })),
     css_ast::Selector::Class(ast) => {
-      let scope_parts = split_scope_parts(&ast.to_string());
-
-      let scope_id = scope_parts.first().unwrap();
+      let scope_parts = split_class_scope_parts(&ast.class_name);
+      let scope_id = scope_parts.first().unwrap_or(&ast.class_name);
       let scope = graph.get_object_by_id(&scope_id).and_then(|(uri, obj)| {
         Some(match obj {
           DependencyObject::Dependency(dep) => SelectorScope::Document(SelectorScopeInfo {
@@ -169,7 +168,7 @@ fn get_selector_info(ast: &css_ast::Selector, graph: &DependencyGraph) -> Result
           None
         }
       } else {
-        None
+        Some(ast.class_name.to_string())
       };
 
       return Ok(Selector::Class(ClassSelector {
@@ -202,15 +201,15 @@ fn get_selector_info(ast: &css_ast::Selector, graph: &DependencyGraph) -> Result
   }
 }
 
-fn split_scope_parts(target_selector_text: &String) -> Vec<String> {
+fn split_class_scope_parts(class_selector_text: &String) -> Vec<String> {
   lazy_static! {
     static ref scope_name_re: Regex = Regex::new(r"_(pub-)?([^_]+)(_(.+))?\b").unwrap();
   }
 
   let mut scope_name_parts: Vec<String> = vec![];
 
-  if scope_name_re.is_match(target_selector_text) {
-    for caps in scope_name_re.captures_iter(target_selector_text) {
+  if scope_name_re.is_match(class_selector_text) {
+    for caps in scope_name_re.captures_iter(class_selector_text) {
       let scope_id = caps.get(2).unwrap().as_str();
       scope_name_parts.push(scope_id.to_string());
 

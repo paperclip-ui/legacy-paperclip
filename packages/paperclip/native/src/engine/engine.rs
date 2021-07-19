@@ -229,7 +229,7 @@ impl Engine {
       })
   }
 
-  pub fn get_expression_by_id<'a>(&'a self, id: &String) -> Option<(String, pc_ast::PCObject<'a>)>  {
+  pub fn get_expression_by_id<'a>(&'a self, id: &String) -> Option<(String, pc_ast::PCObject<'a>)> {
     self.dependency_graph.get_expression_by_id(id)
   }
 

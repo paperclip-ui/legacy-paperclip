@@ -36,13 +36,17 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="StyleRuleProperty">
+<div export component as="StyleRuleProperty" className:disabled="disabled">
   <style>
     display: flex;
     grid-column-gap: 16px;
     font-size: 14px;
     padding: var(--spacing-3) var(--spacing-5);
     border-bottom: 1px solid rgb(233, 233, 233);
+    &.disabled {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
     &:last-child {
       border-bottom-color: transparent;
     }
@@ -141,7 +145,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="SelectorInfo">
+<div export component as="SelectorInfo" {title}>
   <style>
     display: flex;
     justify-content: space-between;
@@ -172,7 +176,8 @@
     properties={<fragment>
       <StyleRuleProperty name="background-color"
         value={<input value="red" />} />
-      <StyleRuleProperty name="font-family"
+      <StyleRuleProperty disabled
+        name="font-family"
         value={<StyleRulePropertyRichValue>
           <KeywordPart value="sans-serif" />
         </StyleRulePropertyRichValue>} />

@@ -29,7 +29,7 @@ impl Declaration {
       Declaration::Media(kv) => &kv.id,
     }
   }
-  
+
   pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
     if self.get_id() == id {
       return Some(CSSObject::Declaration(self));
@@ -38,7 +38,7 @@ impl Declaration {
     match self {
       Declaration::Include(kv) => kv.get_object_by_id(id),
       Declaration::Media(kv) => kv.get_object_by_id(id),
-      _ => None
+      _ => None,
     }
   }
 }
@@ -88,7 +88,6 @@ pub struct KeyValueDeclaration {
   #[serde(rename = "valueLocation")]
   pub value_location: Location,
 }
-
 
 impl fmt::Display for KeyValueDeclaration {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -716,12 +715,14 @@ impl Selector {
 
     self.walk(&mut |descendent| {
       if let Selector::PseudoElement(pseudo_element) = descendent {
-        pseudo_element_name = Some(pseudo_element.name.to_string());
-        return false;
+        if matches!(pseudo_element.name.as_str(), "before" | "after") {
+          pseudo_element_name = Some(pseudo_element.name.to_string());
+          return false;
+        }
       }
       return true;
     });
-
+    
     pseudo_element_name
   }
 }
@@ -1103,18 +1104,25 @@ impl Sheet {
   }
 }
 
-fn get_object_by_id_in_rules_or_declarations<'a>(rules: &'a Vec<Rule>, decls: &'a Vec<Declaration>, id: &String) -> Option<CSSObject<'a>> {
-  get_object_by_id_in_rules(rules, id).or_else(|| {
-    get_object_by_id_in_declarations(decls, id)
-  })
+fn get_object_by_id_in_rules_or_declarations<'a>(
+  rules: &'a Vec<Rule>,
+  decls: &'a Vec<Declaration>,
+  id: &String,
+) -> Option<CSSObject<'a>> {
+  get_object_by_id_in_rules(rules, id).or_else(|| get_object_by_id_in_declarations(decls, id))
 }
-fn get_object_by_id_in_style_rules_or_declarations<'a>(rules: &'a Vec<StyleRule>, decls: &'a Vec<Declaration>, id: &String) -> Option<CSSObject<'a>> {
-  get_object_by_id_in_style_rules(rules, id).or_else(|| {
-    get_object_by_id_in_declarations(decls, id)
-  })
+fn get_object_by_id_in_style_rules_or_declarations<'a>(
+  rules: &'a Vec<StyleRule>,
+  decls: &'a Vec<Declaration>,
+  id: &String,
+) -> Option<CSSObject<'a>> {
+  get_object_by_id_in_style_rules(rules, id).or_else(|| get_object_by_id_in_declarations(decls, id))
 }
 
-fn get_object_by_id_in_style_rules<'a>(rules: &'a Vec<StyleRule>, id: &String) -> Option<CSSObject<'a>> {
+fn get_object_by_id_in_style_rules<'a>(
+  rules: &'a Vec<StyleRule>,
+  id: &String,
+) -> Option<CSSObject<'a>> {
   for rule in rules {
     let nested_object = rule.get_object_by_id(id);
     if nested_object != None {
@@ -1134,7 +1142,10 @@ fn get_object_by_id_in_rules<'a>(rules: &'a Vec<Rule>, id: &String) -> Option<CS
   return None;
 }
 
-fn get_object_by_id_in_declarations<'a>(decls: &'a Vec<Declaration>, id: &String) -> Option<CSSObject<'a>> {
+fn get_object_by_id_in_declarations<'a>(
+  decls: &'a Vec<Declaration>,
+  id: &String,
+) -> Option<CSSObject<'a>> {
   for decl in decls {
     let nested_object = decl.get_object_by_id(id);
     if nested_object != None {

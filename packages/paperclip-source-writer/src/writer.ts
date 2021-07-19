@@ -26,6 +26,7 @@ import {
   astEmitted,
   StyleRule
 } from "paperclip-utils";
+import { editString } from "./string-editor";
 
 type PCSourceWriterOptions = {
   engine: EngineDelegate;
@@ -41,11 +42,29 @@ export type ContentChange = {
 const ANNOTATION_KEYS = ["title", "width", "height", "x", "y"];
 
 export class PCSourceWriter {
-  constructor(private _options: PCSourceWriterOptions) {}
+  constructor(private _engine: EngineDelegate) {}
 
-  getContentChanges(mutations: PCMutation[]): Record<string, ContentChange[]> {
+  apply(mutations: PCMutation[]): Record<string, ContentChange[]> {
+    const changes = this._getContentChanges(mutations);
+
+    for (const uri in changes) {
+      const newContent = editString(
+        this._engine.getVirtualContent(uri),
+        changes[uri]
+      );
+      this._engine.updateVirtualFileContent(uri, newContent);
+    }
+
+    // return changes so that
+
+    return changes;
+  }
+
+  private _getContentChanges(
+    mutations: PCMutation[]
+  ): Record<string, ContentChange[]> {
     const changes: ContentChange[] = [];
-    const engine = this._options.engine;
+    const engine = this._engine;
     for (const { targetId, action } of mutations) {
       const [uri, targetAst] = engine.getExpressionById(targetId);
       const documentAst = engine.getLoadedAst(uri) as DependencyNodeContent;

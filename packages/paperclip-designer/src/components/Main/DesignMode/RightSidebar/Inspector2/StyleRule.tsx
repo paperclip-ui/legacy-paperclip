@@ -56,6 +56,7 @@ type StyleRuleHeaderProps = {
 const StyleRuleHeader = React.memo(({ info }: StyleRuleHeaderProps) => {
   return (
     <styles.SelectorInfo
+      title={info.selectorText}
       computedText={info.selectorText}
       fileName={path.basename(info.sourceUri)}
     />

@@ -1907,7 +1907,7 @@ pub fn __test__evaluate_pc_files<'a>(
         content.to_string(),
         &file_name,
         &vfs,
-        get_document_id(&file_name).as_str()
+        get_document_id(&file_name).as_str(),
       )
       .unwrap(),
     );
