@@ -531,7 +531,11 @@ fn evaluate_condition_rule(
 
   evaluate_style_rules(&rule.rules, &mut child_context, &parent_selector_context)?;
 
+
   if rule.declarations.len() > 0 {
+
+    // Note that condition rule may not parent parent rule. In that
+    // case selector_text will be ""
     let mut child_selector_context = parent_selector_context.child();
 
     if child_selector_context.parent != None {
@@ -542,20 +546,26 @@ fn evaluate_condition_rule(
 
     let selector_text = child_selector_context.to_string();
 
+
     let style = evaluate_style_declarations(
       &rule.declarations,
       &mut child_context,
       parent_selector_context,
     )?;
 
-    child_context
-      .all_rules
-      .push(virt::Rule::Style(virt::StyleRule {
-        exported: context.in_public_scope,
-        source_id: rule.id.to_string(),
-        selector_text,
-        style,
-      }))
+    
+    // cover case with @media print { @media screen { .a { color: red; }}} - selector_text
+    // will be undefined
+    if selector_text.len() > 0 {
+      child_context
+        .all_rules
+        .push(virt::Rule::Style(virt::StyleRule {
+          exported: context.in_public_scope,
+          source_id: rule.id.to_string(),
+          selector_text,
+          style,
+        }))
+    }
   }
 
   context.exports.extend(&child_context.exports);

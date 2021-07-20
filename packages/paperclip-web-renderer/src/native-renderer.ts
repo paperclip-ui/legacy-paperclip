@@ -86,6 +86,7 @@ export const createNativeStyleFromSheet = (
   const ruleTexts = sheet.rules
     .map(rule => stringifyCSSRule(rule, { resolveUrl }))
     .map(text => {
+      // OOF! This is expensive! This should be done in the rust engine instead. Not here!
       const isValid = ruleIsValid(text);
 
       // if (!isValid) {

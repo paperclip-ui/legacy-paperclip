@@ -722,7 +722,7 @@ impl Selector {
       }
       return true;
     });
-    
+
     pseudo_element_name
   }
 }

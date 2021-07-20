@@ -889,7 +889,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      "<style>@media a { b._80f4925f { color:red; } c._80f4925f { color:red; } { } }</style>"
+      "<style>@media a { b._80f4925f { color:red; } c._80f4925f { color:red; } }</style>"
     );
   });
 
@@ -1686,7 +1686,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } { } }</style><div class="_80f4925f _pub-80f4925f"></div>`
+      `<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } }</style><div class="_80f4925f _pub-80f4925f"></div>`
     );
   });
 

@@ -55,7 +55,10 @@ fn calc_specificity(selector: &Selector) -> i32 {
     Selector::Class(_) => 2,
 
     // TODO
-    Selector::Combo(selector) => selector.selectors.iter().fold(0, |sum, child| sum + calc_specificity(child)),
+    Selector::Combo(selector) => selector
+      .selectors
+      .iter()
+      .fold(0, |sum, child| sum + calc_specificity(child)),
 
     // TODO
     Selector::AllSelector(_) => 1,

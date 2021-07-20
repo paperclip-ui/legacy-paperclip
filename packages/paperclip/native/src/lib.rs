@@ -56,6 +56,7 @@ impl NativeEngine {
     resolve_file: js_sys::Function,
     engine_mode: NativeEngineMode,
   ) -> NativeEngine {
+    console_error_panic_hook::set_once();
     NativeEngine {
       target: Engine::new(
         Box::new(move |uri| {
@@ -118,22 +119,18 @@ impl NativeEngine {
     .unwrap()
   }
   pub fn get_loaded_ast(&mut self, uri: String) -> JsValue {
-    console_error_panic_hook::set_once();
     let result = self.target.get_loaded_ast(&uri);
     JsValue::from_serde(&result).unwrap()
   }
   pub fn parse_content(&mut self, content: String, uri: String) -> JsValue {
-    console_error_panic_hook::set_once();
     let result = block_on(self.target.parse_content(&content, &uri));
     JsValue::from_serde(&result).unwrap()
   }
   pub fn parse_file(&mut self, uri: String) -> JsValue {
-    console_error_panic_hook::set_once();
     let result = block_on(self.target.parse_file(&uri));
     JsValue::from_serde(&result).unwrap()
   }
   pub fn purge_unlinked_files(&mut self) {
-    console_error_panic_hook::set_once();
     block_on(self.target.purge_unlinked_files());
   }
   pub fn get_expression_by_id(&self, id: String) -> JsValue {

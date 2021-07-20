@@ -248,6 +248,10 @@ export const startServer = async ({
       screenWidth: number
     ) => {
       const now = Date.now();
+
+      // const ast = engine.getExpressionById("d6063cee-51346");
+      // console.log(JSON.stringify(ast, null, 2));
+
       const inspections: Array<[
         VirtNodeSource,
         NodeStyleInspection

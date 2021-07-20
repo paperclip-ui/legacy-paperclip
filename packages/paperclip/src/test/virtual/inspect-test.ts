@@ -353,6 +353,120 @@ describe(__filename + "#", () => {
           }
         ]
       }
+    ],
+    [
+      "Can inspect a nested media query",
+      {
+        "/entry.pc": `
+          <style>
+            
+            @media (min-width: 1024px) {
+              @media (min-width: 1280px) {
+                .a {
+                  color: blue;
+                }
+              }
+            }
+          </style>
+          <div class="a">
+          </div>
+        `
+      },
+      1300,
+      {
+        styleRules: [
+          {
+            selectorText: "[class]._80f4925f_a",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Attribute",
+                  value: "[class]"
+                },
+                {
+                  kind: "Class",
+                  name: "a",
+                  value: "._80f4925f_a",
+                  scope: {
+                    kind: "Document",
+                    id: "80f4925f"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-1-2",
+            sourceUri: "/entry.pc",
+            media: {
+              conditionText: "(min-width: 1280px)",
+              active: false
+            },
+            declarations: [
+              {
+                sourceId: "80f4925f-1-1",
+                name: "color",
+                value: "blue",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
+    ],
+    [
+      "Can inspect imported styles",
+      {
+        "/entry.pc": `
+          <import src="/test.css" inject-styles />
+          <div class="a" />
+        `,
+        "/test.css": `
+          .a {
+            color: red;
+          }
+        `
+      },
+      100,
+      {
+        styleRules: [
+          {
+            selectorText: "[class]._pub-b8a55827_a",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Attribute",
+                  value: "[class]"
+                },
+                {
+                  kind: "Class",
+                  name: "a",
+                  value: "._pub-b8a55827_a",
+                  scope: {
+                    kind: "Document",
+                    id: "b8a55827"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "b8a55827-2",
+            sourceUri: "/test.css",
+            media: null,
+            declarations: [
+              {
+                sourceId: "b8a55827-1",
+                name: "color",
+                value: "red",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
     ]
   ] as any;
 
@@ -364,6 +478,7 @@ describe(__filename + "#", () => {
         { path: [0], uri: "/entry.pc" },
         screenWidth
       );
+      // console.log(JSON.stringify(inspection, null, 2));
 
       expect(inspection).to.eql(result);
     });

@@ -8,7 +8,8 @@ TODO:
 - scan styles from other files
 */
 
-use super::evaluator::EvalInfo;
+use super::evaluator::EvalInfo as PCEvalInfo;
+use crate::css::runtime::evaluator::EvalInfo as CSSEvalInfo;
 use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::inspect_selector_info as iso;
 use super::selector_match::get_selector_text_matching_sub_selector;
@@ -204,6 +205,7 @@ pub fn inspect_node_styles(
   options: &InspectionOptions,
 ) -> NodeInspectionInfo {
   let mut inspection_info = NodeInspectionInfo::new();
+  
 
   if let Some(main_eval_info) = get_pc_info(document_uri, all_eval_info) {
     add_inspection_info(
@@ -235,7 +237,7 @@ pub fn inspect_node_styles(
 fn get_pc_info<'a>(
   uri: &String,
   all_eval_info: &'a BTreeMap<String, DependencyEvalInfo>,
-) -> Option<&'a EvalInfo> {
+) -> Option<&'a PCEvalInfo> {
   all_eval_info.get(uri).and_then(|info| match info {
     DependencyEvalInfo::PC(pc) => Some(pc),
     _ => None,
@@ -245,25 +247,23 @@ fn get_pc_info<'a>(
 fn add_inspection_info(
   inspection_info: &mut NodeInspectionInfo,
   element_path: &Vec<usize>,
-  main_eval_info: &EvalInfo,
+  main_eval_info: &PCEvalInfo,
   uri: &String,
   all_eval_info: &BTreeMap<String, DependencyEvalInfo>,
   graph: &DependencyGraph,
   options: &InspectionOptions,
 ) {
-  if let Some(dep_eval_info) = get_pc_info(uri, all_eval_info) {
-    let style_rules = get_eval_info_selectors(dep_eval_info, graph, options);
+  if let Some(info) = all_eval_info.get(uri) {
+    let style_rules = get_eval_info_selectors(info, graph, options);
 
     for (style_rule, media_option) in style_rules {
       // TODO - matches should return some result instead of boolean
 
-      if let Some((matching_sub_selector, entire_selector)) =
-        get_selector_text_matching_sub_selector(
-          &style_rule.selector_text,
-          element_path,
-          &main_eval_info.preview,
-        )
-      {
+      if let Some((matching_sub_selector, entire_selector)) = get_selector_text_matching_sub_selector(
+        &style_rule.selector_text,
+        element_path,
+        &main_eval_info.preview,
+      ) {
         if let Ok(selector_info) = iso::Selector::from_ast(&entire_selector, graph) {
           let rule = StyleRuleInfo::new(
             style_rule,
@@ -279,14 +279,23 @@ fn add_inspection_info(
   }
 }
 
+
 fn get_eval_info_selectors<'a>(
-  eval_info: &'a EvalInfo,
+  eval_info: &'a DependencyEvalInfo,
   graph: &'a DependencyGraph,
   options: &'a InspectionOptions,
 ) -> Vec<(&'a StyleRule, Option<MediaInfo>)> {
   let mut style_rules: Vec<(&'a StyleRule, Option<MediaInfo>)> = vec![];
 
-  collect_style_rules(&mut style_rules, &eval_info.sheet.rules, None, options);
+  match eval_info {
+    DependencyEvalInfo::PC(pc) => {
+      collect_style_rules(&mut style_rules, &pc.sheet.rules, None, options);
+    },
+    DependencyEvalInfo::CSS(css) => {
+      collect_style_rules(&mut style_rules, &css.sheet.rules, None, options);
+    }
+  }
+
 
   style_rules
 }
