@@ -102,6 +102,7 @@ use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast as css_ast;
 use crate::css::parser::{parse as parse_css, parse_selector as parse_css_selector};
 use crate::pc::parser::parse as parse_pc;
+use regex::Regex;
 
 #[derive(Debug)]
 struct Context<'a> {
@@ -466,12 +467,19 @@ fn get_matching_sub_selector<'a, 'b, 'c>(
     }
     // .class
     css_ast::Selector::Class(sel) => {
+
+      lazy_static! {
+        static ref escape_re: Regex = Regex::new(r"\\").unwrap();
+      }
+
       return element
         .get_attribute("class")
         .and_then(|value_option| value_option)
         .and_then(|classes| {
+          let match_class_name = escape_re.replace_all(&sel.class_name, "");
+
           for class in classes.split(" ").into_iter() {
-            if class == sel.class_name {
+            if class == match_class_name {
               return Some(selector);
             }
           }

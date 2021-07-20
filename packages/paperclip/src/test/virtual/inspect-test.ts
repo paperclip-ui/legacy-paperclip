@@ -467,6 +467,59 @@ describe(__filename + "#", () => {
           }
         ]
       }
+    ],
+    [
+      "Inspect captures escaped selectors",
+      {
+        "/entry.pc": `
+          <style>
+            .a\\:b\\:c {
+              color: red;
+            }
+          </style>
+          <div class="a:b:c">
+          </div>
+        `
+      },
+      100,
+      {
+        styleRules: [
+          {
+            selectorText: "[class]._80f4925f_a\\:b\\:c",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Attribute",
+                  value: "[class]"
+                },
+                {
+                  kind: "Class",
+                  name: "a\\:b\\:c",
+                  value: "._80f4925f_a\\:b\\:c",
+                  scope: {
+                    kind: "Document",
+                    id: "80f4925f"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-1-2",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-1",
+                name: "color",
+                value: "red",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
     ]
   ] as any;
 

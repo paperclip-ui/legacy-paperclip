@@ -315,7 +315,9 @@ describe(__filename + "#", () => {
       `@media screen { @media print { .a { color: red; }}}`,
       `@media screen { @media print { [class]._80f4925f_a { color:red; } } }`,
       false
-    ]
+    ],
+
+    [`.a\\:b { color: red; }`, `[class]._80f4925f_a\\:b { color:red; }`, false]
 
     // group, selector
   ].forEach(([input, output, scoped]) => {

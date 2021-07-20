@@ -531,9 +531,7 @@ fn evaluate_condition_rule(
 
   evaluate_style_rules(&rule.rules, &mut child_context, &parent_selector_context)?;
 
-
   if rule.declarations.len() > 0 {
-
     // Note that condition rule may not parent parent rule. In that
     // case selector_text will be ""
     let mut child_selector_context = parent_selector_context.child();
@@ -546,14 +544,12 @@ fn evaluate_condition_rule(
 
     let selector_text = child_selector_context.to_string();
 
-
     let style = evaluate_style_declarations(
       &rule.declarations,
       &mut child_context,
       parent_selector_context,
     )?;
 
-    
     // cover case with @media print { @media screen { .a { color: red; }}} - selector_text
     // will be undefined
     if selector_text.len() > 0 {

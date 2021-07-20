@@ -9,13 +9,13 @@ TODO:
 */
 
 use super::evaluator::EvalInfo as PCEvalInfo;
-use crate::css::runtime::evaluator::EvalInfo as CSSEvalInfo;
 use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::inspect_selector_info as iso;
 use super::selector_match::get_selector_text_matching_sub_selector;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::DependencyGraph;
 use crate::css::ast as css_ast;
+use crate::css::runtime::evaluator::EvalInfo as CSSEvalInfo;
 use crate::css::runtime::media_match::media_matches;
 use crate::css::runtime::specificity::get_selector_text_specificity;
 use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
@@ -205,7 +205,6 @@ pub fn inspect_node_styles(
   options: &InspectionOptions,
 ) -> NodeInspectionInfo {
   let mut inspection_info = NodeInspectionInfo::new();
-  
 
   if let Some(main_eval_info) = get_pc_info(document_uri, all_eval_info) {
     add_inspection_info(
@@ -259,11 +258,13 @@ fn add_inspection_info(
     for (style_rule, media_option) in style_rules {
       // TODO - matches should return some result instead of boolean
 
-      if let Some((matching_sub_selector, entire_selector)) = get_selector_text_matching_sub_selector(
-        &style_rule.selector_text,
-        element_path,
-        &main_eval_info.preview,
-      ) {
+      if let Some((matching_sub_selector, entire_selector)) =
+        get_selector_text_matching_sub_selector(
+          &style_rule.selector_text,
+          element_path,
+          &main_eval_info.preview,
+        )
+      {
         if let Ok(selector_info) = iso::Selector::from_ast(&entire_selector, graph) {
           let rule = StyleRuleInfo::new(
             style_rule,
@@ -279,7 +280,6 @@ fn add_inspection_info(
   }
 }
 
-
 fn get_eval_info_selectors<'a>(
   eval_info: &'a DependencyEvalInfo,
   graph: &'a DependencyGraph,
@@ -290,12 +290,11 @@ fn get_eval_info_selectors<'a>(
   match eval_info {
     DependencyEvalInfo::PC(pc) => {
       collect_style_rules(&mut style_rules, &pc.sheet.rules, None, options);
-    },
+    }
     DependencyEvalInfo::CSS(css) => {
       collect_style_rules(&mut style_rules, &css.sheet.rules, None, options);
     }
   }
-
 
   style_rules
 }

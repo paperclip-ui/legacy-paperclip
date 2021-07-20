@@ -24,22 +24,28 @@ impl<'a, 'b> Context<'a, 'b> {
   }
 }
 
-
 pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Sheet, ParseError> {
   let mut tokenizer = Tokenizer::new(&source);
   parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
 }
 
-pub fn parse_selector<'a>(selector: &'a str, id_seed: Option<String>) -> Result<Selector, ParseError> {
+pub fn parse_selector<'a>(
+  selector: &'a str,
+  id_seed: Option<String>,
+) -> Result<Selector, ParseError> {
   let rule = format!("{}{{}}", selector);
 
   let id_seed2 = id_seed.unwrap_or(generate_seed());
   let ast: Sheet = if let Ok(ast) = parse(&rule, id_seed2.as_str()) {
     ast
   } else {
-    return Err(ParseError::unexpected(format!("Unable to parse selector \"{}\"", selector), 0, 0));
+    return Err(ParseError::unexpected(
+      format!("Unable to parse selector \"{}\"", selector),
+      0,
+      0,
+    ));
   };
-  
+
   let rule = ast.rules.get(0).unwrap();
 
   match rule {
