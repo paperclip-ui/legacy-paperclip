@@ -25,6 +25,7 @@ import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
 import { patchCSSOM } from "./cssom-patcher";
+import produce from "immer";
 
 type Box = {
   width: number;
@@ -44,7 +45,12 @@ export type Frame = {
   stage: HTMLElement;
 };
 
+type FramesProxyState = {
+  frames: Frame[];
+};
+
 class FramesProxy implements Patchable {
+  private _state: FramesProxyState;
   private _frames: Frame[];
   private _childNodes: ChildNode[];
   private _mainStyle: any;
@@ -53,20 +59,26 @@ class FramesProxy implements Patchable {
   readonly namespaceURI = null;
 
   constructor(
+    private _targetUri: string,
     private _preview: VirtualNode,
     private _domFactory: DOMFactory = document,
-    public resolveUrl: (url: string) => string
+    public resolveUrl: (url: string) => string,
+    public onChange: (state: FramesProxyState) => void
   ) {
-    this._frames = [];
+    this._state = {
+      frames: []
+    };
     this._childNodes = [];
     this._importedStyles = [];
     this._importedNativeStyles = [];
+
+    this.onChange(this._state);
   }
   setPreview(preview: VirtualNode) {
     this._preview = preview;
   }
-  get immutableFrames() {
-    return this._frames;
+  getState(): FramesProxyState {
+    return this._state;
   }
   get childNodes() {
     return this._childNodes;
@@ -204,6 +216,11 @@ class FramesProxy implements Patchable {
   }
 }
 
+export type FramesRendererState = {
+  uri: string;
+  frames: Frame[];
+};
+
 /**
  * splits a file out into frames that can be
  */
@@ -212,16 +229,42 @@ export class FramesRenderer {
   private _dependencies: string[] = [];
   private _framesProxy: FramesProxy;
   private _preview: VirtualNode;
+  private _state: FramesRendererState;
+  public onChange: (state: FramesRendererState) => void;
 
   constructor(
     private _targetUri: string,
     private _resolveUrl: (url: string) => string,
-    private _domFactory: DOMFactory = document
+    private _domFactory: DOMFactory = document,
+    private _onChange: (state: FramesRendererState) => void
   ) {
+    this._state = {
+      uri: this._targetUri,
+      frames: []
+    };
+
+    //   if ([
+    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Eina_03/font-family.pc",
+    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/IBM_Plex_Sans/font-family.pc",
+    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Inter/font-family.pc",
+    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Supera_Gothic/font-family.pc",
+    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/atoms.pc",
+    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/utils.pc",
+    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/Button.pc"
+    // ].includes(this._targetUri)) {
+    //   console.log("DEP URI");
+    // }
+
+    //   if (this._targetUri.includes("frontend/packages/design-system/src/Modal.pc")) {
+    //     console.log("NEW FRAME RENDERER");;
+    //   }
+
     this._framesProxy = new FramesProxy(
+      this.targetUri,
       this._preview,
       _domFactory,
-      this._resolveUrl
+      this._resolveUrl,
+      this._onFramesProxyChange
     );
   }
 
@@ -247,21 +290,38 @@ export class FramesRenderer {
     return this._targetUri;
   }
 
-  get immutableFrames(): Frame[] {
-    return this._framesProxy.immutableFrames;
+  getState() {
+    return this._state;
   }
 
-  public initialize({ sheet, importedSheets, preview }: LoadedPCData) {
+  private _onFramesProxyChange = (state: FramesProxyState) => {
+    this._updateState(newState => (newState.frames = state.frames));
+  };
+
+  private _updateState = (updater: (state: FramesRendererState) => void) => {
+    this._state = produce(this._state, updater);
+    this.onChange(this._state);
+  };
+
+  public initialize({
+    sheet,
+    importedSheets,
+    preview,
+    allImportedSheetUris
+  }: LoadedPCData) {
     const children =
       preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
     this._preview = preview;
 
     this._framesProxy = new FramesProxy(
+      this._targetUri,
       this._preview,
       this._domFactory,
-      this._resolveUrl
+      this._resolveUrl,
+      this._onFramesProxyChange
     );
-    this._dependencies = importedSheets.map(info => info.uri);
+
+    this._dependencies = allImportedSheetUris;
     this._framesProxy.setMainStyle(sheet);
 
     for (const child of children) {
@@ -303,6 +363,24 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Evaluated: {
         if (event.data.kind === EvaluatedDataKind.PC) {
+          //   if ([
+          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Eina_03/font-family.pc",
+          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/IBM_Plex_Sans/font-family.pc",
+          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Inter/font-family.pc",
+          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Supera_Gothic/font-family.pc",
+          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/atoms.pc",
+          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/utils.pc",
+          //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/Button.pc"
+          // ].includes(event.uri)) {
+          //   console.log("EVALUATED");
+          // }
+
+          //   if (this.targetUri.includes("frontend/packages/design-system/src/Modal.pc")) {
+          //     console.log("MODAL");;
+          //   }
+          // if (this._dependencies.toString().includes("node_modules") || event.uri.includes("node_modules")) {
+          //   console.log("WAI...");
+          // }
           if (event.uri === this.targetUri) {
             this._dependencies = event.data.allImportedSheetUris;
           } else if (this._dependencies.includes(event.uri)) {
@@ -356,11 +434,11 @@ export class FramesRenderer {
 
   public getRects(): Record<string, Box> {
     const rects: Record<string, Box> = {};
-    for (let i = 0, { length } = this.immutableFrames; i < length; i++) {
-      const frame = this.immutableFrames[i];
+    for (let i = 0, { length } = this._state.frames; i < length; i++) {
+      const frame = this._state.frames[i];
       const frameNode = getFrameVirtualNode(
         frame,
-        this._framesProxy.immutableFrames,
+        this._state.frames,
         this._preview
       );
       if (!frameNode) {

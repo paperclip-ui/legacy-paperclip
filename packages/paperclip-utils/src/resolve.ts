@@ -31,7 +31,15 @@ export const resolveImportFile = fs => (
       return uri;
     }
 
-    return url.resolve(fromPath, toPath);
+    const uri = url.resolve(fromPath, toPath);
+
+    // always want realpath here since file name is used as ID for PC files - need
+    // to make sure that we're not doubling up on the same files.
+    try {
+      return url.pathToFileURL(fs.realpathSync(url.fileURLToPath(uri))).href;
+    } catch (e) {
+      return uri;
+    }
   } catch (e) {
     return null;
   }

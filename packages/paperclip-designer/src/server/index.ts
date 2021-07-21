@@ -178,7 +178,7 @@ export const startServer = async ({
       }
     };
 
-    const handleGetAllScreens = () => {
+    const handleGetAllScreens = async () => {
       emit(allPCContentLoaded(engine.getAllLoadedData()));
     };
 
@@ -428,36 +428,5 @@ const startHTTPServer = (
       return next();
     }
     res.sendFile(filePath);
-  });
-};
-
-const watchPaperclipSources = (
-  engine: EngineDelegate,
-  cwd: string = process.cwd()
-) => {
-  // want to load all PC files within the CWD workspace -- disregard PC configs
-
-  const watcher = chokidar.watch(
-    "**/*.{pc,css}",
-
-    // TODO - ignored - fetch .gitignored
-    { cwd: cwd, ignored: ["**/node_modules/**", "node_modules"] }
-  );
-
-  watcher.on("all", (eventName, relativePath) => {
-    if (!isPaperclipFile(relativePath)) {
-      return;
-    }
-    const uri = URL.pathToFileURL(path.join(cwd, relativePath));
-
-    if (eventName === "change") {
-      engine.updateVirtualFileContent(uri.href, fs.readFileSync(uri, "utf8"));
-    } else if (eventName === "add") {
-      engine.open(uri.href);
-    } else if (eventName === "unlink") {
-      engine.purgeUnlinkedFiles();
-    } else if (eventName === "unlinkDir") {
-      engine.purgeUnlinkedFiles();
-    }
   });
 };

@@ -39,6 +39,7 @@ pub struct StyleDeclarationInfo {
   pub active: bool,
 }
 
+
 impl StyleDeclarationInfo {
   pub fn new(source: &CSSStyleProperty) -> StyleDeclarationInfo {
     StyleDeclarationInfo {

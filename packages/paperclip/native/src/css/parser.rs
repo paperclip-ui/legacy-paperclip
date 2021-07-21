@@ -9,6 +9,7 @@ use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
 use crate::core::id_generator::generate_seed;
 use crate::core::id_generator::IDGenerator;
+use cached::proc_macro::cached;
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
@@ -24,19 +25,20 @@ impl<'a, 'b> Context<'a, 'b> {
   }
 }
 
-pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Sheet, ParseError> {
+#[cached]
+pub fn parse<'a>(source: String, id_seed: String) -> Result<Sheet, ParseError> {
   let mut tokenizer = Tokenizer::new(&source);
-  parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
+  parse_with_tokenizer(&mut tokenizer, id_seed.as_str(), |_token| Ok(false))
 }
 
-pub fn parse_selector<'a>(
-  selector: &'a str,
+pub fn parse_selector(
+  selector: String,
   id_seed: Option<String>,
 ) -> Result<Selector, ParseError> {
   let rule = format!("{}{{}}", selector);
 
-  let id_seed2 = id_seed.unwrap_or(generate_seed());
-  let ast: Sheet = if let Ok(ast) = parse(&rule, id_seed2.as_str()) {
+  let id_seed2 = id_seed.unwrap_or("0".to_string());
+  let ast: Sheet = if let Ok(ast) = parse(rule.to_string(), id_seed2) {
     ast
   } else {
     return Err(ParseError::unexpected(
@@ -1159,7 +1161,7 @@ mod tests {
     // comment
     ";
 
-    parse(source, "id").unwrap();
+    parse(source.to_string(), "id".to_string()).unwrap();
   }
 
   #[test]
@@ -1249,7 +1251,7 @@ mod tests {
       }
     ";
 
-    parse(source, "id").unwrap();
+    parse(source.to_string(), "id".to_string()).unwrap();
   }
 
   ///
@@ -1259,7 +1261,7 @@ mod tests {
   #[test]
   fn displays_an_error_for_unterminated_curly_bracket() {
     assert_eq!(
-      parse("div { ", "id"),
+      parse("div { ".to_string(), "id".to_string()),
       Err(ParseError::unterminated(
         "Unterminated bracket.".to_string(),
         4,

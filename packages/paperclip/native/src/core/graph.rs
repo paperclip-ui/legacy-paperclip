@@ -290,7 +290,7 @@ impl<'a> Dependency {
     uri: &String,
     id_seed: &'b str,
   ) -> Result<Dependency, ParseError> {
-    let expression_result = css_parser::parse(source.as_str(), id_seed);
+    let expression_result = css_parser::parse(source, id_seed.to_string());
     if let Err(err) = expression_result {
       return Err(err);
     }

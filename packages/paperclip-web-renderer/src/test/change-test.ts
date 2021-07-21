@@ -186,8 +186,9 @@ describe(__filename, () => {
   });
 
   const combineFrameHTML = (renderer: FramesRenderer) => {
-    return renderer.immutableFrames
-      .map(frame => frame.stage.innerHTML)
+    return renderer
+      .getState()
+      .frames.map(frame => frame.stage.innerHTML)
       .join("");
   };
 });
