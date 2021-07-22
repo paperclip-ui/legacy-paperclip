@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint src",
     "build:watch": "tsc --watch",
     "test": "mocha ./lib/test/**/*-test.js"
   },
