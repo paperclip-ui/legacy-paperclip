@@ -1,15 +1,16 @@
 {
-  "name": "paperclip-language-service",
+  "name": "paperclip-common",
   "version": "17.11.2",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch --incremental"
+    "build:watch": "tsc --watch",
+    "test": "mocha ./lib/test/**/*-test.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "typescript": "^4.2.3"
+    "immer": "^9.0.5"
   }
 }

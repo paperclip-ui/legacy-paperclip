@@ -38,7 +38,11 @@ const watchPaperclipSources = (
     if (!isPaperclipFile(relativePath)) {
       return;
     }
-    const uri = URL.pathToFileURL(path.join(cwd, relativePath));
+
+    // fix symlinks
+    const uri = URL.pathToFileURL(
+      fs.realpathSync(path.join(cwd, relativePath))
+    );
 
     if (eventName === "change") {
       engine.updateVirtualFileContent(uri.href, fs.readFileSync(uri, "utf8"));

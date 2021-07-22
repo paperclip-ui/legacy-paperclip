@@ -68,9 +68,6 @@ const stringifyStyleRule = (
   { selectorText, style, ...rest },
   options: StringifySheetOptions
 ) => {
-  if (!selectorText.trim()) {
-    console.log("NOTHING!!!", style, rest);
-  }
   return `${selectorText} {
     ${style.map(style => stringifyStyle(style, options)).join("\n")}
   }`;

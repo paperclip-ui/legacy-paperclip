@@ -4,7 +4,7 @@ import { URL, fileURLToPath } from "url";
 import * as path from "path";
 import { EngineDelegate, EngineMode } from "../core";
 
-const { resolveImportUri } = require("paperclip-utils");
+import { resolveImportUri } from "paperclip-utils";
 
 const existsSyncCaseSensitive = uri => {
   const pathname = fileURLToPath(String(uri));
@@ -40,6 +40,7 @@ const getIOOptions = options => {
         }
       },
       resolveFile: (from, to) => {
+        // TRUE boolean flag necessary here to resolve symlinks.
         return resolveFile(from, to);
       },
       mode: EngineMode.SingleFrame

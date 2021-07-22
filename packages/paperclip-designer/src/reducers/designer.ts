@@ -470,6 +470,11 @@ export const reduceDesigner = (
         newDesigner.loadingBirdseye = false;
         newDesigner.loadedBirdseyeInitially = true;
         newDesigner.allLoadedPCFileData = action.payload;
+        newDesigner.currentEngineEvents = {};
+
+        // janky mechanism to reset renderer state since renderer depends on diffing  - we
+        // need to explicitly version the data like so
+        newDesigner.pcFileDataVersion++;
       });
     }
     case ActionType.RESIZER_MOVED:
