@@ -16,7 +16,8 @@
     "events": "^3.2.0",
     "html-entities": "^1.2.1",
     "immer": "^9.0.5",
-    "paperclip-utils": "^17.11.0"
+    "paperclip-utils": "^17.11.0",
+    "paperclip-common": "^17.11.0"
   },
   "devDependencies": {
     "@types/cssom": "^0.4.1",

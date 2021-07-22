@@ -30,6 +30,7 @@
     "paperclip": "^17.11.1",
     "paperclip-source-writer": "^17.11.1",
     "paperclip-utils": "^17.11.0",
+    "paperclip-common": "^17.11.0",
     "paperclip-web-renderer": "^17.11.1",
     "path": "^0.12.7",
     "process": "^0.11.10",

@@ -25,7 +25,7 @@ import { arraySplice, traverseNativeNode } from "./utils";
 import { patchNativeNode, Patchable } from "./dom-patcher";
 import { DOMFactory } from "./base";
 import { patchCSSOM } from "./cssom-patcher";
-import produce from "immer";
+import { ImmutableStore } from "paperclip-common";
 
 type Box = {
   width: number;
@@ -50,8 +50,7 @@ type FramesProxyState = {
 };
 
 class FramesProxy implements Patchable {
-  private _state: FramesProxyState;
-  private _frames: Frame[];
+  private _store: ImmutableStore<FramesProxyState>;
   private _childNodes: ChildNode[];
   private _mainStyle: any;
   private _importedNativeStyles: HTMLStyleElement[];
@@ -59,26 +58,16 @@ class FramesProxy implements Patchable {
   readonly namespaceURI = null;
 
   constructor(
-    private _targetUri: string,
-    private _preview: VirtualNode,
-    private _domFactory: DOMFactory = document,
-    public resolveUrl: (url: string) => string,
-    public onChange: (state: FramesProxyState) => void
+    private _renderer: FramesRenderer,
+    bindState: (state: FramesProxyState) => void
   ) {
-    this._state = {
-      frames: []
-    };
     this._childNodes = [];
     this._importedStyles = [];
     this._importedNativeStyles = [];
-
-    this.onChange(this._state);
-  }
-  setPreview(preview: VirtualNode) {
-    this._preview = preview;
+    this._store = new ImmutableStore({ frames: [] }, bindState);
   }
   getState(): FramesProxyState {
-    return this._state;
+    return this._store.getState();
   }
   get childNodes() {
     return this._childNodes;
@@ -90,10 +79,10 @@ class FramesProxy implements Patchable {
     this._mainStyle = style;
     const nativeStyle = createNativeStyleFromSheet(
       style,
-      this._domFactory,
-      this.resolveUrl
+      this._renderer.getDOMFactory(),
+      this._renderer.getUrlResolver()
     );
-    for (const frame of this._frames) {
+    for (const frame of this.getState().frames) {
       removeAllChildren(frame._mainStylesContainer);
       frame._mainStylesContainer.appendChild(nativeStyle.cloneNode(true));
     }
@@ -104,12 +93,16 @@ class FramesProxy implements Patchable {
     });
 
     // first do the frames
-    for (const frame of this._frames) {
+    for (const frame of this.getState().frames) {
       const styleElement = ((styleIndex !== -1
         ? frame._importedStylesContainer.childNodes[styleIndex]
         : frame._mainStylesContainer.childNodes[0]) as any) as HTMLStyleElement;
 
-      patchCSSOM(styleElement.sheet as any, mutations, this.resolveUrl);
+      patchCSSOM(
+        styleElement.sheet as any,
+        mutations,
+        this._renderer.getUrlResolver()
+      );
     }
 
     // note we patch the virt objects here since native styles don't parse text unless
@@ -137,7 +130,7 @@ class FramesProxy implements Patchable {
       }
     }
     for (const i of rmIndices) {
-      for (const frame of this._frames) {
+      for (const frame of this.getState().frames) {
         const nativeSheet = frame._importedStylesContainer.childNodes[i];
         nativeSheet.remove();
       }
@@ -150,12 +143,12 @@ class FramesProxy implements Patchable {
       this._importedStyles.splice(index, 0, info);
       const nativeSheet = createNativeStyleFromSheet(
         sheet,
-        this._domFactory,
-        this.resolveUrl
+        this._renderer.getDOMFactory(),
+        this._renderer.getUrlResolver()
       );
 
       this._importedNativeStyles.splice(index, 0, nativeSheet);
-      for (const frame of this._frames) {
+      for (const frame of this.getState().frames) {
         const beforeChild = frame._importedStylesContainer.childNodes[index];
         const sheet = nativeSheet.cloneNode(true);
         if (beforeChild) {
@@ -167,7 +160,7 @@ class FramesProxy implements Patchable {
     }
   }
   appendChild(child: Node) {
-    this.insert(child, this._frames.length);
+    this.insert(child, this.getState().frames.length);
   }
   insertBefore(child: Node, existing: HTMLElement) {
     this.insert(
@@ -178,26 +171,32 @@ class FramesProxy implements Patchable {
   removeChild(child: Node) {
     const index = this._childNodes.findIndex(_child => _child === child);
     this._childNodes.splice(index, 1);
-    this._frames = arraySplice(this._frames, index, 1);
+    this._store.update(state => {
+      state.frames = arraySplice(state.frames, index, 1);
+    });
   }
   insert(child: Node, index: number) {
-    const _importedStylesContainer = this._domFactory.createElement("div");
+    const _importedStylesContainer = this._renderer
+      .getDOMFactory()
+      .createElement("div");
 
     for (const style of this._importedNativeStyles) {
       _importedStylesContainer.appendChild(style.cloneNode(true));
     }
-    const _mainStylesContainer = this._domFactory.createElement("div");
+    const _mainStylesContainer = this._renderer
+      .getDOMFactory()
+      .createElement("div");
     if (this._mainStyle) {
       _mainStylesContainer.appendChild(
         createNativeStyleFromSheet(
           this._mainStyle,
-          this._domFactory,
-          this.resolveUrl
+          this._renderer.getDOMFactory(),
+          this._renderer.getUrlResolver()
         )
       );
     }
-    const _mount = this._domFactory.createElement("div");
-    const stage = this._domFactory.createElement("div");
+    const _mount = this._renderer.getDOMFactory().createElement("div");
+    const stage = this._renderer.getDOMFactory().createElement("div");
     stage.appendChild(_importedStylesContainer);
     stage.appendChild(_mainStylesContainer);
     stage.appendChild(_mount);
@@ -206,12 +205,14 @@ class FramesProxy implements Patchable {
 
     this._childNodes.splice(index, 0, child as ChildNode);
 
-    this._frames = arraySplice(this._frames, index, 0, {
-      stage,
-      _importedStylesContainer,
-      _mainStylesContainer,
-      _mount,
-      sourceUri: null
+    this._store.update(state => {
+      state.frames = arraySplice(state.frames, index, 0, {
+        stage,
+        _importedStylesContainer,
+        _mainStylesContainer,
+        _mount,
+        sourceUri: null
+      });
     });
   }
 }
@@ -219,6 +220,7 @@ class FramesProxy implements Patchable {
 export type FramesRendererState = {
   uri: string;
   frames: Frame[];
+  preview?: VirtualNode;
 };
 
 /**
@@ -228,79 +230,59 @@ export type FramesRendererState = {
 export class FramesRenderer {
   private _dependencies: string[] = [];
   private _framesProxy: FramesProxy;
-  private _preview: VirtualNode;
-  private _state: FramesRendererState;
+  private _domFactory: DOMFactory;
+  private _store: ImmutableStore<FramesRendererState>;
+  private _imp: any;
   public onChange: (state: FramesRendererState) => void;
 
   constructor(
-    private _targetUri: string,
+    targetUri: string,
     private _resolveUrl: (url: string) => string,
-    private _domFactory: DOMFactory = document,
-    private _onChange: (state: FramesRendererState) => void
+    domFactory: DOMFactory,
+    connectState: (state: FramesRendererState) => void
   ) {
-    this._state = {
-      uri: this._targetUri,
-      frames: []
-    };
-
-    //   if ([
-    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Eina_03/font-family.pc",
-    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/IBM_Plex_Sans/font-family.pc",
-    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Inter/font-family.pc",
-    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Supera_Gothic/font-family.pc",
-    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/atoms.pc",
-    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/utils.pc",
-    //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/Button.pc"
-    // ].includes(this._targetUri)) {
-    //   console.log("DEP URI");
-    // }
-
-    //   if (this._targetUri.includes("frontend/packages/design-system/src/Modal.pc")) {
-    //     console.log("NEW FRAME RENDERER");;
-    //   }
-
-    this._framesProxy = new FramesProxy(
-      this.targetUri,
-      this._preview,
-      _domFactory,
-      this._resolveUrl,
-      this._onFramesProxyChange
+    this._domFactory = domFactory || document;
+    this._store = new ImmutableStore(
+      {
+        uri: targetUri,
+        frames: []
+      },
+      connectState
     );
+
+    this._framesProxy = new FramesProxy(this, this._onFramesProxyChange);
   }
 
-  get urlResolver() {
+  getUrlResolver() {
     return this._resolveUrl;
   }
 
-  set urlResolver(value: UrlResolver) {
+  getDOMFactory() {
+    return this._domFactory;
+  }
+
+  setUrlResolver(value: UrlResolver) {
     this._resolveUrl = value;
-    this._framesProxy.resolveUrl = value;
   }
 
   setPreview(preview: VirtualNode) {
-    this._preview = preview;
-    this._framesProxy.setPreview(preview);
-  }
-
-  getPreview() {
-    return this._preview;
+    this._store.update(newState => {
+      newState.preview = preview;
+    });
   }
 
   get targetUri(): string {
-    return this._targetUri;
+    return this._store.getState().uri;
   }
 
   getState() {
-    return this._state;
+    return this._store.getState();
   }
 
-  private _onFramesProxyChange = (state: FramesProxyState) => {
-    this._updateState(newState => (newState.frames = state.frames));
-  };
-
-  private _updateState = (updater: (state: FramesRendererState) => void) => {
-    this._state = produce(this._state, updater);
-    this.onChange(this._state);
+  private _onFramesProxyChange = (frameState: FramesProxyState) => {
+    this._store.update(newState => {
+      newState.frames = frameState.frames;
+    });
   };
 
   public initialize({
@@ -311,15 +293,11 @@ export class FramesRenderer {
   }: LoadedPCData) {
     const children =
       preview.kind === VirtualNodeKind.Fragment ? preview.children : [preview];
-    this._preview = preview;
+    this.setPreview(preview);
 
-    this._framesProxy = new FramesProxy(
-      this._targetUri,
-      this._preview,
-      this._domFactory,
-      this._resolveUrl,
-      this._onFramesProxyChange
-    );
+    this._imp = importedSheets;
+
+    this._framesProxy = new FramesProxy(this, this._onFramesProxyChange);
 
     this._dependencies = allImportedSheetUris;
     this._framesProxy.setMainStyle(sheet);
@@ -363,6 +341,7 @@ export class FramesRenderer {
       }
       case EngineDelegateEventKind.Evaluated: {
         if (event.data.kind === EvaluatedDataKind.PC) {
+          // console.log("EV", this._dependencies, this._dependencies.includes(event.uri), event.uri);
           //   if ([
           //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/Eina_03/font-family.pc",
           //     "file:///Users/crcn/Developer/work/capital/frontend/packages/design-system/src/fonts/IBM_Plex_Sans/font-family.pc",
@@ -424,7 +403,9 @@ export class FramesRenderer {
               this._resolveUrl
             );
 
-            this._preview = patchVirtNode(this._preview, event.data.mutations);
+            this.setPreview(
+              patchVirtNode(this.getState().preview, event.data.mutations)
+            );
           }
         }
         break;
@@ -434,12 +415,12 @@ export class FramesRenderer {
 
   public getRects(): Record<string, Box> {
     const rects: Record<string, Box> = {};
-    for (let i = 0, { length } = this._state.frames; i < length; i++) {
-      const frame = this._state.frames[i];
+    for (let i = 0, { length } = this.getState().frames; i < length; i++) {
+      const frame = this.getState().frames[i];
       const frameNode = getFrameVirtualNode(
         frame,
-        this._state.frames,
-        this._preview
+        this.getState().frames,
+        this.getState().preview
       );
       if (!frameNode) {
         continue;

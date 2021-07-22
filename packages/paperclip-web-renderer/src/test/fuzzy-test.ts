@@ -42,17 +42,17 @@ describe(__filename + "#", () => {
         await baselineEngine.open("/entry.pc");
 
         await engine.updateVirtualFileContent("/entry.pc", randomDocument);
-        expect(renderer.immutableFrames.length).to.eql(
-          baselineRenderer.immutableFrames.length
+        expect(renderer.getState().frames.length).to.eql(
+          baselineRenderer.getState().frames.length
         );
 
         for (
-          let i = 0, { length } = renderer.immutableFrames;
+          let i = 0, { length } = renderer.getState().frames;
           i < length;
           i++
         ) {
-          const frameA = renderer.immutableFrames[i];
-          const frameB = baselineRenderer.immutableFrames[i];
+          const frameA = renderer.getState().frames[i];
+          const frameB = baselineRenderer.getState().frames[i];
           expect(frameA._mount.innerHTML).to.eql(frameB._mount.innerHTML);
         }
 

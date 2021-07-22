@@ -29,8 +29,10 @@ import * as styles from "./index.pc";
 import { render } from "react-dom";
 import { FrameContainer } from "../../../../FrameContainer";
 import { debounce } from "lodash";
-import { isExpanded } from "../../../../../state";
+import { AppState, isExpanded } from "../../../../../state";
 import produce from "immer";
+import { ImmutableStore } from "paperclip-common";
+import { UrlResolver } from "../../../../../../../paperclip-web-renderer/lib/native-renderer";
 
 type FramesProps = {
   expandedFrameIndex?: number;
@@ -38,23 +40,19 @@ type FramesProps = {
 
 export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   const { state } = useAppStore();
-  const { renderer, preview, onFrameLoaded } = useFrames({
+  const { frames, preview, onFrameLoaded } = useFrames({
     fileUri: state.designer.ui.query.canvasFile,
     shouldCollectRects: true
   });
 
-  if (!preview || !renderer) {
+  if (!preview) {
     return null;
   }
 
   return (
     <>
-      {renderer.getState().frames.map((frame, i) => {
-        const framePreview = getFrameVirtualNode(
-          frame,
-          renderer.immutableFrames,
-          preview
-        );
+      {frames.map((frame, i) => {
+        const framePreview = getFrameVirtualNode(frame, frames, preview);
 
         return (
           <Frame
@@ -71,30 +69,61 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
 });
 
 type UseFrames2Props = {
+  version: number;
   fileData: Record<string, LoadedPCData>;
   shouldCollectRects: boolean;
 };
 
+type FrameControllerState = {} & FramesRendererState;
+
 class FrameController {
+  private _store: ImmutableStore<FrameControllerState>;
   readonly id: string;
   private _disposed: boolean;
+  private _renderer: FramesRenderer;
+  private _initialized: boolean;
+
   constructor(
-    readonly renderer: FramesRenderer,
+    targetUri: string,
+    resolveUrl: (value: string) => string,
     readonly dispatch: any,
     public shouldCollectRects: boolean,
-    readonly loadedData?: LoadedPCData
+    connectState: (state: FrameControllerState) => void
   ) {
+    this._store = new ImmutableStore(
+      { frames: [], uri: targetUri },
+      connectState
+    );
+    this._renderer = new FramesRenderer(
+      targetUri,
+      resolveUrl,
+      null,
+      this._onframeControllerStateChange
+    );
     this.id = `${Date.now()}.${Math.random()}`;
     this.dispatch(rendererMounted({ id: this.id }));
     if (shouldCollectRects) {
       this, window.addEventListener("resize", this._onWindowResize);
     }
-    if (loadedData) {
-      renderer.initialize(loadedData);
-    }
   }
+  initialize(data: LoadedPCData) {
+    this._initialized = true;
+    this._renderer.initialize(data);
+  }
+  isInitialized() {
+    return this._initialized;
+  }
+  isMounted(mountedRendererIds: string[]) {
+    return mountedRendererIds.includes(this.id);
+  }
+  setUrlResolver(resolver: UrlResolver) {
+    this._renderer.setUrlResolver(resolver);
+  }
+  _onframeControllerStateChange = (state: FramesRendererState) => {
+    this._store.update(newState => Object.assign(newState, state));
+  };
   updatePreview(preview: VirtualNode) {
-    this.renderer.setPreview(preview);
+    this._renderer.setPreview(preview);
     this.collectRects();
   }
   dispose() {
@@ -106,7 +135,7 @@ class FrameController {
     if (!events.length) {
       return;
     }
-    events.forEach(this.renderer.handleEngineDelegateEvent);
+    events.forEach(this._renderer.handleEngineDelegateEvent);
     this.updatePreview(preview);
     this.dispatch(
       engineDelegateEventsHandled({ id: this.id, count: events.length })
@@ -123,7 +152,7 @@ class FrameController {
       if (!this.shouldCollectRects || this._disposed) {
         return;
       }
-      const rects = this.renderer.getRects();
+      const rects = this._renderer.getRects();
       this.dispatch(rectsCaptured(rects));
     },
     100,
@@ -145,74 +174,82 @@ const INITIAL_FRAME_CONTROLLER_STATE: MultiFrameControllerState = {
 };
 
 class MultiFrameController {
-  private _state: MultiFrameControllerState;
-
-  private _fileData: Record<string, LoadedPCData>;
-  private _renderers: Record<string, FrameController> = {};
-  public onChange: any;
+  private _store: ImmutableStore<MultiFrameControllerState>;
+  private _controllers: Record<string, FrameController>;
 
   constructor(
     private _dispatch: any,
     private _shouldCollectRects: boolean,
-    private _urResolver: any
+    private _urResolver: any,
+    connectState: (state: MultiFrameControllerState) => void
   ) {
-    this._state = {
-      frames: {}
-    };
+    this._controllers = {};
+    this._store = new ImmutableStore(
+      INITIAL_FRAME_CONTROLLER_STATE,
+      connectState
+    );
   }
 
-  updateFileData(fileData: Record<string, LoadedPCData>) {
-    this._renderers = { ...this._renderers };
+  dispose() {
+    for (const controller of Object.values(this._controllers)) {
+      controller.dispose();
+    }
+  }
+
+  updateFileData(
+    fileData: Record<string, LoadedPCData>,
+    currentEngineEvents: Record<string, EngineDelegateEvent[]>,
+    mountedRendererIds: string[]
+  ) {
     for (const fileUri in fileData) {
-      if (this._renderers[fileUri]) {
-        continue;
+      let controller: FrameController = this._controllers[fileUri];
+
+      if (!controller) {
+        controller = this._controllers[fileUri] = new FrameController(
+          fileUri,
+          this._urResolver,
+          this._dispatch,
+          this._shouldCollectRects,
+          this._onFrameControllerChange
+        );
       }
 
-      const renderer = new FramesRenderer(
-        fileUri,
-        this._urResolver,
-        null,
-        this._onFramesRendererChanged
-      );
+      if (controller.isMounted(mountedRendererIds)) {
+        if (!controller.isInitialized()) {
+          // console.log("INIT", fileData);
+          controller.initialize(fileData[fileUri]);
+        }
 
-      this._renderers[fileUri] = new FrameController(
-        renderer,
-        this._dispatch,
-        this._shouldCollectRects,
-        fileData[fileUri]
-      );
+        if (currentEngineEvents[controller.id]) {
+          // console.log("HANDLE EVV", currentEngineEvents[controller.id], fileData);
+          controller.handleEvents(
+            currentEngineEvents[controller.id],
+            fileData[fileUri].preview
+          );
+        }
+      }
     }
 
-    for (const fileUri in this._renderers) {
+    for (const fileUri in this._controllers) {
       if (!fileData[fileUri]) {
-        this._renderers[fileUri].dispose();
-        delete this._renderers[fileUri];
+        this._controllers[fileUri].dispose();
+        delete this._controllers[fileUri];
       }
     }
   }
 
-  getState() {
-    return this._state;
-  }
-
-  private _onFramesRendererChanged = (rendererState: FramesRendererState) => {
-    this._updateState(newState => {
+  private _onFrameControllerChange = (rendererState: FrameControllerState) => {
+    this._store.update(newState => {
       newState.frames[rendererState.uri] = {
         frames: rendererState.frames,
         preview: rendererState.preview
       };
     });
   };
-
-  private _updateState = (
-    updater: (newState: MultiFrameControllerState) => void
-  ) => {
-    this._state = produce(this._state, updater);
-    this.onChange(this._state);
-  };
 }
 
 export const useMultipleFrames = ({
+  version,
   fileData,
   shouldCollectRects
 }: UseFrames2Props) => {
@@ -223,157 +260,39 @@ export const useMultipleFrames = ({
   const [multiFrameState, setMultiFrameState] = useState<
     MultiFrameControllerState
   >(INITIAL_FRAME_CONTROLLER_STATE);
-  const { dispatch } = useAppStore();
+  const { dispatch, state } = useAppStore();
   const resolveUrl = useUrlResolver();
+
   useEffect(() => {
-    const multiRenderer = new MultiFrameController(
+    const renderer = new MultiFrameController(
       dispatch,
       shouldCollectRects,
-      resolveUrl
+      resolveUrl,
+      setMultiFrameState
     );
-    multiRenderer.onChange = setMultiFrameState;
-    setMultiRenderer(multiRenderer);
-  }, []);
+    setMultiRenderer(renderer);
+    return () => {
+      renderer.dispose();
+    };
+  }, [version]);
 
   useEffect(() => {
-    if (!multiRenderer) {
-      return;
+    if (multiRenderer) {
+      multiRenderer.updateFileData(
+        fileData,
+        state.designer.currentEngineEvents,
+        state.designer.mountedRendererIds
+      );
     }
-
-    multiRenderer.updateFileData(fileData);
-  }, [multiRenderer, fileData]);
+  }, [
+    multiRenderer,
+    fileData,
+    state.designer.currentEngineEvents,
+    state.designer.mountedRendererIds
+  ]);
 
   return multiFrameState;
 };
-
-// export const useMultipleFrames3 = ({
-//   fileData,
-//   shouldCollectRects
-// }: UseFrames2Props) => {
-//   const [renderers, setRenderers] = useState<Record<string, FrameController>>(
-//     {}
-//   );
-//   const { state, dispatch } = useAppStore();
-//   const resolveUrl = useUrlResolver();
-
-//   useEffect(() => {
-//     for (const uri in renderers) {
-//       renderers[uri].renderer.urlResolver = resolveUrl;
-//     }
-//   }, [resolveUrl]);
-
-//   useLayoutEffect(() => {
-//     for (const fileUri in renderers) {
-//       const renderer = renderers[fileUri];
-//       renderer.collectRects();
-//     }
-//   }, [renderers, isExpanded(state.designer), state.designer.canvas.size]);
-
-//   useEffect(() => {
-//     for (const fileUri in renderers) {
-//       const frameData = state.designer.allLoadedPCFileData[
-//         fileUri
-//       ] as LoadedPCData;
-//       const renderer = renderers[fileUri];
-//       renderer.handleEvents(
-//         state.designer.currentEngineEvents[renderer.id],
-//         frameData?.preview
-//       );
-//     }
-//   }, [renderers, state.designer.currentEngineEvents]);
-
-//   return useMemo(
-//     () =>
-//       Object.keys(renderers).map(uri => {
-//         const renderer = renderers[uri];
-
-//         return {
-//           renderer: renderer.renderer,
-//           onFrameLoaded: renderer.collectRects,
-//           preview: renderer.renderer.getPreview()
-//         };
-//       }, {}),
-//     [renderers]
-//   );
-// };
-
-// export const useMultipleFrames3 = ({
-//   fileData,
-//   shouldCollectRects
-// }: UseFrames2Props) => {
-//   const [renderers, setRenderers] = useState<Record<string, FrameController>>(
-//     {}
-//   );
-//   const { state, dispatch } = useAppStore();
-//   const resolveUrl = useUrlResolver();
-
-//   useEffect(() => {
-//     const newRenderers = { ...renderers };
-//     for (const fileUri in fileData) {
-//       if (newRenderers[fileUri]) {
-//         continue;
-//       }
-
-//       const renderer = new FramesRenderer(fileUri, resolveUrl);
-
-//       newRenderers[fileUri] = new FrameController(
-//         renderer,
-//         dispatch,
-//         shouldCollectRects,
-//         fileData[fileUri]
-//       );
-//     }
-
-//     for (const fileUri in newRenderers) {
-//       if (!fileData[fileUri]) {
-//         newRenderers[fileUri].dispose();
-//         delete newRenderers[fileUri];
-//       }
-//     }
-
-//     setRenderers(newRenderers);
-//   }, [fileData]);
-
-//   useEffect(() => {
-//     for (const uri in renderers) {
-//       renderers[uri].renderer.urlResolver = resolveUrl;
-//     }
-//   }, [resolveUrl]);
-
-//   useLayoutEffect(() => {
-//     for (const fileUri in renderers) {
-//       const renderer = renderers[fileUri];
-//       renderer.collectRects();
-//     }
-//   }, [renderers, isExpanded(state.designer), state.designer.canvas.size]);
-
-//   useEffect(() => {
-//     for (const fileUri in renderers) {
-//       const frameData = state.designer.allLoadedPCFileData[
-//         fileUri
-//       ] as LoadedPCData;
-//       const renderer = renderers[fileUri];
-//       renderer.handleEvents(
-//         state.designer.currentEngineEvents[renderer.id],
-//         frameData?.preview
-//       );
-//     }
-//   }, [renderers, state.designer.currentEngineEvents]);
-
-//   return useMemo(
-//     () =>
-//       Object.keys(renderers).map(uri => {
-//         const renderer = renderers[uri];
-
-//         return {
-//           renderer: renderer.renderer,
-//           onFrameLoaded: renderer.collectRects,
-//           preview: renderer.renderer.getPreview()
-//         };
-//       }, {}),
-//     [renderers]
-//   );
-// };
 
 type UseFramesProps = {
   fileUri: string;
@@ -415,7 +334,16 @@ export const useFrames = ({
   shouldCollectRects = true
 }: UseFramesProps) => {
   const { state, dispatch } = useAppStore();
-  const [renderer, setRenderer] = useState<FrameController>();
+  const [frameControllerState, setFrameControllerState] = useState<
+    FrameControllerState
+  >({
+    uri: fileUri,
+    frames: []
+  });
+  const [controller, setController] = useState<FrameController>();
+  const isMounted = Boolean(
+    controller?.isMounted(state.designer.mountedRendererIds)
+  );
 
   const frameData = state.designer.allLoadedPCFileData[fileUri] as LoadedPCData;
 
@@ -423,47 +351,56 @@ export const useFrames = ({
 
   useEffect(() => {
     const renderer = new FrameController(
-      new FramesRenderer(fileUri, resolveUrl),
+      fileUri,
+      resolveUrl,
       dispatch,
       shouldCollectRects,
-      frameData
+      setFrameControllerState
     );
-    setRenderer(renderer);
+
+    setController(renderer);
     return () => {
       renderer.dispose();
     };
-  }, [fileUri, shouldCollectRects, !!frameData]);
+  }, [fileUri, shouldCollectRects]);
 
   useEffect(() => {
-    if (!renderer) {
+    if (isMounted && frameData) {
+      controller.initialize(frameData);
+    }
+  }, [isMounted, controller, !!frameData]);
+
+  useEffect(() => {
+    if (!controller) {
       return;
     }
-    renderer.renderer.urlResolver = resolveUrl;
+    controller.setUrlResolver(resolveUrl);
   }, [resolveUrl]);
 
   const onFrameLoaded = useCallback(() => {
-    if (!renderer) {
+    if (!isMounted) {
       return;
     }
-    renderer.collectRects();
-  }, [renderer]);
+    controller.collectRects();
+  }, [isMounted, controller]);
 
   useLayoutEffect(() => {
-    if (!renderer) {
+    if (!isMounted) {
       return;
     }
 
-    if (state.designer.currentEngineEvents[renderer.id]?.length) {
-      renderer.handleEvents(
-        state.designer.currentEngineEvents[renderer.id],
+    if (state.designer.currentEngineEvents[controller.id]?.length) {
+      controller.handleEvents(
+        state.designer.currentEngineEvents[controller.id],
         frameData?.preview
       );
     } else if (frameData?.preview) {
       // need to update preview in case frame bounds change
-      renderer.updatePreview(frameData.preview);
+      controller.updatePreview(frameData.preview);
     }
   }, [
-    renderer,
+    controller,
+    isMounted,
     isExpanded(state.designer),
     state.designer.currentEngineEvents,
     state.designer.canvas.size,
@@ -471,8 +408,7 @@ export const useFrames = ({
   ]);
 
   return {
-    renderer: renderer?.renderer,
-    preview: frameData?.preview,
+    ...frameControllerState,
     onFrameLoaded
   };
 };

@@ -31,10 +31,7 @@ pub fn parse<'a>(source: String, id_seed: String) -> Result<Sheet, ParseError> {
   parse_with_tokenizer(&mut tokenizer, id_seed.as_str(), |_token| Ok(false))
 }
 
-pub fn parse_selector(
-  selector: String,
-  id_seed: Option<String>,
-) -> Result<Selector, ParseError> {
+pub fn parse_selector(selector: String, id_seed: Option<String>) -> Result<Selector, ParseError> {
   let rule = format!("{}{{}}", selector);
 
   let id_seed2 = id_seed.unwrap_or("0".to_string());

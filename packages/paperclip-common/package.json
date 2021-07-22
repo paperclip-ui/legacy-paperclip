@@ -1,0 +1,17 @@
+{
+  "name": "paperclip-common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src",
+    "build:watch": "tsc --watch",
+    "test": "mocha ./lib/test/**/*-test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "immer": "^9.0.5"
+  }
+}

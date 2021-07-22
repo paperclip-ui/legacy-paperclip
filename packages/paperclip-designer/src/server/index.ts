@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
 
-import * as chokidar from "chokidar";
 import sockjs from "sockjs";
 import getPort from "get-port";
 import { createEngineDelegate, EngineDelegate } from "paperclip";

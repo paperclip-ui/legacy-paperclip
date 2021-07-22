@@ -27,7 +27,7 @@ describe(__filename + "#", () => {
     });
 
     engine.open("/entry.pc");
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style>._406d2856._406d2856 {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f _406d2856"> Hello world </div></div>`
     );
   });
@@ -49,16 +49,16 @@ describe(__filename + "#", () => {
     });
 
     engine.open("/entry.pc");
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"> Hello world </div></div>`
     );
     engine.updateVirtualFileContent("/entry.pc", "span man");
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div>span man</div>`
     );
   });
 
-  it(`renderes root children as multiple immutableFrames`, async () => {
+  it(`renderes root children as multiple getState().frames`, async () => {
     const engine = await createMockEngineDelegate({
       "/entry.pc": `a<span>b</span>`
     });
@@ -66,25 +66,25 @@ describe(__filename + "#", () => {
     const renderer = createMockFramesRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
     engine.open("/entry.pc");
-    expect(renderer.immutableFrames.length).to.eql(2);
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(renderer.getState().frames.length).to.eql(2);
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div>a</div>`
     );
-    expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[1].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f">b</span></div>`
     );
 
     // test update
     engine.updateVirtualFileContent("/entry.pc", "a<span>c</span>");
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div>a</div>`
     );
-    expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[1].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f">c</span></div>`
     );
   });
 
-  it(`main style is shared across all immutableFrames`, async () => {
+  it(`main style is shared across all getState().frames`, async () => {
     const graph = {
       "/entry.pc": `<style>div {
         color: red;
@@ -94,10 +94,10 @@ describe(__filename + "#", () => {
     const renderer = createMockFramesRenderer("/entry.pc");
     engine.onEvent(renderer.handleEngineDelegateEvent);
     engine.open("/entry.pc");
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style>div._80f4925f {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f">a</div></div>`
     );
-    expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[1].stage.innerHTML)).to.eql(
       `<div></div><div><style>div._80f4925f {color: red;} </style></div><div><div class="_80f4925f _pub-80f4925f">b</div></div>`
     );
   });
@@ -108,7 +108,7 @@ describe(__filename + "#", () => {
   xit(`fragments are rendered as their own frame`);
   xit(`fragment children can change`);
   xit(`imported sheet is removed when import is deleted`);
-  xit(`imported sheets across multiple immutableFrames when import changes`);
+  xit(`imported sheets across multiple getState().frames when import changes`);
   it(`properly renders with protocol`, async () => {
     const graph = {
       "file:///entry.pc": `<img src="/file.jpeg" />`
@@ -120,8 +120,8 @@ describe(__filename + "#", () => {
     const engine = await createMockEngineDelegate(graph);
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("file:///entry.pc");
-    expect(renderer.immutableFrames.length).to.eql(1);
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(renderer.getState().frames.length).to.eql(1);
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><img class="_80f4925f _pub-80f4925f" src="blah:///file.jpeg"></img></div>`
     );
   });
@@ -135,8 +135,8 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
 
-    expect(renderer.immutableFrames.length).to.eql(1);
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(renderer.getState().frames.length).to.eql(1);
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><fragment class="_80f4925f _pub-80f4925f">a<span class="_80f4925f _pub-80f4925f">b</span></fragment></div>`
     );
   });
@@ -150,8 +150,8 @@ describe(__filename + "#", () => {
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
 
-    expect(renderer.immutableFrames.length).to.eql(1);
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(renderer.getState().frames.length).to.eql(1);
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><fragment class="_80f4925f _pub-80f4925f">a<span class="_80f4925f _pub-80f4925f">b</span></fragment></div>`
     );
   });
@@ -164,16 +164,16 @@ describe(__filename + "#", () => {
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
     engine.updateVirtualFileContent("/entry.pc", "b");
 
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div>b</div>`
     );
     engine.updateVirtualFileContent("/entry.pc", "<span />b");
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div></div><div><style></style></div><div><span class="_80f4925f _pub-80f4925f"></span></div>`
     );
   });
@@ -187,14 +187,14 @@ describe(__filename + "#", () => {
     const engine = await createMockEngineDelegate(graph, EngineMode.MultiFrame);
     engine.onEvent(renderer.handleEngineDelegateEvent);
     await engine.open("/entry.pc");
-    expect(trimWS(renderer.immutableFrames[0].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[0].stage.innerHTML)).to.eql(
       `<div><style>a._c938aea3 {color: blue;} </style></div><div><style></style></div><div>a</div>`
     );
     engine.updateVirtualFileContent(
       "/entry.pc",
       `<import src="/mod.pc" /><span /><!-- @frame { } --><div />`
     );
-    expect(trimWS(renderer.immutableFrames[1].stage.innerHTML)).to.eql(
+    expect(trimWS(renderer.getState().frames[1].stage.innerHTML)).to.eql(
       `<div><style>a._c938aea3 {color: blue;} </style></div><div><style></style></div><div><div class="_80f4925f _pub-80f4925f"></div></div>`
     );
   });

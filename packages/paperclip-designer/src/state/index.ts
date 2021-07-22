@@ -125,6 +125,7 @@ export type DesignerState = {
   mountedRendererIds: string[];
   currentEngineEvents: Record<string, EngineDelegateEvent[]>;
   allLoadedPCFileData: Record<string, LoadedData>;
+  pcFileDataVersion: number;
   // rendererElement?: any;
   availableBrowsers: AvailableBrowser[];
   resourceHost: string;
@@ -192,6 +193,7 @@ export const INITIAL_STATE: AppState = {
   },
   designer: {
     readonly: false,
+    pcFileDataVersion: 0,
     selectedNodeSources: [],
     selectedNodeStyleInspections: [],
     syncLocationMode: SyncLocationMode.Location | SyncLocationMode.Query,

@@ -41,7 +41,7 @@ const getIOOptions = options => {
       },
       resolveFile: (from, to) => {
         // TRUE boolean flag necessary here to resolve symlinks.
-        return resolveFile(from, to, true);
+        return resolveFile(from, to);
       },
       mode: EngineMode.SingleFrame
     },

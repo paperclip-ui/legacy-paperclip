@@ -49,6 +49,7 @@ export const Birdseye = memo(() => {
   const filter = state.designer.birdseyeFilter;
 
   const multiFrameState = useMultipleFrames({
+    version: state.designer.pcFileDataVersion,
     fileData: getPCFileData(state.designer.allLoadedPCFileData),
     shouldCollectRects: false
   });
@@ -75,25 +76,6 @@ export const Birdseye = memo(() => {
       }))
     );
   }
-
-  // const allFrames: CellFrame[] = renderers.reduce((frames, renderer) => {
-  //   const filePath = fileURLToPath(renderer.renderer.targetUri);
-  //   const relativePath = path.relative(
-  //     state.designer.projectDirectory?.absolutePath,
-  //     filePath
-  //   );
-  //   return [
-  //     ...frames,
-  //     ...renderer.renderer.immutableFrames.map((frame, i) => ({
-  //       ...frame,
-  //       index: i,
-  //       relativePath,
-  //       filePath,
-  //       fileUri: renderer.renderer.targetUri,
-  //       node: (renderer.renderer.getPreview() as any).children[i]
-  //     }))
-  //   ];
-  // }, []);
 
   let content;
 
