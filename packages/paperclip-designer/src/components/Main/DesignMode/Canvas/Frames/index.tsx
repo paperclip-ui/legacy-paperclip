@@ -368,7 +368,7 @@ export const useFrames = ({
     if (isMounted && frameData) {
       controller.initialize(frameData);
     }
-  }, [isMounted, controller, !!frameData]);
+  }, [isMounted, controller, !!frameData, state.designer.pcFileDataVersion]);
 
   useEffect(() => {
     if (!controller) {
