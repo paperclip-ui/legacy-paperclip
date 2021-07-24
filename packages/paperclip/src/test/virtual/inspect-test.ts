@@ -700,6 +700,67 @@ describe(__filename + "#", () => {
           }
         ]
       }
+    ],
+    [
+      "Skips duplicated inherited styles",
+      {
+        "/entry.pc": `
+          <div>
+            <style>
+              font-family: sans-serif;
+            </style>
+            <div>
+              <div />
+            </div>
+          </div>
+        `
+      },
+      100,
+      [0, 0, 0],
+      {
+        styleRules: [
+          {
+            inherited: true,
+            selectorText: "._406d2856._406d2856",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "406d2856",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-1",
+                name: "font-family",
+                value: "sans-serif",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
     ]
   ] as any;
 

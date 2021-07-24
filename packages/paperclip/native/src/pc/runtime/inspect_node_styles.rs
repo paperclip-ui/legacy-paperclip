@@ -11,7 +11,9 @@ TODO:
 use super::evaluator::EvalInfo as PCEvalInfo;
 use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::inspect_selector_info as iso;
-use super::selector_match::get_selector_text_matching_sub_selector;
+use super::selector_match::{
+  element_matches_selector_text_edge, get_selector_text_matching_sub_selector,
+};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::DependencyGraph;
 use crate::css::ast as css_ast;
@@ -20,10 +22,14 @@ use crate::css::runtime::media_match::media_matches;
 use crate::css::runtime::specificity::get_selector_text_specificity;
 use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
 use crate::engine::engine::__test__evaluate_pc_files;
+use crate::pc::runtime::virt as pc_virt;
+use cached::proc_macro::cached;
+use cached::SizedCache;
 use serde::Serialize;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashSet};
-
+use std::thread::sleep;
+use std::time::Duration;
 /*
 
 inherited props:
@@ -316,6 +322,13 @@ impl NodeInspectionInfo {
   }
 
   pub fn insert_inherited_style_rule(&mut self, rule: &StyleRuleInfo) {
+    // skip dupes
+    for style_rule in &mut self.style_rules {
+      if style_rule.source_id == rule.source_id {
+        return;
+      }
+    }
+
     let mut new_rule = rule.as_inherited();
 
     for style_rule in &mut self.style_rules {
@@ -411,28 +424,36 @@ fn add_inspection_info(
   graph: &DependencyGraph,
   options: &InspectionOptions,
 ) {
-  if let Some(info) = all_eval_info.get(uri) {
-    let style_rules = get_eval_info_selectors(info, graph, options);
+  if let Some(pc_virt::Node::Element(element)) =
+    &main_eval_info.preview.get_descendent(element_path)
+  {
+    if let Some(info) = all_eval_info.get(uri) {
+      let style_rules = get_eval_info_selectors(info, graph, options);
 
-    for (style_rule, media_option) in style_rules {
-      // TODO - matches should return some result instead of boolean
+      for (style_rule, media_option) in style_rules {
+        // if !element_matches_selector_text_edge(&style_rule.selector_text, element) || true {
+        //   continue;
+        // }
 
-      if let Some((matching_sub_selector, entire_selector)) =
-        get_selector_text_matching_sub_selector(
-          &style_rule.selector_text,
-          element_path,
-          &main_eval_info.preview,
-        )
-      {
-        if let Ok(selector_info) = iso::Selector::from_ast(&entire_selector, graph) {
-          let rule = StyleRuleInfo::new(
-            style_rule,
-            uri,
-            media_option.clone(),
-            &matching_sub_selector,
-            selector_info,
-          );
-          inspection_info.insert_style_rule(rule);
+        // TODO - matches should return some result instead of boolean
+
+        if let Some((matching_sub_selector, entire_selector)) =
+          get_selector_text_matching_sub_selector(
+            &style_rule.selector_text,
+            element_path,
+            &main_eval_info.preview,
+          )
+        {
+          if let Ok(selector_info) = iso::Selector::from_ast(&entire_selector, graph) {
+            let rule = StyleRuleInfo::new(
+              style_rule,
+              uri,
+              media_option.clone(),
+              &matching_sub_selector,
+              selector_info,
+            );
+            inspection_info.insert_style_rule(rule);
+          }
         }
       }
     }
@@ -447,12 +468,13 @@ fn add_inherited_properties(
   graph: &DependencyGraph,
   options: &InspectionOptions,
 ) {
+  let mut cpath = element_path.clone();
+
   for _i in 0..(element_path.len() - 1) {
     // easier than slice, just as effective
-    let mut new_path = element_path.clone();
-    new_path.pop();
+    cpath.pop();
     let ancestor_inspecto_info =
-      inspect_local_node_styles(&new_path, document_uri, all_eval_info, graph, options);
+      inspect_local_node_styles(&cpath, document_uri, all_eval_info, graph, options);
 
     for style_rule in &ancestor_inspecto_info.style_rules {
       if inspection_info.can_inherit_from_style_rule(style_rule) {
@@ -531,22 +553,16 @@ mod tests {
   #[test]
   fn adds_inherited_props() {
     let source = r#"
-      <div>
-        <style> 
-          background: blue;
-        </style>
-        <div>
-          <style>
-            background: inherit;
-          </style>
-          I have inherited css
-        </div>
-      </div>
+    <div>
+      <style>
+        font-family: sans-serif;
+      </style>
+    </div>
     "#;
 
     test_pc_code(
       source,
-      vec![0, 0],
+      vec![0],
       InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![],

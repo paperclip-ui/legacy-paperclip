@@ -87,7 +87,7 @@ mod tests {
     ];
 
     for (selector_text, expected_specificity) in cases.iter() {
-      let selector = parse_selector(selector_text.to_string(), None).unwrap();
+      let selector = parse_selector(selector_text, None).unwrap();
       let specificity = calc_specificity(&selector);
       assert_eq!(specificity, *expected_specificity);
     }

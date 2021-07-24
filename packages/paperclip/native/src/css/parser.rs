@@ -10,6 +10,8 @@ use crate::base::parser::{get_buffer, ParseError};
 use crate::core::id_generator::generate_seed;
 use crate::core::id_generator::IDGenerator;
 use cached::proc_macro::cached;
+use std::collections::HashMap;
+use std::sync::Mutex;
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
@@ -25,18 +27,37 @@ impl<'a, 'b> Context<'a, 'b> {
   }
 }
 
-#[cached]
-pub fn parse<'a>(source: String, id_seed: String) -> Result<Sheet, ParseError> {
+pub fn parse<'a>(source: &'a str, id_seed: String) -> Result<Sheet, ParseError> {
   let mut tokenizer = Tokenizer::new(&source);
-  parse_with_tokenizer(&mut tokenizer, id_seed.as_str(), |_token| Ok(false))
+  let result = parse_with_tokenizer(&mut tokenizer, id_seed.as_str(), |_token| Ok(false));
+  return result;
 }
 
-pub fn parse_selector(selector: String, id_seed: Option<String>) -> Result<Selector, ParseError> {
-  let rule = format!("{}{{}}", selector);
+pub fn parse_selector<'a>(
+  selector: &'a str,
+  id_seed: Option<String>,
+) -> Result<Selector, ParseError> {
+  lazy_static! {
+    static ref CACHE: Mutex<HashMap<String, Result<Selector, ParseError>>> =
+      Mutex::new(HashMap::new());
+  }
+
+  let mut cache = CACHE.lock().unwrap();
 
   let id_seed2 = id_seed.unwrap_or("0".to_string());
-  let ast: Sheet = if let Ok(ast) = parse(rule.to_string(), id_seed2) {
-    ast
+  let cache_key = format!("{}{}", selector, id_seed2);
+
+  if let Some(result) = cache.get(&cache_key) {
+    return result.clone();
+  }
+
+  let rule_source = format!("{}{{}}", selector);
+
+  let ret: Result<Selector, ParseError> = if let Ok(ast) = parse(&rule_source, id_seed2) {
+    match ast.rules.get(0).unwrap() {
+      Rule::Style(style) => Ok(style.selector.clone()),
+      _ => Err(ParseError::unknown()),
+    }
   } else {
     return Err(ParseError::unexpected(
       format!("Unable to parse selector \"{}\"", selector),
@@ -45,16 +66,9 @@ pub fn parse_selector(selector: String, id_seed: Option<String>) -> Result<Selec
     ));
   };
 
-  let rule = ast.rules.get(0).unwrap();
+  cache.insert(cache_key, ret.clone());
 
-  match rule {
-    Rule::Style(style) => {
-      return Ok(style.selector.clone());
-    }
-    _ => {
-      return Err(ParseError::unknown());
-    }
-  }
+  ret
 }
 
 pub fn parse_with_tokenizer<'a>(
@@ -1158,7 +1172,7 @@ mod tests {
     // comment
     ";
 
-    parse(source.to_string(), "id".to_string()).unwrap();
+    parse(source, "id".to_string()).unwrap();
   }
 
   #[test]
@@ -1248,7 +1262,7 @@ mod tests {
       }
     ";
 
-    parse(source.to_string(), "id".to_string()).unwrap();
+    parse(source, "id".to_string()).unwrap();
   }
 
   ///
@@ -1258,7 +1272,7 @@ mod tests {
   #[test]
   fn displays_an_error_for_unterminated_curly_bracket() {
     assert_eq!(
-      parse("div { ".to_string(), "id".to_string()),
+      parse("div { ", "id".to_string()),
       Err(ParseError::unterminated(
         "Unterminated bracket.".to_string(),
         4,

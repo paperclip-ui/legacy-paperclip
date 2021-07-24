@@ -102,7 +102,11 @@ use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast as css_ast;
 use crate::css::parser::{parse as parse_css, parse_selector as parse_css_selector};
 use crate::pc::parser::parse as parse_pc;
+use cached::proc_macro::cached;
+use cached::SizedCache;
 use regex::Regex;
+use std::collections::HashMap;
+use std::sync::Mutex;
 
 #[derive(Debug)]
 struct Context<'a> {
@@ -174,12 +178,58 @@ pub fn selector_text_matches_element<'a, 'b>(
   get_selector_text_matching_sub_selector(selector_text, element_path, document) != None
 }
 
+pub fn element_matches_selector_text_edge<'a, 'b>(
+  selector_text: &'a str,
+  element: &'b VirtElement,
+) -> bool {
+  let selector = parse_css_selector(selector_text, None).unwrap();
+  let context = Context::new();
+
+  element_matches_selector_edge(&selector, element, &context)
+}
+
+fn element_matches_selector_edge<'a, 'b>(
+  selector: &css_ast::Selector,
+  element: &'b VirtElement,
+  context: &Context,
+) -> bool {
+  match selector {
+    css_ast::Selector::Combo(_)
+    | css_ast::Selector::Class(_)
+    | css_ast::Selector::Attribute(_)
+    | css_ast::Selector::Element(_)
+    | css_ast::Selector::AllSelector(_)
+    | css_ast::Selector::Id(_) => get_matching_sub_selector(selector, element, context) != None,
+    css_ast::Selector::Descendent(sel) => {
+      element_matches_selector_edge(&sel.descendent, element, context)
+    }
+    css_ast::Selector::Child(sel) => element_matches_selector_edge(&sel.child, element, context),
+    css_ast::Selector::Sibling(sel) => {
+      element_matches_selector_edge(&sel.sibling_selector, element, context)
+    }
+    css_ast::Selector::Adjacent(sel) => {
+      element_matches_selector_edge(&sel.next_sibling_selector, element, context)
+    }
+    css_ast::Selector::Group(sel) => sel
+      .selectors
+      .iter()
+      .any(|child| element_matches_selector_edge(child, element, context)),
+    css_ast::Selector::Not(sel) => !element_matches_selector_edge(&sel.selector, element, context),
+    css_ast::Selector::Prefixed(_)
+    | css_ast::Selector::Global(_)
+    | css_ast::Selector::This(_)
+    | css_ast::Selector::Within(_)
+    | css_ast::Selector::SubElement(_) => false,
+    css_ast::Selector::PseudoParamElement(_) | css_ast::Selector::PseudoElement(_) => true,
+  }
+}
+
 pub fn get_selector_text_matching_sub_selector<'a, 'b>(
   selector_text: &'b str,
   element_path: &'a Vec<usize>,
   document: &'a VirtNode,
 ) -> Option<(css_ast::Selector, css_ast::Selector)> {
-  let selector = parse_css_selector(selector_text.to_string(), None).unwrap();
+  let selector = parse_css_selector(selector_text, None).unwrap();
 
   Context::new_from_path(element_path, document)
     .and_then(|context| {
@@ -204,7 +254,7 @@ pub fn get_matching_elements<'a, 'b>(
   // since we may be dealing with nested styles and such -- that information is included in the style selector, but is
   // lost within the CSS AST (unless parent el or scope is provided for context - that's just too cumbersome). We can
   // deal with the performance penalty 😭
-  let selector = parse_css_selector(selector_text.to_string(), None).unwrap();
+  let selector = parse_css_selector(selector_text, None).unwrap();
 
   let mut matching_elements: Vec<&'a VirtElement> = Vec::new();
 
@@ -227,7 +277,7 @@ pub fn find_one_matching_element<'a, 'b>(
   selector_text: &'b str,
   document: &'a VirtNode,
 ) -> Option<&'a VirtElement> {
-  let selector = parse_css_selector(selector_text.to_string(), None).unwrap();
+  let selector = parse_css_selector(selector_text, None).unwrap();
   let mut found: Option<&'a VirtElement> = None;
   traverse_tree(
     &selector,
@@ -469,20 +519,35 @@ fn get_matching_sub_selector<'a, 'b, 'c>(
     css_ast::Selector::Class(sel) => {
       lazy_static! {
         static ref escape_re: Regex = Regex::new(r"\\").unwrap();
+        static ref CACHE: Mutex<HashMap<String, Vec<String>>> = Mutex::new(HashMap::new());
       }
 
       return element
         .get_attribute("class")
         .and_then(|value_option| value_option)
         .and_then(|classes| {
-          let match_class_name = escape_re.replace_all(&sel.class_name, "");
+          let mut class_name_cache = CACHE.lock().unwrap();
 
-          for class in classes.split(" ").into_iter() {
-            if class == match_class_name {
-              return Some(selector);
-            }
+          let match_class_name = escape_re.replace_all(&sel.class_name, "").to_string();
+
+          let class_list = if let Some(class_list) = class_name_cache.get(&classes) {
+            class_list
+          } else {
+            class_name_cache.insert(
+              classes.to_string(),
+              classes
+                .split(" ")
+                .map(|v| v.to_string())
+                .collect::<Vec<String>>(),
+            );
+            class_name_cache.get(&classes).unwrap()
+          };
+
+          if class_list.contains(&match_class_name) {
+            Some(selector)
+          } else {
+            None
           }
-          None
         });
     }
     // *
@@ -529,6 +594,15 @@ fn get_matching_sub_selector<'a, 'b, 'c>(
   }
 
   None
+}
+
+#[cached(
+  type = "SizedCache<String, bool>",
+  create = "{ SizedCache::with_size(100) }",
+  convert = r#"{ format!("{}{}", class, value) }"#
+)]
+fn class_contains(class: &str, value: &str) -> bool {
+  false
 }
 
 fn selector_matches_nested_element<'a>(
