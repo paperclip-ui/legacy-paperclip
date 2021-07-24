@@ -26,7 +26,7 @@ use std::collections::{BTreeMap, HashSet};
 
 /*
 
-inherited props: 
+inherited props:
 
     border-collapse
     border-spacing
@@ -97,7 +97,6 @@ impl StyleDeclarationInfo {
     self.value.contains(" !important")
   }
   pub fn overrides(&mut self, other: &mut StyleDeclarationInfo) {
-
     if self.inherits() {
       return;
     }
@@ -109,7 +108,45 @@ impl StyleDeclarationInfo {
     }
   }
   pub fn cascades(&self) -> bool {
-    let inherited_prop_names = ["border-collapse","border-spacing","caption-side","color","cursor","direction","empty-cells","font-family","font-size","font-style","font-variant","font-weight","font-size-adjust","font-stretch","font","letter-spacing","line-height","list-style-image","list-style-position","list-style-type","list-style","orphans","quotes","tab-size","text-align","text-align-last","text-decoration-color","text-indent","text-justify","text-shadow","text-transform","visibility","white-space","widows","word-break","word-spacing","word-wrap"];
+    let inherited_prop_names = [
+      "border-collapse",
+      "border-spacing",
+      "caption-side",
+      "color",
+      "cursor",
+      "direction",
+      "empty-cells",
+      "font-family",
+      "font-size",
+      "font-style",
+      "font-variant",
+      "font-weight",
+      "font-size-adjust",
+      "font-stretch",
+      "font",
+      "letter-spacing",
+      "line-height",
+      "list-style-image",
+      "list-style-position",
+      "list-style-type",
+      "list-style",
+      "orphans",
+      "quotes",
+      "tab-size",
+      "text-align",
+      "text-align-last",
+      "text-decoration-color",
+      "text-indent",
+      "text-justify",
+      "text-shadow",
+      "text-transform",
+      "visibility",
+      "white-space",
+      "widows",
+      "word-break",
+      "word-spacing",
+      "word-wrap",
+    ];
     inherited_prop_names.contains(&self.name.as_str())
   }
   pub fn inherits(&self) -> bool {
@@ -127,7 +164,6 @@ pub struct MediaInfo {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRuleInfo {
   pub inherited: bool,
-
 
   #[serde(rename = "selectorText")]
   pub selector_text: String,
@@ -181,8 +217,8 @@ impl StyleRuleInfo {
 
     return rule_info;
   }
-  
-  pub fn as_inherited(&self) -> StyleRuleInfo {  
+
+  pub fn as_inherited(&self) -> StyleRuleInfo {
     let mut clone = self.clone();
     clone.inherited = true;
     clone
@@ -232,13 +268,11 @@ impl StyleRuleInfo {
     self.declarations.iter().any(|decl| &decl.name == name)
   }
   pub fn can_inherit_from_style_rule(&self, other: &StyleRuleInfo) -> bool {
-
     for declaration in &self.declarations {
       if declaration.inherits() && other.contains_declaration(&declaration.name) {
         return true;
       }
     }
-
 
     return false;
   }
@@ -281,9 +315,7 @@ impl NodeInspectionInfo {
     self.style_rules.insert(insert_index, rule);
   }
 
-
   pub fn insert_inherited_style_rule(&mut self, rule: &StyleRuleInfo) {
-
     let mut new_rule = rule.as_inherited();
 
     for style_rule in &mut self.style_rules {
@@ -298,7 +330,6 @@ impl NodeInspectionInfo {
       return true;
     }
 
-
     for rule in &self.style_rules {
       if rule.can_inherit_from_style_rule(other_rule) {
         return true;
@@ -306,10 +337,7 @@ impl NodeInspectionInfo {
     }
     return false;
   }
-
 }
-
-
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct InspectionOptions {
@@ -323,15 +351,20 @@ pub fn inspect_node_styles(
   graph: &DependencyGraph,
   options: &InspectionOptions,
 ) -> NodeInspectionInfo {
-  let mut inspection_info = inspect_local_node_styles(element_path, document_uri, all_eval_info, graph, options);
+  let mut inspection_info =
+    inspect_local_node_styles(element_path, document_uri, all_eval_info, graph, options);
 
-  
-  add_inherited_properties(&mut inspection_info, element_path, document_uri, all_eval_info, graph, options);
-  
+  add_inherited_properties(
+    &mut inspection_info,
+    element_path,
+    document_uri,
+    all_eval_info,
+    graph,
+    options,
+  );
 
   inspection_info
 }
-
 
 pub fn inspect_local_node_styles(
   element_path: &Vec<usize>,
@@ -342,9 +375,7 @@ pub fn inspect_local_node_styles(
 ) -> NodeInspectionInfo {
   let mut inspection_info = NodeInspectionInfo::new();
 
-
   if let Some(main_eval_info) = get_pc_info(document_uri, all_eval_info) {
-
     add_inspection_info(
       &mut inspection_info,
       element_path,
@@ -370,7 +401,6 @@ pub fn inspect_local_node_styles(
 
   inspection_info
 }
-
 
 fn add_inspection_info(
   inspection_info: &mut NodeInspectionInfo,
@@ -409,7 +439,6 @@ fn add_inspection_info(
   }
 }
 
-
 fn add_inherited_properties(
   inspection_info: &mut NodeInspectionInfo,
   element_path: &Vec<usize>,
@@ -419,11 +448,11 @@ fn add_inherited_properties(
   options: &InspectionOptions,
 ) {
   for _i in 0..(element_path.len() - 1) {
-
     // easier than slice, just as effective
     let mut new_path = element_path.clone();
     new_path.pop();
-    let ancestor_inspecto_info = inspect_local_node_styles(&new_path, document_uri, all_eval_info, graph, options);
+    let ancestor_inspecto_info =
+      inspect_local_node_styles(&new_path, document_uri, all_eval_info, graph, options);
 
     for style_rule in &ancestor_inspecto_info.style_rules {
       if inspection_info.can_inherit_from_style_rule(style_rule) {
@@ -499,7 +528,6 @@ mod tests {
   use super::super::super::parser::*;
   use super::*;
 
-
   #[test]
   fn adds_inherited_props() {
     let source = r#"
@@ -518,11 +546,11 @@ mod tests {
 
     test_pc_code(
       source,
-      vec![0, 0], 
+      vec![0, 0],
       InspectionOptions { screen_width: None },
       NodeInspectionInfo {
-        style_rules: vec![]
-      }
+        style_rules: vec![],
+      },
     );
 
     panic!("fsdfsd");
