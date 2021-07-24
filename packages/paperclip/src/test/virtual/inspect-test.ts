@@ -13,9 +13,11 @@ describe(__filename + "#", () => {
         </div>`
       },
       100,
+      [0],
       {
         styleRules: [
           {
+            inherited: false,
             selectorText: "._406d2856._406d2856",
             selectorInfo: {
               kind: "Combo",
@@ -74,9 +76,11 @@ describe(__filename + "#", () => {
         `
       },
       100,
+      [0],
       {
         styleRules: [
           {
+            inherited: false,
             selectorText: "._376a18c0._376a18c0",
             selectorInfo: {
               kind: "Combo",
@@ -116,6 +120,7 @@ describe(__filename + "#", () => {
             specificity: 4
           },
           {
+            inherited: false,
             selectorText: "[class]._80f4925f_item",
             selectorInfo: {
               kind: "Combo",
@@ -167,9 +172,11 @@ describe(__filename + "#", () => {
         `
       },
       100,
+      [0],
       {
         styleRules: [
           {
+            inherited: false,
             selectorText: "._406d2856._406d2856",
             selectorInfo: {
               kind: "Combo",
@@ -227,9 +234,11 @@ describe(__filename + "#", () => {
         `
       },
       100,
+      [0],
       {
         styleRules: [
           {
+            inherited: false,
             selectorText: "._80f4925f_a._80f4925f_b._80f4925f",
             selectorInfo: {
               kind: "Combo",
@@ -278,6 +287,7 @@ describe(__filename + "#", () => {
             specificity: 6
           },
           {
+            inherited: false,
             selectorText: "[class]._80f4925f_a",
             selectorInfo: {
               kind: "Combo",
@@ -327,9 +337,11 @@ describe(__filename + "#", () => {
         `
       },
       100,
+      [0],
       {
         styleRules: [
           {
+            inherited: false,
             selectorText: ".a",
             selectorInfo: {
               kind: "Class",
@@ -373,9 +385,11 @@ describe(__filename + "#", () => {
         `
       },
       1300,
+      [0],
       {
         styleRules: [
           {
+            inherited: false,
             selectorText: "[class]._80f4925f_a",
             selectorInfo: {
               kind: "Combo",
@@ -429,9 +443,11 @@ describe(__filename + "#", () => {
         `
       },
       100,
+      [0],
       {
         styleRules: [
           {
+            inherited: false,
             selectorText: "[class]._pub-b8a55827_a",
             selectorInfo: {
               kind: "Combo",
@@ -482,9 +498,11 @@ describe(__filename + "#", () => {
         `
       },
       100,
+      [0],
       {
         styleRules: [
           {
+            inherited: false,
             selectorText: "[class]._80f4925f_a\\:b\\:c",
             selectorInfo: {
               kind: "Combo",
@@ -520,15 +538,177 @@ describe(__filename + "#", () => {
           }
         ]
       }
+    ],
+    [
+      "inherits font-family from parent",
+      {
+        "/entry.pc": `
+          <div>
+            <style>
+              font-family: sans-serif;
+            </style>
+            <div />
+          </div>
+        `
+      },
+      100,
+      [0, 0],
+      {
+        styleRules: [
+          {
+            inherited: true,
+            selectorText: "._406d2856._406d2856",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "406d2856",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-1",
+                name: "font-family",
+                value: "sans-serif",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
+    ],
+    [
+      "When inherit is declared, then prop is inherited from parent",
+      {
+        "/entry.pc": `
+          <div>
+            <style>
+              background: blue;
+            </style>
+            <div>
+              <style>
+                background: inherit;
+              </style>
+            </div>
+          </div>
+        `
+      },
+      100,
+      [0, 0],
+      {
+        styleRules: [
+          {
+            inherited: false,
+            selectorText: "._e9795a6f._e9795a6f",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._e9795a6f",
+                  scope: {
+                    kind: "Element",
+                    id: "e9795a6f"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._e9795a6f",
+                  scope: {
+                    kind: "Element",
+                    id: "e9795a6f"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "e9795a6f",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-3-1",
+                name: "background",
+                value: "inherit",
+                active: true
+              }
+            ],
+            specificity: 4
+          },
+          {
+            inherited: true,
+            selectorText: "._406d2856._406d2856",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "406d2856",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-1",
+                name: "background",
+                value: "blue",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
     ]
   ] as any;
 
-  for (const [title, graph, screenWidth, result] of cases) {
+  for (const [title, graph, screenWidth, path, result] of cases) {
     it(title, async () => {
       const engine = await createMockEngine(graph);
       await engine.open("/entry.pc");
       const inspection = engine.inspectNodeStyles(
-        { path: [0], uri: "/entry.pc" },
+        { path, uri: "/entry.pc" },
         screenWidth
       );
       // console.log(JSON.stringify(inspection, null, 2));

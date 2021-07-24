@@ -24,6 +24,51 @@ use serde::Serialize;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashSet};
 
+/*
+
+inherited props: 
+
+    border-collapse
+    border-spacing
+    caption-side
+    color
+    cursor
+    direction
+    empty-cells
+    font-family
+    font-size
+    font-style
+    font-variant
+    font-weight
+    font-size-adjust
+    font-stretch
+    font
+    letter-spacing
+    line-height
+    list-style-image
+    list-style-position
+    list-style-type
+    list-style
+    orphans
+    quotes
+    tab-size
+    text-align
+    text-align-last
+    text-decoration-color
+    text-indent
+    text-justify
+    text-shadow
+    text-transform
+    visibility
+    white-space
+    widows
+    word-break
+    word-spacing
+    word-wrap
+
+
+*/
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleDeclarationInfo {
   #[serde(rename = "sourceId")]
@@ -52,11 +97,23 @@ impl StyleDeclarationInfo {
     self.value.contains(" !important")
   }
   pub fn overrides(&mut self, other: &mut StyleDeclarationInfo) {
+
+    if self.inherits() {
+      return;
+    }
+
     if other.important() && !self.important() {
       self.active = false;
     } else {
       other.active = false;
     }
+  }
+  pub fn cascades(&self) -> bool {
+    let inherited_prop_names = ["border-collapse","border-spacing","caption-side","color","cursor","direction","empty-cells","font-family","font-size","font-style","font-variant","font-weight","font-size-adjust","font-stretch","font","letter-spacing","line-height","list-style-image","list-style-position","list-style-type","list-style","orphans","quotes","tab-size","text-align","text-align-last","text-decoration-color","text-indent","text-justify","text-shadow","text-transform","visibility","white-space","widows","word-break","word-spacing","word-wrap"];
+    inherited_prop_names.contains(&self.name.as_str())
+  }
+  pub fn inherits(&self) -> bool {
+    self.value == "inherit"
   }
 }
 
@@ -69,6 +126,9 @@ pub struct MediaInfo {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleRuleInfo {
+  pub inherited: bool,
+
+
   #[serde(rename = "selectorText")]
   pub selector_text: String,
 
@@ -104,6 +164,7 @@ impl StyleRuleInfo {
     selector_info: iso::Selector,
   ) -> StyleRuleInfo {
     let mut rule_info = StyleRuleInfo {
+      inherited: false,
       selector_text: rule.selector_text.to_string(),
       selector_info,
       source_uri: source_uri.to_string(),
@@ -120,6 +181,13 @@ impl StyleRuleInfo {
 
     return rule_info;
   }
+  
+  pub fn as_inherited(&self) -> StyleRuleInfo {  
+    let mut clone = self.clone();
+    clone.inherited = true;
+    clone
+  }
+
   pub fn push_declaration(&mut self, mut declaration: StyleDeclarationInfo) {
     if let Some(existing_decl) = self.get_declaration(&declaration.name) {
       declaration.overrides(existing_decl);
@@ -151,6 +219,28 @@ impl StyleRuleInfo {
       return media.active;
     }
     return true;
+  }
+  pub fn contains_cascading_declarations(&self) -> bool {
+    for decl in &self.declarations {
+      if decl.cascades() {
+        return true;
+      }
+    }
+    return false;
+  }
+  pub fn contains_declaration(&self, name: &String) -> bool {
+    self.declarations.iter().any(|decl| &decl.name == name)
+  }
+  pub fn can_inherit_from_style_rule(&self, other: &StyleRuleInfo) -> bool {
+
+    for declaration in &self.declarations {
+      if declaration.inherits() && other.contains_declaration(&declaration.name) {
+        return true;
+      }
+    }
+
+
+    return false;
   }
 }
 
@@ -190,7 +280,36 @@ impl NodeInspectionInfo {
 
     self.style_rules.insert(insert_index, rule);
   }
+
+
+  pub fn insert_inherited_style_rule(&mut self, rule: &StyleRuleInfo) {
+
+    let mut new_rule = rule.as_inherited();
+
+    for style_rule in &mut self.style_rules {
+      style_rule.overrides(&mut new_rule);
+    }
+
+    self.style_rules.push(new_rule);
+  }
+
+  pub fn can_inherit_from_style_rule(&self, other_rule: &StyleRuleInfo) -> bool {
+    if other_rule.contains_cascading_declarations() {
+      return true;
+    }
+
+
+    for rule in &self.style_rules {
+      if rule.can_inherit_from_style_rule(other_rule) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }
+
+
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct InspectionOptions {
@@ -204,9 +323,28 @@ pub fn inspect_node_styles(
   graph: &DependencyGraph,
   options: &InspectionOptions,
 ) -> NodeInspectionInfo {
+  let mut inspection_info = inspect_local_node_styles(element_path, document_uri, all_eval_info, graph, options);
+
+  
+  add_inherited_properties(&mut inspection_info, element_path, document_uri, all_eval_info, graph, options);
+  
+
+  inspection_info
+}
+
+
+pub fn inspect_local_node_styles(
+  element_path: &Vec<usize>,
+  document_uri: &String,
+  all_eval_info: &BTreeMap<String, DependencyEvalInfo>,
+  graph: &DependencyGraph,
+  options: &InspectionOptions,
+) -> NodeInspectionInfo {
   let mut inspection_info = NodeInspectionInfo::new();
 
+
   if let Some(main_eval_info) = get_pc_info(document_uri, all_eval_info) {
+
     add_inspection_info(
       &mut inspection_info,
       element_path,
@@ -233,15 +371,6 @@ pub fn inspect_node_styles(
   inspection_info
 }
 
-fn get_pc_info<'a>(
-  uri: &String,
-  all_eval_info: &'a BTreeMap<String, DependencyEvalInfo>,
-) -> Option<&'a PCEvalInfo> {
-  all_eval_info.get(uri).and_then(|info| match info {
-    DependencyEvalInfo::PC(pc) => Some(pc),
-    _ => None,
-  })
-}
 
 fn add_inspection_info(
   inspection_info: &mut NodeInspectionInfo,
@@ -278,6 +407,40 @@ fn add_inspection_info(
       }
     }
   }
+}
+
+
+fn add_inherited_properties(
+  inspection_info: &mut NodeInspectionInfo,
+  element_path: &Vec<usize>,
+  document_uri: &String,
+  all_eval_info: &BTreeMap<String, DependencyEvalInfo>,
+  graph: &DependencyGraph,
+  options: &InspectionOptions,
+) {
+  for _i in 0..(element_path.len() - 1) {
+
+    // easier than slice, just as effective
+    let mut new_path = element_path.clone();
+    new_path.pop();
+    let ancestor_inspecto_info = inspect_local_node_styles(&new_path, document_uri, all_eval_info, graph, options);
+
+    for style_rule in &ancestor_inspecto_info.style_rules {
+      if inspection_info.can_inherit_from_style_rule(style_rule) {
+        inspection_info.insert_inherited_style_rule(style_rule);
+      }
+    }
+  }
+}
+
+fn get_pc_info<'a>(
+  uri: &String,
+  all_eval_info: &'a BTreeMap<String, DependencyEvalInfo>,
+) -> Option<&'a PCEvalInfo> {
+  all_eval_info.get(uri).and_then(|info| match info {
+    DependencyEvalInfo::PC(pc) => Some(pc),
+    _ => None,
+  })
 }
 
 fn get_eval_info_selectors<'a>(
@@ -331,744 +494,38 @@ fn collect_style_rules<'a, 'b>(
   }
 }
 
-// #[cfg(test)]
+#[cfg(test)]
 mod tests {
   use super::super::super::parser::*;
   use super::*;
 
-  // #[test]
-  fn can_inspect_a_simple_selector() {
+
+  #[test]
+  fn adds_inherited_props() {
     let source = r#"
-      <style>
-        a > b { color: red; }
-      </style>
-      <a><b class='b' /></a>
-    "#;
-
-    test_pc_code(
-      source,
-      vec![0, 0],
-      InspectionOptions { screen_width: None },
-      NodeInspectionInfo {
-        style_rules: vec![StyleRuleInfo {
-          selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
-          selector_info: iso::Selector::Child(iso::BinarySelector {
-            left: Box::new(iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "a".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  value: "._acb5fc82".to_string(),
-                  name: None,
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-              ],
-            })),
-            right: Box::new(iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "b".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  value: "._acb5fc82".to_string(),
-                  name: None,
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-              ],
-            })),
-          }),
-          source_id: "0-1-1-1".to_string(),
-          source_uri: "entry.pc".to_string(),
-          pseudo_element_name: None,
-          media: None,
-          declarations: vec![StyleDeclarationInfo {
-            source_id: "a".to_string(),
-            name: "color".to_string(),
-            value: "red".to_string(),
-            active: true,
-          }],
-          specificity: 4,
-        }],
-      },
-    )
-  }
-
-  // #[test]
-  fn sets_first_declaration_as_inactive_if_overriden_in_same_rule() {
-    let source = r#"
-      <style>
-        a > b { color: red; color: blue; }
-      </style>
-      <a><b class='b' /></a>
-    "#;
-
-    test_pc_code(
-      source,
-      vec![0, 0],
-      InspectionOptions { screen_width: None },
-      NodeInspectionInfo {
-        style_rules: vec![StyleRuleInfo {
-          selector_info: iso::Selector::Child(iso::BinarySelector {
-            left: Box::new(iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "a".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  value: "._acb5fc82".to_string(),
-                  name: None,
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-              ],
-            })),
-            right: Box::new(iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "b".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  value: "._acb5fc82".to_string(),
-                  name: None,
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-              ],
-            })),
-          }),
-          selector_text: "a._acb5fc82 > b._acb5fc82".to_string(),
-          source_id: "0-1-1-1".to_string(),
-          source_uri: "entry.pc".to_string(),
-          media: None,
-          pseudo_element_name: None,
-          declarations: vec![
-            StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "red".to_string(),
-              active: false,
-            },
-            StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "blue".to_string(),
-              active: true,
-            },
-          ],
-          specificity: 4,
-        }],
-      },
-    )
-  }
-
-  // #[test]
-  fn sorts_style_rule_info_based_on_specificity() {
-    let source = r#"
-      <style>
-        a b { color: red; }
-        b.b.b { color: blue; }
-      </style>
-      <a><b class='b' /></a>
-    "#;
-
-    test_pc_code(
-      source,
-      vec![0, 0],
-      InspectionOptions { screen_width: None },
-      NodeInspectionInfo {
-        style_rules: vec![
-          StyleRuleInfo {
-            selector_text: "b[class].b[class].b._acb5fc82".to_string(),
-            selector_info: iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "b".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: Some("b".to_string()),
-                  value: "._acb5fc82_b".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: Some("b".to_string()),
-                  value: "._acb5fc82_b".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: None,
-                  value: "._acb5fc82".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-              ],
-            }),
-            source_id: "0-1-1-2".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "blue".to_string(),
-              active: true,
-            }],
-            specificity: 6,
-          },
-          StyleRuleInfo {
-            selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
-            selector_info: iso::Selector::Descendent(iso::BinarySelector {
-              left: Box::new(iso::Selector::Combo(iso::GroupSelector {
-                selectors: vec![
-                  iso::Selector::Element(iso::TargetSelector {
-                    value: "a".to_string(),
-                  }),
-                  iso::Selector::Class(iso::ClassSelector {
-                    name: None,
-                    value: "._acb5fc82".to_string(),
-                    scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                      id: "acb5fc82".to_string(),
-                    })),
-                  }),
-                ],
-              })),
-              right: Box::new(iso::Selector::Combo(iso::GroupSelector {
-                selectors: vec![
-                  iso::Selector::Element(iso::TargetSelector {
-                    value: "b".to_string(),
-                  }),
-                  iso::Selector::Class(iso::ClassSelector {
-                    name: None,
-                    value: "._acb5fc82".to_string(),
-                    scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                      id: "acb5fc82".to_string(),
-                    })),
-                  }),
-                ],
-              })),
-            }),
-            source_id: "0-1-1-1".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "red".to_string(),
-              active: false,
-            }],
-            specificity: 4,
-          },
-        ],
-      },
-    )
-  }
-
-  // #[test]
-  fn important_props_get_prioity_in_other_style_rules() {
-    let source = r#"
-      <style>
-        a b { color: red !important; }
-        b.b.b { color: blue; }
-      </style>
-      <a><b class='b' /></a>
-    "#;
-
-    test_pc_code(
-      source,
-      vec![0, 0],
-      InspectionOptions { screen_width: None },
-      NodeInspectionInfo {
-        style_rules: vec![
-          StyleRuleInfo {
-            selector_text: "b[class].b[class].b._acb5fc82".to_string(),
-            selector_info: iso::Selector::Element(iso::TargetSelector {
-              value: "a".to_string(),
-            }),
-            source_id: "0-1-1-2".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "blue".to_string(),
-              active: false,
-            }],
-            specificity: 6,
-          },
-          StyleRuleInfo {
-            selector_text: "a._acb5fc82 b._acb5fc82".to_string(),
-            selector_info: iso::Selector::Element(iso::TargetSelector {
-              value: "a".to_string(),
-            }),
-            source_id: "0-1-1-1".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "red !important".to_string(),
-              active: true,
-            }],
-            specificity: 4,
-          },
-        ],
-      },
-    )
-  }
-
-  // #[test]
-  fn if_two_importants_then_lower_index_wins() {
-    let source = r#"
-      <style>
-        b.b.b { color: red !important; }
-        b.b.b { color: blue !important; }
-      </style>
-      <a><b class='b' /></a>
-    "#;
-
-    test_pc_code(
-      source,
-      vec![0, 0],
-      InspectionOptions { screen_width: None },
-      NodeInspectionInfo {
-        style_rules: vec![
-          StyleRuleInfo {
-            selector_text: "b._acb5fc82_b._acb5fc82_b._acb5fc82".to_string(),
-            selector_info: iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "b".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: Some("b".to_string()),
-                  value: "._acb5fc82_b".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: Some("b".to_string()),
-                  value: "._acb5fc82_b".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: Some("b".to_string()),
-                  value: "._acb5fc82_b".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-              ],
-            }),
-            source_id: "0-1-1-2".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "blue !important".to_string(),
-              active: true,
-            }],
-            specificity: 6,
-          },
-          StyleRuleInfo {
-            selector_text: "b[class].b[class].b._acb5fc82".to_string(),
-            selector_info: iso::Selector::Element(iso::TargetSelector {
-              value: "a".to_string(),
-            }),
-            source_id: "0-1-1-1".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "red !important".to_string(),
-              active: false,
-            }],
-            specificity: 6,
-          },
-        ],
-      },
-    )
-  }
-
-  // #[test]
-  fn pseudo_element_declarations_arent_touched() {
-    let source = r#"
-      <style>
-        a { color: red; }
-        a:before { color: blue; }
-      </style>
-      <a />
-    "#;
-
-    test_pc_code(
-      source,
-      vec![0],
-      InspectionOptions { screen_width: None },
-      NodeInspectionInfo {
-        style_rules: vec![
-          StyleRuleInfo {
-            selector_text: "a._acb5fc82:before".to_string(),
-            selector_info: iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "a".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: None,
-                  value: "._acb5fc82".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-                iso::Selector::PseudoElement(iso::TargetSelector {
-                  value: ":before".to_string(),
-                }),
-              ],
-            }),
-            source_id: "0-1-1-2".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: Some("before".to_string()),
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "blue".to_string(),
-              active: true,
-            }],
-            specificity: 3,
-          },
-          StyleRuleInfo {
-            selector_text: "a._acb5fc82".to_string(),
-            selector_info: iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "a".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: None,
-                  value: "._acb5fc82".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-              ],
-            }),
-            source_id: "0-1-1-1".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "red".to_string(),
-              active: true,
-            }],
-            specificity: 2,
-          },
-        ],
-      },
-    )
-  }
-
-  // #[test]
-  fn decl_is_overridden_if_shared_with_same_pseudo_element() {
-    let source = r#"
-      <style>
-        a:before { color: red; }
-        a:before { color: blue; }
-      </style>
-      <a />
-    "#;
-
-    test_pc_code(
-      source,
-      vec![0],
-      InspectionOptions { screen_width: None },
-      NodeInspectionInfo {
-        style_rules: vec![
-          StyleRuleInfo {
-            selector_text: "a._acb5fc82:before".to_string(),
-            selector_info: iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "a".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: None,
-                  value: "._acb5fc82".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-                iso::Selector::PseudoElement(iso::TargetSelector {
-                  value: ":before".to_string(),
-                }),
-              ],
-            }),
-            source_id: "0-1-1-2".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: Some("before".to_string()),
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "blue".to_string(),
-              active: true,
-            }],
-            specificity: 3,
-          },
-          StyleRuleInfo {
-            selector_text: "a._acb5fc82:before".to_string(),
-            selector_info: iso::Selector::Combo(iso::GroupSelector {
-              selectors: vec![
-                iso::Selector::Element(iso::TargetSelector {
-                  value: "a".to_string(),
-                }),
-                iso::Selector::Class(iso::ClassSelector {
-                  name: None,
-                  value: "._acb5fc82".to_string(),
-                  scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                    id: "acb5fc82".to_string(),
-                  })),
-                }),
-                iso::Selector::PseudoElement(iso::TargetSelector {
-                  value: ":before".to_string(),
-                }),
-              ],
-            }),
-            source_id: "0-1-1-1".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: Some("before".to_string()),
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "red".to_string(),
-              active: false,
-            }],
-            specificity: 3,
-          },
-        ],
-      },
-    )
-  }
-
-  // #[test]
-  fn ignores_media_rule_if_media_doesnt_match() {
-    let source = r#"
-      <style>
-        @media screen and (max-width: 400px) {
-          a {
-            color: red;
-          }
-        }
-      </style>
-      <a />
-    "#;
-
-    test_pc_code(
-      source,
-      vec![0],
-      InspectionOptions {
-        screen_width: Some(600),
-      },
-      NodeInspectionInfo {
-        style_rules: vec![StyleRuleInfo {
-          selector_text: "a._acb5fc82".to_string(),
-          selector_info: iso::Selector::Combo(iso::GroupSelector {
-            selectors: vec![
-              iso::Selector::Element(iso::TargetSelector {
-                value: "a".to_string(),
-              }),
-              iso::Selector::Class(iso::ClassSelector {
-                name: None,
-                value: "._acb5fc82".to_string(),
-                scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                  id: "acb5fc82".to_string(),
-                })),
-              }),
-            ],
-          }),
-          source_id: "0-1-1-1".to_string(),
-          source_uri: "entry.pc".to_string(),
-          media: Some(MediaInfo {
-            condition_text: "screen and (max-width: 400px)".to_string(),
-            active: false,
-          }),
-          pseudo_element_name: None,
-          declarations: vec![StyleDeclarationInfo {
-            source_id: "a".to_string(),
-            name: "color".to_string(),
-            value: "red".to_string(),
-            active: true,
-          }],
-          specificity: 2,
-        }],
-      },
-    )
-  }
-
-  // #[test]
-  fn activates_media_if_screen_matches() {
-    let source = r#"
-      <style>
-        @media screen and (max-width: 400px) {
-          a {
-            color: red;
-          }
-        }
-      </style>
-      <a />
-    "#;
-
-    test_pc_code(
-      source,
-      vec![0],
-      InspectionOptions {
-        screen_width: Some(100),
-      },
-      NodeInspectionInfo {
-        style_rules: vec![StyleRuleInfo {
-          selector_text: "a._acb5fc82".to_string(),
-          selector_info: iso::Selector::Combo(iso::GroupSelector {
-            selectors: vec![
-              iso::Selector::Element(iso::TargetSelector {
-                value: "a".to_string(),
-              }),
-              iso::Selector::Class(iso::ClassSelector {
-                name: None,
-                value: "._acb5fc82".to_string(),
-                scope: Some(iso::SelectorScope::Document(iso::SelectorScopeInfo {
-                  id: "acb5fc82".to_string(),
-                })),
-              }),
-            ],
-          }),
-          source_id: "0-1-1-1".to_string(),
-          source_uri: "entry.pc".to_string(),
-          media: Some(MediaInfo {
-            condition_text: "screen and (max-width: 400px)".to_string(),
-            active: true,
-          }),
-          pseudo_element_name: None,
-          declarations: vec![StyleDeclarationInfo {
-            source_id: "a".to_string(),
-            name: "color".to_string(),
-            value: "red".to_string(),
-            active: true,
-          }],
-          specificity: 2,
-        }],
-      },
-    )
-  }
-
-  // #[test]
-  fn gathers_inspected_styles_from_other_files() {
-    let mut files: BTreeMap<String, String> = BTreeMap::new();
-    files.insert(
-      "entry.pc".to_string(),
-      r"
-      <import src='dep.pc' inject-styles />
-      <style>
-        .item {
-          background: red;
-        }
-      </style>
-      <div className='item'>
-        <style>
-          color: blue;
+      <div>
+        <style> 
+          background: blue;
         </style>
-        Hello world
+        <div>
+          <style>
+            background: inherit;
+          </style>
+          I have inherited css
+        </div>
       </div>
-    "
-      .to_string(),
-    );
+    "#;
 
-    files.insert(
-      "dep.pc".to_string(),
-      r"
-      <style>
-        @export {
-          .item {
-            && {
-              color: red;
-            }
-          }
-          :global(div) {
-            color: red;
-          }
-        }
-      </style>
-    "
-      .to_string(),
-    );
-
-    test_files(
-      files,
-      vec![0],
-      InspectionOptions {
-        screen_width: Some(100),
-      },
+    test_pc_code(
+      source,
+      vec![0, 0], 
+      InspectionOptions { screen_width: None },
       NodeInspectionInfo {
-        style_rules: vec![
-          StyleRuleInfo {
-            selector_text: "[class]._pub-bbfa9a83_item[class]._pub-bbfa9a83_item".to_string(),
-            selector_info: iso::Selector::Element(iso::TargetSelector {
-              value: "a".to_string(),
-            }),
-            source_id: "0-2-1-1".to_string(),
-            source_uri: "dep.pc".to_string(),
-            media: None,
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "red".to_string(),
-              active: true,
-            }],
-            specificity: 4,
-          },
-          StyleRuleInfo {
-            selector_text: "._c782daaa._c782daaa".to_string(),
-            selector_info: iso::Selector::Element(iso::TargetSelector {
-              value: "a".to_string(),
-            }),
-            source_id: "c782daaa".to_string(),
-            source_uri: "entry.pc".to_string(),
-            media: None,
-            pseudo_element_name: None,
-            declarations: vec![StyleDeclarationInfo {
-              source_id: "a".to_string(),
-              name: "color".to_string(),
-              value: "blue".to_string(),
-              active: false,
-            }],
-            specificity: 2,
-          },
-        ],
-      },
-    )
+        style_rules: vec![]
+      }
+    );
+
+    panic!("fsdfsd");
   }
 
   fn test_pc_code<'a>(
