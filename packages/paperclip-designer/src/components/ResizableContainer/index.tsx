@@ -2,6 +2,8 @@ import React, { MouseEvent, useEffect, useMemo, useState } from "react";
 import { Point } from "../../state";
 import * as styles from "./index.pc";
 import { clamp, throttle } from "lodash";
+import { useDragger } from "../../hooks/useDragger";
+import { useCache } from "../../hooks/useCache";
 
 export type ResizableContainerProps = {
   id: string;
@@ -56,52 +58,3 @@ export const ResizableContainer = ({
     </styles.default>
   );
 };
-
-function useCache<TState>(
-  id: string,
-  initialValue: TState
-): [TState, (value: TState) => void] {
-  const localValue = useMemo(
-    () => localStorage.getItem(id) && JSON.parse(localStorage.getItem(id)),
-    []
-  );
-
-  const [value, _setValue] = useState<TState>(localValue || initialValue);
-
-  const setValue = (value: TState) => {
-    localStorage.setItem(id, JSON.stringify(value));
-    _setValue(value);
-  };
-
-  return [value, setValue];
-}
-
-type DragProps = {
-  delta: Point;
-};
-
-function useDragger(onDrag: (props: DragProps) => any) {
-  const onMouseDown = (event: React.MouseEvent<any>) => {
-    const start = { x: event.screenX, y: event.screenY };
-
-    const onMouseMove = throttle((event: MouseEvent<any, any>) => {
-      requestAnimationFrame(() => {
-        onDrag({
-          delta: { x: event.screenX - start.x, y: event.screenY - start.y }
-        });
-      });
-    }, 30);
-
-    const onMouseUp = () => {
-      document.removeEventListener("mousemove", onMouseMove as any);
-      document.removeEventListener("mouseup", onMouseUp);
-    };
-
-    document.addEventListener("mousemove", onMouseMove as any);
-    document.addEventListener("mouseup", onMouseUp);
-  };
-
-  return {
-    onMouseDown
-  };
-}

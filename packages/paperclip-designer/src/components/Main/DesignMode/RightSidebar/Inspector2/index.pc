@@ -69,9 +69,6 @@
       padding-bottom: 0;
     </style>
     <div>
-      <style>
-        word-break: break-word;
-      </style>
       <span className="statement">
         {selector}
       </span>&nbsp;<span className="token">&#123;</span>
@@ -354,6 +351,6 @@
 
 
 <!--
-  @frame { title: "Inspector", width: 350, height: 768, x: 364, y: 49 }
+  @frame { title: "Inspector", width: 265, height: 1365, x: 470, y: 49 }
 -->
 <Preview />

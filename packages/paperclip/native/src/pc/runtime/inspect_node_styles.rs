@@ -319,12 +319,10 @@ impl NodeInspectionInfo {
 
     // starting at the insertion index, override all existing declarations
     if rule.media_active() {
-
       for i in 0..insert_index {
         let existing_rule = self.style_rules.get_mut(i).unwrap();
         existing_rule.overrides(&mut rule);
       }
-
 
       for i in insert_index..self.style_rules.len() {
         let existing_rule = self.style_rules.get_mut(i).unwrap();
@@ -580,7 +578,6 @@ mod tests {
       </div>
     </div>
     "#;
-    
 
     test_pc_code(
       source,
