@@ -1,7 +1,6 @@
 import React from "react";
 import { StyleDeclarationInfo } from "paperclip-utils";
 import * as styles from "./index.pc";
-import { useTextInput } from "../../../../TextInput";
 
 export type StyleRuleProps = {
   info: StyleDeclarationInfo;
@@ -19,9 +18,9 @@ export const StyleDeclaration = ({ info, onValueChange }: StyleRuleProps) => {
       disabled={!info.active}
       name={info.name}
       value={
-        <styles.StyleRulePropertyRichValue>
+        <styles.StyleRulePropertyValue>
           <styles.Expression>{info.value}</styles.Expression>
-        </styles.StyleRulePropertyRichValue>
+        </styles.StyleRulePropertyValue>
       }
     />
   );

@@ -33,7 +33,7 @@ export enum SelectorInfoKind {
   Sibling = "Sibling"
 }
 
-type BaseSelectorInfo<TKind extends SelectorInfoKind> = {
+export type BaseSelectorInfo<TKind extends SelectorInfoKind> = {
   kind: TKind;
 };
 
@@ -49,8 +49,13 @@ export type WrapperSelectorInfo<TKind extends SelectorInfoKind> = {
   selector: BaseSelectorInfo<SelectorInfoKind>;
 } & BaseSelectorInfo<TKind>;
 
+export type BinarySelectorInfo<TKind extends SelectorInfoKind> = {
+  left: BaseSelectorInfo<SelectorInfoKind>;
+  right: BaseSelectorInfo<SelectorInfoKind>;
+} & BaseSelectorInfo<TKind>;
+
 export type ListSelectorInfo = GroupSelectorInfo<SelectorInfoKind.List>;
-export type ElementSelectorInfo = GroupSelectorInfo<SelectorInfoKind.Element>;
+export type ElementSelectorInfo = TargetSelectorInfo<SelectorInfoKind.Element>;
 export type AllSelectorInfo = GroupSelectorInfo<SelectorInfoKind.All>;
 export type PseudoElementSelectorInfo = TargetSelectorInfo<
   SelectorInfoKind.PseudoElement
@@ -71,14 +76,14 @@ export type ClassSelectorInfo = {
 } & BaseSelectorInfo<SelectorInfoKind.Class>;
 
 export type ComboSelectorInfo = GroupSelectorInfo<SelectorInfoKind.Combo>;
-export type ChildSelectorInfo = WrapperSelectorInfo<SelectorInfoKind.Child>;
-export type DescendentSelectorInfo = WrapperSelectorInfo<
+export type ChildSelectorInfo = BinarySelectorInfo<SelectorInfoKind.Child>;
+export type DescendentSelectorInfo = BinarySelectorInfo<
   SelectorInfoKind.Descendent
 >;
-export type AdjacentSelectorInfo = WrapperSelectorInfo<
+export type AdjacentSelectorInfo = BinarySelectorInfo<
   SelectorInfoKind.Adjacent
 >;
-export type SiblingSelectorInfo = WrapperSelectorInfo<SelectorInfoKind.Sibling>;
+export type SiblingSelectorInfo = BinarySelectorInfo<SelectorInfoKind.Sibling>;
 
 export type SelectorInfo =
   | ListSelectorInfo
@@ -110,6 +115,7 @@ export type MediaInfo = {
 
 export type StyleRuleInfo = {
   selectorText: string;
+  inherited: boolean;
   selectorInfo: SelectorInfo;
   pseudoElementName?: string;
   sourceId: string;

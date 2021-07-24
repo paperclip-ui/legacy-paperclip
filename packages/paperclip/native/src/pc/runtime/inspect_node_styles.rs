@@ -304,6 +304,8 @@ impl NodeInspectionInfo {
   pub fn insert_style_rule(&mut self, mut rule: StyleRuleInfo) {
     let mut insert_index: usize = 0;
 
+    println!("{:?}", rule);
+
     // first find the right index
     for (i, existing_rule) in &mut self.style_rules.iter().enumerate() {
       // higher priority = lower index
@@ -317,6 +319,13 @@ impl NodeInspectionInfo {
 
     // starting at the insertion index, override all existing declarations
     if rule.media_active() {
+
+      for i in 0..insert_index {
+        let existing_rule = self.style_rules.get_mut(i).unwrap();
+        existing_rule.overrides(&mut rule);
+      }
+
+
       for i in insert_index..self.style_rules.len() {
         let existing_rule = self.style_rules.get_mut(i).unwrap();
         rule.overrides(existing_rule);
@@ -555,19 +564,27 @@ mod tests {
   use super::super::super::parser::*;
   use super::*;
 
-  // #[test]
+  #[test]
   fn adds_inherited_props() {
     let source = r#"
-    <div>
-      <style>
-        font-family: sans-serif;
-      </style>
+    <div className="test">
+      <div>
+        <style>
+          &&& {
+            ab: red;
+          }
+          &:within(.test) {
+            ab: blue;
+          }
+        </style>
+      </div>
     </div>
     "#;
+    
 
     test_pc_code(
       source,
-      vec![0],
+      vec![0, 0],
       InspectionOptions { screen_width: None },
       NodeInspectionInfo {
         style_rules: vec![],

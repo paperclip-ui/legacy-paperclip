@@ -15,9 +15,20 @@ export const Inspector2 = React.memo(() => {
   return (
     <>
       <styles.Container>
-        {inspection.styleRules.map(rule => {
-          return <StyleRule key={rule.sourceId} info={rule} />;
-        })}
+        <styles.StyleSection title="Element styles">
+          {inspection.styleRules
+            .filter(rule => !rule.inherited)
+            .map(rule => {
+              return <StyleRule key={rule.sourceId} info={rule} />;
+            })}
+        </styles.StyleSection>
+        <styles.StyleSection title="Inherited styles">
+          {inspection.styleRules
+            .filter(rule => rule.inherited)
+            .map(rule => {
+              return <StyleRule key={rule.sourceId} info={rule} />;
+            })}
+        </styles.StyleSection>
       </styles.Container>
     </>
   );

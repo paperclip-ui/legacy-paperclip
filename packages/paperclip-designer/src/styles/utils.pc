@@ -9,6 +9,7 @@
       display: inline-block;
       mask-size: var(--size);
       background: currentColor;
+      @content;
     }
     @mixin mask-button {
       cursor: pointer;

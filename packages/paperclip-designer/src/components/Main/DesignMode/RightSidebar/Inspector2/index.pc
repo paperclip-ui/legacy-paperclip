@@ -1,4 +1,5 @@
-<import src="styles/atoms.pc" inject-styles />
+<import src="styles/atoms.pc" as="atoms" inject-styles />
+<import src="styles/utils.pc" as="utils" />
 
 <style>
   * {
@@ -8,6 +9,7 @@
   :root {
     --token-color: rgb(190, 190, 190);
     --keyword-input-background: rgb(240, 240, 240);
+    --border-color: rgb(211, 211, 211);
   }
 
   .keyword-input {
@@ -30,6 +32,10 @@
   .decl-value {
     color: rgb(226, 84, 207);
   }
+
+  .section {
+    border-top: 1px solid var(--border-color);
+  }
 </style>
 
 
@@ -38,8 +44,6 @@
 -->
 <div export component as="Container">
   <style>
-    width: 350px;
-    overflow-y: scroll;
   </style>
   {children}
 </div>
@@ -47,13 +51,13 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="StyleRule">
+<div export
+  component
+  as="StyleRule"
+  className="section"
+  className:isGlobal="is-global">
   <style>
-    border-top: 1px solid rgb(228, 228, 228);
     font-size: 14px;
-    &:first-child {
-      border-top: none;
-    }
   </style>
   <div />
   <div>
@@ -62,25 +66,46 @@
       display: flex;
       grid-column-gap: var(--spacing-5);
       justify-content: space-between;
+      padding-bottom: 0;
     </style>
     <div>
       <style>
         word-break: break-word;
       </style>
       <span className="statement">
-        {selectorText}
+        {selector}
       </span>&nbsp;<span className="token">&#123;</span>
     </div>
     <div>
       <style>
-        color: rgb(180, 180, 180);
+        display: flex;
+        grid-column-gap: var(--spacing-4);
+        font-size: 12px;
+        align-items: center;
       </style>
-      {fileName}
+      <div title="this style rule is global">
+        <style>
+          opacity: 0.5;
+          visibility: hidden;
+          &:within(.is-global) {
+            visibility: visible;
+          }
+          @include utils.mask {
+            mask-image: url(./earth.svg);
+            --size: 1.4em;
+          }
+        </style>
+      </div>
+      <div>
+        <style>
+          color: rgb(180, 180, 180);
+        </style>
+        {fileName}
+      </div>
     </div>
   </div>
   <div>
     <style>
-
       padding-left: var(--spacing-4);
     </style>
     {properties}
@@ -88,6 +113,7 @@
   <div>
     <style>
       padding: var(--spacing-4) var(--spacing-5);
+      padding-top: 0;
     </style>
     <span className="token">&#125;</span>
   </div>
@@ -134,6 +160,10 @@
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <span export
   component
   as="Expression"
@@ -156,7 +186,7 @@
 <!--
   @frame { visible: false }
 -->
-<span export component as="StyleRulePropertyRichValue">
+<span export component as="StyleRulePropertyValue">
   <style>
     display: inline-flex;
     flex-wrap: wrap;
@@ -183,6 +213,21 @@
     {value}
   </span>
 </Expression>
+
+
+<!--
+  @frame { visible: false }
+-->
+<span export component as="ScopedElementSelector">
+  <style>
+    background: rgb(228, 228, 228);
+    padding: 0px var(--spacing-2);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    display: inline-flex;
+  </style>
+  scope
+</span>
 
 
 
@@ -219,11 +264,16 @@
 </Expression>
 
 
-<div export component as="StyleSection">
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="StyleSection" className="section">
   <div>
     <style>
       padding: var(--spacing-4) var(--spacing-5);
-      background: rgb(192, 192, 192);
+      background: rgb(247, 247, 247);
+      color: rgb(32, 32, 32);
     </style>
     {title}
   </div>
@@ -237,48 +287,67 @@
 <Container export component as="Preview">
   <StyleSection title="Element styles">
     <StyleRule fileName="styles.pc"
-      selectorText=".div.div.div.div.div.div.div.div.div.div.div.div.div"
+      selector=".this-is-a-super-long-selector-to-see-how-it-wraps"
       properties={<fragment>
         <StyleRuleProperty name="background-color"
-          value={<StyleRulePropertyRichValue>
+          value={<StyleRulePropertyValue>
             <Expression>
               var(--page-background-color, var(--gray-gray-90))
             </Expression>
-          </StyleRulePropertyRichValue>} />
+          </StyleRulePropertyValue>} />
         <StyleRuleProperty disabled
           name="font-family"
-          value={<StyleRulePropertyRichValue>
+          value={<StyleRulePropertyValue>
             <KeywordPart value="sans-serif" />
-          </StyleRulePropertyRichValue>} />
+          </StyleRulePropertyValue>} />
         <StyleRuleProperty name="box-shadow"
-          value={<StyleRulePropertyRichValue>
+          value={<StyleRulePropertyValue>
             <UnitPart value="2px" />
             <UnitPart value="0px" />
             <UnitPart value="0px" />
             <ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
-          </StyleRulePropertyRichValue>} />
+          </StyleRulePropertyValue>} />
         <StyleRuleProperty name="box-shadow"
-          value={<StyleRulePropertyRichValue>
+          value={<StyleRulePropertyValue>
             <Expression>2px 0px rgba(0, 0, 0, 0.2)</Expression>
-          </StyleRulePropertyRichValue>} />
+          </StyleRulePropertyValue>} />
       </fragment>} />
-    <StyleRule fileName="atoms.pc"
-      selectorText="#test"
+
+    <StyleRule isGlobal
+      fileName="atoms.pc"
+      selector="#test"
       properties={<fragment>
         <StyleRuleProperty name="background-color"
-          value={<StyleRulePropertyRichValue>
+          value={<StyleRulePropertyValue>
             <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
-          </StyleRulePropertyRichValue>} />
+          </StyleRulePropertyValue>} />
         <StyleRuleProperty name="another-background"
-          value={<StyleRulePropertyRichValue>
+          value={<StyleRulePropertyValue>
             <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
-          </StyleRulePropertyRichValue>} /><StyleRuleProperty name="box-shadow"
-          value={<StyleRulePropertyRichValue>
+          </StyleRulePropertyValue>} /><StyleRuleProperty name="box-shadow"
+          value={<StyleRulePropertyValue>
             <Expression>
               0px 2px 1px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(66, 71, 76,
               0.45)
             </Expression>
-          </StyleRulePropertyRichValue>} />
+          </StyleRulePropertyValue>} />
+      </fragment>} />
+
+    <StyleRule fileName="atoms.pc"
+      selector="element"
+      global
+      properties={<fragment>
+        <StyleRuleProperty name="color"
+          value={<StyleRulePropertyValue>
+            <Expression>inherit</Expression>
+          </StyleRulePropertyValue>} />
+      </fragment>} />
+  </StyleSection>
+  <StyleSection title="Inherited styles">
+    <StyleRule fileName="atoms.pc"
+      selector={<fragment>
+        <ScopedElementSelector name="element" />
+        <ScopedElementSelector name="element" />.test
       </fragment>} />
   </StyleSection>
 </Container>

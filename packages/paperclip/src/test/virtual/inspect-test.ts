@@ -761,6 +761,169 @@ describe(__filename + "#", () => {
           }
         ]
       }
+    ],
+    [
+      "&&& and proceeding :within gets declaration value overrides correct",
+      {
+        "/entry.pc": `
+          <div className="test">
+            <div>
+              <style>
+                &&& {
+                  ab: red;
+                }
+                &:within(.test) {
+                  ab: blue;
+                }
+              </style>
+            </div>
+          </div>
+        `
+      },
+      100,
+      [0, 0],
+      {
+        styleRules: [
+          {
+            inherited: false,
+            selectorText:
+              "._9e7e6af9._9e7e6af9._9e7e6af9._9e7e6af9._9e7e6af9._9e7e6af9",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9e7e6af9",
+                  scope: {
+                    kind: "Element",
+                    id: "9e7e6af9"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9e7e6af9",
+                  scope: {
+                    kind: "Element",
+                    id: "9e7e6af9"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9e7e6af9",
+                  scope: {
+                    kind: "Element",
+                    id: "9e7e6af9"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9e7e6af9",
+                  scope: {
+                    kind: "Element",
+                    id: "9e7e6af9"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9e7e6af9",
+                  scope: {
+                    kind: "Element",
+                    id: "9e7e6af9"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9e7e6af9",
+                  scope: {
+                    kind: "Element",
+                    id: "9e7e6af9"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-3-2",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-3-1",
+                name: "ab",
+                value: "red",
+                active: true
+              }
+            ],
+            specificity: 12
+          },
+          {
+            inherited: false,
+            selectorText: "[class]._80f4925f_test ._9e7e6af9._9e7e6af9",
+            selectorInfo: {
+              kind: "Descendent",
+              left: {
+                kind: "Combo",
+                selectors: [
+                  {
+                    kind: "Attribute",
+                    value: "[class]"
+                  },
+                  {
+                    kind: "Class",
+                    name: "test",
+                    value: "._80f4925f_test",
+                    scope: {
+                      kind: "Document",
+                      id: "80f4925f"
+                    }
+                  }
+                ]
+              },
+              right: {
+                kind: "Combo",
+                selectors: [
+                  {
+                    kind: "Class",
+                    name: null,
+                    value: "._9e7e6af9",
+                    scope: {
+                      kind: "Element",
+                      id: "9e7e6af9"
+                    }
+                  },
+                  {
+                    kind: "Class",
+                    name: null,
+                    value: "._9e7e6af9",
+                    scope: {
+                      kind: "Element",
+                      id: "9e7e6af9"
+                    }
+                  }
+                ]
+              }
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-3-4",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-3-3",
+                name: "ab",
+                value: "blue",
+                active: false
+              }
+            ],
+            specificity: 8
+          }
+        ]
+      }
     ]
   ] as any;
 
