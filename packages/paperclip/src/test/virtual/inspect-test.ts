@@ -924,6 +924,68 @@ describe(__filename + "#", () => {
           }
         ]
       }
+    ],
+    [
+      "Can inspect styles in slots",
+      {
+        "/entry.pc": `
+          <div component as="Test">
+            {show && <div>
+              <style>
+                color: red;
+              </style>
+            </div>}
+          </div>
+
+          <Test show />
+        `
+      },
+      100,
+      [0, 0],
+      {
+        styleRules: [
+          {
+            inherited: false,
+            selectorText: "._3024ebf3._3024ebf3",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._3024ebf3",
+                  scope: {
+                    kind: "Element",
+                    id: "3024ebf3"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._3024ebf3",
+                  scope: {
+                    kind: "Element",
+                    id: "3024ebf3"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "3024ebf3",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "0-00-2-1-1",
+                name: "color",
+                value: "red",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
     ]
   ] as any;
 

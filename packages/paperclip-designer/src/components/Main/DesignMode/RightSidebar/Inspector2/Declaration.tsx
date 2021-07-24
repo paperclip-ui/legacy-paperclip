@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleDeclarationInfo } from "paperclip-utils";
 import * as styles from "./index.pc";
-import { useTextInput, TextInput } from "../../../../TextInput";
+import { TextInput } from "../../../../TextInput";
 
 export type StyleRuleProps = {
   info: StyleDeclarationInfo;
@@ -10,10 +10,6 @@ export type StyleRuleProps = {
 
 export const StyleDeclaration = ({ info, onValueChange }: StyleRuleProps) => {
   const [editingValue, setEditingValue] = useState(false);
-  const { inputProps } = useTextInput({
-    value: info.value,
-    onValueChange
-  });
 
   const onClick = () => setEditingValue(false);
   const onBlur = () => {

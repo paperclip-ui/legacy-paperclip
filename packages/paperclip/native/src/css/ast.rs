@@ -237,6 +237,8 @@ impl Rule {
       Rule::Style(rule) => rule.get_object_by_id(id),
       Rule::Export(rule) => rule.get_object_by_id(id),
       Rule::Media(rule) => rule.get_object_by_id(id),
+      Rule::Mixin(rule) => rule.get_object_by_id(id),
+      Rule::Include(rule) => rule.get_object_by_id(id),
       _ => None
     }
   }
@@ -452,6 +454,12 @@ impl fmt::Display for MixinRule {
     writeln!(f, "}}")?;
 
     Ok(())
+  }
+}
+
+impl MixinRule {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    get_object_by_id_in_declarations(&self.declarations, id)
   }
 }
 

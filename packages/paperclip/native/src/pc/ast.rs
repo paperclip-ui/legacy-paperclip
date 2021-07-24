@@ -70,6 +70,7 @@ pub enum Node {
 pub enum PCObject<'a> {
   Node(&'a Node),
   CSSObject(css_ast::CSSObject<'a>),
+  JSObject(js_ast::JSObject<'a>)
 }
 
 impl<'a> PCObject<'a> {
@@ -77,6 +78,7 @@ impl<'a> PCObject<'a> {
     match self {
       PCObject::Node(node) => node.get_location(),
       PCObject::CSSObject(css) => css.get_location(),
+      PCObject::JSObject(js) => js.get_location(),
     }
   }
 }
@@ -120,12 +122,17 @@ impl Node {
       return Some(PCObject::Node(self));
     }
 
-    if let Node::StyleElement(style_element) = self {
+    if let Node::Slot(slot) = self {
+      return slot.script.get_object_by_id(id).and_then(|object| {
+        Some(PCObject::JSObject(object))
+      });
+    } else if let Node::StyleElement(style_element) = self {
       return style_element
         .sheet
         .get_object_by_id(id)
-        .and_then(|obj| Some(PCObject::CSSObject(obj)));
+        .and_then(|object| Some(PCObject::CSSObject(object)));
     }
+    
 
     get_children(self).and_then(|children| {
       for child in children {

@@ -5,6 +5,22 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 #[serde(tag = "jsKind")]
+pub enum JSObject<'a> {
+  Expression(&'a Expression),
+  PCObject(Box<pc_ast::PCObject<'a>>)
+}
+
+impl<'a> JSObject<'a> {
+  pub fn get_location(&'a self) -> &'a Location {
+    match self {
+      JSObject::Expression(expr) => expr.get_location(),
+      JSObject::PCObject(expr) => expr.get_location()
+    }
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+#[serde(tag = "jsKind")]
 pub enum Expression {
   Conjunction(Conjunction),
   Group(Group),
@@ -16,6 +32,22 @@ pub enum Expression {
   Array(Array),
   Object(Object),
   Node(Box<pc_ast::Node>),
+}
+
+impl Expression {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<JSObject<'a>> {
+    if self.get_id() == id {
+      return Some(JSObject::Expression(self));
+    }
+
+    match self {
+      Expression::Conjunction(conj) => conj.get_object_by_id(id),
+      Expression::Node(node) => node.get_object_by_id(id).and_then(|object| {
+        Some(JSObject::PCObject(Box::new(object)))
+      }),
+      _ => None
+    }
+  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -120,6 +152,14 @@ pub struct Conjunction {
   pub left: Box<Expression>,
   pub operator: ConjunctionOperatorKind,
   pub right: Box<Expression>,
+}
+
+impl Conjunction {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<JSObject<'a>> {
+    self.left.get_object_by_id(id).or_else(|| {
+      self.right.get_object_by_id(id)
+    })
+  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
