@@ -129,6 +129,10 @@ const isClassElementScopeSelector = (
   );
 };
 
+const isTargetSelector = (
+  info: BaseSelectorInfo<any>
+): info is TargetSelectorInfo<any> => (info as any).value != null;
+
 const generateSelector = memoize((info: SelectorInfo) => {
   switch (info.kind) {
     // VERY crude approach to remove scope selectors + extra specificity. Ideally
@@ -141,15 +145,7 @@ const generateSelector = memoize((info: SelectorInfo) => {
       if (cleanedSelectors.length === 2) {
         // remove extra specificity. Classes use special [class] attribute
         // since they need to pierce through documents
-        if (
-          (cleanedSelectors[0] as TargetSelectorInfo<any>).value ===
-            "[class]" &&
-          cleanedSelectors[1].kind === SelectorInfoKind.Class
-        ) {
-          cleanedSelectors.shift();
-
-          // for everything else, specificity is added at the end of the selector.
-        } else if (isClassScopeSelector(cleanedSelectors[1])) {
+        if (isClassScopeSelector(cleanedSelectors[1])) {
           cleanedSelectors.pop();
         }
       }
@@ -176,6 +172,14 @@ const generateSelector = memoize((info: SelectorInfo) => {
         // & > b, &.& &.test.&
         for (let i = cleanedSelectors.length; i--; ) {
           const selector = cleanedSelectors[i];
+
+          // Dirty, but we check for [class] since it's just a specificity prop. Note this
+          // will break if someone does [class] willy-nill but oh well, that's a less common bug.
+          if (isTargetSelector(selector) && selector.value === "[class]") {
+            cleanedSelectors.splice(i, 1);
+            continue;
+          }
+
           if (
             isClassElementScopeSelector(selector) &&
             i &&

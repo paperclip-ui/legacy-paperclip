@@ -3,18 +3,17 @@ use crate::pc::ast as pc_ast;
 use serde::Serialize;
 use std::fmt;
 
-#[derive(Debug, PartialEq, Serialize, Clone)]
-#[serde(tag = "jsKind")]
+#[derive(Debug, PartialEq, Clone)]
 pub enum JSObject<'a> {
   Expression(&'a Expression),
-  PCObject(Box<pc_ast::PCObject<'a>>)
+  PCObject(pc_ast::PCObject<'a>),
 }
 
 impl<'a> JSObject<'a> {
   pub fn get_location(&'a self) -> &'a Location {
     match self {
       JSObject::Expression(expr) => expr.get_location(),
-      JSObject::PCObject(expr) => expr.get_location()
+      JSObject::PCObject(expr) => expr.get_location(),
     }
   }
 }
@@ -42,10 +41,10 @@ impl Expression {
 
     match self {
       Expression::Conjunction(conj) => conj.get_object_by_id(id),
-      Expression::Node(node) => node.get_object_by_id(id).and_then(|object| {
-        Some(JSObject::PCObject(Box::new(object)))
-      }),
-      _ => None
+      Expression::Node(node) => node
+        .get_object_by_id(id)
+        .and_then(|object| Some(JSObject::PCObject(object))),
+      _ => None,
     }
   }
 }
@@ -156,9 +155,10 @@ pub struct Conjunction {
 
 impl Conjunction {
   pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<JSObject<'a>> {
-    self.left.get_object_by_id(id).or_else(|| {
-      self.right.get_object_by_id(id)
-    })
+    self
+      .left
+      .get_object_by_id(id)
+      .or_else(|| self.right.get_object_by_id(id))
   }
 }
 

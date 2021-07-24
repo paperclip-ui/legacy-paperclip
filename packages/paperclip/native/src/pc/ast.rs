@@ -70,7 +70,7 @@ pub enum Node {
 pub enum PCObject<'a> {
   Node(&'a Node),
   CSSObject(css_ast::CSSObject<'a>),
-  JSObject(js_ast::JSObject<'a>)
+  JSObject(&'a js_ast::Expression),
 }
 
 impl<'a> PCObject<'a> {
@@ -123,16 +123,21 @@ impl Node {
     }
 
     if let Node::Slot(slot) = self {
-      return slot.script.get_object_by_id(id).and_then(|object| {
-        Some(PCObject::JSObject(object))
-      });
+      return slot
+        .script
+        .get_object_by_id(id)
+        .and_then(|object| {
+          match object {
+            js_ast::JSObject::PCObject(obj) => Some(obj),
+            js_ast::JSObject::Expression(expr) => Some(PCObject::JSObject(expr))
+          }
+        })
     } else if let Node::StyleElement(style_element) = self {
       return style_element
         .sheet
         .get_object_by_id(id)
         .and_then(|object| Some(PCObject::CSSObject(object)));
     }
-    
 
     get_children(self).and_then(|children| {
       for child in children {

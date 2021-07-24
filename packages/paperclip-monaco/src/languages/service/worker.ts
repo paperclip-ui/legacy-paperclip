@@ -19,13 +19,13 @@ const init = () => {
   let _resolveAst: (content: any) => any = () => {};
   let _resolveLoadedData: (content: any) => any = () => {};
 
-  channels.documentColors(self).responder(async ({ uri }) => {
+  channels.documentColors(self).listen(async ({ uri }) => {
     return collectASTInfo(await waitForAST(uri)).colors;
   });
-  channels.updateDocument(self).responder(async ({ uri, value }) => {
+  channels.updateDocument(self).listen(async ({ uri, value }) => {
     channel.postMessage(previewContent({ uri, value }));
   });
-  channels.getSuggestions(self).responder(async ({ uri, text }) => {
+  channels.getSuggestions(self).listen(async ({ uri, text }) => {
     const {
       payload: { data, imports, ast }
     } = await getLoadedData(uri);

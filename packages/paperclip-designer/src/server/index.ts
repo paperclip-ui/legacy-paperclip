@@ -57,6 +57,8 @@ import {
 } from "paperclip-utils";
 import { sourceWriterPlugin } from "./plugins/source-writer";
 import { fileWatcherPlugin } from "./plugins/file-watcher";
+import { inspectNodeStyleChannel } from "../rpc/channels";
+import { sockAdapter } from "../../../paperclip-common";
 
 type BrowserstackCredentials = {
   username: string;
@@ -118,11 +120,30 @@ export const startServer = async ({
     return ret;
   };
 
-  let _shareHost: string;
   let _browsers: any[];
+
+  const handleChans = conn => {
+    const chanAdapter = sockAdapter(conn);
+
+    inspectNodeStyleChannel(chanAdapter).listen(async sources => {
+      const now = Date.now();
+
+      // TODO - need to pull frame size from virt node source
+      const inspections: Array<[
+        VirtNodeSource,
+        NodeStyleInspection
+      ]> = sources.map(source => [source, engine.inspectNodeStyles(source, 0)]);
+
+      console.log("Inspected in %d ms", Date.now() - now);
+
+      return inspections;
+    });
+  };
 
   io.on("connection", conn => {
     let targetUri;
+
+    handleChans(conn);
 
     const emit = message => {
       conn.write(JSON.stringify(message));
@@ -231,10 +252,6 @@ export const startServer = async ({
 
     const onVirtualNodeSelected = (action: VirtualNodesSelected) => {
       loadVirtualNodeSources(action.payload.sources);
-      inspectVirtuaNodeSources(
-        action.payload.sources,
-        action.payload.screenWidth
-      );
     };
 
     const loadVirtualNodeSources = (virstSources: VirtNodeSource[]) => {
@@ -245,27 +262,6 @@ export const startServer = async ({
         };
       });
       emit(virtualNodeSourcesLoaded(sources));
-    };
-
-    const inspectVirtuaNodeSources = (
-      virtSources: VirtNodeSource[],
-      screenWidth: number
-    ) => {
-      const now = Date.now();
-      console.log("inspecting!");
-
-      // const ast = engine.getExpressionById("d6063cee-51346");
-      // console.log(JSON.stringify(ast, null, 2));
-
-      const inspections: Array<[
-        VirtNodeSource,
-        NodeStyleInspection
-      ]> = virtSources.map(source => [
-        source,
-        engine.inspectNodeStyles(source, screenWidth)
-      ]);
-      console.log("Inspected in %d ms", Date.now() - now);
-      emit(virtualNodeStylesInspected(inspections));
     };
 
     const onFileOpened = async (action: FileOpened) => {

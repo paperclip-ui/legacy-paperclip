@@ -239,7 +239,7 @@ impl Rule {
       Rule::Media(rule) => rule.get_object_by_id(id),
       Rule::Mixin(rule) => rule.get_object_by_id(id),
       Rule::Include(rule) => rule.get_object_by_id(id),
-      _ => None
+      _ => None,
     }
   }
   pub fn get_location(&self) -> &Location {

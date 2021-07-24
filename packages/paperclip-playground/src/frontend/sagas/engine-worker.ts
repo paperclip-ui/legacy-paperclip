@@ -5,7 +5,6 @@ import {
   contentChangesCreated,
   engineCrashed,
   engineLoaded,
-  GetProjectFilesRequestChanged,
   WorkerInitialized
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
@@ -17,7 +16,7 @@ import {
   LoadedData,
   loadedDataEmitted
 } from "paperclip-utils";
-import { AppState, WorkerState } from "../state";
+import { WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
 import { EngineDelegateEvent } from "paperclip";
