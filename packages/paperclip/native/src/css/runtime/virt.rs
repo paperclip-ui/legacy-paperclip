@@ -178,7 +178,7 @@ impl fmt::Display for KeyframeRule {
   }
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Hash, Clone)]
 pub struct StyleRule {
   pub exported: bool,
 
@@ -198,6 +198,8 @@ impl PartialEq for StyleRule {
   }
 }
 
+impl Eq for StyleRule {}
+
 impl fmt::Display for StyleRule {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, " {} {{", &self.selector_text)?;
@@ -209,7 +211,7 @@ impl fmt::Display for StyleRule {
   }
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Hash, Clone)]
 pub struct CSSStyleProperty {
   pub name: String,
   pub value: String,
@@ -223,3 +225,5 @@ impl PartialEq for CSSStyleProperty {
     self.name == other.name && self.value == other.value
   }
 }
+
+impl Eq for CSSStyleProperty {}

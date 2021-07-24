@@ -30,7 +30,7 @@ repository:
   elements:
     patterns:
       # Void tag elements
-      - begin: (<)(meta|import|input)
+      - begin: (<)(meta|import)
         beginCaptures:
           "1": { name: punctuation.definition.tag.begin.html }
           "2": { name: entity.name.tag.html }

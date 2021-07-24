@@ -86,6 +86,10 @@ export const allPCContentLoaded = actionCreator<AllPCContentLoaded>(
 export const browserstackBrowsersLoaded = actionCreator<
   BrowserstackBrowsersLoaded
 >(ServerActionType.BROWSERSTACK_BROWSERS_LOADED);
+
+/**
+ * @deprecated use explicit reveal API instead
+ */
 export const revealExpressionSourceRequested = actionCreator<
   RevealExpressionSourceRequested
 >(ServerActionType.REVEAL_EXPRESSION_SOURCE_REQUESTED);

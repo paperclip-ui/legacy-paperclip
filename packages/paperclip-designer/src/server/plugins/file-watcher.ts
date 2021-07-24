@@ -43,7 +43,6 @@ const watchPaperclipSources = (
     const uri = URL.pathToFileURL(
       fs.realpathSync(path.join(cwd, relativePath))
     );
-
     if (eventName === "change") {
       engine.updateVirtualFileContent(uri.href, fs.readFileSync(uri, "utf8"));
     } else if (eventName === "add") {

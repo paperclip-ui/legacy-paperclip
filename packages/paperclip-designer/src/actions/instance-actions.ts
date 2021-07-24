@@ -76,7 +76,8 @@ export enum ActionType {
   EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
   COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED",
   VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED",
-  VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED = "VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED"
+  VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED = "VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED",
+  STYLE_RULE_FILE_NAME_CLICKED = "STYLE_RULE_FILE_NAME_CLICKED"
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -153,6 +154,13 @@ export type VirtualStyleDeclarationValueChanged = BaseAction<
     declarationId: string;
     name: string;
     value: string;
+  }
+>;
+
+export type StyleRuleFileNameClicked = BaseAction<
+  ActionType.STYLE_RULE_FILE_NAME_CLICKED,
+  {
+    styleRuleSourceId: string;
   }
 >;
 
@@ -387,9 +395,14 @@ export const locationChanged = actionCreator<LocationChanged>(
 export const envOptionClicked = actionCreator<EnvOptionClicked>(
   ActionType.ENV_OPTION_CLICKED
 );
+
 export const virtualStyleDeclarationValueChanged = actionCreator<
   VirtualStyleDeclarationValueChanged
 >(ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED);
+
+export const styleRuleFileNameClicked = actionCreator<StyleRuleFileNameClicked>(
+  ActionType.STYLE_RULE_FILE_NAME_CLICKED
+);
 
 export const metaClicked = actionCreator<MetaClicked>(ActionType.META_CLICKED);
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
@@ -561,6 +574,7 @@ export type InstanceAction =
   | BasicPaperclipAction
   | ZoomInButtonClicked
   | ActionHandled
+  | StyleRuleFileNameClicked
   | ZoomInputChanged
   | ClientConnected
   | EnvOptionClicked

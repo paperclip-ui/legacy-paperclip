@@ -91,7 +91,6 @@ fn match_mf_plain(ast: &MFPlain, options: &Options) -> bool {
       false
     };
   } else {
-    println!("FAL");
     false
   }
 }

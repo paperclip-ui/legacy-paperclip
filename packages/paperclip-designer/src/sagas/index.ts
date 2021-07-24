@@ -223,6 +223,7 @@ function* handleRenderer(getState: AppStateSelector) {
       ActionType.VIRTUAL_NODES_SELECTED,
       ActionType.PASTED,
       ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED,
+      ActionType.STYLE_RULE_FILE_NAME_CLICKED,
       ActionType.FS_ITEM_CLICKED,
       ActionType.TITLE_DOUBLE_CLICKED,
       ActionType.ENV_OPTION_CLICKED,
