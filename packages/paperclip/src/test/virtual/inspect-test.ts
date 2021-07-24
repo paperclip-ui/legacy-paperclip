@@ -693,7 +693,7 @@ describe(__filename + "#", () => {
                 sourceId: "80f4925f-1-1",
                 name: "background",
                 value: "blue",
-                active: true
+                active: false
               }
             ],
             specificity: 4
