@@ -12,7 +12,10 @@ import * as styles from "./index.pc";
 import * as path from "path";
 import { StyleDeclaration } from "./Declaration";
 import { useAppStore } from "../../../../../hooks/useAppStore";
-import { virtualStyleDeclarationValueChanged } from "../../../../../actions";
+import {
+  styleRuleFileNameClicked,
+  virtualStyleDeclarationValueChanged
+} from "../../../../../actions";
 import { SelectorScopeKind } from "paperclip-utils";
 
 export type StyleRuleProps = {
@@ -36,8 +39,17 @@ export const StyleRule = React.memo(({ info }: StyleRuleProps) => {
     );
   };
 
+  const onFileNameClick = () => {
+    dispatch(
+      styleRuleFileNameClicked({
+        styleRuleSourceId: info.sourceId
+      })
+    );
+  };
+
   return (
     <styles.StyleRule
+      onFileNameClick={onFileNameClick}
       isGlobal={isSelectorPartiallyGlobal(info.selectorInfo)}
       fileName={path.basename(info.sourceUri)}
       selector={generateSelector(info.selectorInfo)}

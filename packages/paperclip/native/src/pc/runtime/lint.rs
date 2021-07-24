@@ -164,7 +164,7 @@ mod tests {
     let cases = [
       (
         "<style>@media screen and (max-width: 100px) { div { color: red; }}</style><a />",
-        0,
+        1,
       ),
       // ignore exports
       ("<style>@export { div { color: orange; }}</style><a />", 0),
@@ -176,6 +176,7 @@ mod tests {
     ];
 
     for (source, warning_count) in cases.iter() {
+      println!("{}", source);
       let (eval_info, graph) = __test__evaluate_pc_code(source);
       let notices = lint(
         &eval_info.unwrap(),

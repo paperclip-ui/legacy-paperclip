@@ -1,4 +1,10 @@
-style rules:
-  - [ ] styleize scoped selectors
-  - [ ] go to source when selector is pressed (explicit button)
-  - [ ] ability to add declarations
+- [ ] navigate to source when file name clicked
+- [ ] ability to filter style rules
+- [ ] ability to change declaration value
+- [ ] ability to insert new declaration
+
+
+- [ ] decl value pickers
+  - [ ] color picker
+  - [ ] box shadow editor
+  - [ ] pretty pane for style rule**

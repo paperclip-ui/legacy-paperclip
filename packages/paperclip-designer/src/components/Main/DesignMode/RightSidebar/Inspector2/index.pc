@@ -80,7 +80,7 @@
         font-size: 12px;
         align-items: center;
       </style>
-      <div title="this style rule is global">
+      <div title="This style rule is global">
         <style>
           opacity: 0.5;
           visibility: hidden;
@@ -93,9 +93,11 @@
           }
         </style>
       </div>
-      <div>
+      <div onClick={onFileNameClick}>
         <style>
           color: rgb(180, 180, 180);
+          text-decoration: underline dotted;
+          cursor: pointer;
         </style>
         {fileName}
       </div>
@@ -168,29 +170,35 @@
   {style?}
   className:last="last">
   <style>
+    & > :global(*) {
+      display: inline;
+    }
   </style>
 
   {children}
   <span className="closing token">
     <style>
       display: none;
-      margin-left: calc(var(--spacing-2) * -1);
     </style>
-    ;
   </span>
 </span>
 
 <!--
   @frame { visible: false }
 -->
-<span export component as="StyleRulePropertyValue">
+<span export component as="StyleRulePropertyValue" {onClick?}>
   <style>
     display: inline-flex;
+    outline: none;
     flex-wrap: wrap;
     grid-column-gap: var(--spacing-3);
     & > :last-child {
       .closing {
         display: inline;
+        &:after {
+          margin-left: 0px;
+          content: ";";
+        }
       }
     }
   </style>

@@ -29,7 +29,9 @@ import {
   MetaClicked,
   revealExpressionSourceRequested,
   virtualNodeStylesInspected,
-  VirtualStyleDeclarationValueChanged
+  VirtualStyleDeclarationValueChanged,
+  styleRuleFileNameClicked,
+  StyleRuleFileNameClicked
 } from "../actions";
 import {
   AvailableBrowser,
@@ -50,9 +52,9 @@ import * as bs from "browserstack";
 import {
   engineDelegateChanged,
   NodeStyleInspection,
+  StyleRule,
   VirtNodeSource
 } from "paperclip-utils";
-import { PCSourceWriter } from "paperclip-source-writer";
 import { sourceWriterPlugin } from "./plugins/source-writer";
 import { fileWatcherPlugin } from "./plugins/file-watcher";
 
@@ -151,6 +153,9 @@ export const startServer = async ({
         }
         case ActionType.VIRTUAL_NODES_SELECTED: {
           return onVirtualNodeSelected(action);
+        }
+        case ActionType.STYLE_RULE_FILE_NAME_CLICKED: {
+          return handleStyleRuleFileNameClicked(action);
         }
         case ActionType.FILE_OPENED: {
           return onFileOpened(action);
@@ -268,6 +273,28 @@ export const startServer = async ({
         targetUri = URL.parse(action.payload.uri).href;
         handleOpen(targetUri);
       }
+    };
+
+    const handleStyleRuleFileNameClicked = ({
+      payload: { styleRuleSourceId }
+    }: StyleRuleFileNameClicked) => {
+      console.log(
+        styleRuleSourceId,
+        engine.getExpressionById(styleRuleSourceId)
+      );
+      const [uri, expr] = engine.getExpressionById(styleRuleSourceId) as [
+        string,
+        StyleRule
+      ];
+      emitExternal(
+        revealExpressionSourceRequested({
+          sourceId: styleRuleSourceId,
+          textSource: {
+            location: expr.location,
+            uri
+          }
+        })
+      );
     };
 
     const handleMetaClickVirtualNode = ({

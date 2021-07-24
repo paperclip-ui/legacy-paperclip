@@ -233,11 +233,12 @@ impl Rule {
       return Some(CSSObject::Rule(self));
     }
 
-    if let Rule::Style(rule) = self {
-      return rule.get_object_by_id(id);
+    match self {
+      Rule::Style(rule) => rule.get_object_by_id(id),
+      Rule::Export(rule) => rule.get_object_by_id(id),
+      Rule::Media(rule) => rule.get_object_by_id(id),
+      _ => None
     }
-
-    return None;
   }
   pub fn get_location(&self) -> &Location {
     match self {
@@ -389,6 +390,12 @@ impl fmt::Display for ExportRule {
     writeln!(f, "}}")?;
 
     Ok(())
+  }
+}
+
+impl ExportRule {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    get_object_by_id_in_rules(&self.rules, id)
   }
 }
 
