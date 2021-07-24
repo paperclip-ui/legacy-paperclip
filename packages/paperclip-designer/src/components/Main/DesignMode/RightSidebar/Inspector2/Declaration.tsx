@@ -9,16 +9,20 @@ export type StyleRuleProps = {
 };
 
 export const StyleDeclaration = ({ info, onValueChange }: StyleRuleProps) => {
-  const { inputProps } = useTextInput({
-    value: info.value,
-    onValueChange
-  });
+  // const { inputProps } = useTextInput({
+  //   value: info.value,
+  //   onValueChange
+  // });
 
   return (
     <styles.StyleRuleProperty
       disabled={!info.active}
       name={info.name}
-      value={<input {...inputProps} />}
+      value={
+        <styles.StyleRulePropertyRichValue>
+          <styles.Expression>{info.value}</styles.Expression>
+        </styles.StyleRulePropertyRichValue>
+      }
     />
   );
 };

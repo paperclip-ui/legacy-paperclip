@@ -29,7 +29,9 @@ export const StyleRule = React.memo(({ info }: StyleRuleProps) => {
 
   return (
     <styles.StyleRule
-      header={<StyleRuleHeader info={info} />}
+      // header={<StyleRuleHeader info={info} />}
+      fileName={path.basename(info.sourceUri)}
+      selectorText={info.selectorText}
       properties={info.declarations.map((declaration, i) => {
         return (
           <StyleDeclaration
@@ -53,12 +55,12 @@ type StyleRuleHeaderProps = {
   info: StyleRuleInfo;
 };
 
-const StyleRuleHeader = React.memo(({ info }: StyleRuleHeaderProps) => {
-  return (
-    <styles.SelectorInfo
-      title={info.selectorText}
-      computedText={info.selectorText}
-      fileName={path.basename(info.sourceUri)}
-    />
-  );
-});
+// const StyleRuleHeader = React.memo(({ info }: StyleRuleHeaderProps) => {
+//   return (
+//     <styles.SelectorInfo
+//       title={info.selectorText}
+//       computedText={info.selectorText}
+//       fileName={path.basename(info.sourceUri)}
+//     />
+//   );
+// });
