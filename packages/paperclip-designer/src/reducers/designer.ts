@@ -316,6 +316,7 @@ export const reduceDesigner = (
       designer = produce(designer, newDesigner => {
         newDesigner.allLoadedPCFileData[designer.ui.query.canvasFile] = action
           .payload.data as LoadedPCData;
+        newDesigner.pcFileDataVersion++;
       });
       designer = maybeCenterCanvas(designer);
       return designer;
