@@ -302,7 +302,6 @@ impl NodeInspectionInfo {
     }
   }
   pub fn insert_style_rule(&mut self, mut rule: StyleRuleInfo) {
-
     for existing_rule in &mut self.style_rules {
       if existing_rule.source_id == rule.source_id {
         return;
@@ -313,16 +312,14 @@ impl NodeInspectionInfo {
 
     // first find the right index
     for (i, existing_rule) in &mut self.style_rules.iter().enumerate() {
-
-
       // always higher priority for styles applied to element
       if !rule.inherited && existing_rule.inherited {
         break;
       }
 
-
       // higher priority = lower index
-      if rule.specificity >= existing_rule.specificity && rule.inherited == existing_rule.inherited {
+      if rule.specificity >= existing_rule.specificity && rule.inherited == existing_rule.inherited
+      {
         break;
       }
 
@@ -501,7 +498,6 @@ fn add_inherited_properties(
     let ancestor_inspecto_info =
       inspect_local_node_styles(&cpath, document_uri, all_eval_info, graph, options);
 
-
     for style_rule in &ancestor_inspecto_info.style_rules {
       println!("INS {:?}", style_rule);
       if inspection_info.can_inherit_from_style_rule(style_rule) {
@@ -579,7 +575,7 @@ mod tests {
   use super::super::super::parser::*;
   use super::*;
 
-   #[test]
+  #[test]
   fn adds_inherited_props() {
     let source = r#"
     
