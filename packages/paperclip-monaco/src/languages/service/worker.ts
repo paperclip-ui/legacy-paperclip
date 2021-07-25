@@ -12,6 +12,7 @@ import {
 import { collectASTInfo } from "./ast-info";
 import * as channels from "./channel";
 import { getSuggestions } from "./autocomplete";
+import { workerAdapter } from "paperclip-common";
 
 const init = () => {
   const channel = new BroadcastChannel("paperclip");
@@ -19,13 +20,14 @@ const init = () => {
   let _resolveAst: (content: any) => any = () => {};
   let _resolveLoadedData: (content: any) => any = () => {};
 
-  channels.documentColors(self).listen(async ({ uri }) => {
+  const adapter = workerAdapter(self);
+  channels.documentColors(adapter).listen(async ({ uri }) => {
     return collectASTInfo(await waitForAST(uri)).colors;
   });
-  channels.updateDocument(self).listen(async ({ uri, value }) => {
+  channels.updateDocument(adapter).listen(async ({ uri, value }) => {
     channel.postMessage(previewContent({ uri, value }));
   });
-  channels.getSuggestions(self).listen(async ({ uri, text }) => {
+  channels.getSuggestions(adapter).listen(async ({ uri, text }) => {
     const {
       payload: { data, imports, ast }
     } = await getLoadedData(uri);
