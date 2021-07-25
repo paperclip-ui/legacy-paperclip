@@ -153,7 +153,7 @@ impl StyleDeclarationInfo {
       "word-spacing",
       "word-wrap",
     ];
-    inherited_prop_names.contains(&self.name.as_str())
+    inherited_prop_names.contains(&self.name.as_str()) || self.name.starts_with("--")
   }
   pub fn inherits(&self) -> bool {
     self.value == "inherit"
@@ -206,7 +206,7 @@ impl StyleRuleInfo {
     selector_info: iso::Selector,
   ) -> StyleRuleInfo {
     let mut rule_info = StyleRuleInfo {
-      inherited: false,
+      inherited: rule.selector_text == ":root",
       selector_text: rule.selector_text.to_string(),
       selector_info,
       source_uri: source_uri.to_string(),
@@ -302,14 +302,27 @@ impl NodeInspectionInfo {
     }
   }
   pub fn insert_style_rule(&mut self, mut rule: StyleRuleInfo) {
-    let mut insert_index: usize = 0;
 
-    println!("{:?}", rule);
+    for existing_rule in &mut self.style_rules {
+      if existing_rule.source_id == rule.source_id {
+        return;
+      }
+    }
+
+    let mut insert_index: usize = 0;
 
     // first find the right index
     for (i, existing_rule) in &mut self.style_rules.iter().enumerate() {
+
+
+      // always higher priority for styles applied to element
+      if !rule.inherited && existing_rule.inherited {
+        break;
+      }
+
+
       // higher priority = lower index
-      if rule.specificity >= existing_rule.specificity {
+      if rule.specificity >= existing_rule.specificity && rule.inherited == existing_rule.inherited {
         break;
       }
 
@@ -333,22 +346,22 @@ impl NodeInspectionInfo {
     self.style_rules.insert(insert_index, rule);
   }
 
-  pub fn insert_inherited_style_rule(&mut self, rule: &StyleRuleInfo) {
-    // skip dupes
-    for style_rule in &mut self.style_rules {
-      if style_rule.source_id == rule.source_id {
-        return;
-      }
-    }
+  // pub fn insert_inherited_style_rule(&mut self, rule: &StyleRuleInfo) {
+  //   // skip dupes
+  //   for style_rule in &mut self.style_rules {
+  //     if style_rule.source_id == rule.source_id {
+  //       return;
+  //     }
+  //   }
 
-    let mut new_rule = rule.as_inherited();
+  //   let mut new_rule = rule.as_inherited();
 
-    for style_rule in &mut self.style_rules {
-      style_rule.overrides(&mut new_rule);
-    }
+  //   for style_rule in &mut self.style_rules {
+  //     style_rule.overrides(&mut new_rule);
+  //   }
 
-    self.style_rules.push(new_rule);
-  }
+  //   self.style_rules.push(new_rule);
+  // }
 
   pub fn can_inherit_from_style_rule(&self, other_rule: &StyleRuleInfo) -> bool {
     if other_rule.contains_cascading_declarations() {
@@ -488,12 +501,16 @@ fn add_inherited_properties(
     let ancestor_inspecto_info =
       inspect_local_node_styles(&cpath, document_uri, all_eval_info, graph, options);
 
+
     for style_rule in &ancestor_inspecto_info.style_rules {
+      println!("INS {:?}", style_rule);
       if inspection_info.can_inherit_from_style_rule(style_rule) {
-        inspection_info.insert_inherited_style_rule(style_rule);
+        inspection_info.insert_style_rule(style_rule.as_inherited());
       }
     }
   }
+
+  println!("INSPEEEEE {:?}", inspection_info);
 }
 
 fn get_pc_info<'a>(
@@ -562,21 +579,25 @@ mod tests {
   use super::super::super::parser::*;
   use super::*;
 
-  //  #[test]
+   #[test]
   fn adds_inherited_props() {
     let source = r#"
-    <div className="test">
-      <div>
-        <style>
-          &&& {
-            ab: red;
-          }
-          &:within(.test) {
-            ab: blue;
-          }
-        </style>
-      </div>
+    
+    <style>
+    :global(:root) {
+      --color: red;
+    }
+    :global(.theme) {
+      --color: blue;
+    }
+  </style>
+  <div class="theme">
+    <div>
+      <style>
+        color: var(--color);
+      </style>
     </div>
+  </div>
     "#;
 
     test_pc_code(

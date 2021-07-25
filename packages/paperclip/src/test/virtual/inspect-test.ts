@@ -1047,6 +1047,177 @@ describe(__filename + "#", () => {
           }
         ]
       }
+    ],
+    [
+      "parent selectors with css variables are inherited",
+      {
+        "/entry.pc": `
+          <div>
+            <style>
+              --color: red;
+            </style>
+            <div />
+          </div>
+        `
+      },
+      100,
+      [0, 0],
+      {
+        styleRules: [
+          {
+            inherited: true,
+            selectorText: "._406d2856._406d2856",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._406d2856",
+                  scope: {
+                    kind: "Element",
+                    id: "406d2856"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "406d2856",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-1",
+                name: "--color",
+                value: "red",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
+    ],
+    [
+      "classes have priority over :root",
+      {
+        "/entry.pc": `
+          <style>
+            :global(:root) {
+              --color: red;
+            }
+            :global(.theme) {
+              --color: blue;
+            }
+          </style>
+          <div class="theme">
+            <div>
+              <style>
+                color: var(--color);
+              </style>
+            </div>
+          </div>
+        `
+      },
+      100,
+      [0, 0],
+      {
+        styleRules: [
+          {
+            inherited: false,
+            selectorText: "._9fbc00ce._9fbc00ce",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9fbc00ce",
+                  scope: {
+                    kind: "Element",
+                    id: "9fbc00ce"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9fbc00ce",
+                  scope: {
+                    kind: "Element",
+                    id: "9fbc00ce"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "9fbc00ce",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-5-1",
+                name: "color",
+                value: "var(--color)",
+                active: true
+              }
+            ],
+            specificity: 4
+          },
+          {
+            inherited: true,
+            selectorText: ".theme",
+            selectorInfo: {
+              kind: "Class",
+              name: "theme",
+              value: ".theme",
+              scope: null
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-1-4",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-3",
+                name: "--color",
+                value: "blue",
+                active: true
+              }
+            ],
+            specificity: 2
+          },
+          {
+            inherited: true,
+            selectorText: ":root",
+            selectorInfo: {
+              kind: "PseudoElement",
+              value: ":root"
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-1-2",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-1-1",
+                name: "--color",
+                value: "red",
+                active: false
+              }
+            ],
+            specificity: 1
+          }
+        ]
+      }
     ]
   ] as any;
 
