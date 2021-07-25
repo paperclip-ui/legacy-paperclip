@@ -494,6 +494,54 @@ mod tests {
 
     let result = block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
   }
+
+  #[test]
+  fn can_return_source_info_for_various_cases() {
+    let cases = [
+      (
+        "<div />",
+        vec![0],
+        Some(ast::ExprSource {
+          id: "406d2856".to_string(),
+          text_source: Some(ast::ExprTextSource {
+            uri: "/entry.pc".to_string(),
+            location: ast::Location { start: 0, end: 7 },
+          }),
+        }),
+      ),
+      (
+        "{<div />}",
+        vec![0],
+        Some(ast::ExprSource {
+          id: "769346c8".to_string(),
+          text_source: Some(ast::ExprTextSource {
+            uri: "/entry.pc".to_string(),
+            location: ast::Location { start: 1, end: 8 },
+          }),
+        }),
+      ),
+    ];
+
+    for (content, path, output) in &cases {
+      let content = content.to_string();
+
+      let mut engine = Engine::new(
+        Box::new(move |uri| content.to_string()),
+        Box::new(move |uri| true),
+        Box::new(|_, _| Some("".to_string())),
+        EngineMode::SingleFrame,
+      );
+
+      block_on(engine.load(&"/entry.pc".to_string()));
+
+      let info = engine.get_virtual_node_source_info(&pc_virt::NodeSource {
+        path: path.clone(),
+        document_uri: "/entry.pc".to_string(),
+      });
+
+      assert_eq!(&info, output);
+    }
+  }
 }
 
 pub fn __test__evaluate_pc_files<'a>(

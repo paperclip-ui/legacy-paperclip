@@ -500,14 +500,11 @@ fn add_inherited_properties(
       inspect_local_node_styles(&cpath, document_uri, all_eval_info, graph, options);
 
     for style_rule in &ancestor_inspecto_info.style_rules {
-      println!("INS {:?}", style_rule);
       if inspection_info.can_inherit_from_style_rule(style_rule) {
         inspection_info.insert_style_rule(style_rule.as_inherited());
       }
     }
   }
-
-  println!("INSPEEEEE {:?}", inspection_info);
 }
 
 fn get_pc_info<'a>(
@@ -605,8 +602,6 @@ mod tests {
         style_rules: vec![],
       },
     );
-
-    panic!("fsdfsd");
   }
 
   fn test_pc_code<'a>(
