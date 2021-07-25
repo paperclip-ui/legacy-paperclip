@@ -6,7 +6,10 @@ import { Inspector2 } from "./Inspector2";
 export const RightSidebar = React.memo(() => {
   const { state } = useAppStore();
 
-  if (!state.designer.selectedNodeStyleInspections.length) {
+  if (
+    !state.designer.selectedNodeStyleInspections.length ||
+    state.designer.ui.query.expanded
+  ) {
     return null;
   }
 
