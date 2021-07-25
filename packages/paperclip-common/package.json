@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch",
-    "test": "mocha ./lib/test/**/*-test.js"
+    "build:watch": "tsc --watch"
   },
   "author": "",
   "license": "ISC",

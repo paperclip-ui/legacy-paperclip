@@ -411,7 +411,6 @@ pub fn inspect_local_node_styles(
   let mut inspection_info = NodeInspectionInfo::new();
 
   if let Some(main_eval_info) = get_pc_info(document_uri, all_eval_info) {
-
     // need to start with imported CSS because document styles will override these
     for dep_uri in &main_eval_info.all_imported_sheet_uris {
       add_inspection_info(
@@ -434,7 +433,6 @@ pub fn inspect_local_node_styles(
       graph,
       options,
     );
-
   }
 
   inspection_info
