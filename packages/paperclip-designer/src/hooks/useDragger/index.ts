@@ -1,4 +1,5 @@
 import { throttle } from "lodash";
+import { useState } from "react";
 import { Point } from "../../state";
 
 type DragProps = {
@@ -6,7 +7,10 @@ type DragProps = {
 };
 
 export function useDragger(onDrag: (props: DragProps) => any) {
+  const [dragging, setDragging] = useState(false);
+
   const onMouseDown = (event: React.MouseEvent<any>) => {
+    setDragging(true);
     const start = { x: event.screenX, y: event.screenY };
 
     const onMouseMove = throttle((event: any) => {
@@ -18,6 +22,7 @@ export function useDragger(onDrag: (props: DragProps) => any) {
     }, 30);
 
     const onMouseUp = () => {
+      setDragging(false);
       document.removeEventListener("mousemove", onMouseMove as any);
       document.removeEventListener("mouseup", onMouseUp);
     };
@@ -27,6 +32,7 @@ export function useDragger(onDrag: (props: DragProps) => any) {
   };
 
   return {
+    dragging,
     onMouseDown
   };
 }

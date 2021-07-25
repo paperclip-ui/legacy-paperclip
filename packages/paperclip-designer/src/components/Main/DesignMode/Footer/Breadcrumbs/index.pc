@@ -1,0 +1,105 @@
+<import src="styles/atoms.pc" as="atoms" inject-styles />
+<import src="styles/utils.pc" as="utils" />
+
+<style>
+
+  :root {
+    --border-color: rgb(212, 212, 212);
+    --active-color: rgb(79, 153, 236);
+  }
+</style>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 146, y: -107 }
+-->
+<div export component as="Breadcrumbs">
+  <style>
+    overflow: hidden;
+    background: rgba(247, 247, 247);
+    font-size: 14px;
+  </style>
+  {children}
+</div>
+
+<div export
+  component
+  as="Breadcrumb"
+  className:hover="hover"
+  className:active="active">
+  <style>
+    display: inline-flex;
+    padding: var(--spacing-3) var(--spacing-5);
+    color: grey;
+    cursor: pointer;
+    align-items: center;
+    position: relative;
+    &.hover {
+      color: var(--active-color);
+    }
+
+    &:after {
+      --size: 34px;
+      position: absolute;
+      top: 50%;
+      right: 0px;
+      z-index: -1;
+      transform: translateY(-50%) rotate(45deg);
+      z-index: 1;
+      width: var(--size);
+      height: var(--size);
+      border-top: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      content: "\00a0";
+    }
+
+    &.active {
+      font-weight: 600;
+      color: var(--active-color);
+      &:after {
+        display: none;
+      }
+    }
+  </style>
+
+  <style>
+    display: inline-flex;
+  </style>
+  {<div className:instance="instance show">
+    <style>
+
+      margin-right: var(--spacing-3);
+      visibility: hidden;
+      @include utils.mask {
+        --size: 13px;
+        mask-image: url("./block.svg");
+      }
+      && {
+        width: 0px;
+      }
+      &.show {
+        && {
+          width: var(--size);
+          visibility: visible;
+        }
+      }
+    </style>
+  </div>}
+  {children}
+</div>
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 146, y: -107 }
+-->
+<div export component as="Preview">
+  <style>
+    flex-shrink: 0;
+  </style>
+  <Breadcrumbs>
+    <Breadcrumb>div</Breadcrumb>
+    <Breadcrumb>span</Breadcrumb>
+    <Breadcrumb instance>div</Breadcrumb>
+    <Breadcrumb hover>div</Breadcrumb>
+    <Breadcrumb active>div</Breadcrumb>
+  </Breadcrumbs>
+</div>

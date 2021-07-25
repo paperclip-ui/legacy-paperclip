@@ -1,0 +1,10 @@
+<import src="./Breadcrumbs/index.pc" as="Breadcrums" />
+<import src="components/ResizableContainer/index.pc" as="ResizableContainer" />
+
+<ResizableContainer bottom export component as="Preview">
+  <style>
+    display: flex;
+    flex-direction: column;
+  </style>
+  <Breadcrums.Preview />
+</ResizableContainer>
