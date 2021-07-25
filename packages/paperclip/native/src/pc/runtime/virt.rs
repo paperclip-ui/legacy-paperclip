@@ -54,14 +54,20 @@ impl Element {
       }
     })
   }
-  pub fn get_annotation_property_value(&self, annotation_name: &str, property_name: &str) -> Option<&js_virt::JsValue> {
-    self.get_annotation(&annotation_name.to_string()).and_then(|ann| {
-      if let js_virt::JsValue::JsObject(object) = ann {
-        object.values.get(property_name)
-      } else {
-        None
-      }
-    })
+  pub fn get_annotation_property_value(
+    &self,
+    annotation_name: &str,
+    property_name: &str,
+  ) -> Option<&js_virt::JsValue> {
+    self
+      .get_annotation(&annotation_name.to_string())
+      .and_then(|ann| {
+        if let js_virt::JsValue::JsObject(object) = ann {
+          object.values.get(property_name)
+        } else {
+          None
+        }
+      })
   }
 }
 
@@ -192,4 +198,3 @@ impl Node {
     curr
   }
 }
-
