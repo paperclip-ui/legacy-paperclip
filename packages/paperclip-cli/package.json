@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli",
-  "version": "17.12.0",
+  "version": "17.12.1",
   "description": "Command line tools for Paperclip",
   "main": "lib/cli.js",
   "bin": {
@@ -27,7 +27,7 @@
     "paperclip": "^17.12.0",
     "paperclip-cli-minimal": "^17.12.0",
     "paperclip-cli-utils": "^17.12.0",
-    "paperclip-designer": "^17.12.0",
+    "paperclip-designer": "^17.12.1",
     "paperclip-utils": "^17.12.0",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",

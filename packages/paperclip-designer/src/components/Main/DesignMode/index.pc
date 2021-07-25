@@ -4,6 +4,7 @@
 <import src="./Birdseye/index.pc" as="Birdseye" />
 <import src="./Canvas/index.pc" as="Canvas" />
 <import src="./RightSidebar/index.pc" as="RightSidebar" />
+<import src="./Footer/index.pc" as="Footer" />
 
 
 
@@ -38,13 +39,29 @@
 
 
 <!--
+  @frame { visible: false, width: 1024, height: 768, x: 326, y: -117 }
+-->
+<div export component as="Center">
+  <style>
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+  </style>
+  {children}
+</div>
+
+
+<!--
   @frame { visible: false }
 -->
 <CanvasContainer component as="CanvasContainerPreview">
   {showGrid && <Birdseye.Preview {zoom?} />}
   {showEmpty && <Birdseye.PreviewEmpty />}
   {showCanvas && <fragment>
-    <Canvas.Preview />
+    <Center>
+      <Canvas.Preview />
+      <Footer.Preview />
+    </Center>
     <RightSidebar.Preview />
   </fragment>}
 </CanvasContainer>
@@ -93,7 +110,6 @@
   @frame { title: "Center V2 / Grid / x1", width: 1587, height: 768, x: 4768, y: 3475 }
 -->
 <Preview showGrid v2 zoom={1} />
-
 
 <!--
   @frame { title: "Center V2 / Env", width: 1024, height: 768, x: 1073, y: 1621 }

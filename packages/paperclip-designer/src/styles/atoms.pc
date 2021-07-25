@@ -3,6 +3,11 @@
   @export {
     * {
       font-family: sans-serif;
+      box-sizing: border-box;
+    }
+
+    @mixin ease-in {
+      transition: 0.2s;
     }
 
     /*

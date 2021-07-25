@@ -32,7 +32,7 @@ export const ResizableContainer = ({
   const setSize2 = (newSize: number) =>
     setSize(clamp(newSize, MIN_SIZE, maxSize));
 
-  const { onMouseDown: onBarDown } = useDragger(({ delta }) => {
+  const { dragging, onMouseDown: onBarDown } = useDragger(({ delta }) => {
     if (right) {
       setSize2(size - delta.x);
     } else if (left) {
@@ -53,7 +53,12 @@ export const ResizableContainer = ({
   }, [size]);
 
   return (
-    <styles.default style={style} right={right} onBarDown={onBarDown}>
+    <styles.default
+      dragging={dragging}
+      style={style}
+      right={right}
+      onBarDown={onBarDown}
+    >
       {children}
     </styles.default>
   );
