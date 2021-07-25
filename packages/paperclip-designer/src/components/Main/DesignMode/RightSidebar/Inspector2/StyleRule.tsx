@@ -20,9 +20,10 @@ import { SelectorScopeKind } from "paperclip-utils";
 
 export type StyleRuleProps = {
   info: StyleRuleInfo;
+  filter?: (value: string) => boolean;
 };
 
-export const StyleRule = React.memo(({ info }: StyleRuleProps) => {
+export const StyleRule = React.memo(({ info, filter }: StyleRuleProps) => {
   const { dispatch } = useAppStore();
 
   const onDeclarationValueChange = (
@@ -50,6 +51,7 @@ export const StyleRule = React.memo(({ info }: StyleRuleProps) => {
   return (
     <styles.StyleRule
       onFileNameClick={onFileNameClick}
+      boldSelector={filter && filter(info.selectorText)}
       isGlobal={isSelectorPartiallyGlobal(info.selectorInfo)}
       fileName={path.basename(info.sourceUri)}
       selector={generateSelector(info.selectorInfo)}
@@ -57,6 +59,7 @@ export const StyleRule = React.memo(({ info }: StyleRuleProps) => {
         return (
           <StyleDeclaration
             key={i}
+            filter={filter}
             info={declaration}
             onValueChange={value => {
               onDeclarationValueChange(

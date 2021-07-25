@@ -126,12 +126,10 @@ impl Node {
       return slot
         .script
         .get_object_by_id(id)
-        .and_then(|object| {
-          match object {
-            js_ast::JSObject::PCObject(obj) => Some(obj),
-            js_ast::JSObject::Expression(expr) => Some(PCObject::JSObject(expr))
-          }
-        })
+        .and_then(|object| match object {
+          js_ast::JSObject::PCObject(obj) => Some(obj),
+          js_ast::JSObject::Expression(expr) => Some(PCObject::JSObject(expr)),
+        });
     } else if let Node::StyleElement(style_element) = self {
       return style_element
         .sheet

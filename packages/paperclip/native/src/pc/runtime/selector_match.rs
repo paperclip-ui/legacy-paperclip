@@ -351,7 +351,10 @@ fn get_matching_sub_selector<'a, 'b, 'c>(
 
       // TODO - need to have flag for states like this. For now, ignore
       // https://www.w3schools.com/css/css_pseudo_classes.asp
-      if matches!(sel.name.as_str(), "hover" | "active" | "visited" | "link" | "focus") {
+      if matches!(
+        sel.name.as_str(),
+        "hover" | "active" | "visited" | "link" | "focus"
+      ) {
         return None;
       }
 

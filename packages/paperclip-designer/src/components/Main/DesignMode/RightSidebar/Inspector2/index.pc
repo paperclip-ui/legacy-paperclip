@@ -69,7 +69,12 @@
       padding-bottom: 0;
     </style>
     <div>
-      <span className="statement">
+      <span className="statement" className:boldSelector="bold-selector">
+        <style>
+          &.bold-selector {
+            font-weight: 600;
+          }
+        </style>
         {selector}
       </span>&nbsp;<span className="token">&#123;</span>
     </div>
@@ -144,16 +149,21 @@
       color: inherit;
     }
   </style>
-  <div>
+  <div className:boldName="bold-name">
     <style>
-
       white-space: nowrap;
+      &.bold-name {
+        font-weight: 600;
+      }
     </style>
     <span className="decl-name">{name}</span><span className="token">:</span>
   </div>
-  <div className="decl-value">
+  <div className="decl-value" className:boldValue="bold-value">
     <style>
       flex: 1;
+      &.bold-value {
+        font-weight: 600;
+      }
     </style>
     {value}
   </div>
@@ -285,13 +295,57 @@
   <div>{children}</div>
 </div>
 
+<div export component as="Header">
+  <style>
+    padding: var(--spacing-3);
+  </style>
+  <div>
+    <style>
+      position: relative;
+    </style>
+    <div>
+      <style>
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: var(--spacing-3);
+        @include utils.mask {
+          color: rgb(160, 160, 160);
+          --size: 10px;
+          mask-image: url("./filter.svg");
+        }
+      </style>
+    </div>
+    {input}
+  </div>
+</div>
+
+<input export
+  component
+  as="FilterInput"
+  placeholder="Filter styles..."
+  {onChange}
+  {onBlur}>
+  <style>
+    border-radius: 0px;
+    width: 100%;
+    border: none;
+    outline: #333;
+    background: white;
+    padding: var(--spacing-2) 0px;
+    padding-left: var(--spacing-6);
+  </style>
+</input>
+
 
 <!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
 <Container export component as="Preview">
+  <Header input={<FilterInput />} />
   <StyleSection title="Element styles">
     <StyleRule fileName="styles.pc"
+      boldSelector
       selector=".this-is-a-super-long-selector-to-see-how-it-wraps"
       properties={<fragment>
         <StyleRuleProperty name="background-color"
@@ -300,7 +354,8 @@
               var(--page-background-color, var(--gray-gray-90))
             </Expression>
           </StyleRulePropertyValue>} />
-        <StyleRuleProperty disabled
+        <StyleRuleProperty boldName
+          disabled
           name="font-family"
           value={<StyleRulePropertyValue>
             <KeywordPart value="sans-serif" />
@@ -322,7 +377,8 @@
       fileName="atoms.pc"
       selector="#test"
       properties={<fragment>
-        <StyleRuleProperty name="background-color"
+        <StyleRuleProperty boldValue
+          name="background-color"
           value={<StyleRulePropertyValue>
             <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
           </StyleRulePropertyValue>} />

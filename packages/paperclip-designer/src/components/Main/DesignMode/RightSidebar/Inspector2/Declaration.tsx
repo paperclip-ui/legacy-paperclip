@@ -6,9 +6,14 @@ import { TextInput } from "../../../../TextInput";
 export type StyleRuleProps = {
   info: StyleDeclarationInfo;
   onValueChange: (value) => void;
+  filter?: (value: string) => boolean;
 };
 
-export const StyleDeclaration = ({ info, onValueChange }: StyleRuleProps) => {
+export const StyleDeclaration = ({
+  info,
+  onValueChange,
+  filter
+}: StyleRuleProps) => {
   const [editingValue, setEditingValue] = useState(false);
 
   const onClick = () => setEditingValue(false);
@@ -20,6 +25,8 @@ export const StyleDeclaration = ({ info, onValueChange }: StyleRuleProps) => {
     <styles.StyleRuleProperty
       disabled={!info.active}
       name={info.name}
+      boldName={filter && filter(info.name)}
+      boldValue={filter && filter(info.value)}
       value={
         <styles.StyleRulePropertyValue onClick={onClick}>
           {editingValue ? (
