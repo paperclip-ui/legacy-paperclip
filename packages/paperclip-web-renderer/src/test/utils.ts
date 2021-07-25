@@ -229,6 +229,7 @@ export const createMockFramesRenderer = (
   resolveUrl: (url: string) => string = identity
 ) => new FramesRenderer(uri, resolveUrl, mockDOMFactory, noop);
 
+// eslint-disable-next-line
 const noop = () => {};
 
 export const trimWS = (str: string) => str.replace(/[\s\r\n\t]+/g, " ");
