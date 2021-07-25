@@ -203,7 +203,7 @@ function Home() {
               title="Just like CSS-in-JS"
               description={
                 <>
-                  <a href="https://playground.paperclip.dev">Try it out!</a>{" "}
+                  {/* <a href="https://playground.paperclip.dev">Try it out!</a>{" "} */}
                   Paperclip works just like other CSS-in-JS libraries such as
                   Emotion, and Styled Components. If you don't like Paperclip,
                   you can easily switch back.
