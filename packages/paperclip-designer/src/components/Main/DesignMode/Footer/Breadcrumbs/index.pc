@@ -12,7 +12,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 146, y: -107 }
 -->
-<div export component as="Breadcrumbs">
+<div export component as="Breadcrumbs" data-label="Breadcrumbs">
   <style>
     display: flex;
     flex-flow: row;
@@ -35,6 +35,7 @@
   {onClick?}
   {onMouseEnter?}
   {onMouseLeave?}
+  data-label="Breadcrumb"
   className:hover="hover"
   className:active="active">
   <style>

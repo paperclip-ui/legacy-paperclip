@@ -3,6 +3,7 @@
   as="default"
   {style}
   {className?}
+  data-label="Resizable"
   className:dragging="dragging"
   className:right="right"
   className:bottom="bottom"
@@ -17,6 +18,7 @@
 
     &.bottom, &.top {
       width: 100%;
+      flex-direction: column;
     }
 
     &.right, &.left {
@@ -62,7 +64,7 @@
       </style>
     </div>
   </div>
-  <div>
+  <div data-label="Container">
     <style>
       overflow: scroll;
       height: 100%;

@@ -1,6 +1,6 @@
 <import src="./Breadcrumbs/index.pc" as="Breadcrums" />
 <import src="components/ResizableContainer/index.pc" as="ResizableContainer" />
 
-<div bottom export component as="Preview">
+<ResizableContainer bottom export component as="Preview">
   <Breadcrums.Preview />
-</div>
+</ResizableContainer>

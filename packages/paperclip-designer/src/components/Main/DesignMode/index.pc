@@ -11,7 +11,11 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className="$theme.full-wh {className?}">
+<div export
+  component
+  as="Container"
+  className="$theme.full-wh {className?}"
+  data-label="Design mode Container">
   <style>
     position: relative;
     display: flex;
@@ -26,7 +30,11 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="CanvasContainer" className="$theme.full-wh">
+<div export
+  component
+  as="CanvasContainer"
+  className="$theme.full-wh"
+  data-label="Canvas Container">
   <style>
     display: flex;
     position: relative;
@@ -40,7 +48,7 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 326, y: -117 }
 -->
-<div export component as="Center">
+<div export component as="Center" data-label="Center">
   <style>
     display: flex;
     flex-direction: column;

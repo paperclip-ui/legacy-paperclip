@@ -9,6 +9,7 @@
   component
   as="FramesContainer"
   {style?}
+  data-label="Frames container"
   className="$theme.font-default {className?}">
   <style>
     width: 100%;

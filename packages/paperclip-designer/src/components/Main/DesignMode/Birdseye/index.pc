@@ -8,6 +8,7 @@
 <div export
   component
   as="Cell"
+  data-label="Cell"
   className="v2 {className?}"
   className:warn="warn"
   className:hover="hover"
@@ -56,7 +57,7 @@
 
 
   <!-- inner -->
-  <div>
+  <div data-label="Inner">
     <style>
 
       height: 100%;
@@ -150,7 +151,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container">
+<div export component as="Container" data-label="Container">
   <style>
     display: flex;
     flex-shrink: 0;
@@ -181,7 +182,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Cells" data-zoom={zoom}>
+<div export component as="Cells" data-zoom={zoom} data-label="Cells">
   <style>
     flex: 1;
     height: 100%;
