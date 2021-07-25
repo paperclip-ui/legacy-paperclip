@@ -41,11 +41,11 @@ module.exports = {
           to: "/docs/guide-how-to-use",
           position: "left"
         },
-        {
-          label: "Playground",
-          to: "https://playground.paperclip.dev",
-          position: "left"
-        },
+        // {
+        //   label: "Playground",
+        //   to: "https://playground.paperclip.dev",
+        //   position: "left"
+        // },
         // {
         //   label: "Why",
         //   to: "/docs/guide-why",

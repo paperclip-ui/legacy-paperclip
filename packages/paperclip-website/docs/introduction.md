@@ -6,7 +6,7 @@ sidebar_label: Introduction
 
 Paperclip is a tool that specializes in just the appearance of your application, and it only covers HTML, CSS, and primitive components.
 
-I'd recommend that you play around with the [Playground](https://playground.paperclip.dev) to get a feel for the tool. 
+<!-- I'd recommend that you play around with the [Playground](https://playground.paperclip.dev) to get a feel for the tool.  -->
 
 ## Motivation
 
