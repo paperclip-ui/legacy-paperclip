@@ -1,4 +1,11 @@
 <import src="./Inspector2/index.pc" as="Inspector" />
+<import src="components/ResizableContainer/index.pc" as="ResizableContainer" />
+
+<!--
+  @frame { width: 351, height: 768, x: 0, y: 0 }
+-->
 <div export component as="Preview">
-  <Inspector.Preview />
+  <ResizableContainer right fixedWidth>
+    <Inspector.Preview />
+  </ResizableContainer>
 </div>

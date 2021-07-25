@@ -19,7 +19,9 @@ import {
   getAttributeStringValue,
   hasAttribute,
   Diagnostic,
-  INJECT_STYLES_TAG_NAME
+  INJECT_STYLES_TAG_NAME,
+  NodeStyleInspection,
+  VirtNodeSource
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -195,19 +197,39 @@ export class EngineDelegate {
     return this._documents[uri];
   }
   updateVirtualFileContent(uri: string, content: string) {
+    if (this._documents[uri] === content) {
+      return;
+    }
+
+    // only define if successfuly loaded
+    this._documents[uri] = content;
+
     return this._tryCatch(() => {
       const ret = mapResult(
         this._native.update_virtual_file_content(uri, content)
       );
 
-      // only define if successfuly loaded
-      this._documents[uri] = content;
       return ret;
     });
   }
 
+  public inspectNodeStyles(
+    source: VirtNodeSource,
+    screenWidth: number
+  ): NodeStyleInspection {
+    return this._native.inspect_node_styles(
+      source.path,
+      source.uri,
+      screenWidth
+    );
+  }
+
   public getLoadedData(uri: string): LoadedData | null {
     return this._rendered[uri];
+  }
+
+  public getExpressionById(id: string): [string, any] {
+    return this._native.get_expression_by_id(id);
   }
 
   public getAllLoadedData(): Record<string, LoadedData> {

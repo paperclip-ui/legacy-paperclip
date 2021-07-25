@@ -1,6 +1,12 @@
-- fix centering issue with large files
-- Figma sync
-  - option to make global
-  - option to define class variant
-  - prefix vars with type
-- ensure that synced colors are injected globally
+- [ ] remove playground from website
+
+- [ ] navigate to source when file name clicked
+- [ ] ability to filter style rules
+- [ ] ability to change declaration value
+- [ ] ability to insert new declaration
+
+
+- [ ] decl value pickers
+  - [ ] color picker
+  - [ ] box shadow editor
+  - [ ] pretty pane for style rule**

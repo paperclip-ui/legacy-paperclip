@@ -2,6 +2,7 @@ import { EngineDelegate } from "paperclip";
 import { EventEmitter } from "events";
 import {
   AnnotationsChanged,
+  CSSDeclarationChanged,
   PCMutation,
   PCMutationAction,
   PCMutationActionKind
@@ -21,8 +22,11 @@ import {
   getNodeByPath,
   DependencyNodeContent,
   getPCNodeAnnotations,
-  getNodeById
+  getNodeById,
+  astEmitted,
+  StyleRule
 } from "paperclip-utils";
+import { editString } from "./string-editor";
 
 type PCSourceWriterOptions = {
   engine: EngineDelegate;
@@ -38,36 +42,56 @@ export type ContentChange = {
 const ANNOTATION_KEYS = ["title", "width", "height", "x", "y"];
 
 export class PCSourceWriter {
-  constructor(private _options: PCSourceWriterOptions) {}
-  async getContentChanges(
-    mutations: PCMutation[]
-  ): Promise<Record<string, ContentChange[]>> {
-    const changes: ContentChange[] = [];
-    const engine = this._options.engine;
-    for (const { nodePath, nodeUri, action } of mutations) {
-      const ast = engine.getLoadedAst(nodeUri) as DependencyNodeContent;
-      const pcData = engine.getLoadedData(nodeUri) as LoadedPCData;
-      const virtNode = getNodeByPath(nodePath, pcData.preview);
+  constructor(private _engine: EngineDelegate) {}
 
-      const sourceInfo = engine.getVirtualNodeSourceInfo(nodePath, nodeUri);
-      const pcNode = getNodeById(sourceInfo.sourceId, ast);
+  apply(mutations: PCMutation[]): Record<string, ContentChange[]> {
+    const changes = this._getContentChanges(mutations);
+
+    for (const uri in changes) {
+      const newContent = editString(
+        this._engine.getVirtualContent(uri),
+        changes[uri]
+      );
+      this._engine.updateVirtualFileContent(uri, newContent);
+    }
+
+    // return changes so that
+
+    return changes;
+  }
+
+  private _getContentChanges(
+    mutations: PCMutation[]
+  ): Record<string, ContentChange[]> {
+    const changes: ContentChange[] = [];
+    const engine = this._engine;
+    for (const { targetId, action } of mutations) {
+      const [uri, targetAst] = engine.getExpressionById(targetId);
+      const documentAst = engine.getLoadedAst(uri) as DependencyNodeContent;
+
+      const textSource = { uri, location: targetAst.location };
 
       switch (action.kind) {
         case PCMutationActionKind.ANNOTATIONS_CHANGED: {
-          const el = virtNode as VirtualElement;
-
           changes.push(
             this._getAnnotationChange(
-              sourceInfo.textSource,
-              getPCNodeAnnotations(pcNode, ast)?.location,
+              textSource,
+              getPCNodeAnnotations(
+                getNodeById(targetAst.id, documentAst),
+                documentAst
+              )?.location,
               action.annotations
             )
           );
           break;
         }
+        case PCMutationActionKind.CSS_DECLARATION_CHANGED: {
+          changes.push(this._getCSSDeclarationChange(textSource, action));
+          break;
+        }
         case PCMutationActionKind.EXPRESSION_DELETED: {
           changes.push(
-            ...this._getExpressionDeletedChanged(sourceInfo.textSource, ast)
+            ...this._getExpressionDeletedChanged(textSource, targetAst)
           );
           break;
         }
@@ -116,6 +140,18 @@ export class PCSourceWriter {
     });
 
     return changes;
+  }
+
+  private _getCSSDeclarationChange(
+    exprTextSource: ExprTextSource,
+    action: CSSDeclarationChanged
+  ) {
+    return {
+      uri: exprTextSource.uri,
+      start: exprTextSource.location.start,
+      end: exprTextSource.location.end,
+      value: `${action.name}: ${action.value};`
+    };
   }
 
   private _getAnnotationChange(

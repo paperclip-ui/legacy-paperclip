@@ -6,7 +6,7 @@ use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tok
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
-use crate::base::utils::get_document_style_private_scope;
+use crate::base::utils::get_document_id;
 use crate::core::id_generator::IDGenerator;
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
@@ -51,7 +51,7 @@ pub fn parse<'a, 'b>(
   parse_fragment(
     &mut Context {
       tokenizer: Tokenizer::new(source),
-      scope_id: get_document_style_private_scope(&source_uri.to_string()),
+      scope_id: get_document_id(&source_uri.to_string()),
       id_generator: IDGenerator::new(id_seed.to_string()),
     },
     vec![],

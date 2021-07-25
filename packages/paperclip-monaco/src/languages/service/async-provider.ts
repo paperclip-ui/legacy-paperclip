@@ -1,6 +1,7 @@
 import { IPaperclipEngineInfoProvider } from "./base";
 import { SourceLocation } from "paperclip-utils";
 import * as channels from "./channel";
+import { workerAdapter } from "paperclip-common";
 
 export class PaperclipEngineAsyncInfoProvider
   implements IPaperclipEngineInfoProvider {
@@ -11,18 +12,18 @@ export class PaperclipEngineAsyncInfoProvider
 
   constructor() {
     this._worker = new Worker(new URL("./worker.js", import.meta.url));
-    this._colorsChannel = channels.documentColors(this._worker);
-    this._updateDocument = channels.updateDocument(this._worker);
-    this._getSuggestions = channels.getSuggestions(this._worker);
+    this._colorsChannel = channels.documentColors(workerAdapter(this._worker));
+    this._updateDocument = channels.updateDocument(workerAdapter(this._worker));
+    this._getSuggestions = channels.getSuggestions(workerAdapter(this._worker));
   }
 
   getDocumentColors(uri: string) {
-    return this._colorsChannel.request({ uri });
+    return this._colorsChannel.call({ uri });
   }
   updateDocument(uri: string, value: string) {
-    this._updateDocument.request({ uri, value });
+    this._updateDocument.call({ uri, value });
   }
   getSuggestions(text: string, uri: string) {
-    return this._getSuggestions.request({ uri, text });
+    return this._getSuggestions.call({ uri, text });
   }
 }

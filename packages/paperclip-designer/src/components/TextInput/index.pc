@@ -4,7 +4,60 @@
 <!--
   @frame { visible: false }
 -->
-<input export component as="default" {disabled?} className="input v2 {className?}" className:dark="dark" className:light="light" {type} {onBlur?} {onFocus?} {onKeyPress?} {onChange?} {placeholder?} {value?} {defaultValue?} {autoFocus?} {autocomplete?}  allow-1password="no">
+<span export component as="DummySpan">
+  <style>
+    pointer-events: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    white-space: nowrap;
+    visibility: hidden;
+  </style>
+  {children}
+</span>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" className:autoResize="auto-resize">
+  <style>
+    position: relative;
+    & :global(input) {
+      line-height: inherit;
+      font-size: inherit;
+      font-family: inherit;
+      letter-spacing: inherit;
+      padding: 0;
+      border: none;
+      outline: none;
+    }
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<input export
+  component
+  as="default"
+  {disabled?}
+  className="input v2 {className?}"
+  className:dark="dark"
+  className:light="light"
+  {type}
+  {onBlur?}
+  {onFocus?}
+  {onKeyPress?}
+  {onChange?}
+  {placeholder?}
+  {value?}
+  {defaultValue?}
+  {autoFocus?}
+  {autocomplete?}
+  allow-1password="no">
   <style>
 
     background: var(--background-50);
@@ -29,8 +82,17 @@
       }
     }
     &::placeholder {
-      color: var(--grey-300)
+      color: var(--grey-300);
     }
   </style>
 </input>
 
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 84, y: -28 }
+-->
+<Container>
+  <input value="some dummy text" />
+  <DummySpan>some dummy text</DummySpan>
+</Container>

@@ -2,7 +2,16 @@ import Mousetrap, { addKeycodes } from "mousetrap";
 import SockJSClient from "sockjs-client";
 import { computeVirtJSObject, LoadedPCData } from "paperclip-utils";
 import * as Url from "url";
-import { fork, put, take, takeEvery, select, call } from "redux-saga/effects";
+import {
+  fork,
+  put,
+  take,
+  takeEvery,
+  select,
+  call,
+  takeLatest,
+  throttle
+} from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import * as qs from "querystring";
 import {
@@ -32,7 +41,8 @@ import {
   globalOptionKeyUp,
   actionHandled,
   redirectRequest,
-  virtualNodesSelected
+  virtualNodesSelected,
+  virtualNodeStylesInspected
 } from "../actions";
 import {
   AppState,
@@ -48,6 +58,8 @@ import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { omit } from "lodash";
+import { inspectNodeStyleChannel } from "../rpc/channels";
+import { sockAdapter } from "../../../paperclip-common";
 
 export type AppStateSelector = (state) => AppState;
 
@@ -82,9 +94,7 @@ function handleSock(onMessage, onClient) {
   );
 
   client.onopen = () => {
-    onClient({
-      send: message => client.send(JSON.stringify(message))
-    });
+    onClient(sockAdapter(client));
   };
 
   client.onmessage = message => {
@@ -95,6 +105,36 @@ function handleSock(onMessage, onClient) {
   return () => {
     client.close();
   };
+}
+
+function* handleClientChans(client: any) {
+  const inspectNodeStyle = inspectNodeStyleChannel(client);
+
+  yield throttle(
+    500,
+    [
+      ActionType.CANVAS_MOUSE_UP,
+      ActionType.FRAME_TITLE_CLICKED,
+      ActionType.ENGINE_DELEGATE_CHANGED,
+      ActionType.FILE_OPENED
+    ],
+    function*() {
+      const state: AppState = yield select();
+      if (!state.designer.selectedNodePaths.length) {
+        return;
+      }
+
+      const inspectionInfo = yield call(
+        inspectNodeStyle.call,
+        state.designer.selectedNodePaths.map(path => ({
+          path: path.split(".").map(Number),
+          uri: state.designer.ui.query.canvasFile
+        }))
+      );
+
+      yield put(virtualNodeStylesInspected(inspectionInfo));
+    }
+  );
 }
 
 function* handleRenderer(getState: AppStateSelector) {
@@ -113,9 +153,18 @@ function* handleRenderer(getState: AppStateSelector) {
   yield fork(function*() {
     while (1) {
       const action = yield take(chan);
-      yield put(action);
+
+      // ensure it's an action
+      if (action.type) {
+        yield put(action);
+      }
     }
   });
+
+  yield takeLatest(ActionType.CLIENT_CONNECTED, function*() {
+    yield call(handleClientChans, _client);
+  });
+
   yield takeEvery(["FOCUS"], function() {
     window.focus();
   });
@@ -147,14 +196,14 @@ function* handleRenderer(getState: AppStateSelector) {
     ],
     function*() {
       const state: AppState = yield select(getState);
+      console.log(state.designer.selectedNodeSources);
 
       yield put(
         pcVirtObjectEdited({
-          mutations: state.designer.selectedNodePaths.map(info => {
+          mutations: state.designer.selectedNodePaths.map((info, i) => {
             const frame = getFrameFromIndex(Number(info), state.designer);
             return {
-              nodePath: [Number(info)],
-              nodeUri: state.designer.ui.query.canvasFile,
+              targetId: state.designer.selectedNodeSources[i].source.sourceId,
               action: {
                 kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
                 annotations: computeVirtJSObject(frame.annotations)
@@ -177,8 +226,7 @@ function* handleRenderer(getState: AppStateSelector) {
       pcVirtObjectEdited({
         mutations: state.designer.selectedNodePaths.map(index => {
           return {
-            nodePath: [Number(index)],
-            nodeUri: state.designer.ui.query.canvasFile,
+            targetId: state.designer.selectedNodeSources[index].source.sourceId,
             action: {
               kind: PCMutationActionKind.EXPRESSION_DELETED
             }
@@ -221,7 +269,10 @@ function* handleRenderer(getState: AppStateSelector) {
       ActionType.GLOBAL_Y_KEY_DOWN,
       ActionType.GLOBAL_SAVE_KEY_DOWN,
       ActionType.GET_ALL_SCREENS_REQUESTED,
+      ActionType.VIRTUAL_NODES_SELECTED,
       ActionType.PASTED,
+      ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED,
+      ActionType.STYLE_RULE_FILE_NAME_CLICKED,
       ActionType.FS_ITEM_CLICKED,
       ActionType.TITLE_DOUBLE_CLICKED,
       ActionType.ENV_OPTION_CLICKED,
@@ -243,6 +294,8 @@ function* handleCanvasMouseUp(
 ) {
   yield fork(handleMetaKeyClick, action, getState);
   yield fork(handleSyncFrameToLocation);
+
+  const state: AppState = yield select();
 }
 
 function* handleSyncFrameToLocation() {
@@ -567,21 +620,25 @@ function* handleActions(getState: AppStateSelector) {
 }
 
 function* handleVirtualObjectSelected(getState: AppStateSelector) {
-  yield takeEvery(ActionType.CANVAS_MOUSE_UP, function*() {
-    const state: AppState = yield select(getState);
-    if (!state.designer.selectedNodePaths.length) {
-      return;
-    }
+  yield takeEvery(
+    [ActionType.CANVAS_MOUSE_UP, ActionType.FRAME_TITLE_CLICKED],
+    function*() {
+      const state: AppState = yield select(getState);
+      if (!state.designer.selectedNodePaths.length) {
+        return;
+      }
 
-    yield put(
-      virtualNodesSelected(
-        state.designer.selectedNodePaths.map(nodePath => {
-          return {
-            nodePath: nodePath.split(".").map(Number),
-            nodeUri: state.designer.ui.query.canvasFile!
-          };
+      yield put(
+        virtualNodesSelected({
+          sources: state.designer.selectedNodePaths.map(nodePath => {
+            return {
+              path: nodePath.split(".").map(Number),
+              uri: state.designer.ui.query.canvasFile!
+            };
+          }),
+          screenWidth: window.screenX
         })
-      )
-    );
-  });
+      );
+    }
+  );
 }

@@ -1,6 +1,6 @@
 use super::super::ast;
 use super::virt;
-use crate::base::ast::{ExprTextSource, Location};
+use crate::base::ast::Location;
 use crate::base::runtime::RuntimeError;
 use crate::pc::ast as pc_ast;
 use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext};
@@ -23,8 +23,8 @@ fn evaluate_expression<'a>(
     ast::Expression::Group(group) => evaluate_group(group, depth, context),
     ast::Expression::Not(conjunction) => evaluate_not(conjunction, depth, context),
     ast::Expression::Node(node) => evaluate_node(node, depth, context),
-    ast::Expression::String(value) => evaluate_string(&value, context),
-    ast::Expression::Boolean(value) => evaluate_boolean(&value, context),
+    ast::Expression::String(value) => evaluate_string(&value),
+    ast::Expression::Boolean(value) => evaluate_boolean(&value),
     ast::Expression::Number(value) => evaluate_number(&value, context),
     ast::Expression::Array(value) => evaluate_array(value, depth, context),
     ast::Expression::Object(value) => evaluate_object(value, depth, context),
@@ -50,7 +50,7 @@ fn evaluate_conjuction<'a>(
       if !left.truthy() {
         match &*conjunction.right {
           ast::Expression::Conjunction(conj_right) => {
-            if (conj_right.operator == ast::ConjunctionOperatorKind::Or) {
+            if conj_right.operator == ast::ConjunctionOperatorKind::Or {
               evaluate_expression(&conj_right.right, depth, context)
             } else {
               Ok(left)
@@ -98,20 +98,14 @@ fn evaluate_node<'a>(
   }
 }
 
-fn evaluate_string<'a>(
-  value: &ast::Str,
-  context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+fn evaluate_string<'a>(value: &ast::Str) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsString(virt::JsString {
     source_id: value.id.to_string(),
     value: value.value.to_string(),
   }))
 }
 
-fn evaluate_boolean<'a>(
-  value: &ast::Boolean,
-  context: &'a mut PCContext,
-) -> Result<virt::JsValue, RuntimeError> {
+fn evaluate_boolean<'a>(value: &ast::Boolean) -> Result<virt::JsValue, RuntimeError> {
   Ok(virt::JsValue::JsBoolean(virt::JsBoolean {
     source_id: value.id.to_string(),
     value: value.value,

@@ -2,16 +2,16 @@
 
 TODO:
 
-caniuse
-a11y
-/*lint-disable-next-line*/
-enforce previews*
+- caniuse
+- a11y
+- /*lint-disable-next-line*/
+- enforce previews*
+- declaration linting
+  - noImportant
 */
 
 use super::evaluator::EvalInfo;
-use super::evaluator::{
-  evaluate as evaluate_pc, EngineMode, __test__evaluate_source as __test__evaluate_pc_source,
-};
+use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::selector_match::find_one_matching_element;
 use super::virt::Node as VirtNode;
 use crate::base::ast::{ExprSource, ExprTextSource, Location};
@@ -146,7 +146,7 @@ mod tests {
   #[test]
   fn generates_warning_when_simple_style_not_found() {
     let source = "<style>a { color: red; }</style><div></div>";
-    let (eval_info, graph) = __test__evaluate_pc_source(source);
+    let (eval_info, graph) = __test__evaluate_pc_code(source);
     let notices = lint(
       &eval_info.unwrap(),
       &graph,
@@ -164,7 +164,7 @@ mod tests {
     let cases = [
       (
         "<style>@media screen and (max-width: 100px) { div { color: red; }}</style><a />",
-        0,
+        1,
       ),
       // ignore exports
       ("<style>@export { div { color: orange; }}</style><a />", 0),
@@ -176,7 +176,8 @@ mod tests {
     ];
 
     for (source, warning_count) in cases.iter() {
-      let (eval_info, graph) = __test__evaluate_pc_source(source);
+      println!("{}", source);
+      let (eval_info, graph) = __test__evaluate_pc_code(source);
       let notices = lint(
         &eval_info.unwrap(),
         &graph,

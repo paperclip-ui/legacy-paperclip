@@ -48,30 +48,34 @@ export const Birdseye = memo(() => {
   const { state, dispatch } = useAppStore();
   const filter = state.designer.birdseyeFilter;
 
-  const renderers = useMultipleFrames({
+  const multiFrameState = useMultipleFrames({
+    version: state.designer.pcFileDataVersion,
     fileData: getPCFileData(state.designer.allLoadedPCFileData),
     shouldCollectRects: false
   });
 
   // TODO - can't memoize sinze renderer is _mutable_ but immutableFrames is not
-  const allFrames: CellFrame[] = renderers.reduce((frames, renderer) => {
-    const filePath = fileURLToPath(renderer.renderer.targetUri);
+
+  const allFrames: CellFrame[] = [];
+
+  for (const uri in multiFrameState.frames) {
+    const filePath = fileURLToPath(uri);
+    const info = multiFrameState.frames[uri];
     const relativePath = path.relative(
       state.designer.projectDirectory?.absolutePath,
       filePath
     );
-    return [
-      ...frames,
-      ...renderer.renderer.immutableFrames.map((frame, i) => ({
+    allFrames.push(
+      ...info.frames.map((frame, i) => ({
         ...frame,
         index: i,
         relativePath,
         filePath,
-        fileUri: renderer.renderer.targetUri,
-        node: (renderer.renderer.getPreview() as any).children[i]
+        fileUri: uri,
+        node: info.preview.children[i]
       }))
-    ];
-  }, []);
+    );
+  }
 
   let content;
 

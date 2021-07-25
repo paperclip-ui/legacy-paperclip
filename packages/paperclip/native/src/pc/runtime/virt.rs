@@ -1,9 +1,20 @@
+extern crate wasm_bindgen;
+use wasm_bindgen::prelude::*;
+
 use crate::base::ast::ExprTextSource;
 use crate::css::runtime::virt as css_virt;
 use crate::js::runtime::virt as js_virt;
 use serde::Serialize;
 use std::collections::BTreeMap;
 use std::fmt;
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct NodeSource {
+  pub path: Vec<usize>,
+
+  #[serde(rename = "documentUri")]
+  pub document_uri: String,
+}
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {

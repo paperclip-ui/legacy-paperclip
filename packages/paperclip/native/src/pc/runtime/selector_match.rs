@@ -94,16 +94,19 @@ Combo selectors? `a b, c > d` would yield:
 
 */
 
-use super::evaluator::{
-  evaluate as evaluate_pc, EngineMode, __test__evaluate_source as __test__evaluate_pc_source,
-};
+use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::virt::{Element as VirtElement, Node as VirtNode};
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::id_generator::generate_seed;
 use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast as css_ast;
-use crate::css::parser::parse as parse_css;
+use crate::css::parser::{parse as parse_css, parse_selector as parse_css_selector};
 use crate::pc::parser::parse as parse_pc;
+use cached::proc_macro::cached;
+use cached::SizedCache;
+use regex::Regex;
+use std::collections::HashMap;
+use std::sync::Mutex;
 
 #[derive(Debug)]
 struct Context<'a> {
@@ -113,6 +116,26 @@ struct Context<'a> {
 impl<'a> Context<'a> {
   fn new() -> Context<'a> {
     Context { path: Vec::new() }
+  }
+  fn new_from_path(node_path: &Vec<usize>, document: &'a VirtNode) -> Option<Context<'a>> {
+    let mut curr = Context::new();
+    let mut parent = document;
+
+    for i in node_path {
+      let curr_option = parent
+        .get_children()
+        .and_then(|children| children.get(*i))
+        .and_then(|child| Some(curr.child(*i, parent)));
+
+      if let Some(new_curr) = curr_option {
+        curr = new_curr;
+        parent = curr.target().unwrap();
+      } else {
+        return None;
+      }
+    }
+
+    Some(curr)
   }
   fn child(&self, index: usize, parent: &'a VirtNode) -> Context<'a> {
     let mut path = self.path.clone();
@@ -147,6 +170,81 @@ impl<'a> Context<'a> {
   }
 }
 
+pub fn selector_text_matches_element<'a, 'b>(
+  selector_text: &'b str,
+  element_path: &'a Vec<usize>,
+  document: &'a VirtNode,
+) -> bool {
+  get_selector_text_matching_sub_selector(selector_text, element_path, document) != None
+}
+
+pub fn element_matches_selector_text_edge<'a, 'b>(
+  selector_text: &'a str,
+  element: &'b VirtElement,
+) -> bool {
+  let selector = parse_css_selector(selector_text, None).unwrap();
+  let context = Context::new();
+
+  element_matches_selector_edge(&selector, element, &context)
+}
+
+fn element_matches_selector_edge<'a, 'b>(
+  selector: &css_ast::Selector,
+  element: &'b VirtElement,
+  context: &Context,
+) -> bool {
+  match selector {
+    css_ast::Selector::Combo(_)
+    | css_ast::Selector::Class(_)
+    | css_ast::Selector::Attribute(_)
+    | css_ast::Selector::Element(_)
+    | css_ast::Selector::AllSelector(_)
+    | css_ast::Selector::Id(_) => get_matching_sub_selector(selector, element, context) != None,
+    css_ast::Selector::Descendent(sel) => {
+      element_matches_selector_edge(&sel.descendent, element, context)
+    }
+    css_ast::Selector::Child(sel) => element_matches_selector_edge(&sel.child, element, context),
+    css_ast::Selector::Sibling(sel) => {
+      element_matches_selector_edge(&sel.sibling_selector, element, context)
+    }
+    css_ast::Selector::Adjacent(sel) => {
+      element_matches_selector_edge(&sel.next_sibling_selector, element, context)
+    }
+    css_ast::Selector::Group(sel) => sel
+      .selectors
+      .iter()
+      .any(|child| element_matches_selector_edge(child, element, context)),
+    css_ast::Selector::Not(sel) => !element_matches_selector_edge(&sel.selector, element, context),
+    css_ast::Selector::Prefixed(_)
+    | css_ast::Selector::Global(_)
+    | css_ast::Selector::This(_)
+    | css_ast::Selector::Within(_)
+    | css_ast::Selector::SubElement(_) => false,
+    css_ast::Selector::PseudoParamElement(_) | css_ast::Selector::PseudoElement(_) => true,
+  }
+}
+
+pub fn get_selector_text_matching_sub_selector<'a, 'b>(
+  selector_text: &'b str,
+  element_path: &'a Vec<usize>,
+  document: &'a VirtNode,
+) -> Option<(css_ast::Selector, css_ast::Selector)> {
+  let selector = parse_css_selector(selector_text, None).unwrap();
+
+  Context::new_from_path(element_path, document)
+    .and_then(|context| {
+      context
+        .target()
+        .and_then(|node| match node {
+          VirtNode::Element(el) => Some(el),
+          _ => None,
+        })
+        .and_then(|element| get_matching_sub_selector(&selector, element, &context))
+        .and_then(|sub_selector| Some(sub_selector.clone()))
+    })
+    .and_then(|sub_selector| Some((sub_selector, selector)))
+}
+
 // Note that we
 pub fn get_matching_elements<'a, 'b>(
   selector_text: &'b str,
@@ -156,7 +254,7 @@ pub fn get_matching_elements<'a, 'b>(
   // since we may be dealing with nested styles and such -- that information is included in the style selector, but is
   // lost within the CSS AST (unless parent el or scope is provided for context - that's just too cumbersome). We can
   // deal with the performance penalty 😭
-  let selector = parse_css_selector(selector_text).unwrap();
+  let selector = parse_css_selector(selector_text, None).unwrap();
 
   let mut matching_elements: Vec<&'a VirtElement> = Vec::new();
 
@@ -165,7 +263,7 @@ pub fn get_matching_elements<'a, 'b>(
     document,
     Context::new(),
     &mut |child, context| {
-      if selector_matches_element2(&selector, child, context) {
+      if get_matching_sub_selector(&selector, child, context) != None {
         matching_elements.push(child);
       }
       true
@@ -179,14 +277,14 @@ pub fn find_one_matching_element<'a, 'b>(
   selector_text: &'b str,
   document: &'a VirtNode,
 ) -> Option<&'a VirtElement> {
-  let selector = parse_css_selector(selector_text).unwrap();
+  let selector = parse_css_selector(selector_text, None).unwrap();
   let mut found: Option<&'a VirtElement> = None;
   traverse_tree(
     &selector,
     document,
     Context::new(),
     &mut |child, context| {
-      if selector_matches_element2(&selector, child, context) {
+      if get_matching_sub_selector(&selector, child, context) != None {
         found = Some(child);
         false
       } else {
@@ -220,17 +318,17 @@ fn traverse_tree<'a>(
   return true;
 }
 
-fn selector_matches_element2<'a, 'b>(
-  selector: &css_ast::Selector,
+fn get_matching_sub_selector<'a, 'b, 'c>(
+  selector: &'c css_ast::Selector,
   element: &'a VirtElement,
   context: &'a Context,
-) -> bool {
+) -> Option<&'c css_ast::Selector> {
   match selector {
     // a, b, c
     css_ast::Selector::Group(sel) => {
       for selector in &sel.selectors {
-        if selector_matches_element2(&selector, element, context) {
-          return true;
+        if let Some(sub_selector) = get_matching_sub_selector(&selector, element, context) {
+          return Some(sub_selector);
         }
       }
     }
@@ -238,25 +336,35 @@ fn selector_matches_element2<'a, 'b>(
     // a[b]
     css_ast::Selector::Combo(sel) => {
       for selector in &sel.selectors {
-        if !selector_matches_element2(selector, element, context) {
-          return false;
+        if get_matching_sub_selector(selector, element, context) == None {
+          return None;
         }
       }
-      return true;
+      return Some(&selector);
     }
 
     // :hover
     css_ast::Selector::PseudoElement(sel) => {
-      if sel.name == "disabled" {
-        return element.get_attribute("disabled") != None;
+      if sel.name == "disabled" && element.get_attribute("disabled") == None {
+        return None;
       }
-      return true;
+
+      // TODO - need to have flag for states like this. For now, ignore
+      // https://www.w3schools.com/css/css_pseudo_classes.asp
+      if matches!(
+        sel.name.as_str(),
+        "hover" | "active" | "visited" | "link" | "focus"
+      ) {
+        return None;
+      }
+
+      return Some(&selector);
     }
 
     // :nth-child(2n)
     css_ast::Selector::PseudoParamElement(sel) => {
       // TODO - need to do simple parse logic
-      return true;
+      return Some(&selector);
     }
 
     // a b c d -> [a [b [c d]]]
@@ -265,8 +373,8 @@ fn selector_matches_element2<'a, 'b>(
     // ancestor selectors along the way. Ancestor selectors are always _leaf_ selectors.
     css_ast::Selector::Descendent(sel) => {
       // _may_ be a descendent element
-      if !selector_matches_element2(&sel.descendent, element, context) {
-        return false;
+      if get_matching_sub_selector(&sel.descendent, element, context) == None {
+        return None;
       }
 
       let mut ancestor_context_option = context.parent_context();
@@ -276,8 +384,9 @@ fn selector_matches_element2<'a, 'b>(
         if let Some(ancestor_target) = ancestor_context.target() {
           if let VirtNode::Element(ancestor_element) = ancestor_target {
             // this will *always* be a leaf selector
-            if selector_matches_element2(&sel.ancestor, ancestor_element, &ancestor_context) {
-              return true;
+            if get_matching_sub_selector(&sel.ancestor, ancestor_element, &ancestor_context) != None
+            {
+              return Some(&selector);
             }
           }
         } else {
@@ -286,21 +395,17 @@ fn selector_matches_element2<'a, 'b>(
         ancestor_context_option = ancestor_context.parent_context();
       }
 
-      return false;
+      return None;
     }
 
     // :has
     css_ast::Selector::SubElement(sel) => {
-      return context
-        .target()
-        .and_then(|self_context| {
-          Some(selector_matches_nested_element(
-            &sel.selector,
-            self_context,
-            &context,
-          ))
-        })
-        .unwrap_or(false);
+      return context.target().and_then(|self_context| {
+        if selector_matches_nested_element(&sel.selector, self_context, &context) {
+          return Some(selector);
+        }
+        return None;
+      });
     }
 
     // :global(a)
@@ -313,13 +418,16 @@ fn selector_matches_element2<'a, 'b>(
 
     // :not(a)
     css_ast::Selector::Not(not) => {
-      return !selector_matches_element2(&not.selector, element, context);
+      if get_matching_sub_selector(&not.selector, element, context) == None {
+        return Some(&not.selector);
+      }
+      return None;
     }
 
     // a > b
     css_ast::Selector::Child(sel) => {
-      if !selector_matches_element2(&sel.child, element, context) {
-        return false;
+      if get_matching_sub_selector(&sel.child, element, context) == None {
+        return None;
       }
 
       return context
@@ -327,22 +435,18 @@ fn selector_matches_element2<'a, 'b>(
         .and_then(|parent_context| {
           return parent_context.target().and_then(|parent_node| {
             if let VirtNode::Element(parent_element) = parent_node {
-              Some(selector_matches_element2(
-                &sel.parent,
-                &parent_element,
-                &parent_context,
-              ))
+              get_matching_sub_selector(&sel.parent, &parent_element, &parent_context)
             } else {
               None
             }
           });
         })
-        .unwrap_or(false);
+        .and_then(|matches_parent| Some(selector));
     }
     // a + b
     css_ast::Selector::Adjacent(sel) => {
-      if !selector_matches_element2(&sel.next_sibling_selector, element, context) {
-        return false;
+      if get_matching_sub_selector(&sel.next_sibling_selector, element, context) == None {
+        return None;
       }
 
       return context
@@ -356,27 +460,27 @@ fn selector_matches_element2<'a, 'b>(
             let sibling = children.get(i);
             if let Some(node) = sibling {
               if let VirtNode::Element(element) = node {
-                if selector_matches_element2(
+                if get_matching_sub_selector(
                   &sel.selector,
                   &element,
                   &context.parent_context().unwrap().child(i, node),
-                ) {
-                  return Some(true);
+                ) != None
+                {
+                  return Some(sel.next_sibling_selector.as_ref());
                 }
 
-                return Some(false);
+                return None;
               }
             }
           }
 
-          Some(false)
-        })
-        .unwrap_or(false);
+          None
+        });
     }
     // a ~ b
     css_ast::Selector::Sibling(sel) => {
-      if !selector_matches_element2(&sel.sibling_selector, element, context) {
-        return false;
+      if get_matching_sub_selector(&sel.sibling_selector, element, context) == None {
+        return None;
       }
 
       return context
@@ -390,20 +494,20 @@ fn selector_matches_element2<'a, 'b>(
             let sibling = children.get(i);
             if let Some(node) = sibling {
               if let VirtNode::Element(element) = node {
-                if selector_matches_element2(
+                if get_matching_sub_selector(
                   &sel.selector,
                   &element,
                   &context.parent_context().unwrap().child(i, node),
-                ) {
-                  return Some(true);
+                ) != None
+                {
+                  return Some(sel.sibling_selector.as_ref());
                 }
               }
             }
           }
 
-          Some(false)
-        })
-        .unwrap_or(false);
+          None
+        });
     }
     // #id
     css_ast::Selector::Id(sel) => {
@@ -412,31 +516,50 @@ fn selector_matches_element2<'a, 'b>(
         .and_then(|id_attr| {
           return id_attr;
         })
-        .and_then(|id| Some(id == sel.id))
-        .unwrap_or(false);
+        .and_then(|id| if id == sel.id { Some(selector) } else { None });
     }
     // .class
     css_ast::Selector::Class(sel) => {
+      lazy_static! {
+        static ref escape_re: Regex = Regex::new(r"\\").unwrap();
+        static ref CACHE: Mutex<HashMap<String, Vec<String>>> = Mutex::new(HashMap::new());
+      }
+
       return element
         .get_attribute("class")
         .and_then(|value_option| value_option)
         .and_then(|classes| {
-          for class in classes.split(" ").into_iter() {
-            if class == sel.class_name {
-              return Some(true);
-            }
+          let mut class_name_cache = CACHE.lock().unwrap();
+
+          let match_class_name = escape_re.replace_all(&sel.class_name, "").to_string();
+
+          let class_list = if let Some(class_list) = class_name_cache.get(&classes) {
+            class_list
+          } else {
+            class_name_cache.insert(
+              classes.to_string(),
+              classes
+                .split(" ")
+                .map(|v| v.to_string())
+                .collect::<Vec<String>>(),
+            );
+            class_name_cache.get(&classes).unwrap()
+          };
+
+          if class_list.contains(&match_class_name) {
+            Some(selector)
+          } else {
+            None
           }
-          Some(false)
-        })
-        .unwrap_or(false);
+        });
     }
     // *
     css_ast::Selector::AllSelector(_) => {
-      return true;
+      return Some(selector);
     }
     css_ast::Selector::Element(sel) => {
       if sel.tag_name == element.tag_name {
-        return true;
+        return Some(&selector);
       }
     }
     css_ast::Selector::Attribute(sel) => {
@@ -458,22 +581,30 @@ fn selector_matches_element2<'a, 'b>(
                   || attr_value == &format!("\"{}\"", value)
                   || attr_value == &format!("'{}'", value)
                 {
-                  return Some(true);
+                  return Some(selector);
                 }
               }
               _ => {}
             }
-            return Some(false);
-          })
-          .unwrap_or(false);
+            None
+          });
       } else {
         if element.get_attribute(&sel.name) != None {
-          return true;
+          return Some(&selector);
         }
       }
     }
   }
 
+  None
+}
+
+#[cached(
+  type = "SizedCache<String, bool>",
+  create = "{ SizedCache::with_size(100) }",
+  convert = r#"{ format!("{}{}", class, value) }"#
+)]
+fn class_contains(class: &str, value: &str) -> bool {
   false
 }
 
@@ -485,7 +616,7 @@ fn selector_matches_nested_element<'a>(
   if let Some(children) = parent.get_children() {
     for (i, child) in children.iter().enumerate() {
       if let VirtNode::Element(child_element) = child {
-        if selector_matches_element2(selector, child_element, &context.child(i, parent)) {
+        if get_matching_sub_selector(selector, child_element, &context.child(i, parent)) != None {
           return true;
         }
       }
@@ -506,7 +637,7 @@ mod tests {
   fn can_match_tag_name_selector() {
     let selector_source = "div";
     let pc_source = "<div /><span />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -516,7 +647,7 @@ mod tests {
   fn can_match_attr() {
     let selector_source = "[href]";
     let pc_source = "<a href='#' /> <a />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -526,7 +657,7 @@ mod tests {
   fn can_match_attr_with_value() {
     let selector_source = "[href=#]";
     let pc_source = "<a href='#' /><a href='##' />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -536,7 +667,7 @@ mod tests {
   fn can_match_id_selector() {
     let selector_source = "#a";
     let pc_source = "<div id='a' /><div id='b' />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -546,7 +677,7 @@ mod tests {
   fn can_match_adj_selector() {
     let selector_source = "a + b";
     let pc_source = "<a /><b />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -556,7 +687,7 @@ mod tests {
   fn can_match_nested_adj_selector() {
     let selector_source = "a + b";
     let pc_source = "<div><a /><b /></div>";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -566,7 +697,7 @@ mod tests {
   fn can_match_sib_selector() {
     let selector_source = "a ~ b";
     let pc_source = "<div><a /><c /><b /></div>";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -578,7 +709,7 @@ mod tests {
   fn can_match_ancestor_selector() {
     let selector_source = "[href=#]";
     let pc_source = "<a href='#' /><a href='##' />";
-    let (eval_info, _) = __test__evaluate_pc_source(pc_source);
+    let (eval_info, _) = __test__evaluate_pc_code(pc_source);
     let info2 = &eval_info.unwrap();
     let elements = get_matching_elements(&selector_source, &info2.preview);
     assert_eq!(elements.len(), 1);
@@ -620,24 +751,10 @@ mod tests {
     ];
 
     for (selector, html, count) in cases.iter() {
-      let (result, _) = __test__evaluate_pc_source(html);
+      let (result, _) = __test__evaluate_pc_code(html);
       let eval_info = &result.unwrap();
       let elements = get_matching_elements(&selector, &eval_info.preview);
       assert_eq!(elements.len() as i32, *count);
-    }
-  }
-}
-
-fn parse_css_selector<'a>(selector: &'a str) -> Option<css_ast::Selector> {
-  let rule = format!("{}{{}}", selector);
-  let ast: css_ast::Sheet = parse_css(&rule, generate_seed().as_str()).unwrap();
-  let rule = ast.rules.get(0).unwrap();
-  match rule {
-    css_ast::Rule::Style(style) => {
-      return Some(style.selector.clone());
-    }
-    _ => {
-      return None;
     }
   }
 }

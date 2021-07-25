@@ -16,6 +16,9 @@ use crate::pc::parser::parse as parse_pc;
 use crate::pc::runtime::diff::diff as diff_pc;
 use crate::pc::runtime::evaluator::{evaluate as evaluate_pc, EngineMode};
 use crate::pc::runtime::export as pc_export;
+use crate::pc::runtime::inspect_node_styles::{
+  inspect_node_styles, InspectionOptions, NodeInspectionInfo,
+};
 use crate::pc::runtime::lint::{lint as lint_pc, LintOptions};
 use crate::pc::runtime::mutation as pc_mutation;
 use crate::pc::runtime::virt as pc_virt;
@@ -199,17 +202,16 @@ impl Engine {
 
   pub fn get_virtual_node_source_info(
     &self,
-    node_path: &Vec<usize>,
-    uri: &String,
+    source: &pc_virt::NodeSource,
   ) -> Option<ast::ExprSource> {
     self
       .evaluated_data
-      .get(uri)
+      .get(&source.document_uri)
       .and_then(|eval_info| match eval_info {
         DependencyEvalInfo::PC(pc_eval_info) => Some(pc_eval_info),
         _ => None,
       })
-      .and_then(|pc_eval_info| pc_eval_info.preview.get_descendent(node_path))
+      .and_then(|pc_eval_info| pc_eval_info.preview.get_descendent(&source.path))
       .and_then(|descendent| {
         self
           .dependency_graph
@@ -225,6 +227,24 @@ impl Engine {
           Some(&ast::ExprTextSource::new(uri, ast.get_location().clone())),
         ))
       })
+  }
+
+  pub fn get_expression_by_id<'a>(&'a self, id: &String) -> Option<(String, pc_ast::PCObject<'a>)> {
+    self.dependency_graph.get_expression_by_id(id)
+  }
+
+  pub fn inspect_node_styles(
+    &mut self,
+    source: &pc_virt::NodeSource,
+    options: &InspectionOptions,
+  ) -> NodeInspectionInfo {
+    inspect_node_styles(
+      &source.path,
+      &source.document_uri,
+      &self.evaluated_data,
+      &self.dependency_graph,
+      options,
+    )
   }
 
   pub fn lint_file(&mut self, uri: &String) -> Option<Vec<Diagnostic>> {
@@ -474,4 +494,26 @@ mod tests {
 
     let result = block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
   }
+}
+
+pub fn __test__evaluate_pc_files<'a>(
+  files: BTreeMap<String, String>,
+  main_file_name: &'a str,
+) -> (BTreeMap<String, DependencyEvalInfo>, DependencyGraph) {
+  let f1 = files.clone();
+  let f2 = files.clone();
+
+  let mut engine = Engine::new(
+    Box::new(move |uri| f1.get(uri).unwrap().clone()),
+    Box::new(move |uri| f2.get(uri) != None),
+    Box::new(|_, uri| Some(uri.to_string())),
+    EngineMode::SingleFrame,
+  );
+
+  block_on(engine.run(&main_file_name.to_string()));
+
+  (
+    engine.evaluated_data.clone(),
+    engine.dependency_graph.clone(),
+  )
 }

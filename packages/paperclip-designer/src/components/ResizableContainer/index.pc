@@ -1,0 +1,48 @@
+<div export
+  component
+  as="default"
+  {style}
+  className:right="right"
+  className:fixedWidth="fixed-width">
+  <style>
+    --bar-size: 2px;
+    height: 100%;
+    display: flex;
+    flex-shrink: 0;
+    &.fixed-width {
+      width: 300px;
+    }
+  </style>
+
+  <!-- bar -->
+  <div>
+    <style>
+      background: rgba(211, 211, 211);
+      flex-shrink: 0;
+      position: relative;
+      &:within(.right), &:within(.left) {
+        height: 100%;
+        width: var(--bar-size);
+      }
+    </style>
+    <div onMouseDown={onBarDown}>
+      <style>
+        background: transparent;
+        &:within(.right), &:within(.left) {
+          width: 200%;
+          height: 100%;
+          transform: translateX(-50%);
+          cursor: ew-resize;
+        }
+      </style>
+    </div>
+  </div>
+  <div>
+    <style>
+      overflow: scroll;
+      height: 100%;
+      width: 100%;
+    </style>
+    {children}
+  </div>
+</div>

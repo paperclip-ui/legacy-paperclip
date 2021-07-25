@@ -65,7 +65,7 @@ const stringifyFontFaceRule = ({ style }, options: StringifySheetOptions) => {
 };
 
 const stringifyStyleRule = (
-  { selectorText, style },
+  { selectorText, style, ...rest },
   options: StringifySheetOptions
 ) => {
   return `${selectorText} {

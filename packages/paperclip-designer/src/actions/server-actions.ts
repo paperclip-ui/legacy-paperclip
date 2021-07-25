@@ -1,6 +1,10 @@
 import { LoadedData } from "paperclip";
 import { ContentChange } from "paperclip-source-writer";
-import { ExprSource } from "paperclip-utils";
+import {
+  ExprSource,
+  NodeStyleInspection,
+  VirtNodeSource
+} from "paperclip-utils";
 import { AvailableBrowser, VirtualNodeSourceInfo } from "../state";
 import { actionCreator } from "./base";
 import { InstanceAction } from "./instance-actions";
@@ -13,7 +17,8 @@ export enum ServerActionType {
   INIT_PARAM_DEFINED = "INIT_PARAM_DEFINED",
   BROWSERSTACK_BROWSERS_LOADED = "INIT_PARAM_BROWSERSTACK_BROWSERS_LOADEDDEFINED",
   PC_SOURCE_EDITED = "PC_SOURCE_EDITED",
-  VIRTUAL_NODE_SOURCES_LOADED = "VIRTUAL_NODE_SOURCES_LOADED"
+  VIRTUAL_NODE_SOURCES_LOADED = "VIRTUAL_NODE_SOURCES_LOADED",
+  VIRTUAL_NODE_STYLES_INSPECTED = "VIRTUAL_NODE_STYLES_INSPECTED"
 }
 
 type BaseAction<TType extends ServerActionType, TPayload = undefined> = {
@@ -40,6 +45,11 @@ export type InitParamsDefined = BaseAction<
     readonly: boolean;
     availableBrowsers: AvailableBrowser[];
   }
+>;
+
+export type VirtualNodeStylesInspected = BaseAction<
+  ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED,
+  Array<[VirtNodeSource, NodeStyleInspection]>
 >;
 
 export type BrowserstackBrowsersLoaded = BaseAction<
@@ -76,6 +86,10 @@ export const allPCContentLoaded = actionCreator<AllPCContentLoaded>(
 export const browserstackBrowsersLoaded = actionCreator<
   BrowserstackBrowsersLoaded
 >(ServerActionType.BROWSERSTACK_BROWSERS_LOADED);
+
+/**
+ * @deprecated use explicit reveal API instead
+ */
 export const revealExpressionSourceRequested = actionCreator<
   RevealExpressionSourceRequested
 >(ServerActionType.REVEAL_EXPRESSION_SOURCE_REQUESTED);
@@ -86,10 +100,14 @@ export const virtualNodeSourcesLoaded = actionCreator<VirtualNodeSourcesLoaded>(
 export const pcSourceEdited = actionCreator<PCSourceEdited>(
   ServerActionType.PC_SOURCE_EDITED
 );
+export const virtualNodeStylesInspected = actionCreator<
+  VirtualNodeStylesInspected
+>(ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED);
 
 export type ServerAction =
   | InstanceChanged
   | RevealExpressionSourceRequested
+  | VirtualNodeStylesInspected
   | VirtualNodeSourcesLoaded
   | Crashed
   | PCSourceEdited

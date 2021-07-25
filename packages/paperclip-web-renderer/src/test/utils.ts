@@ -3,7 +3,7 @@ import { createEngineDelegate } from "paperclip";
 import * as path from "path";
 import { FramesRenderer } from "../frame-renderer";
 import { EngineMode } from "paperclip";
-import { identity, replace, takeWhile } from "lodash";
+import { identity } from "lodash";
 import * as CSSOM from "cssom";
 
 export const mockDOMFactory: DOMFactory = {
@@ -227,6 +227,9 @@ export const createMockEngineDelegate = (
 export const createMockFramesRenderer = (
   uri = "",
   resolveUrl: (url: string) => string = identity
-) => new FramesRenderer(uri, resolveUrl, mockDOMFactory);
+) => new FramesRenderer(uri, resolveUrl, mockDOMFactory, noop);
+
+// eslint-disable-next-line
+const noop = () => {};
 
 export const trimWS = (str: string) => str.replace(/[\s\r\n\t]+/g, " ");

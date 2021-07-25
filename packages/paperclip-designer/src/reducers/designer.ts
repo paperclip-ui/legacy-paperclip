@@ -138,6 +138,9 @@ const selectNode = (
   designer: DesignerState
 ) => {
   return produce(designer, newDesigner => {
+    newDesigner.selectedNodeStyleInspections = [];
+    newDesigner.selectedNodeSources = [];
+
     if (nodePath == null) {
       newDesigner.selectedNodePaths = [];
       return;
@@ -208,6 +211,13 @@ export const reduceDesigner = (
     case ServerActionType.VIRTUAL_NODE_SOURCES_LOADED: {
       return produce(designer, newDesigner => {
         newDesigner.selectedNodeSources = action.payload;
+      });
+    }
+    case ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED: {
+      return produce(designer, newDesigner => {
+        newDesigner.selectedNodeStyleInspections = action.payload.map(
+          info => info[1]
+        );
       });
     }
     case ActionType.BIRDSEYE_FILTER_CHANGED: {
@@ -306,6 +316,7 @@ export const reduceDesigner = (
       designer = produce(designer, newDesigner => {
         newDesigner.allLoadedPCFileData[designer.ui.query.canvasFile] = action
           .payload.data as LoadedPCData;
+        newDesigner.pcFileDataVersion++;
       });
       designer = maybeCenterCanvas(designer);
       return designer;
@@ -460,6 +471,11 @@ export const reduceDesigner = (
         newDesigner.loadingBirdseye = false;
         newDesigner.loadedBirdseyeInitially = true;
         newDesigner.allLoadedPCFileData = action.payload;
+        newDesigner.currentEngineEvents = {};
+
+        // janky mechanism to reset renderer state since renderer depends on diffing  - we
+        // need to explicitly version the data like so
+        newDesigner.pcFileDataVersion++;
       });
     }
     case ActionType.RESIZER_MOVED:

@@ -5,7 +5,6 @@ import {
   contentChangesCreated,
   engineCrashed,
   engineLoaded,
-  GetProjectFilesRequestChanged,
   WorkerInitialized
 } from "../actions";
 import { loadEngineDelegate } from "paperclip/browser";
@@ -17,7 +16,7 @@ import {
   LoadedData,
   loadedDataEmitted
 } from "paperclip-utils";
-import { AppState, WorkerState } from "../state";
+import { WorkerState } from "../state";
 import { applyPatch } from "fast-json-patch";
 import { EngineDelegate } from "paperclip";
 import { EngineDelegateEvent } from "paperclip";
@@ -59,9 +58,7 @@ const init = async () => {
   };
 
   const onEngineInit = () => {
-    _writer = new PCSourceWriter({
-      engine: _engine
-    });
+    _writer = new PCSourceWriter(_engine);
     dispatch(engineLoaded(null));
     tryOpeningCurrentFile();
   };
@@ -115,7 +112,7 @@ const init = async () => {
   const handleVirtObjectEdited = async (action: vea.PCVirtObjectEdited) => {
     dispatch(
       contentChangesCreated({
-        changes: await _writer.getContentChanges(action.payload.mutations)
+        changes: _writer.apply(action.payload.mutations)
       })
     );
   };

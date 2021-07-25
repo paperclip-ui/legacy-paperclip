@@ -1,6 +1,6 @@
 import { noop } from "lodash";
 import React, { memo, useState } from "react";
-import { useTextInput } from "../../../../../../paperclip-designer/src/components/TextInput";
+import { useTextInput } from "paperclip-designer/src/components/TextInput";
 import { Modal } from "../../Modal";
 import * as styles from "./index.pc";
 import crc32 from "crc32";
@@ -12,7 +12,9 @@ const PASSWORDS = ["dinosaur!", "andy", "rana", "css sucks"];
 const KEY = "has_access3";
 
 export const PasswordModal = memo(() => {
-  const [hasAccess, setHasAccess] = useState(localStorage.getItem(KEY) === "yes");
+  const [hasAccess, setHasAccess] = useState(
+    localStorage.getItem(KEY) === "yes"
+  );
   const [error, setError] = useState<string>();
   const [password, setPassword] = useState<string>();
   const passwordInputProps = useTextInput({
@@ -24,7 +26,7 @@ export const PasswordModal = memo(() => {
     return null;
   }
 
-  const onSubmit = (event) => {
+  const onSubmit = event => {
     event.preventDefault();
     if (!PASSWORDS.includes(password)) {
       return setError(`Incorrect password!`);
@@ -34,7 +36,14 @@ export const PasswordModal = memo(() => {
     setHasAccess(true);
   };
 
-  return <Modal secret onClose={noop} title={<styles.HeaderTitle />}>
-    <styles.Content error={error} onSubmit={onSubmit} onPasswordChange={passwordInputProps.onChange} passwordInputRef={passwordInputProps.ref} />
-  </Modal>
+  return (
+    <Modal secret onClose={noop} title={<styles.HeaderTitle />}>
+      <styles.Content
+        error={error}
+        onSubmit={onSubmit}
+        onPasswordChange={passwordInputProps.onChange}
+        passwordInputRef={passwordInputProps.ref}
+      />
+    </Modal>
+  );
 });

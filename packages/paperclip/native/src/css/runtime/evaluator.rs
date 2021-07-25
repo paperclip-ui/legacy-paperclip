@@ -30,7 +30,7 @@ use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
-use crate::base::utils::{get_document_style_private_scope, get_document_style_public_scope};
+use crate::base::utils::{get_document_id, get_document_style_public_scope};
 
 use crate::base::ast::{ExprTextSource, Location};
 use crate::base::runtime::RuntimeError;
@@ -300,7 +300,7 @@ pub fn evaluate<'a>(
     DependencyContent::StyleSheet(sheet) => evaluate_expr(
       sheet,
       uri,
-      &get_document_style_private_scope(uri),
+      dep.get_id().as_str(),
       &get_document_style_public_scope(uri),
       None,
       BTreeMap::new(),
@@ -532,6 +532,8 @@ fn evaluate_condition_rule(
   evaluate_style_rules(&rule.rules, &mut child_context, &parent_selector_context)?;
 
   if rule.declarations.len() > 0 {
+    // Note that condition rule may not parent parent rule. In that
+    // case selector_text will be ""
     let mut child_selector_context = parent_selector_context.child();
 
     if child_selector_context.parent != None {
@@ -548,14 +550,18 @@ fn evaluate_condition_rule(
       parent_selector_context,
     )?;
 
-    child_context
-      .all_rules
-      .push(virt::Rule::Style(virt::StyleRule {
-        exported: context.in_public_scope,
-        source_id: rule.id.to_string(),
-        selector_text,
-        style,
-      }))
+    // cover case with @media print { @media screen { .a { color: red; }}} - selector_text
+    // will be undefined
+    if selector_text.len() > 0 {
+      child_context
+        .all_rules
+        .push(virt::Rule::Style(virt::StyleRule {
+          exported: context.in_public_scope,
+          source_id: rule.id.to_string(),
+          selector_text,
+          style,
+        }))
+    }
   }
 
   context.exports.extend(&child_context.exports);
@@ -976,7 +982,7 @@ fn evaluate_style_rule2(
   };
 
   let mut emitter: SelectorEmitter = SelectorEmitter::new(parent_selector_context.child());
-  write_element_selector(&expr.selector, true, true, context, &mut emitter);
+  write_element_selector(&expr.selector, true, false, context, &mut emitter);
 
   for selector_context in emitter.into_iter() {
     let selector_text = selector_context.to_string();
@@ -1176,10 +1182,18 @@ fn get_document_scope_selector(context: &Context) -> String {
   format!("._{}", get_document_scope(context))
 }
 
+fn get_scope_selector(context: &Context, is_global: bool) -> String {
+  if is_global {
+    "[class]".to_string()
+  } else {
+    format!("._{}", get_document_scope(context))
+  }
+}
+
 fn write_element_selector(
   selector: &ast::Selector,
-  include_document_scope: bool,
-  extra_specificity: bool,
+  is_target: bool,
+  is_global: bool,
   context: &mut Context,
   emitter: &mut SelectorEmitter,
 ) {
@@ -1189,21 +1203,18 @@ fn write_element_selector(
       let mut curr = emitter;
       for selector in &group.selectors {
         curr = curr.split();
-        write_element_selector(
-          selector,
-          include_document_scope,
-          extra_specificity,
-          context,
-          curr,
-        );
+        write_element_selector(selector, is_target, is_global, context, curr);
       }
     }
     ast::Selector::Global(selector) => {
+      // note that we don't want to include extra specificity for global
+      // selectors since they're outside of PC context -- extra specificty demands at _minimum_ [class]
+      // and not every element will have that outside of PC.
       write_element_selector(&selector.selector, false, true, context, emitter);
     }
     ast::Selector::Within(selector) => {
       let mut scope = SelectorEmitter::new(SelectorContext::nil());
-      write_element_selector(&selector.selector, true, true, context, &mut scope);
+      write_element_selector(&selector.selector, true, false, context, &mut scope);
 
       emitter.fork();
 
@@ -1224,8 +1235,12 @@ fn write_element_selector(
 
       // cover :self(.selector)
       if let Some(selector) = &this.selector {
-        write_element_selector(selector, false, true, context, emitter);
+        write_element_selector(selector, false, false, context, emitter);
       }
+
+      // if is_target {
+      //   emitter.push_target(get_scope_selector(context, is_global));
+      // }
     }
     ast::Selector::Prefixed(prefixed) => {
       let connector = prefixed.connector.trim().to_string();
@@ -1240,96 +1255,60 @@ fn write_element_selector(
       // trimming needs to happen in this case `&& {}`. Still works with `& & {}` since that's a descendent selector
       emitter.push_target(connector);
       if let Some(postfix) = &prefixed.postfix_selector {
-        write_element_selector(&postfix, false, true, context, emitter);
+        // target already came from parent, so ignore
+        write_element_selector(&postfix, false, is_global, context, emitter);
       }
     }
     ast::Selector::Element(element) => {
       emitter.push_target(element.tag_name.to_string());
-      if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context))
+      if is_target {
+        emitter.push_target(get_scope_selector(context, is_global));
       }
     }
     ast::Selector::Descendent(selector) => {
-      write_element_selector(
-        &selector.ancestor,
-        include_document_scope,
-        true,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.ancestor, is_target, is_global, context, emitter);
       emitter.push_target(" ".to_string());
-      write_element_selector(
-        &selector.descendent,
-        include_document_scope,
-        true,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.descendent, is_target, is_global, context, emitter);
     }
     ast::Selector::Child(selector) => {
-      write_element_selector(
-        &selector.parent,
-        include_document_scope,
-        true,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.parent, is_target, is_global, context, emitter);
       emitter.push_target(" > ".to_string());
-      write_element_selector(
-        &selector.child,
-        include_document_scope,
-        true,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.child, is_target, is_global, context, emitter);
     }
     ast::Selector::Sibling(selector) => {
-      write_element_selector(
-        &selector.selector,
-        include_document_scope,
-        true,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.selector, is_target, is_global, context, emitter);
       emitter.push_target(" ~ ".to_string());
       write_element_selector(
         &selector.sibling_selector,
-        include_document_scope,
-        true,
+        is_target,
+        is_global,
         context,
         emitter,
       );
     }
     ast::Selector::Adjacent(selector) => {
-      write_element_selector(
-        &selector.selector,
-        include_document_scope,
-        true,
-        context,
-        emitter,
-      );
+      write_element_selector(&selector.selector, is_target, is_global, context, emitter);
       emitter.push_target(" + ".to_string());
       write_element_selector(
         &selector.next_sibling_selector,
-        include_document_scope,
-        true,
+        is_target,
+        is_global,
         context,
         emitter,
       );
     }
     ast::Selector::PseudoElement(selector) => {
       if selector.name == "root" {
-        if include_document_scope {
-          emitter.push_target(get_document_scope_selector(context));
+        if is_global {
+          emitter.push_target(":root".to_string());
         } else {
-          emitter.push_target(format!("{}{}", selector.separator, selector.name));
+          emitter.push_target(get_document_scope_selector(context));
         }
       } else {
-        if include_document_scope {
-          // emitter.push_target(get_document_scope_selector(context));
+        if is_target {
           emitter.push_target(format!(
             "{}{}{}",
-            get_document_scope_selector(context),
+            get_scope_selector(context, is_global),
             selector.separator,
             selector.name
           ));
@@ -1339,41 +1318,50 @@ fn write_element_selector(
       }
     }
     ast::Selector::AllSelector(_) => {
-      if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context));
+      // need to make sure it's not part of combo
+      if is_global {
+        emitter.push_target("*".to_string())
       } else {
-        emitter.push_target("*".to_string());
+        emitter.push_target(get_scope_selector(context, is_global));
       }
     }
     ast::Selector::Id(selector) => {
       emitter.push_target(format!("#{}", selector.id));
-      if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context));
+      if is_target {
+        if is_global {
+          emitter.push_target(format!("#{}", selector.id));
+        } else {
+          emitter.push_target(get_document_scope_selector(context));
+        }
       }
     }
     ast::Selector::PseudoParamElement(selector) => {
-      if include_document_scope {
+      if is_target {
         emitter.push_target(get_document_scope_selector(context));
       }
       emitter.push_target(format!(":{}({})", selector.name, selector.param));
     }
     ast::Selector::Attribute(selector) => {
       emitter.push_target(selector.to_string());
-      if include_document_scope {
+      if is_global {
+        emitter.push_target(selector.to_string());
+      }
+      if is_target {
         emitter.push_target(get_document_scope_selector(context));
       }
     }
     ast::Selector::Not(selector) => {
-      // Note that we don't want extra specificty in :not selector since :not
-      // doesn't support things like :not([class].class)
-
-      if include_document_scope {
+      if is_target {
         emitter.push_target(get_document_scope_selector(context));
+      }
+
+      if is_global {
+        emitter.push_target(get_scope_selector(context, is_global));
       }
 
       emitter.push_buffer(":not(".to_string());
 
-      write_element_selector(&selector.selector, false, true, context, emitter);
+      write_element_selector(&selector.selector, false, is_global, context, emitter);
       emitter.push_buffer(")".to_string());
       emitter.persist_buffer();
     }
@@ -1381,57 +1369,63 @@ fn write_element_selector(
       // Note that we don't want extra specificty in :not selector since :not
       // doesn't support things like :not([class].class)
 
-      if include_document_scope {
-        emitter.push_target(get_document_scope_selector(context));
+      if is_target {
+        emitter.push_target(get_scope_selector(context, is_global));
       }
 
       emitter.push_buffer(format!(":{}(", selector.name));
 
-      write_element_selector(&selector.selector, true, true, context, emitter);
+      write_element_selector(&selector.selector, true, is_global, context, emitter);
       emitter.push_buffer(")".to_string());
       emitter.persist_buffer();
     }
     ast::Selector::Combo(combo) => {
-      let mut included_scope = false;
+      let mut found_pseudo = false;
 
       for child in &combo.selectors {
-        let include_scope = is_pseudo_element(child);
+        let is_pseudo = is_pseudo_element(child);
 
         write_element_selector(
           child,
-          include_scope && !included_scope,
-          true,
+          // This is _very_ redundant, but we want to pass down extra_specificity
+          // and extra_specificity since things like class names need to remain injectible
+          // in other docs. This particular case happens with .a:within(.b)
+          !found_pseudo && is_pseudo,
+          is_global,
           context,
           emitter,
         );
-        included_scope = included_scope || include_scope;
+
+        found_pseudo = found_pseudo || is_pseudo;
       }
 
-      if include_document_scope && !included_scope {
-        emitter.push_target(get_document_scope_selector(context))
+      if is_target && !found_pseudo {
+        emitter.push_target(get_scope_selector(context, is_global));
       }
     }
+
+    // NOTE that classes behave differently than other selectors since they can be
+    // injected into other documents via $. Because of this, the document scope is included in the selector
     ast::Selector::Class(selector) => {
       // Don't hate me for adding [class] -- it's the browsers fault, I promise. Each
       // selector other than class has a scope class, and that gives priority over
       // any class. So to counter-balance that, we need to add [class] so that classes take priority, again.
 
-      let specificty_str = if extra_specificity {
-        "[class]".to_string()
+      let new_class_name = if is_global {
+        format!(".{}", selector.class_name)
       } else {
-        "".to_string()
+        format!("._{}_{}", get_document_scope(context), selector.class_name)
       };
 
-      let selector_text = if include_document_scope {
-        format!(
-          "{}._{}_{}",
-          specificty_str,
-          get_document_scope(context),
-          selector.class_name
-        )
-      } else {
-        format!("{}.{}", specificty_str, selector.class_name)
-      };
+      let mut selector_text = new_class_name.to_string();
+
+      // specificity needs to be same as other selectors that include document
+      // scope class, so just double-up class name
+      // NOTE!! [class] is necessary here to cover this case: `.a { &--b { }}`
+      // while also remaining injectable in other documents
+      if is_target {
+        selector_text = format!("[class]{}", new_class_name);
+      }
 
       emitter.push_target(selector_text);
     }
@@ -1570,6 +1564,7 @@ fn evaluate_style_key_value_declaration<'a>(
   }
 
   declarations.push(virt::CSSStyleProperty {
+    source_id: expr.id.to_string(),
     name: expr.name.to_string(),
     value: value.to_string(),
   });
@@ -1578,6 +1573,7 @@ fn evaluate_style_key_value_declaration<'a>(
     if expr.name.starts_with(start) {
       for prefix in css3_prefixes.iter() {
         declarations.push(virt::CSSStyleProperty {
+          source_id: expr.id.to_string(),
           name: format!("{}{}", prefix, expr.name.to_string()),
           value: value.to_string(),
         });

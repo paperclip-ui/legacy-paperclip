@@ -1,22 +1,125 @@
-<import src="styles/atoms.pc" inject-styles />
+<import src="styles/atoms.pc" as="atoms" inject-styles />
+<import src="styles/utils.pc" as="utils" />
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {
+    --token-color: rgb(190, 190, 190);
+    --keyword-input-background: rgb(240, 240, 240);
+    --border-color: rgb(211, 211, 211);
+  }
+
+  .keyword-input {
+    background: var(--keyword-input-background);
+    border: 1px solid rgb(206, 206, 206);
+  }
+
+  .statement {
+    color: rgb(83, 83, 83);
+  }
+
+  .token {
+    color: var(--token-color);
+  }
+
+  .decl-name {
+    color: rgb(66, 164, 255);
+  }
+
+  .decl-value {
+    color: rgb(226, 84, 207);
+  }
+
+  .section {
+    border-top: 1px solid var(--border-color);
+  }
+</style>
 
 
 <!--
   @frame { visible: false }
 -->
-<div export component as="StyleRule">
+<div export component as="Container">
+  <style>
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="StyleRule"
+  className="section"
+  className:isGlobal="is-global">
+  <style>
+    font-size: 14px;
+  </style>
+  <div />
   <div>
     <style>
-      background: rgb(197, 197, 197);
       padding: var(--spacing-4) var(--spacing-5);
+      display: flex;
+      grid-column-gap: var(--spacing-5);
+      justify-content: space-between;
+      padding-bottom: 0;
     </style>
-    {header}
+    <div>
+      <span className="statement" className:boldSelector="bold-selector">
+        <style>
+          &.bold-selector {
+            font-weight: 600;
+          }
+        </style>
+        {selector}
+      </span>&nbsp;<span className="token">&#123;</span>
+    </div>
+    <div>
+      <style>
+        display: flex;
+        grid-column-gap: var(--spacing-4);
+        font-size: 12px;
+        align-items: center;
+      </style>
+      <div title="This style rule is global">
+        <style>
+          opacity: 0.5;
+          visibility: hidden;
+          &:within(.is-global) {
+            visibility: visible;
+          }
+          @include utils.mask {
+            mask-image: url(./earth.svg);
+            --size: 1.4em;
+          }
+        </style>
+      </div>
+      <div onClick={onFileNameClick}>
+        <style>
+          color: rgb(180, 180, 180);
+          text-decoration: underline dotted;
+          cursor: pointer;
+        </style>
+        {fileName}
+      </div>
+    </div>
   </div>
   <div>
     <style>
-      padding: var(--spacing-2) 0px;
+      padding-left: var(--spacing-4);
     </style>
     {properties}
+  </div>
+  <div>
+    <style>
+      padding: var(--spacing-4) var(--spacing-5);
+      padding-top: 0;
+    </style>
+    <span className="token">&#125;</span>
   </div>
 </div>
 
@@ -24,26 +127,43 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="StyleRuleProperty">
+<div export component as="StyleRuleProperty" className:disabled="disabled">
   <style>
     display: flex;
-    grid-column-gap: 16px;
-    font-size: 14px;
-    padding: var(--spacing-3) var(--spacing-5);
-    border-bottom: 1px solid rgb(233, 233, 233);
+    grid-column-gap: var(--spacing-3);
+    flex-wrap: wrap;
+    grid-row-gap: var(--spacing-2);
+    line-height: var(--spacing-6);
+    padding: 0px var(--spacing-4);
+    &.disabled {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
     &:last-child {
       border-bottom-color: transparent;
     }
+    :global(input) {
+      border: none;
+      padding-left: 0;
+      margin: 0;
+      color: inherit;
+    }
   </style>
-  <div>
+  <div className:boldName="bold-name">
     <style>
-      width: 120px;
-      flex-shrink: 0;
+      white-space: nowrap;
+      &.bold-name {
+        font-weight: 600;
+      }
     </style>
-    {name}
+    <span className="decl-name">{name}</span><span className="token">:</span>
   </div>
-  <div>
+  <div className="decl-value" className:boldValue="bold-value">
     <style>
+      flex: 1;
+      &.bold-value {
+        font-weight: 600;
+      }
     </style>
     {value}
   </div>
@@ -53,52 +173,91 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="StyleRulePropertyRichValue">
+<span export
+  component
+  as="Expression"
+  {className?}
+  {style?}
+  className:last="last">
   <style>
-    display: flex;
-    grid-column-gap: var(--spacing-3);
+    & > :global(*) {
+      display: inline;
+    }
+  </style>
+
+  {children}
+  <span className="closing token">
+    <style>
+      display: none;
+    </style>
+  </span>
+</span>
+
+<!--
+  @frame { visible: false }
+-->
+<span export component as="StyleRulePropertyValue" {onClick?}>
+  <style>
+    display: inline-flex;
+    outline: none;
     flex-wrap: wrap;
-    grid-row-gap: var(--spacing-3);
+    grid-column-gap: var(--spacing-3);
+    & > :last-child {
+      .closing {
+        display: inline;
+        &:after {
+          margin-left: 0px;
+          content: ";";
+        }
+      }
+    }
   </style>
   {children}
-</div>
+</span>
 
 
 <!--
   @frame { visible: false }
 -->
-<div component as="UnitPart">
+<Expression component as="UnitPart">
+  <span className="keyword-input">
+    <style>
+      border-radius: var(--radius-1);
+      padding: 0 var(--spacing-2);
+    </style>
+    {value}
+  </span>
+</Expression>
+
+
+<!--
+  @frame { visible: false }
+-->
+<span export component as="ScopedElementSelector">
   <style>
-    background: rgb(223, 223, 223);
-    border-radius: var(--radius-1);
-    padding: 0 var(--spacing-2);
-    color: rgb(75, 75, 75);
+    background: rgb(228, 228, 228);
+    padding: 0px var(--spacing-2);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    display: inline-flex;
   </style>
-  {value}
-</div>
+  scope
+</span>
 
 
 
 <!--
   @frame { visible: false }
 -->
-<div component as="KeywordPart">
-  <style>
-    background: rgb(223, 223, 223);
-    border-radius: var(--radius-1);
-    padding: 0 var(--spacing-2);
-    color: rgb(75, 75, 75);
-  </style>
-  {value}
-</div>
+<UnitPart component as="KeywordPart" {value} className="keyword-input" />
 
 
 <!--
   @frame { visible: false }
 -->
-<div component as="ColorPropertyPart" style="--value: {value}">
+<Expression component as="ColorPropertyPart" style="--value: {value}">
   <style>
-    display: flex;
+    display: inline-flex;
     grid-column-gap: var(--spacing-2);
     align-items: center;
   </style>
@@ -117,46 +276,145 @@
     </style>
     {value}
   </div>
-</div>
+</Expression>
+
+
 
 <!--
   @frame { visible: false }
 -->
-<div export component as="SelectorInfo">
-  <div>{computedText}</div>
+<div export component as="StyleSection" className="section">
+  <div>
+    <style>
+      padding: var(--spacing-4) var(--spacing-5);
+      background: rgb(247, 247, 247);
+      color: rgb(32, 32, 32);
+    </style>
+    {title}
+  </div>
+  <div>{children}</div>
 </div>
+
+<div export component as="Header">
+  <style>
+    padding: var(--spacing-3);
+  </style>
+  <div>
+    <style>
+      position: relative;
+    </style>
+    <div>
+      <style>
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: var(--spacing-3);
+        @include utils.mask {
+          color: rgb(160, 160, 160);
+          --size: 10px;
+          mask-image: url("./filter.svg");
+        }
+      </style>
+    </div>
+    {input}
+  </div>
+</div>
+
+<input export
+  component
+  as="FilterInput"
+  placeholder="Filter styles..."
+  {onChange}
+  {onBlur}>
+  <style>
+    border-radius: 0px;
+    width: 100%;
+    border: none;
+    outline: #333;
+    background: white;
+    padding: var(--spacing-2) 0px;
+    padding-left: var(--spacing-6);
+  </style>
+</input>
+
 
 <!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
-<div export component as="Preview">
-  <StyleRule header={<SelectorInfo computedText=".div.div" source={"SOURCE"} />}
-    properties={<fragment>
-      <StyleRuleProperty name="background-color"
-        value={<StyleRulePropertyRichValue>
-          <ColorPropertyPart value="#333" />
-        </StyleRulePropertyRichValue>} />
-      <StyleRuleProperty name="font-family"
-        value={<StyleRulePropertyRichValue>
-          <KeywordPart value="sans-serif" />
-        </StyleRulePropertyRichValue>} />
-      <StyleRuleProperty name="box-shadow"
-        value={<StyleRulePropertyRichValue>
-          <UnitPart value="2px" /><UnitPart value="0px" /><UnitPart value="0px" /><ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
-        </StyleRulePropertyRichValue>} />
-    </fragment>} />
-  <StyleRule header={<SelectorInfo computedText="*:nth-child(2n)"
-      source={"SOURCE"} />}
-    properties={<fragment>
-      <StyleRuleProperty name="background-color"
-        value={<StyleRulePropertyRichValue>
-          <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
-        </StyleRulePropertyRichValue>} />
-    </fragment>} />
-</div>
+<Container export component as="Preview">
+  <Header input={<FilterInput />} />
+  <StyleSection title="Element styles">
+    <StyleRule fileName="styles.pc"
+      boldSelector
+      selector=".this-is-a-super-long-selector-to-see-how-it-wraps"
+      properties={<fragment>
+        <StyleRuleProperty name="background-color"
+          value={<StyleRulePropertyValue>
+            <Expression>
+              var(--page-background-color, var(--gray-gray-90))
+            </Expression>
+          </StyleRulePropertyValue>} />
+        <StyleRuleProperty boldName
+          disabled
+          name="font-family"
+          value={<StyleRulePropertyValue>
+            <KeywordPart value="sans-serif" />
+          </StyleRulePropertyValue>} />
+        <StyleRuleProperty name="box-shadow"
+          value={<StyleRulePropertyValue>
+            <UnitPart value="2px" />
+            <UnitPart value="0px" />
+            <UnitPart value="0px" />
+            <ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
+          </StyleRulePropertyValue>} />
+        <StyleRuleProperty name="box-shadow"
+          value={<StyleRulePropertyValue>
+            <Expression>2px 0px rgba(0, 0, 0, 0.2)</Expression>
+          </StyleRulePropertyValue>} />
+      </fragment>} />
+
+    <StyleRule isGlobal
+      fileName="atoms.pc"
+      selector="#test"
+      properties={<fragment>
+        <StyleRuleProperty boldValue
+          name="background-color"
+          value={<StyleRulePropertyValue>
+            <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
+          </StyleRulePropertyValue>} />
+        <StyleRuleProperty name="another-background"
+          value={<StyleRulePropertyValue>
+            <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
+          </StyleRulePropertyValue>} /><StyleRuleProperty name="box-shadow"
+          value={<StyleRulePropertyValue>
+            <Expression>
+              0px 2px 1px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(66, 71, 76,
+              0.45)
+            </Expression>
+          </StyleRulePropertyValue>} />
+      </fragment>} />
+
+    <StyleRule fileName="atoms.pc"
+      selector="element"
+      global
+      properties={<fragment>
+        <StyleRuleProperty name="color"
+          value={<StyleRulePropertyValue>
+            <Expression>inherit</Expression>
+          </StyleRulePropertyValue>} />
+      </fragment>} />
+  </StyleSection>
+  <StyleSection title="Inherited styles">
+    <StyleRule fileName="atoms.pc"
+      selector={<fragment>
+        <ScopedElementSelector name="element" />
+        <ScopedElementSelector name="element" />.test
+      </fragment>} />
+  </StyleSection>
+</Container>
 
 
 <!--
-  @frame { title: "Inspector", width: 337, height: 768, x: 364, y: 49 }
+  @frame { title: "Inspector", width: 265, height: 1365, x: 470, y: 49 }
 -->
 <Preview />

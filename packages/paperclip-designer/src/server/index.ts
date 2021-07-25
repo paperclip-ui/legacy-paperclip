@@ -1,6 +1,5 @@
 import * as path from "path";
 import * as fs from "fs";
-import * as chokidar from "chokidar";
 
 import sockjs from "sockjs";
 import getPort from "get-port";
@@ -13,7 +12,6 @@ import {
   FSItemClicked,
   Action,
   ExternalAction,
-  PopoutWindowRequested,
   pcFileLoaded,
   instanceChanged,
   InstanceAction,
@@ -26,20 +24,21 @@ import {
   browserstackBrowsersLoaded,
   ServerAction,
   TitleDoubleClicked,
-  openedDocument,
   VirtualNodesSelected,
   virtualNodeSourcesLoaded,
   MetaClicked,
   revealExpressionSourceRequested,
-  PCVirtObjectEdited,
-  pcSourceEdited
-} from "./actions";
+  virtualNodeStylesInspected,
+  VirtualStyleDeclarationValueChanged,
+  styleRuleFileNameClicked,
+  StyleRuleFileNameClicked
+} from "../actions";
 import {
   AvailableBrowser,
   EnvOption,
   EnvOptionKind,
   FSItemKind
-} from "./state";
+} from "../state";
 import express from "express";
 import { normalize } from "path";
 import { EventEmitter } from "events";
@@ -50,8 +49,16 @@ import { isPaperclipFile } from "paperclip";
 import * as ngrok from "ngrok";
 import * as qs from "querystring";
 import * as bs from "browserstack";
-import { engineDelegateChanged } from "paperclip-utils";
-import { PCSourceWriter } from "paperclip-source-writer";
+import {
+  engineDelegateChanged,
+  NodeStyleInspection,
+  StyleRule,
+  VirtNodeSource
+} from "paperclip-utils";
+import { sourceWriterPlugin } from "./plugins/source-writer";
+import { fileWatcherPlugin } from "./plugins/file-watcher";
+import { inspectNodeStyleChannel } from "../rpc/channels";
+import { sockAdapter } from "../../../paperclip-common";
 
 type BrowserstackCredentials = {
   username: string;
@@ -87,14 +94,16 @@ export const startServer = async ({
       emitExternal(crashed(null));
     }
   );
-  watchPaperclipSources(engine, cwd);
-  const textSourceWriter = new PCSourceWriter({ engine });
+
+  const plugins = [
+    sourceWriterPlugin(engine, emitExternal),
+    fileWatcherPlugin(engine, cwd, emitExternal)
+  ];
 
   const port = await getPort({ port: defaultPort });
 
   const io = sockjs.createServer();
 
-  let _watcher: chokidar.FSWatcher;
   const em = new EventEmitter();
 
   const openURI = uri => {
@@ -111,11 +120,30 @@ export const startServer = async ({
     return ret;
   };
 
-  let _shareHost: string;
   let _browsers: any[];
+
+  const handleChans = conn => {
+    const chanAdapter = sockAdapter(conn);
+
+    inspectNodeStyleChannel(chanAdapter).listen(async sources => {
+      const now = Date.now();
+
+      // TODO - need to pull frame size from virt node source
+      const inspections: Array<[
+        VirtNodeSource,
+        NodeStyleInspection
+      ]> = sources.map(source => [source, engine.inspectNodeStyles(source, 0)]);
+
+      console.log("Inspected in %d ms", Date.now() - now);
+
+      return inspections;
+    });
+  };
 
   io.on("connection", conn => {
     let targetUri;
+
+    handleChans(conn);
 
     const emit = message => {
       conn.write(JSON.stringify(message));
@@ -133,12 +161,22 @@ export const startServer = async ({
 
     conn.on("data", data => {
       const action: InstanceAction = JSON.parse(data) as any;
+
+      // pass action handling to plugins
+      for (const handleAction of plugins) {
+        handleAction(action);
+      }
+
+      // LEGACY
       switch (action.type) {
         case ActionType.FS_ITEM_CLICKED: {
           return onFSItemClicked(action);
         }
         case ActionType.VIRTUAL_NODES_SELECTED: {
           return onVirtualNodeSelected(action);
+        }
+        case ActionType.STYLE_RULE_FILE_NAME_CLICKED: {
+          return handleStyleRuleFileNameClicked(action);
         }
         case ActionType.FILE_OPENED: {
           return onFileOpened(action);
@@ -155,21 +193,17 @@ export const startServer = async ({
         case ActionType.TITLE_DOUBLE_CLICKED: {
           return handleTitleDoubleClicked(action);
         }
-        case ActionType.PC_VIRT_OBJECT_EDITED: {
-          return handleVirtObjectEdited(action);
-        }
       }
       emitExternal(instanceChanged({ targetPCFileUri: targetUri, action }));
     });
 
     const handleTitleDoubleClicked = (action: TitleDoubleClicked) => {
-      console.log("title double clicked: ", action.payload.uri);
       if (action.payload.uri) {
         exec(`open "${URL.fileURLToPath(action.payload.uri)}"`);
       }
     };
 
-    const handleGetAllScreens = () => {
+    const handleGetAllScreens = async () => {
       emit(allPCContentLoaded(engine.getAllLoadedData()));
     };
 
@@ -190,7 +224,6 @@ export const startServer = async ({
         url = getBrowserstackUrl(url, option);
       }
 
-      console.log(`opening ${url}`);
       exec(`open "${url}"`);
     };
 
@@ -218,10 +251,14 @@ export const startServer = async ({
     };
 
     const onVirtualNodeSelected = (action: VirtualNodesSelected) => {
-      const sources = action.payload.map(info => {
+      loadVirtualNodeSources(action.payload.sources);
+    };
+
+    const loadVirtualNodeSources = (virstSources: VirtNodeSource[]) => {
+      const sources = virstSources.map(info => {
         return {
-          virtualNodePath: info.nodePath,
-          source: engine.getVirtualNodeSourceInfo(info.nodePath, info.nodeUri)
+          virtualNodePath: info.path,
+          source: engine.getVirtualNodeSourceInfo(info.path, info.uri)
         };
       });
       emit(virtualNodeSourcesLoaded(sources));
@@ -234,22 +271,35 @@ export const startServer = async ({
       }
     };
 
+    const handleStyleRuleFileNameClicked = ({
+      payload: { styleRuleSourceId }
+    }: StyleRuleFileNameClicked) => {
+      console.log(
+        styleRuleSourceId,
+        engine.getExpressionById(styleRuleSourceId)
+      );
+      const [uri, expr] = engine.getExpressionById(styleRuleSourceId) as [
+        string,
+        StyleRule
+      ];
+      emitExternal(
+        revealExpressionSourceRequested({
+          sourceId: styleRuleSourceId,
+          textSource: {
+            location: expr.location,
+            uri
+          }
+        })
+      );
+    };
+
     const handleMetaClickVirtualNode = ({
       payload: { nodeUri, nodePath }
     }: MetaClicked) => {
       const info = engine.getVirtualNodeSourceInfo(nodePath, nodeUri);
-      console.log(nodePath, nodeUri, info);
       if (info) {
         emitExternal(revealExpressionSourceRequested(info));
       }
-    };
-
-    const handleVirtObjectEdited = async (action: PCVirtObjectEdited) => {
-      emitExternal(
-        pcSourceEdited(
-          await textSourceWriter.getContentChanges(action.payload.mutations)
-        )
-      );
     };
 
     const handleOpen = (uri: string) => {
@@ -374,7 +424,7 @@ const startHTTPServer = (
   const server = app.listen(port);
   io.installHandlers(server, { prefix: "/rt" });
 
-  const distHandler = express.static(path.join(__dirname, "..", "dist"));
+  const distHandler = express.static(path.join(__dirname, "..", "..", "dist"));
 
   // cors to enable iframe embed
   app.use(function(req, res, next) {
@@ -401,36 +451,5 @@ const startHTTPServer = (
       return next();
     }
     res.sendFile(filePath);
-  });
-};
-
-const watchPaperclipSources = (
-  engine: EngineDelegate,
-  cwd: string = process.cwd()
-) => {
-  // want to load all PC files within the CWD workspace -- disregard PC configs
-
-  const watcher = chokidar.watch(
-    "**/*.{pc,css}",
-
-    // TODO - ignored - fetch .gitignored
-    { cwd: cwd, ignored: ["**/node_modules/**", "node_modules"] }
-  );
-
-  watcher.on("all", (eventName, relativePath) => {
-    if (!isPaperclipFile(relativePath)) {
-      return;
-    }
-    const uri = URL.pathToFileURL(path.join(cwd, relativePath));
-
-    if (eventName === "change") {
-      engine.updateVirtualFileContent(uri.href, fs.readFileSync(uri, "utf8"));
-    } else if (eventName === "add") {
-      engine.open(uri.href);
-    } else if (eventName === "unlink") {
-      engine.purgeUnlinkedFiles();
-    } else if (eventName === "unlinkDir") {
-      engine.purgeUnlinkedFiles();
-    }
   });
 };

@@ -7,7 +7,11 @@ use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::core::id_generator::generate_seed;
 use crate::core::id_generator::IDGenerator;
+use cached::proc_macro::cached;
+use std::collections::HashMap;
+use std::sync::Mutex;
 
 type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
@@ -23,9 +27,48 @@ impl<'a, 'b> Context<'a, 'b> {
   }
 }
 
-pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Sheet, ParseError> {
+pub fn parse<'a>(source: &'a str, id_seed: String) -> Result<Sheet, ParseError> {
   let mut tokenizer = Tokenizer::new(&source);
-  parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
+  let result = parse_with_tokenizer(&mut tokenizer, id_seed.as_str(), |_token| Ok(false));
+  return result;
+}
+
+pub fn parse_selector<'a>(
+  selector: &'a str,
+  id_seed: Option<String>,
+) -> Result<Selector, ParseError> {
+  lazy_static! {
+    static ref CACHE: Mutex<HashMap<String, Result<Selector, ParseError>>> =
+      Mutex::new(HashMap::new());
+  }
+
+  let mut cache = CACHE.lock().unwrap();
+
+  let id_seed2 = id_seed.unwrap_or("0".to_string());
+  let cache_key = format!("{}{}", selector, id_seed2);
+
+  if let Some(result) = cache.get(&cache_key) {
+    return result.clone();
+  }
+
+  let rule_source = format!("{}{{}}", selector);
+
+  let ret: Result<Selector, ParseError> = if let Ok(ast) = parse(&rule_source, id_seed2) {
+    match ast.rules.get(0).unwrap() {
+      Rule::Style(style) => Ok(style.selector.clone()),
+      _ => Err(ParseError::unknown()),
+    }
+  } else {
+    return Err(ParseError::unexpected(
+      format!("Unable to parse selector \"{}\"", selector),
+      0,
+      0,
+    ));
+  };
+
+  cache.insert(cache_key, ret.clone());
+
+  ret
 }
 
 pub fn parse_with_tokenizer<'a>(
@@ -169,7 +212,7 @@ fn parse_style_rule2<'a, 'b>(
 ) -> Result<StyleRule, ParseError> {
   let raw_before = context.tokenizer.eat_whitespace();
   let start = context.tokenizer.utf16_pos;
-  let selector = parse_selector(context, is_child_without_amp_prefix)?;
+  let selector = parse_selector2(context, is_child_without_amp_prefix)?;
   let (declarations, children, raw_after) = parse_declaration_body(context)?;
   Ok(StyleRule {
     id: context.id_generator.new_id(),
@@ -415,7 +458,7 @@ fn parse_keyframe_rule<'a, 'b>(
   })
 }
 
-fn parse_selector<'a, 'b>(
+fn parse_selector2<'a, 'b>(
   context: &mut Context<'a, 'b>,
   is_child_without_amp_prefix: bool,
 ) -> Result<Selector, ParseError> {
@@ -943,6 +986,7 @@ fn parse_at_declaration<'a, 'b>(
       context.tokenizer.next_expect(Token::Semicolon);
       let end = context.tokenizer.utf16_pos;
       Ok(Declaration::Content(Content {
+        id: context.id_generator.new_id(),
         raws: BasicRaws::new(raw_before, context.tokenizer.eat_whitespace()),
         location: Location::new(start, end),
       }))
@@ -1034,6 +1078,7 @@ fn parse_key_value_declaration<'a, 'b>(
     let raw_after = eat_superfluous(context)?;
 
     Ok(Declaration::KeyValue(KeyValueDeclaration {
+      id: context.id_generator.new_id(),
       name,
       value,
       raws: BasicRaws::new(raw_before, raw_after),
@@ -1127,7 +1172,7 @@ mod tests {
     // comment
     ";
 
-    parse(source, "id").unwrap();
+    parse(source, "id".to_string()).unwrap();
   }
 
   #[test]
@@ -1217,7 +1262,7 @@ mod tests {
       }
     ";
 
-    parse(source, "id").unwrap();
+    parse(source, "id".to_string()).unwrap();
   }
 
   ///
@@ -1227,7 +1272,7 @@ mod tests {
   #[test]
   fn displays_an_error_for_unterminated_curly_bracket() {
     assert_eq!(
-      parse("div { ", "id"),
+      parse("div { ", "id".to_string()),
       Err(ParseError::unterminated(
         "Unterminated bracket.".to_string(),
         4,

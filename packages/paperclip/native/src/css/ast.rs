@@ -20,6 +20,27 @@ impl Declaration {
       Declaration::Media(kv) => &kv.location,
     }
   }
+
+  pub fn get_id(&self) -> &String {
+    match self {
+      Declaration::KeyValue(kv) => &kv.id,
+      Declaration::Include(kv) => &kv.id,
+      Declaration::Content(kv) => &kv.id,
+      Declaration::Media(kv) => &kv.id,
+    }
+  }
+
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    if self.get_id() == id {
+      return Some(CSSObject::Declaration(self));
+    }
+
+    match self {
+      Declaration::Include(kv) => kv.get_object_by_id(id),
+      Declaration::Media(kv) => kv.get_object_by_id(id),
+      _ => None,
+    }
+  }
 }
 
 impl fmt::Display for Declaration {
@@ -55,6 +76,7 @@ impl<'a> CSSObject<'a> {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct KeyValueDeclaration {
+  pub id: String,
   pub name: String,
   pub value: String,
   pub location: Location,
@@ -76,6 +98,7 @@ impl fmt::Display for KeyValueDeclaration {
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Content {
+  pub id: String,
   pub raws: BasicRaws,
   pub location: Location,
 }
@@ -89,6 +112,12 @@ pub struct Include {
   pub rules: Vec<StyleRule>,
   pub location: Location,
   pub raws: BasicRaws,
+}
+
+impl Include {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
+  }
 }
 
 impl fmt::Display for Include {
@@ -204,11 +233,14 @@ impl Rule {
       return Some(CSSObject::Rule(self));
     }
 
-    if let Rule::Style(rule) = self {
-      return rule.get_object_by_id(id);
+    match self {
+      Rule::Style(rule) => rule.get_object_by_id(id),
+      Rule::Export(rule) => rule.get_object_by_id(id),
+      Rule::Media(rule) => rule.get_object_by_id(id),
+      Rule::Mixin(rule) => rule.get_object_by_id(id),
+      Rule::Include(rule) => rule.get_object_by_id(id),
+      _ => None,
     }
-
-    return None;
   }
   pub fn get_location(&self) -> &Location {
     match self {
@@ -292,13 +324,7 @@ impl StyleRule {
     if (&self.id == id) {
       return Some(CSSObject::StyleRule(&self));
     }
-    for child in &self.children {
-      let sub = child.get_object_by_id(id);
-      if sub != None {
-        return sub;
-      }
-    }
-    return None;
+    get_object_by_id_in_style_rules_or_declarations(&self.children, &self.declarations, id)
   }
 }
 
@@ -369,6 +395,12 @@ impl fmt::Display for ExportRule {
   }
 }
 
+impl ExportRule {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    get_object_by_id_in_rules(&self.rules, id)
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ConditionRule {
   pub id: String,
@@ -380,6 +412,12 @@ pub struct ConditionRule {
   pub declarations: Vec<Declaration>,
   pub location: Location,
   pub raws: BasicRaws,
+}
+
+impl ConditionRule {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    get_object_by_id_in_style_rules_or_declarations(&self.rules, &self.declarations, id)
+  }
 }
 
 impl fmt::Display for ConditionRule {
@@ -416,6 +454,12 @@ impl fmt::Display for MixinRule {
     writeln!(f, "}}")?;
 
     Ok(())
+  }
+}
+
+impl MixinRule {
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<CSSObject<'a>> {
+    get_object_by_id_in_declarations(&self.declarations, id)
   }
 }
 
@@ -680,6 +724,21 @@ impl Selector {
       Selector::Attribute(selector) => &selector.location,
       Selector::AllSelector(selector) => &selector.location,
     }
+  }
+  pub fn get_pseudo_element_name(&self) -> Option<String> {
+    let mut pseudo_element_name = None;
+
+    self.walk(&mut |descendent| {
+      if let Selector::PseudoElement(pseudo_element) = descendent {
+        if matches!(pseudo_element.name.as_str(), "before" | "after") {
+          pseudo_element_name = Some(pseudo_element.name.to_string());
+          return false;
+        }
+      }
+      return true;
+    });
+
+    pseudo_element_name
   }
 }
 
@@ -983,6 +1042,12 @@ pub struct AllSelector {
   pub location: Location,
 }
 
+impl fmt::Display for AllSelector {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "*")
+  }
+}
+
 impl fmt::Display for ClassSelector {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, ".{}", &self.class_name)?;
@@ -1050,13 +1115,57 @@ impl Sheet {
       return Some(CSSObject::Sheet(&self));
     }
 
-    for rule in &self.rules {
-      let nested_object = rule.get_object_by_id(id);
-      if nested_object != None {
-        return nested_object;
-      }
-    }
-
-    return None;
+    get_object_by_id_in_rules_or_declarations(&self.rules, &self.declarations, id)
   }
+}
+
+fn get_object_by_id_in_rules_or_declarations<'a>(
+  rules: &'a Vec<Rule>,
+  decls: &'a Vec<Declaration>,
+  id: &String,
+) -> Option<CSSObject<'a>> {
+  get_object_by_id_in_rules(rules, id).or_else(|| get_object_by_id_in_declarations(decls, id))
+}
+fn get_object_by_id_in_style_rules_or_declarations<'a>(
+  rules: &'a Vec<StyleRule>,
+  decls: &'a Vec<Declaration>,
+  id: &String,
+) -> Option<CSSObject<'a>> {
+  get_object_by_id_in_style_rules(rules, id).or_else(|| get_object_by_id_in_declarations(decls, id))
+}
+
+fn get_object_by_id_in_style_rules<'a>(
+  rules: &'a Vec<StyleRule>,
+  id: &String,
+) -> Option<CSSObject<'a>> {
+  for rule in rules {
+    let nested_object = rule.get_object_by_id(id);
+    if nested_object != None {
+      return nested_object;
+    }
+  }
+  return None;
+}
+
+fn get_object_by_id_in_rules<'a>(rules: &'a Vec<Rule>, id: &String) -> Option<CSSObject<'a>> {
+  for rule in rules {
+    let nested_object = rule.get_object_by_id(id);
+    if nested_object != None {
+      return nested_object;
+    }
+  }
+  return None;
+}
+
+fn get_object_by_id_in_declarations<'a>(
+  decls: &'a Vec<Declaration>,
+  id: &String,
+) -> Option<CSSObject<'a>> {
+  for decl in decls {
+    let nested_object = decl.get_object_by_id(id);
+    if nested_object != None {
+      return nested_object;
+    }
+  }
+  return None;
 }

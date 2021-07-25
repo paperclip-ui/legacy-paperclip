@@ -25,10 +25,10 @@ import {
 } from "../common/actions";
 import {
   startServer,
-  Action as VsualEditorAction,
   ServerAction,
   ExternalAction,
-  configChanged
+  configChanged,
+  ServerActionType
 } from "paperclip-designer";
 class Server {
   private _connection: Connection;
@@ -90,6 +90,14 @@ class Server {
       openInitial: false,
       emit: (action: ServerAction) => {
         this._dispatch(devServerChanged(action));
+
+        // if changes are coming from preview, then increment a "do not change" token.
+        // This shit is ugly.
+        if (action.type === ServerActionType.PC_SOURCE_EDITED) {
+          for (const uri in action.payload) {
+            bridge.skipChanges(uri);
+          }
+        }
       }
     });
     this._dispatchDevServer = dispatch;

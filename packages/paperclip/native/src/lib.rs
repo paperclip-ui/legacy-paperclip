@@ -19,6 +19,8 @@ mod js;
 mod pc;
 
 use crate::pc::runtime::evaluator::EngineMode;
+use crate::pc::runtime::inspect_node_styles::InspectionOptions;
+use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use engine::engine::Engine;
 
@@ -54,6 +56,7 @@ impl NativeEngine {
     resolve_file: js_sys::Function,
     engine_mode: NativeEngineMode,
   ) -> NativeEngine {
+    console_error_panic_hook::set_once();
     NativeEngine {
       target: Engine::new(
         Box::new(move |uri| {
@@ -105,26 +108,51 @@ impl NativeEngine {
     JsValue::from_serde(&self.target.lint_file(&uri)).unwrap()
   }
   pub fn get_virtual_node_source_info(&mut self, path: Vec<usize>, uri: String) -> JsValue {
-    JsValue::from_serde(&self.target.get_virtual_node_source_info(&path, &uri)).unwrap()
+    JsValue::from_serde(
+      &self
+        .target
+        .get_virtual_node_source_info(&pc_virt::NodeSource {
+          path,
+          document_uri: uri,
+        }),
+    )
+    .unwrap()
   }
   pub fn get_loaded_ast(&mut self, uri: String) -> JsValue {
-    console_error_panic_hook::set_once();
     let result = self.target.get_loaded_ast(&uri);
     JsValue::from_serde(&result).unwrap()
   }
   pub fn parse_content(&mut self, content: String, uri: String) -> JsValue {
-    console_error_panic_hook::set_once();
     let result = block_on(self.target.parse_content(&content, &uri));
     JsValue::from_serde(&result).unwrap()
   }
   pub fn parse_file(&mut self, uri: String) -> JsValue {
-    console_error_panic_hook::set_once();
     let result = block_on(self.target.parse_file(&uri));
     JsValue::from_serde(&result).unwrap()
   }
   pub fn purge_unlinked_files(&mut self) {
-    console_error_panic_hook::set_once();
     block_on(self.target.purge_unlinked_files());
+  }
+  pub fn get_expression_by_id(&self, id: String) -> JsValue {
+    JsValue::from_serde(&self.target.get_expression_by_id(&id)).unwrap()
+  }
+  pub fn inspect_node_styles(
+    &mut self,
+    path: Vec<usize>,
+    uri: String,
+    screen_width: u32,
+  ) -> JsValue {
+    let result = self.target.inspect_node_styles(
+      &pc_virt::NodeSource {
+        path,
+        document_uri: uri,
+      },
+      &InspectionOptions {
+        screen_width: Some(screen_width),
+      },
+    );
+
+    JsValue::from_serde(&result).unwrap()
   }
   pub fn update_virtual_file_content(&mut self, uri: String, content: String) {
     console_error_panic_hook::set_once();

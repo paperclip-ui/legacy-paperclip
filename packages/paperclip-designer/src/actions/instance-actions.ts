@@ -8,17 +8,10 @@ import {
   LoadedData,
   ExprTextSource,
   Action,
-  ExprSource
+  ExprSource,
+  VirtNodeSource
 } from "paperclip-utils";
-import {
-  Box,
-  Directory,
-  EnvOption,
-  FSItemKind,
-  Point,
-  Size,
-  VirtualNodeSourceInfo
-} from "../state";
+import { Box, Directory, EnvOption, FSItemKind, Point, Size } from "../state";
 
 export enum ActionType {
   RENDERER_CHANGED = "RENDERER_CHANGED",
@@ -82,7 +75,9 @@ export enum ActionType {
   FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
   EXPAND_FRAME_BUTTON_CLICKED = "EXPAND_FRAME_BUTTON_CLICKED",
   COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED",
-  VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED"
+  VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED",
+  VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED = "VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED",
+  STYLE_RULE_FILE_NAME_CLICKED = "STYLE_RULE_FILE_NAME_CLICKED"
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -136,10 +131,7 @@ export type EnvOptionClicked = BaseAction<
 >;
 export type VirtualNodesSelected = BaseAction<
   ActionType.VIRTUAL_NODES_SELECTED,
-  Array<{
-    nodePath: number[];
-    nodeUri: string;
-  }>
+  { sources: Array<VirtNodeSource>; screenWidth: number }
 >;
 
 export type MetaClicked = BaseAction<
@@ -153,6 +145,22 @@ export type BirdseyeFilterChanged = BaseAction<
   ActionType.BIRDSEYE_FILTER_CHANGED,
   {
     value: string;
+  }
+>;
+
+export type VirtualStyleDeclarationValueChanged = BaseAction<
+  ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED,
+  {
+    declarationId: string;
+    name: string;
+    value: string;
+  }
+>;
+
+export type StyleRuleFileNameClicked = BaseAction<
+  ActionType.STYLE_RULE_FILE_NAME_CLICKED,
+  {
+    styleRuleSourceId: string;
   }
 >;
 
@@ -387,6 +395,15 @@ export const locationChanged = actionCreator<LocationChanged>(
 export const envOptionClicked = actionCreator<EnvOptionClicked>(
   ActionType.ENV_OPTION_CLICKED
 );
+
+export const virtualStyleDeclarationValueChanged = actionCreator<
+  VirtualStyleDeclarationValueChanged
+>(ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED);
+
+export const styleRuleFileNameClicked = actionCreator<StyleRuleFileNameClicked>(
+  ActionType.STYLE_RULE_FILE_NAME_CLICKED
+);
+
 export const metaClicked = actionCreator<MetaClicked>(ActionType.META_CLICKED);
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
   ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
@@ -520,6 +537,7 @@ export type InstanceAction =
   | RectsCaptured
   | CanvasMouseUp
   | ResizerPathMoved
+  | VirtualStyleDeclarationValueChanged
   | VirtualNodesSelected
   | ResizerPathStoppedMoving
   | Pasted
@@ -556,6 +574,7 @@ export type InstanceAction =
   | BasicPaperclipAction
   | ZoomInButtonClicked
   | ActionHandled
+  | StyleRuleFileNameClicked
   | ZoomInputChanged
   | ClientConnected
   | EnvOptionClicked

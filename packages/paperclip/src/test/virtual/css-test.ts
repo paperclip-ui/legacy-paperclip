@@ -412,7 +412,7 @@ describe(__filename + "#", () => {
     expect((result as LoadedPCData).exports.style.classNames).to.eql({
       color: { name: "color", public: false, scopedName: "_80f4925f_color" },
       div: { name: "div", public: true, scopedName: "_pub-80f4925f_div" },
-      child: { name: "child", public: false, scopedName: "child" },
+      child: { name: "child", public: false, scopedName: "_80f4925f_child" },
       "element--child": {
         name: "element--child",
         public: false,
@@ -513,7 +513,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>a._80f4925f > b._80f4925f { color:blue; } a._80f4925f + c._80f4925f { color:black; } a._80f4925f ~ d._80f4925f { color:red; } a._80f4925f ._80f4925f:not([class].div) { color:voilet; } a._80f4925f ._80f4925f::active { color:green; }</style>`
+      `<style>a._80f4925f > b._80f4925f { color:blue; } a._80f4925f + c._80f4925f { color:black; } a._80f4925f ~ d._80f4925f { color:red; } a._80f4925f ._80f4925f:not(._80f4925f_div) { color:voilet; } a._80f4925f ._80f4925f::active { color:green; }</style>`
     );
   });
 
@@ -651,7 +651,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      "<style>[class]._80f4925f_parent [class].child._80f4925f:first-child { color:blue ; }</style>"
+      "<style>[class]._80f4925f_parent ._80f4925f_child._80f4925f:first-child { color:blue ; }</style>"
     );
   });
 
@@ -889,7 +889,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      "<style>@media a { b._80f4925f { color:red; } c._80f4925f { color:red; } { } }</style>"
+      "<style>@media a { b._80f4925f { color:red; } c._80f4925f { color:red; } }</style>"
     );
   });
 
@@ -920,7 +920,7 @@ describe(__filename + "#", () => {
   });
 
   // Fix https://github.com/crcn/paperclip/issues/529
-  it(`can use & in media query include`, async () => {
+  it(`can use & in media query include 1`, async () => {
     const graph = {
       "/entry.pc": `
       <style>
@@ -949,12 +949,12 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      '<style>@media screen and (max-width: 900px) { ._376a18c0 a._80f4925f:nth-child(2n) { color:red; } ._376a18c0 a._80f4925f { } }</style><div class="_80f4925f _pub-80f4925f _376a18c0"></div>'
+      `<style>@media screen and (max-width: 900px) { ._376a18c0 a._80f4925f:nth-child(2n) { color:red; } ._376a18c0 a._80f4925f { } }</style><div class="_80f4925f _pub-80f4925f _376a18c0"></div>`
     );
   });
 
   // sanity after #529
-  it(`can use & in media query include`, async () => {
+  it(`can use & in media query include 2`, async () => {
     const graph = {
       "/entry.pc": `
       <style>
@@ -991,7 +991,7 @@ describe(__filename + "#", () => {
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
     expect(stringifyLoadResult(result)).to.eql(
-      '<style>@media screen and (max-width: 900px) { a._80f4925f b._80f4925f c._80f4925f { background:blue; } a._80f4925f b._80f4925f c._80f4925f ee._80f4925f { color:red; } a._80f4925f b._80f4925f c._80f4925f[class].ff { color:orange; } a._80f4925f ee._80f4925f { color:red; } a._80f4925f[class].ff { color:orange; } a._80f4925f { background:blue; } }</style><Test class="_80f4925f _pub-80f4925f"></Test>'
+      `<style>@media screen and (max-width: 900px) { a._80f4925f b._80f4925f c._80f4925f { background:blue; } a._80f4925f b._80f4925f c._80f4925f ee._80f4925f { color:red; } a._80f4925f b._80f4925f c._80f4925f._80f4925f_ff { color:orange; } a._80f4925f ee._80f4925f { color:red; } a._80f4925f._80f4925f_ff { color:orange; } a._80f4925f { background:blue; } }</style><Test class="_80f4925f _pub-80f4925f"></Test>`
     );
   });
 
@@ -1052,7 +1052,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_a[class].hover { color:blue; } [class]._80f4925f_a:not(:disabled):not([class].transparent)[class].hover { color:red; }</style><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f">I'm red</div><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_transparent _pub-80f4925f_transparent transparent _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f">I'm blue</div>`
+      `<style>[class]._80f4925f_a._80f4925f_hover { color:blue; } [class]._80f4925f_a:not(:disabled):not(._80f4925f_transparent)._80f4925f_hover { color:red; }</style><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f">I'm red</div><div class="_80f4925f_a _pub-80f4925f_a a _80f4925f_transparent _pub-80f4925f_transparent transparent _80f4925f_hover _pub-80f4925f_hover hover _80f4925f _pub-80f4925f">I'm blue</div>`
     );
   });
 
@@ -1188,7 +1188,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._9e7e6af9._9e7e6af9 { color:red; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9[class].a { color:red; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9 [class]._80f4925f_b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>._9e7e6af9._9e7e6af9 { color:red; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._80f4925f_a { color:red; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9 [class]._80f4925f_b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1214,7 +1214,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_variant ._9e7e6af9._9e7e6af9[class].a { color:blue; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9[class].b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>[class]._80f4925f_variant ._9e7e6af9._9e7e6af9._80f4925f_a { color:blue; } [class]._80f4925f_variant ._9e7e6af9._9e7e6af9._80f4925f_b { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1238,7 +1238,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class].variant ._9e7e6af9._9e7e6af9 { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>.variant ._9e7e6af9._9e7e6af9 { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1292,7 +1292,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_light ._9e7e6af9._9e7e6af9[class].variant { color:blue; } [class]._80f4925f_light ._9e7e6af9._9e7e6af9[class].variant { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
+      `<style>[class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; } [class]._80f4925f_light ._9e7e6af9._9e7e6af9._80f4925f_variant { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f"><div class="_80f4925f_test _pub-80f4925f_test test _80f4925f _pub-80f4925f _9e7e6af9"></div></div>`
     );
   });
 
@@ -1409,7 +1409,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856[class].red { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>._406d2856._406d2856 { color:orange; } ._406d2856._406d2856._80f4925f_red { color:blue; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1475,7 +1475,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_blue ._406d2856._406d2856[class].variant ._80f4925f { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>[class]._80f4925f_blue ._406d2856._406d2856._80f4925f_variant ._80f4925f { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1498,7 +1498,7 @@ describe(__filename + "#", () => {
 
     const text = stringifyLoadResult(await engine.open("/entry.pc"));
     expect(text).to.eql(
-      `<style>[class]._80f4925f_blue ._406d2856._406d2856[class].variant ._80f4925f { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
+      `<style>[class]._80f4925f_blue ._406d2856._406d2856._80f4925f_variant ._80f4925f { color:orange; }</style><div class="_80f4925f_variant _pub-80f4925f_variant variant _80f4925f _pub-80f4925f _406d2856"></div>`
     );
   });
 
@@ -1686,7 +1686,7 @@ describe(__filename + "#", () => {
     const result = await engine.open("/entry.pc");
 
     expect(stringifyLoadResult(result)).to.eql(
-      `<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } { } }</style><div class="_80f4925f _pub-80f4925f"></div>`
+      `<style>@media screen { [class]._80f4925f_a { color:blue; } @media b { [class]._80f4925f_a { color:blue; } } }</style><div class="_80f4925f _pub-80f4925f"></div>`
     );
   });
 

@@ -12,7 +12,7 @@ describe(__filename + "#", () => {
     ],
     [
       `.a.b { color: red; }`,
-      `[class].a[class].b._80f4925f { color:red; }`,
+      `._80f4925f_a._80f4925f_b._80f4925f { color:red; }`,
       false
     ],
     [
@@ -20,15 +20,15 @@ describe(__filename + "#", () => {
       `[class]._80f4925f_a [class]._80f4925f_b { color:red; }`,
       false
     ],
-    [`:global(.a) { color: red; }`, `[class].a { color:red; }`, false],
+    [`:global(.a) { color: red; }`, `.a { color:red; }`, false],
     [
       `:global(.a, .b) .c { color: red; }`,
-      `[class].a [class]._80f4925f_c { color:red; } [class].b [class]._80f4925f_c { color:red; }`,
+      `.a [class]._80f4925f_c { color:red; } .b [class]._80f4925f_c { color:red; }`,
       false
     ],
     [
       `.c :global(.a, .b) { color: red; }`,
-      `[class]._80f4925f_c [class].a { color:red; } [class]._80f4925f_c [class].b { color:red; }`,
+      `[class]._80f4925f_c .a { color:red; } [class]._80f4925f_c .b { color:red; }`,
       false
     ],
     [
@@ -38,22 +38,22 @@ describe(__filename + "#", () => {
     ],
     [
       `.c :global(.a, :global(.a1, .a2), .b) { color: red; }`,
-      `[class]._80f4925f_c [class].a { color:red; } [class]._80f4925f_c [class].a1 { color:red; } [class]._80f4925f_c [class].a2 { color:red; } [class]._80f4925f_c [class].b { color:red; }`,
+      `[class]._80f4925f_c .a { color:red; } [class]._80f4925f_c .a1 { color:red; } [class]._80f4925f_c .a2 { color:red; } [class]._80f4925f_c .b { color:red; }`,
       false
     ],
     [
       `.c:within(.b) { color: red; }`,
-      `[class]._80f4925f_b [class].c._80f4925f { color:red; }`,
+      `[class]._80f4925f_b ._80f4925f_c._80f4925f { color:red; }`,
       false
     ],
     [
       `.c:within(.b, .d) { color: red; }`,
-      `[class]._80f4925f_b [class].c._80f4925f { color:red; } [class]._80f4925f_d [class].c._80f4925f { color:red; }`,
+      `[class]._80f4925f_b ._80f4925f_c._80f4925f { color:red; } [class]._80f4925f_d ._80f4925f_c._80f4925f { color:red; }`,
       false
     ],
     [
       `.c:within(.b, .d) { color: red; }`,
-      `[class]._80f4925f_b ._406d2856 [class].c._80f4925f { color:red; } [class]._80f4925f_d ._406d2856 [class].c._80f4925f { color:red; }`,
+      `[class]._80f4925f_b ._406d2856 ._80f4925f_c._80f4925f { color:red; } [class]._80f4925f_d ._406d2856 ._80f4925f_c._80f4925f { color:red; }`,
       true
     ],
     [
@@ -98,7 +98,7 @@ describe(__filename + "#", () => {
     ],
     [
       `.a { &.b { color: blue; }}`,
-      `[class]._80f4925f_a[class].b { color:blue; }`,
+      `[class]._80f4925f_a._80f4925f_b { color:blue; }`,
       false
     ],
     [
@@ -108,7 +108,7 @@ describe(__filename + "#", () => {
     ],
     [
       `.a { & & { &.test { color: blue; } }}`,
-      `[class]._80f4925f_a [class]._80f4925f_a[class].test { color:blue; }`,
+      `[class]._80f4925f_a [class]._80f4925f_a._80f4925f_test { color:blue; }`,
       false
     ],
     [
@@ -118,14 +118,10 @@ describe(__filename + "#", () => {
     ],
     [
       `element.a { color: red; }`,
-      `element[class].a._80f4925f { color:red; }`,
+      `element._80f4925f_a._80f4925f { color:red; }`,
       false
     ],
-    [
-      `:global(element.b) { color: red; }`,
-      `element[class].b { color:red; }`,
-      false
-    ],
+    [`:global(element.b) { color: red; }`, `element.b { color:red; }`, false],
     [
       `a ~ b { color: red; }`,
       `a._80f4925f ~ b._80f4925f { color:red; }`,
@@ -152,12 +148,12 @@ describe(__filename + "#", () => {
     ],
     [
       `:not(:within(:global(.a, .b))) { color: red; }`,
-      `:not([class].a) ._80f4925f { color:red; } :not([class].b) ._80f4925f { color:red; }`,
+      `:not(.a) ._80f4925f { color:red; } :not(.b) ._80f4925f { color:red; }`,
       false
     ],
     [
       `:within(:not(.a)) { color: red; }`,
-      `._80f4925f:not([class].a) ._80f4925f { color:red; }`,
+      `._80f4925f:not(._80f4925f_a) ._80f4925f { color:red; }`,
       false
     ],
     [
@@ -200,10 +196,14 @@ describe(__filename + "#", () => {
     ],
     [
       `a.b.c:within(:global(d, e)) { color: orange; }`,
-      `d ._406d2856 a[class].b[class].c._80f4925f { color:orange; } e ._406d2856 a[class].b[class].c._80f4925f { color:orange; }`,
+      `d ._406d2856 a._80f4925f_b._80f4925f_c._80f4925f { color:orange; } e ._406d2856 a._80f4925f_b._80f4925f_c._80f4925f { color:orange; }`,
       true
     ],
-    [`&.a { color: red}`, `._406d2856._406d2856[class].a { color:red; }`, true],
+    [
+      `&.a { color: red}`,
+      `._406d2856._406d2856._80f4925f_a { color:red; }`,
+      true
+    ],
 
     [
       `:global(a, &:within(b, c, d)) { color: orange; }`,
@@ -214,7 +214,7 @@ describe(__filename + "#", () => {
     // https://github.com/crcn/paperclip/issues/547
     [
       `:self(.a) { &&& { color: red; &:checked { color: blue; }}}`,
-      `._406d2856._406d2856[class].a._406d2856._406d2856[class].a._406d2856._406d2856[class].a { color:red; } ._406d2856._406d2856[class].a._406d2856._406d2856[class].a._406d2856._406d2856[class].a:checked { color:blue; }`,
+      `._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a { color:red; } ._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a._406d2856._406d2856._80f4925f_a:checked { color:blue; }`,
       true
     ],
 
@@ -237,7 +237,7 @@ describe(__filename + "#", () => {
     // https://github.com/crcn/paperclip/issues/573
     [
       `:self(.variant) { @media screen and (max-width: 400px) { color: red; }}`,
-      `@media screen and (max-width: 400px) { ._406d2856._406d2856[class].variant { color:red; } }`,
+      `@media screen and (max-width: 400px) { ._406d2856._406d2856._80f4925f_variant { color:red; } }`,
       true
     ],
 
@@ -289,7 +289,7 @@ describe(__filename + "#", () => {
 
     [
       `&:has(:global(.a)) { color: red; }`,
-      `._406d2856._406d2856:has([class].a) { color:red; }`,
+      `._406d2856._406d2856:has(.a) { color:red; }`,
       true
     ],
 
@@ -305,7 +305,19 @@ describe(__filename + "#", () => {
       false
     ],
 
-    [`@export { :root { color: red; }}`, `._pub-80f4925f { color:red; }`, false]
+    [
+      `@export { :root { color: red; }}`,
+      `._pub-80f4925f { color:red; }`,
+      false
+    ],
+
+    [
+      `@media screen { @media print { .a { color: red; }}}`,
+      `@media screen { @media print { [class]._80f4925f_a { color:red; } } }`,
+      false
+    ],
+
+    [`.a\\:b { color: red; }`, `[class]._80f4925f_a\\:b { color:red; }`, false]
 
     // group, selector
   ].forEach(([input, output, scoped]) => {

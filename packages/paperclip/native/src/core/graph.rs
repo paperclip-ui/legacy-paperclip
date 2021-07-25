@@ -1,9 +1,11 @@
 use super::vfs::VirtualFileSystem;
 use crate::base::ast::Location;
 use crate::base::parser::ParseError;
-use crate::core::id_generator::generate_seed;
+use crate::base::utils::get_document_id;
+use crate::core::id_generator::IDGenerator;
 use crate::css::{ast as css_ast, parser as css_parser};
 use crate::pc::{ast as pc_ast, parser as pc_parser};
+use crc::crc32;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};
 
@@ -30,8 +32,14 @@ pub struct GraphError {
   info: GraphErrorInfo,
 }
 
+#[derive(Debug, Clone)]
 pub struct DependencyGraph {
   pub dependencies: BTreeMap<String, Dependency>,
+}
+
+pub enum DependencyObject<'a> {
+  Dependency(&'a Dependency),
+  PCObject(pc_ast::PCObject<'a>),
 }
 
 #[allow(dead_code)]
@@ -108,6 +116,17 @@ impl DependencyGraph {
     }
 
     return;
+  }
+  pub fn get_object_by_id<'a>(&'a self, id: &String) -> Option<(String, DependencyObject<'a>)> {
+    for (uri, dependency) in &self.dependencies {
+      if &dependency.get_id() == id {
+        return Some((uri.to_string(), DependencyObject::Dependency(&dependency)));
+      }
+    }
+
+    self
+      .get_expression_by_id(id)
+      .and_then(|(uri, object)| return Some((uri, DependencyObject::PCObject(object))))
   }
   pub fn flatten_dependencies<'a>(&'a self, entry_uri: &String) -> Vec<String> {
     let mut all_deps: Vec<String> = vec![];
@@ -195,12 +214,14 @@ impl DependencyGraph {
         .to_string();
 
       // TODO - check if content matches old content.
-      let dependency_option = Dependency::from_source(source, &curr_uri, vfs).or_else(|error| {
-        Err(GraphError {
-          uri: curr_uri.to_string(),
-          info: GraphErrorInfo::Syntax(error),
-        })
-      });
+      let dependency_option =
+        Dependency::from_source(source, &curr_uri, vfs, get_document_id(&curr_uri).as_str())
+          .or_else(|error| {
+            Err(GraphError {
+              uri: curr_uri.to_string(),
+              info: GraphErrorInfo::Syntax(error),
+            })
+          });
 
       match dependency_option {
         Ok(dependency) => {
@@ -231,14 +252,14 @@ impl DependencyGraph {
   }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 #[serde(tag = "contentKind")]
 pub enum DependencyContent {
   Node(pc_ast::Node),
   StyleSheet(css_ast::Sheet),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Dependency {
   pub uri: String,
   pub dependencies: BTreeMap<String, String>,
@@ -247,20 +268,29 @@ pub struct Dependency {
 }
 
 impl<'a> Dependency {
-  pub fn from_source(
+  pub fn from_source<'b>(
     source: String,
     uri: &String,
     vfs: &VirtualFileSystem,
+    id_seed: &'b str,
   ) -> Result<Dependency, ParseError> {
     if uri.ends_with(".css") {
-      Dependency::from_css_source(source, uri)
+      Dependency::from_css_source(source, uri, id_seed)
     } else {
-      Dependency::from_pc_source(source, uri, vfs)
+      Dependency::from_pc_source(source, uri, vfs, id_seed)
     }
   }
 
-  fn from_css_source(source: String, uri: &String) -> Result<Dependency, ParseError> {
-    let expression_result = css_parser::parse(source.as_str(), generate_seed().as_str());
+  pub fn get_id(&self) -> String {
+    get_document_id(&self.uri).to_string()
+  }
+
+  fn from_css_source<'b>(
+    source: String,
+    uri: &String,
+    id_seed: &'b str,
+  ) -> Result<Dependency, ParseError> {
+    let expression_result = css_parser::parse(&source, id_seed.to_string());
     if let Err(err) = expression_result {
       return Err(err);
     }
@@ -274,13 +304,13 @@ impl<'a> Dependency {
     })
   }
 
-  fn from_pc_source(
+  fn from_pc_source<'b>(
     source: String,
     uri: &String,
     vfs: &VirtualFileSystem,
+    id_seed: &'b str,
   ) -> Result<Dependency, ParseError> {
-    let expression_result =
-      pc_parser::parse(source.as_str(), uri.as_str(), generate_seed().as_str());
+    let expression_result = pc_parser::parse(source.as_str(), uri.as_str(), id_seed);
 
     if let Err(err) = expression_result {
       return Err(err);

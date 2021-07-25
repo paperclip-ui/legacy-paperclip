@@ -5,9 +5,7 @@ use super::virt;
 use crate::annotation::ast as annotation_ast;
 use crate::base::ast::{ExprSource, ExprTextSource, Location};
 use crate::base::runtime::RuntimeError;
-use crate::base::utils::{
-  get_document_style_private_scope, get_document_style_public_scope, is_relative_path,
-};
+use crate::base::utils::{get_document_id, get_document_style_public_scope, is_relative_path};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
@@ -364,7 +362,7 @@ fn evaluate_node_sheet<'a>(
   css_exports: &'a mut css_export::Exports,
   context: &'a mut Context,
 ) -> Result<(), RuntimeError> {
-  let private_scope = get_document_style_private_scope(uri);
+  let private_scope = get_document_id(uri);
   let public_scope = get_document_style_public_scope(uri);
 
   let element_scope = if let Some(parent) = parent {
@@ -515,7 +513,7 @@ fn create_context<'a>(
     vec![]
   };
 
-  let private_scope = get_document_style_private_scope(uri);
+  let private_scope = get_document_id(uri);
   let public_scope = get_document_style_public_scope(uri);
 
   Context {
@@ -1605,10 +1603,6 @@ fn transform_class_value<'a>(name: &String, value: &String, context: &mut Contex
     static ref scope_re: Regex = Regex::new(r"^_[-\w]+_").unwrap();
   }
 
-  // if scope_re.is_match(value) {
-  //   return value.to_string();
-  // }
-
   let mut skip = 0;
 
   let class_name_parts: Vec<&str> = value.split(" ").collect();
@@ -1803,12 +1797,12 @@ mod tests {
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
     );
-    __test__evaluate_source(case);
+    __test__evaluate_pc_code(case);
   }
 
   #[test]
   fn catches_infinite_part_loop() {
-    let (result, _) = __test__evaluate_source(
+    let (result, _) = __test__evaluate_pc_code(
       "
       <fragment component as='test'>
         <div>
@@ -1833,7 +1827,7 @@ mod tests {
 
   #[test]
   fn catches_recursion_in_multiple_parts() {
-    let (result, _) = __test__evaluate_source(
+    let (result, _) = __test__evaluate_pc_code(
       "
       <fragment component as='test2'>
         <div>
@@ -1863,7 +1857,7 @@ mod tests {
 
   #[test]
   fn allows_self_to_be_called_in_preview() {
-    let (result, _) = __test__evaluate_source(
+    let (result, _) = __test__evaluate_pc_code(
       "
       Hello
       <preview>
@@ -1876,7 +1870,7 @@ mod tests {
 
   #[test]
   fn can_evaluate_class_pierce() {
-    let (result, _) = __test__evaluate_source(
+    let (result, _) = __test__evaluate_pc_code(
       "
       <div something='$something $that' />
     ",
@@ -1886,20 +1880,38 @@ mod tests {
   }
 }
 
-pub fn __test__evaluate_source<'a>(
+pub fn __test__evaluate_pc_code<'a>(
   code: &'a str,
 ) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
+  let mut files: BTreeMap<String, String> = BTreeMap::new();
+  files.insert("some-file.pc".to_string(), code.to_string());
+  __test__evaluate_pc_files(files, "some-file.pc")
+}
+
+pub fn __test__evaluate_pc_files<'a>(
+  files: BTreeMap<String, String>,
+  main_file_name: &'a str,
+) -> (Result<EvalInfo, RuntimeError>, DependencyGraph) {
   let mut graph = DependencyGraph::new();
-  let uri = "some-file.pc".to_string();
+  let uri = main_file_name.to_string();
   let vfs = VirtualFileSystem::new(
     Box::new(|_| "".to_string()),
     Box::new(|_| true),
     Box::new(|_, uri| Some(uri.to_string())),
   );
-  graph.dependencies.insert(
-    uri.clone(),
-    Dependency::from_source(code.to_string(), &uri, &vfs).unwrap(),
-  );
+
+  for (file_name, content) in files {
+    graph.dependencies.insert(
+      file_name.clone(),
+      Dependency::from_source(
+        content.to_string(),
+        &file_name,
+        &vfs,
+        get_document_id(&file_name).as_str(),
+      )
+      .unwrap(),
+    );
+  }
 
   (
     evaluate(

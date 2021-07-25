@@ -1,0 +1,15 @@
+{
+  "name": "paperclip-common",
+  "version": "17.12.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "immer": "^9.0.5"
+  }
+}

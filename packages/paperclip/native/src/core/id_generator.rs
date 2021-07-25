@@ -1,5 +1,6 @@
 use uuid::Uuid;
 
+#[derive(Debug, Clone)]
 pub struct IDGenerator {
   pub seed: String,
   pub count: u32,
