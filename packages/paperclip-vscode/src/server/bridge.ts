@@ -105,10 +105,10 @@ export class VSCServiceBridge {
 
       // this is a bit janky, but we need to temporarily turn off listening for cases
       // where changes are coming from the preview.
-      if (this._updateSkips[uri]) {
-        this._updateSkips[uri]--;
-        return;
-      }
+      // if (this._updateSkips[uri]) {
+      //   this._updateSkips[uri]--;
+      //   return;
+      // }
 
       this._updateTextContent(uri, params.contentChanges);
     });
@@ -156,6 +156,7 @@ export class VSCServiceBridge {
       this._waitingForCalm = false;
       return;
     }
+
     const contentChanges = this._contentChanges;
     this._contentChanges = {};
     this._waitingForCalm = true;
