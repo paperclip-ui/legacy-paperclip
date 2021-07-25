@@ -6,6 +6,10 @@
       box-sizing: border-box;
     }
 
+    @mixin ease-in {
+      transition: 0.2s;
+    }
+
     /*
        https://www.figma.com/file/dOQZzseI3v7LUEwXjAKw4I/Polaris-for-Admin%3A-Colors-(Community)?node-id=2989%3A2
     */

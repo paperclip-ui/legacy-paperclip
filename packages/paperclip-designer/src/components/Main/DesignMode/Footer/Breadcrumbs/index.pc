@@ -33,7 +33,8 @@
     cursor: pointer;
     align-items: center;
     position: relative;
-    &.hover {
+    @include atoms.ease-in {}
+    &.hover, &:hover {
       color: var(--active-color);
     }
 
