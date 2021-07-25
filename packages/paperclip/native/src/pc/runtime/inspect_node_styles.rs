@@ -23,6 +23,7 @@ use crate::css::runtime::specificity::get_selector_text_specificity;
 use crate::css::runtime::virt::{CSSStyleProperty, Rule, StyleRule};
 use crate::engine::engine::__test__evaluate_pc_files;
 use crate::pc::runtime::virt as pc_virt;
+use crate::js::runtime::virt as js_virt;
 use cached::proc_macro::cached;
 use cached::SizedCache;
 use serde::Serialize;
@@ -379,6 +380,8 @@ pub struct InspectionOptions {
   pub screen_width: Option<u32>,
 }
 
+
+
 pub fn inspect_node_styles(
   element_path: &Vec<usize>,
   document_uri: &String,
@@ -386,8 +389,12 @@ pub fn inspect_node_styles(
   graph: &DependencyGraph,
   options: &InspectionOptions,
 ) -> NodeInspectionInfo {
+
+  let mut options = options.clone();
+  options.screen_width = get_node_frame_width(element_path, document_uri, all_eval_info).or(options.screen_width);
+
   let mut inspection_info =
-    inspect_local_node_styles(element_path, document_uri, all_eval_info, graph, options);
+    inspect_local_node_styles(element_path, document_uri, all_eval_info, graph, &options);
 
   add_inherited_properties(
     &mut inspection_info,
@@ -395,7 +402,7 @@ pub fn inspect_node_styles(
     document_uri,
     all_eval_info,
     graph,
-    options,
+    &options,
   );
 
   inspection_info
@@ -411,6 +418,10 @@ pub fn inspect_local_node_styles(
   let mut inspection_info = NodeInspectionInfo::new();
 
   if let Some(main_eval_info) = get_pc_info(document_uri, all_eval_info) {
+    
+
+
+
     // need to start with imported CSS because document styles will override these
     for dep_uri in &main_eval_info.all_imported_sheet_uris {
       add_inspection_info(
@@ -436,6 +447,36 @@ pub fn inspect_local_node_styles(
   }
 
   inspection_info
+}
+
+fn get_node_frame_width(element_path: &Vec<usize>, document_uri: &String, all_eval_info: &BTreeMap<String, DependencyEvalInfo>) -> Option<u32> {
+  if let Some(main_eval_info) = get_pc_info(document_uri, all_eval_info) {
+    if let Some(frame_index) = element_path.get(0) {
+      get_frame_width(*frame_index, main_eval_info)
+    } else {
+      None
+    }
+  } else {
+    None
+  }
+}
+
+fn get_frame_width(index: usize, eval_info: &PCEvalInfo) -> Option<u32> {
+  eval_info.preview.get_children().and_then(|children| {
+    children.get(index)
+  }).and_then(|node| {
+    if let pc_virt::Node::Element(element) = node {
+      element.get_annotation_property_value("frame", "width")
+    } else {
+      None
+    }
+  }).and_then(|width| {
+    if let js_virt::JsValue::JsNumber(number) = width {
+      Some(number.value as u32)
+    } else {
+      None
+    }
+  })
 }
 
 fn add_inspection_info(

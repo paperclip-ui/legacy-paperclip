@@ -7,7 +7,8 @@ import {
   birdseyeFilterChanged,
   titleDoubleClicked,
   redirectRequest,
-  zoomInputChanged
+  zoomInputChanged,
+  popoutButtonClicked
 } from "../../../../actions";
 import { useTextInput } from "../../../TextInput";
 import { EnvironmentPopup } from "./EnvironmentPopup";
@@ -33,7 +34,8 @@ export const Toolbar = () => {
     dispatch(zoomInButtonClicked(null));
   };
   const onPopOutButtonClicked = () => {
-    setShowEnvironmentPopup(!showEnvironmentPopup);
+    // setShowEnvironmentPopup(!showEnvironmentPopup);
+    dispatch(popoutButtonClicked(null));
   };
   const onCollapseButtonClick = useCallback(() => {
     dispatch(

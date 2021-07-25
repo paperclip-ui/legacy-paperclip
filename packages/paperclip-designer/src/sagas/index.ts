@@ -66,6 +66,7 @@ import history from "../dom-history";
 import { omit } from "lodash";
 import {
   inspectNodeStyleChannel,
+  popoutWindowChannel,
   revealNodeSourceChannel
 } from "../rpc/channels";
 import { sockAdapter } from "../../../paperclip-common";
@@ -119,10 +120,12 @@ function handleSock(onMessage, onClient) {
 function* handleClientChans(client: any) {
   const inspectNodeStyle = inspectNodeStyleChannel(client);
   const revealNodeSource = revealNodeSourceChannel(client);
+  const popoutWindow = popoutWindowChannel(client);
 
   yield throttle(
     500,
     [
+      ActionType.NODE_BREADCRUMB_CLICKED,
       ActionType.CANVAS_MOUSE_UP,
       ActionType.FRAME_TITLE_CLICKED,
       ActionType.ENGINE_DELEGATE_CHANGED,
@@ -157,6 +160,12 @@ function* handleClientChans(client: any) {
       path: nodePathToAry(nodePath),
       uri: state.designer.ui.query.canvasFile
     } as VirtNodeSource);
+  });
+
+  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function*() {
+    yield call(popoutWindow.call, {
+      path: window.location.pathname + window.location.search
+    });
   });
 }
 

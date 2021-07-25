@@ -14,9 +14,13 @@
 -->
 <div export component as="Breadcrumbs">
   <style>
-    overflow: hidden;
+    display: flex;
+    flex-flow: row;
+    grid-row-gap: 1px;
     background: rgba(247, 247, 247);
     font-size: 14px;
+    overflow-x: auto;
+    position: relative;
   </style>
   {children}
 </div>
@@ -34,42 +38,53 @@
   className:hover="hover"
   className:active="active">
   <style>
-    flex-shrink: 0;
-    display: inline-flex;
+    --bg-color: rgb(211, 211, 211);
+    --arrow-size: 15px;
+    flex: 0 0 auto;
+    display: inline-block;
     padding: var(--spacing-3) var(--spacing-5);
+    background: var(--bg-color);
+    margin-right: 16px;
     color: grey;
     cursor: pointer;
     align-items: center;
     position: relative;
-    @include atoms.ease-in {}
+    height: 30px;
     &.hover, &:hover {
-      color: var(--active-color);
-    }
-
-    &:after {
-      --size: 34px;
-      position: absolute;
-      top: 50%;
-      right: 0px;
-      z-index: -1;
-      transform: translateY(-50%) rotate(45deg);
-      z-index: 1;
-      width: var(--size);
-      height: var(--size);
-      border-top: 1px solid var(--border-color);
-      border-right: 1px solid var(--border-color);
-      content: "\00a0";
+      --bg-color: rgb(129, 193, 252);
+      color: white;
     }
 
     &.active {
-      font-weight: 600;
-      color: var(--active-color);
+      --bg-color: rgb(66, 164, 255);
+      color: white;
       &:after {
         display: none;
       }
     }
-  </style>
 
+    &:after {
+      top: 0px;
+      content: "";
+      border-left: var(--arrow-size) solid var(--bg-color);
+      border-top: var(--arrow-size) solid transparent;
+      border-bottom: var(--arrow-size) solid transparent;
+      border-right: 0;
+      right: calc(0px - var(--arrow-size));
+      position: absolute;
+    }
+
+    &:before {
+      top: 0px;
+      content: "";
+      border-left: var(--arrow-size) solid transparent;
+      border-top: var(--arrow-size) solid var(--bg-color);
+      border-bottom: var(--arrow-size) solid var(--bg-color);
+      border-right: 0;
+      position: absolute;
+      left: calc(0px - var(--arrow-size));
+    }
+  </style>
   <style>
     display: inline-flex;
   </style>
@@ -100,15 +115,28 @@
 <!--
   @frame { width: 1024, height: 768, x: 146, y: -107 }
 -->
-<div export component as="Preview">
-  <style>
-    flex-shrink: 0;
-  </style>
-  <Breadcrumbs>
-    <Breadcrumb>div</Breadcrumb>
-    <Breadcrumb>span</Breadcrumb>
-    <Breadcrumb instance>div</Breadcrumb>
-    <Breadcrumb hover>div</Breadcrumb>
-    <Breadcrumb active>div</Breadcrumb>
-  </Breadcrumbs>
-</div>
+<Breadcrumbs export component as="Preview">
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>span</Breadcrumb>
+  <Breadcrumb instance hover>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb active>div</Breadcrumb>
+</Breadcrumbs>

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getNodeByPath,
@@ -8,7 +8,11 @@ import {
   memoize,
   getElementLabel
 } from "paperclip-utils";
-import { getActivePCData, getSelectedNodePaths } from "../../../../../state";
+import {
+  getActivePCData,
+  getInspectionInfo,
+  getSelectedNodePaths
+} from "../../../../../state";
 import * as styles from "./index.pc";
 import {
   nodeBreadcrumbClicked,
@@ -19,8 +23,24 @@ import { Dispatch } from "redux";
 
 export const Breadcrumbs = React.memo(() => {
   const pcData: LoadedPCData = useSelector(getActivePCData);
+  const inspectionInfo = useSelector(getInspectionInfo);
   const selectedNodePaths = useSelector(getSelectedNodePaths);
   const dispatch = useDispatch();
+
+  const ref = useRef<HTMLDivElement>();
+
+  useLayoutEffect(() => {
+    if (!ref.current || !pcData || !selectedNodePaths.length) {
+      return;
+    }
+    const scrollLeft = () => {
+      ref.current.scrollLeft = 9999999;
+    };
+
+    window.addEventListener("resize", scrollLeft);
+    scrollLeft();
+    return () => window.removeEventListener("resize", scrollLeft);
+  }, [ref.current, pcData, selectedNodePaths, inspectionInfo]);
 
   if (!pcData || !selectedNodePaths.length) {
     return null;
@@ -29,7 +49,7 @@ export const Breadcrumbs = React.memo(() => {
   const nodePath: number[] = nodePathToAry(selectedNodePaths[0]);
 
   return (
-    <styles.Breadcrumbs>
+    <styles.Breadcrumbs ref={ref}>
       {nodePath.map((part, i) => {
         const elPath = sliceAry(nodePath, i + 1);
         const node = getNodeByPath(elPath, pcData.preview) as VirtualNode;

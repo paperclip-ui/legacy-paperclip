@@ -1323,6 +1323,138 @@ describe(__filename + "#", () => {
           }
         ]
       }
+    ],
+    [
+      "Returns correct sourceId for included media rule",
+      {
+        "/entry.pc": `
+          <style>
+            @mixin mobile {
+              @media screen and (max-width: 500px) {
+                @content;
+              }
+            }
+            .item {
+              @include mobile {
+                background: red;
+              }
+            }
+          </style>
+          <div class="item" />
+        `
+      },
+      100,
+      [0],
+      {
+        styleRules: [
+          {
+            inherited: false,
+            selectorText: "[class]._80f4925f_item",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Attribute",
+                  value: "[class]"
+                },
+                {
+                  kind: "Class",
+                  name: "item",
+                  value: "._80f4925f_item",
+                  scope: {
+                    kind: "Document",
+                    id: "80f4925f"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-1-5",
+            sourceUri: "/entry.pc",
+            media: {
+              conditionText: "screen and (max-width: 500px)",
+              active: true
+            },
+            declarations: [
+              {
+                sourceId: "80f4925f-1-4",
+                name: "background",
+                value: "red",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
+    ],
+    [
+      "Uses annotation information for screen size",
+      {
+        "/entry.pc": `
+          <style>
+            @mixin mobile {
+              @media screen and (max-width: 500px) {
+                @content;
+              }
+            }
+            .item {
+              @include mobile {
+                background: red;
+              }
+            }
+          </style>
+          
+          <!-- 
+            @frame { width: 600 }
+          -->
+          <div class="item" />
+        `
+      },
+      100,
+      [0],
+      {
+        styleRules: [
+          {
+            inherited: false,
+            selectorText: "[class]._80f4925f_item",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Attribute",
+                  value: "[class]"
+                },
+                {
+                  kind: "Class",
+                  name: "item",
+                  value: "._80f4925f_item",
+                  scope: {
+                    kind: "Document",
+                    id: "80f4925f"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "80f4925f-1-5",
+            sourceUri: "/entry.pc",
+            media: {
+              conditionText: "screen and (max-width: 500px)",
+              active: false
+            },
+            declarations: [
+              {
+                sourceId: "80f4925f-1-4",
+                name: "background",
+                value: "red",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
     ]
   ] as any;
 

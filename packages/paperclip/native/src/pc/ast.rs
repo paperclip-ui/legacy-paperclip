@@ -130,7 +130,7 @@ impl Node {
           js_ast::JSObject::PCObject(obj) => Some(obj),
           js_ast::JSObject::Expression(expr) => match expr {
             js_ast::Expression::Node(node) => Some(PCObject::Node(node)),
-            _ => Some(PCObject::JSObject(expr))
+            _ => Some(PCObject::JSObject(expr)),
           },
         });
     } else if let Node::StyleElement(style_element) = self {

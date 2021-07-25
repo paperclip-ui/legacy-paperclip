@@ -9,3 +9,7 @@ export const inspectNodeStyleChannel = remoteChannel<
 export const revealNodeSourceChannel = remoteChannel<VirtNodeSource, void>(
   "revealNodeSourceChannel"
 );
+
+export const popoutWindowChannel = remoteChannel<{ path: string }, void>(
+  "popoutWindowChannel"
+);

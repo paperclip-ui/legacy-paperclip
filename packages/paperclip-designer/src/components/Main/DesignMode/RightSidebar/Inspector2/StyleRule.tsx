@@ -50,6 +50,8 @@ export const StyleRule = React.memo(
 
     return (
       <styles.StyleRule
+        media={info.media?.conditionText}
+        mediaActive={info.media?.active}
         onFileNameClick={onFileNameClick}
         boldSelector={filter && filter(info.selectorText)}
         isGlobal={isSelectorPartiallyGlobal(info.selectorInfo)}

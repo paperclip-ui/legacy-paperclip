@@ -539,3 +539,6 @@ export const getActivePCData = (state: AppState) =>
   ] as any) as LoadedPCData;
 export const getSelectedNodePaths = (state: AppState) =>
   state.designer.selectedNodePaths;
+
+export const getInspectionInfo = (state: AppState) =>
+  state.designer.selectedNodeStyleInspections;

@@ -56,6 +56,18 @@
   {children}
 </div>
 
+<div component as="StyleRuleIcon" {title} {className?}>
+  <style>
+    opacity: 0.5;
+    position: relative;
+    @include atoms.ease-in {}
+    @include utils.mask {
+      mask-image: url(./earth.svg);
+      --size: 1.4em;
+    }
+  </style>
+</div>
+
 <!--
   @frame { visible: false }
 -->
@@ -63,8 +75,8 @@
   component
   as="StyleRule"
   className="section"
+  className:mediaActive="media-active"
   className:isGlobal="is-global">
-  <div />
   <div>
     <style>
       padding: var(--spacing-4) var(--spacing-5);
@@ -91,19 +103,24 @@
         margin-top: 2px;
         align-items: top;
       </style>
-      <div title="This style rule is global">
+      {media && <StyleRuleIcon title={media}>
         <style>
-          opacity: 0.5;
-          visibility: hidden;
-          &:within(.is-global) {
-            visibility: visible;
-          }
-          @include utils.mask {
-            mask-image: url(./earth.svg);
-            --size: 1.4em;
+          mask-image: url(./phone.svg);
+          --size: 1.1em;
+          top: 2px;
+          &:within(.media-active) {
+            color: rgb(66, 164, 255);
+            opacity: 0.8;
           }
         </style>
-      </div>
+      </StyleRuleIcon>}
+
+      {isGlobal && <StyleRuleIcon title="This style rule is global">
+        <style>
+          mask-image: url(./earth.svg);
+          --size: 1.4em;
+        </style>
+      </StyleRuleIcon>}
       <div onClick={onFileNameClick}>
         <style>
           color: rgb(180, 180, 180);
@@ -389,6 +406,7 @@
 
     <StyleRule isGlobal
       fileName="atoms.pc"
+      media="media screen and (max-width: 500px)"
       selector="#test"
       properties={<fragment>
         <StyleRuleProperty boldValue
@@ -410,6 +428,8 @@
 
     <StyleRule fileName="atoms.pc"
       selector="element"
+      media="screen"
+      mediaActive
       global
       properties={<fragment>
         <StyleRuleProperty name="color"
