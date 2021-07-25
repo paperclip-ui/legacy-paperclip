@@ -37,6 +37,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 326, y: -117 }
+-->
 <div export component as="Center">
   <style>
     display: flex;

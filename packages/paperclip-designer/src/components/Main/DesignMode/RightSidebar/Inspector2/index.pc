@@ -10,6 +10,7 @@
     --token-color: rgb(190, 190, 190);
     --keyword-input-background: rgb(240, 240, 240);
     --border-color: rgb(211, 211, 211);
+    --font-size: 14px;
   }
 
   .keyword-input {
@@ -27,10 +28,16 @@
 
   .decl-name {
     color: rgb(66, 164, 255);
+    &:within(.disabled) {
+      color: grey;
+    }
   }
 
   .decl-value {
     color: rgb(226, 84, 207);
+    &:within(.disabled) {
+      color: grey;
+    }
   }
 
   .section {
@@ -44,6 +51,7 @@
 -->
 <div export component as="Container">
   <style>
+    font-size: var(--font-size);
   </style>
   {children}
 </div>
@@ -56,9 +64,6 @@
   as="StyleRule"
   className="section"
   className:isGlobal="is-global">
-  <style>
-    font-size: 14px;
-  </style>
   <div />
   <div>
     <style>
@@ -83,7 +88,8 @@
         display: flex;
         grid-column-gap: var(--spacing-4);
         font-size: 12px;
-        align-items: center;
+        margin-top: 2px;
+        align-items: top;
       </style>
       <div title="This style rule is global">
         <style>
@@ -295,6 +301,10 @@
   <div>{children}</div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="Header">
   <style>
     padding: var(--spacing-3);
@@ -320,6 +330,10 @@
   </div>
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <input export
   component
   as="FilterInput"
