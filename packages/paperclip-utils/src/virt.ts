@@ -135,7 +135,7 @@ export const nodePathToAry = memoize((path: string) =>
   path.split(".").map(Number)
 );
 export const getElementLabel = (node: VirtualElement) =>
-  node.attributes["data-label"];
+  node.attributes["data-pc-label"];
 
 // export const createVirtNodeSource = (path: number[], uri: string): VirtNodeSource => ({
 //   uri,
