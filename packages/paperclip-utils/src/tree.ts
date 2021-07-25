@@ -43,7 +43,7 @@ export const containsNode = <TNode extends BaseTreeNode>(
 export const getTreeNodeMap = memoize(
   <TNode extends BaseTreeNode>(
     current: TNode,
-    path = "0"
+    path = ""
   ): Record<string, TNode> => {
     const map: Record<string, TNode> = {
       [path]: current
@@ -52,7 +52,7 @@ export const getTreeNodeMap = memoize(
       Object.assign(
         map,
         ...current.children.map((child, i) =>
-          getTreeNodeMap(child, path + "." + i)
+          getTreeNodeMap(child, path ? path + "." + i : String(i))
         )
       );
     }

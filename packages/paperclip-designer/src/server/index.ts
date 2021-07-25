@@ -57,7 +57,10 @@ import {
 } from "paperclip-utils";
 import { sourceWriterPlugin } from "./plugins/source-writer";
 import { fileWatcherPlugin } from "./plugins/file-watcher";
-import { inspectNodeStyleChannel } from "../rpc/channels";
+import {
+  inspectNodeStyleChannel,
+  revealNodeSourceChannel
+} from "../rpc/channels";
 import { sockAdapter } from "../../../paperclip-common";
 
 type BrowserstackCredentials = {
@@ -137,6 +140,14 @@ export const startServer = async ({
       console.log("Inspected in %d ms", Date.now() - now);
 
       return inspections;
+    });
+
+    revealNodeSourceChannel(chanAdapter).listen(async source => {
+      const info = engine.getVirtualNodeSourceInfo(source.path, source.uri);
+      console.log("INFO", info, source);
+      if (info) {
+        emitExternal(revealExpressionSourceRequested(info));
+      }
     });
   };
 
@@ -274,10 +285,6 @@ export const startServer = async ({
     const handleStyleRuleFileNameClicked = ({
       payload: { styleRuleSourceId }
     }: StyleRuleFileNameClicked) => {
-      console.log(
-        styleRuleSourceId,
-        engine.getExpressionById(styleRuleSourceId)
-      );
       const [uri, expr] = engine.getExpressionById(styleRuleSourceId) as [
         string,
         StyleRule

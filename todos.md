@@ -1,0 +1,4 @@
+- [ ] hover breadcrumb, highlight element
+- [ ] display data-name of element
+- [ ] display whether element is instance
+- [ ] start on tree view

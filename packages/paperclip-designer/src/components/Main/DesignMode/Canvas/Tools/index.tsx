@@ -75,7 +75,7 @@ export const Tools = () => {
     [dispatch]
   );
 
-  const onMouseLeave = (event: React.MouseEvent<any>) => {
+  const onMouseLeave = () => {
     dispatch(canvasMouseLeave(null));
   };
   const selectedBox =
@@ -83,14 +83,8 @@ export const Tools = () => {
     mergeBoxes(selectedNodePaths.map(path => boxes[path]));
 
   const hoveringBox =
-    canvas.mousePosition &&
-    !resizerMoving &&
-    getNodeInfoAtPoint(
-      canvas.mousePosition,
-      canvas.transform,
-      boxes,
-      isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
-    )?.box;
+    state.designer.highlightNodePath &&
+    state.designer.boxes[state.designer.highlightNodePath];
 
   const virtualNode = allLoadedPCFileData[canvasFile] as LoadedPCData;
 

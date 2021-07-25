@@ -21,12 +21,20 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export
   component
   as="Breadcrumb"
+  {onClick?}
+  {onMouseEnter?}
+  {onMouseLeave?}
   className:hover="hover"
   className:active="active">
   <style>
+    flex-shrink: 0;
     display: inline-flex;
     padding: var(--spacing-3) var(--spacing-5);
     color: grey;

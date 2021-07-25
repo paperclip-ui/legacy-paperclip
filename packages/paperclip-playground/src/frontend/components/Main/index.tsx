@@ -1,6 +1,5 @@
 import React, { memo, useMemo, useRef, useState } from "react";
 import { MainBase as DesignModeMainBase } from "paperclip-designer/src/components/Main";
-import { AppStoreContext as DesignModeAppStoreContext } from "paperclip-designer/src/contexts";
 import history from "paperclip-designer/src/dom-history";
 import { withAppStore } from "../../hocs/withAppStore";
 import { useAppStore } from "../../hooks/useAppStore";
@@ -94,9 +93,7 @@ const Editor = memo(() => {
       {!compact && <MainToolbar />}
       <styles.EditorContainer compact={compact}>
         <CodeMode />
-        <DesignModeAppStoreContext.Provider value={store}>
-          <Preview />
-        </DesignModeAppStoreContext.Provider>
+        <Preview />
       </styles.EditorContainer>
       <styles.FileDrop
         onClick={onFileDropClick}

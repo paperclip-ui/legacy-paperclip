@@ -18,7 +18,7 @@ const MIN_SIZE = 50;
 
 export const ResizableContainer = ({
   id,
-  defaultSize = 350,
+  defaultSize = 300,
   maxSize = DEFAULT_MAX_SIZE,
   orientation,
   children

@@ -129,6 +129,7 @@ export type DesignerState = {
   // rendererElement?: any;
   availableBrowsers: AvailableBrowser[];
   resourceHost: string;
+  highlightNodePath: string;
   selectedNodePaths: string[];
   selectedNodeSources: VirtualNodeSourceInfo[];
   selectedNodeStyleInspections: NodeStyleInspection[];
@@ -202,6 +203,7 @@ export const INITIAL_STATE: AppState = {
       pathname: "",
       query: {}
     },
+    highlightNodePath: null,
     centeredInitial: false,
     mountedRendererIds: [],
     toolsLayerEnabled: true,
@@ -530,3 +532,10 @@ export const centerEditorCanvas = (
 
   return designer;
 };
+
+export const getActivePCData = (state: AppState) =>
+  (state.designer.allLoadedPCFileData[
+    state.designer.ui.query.canvasFile
+  ] as any) as LoadedPCData;
+export const getSelectedNodePaths = (state: AppState) =>
+  state.designer.selectedNodePaths;
