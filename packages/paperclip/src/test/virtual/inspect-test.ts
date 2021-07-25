@@ -1218,6 +1218,111 @@ describe(__filename + "#", () => {
           }
         ]
       }
+    ],
+    [
+      "Inspects styles for injected classes",
+      {
+        "/entry.pc": `
+          <import src="/atoms.pc" inject-styles />
+          <div class="text-small">
+            <div>
+              <style>
+                color: var(--color);
+              </style>
+            </div>
+          </div>
+        `,
+        "/atoms.pc": `
+        <style>
+          @export {
+            .text-small {
+              font-size: 24px;
+            }
+          }
+        </style>
+      `
+      },
+      100,
+      [0, 0],
+      {
+        styleRules: [
+          {
+            inherited: false,
+            selectorText: "._9fbc00ce._9fbc00ce",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9fbc00ce",
+                  scope: {
+                    kind: "Element",
+                    id: "9fbc00ce"
+                  }
+                },
+                {
+                  kind: "Class",
+                  name: null,
+                  value: "._9fbc00ce",
+                  scope: {
+                    kind: "Element",
+                    id: "9fbc00ce"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "9fbc00ce",
+            sourceUri: "/entry.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "80f4925f-6-1",
+                name: "color",
+                value: "var(--color)",
+                active: true
+              }
+            ],
+            specificity: 4
+          },
+          {
+            inherited: true,
+            selectorText: "[class]._pub-230c4d4a_text-small",
+            selectorInfo: {
+              kind: "Combo",
+              selectors: [
+                {
+                  kind: "Attribute",
+                  value: "[class]"
+                },
+                {
+                  kind: "Class",
+                  name: "text-small",
+                  value: "._pub-230c4d4a_text-small",
+                  scope: {
+                    kind: "Document",
+                    id: "230c4d4a"
+                  }
+                }
+              ]
+            },
+            pseudoElementName: null,
+            sourceId: "230c4d4a-1-2",
+            sourceUri: "/atoms.pc",
+            media: null,
+            declarations: [
+              {
+                sourceId: "230c4d4a-1-1",
+                name: "font-size",
+                value: "24px",
+                active: true
+              }
+            ],
+            specificity: 4
+          }
+        ]
+      }
     ]
   ] as any;
 

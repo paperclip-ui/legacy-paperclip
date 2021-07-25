@@ -19,61 +19,62 @@ import {
 import { SelectorScopeKind } from "paperclip-utils";
 
 export type StyleRuleProps = {
+  dispatch: any;
   info: StyleRuleInfo;
   filter?: (value: string) => boolean;
 };
 
-export const StyleRule = React.memo(({ info, filter }: StyleRuleProps) => {
-  const { dispatch } = useAppStore();
+export const StyleRule = React.memo(
+  ({ dispatch, info, filter }: StyleRuleProps) => {
+    const onDeclarationValueChange = (
+      declarationId: string,
+      name: string,
+      value: string
+    ) => {
+      dispatch(
+        virtualStyleDeclarationValueChanged({
+          declarationId,
+          name,
+          value
+        })
+      );
+    };
 
-  const onDeclarationValueChange = (
-    declarationId: string,
-    name: string,
-    value: string
-  ) => {
-    dispatch(
-      virtualStyleDeclarationValueChanged({
-        declarationId,
-        name,
-        value
-      })
+    const onFileNameClick = () => {
+      dispatch(
+        styleRuleFileNameClicked({
+          styleRuleSourceId: info.sourceId
+        })
+      );
+    };
+
+    return (
+      <styles.StyleRule
+        onFileNameClick={onFileNameClick}
+        boldSelector={filter && filter(info.selectorText)}
+        isGlobal={isSelectorPartiallyGlobal(info.selectorInfo)}
+        fileName={path.basename(info.sourceUri)}
+        selector={generateSelector(info.selectorInfo)}
+        properties={info.declarations.map((declaration, i) => {
+          return (
+            <StyleDeclaration
+              key={i}
+              filter={filter}
+              info={declaration}
+              onValueChange={value => {
+                onDeclarationValueChange(
+                  declaration.sourceId,
+                  declaration.name,
+                  value
+                );
+              }}
+            />
+          );
+        })}
+      />
     );
-  };
-
-  const onFileNameClick = () => {
-    dispatch(
-      styleRuleFileNameClicked({
-        styleRuleSourceId: info.sourceId
-      })
-    );
-  };
-
-  return (
-    <styles.StyleRule
-      onFileNameClick={onFileNameClick}
-      boldSelector={filter && filter(info.selectorText)}
-      isGlobal={isSelectorPartiallyGlobal(info.selectorInfo)}
-      fileName={path.basename(info.sourceUri)}
-      selector={generateSelector(info.selectorInfo)}
-      properties={info.declarations.map((declaration, i) => {
-        return (
-          <StyleDeclaration
-            key={i}
-            filter={filter}
-            info={declaration}
-            onValueChange={value => {
-              onDeclarationValueChange(
-                declaration.sourceId,
-                declaration.name,
-                value
-              );
-            }}
-          />
-        );
-      })}
-    />
-  );
-});
+  }
+);
 
 const isSelectorPartiallyGlobal = memoize((info: SelectorInfo) => {
   switch (info.kind) {
@@ -83,7 +84,7 @@ const isSelectorPartiallyGlobal = memoize((info: SelectorInfo) => {
     // I suppose nobody would realistically do that.
     case SelectorInfoKind.Combo: {
       return !info.selectors.some(selector => {
-        return isClassScopeSelector(selector);
+        return isScopedSelector(selector);
       });
     }
     case SelectorInfoKind.Sibling:
@@ -115,13 +116,16 @@ const isClassSelector = (
 ): info is ClassSelectorInfo => {
   return info.kind === SelectorInfoKind.Class;
 };
+const isScopedSelector = (
+  info: BaseSelectorInfo<any>
+): info is ClassSelectorInfo => {
+  return info != null && isClassSelector(info) && info.scope != null;
+};
 
 const isClassScopeSelector = (
   info: BaseSelectorInfo<any>
 ): info is ClassSelectorInfo => {
-  return (
-    info != null && isClassSelector(info) && !info.name && info.scope != null
-  );
+  return isScopedSelector(info) && !info.name;
 };
 
 const isClassElementScopeSelector = (
@@ -145,15 +149,21 @@ const generateSelector = memoize((info: SelectorInfo) => {
     case SelectorInfoKind.Combo: {
       const cleanedSelectors = info.selectors.concat();
 
+      // there's only ever one scope selector, so if the combo is 2, then that
+      // simplifies things
       if (cleanedSelectors.length === 2) {
-        // remove extra specificity. Classes use special [class] attribute
-        // since they need to pierce through documents
-        if (isClassScopeSelector(cleanedSelectors[1])) {
+        // it's a class selector
+        if (
+          isTargetSelector(cleanedSelectors[0]) &&
+          cleanedSelectors[0].value === "[class]"
+        ) {
+          cleanedSelectors.shift();
+
+          // other attr selector
+        } else if (isClassScopeSelector(cleanedSelectors[1])) {
           cleanedSelectors.pop();
         }
-      }
-
-      if (cleanedSelectors.length > 2) {
+      } else if (cleanedSelectors.length >= 2) {
         const lastSelector = cleanedSelectors[cleanedSelectors.length - 1];
 
         // scope selector comes before pseudo element. E.g: .div._59bb:before
@@ -205,7 +215,7 @@ const generateSelector = memoize((info: SelectorInfo) => {
     }
     case SelectorInfoKind.Class: {
       if (!info.name) {
-        if (info.scope.kind === SelectorScopeKind.Document) {
+        if (info.scope?.kind === SelectorScopeKind.Document) {
           return "*";
         } else {
           return <styles.ScopedElementSelector />;

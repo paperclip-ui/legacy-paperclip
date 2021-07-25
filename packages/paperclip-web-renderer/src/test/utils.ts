@@ -3,7 +3,7 @@ import { createEngineDelegate } from "paperclip";
 import * as path from "path";
 import { FramesRenderer } from "../frame-renderer";
 import { EngineMode } from "paperclip";
-import { identity, replace, takeWhile } from "lodash";
+import { identity } from "lodash";
 import * as CSSOM from "cssom";
 
 export const mockDOMFactory: DOMFactory = {

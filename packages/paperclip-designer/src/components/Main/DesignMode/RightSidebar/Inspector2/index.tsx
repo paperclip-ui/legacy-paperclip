@@ -6,7 +6,7 @@ import { useTextInput } from "../../../../TextInput";
 import * as ast from "paperclip-utils";
 
 export const Inspector2 = React.memo(() => {
-  const { state } = useAppStore();
+  const { state, dispatch } = useAppStore();
   const [filterText, setFilterText] = useState("");
 
   const filter = useMemo(() => {
@@ -36,7 +36,12 @@ export const Inspector2 = React.memo(() => {
             .filter(rule => !rule.inherited && filterRule(rule, filter))
             .map(rule => {
               return (
-                <StyleRule filter={filter} key={rule.sourceId} info={rule} />
+                <StyleRule
+                  dispatch={dispatch}
+                  filter={filter}
+                  key={rule.sourceId}
+                  info={rule}
+                />
               );
             })}
         </styles.StyleSection>
@@ -45,7 +50,12 @@ export const Inspector2 = React.memo(() => {
             .filter(rule => rule.inherited && filterRule(rule, filter))
             .map(rule => {
               return (
-                <StyleRule filter={filter} key={rule.sourceId} info={rule} />
+                <StyleRule
+                  dispatch={dispatch}
+                  filter={filter}
+                  key={rule.sourceId}
+                  info={rule}
+                />
               );
             })}
         </styles.StyleSection>
