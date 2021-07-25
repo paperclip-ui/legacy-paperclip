@@ -1,6 +1,11 @@
 import Mousetrap, { addKeycodes } from "mousetrap";
 import SockJSClient from "sockjs-client";
-import { computeVirtJSObject, LoadedPCData } from "paperclip-utils";
+import {
+  computeVirtJSObject,
+  LoadedPCData,
+  VirtNodeSource,
+  nodePathToAry
+} from "paperclip-utils";
 import * as Url from "url";
 import {
   fork,
@@ -42,7 +47,8 @@ import {
   actionHandled,
   redirectRequest,
   virtualNodesSelected,
-  virtualNodeStylesInspected
+  virtualNodeStylesInspected,
+  NodeBreadcrumbClicked
 } from "../actions";
 import {
   AppState,
@@ -58,7 +64,11 @@ import { handleCanvas } from "./canvas";
 import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { omit } from "lodash";
-import { inspectNodeStyleChannel } from "../rpc/channels";
+import {
+  inspectNodeStyleChannel,
+  popoutWindowChannel,
+  revealNodeSourceChannel
+} from "../rpc/channels";
 import { sockAdapter } from "../../../paperclip-common";
 
 export type AppStateSelector = (state) => AppState;
@@ -109,10 +119,13 @@ function handleSock(onMessage, onClient) {
 
 function* handleClientChans(client: any) {
   const inspectNodeStyle = inspectNodeStyleChannel(client);
+  const revealNodeSource = revealNodeSourceChannel(client);
+  const popoutWindow = popoutWindowChannel(client);
 
   yield throttle(
     500,
     [
+      ActionType.NODE_BREADCRUMB_CLICKED,
       ActionType.CANVAS_MOUSE_UP,
       ActionType.FRAME_TITLE_CLICKED,
       ActionType.ENGINE_DELEGATE_CHANGED,
@@ -135,6 +148,25 @@ function* handleClientChans(client: any) {
       yield put(virtualNodeStylesInspected(inspectionInfo));
     }
   );
+
+  yield takeEvery(ActionType.NODE_BREADCRUMB_CLICKED, function*({
+    payload: { metaKey, nodePath }
+  }: NodeBreadcrumbClicked) {
+    if (!metaKey) {
+      return;
+    }
+    const state: AppState = yield select();
+    yield call(revealNodeSource.call, {
+      path: nodePathToAry(nodePath),
+      uri: state.designer.ui.query.canvasFile
+    } as VirtNodeSource);
+  });
+
+  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function*() {
+    yield call(popoutWindow.call, {
+      path: window.location.pathname + window.location.search
+    });
+  });
 }
 
 function* handleRenderer(getState: AppStateSelector) {

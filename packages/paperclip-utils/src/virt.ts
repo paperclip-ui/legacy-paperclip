@@ -1,7 +1,7 @@
 import { CSSExports, PCExports } from "./exports";
 import { DependencyContent } from "./graph";
 import { VirtJsObject } from "./js-virt";
-import { containsNode, flattenTreeNode, getNodePath } from "./tree";
+import { memoize } from "./memo";
 import { Mutation } from "./virt-mtuation";
 
 export enum VirtualNodeKind {
@@ -130,6 +130,12 @@ export type VirtualFrame = VirtualElement | VirtualText;
 
 export const getStyleExports = (data: LoadedData) =>
   data.kind === EvaluatedDataKind.PC ? data.exports.style : data.exports;
+
+export const nodePathToAry = memoize((path: string) =>
+  path.split(".").map(Number)
+);
+export const getElementLabel = (node: VirtualElement) =>
+  node.attributes["data-label"];
 
 // export const createVirtNodeSource = (path: number[], uri: string): VirtNodeSource => ({
 //   uri,

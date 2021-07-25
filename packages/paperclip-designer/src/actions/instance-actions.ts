@@ -21,6 +21,10 @@ export enum ActionType {
   ZOOM_IN_KEY_PRESSED = "ZOOM_IN_KEY_PRESSED",
   ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
+
+  /**
+   * @deprecated
+   */
   ENV_OPTION_CLICKED = "ENV_OPTION_CLICKED",
   BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
@@ -43,6 +47,9 @@ export enum ActionType {
   DIR_LOADED = "DIR_LOADED",
   FS_ITEM_CLICKED = "FS_ITEM_CLICKED",
   VIRTUAL_NODES_SELECTED = "VIRTUAL_NODES_SELECTED",
+  NODE_BREADCRUMB_CLICKED = "NODE_BREADCRUMB_CLICKED",
+  NODE_BREADCRUMB_MOUSE_ENTERED = "NODE_BREADCRUMB_MOUSE_ENTERED",
+  NODE_BREADCRUMB_MOUSE_LEFT = "NODE_BREADCRUMB_MOUSE_LEFT",
   CANVAS_PAN_START = "CANVAS_PAN_START",
   CANVAS_PAN_END = "CANVAS_PAN_END",
   CANVAS_PANNED = "CANVAS_PANNED",
@@ -111,6 +118,28 @@ export type ResizerStoppedMoving = WrappedEvent<
     originalBounds: Box;
     newBounds: Box;
     anchor: Point;
+  }
+>;
+
+export type NodeBreadcrumbClicked = BaseAction<
+  ActionType.NODE_BREADCRUMB_CLICKED,
+  {
+    nodePath: string;
+    metaKey: boolean;
+  }
+>;
+
+export type NodeBreadcrumbMouseEntered = BaseAction<
+  ActionType.NODE_BREADCRUMB_MOUSE_ENTERED,
+  {
+    nodePath: string;
+  }
+>;
+
+export type NodeBreadcrumbMouseLeft = BaseAction<
+  ActionType.NODE_BREADCRUMB_MOUSE_LEFT,
+  {
+    nodePath: string;
   }
 >;
 
@@ -370,6 +399,15 @@ export const birdseyeFilterChanged = actionCreator<BirdseyeFilterChanged>(
 export const redirectRequest = actionCreator<RedirectRequested>(
   ActionType.REDIRECT_REQUESTED
 );
+export const nodeBreadcrumbClicked = actionCreator<NodeBreadcrumbClicked>(
+  ActionType.NODE_BREADCRUMB_CLICKED
+);
+export const nodeBreadcrumbMouseEntered = actionCreator<
+  NodeBreadcrumbMouseEntered
+>(ActionType.NODE_BREADCRUMB_MOUSE_ENTERED);
+export const nodeBreadcrumbMouseLeft = actionCreator<NodeBreadcrumbMouseLeft>(
+  ActionType.NODE_BREADCRUMB_MOUSE_LEFT
+);
 export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
 >(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
@@ -539,7 +577,10 @@ export type InstanceAction =
   | ResizerPathMoved
   | VirtualStyleDeclarationValueChanged
   | VirtualNodesSelected
+  | NodeBreadcrumbClicked
   | ResizerPathStoppedMoving
+  | NodeBreadcrumbMouseEntered
+  | NodeBreadcrumbMouseLeft
   | Pasted
   | RendererMounted
   | RedirectRequested

@@ -4,8 +4,9 @@
 <!--
   @frame { width: 351, height: 768, x: 0, y: 0 }
 -->
-<div export component as="Preview">
-  <ResizableContainer right fixedWidth>
-    <Inspector.Preview />
-  </ResizableContainer>
-</div>
+<ResizableContainer right fixedWidth export component as="Preview">
+  <style>
+    min-width: 100px;
+  </style>
+  <Inspector.Preview />
+</ResizableContainer>

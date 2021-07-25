@@ -31,7 +31,8 @@ import {
   virtualNodeStylesInspected,
   VirtualStyleDeclarationValueChanged,
   styleRuleFileNameClicked,
-  StyleRuleFileNameClicked
+  StyleRuleFileNameClicked,
+  popoutWindowRequested
 } from "../actions";
 import {
   AvailableBrowser,
@@ -57,7 +58,11 @@ import {
 } from "paperclip-utils";
 import { sourceWriterPlugin } from "./plugins/source-writer";
 import { fileWatcherPlugin } from "./plugins/file-watcher";
-import { inspectNodeStyleChannel } from "../rpc/channels";
+import {
+  inspectNodeStyleChannel,
+  popoutWindowChannel,
+  revealNodeSourceChannel
+} from "../rpc/channels";
 import { sockAdapter } from "../../../paperclip-common";
 
 type BrowserstackCredentials = {
@@ -138,6 +143,23 @@ export const startServer = async ({
 
       return inspections;
     });
+
+    revealNodeSourceChannel(chanAdapter).listen(async source => {
+      const info = engine.getVirtualNodeSourceInfo(source.path, source.uri);
+      if (info) {
+        emitExternal(revealExpressionSourceRequested(info));
+      }
+    });
+
+    popoutWindowChannel(chanAdapter).listen(async ({ path }) => {
+      popoutWindow(path);
+    });
+  };
+
+  const popoutWindow = (path: string) => {
+    let host = `http://localhost:${port}`;
+    let url = host + path;
+    exec(`open "${url}"`);
   };
 
   io.on("connection", conn => {
@@ -209,6 +231,9 @@ export const startServer = async ({
 
     let _ngrokUrl;
 
+    /**
+     * @deprecated
+     */
     const handleEnvOptionClicked = async ({
       payload: { option, path }
     }: EnvOptionClicked) => {
@@ -274,10 +299,6 @@ export const startServer = async ({
     const handleStyleRuleFileNameClicked = ({
       payload: { styleRuleSourceId }
     }: StyleRuleFileNameClicked) => {
-      console.log(
-        styleRuleSourceId,
-        engine.getExpressionById(styleRuleSourceId)
-      );
       const [uri, expr] = engine.getExpressionById(styleRuleSourceId) as [
         string,
         StyleRule

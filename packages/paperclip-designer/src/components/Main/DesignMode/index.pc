@@ -31,8 +31,7 @@
     display: flex;
     position: relative;
     overflow: hidden;
-    width: 100%;
-    height: 100%;
+    flex: 1;
   </style>
   {children}
 </div>
@@ -44,8 +43,9 @@
 <div export component as="Center">
   <style>
     display: flex;
-    width: 100%;
     flex-direction: column;
+    flex: 1;
+    overflow: hidden;
   </style>
   {children}
 </div>
@@ -128,6 +128,6 @@
 
 
 <!--
-  @frame { title: "Center / Canvas", width: 1394, height: 975, x: 2558, y: 736 }
+  @frame { title: "Center / Canvas", width: 1442, height: 958, x: 2558, y: 736 }
 -->
 <Preview showCanvas v2 />

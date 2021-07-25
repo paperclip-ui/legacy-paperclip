@@ -6,6 +6,7 @@ import { ErrorBanner } from "./ErrorBanner";
 import { useAppStore } from "../../../hooks/useAppStore";
 import { Birdseye } from "./Birdseye";
 import { RightSidebar } from "./RightSidebar";
+import { Footer } from "./Footer";
 
 export const DesignMode = () => {
   const { state, dispatch } = useAppStore();
@@ -14,7 +15,12 @@ export const DesignMode = () => {
     <styles.Container>
       <Toolbar />
       <styles.CanvasContainer>
-        {state.designer.ui.pathname === "/canvas" && <Canvas />}
+        {state.designer.ui.pathname === "/canvas" && (
+          <styles.Center>
+            <Canvas />
+            <Footer />
+          </styles.Center>
+        )}
         {state.designer.ui.pathname === "/all" && <Birdseye />}
         <RightSidebar />
       </styles.CanvasContainer>

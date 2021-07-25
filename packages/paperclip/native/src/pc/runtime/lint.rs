@@ -176,7 +176,6 @@ mod tests {
     ];
 
     for (source, warning_count) in cases.iter() {
-      println!("{}", source);
       let (eval_info, graph) = __test__evaluate_pc_code(source);
       let notices = lint(
         &eval_info.unwrap(),

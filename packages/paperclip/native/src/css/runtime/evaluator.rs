@@ -550,6 +550,12 @@ fn evaluate_condition_rule(
       parent_selector_context,
     )?;
 
+    let source_id = if let Some((_, inc)) = &context.content {
+      inc.id.to_string()
+    } else {
+      rule.id.to_string()
+    };
+
     // cover case with @media print { @media screen { .a { color: red; }}} - selector_text
     // will be undefined
     if selector_text.len() > 0 {
@@ -557,7 +563,7 @@ fn evaluate_condition_rule(
         .all_rules
         .push(virt::Rule::Style(virt::StyleRule {
           exported: context.in_public_scope,
-          source_id: rule.id.to_string(),
+          source_id,
           selector_text,
           style,
         }))

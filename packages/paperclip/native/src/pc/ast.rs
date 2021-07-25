@@ -128,7 +128,10 @@ impl Node {
         .get_object_by_id(id)
         .and_then(|object| match object {
           js_ast::JSObject::PCObject(obj) => Some(obj),
-          js_ast::JSObject::Expression(expr) => Some(PCObject::JSObject(expr)),
+          js_ast::JSObject::Expression(expr) => match expr {
+            js_ast::Expression::Node(node) => Some(PCObject::Node(node)),
+            _ => Some(PCObject::JSObject(expr)),
+          },
         });
     } else if let Node::StyleElement(style_element) = self {
       return style_element

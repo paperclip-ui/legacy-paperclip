@@ -41,11 +41,11 @@ pub struct ExprTextSource {
 pub struct ExprSource {
   // source where the error is. Might not exist
   #[serde(rename = "sourceId")]
-  id: String,
+  pub id: String,
 
   // This may not exist if we're dealing with just the AST
   #[serde(rename = "textSource")]
-  text_source: Option<ExprTextSource>,
+  pub text_source: Option<ExprTextSource>,
 }
 
 impl ExprSource {

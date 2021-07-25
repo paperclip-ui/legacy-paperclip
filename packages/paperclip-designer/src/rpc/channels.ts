@@ -4,4 +4,12 @@ import { NodeStyleInspection, VirtNodeSource } from "paperclip-utils";
 export const inspectNodeStyleChannel = remoteChannel<
   VirtNodeSource[],
   Array<[VirtNodeSource, NodeStyleInspection]>
->("inspectNodeStyle");
+>("inspectNodeStyleChannel");
+
+export const revealNodeSourceChannel = remoteChannel<VirtNodeSource, void>(
+  "revealNodeSourceChannel"
+);
+
+export const popoutWindowChannel = remoteChannel<{ path: string }, void>(
+  "popoutWindowChannel"
+);

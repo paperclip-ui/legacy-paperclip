@@ -1,0 +1,2 @@
+- [ ] display whether element is instance
+- [ ] start on tree view

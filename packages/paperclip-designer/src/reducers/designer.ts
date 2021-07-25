@@ -41,7 +41,8 @@ import {
   isPaperclipFile,
   EngineDelegateEventKind,
   BasicPaperclipActionType,
-  LoadedPCData
+  LoadedPCData,
+  getNodePath
 } from "paperclip-utils";
 import * as path from "path";
 import { actionCreator } from "../actions/base";
@@ -207,6 +208,23 @@ export const reduceDesigner = (
         false,
         designer
       );
+    }
+    case ActionType.NODE_BREADCRUMB_CLICKED: {
+      if (action.payload.metaKey) {
+        return designer;
+      }
+
+      return selectNode(action.payload.nodePath, false, false, designer);
+    }
+    case ActionType.NODE_BREADCRUMB_MOUSE_ENTERED: {
+      return produce(designer, newDesigner => {
+        newDesigner.highlightNodePath = action.payload.nodePath;
+      });
+    }
+    case ActionType.NODE_BREADCRUMB_MOUSE_LEFT: {
+      return produce(designer, newDesigner => {
+        newDesigner.highlightNodePath = null;
+      });
     }
     case ServerActionType.VIRTUAL_NODE_SOURCES_LOADED: {
       return produce(designer, newDesigner => {
@@ -605,7 +623,17 @@ export const reduceDesigner = (
     }
     case ActionType.CANVAS_MOUSE_MOVED: {
       return produce(designer, newDesigner => {
-        newDesigner.canvas.mousePosition = action.payload;
+        const mousePosition = (newDesigner.canvas.mousePosition =
+          action.payload);
+        const canvas = newDesigner.canvas;
+        const info = getNodeInfoAtPoint(
+          mousePosition,
+          canvas.transform,
+          newDesigner.boxes,
+          isExpanded(newDesigner) ? getActiveFrameIndex(newDesigner) : null
+        );
+
+        newDesigner.highlightNodePath = info?.nodePath;
       });
     }
     case ActionType.DIR_LOADED: {

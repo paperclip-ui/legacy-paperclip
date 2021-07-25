@@ -44,6 +44,33 @@ pub struct Element {
   pub children: Vec<Node>,
 }
 
+impl Element {
+  pub fn get_annotation(&self, name: &String) -> Option<&js_virt::JsValue> {
+    self.annotations.as_ref().and_then(|annotations| {
+      if let Some(annotation) = annotations.values.get(name) {
+        Some(annotation)
+      } else {
+        None
+      }
+    })
+  }
+  pub fn get_annotation_property_value(
+    &self,
+    annotation_name: &str,
+    property_name: &str,
+  ) -> Option<&js_virt::JsValue> {
+    self
+      .get_annotation(&annotation_name.to_string())
+      .and_then(|ann| {
+        if let js_virt::JsValue::JsObject(object) = ann {
+          object.values.get(property_name)
+        } else {
+          None
+        }
+      })
+  }
+}
+
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct StyleElement {
   pub source_id: String,
