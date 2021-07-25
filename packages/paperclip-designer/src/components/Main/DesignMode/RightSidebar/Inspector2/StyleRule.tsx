@@ -155,7 +155,7 @@ const generateSelector = memoize((info: SelectorInfo) => {
         // it's a class selector
         if (
           isTargetSelector(cleanedSelectors[0]) &&
-          cleanedSelectors[0].value === "[class]"
+          (cleanedSelectors[0] as any).value === "[class]"
         ) {
           cleanedSelectors.shift();
 
