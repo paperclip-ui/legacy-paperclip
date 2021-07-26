@@ -162,6 +162,19 @@ describe(__filename, () => {
           </style>
         `
       }
+    ],
+    [
+      "Can handle charset",
+      {
+        "entry.pc": `
+          <div data />
+        `
+      },
+      {
+        "entry.pc": `
+          <div data-l />
+        `
+      }
     ]
   ].forEach(([title, initial, ...changes]: any) => {
     it(title, async () => {
