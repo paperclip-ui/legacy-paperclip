@@ -168,6 +168,7 @@
 <div export component as="Layers">
   <style>
     font-size: 14px;
+    padding: var(--spacing-3) 0px;
   </style>
   <Element depth="1"
     hover
