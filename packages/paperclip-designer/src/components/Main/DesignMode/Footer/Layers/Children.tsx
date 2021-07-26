@@ -36,6 +36,7 @@ export const Children = React.memo(
               }
               return (
                 <Text
+                  key={i}
                   selectedNodePath={selectedNodePath}
                   onLeafClick={onLeafClick}
                   path={childPath}
@@ -45,6 +46,7 @@ export const Children = React.memo(
             } else if (child.kind === VirtualNodeKind.Element) {
               return (
                 <Element
+                  key={i}
                   selectedNodePath={selectedNodePath}
                   path={childPath}
                   onLeafClick={onLeafClick}

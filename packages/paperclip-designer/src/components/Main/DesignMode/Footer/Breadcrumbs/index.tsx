@@ -9,7 +9,7 @@ import {
   getElementLabel
 } from "paperclip-utils";
 import {
-  getActivePCData,
+  getAppActivePCData,
   getInspectionInfo,
   getSelectedNodePaths
 } from "../../../../../state";
@@ -22,7 +22,7 @@ import {
 import { Dispatch } from "redux";
 
 export const Breadcrumbs = React.memo(() => {
-  const pcData: LoadedPCData = useSelector(getActivePCData);
+  const pcData: LoadedPCData = useSelector(getAppActivePCData);
   const inspectionInfo = useSelector(getInspectionInfo);
   const selectedNodePaths = useSelector(getSelectedNodePaths);
   const dispatch = useDispatch();

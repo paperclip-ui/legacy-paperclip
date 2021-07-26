@@ -4,9 +4,11 @@ import Automerge from "automerge";
 import {
   computeVirtJSObject,
   ExprSource,
+  getNodeByPath,
   LoadedPCData,
   memoize,
   NodeAnnotations,
+  nodePathToAry,
   NodeStyleInspection,
   VirtualFrame,
   VirtualNodeKind
@@ -538,12 +540,38 @@ export const centerEditorCanvas = (
   return designer;
 };
 
-export const getActivePCData = (state: AppState) =>
-  (state.designer.allLoadedPCFileData[
-    state.designer.ui.query.canvasFile
+export const getActivePCData = (designer: DesignerState) =>
+  (designer.allLoadedPCFileData[
+    designer.ui.query.canvasFile
   ] as any) as LoadedPCData;
+
+export const getAppActivePCData = (state: AppState) =>
+  getActivePCData(state.designer);
 export const getSelectedNodePaths = (state: AppState) =>
   state.designer.selectedNodePaths;
 
 export const getInspectionInfo = (state: AppState) =>
   state.designer.selectedNodeStyleInspections;
+
+export const pruneDeletedNodes = (designer: DesignerState) => {
+  return produce(designer, newDesigner => {
+    const pruneAry = (ary: string[]) => {
+      let pruned = false;
+      for (let i = ary.length; i--; ) {
+        const nodePath = ary[i];
+        if (!getNodeByPath(nodePathToAry(nodePath), activePCData?.preview)) {
+          pruned = true;
+          ary.splice(i, 1);
+        }
+      }
+      return pruned;
+    };
+
+    const activePCData = getActivePCData(newDesigner);
+    if (pruneAry(newDesigner.selectedNodePaths)) {
+      newDesigner.selectedNodeStyleInspections = [];
+      newDesigner.selectedNodeSources = [];
+    }
+    pruneAry(newDesigner.expandedNodePaths);
+  });
+};

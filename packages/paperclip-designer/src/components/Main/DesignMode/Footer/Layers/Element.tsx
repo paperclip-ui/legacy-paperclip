@@ -59,7 +59,7 @@ export const Element = React.memo(
         }
       }
 
-      attributes.push(<styles.Attribute name={key} value={value} />);
+      attributes.push(<styles.Attribute key={key} name={key} value={value} />);
     }
     const isVoid = VOID_TAG_NAMES.includes(element.tagName);
     const expanded = expandedPaths.includes(path) && !isVoid;

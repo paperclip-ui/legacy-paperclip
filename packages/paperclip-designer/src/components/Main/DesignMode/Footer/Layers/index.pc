@@ -184,6 +184,7 @@
 
 <div export component as="Container">
   <style>
+    border-top: 2px solid rgb(233, 233, 233);
     font-size: 14px;
     padding: var(--spacing-3) 0px;
     overflow: scroll;

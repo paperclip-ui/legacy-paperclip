@@ -18,7 +18,8 @@ import {
   getCurrentPreviewFrameBoxes,
   updateShared,
   DesignerState,
-  SyncLocationMode
+  SyncLocationMode,
+  pruneDeletedNodes
 } from "../state";
 import { produce } from "immer";
 import {
@@ -354,6 +355,7 @@ export const reduceDesigner = (
       });
 
       designer = maybeCenterCanvas(designer);
+      designer = pruneDeletedNodes(designer);
 
       return designer;
     }
@@ -367,6 +369,7 @@ export const reduceDesigner = (
         newDesigner.pcFileDataVersion++;
       });
       designer = maybeCenterCanvas(designer);
+      designer = pruneDeletedNodes(designer);
       return designer;
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
@@ -515,7 +518,7 @@ export const reduceDesigner = (
 
     // happens when grid view is requested
     case ServerActionType.ALL_PC_CONTENT_LOADED: {
-      return produce(designer, newDesigner => {
+      designer = produce(designer, newDesigner => {
         newDesigner.loadingBirdseye = false;
         newDesigner.loadedBirdseyeInitially = true;
         newDesigner.allLoadedPCFileData = action.payload;
@@ -525,6 +528,9 @@ export const reduceDesigner = (
         // need to explicitly version the data like so
         newDesigner.pcFileDataVersion++;
       });
+
+      designer = pruneDeletedNodes(designer);
+      return designer;
     }
     case ActionType.RESIZER_MOVED:
     case ActionType.RESIZER_PATH_MOUSE_MOVED: {
