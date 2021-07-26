@@ -32,6 +32,19 @@ impl fmt::Display for Fragment {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ElementInstanceOfInfo {
+
+  #[serde(rename = "componentName")]
+  pub component_name: String
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ElementSourceInfo {
+  #[serde(rename = "instanceOf")]
+  pub instance_of: Option<ElementInstanceOfInfo>
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
   pub source_id: String,
 
@@ -42,6 +55,9 @@ pub struct Element {
   pub tag_name: String,
   pub attributes: BTreeMap<String, Option<String>>,
   pub children: Vec<Node>,
+
+  #[serde(rename = "sourceInfo")]
+  pub source_info: ElementSourceInfo
 }
 
 impl Element {
