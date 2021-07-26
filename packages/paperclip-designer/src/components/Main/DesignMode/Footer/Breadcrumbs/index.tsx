@@ -100,11 +100,14 @@ const Breadcrumb = React.memo(
 
     if (node.kind === VirtualNodeKind.Element) {
       label = getElementLabel(node) || node.tagName;
+    } else if (node.kind === VirtualNodeKind.Text) {
+      label = "text";
     }
 
     return (
       <styles.Breadcrumb
         active={active}
+        text={node.kind === VirtualNodeKind.Text}
         onClick={onBreadcrumbClick}
         onMouseEnter={onBreadcrumbMouseEnter}
         onMouseLeave={onBreadcrumbMouseLeave}

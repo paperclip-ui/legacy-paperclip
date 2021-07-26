@@ -155,7 +155,9 @@ const selectNode = (
     }
   });
 
-  designer = expandNode(nodePath, designer);
+  if (nodePath) {
+    designer = expandNode(nodePath, designer);
+  }
 
   return designer;
 };

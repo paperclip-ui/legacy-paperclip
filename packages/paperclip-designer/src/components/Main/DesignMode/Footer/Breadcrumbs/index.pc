@@ -91,14 +91,22 @@
   <style>
     display: inline-flex;
   </style>
-  {<div className:instance="instance show">
+  {<div className:instance="instance show" className:text="text show">
     <style>
 
       margin-right: var(--spacing-3);
       visibility: hidden;
+      position: relative;
+      &.instance {
+        mask-image: url("./block.svg");
+      }
+      &.text {
+        mask-image: url("./text.svg");
+        --size: 10px;
+        top: 1px;
+      }
       @include utils.mask {
         --size: 13px;
-        mask-image: url("./block.svg");
       }
       && {
         width: 0px;
@@ -127,5 +135,5 @@
   <Breadcrumb>div</Breadcrumb>
   <Breadcrumb>div</Breadcrumb>
   <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb active>div</Breadcrumb>
+  <Breadcrumb text active>text</Breadcrumb>
 </Breadcrumbs>
