@@ -1,3 +1,5 @@
+<import src="styles/atoms.pc" as="atoms" />
+
 <div export
   component
   as="default"
@@ -48,18 +50,22 @@
     <div onMouseDown={onBarDown}>
       <style>
         background: transparent;
+        @include atoms.ease-in {}
         &:within(.right), &:within(.left) {
           width: 200%;
           height: 100%;
           transform: translateX(-50%);
-          cursor: ew-resize;
+          cursor: col-resize;
+        }
+        &:hover {
+          background: rgb(66, 164, 255);
         }
 
         &:within(.bottom), &:within(.top) {
           width: 100%;
           height: 200%;
           transform: translateY(-50%);
-          cursor: ns-resize;
+          cursor: row-resize;
         }
       </style>
     </div>
