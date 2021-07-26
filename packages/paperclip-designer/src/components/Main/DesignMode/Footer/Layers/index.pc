@@ -74,9 +74,9 @@
   {root}
   {onClick}>
   <style>
+    width: 100%;
     &:within(.collapsed) {
       display: flex;
-      width: 100%;
       align-items: center;
     }
   </style>
@@ -188,9 +188,15 @@
     padding: var(--spacing-3) 0px;
     overflow: scroll;
     height: 100%;
-    width: 100%;
   </style>
-  {children}
+  <div>
+    <style>
+      width: fit-content;
+      min-width: 100%;
+      height: 100%;
+    </style>
+    {children}
+  </div>
 </div>
 
 <!--
