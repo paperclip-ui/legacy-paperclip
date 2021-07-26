@@ -48,7 +48,7 @@ export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
       case ActionKind.RemoveAttribute: {
         const element = target as VirtualElement;
         const attributes = { ...element.attributes };
-        attributes[action.name] = undefined;
+        delete attributes[action.name];
         target = {
           ...target,
           attributes
@@ -58,7 +58,11 @@ export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
       case ActionKind.SetAttribute: {
         const element = target as VirtualElement;
         const attributes = { ...element.attributes };
-        attributes[action.name] = action.value;
+        if (!action.value) {
+          attributes[action.name] = action.value;
+        } else {
+          attributes[action.name] = action.value;
+        }
         target = {
           ...target,
           attributes

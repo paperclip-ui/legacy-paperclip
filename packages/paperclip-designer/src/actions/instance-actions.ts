@@ -84,7 +84,9 @@ export enum ActionType {
   COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED",
   VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED",
   VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED = "VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED",
-  STYLE_RULE_FILE_NAME_CLICKED = "STYLE_RULE_FILE_NAME_CLICKED"
+  STYLE_RULE_FILE_NAME_CLICKED = "STYLE_RULE_FILE_NAME_CLICKED",
+  LAYER_LEAF_CLICKED = "LAYER_LEAF_CLICKED",
+  LAYER_EXPAND_TOGGLE_CLICKED = "LAYER_EXPAND_TOGGLE_CLICKED"
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -219,6 +221,14 @@ export type LocationChanged = BaseAction<
     pathname: string;
     query: any;
   }
+>;
+export type LayerLeafClicked = BaseAction<
+  ActionType.LAYER_LEAF_CLICKED,
+  { nodePath: string; metaKey: boolean }
+>;
+export type LayerExpandToggleClicked = BaseAction<
+  ActionType.LAYER_EXPAND_TOGGLE_CLICKED,
+  { nodePath: string }
 >;
 export type RedirectRequested = BaseAction<
   ActionType.REDIRECT_REQUESTED,
@@ -446,6 +456,12 @@ export const metaClicked = actionCreator<MetaClicked>(ActionType.META_CLICKED);
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
   ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
 );
+export const layerLeafClicked = actionCreator<LayerLeafClicked>(
+  ActionType.LAYER_LEAF_CLICKED
+);
+export const layerExpandToggleClicked = actionCreator<LayerExpandToggleClicked>(
+  ActionType.LAYER_EXPAND_TOGGLE_CLICKED
+);
 export const actionHandled = actionCreator<ActionHandled>(
   ActionType.ACTION_HANDLED
 );
@@ -616,6 +632,8 @@ export type InstanceAction =
   | ZoomInButtonClicked
   | ActionHandled
   | StyleRuleFileNameClicked
+  | LayerExpandToggleClicked
+  | LayerLeafClicked
   | ZoomInputChanged
   | ClientConnected
   | EnvOptionClicked

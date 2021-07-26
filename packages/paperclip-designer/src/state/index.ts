@@ -4,9 +4,11 @@ import Automerge from "automerge";
 import {
   computeVirtJSObject,
   ExprSource,
+  getNodeByPath,
   LoadedPCData,
   memoize,
   NodeAnnotations,
+  nodePathToAry,
   NodeStyleInspection,
   VirtualFrame,
   VirtualNodeKind
@@ -131,6 +133,7 @@ export type DesignerState = {
   resourceHost: string;
   highlightNodePath: string;
   selectedNodePaths: string[];
+  expandedNodePaths: string[];
   selectedNodeSources: VirtualNodeSourceInfo[];
   selectedNodeStyleInspections: NodeStyleInspection[];
   projectDirectory?: Directory;
@@ -197,6 +200,7 @@ export const INITIAL_STATE: AppState = {
     pcFileDataVersion: 0,
     selectedNodeSources: [],
     selectedNodeStyleInspections: [],
+    expandedNodePaths: [],
     syncLocationMode: SyncLocationMode.Location | SyncLocationMode.Query,
     sharable: true,
     ui: {
@@ -410,14 +414,17 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
   return frameBoxes;
 };
 
-export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
+export const getCurrentPreview = (designer: DesignerState) => {
   const currentPCData = designer.allLoadedPCFileData[
     designer.ui.query?.canvasFile
   ] as LoadedPCData;
+  return currentPCData?.preview;
+};
 
-  return currentPCData?.preview
-    ? getPreviewFrameBoxes(currentPCData?.preview).filter(Boolean)
-    : [];
+export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
+  const preview = getCurrentPreview(designer);
+
+  return preview ? getPreviewFrameBoxes(preview).filter(Boolean) : [];
 };
 
 const getAllFrameBounds = (designer: DesignerState) => {
@@ -533,12 +540,38 @@ export const centerEditorCanvas = (
   return designer;
 };
 
-export const getActivePCData = (state: AppState) =>
-  (state.designer.allLoadedPCFileData[
-    state.designer.ui.query.canvasFile
+export const getActivePCData = (designer: DesignerState) =>
+  (designer.allLoadedPCFileData[
+    designer.ui.query.canvasFile
   ] as any) as LoadedPCData;
+
+export const getAppActivePCData = (state: AppState) =>
+  getActivePCData(state.designer);
 export const getSelectedNodePaths = (state: AppState) =>
   state.designer.selectedNodePaths;
 
 export const getInspectionInfo = (state: AppState) =>
   state.designer.selectedNodeStyleInspections;
+
+export const pruneDeletedNodes = (designer: DesignerState) => {
+  return produce(designer, newDesigner => {
+    const pruneAry = (ary: string[]) => {
+      let pruned = false;
+      for (let i = ary.length; i--; ) {
+        const nodePath = ary[i];
+        if (!getNodeByPath(nodePathToAry(nodePath), activePCData?.preview)) {
+          pruned = true;
+          ary.splice(i, 1);
+        }
+      }
+      return pruned;
+    };
+
+    const activePCData = getActivePCData(newDesigner);
+    if (pruneAry(newDesigner.selectedNodePaths)) {
+      newDesigner.selectedNodeStyleInspections = [];
+      newDesigner.selectedNodeSources = [];
+    }
+    pruneAry(newDesigner.expandedNodePaths);
+  });
+};

@@ -12,15 +12,17 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 146, y: -107 }
 -->
-<div export component as="Breadcrumbs">
+<div export component as="Breadcrumbs" data-label="Breadcrumbs">
   <style>
     display: flex;
     flex-flow: row;
+    flex-shrink: 0;
     grid-row-gap: 1px;
     background: rgba(247, 247, 247);
     font-size: 14px;
     overflow-x: auto;
     position: relative;
+    user-select: none;
   </style>
   {children}
 </div>
@@ -35,6 +37,7 @@
   {onClick?}
   {onMouseEnter?}
   {onMouseLeave?}
+  data-label="Breadcrumb"
   className:hover="hover"
   className:active="active">
   <style>
@@ -88,14 +91,22 @@
   <style>
     display: inline-flex;
   </style>
-  {<div className:instance="instance show">
+  {<div className:instance="instance show" className:text="text show">
     <style>
 
       margin-right: var(--spacing-3);
       visibility: hidden;
+      position: relative;
+      &.instance {
+        mask-image: url("./block.svg");
+      }
+      &.text {
+        mask-image: url("./text.svg");
+        --size: 10px;
+        top: 1px;
+      }
       @include utils.mask {
         --size: 13px;
-        mask-image: url("./block.svg");
       }
       && {
         width: 0px;
@@ -124,19 +135,5 @@
   <Breadcrumb>div</Breadcrumb>
   <Breadcrumb>div</Breadcrumb>
   <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb>div</Breadcrumb>
-  <Breadcrumb active>div</Breadcrumb>
+  <Breadcrumb text active>text</Breadcrumb>
 </Breadcrumbs>

@@ -2,31 +2,26 @@
 
 <style>
 
-  // basic colors
+
   :global(:root) {
     --color-dark-1: rgb(66, 66, 66);
     --color-dark-2: rgb(54, 54, 54);
     --color-dark-3: rgb(44, 44, 44);
     --color-dark-4: rgb(39, 39, 39);
     --color-dark-5: rgb(29, 29, 29);
-
     --color-blue-1: rgb(94, 160, 245);
     --color-blue-2: rgb(0, 110, 255);
   }
 
-  // Spacing
-  :global(:root) {
-  }
+  :global(:root) {}
 
-  // Etc
   :global(:root) {
     --border-radius: 4px;
   }
 
 
-  // atom part colors
   :global(:root) {
-    --font-1: var(--vscode-font-family, Open Sans);
+    --font-1: Open Sans;
     --background-1: var(--color-dark-2);
     --background-2: var(--color-dark-3);
     --background-active-1: var(--color-blue-1);
@@ -36,7 +31,6 @@
     --input-padding: 6px 12px;
     --border-color-1: rgb(219, 219, 219);
     --border-color-2: var(--color-dark-5);
-
   }
 
   :global(.light) {
@@ -46,7 +40,7 @@
     --border-color-1: rgb(219, 219, 219);
   }
 
-  
+
   @export {
     .font-default {
       font-weight: 400;
@@ -75,7 +69,7 @@
     border-radius: 4px;
     margin-left: 8px;
     &--dark {
-      color:var(--color-negate-1);
+      color: var(--color-negate-1);
     }
   }
 
@@ -90,22 +84,22 @@
   @export {
     @mixin desktop-s {
       @media screen and (max-width: 630px) {
-        @content
+        @content;
       }
     }
     @mixin desktop-m {
       @media screen and (max-width: 900px) and (min-width: 630px) {
-        @content
+        @content;
       }
     }
     @mixin desktop-l {
       @media screen and ( max-width: 1024px) and (min-width: 900px) {
-        @content
+        @content;
       }
     }
     @mixin desktop-xl {
       @media screen and (min-width: 1024px) {
-        @content
+        @content;
       }
     }
   }
@@ -114,10 +108,8 @@
 
 <style>
   :global(.v2) {
-    // colors
     --text-color: #767676;
     --text-color-night: #F0F0F0;
-
     --grey-50: rgb(240, 240, 240);
     --grey-75: rgb(240, 240, 240);
     --grey-100: #D9D9D9;
@@ -130,20 +122,13 @@
     --grey-night-300: #292929;
     --grey-night-400: rgb(29, 29, 29);
     --grey-night-500: #151515;
-
     --background-50: rgb(240, 240, 240);
     --background-100: var(--grey-100);
     --background-200: var(--grey-200);
     --background-300: var(--grey-300);
-
     --color-blue-100: rgb(102, 163, 255);
     --color-blue-500: rgb(51, 113, 206);
-
-    // shadows
     --shadow-100: 4px 4px 4px rgba(0, 0, 0, 0.1);
-
-    // radiuses
-
     --border-radius-100: 4px;
     font-family: Open Sans;
     .dark {
@@ -167,16 +152,19 @@
 <!--
   @frame { visible: false }
 -->
-<div component as="Color" className="color {className?}" className:dark="color--dark" style="background: var({value});">
+<div component
+  as="Color"
+  className="color {className?}"
+  className:dark="color--dark"
+  style="background: var({value});">
   var(--background-1)
-</div> 
+</div>
 
 
 <!--
   @frame { visible: false }
 -->
-<Section title="Typography">
-</Section>
+<Section title="Typography" />
 
 <!--
   @frame { visible: false }
@@ -188,5 +176,4 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 58, y: 37 }
 -->
-<Section title="Spacing">
-</Section>
+<Section title="Spacing" />

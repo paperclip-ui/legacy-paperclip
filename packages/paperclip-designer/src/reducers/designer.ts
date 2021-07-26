@@ -18,10 +18,10 @@ import {
   getCurrentPreviewFrameBoxes,
   updateShared,
   DesignerState,
-  SyncLocationMode
+  SyncLocationMode,
+  pruneDeletedNodes
 } from "../state";
 import { produce } from "immer";
-import Automerge from "automerge";
 import {
   Action,
   ActionType,
@@ -30,7 +30,7 @@ import {
   RedirectRequested,
   ServerActionType
 } from "../actions";
-import { clamp } from "lodash";
+import { clamp, without } from "lodash";
 import {
   updateAllLoadedData,
   VirtualFrame,
@@ -42,7 +42,8 @@ import {
   EngineDelegateEventKind,
   BasicPaperclipActionType,
   LoadedPCData,
-  getNodePath
+  getNodePath,
+  nodePathToAry
 } from "paperclip-utils";
 import * as path from "path";
 import { actionCreator } from "../actions/base";
@@ -138,7 +139,7 @@ const selectNode = (
   metaKey: boolean,
   designer: DesignerState
 ) => {
-  return produce(designer, newDesigner => {
+  designer = produce(designer, newDesigner => {
     newDesigner.selectedNodeStyleInspections = [];
     newDesigner.selectedNodeSources = [];
 
@@ -151,6 +152,25 @@ const selectNode = (
       newDesigner.selectedNodePaths.push(nodePath);
     } else {
       newDesigner.selectedNodePaths = [nodePath];
+    }
+  });
+
+  if (nodePath) {
+    designer = expandNode(nodePath, designer);
+  }
+
+  return designer;
+};
+
+const expandNode = (nodePath: string, designer: DesignerState) => {
+  const nodePathAry = nodePathToAry(nodePath);
+  return produce(designer, newDesigner => {
+    // can't be empty, so start at 1
+    for (let i = 1, { length } = nodePathAry; i <= length; i++) {
+      const ancestorPath = nodePathAry.slice(0, i).join(".");
+      if (!newDesigner.expandedNodePaths.includes(ancestorPath)) {
+        newDesigner.expandedNodePaths.push(ancestorPath);
+      }
     }
   });
 };
@@ -209,12 +229,25 @@ export const reduceDesigner = (
         designer
       );
     }
+    case ActionType.LAYER_LEAF_CLICKED:
     case ActionType.NODE_BREADCRUMB_CLICKED: {
       if (action.payload.metaKey) {
         return designer;
       }
 
       return selectNode(action.payload.nodePath, false, false, designer);
+    }
+    case ActionType.LAYER_EXPAND_TOGGLE_CLICKED: {
+      return produce(designer, newDesigner => {
+        if (newDesigner.expandedNodePaths.includes(action.payload.nodePath)) {
+          newDesigner.expandedNodePaths = without(
+            newDesigner.expandedNodePaths,
+            action.payload.nodePath
+          );
+        } else {
+          newDesigner.expandedNodePaths.push(action.payload.nodePath);
+        }
+      });
     }
     case ActionType.NODE_BREADCRUMB_MOUSE_ENTERED: {
       return produce(designer, newDesigner => {
@@ -324,6 +357,7 @@ export const reduceDesigner = (
       });
 
       designer = maybeCenterCanvas(designer);
+      designer = pruneDeletedNodes(designer);
 
       return designer;
     }
@@ -337,6 +371,7 @@ export const reduceDesigner = (
         newDesigner.pcFileDataVersion++;
       });
       designer = maybeCenterCanvas(designer);
+      designer = pruneDeletedNodes(designer);
       return designer;
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
@@ -485,7 +520,7 @@ export const reduceDesigner = (
 
     // happens when grid view is requested
     case ServerActionType.ALL_PC_CONTENT_LOADED: {
-      return produce(designer, newDesigner => {
+      designer = produce(designer, newDesigner => {
         newDesigner.loadingBirdseye = false;
         newDesigner.loadedBirdseyeInitially = true;
         newDesigner.allLoadedPCFileData = action.payload;
@@ -495,6 +530,9 @@ export const reduceDesigner = (
         // need to explicitly version the data like so
         newDesigner.pcFileDataVersion++;
       });
+
+      designer = pruneDeletedNodes(designer);
+      return designer;
     }
     case ActionType.RESIZER_MOVED:
     case ActionType.RESIZER_PATH_MOUSE_MOVED: {

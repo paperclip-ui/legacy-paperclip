@@ -48,7 +48,8 @@ import {
   redirectRequest,
   virtualNodesSelected,
   virtualNodeStylesInspected,
-  NodeBreadcrumbClicked
+  NodeBreadcrumbClicked,
+  LayerLeafClicked
 } from "../actions";
 import {
   AppState,
@@ -128,6 +129,7 @@ function* handleClientChans(client: any) {
       ActionType.NODE_BREADCRUMB_CLICKED,
       ActionType.CANVAS_MOUSE_UP,
       ActionType.FRAME_TITLE_CLICKED,
+      ActionType.LAYER_LEAF_CLICKED,
       ActionType.ENGINE_DELEGATE_CHANGED,
       ActionType.FILE_OPENED
     ],
@@ -149,18 +151,21 @@ function* handleClientChans(client: any) {
     }
   );
 
-  yield takeEvery(ActionType.NODE_BREADCRUMB_CLICKED, function*({
-    payload: { metaKey, nodePath }
-  }: NodeBreadcrumbClicked) {
-    if (!metaKey) {
-      return;
+  yield takeEvery(
+    [ActionType.NODE_BREADCRUMB_CLICKED, ActionType.LAYER_LEAF_CLICKED],
+    function*({
+      payload: { metaKey, nodePath }
+    }: NodeBreadcrumbClicked | LayerLeafClicked) {
+      if (!metaKey) {
+        return;
+      }
+      const state: AppState = yield select();
+      yield call(revealNodeSource.call, {
+        path: nodePathToAry(nodePath),
+        uri: state.designer.ui.query.canvasFile
+      } as VirtNodeSource);
     }
-    const state: AppState = yield select();
-    yield call(revealNodeSource.call, {
-      path: nodePathToAry(nodePath),
-      uri: state.designer.ui.query.canvasFile
-    } as VirtNodeSource);
-  });
+  );
 
   yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function*() {
     yield call(popoutWindow.call, {
