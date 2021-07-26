@@ -29,7 +29,8 @@
 
 <div export component as="Attribute">
   <style>
-    display: flex;
+    white-space: nowrap;
+    margin-left: var(--spacing-3);
   </style>
   <span className="control ">{name}</span>
   <span className="token">=</span>
@@ -41,6 +42,8 @@
   component
   as="Leaf"
   {className?}
+  {onClick?}
+  className:active="active"
   className:hover="hover"
   className:inline="inline"
   style="--depth: {depth}">
@@ -50,10 +53,10 @@
     user-select: none;
     position: relative;
     &.inline {
-      padding-left: 0px;
+      padding: 0px;
     }
 
-    &:hover, &.hover {
+    &:hover, &.hover, &.active {
       background: rgba(66, 164, 255, 0.13);
     }
   </style>
@@ -64,10 +67,12 @@
   component
   as="OpenTag"
   className="tag"
+  className:noChildren="no-children"
+  {active}
   {hover}
   {depth}
   {root}
-  onClick={on}>
+  {onClick}>
   <style>
     &:within(.collapsed) {
       display: flex;
@@ -79,12 +84,20 @@
     <style>
       position: relative;
     </style>
-    <div className="token" onClick={onArrowClick}>
+    <div className="token" onClick={onExpandToggleClick}>
       <style>
         position: absolute;
         left: 0;
         cursor: pointer;
-        transform: translateX(-100%) translateY(-1px) rotate(-90deg);
+        transform: translateX(-100%);
+        @include atoms.ease-in {}
+        &:within(.collapsed) {
+          transform: translateX(-100%) translateY(-1px) rotate(-90deg);
+        }
+        &:within(.is-void, .no-children) {
+          opacity: 0;
+          pointer-events: none;
+        }
         @include utils.mask {
           --size: var(--arrow-size);
           mask-image: url('./chevron.svg');
@@ -97,30 +110,29 @@
     <span className="token">&lt;</span>
     <span className="control">{name}</span>
 
-    {attributes && <span>
+    <span className:attributes="attributes">
       <style>
-        margin-left: var(--spacing-3);
         display: flex;
-        grid-column-gap: var(--spacing-4);
+        flex-wrap: nowrap;
       </style>
       {attributes}
-    </span>}
 
-    <span className="token">{children && ">" || "&nbsp;/>"}</span>
+      <span className="token">{noChildren && " />" || ">"}</span>
+    </span>
   </div>
-  {collapsed && <fragment>
-    <ExpandButton onClick={onExpandButtonClick} />
+  {collapsed && !isVoid && !noChildren && <fragment>
+    <ExpandButton />
     <CloseTag inline {depth} {name} />
   </fragment>}
 </Leaf>
 
-<div export component as="CloseTag">
-  <Leaf {depth} className="tag" {inline?}>
-    <span className="token">&lt;/</span>
-    <span className="control">{name}</span>
-    <span className="token">&gt;</span>
-  </Leaf>
-</div>
+
+<Leaf export component as="CloseTag" {depth} className="tag" {inline?}>
+  <span className="token">&lt;/</span>
+  <span className="control">{name}</span>
+  <span className="token">&gt;</span>
+</Leaf>
+
 
 <div export component as="ExpandButton" {onClick?}>
   <style>
@@ -132,7 +144,6 @@
     color: grey;
     border: 1px solid rgb(199, 199, 199);
     height: 12px;
-    cursor: pointer;
   </style>
   ...
 </div>
@@ -142,6 +153,7 @@
 <Node export
   component
   as="Element"
+  className:isVoid="is-void collapsed"
   className:collapsed="collapsed"
   className:children="has-children">
   <style>
@@ -152,24 +164,39 @@
   </style>
 
   <!-- open tag -->
-  <OpenTag {name} {attributes} {depth} {collapsed} />
+  <OpenTag {active}
+    {noChildren}
+    onClick={onLeafClick}
+    {name}
+    {attributes}
+    {depth}
+    {collapsed}
+    {isVoid}
+    {onExpandToggleClick} />
   {children}
   <!-- close tag -->
-  {!collapsed && <CloseTag {depth} {name} />}
+  {!collapsed && !isVoid && <CloseTag {depth} {name} />}
 </Node>
 
 <Node export component as="Text" className="tag text" {depth}>
-  <Leaf {depth}>{children}</Leaf>
+  <Leaf {active} {depth} onClick={onLeafClick}>{children}</Leaf>
 </Node>
+
+<div export component as="Container">
+  <style>
+    font-size: 14px;
+    padding: var(--spacing-3) 0px;
+    overflow: scroll;
+    height: 100%;
+    width: 100%;
+  </style>
+  {children}
+</div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 7, y: 76 }
 -->
-<div export component as="Layers">
-  <style>
-    font-size: 14px;
-    padding: var(--spacing-3) 0px;
-  </style>
+<Container export component as="Preview">
   <Element depth="1"
     hover
     name="div"
@@ -181,13 +208,21 @@
       <Text depth="3">Value</Text>
     </Element>
     <Element depth="2" name="div" collapsed />
+    <Element isVoid depth="2" name="img" collapsed />
+    <Element isVoid depth="2" name="img" collapsed />
+    <Element collapsed depth="2" name="span" noChildren />
+    <Element isVoid depth="2" name="img" collapsed />
+    <Element isVoid depth="2" name="img" collapsed active />
+    <Element isVoid depth="2" name="img" collapsed />
+    <Element depth="2" name="div" collapsed />
+    <Element depth="2" name="div" collapsed />
+    <Element isVoid depth="2" name="img" collapsed />
   </Element>
-</div>
+</Container>
 
 
 <!--
-  @frame { visible: false, width: 1024, height: 768, x: 7, y: 76 }
+  @frame { visible: true, width: 1024, height: 768, x: 7, y: 76 }
 -->
-<Layers export component as="Preview" />
 
 <Preview />

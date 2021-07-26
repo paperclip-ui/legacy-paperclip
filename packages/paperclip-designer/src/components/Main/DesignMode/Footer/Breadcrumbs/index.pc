@@ -16,6 +16,7 @@
   <style>
     display: flex;
     flex-flow: row;
+    flex-shrink: 0;
     grid-row-gap: 1px;
     background: rgba(247, 247, 247);
     font-size: 14px;

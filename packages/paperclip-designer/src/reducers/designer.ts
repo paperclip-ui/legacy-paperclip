@@ -21,7 +21,6 @@ import {
   SyncLocationMode
 } from "../state";
 import { produce } from "immer";
-import Automerge from "automerge";
 import {
   Action,
   ActionType,
@@ -30,7 +29,7 @@ import {
   RedirectRequested,
   ServerActionType
 } from "../actions";
-import { clamp } from "lodash";
+import { clamp, without } from "lodash";
 import {
   updateAllLoadedData,
   VirtualFrame,
@@ -42,7 +41,8 @@ import {
   EngineDelegateEventKind,
   BasicPaperclipActionType,
   LoadedPCData,
-  getNodePath
+  getNodePath,
+  nodePathToAry
 } from "paperclip-utils";
 import * as path from "path";
 import { actionCreator } from "../actions/base";
@@ -138,7 +138,7 @@ const selectNode = (
   metaKey: boolean,
   designer: DesignerState
 ) => {
-  return produce(designer, newDesigner => {
+  designer = produce(designer, newDesigner => {
     newDesigner.selectedNodeStyleInspections = [];
     newDesigner.selectedNodeSources = [];
 
@@ -151,6 +151,23 @@ const selectNode = (
       newDesigner.selectedNodePaths.push(nodePath);
     } else {
       newDesigner.selectedNodePaths = [nodePath];
+    }
+  });
+
+  designer = expandNode(nodePath, designer);
+
+  return designer;
+};
+
+const expandNode = (nodePath: string, designer: DesignerState) => {
+  const nodePathAry = nodePathToAry(nodePath);
+  return produce(designer, newDesigner => {
+    // can't be empty, so start at 1
+    for (let i = 1, { length } = nodePathAry; i <= length; i++) {
+      const ancestorPath = nodePathAry.slice(0, i).join(".");
+      if (!newDesigner.expandedNodePaths.includes(ancestorPath)) {
+        newDesigner.expandedNodePaths.push(ancestorPath);
+      }
     }
   });
 };
@@ -209,12 +226,25 @@ export const reduceDesigner = (
         designer
       );
     }
+    case ActionType.LAYER_LEAF_CLICKED:
     case ActionType.NODE_BREADCRUMB_CLICKED: {
       if (action.payload.metaKey) {
         return designer;
       }
 
       return selectNode(action.payload.nodePath, false, false, designer);
+    }
+    case ActionType.LAYER_EXPAND_TOGGLE_CLICKED: {
+      return produce(designer, newDesigner => {
+        if (newDesigner.expandedNodePaths.includes(action.payload.nodePath)) {
+          newDesigner.expandedNodePaths = without(
+            newDesigner.expandedNodePaths,
+            action.payload.nodePath
+          );
+        } else {
+          newDesigner.expandedNodePaths.push(action.payload.nodePath);
+        }
+      });
     }
     case ActionType.NODE_BREADCRUMB_MOUSE_ENTERED: {
       return produce(designer, newDesigner => {

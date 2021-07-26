@@ -6,10 +6,12 @@
   {style}
   {className?}
   data-label="Resizable"
+  className:scrollable="scrollable"
+  className:disabled="disabled"
   className:dragging="dragging"
   className:right="right"
   className:bottom="bottom"
-  className:fixedWidth="fixed-width">
+  className:fixedSize="fixed-size">
   <style>
     --bar-size: 2px;
     display: flex;
@@ -21,15 +23,18 @@
     &.bottom, &.top {
       width: 100%;
       flex-direction: column;
+      &.fixed-size {
+        height: 300px;
+      }
     }
 
     &.right, &.left {
       height: 100%;
+      &.fixed-size {
+        width: 300px;
+      }
     }
 
-    &.fixed-width {
-      width: 300px;
-    }
   </style>
 
   <!-- bar -->
@@ -50,6 +55,9 @@
     <div onMouseDown={onBarDown}>
       <style>
         background: transparent;
+        &:within(.disabled) {
+          display: none;
+        }
         @include atoms.ease-in {}
         &:within(.right), &:within(.left) {
           width: 200%;
@@ -72,9 +80,11 @@
   </div>
   <div data-label="Container">
     <style>
-      overflow: scroll;
       height: 100%;
       width: 100%;
+      &:within(.scrollable) {
+        overflow: scroll;
+      }
     </style>
     {children}
   </div>

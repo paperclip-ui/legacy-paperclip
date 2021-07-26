@@ -131,6 +131,7 @@ export type DesignerState = {
   resourceHost: string;
   highlightNodePath: string;
   selectedNodePaths: string[];
+  expandedNodePaths: string[];
   selectedNodeSources: VirtualNodeSourceInfo[];
   selectedNodeStyleInspections: NodeStyleInspection[];
   projectDirectory?: Directory;
@@ -197,6 +198,7 @@ export const INITIAL_STATE: AppState = {
     pcFileDataVersion: 0,
     selectedNodeSources: [],
     selectedNodeStyleInspections: [],
+    expandedNodePaths: [],
     syncLocationMode: SyncLocationMode.Location | SyncLocationMode.Query,
     sharable: true,
     ui: {
@@ -410,14 +412,17 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
   return frameBoxes;
 };
 
-export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
+export const getCurrentPreview = (designer: DesignerState) => {
   const currentPCData = designer.allLoadedPCFileData[
     designer.ui.query?.canvasFile
   ] as LoadedPCData;
+  return currentPCData?.preview;
+};
 
-  return currentPCData?.preview
-    ? getPreviewFrameBoxes(currentPCData?.preview).filter(Boolean)
-    : [];
+export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
+  const preview = getCurrentPreview(designer);
+
+  return preview ? getPreviewFrameBoxes(preview).filter(Boolean) : [];
 };
 
 const getAllFrameBounds = (designer: DesignerState) => {
