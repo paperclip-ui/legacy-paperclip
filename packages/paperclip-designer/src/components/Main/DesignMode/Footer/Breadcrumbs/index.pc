@@ -21,6 +21,7 @@
     font-size: 14px;
     overflow-x: auto;
     position: relative;
+    user-select: none;
   </style>
   {children}
 </div>

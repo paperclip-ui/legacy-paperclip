@@ -1,0 +1,120 @@
+<import src="styles/atoms.pc" as="atoms" inject-styles />
+
+<style>
+  :root {
+    --value-object-color: rgb(226, 84, 207);
+  }
+</style>
+
+<style>
+  .tag {
+    padding: var(--spacing-1);
+  }
+  .token {
+    color: rgb(150, 150, 150);
+  }
+  .control {
+    color: rgb(66, 164, 255);
+  }
+  .text {
+    color: rgb(121, 121, 121);
+  }
+  .attribute {}
+  .string {
+    color: rgb(226, 84, 207);
+  }
+</style>
+
+<div export component as="Attribute">
+  <style>
+    display: flex;
+  </style>
+  <span className="control ">{name}</span>
+  <span className="token">=</span>
+  <span className="string">"{value}"</span>
+</div>
+
+
+<div export
+  component
+  as="Leaf"
+  {className?}
+  className:hover="hover"
+  className:root="root"
+  style="--depth: {depth}">
+  <style>
+    padding: var(--spacing-2);
+    padding-left: calc(var(--spacing-4) * var(--depth));
+    user-select: none;
+    cursor: pointer;
+    &:hover, &.hover {
+      background: rgba(66, 164, 255, 0.13);
+    }
+    &.root {
+      padding-left: 10px;
+      padding-top: 10px;
+    }
+  </style>
+  {children}
+</div>
+
+
+<div export component as="Node" {className?}>{children}</div>
+
+<Node export component as="Element" className:children="has-children">
+  <!-- open tag -->
+  <Leaf className="tag" {hover} {depth} {root}>
+    <style>
+      display: flex;
+    </style>
+    <span className="token">&lt;</span>
+    <span className="control">{name}</span>
+
+    {attributes && <span>
+      <style>
+        margin-left: var(--spacing-2);
+        display: flex;
+        grid-column-gap: var(--spacing-2);
+      </style>
+      {attributes}
+    </span>}
+
+    <span className="token">{children && ">" || "/>"}</span>
+  </Leaf>
+  {children}
+  <!-- close tag -->
+  {children && <fragment>
+    <Leaf {depth} className="tag">
+      <span className="token">&lt;/</span>
+      <span className="control">{name}</span>
+      <span className="token">&gt;</span>
+    </Leaf>
+  </fragment>}
+</Node>
+
+<Node export component as="Text" className="tag text" {depth}>
+  <Leaf {depth}>{children}</Leaf>
+</Node>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 7, y: 76 }
+-->
+<div export component as="Layers">
+  <style>
+    font-size: 14px;
+  </style>
+  <Element depth="1"
+    hover
+    name="div"
+    attributes={<Attribute name="a" value="b" />}>
+    <Element depth="2" name="div">
+      <Text depth="3">Value</Text>
+    </Element>
+  </Element>
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 7, y: 76 }
+-->
+<Layers export component as="Preview" />

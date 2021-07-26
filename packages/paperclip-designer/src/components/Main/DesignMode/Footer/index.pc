@@ -1,6 +1,8 @@
 <import src="./Breadcrumbs/index.pc" as="Breadcrums" />
+<import src="./Layers/index.pc" as="Layers" />
 <import src="components/ResizableContainer/index.pc" as="ResizableContainer" />
 
 <ResizableContainer bottom export component as="Preview">
   <Breadcrums.Preview />
+  <Layers.Preview />
 </ResizableContainer>
