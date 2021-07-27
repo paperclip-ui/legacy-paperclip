@@ -1,10 +1,13 @@
 import produce from "immer";
-import { isEqual, pick, pickBy } from "lodash";
+import { isEqual, omit, omitBy, pick, pickBy } from "lodash";
 import Automerge from "automerge";
 import {
   computeVirtJSObject,
   ExprSource,
   getNodeByPath,
+  getNodePath,
+  getTreeNodeMap,
+  isInstance,
   LoadedPCData,
   memoize,
   NodeAnnotations,
@@ -132,6 +135,7 @@ export type DesignerState = {
   availableBrowsers: AvailableBrowser[];
   resourceHost: string;
   highlightNodePath: string;
+  scopedElementPath?: string;
   selectedNodePaths: string[];
   expandedNodePaths: string[];
   selectedNodeSources: VirtualNodeSourceInfo[];
@@ -381,6 +385,88 @@ export const getNodeInfoAtPoint = (
   );
 };
 
+export const getScopedBoxes = memoize(
+  (
+    boxes: Record<string, Box>,
+    scopedElementPath: string,
+    root: VirtualNode
+  ) => {
+    const scopedElementPathAry = scopedElementPath
+      ? nodePathToAry(scopedElementPath)
+      : [];
+
+    // const now = Date.now();
+
+    const allNodeIds = Object.keys(boxes);
+
+    const instancePaths = allNodeIds.filter(nodeId => {
+      return isInstance(getNodeByPath(nodeId, root));
+    });
+
+    const topMostInstancePaths = instancePaths.filter(a => {
+      // make sure it's not part of any instance in the bucket
+      return !instancePaths.some(b => {
+        return a !== b && a.startsWith(b);
+      });
+    });
+
+    const scopedDescendentPaths = scopedElementPath
+      ? allNodeIds.filter(nodePath => {
+          return nodePath.startsWith(scopedElementPath);
+        })
+      : allNodeIds;
+
+    const selectableScopedDescendentPaths = scopedDescendentPaths.filter(
+      nodePath => {
+        // ensure that we don't break past instances, but always allow for
+        // instance children
+        return (
+          !instancePaths.some(instancePath => {
+            return nodePath.startsWith(instancePath);
+          }) ||
+          nodePathToAry(nodePath).length == scopedElementPathAry.length + 1
+        );
+      }
+    );
+
+    const selectableParentPaths = scopedElementPath
+      ? allNodeIds.filter(nodePath => {
+          // first get children out of the way
+          if (nodePath.startsWith(scopedElementPath)) {
+            return false;
+          }
+
+          // allow all parents to be selected
+          if (scopedElementPath.startsWith(nodePath)) {
+            return true;
+          }
+
+          const scopedElementPathAry = nodePathToAry(scopedElementPath);
+
+          for (let i = scopedElementPathAry.length; i--; ) {
+            const ancestorPath = scopedElementPathAry.slice(0, i).join(".");
+            if (nodePath.startsWith(ancestorPath)) {
+              return !instancePaths.some(instancePath => {
+                // if not the same, then ensure that instancePath is not a _parent_ of nodePath
+                return (
+                  instancePath !== nodePath && instancePath.startsWith(nodePath)
+                );
+              });
+            }
+          }
+
+          return false;
+          // return topMostInstancePaths.includes(nodePath);
+        })
+      : [];
+
+    return pick(boxes, [
+      ...selectableParentPaths,
+      ...selectableScopedDescendentPaths
+    ]);
+  }
+);
+
 export const getFrameBoxes = memoize(
   (boxes: Record<string, Box>, frameIndex: number) => {
     const v = pickBy(boxes, (value: Box, key: string) => {
@@ -559,7 +645,7 @@ export const pruneDeletedNodes = (designer: DesignerState) => {
       let pruned = false;
       for (let i = ary.length; i--; ) {
         const nodePath = ary[i];
-        if (!getNodeByPath(nodePathToAry(nodePath), activePCData?.preview)) {
+        if (!getNodeByPath(nodePath, activePCData?.preview)) {
           pruned = true;
           ary.splice(i, 1);
         }
@@ -573,5 +659,12 @@ export const pruneDeletedNodes = (designer: DesignerState) => {
       newDesigner.selectedNodeSources = [];
     }
     pruneAry(newDesigner.expandedNodePaths);
+
+    if (
+      newDesigner.scopedElementPath &&
+      !getNodeByPath(newDesigner.scopedElementPath, activePCData.preview)
+    ) {
+      newDesigner.scopedElementPath = undefined;
+    }
   });
 };

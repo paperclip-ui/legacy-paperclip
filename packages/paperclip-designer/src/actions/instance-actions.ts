@@ -35,6 +35,7 @@ export enum ActionType {
   ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
   CANVAS_MOUSE_LEAVE = "CANVAS_MOUSE_LEAVE",
   CANVAS_MOUSE_UP = "CANVAS_MOUSE_UP",
+  CANVAS_DOUBLE_CLICK = "CANVAS_DOUBLE_CLICK",
   ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
   POPOUT_BUTTON_CLICKED = "POPOUT_BUTTON_CLICKED",
   POPOUT_WINDOW_REQUESTED = "POPOUT_WINDOW_REQUESTED",
@@ -321,6 +322,8 @@ export type CanvasMouseUp = BaseAction<
   { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean }
 >;
 
+export type CanvasDoubleClick = BaseAction<ActionType.CANVAS_DOUBLE_CLICK>;
+
 export type CanvasMouseLeave = BaseAction<
   ActionType.CANVAS_MOUSE_LEAVE,
   { mousePosition: Point }
@@ -480,6 +483,9 @@ export const rectsCaptured = actionCreator<RectsCaptured>(
 export const canvasMouseUp = actionCreator<CanvasMouseUp>(
   ActionType.CANVAS_MOUSE_UP
 );
+export const canvasDoubleClick = actionCreator<CanvasDoubleClick>(
+  ActionType.CANVAS_DOUBLE_CLICK
+);
 export const canvasMouseLeave = actionCreator<CanvasMouseLeave>(
   ActionType.CANVAS_MOUSE_LEAVE
 );
@@ -634,6 +640,7 @@ export type InstanceAction =
   | StyleRuleFileNameClicked
   | LayerExpandToggleClicked
   | LayerLeafClicked
+  | CanvasDoubleClick
   | ZoomInputChanged
   | ClientConnected
   | EnvOptionClicked

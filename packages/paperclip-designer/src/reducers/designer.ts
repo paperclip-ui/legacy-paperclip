@@ -19,7 +19,9 @@ import {
   updateShared,
   DesignerState,
   SyncLocationMode,
-  pruneDeletedNodes
+  pruneDeletedNodes,
+  getActivePCData,
+  getScopedBoxes
 } from "../state";
 import { produce } from "immer";
 import { compare, applyPatch } from "fast-json-patch";
@@ -41,10 +43,14 @@ import {
   NodeAnnotations,
   isPaperclipFile,
   EngineDelegateEventKind,
+  getInstanceAncestor,
   BasicPaperclipActionType,
   LoadedPCData,
   getNodePath,
-  nodePathToAry
+  nodePathToAry,
+  getNodeByPath,
+  getNodeAncestors,
+  isInstance
 } from "paperclip-utils";
 import * as path from "path";
 import { actionCreator } from "../actions/base";
@@ -146,6 +152,7 @@ const selectNode = (
 
     if (nodePath == null) {
       newDesigner.selectedNodePaths = [];
+      newDesigner.scopedElementPath = null;
       return;
     }
     if (shiftKey) {
@@ -153,6 +160,17 @@ const selectNode = (
       newDesigner.selectedNodePaths.push(nodePath);
     } else {
       newDesigner.selectedNodePaths = [nodePath];
+    }
+
+    if (
+      newDesigner.scopedElementPath &&
+      !nodePath.startsWith(newDesigner.scopedElementPath)
+    ) {
+      const preview = getActivePCData(newDesigner).preview;
+      const node = getNodeByPath(nodePath, preview);
+      const instanceAncestor = getInstanceAncestor(node, preview);
+      newDesigner.scopedElementPath =
+        instanceAncestor && getNodePath(instanceAncestor, preview);
     }
   });
 
@@ -420,6 +438,7 @@ export const reduceDesigner = (
       // Don't do this until deselecting can be handled properly
       return produce(designer, newDesigner => {
         newDesigner.selectedNodePaths = [];
+        newDesigner.scopedElementPath = null;
         newDesigner.showBirdseye = false;
       });
     }
@@ -447,6 +466,24 @@ export const reduceDesigner = (
         newDesigner.optionKeyDown = false;
       });
     }
+    case ActionType.CANVAS_DOUBLE_CLICK: {
+      const nodePath = getNodeInfoAtPoint(
+        designer.canvas.mousePosition,
+        designer.canvas.transform,
+        getScopedBoxes(
+          designer.boxes,
+          designer.scopedElementPath,
+          getActivePCData(designer).preview
+        ),
+        isExpanded(designer) ? getActiveFrameIndex(designer) : null
+      )?.nodePath;
+
+      console.log(nodePath);
+
+      return produce(designer, newDesigner => {
+        newDesigner.scopedElementPath = nodePath;
+      });
+    }
     case ActionType.CANVAS_MOUSE_UP: {
       if (designer.resizerMoving) {
         return designer;
@@ -458,7 +495,11 @@ export const reduceDesigner = (
       const nodePath = getNodeInfoAtPoint(
         designer.canvas.mousePosition,
         designer.canvas.transform,
-        designer.boxes,
+        getScopedBoxes(
+          designer.boxes,
+          designer.scopedElementPath,
+          getActivePCData(designer).preview
+        ),
         isExpanded(designer) ? getActiveFrameIndex(designer) : null
       )?.nodePath;
       return selectNode(
@@ -674,10 +715,13 @@ export const reduceDesigner = (
         const info = getNodeInfoAtPoint(
           mousePosition,
           canvas.transform,
-          newDesigner.boxes,
+          getScopedBoxes(
+            designer.boxes,
+            designer.scopedElementPath,
+            getActivePCData(designer).preview
+          ),
           isExpanded(newDesigner) ? getActiveFrameIndex(newDesigner) : null
         );
-
         newDesigner.highlightNodePath = info?.nodePath;
       });
     }

@@ -2,6 +2,7 @@ import { CSSExports, PCExports } from "./exports";
 import { DependencyContent } from "./graph";
 import { VirtJsObject } from "./js-virt";
 import { memoize } from "./memo";
+import { getNodeAncestors, getNodePath } from "./tree";
 import { Mutation } from "./virt-mtuation";
 
 export enum VirtualNodeKind {
@@ -149,6 +150,9 @@ export const getElementLabel = (node: VirtualElement) =>
 
 export const isInstance = (node: VirtualNode) =>
   node.kind === VirtualNodeKind.Element && Boolean(node.sourceInfo?.instanceOf);
+
+export const getInstanceAncestor = (node: VirtualNode, root: VirtualNode) =>
+  getNodeAncestors(getNodePath(node, root), root).find(isInstance);
 
 // export const createVirtNodeSource = (path: number[], uri: string): VirtNodeSource => ({
 //   uri,

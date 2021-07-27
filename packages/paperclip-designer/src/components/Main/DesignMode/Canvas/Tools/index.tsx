@@ -1,12 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
-import {
-  Point,
-  findBoxNodeInfo,
-  mergeBoxes,
-  getNodeInfoAtPoint,
-  isExpanded,
-  getActiveFrameIndex
-} from "../../../../../state";
+import { mergeBoxes, isExpanded } from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
 import * as styles from "./index.pc";
@@ -25,7 +18,8 @@ import {
 import {
   canvasMouseUp,
   canvasMouseLeave,
-  canvasMouseMoved
+  canvasMouseMoved,
+  canvasDoubleClick
 } from "../../../../../actions";
 import { Empty } from "./Empty";
 
@@ -75,6 +69,10 @@ export const Tools = () => {
     [dispatch]
   );
 
+  const onDoubleClick = useCallback(() => {
+    dispatch(canvasDoubleClick(null));
+  }, [dispatch]);
+
   const onMouseLeave = () => {
     dispatch(canvasMouseLeave(null));
   };
@@ -102,6 +100,7 @@ export const Tools = () => {
     <styles.Tools
       ref={toolsRef}
       onMouseUp={onMouseUp}
+      onDoubleClick={onDoubleClick}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >

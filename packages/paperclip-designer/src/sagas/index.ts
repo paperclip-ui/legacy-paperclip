@@ -54,8 +54,10 @@ import {
 import {
   AppState,
   getActiveFrameIndex,
+  getActivePCData,
   getFrameFromIndex,
   getNodeInfoAtPoint,
+  getScopedBoxes,
   getSelectedFrames,
   isExpanded,
   SyncLocationMode
@@ -381,7 +383,11 @@ function* handleMetaKeyClick(
   const nodeInfo = getNodeInfoAtPoint(
     state.designer.canvas.mousePosition,
     state.designer.canvas.transform,
-    state.designer.boxes,
+    getScopedBoxes(
+      state.designer.boxes,
+      state.designer.scopedElementPath,
+      getActivePCData(state.designer).preview
+    ),
     isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
   );
 
