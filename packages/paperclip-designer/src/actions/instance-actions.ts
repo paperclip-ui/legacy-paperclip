@@ -322,7 +322,10 @@ export type CanvasMouseUp = BaseAction<
   { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean }
 >;
 
-export type CanvasDoubleClick = BaseAction<ActionType.CANVAS_DOUBLE_CLICK>;
+export type CanvasDoubleClick = BaseAction<
+  ActionType.CANVAS_DOUBLE_CLICK,
+  Point
+>;
 
 export type CanvasMouseLeave = BaseAction<
   ActionType.CANVAS_MOUSE_LEAVE,

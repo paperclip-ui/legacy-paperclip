@@ -42,16 +42,17 @@ export const Tools = () => {
   const toolsRef = useRef<HTMLDivElement>();
   const toolsLayerEnabled = !isExpanded(state.designer);
 
+  const getMousePoint = event => {
+    const rect: ClientRect = (event.currentTarget as any).getBoundingClientRect();
+    return {
+      x: event.pageX - rect.left,
+      y: event.pageY - rect.top
+    };
+  };
+
   const onMouseMove = useCallback(
     (event: React.MouseEvent<any>) => {
-      // offset toolbars
-      const rect: ClientRect = (event.currentTarget as any).getBoundingClientRect();
-      dispatch(
-        canvasMouseMoved({
-          x: event.pageX - rect.left,
-          y: event.pageY - rect.top
-        })
-      );
+      dispatch(canvasMouseMoved(getMousePoint(event)));
     },
     [dispatch]
   );
@@ -69,9 +70,12 @@ export const Tools = () => {
     [dispatch]
   );
 
-  const onDoubleClick = useCallback(() => {
-    dispatch(canvasDoubleClick(null));
-  }, [dispatch]);
+  const onDoubleClick = useCallback(
+    (event: React.MouseEvent) => {
+      dispatch(canvasDoubleClick(getMousePoint(event)));
+    },
+    [dispatch]
+  );
 
   const onMouseLeave = () => {
     dispatch(canvasMouseLeave(null));

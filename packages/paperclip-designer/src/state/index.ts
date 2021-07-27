@@ -4,10 +4,12 @@ import Automerge from "automerge";
 import {
   computeVirtJSObject,
   ExprSource,
+  getNodeAncestors,
   getNodeByPath,
   getNodePath,
   getTreeNodeMap,
   isInstance,
+  isNodeParent,
   LoadedPCData,
   memoize,
   NodeAnnotations,
@@ -391,81 +393,52 @@ export const getScopedBoxes = memoize(
     scopedElementPath: string,
     root: VirtualNode
   ) => {
-    const scopedElementPathAry = scopedElementPath
-      ? nodePathToAry(scopedElementPath)
-      : [];
+    const hoverableNodePaths = getHoverableNodePaths(scopedElementPath, root);
 
-    // const now = Date.now();
-
-    const allNodeIds = Object.keys(boxes);
-
-    const instancePaths = allNodeIds.filter(nodeId => {
-      return isInstance(getNodeByPath(nodeId, root));
-    });
-
-    const topMostInstancePaths = instancePaths.filter(a => {
-      // make sure it's not part of any instance in the bucket
-      return !instancePaths.some(b => {
-        return a !== b && a.startsWith(b);
-      });
-    });
-
-    const scopedDescendentPaths = scopedElementPath
-      ? allNodeIds.filter(nodePath => {
-          return nodePath.startsWith(scopedElementPath);
-        })
-      : allNodeIds;
-
-    const selectableScopedDescendentPaths = scopedDescendentPaths.filter(
-      nodePath => {
-        // ensure that we don't break past instances, but always allow for
-        // instance children
-        return (
-          !instancePaths.some(instancePath => {
-            return nodePath.startsWith(instancePath);
-          }) ||
-          nodePathToAry(nodePath).length == scopedElementPathAry.length + 1
-        );
-      }
-    );
-
-    const selectableParentPaths = scopedElementPath
-      ? allNodeIds.filter(nodePath => {
-          // first get children out of the way
-          if (nodePath.startsWith(scopedElementPath)) {
-            return false;
-          }
-
-          // allow all parents to be selected
-          if (scopedElementPath.startsWith(nodePath)) {
-            return true;
-          }
-
-          const scopedElementPathAry = nodePathToAry(scopedElementPath);
-
-          for (let i = scopedElementPathAry.length; i--; ) {
-            const ancestorPath = scopedElementPathAry.slice(0, i).join(".");
-            if (nodePath.startsWith(ancestorPath)) {
-              return !instancePaths.some(instancePath => {
-                // if not the same, then ensure that instancePath is not a _parent_ of nodePath
-                return (
-                  instancePath !== nodePath && instancePath.startsWith(nodePath)
-                );
-              });
-            }
-          }
-
-          return false;
-          // return topMostInstancePaths.includes(nodePath);
-        })
-      : [];
-
-    return pick(boxes, [
-      ...selectableParentPaths,
-      ...selectableScopedDescendentPaths
-    ]);
+    return pick(boxes, hoverableNodePaths);
   }
 );
+
+const getHoverableNodePaths = memoize(
+  (scopedNodePath: string | undefined, root: VirtualNode) => {
+    const scopedNode = scopedNodePath
+      ? getNodeByPath(scopedNodePath, root)
+      : root;
+    const ancestors = scopedNodePath
+      ? getNodeAncestors(scopedNodePath, root)
+      : [];
+
+    const hoverable: VirtualNode[] = [];
+
+    const scopes = [scopedNode, ...ancestors];
+
+    for (const scope of scopes) {
+      addHoverableChildren(scope, true, hoverable);
+    }
+
+    return hoverable.map(node => getNodePath(node, root));
+  }
+);
+
+const addHoverableChildren = (
+  node: VirtualNode,
+  isScope: boolean,
+  hoverable: VirtualNode[]
+) => {
+  if (!hoverable.includes(node)) {
+    hoverable.push(node);
+  }
+
+  if (isInstance(node) && !isScope) {
+    return;
+  }
+
+  if (isNodeParent(node)) {
+    for (const child of node.children) {
+      addHoverableChildren(child, false, hoverable);
+    }
+  }
+};
 
 export const getFrameBoxes = memoize(
   (boxes: Record<string, Box>, frameIndex: number) => {

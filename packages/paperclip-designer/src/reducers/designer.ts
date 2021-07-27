@@ -21,7 +21,8 @@ import {
   SyncLocationMode,
   pruneDeletedNodes,
   getActivePCData,
-  getScopedBoxes
+  getScopedBoxes,
+  Point
 } from "../state";
 import { produce } from "immer";
 import { compare, applyPatch } from "fast-json-patch";
@@ -478,11 +479,13 @@ export const reduceDesigner = (
         isExpanded(designer) ? getActiveFrameIndex(designer) : null
       )?.nodePath;
 
-      console.log(nodePath);
-
-      return produce(designer, newDesigner => {
+      designer = produce(designer, newDesigner => {
         newDesigner.scopedElementPath = nodePath;
       });
+
+      designer = highlightNode(designer, action.payload);
+
+      return designer;
     }
     case ActionType.CANVAS_MOUSE_UP: {
       if (designer.resizerMoving) {
@@ -708,22 +711,7 @@ export const reduceDesigner = (
       });
     }
     case ActionType.CANVAS_MOUSE_MOVED: {
-      return produce(designer, newDesigner => {
-        const mousePosition = (newDesigner.canvas.mousePosition =
-          action.payload);
-        const canvas = newDesigner.canvas;
-        const info = getNodeInfoAtPoint(
-          mousePosition,
-          canvas.transform,
-          getScopedBoxes(
-            designer.boxes,
-            designer.scopedElementPath,
-            getActivePCData(designer).preview
-          ),
-          isExpanded(newDesigner) ? getActiveFrameIndex(newDesigner) : null
-        );
-        newDesigner.highlightNodePath = info?.nodePath;
-      });
+      return highlightNode(designer, action.payload);
     }
     case ActionType.DIR_LOADED: {
       return produce(designer, newDesigner => {
@@ -756,3 +744,21 @@ export const reduceDesigner = (
 
 const cleanupPath = (pathname: string) =>
   path.normalize(pathname).replace(/\/$/, "");
+
+const highlightNode = (designer: DesignerState, mousePosition: Point) => {
+  return produce(designer, newDesigner => {
+    newDesigner.canvas.mousePosition = mousePosition;
+    const canvas = newDesigner.canvas;
+    const info = getNodeInfoAtPoint(
+      mousePosition,
+      canvas.transform,
+      getScopedBoxes(
+        designer.boxes,
+        designer.scopedElementPath,
+        getActivePCData(designer).preview
+      ),
+      isExpanded(newDesigner) ? getActiveFrameIndex(newDesigner) : null
+    );
+    newDesigner.highlightNodePath = info?.nodePath;
+  });
+};
