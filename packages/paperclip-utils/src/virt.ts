@@ -102,9 +102,18 @@ export type VirtualStyleElement = {
   sheet: any;
 } & VirtualBaseNode<VirtualNodeKind.StyleElement>;
 
+export type VirtualElementInstanceOfInfo = {
+  componentName: string;
+};
+
+export type VirtualElementSourceInfo = {
+  instanceOf?: VirtualElementInstanceOfInfo;
+};
+
 export type VirtualElement = {
   annotations?: VirtJsObject;
   tagName: string;
+  sourceInfo?: VirtualElementSourceInfo;
   attributes: {
     [identifier: string]: string | null;
   };
@@ -135,7 +144,11 @@ export const nodePathToAry = memoize((path: string) =>
   path.split(".").map(Number)
 );
 export const getElementLabel = (node: VirtualElement) =>
-  node.attributes["data-pc-label"];
+  node.attributes["data-pc-label"] ||
+  node.sourceInfo?.instanceOf?.componentName;
+
+export const isInstance = (node: VirtualNode) =>
+  node.kind === VirtualNodeKind.Element && Boolean(node.sourceInfo?.instanceOf);
 
 // export const createVirtNodeSource = (path: number[], uri: string): VirtNodeSource => ({
 //   uri,

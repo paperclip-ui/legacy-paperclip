@@ -32,14 +32,14 @@ pub enum EngineMode {
 
 pub struct ElementSource {
   pub id: String,
-  pub tag_name: String
+  pub tag_name: String,
 }
 
 impl ElementSource {
   pub fn new_from_element(element: &ast::Element) -> ElementSource {
     ElementSource {
       id: element.id.to_string(),
-      tag_name: element.tag_name.to_string()
+      tag_name: element.tag_name.to_string(),
     }
   }
 }
@@ -665,9 +665,14 @@ fn evaluate_element<'a>(
         }
       }
 
-
       if context.import_ids.contains(&ast::get_tag_name(&element)) {
-        let result = evaluate_imported_component(element, instance_source.or(Some(ElementSource::new_from_element(element))), depth, annotations, context);
+        let result = evaluate_imported_component(
+          element,
+          instance_source.or(Some(ElementSource::new_from_element(element))),
+          depth,
+          annotations,
+          context,
+        );
 
         if Ok(None) == result {
           return Err(RuntimeError::new(
@@ -679,7 +684,13 @@ fn evaluate_element<'a>(
 
         result
       } else if context.part_ids.contains(&element.tag_name) {
-        evaluate_part_instance_element(element, instance_source.or(Some(ElementSource::new_from_element(element))), depth, annotations, context)
+        evaluate_part_instance_element(
+          element,
+          instance_source.or(Some(ElementSource::new_from_element(element))),
+          depth,
+          annotations,
+          context,
+        )
       } else {
         // fragments should be preserved if in multi frame mode if root
         if element.tag_name == "fragment" && (context.mode != &EngineMode::MultiFrame || depth > 1)
@@ -692,13 +703,12 @@ fn evaluate_element<'a>(
             context,
           )
         } else {
-          evaluate_native_element(element, is_root, depth, None, annotations, context)
+          evaluate_native_element(element, is_root, depth, instance_source, annotations, context)
         }
       }
     }
   }
 }
-
 
 fn evaluate_slot<'a>(
   slot: &ast::Slot,
@@ -755,10 +765,7 @@ pub fn evaluate_imported_component<'a>(
 
   let tag_name = &ast::get_tag_name(element);
 
-  let dep_uri = &self_dep
-    .dependencies
-    .get(tag_name)
-    .unwrap();
+  let dep_uri = &self_dep.dependencies.get(tag_name).unwrap();
   let namespace_option = ast::get_tag_namespace(element);
   evaluate_component_instance(
     element,
@@ -1285,11 +1292,11 @@ fn evaluate_native_element<'a>(
     source_info: virt::ElementSourceInfo {
       instance_of: if let Some(source) = &instance_source {
         Some(virt::ElementInstanceOfInfo {
-          component_name: source.tag_name.to_string()
+          component_name: source.tag_name.to_string(),
         })
       } else {
         None
-      }
+      },
     },
     source_id: if let Some(source) = &instance_source {
       source.id.clone()

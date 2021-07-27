@@ -6,7 +6,8 @@ import {
   VirtualNode,
   VirtualNodeKind,
   memoize,
-  getElementLabel
+  getElementLabel,
+  isInstance
 } from "paperclip-utils";
 import {
   getAppActivePCData,
@@ -107,6 +108,7 @@ const Breadcrumb = React.memo(
     return (
       <styles.Breadcrumb
         active={active}
+        instance={isInstance(node)}
         text={node.kind === VirtualNodeKind.Text}
         onClick={onBreadcrumbClick}
         onMouseEnter={onBreadcrumbMouseEnter}

@@ -1,4 +1,4 @@
-use super::virt::{Node, ElementSourceInfo};
+use super::virt::{ElementSourceInfo, Node};
 use crate::base::ast::ExprTextSource;
 use crate::css::runtime::mutation as css_mutation;
 use crate::js::runtime::virt as js_virt;
