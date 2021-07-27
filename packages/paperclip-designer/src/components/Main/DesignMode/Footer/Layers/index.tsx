@@ -31,7 +31,7 @@ export const Layers = React.memo(() => {
   const selectedNodePath = state.designer.selectedNodePaths[0];
   const nodePath = nodePathToAry(selectedNodePath);
   const preview = getCurrentPreview(state.designer);
-  const frame = getNodeByPath([nodePath[0]], preview) as VirtualElement;
+  const frame = getNodeByPath(String(nodePath[0]), preview) as VirtualElement;
 
   return (
     <styles.Container>

@@ -69,6 +69,13 @@ export const patchVirtNode = (root: VirtualNode, mutations: Mutation[]) => {
         } as VirtualElement;
         break;
       }
+      case ActionKind.SetElementSourceInfo: {
+        target = {
+          ...target,
+          sourceInfo: action.value
+        } as VirtualElement;
+        break;
+      }
       case ActionKind.SetAnnotations: {
         target = { ...target, annotations: action.value } as
           | VirtualElement

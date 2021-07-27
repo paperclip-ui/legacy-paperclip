@@ -30,6 +30,20 @@ pub enum EngineMode {
   MultiFrame,
 }
 
+pub struct ElementSource {
+  pub id: String,
+  pub tag_name: String,
+}
+
+impl ElementSource {
+  pub fn new_from_element(element: &ast::Element) -> ElementSource {
+    ElementSource {
+      id: element.id.to_string(),
+      tag_name: element.tag_name.to_string(),
+    }
+  }
+}
+
 #[derive(Clone)]
 pub struct Context<'a> {
   pub graph: &'a DependencyGraph,
@@ -484,7 +498,7 @@ pub fn evaluate_instance_node<'a>(
   imported: bool,
   depth: u32,
   annotations: &Option<js_virt::JsObject>,
-  instance_source: Option<String>,
+  instance_source: Option<ElementSource>,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   context
     .render_call_stack
@@ -559,7 +573,7 @@ pub fn evaluate_node<'a>(
   node_expr: &ast::Node,
   is_root: bool,
   depth: u32,
-  instance_source: Option<String>,
+  instance_source: Option<ElementSource>,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -619,7 +633,7 @@ fn evaluate_element<'a>(
   element: &ast::Element,
   is_root: bool,
   depth: u32,
-  instance_source: Option<String>,
+  instance_source: Option<ElementSource>,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -651,10 +665,14 @@ fn evaluate_element<'a>(
         }
       }
 
-      let source = instance_or_element_source(element, context.uri, instance_source);
-
       if context.import_ids.contains(&ast::get_tag_name(&element)) {
-        let result = evaluate_imported_component(element, source, depth, annotations, context);
+        let result = evaluate_imported_component(
+          element,
+          instance_source.or(Some(ElementSource::new_from_element(element))),
+          depth,
+          annotations,
+          context,
+        );
 
         if Ok(None) == result {
           return Err(RuntimeError::new(
@@ -666,7 +684,13 @@ fn evaluate_element<'a>(
 
         result
       } else if context.part_ids.contains(&element.tag_name) {
-        evaluate_part_instance_element(element, source, depth, annotations, context)
+        evaluate_part_instance_element(
+          element,
+          instance_source.or(Some(ElementSource::new_from_element(element))),
+          depth,
+          annotations,
+          context,
+        )
       } else {
         // fragments should be preserved if in multi frame mode if root
         if element.tag_name == "fragment" && (context.mode != &EngineMode::MultiFrame || depth > 1)
@@ -679,22 +703,17 @@ fn evaluate_element<'a>(
             context,
           )
         } else {
-          evaluate_native_element(element, is_root, depth, source, annotations, context)
+          evaluate_native_element(
+            element,
+            is_root,
+            depth,
+            instance_source,
+            annotations,
+            context,
+          )
         }
       }
     }
-  }
-}
-
-fn instance_or_element_source<'a>(
-  element: &ast::Element,
-  dep_uri: &String,
-  source_option: Option<String>,
-) -> Option<String> {
-  if let Some(source) = source_option {
-    Some(source.clone())
-  } else {
-    Some(element.id.clone())
   }
 }
 
@@ -744,17 +763,16 @@ fn evaluate_slot<'a>(
 
 pub fn evaluate_imported_component<'a>(
   element: &ast::Element,
-  instance_source: Option<String>,
+  instance_source: Option<ElementSource>,
   depth: u32,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
   let self_dep = &context.graph.dependencies.get(context.uri).unwrap();
 
-  let dep_uri = &self_dep
-    .dependencies
-    .get(&ast::get_tag_name(element))
-    .unwrap();
+  let tag_name = &ast::get_tag_name(element);
+
+  let dep_uri = &self_dep.dependencies.get(tag_name).unwrap();
   let namespace_option = ast::get_tag_namespace(element);
   evaluate_component_instance(
     element,
@@ -810,7 +828,7 @@ fn check_instance_loop<'a>(
 
 fn evaluate_part_instance_element<'a>(
   element: &ast::Element,
-  instance_source: Option<String>,
+  instance_source: Option<ElementSource>,
   depth: u32,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
@@ -1039,7 +1057,7 @@ fn evaluate_component_instance<'a>(
   render_strategy: RenderStrategy,
   imported: bool,
   depth: u32,
-  instance_source: Option<String>,
+  instance_source: Option<ElementSource>,
   annotations: &Option<js_virt::JsObject>,
   dep_uri: &String,
   context: &'a mut Context,
@@ -1061,12 +1079,6 @@ fn evaluate_component_instance<'a>(
       check_instance_loop(&render_strategy, instance_element, &mut instance_context)?;
       // TODO: if fragment, then wrap in span. If not, then copy these attributes to root element
 
-      let source = if let Some(source) = instance_source {
-        source.clone()
-      } else {
-        instance_element.id.clone()
-      };
-
       evaluate_instance_node(
         &node,
         &mut instance_context,
@@ -1074,7 +1086,7 @@ fn evaluate_component_instance<'a>(
         imported,
         depth,
         annotations,
-        Some(source),
+        instance_source.or(Some(ElementSource::new_from_element(instance_element))),
       )
     } else {
       Err(RuntimeError::unknown(context.uri))
@@ -1114,7 +1126,7 @@ fn evaluate_native_element<'a>(
   element: &ast::Element,
   is_root: bool,
   depth: u32,
-  instance_source: Option<String>,
+  instance_source: Option<ElementSource>,
   annotations: &Option<js_virt::JsObject>,
   context: &'a mut Context,
 ) -> Result<Option<virt::Node>, RuntimeError> {
@@ -1284,8 +1296,17 @@ fn evaluate_native_element<'a>(
   }
 
   Ok(Some(virt::Node::Element(virt::Element {
-    source_id: if let Some(source_id) = instance_source {
-      source_id.clone()
+    source_info: virt::ElementSourceInfo {
+      instance_of: if let Some(source) = &instance_source {
+        Some(virt::ElementInstanceOfInfo {
+          component_name: source.tag_name.to_string(),
+        })
+      } else {
+        None
+      },
+    },
+    source_id: if let Some(source) = &instance_source {
+      source.id.clone()
     } else {
       element.id.to_string()
     },

@@ -19,9 +19,13 @@ import {
   updateShared,
   DesignerState,
   SyncLocationMode,
-  pruneDeletedNodes
+  pruneDeletedNodes,
+  getActivePCData,
+  getScopedBoxes,
+  Point
 } from "../state";
 import { produce } from "immer";
+import { compare, applyPatch } from "fast-json-patch";
 import {
   Action,
   ActionType,
@@ -40,10 +44,14 @@ import {
   NodeAnnotations,
   isPaperclipFile,
   EngineDelegateEventKind,
+  getInstanceAncestor,
   BasicPaperclipActionType,
   LoadedPCData,
   getNodePath,
-  nodePathToAry
+  nodePathToAry,
+  getNodeByPath,
+  getNodeAncestors,
+  isInstance
 } from "paperclip-utils";
 import * as path from "path";
 import { actionCreator } from "../actions/base";
@@ -145,6 +153,7 @@ const selectNode = (
 
     if (nodePath == null) {
       newDesigner.selectedNodePaths = [];
+      newDesigner.scopedElementPath = null;
       return;
     }
     if (shiftKey) {
@@ -152,6 +161,17 @@ const selectNode = (
       newDesigner.selectedNodePaths.push(nodePath);
     } else {
       newDesigner.selectedNodePaths = [nodePath];
+    }
+
+    if (
+      newDesigner.scopedElementPath &&
+      !nodePath.startsWith(newDesigner.scopedElementPath)
+    ) {
+      const preview = getActivePCData(newDesigner).preview;
+      const node = getNodeByPath(nodePath, preview);
+      const instanceAncestor = getInstanceAncestor(node, preview);
+      newDesigner.scopedElementPath =
+        instanceAncestor && getNodePath(instanceAncestor, preview);
     }
   });
 
@@ -265,10 +285,16 @@ export const reduceDesigner = (
       });
     }
     case ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED: {
+      const diff = compare(
+        designer.selectedNodeStyleInspections,
+        action.payload.map(info => info[1])
+      );
+
       return produce(designer, newDesigner => {
-        newDesigner.selectedNodeStyleInspections = action.payload.map(
-          info => info[1]
-        );
+        newDesigner.selectedNodeStyleInspections = applyPatch(
+          newDesigner.selectedNodeStyleInspections,
+          diff
+        ).newDocument;
       });
     }
     case ActionType.BIRDSEYE_FILTER_CHANGED: {
@@ -413,6 +439,7 @@ export const reduceDesigner = (
       // Don't do this until deselecting can be handled properly
       return produce(designer, newDesigner => {
         newDesigner.selectedNodePaths = [];
+        newDesigner.scopedElementPath = null;
         newDesigner.showBirdseye = false;
       });
     }
@@ -440,6 +467,26 @@ export const reduceDesigner = (
         newDesigner.optionKeyDown = false;
       });
     }
+    case ActionType.CANVAS_DOUBLE_CLICK: {
+      const nodePath = getNodeInfoAtPoint(
+        designer.canvas.mousePosition,
+        designer.canvas.transform,
+        getScopedBoxes(
+          designer.boxes,
+          designer.scopedElementPath,
+          getActivePCData(designer).preview
+        ),
+        isExpanded(designer) ? getActiveFrameIndex(designer) : null
+      )?.nodePath;
+
+      designer = produce(designer, newDesigner => {
+        newDesigner.scopedElementPath = nodePath;
+      });
+
+      designer = highlightNode(designer, action.payload);
+
+      return designer;
+    }
     case ActionType.CANVAS_MOUSE_UP: {
       if (designer.resizerMoving) {
         return designer;
@@ -451,7 +498,11 @@ export const reduceDesigner = (
       const nodePath = getNodeInfoAtPoint(
         designer.canvas.mousePosition,
         designer.canvas.transform,
-        designer.boxes,
+        getScopedBoxes(
+          designer.boxes,
+          designer.scopedElementPath,
+          getActivePCData(designer).preview
+        ),
         isExpanded(designer) ? getActiveFrameIndex(designer) : null
       )?.nodePath;
       return selectNode(
@@ -660,19 +711,7 @@ export const reduceDesigner = (
       });
     }
     case ActionType.CANVAS_MOUSE_MOVED: {
-      return produce(designer, newDesigner => {
-        const mousePosition = (newDesigner.canvas.mousePosition =
-          action.payload);
-        const canvas = newDesigner.canvas;
-        const info = getNodeInfoAtPoint(
-          mousePosition,
-          canvas.transform,
-          newDesigner.boxes,
-          isExpanded(newDesigner) ? getActiveFrameIndex(newDesigner) : null
-        );
-
-        newDesigner.highlightNodePath = info?.nodePath;
-      });
+      return highlightNode(designer, action.payload);
     }
     case ActionType.DIR_LOADED: {
       return produce(designer, newDesigner => {
@@ -705,3 +744,21 @@ export const reduceDesigner = (
 
 const cleanupPath = (pathname: string) =>
   path.normalize(pathname).replace(/\/$/, "");
+
+const highlightNode = (designer: DesignerState, mousePosition: Point) => {
+  return produce(designer, newDesigner => {
+    newDesigner.canvas.mousePosition = mousePosition;
+    const canvas = newDesigner.canvas;
+    const info = getNodeInfoAtPoint(
+      mousePosition,
+      canvas.transform,
+      getScopedBoxes(
+        designer.boxes,
+        designer.scopedElementPath,
+        getActivePCData(designer).preview
+      ),
+      isExpanded(newDesigner) ? getActiveFrameIndex(newDesigner) : null
+    );
+    newDesigner.highlightNodePath = info?.nodePath;
+  });
+};

@@ -2,6 +2,7 @@ import { CSSExports, PCExports } from "./exports";
 import { DependencyContent } from "./graph";
 import { VirtJsObject } from "./js-virt";
 import { memoize } from "./memo";
+import { getNodeAncestors, getNodePath } from "./tree";
 import { Mutation } from "./virt-mtuation";
 
 export enum VirtualNodeKind {
@@ -102,9 +103,18 @@ export type VirtualStyleElement = {
   sheet: any;
 } & VirtualBaseNode<VirtualNodeKind.StyleElement>;
 
+export type VirtualElementInstanceOfInfo = {
+  componentName: string;
+};
+
+export type VirtualElementSourceInfo = {
+  instanceOf?: VirtualElementInstanceOfInfo;
+};
+
 export type VirtualElement = {
   annotations?: VirtJsObject;
   tagName: string;
+  sourceInfo?: VirtualElementSourceInfo;
   attributes: {
     [identifier: string]: string | null;
   };
@@ -135,7 +145,14 @@ export const nodePathToAry = memoize((path: string) =>
   path.split(".").map(Number)
 );
 export const getElementLabel = (node: VirtualElement) =>
-  node.attributes["data-pc-label"];
+  node.attributes["data-pc-label"] ||
+  node.sourceInfo?.instanceOf?.componentName;
+
+export const isInstance = (node: VirtualNode) =>
+  node.kind === VirtualNodeKind.Element && Boolean(node.sourceInfo?.instanceOf);
+
+export const getInstanceAncestor = (node: VirtualNode, root: VirtualNode) =>
+  getNodeAncestors(getNodePath(node, root), root).find(isInstance);
 
 // export const createVirtNodeSource = (path: number[], uri: string): VirtNodeSource => ({
 //   uri,

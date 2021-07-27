@@ -1,4 +1,5 @@
 import { memoize } from "./memo";
+import { nodePathToAry } from "./virt";
 
 // core tree utils
 
@@ -30,8 +31,20 @@ export const getNodePath = memoize(
 );
 
 export const getNodeByPath = memoize(
-  <TNode extends BaseTreeNode>(nodePath: number[], root: TNode) => {
-    return getTreeNodeMap(root)[nodePath.join(".")];
+  <TNode extends BaseTreeNode>(nodePath: string, root: TNode) => {
+    return getTreeNodeMap(root)[nodePath];
+  }
+);
+
+export const getNodeAncestors = memoize(
+  <TNode extends BaseTreeNode>(nodePath: string, root: TNode) => {
+    const pathAry = nodePathToAry(nodePath);
+    const map = getTreeNodeMap(root);
+    const ancestors = [];
+    for (let i = pathAry.length; i--; ) {
+      ancestors.push(getNodeByPath(pathAry.slice(0, i).join("."), root));
+    }
+    return ancestors;
   }
 );
 

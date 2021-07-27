@@ -1,10 +1,15 @@
 import produce from "immer";
-import { isEqual, pick, pickBy } from "lodash";
+import { isEqual, omit, omitBy, pick, pickBy } from "lodash";
 import Automerge from "automerge";
 import {
   computeVirtJSObject,
   ExprSource,
+  getNodeAncestors,
   getNodeByPath,
+  getNodePath,
+  getTreeNodeMap,
+  isInstance,
+  isNodeParent,
   LoadedPCData,
   memoize,
   NodeAnnotations,
@@ -132,6 +137,7 @@ export type DesignerState = {
   availableBrowsers: AvailableBrowser[];
   resourceHost: string;
   highlightNodePath: string;
+  scopedElementPath?: string;
   selectedNodePaths: string[];
   expandedNodePaths: string[];
   selectedNodeSources: VirtualNodeSourceInfo[];
@@ -381,6 +387,59 @@ export const getNodeInfoAtPoint = (
   );
 };
 
+export const getScopedBoxes = memoize(
+  (
+    boxes: Record<string, Box>,
+    scopedElementPath: string,
+    root: VirtualNode
+  ) => {
+    const hoverableNodePaths = getHoverableNodePaths(scopedElementPath, root);
+
+    return pick(boxes, hoverableNodePaths);
+  }
+);
+
+const getHoverableNodePaths = memoize(
+  (scopedNodePath: string | undefined, root: VirtualNode) => {
+    const scopedNode = scopedNodePath
+      ? getNodeByPath(scopedNodePath, root)
+      : root;
+    const ancestors = scopedNodePath
+      ? getNodeAncestors(scopedNodePath, root)
+      : [];
+
+    const hoverable: VirtualNode[] = [];
+
+    const scopes = [scopedNode, ...ancestors];
+
+    for (const scope of scopes) {
+      addHoverableChildren(scope, true, hoverable);
+    }
+
+    return hoverable.map(node => getNodePath(node, root));
+  }
+);
+
+const addHoverableChildren = (
+  node: VirtualNode,
+  isScope: boolean,
+  hoverable: VirtualNode[]
+) => {
+  if (!hoverable.includes(node)) {
+    hoverable.push(node);
+  }
+
+  if (isInstance(node) && !isScope) {
+    return;
+  }
+
+  if (isNodeParent(node)) {
+    for (const child of node.children) {
+      addHoverableChildren(child, false, hoverable);
+    }
+  }
+};
+
 export const getFrameBoxes = memoize(
   (boxes: Record<string, Box>, frameIndex: number) => {
     const v = pickBy(boxes, (value: Box, key: string) => {
@@ -559,7 +618,7 @@ export const pruneDeletedNodes = (designer: DesignerState) => {
       let pruned = false;
       for (let i = ary.length; i--; ) {
         const nodePath = ary[i];
-        if (!getNodeByPath(nodePathToAry(nodePath), activePCData?.preview)) {
+        if (!getNodeByPath(nodePath, activePCData?.preview)) {
           pruned = true;
           ary.splice(i, 1);
         }
@@ -573,5 +632,12 @@ export const pruneDeletedNodes = (designer: DesignerState) => {
       newDesigner.selectedNodeSources = [];
     }
     pruneAry(newDesigner.expandedNodePaths);
+
+    if (
+      newDesigner.scopedElementPath &&
+      !getNodeByPath(newDesigner.scopedElementPath, activePCData.preview)
+    ) {
+      newDesigner.scopedElementPath = undefined;
+    }
   });
 };

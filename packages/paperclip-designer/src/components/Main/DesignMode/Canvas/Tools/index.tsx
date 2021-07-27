@@ -1,12 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
-import {
-  Point,
-  findBoxNodeInfo,
-  mergeBoxes,
-  getNodeInfoAtPoint,
-  isExpanded,
-  getActiveFrameIndex
-} from "../../../../../state";
+import { mergeBoxes, isExpanded } from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
 import * as styles from "./index.pc";
@@ -25,7 +18,8 @@ import {
 import {
   canvasMouseUp,
   canvasMouseLeave,
-  canvasMouseMoved
+  canvasMouseMoved,
+  canvasDoubleClick
 } from "../../../../../actions";
 import { Empty } from "./Empty";
 
@@ -48,16 +42,17 @@ export const Tools = () => {
   const toolsRef = useRef<HTMLDivElement>();
   const toolsLayerEnabled = !isExpanded(state.designer);
 
+  const getMousePoint = event => {
+    const rect: ClientRect = (event.currentTarget as any).getBoundingClientRect();
+    return {
+      x: event.pageX - rect.left,
+      y: event.pageY - rect.top
+    };
+  };
+
   const onMouseMove = useCallback(
     (event: React.MouseEvent<any>) => {
-      // offset toolbars
-      const rect: ClientRect = (event.currentTarget as any).getBoundingClientRect();
-      dispatch(
-        canvasMouseMoved({
-          x: event.pageX - rect.left,
-          y: event.pageY - rect.top
-        })
-      );
+      dispatch(canvasMouseMoved(getMousePoint(event)));
     },
     [dispatch]
   );
@@ -71,6 +66,13 @@ export const Tools = () => {
           shiftKey: event.shiftKey
         })
       );
+    },
+    [dispatch]
+  );
+
+  const onDoubleClick = useCallback(
+    (event: React.MouseEvent) => {
+      dispatch(canvasDoubleClick(getMousePoint(event)));
     },
     [dispatch]
   );
@@ -102,6 +104,7 @@ export const Tools = () => {
     <styles.Tools
       ref={toolsRef}
       onMouseUp={onMouseUp}
+      onDoubleClick={onDoubleClick}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >
