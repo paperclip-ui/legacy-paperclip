@@ -1,7 +1,4 @@
-use super::mutation::{
-  Action, DeleteChild, InsertChild, Mutation, RemoveAttribute, ReplaceNode, SetAnnotations,
-  SetAttribute, SetText, UpdateSheet,
-};
+use super::mutation::*;
 use super::virt::{Element, Fragment, Node, StyleElement, Text};
 use crate::css::runtime::diff::diff as diff_css;
 use std::cmp::{max, min};
@@ -64,6 +61,14 @@ fn diff_element<'a>(a: &Element, b: &Element, context: &mut Context<'a>) {
       context.node_path.clone(),
       Action::SetAnnotations(SetAnnotations {
         value: b.annotations.clone(),
+      }),
+    ));
+  }
+  if (a.source_info != b.source_info) {
+    context.mutations.push(Mutation::new(
+      context.node_path.clone(),
+      Action::SetElementSourceInfo(SetElementSourceInfo {
+        value: b.source_info.clone(),
       }),
     ));
   }

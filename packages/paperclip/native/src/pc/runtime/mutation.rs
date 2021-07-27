@@ -1,4 +1,4 @@
-use super::virt::Node;
+use super::virt::{Node, ElementSourceInfo};
 use crate::base::ast::ExprTextSource;
 use crate::css::runtime::mutation as css_mutation;
 use crate::js::runtime::virt as js_virt;
@@ -42,6 +42,11 @@ pub struct SetAnnotations {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct SetElementSourceInfo {
+  pub value: ElementSourceInfo,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ReplaceNode {
   pub replacement: Node,
 }
@@ -55,6 +60,7 @@ pub enum Action {
   SetAttribute(SetAttribute),
   SetText(SetText),
   SetAnnotations(SetAnnotations),
+  SetElementSourceInfo(SetElementSourceInfo),
   RemoveAttribute(RemoveAttribute),
   UpdateSheet(UpdateSheet),
 }
