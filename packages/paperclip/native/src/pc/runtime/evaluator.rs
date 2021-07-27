@@ -703,7 +703,14 @@ fn evaluate_element<'a>(
             context,
           )
         } else {
-          evaluate_native_element(element, is_root, depth, instance_source, annotations, context)
+          evaluate_native_element(
+            element,
+            is_root,
+            depth,
+            instance_source,
+            annotations,
+            context,
+          )
         }
       }
     }

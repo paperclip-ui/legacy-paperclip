@@ -22,6 +22,7 @@ import {
   pruneDeletedNodes
 } from "../state";
 import { produce } from "immer";
+import { compare, applyPatch } from "fast-json-patch";
 import {
   Action,
   ActionType,
@@ -265,10 +266,16 @@ export const reduceDesigner = (
       });
     }
     case ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED: {
+      const diff = compare(
+        designer.selectedNodeStyleInspections,
+        action.payload.map(info => info[1])
+      );
+
       return produce(designer, newDesigner => {
-        newDesigner.selectedNodeStyleInspections = action.payload.map(
-          info => info[1]
-        );
+        newDesigner.selectedNodeStyleInspections = applyPatch(
+          newDesigner.selectedNodeStyleInspections,
+          diff
+        ).newDocument;
       });
     }
     case ActionType.BIRDSEYE_FILTER_CHANGED: {
