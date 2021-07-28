@@ -1,60 +1,61 @@
-import { EngineDelegate } from "paperclip";
-import { Action } from "../../actions";
 import * as chokidar from "chokidar";
 import * as URL from "url";
 import * as path from "path";
 import * as fs from "fs";
 import { isPaperclipFile } from "paperclip-utils";
-import { Observable } from "../core/events";
-import { ServerEvent } from "../events";
+import { eventProcesses } from "../core/events";
+import { ServerKernel } from "../core/kernel";
+import { PCEngineEventType, PCEngineInitialized } from "./pc-engine";
 
-// export const fileWatcherService = (
-//   engine: EngineDelegate,
-//   cwd: string,
-//   dispatch: (action: Action) => void
-// ) => {
-//   watchPaperclipSources(engine, cwd);
-//   return () => {};
-// };
+type Options = {
+  cwd: string;
+};
 
-// const watchPaperclipSources = (
-//   engine: EngineDelegate,
-//   cwd: string = process.cwd()
-// ) => {
-//   // want to load all PC files within the CWD workspace -- disregard PC configs
+export const fileWatcherService = (options: Options) => ({
+  connect: connect(options)
+});
 
-//   const watcher = chokidar.watch(
-//     "**/*.{pc,css}",
+const connect = (options: Options) => (kernel: ServerKernel) => {
+  kernel.events.observe({
+    onEvent: eventProcesses({
+      [PCEngineEventType.INITIALIZED]: init(options, kernel)
+    })
+  });
+};
 
-//     // TODO - ignored - fetch .gitignored
-//     { cwd: cwd, ignored: ["**/node_modules/**", "node_modules"] }
-//   );
+const init = ({ cwd }: Options, kernel: ServerKernel) => ({
+  engine
+}: PCEngineInitialized) => {
+  const watcher = chokidar.watch(
+    "**/*.{pc,css}",
 
-//   watcher.on("all", (eventName, relativePath) => {
-//     if (!isPaperclipFile(relativePath)) {
-//       return;
-//     }
+    // TODO - ignored - fetch .gitignored
+    { cwd: cwd, ignored: ["**/node_modules/**", "node_modules"] }
+  );
 
-//     // fix symlinks
-//     const uri = URL.pathToFileURL(
-//       fs.realpathSync(path.join(cwd, relativePath))
-//     );
-//     if (eventName === "change") {
-//       engine.updateVirtualFileContent(uri.href, fs.readFileSync(uri, "utf8"));
-//     } else if (eventName === "add") {
-//       engine.open(uri.href);
-//     } else if (eventName === "unlink") {
-//       engine.purgeUnlinkedFiles();
-//     } else if (eventName === "unlinkDir") {
-//       engine.purgeUnlinkedFiles();
-//     }
-//   });
-// };
+  watcher.on("all", (eventName, relativePath) => {
+    if (!isPaperclipFile(relativePath)) {
+      return;
+    }
 
-export const fileWatcherService = () => ({ connect });
+    // fix symlinks
+    const uri = URL.pathToFileURL(
+      fs.realpathSync(path.join(cwd, relativePath))
+    );
+    if (eventName === "change") {
+      engine.updateVirtualFileContent(uri.href, fs.readFileSync(uri, "utf8"));
+    } else if (eventName === "add") {
+      engine.open(uri.href);
+    } else if (eventName === "unlink") {
+      engine.purgeUnlinkedFiles();
+    } else if (eventName === "unlinkDir") {
+      engine.purgeUnlinkedFiles();
+    }
+  });
 
-const connect = (observable: Observable) => {
-  const onEvent = (event: ServerEvent) => {};
-
-  observable.observe({ onEvent });
+  return {
+    dispose() {
+      watcher.close();
+    }
+  };
 };

@@ -7,8 +7,9 @@ import {
   PCVirtObjectEdited,
   VirtualStyleDeclarationValueChanged
 } from "../../actions";
-import { Observable } from "../core/events";
-import { ServerEvent, ServerEventType } from "../events";
+import { eventHandler, eventProcesses, Observable } from "../core/events";
+import { ServerKernel } from "../core/kernel";
+import { PCEngineInitialized } from "./pc-engine";
 
 // export const sourceWriterService = (
 //   engine: EngineDelegate,
@@ -57,13 +58,10 @@ import { ServerEvent, ServerEventType } from "../events";
 
 export const sourceWriterService = () => ({ connect });
 
-const connect = (observable: Observable) => {
-  const onEvent = (event: ServerEvent) => {
-    switch (event.type) {
-    }
-  };
-
-  observable.observe({
-    onEvent
+const connect = (kernel: ServerKernel) => {
+  kernel.events.observe({
+    onEvent: eventProcesses({
+      // [PCEngineInitialized.TYPE]: init()
+    })
   });
 };

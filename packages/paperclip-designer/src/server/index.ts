@@ -1,6 +1,10 @@
 import { ServiceManager } from "./core/service-manager";
 import { fileWatcherService } from "./services/file-watcher";
+import { httpServer } from "./services/http-server";
+import { ServerKernel } from "./core/kernel";
 import { sourceWriterService } from "./services/source-writer";
+import { eventLogger } from "./services/event-logger";
+import { rpcService } from "./services/rpc";
 
 type BrowserstackCredentials = {
   username: string;
@@ -18,7 +22,7 @@ export type ServerOptions = {
   };
 };
 
-export const startServer = async ({
+export const startServer = ({
   port: defaultPort,
   localResourceRoots,
   cwd = process.cwd(),
@@ -26,9 +30,19 @@ export const startServer = async ({
   openInitial,
   readonly
 }: ServerOptions) => {
-  const serviceManager = new ServiceManager(
+  const revealSource = () => {
+    console.log("TODO!");
+  };
+
+  const serviceManager = new ServiceManager(new ServerKernel()).add(
+    // watches for
     sourceWriterService(),
-    fileWatcherService()
+    fileWatcherService({ cwd }),
+    httpServer({ defaultPort, localResourceRoots }),
+    eventLogger(),
+    rpcService({
+      revealSource
+    })
   );
 
   serviceManager.initialize();

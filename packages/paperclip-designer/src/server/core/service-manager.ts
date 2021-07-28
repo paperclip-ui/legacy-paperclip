@@ -1,31 +1,36 @@
-import { BaseEvent, Observable } from "./events";
+import { BaseEvent, Observer } from "./events";
+import { BaseServerKernel } from "./kernel";
 
-export interface Service {
-  connect: (eventBus: Observable) => void;
+export class ServiceInitialized implements BaseEvent {
+  static TYPE = "ServiceEvent/INITIALIZED";
+  readonly type = ServiceInitialized.TYPE;
 }
 
-export enum ServiceEventType {
-  INITIALIZED = "ServiceEvent/INITIALIZED"
-}
+export interface BaseServerState extends Observer {}
 
-export type ServiceInitialized = BaseEvent<ServiceEventType.INITIALIZED>;
-
-export class ServiceManager {
-  private _services: Service[];
-  private _eventBus: Observable;
-
-  constructor(...services: Service[]) {
-    this._eventBus = new Observable();
-    this._services = [];
-    this.add(...services);
+export const serviceCreator = <TKernel extends BaseServerKernel, TState>(
+  load: (kernel: TKernel, state: TState) => void,
+  createState?: () => TState
+) => (kernel: TKernel) => {
+  let state: TState;
+  if (createState) {
+    state = createState();
+    if (((state as any) as Observer).onEvent) {
+      kernel.events.observe((state as any) as Observer);
+    }
   }
-  add(...services: Service[]) {
-    services.forEach(service => {
-      this._services.push(service);
-      service.connect(this._eventBus);
+  load(kernel, state);
+};
+
+export class ServiceManager<TKernel extends BaseServerKernel> {
+  constructor(private _kernal: TKernel) {}
+  add(...serviceCreators: Array<(kernel: TKernel) => void>) {
+    serviceCreators.forEach(createService => {
+      createService(this._kernal);
     });
+    return this;
   }
   initialize() {
-    this._eventBus.dispatch({ type: ServiceEventType.INITIALIZED });
+    this._kernal.events.dispatch(new ServiceInitialized());
   }
 }

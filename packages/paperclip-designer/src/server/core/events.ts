@@ -1,13 +1,15 @@
 import { Disposable } from "./disposable";
 
-export type BaseEvent<TType extends string> = {
-  type: TType;
+export type BaseEvent = {
+  type: string;
 };
 
-export type Dispatcher = (event: BaseEvent<any>) => void;
+export type Dispatcher = (event: BaseEvent) => void;
+
+type EventHandler = (event: BaseEvent) => void;
 
 export type Observer = {
-  onEvent: (event: BaseEvent<any>) => void;
+  onEvent: EventHandler;
 };
 
 export class Observable {
@@ -15,7 +17,7 @@ export class Observable {
   constructor() {
     this._observers = [];
   }
-  dispatch(event: BaseEvent<any>) {
+  dispatch(event: BaseEvent) {
     for (let i = this._observers.length; i--; ) {
       this._observers[i].onEvent(event);
     }
@@ -35,3 +37,44 @@ export class Observable {
     }
   }
 }
+
+export type EventProcessCreator = (
+  event: BaseEvent
+) => Disposable | Promise<Disposable>;
+
+export const eventHandler = (
+  type: string,
+  handler: (event: BaseEvent) => void
+) => (event: BaseEvent) => {
+  if (event.type === type) {
+    handler(event);
+  }
+};
+
+export const eventHandlers = (
+  handlers: Record<string, (event: BaseEvent) => void>
+) => (event: BaseEvent) => {
+  if (handlers[event.type]) {
+    handlers[event.type](event);
+  }
+};
+
+export const eventProcesses = (
+  handlers: Record<string, EventProcessCreator>
+): EventHandler => {
+  const processes: Record<string, Disposable | Promise<Disposable>> = {};
+
+  return async (event: BaseEvent) => {
+    const handleEvent = handlers[event.type];
+    if (handleEvent) {
+      // NOTE - this is problematic if other events come in - we want to use
+      // something like take latest
+      if (processes[event.type]) {
+        (await processes[event.type]).dispose();
+      }
+      processes[event.type] = handleEvent(event);
+    }
+  };
+};
+
+type EventCreator<TEvent extends BaseEvent> = () => TEvent;
