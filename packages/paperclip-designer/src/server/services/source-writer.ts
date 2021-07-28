@@ -56,7 +56,7 @@ import { PCEngineInitialized } from "./pc-engine";
 //   };
 // };
 
-export const sourceWriterService = () => ({ connect });
+export const sourceWriterService = () => connect;
 
 const connect = (kernel: ServerKernel) => {
   kernel.events.observe({

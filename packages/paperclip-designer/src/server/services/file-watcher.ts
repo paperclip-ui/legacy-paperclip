@@ -5,20 +5,18 @@ import * as fs from "fs";
 import { isPaperclipFile } from "paperclip-utils";
 import { eventProcesses } from "../core/events";
 import { ServerKernel } from "../core/kernel";
-import { PCEngineEventType, PCEngineInitialized } from "./pc-engine";
+import { PCEngineInitialized } from "./pc-engine";
 
 type Options = {
   cwd: string;
 };
 
-export const fileWatcherService = (options: Options) => ({
-  connect: connect(options)
-});
+export const fileWatcherService = (options: Options) => load(options);
 
-const connect = (options: Options) => (kernel: ServerKernel) => {
+const load = (options: Options) => (kernel: ServerKernel) => {
   kernel.events.observe({
     onEvent: eventProcesses({
-      [PCEngineEventType.INITIALIZED]: init(options, kernel)
+      [PCEngineInitialized.TYPE]: init(options, kernel)
     })
   });
 };

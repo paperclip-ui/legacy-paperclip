@@ -78,6 +78,7 @@ export enum ActionType {
   RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING",
   META_CLICKED = "META_CLICKED",
   PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED",
+  SERVER_OPTIONS_LOADED = "SERVER_OPTIONS_LOADED",
 
   ACTION_HANDLED = "ACTION_HANDLED",
   FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
@@ -122,6 +123,11 @@ export type ResizerStoppedMoving = WrappedEvent<
     newBounds: Box;
     anchor: Point;
   }
+>;
+
+export type ServerOptionsLoaded = BaseAction<
+  ActionType.SERVER_OPTIONS_LOADED,
+  { localResourceRoots: string[] }
 >;
 
 export type NodeBreadcrumbClicked = BaseAction<
@@ -595,6 +601,10 @@ export const virtualNodesSelected = actionCreator<VirtualNodesSelected>(
   ActionType.VIRTUAL_NODES_SELECTED
 );
 
+export const serverOptionsLoaded = actionCreator<ServerOptionsLoaded>(
+  ActionType.SERVER_OPTIONS_LOADED
+);
+
 export type InstanceAction =
   // | RendererInitialized
   | RectsCaptured
@@ -610,6 +620,7 @@ export type InstanceAction =
   | RendererMounted
   | RedirectRequested
   | RendererUnmounted
+  | ServerOptionsLoaded
   | BirdseyeFilterChanged
   | FrameTitleChanged
   | MetaClicked

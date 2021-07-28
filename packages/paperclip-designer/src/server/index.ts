@@ -5,6 +5,8 @@ import { ServerKernel } from "./core/kernel";
 import { sourceWriterService } from "./services/source-writer";
 import { eventLogger } from "./services/event-logger";
 import { rpcService } from "./services/rpc";
+import { postInitService } from "./services/post-init";
+import { pcEngineService } from "./services/pc-engine";
 
 type BrowserstackCredentials = {
   username: string;
@@ -38,10 +40,13 @@ export const startServer = ({
     // watches for
     sourceWriterService(),
     fileWatcherService({ cwd }),
+    pcEngineService(),
     httpServer({ defaultPort, localResourceRoots }),
     eventLogger(),
+    postInitService({ openInitial }),
     rpcService({
-      revealSource
+      revealSource,
+      localResourceRoots
     })
   );
 

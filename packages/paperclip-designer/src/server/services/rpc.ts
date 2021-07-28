@@ -6,24 +6,33 @@ import {
   VirtNodeSource
 } from "paperclip/src/core";
 import {
+  getAllScreensChannel,
+  getServerOptionsChannel,
   inspectNodeStyleChannel,
+  loadDirectoryChannel,
+  openFileChannel,
   popoutWindowChannel,
   revealNodeSourceChannel
 } from "../../rpc/channels";
 import { BaseEvent, eventHandlers } from "../core/events";
 import { ServerKernel } from "../core/kernel";
 import { serviceCreator, BaseServerState } from "../core/service-manager";
-import { SockJSConnection } from "./http-server";
+import { HTTPServerStarted, SockJSConnection } from "./http-server";
 import { PCEngineInitialized } from "./pc-engine";
 import { exec } from "child_process";
+import URL from "url";
+import * as path from "path";
+import { Directory, FSItemKind } from "../../state";
+import * as fs from "fs";
 
 type Options = {
+  localResourceRoots: string[];
   revealSource: (source: ExprSource) => void;
 };
 
 class State implements BaseServerState {
-  engine: EngineDelegate;
-  httpPort: number;
+  engine?: EngineDelegate;
+  httpPort?: number;
   constructor(readonly options: Options) {}
 
   onEvent(event: BaseEvent) {
@@ -32,7 +41,20 @@ class State implements BaseServerState {
         this.engine = (event as PCEngineInitialized).engine;
         break;
       }
+      case HTTPServerStarted.TYPE: {
+        this.httpPort = (event as HTTPServerStarted).port;
+        break;
+      }
     }
+  }
+
+  pathInLocalResourceRoot(localPath: string) {
+    if (localPath.startsWith("file://")) {
+      localPath = URL.fileURLToPath(localPath);
+    }
+    return this.options.localResourceRoots.some(root =>
+      localPath.toLowerCase().includes(root.toLowerCase())
+    );
   }
 }
 
@@ -51,7 +73,11 @@ const onConnection = (state: State) => ({ connection }: SockJSConnection) => {
   const io = sockAdapter(connection);
   inspectNodeStyleChannel(io).listen(inspectNodeStyles(state));
   revealNodeSourceChannel(io).listen(revealNodeSource(state));
-  popoutWindowChannel(io).listen(popoutWindow);
+  popoutWindowChannel(io).listen(popoutWindow(state));
+  getAllScreensChannel(io).listen(getAllScreens(state));
+  getServerOptionsChannel(io).listen(getServerOptions(state));
+  loadDirectoryChannel(io).listen(loadDirectory(state));
+  openFileChannel(io).listen(openFile(state));
 };
 
 const inspectNodeStyles = ({ engine }: State) => async sources => {
@@ -74,8 +100,69 @@ const revealNodeSource = ({
   }
 };
 
-const popoutWindow = async ({ path }) => {
-  let host = `http://localhost:${port}`;
+const getAllScreens = (state: State) => async () =>
+  state.engine?.getAllLoadedData();
+
+const popoutWindow = (state: State) => async ({ path }) => {
+  let host = `http://localhost:${state.httpPort}`;
   let url = host + path;
   exec(`open "${url}"`);
+};
+
+const getServerOptions = (state: State) => async () => ({
+  localResourceRoots: state.options.localResourceRoots
+});
+
+const loadDirectory = (state: State) => async ({
+  path: dirPath
+}): Promise<Directory> => {
+  return new Promise((resolve, reject) => {
+    if (!state.pathInLocalResourceRoot(dirPath)) {
+      return reject(new Error("not in resource root"));
+    }
+
+    fs.readdir(dirPath, (err, basenames) => {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve({
+        absolutePath: dirPath,
+        url: URL.pathToFileURL(dirPath).toString(),
+        kind: FSItemKind.DIRECTORY,
+        name: path.basename(dirPath),
+        children: basenames.map(basename => {
+          const absolutePath = path.join(dirPath, basename);
+          const isDir = fs.lstatSync(absolutePath).isDirectory();
+          return {
+            absolutePath,
+            url: URL.pathToFileURL(absolutePath).toString(),
+            name: basename,
+            kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
+            children: isDir ? [] : undefined
+          };
+        })
+      });
+    });
+  });
+};
+
+const openFile = (state: State) => async ({ uri }) => {
+  if (!state.pathInLocalResourceRoot(uri)) {
+    throw new Error(`Not in resource root`);
+  }
+
+  if (!/\.pc$/.test(uri)) {
+    return;
+  }
+
+  const document =
+    state.engine.getVirtualContent(uri) ||
+    fs.readFileSync(new URL.URL(uri), "utf8");
+
+  return {
+    uri,
+    document,
+    data: state.engine.open(uri)
+  };
 };

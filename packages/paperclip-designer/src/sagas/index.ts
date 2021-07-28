@@ -49,10 +49,16 @@ import {
   virtualNodesSelected,
   virtualNodeStylesInspected,
   NodeBreadcrumbClicked,
-  LayerLeafClicked
+  LayerLeafClicked,
+  allPCContentLoaded,
+  serverOptionsLoaded,
+  ServerOptionsLoaded,
+  dirLoaded,
+  pcFileLoaded
 } from "../actions";
 import {
   AppState,
+  DesignerState,
   getActiveFrameIndex,
   getActivePCData,
   getFrameFromIndex,
@@ -68,9 +74,13 @@ import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { omit } from "lodash";
 import {
+  getAllScreensChannel,
   inspectNodeStyleChannel,
   popoutWindowChannel,
-  revealNodeSourceChannel
+  revealNodeSourceChannel,
+  getServerOptionsChannel,
+  loadDirectoryChannel,
+  openFileChannel
 } from "../rpc/channels";
 import { sockAdapter } from "../../../paperclip-common";
 
@@ -120,10 +130,55 @@ function handleSock(onMessage, onClient) {
   };
 }
 
-function* handleClientChans(client: any) {
+function* handleClientComunication(client, getState, projectDirectory: string) {
   const inspectNodeStyle = inspectNodeStyleChannel(client);
   const revealNodeSource = revealNodeSourceChannel(client);
   const popoutWindow = popoutWindowChannel(client);
+  const getAllScreens = getAllScreensChannel(client);
+  const loadDirectory = loadDirectoryChannel(client);
+  const openFile = openFileChannel(client);
+
+  yield call(loadDirectory2, projectDirectory, true);
+
+  function* loadDirectory2(path: string, root: boolean) {
+    const dir = yield call(loadDirectory.call, { path });
+    yield put(dirLoaded({ item: dir, isRoot: root }));
+  }
+
+  yield takeEvery(
+    [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
+    function*() {
+      const state: AppState = yield select(getState);
+      if (
+        state.designer.showBirdseye &&
+        !state.designer.loadedBirdseyeInitially
+      ) {
+        yield call(reloadScreens);
+      }
+    }
+  );
+
+  yield takeEvery([ActionType.LOCATION_CHANGED], maybeLoadScreens);
+
+  function* maybeLoadScreens() {
+    const state: AppState = yield select(getState);
+    if (
+      (!state.designer.ui.query.canvasFile ||
+        location.pathname.indexOf("/all") === 0) &&
+      !state.designer.loadedBirdseyeInitially
+    ) {
+      yield call(reloadScreens);
+    }
+  }
+
+  yield fork(maybeLoadScreens);
+
+  function* reloadScreens() {
+    const screens = yield call(getAllScreens.call);
+    yield put(allPCContentLoaded(screens));
+  }
+
+  yield throttle(500, [ActionType.LOCATION_CHANGED], function*() {});
 
   yield throttle(
     500,
@@ -174,6 +229,54 @@ function* handleClientChans(client: any) {
       path: window.location.pathname + window.location.search
     });
   });
+
+  let _previousFileUri;
+
+  yield takeEvery(
+    [
+      ActionType.LOCATION_CHANGED,
+      ActionType.CLIENT_CONNECTED,
+      ActionType.FS_ITEM_CLICKED
+    ],
+    maybeLoadCanvasFile
+  );
+
+  function* maybeLoadCanvasFile() {
+    const state: AppState = yield select(getState);
+    const currUri = state.designer.ui.query.canvasFile;
+    if (currUri !== _previousFileUri) {
+      _previousFileUri = currUri;
+      yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
+      const result = yield call(openFile.call, { uri: currUri });
+      if (result) {
+        yield put(pcFileLoaded(result));
+      }
+    }
+  }
+
+  yield call(maybeLoadCanvasFile);
+}
+
+function* handleClientChans(client: any, getState: any) {
+  const getServerOptions = getServerOptionsChannel(client);
+
+  function* loadServerOptions() {
+    const options = yield call(getServerOptions.call);
+    yield put(serverOptionsLoaded(options));
+  }
+
+  yield takeLatest(ActionType.SERVER_OPTIONS_LOADED, function*({
+    payload: { localResourceRoots }
+  }: ServerOptionsLoaded) {
+    yield fork(
+      handleClientComunication,
+      client,
+      getState,
+      localResourceRoots[0]
+    );
+  });
+
+  yield call(loadServerOptions);
 }
 
 function* handleRenderer(getState: AppStateSelector) {
@@ -201,30 +304,12 @@ function* handleRenderer(getState: AppStateSelector) {
   });
 
   yield takeLatest(ActionType.CLIENT_CONNECTED, function*() {
-    yield call(handleClientChans, _client);
+    yield call(handleClientChans, _client, getState);
   });
 
   yield takeEvery(["FOCUS"], function() {
     window.focus();
   });
-
-  let _previousFileUri;
-
-  yield takeEvery(
-    [
-      ActionType.LOCATION_CHANGED,
-      ActionType.CLIENT_CONNECTED,
-      ActionType.FS_ITEM_CLICKED
-    ],
-    function*() {
-      const state: AppState = yield select(getState);
-      const currUri = state.designer.ui.query.canvasFile;
-      if (currUri !== _previousFileUri) {
-        _previousFileUri = currUri;
-        yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
-      }
-    }
-  );
 
   yield takeEvery(
     [
@@ -235,7 +320,6 @@ function* handleRenderer(getState: AppStateSelector) {
     ],
     function*() {
       const state: AppState = yield select(getState);
-      console.log(state.designer.selectedNodeSources);
 
       yield put(
         pcVirtObjectEdited({
@@ -275,30 +359,6 @@ function* handleRenderer(getState: AppStateSelector) {
     );
 
     yield put(globalBackspaceKeySent(null));
-  });
-
-  yield takeEvery(
-    [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
-    function*() {
-      const state: AppState = yield select(getState);
-      if (
-        state.designer.showBirdseye &&
-        !state.designer.loadedBirdseyeInitially
-      ) {
-        yield put(getAllScreensRequested(null));
-      }
-    }
-  );
-
-  yield takeEvery([ActionType.LOCATION_CHANGED], function*() {
-    const state: AppState = yield select(getState);
-    if (
-      (!state.designer.ui.query.canvasFile ||
-        location.pathname.indexOf("/all") === 0) &&
-      !state.designer.loadedBirdseyeInitially
-    ) {
-      yield put(getAllScreensRequested(null));
-    }
   });
 
   yield takeEvery(

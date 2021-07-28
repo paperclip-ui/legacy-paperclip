@@ -4,8 +4,6 @@ import { BaseEvent, eventProcesses } from "../core/events";
 import { ServerKernel } from "../core/kernel";
 import { ServiceInitialized } from "../core/service-manager";
 
-export const pcEngineService = () => ({ connect });
-
 export class PCEngineCrashed implements BaseEvent {
   static TYPE = "PCEngineEventType/CRASHED";
   readonly type = PCEngineCrashed.TYPE;
@@ -13,11 +11,11 @@ export class PCEngineCrashed implements BaseEvent {
 
 export class PCEngineInitialized implements BaseEvent {
   static TYPE = "PCEngineEventType/INITIALIZED";
-  readonly type = PCEngineCrashed.TYPE;
+  readonly type = PCEngineInitialized.TYPE;
   constructor(readonly engine: EngineDelegate) {}
 }
 
-const connect = (kernel: ServerKernel) => {
+export const pcEngineService = () => (kernel: ServerKernel) => {
   kernel.events.observe({
     onEvent: eventProcesses({
       [ServiceInitialized.TYPE]: init(kernel)

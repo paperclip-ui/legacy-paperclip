@@ -12,19 +12,21 @@ type Options = {
   localResourceRoots: string[];
 };
 
-export enum HTTPServerEventType {
-  SOCK_JS_CONNECTION = "HTTPServerEventType/SOCK_JS_CONNECTION"
-}
-
 export class SockJSConnection implements BaseEvent {
   static TYPE = "HTTPServerEventType/SOCK_JS_CONNECTION";
   readonly type = SockJSConnection.TYPE;
   constructor(readonly connection: sockjs.Connection) {}
 }
 
-export const httpServer = (options: Options) => ({ connect: connect(options) });
+export class HTTPServerStarted implements BaseEvent {
+  static TYPE = "HTTPServerEventType/SERVER_STARTED";
+  readonly type = HTTPServerStarted.TYPE;
+  constructor(readonly port: number) {}
+}
 
-const connect = (options: Options) => async (kernel: ServerKernel) => {
+export const httpServer = (options: Options) => async (
+  kernel: ServerKernel
+) => {
   kernel.events.observe({
     onEvent: eventProcesses({
       [ServiceInitialized.TYPE]: init(options, kernel)
@@ -49,7 +51,9 @@ const init = (
   io.installHandlers(server, { prefix: "/rt" });
 
   // TODO - move these handlers to
-  const distHandler = express.static(path.join(__dirname, "..", "..", "dist"));
+  const distHandler = express.static(
+    path.join(__dirname, "..", "..", "..", "dist")
+  );
 
   // cors to enable iframe embed
   app.use(function(req, res, next) {
@@ -77,6 +81,8 @@ const init = (
     }
     res.sendFile(filePath);
   });
+
+  events.dispatch(new HTTPServerStarted(port));
 
   return {
     dispose() {
