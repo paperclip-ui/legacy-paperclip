@@ -22,10 +22,6 @@ export enum ActionType {
   ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
 
-  /**
-   * @deprecated
-   */
-  ENV_OPTION_CLICKED = "ENV_OPTION_CLICKED",
   BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
   PC_FILE_OPENED = "PC_FILE_OPENED",
@@ -159,13 +155,6 @@ export type GridHotkeyPressed = WrappedEvent<
 export type GetAllScreensRequested = WrappedEvent<
   MouseEvent,
   ActionType.GET_ALL_SCREENS_REQUESTED
->;
-export type EnvOptionClicked = BaseAction<
-  ActionType.ENV_OPTION_CLICKED,
-  {
-    option: EnvOption;
-    path: string;
-  }
 >;
 export type VirtualNodesSelected = BaseAction<
   ActionType.VIRTUAL_NODES_SELECTED,
@@ -452,9 +441,6 @@ export const resizerPathMoved = actionCreator<ResizerPathMoved>(
 export const locationChanged = actionCreator<LocationChanged>(
   ActionType.LOCATION_CHANGED
 );
-export const envOptionClicked = actionCreator<EnvOptionClicked>(
-  ActionType.ENV_OPTION_CLICKED
-);
 
 export const virtualStyleDeclarationValueChanged = actionCreator<
   VirtualStyleDeclarationValueChanged
@@ -657,7 +643,6 @@ export type InstanceAction =
   | CanvasDoubleClick
   | ZoomInputChanged
   | ClientConnected
-  | EnvOptionClicked
   | FrameTitleClicked
   | EngineDelegateEventsHandled
   | KeyComboPressed<ActionType.GLOBAL_OPTION_KEY_DOWN>

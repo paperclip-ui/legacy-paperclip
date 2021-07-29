@@ -6,7 +6,6 @@
   }
 </style>
 
-
 <!--
   @frame { title: "Login, register form / Desktop (https://tailwindcomponents.com/component/login-register-form)", width: 1239, height: 768, x: 0, y: 0 }
 -->

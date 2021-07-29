@@ -1,17 +1,21 @@
-import { sockAdapter } from "paperclip-common";
+import { Channel, sockAdapter } from "paperclip-common";
 import {
   EngineDelegate,
+  engineDelegateChanged,
   ExprSource,
   NodeStyleInspection,
   VirtNodeSource
-} from "paperclip/src/core";
+} from "paperclip";
 import {
+  eventsChannel,
   getAllScreensChannel,
   getServerOptionsChannel,
   inspectNodeStyleChannel,
   loadDirectoryChannel,
+  loadVirtualNodeSourcesChannel,
   openFileChannel,
   popoutWindowChannel,
+  revealNodeSourceByIdChannel,
   revealNodeSourceChannel
 } from "../../rpc/channels";
 import { BaseEvent, eventHandlers } from "../core/events";
@@ -73,11 +77,17 @@ const onConnection = (state: State) => ({ connection }: SockJSConnection) => {
   const io = sockAdapter(connection);
   inspectNodeStyleChannel(io).listen(inspectNodeStyles(state));
   revealNodeSourceChannel(io).listen(revealNodeSource(state));
+  revealNodeSourceByIdChannel(io).listen(revealNodeSourceById(state));
   popoutWindowChannel(io).listen(popoutWindow(state));
   getAllScreensChannel(io).listen(getAllScreens(state));
   getServerOptionsChannel(io).listen(getServerOptions(state));
   loadDirectoryChannel(io).listen(loadDirectory(state));
   openFileChannel(io).listen(openFile(state));
+  loadVirtualNodeSourcesChannel(io).listen(loadVirtNodeSources(state));
+
+  const remoteEvents = eventsChannel(io);
+
+  watchEngineEvents(state.engine, remoteEvents);
 };
 
 const inspectNodeStyles = ({ engine }: State) => async sources => {
@@ -165,4 +175,36 @@ const openFile = (state: State) => async ({ uri }) => {
     document,
     data: state.engine.open(uri)
   };
+};
+
+const loadVirtNodeSources = (state: State) => async (
+  sources: VirtNodeSource[]
+) => {
+  return sources.map(info => {
+    return {
+      virtualNodePath: info.path,
+      source: state.engine.getVirtualNodeSourceInfo(info.path, info.uri)
+    };
+  });
+};
+
+const revealNodeSourceById = (state: State) => async (sourceId: string) => {
+  const [uri, expr] = state.engine.getExpressionById(sourceId) as [string, any];
+
+  state.options.revealSource({
+    sourceId,
+    textSource: {
+      location: expr.location,
+      uri
+    }
+  });
+};
+
+const watchEngineEvents = (
+  engine: EngineDelegate,
+  events: Channel<any, any>
+) => {
+  engine.onEvent(event => {
+    events.call(engineDelegateChanged(event));
+  });
 };
