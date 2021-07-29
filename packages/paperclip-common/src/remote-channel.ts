@@ -1,6 +1,8 @@
+import { Disposable } from "./disposable";
+
 export type Channel<TRequest, TResponse> = {
   call: (request: TRequest) => Promise<TResponse>;
-  listen: (handle: (request: TRequest) => Promise<TResponse>) => void;
+  listen: (handle: (request: TRequest) => Promise<TResponse>) => Disposable;
 };
 
 const spy = (obj, prop, handler) => {
@@ -75,7 +77,7 @@ export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
     };
 
     const listen = (call: (payload: any) => Promise<any>) => {
-      chan.onMessage(async message => {
+      const dispose = chan.onMessage(async message => {
         if (message.name === name) {
           chan.send({
             name,
@@ -83,6 +85,7 @@ export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
           });
         }
       });
+      return { dispose };
     };
 
     return { call, listen };

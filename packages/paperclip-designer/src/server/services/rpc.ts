@@ -28,6 +28,7 @@ import URL from "url";
 import * as path from "path";
 import { Directory, FSItemKind } from "../../state";
 import * as fs from "fs";
+import { Disposable, disposableGroup } from "paperclip-common";
 
 type Options = {
   localResourceRoots: string[];
@@ -75,19 +76,23 @@ const load = (kernel: ServerKernel, state: State) => {
 
 const onConnection = (state: State) => ({ connection }: SockJSConnection) => {
   const io = sockAdapter(connection);
-  inspectNodeStyleChannel(io).listen(inspectNodeStyles(state));
-  revealNodeSourceChannel(io).listen(revealNodeSource(state));
-  revealNodeSourceByIdChannel(io).listen(revealNodeSourceById(state));
-  popoutWindowChannel(io).listen(popoutWindow(state));
-  getAllScreensChannel(io).listen(getAllScreens(state));
-  getServerOptionsChannel(io).listen(getServerOptions(state));
-  loadDirectoryChannel(io).listen(loadDirectory(state));
-  openFileChannel(io).listen(openFile(state));
-  loadVirtualNodeSourcesChannel(io).listen(loadVirtNodeSources(state));
 
   const remoteEvents = eventsChannel(io);
 
-  watchEngineEvents(state.engine, remoteEvents);
+  const disposables: Disposable[] = [
+    inspectNodeStyleChannel(io).listen(inspectNodeStyles(state)),
+    revealNodeSourceChannel(io).listen(revealNodeSource(state)),
+    revealNodeSourceByIdChannel(io).listen(revealNodeSourceById(state)),
+    popoutWindowChannel(io).listen(popoutWindow(state)),
+    getAllScreensChannel(io).listen(getAllScreens(state)),
+    getServerOptionsChannel(io).listen(getServerOptions(state)),
+    loadDirectoryChannel(io).listen(loadDirectory(state)),
+    openFileChannel(io).listen(openFile(state)),
+    loadVirtualNodeSourcesChannel(io).listen(loadVirtNodeSources(state)),
+    watchEngineEvents(state.engine, remoteEvents)
+  ];
+
+  connection.on("close", disposableGroup(disposables).dispose);
 };
 
 const inspectNodeStyles = ({ engine }: State) => async sources => {
@@ -204,7 +209,8 @@ const watchEngineEvents = (
   engine: EngineDelegate,
   events: Channel<any, any>
 ) => {
-  engine.onEvent(event => {
+  const dispose = engine.onEvent(event => {
     events.call(engineDelegateChanged(event));
   });
+  return { dispose };
 };

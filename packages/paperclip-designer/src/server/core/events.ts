@@ -1,4 +1,4 @@
-import { Disposable } from "./disposable";
+import { Disposable } from "paperclip-common";
 
 export type BaseEvent = {
   type: string;
