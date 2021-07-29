@@ -1,6 +1,6 @@
 import { createEngineDelegate } from "paperclip";
 import { EngineDelegate, EngineMode } from "paperclip";
-import { BaseEvent, eventProcesses } from "../core/events";
+import { BaseEvent, eventProcesses } from "paperclip-common";
 import { ServerKernel } from "../core/kernel";
 import { ServiceInitialized } from "../core/service-manager";
 
@@ -17,7 +17,7 @@ export class PCEngineInitialized implements BaseEvent {
 
 export const pcEngineService = () => (kernel: ServerKernel) => {
   kernel.events.observe({
-    onEvent: eventProcesses({
+    handleEvent: eventProcesses({
       [ServiceInitialized.TYPE]: init(kernel)
     })
   });

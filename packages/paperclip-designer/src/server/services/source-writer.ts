@@ -7,7 +7,7 @@ import {
   PCVirtObjectEdited,
   VirtualStyleDeclarationValueChanged
 } from "../../actions";
-import { eventHandler, eventProcesses, Observable } from "../core/events";
+import { eventHandler, eventProcesses, Observable } from "paperclip-common";
 import { ServerKernel } from "../core/kernel";
 import { PCEngineInitialized } from "./pc-engine";
 
@@ -60,7 +60,7 @@ export const sourceWriterService = () => connect;
 
 const connect = (kernel: ServerKernel) => {
   kernel.events.observe({
-    onEvent: eventProcesses({
+    handleEvent: eventProcesses({
       // [PCEngineInitialized.TYPE]: init()
     })
   });

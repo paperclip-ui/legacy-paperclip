@@ -4,6 +4,4 @@
 <!--
   @frame { visible: false }
 -->
-<module.Message>
-  {children}
-</module.Message>
+<module.Message>{children}</module.Message>

@@ -1,0 +1,7 @@
+<import src="./module.pc" as="module" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<module.Message>{children}</module.Message>

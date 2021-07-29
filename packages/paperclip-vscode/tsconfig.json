@@ -8,6 +8,7 @@
   },
   "exclude": [
     "node_modules",
+    "src-old",
     "*-test",
     "lib",
     "index.d.ts",

@@ -1,5 +1,5 @@
 import getPort from "get-port";
-import { BaseEvent, eventProcesses } from "../core/events";
+import { BaseEvent, eventProcesses } from "paperclip-common";
 import sockjs from "sockjs";
 import express from "express";
 import path from "path";

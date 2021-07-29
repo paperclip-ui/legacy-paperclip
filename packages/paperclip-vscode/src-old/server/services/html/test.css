@@ -1,0 +1,7 @@
+:root {
+  --test: red;
+}
+
+div {
+  color: blue;
+}

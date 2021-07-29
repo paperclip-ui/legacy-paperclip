@@ -10,11 +10,14 @@ Considerations:
 */
 
 import { EngineDelegate } from "paperclip";
+import { AutocompleteService } from "./autocomplete/service";
 
-export class PaperclipLanguageServer {
-  // TODO - pass dev server here instead? Instantiate dev server??
-  // Probably want to keep that separate, esp for online editing.
-  constructor(private _engine: EngineDelegate) {}
+export class PaperclipLanguageService {
+  private _autocomplete: AutocompleteService;
+
+  constructor(private _engine: EngineDelegate) {
+    this._autocomplete = new AutocompleteService(this._engine);
+  }
 
   /**
    * Returns all definitions (meta + click functionality)

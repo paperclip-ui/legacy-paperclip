@@ -18,7 +18,7 @@ import {
   revealNodeSourceByIdChannel,
   revealNodeSourceChannel
 } from "../../rpc/channels";
-import { BaseEvent, eventHandlers } from "../core/events";
+import { BaseEvent, eventHandlers } from "paperclip-common";
 import { ServerKernel } from "../core/kernel";
 import { serviceCreator, BaseServerState } from "../core/service-manager";
 import { HTTPServerStarted, SockJSConnection } from "./http-server";

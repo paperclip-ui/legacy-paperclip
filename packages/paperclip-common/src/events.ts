@@ -1,4 +1,4 @@
-import { Disposable } from "paperclip-common";
+import { Disposable } from "./disposable";
 
 export type BaseEvent = {
   type: string;
@@ -9,8 +9,15 @@ export type Dispatcher = (event: BaseEvent) => void;
 type EventHandler = (event: BaseEvent) => void;
 
 export type Observer = {
-  onEvent: EventHandler;
+  handleEvent: EventHandler;
 };
+
+class ObservablePipe implements Observer {
+  constructor(private _dest: Observable) {}
+  handleEvent(event: BaseEvent) {
+    this._dest.dispatch(event);
+  }
+}
 
 export class Observable {
   private _observers: Observer[];
@@ -19,8 +26,14 @@ export class Observable {
   }
   dispatch(event: BaseEvent) {
     for (let i = this._observers.length; i--; ) {
-      this._observers[i].onEvent(event);
+      this._observers[i].handleEvent(event);
     }
+  }
+  pipe(observable: Observable) {
+    return this.observe(new ObservablePipe(observable));
+  }
+  source(observable: Observable) {
+    return observable.pipe(this);
   }
   observe(observer: Observer): Disposable {
     this._observers.push(observer);

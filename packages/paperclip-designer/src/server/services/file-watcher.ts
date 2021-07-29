@@ -3,7 +3,7 @@ import * as URL from "url";
 import * as path from "path";
 import * as fs from "fs";
 import { isPaperclipFile } from "paperclip-utils";
-import { eventProcesses } from "../core/events";
+import { eventProcesses } from "paperclip-common";
 import { ServerKernel } from "../core/kernel";
 import { PCEngineInitialized } from "./pc-engine";
 
@@ -15,7 +15,7 @@ export const fileWatcherService = (options: Options) => load(options);
 
 const load = (options: Options) => (kernel: ServerKernel) => {
   kernel.events.observe({
-    onEvent: eventProcesses({
+    handleEvent: eventProcesses({
       [PCEngineInitialized.TYPE]: init(options, kernel)
     })
   });

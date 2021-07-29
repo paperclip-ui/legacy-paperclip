@@ -1,4 +1,4 @@
-import { BaseEvent } from "../core/events";
+import { BaseEvent } from "paperclip-common";
 import { ServerKernel } from "../core/kernel";
 
 export const eventLogger = () => (kernel: ServerKernel) => {
