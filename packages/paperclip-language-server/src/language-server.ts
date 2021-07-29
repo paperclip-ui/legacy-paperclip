@@ -13,7 +13,7 @@ import { EngineDelegate } from "paperclip";
 
 export class PaperclipLanguageServer {
   // TODO - pass dev server here instead? Instantiate dev server??
-  // Probably want to keep that separate
+  // Probably want to keep that separate, esp for online editing.
   constructor(private _engine: EngineDelegate) {}
 
   /**
