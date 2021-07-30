@@ -1,4 +1,4 @@
-import { Disposable, Observable, Observer } from "paperclip-common";
+import { BaseEvent, Disposable, Observable, Observer } from "paperclip-common";
 import { workspace, ExtensionContext } from "vscode";
 
 import {
@@ -8,6 +8,7 @@ import {
   LanguageClientOptions
 } from "vscode-languageclient";
 import * as path from "path";
+import { $$EVENT } from "./server/constants";
 
 /**
  * Spins up language server
@@ -53,9 +54,10 @@ export class PaperclipLanguageClient implements Disposable, Observer {
     );
   }
   handleEvent(event) {}
-  activate() {
+  async activate() {
     this._client.start();
-    return this.ready();
+    await this.ready();
+    this._client.onNotification($$EVENT, this._onServerEvent);
   }
   ready() {
     return this._client.onReady();
@@ -63,4 +65,7 @@ export class PaperclipLanguageClient implements Disposable, Observer {
   dispose() {
     this._client.stop();
   }
+  private _onServerEvent = (event: BaseEvent) => {
+    this.events.dispatch(event);
+  };
 }

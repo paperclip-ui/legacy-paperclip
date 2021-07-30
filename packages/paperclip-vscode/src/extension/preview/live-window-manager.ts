@@ -1,6 +1,13 @@
 import { WebviewPanel, window } from "vscode";
-import { BaseEvent, Disposable, Observable, Observer } from "paperclip-common";
+import {
+  BaseEvent,
+  Disposable,
+  eventHandlers,
+  Observable,
+  Observer
+} from "paperclip-common";
 import { LiveWindow, LiveWindowState } from "./live-window";
+import { HTTPServerStarted } from "paperclip-designer/lib/server/services/http-server";
 
 export class LiveWindowManager implements Observer, Disposable {
   readonly events: Observable;
@@ -10,9 +17,13 @@ export class LiveWindowManager implements Observer, Disposable {
     this._windows = [];
     this.events = new Observable();
   }
-  handleEvent(event: BaseEvent) {
-    // if DEV_SERVER_INITIALIZED
-  }
+  _onDevServerStarted = ({ port }: HTTPServerStarted) => {
+    this._devServerPort = port;
+    for (const window of this._windows) {
+      window.setDevServerPort(port);
+    }
+  };
+
   dispose() {}
   getLength() {
     return this._windows.length;
@@ -37,12 +48,16 @@ export class LiveWindowManager implements Observer, Disposable {
   }
   activate() {
     window.registerWebviewPanelSerializer(LiveWindow.TYPE, {
-      async deserializeWebviewPanel(
+      deserializeWebviewPanel: async (
         panel: WebviewPanel,
         state: LiveWindowState
-      ) {
+      ) => {
         this._add(LiveWindow.newFromPanel(panel, state, this._devServerPort));
       }
     });
   }
+
+  handleEvent = eventHandlers({
+    [HTTPServerStarted.TYPE]: this._onDevServerStarted
+  });
 }

@@ -22,6 +22,9 @@ export class HTTPServerStarted implements BaseEvent {
   static TYPE = "HTTPServerEventType/SERVER_STARTED";
   readonly type = HTTPServerStarted.TYPE;
   constructor(readonly port: number) {}
+  toJSON() {
+    return { type: this.type, port: this.port };
+  }
 }
 
 export const httpServer = (options: Options) => async (

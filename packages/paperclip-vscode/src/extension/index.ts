@@ -38,11 +38,18 @@ class PaperclipExtension implements Disposable {
 
   constructor(readonly context: ExtensionContext) {
     this._events = new Observable();
+
     this._languageClient = new PaperclipLanguageClient(context);
+    this._events.source(this._languageClient.events);
+    this._events.observe(this._languageClient);
+
     this._windows = new LiveWindowManager();
+    this._events.source(this._windows.events);
+    this._events.observe(this._windows);
+
     this._commandManager = new CommandManager(this._windows);
     this._documentManager = new DocumentManager(this._windows);
-    this._connectChannels();
+    this._events.observe(this._documentManager);
   }
   activate() {
     this._documentManager.activate();
@@ -54,15 +61,6 @@ class PaperclipExtension implements Disposable {
     this._languageClient.dispose();
     this._windows.dispose();
   }
-  _connectChannels() {
-    this._events.source(this._languageClient.events);
-    this._events.observe(this._languageClient);
-
-    this._events.source(this._windows.events);
-    this._events.observe(this._windows);
-
-    this._events.observe(this._documentManager);
-  }
 }
 
 let _ext: PaperclipExtension;
@@ -70,8 +68,6 @@ let _ext: PaperclipExtension;
 export const activate = (context: ExtensionContext) => {
   _ext = new PaperclipExtension(context);
   _ext.activate();
-
-  console.log("activate");
 };
 
 export const deactivate = () => {

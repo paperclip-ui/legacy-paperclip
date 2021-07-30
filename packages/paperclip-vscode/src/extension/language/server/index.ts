@@ -11,8 +11,10 @@ export class PaperclipLanguageServer {
     this._events = new Observable();
     this._connection = new PaperclipLanguageServerConnection({});
     this._events.source(this._connection.events);
+    this._events.observe(this._connection);
 
     this._designServer = new PaperclipDesignServer();
+    this._events.source(this._designServer.events);
     this._events.observe(this._designServer);
   }
   activate() {

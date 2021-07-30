@@ -1,4 +1,4 @@
-import { BaseEvent, Observer } from "./events";
+import { BaseEvent, Observer } from "paperclip-common";
 import { BaseServerKernel } from "./kernel";
 
 export class ServiceInitialized implements BaseEvent {

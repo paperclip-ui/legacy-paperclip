@@ -148,7 +148,6 @@ function* handleClientComunication(client, getState, projectDirectory: string) {
   yield fork(function*() {
     const chan = eventChannel(emit => {
       events.listen(async action => {
-        console.log("ACTIOn");
         emit(action);
       });
       return () => {};
@@ -247,7 +246,7 @@ function* handleClientComunication(client, getState, projectDirectory: string) {
       const inspectionInfo = yield call(
         inspectNodeStyle.call,
         state.designer.selectedNodePaths.map(path => ({
-          path: path.split(".").map(Number),
+          path: nodePathToAry(path),
           uri: state.designer.ui.query.canvasFile
         }))
       );

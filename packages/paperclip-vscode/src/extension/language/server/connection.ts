@@ -7,15 +7,19 @@ import {
   WorkspaceFolder,
   InitializeResult
 } from "vscode-languageserver";
-import { Observable } from "paperclip-common";
+import { Observable, Observer } from "paperclip-common";
+import { $$EVENT } from "./constants";
 
 export class Initialized {
   static TYPE = "PaperclipLanguageServerConnection/Initialized";
   readonly type = Initialized.TYPE;
-  constructor(readonly workspaceFolders: WorkspaceFolder[]) {}
+  constructor(
+    readonly workspaceFolders: WorkspaceFolder[],
+    readonly connection: Connection
+  ) {}
 }
 
-export class PaperclipLanguageServerConnection {
+export class PaperclipLanguageServerConnection implements Observer {
   private _connection: Connection;
   private _workspaceFolders: WorkspaceFolder[];
   readonly events: Observable;
@@ -29,6 +33,11 @@ export class PaperclipLanguageServerConnection {
     this._connection.onInitialized(this._onConnectionInitialized);
     this._connection.onDidChangeConfiguration(this._onDidChangeConfiguration);
     this._connection.listen();
+  }
+  handleEvent(event) {
+    if (event.toJSON) {
+      this._connection.sendNotification($$EVENT, event.toJSON());
+    }
   }
 
   _onConnectionInitialize = (params: InitializeParams) => {
@@ -54,6 +63,8 @@ export class PaperclipLanguageServerConnection {
   private _onDidChangeConfiguration = ({ settings: { credentials } }) => {};
 
   private _onConnectionInitialized = async cd => {
-    this.events.dispatch(new Initialized(this._workspaceFolders));
+    this.events.dispatch(
+      new Initialized(this._workspaceFolders, this._connection)
+    );
   };
 }
