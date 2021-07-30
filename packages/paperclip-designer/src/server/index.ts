@@ -1,4 +1,4 @@
-import { ServiceManager } from "./core/service-manager";
+import { ServiceInitialized, ServiceManager } from "./core/service-manager";
 import { fileWatcherService } from "./services/file-watcher";
 import { httpServer } from "./services/http-server";
 import { ServerKernel } from "./core/kernel";
@@ -7,6 +7,7 @@ import { eventLogger } from "./services/event-logger";
 import { rpcService } from "./services/rpc";
 import { postInitService } from "./services/post-init";
 import { pcEngineService } from "./services/pc-engine";
+import { BaseEvent } from "paperclip-common";
 
 type BrowserstackCredentials = {
   username: string;
@@ -19,6 +20,7 @@ export type ServerOptions = {
   cwd?: string;
   readonly?: boolean;
   openInitial: boolean;
+  handleEvent?: (event: BaseEvent) => void;
   credentials?: {
     browserstack?: BrowserstackCredentials;
   };
@@ -30,13 +32,16 @@ export const startServer = ({
   cwd = process.cwd(),
   credentials = {},
   openInitial,
-  readonly
+  readonly,
+  handleEvent
 }: ServerOptions) => {
   const revealSource = () => {
     console.log("TODO!");
   };
 
-  const serviceManager = new ServiceManager(new ServerKernel()).add(
+  const kernel = new ServerKernel();
+
+  const serviceManager = new ServiceManager(kernel).add(
     // watches for
     sourceWriterService(),
     fileWatcherService({ cwd }),
@@ -49,6 +54,10 @@ export const startServer = ({
       localResourceRoots
     })
   );
+
+  if (handleEvent) {
+    kernel.events.observe({ handleEvent });
+  }
 
   serviceManager.initialize();
 };

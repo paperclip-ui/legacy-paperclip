@@ -36,6 +36,9 @@ export class Observable {
     return observable.pipe(this);
   }
   observe(observer: Observer): Disposable {
+    if (!observer.handleEvent) {
+      throw new Error(`handleEvent not defined`);
+    }
     this._observers.push(observer);
     return {
       dispose() {

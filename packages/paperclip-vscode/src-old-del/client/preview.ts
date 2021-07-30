@@ -155,21 +155,6 @@ export const activate = (
     return true;
   };
 
-  const onTextEditorChange = async (editor: TextEditor) => {
-    if (!editor) {
-      return;
-    }
-    const uri = fixFileUrlCasing(String(editor.document.uri));
-    const stickyWindow = getStickyWindow();
-    if (isPaperclipFile(uri)) {
-      if (stickyWindow) {
-        stickyWindow.setTargetUri(uri);
-      } else if (!_previews.length) {
-        askToDisplayLivePreview(editor);
-      }
-    }
-  };
-
   const onTextDocumentChange = async ({
     contentChanges,
     document

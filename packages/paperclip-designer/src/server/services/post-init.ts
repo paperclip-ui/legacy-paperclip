@@ -11,7 +11,7 @@ export const postInitService = ({ openInitial }: Options) => (
   kernel: ServerKernel
 ) => {
   kernel.events.observe({
-    onEvent: eventHandler(
+    handleEvent: eventHandler(
       HTTPServerStarted.TYPE,
       ({ port }: HTTPServerStarted) => {
         if (openInitial) {

@@ -1,4 +1,4 @@
-import { BaseEvent, Observable } from "./events";
+import { BaseEvent, Observable } from "paperclip-common";
 
 export interface BaseServerKernel {
   readonly events: Observable;

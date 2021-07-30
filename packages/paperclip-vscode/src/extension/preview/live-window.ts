@@ -14,7 +14,7 @@ import {
   TextEdit,
   WorkspaceEdit
 } from "vscode";
-import path from "path";
+import * as path from "path";
 import { ImmutableStore, Observer } from "paperclip-common";
 import { EventEmitter } from "events";
 import * as qs from "querystring";
@@ -42,18 +42,23 @@ export class LiveWindow implements Observer {
   private _em: EventEmitter;
 
   constructor(
-    private _devServerPort: number,
     state: LiveWindowState,
+    private _devServerPort: number,
     private _panel: WebviewPanel
   ) {
     this._store = new ImmutableStore({
       ...state,
       panelVisible: this._panel.visible
     });
+    this._store.update(newState => {
+      newState.location.query.id = `${Date.now()}.${Math.random()}`;
+    });
+
     this._store.onChange(this._onStoreChange);
     this._em = new EventEmitter();
     this._panel.onDidDispose(this._onPanelDispose);
     this._createBindings();
+    this._render();
   }
 
   getState() {
@@ -82,6 +87,12 @@ export class LiveWindow implements Observer {
     this._render();
   }
 
+  setTargetUri(uri: string) {
+    this._store.update(state => {
+      state.location.query.canvasFile = uri;
+    });
+  }
+
   private _onPanelDispose = () => {
     this.dispose();
   };
@@ -92,15 +103,23 @@ export class LiveWindow implements Observer {
   ) => {
     // if coming into visibility again
     if (
-      newState.panelVisible &&
-      newState.panelVisible !== oldState.panelVisible
+      (newState.panelVisible &&
+        newState.panelVisible !== oldState.panelVisible) ||
+      newState.location.query.canvasFile !== newState.location.query.canvasFile
     ) {
       this._render();
     }
   };
 
   private _render() {
-    // force reload
+    const state = this.getState();
+
+    this._panel.title = `⚡️ ${
+      state.sticky
+        ? "sticky preview"
+        : path.basename(state.location.query.canvasFile)
+    }`;
+
     this._panel.webview.html = "";
     this._panel.webview.html = this._getHTML();
   }
@@ -161,7 +180,7 @@ export class LiveWindow implements Observer {
     });
   }
 
-  static newFromUri(devServerPort: number, uri: string, sticky: boolean) {
+  static newFromUri(uri: string, sticky: boolean, devServerPort: number) {
     const panel = window.createWebviewPanel(
       LiveWindow.TYPE,
       sticky ? "sticky preview" : `⚡️ ${path.basename(uri)}`,
@@ -172,8 +191,8 @@ export class LiveWindow implements Observer {
     );
 
     return new LiveWindow(
-      devServerPort,
       { location: getLocationFromUri(uri), sticky },
+      devServerPort,
       panel
     );
   }
@@ -183,7 +202,7 @@ export class LiveWindow implements Observer {
     state: LiveWindowState,
     devServerPort: number
   ) {
-    return new LiveWindow(devServerPort, state, panel);
+    return new LiveWindow(state, devServerPort, panel);
   }
 }
 

@@ -28,7 +28,7 @@ export const httpServer = (options: Options) => async (
   kernel: ServerKernel
 ) => {
   kernel.events.observe({
-    onEvent: eventProcesses({
+    handleEvent: eventProcesses({
       [ServiceInitialized.TYPE]: init(options, kernel)
     })
   });

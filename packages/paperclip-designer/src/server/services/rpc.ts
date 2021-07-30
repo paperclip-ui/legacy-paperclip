@@ -40,7 +40,7 @@ class State implements BaseServerState {
   httpPort?: number;
   constructor(readonly options: Options) {}
 
-  onEvent(event: BaseEvent) {
+  handleEvent(event: BaseEvent) {
     switch (event.type) {
       case PCEngineInitialized.TYPE: {
         this.engine = (event as PCEngineInitialized).engine;
@@ -68,7 +68,7 @@ export const rpcService = (options: Options) =>
 
 const load = (kernel: ServerKernel, state: State) => {
   kernel.events.observe({
-    onEvent: eventHandlers({
+    handleEvent: eventHandlers({
       [SockJSConnection.TYPE]: onConnection(state)
     })
   });

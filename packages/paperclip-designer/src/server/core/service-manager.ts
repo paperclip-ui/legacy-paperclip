@@ -15,7 +15,7 @@ export const serviceCreator = <TKernel extends BaseServerKernel, TState>(
   let state: TState;
   if (createState) {
     state = createState();
-    if (((state as any) as Observer).onEvent) {
+    if (((state as any) as Observer).handleEvent) {
       kernel.events.observe((state as any) as Observer);
     }
   }

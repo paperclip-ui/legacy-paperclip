@@ -7,7 +7,7 @@ import {
   TransportKind,
   LanguageClientOptions
 } from "vscode-languageclient";
-import path from "path";
+import * as path from "path";
 
 /**
  * Spins up language server
@@ -21,7 +21,7 @@ export class PaperclipLanguageClient implements Disposable, Observer {
     this.events = new Observable();
 
     const serverPath = context.asAbsolutePath(
-      path.join("lib", "extension", "language-services", "server", "index.js")
+      path.join("lib", "extension", "language", "server", "index.js")
     );
     const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
     const serverOptions: ServerOptions = {

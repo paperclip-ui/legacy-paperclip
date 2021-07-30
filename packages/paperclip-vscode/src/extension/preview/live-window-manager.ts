@@ -8,13 +8,25 @@ export class LiveWindowManager implements Observer, Disposable {
   private _devServerPort: number;
   constructor() {
     this._windows = [];
+    this.events = new Observable();
   }
   handleEvent(event: BaseEvent) {
     // if DEV_SERVER_INITIALIZED
   }
   dispose() {}
+  getLength() {
+    return this._windows.length;
+  }
+  setStickyWindowUri(uri: string) {
+    const stickyWindow = this._windows.find(window => window.getState().sticky);
+    if (stickyWindow) {
+      stickyWindow.setTargetUri(uri);
+      return true;
+    }
+    return false;
+  }
   open(uri: string, sticky: boolean) {
-    const liveWindow = LiveWindow.newFromUri(0, uri, sticky);
+    const liveWindow = LiveWindow.newFromUri(uri, sticky, this._devServerPort);
     this._add(liveWindow);
   }
   private _add(window: LiveWindow) {

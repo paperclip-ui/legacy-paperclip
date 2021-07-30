@@ -68,35 +68,6 @@ export const activate = (
   let _showedOpenLivePreviewPrompt = false;
   let _devServerPort: number;
 
-  const openLivePreview = async (editor: TextEditor, sticky: boolean) => {
-    const paperclipUri = fixFileUrlCasing(String(editor.document.uri));
-
-    // NOTE - don't get in the way of opening the live preview since
-    // there's really no way to tell whether an existing tab is open which will
-    // happen when the app loads with existing live preview tabs.
-
-    const panel = window.createWebviewPanel(
-      VIEW_TYPE,
-      sticky ? "sticky preview" : `⚡️ ${path.basename(paperclipUri)}`,
-      ViewColumn.Beside,
-      {
-        enableScripts: true
-      }
-    );
-
-    registerLivePreview(
-      new LivePreview(
-        _devServerPort,
-        panel,
-        {
-          query: {
-            canvasFile: paperclipUri
-          }
-        },
-        sticky
-      )
-    );
-  };
   const dispatchClient = (action: ve.ExternalAction | Goosefraba) => {
     client.sendNotification($$ACTION_NOTIFICATION, action);
   };
@@ -122,21 +93,6 @@ export const activate = (
   const execCommand = async (targetUri: string, command: string) => {
     await showTextDocument(targetUri);
     await commands.executeCommand(command);
-  };
-
-  const registerLivePreview = (preview: LivePreview) => {
-    _previews.push(preview);
-    const listeners = [
-      preview.onDidDispose(() => {
-        const index = _previews.indexOf(preview);
-        if (index !== -1) {
-          _previews.splice(index, 1);
-          for (const listener of listeners) {
-            listener();
-          }
-        }
-      })
-    ];
   };
 
   const getStickyWindow = () => {
@@ -186,41 +142,8 @@ export const activate = (
     }
   };
 
-  const onTextDocumentChange = async ({
-    contentChanges,
-    document
-  }: TextDocumentChangeEvent) => {
-    // ignore path: extension-output-#N
-    try {
-      dispatchClient(
-        ve.contentChanged({
-          fileUri: fixFileUrlCasing(document.uri.toString()),
-          changes: contentChanges.map(({ text, rangeOffset, rangeLength }) => ({
-            text,
-            rangeLength,
-            rangeOffset
-          }))
-        })
-      );
-    } catch (e) {
-      console.error(e.stack);
-    }
-  };
-
-  window.registerWebviewPanelSerializer(VIEW_TYPE, {
-    async deserializeWebviewPanel(
-      panel: WebviewPanel,
-      { location, sticky }: LivePreviewState
-    ) {
-      registerLivePreview(
-        new LivePreview(_devServerPort, panel, location, sticky)
-      );
-    }
-  });
-
   setTimeout(() => {
     window.onDidChangeActiveTextEditor(onTextEditorChange);
-    workspace.onDidChangeTextDocument(onTextDocumentChange);
     if (window.activeTextEditor) {
       onTextEditorChange(window.activeTextEditor);
     }
@@ -419,137 +342,3 @@ const handlePCSourceEdited = async ({
     await vscode.workspace.applyEdit(wsEdit);
   }
 };
-
-class LivePreview {
-  private _em: EventEmitter;
-  readonly location: PreviewLocation;
-
-  constructor(
-    private _devServerPort: number,
-    readonly panel: WebviewPanel,
-    location: Partial<PreviewLocation>,
-    readonly sticky: boolean
-  ) {
-    const id = `${Date.now()}.${Math.random()}`;
-
-    this.location = {
-      pathname: location.pathname || "/canvas",
-      query: {
-        id,
-        embedded: true,
-        ...location.query
-      }
-    };
-
-    this._em = new EventEmitter();
-    this._render();
-    panel.onDidDispose(this._onPanelDispose);
-    let prevVisible = panel.visible;
-    panel.onDidChangeViewState(() => {
-      if (prevVisible === panel.visible) {
-        return;
-      }
-      prevVisible = panel.visible;
-      // Need to re-render when the panel becomes visible
-      if (panel.visible) {
-        this._render();
-      }
-    });
-  }
-  focus() {
-    this.panel.reveal(this.panel.viewColumn, false);
-  }
-  setTargetUri(value: string, rerender = true) {
-    if (this.location.query.canvasFile === value) {
-      return;
-    }
-    this.panel.title = `⚡️ ${
-      this.sticky ? "sticky preview" : path.basename(value)
-    }`;
-    this.location.query.canvasFile = value;
-
-    if (rerender) {
-      this._render();
-    }
-  }
-  getState(): LivePreviewState {
-    return {
-      location: this.location,
-      sticky: this.sticky
-    };
-  }
-  private _render() {
-    // force reload
-    this.panel.webview.html = "";
-    this.panel.webview.html = this._getHTML();
-  }
-  private _onPanelDispose = () => {
-    this.dispose();
-  };
-  public onDidDispose(listener: () => void) {
-    this._em.on("didDispose", listener);
-    return () => {
-      this._em.removeListener("didDispose", listener);
-    };
-  }
-  public handlePreviewLocationChanged(action: LocationChanged) {
-    this.panel.webview.postMessage(action);
-  }
-  public async setDevServerPort(port: number) {
-    this._devServerPort = port;
-    this._render();
-  }
-  private _getHTML() {
-    return `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <style>
-        html, body { 
-          margin: 0;
-          padding: 0;
-          width: 100vw;
-          height: 100vh;
-          overflow: hidden;
-        }
-        body {
-          /* ensure that bg is white, even for themes */
-          background: white;
-          margin: 0;
-        }
-        iframe {
-          width: 100%;
-          height: 100%;
-          border: none;
-        }
-      </style>
-
-      <script>
-        const vscode = acquireVsCodeApi();
-        const initialState = ${JSON.stringify(this.getState())};
-        vscode.setState(initialState);
-        window.onmessage = ({ data }) => {
-          if (data && data.type === "LOCATION_CHANGED") {
-            vscode.setState({
-              ...initialState,
-              location: data.payload
-            })
-          }
-        }
-      </script>
-    </head>
-    <body>
-      <iframe id="app" src="http://localhost:${this._devServerPort}${
-      this.location.pathname
-    }?${qs.stringify(this.location.query)}"></iframe>
-    </body>
-    </html>`;
-  }
-  dispose() {
-    this._em.emit("didDispose");
-    try {
-      this.panel.dispose();
-    } catch (e) {
-      console.warn(e);
-    }
-  }
-}
