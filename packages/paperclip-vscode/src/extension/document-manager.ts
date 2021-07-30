@@ -1,7 +1,9 @@
 import { LiveWindowManager } from "./preview/live-window-manager";
-import { TextEditor, window } from "vscode";
+import { Selection, TextEditor, ViewColumn, window, workspace } from "vscode";
 import { fixFileUrlCasing } from "./utils";
-import { Observer } from "../../../paperclip-common";
+import { eventHandlers, Observer } from "paperclip-common";
+import { RevealSourceRequested } from "./language/server/events";
+import { stripFileProtocol } from "paperclip-utils";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -13,10 +15,6 @@ export class DocumentManager implements Observer {
   private _showedOpenLivePreviewPrompt: boolean;
 
   constructor(private _windows: LiveWindowManager) {}
-
-  handleEvent(event) {
-    // TODO: undo, redo, save, paste, reveal range
-  }
 
   activate() {
     window.onDidChangeActiveTextEditor(this._onActiveTextEditorChange);
@@ -58,4 +56,40 @@ export class DocumentManager implements Observer {
       this._windows.open(uri, true);
     }
   };
+
+  private _onRevealSourceRequested = async ({
+    source: { textSource }
+  }: RevealSourceRequested) => {
+    // shouldn't happen, but might if text isn't loaded
+    if (!textSource) {
+      return;
+    }
+
+    // TODO - no globals here
+    const textDocument = await this._openDoc(textSource.uri);
+
+    const editor: TextEditor =
+      window.visibleTextEditors.find(
+        editor =>
+          editor.document &&
+          fixFileUrlCasing(String(editor.document.uri)) ===
+            fixFileUrlCasing(textSource.uri)
+      ) || (await window.showTextDocument(textDocument, ViewColumn.One));
+    editor.selection = new Selection(
+      textDocument.positionAt(textSource.location.start),
+      textDocument.positionAt(textSource.location.end)
+    );
+    editor.revealRange(editor.selection);
+  };
+
+  private _openDoc = async (uri: string) => {
+    return (
+      workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
+      (await workspace.openTextDocument(stripFileProtocol(uri)))
+    );
+  };
+
+  handleEvent = eventHandlers({
+    [RevealSourceRequested.TYPE]: this._onRevealSourceRequested
+  });
 }

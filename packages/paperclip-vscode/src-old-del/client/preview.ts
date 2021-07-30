@@ -244,11 +244,6 @@ export const activate = (
             "Paperclip crashed - you'll need to reload this window."
           );
         } else if (
-          action.payload.type ===
-          ve.ServerActionType.REVEAL_EXPRESSION_SOURCE_REQUESTED
-        ) {
-          handleRevealExpressionSourceRequested(action.payload);
-        } else if (
           action.payload.type === ve.ServerActionType.PC_SOURCE_EDITED
         ) {
           handlePCSourceEdited(action.payload);
@@ -332,31 +327,6 @@ export const activate = (
       workspace.textDocuments.find(doc => String(doc.uri) === uri) ||
       (await workspace.openTextDocument(stripFileProtocol(uri)))
     );
-  };
-
-  const handleRevealExpressionSourceRequested = async ({
-    payload: { textSource }
-  }: ve.RevealExpressionSourceRequested) => {
-    // shouldn't happen, but might if text isn't loaded
-    if (!textSource) {
-      return;
-    }
-
-    // TODO - no globals here
-    const textDocument = await openDoc(textSource.uri);
-
-    const editor =
-      window.visibleTextEditors.find(
-        editor =>
-          editor.document &&
-          fixFileUrlCasing(String(editor.document.uri)) ===
-            fixFileUrlCasing(textSource.uri)
-      ) || (await window.showTextDocument(textDocument, ViewColumn.One));
-    editor.selection = new Selection(
-      textDocument.positionAt(textSource.location.start),
-      textDocument.positionAt(textSource.location.end)
-    );
-    editor.revealRange(editor.selection);
   };
 
   const handleErrorBannerClicked = async ({

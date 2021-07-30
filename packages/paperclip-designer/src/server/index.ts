@@ -8,6 +8,8 @@ import { rpcService } from "./services/rpc";
 import { postInitService } from "./services/post-init";
 import { pcEngineService } from "./services/pc-engine";
 import { BaseEvent } from "paperclip-common";
+import { ExprSource } from "paperclip-utils";
+import { noop } from "lodash";
 
 type BrowserstackCredentials = {
   username: string;
@@ -21,6 +23,7 @@ export type ServerOptions = {
   readonly?: boolean;
   openInitial: boolean;
   handleEvent?: (event: BaseEvent) => void;
+  revealSource?: (source: ExprSource) => void;
   credentials?: {
     browserstack?: BrowserstackCredentials;
   };
@@ -33,12 +36,9 @@ export const startServer = ({
   credentials = {},
   openInitial,
   readonly,
-  handleEvent
+  handleEvent,
+  revealSource = noop
 }: ServerOptions) => {
-  const revealSource = () => {
-    console.log("TODO!");
-  };
-
   const kernel = new ServerKernel();
 
   const serviceManager = new ServiceManager(kernel).add(

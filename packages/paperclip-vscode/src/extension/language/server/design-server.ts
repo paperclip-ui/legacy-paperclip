@@ -3,6 +3,8 @@ import { Initialized } from "./connection";
 import { startServer } from "paperclip-designer";
 import { PCEngineInitialized } from "paperclip-designer/lib/server/services/pc-engine";
 import * as URL from "url";
+import { ExprSource } from "paperclip-utils";
+import { RevealSourceRequested } from "./events";
 
 export class PaperclipDesignServer implements Observer {
   readonly events: Observable;
@@ -22,6 +24,9 @@ export class PaperclipDesignServer implements Observer {
       }),
       readonly: false,
       openInitial: false,
+      revealSource: (source: ExprSource) => {
+        this.events.dispatch(new RevealSourceRequested(source));
+      },
       handleEvent: event => {
         this.events.dispatch(event);
       }
