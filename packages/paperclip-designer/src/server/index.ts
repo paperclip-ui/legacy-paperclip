@@ -1,8 +1,7 @@
-import { ServiceInitialized, ServiceManager } from "./core/service-manager";
+import { ServiceManager } from "./core/service-manager";
 import { fileWatcherService } from "./services/file-watcher";
 import { httpServer } from "./services/http-server";
 import { ServerKernel } from "./core/kernel";
-import { sourceWriterService } from "./services/source-writer";
 import { eventLogger } from "./services/event-logger";
 import { rpcService } from "./services/rpc";
 import { postInitService } from "./services/post-init";
@@ -42,8 +41,6 @@ export const startServer = ({
   const kernel = new ServerKernel();
 
   const serviceManager = new ServiceManager(kernel).add(
-    // watches for
-    sourceWriterService(),
     fileWatcherService({ cwd }),
     pcEngineService(),
     httpServer({ defaultPort, localResourceRoots }),

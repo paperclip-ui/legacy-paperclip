@@ -1,4 +1,5 @@
 import { remoteChannel } from "paperclip-common";
+import { PCMutation } from "paperclip-source-writer";
 import {
   NodeStyleInspection,
   VirtNodeSource,
@@ -17,6 +18,10 @@ export const revealNodeSourceChannel = remoteChannel<VirtNodeSource, void>(
 
 export const revealNodeSourceByIdChannel = remoteChannel<string, void>(
   "revealNodeSourceByIdChannel"
+);
+
+export const editPCSourceChannel = remoteChannel<PCMutation[], void>(
+  "editPCSourceChannel"
 );
 
 export const popoutWindowChannel = remoteChannel<{ path: string }, void>(

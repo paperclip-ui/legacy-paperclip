@@ -85,26 +85,29 @@ export const sockAdapter = (worker: any): Adapter => ({
 });
 
 export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
+  const requestName = `${name}:request`;
+  const responseName = `${name}:response`;
+
   return (chan: Adapter): Channel<TRequest, TResponse> => {
     const call = (payload: any): Promise<any> => {
       return new Promise(resolve => {
         const onMessage = message => {
-          if (message.name === name) {
+          if (message.name === responseName) {
             disposeListener();
             resolve(message.payload);
           }
         };
 
         const disposeListener = chan.onMessage(onMessage);
-        chan.send({ name, payload });
+        chan.send({ name: requestName, payload });
       });
     };
 
     const listen = (call: (payload: any) => Promise<any>) => {
       const dispose = chan.onMessage(async message => {
-        if (message.name === name) {
+        if (message.name === requestName) {
           chan.send({
-            name,
+            name: responseName,
             payload: await call(message.payload)
           });
         }

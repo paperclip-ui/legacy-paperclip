@@ -1,4 +1,5 @@
 import { ExprSource } from "paperclip-utils";
+import { WorkspaceFolder } from "vscode-languageserver";
 
 export class RevealSourceRequested {
   static TYPE = "RevealSourceRequested";
@@ -7,4 +8,22 @@ export class RevealSourceRequested {
   toJSON() {
     return { type: this.type, source: this.source };
   }
+}
+
+export class Initialized {
+  static TYPE = "PaperclipLanguageServerConnection/Initialized";
+  readonly type = Initialized.TYPE;
+  constructor(readonly workspaceFolders: WorkspaceFolder[]) {}
+}
+
+export class TextDocumentChanged {
+  static TYPE = "PaperclipLanguageServerConnection/TextDocumentChanged";
+  readonly type = TextDocumentChanged.TYPE;
+  constructor(readonly uri: string, readonly content: string) {}
+}
+
+export class TextDocumentOpened {
+  static TYPE = "PaperclipLanguageServerConnection/TextDocumentOpened";
+  readonly type = TextDocumentChanged.TYPE;
+  constructor(readonly uri: string, readonly content: string) {}
 }

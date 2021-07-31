@@ -14,6 +14,7 @@ export const loadEngineDelegate = async (options, onCrash) => {
       resolveFile,
       options.mode || EngineMode.MultiFrame
     ),
+    readFile,
     onCrash ||
       function(e) {
         console.error(e);

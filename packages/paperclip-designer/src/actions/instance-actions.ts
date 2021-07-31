@@ -1,4 +1,4 @@
-import { BaseAction, actionCreator } from "./base";
+import { BaseAction, actionCreator, publicActionCreator } from "./base";
 import { PCMutation } from "paperclip-source-writer";
 import {
   VirtualNode,
@@ -84,7 +84,9 @@ export enum ActionType {
   VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED = "VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED",
   STYLE_RULE_FILE_NAME_CLICKED = "STYLE_RULE_FILE_NAME_CLICKED",
   LAYER_LEAF_CLICKED = "LAYER_LEAF_CLICKED",
-  LAYER_EXPAND_TOGGLE_CLICKED = "LAYER_EXPAND_TOGGLE_CLICKED"
+  LAYER_EXPAND_TOGGLE_CLICKED = "LAYER_EXPAND_TOGGLE_CLICKED",
+  WINDOW_FOCUSED = "WINDOW_FOCUSED",
+  WINDOW_BLURRED = "WINDOW_BLURRED"
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -559,6 +561,13 @@ export const globalSaveKeyPress = actionCreator<KeyComboPressed<ActionType>>(
   ActionType.GLOBAL_SAVE_KEY_DOWN
 );
 
+export const windowFocused = publicActionCreator<
+  BaseAction<ActionType.WINDOW_FOCUSED>
+>(ActionType.WINDOW_FOCUSED);
+export const windowBlurred = publicActionCreator<
+  BaseAction<ActionType.WINDOW_BLURRED>
+>(ActionType.WINDOW_BLURRED);
+
 export const globalMetaKeyUp = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
 >(ActionType.GLOBAL_META_KEY_UP);
@@ -658,6 +667,8 @@ export type InstanceAction =
   | KeyComboPressed<ActionType.GLOBAL_Y_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_Z_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_H_KEY_DOWN>
+  | ReturnType<typeof windowFocused>
+  | ReturnType<typeof windowBlurred>
   | EngineErrored
   | ZoomOutButtonClicked
   | DirLoaded

@@ -84,17 +84,6 @@ export class VSCServiceBridge {
     connection.onRequest(DefinitionRequest.type, this._onDefinitionRequest);
     connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
 
-    connection.onDidOpenTextDocument(({ textDocument }) => {
-      const uri = fixFileUrlCasing(textDocument.uri);
-      this._documents[uri] = TextDocument.create(
-        uri,
-        textDocument.languageId,
-        textDocument.version,
-        textDocument.text
-      );
-
-      this._engine.updateVirtualFileContent(uri, textDocument.text);
-    });
     connection.onDidCloseTextDocument(params => {
       const uri = fixFileUrlCasing(params.textDocument.uri);
       delete this._documents[uri];

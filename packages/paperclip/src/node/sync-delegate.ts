@@ -60,6 +60,7 @@ export const createEngineDelegate = (options = {}, onCrash: any = () => {}) => {
   } = getIOOptions(options || {});
   return new EngineDelegate(
     NativeEngine.new(readFile, fileExists, resolveFile, mode),
+    readFile,
     onCrash ||
       function(e) {
         console.error(e);

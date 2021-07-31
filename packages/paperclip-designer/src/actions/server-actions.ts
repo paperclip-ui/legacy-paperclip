@@ -6,7 +6,7 @@ import {
   VirtNodeSource
 } from "paperclip-utils";
 import { AvailableBrowser, VirtualNodeSourceInfo } from "../state";
-import { actionCreator } from "./base";
+import { actionCreator, BaseAction } from "./base";
 import { InstanceAction } from "./instance-actions";
 
 export enum ServerActionType {
@@ -20,12 +20,6 @@ export enum ServerActionType {
   VIRTUAL_NODE_SOURCES_LOADED = "VIRTUAL_NODE_SOURCES_LOADED",
   VIRTUAL_NODE_STYLES_INSPECTED = "VIRTUAL_NODE_STYLES_INSPECTED"
 }
-
-type BaseAction<TType extends ServerActionType, TPayload = undefined> = {
-  type: TType;
-  payload: TPayload;
-};
-
 export type InstanceChanged = BaseAction<
   ServerActionType.INSTANCE_CHANGED,
   {

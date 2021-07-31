@@ -81,6 +81,7 @@ export class EngineDelegate {
 
   constructor(
     private _native: any,
+    private _readFile: any,
     private _onCrash: (err: any) => void = noop
   ) {
     // only one native listener to for buffer performance
@@ -242,6 +243,11 @@ export class EngineDelegate {
   }
 
   open(uri: string): LoadedData {
+    // need to load document so that it's accessible via source writer
+    if (!this._documents[uri]) {
+      this._documents[uri] = this._readFile(uri);
+    }
+
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
       throw result.error;

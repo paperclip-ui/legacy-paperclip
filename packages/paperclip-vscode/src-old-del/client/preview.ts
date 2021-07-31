@@ -337,28 +337,6 @@ export const activate = (
   };
 };
 
-const handlePCSourceEdited = async ({
-  payload: changesByUri
-}: ve.PCSourceEdited) => {
-  for (const uri in changesByUri) {
-    const changes = changesByUri[uri];
-    const filePath = url.fileURLToPath(uri);
-    const doc = await vscode.workspace.openTextDocument(filePath);
-    const tedits = changes.map(change => {
-      return new vscode.TextEdit(
-        new vscode.Range(
-          doc.positionAt(change.start),
-          doc.positionAt(change.end)
-        ),
-        change.value
-      );
-    });
-    const wsEdit = new vscode.WorkspaceEdit();
-    wsEdit.set(vscode.Uri.parse(uri), tedits);
-    await vscode.workspace.applyEdit(wsEdit);
-  }
-};
-
 class LivePreview {
   private _em: EventEmitter;
   readonly location: PreviewLocation;

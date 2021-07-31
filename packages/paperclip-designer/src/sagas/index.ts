@@ -55,7 +55,9 @@ import {
   dirLoaded,
   pcFileLoaded,
   virtualNodeSourcesLoaded,
-  StyleRuleFileNameClicked
+  StyleRuleFileNameClicked,
+  windowFocused,
+  windowBlurred
 } from "../actions";
 import {
   AppState,
@@ -71,7 +73,10 @@ import {
 } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
-import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
+import {
+  PCMutation,
+  PCMutationActionKind
+} from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { omit } from "lodash";
 import {
@@ -84,6 +89,7 @@ import {
   openFileChannel,
   loadVirtualNodeSourcesChannel,
   revealNodeSourceByIdChannel,
+  editPCSourceChannel,
   eventsChannel
 } from "../rpc/channels";
 import { sockAdapter } from "../../../paperclip-common";
@@ -110,6 +116,7 @@ export default function* mainSaga(
   yield fork(handleLocation, getState);
   yield fork(handleActions, getState);
   yield fork(handleVirtualObjectSelected, getState);
+  yield fork(handleAppFocus);
 }
 
 function handleSock(onMessage, onClient) {
@@ -143,6 +150,7 @@ function* handleClientComunication(client, getState, projectDirectory: string) {
   const openFile = openFileChannel(client);
   const loadVirtualNodeSources = loadVirtualNodeSourcesChannel(client);
   const revealNodeSourceById = revealNodeSourceByIdChannel(client);
+  const editPCSource = editPCSourceChannel(client);
   const events = eventsChannel(client);
 
   yield fork(function*() {
@@ -152,8 +160,19 @@ function* handleClientComunication(client, getState, projectDirectory: string) {
       });
       return () => {};
     });
+    yield takeEvery(chan, function*(action: Action) {
+      if (action["remote"]) {
+        return;
+      }
+      action["remote"] = true;
+      yield put(action);
+    });
     while (1) {
-      yield put(yield take(chan));
+      const action = yield take();
+      if (!action["public"] || action["remote"]) {
+        continue;
+      }
+      events.call(action);
     }
   });
 
@@ -332,6 +351,52 @@ function* handleClientComunication(client, getState, projectDirectory: string) {
     }
   }
 
+  yield takeEvery(
+    [
+      ActionType.RESIZER_STOPPED_MOVING,
+      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
+      ActionType.FRAME_TITLE_CHANGED,
+      ActionType.GLOBAL_H_KEY_DOWN
+    ],
+    function*() {
+      const state: AppState = yield select(getState);
+
+      yield call(
+        editPCSource.call,
+        state.designer.selectedNodePaths.map((info, i) => {
+          const frame = getFrameFromIndex(Number(info), state.designer);
+          return {
+            targetId: state.designer.selectedNodeSources[i].source.sourceId,
+            action: {
+              kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
+              annotations: computeVirtJSObject(frame.annotations)
+            }
+          };
+        }) as PCMutation[]
+      );
+    }
+  );
+
+  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
+    const state: AppState = yield select(getState);
+
+    if (state.designer.selectedNodePaths.length) {
+      yield call(
+        editPCSource.call,
+        state.designer.selectedNodePaths.map((v, index) => {
+          return {
+            targetId: state.designer.selectedNodeSources[index].source.sourceId,
+            action: {
+              kind: PCMutationActionKind.EXPRESSION_DELETED
+            }
+          };
+        }) as PCMutation[]
+      );
+    }
+
+    yield put(globalBackspaceKeySent(null));
+  });
+
   yield call(maybeLoadCanvasFile);
 }
 
@@ -387,56 +452,6 @@ function* handleRenderer(getState: AppStateSelector) {
 
   yield takeEvery(["FOCUS"], function() {
     window.focus();
-  });
-
-  yield takeEvery(
-    [
-      ActionType.RESIZER_STOPPED_MOVING,
-      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
-      ActionType.FRAME_TITLE_CHANGED,
-      ActionType.GLOBAL_H_KEY_DOWN
-    ],
-    function*() {
-      const state: AppState = yield select(getState);
-
-      yield put(
-        pcVirtObjectEdited({
-          mutations: state.designer.selectedNodePaths.map((info, i) => {
-            const frame = getFrameFromIndex(Number(info), state.designer);
-            return {
-              targetId: state.designer.selectedNodeSources[i].source.sourceId,
-              action: {
-                kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
-                annotations: computeVirtJSObject(frame.annotations)
-              }
-            };
-          })
-        })
-      );
-    }
-  );
-
-  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
-    const state: AppState = yield select(getState);
-
-    if (state.designer.readonly) {
-      return;
-    }
-
-    yield put(
-      pcVirtObjectEdited({
-        mutations: state.designer.selectedNodePaths.map(index => {
-          return {
-            targetId: state.designer.selectedNodeSources[index].source.sourceId,
-            action: {
-              kind: PCMutationActionKind.EXPRESSION_DELETED
-            }
-          };
-        })
-      })
-    );
-
-    yield put(globalBackspaceKeySent(null));
   });
 }
 
@@ -732,3 +747,23 @@ function* handleActions(getState: AppStateSelector) {
 }
 
 function* handleVirtualObjectSelected(getState: AppStateSelector) {}
+
+function* handleAppFocus() {
+  const chan = eventChannel(emit => {
+    document.addEventListener("mouseenter", ev => {
+      if (ev.target === document) {
+        emit(windowFocused(null));
+      }
+    });
+    document.addEventListener("mouseleave", ev => {
+      if (ev.target === document) {
+        emit(windowBlurred(null));
+      }
+    });
+    return () => {};
+  });
+
+  yield takeEvery(chan, function*(event: any) {
+    yield put(event);
+  });
+}

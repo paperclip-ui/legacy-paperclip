@@ -15,6 +15,7 @@ import {
   loadVirtualNodeSourcesChannel,
   openFileChannel,
   popoutWindowChannel,
+  editPCSourceChannel,
   revealNodeSourceByIdChannel,
   revealNodeSourceChannel
 } from "../../rpc/channels";
@@ -29,6 +30,20 @@ import * as path from "path";
 import { Directory, FSItemKind } from "../../state";
 import * as fs from "fs";
 import { Disposable, disposableGroup } from "paperclip-common";
+import {
+  ContentChange,
+  PCMutation,
+  PCSourceWriter
+} from "paperclip-source-writer";
+
+export class PCSourceEdited {
+  static TYPE = "rpc/PCSourceEdited";
+  readonly type = PCSourceEdited.TYPE;
+  constructor(readonly changes: Record<string, ContentChange[]>) {}
+  toJSON() {
+    return { type: this.type, changes: this.changes };
+  }
+}
 
 type Options = {
   localResourceRoots: string[];
@@ -69,12 +84,14 @@ export const rpcService = (options: Options) =>
 const load = (kernel: ServerKernel, state: State) => {
   kernel.events.observe({
     handleEvent: eventHandlers({
-      [SockJSConnection.TYPE]: onConnection(state)
+      [SockJSConnection.TYPE]: onConnection(state, kernel)
     })
   });
 };
 
-const onConnection = (state: State) => ({ connection }: SockJSConnection) => {
+const onConnection = (state: State, kernel: ServerKernel) => ({
+  connection
+}: SockJSConnection) => {
   const io = sockAdapter(connection);
 
   const remoteEvents = eventsChannel(io);
@@ -89,10 +106,18 @@ const onConnection = (state: State) => ({ connection }: SockJSConnection) => {
     loadDirectoryChannel(io).listen(loadDirectory(state)),
     openFileChannel(io).listen(openFile(state)),
     loadVirtualNodeSourcesChannel(io).listen(loadVirtNodeSources(state)),
-    watchEngineEvents(state.engine, remoteEvents)
+    editPCSourceChannel(io).listen(editPCSource(state, kernel)),
+    watchEngineEvents(state.engine, remoteEvents),
+    remoteEvents.listen(dispatchRemoteEvents(kernel))
   ];
 
   connection.on("close", disposableGroup(disposables).dispose);
+};
+
+const dispatchRemoteEvents = (kernel: ServerKernel) => async (
+  event: BaseEvent
+) => {
+  kernel.events.dispatch(event);
 };
 
 const inspectNodeStyles = ({ engine }: State) => async sources => {
@@ -191,6 +216,14 @@ const loadVirtNodeSources = (state: State) => async (
       source: state.engine.getVirtualNodeSourceInfo(info.path, info.uri)
     };
   });
+};
+
+const editPCSource = (state: State, kernel: ServerKernel) => async (
+  mutations: PCMutation[]
+) => {
+  const writer = new PCSourceWriter(state.engine!);
+  const changes = writer.apply(mutations);
+  kernel.events.dispatch(new PCSourceEdited(changes));
 };
 
 const revealNodeSourceById = (state: State) => async (sourceId: string) => {
