@@ -46,6 +46,10 @@ export class PaperclipLanguageService {
   getAutoCompletionSuggestions(uri: string, position: number) {}
 
   private _collectASTInfo(uri: string) {
-    return collectASTInfo(uri, this._engine.getAllLoadedData());
+    return collectASTInfo(
+      uri,
+      this._engine.getAllLoadedASTs(),
+      this._engine.getAllLoadedData()
+    );
   }
 }

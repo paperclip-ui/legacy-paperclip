@@ -1,0 +1,15 @@
+{
+  "name": "paperclip-test-utils",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "yarn tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cssom": "^0.5.0",
+    "lodash": "^4.17.21"
+  }
+}

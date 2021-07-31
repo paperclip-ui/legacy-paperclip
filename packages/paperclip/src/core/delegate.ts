@@ -78,6 +78,7 @@ export class EngineDelegate {
   private _listeners: EngineDelegateEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
   private _documents: Record<string, string> = {};
+  private _asts: Record<string, LoadedData> = {};
 
   constructor(
     private _native: any,
@@ -181,7 +182,10 @@ export class EngineDelegate {
     return this._native.get_virtual_node_source_info(nodePath, uri);
   }
   getLoadedAst(uri: string): DependencyContent {
-    return this._tryCatch(() => this._native.get_loaded_ast(uri));
+    return (
+      this._asts[uri] ||
+      (this._asts[uri] = this._tryCatch(() => this._native.get_loaded_ast(uri)))
+    );
   }
   parseContent(content: string, uri: string) {
     return this._tryCatch(() =>
@@ -236,6 +240,14 @@ export class EngineDelegate {
   public getAllLoadedData(): Record<string, LoadedData> {
     return this._rendered;
   }
+  public getAllLoadedASTs(): Record<string, DependencyContent> {
+    const map = {};
+    for (const uri in this._rendered) {
+      map[uri] = this.getLoadedAst(uri);
+    }
+    return map;
+  }
+
   reset() {
     this._rendered = {};
     this._documents = {};
@@ -243,6 +255,8 @@ export class EngineDelegate {
   }
 
   open(uri: string): LoadedData {
+    this._asts[uri] = undefined;
+
     // need to load document so that it's accessible via source writer
     if (!this._documents[uri]) {
       this._documents[uri] = this._readFile(uri);
