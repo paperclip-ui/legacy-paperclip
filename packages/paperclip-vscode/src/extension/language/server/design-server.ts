@@ -7,10 +7,14 @@ import { ExprSource } from "paperclip-utils";
 import { RevealSourceRequested } from "./events";
 import { EngineDelegate } from "paperclip";
 
+const UPDATE_THROTTLE = 10;
+
 export class PaperclipDesignServer implements Observer {
   readonly events: Observable;
   private _engine: EngineDelegate;
   private _windowFocused: boolean;
+  private _latestDocuments: Record<string, string>;
+  private _updatingDocuments: boolean;
 
   constructor() {
     this.events = new Observable();
@@ -41,11 +45,29 @@ export class PaperclipDesignServer implements Observer {
   };
   private _onTextDocumentChanged = ({ uri, content }: TextDocumentChanged) => {
     if (this._windowFocused) {
-      console.log("SKIP FOC");
       return;
     }
-    // TODO - check locks
-    this._engine.updateVirtualFileContent(uri, content);
+
+    if (this._updatingDocuments) {
+      this._latestDocuments[uri] = content;
+      return;
+    }
+
+    this._updatingDocuments = true;
+    this._latestDocuments = {
+      [uri]: content
+    };
+
+    // throttle for updating doc to ensure that the engine doesn't
+    // get flooded
+    setTimeout(() => {
+      const changes = this._latestDocuments;
+      this._latestDocuments = {};
+      for (const uri in changes) {
+        this._engine.updateVirtualFileContent(uri, changes[uri]);
+      }
+      this._updatingDocuments = false;
+    }, UPDATE_THROTTLE);
   };
 
   private _onWindowFocused = () => {

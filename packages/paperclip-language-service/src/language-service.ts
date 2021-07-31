@@ -11,6 +11,7 @@ Considerations:
 
 import { EngineDelegate } from "paperclip";
 import { AutocompleteService } from "./autocomplete/service";
+import { collectASTInfo } from "./collect-ast-info";
 
 export class PaperclipLanguageService {
   private _autocomplete: AutocompleteService;
@@ -32,13 +33,19 @@ export class PaperclipLanguageService {
   getLinks(uri: string) {}
 
   /**
+   */
+
+  getDocumentColors(uri: string) {
+    return this._collectASTInfo(uri).colors;
+  }
+
+  /**
    * Returns list of options fro autocomplete
    */
 
   getAutoCompletionSuggestions(uri: string, position: number) {}
 
-  /**
-   */
-
-  onEvent(listener) {}
+  private _collectASTInfo(uri: string) {
+    return collectASTInfo(uri, this._engine.getAllLoadedData());
+  }
 }

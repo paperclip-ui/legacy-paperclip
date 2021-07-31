@@ -27,3 +27,9 @@ export class TextDocumentOpened {
   readonly type = TextDocumentChanged.TYPE;
   constructor(readonly uri: string, readonly content: string) {}
 }
+
+export class UpdatedTextDocuments {
+  static TYPE = "PaperclipDesignServer/UpdatedTextDocuments";
+  readonly type = TextDocumentChanged.TYPE;
+  constructor() {}
+}

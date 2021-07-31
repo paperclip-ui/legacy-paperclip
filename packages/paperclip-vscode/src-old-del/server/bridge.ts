@@ -67,40 +67,6 @@ export class VSCServiceBridge {
     private _enhanceCalm: () => void
   ) {
     _engine.onEvent(this._onEngineDelegateEvent);
-    connection.onRequest(
-      ColorPresentationRequest.type,
-      this._onColorPresentationRequest
-    );
-    connection.onRequest(
-      DocumentColorRequest.type,
-      this._onDocumentColorRequest
-    );
-    connection.onRequest(CompletionRequest.type, this._onCompletionRequest);
-    connection.onRequest(
-      CompletionResolveRequest.type,
-      this._onCompletionResolveRequest
-    );
-
-    connection.onRequest(DefinitionRequest.type, this._onDefinitionRequest);
-    connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
-
-    connection.onDidCloseTextDocument(params => {
-      const uri = fixFileUrlCasing(params.textDocument.uri);
-      delete this._documents[uri];
-    });
-
-    connection.onDidChangeTextDocument(params => {
-      const uri = fixFileUrlCasing(params.textDocument.uri);
-
-      // this is a bit janky, but we need to temporarily turn off listening for cases
-      // where changes are coming from the preview.
-      // if (this._updateSkips[uri]) {
-      //   this._updateSkips[uri]--;
-      //   return;
-      // }
-
-      this._updateTextContent(uri, params.contentChanges);
-    });
   }
 
   private _onDocumentLinkRequest = (params: DocumentLinkParams) => {
