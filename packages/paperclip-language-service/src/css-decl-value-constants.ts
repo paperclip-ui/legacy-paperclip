@@ -11,7 +11,7 @@ Copy printed object
 
 */
 
-import { CSS_DECLARATION_VALUE_MAP } from "./css-declaration-constants";
+import { CSS_DECLARATION_VALUE_MAP } from "./css-decl-name-constants";
 
 // https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
 const CSS_AT_RULE_NAMES = [

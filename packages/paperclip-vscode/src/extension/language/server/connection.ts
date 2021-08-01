@@ -7,7 +7,8 @@ import {
   WorkspaceFolder,
   DidChangeTextDocumentParams,
   DidOpenTextDocumentParams,
-  DidCloseTextDocumentParams
+  DidCloseTextDocumentParams,
+  TextEdit
 } from "vscode-languageserver";
 import { BaseEvent, Observable, Observer } from "paperclip-common";
 import { $$EVENT } from "./constants";
@@ -18,14 +19,28 @@ import { LanguageRequestResolver } from "./resolver";
 
 export class DocumentManager {
   private _documents: Record<string, TextDocument>;
+  readonly events: Observable;
   constructor() {
     this._documents = {};
+    this.events = new Observable();
   }
   getDocument(uri: string) {
     return this._documents[uri];
   }
   updateDocument(uri: string, document: TextDocument) {
+    const exists = this._documents[uri] != null;
+
     this._documents[uri] = document;
+
+    if (exists) {
+      this.events.dispatch(new TextDocumentChanged(uri, document.getText()));
+    } else {
+      this.events.dispatch(new TextDocumentOpened(uri, document.getText()));
+    }
+  }
+  appleDocumentEdits(uri: string, edits: TextEdit[]) {
+    const text = TextDocument.applyEdits(this._documents[uri], edits);
+    this.events.dispatch(new TextDocumentChanged(uri, text));
   }
   removeDocument(uri: string) {
     delete this._documents;
@@ -42,6 +57,7 @@ export class PaperclipLanguageServerConnection implements Observer {
   constructor(readonly config: any) {
     this.events = new Observable();
     this._documents = new DocumentManager();
+    this.events.source(this._documents.events);
   }
   activate() {
     this._connection = createConnection(ProposedFeatures.all);
@@ -87,9 +103,6 @@ export class PaperclipLanguageServerConnection implements Observer {
         textDocument.text
       )
     );
-    this.events.dispatch(
-      new TextDocumentOpened(uri, this._documents.getDocument(uri).getText())
-    );
   };
 
   private _onDidCloseTextDocument = ({
@@ -105,7 +118,7 @@ export class PaperclipLanguageServerConnection implements Observer {
   }: DidChangeTextDocumentParams) => {
     const uri = fixFileUrlCasing(textDocument.uri);
 
-    const oldDocument = this._documents[uri];
+    const oldDocument = this._documents.getDocument(uri);
 
     const newDocument = TextDocument.update(
       oldDocument,
@@ -114,8 +127,6 @@ export class PaperclipLanguageServerConnection implements Observer {
     );
 
     this._documents.updateDocument(uri, newDocument);
-
-    this.events.dispatch(new TextDocumentChanged(uri, newDocument.getText()));
   };
 
   private _onConnectionInitialize = (params: InitializeParams) => {

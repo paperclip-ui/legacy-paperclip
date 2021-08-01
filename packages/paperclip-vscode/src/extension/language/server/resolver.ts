@@ -6,20 +6,32 @@ import {
   DefinitionRequest,
   DocumentColorParams,
   DocumentColorRequest,
-  DocumentLinkRequest
+  TextEdit,
+  Range,
+  Color,
+  ColorPresentation,
+  DocumentLinkRequest,
+  ColorPresentationParams
 } from "vscode-languageserver";
+import { TextDocument } from "vscode-languageserver-textdocument";
 import { PaperclipLanguageService } from "paperclip-language-service";
 import { PCEngineInitialized } from "paperclip-designer/lib/server/services/pc-engine";
 import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./connection";
+import * as parseColor from "color";
+import { Observable } from "paperclip-common";
 
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;
   private _listening: boolean;
+  readonly events: Observable;
+
   constructor(
     private _connection: Connection,
     private _documents: DocumentManager
-  ) {}
+  ) {
+    this.events = new Observable();
+  }
 
   handleEvent(event) {
     if (event.type === PCEngineInitialized.TYPE) {
@@ -64,14 +76,22 @@ export class LanguageRequestResolver {
     );
   }
 
-  private _onColorPresentationRequest = () => {
-    return [];
+  private _onColorPresentationRequest = (params: ColorPresentationParams) => {
+    const presentation = getColorPresentation(params.color, params.range);
+    const uri = fixFileUrlCasing(params.textDocument.uri);
+
+    const { textEdit } = presentation;
+    this._documents.appleDocumentEdits(uri, [textEdit]);
+
+    // update virtual file content to show preview
+    // this._previewEngineContent(params.textDocument.uri, { text: source });
+
+    return [presentation];
   };
 
   private _onDocumentColorRequest = (params: DocumentColorParams) => {
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
-    console.log(this._service.getDocumentColors(uri));
     return this._service.getDocumentColors(uri).map(({ value, location }) => {
       return {
         range: {
@@ -98,3 +118,18 @@ export class LanguageRequestResolver {
     return [];
   };
 }
+
+// from https://github.com/microsoft/vscode-css-languageservice/blob/a652e5da7ebb86677bff750c9ca0cf4740adacee/src/services/cssNavigation.ts#L196
+const getColorPresentation = (
+  { red, green, blue, alpha }: Color,
+  range: Range
+): ColorPresentation => {
+  const info = parseColor.rgb(
+    Math.round(red * 255),
+    Math.round(green * 255),
+    Math.round(blue * 255),
+    alpha
+  );
+  const label = info.toString();
+  return { label, textEdit: TextEdit.replace(range, label) };
+};

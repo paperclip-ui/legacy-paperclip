@@ -306,35 +306,3 @@ export class VSCServiceBridge {
       .filter(Boolean);
   }
 }
-
-// from https://github.com/microsoft/vscode-css-languageservice/blob/a652e5da7ebb86677bff750c9ca0cf4740adacee/src/services/cssNavigation.ts#L196
-const getColorPresentation = (
-  { red, green, blue, alpha }: Color,
-  range: Range
-): ColorPresentation => {
-  const info = parseColor.rgb(
-    Math.round(red * 255),
-    Math.round(green * 255),
-    Math.round(blue * 255),
-    alpha
-  );
-  const label = info.toString();
-  return { label, textEdit: TextEdit.replace(range, label) };
-};
-
-const createDiagnostic = (
-  severity: DiagnosticSeverity,
-  message: string,
-  textDocument: TextDocument,
-  location: SourceLocation
-) => {
-  return {
-    severity,
-    range: {
-      start: textDocument.positionAt(location.start),
-      end: textDocument.positionAt(location.end)
-    },
-    message: `${message}`,
-    source: "ex"
-  };
-};

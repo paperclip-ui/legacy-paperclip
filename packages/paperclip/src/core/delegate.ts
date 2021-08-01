@@ -211,6 +211,7 @@ export class EngineDelegate {
     if (this._documents[uri] === content) {
       return;
     }
+    this._graph[uri] = undefined;
 
     // only define if successfuly loaded
     this._documents[uri] = content;

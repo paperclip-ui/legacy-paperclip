@@ -22,6 +22,12 @@ export class TextDocumentChanged {
   constructor(readonly uri: string, readonly content: string) {}
 }
 
+export class TextDocumentPreview {
+  static TYPE = "PaperclipLanguageServerConnection/TextDocumentPreview";
+  readonly type = TextDocumentPreview.TYPE;
+  constructor(readonly uri: string, readonly content: string) {}
+}
+
 export class TextDocumentOpened {
   static TYPE = "PaperclipLanguageServerConnection/TextDocumentOpened";
   readonly type = TextDocumentChanged.TYPE;
