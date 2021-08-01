@@ -21,3 +21,12 @@ export type DependencyStyleSheetContent = BaeDependencyContent<
 export type DependencyContent =
   | DependencyNodeContent
   | DependencyStyleSheetContent;
+
+export type Dependency = {
+  uri: string;
+  dependencies: Record<string, string>;
+  dependencyUriPam: Record<string, string>;
+  content: DependencyContent;
+};
+
+export type DependencyGraph = Record<string, Dependency>;

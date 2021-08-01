@@ -10,7 +10,7 @@ Considerations:
 */
 
 import { EngineDelegate } from "paperclip";
-import { AutocompleteService } from "./autocomplete/service";
+import { AutocompleteService } from "./autocomplete";
 import { collectASTInfo } from "./collect-ast-info";
 
 export class PaperclipLanguageService {
@@ -48,7 +48,7 @@ export class PaperclipLanguageService {
   private _collectASTInfo(uri: string) {
     return collectASTInfo(
       uri,
-      this._engine.getAllLoadedASTs(),
+      this._engine.getLoadedGraph(),
       this._engine.getAllLoadedData()
     );
   }

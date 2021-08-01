@@ -67,6 +67,18 @@ export class VSCServiceBridge {
     private _enhanceCalm: () => void
   ) {
     _engine.onEvent(this._onEngineDelegateEvent);
+    connection.onRequest(
+      ColorPresentationRequest.type,
+      this._onColorPresentationRequest
+    );
+    connection.onRequest(CompletionRequest.type, this._onCompletionRequest);
+    connection.onRequest(
+      CompletionResolveRequest.type,
+      this._onCompletionResolveRequest
+    );
+
+    connection.onRequest(DefinitionRequest.type, this._onDefinitionRequest);
+    connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
   }
 
   private _onDocumentLinkRequest = (params: DocumentLinkParams) => {
@@ -83,52 +95,6 @@ export class VSCServiceBridge {
         }
       })) as DocumentLink[])
     );
-  };
-
-  goAheadNowYaHear() {
-    this._waitingForCalm = false;
-    this._maybePersistContentChanges();
-  }
-
-  skipChanges(uri: string) {
-    if (!this._updateSkips[uri]) {
-      this._updateSkips[uri] = 0;
-    }
-    this._updateSkips[uri]++;
-  }
-
-  private _deferUpdateEngineContent = (uri: string, content: string) => {
-    this._contentChanges[uri] = content;
-    this._maybePersistContentChanges();
-  };
-
-  private _maybePersistContentChanges = () => {
-    if (this._waitingForCalm) {
-      return;
-    }
-
-    if (Object.keys(this._contentChanges).length === 0) {
-      this._waitingForCalm = false;
-      return;
-    }
-
-    const contentChanges = this._contentChanges;
-    this._contentChanges = {};
-    this._waitingForCalm = true;
-
-    // Engine is synchronous, so we may end up with a flood of events
-    // that become a bottleneck. The _correct_ area would be put to this
-    // in the engine, but that would require async work that could defer
-    // performance elsewhere (e.g: transmitting data between worker & parent). So
-    // Cheap way is ask the client to help enhance calm
-    this._enhanceCalm();
-
-    for (const uri in contentChanges) {
-      this._engine.updateVirtualFileContent(
-        fixFileUrlCasing(uri),
-        contentChanges[uri]
-      );
-    }
   };
 
   private _onDefinitionRequest = (params: DefinitionParams) => {
@@ -201,46 +167,6 @@ export class VSCServiceBridge {
     return this._service.getService(item.data.uri).resolveCompletionItem(item);
   };
 
-  private _onDocumentColorRequest = (params: DocumentColorParams) => {
-    const uri = fixFileUrlCasing(params.textDocument.uri);
-    const document = this._documents[uri];
-    const service = this._service.getService(uri);
-    return (
-      service &&
-      (service
-        .getColors(document.uri)
-        .map(({ color, location }) => {
-          // Skip for now.
-          if (/var\(.*?\)/.test(color)) {
-            return;
-          }
-
-          try {
-            const {
-              color: [red, green, blue],
-              valpha: alpha
-            } = parseColor(color);
-
-            return {
-              range: {
-                start: document.positionAt(location.start),
-                end: document.positionAt(location.end)
-              },
-              color: {
-                red: red / 255,
-                green: green / 255,
-                blue: blue / 255,
-                alpha
-              }
-            };
-          } catch (e) {
-            console.error(e.stack);
-          }
-        })
-        .filter(Boolean) as ColorInformation[])
-    );
-  };
-
   private _onColorPresentationRequest = (params: ColorPresentationParams) => {
     const presentation = getColorPresentation(params.color, params.range);
     const uri = fixFileUrlCasing(params.textDocument.uri);
@@ -255,19 +181,6 @@ export class VSCServiceBridge {
     this._deferUpdateEngineContent(uri, source);
 
     return [presentation];
-  };
-
-  private _updateTextContent = (
-    uri: string,
-    events: TextDocumentContentChangeEvent[]
-  ) => {
-    const newDocument = TextDocument.update(
-      this._documents[uri],
-      events,
-      this._documents[uri].version + 1
-    );
-    this._documents[uri] = newDocument;
-    this._deferUpdateEngineContent(uri, newDocument.getText());
   };
 
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {

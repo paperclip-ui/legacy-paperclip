@@ -64,13 +64,14 @@ export class LanguageRequestResolver {
     );
   }
 
-  private _onColorPresentationRequest() {
+  private _onColorPresentationRequest = () => {
     return [];
-  }
+  };
 
-  private _onDocumentColorRequest(params: DocumentColorParams) {
+  private _onDocumentColorRequest = (params: DocumentColorParams) => {
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
+    console.log(this._service.getDocumentColors(uri));
     return this._service.getDocumentColors(uri).map(({ value, location }) => {
       return {
         range: {
@@ -80,20 +81,20 @@ export class LanguageRequestResolver {
         color: value
       };
     });
-  }
+  };
 
-  private _onCompletionResolveRequest() {
+  private _onCompletionResolveRequest = () => {
     return null;
-  }
+  };
 
-  private _onCompletionRequest() {
+  private _onCompletionRequest = () => {
     return [];
-  }
+  };
 
-  private _onDefinitionRequest() {
+  private _onDefinitionRequest = () => {
     return [];
-  }
-  private _onDocumentLinkRequest() {
+  };
+  private _onDocumentLinkRequest = () => {
     return [];
-  }
+  };
 }

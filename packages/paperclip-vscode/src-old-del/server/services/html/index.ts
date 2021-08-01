@@ -43,15 +43,8 @@ import { getStyleExport, PCCompletionItem } from "./utils";
 import { LoadedData } from "paperclip";
 import { EngineDelegate } from "paperclip";
 import { JsExpression, Slot } from "paperclip";
-import CSS_COLOR_NAMES from "./css-color-names";
 import { LoadedDataEmitted } from "paperclip-utils";
 import { getEngineImports } from "paperclip";
-const CSS_COLOR_NAME_LIST = Object.keys(CSS_COLOR_NAMES);
-const CSS_COLOR_NAME_REGEXP = new RegExp(
-  `\\b(?<![-_])(${CSS_COLOR_NAME_LIST.join("|")})(?![-_])\\b`,
-  "g"
-);
-
 /**
  * Main HTML language service. Contains everything for now.
  */
@@ -168,10 +161,6 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
   ) {
     for (const declaration of declarations) {
       switch (declaration.declarationKind) {
-        case StyleDeclarationKind.KeyValue: {
-          this._handleKeyValueDeclaration(declaration, context);
-          break;
-        }
         case StyleDeclarationKind.Include: {
           this._handleInclude(declaration, context);
           break;
@@ -186,56 +175,6 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
       for (const child of rule.children) {
         this._handleStyleRule(child, context);
       }
-    }
-  }
-  private _handleKeyValueDeclaration(
-    declaration: KeyValueDeclaration,
-    context: HandleContext
-  ) {
-    const colors =
-      matchColor(declaration.value) ||
-      declaration.value.match(/#[^\s,;]+|(var)\(.*?\)/g) ||
-      [];
-
-    let modelDecl = declaration.value;
-
-    for (const color of colors) {
-      let colorValue;
-      if (/var\(.*?\)/.test(color)) {
-        const name = color.match(/var\((.*?)\)/)[1];
-        const value = getVariableValue(
-          name,
-          context.data,
-          getEngineImports(context.uri, this._engine)
-        );
-        if (value) {
-          const match = matchColor(value);
-          if (match) {
-            colorValue = match[0];
-          }
-        }
-      } else {
-        colorValue = color;
-      }
-
-      if (!colorValue) {
-        continue;
-      }
-
-      const colorIndex = modelDecl.indexOf(color);
-
-      // ensure that color isn't there in case there is another instance
-      // in the string -- want to go through each one.
-      modelDecl = modelDecl.replace(color, "_".repeat(color.length));
-
-      // Color(color)
-      // const {color: [r, g, b], valpha: a } = Color(color);
-      const colorStart = declaration.valueLocation.start + colorIndex;
-
-      context.info.colors.push({
-        color: colorValue,
-        location: { start: colorStart, end: colorStart + color.length }
-      });
     }
   }
 
@@ -474,11 +413,4 @@ const getVariableValue = (
       return v.value;
     }
   }
-};
-
-const matchColor = (value: string) => {
-  return (
-    value.match(/#[a-zA-Z0-9]+|(rgba|rgb|hsl|hsla|var)\(.*?\)/g) ||
-    value.match(CSS_COLOR_NAME_REGEXP)
-  );
 };

@@ -389,6 +389,10 @@ export const isComponent = (node: Node): node is Element =>
   hasAttribute("component", node) &&
   hasAttribute(AS_ATTR_NAME, node);
 
+export const isImport = (node: Node): node is Element =>
+  node.nodeKind === NodeKind.Element &&
+  node.tagName === "import" &&
+  hasAttribute("src", node);
 export const getParts = (ast: Node): Element[] =>
   getChildren(ast).filter(isComponent) as Element[];
 

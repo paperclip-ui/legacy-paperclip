@@ -354,15 +354,18 @@ export const traverseSheet = (
   sheet: Sheet,
   each: (rule: StyleExpression) => void
 ) => {
-  return traverseStyleExpressions(sheet.rules, each);
+  return (
+    traverseStyleExpressions(sheet.declarations, each) &&
+    traverseStyleExpressions(sheet.rules, each)
+  );
 };
 
-const traverseStyleExpressions = (
+const traverseChildren = traverse => (
   rules: StyleExpression[],
   each: (rule: StyleExpression) => void | boolean
 ) => {
   for (const rule of rules) {
-    if (!traverseStyleExpression(rule, each)) {
+    if (!traverse(rule, each)) {
       return false;
     }
   }
@@ -419,19 +422,21 @@ export const traverseStyleExpression = (
   if (isRule(rule)) {
     switch (rule.ruleKind) {
       case RuleKind.Media: {
-        return traverseStyleExpressions(rule.rules, each);
+        return traverseChildren(traverseStyleRule)(rule.rules, each);
       }
       case RuleKind.Export: {
         return traverseStyleExpressions(rule.rules, each);
       }
       case RuleKind.Style: {
-        return (
-          traverseStyleExpressions(rule.declarations, each) &&
-          traverseStyleExpressions(rule.children, each)
-        );
+        return traverseStyleRule(rule, each);
       }
       case RuleKind.Mixin: {
         return traverseStyleExpressions(rule.declarations, each);
+      }
+      case RuleKind.Keyframes: {
+        return traverseChildren((child: KeyframeRule) => {
+          return traverseStyleExpressions(child.declarations, each);
+        })(rule.rules, each);
       }
     }
   } else if (isStyleDeclaration(rule)) {
@@ -449,6 +454,15 @@ export const traverseStyleExpression = (
 
   return true;
 };
+
+const traverseStyleExpressions = traverseChildren(traverseStyleExpression);
+
+const traverseStyleRule = (
+  rule: StyleRule,
+  each: (rule: StyleExpression) => void | boolean
+) =>
+  traverseStyleExpressions(rule.declarations, each) &&
+  traverseChildren(traverseStyleRule)(rule.children, each);
 
 export const getSelectorClassNames = (
   selector: Selector,

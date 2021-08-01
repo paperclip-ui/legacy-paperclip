@@ -21,7 +21,8 @@ import {
   Diagnostic,
   INJECT_STYLES_TAG_NAME,
   NodeStyleInspection,
-  VirtNodeSource
+  VirtNodeSource,
+  Dependency
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -78,7 +79,7 @@ export class EngineDelegate {
   private _listeners: EngineDelegateEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
   private _documents: Record<string, string> = {};
-  private _asts: Record<string, LoadedData> = {};
+  private _graph: Record<string, Dependency> = {};
 
   constructor(
     private _native: any,
@@ -182,9 +183,14 @@ export class EngineDelegate {
     return this._native.get_virtual_node_source_info(nodePath, uri);
   }
   getLoadedAst(uri: string): DependencyContent {
+    return this._tryCatch(() => this._native.get_loaded_ast(uri));
+  }
+  getLoadedDependency(uri: string) {
     return (
-      this._asts[uri] ||
-      (this._asts[uri] = this._tryCatch(() => this._native.get_loaded_ast(uri)))
+      this._graph[uri] ||
+      (this._graph[uri] = this._tryCatch(() =>
+        this._native.get_dependency(uri)
+      ))
     );
   }
   parseContent(content: string, uri: string) {
@@ -240,10 +246,10 @@ export class EngineDelegate {
   public getAllLoadedData(): Record<string, LoadedData> {
     return this._rendered;
   }
-  public getAllLoadedASTs(): Record<string, DependencyContent> {
+  public getLoadedGraph(): Record<string, Dependency> {
     const map = {};
     for (const uri in this._rendered) {
-      map[uri] = this.getLoadedAst(uri);
+      map[uri] = this.getLoadedDependency(uri);
     }
     return map;
   }
@@ -255,7 +261,7 @@ export class EngineDelegate {
   }
 
   open(uri: string): LoadedData {
-    this._asts[uri] = undefined;
+    this._graph[uri] = undefined;
 
     // need to load document so that it's accessible via source writer
     if (!this._documents[uri]) {

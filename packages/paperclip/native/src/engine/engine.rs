@@ -166,6 +166,13 @@ impl Engine {
       .and_then(|dep| Some(&dep.content))
   }
 
+  pub fn get_dependency(&self, uri: &String) -> Option<&Dependency> {
+    self
+      .dependency_graph
+      .dependencies
+      .get(uri)
+  }
+
   pub async fn load(&mut self, uri: &String) -> Result<(), EngineError> {
     self.remove_diagnostic_error(uri);
 
