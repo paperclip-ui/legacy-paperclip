@@ -63,6 +63,14 @@ export const collectASTInfo = (
   graph: DependencyGraph,
   evaluated: Record<string, LoadedData>
 ) => {
+  if (!graph[entryUri]) {
+    return {
+      colors: [],
+      links: [],
+      definitions: []
+    };
+  }
+
   const map = {
     colors: getDocumentColors(entryUri, graph, evaluated),
     links: getDocumentLinks(entryUri, graph),

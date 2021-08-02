@@ -36,7 +36,6 @@ export class LanguageRequestResolver {
     private _connection: Connection,
     private _documents: DocumentManager
   ) {
-    console.log("LNK;");
     this.events = new Observable();
   }
 
