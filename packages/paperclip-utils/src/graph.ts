@@ -25,7 +25,7 @@ export type DependencyContent =
 export type Dependency = {
   uri: string;
   dependencies: Record<string, string>;
-  dependencyUriPam: Record<string, string>;
+  dependencyUriMaps: Record<string, string>;
   content: DependencyContent;
 };
 

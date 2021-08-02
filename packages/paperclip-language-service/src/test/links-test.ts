@@ -8,7 +8,7 @@ describe(__filename + "#", () => {
       `returns link to import`,
       {
         "/entry.pc": `
-          <import src="./test.pc" />
+          <import src="./test.pc" as="test" />
         `,
         "/test.pc": `
           something
@@ -33,6 +33,7 @@ describe(__filename + "#", () => {
         engine.getLoadedGraph(),
         engine.getAllLoadedData()
       );
+      // console.log(info.links);
 
       expect(info.links).to.eql(expectedLinks);
     });

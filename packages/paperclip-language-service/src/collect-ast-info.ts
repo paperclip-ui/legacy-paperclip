@@ -65,7 +65,8 @@ export const collectASTInfo = (
 ) => {
   const map = {
     colors: getDocumentColors(entryUri, graph, evaluated),
-    links: getDocumentLinks(entryUri, graph)
+    links: getDocumentLinks(entryUri, graph),
+    definitions: getDocumentDefinitions(entryUri, graph)
   };
 
   return map;
@@ -98,7 +99,6 @@ const getDocumentLinks = (
   }
 
   const links: DocumentLinkInfo[] = [];
-  console.log(asts[uri]);
 
   const imports = getImportMap(documentAST.content);
 
@@ -109,7 +109,7 @@ const getDocumentLinks = (
       continue;
     }
     links.push({
-      uri: asts[uri].dependencies[src.value],
+      uri: asts[uri].dependencyUriMaps[src.value],
       location: src.location
     });
   }
@@ -117,13 +117,69 @@ const getDocumentLinks = (
   return links;
 };
 
+const getDocumentDefinitions = (uri: string, graph: DependencyGraph) => {
+  const dependency = graph[uri];
+
+  if (dependency.content.contentKind !== DependencyContentKind.Node) {
+    return;
+  }
+
+  const definitions: DefinitionInfo[] = [];
+
+  const { instances } = getNodeASTInfo(dependency.content);
+
+  for (const instance of instances) {
+    const [instanceUri, component] = getInstanceComponentInfo(
+      instance,
+      uri,
+      graph
+    );
+
+    if (component) {
+      definitions.push({
+        sourceUri: instanceUri,
+        sourceLocation: component.location,
+        sourceDefinitionLocation: component.location,
+        instanceLocation: instance.location
+      });
+    }
+  }
+
+  return definitions;
+};
+
+const getInstanceComponentInfo = (
+  instance: Element,
+  uri: string,
+  graph: DependencyGraph
+): [string, Element] => {
+  const entry = graph[uri];
+
+  const components = getComponentMap(entry.content as DependencyNodeContent);
+
+  if (components[instance.tagName]) {
+    const component = components[instance.tagName];
+
+    return [uri, component];
+  } else {
+    const parts = instance.tagName.split(".");
+    const depUri = entry.dependencies[parts.shift()];
+    const dep = graph[depUri];
+    const component = getComponentMap(dep.content as DependencyNodeContent)[
+      parts.shift() || "default"
+    ];
+    return [depUri, component];
+  }
+};
+
 const getAllDocumentVariables = (uri: string, graph: DependencyGraph) => {
   const entry = graph[uri];
   const allVariables: Record<string, KeyValueDeclaration> = {
     ...getDocumentVariables(entry.content)
   };
-  for (const relPath in entry.dependencies) {
-    const dep = graph[entry.dependencies[relPath]];
+
+  for (const relPath in entry.dependencyUriMaps) {
+    const dep = graph[entry.dependencyUriMaps[relPath]];
     Object.assign(
       allVariables,
       getDocumentVariables(dep.content),
@@ -190,17 +246,21 @@ const getDocumentComponents = (root: Node) =>
     isComponent
   );
 
-const getComponentMap = (root: Node): Record<string, Element> =>
-  getDocumentComponents(root).reduce((map, element) => {
-    map[element.tagName] = element;
-    return map;
-  }, {});
+const getComponentMap = memoize(
+  (root: Node): Record<string, Element> =>
+    getDocumentComponents(root).reduce((map, element) => {
+      map[getAttributeStringValue("as", element)] = element;
+      return map;
+    }, {})
+);
 
-const getImportMap = (root: Node): Record<string, Element> =>
-  getPCDocumentImports(root).reduce((map, element) => {
-    map[getAttributeStringValue("as", element)] = element;
-    return map;
-  }, {});
+const getImportMap = memoize(
+  (root: Node): Record<string, Element> =>
+    getPCDocumentImports(root).reduce((map, element) => {
+      map[getAttributeStringValue("as", element)] = element;
+      return map;
+    }, {})
+);
 
 const getNodeASTInfo = memoize((root: Node) => {
   const allDecls: KeyValueDeclaration[] = [];
@@ -228,7 +288,7 @@ const getNodeASTInfo = memoize((root: Node) => {
         instances.push(node);
       } else {
         const nameParts = node.tagName.split(".");
-        if (nameParts.length === 2 && imports[nameParts[0]]) {
+        if (imports[nameParts[0]]) {
           instances.push(node);
         }
       }
