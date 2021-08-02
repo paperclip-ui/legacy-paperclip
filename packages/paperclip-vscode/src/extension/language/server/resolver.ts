@@ -9,10 +9,13 @@ import {
   TextEdit,
   Range,
   Color,
+  DefinitionLink,
   ColorPresentation,
   DocumentLinkRequest,
-  ColorPresentationParams
+  ColorPresentationParams,
+  DefinitionParams
 } from "vscode-languageserver";
+import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { PaperclipLanguageService } from "paperclip-language-service";
 import { PCEngineInitialized } from "paperclip-designer/lib/server/services/pc-engine";
@@ -20,6 +23,7 @@ import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./connection";
 import * as parseColor from "color";
 import { Observable } from "paperclip-common";
+import { stripFileProtocol } from "paperclip-utils";
 
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;
@@ -111,8 +115,57 @@ export class LanguageRequestResolver {
     return [];
   };
 
-  private _onDefinitionRequest = () => {
-    return [];
+  private _onDefinitionRequest = (params: DefinitionParams) => {
+    const uri = fixFileUrlCasing(params.textDocument.uri);
+    const document = this._documents.getDocument(uri);
+    console.log(this._service.getDefinitions(uri));
+
+    const info = this._service
+      .getDefinitions(uri)
+      .filter(info => {
+        const offset = document.offsetAt(params.position);
+        return (
+          offset >= info.instanceLocation.start &&
+          offset <= info.instanceLocation.end
+        );
+      })
+      .map(
+        ({
+          sourceUri,
+          instanceLocation: { start: instanceStart, end: instanceEnd },
+          sourceLocation: { start: sourceStart, end: sourceEnd },
+          sourceDefinitionLocation: {
+            start: definitionStart,
+            end: definitionEnd
+          }
+        }) => {
+          const sourceDocument =
+            this._documents.getDocument(sourceUri) ||
+            TextDocument.create(
+              sourceUri,
+              "paperclip",
+              null,
+              fs.readFileSync(stripFileProtocol(sourceUri), "utf8")
+            );
+
+          return {
+            targetUri: sourceDocument.uri,
+            targetRange: {
+              start: sourceDocument.positionAt(definitionStart),
+              end: sourceDocument.positionAt(definitionEnd)
+            },
+            targetSelectionRange: {
+              start: sourceDocument.positionAt(sourceStart),
+              end: sourceDocument.positionAt(sourceEnd)
+            },
+            originSelectionRange: {
+              start: document.positionAt(instanceStart),
+              end: document.positionAt(instanceEnd)
+            }
+          };
+        }
+      ) as DefinitionLink[];
+    return info;
   };
   private _onDocumentLinkRequest = () => {
     return [];

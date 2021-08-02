@@ -24,13 +24,17 @@ export class PaperclipLanguageService {
    * Returns all definitions (meta + click functionality)
    */
 
-  getDefinitions(uri: string) {}
+  getDefinitions(uri: string) {
+    return this._collectASTInfo(uri).definitions;
+  }
 
   /**
    * returns all document links in the file
    */
 
-  getLinks(uri: string) {}
+  getLinks(uri: string) {
+    return this._collectASTInfo(uri).links;
+  }
 
   /**
    */
