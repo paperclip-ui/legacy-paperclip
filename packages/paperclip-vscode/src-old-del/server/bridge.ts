@@ -77,75 +77,7 @@ export class VSCServiceBridge {
     connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
   }
 
-  private _onDocumentLinkRequest = (params: DocumentLinkParams) => {
-    const uri = fixFileUrlCasing(params.textDocument.uri);
-    const document = this._documents[uri];
-    const service = this._service.getService(uri);
-    return (
-      service &&
-      (service.getLinks(uri).map(({ uri, location: { start, end } }) => ({
-        target: uri,
-        range: {
-          start: document.positionAt(start),
-          end: document.positionAt(end)
-        }
-      })) as DocumentLink[])
-    );
-  };
-
-  private _onDefinitionRequest = (params: DefinitionParams) => {
-    const uri = fixFileUrlCasing(params.textDocument.uri);
-    const document = this._documents[uri];
-    const service = this._service.getService(uri);
-    const info =
-      service &&
-      (service
-        .getDefinitions(document.uri)
-        .filter(info => {
-          const offset = document.offsetAt(params.position);
-          return (
-            offset >= info.instanceLocation.start &&
-            offset <= info.instanceLocation.end
-          );
-        })
-        .map(
-          ({
-            sourceUri,
-            instanceLocation: { start: instanceStart, end: instanceEnd },
-            sourceLocation: { start: sourceStart, end: sourceEnd },
-            sourceDefinitionLocation: {
-              start: definitionStart,
-              end: definitionEnd
-            }
-          }) => {
-            const sourceDocument =
-              this._documents[sourceUri] ||
-              TextDocument.create(
-                sourceUri,
-                "paperclip",
-                null,
-                fs.readFileSync(stripFileProtocol(sourceUri), "utf8")
-              );
-
-            return {
-              targetUri: sourceDocument.uri,
-              targetRange: {
-                start: sourceDocument.positionAt(definitionStart),
-                end: sourceDocument.positionAt(definitionEnd)
-              },
-              targetSelectionRange: {
-                start: sourceDocument.positionAt(sourceStart),
-                end: sourceDocument.positionAt(sourceEnd)
-              },
-              originSelectionRange: {
-                start: document.positionAt(instanceStart),
-                end: document.positionAt(instanceEnd)
-              }
-            };
-          }
-        ) as DefinitionLink[]);
-    return info;
-  };
+  private _onDocumentLinkRequest = (params: DocumentLinkParams) => {};
 
   private _onCompletionRequest = (params: CompletionParams) => {
     const uri = fixFileUrlCasing(params.textDocument.uri);

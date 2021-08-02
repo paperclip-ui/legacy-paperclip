@@ -43,7 +43,7 @@ export class DocumentManager {
     this.events.dispatch(new TextDocumentChanged(uri, text));
   }
   removeDocument(uri: string) {
-    delete this._documents;
+    delete this._documents[uri];
   }
 }
 

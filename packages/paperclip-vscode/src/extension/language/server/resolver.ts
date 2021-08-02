@@ -2,6 +2,7 @@ import {
   ColorPresentationRequest,
   CompletionRequest,
   CompletionResolveRequest,
+  DocumentLink,
   Connection,
   DefinitionRequest,
   DocumentColorParams,
@@ -13,7 +14,8 @@ import {
   ColorPresentation,
   DocumentLinkRequest,
   ColorPresentationParams,
-  DefinitionParams
+  DefinitionParams,
+  DocumentLinkParams
 } from "vscode-languageserver";
 import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -34,6 +36,7 @@ export class LanguageRequestResolver {
     private _connection: Connection,
     private _documents: DocumentManager
   ) {
+    console.log("LNK;");
     this.events = new Observable();
   }
 
@@ -118,7 +121,6 @@ export class LanguageRequestResolver {
   private _onDefinitionRequest = (params: DefinitionParams) => {
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
-    console.log(this._service.getDefinitions(uri));
 
     const info = this._service
       .getDefinitions(uri)
@@ -167,8 +169,18 @@ export class LanguageRequestResolver {
       ) as DefinitionLink[];
     return info;
   };
-  private _onDocumentLinkRequest = () => {
-    return [];
+  private _onDocumentLinkRequest = (params: DocumentLinkParams) => {
+    const uri = fixFileUrlCasing(params.textDocument.uri);
+    const document = this._documents.getDocument(uri);
+    return this._service
+      .getLinks(uri)
+      .map(({ uri, location: { start, end } }) => ({
+        target: uri,
+        range: {
+          start: document.positionAt(start),
+          end: document.positionAt(end)
+        }
+      })) as DocumentLink[];
   };
 }
 
