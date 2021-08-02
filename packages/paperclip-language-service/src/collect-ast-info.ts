@@ -24,7 +24,11 @@ import {
   getChildren,
   isImport,
   getAttribute,
-  Dependency
+  Dependency,
+  DependencyNodeContent,
+  getAttributeValue,
+  getAttributeStringValue,
+  AttributeValueKind
 } from "paperclip-utils";
 import { CSS_COLOR_NAME_REGEXP } from "./css-color-names";
 import * as parseColor from "color";
@@ -42,8 +46,16 @@ type ColorInfo = {
   location: SourceLocation;
 };
 
-type DocumentInfo = {
-  colors: ColorInfo[];
+type DocumentLinkInfo = {
+  uri: string;
+  location: SourceLocation;
+};
+
+export type DefinitionInfo = {
+  sourceUri: string;
+  instanceLocation: SourceLocation;
+  sourceLocation: SourceLocation;
+  sourceDefinitionLocation: SourceLocation;
 };
 
 export const collectASTInfo = (
@@ -52,7 +64,8 @@ export const collectASTInfo = (
   evaluated: Record<string, LoadedData>
 ) => {
   const map = {
-    colors: getDocumentColors(entryUri, graph, evaluated)
+    colors: getDocumentColors(entryUri, graph, evaluated),
+    links: getDocumentLinks(entryUri, graph)
   };
 
   return map;
@@ -72,6 +85,36 @@ const getDocumentColors = (
     addDeclarationColors(declaration, colors, allVariables);
   }
   return colors;
+};
+
+const getDocumentLinks = (
+  uri: string,
+  asts: DependencyGraph
+): DocumentLinkInfo[] => {
+  const documentAST = asts[uri];
+
+  if (documentAST.content.contentKind !== DependencyContentKind.Node) {
+    return [];
+  }
+
+  const links: DocumentLinkInfo[] = [];
+  console.log(asts[uri]);
+
+  const imports = getImportMap(documentAST.content);
+
+  for (const importId in imports) {
+    const imp = imports[importId];
+    const src = getAttributeValue("src", imp);
+    if (src?.attrValueKind !== AttributeValueKind.String) {
+      continue;
+    }
+    links.push({
+      uri: asts[uri].dependencies[src.value],
+      location: src.location
+    });
+  }
+
+  return links;
 };
 
 const getAllDocumentVariables = (uri: string, graph: DependencyGraph) => {
@@ -142,13 +185,34 @@ const getPCDocumentImports = (content: Node) => {
   return getChildren(content).filter(isImport) as Element[];
 };
 
-const getNodeASTInfo = memoize((node: Node) => {
+const getDocumentComponents = (root: Node) =>
+  (root.nodeKind === NodeKind.Fragment ? root.children : [root]).filter(
+    isComponent
+  );
+
+const getComponentMap = (root: Node): Record<string, Element> =>
+  getDocumentComponents(root).reduce((map, element) => {
+    map[element.tagName] = element;
+    return map;
+  }, {});
+
+const getImportMap = (root: Node): Record<string, Element> =>
+  getPCDocumentImports(root).reduce((map, element) => {
+    map[getAttributeStringValue("as", element)] = element;
+    return map;
+  }, {});
+
+const getNodeASTInfo = memoize((root: Node) => {
   const allDecls: KeyValueDeclaration[] = [];
   const allComponents: Element[] = [];
   const allKeyframes: KeyframesRule[] = [];
   const allMixins: MixinRule[] = [];
+  const instances: Element[] = [];
 
-  traverseExpression(node, (node: Node) => {
+  const components = getComponentMap(root);
+  const imports = getImportMap(root);
+
+  traverseExpression(root, (node: Node) => {
     if (node.nodeKind === NodeKind.StyleElement) {
       const { declarations, mixins, keyframes } = getSheetASTInfo(node.sheet);
       allDecls.push(...declarations);
@@ -158,13 +222,25 @@ const getNodeASTInfo = memoize((node: Node) => {
     if (isComponent(node)) {
       allComponents.push(node);
     }
+
+    if (node.nodeKind === NodeKind.Element) {
+      if (components[node.tagName]) {
+        instances.push(node);
+      } else {
+        const nameParts = node.tagName.split(".");
+        if (nameParts.length === 2 && imports[nameParts[0]]) {
+          instances.push(node);
+        }
+      }
+    }
   });
 
   return {
     declarations: allDecls,
     components: allComponents,
     keyframes: allKeyframes,
-    mixins: allMixins
+    mixins: allMixins,
+    instances
   };
 });
 

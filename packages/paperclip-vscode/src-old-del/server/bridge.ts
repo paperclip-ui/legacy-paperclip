@@ -67,10 +67,6 @@ export class VSCServiceBridge {
     private _enhanceCalm: () => void
   ) {
     _engine.onEvent(this._onEngineDelegateEvent);
-    connection.onRequest(
-      ColorPresentationRequest.type,
-      this._onColorPresentationRequest
-    );
     connection.onRequest(CompletionRequest.type, this._onCompletionRequest);
     connection.onRequest(
       CompletionResolveRequest.type,
@@ -167,22 +163,6 @@ export class VSCServiceBridge {
     return this._service.getService(item.data.uri).resolveCompletionItem(item);
   };
 
-  private _onColorPresentationRequest = (params: ColorPresentationParams) => {
-    const presentation = getColorPresentation(params.color, params.range);
-    const uri = fixFileUrlCasing(params.textDocument.uri);
-
-    const document = this._documents[uri];
-
-    const { textEdit } = presentation;
-    const source = TextDocument.applyEdits(document, [textEdit]);
-
-    // update virtual file content to show preview
-    // this._previewEngineContent(params.textDocument.uri, { text: source });
-    this._deferUpdateEngineContent(uri, source);
-
-    return [presentation];
-  };
-
   private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
     switch (event.kind) {
       case EngineDelegateEventKind.Error: {
@@ -197,8 +177,6 @@ export class VSCServiceBridge {
         break;
       }
     }
-
-    this._maybePersistContentChanges();
   };
 
   private _onEngineEvaluatedEvent(

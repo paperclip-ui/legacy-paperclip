@@ -303,20 +303,6 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
     this._handleParts(context);
   }
 
-  private _handleImports(context: HandleContext) {
-    const { root: node, uri } = context;
-    const imports = getImports(node);
-    for (const imp of imports) {
-      const srcAttr = getAttributeValue("src", imp);
-      if (srcAttr.attrValueKind === AttributeValueKind.String) {
-        context.info.links.push({
-          uri: resolveImportUri(fs)(uri, srcAttr.value),
-          location: srcAttr.location
-        });
-      }
-    }
-  }
-
   private _handleMainTemplate(context: HandleContext) {
     for (const child of getChildren(context.root)) {
       this._handleNode(child, context);
@@ -387,24 +373,6 @@ export class PCHTMLLanguageService extends BaseEngineLanguageService<Node> {
             impUri,
             context
           );
-        }
-      }
-    }
-  }
-
-  private _handleAttributes(element: Element, context: HandleContext) {
-    for (const attr of element.attributes) {
-      if (attr.attrKind === AttributeKind.KeyValueAttribute && attr.value) {
-        if (attr.value.attrValueKind === AttributeValueKind.Slot) {
-          this._handleJsExpression(attr.value.script, context);
-        } else if (
-          attr.value.attrValueKind === AttributeValueKind.String &&
-          attr.name === "src"
-        ) {
-          context.info.links.push({
-            uri: resolveUri(context.uri, attr.value.value),
-            location: attr.value.location
-          });
         }
       }
     }
