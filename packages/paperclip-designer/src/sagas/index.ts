@@ -217,7 +217,11 @@ function* handleClientComunication(client, getState, projectDirectory: string) {
   }
 
   yield takeEvery(
-    [ActionType.CANVAS_MOUSE_UP, ActionType.FRAME_TITLE_CLICKED],
+    [
+      ActionType.CANVAS_MOUSE_UP,
+      ActionType.FRAME_TITLE_CLICKED,
+      ActionType.ENGINE_DELEGATE_CHANGED
+    ],
     function*() {
       const state: AppState = yield select(getState);
 

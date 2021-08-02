@@ -24,8 +24,8 @@ describe(__filename + "#", () => {
             end: 38
           },
           instanceLocation: {
-            start: 49,
-            end: 57
+            start: 50,
+            end: 54
           }
         }
       ]
@@ -51,8 +51,8 @@ describe(__filename + "#", () => {
             end: 38
           },
           instanceLocation: {
-            start: 49,
-            end: 78
+            start: 50,
+            end: 54
           }
         },
         {
@@ -66,8 +66,8 @@ describe(__filename + "#", () => {
             end: 78
           },
           instanceLocation: {
-            start: 89,
-            end: 98
+            start: 90,
+            end: 95
           }
         }
       ]
@@ -95,8 +95,8 @@ describe(__filename + "#", () => {
             end: 45
           },
           instanceLocation: {
-            start: 59,
-            end: 72
+            start: 60,
+            end: 69
           }
         }
       ]
@@ -124,8 +124,8 @@ describe(__filename + "#", () => {
             end: 48
           },
           instanceLocation: {
-            start: 59,
-            end: 67
+            start: 60,
+            end: 64
           }
         }
       ]
@@ -139,6 +139,7 @@ describe(__filename + "#", () => {
         engine.getLoadedGraph(),
         engine.getAllLoadedData()
       );
+
       // console.log(JSON.stringify(info.definitions, null, 2));
 
       expect(info.definitions).to.eql(expectedLinks);

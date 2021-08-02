@@ -430,7 +430,7 @@ export const getPCNodeAnnotations = (node: Node, root: Node) => {
   const parent = getParentNode(node, root);
   const prevChild = parent.children[parent.children.indexOf(node) - 1];
 
-  if (prevChild.nodeKind === NodeKind.Comment) {
+  if (prevChild?.nodeKind === NodeKind.Comment) {
     return prevChild;
   }
 
