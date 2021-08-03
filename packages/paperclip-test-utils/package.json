@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "yarn tsc"
+    "build": "yarn tsc",
+    "build:watch": "yarn tsc --watch"
   },
   "author": "",
   "license": "ISC",

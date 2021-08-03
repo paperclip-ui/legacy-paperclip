@@ -247,7 +247,6 @@ describe(__filename + "#", () => {
         engine.getLoadedGraph(),
         engine.getAllLoadedData()
       );
-      console.log(JSON.stringify(info.colors));
 
       expect(info.colors).to.eql(expectedColors);
     });
