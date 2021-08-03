@@ -9,15 +9,15 @@ Considerations:
 
 */
 
-import { EngineDelegate } from "paperclip";
+import { EngineDelegate, getEngineImports } from "paperclip";
 import { AutocompleteService } from "./autocomplete";
 import { collectASTInfo } from "./collect-ast-info";
 
 export class PaperclipLanguageService {
   private _autocomplete: AutocompleteService;
 
-  constructor(private _engine: EngineDelegate) {
-    this._autocomplete = new AutocompleteService(this._engine);
+  constructor(private _engine: EngineDelegate, fs?: any) {
+    this._autocomplete = new AutocompleteService(fs);
   }
 
   /**
@@ -47,7 +47,14 @@ export class PaperclipLanguageService {
    * Returns list of options fro autocomplete
    */
 
-  getAutoCompletionSuggestions(uri: string, position: number) {}
+  getAutoCompletionSuggestions(uri: string, position: number = Infinity) {
+    return this._autocomplete.getSuggestions(
+      uri,
+      this._engine.getVirtualContent(uri).substr(0, position),
+      this._engine.getLoadedData(uri),
+      getEngineImports(uri, this._engine)
+    );
+  }
 
   private _collectASTInfo(uri: string) {
     return collectASTInfo(

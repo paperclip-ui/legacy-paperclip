@@ -1,19 +1,18 @@
 import {
   stringArrayToAutoCompleteItems,
   RETRIGGER_COMMAND,
-  tagCompletionItem
-} from "./utils";
-import {
-  CompletionItemKind,
+  tagCompletionItem,
+  InsertTextFormat,
   CompletionItem,
-  InsertTextFormat
-} from "vscode-languageserver";
+  CompletionItemKind
+} from "./utils";
+
 import {
   CSS_DECLARATION_NAMES,
   CSS_DECLARATION_VALUE_MAP,
   CSS_AT_RULE_NAMES
-} from "./css-constants";
-import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./";
+} from "./css-decl-value-constants";
+import { ELEMENT_ATTRIBUTES, ALL_TAG_NAMES } from "./tag-name-constants";
 import { merge } from "lodash";
 
 const ATTRIBUTE_NAME_COMPLETION_ITEMS = {};
