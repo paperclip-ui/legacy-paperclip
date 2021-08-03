@@ -59,7 +59,6 @@ class PaperclipExtension implements Disposable {
   }
   dispose() {
     this._languageClient.dispose();
-    this._windows.dispose();
   }
 }
 
