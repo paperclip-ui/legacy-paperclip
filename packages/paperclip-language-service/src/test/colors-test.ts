@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { collectASTInfo } from "../collect-ast-info";
 import { createMockEngineDelegate } from "paperclip-test-utils";
+import { createEngineDelegate } from "paperclip";
 
 describe(__filename + "#", () => {
   [
@@ -239,7 +240,7 @@ describe(__filename + "#", () => {
     ]
   ].forEach(([name, graph, expectedColors]: any) => {
     it(name, () => {
-      const engine = createMockEngineDelegate(graph);
+      const engine = createMockEngineDelegate(createEngineDelegate)(graph);
       engine.open("/entry.pc");
       const info = collectASTInfo(
         "/entry.pc",

@@ -1,7 +1,4 @@
-import { createEngineDelegate } from "paperclip";
 import * as path from "path";
-import { EngineMode } from "paperclip";
-import { identity } from "lodash";
 import * as CSSOM from "cssom";
 
 export const mockDOMFactory = {
@@ -174,11 +171,11 @@ export type Graph = {
   [identifier: string]: string;
 };
 
-export const createMockEngineDelegate = (
+export const createMockEngineDelegate = engineFactory => (
   graph: Graph,
-  mode: EngineMode = EngineMode.SingleFrame
+  mode = "SingleFrame"
 ) =>
-  createEngineDelegate({
+  engineFactory({
     io: {
       readFile: uri =>
         graph[uri.replace("file://", "")] || graph[uri.replace(/\\+/g, "/")],

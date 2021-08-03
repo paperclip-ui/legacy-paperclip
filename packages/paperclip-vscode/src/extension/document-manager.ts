@@ -16,7 +16,6 @@ import { RevealSourceRequested } from "./language/server/events";
 import { PCSourceEdited } from "paperclip-designer/lib/server/services/rpc";
 import { stripFileProtocol } from "paperclip-utils";
 import * as URL from "url";
-import { ActionType, ErrorBannerClicked } from "paperclip-designer";
 
 enum OpenLivePreviewOptions {
   Yes = "Yes",
@@ -122,13 +121,8 @@ export class DocumentManager implements Observer {
     }
   };
 
-  private _onErrorBannerClicked = ({
-    payload: error
-  }: ErrorBannerClicked) => {};
-
   handleEvent = eventHandlers({
     [RevealSourceRequested.TYPE]: this._onRevealSourceRequested,
-    [PCSourceEdited.TYPE]: this._onPCSourceEdited,
-    [ActionType.ERROR_BANNER_CLICKED]: this._onErrorBannerClicked
+    [PCSourceEdited.TYPE]: this._onPCSourceEdited
   });
 }

@@ -3,6 +3,7 @@ import { createMockEngineDelegate } from "paperclip-test-utils";
 import { PaperclipLanguageService } from "../language-service";
 import { TAG_NAME_COMPLETION_ITEMS } from "../completion-items";
 import { addCompletionItemData } from "../utils";
+import { createEngineDelegate } from "paperclip";
 
 describe(__filename + "#", () => {
   [
@@ -30,7 +31,7 @@ describe(__filename + "#", () => {
     ]
   ].forEach(([name, graph, expectedLinks]: any) => {
     xit(name, () => {
-      const engine = createMockEngineDelegate(graph);
+      const engine = createMockEngineDelegate(createEngineDelegate)(graph);
       try {
         engine.open("/entry.pc");
       } catch (e) {}

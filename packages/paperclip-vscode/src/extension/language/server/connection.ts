@@ -67,7 +67,6 @@ export class PaperclipLanguageServerConnection implements Observer {
     );
     this._connection.onInitialize(this._onConnectionInitialize);
     this._connection.onInitialized(this._onConnectionInitialized);
-    this._connection.onDidChangeConfiguration(this._onDidChangeConfiguration);
     this._connection.onDidOpenTextDocument(this._onDidOpenTextDocument);
     this._connection.onDidCloseTextDocument(this._onDidCloseTextDocument);
     this._connection.onDidChangeTextDocument(this._onDidChangeTextDocument);
@@ -148,8 +147,6 @@ export class PaperclipLanguageServerConnection implements Observer {
       }
     };
   };
-
-  private _onDidChangeConfiguration = ({ settings: { credentials } }) => {};
 
   private _onConnectionInitialized = async cd => {
     this.events.dispatch(new Initialized(this._workspaceFolders));

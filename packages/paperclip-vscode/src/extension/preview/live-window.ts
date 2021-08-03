@@ -36,7 +36,7 @@ export type LiveWindowState = {
   panelVisible?: boolean;
 };
 
-export class LiveWindow implements Observer {
+export class LiveWindow {
   static TYPE = "paperclip-preview";
   private _store: ImmutableStore<LiveWindowState>;
   private _em: EventEmitter;
@@ -64,11 +64,12 @@ export class LiveWindow implements Observer {
   getState() {
     return this._store.getState();
   }
-  handleEvent(event) {}
 
   dispose() {
     try {
       this._panel.dispose();
+
+      // eslint-disable-next-line
     } catch (e) {}
     this._em.emit("dispose");
   }

@@ -9,7 +9,7 @@ import {
 import { LiveWindow, LiveWindowState } from "./live-window";
 import { HTTPServerStarted } from "paperclip-designer/lib/server/services/http-server";
 
-export class LiveWindowManager implements Observer, Disposable {
+export class LiveWindowManager implements Observer {
   readonly events: Observable;
   private _windows: LiveWindow[];
   private _devServerPort: number;
@@ -23,8 +23,6 @@ export class LiveWindowManager implements Observer, Disposable {
       window.setDevServerPort(port);
     }
   };
-
-  dispose() {}
   getLength() {
     return this._windows.length;
   }
