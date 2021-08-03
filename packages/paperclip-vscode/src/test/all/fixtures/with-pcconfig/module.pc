@@ -1,8 +1,0 @@
-
-
-<!--
-  @frame { visible: false }
--->
-<div export component as="Message">
-  {children}
-</div>

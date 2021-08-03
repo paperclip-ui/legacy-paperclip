@@ -122,6 +122,10 @@ impl NativeEngine {
     let result = self.target.get_loaded_ast(&uri);
     JsValue::from_serde(&result).unwrap()
   }
+  pub fn get_dependency(&mut self, uri: String) -> JsValue {
+    let result = self.target.get_dependency(&uri);
+    JsValue::from_serde(&result).unwrap()
+  }
   pub fn parse_content(&mut self, content: String, uri: String) -> JsValue {
     let result = block_on(self.target.parse_content(&content, &uri));
     JsValue::from_serde(&result).unwrap()

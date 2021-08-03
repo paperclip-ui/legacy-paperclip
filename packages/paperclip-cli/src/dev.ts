@@ -8,7 +8,7 @@ export type ServerOptions = {
 };
 
 export const devStart = async ({ port, cwd, open = true }: ServerOptions) => {
-  const { port: actualPort } = await startServer({
+  await startServer({
     port,
     cwd: process.cwd(),
     localResourceRoots: [cwd],

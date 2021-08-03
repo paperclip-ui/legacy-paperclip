@@ -1,4 +1,4 @@
-import { BaseAction, actionCreator } from "./base";
+import { BaseAction, actionCreator, publicActionCreator } from "./base";
 import { PCMutation } from "paperclip-source-writer";
 import {
   VirtualNode,
@@ -22,10 +22,6 @@ export enum ActionType {
   ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
 
-  /**
-   * @deprecated
-   */
-  ENV_OPTION_CLICKED = "ENV_OPTION_CLICKED",
   BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
   PC_FILE_OPENED = "PC_FILE_OPENED",
@@ -78,6 +74,7 @@ export enum ActionType {
   RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING",
   META_CLICKED = "META_CLICKED",
   PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED",
+  SERVER_OPTIONS_LOADED = "SERVER_OPTIONS_LOADED",
 
   ACTION_HANDLED = "ACTION_HANDLED",
   FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
@@ -87,7 +84,9 @@ export enum ActionType {
   VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED = "VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED",
   STYLE_RULE_FILE_NAME_CLICKED = "STYLE_RULE_FILE_NAME_CLICKED",
   LAYER_LEAF_CLICKED = "LAYER_LEAF_CLICKED",
-  LAYER_EXPAND_TOGGLE_CLICKED = "LAYER_EXPAND_TOGGLE_CLICKED"
+  LAYER_EXPAND_TOGGLE_CLICKED = "LAYER_EXPAND_TOGGLE_CLICKED",
+  WINDOW_FOCUSED = "WINDOW_FOCUSED",
+  WINDOW_BLURRED = "WINDOW_BLURRED"
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -124,6 +123,11 @@ export type ResizerStoppedMoving = WrappedEvent<
   }
 >;
 
+export type ServerOptionsLoaded = BaseAction<
+  ActionType.SERVER_OPTIONS_LOADED,
+  { localResourceRoots: string[] }
+>;
+
 export type NodeBreadcrumbClicked = BaseAction<
   ActionType.NODE_BREADCRUMB_CLICKED,
   {
@@ -153,13 +157,6 @@ export type GridHotkeyPressed = WrappedEvent<
 export type GetAllScreensRequested = WrappedEvent<
   MouseEvent,
   ActionType.GET_ALL_SCREENS_REQUESTED
->;
-export type EnvOptionClicked = BaseAction<
-  ActionType.ENV_OPTION_CLICKED,
-  {
-    option: EnvOption;
-    path: string;
-  }
 >;
 export type VirtualNodesSelected = BaseAction<
   ActionType.VIRTUAL_NODES_SELECTED,
@@ -428,7 +425,7 @@ export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
 >(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
 export const fileOpened = actionCreator<FileOpened>(ActionType.FILE_OPENED);
-export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
+export const errorBannerClicked = publicActionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
 );
 export const pcFileLoaded = actionCreator<PCFileLoaded>(
@@ -443,11 +440,8 @@ export const collapseFrameButtonClicked = actionCreator<
 export const resizerPathMoved = actionCreator<ResizerPathMoved>(
   ActionType.RESIZER_PATH_MOUSE_MOVED
 );
-export const locationChanged = actionCreator<LocationChanged>(
+export const locationChanged = publicActionCreator<LocationChanged>(
   ActionType.LOCATION_CHANGED
-);
-export const envOptionClicked = actionCreator<EnvOptionClicked>(
-  ActionType.ENV_OPTION_CLICKED
 );
 
 export const virtualStyleDeclarationValueChanged = actionCreator<
@@ -567,6 +561,13 @@ export const globalSaveKeyPress = actionCreator<KeyComboPressed<ActionType>>(
   ActionType.GLOBAL_SAVE_KEY_DOWN
 );
 
+export const windowFocused = publicActionCreator<
+  BaseAction<ActionType.WINDOW_FOCUSED>
+>(ActionType.WINDOW_FOCUSED);
+export const windowBlurred = publicActionCreator<
+  BaseAction<ActionType.WINDOW_BLURRED>
+>(ActionType.WINDOW_BLURRED);
+
 export const globalMetaKeyUp = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
 >(ActionType.GLOBAL_META_KEY_UP);
@@ -595,6 +596,10 @@ export const virtualNodesSelected = actionCreator<VirtualNodesSelected>(
   ActionType.VIRTUAL_NODES_SELECTED
 );
 
+export const serverOptionsLoaded = actionCreator<ServerOptionsLoaded>(
+  ActionType.SERVER_OPTIONS_LOADED
+);
+
 export type InstanceAction =
   // | RendererInitialized
   | RectsCaptured
@@ -610,6 +615,7 @@ export type InstanceAction =
   | RendererMounted
   | RedirectRequested
   | RendererUnmounted
+  | ServerOptionsLoaded
   | BirdseyeFilterChanged
   | FrameTitleChanged
   | MetaClicked
@@ -646,7 +652,6 @@ export type InstanceAction =
   | CanvasDoubleClick
   | ZoomInputChanged
   | ClientConnected
-  | EnvOptionClicked
   | FrameTitleClicked
   | EngineDelegateEventsHandled
   | KeyComboPressed<ActionType.GLOBAL_OPTION_KEY_DOWN>
@@ -662,6 +667,8 @@ export type InstanceAction =
   | KeyComboPressed<ActionType.GLOBAL_Y_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_Z_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_H_KEY_DOWN>
+  | ReturnType<typeof windowFocused>
+  | ReturnType<typeof windowBlurred>
   | EngineErrored
   | ZoomOutButtonClicked
   | DirLoaded

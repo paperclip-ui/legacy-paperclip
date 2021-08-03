@@ -1,0 +1,6 @@
+<div>
+  <style>
+    display: block;
+  </style>
+  something else
+</div>

@@ -1,15 +1,24 @@
 {
   "name": "paperclip-language-service",
-  "version": "17.12.0",
+  "version": "17.14.3",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc --watch --incremental"
+    "build:watch": "tsc --watch --incremental",
+    "test": "mocha lib/**/*-test.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "color": "^4.0.0",
+    "paperclip": "^17.14.3",
+    "paperclip-test-utils": "^17.14.3",
+    "paperclip-utils": "^17.14.3",
     "typescript": "^4.2.3"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.0.3"
   }
 }

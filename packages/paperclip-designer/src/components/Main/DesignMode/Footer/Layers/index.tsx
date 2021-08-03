@@ -9,6 +9,7 @@ import {
   layerExpandToggleClicked,
   layerLeafClicked
 } from "../../../../../actions";
+import { Node } from "./Node";
 
 export const Layers = React.memo(() => {
   const state: AppState = useSelector(identity);
@@ -35,7 +36,7 @@ export const Layers = React.memo(() => {
 
   return (
     <styles.Container>
-      <Element
+      <Node
         selectedNodePath={selectedNodePath}
         path={String(nodePath[0])}
         onExpandToggleClick={onExpandToggleClick}

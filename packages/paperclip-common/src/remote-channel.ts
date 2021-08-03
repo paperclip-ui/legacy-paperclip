@@ -1,16 +1,42 @@
+import { Disposable } from "./disposable";
+
 export type Channel<TRequest, TResponse> = {
   call: (request: TRequest) => Promise<TResponse>;
-  listen: (handle: (request: TRequest) => Promise<TResponse>) => void;
+  listen: (handle: (request: TRequest) => Promise<TResponse>) => Disposable;
 };
 
 const spy = (obj, prop, handler) => {
   const oldProp = obj[prop];
-  obj[prop] = (...args) => {
-    oldProp && oldProp(...args);
-    handler(...args);
-  };
 
-  return () => (obj[prop] = oldProp);
+  let spyFn;
+
+  // spy exists? Use that
+  if (oldProp?.callbacks) {
+    spyFn = oldProp;
+  } else {
+    const callbacks = [];
+    spyFn = (...args) => {
+      for (const cb of callbacks) {
+        cb && cb(...args);
+      }
+    };
+    spyFn.callbacks = callbacks;
+  }
+
+  spyFn.callbacks.push(handler);
+
+  obj[prop] = spyFn;
+
+  return () => {
+    if (spyFn.callbacks.length === 1) {
+      obj[prop] = spyFn[spyFn.callbacks[0]];
+    } else {
+      const i = spyFn.callbacks.indexOf(handler);
+      if (i !== -1) {
+        spyFn.callbacks.splice(i, 1);
+      }
+    }
+  };
 };
 
 type Message = {
@@ -59,30 +85,34 @@ export const sockAdapter = (worker: any): Adapter => ({
 });
 
 export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
+  const requestName = `${name}:request`;
+  const responseName = `${name}:response`;
+
   return (chan: Adapter): Channel<TRequest, TResponse> => {
     const call = (payload: any): Promise<any> => {
       return new Promise(resolve => {
         const onMessage = message => {
-          if (message.name === name) {
+          if (message.name === responseName) {
             disposeListener();
             resolve(message.payload);
           }
         };
 
         const disposeListener = chan.onMessage(onMessage);
-        chan.send({ name, payload });
+        chan.send({ name: requestName, payload });
       });
     };
 
     const listen = (call: (payload: any) => Promise<any>) => {
-      chan.onMessage(async message => {
-        if (message.name === name) {
+      const dispose = chan.onMessage(async message => {
+        if (message.name === requestName) {
           chan.send({
-            name,
+            name: responseName,
             payload: await call(message.payload)
           });
         }
       });
+      return { dispose };
     };
 
     return { call, listen };

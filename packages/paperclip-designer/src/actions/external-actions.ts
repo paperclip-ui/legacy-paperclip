@@ -1,15 +1,10 @@
-import { actionCreator } from "./base";
+import { actionCreator, BaseAction } from "./base";
 
 export enum ExternalActionType {
   OPENED_DOCUMENT = "OPENED_DOCUMENT",
   CONTENT_CHANGED = "CONTENT_CHANGED",
   CONFIG_CHANGED = "CONFIG_CHANGED"
 }
-
-type BaseAction<TType extends ExternalActionType, TPayload = undefined> = {
-  type: TType;
-  payload: TPayload;
-};
 
 type ContentChange = {
   rangeOffset: number;

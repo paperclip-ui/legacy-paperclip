@@ -14,20 +14,21 @@ export class ImmutableStore<TState> {
   getState() {
     return this._state;
   }
-  bind(listener: (TState) => void) {
+  bind(listener: (state: TState) => void) {
     listener(this.getState());
     return this.onChange(listener);
   }
-  onChange(listener: (TState) => void) {
+  onChange(listener: (newState: TState, oldState: TState) => void) {
     this._em.on("change", listener);
     return () => this._em.off("change", listener);
   }
-  update(updater: (TState) => void) {
+  update(updater: (state: TState) => void) {
     const newState = produce(this._state, updater);
 
     if (this._state !== newState) {
+      const oldState = this._state;
       this._state = newState;
-      this._em.emit("change", this._state);
+      this._em.emit("change", newState, oldState);
     }
   }
 }
