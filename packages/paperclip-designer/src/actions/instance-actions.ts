@@ -425,7 +425,7 @@ export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
 >(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
 export const fileOpened = actionCreator<FileOpened>(ActionType.FILE_OPENED);
-export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
+export const errorBannerClicked = publicActionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
 );
 export const pcFileLoaded = actionCreator<PCFileLoaded>(
@@ -440,7 +440,7 @@ export const collapseFrameButtonClicked = actionCreator<
 export const resizerPathMoved = actionCreator<ResizerPathMoved>(
   ActionType.RESIZER_PATH_MOUSE_MOVED
 );
-export const locationChanged = actionCreator<LocationChanged>(
+export const locationChanged = publicActionCreator<LocationChanged>(
   ActionType.LOCATION_CHANGED
 );
 

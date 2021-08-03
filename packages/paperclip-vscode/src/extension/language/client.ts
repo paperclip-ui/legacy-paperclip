@@ -63,7 +63,6 @@ export class PaperclipLanguageClient implements Disposable, Observer {
 
   handleEvent = eventHandlers({
     [PCEngineCrashed.TYPE]: () => {
-      console.log("OKOKOKO");
       window.showWarningMessage(
         "Paperclip crashed - you'll need to reload this window."
       );

@@ -105,7 +105,7 @@ export class LiveWindow implements Observer {
     if (
       (newState.panelVisible &&
         newState.panelVisible !== oldState.panelVisible) ||
-      newState.location.query.canvasFile !== newState.location.query.canvasFile
+      newState.location.query.canvasFile !== oldState.location.query.canvasFile
     ) {
       this._render();
     }
