@@ -39,3 +39,15 @@ export class UpdatedTextDocuments {
   readonly type = TextDocumentChanged.TYPE;
   constructor() {}
 }
+
+export class DesignServerUpdating {
+  static TYPE = "PaperclipDesignServer/DesignServerUpdating";
+  readonly type = DesignServerUpdating.TYPE;
+  constructor() {}
+}
+
+export class DesignServerUpdated {
+  static TYPE = "PaperclipDesignServer/DesignServerUpdated";
+  readonly type = DesignServerUpdated.TYPE;
+  constructor() {}
+}

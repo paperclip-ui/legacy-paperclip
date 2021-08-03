@@ -15,7 +15,8 @@ import {
   DocumentLinkRequest,
   ColorPresentationParams,
   DefinitionParams,
-  DocumentLinkParams
+  DocumentLinkParams,
+  CompletionParams
 } from "vscode-languageserver";
 import * as fs from "fs";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -24,12 +25,17 @@ import { PCEngineInitialized } from "paperclip-designer/lib/server/services/pc-e
 import { fixFileUrlCasing } from "../../utils";
 import { DocumentManager } from "./connection";
 import * as parseColor from "color";
-import { Observable } from "paperclip-common";
+import { BaseEvent, Observable } from "paperclip-common";
 import { stripFileProtocol } from "paperclip-utils";
+import { DesignServerUpdated, DesignServerUpdating } from "./events";
+import { SourceLinted } from "paperclip-language-service";
+import * as url from "url";
 
 export class LanguageRequestResolver {
   private _service: PaperclipLanguageService;
   private _listening: boolean;
+  private _engineReady: Promise<any>;
+  private _resolveEngineReady: (value?: any) => void;
   readonly events: Observable;
 
   constructor(
@@ -45,6 +51,15 @@ export class LanguageRequestResolver {
         (event as PCEngineInitialized).engine
       );
       this._listen();
+    } else if (event.type === DesignServerUpdating.TYPE) {
+      this._engineReady =
+        this._engineReady ||
+        new Promise(resolve => {
+          this._resolveEngineReady = resolve;
+        });
+    } else if (event.type === DesignServerUpdated.TYPE) {
+      this._resolveEngineReady();
+      this._engineReady = undefined;
     }
   }
 
@@ -52,6 +67,10 @@ export class LanguageRequestResolver {
     if (this._listening) {
       return;
     }
+
+    this._service.events.observe({
+      handleEvent: this._onServiceEvent
+    });
 
     this._listening = true;
 
@@ -82,20 +101,41 @@ export class LanguageRequestResolver {
     );
   }
 
-  private _onColorPresentationRequest = (params: ColorPresentationParams) => {
+  private _onServiceEvent = (event: BaseEvent) => {
+    if (event.type === SourceLinted.TYPE) {
+      const { uri, content, diagnostics } = event as SourceLinted;
+      let textDocument = this._documents.getDocument(uri);
+      textDocument = TextDocument.create(uri, "paperclip", 0, content);
+      this._connection.sendDiagnostics({
+        uri: uri,
+        diagnostics: diagnostics.map(diagnostic => {
+          return {
+            ...diagnostic,
+            range: {
+              start: textDocument.positionAt(diagnostic.location.start),
+              end: textDocument.positionAt(diagnostic.location.end)
+            }
+          };
+        })
+      });
+    }
+  };
+
+  private _onColorPresentationRequest = async (
+    params: ColorPresentationParams
+  ) => {
+    await this._engineReady;
     const presentation = getColorPresentation(params.color, params.range);
     const uri = fixFileUrlCasing(params.textDocument.uri);
 
     const { textEdit } = presentation;
     this._documents.appleDocumentEdits(uri, [textEdit]);
 
-    // update virtual file content to show preview
-    // this._previewEngineContent(params.textDocument.uri, { text: source });
-
     return [presentation];
   };
 
-  private _onDocumentColorRequest = (params: DocumentColorParams) => {
+  private _onDocumentColorRequest = async (params: DocumentColorParams) => {
+    await this._engineReady;
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
     return this._service.getDocumentColors(uri).map(({ value, location }) => {
@@ -109,15 +149,26 @@ export class LanguageRequestResolver {
     });
   };
 
-  private _onCompletionResolveRequest = () => {
-    return null;
+  private _onCompletionResolveRequest = async item => {
+    await this._engineReady;
+    return item;
   };
 
-  private _onCompletionRequest = () => {
-    return [];
+  private _onCompletionRequest = async (params: CompletionParams) => {
+    await this._engineReady;
+
+    const uri = fixFileUrlCasing(params.textDocument.uri);
+    const document = this._documents.getDocument(uri);
+    const items = this._service.getAutoCompletionSuggestions(
+      uri,
+      document.offsetAt(params.position)
+    );
+
+    return items;
   };
 
-  private _onDefinitionRequest = (params: DefinitionParams) => {
+  private _onDefinitionRequest = async (params: DefinitionParams) => {
+    await this._engineReady;
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
 
@@ -168,7 +219,8 @@ export class LanguageRequestResolver {
       ) as DefinitionLink[];
     return info;
   };
-  private _onDocumentLinkRequest = (params: DocumentLinkParams) => {
+  private _onDocumentLinkRequest = async (params: DocumentLinkParams) => {
+    await this._engineReady;
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
     return this._service

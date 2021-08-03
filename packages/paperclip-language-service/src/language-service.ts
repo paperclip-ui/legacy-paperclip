@@ -10,14 +10,21 @@ Considerations:
 */
 
 import { EngineDelegate, getEngineImports } from "paperclip";
+import { Observable } from "paperclip-common";
 import { AutocompleteService } from "./autocomplete";
 import { collectASTInfo } from "./collect-ast-info";
+import { DiagnosticService } from "./error-service";
 
 export class PaperclipLanguageService {
   private _autocomplete: AutocompleteService;
+  private _diagnostics: DiagnosticService;
+  readonly events: Observable;
 
   constructor(private _engine: EngineDelegate, fs?: any) {
+    this.events = new Observable();
     this._autocomplete = new AutocompleteService(fs);
+    this._diagnostics = new DiagnosticService(_engine);
+    this.events.source(this._diagnostics.events);
   }
 
   /**

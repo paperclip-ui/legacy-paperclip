@@ -7,6 +7,9 @@ import { ServiceInitialized } from "../core/service-manager";
 export class PCEngineCrashed implements BaseEvent {
   static TYPE = "PCEngineEventType/CRASHED";
   readonly type = PCEngineCrashed.TYPE;
+  toJSON() {
+    return { type: this.type };
+  }
 }
 
 export class PCEngineInitialized implements BaseEvent {

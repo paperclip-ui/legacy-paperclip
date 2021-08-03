@@ -236,6 +236,32 @@ describe(__filename + "#", () => {
           }
         }
       ]
+    ],
+    [
+      `can parse rgb colors`,
+      {
+        "/entry.pc": `
+          <div>
+            <style>
+              color: rgb(255, 5, 5);
+            </style>
+          </div>
+        `
+      },
+      [
+        {
+          value: {
+            red: 255,
+            green: 0,
+            blue: 0,
+            alpha: 1
+          },
+          location: {
+            start: 96,
+            end: 108
+          }
+        }
+      ]
     ]
   ].forEach(([name, graph, expectedColors]: any) => {
     it(name, () => {
@@ -246,6 +272,7 @@ describe(__filename + "#", () => {
         engine.getLoadedGraph(),
         engine.getAllLoadedData()
       );
+      console.log(JSON.stringify(info.colors));
 
       expect(info.colors).to.eql(expectedColors);
     });

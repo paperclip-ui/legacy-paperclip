@@ -1,5 +1,11 @@
 import { eventHandlers, Observable, Observer } from "paperclip-common";
-import { Initialized, TextDocumentChanged, TextDocumentOpened } from "./events";
+import {
+  DesignServerUpdated,
+  DesignServerUpdating,
+  Initialized,
+  TextDocumentChanged,
+  TextDocumentOpened
+} from "./events";
 import { ActionType, startServer } from "paperclip-designer";
 import { PCEngineInitialized } from "paperclip-designer/lib/server/services/pc-engine";
 import * as URL from "url";
@@ -53,6 +59,8 @@ export class PaperclipDesignServer implements Observer {
       return;
     }
 
+    this.events.dispatch(new DesignServerUpdating());
+
     this._updatingDocuments = true;
     this._latestDocuments = {
       [uri]: content
@@ -66,6 +74,7 @@ export class PaperclipDesignServer implements Observer {
       for (const uri in changes) {
         this._engine.updateVirtualFileContent(uri, changes[uri]);
       }
+      this.events.dispatch(new DesignServerUpdated());
       this._updatingDocuments = false;
     }, UPDATE_THROTTLE);
   };

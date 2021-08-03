@@ -1,7 +1,6 @@
 <div>
   <style>
-    font-family: sans-serif;
-    font-size: 72px;
+    display: block;
   </style>
-  Something
+  something else
 </div>

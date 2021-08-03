@@ -1,5 +1,11 @@
-import { BaseEvent, Disposable, Observable, Observer } from "paperclip-common";
-import { workspace, ExtensionContext } from "vscode";
+import {
+  BaseEvent,
+  Disposable,
+  eventHandlers,
+  Observable,
+  Observer
+} from "paperclip-common";
+import { workspace, ExtensionContext, window } from "vscode";
 
 import {
   LanguageClient,
@@ -9,6 +15,7 @@ import {
 } from "vscode-languageclient";
 import * as path from "path";
 import { $$EVENT } from "./server/constants";
+import { PCEngineCrashed } from "paperclip-designer/lib/server/services/pc-engine";
 
 /**
  * Spins up language server
@@ -53,7 +60,16 @@ export class PaperclipLanguageClient implements Disposable, Observer {
       clientOptions
     );
   }
-  handleEvent(event) {}
+
+  handleEvent = eventHandlers({
+    [PCEngineCrashed.TYPE]: () => {
+      console.log("OKOKOKO");
+      window.showWarningMessage(
+        "Paperclip crashed - you'll need to reload this window."
+      );
+    }
+  });
+
   async activate() {
     this._client.start();
     await this.ready();

@@ -67,17 +67,11 @@ export class VSCServiceBridge {
     private _enhanceCalm: () => void
   ) {
     _engine.onEvent(this._onEngineDelegateEvent);
-    connection.onRequest(CompletionRequest.type, this._onCompletionRequest);
     connection.onRequest(
       CompletionResolveRequest.type,
       this._onCompletionResolveRequest
     );
-
-    connection.onRequest(DefinitionRequest.type, this._onDefinitionRequest);
-    connection.onRequest(DocumentLinkRequest.type, this._onDocumentLinkRequest);
   }
-
-  private _onDocumentLinkRequest = (params: DocumentLinkParams) => {};
 
   private _onCompletionRequest = (params: CompletionParams) => {
     const uri = fixFileUrlCasing(params.textDocument.uri);
@@ -94,48 +88,6 @@ export class VSCServiceBridge {
   private _onCompletionResolveRequest = item => {
     return this._service.getService(item.data.uri).resolveCompletionItem(item);
   };
-
-  private _onEngineDelegateEvent = (event: EngineDelegateEvent) => {
-    switch (event.kind) {
-      case EngineDelegateEventKind.Error: {
-        this._onEngineErrorEvent(event);
-        break;
-      }
-      case EngineDelegateEventKind.Loaded:
-      case EngineDelegateEventKind.Diffed:
-      case EngineDelegateEventKind.ChangedSheets:
-      case EngineDelegateEventKind.Evaluated: {
-        this._onEngineEvaluatedEvent(event);
-        break;
-      }
-    }
-  };
-
-  private _onEngineEvaluatedEvent(
-    event: DiffedEvent | EvaluatedEvent | LoadedEvent | ChangedSheetsEvent
-  ) {
-    setTimeout(() => {
-      this.connection.sendDiagnostics({
-        uri: event.uri,
-        diagnostics: this._lint(event.uri, true)
-      });
-    });
-  }
-
-  private _onEngineErrorEvent(event: EngineErrorEvent) {
-    try {
-      switch (event.errorKind) {
-        case EngineErrorKind.Graph: {
-          return this._handleGraphError(event);
-        }
-        case EngineErrorKind.Runtime: {
-          return this._handleRuntimeError(event);
-        }
-      }
-    } catch (e) {
-      console.error(e.stack);
-    }
-  }
 
   private _handleGraphError({ uri }: GraphErrorEvent) {
     this._sendLints(uri);

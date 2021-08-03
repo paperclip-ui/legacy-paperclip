@@ -80,7 +80,7 @@ export class AutocompleteService {
       throw e;
     }
 
-    if (!context) {
+    if (!context || !data) {
       return [];
     }
 
