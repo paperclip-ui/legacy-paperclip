@@ -48,6 +48,7 @@ export class LiveWindow {
   ) {
     this._store = new ImmutableStore({
       ...state,
+      embedded: true,
       panelVisible: this._panel.visible
     });
     this._store.update(newState => {
