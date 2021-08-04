@@ -107,6 +107,10 @@ export class EngineDelegate {
   }
 
   private _onEngineEvent = (event: EngineDelegateEvent) => {
+    if (!this._documents[event.uri]) {
+      this._documents[event.uri] = this._readFile(event.uri);
+    }
+
     if (event.kind === EngineDelegateEventKind.Deleted) {
       delete this._rendered[event.uri];
     } else if (event.kind === EngineDelegateEventKind.Evaluated) {

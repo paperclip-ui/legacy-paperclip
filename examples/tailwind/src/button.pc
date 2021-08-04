@@ -1,0 +1,9 @@
+<div export component as="default">
+  <style>
+    background: red;
+    display: inline-block;
+  </style>
+  {children}
+</div>
+
+<default>Click me!</default>

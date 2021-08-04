@@ -108,15 +108,11 @@ export class DiagnosticService {
   private _dispatchDiagnostics(uri: string) {
     // break out of recursion
     setImmediate(() => {
+      const content = this._engine.getVirtualContent(uri);
+
       // need to provide content here too since listener may not have direct access
       // to state related to the linted diagnostics.
-      this.events.dispatch(
-        new SourceLinted(
-          uri,
-          this._engine.getVirtualContent(uri),
-          this._lint(uri)
-        )
-      );
+      this.events.dispatch(new SourceLinted(uri, content, this._lint(uri)));
     });
   }
 
