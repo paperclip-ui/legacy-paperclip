@@ -27,7 +27,10 @@
     <div class="rounded-lg sm:border-2 px-4 lg:px-24 py-16 lg:max-w-xl sm:max-w-md w-full text-center">
       <form class="text-center">
         <h1 class="font-bold tracking-wider text-3xl mb-8 w-full text-gray-600">
-          Sign in
+          <style>
+            display: flex;
+          </style>
+          <div>Sign into this thing</div>
         </h1>
         <div class="py-2 text-left">
           <input type="email"

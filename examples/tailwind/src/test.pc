@@ -1,6 +1,124 @@
-<div>
+<import src="./button.pc" as="Button" />
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 985, y: 270 }
+-->
+<div export component as="Header" {onClick?} {onMouseUp}>
   <style>
-    display: block;
+    background: rgb(195, 0, 255);
+    padding: 32px;
   </style>
-  something else
+  <h1>{title}!!!!!!</h1>
+  <Button>Click me</Button>
 </div>
+
+
+<!--
+  @frame { title: "Desktop", width: 1024, height: 300, x: 72, y: -483 }
+  @comment "blahhhh"
+-->
+<div export component as="Page">
+  <style>
+    font-family: sans-serif;
+    color: white;
+  </style>
+  <Header title="This is a page" onClick={onHeaderClick} />
+</div>
+
+
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
+<!--
+  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
+-->
+<Page />
