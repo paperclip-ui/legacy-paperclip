@@ -58,26 +58,32 @@ export type DefinitionInfo = {
   sourceDefinitionLocation: SourceLocation;
 };
 
+const EMPTY = {
+  colors: [],
+  links: [],
+  definitions: []
+};
+
 export const collectASTInfo = (
   entryUri: string,
   graph: DependencyGraph,
   evaluated: Record<string, LoadedData>
 ) => {
   if (!graph[entryUri]) {
-    return {
-      colors: [],
-      links: [],
-      definitions: []
-    };
+    return EMPTY;
   }
 
-  const map = {
-    colors: getDocumentColors(entryUri, graph, evaluated),
-    links: getDocumentLinks(entryUri, graph),
-    definitions: getDocumentDefinitions(entryUri, graph)
-  };
-
-  return map;
+  try {
+    const map = {
+      colors: getDocumentColors(entryUri, graph, evaluated),
+      links: getDocumentLinks(entryUri, graph),
+      definitions: getDocumentDefinitions(entryUri, graph)
+    };
+    return map;
+  } catch (e) {
+    console.error(e);
+    return EMPTY;
+  }
 };
 
 const getDocumentColors = (
