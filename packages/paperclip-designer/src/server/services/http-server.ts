@@ -1,11 +1,14 @@
 import getPort from "get-port";
-import { BaseEvent, eventProcesses } from "paperclip-common";
+import {
+  BaseEvent,
+  eventProcesses,
+  ServiceInitialized,
+  ServerKernel
+} from "paperclip-common";
 import sockjs from "sockjs";
 import express from "express";
 import path from "path";
 import URL from "url";
-import { ServerKernel } from "../core/kernel";
-import { ServiceInitialized } from "../core/service-manager";
 
 type Options = {
   defaultPort: number;
