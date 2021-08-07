@@ -31,7 +31,7 @@
     "build:wasm:node": "cd native && wasm-pack build --release --target nodejs --out-dir node"
   },
   "author": "",
-  "license": "MIT",
+  "license": "GPLv3",
   "dependencies": {
     "@types/mocha": "^5.2.7",
     "chai": "^4.2.0",
