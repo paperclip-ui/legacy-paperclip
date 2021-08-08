@@ -1,5 +1,4 @@
-
-<style> 
+<style>
   @font-face {
     font-family: Open Sans;
     src: url(./OpenSans-Light.ttf);
@@ -31,9 +30,9 @@
 
 
 <!--
-  @frame { title: "Open Sans" }
+  @frame { visible: false, title: "Open Sans" }
 -->
-<div> 
+<div>
   <div>
     <style>
       font-family: Open Sans;

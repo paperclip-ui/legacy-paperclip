@@ -130,6 +130,35 @@ describe(__filename + "#", () => {
           }
         }
       ]
+    ],
+    [
+      `Returns definition about instance defined in slot`,
+      {
+        "/entry.pc": `
+          <div component as="Test" />
+          {<Test />}
+        `,
+        "/module.pc": `
+          <div export component as="default" />
+        `
+      },
+      [
+        {
+          sourceUri: "/entry.pc",
+          sourceLocation: {
+            start: 11,
+            end: 38
+          },
+          sourceDefinitionLocation: {
+            start: 11,
+            end: 38
+          },
+          instanceLocation: {
+            start: 51,
+            end: 55
+          }
+        }
+      ]
     ]
   ].forEach(([name, graph, expectedLinks]: any) => {
     it(name, () => {

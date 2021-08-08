@@ -56,6 +56,10 @@
   {children}
 </div>
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 22, y: 4 }
+-->
 <div component as="StyleRuleIcon" {title} {className?}>
   <style>
     opacity: 0.5;
@@ -373,82 +377,86 @@
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
 <Container export component as="Preview">
-  <Header input={<FilterInput />} />
-  <StyleSection title="Element styles">
-    <StyleRule fileName="styles.pc"
-      boldSelector
-      selector=".this-is-a-super-long-selector-to-see-how-it-wraps"
-      properties={<fragment>
-        <StyleRuleProperty name="background-color"
-          value={<StyleRulePropertyValue>
-            <Expression>
-              var(--page-background-color, var(--gray-gray-90))
-            </Expression>
-          </StyleRulePropertyValue>} />
-        <StyleRuleProperty boldName
-          disabled
-          name="font-family"
-          value={<StyleRulePropertyValue>
-            <KeywordPart value="sans-serif" />
-          </StyleRulePropertyValue>} />
-        <StyleRuleProperty name="box-shadow"
-          value={<StyleRulePropertyValue>
-            <UnitPart value="2px" />
-            <UnitPart value="0px" />
-            <UnitPart value="0px" />
-            <ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
-          </StyleRulePropertyValue>} />
-        <StyleRuleProperty name="box-shadow"
-          value={<StyleRulePropertyValue>
-            <Expression>2px 0px rgba(0, 0, 0, 0.2)</Expression>
-          </StyleRulePropertyValue>} />
-      </fragment>} />
+  {showComputed && <fragment>Computed</fragment>}
 
-    <StyleRule isGlobal
-      fileName="atoms.pc"
-      media="media screen and (max-width: 500px)"
-      selector="#test"
-      properties={<fragment>
-        <StyleRuleProperty boldValue
-          name="background-color"
-          value={<StyleRulePropertyValue>
-            <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
-          </StyleRulePropertyValue>} />
-        <StyleRuleProperty name="another-background"
-          value={<StyleRulePropertyValue>
-            <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
-          </StyleRulePropertyValue>} /><StyleRuleProperty name="box-shadow"
-          value={<StyleRulePropertyValue>
-            <Expression>
-              0px 2px 1px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(66, 71, 76,
-              0.45)
-            </Expression>
-          </StyleRulePropertyValue>} />
-      </fragment>} />
+  {!showComputed && <fragment>
+    <Header input={<FilterInput />} />
+    <StyleSection title="Element styles">
+      <StyleRule fileName="styles.pc"
+        boldSelector
+        selector=".this-is-a-super-long-selector-to-see-how-it-wraps"
+        properties={<fragment>
+          <StyleRuleProperty name="background-color"
+            value={<StyleRulePropertyValue>
+              <Expression>
+                var(--page-background-color, var(--gray-gray-90))
+              </Expression>
+            </StyleRulePropertyValue>} />
+          <StyleRuleProperty boldName
+            disabled
+            name="font-family"
+            value={<StyleRulePropertyValue>
+              <KeywordPart value="sans-serif" />
+            </StyleRulePropertyValue>} />
+          <StyleRuleProperty name="box-shadow"
+            value={<StyleRulePropertyValue>
+              <UnitPart value="2px" />
+              <UnitPart value="0px" />
+              <UnitPart value="0px" />
+              <ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
+            </StyleRulePropertyValue>} />
+          <StyleRuleProperty name="box-shadow"
+            value={<StyleRulePropertyValue>
+              <Expression>2px 0px rgba(0, 0, 0, 0.2)</Expression>
+            </StyleRulePropertyValue>} />
+        </fragment>} />
 
-    <StyleRule fileName="atoms.pc"
-      selector="element"
-      media="screen"
-      mediaActive
-      global
-      properties={<fragment>
-        <StyleRuleProperty name="color"
-          value={<StyleRulePropertyValue>
-            <Expression>inherit</Expression>
-          </StyleRulePropertyValue>} />
-      </fragment>} />
-  </StyleSection>
-  <StyleSection title="Inherited styles">
-    <StyleRule fileName="atoms.pc"
-      selector={<fragment>
-        <ScopedElementSelector name="element" />
-        <ScopedElementSelector name="element" />.test
-      </fragment>} />
-  </StyleSection>
+      <StyleRule isGlobal
+        fileName="atoms.pc"
+        media="media screen and (max-width: 500px)"
+        selector="#test"
+        properties={<fragment>
+          <StyleRuleProperty boldValue
+            name="background-color"
+            value={<StyleRulePropertyValue>
+              <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
+            </StyleRulePropertyValue>} />
+          <StyleRuleProperty name="another-background"
+            value={<StyleRulePropertyValue>
+              <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
+            </StyleRulePropertyValue>} /><StyleRuleProperty name="box-shadow"
+            value={<StyleRulePropertyValue>
+              <Expression>
+                0px 2px 1px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(66, 71, 76,
+                0.45)
+              </Expression>
+            </StyleRulePropertyValue>} />
+        </fragment>} />
+
+      <StyleRule fileName="atoms.pc"
+        selector="element"
+        media="screen"
+        mediaActive
+        global
+        properties={<fragment>
+          <StyleRuleProperty name="color"
+            value={<StyleRulePropertyValue>
+              <Expression>inherit</Expression>
+            </StyleRulePropertyValue>} />
+        </fragment>} />
+    </StyleSection>
+    <StyleSection title="Inherited styles">
+      <StyleRule fileName="atoms.pc"
+        selector={<fragment>
+          <ScopedElementSelector name="element" />
+          <ScopedElementSelector name="element" />.test
+        </fragment>} />
+    </StyleSection>
+  </fragment>}
 </Container>
 
 
 <!--
-  @frame { title: "Inspector", width: 265, height: 1365, x: 470, y: 49 }
+  @frame { title: "Inspector", width: 265, height: 900, x: 230, y: -137 }
 -->
 <Preview />

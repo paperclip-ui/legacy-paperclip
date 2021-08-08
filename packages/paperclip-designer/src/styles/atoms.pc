@@ -162,7 +162,7 @@
 </div>
 
 <!--
-  @frame { title: "DS", width: 1024, height: 768, x: 1306, y: -7 }
+  @frame { visible: false, title: "DS", width: 1024, height: 768, x: 1306, y: -7 }
 -->
 <div>
   <style>

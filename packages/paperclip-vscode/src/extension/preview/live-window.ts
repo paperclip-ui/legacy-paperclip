@@ -156,6 +156,9 @@ export class LiveWindow {
         const vscode = acquireVsCodeApi();
         const initialState = ${JSON.stringify(state)};
         vscode.setState(initialState);
+        window.addEventListener("locationChanged", () => {
+          console.log(window.location);
+        });
         window.onmessage = ({ data }) => {
           if (data && data.type === "LOCATION_CHANGED") {
             vscode.setState({

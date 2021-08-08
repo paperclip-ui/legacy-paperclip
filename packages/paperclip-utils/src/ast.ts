@@ -1,4 +1,9 @@
-import { JsExpression, JsExpressionKind, Reference } from "./js-ast";
+import {
+  JsExpression,
+  JsExpressionKind,
+  Reference,
+  traverseJSExpression
+} from "./js-ast";
 import {
   Sheet,
   traverseSheet,
@@ -507,6 +512,9 @@ export const traverseExpression = (
       }
       case NodeKind.Fragment: {
         return traverseExpressions(ast.children, each);
+      }
+      case NodeKind.Slot: {
+        return traverseJSExpression(ast.script, each);
       }
       case NodeKind.StyleElement: {
         return traverseSheet(ast.sheet, each);

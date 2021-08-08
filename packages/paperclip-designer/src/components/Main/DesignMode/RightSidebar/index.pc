@@ -8,5 +8,5 @@
   <style>
     min-width: 100px;
   </style>
-  <Inspector.Preview />
+  <Inspector.Preview {showComputed?} />
 </ResizableContainer>
