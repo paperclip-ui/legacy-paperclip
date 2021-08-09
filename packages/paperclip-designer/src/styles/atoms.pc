@@ -1,4 +1,6 @@
 <!-- TODO - values should be based on polaris -->
+<import src="components/Theme/index.pc" inject-styles />
+
 <style>
   @export {
     * {
@@ -10,12 +12,22 @@
     }
 
     .code {
-      font-family: Monaco;
-      font-size: 12px;
+      font-family: Roboto, Monaco, sans-serif;
+      letter-spacing: 0.1em;
+      font-size: 13px;
     }
 
     .font-regular {
       font-family: Open Sans, sans-serif;
+    }
+
+    .button-reset {
+      border: none;
+      color: inherit;
+      letter-spacing: inherit;
+      background: none;
+      margin: 0;
+      padding: 0;
     }
 
     /*

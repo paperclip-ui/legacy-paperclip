@@ -49,9 +49,10 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container">
+<div export component as="Container" {className?}>
   <style>
     font-size: var(--font-size);
+    color: rgb(109, 109, 109);
   </style>
   {children}
 </div>
@@ -183,9 +184,8 @@
         font-weight: 600;
       }
     </style>
-    <span className="decl-name code">{name}</span><span className="token">
-      :
-    </span>
+    <span className="decl-name code">{name}</span>
+    <span className="token">:</span>
   </div>
   <div className="decl-value code" className:boldValue="bold-value">
     <style>
@@ -317,7 +317,6 @@
     <style>
       padding: var(--spacing-4) var(--spacing-5);
       background: rgb(247, 247, 247);
-      color: rgb(32, 32, 32);
     </style>
     {title}
   </div>
@@ -376,10 +375,84 @@
 
 
 <!--
+  @frame { visible: false }
+-->
+<div export component as="Tabs">
+  <style>
+    border-top: 1px solid rgb(177, 177, 177);
+    border-bottom: 1px solid rgb(206, 206, 206);
+    display: flex;
+    background: rgb(245, 245, 245);
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<button export
+  component
+  as="Tab"
+  className="button-reset"
+  className:active="active">
+  <style>
+    border-top: 2px solid transparent;
+    padding: var(--spacing-3) var(--spacing-4);
+    &.active {
+      border-top: 2px solid rgb(66, 164, 255);
+    }
+  </style>
+  {children}
+</button>
+
+<div export component as="ComputedStyles">
+  <style>
+    border-top: 1px solid rgb(206, 206, 206);
+    & > :nth-child(2n) {
+      background: rgb(247, 247, 247);
+    }
+  </style>
+  {children}
+</div>
+
+<div export component as="ComputedProperty">
+  <div>
+    <style>
+      display: flex;
+      justify-content: space-between;
+      padding: var(--spacing-3) var(--spacing-4);
+      & > * {
+        display: inline-block;
+        flex: 1;
+      }
+    </style>
+    <span className="decl-name">{name}</span>
+    <span className="decl-value">{value}</span>
+  </div>
+</div>
+
+<!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
 <Container export component as="Preview" className="font-regular">
-  {showComputed && <fragment>Computed</fragment>}
+  <Tabs>
+    <Tab active>Rules</Tab>
+    <Tab>Computed</Tab>
+  </Tabs>
+  {showComputed && <fragment>
+    <Header input={<FilterInput />} />
+    <ComputedStyles>
+      <ComputedProperty name="display"
+        value="flex"
+        sources={<fragment />} />
+      <ComputedProperty name="color"
+        value="red"
+        sources={<fragment />} />
+      <ComputedProperty name="background-color"
+        value="orange"
+        sources={<fragment />} />
+    </ComputedStyles>
+  </fragment>}
 
   {!showComputed && <fragment>
     <Header input={<FilterInput />} />
@@ -459,6 +532,6 @@
 
 
 <!--
-  @frame { title: "Inspector", width: 265, height: 900, x: 230, y: -137 }
+  @frame { title: "Inspector", width: 265, height: 900, x: 230, y: -138 }
 -->
 <Preview />
