@@ -9,6 +9,15 @@
       transition: 0.2s;
     }
 
+    .code {
+      font-family: Monaco;
+      font-size: 12px;
+    }
+
+    .font-regular {
+      font-family: Open Sans, sans-serif;
+    }
+
     /*
        https://www.figma.com/file/dOQZzseI3v7LUEwXjAKw4I/Polaris-for-Admin%3A-Colors-(Community)?node-id=2989%3A2
     */

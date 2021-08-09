@@ -89,10 +89,10 @@
         position: absolute;
         left: 0;
         cursor: pointer;
-        transform: translateX(-100%);
+        transform: translateX(-100%) translateY(-1px);
         @include atoms.ease-in {}
         &:within(.collapsed) {
-          transform: translateX(-100%) translateY(-1px) rotate(-90deg);
+          transform: translateX(-100%) translateY(-2px) rotate(-90deg);
         }
         &:within(.is-void, .no-children) {
           opacity: 0;
@@ -140,7 +140,8 @@
     border-radius: 2px;
     padding: 0px var(--spacing-2);
     margin: 0px var(--spacing-2);
-    line-height: 2px;
+    line-height: 3px;
+    letter-spacing: -1px;
     color: grey;
     border: 1px solid rgb(199, 199, 199);
     height: 12px;
@@ -148,7 +149,7 @@
   ...
 </div>
 
-<div export component as="Node" {className?}>{children}</div>
+<div export component as="Node" className="code {className?}">{children}</div>
 
 <Node export
   component
@@ -212,7 +213,7 @@
       <Attribute name="data-pc-label" value="A test label" />
     </fragment>}>
     <Element depth="2" name="div">
-      <Text depth="3">Value</Text>
+      <Text depth="3">Some text</Text>
     </Element>
     <Element depth="2" name="div" collapsed />
     <Element isVoid depth="2" name="img" collapsed />

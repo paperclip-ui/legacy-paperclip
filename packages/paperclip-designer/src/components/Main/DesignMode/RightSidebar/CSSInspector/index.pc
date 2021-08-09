@@ -90,7 +90,7 @@
       padding-bottom: 0;
     </style>
     <div>
-      <span className="statement" className:boldSelector="bold-selector">
+      <span className="statement code" className:boldSelector="bold-selector">
         <style>
           &.bold-selector {
             font-weight: 600;
@@ -183,9 +183,11 @@
         font-weight: 600;
       }
     </style>
-    <span className="decl-name">{name}</span><span className="token">:</span>
+    <span className="decl-name code">{name}</span><span className="token">
+      :
+    </span>
   </div>
-  <div className="decl-value" className:boldValue="bold-value">
+  <div className="decl-value code" className:boldValue="bold-value">
     <style>
       flex: 1;
       &.bold-value {
@@ -260,7 +262,7 @@
 <!--
   @frame { visible: false }
 -->
-<span export component as="ScopedElementSelector">
+<span export component as="ScopedElementSelector" className="code">
   <style>
     background: rgb(228, 228, 228);
     padding: 0px var(--spacing-2);
@@ -310,7 +312,7 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="StyleSection" className="section">
+<div export component as="StyleSection" className="section font-regular">
   <div>
     <style>
       padding: var(--spacing-4) var(--spacing-5);
@@ -376,7 +378,7 @@
 <!--
   @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
 -->
-<Container export component as="Preview">
+<Container export component as="Preview" className="font-regular">
   {showComputed && <fragment>Computed</fragment>}
 
   {!showComputed && <fragment>

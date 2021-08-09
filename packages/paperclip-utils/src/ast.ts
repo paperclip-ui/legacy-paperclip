@@ -520,6 +520,14 @@ export const traverseExpression = (
         return traverseSheet(ast.sheet, each);
       }
     }
+  } else if (isAttribute(ast)) {
+    if (ast.attrKind === AttributeKind.KeyValueAttribute && ast.value) {
+      return traverseExpression(ast.value, each);
+    }
+  } else if (isAttributeValue(ast)) {
+    if (ast.attrValueKind === AttributeValueKind.Slot) {
+      return traverseJSExpression(ast.script, each);
+    }
   }
   return true;
 };
