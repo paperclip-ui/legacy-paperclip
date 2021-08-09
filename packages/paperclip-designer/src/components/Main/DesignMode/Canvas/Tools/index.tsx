@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { mergeBoxes, isExpanded } from "../../../../../state";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 
@@ -63,16 +63,10 @@ export const Tools = () => {
         canvasMouseUp({
           metaKey: event.metaKey,
           ctrlKey: event.ctrlKey,
-          shiftKey: event.shiftKey
+          shiftKey: event.shiftKey,
+          timestamp: Date.now()
         })
       );
-    },
-    [dispatch]
-  );
-
-  const onDoubleClick = useCallback(
-    (event: React.MouseEvent) => {
-      dispatch(canvasDoubleClick(getMousePoint(event)));
     },
     [dispatch]
   );
@@ -80,6 +74,8 @@ export const Tools = () => {
   const onMouseLeave = () => {
     dispatch(canvasMouseLeave(null));
   };
+
+  document.body.ondblclick;
   const selectedBox =
     selectedNodePaths.length &&
     mergeBoxes(selectedNodePaths.map(path => boxes[path]));
@@ -104,7 +100,6 @@ export const Tools = () => {
     <styles.Tools
       ref={toolsRef}
       onMouseUp={onMouseUp}
-      onDoubleClick={onDoubleClick}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >

@@ -6,7 +6,6 @@ import React, {
   useCallback
 } from "react";
 import * as styles from "./index.pc";
-// import { Preview } from "./Preview";
 import { Tools } from "./Tools";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import { Frames } from "./Frames";
@@ -23,7 +22,6 @@ import {
   isExpanded
 } from "../../../../state";
 import { getFrameBounds } from "paperclip-web-renderer";
-import { request } from "express";
 
 export const Canvas = React.memo(() => {
   const { state, dispatch } = useAppStore();
