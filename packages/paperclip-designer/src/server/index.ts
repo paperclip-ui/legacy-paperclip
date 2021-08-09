@@ -1,12 +1,10 @@
-import { ServiceManager } from "./core/service-manager";
 import { fileWatcherService } from "./services/file-watcher";
 import { httpServer } from "./services/http-server";
-import { ServerKernel } from "./core/kernel";
 import { eventLogger } from "./services/event-logger";
 import { rpcService } from "./services/rpc";
 import { postInitService } from "./services/post-init";
 import { pcEngineService } from "./services/pc-engine";
-import { BaseEvent } from "paperclip-common";
+import { BaseEvent, ServiceManager, ServerKernel } from "paperclip-common";
 import { ExprSource } from "paperclip-utils";
 import { noop } from "lodash";
 

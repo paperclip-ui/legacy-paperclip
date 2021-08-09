@@ -1,5 +1,4 @@
-import { eventHandler } from "paperclip-common";
-import { ServerKernel } from "../core/kernel";
+import { eventHandler, ServerKernel } from "paperclip-common";
 import { HTTPServerStarted } from "./http-server";
 import { exec } from "child_process";
 

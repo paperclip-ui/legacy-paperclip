@@ -27,6 +27,7 @@ import { compare, applyPatch } from "fast-json-patch";
 import {
   Action,
   ActionType,
+  CanvasMouseUp,
   ExternalActionType,
   LocationChanged,
   RedirectRequested,
@@ -59,6 +60,7 @@ const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const PAN_Y_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const MIN_ZOOM = 0.01;
 const MAX_ZOOM = 6400 / 100;
+const DOUBLE_CLICK_MS = 250;
 
 const normalizeZoom = zoom => {
   return zoom < 1 ? 1 / Math.round(1 / zoom) : Math.round(zoom);
@@ -465,26 +467,6 @@ export const reduceDesigner = (
         newDesigner.optionKeyDown = false;
       });
     }
-    case ActionType.CANVAS_DOUBLE_CLICK: {
-      const nodePath = getNodeInfoAtPoint(
-        designer.canvas.mousePosition,
-        designer.canvas.transform,
-        getScopedBoxes(
-          designer.boxes,
-          designer.scopedElementPath,
-          getActivePCData(designer).preview
-        ),
-        isExpanded(designer) ? getActiveFrameIndex(designer) : null
-      )?.nodePath;
-
-      designer = produce(designer, newDesigner => {
-        newDesigner.scopedElementPath = nodePath;
-      });
-
-      designer = highlightNode(designer, action.payload);
-
-      return designer;
-    }
     case ActionType.CANVAS_MOUSE_UP: {
       if (designer.resizerMoving) {
         return designer;
@@ -492,6 +474,15 @@ export const reduceDesigner = (
       if (!designer.canvas.transform.x || !designer.canvas.mousePosition?.x) {
         return designer;
       }
+
+      let doubleClicked;
+
+      [designer, doubleClicked] = handleDoubleClick(designer, action);
+
+      if (doubleClicked) {
+        return designer;
+      }
+
       // Don't do this until deselecting can be handled properly
       const nodePath = getNodeInfoAtPoint(
         designer.canvas.mousePosition,
@@ -738,6 +729,44 @@ export const reduceDesigner = (
   }
 
   return designer;
+};
+
+const handleDoubleClick = (
+  designer: DesignerState,
+  action: CanvasMouseUp
+): [DesignerState, boolean] => {
+  const oldTimestamp = designer.canvasClickTimestamp;
+
+  if (
+    !oldTimestamp ||
+    action.payload.timestamp - oldTimestamp > DOUBLE_CLICK_MS
+  ) {
+    return [
+      produce(designer, newDesigner => {
+        newDesigner.canvasClickTimestamp = action.payload.timestamp;
+      }),
+      false
+    ];
+  }
+  const nodePath = getNodeInfoAtPoint(
+    designer.canvas.mousePosition,
+    designer.canvas.transform,
+    getScopedBoxes(
+      designer.boxes,
+      designer.scopedElementPath,
+      getActivePCData(designer).preview
+    ),
+    isExpanded(designer) ? getActiveFrameIndex(designer) : null
+  )?.nodePath;
+
+  designer = produce(designer, newDesigner => {
+    newDesigner.canvasClickTimestamp = action.payload.timestamp;
+    newDesigner.scopedElementPath = nodePath;
+  });
+
+  designer = highlightNode(designer, designer.canvas.mousePosition!);
+
+  return [designer, true];
 };
 
 const cleanupPath = (pathname: string) =>

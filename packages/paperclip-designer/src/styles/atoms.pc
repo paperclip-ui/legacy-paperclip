@@ -1,4 +1,6 @@
 <!-- TODO - values should be based on polaris -->
+<import src="components/Theme/index.pc" inject-styles />
+
 <style>
   @export {
     * {
@@ -7,6 +9,25 @@
 
     @mixin ease-in {
       transition: 0.2s;
+    }
+
+    .code {
+      font-family: Roboto, Monaco, sans-serif;
+      letter-spacing: 0.1em;
+      font-size: 13px;
+    }
+
+    .font-regular {
+      font-family: Open Sans, sans-serif;
+    }
+
+    .button-reset {
+      border: none;
+      color: inherit;
+      letter-spacing: inherit;
+      background: none;
+      margin: 0;
+      padding: 0;
     }
 
     /*
@@ -162,7 +183,7 @@
 </div>
 
 <!--
-  @frame { title: "DS", width: 1024, height: 768, x: 1306, y: -7 }
+  @frame { visible: false, title: "DS", width: 1024, height: 768, x: 1306, y: -7 }
 -->
 <div>
   <style>

@@ -1,8 +1,11 @@
 import { createEngineDelegate } from "paperclip";
 import { EngineDelegate, EngineMode } from "paperclip";
-import { BaseEvent, eventProcesses } from "paperclip-common";
-import { ServerKernel } from "../core/kernel";
-import { ServiceInitialized } from "../core/service-manager";
+import {
+  BaseEvent,
+  eventProcesses,
+  ServerKernel,
+  ServiceInitialized
+} from "paperclip-common";
 
 export class PCEngineCrashed implements BaseEvent {
   static TYPE = "PCEngineEventType/CRASHED";

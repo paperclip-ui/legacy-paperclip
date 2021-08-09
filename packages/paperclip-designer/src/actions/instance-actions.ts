@@ -316,7 +316,7 @@ export type RendererChanged = BaseAction<
 
 export type CanvasMouseUp = BaseAction<
   ActionType.CANVAS_MOUSE_UP,
-  { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean }
+  { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean; timestamp: number }
 >;
 
 export type CanvasDoubleClick = BaseAction<

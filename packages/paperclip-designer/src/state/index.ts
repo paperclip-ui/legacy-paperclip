@@ -118,6 +118,7 @@ export type VirtualNodeSourceInfo = {
 };
 export type DesignerState = {
   syncLocationMode?: number;
+  canvasClickTimestamp?: number;
   ui: UIState;
   readonly: boolean;
   sharable: boolean;

@@ -8,6 +8,10 @@ import {
 } from "paperclip-common";
 import { LiveWindow, LiveWindowState } from "./live-window";
 import { HTTPServerStarted } from "paperclip-designer/lib/server/services/http-server";
+import {
+  ActionType,
+  LocationChanged
+} from "../../../../paperclip-designer/lib";
 
 export class LiveWindowManager implements Observer {
   readonly events: Observable;

@@ -1,4 +1,4 @@
-import { Node } from "./ast";
+import { Node, traverseExpression } from "./ast";
 import { SourceLocation } from "./base-ast";
 
 export enum JsExpressionKind {
@@ -93,3 +93,24 @@ export type JsExpression =
   | JsBoolean
   | JsConjunction
   | JsNot;
+
+export const traverseJSExpression = (
+  expr: JsExpression,
+  each: (expr: JsExpression) => void | boolean
+) => {
+  if (expr.jsKind === JsExpressionKind.Conjunction) {
+    return (
+      traverseJSExpression(expr.left, each) &&
+      traverseJSExpression(expr.right, each)
+    );
+  } else if (expr.jsKind === JsExpressionKind.Array) {
+    for (const value of expr.values) {
+      if (traverseJSExpression(value, each) === false) {
+        return false;
+      }
+    }
+  } else if (expr.jsKind === JsExpressionKind.Node) {
+    return traverseExpression(expr, each);
+  }
+  return true;
+};

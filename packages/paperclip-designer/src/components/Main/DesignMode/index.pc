@@ -70,7 +70,7 @@
       <Canvas.Preview />
       <Footer.Preview />
     </Center>
-    <RightSidebar.Preview />
+    <RightSidebar.Preview {showComputed?} />
   </fragment>}
 </CanvasContainer>
 
@@ -81,7 +81,10 @@
 <Container export component as="Preview" className="$theme.font-default">
   {v2 && <ToolbarV2.Preview {showGrid} {showEnvPopup} />}
   {!v2 && <Toolbar.Preview gridMode {showEnvPopup} />}
-  <CanvasContainerPreview {showCanvas?} {showEmpty?} {showGrid?} />
+  <CanvasContainerPreview {showCanvas?}
+    {showEmpty?}
+    {showGrid?}
+    {showComputed?} />
 </Container>
 
 <!--
@@ -134,6 +137,11 @@
 -->
 <Preview showEmpty />
 
+
+<!--
+  @frame { title: "Center / Canvas / Computed", width: 1266, height: 958, x: 4212, y: 736 }
+-->
+<Preview showCanvas v2 showComputed />
 
 <!--
   @frame { title: "Center / Canvas", width: 1266, height: 958, x: 2734, y: 736 }

@@ -3,8 +3,7 @@ import * as URL from "url";
 import * as path from "path";
 import * as fs from "fs";
 import { isPaperclipFile } from "paperclip-utils";
-import { eventProcesses } from "paperclip-common";
-import { ServerKernel } from "../core/kernel";
+import { eventProcesses, ServerKernel } from "paperclip-common";
 import { PCEngineInitialized } from "./pc-engine";
 
 type Options = {

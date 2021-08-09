@@ -1,7 +1,12 @@
+<import src="styles/atoms.pc" inject-styles />
 <import src="./Breadcrumbs/index.pc" as="Breadcrums" />
 <import src="./Layers/index.pc" as="Layers" />
 <import src="components/ResizableContainer/index.pc" as="ResizableContainer" />
 
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -6, y: 247 }
+-->
 <div export component as="Container">
   <style>
     display: flex;
