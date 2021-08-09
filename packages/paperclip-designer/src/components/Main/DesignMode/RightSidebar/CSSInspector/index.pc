@@ -405,6 +405,10 @@
   {children}
 </button>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export component as="ComputedStyles">
   <style>
     border-top: 1px solid rgb(206, 206, 206);
@@ -415,20 +419,63 @@
   {children}
 </div>
 
-<div export component as="ComputedProperty">
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ComputedProperty" className:collapsed="collapsed">
   <div>
     <style>
       display: flex;
-      justify-content: space-between;
-      padding: var(--spacing-3) var(--spacing-4);
-      & > * {
-        display: inline-block;
-        flex: 1;
-      }
+      align-items: center;
+      padding: var(--spacing-2) var(--spacing-4);
     </style>
-    <span className="decl-name">{name}</span>
-    <span className="decl-value">{value}</span>
+    <div>
+      <style>
+        --size: 1em;
+        margin-right: var(--spacing-3);
+        &:within(.collapsed) {
+          transform: rotate(-90deg);
+        }
+        @include utils.mask {
+          mask-image: url("assets/chevron.svg");
+        }
+      </style>
+    </div>
+    <div>
+      <style>
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+        grid-column-gap: var(--spacing-2);
+        & > * {
+          display: inline-block;
+          flex: 1;
+        }
+      </style>
+      <span className="decl-name">{name}</span>
+      <span className="decl-value">{value}</span>
+    </div>
   </div>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ComputedPropertySource">
+  <style>
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-2) var(--spacing-7);
+    font-size: 0.9em;
+  </style>
+  <span>
+    <span className="decl-name">{selector}&nbsp;</span>
+    <!-- <span className="decl-value">{value}</span> -->
+  </span>
+  <span>{fileName}</span>
 </div>
 
 <!--
@@ -442,14 +489,24 @@
   {showComputed && <fragment>
     <Header input={<FilterInput />} />
     <ComputedStyles>
-      <ComputedProperty name="display"
+      <ComputedProperty collapsed
+        name="display"
         value="flex"
         sources={<fragment />} />
-      <ComputedProperty name="color"
+      <ComputedProperty collapsed
+        name="color"
         value="red"
         sources={<fragment />} />
       <ComputedProperty name="background-color"
         value="orange"
+        sources={<fragment />}>
+        <ComputedPropertySource selector="a"
+          value="background-color"
+          fileName="atoms.pc" />
+      </ComputedProperty>
+      <ComputedProperty collapsed
+        name="box-shadow"
+        value="0px 0px 1px #FF00FF"
         sources={<fragment />} />
     </ComputedStyles>
   </fragment>}
