@@ -464,16 +464,22 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ComputedPropertySource">
+<div export component as="ComputedPropertySource" className:disabled="disabled">
   <style>
+    border-top: 1px solid rgb(240, 240, 240);
     display: flex;
     justify-content: space-between;
-    padding: var(--spacing-2) var(--spacing-7);
+    padding: var(--spacing-2) 0px;
+    padding-left: calc(var(--spacing-7) + 2px);
+    padding-right: var(--spacing-7);
     font-size: 0.9em;
+    &.disabled {
+      color: rgba(0,0,0,0.2);
+    }
   </style>
   <span>
-    <span className="decl-name">{selector}&nbsp;</span>
-    <!-- <span className="decl-value">{value}</span> -->
+    <span>{selector}&nbsp;</span>
+    <span className="decl-name">{value}</span>
   </span>
   <span>{fileName}</span>
 </div>
@@ -500,7 +506,11 @@
       <ComputedProperty name="background-color"
         value="orange"
         sources={<fragment />}>
-        <ComputedPropertySource selector="a"
+        <ComputedPropertySource selector="background-color"
+          value="background-color"
+          fileName="atoms.pc" />
+        <ComputedPropertySource disabled
+          selector="background-color"
           value="background-color"
           fileName="atoms.pc" />
       </ComputedProperty>
