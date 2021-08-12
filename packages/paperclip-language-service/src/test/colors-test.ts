@@ -19,7 +19,7 @@ describe(__filename + "#", () => {
       [
         {
           value: {
-            red: 255,
+            red: 1,
             green: 0,
             blue: 0,
             alpha: 1
@@ -75,7 +75,7 @@ describe(__filename + "#", () => {
           value: {
             red: 0,
             green: 0,
-            blue: 255,
+            blue: 1,
             alpha: 1
           },
           location: {
@@ -103,7 +103,7 @@ describe(__filename + "#", () => {
           value: {
             red: 0,
             green: 0,
-            blue: 255,
+            blue: 1,
             alpha: 1
           },
           location: {
@@ -129,7 +129,7 @@ describe(__filename + "#", () => {
       [
         {
           value: {
-            red: 255,
+            red: 1,
             green: 0,
             blue: 0,
             alpha: 1
@@ -156,8 +156,8 @@ describe(__filename + "#", () => {
         {
           value: {
             red: 0,
-            green: 100,
-            blue: 50,
+            green: 0.39215686274509803,
+            blue: 0.19607843137254902,
             alpha: 1
           },
           location: {
@@ -182,7 +182,7 @@ describe(__filename + "#", () => {
       [
         {
           value: {
-            red: 255,
+            red: 1,
             green: 0,
             blue: 0,
             alpha: 1
@@ -194,7 +194,7 @@ describe(__filename + "#", () => {
         },
         {
           value: {
-            red: 255,
+            red: 1,
             green: 0,
             blue: 0,
             alpha: 1
@@ -226,7 +226,7 @@ describe(__filename + "#", () => {
       [
         {
           value: {
-            red: 255,
+            red: 1,
             green: 0,
             blue: 0,
             alpha: 1

@@ -29,6 +29,7 @@ export type FrameAnnotation = {
 export type NodeAnnotations = {
   frame?: FrameAnnotation;
   tags?: string[];
+  visualRegresionTest?: boolean;
 };
 
 export enum EvaluatedDataKind {

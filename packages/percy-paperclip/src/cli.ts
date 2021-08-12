@@ -1,10 +1,12 @@
-import PercyAgent from "@percy/agent";
+// Inspiration: https://github.com/percy/cli/blob/43a608c1f49e0e65cc78e00a55a9506c45173da5/packages/cli-upload/src/commands/upload.js
+// https://github.com/percy/cli/blob/43a608c1f49e0e65cc78e00a55a9506c45173da5/packages/cli-upload/src/resources.js
+import PercyClient from "@percy/client";
 import * as glob from "glob";
 import * as path from "path";
 import * as chalk from "chalk";
+import * as mime from "mime";
 import * as url from "url";
-import { XMLHttpRequest } from "w3c-xmlhttprequest";
-import domTransformation from "./dom-transformation";
+import * as fs from "fs";
 import {
   createEngineDelegate,
   VirtualFragment,
@@ -18,9 +20,13 @@ import {
   NodeAnnotations,
   EvaluatedDataKind
 } from "paperclip";
-import { PCDocument } from "./pc-document";
-import { startStaticServer } from "./static-server";
-import { timeout } from "./utils";
+import {
+  embedAssets,
+  getDocumenAssetPaths,
+  getPCDocumentHTML
+} from "./pc-document";
+import { createHash } from "crypto";
+import * as pLimit from "p-limit";
 
 export type RunOptions = {
   cwd: string;
@@ -33,6 +39,7 @@ const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
 
 // max size for frame
 const MAX_FRAME_WIDTH = 2000;
+const MAX_CONCURRENT = 10;
 
 export const run = async (
   sourceDirectory: string,
@@ -51,15 +58,14 @@ export const run = async (
   const engine = await createEngineDelegate({
     mode: EngineMode.MultiFrame
   });
-  const server = await startStaticServer();
 
-  const agent = new PercyAgent({
-    xhr: XMLHttpRequest,
-    domTransformation
+  const client = new PercyClient({
+    token: process.env.PERCY_TOKEN
   });
 
-  // // wait for the agent to do a quick health check (needed so that the agent doesn't display "not connected" error)
-  await timeout(1000);
+  const buildId = (await client.createBuild()).data.id;
+  const limit = pLimit(MAX_CONCURRENT);
+  const snapshotPromises = [];
 
   for (const filePath of paperclipFilePaths) {
     const relativePath = path.relative(cwd, filePath);
@@ -97,26 +103,14 @@ export const run = async (
         kind: VirtualNodeKind.Fragment
       };
 
-      const document = new PCDocument(root, server.allowFile) as any;
       const frameLabel = annotations.frame?.title || `Untitled ${i}`;
 
-      if (skipHidden && annotations.frame?.visible === false) {
-        console.info(
-          `[${chalk.blue(
-            "ppclp"
-          )}] skip hidden frame "${frameLabel}" - ${chalk.gray(relativePath)}`
-        );
-        continue;
-      }
-
-      if (!keepEmpty && isEmpty(document.outerHTML)) {
-        console.info(
-          `[${chalk.yellow(
-            "ppclp"
-          )}] skip empty frame "${frameLabel}" - ${chalk.gray(relativePath)}`
-        );
-        continue;
-      }
+      const html = getPCDocumentHTML(root);
+      const isDocEmpty = !keepEmpty && isEmpty(html);
+      const shouldSkip =
+        (skipHidden && annotations.frame?.visible === false) ||
+        annotations.visualRegresionTest === false ||
+        isDocEmpty;
 
       const data = {
         frameFilePath: relativePath,
@@ -130,17 +124,69 @@ export const run = async (
         }
       );
 
-      agent.snapshot(snapshotName, {
-        document,
-        widths: annotations.frame?.width
-          ? [Math.min(annotations.frame.width, MAX_FRAME_WIDTH)]
-          : null
+      if (shouldSkip) {
+        console.info(`skip ${snapshotName}`);
+        continue;
+      }
+
+      const assetPaths: Record<string, string> = {};
+
+      const fixedHTML = embedAssets(html, filePath => {
+        return (assetPaths[filePath] = "/" + encodeURIComponent(filePath));
       });
+
+      const resources = [
+        {
+          url: "/",
+          root: true,
+          mimetype: "text/html",
+          sha: createHash("sha256")
+            .update(fixedHTML, "utf-8")
+            .digest("hex"),
+          content: fixedHTML
+        },
+        ...Object.keys(assetPaths)
+          .map(filePath => {
+            const url = assetPaths[filePath];
+            const content = fs.readFileSync(filePath);
+            const mimetype = mime.getType(filePath);
+            return {
+              url,
+              sha: createHash("sha256")
+                .update(fs.readFileSync(filePath))
+                .digest("hex"),
+              mimetype,
+              content
+            };
+          })
+          .filter(Boolean)
+      ];
+
+      snapshotPromises.push(
+        limit(async () => {
+          console.info(`snap ${snapshotName}`);
+
+          try {
+            await client.sendSnapshot(buildId, {
+              name: snapshotName,
+              widths: annotations.frame?.width
+                ? [Math.min(annotations.frame.width, MAX_FRAME_WIDTH)]
+                : null,
+              resources
+            });
+          } catch (e) {
+            console.error(chalk.red(e.stack));
+          }
+        })
+      );
     }
   }
 
-  await server.finished();
-  server.dispose();
+  await Promise.all(snapshotPromises);
+
+  console.info(`Waiting for build to finalize...`);
+  await client.finalizeBuild(buildId);
+  console.info(`Done!`);
 };
 
 const isEmpty = (source: string) => {

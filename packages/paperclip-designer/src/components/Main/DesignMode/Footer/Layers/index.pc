@@ -100,7 +100,7 @@
         }
         @include utils.mask {
           --size: var(--arrow-size);
-          mask-image: url('./chevron.svg');
+          mask-image: url("assets/chevron.svg");
         }
       </style>
     </div>
