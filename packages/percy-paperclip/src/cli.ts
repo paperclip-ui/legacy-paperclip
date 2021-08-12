@@ -1,10 +1,8 @@
-import PercyAgent from "@percy/agent";
+import PercyClient from "@percy/client";
 import * as glob from "glob";
 import * as path from "path";
 import * as chalk from "chalk";
 import * as url from "url";
-import { XMLHttpRequest } from "w3c-xmlhttprequest";
-import domTransformation from "./dom-transformation";
 import {
   createEngineDelegate,
   VirtualFragment,
@@ -20,7 +18,8 @@ import {
 } from "paperclip";
 import { PCDocument } from "./pc-document";
 import { startStaticServer } from "./static-server";
-import { timeout } from "./utils";
+import { createHash } from "crypto";
+import * as pLimit from "p-limit";
 
 export type RunOptions = {
   cwd: string;
@@ -33,6 +32,7 @@ const EMPTY_CONTENT_STATE = `<html><head></head><body></body></html>`;
 
 // max size for frame
 const MAX_FRAME_WIDTH = 2000;
+const MAX_CONCURRENT = 10;
 
 export const run = async (
   sourceDirectory: string,
@@ -53,13 +53,13 @@ export const run = async (
   });
   const server = await startStaticServer();
 
-  const agent = new PercyAgent({
-    xhr: XMLHttpRequest,
-    domTransformation
+  const client = new PercyClient({
+    token: process.env.PERCY_TOKEN
   });
 
-  // // wait for the agent to do a quick health check (needed so that the agent doesn't display "not connected" error)
-  await timeout(1000);
+  const buildId = (await client.createBuild()).data.id;
+  const limit = pLimit(MAX_CONCURRENT);
+  const snapshotPromises = [];
 
   for (const filePath of paperclipFilePaths) {
     const relativePath = path.relative(cwd, filePath);
@@ -97,34 +97,14 @@ export const run = async (
         kind: VirtualNodeKind.Fragment
       };
 
-      const document = new PCDocument(root, server.allowFile) as any;
+      const document = new PCDocument(root, server.allowFile);
       const frameLabel = annotations.frame?.title || `Untitled ${i}`;
 
-      if (
+      const isDocEmpty = !keepEmpty && isEmpty(document.outerHTML);
+      const shouldSkip =
         (skipHidden && annotations.frame?.visible === false) ||
-        annotations.visualRegresionTest === false
-      ) {
-        console.info(
-          `[${chalk.blue("ppclp")}] skip frame "${frameLabel}" - ${chalk.gray(
-            relativePath
-          )}`
-        );
-        continue;
-      }
-
-      if (!keepEmpty && isEmpty(document.outerHTML)) {
-        console.info(
-          `[${chalk.yellow(
-            "ppclp"
-          )}] skip empty frame "${frameLabel}" - ${chalk.gray(relativePath)}`
-        );
-        continue;
-      }
-
-      const data = {
-        frameFilePath: relativePath,
-        frameTitle: frameLabel
-      };
+        annotations.visualRegresionTest === false ||
+        isDocEmpty;
 
       const snapshotName = snapshotNameTemplate.replace(
         /\{(.*?)\}/g,
@@ -133,16 +113,52 @@ export const run = async (
         }
       );
 
-      agent.snapshot(snapshotName, {
-        document,
-        widths: annotations.frame?.width
-          ? [Math.min(annotations.frame.width, MAX_FRAME_WIDTH)]
-          : null
-      });
+      if (shouldSkip) {
+        console.info(`skip ${snapshotName}`);
+        continue;
+      }
+
+      const data = {
+        frameFilePath: relativePath,
+        frameTitle: frameLabel
+      };
+
+      snapshotPromises.push(
+        limit(async () => {
+          console.info(`snap ${snapshotName}`);
+
+          try {
+            await client.sendSnapshot(buildId, {
+              name: snapshotName,
+              widths: annotations.frame?.width
+                ? [Math.min(annotations.frame.width, MAX_FRAME_WIDTH)]
+                : null,
+              resources: [
+                {
+                  root: true,
+                  url: `http://localhost`,
+                  mimetype: "text/html",
+                  sha: createHash("sha256")
+                    .update(document.outerHTML, "utf-8")
+                    .digest("hex"),
+                  content: document.outerHTML
+                }
+              ]
+            });
+          } catch (e) {
+            console.error(chalk.red(e.stack));
+          }
+        })
+      );
     }
   }
 
-  await server.finished();
+  await Promise.all(snapshotPromises);
+
+  console.info(`Waiting for build to finalize...`);
+
+  await client.finalizeBuild(buildId);
+  console.info(`Done!`);
   server.dispose();
 };
 

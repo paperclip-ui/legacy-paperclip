@@ -1,9 +1,6 @@
 import * as fs from "fs";
-import { memoize } from "lodash";
-import * as mime from "mime";
 import * as url from "url";
 import { VirtualFragment, stringifyVirtualNode } from "paperclip";
-import { StaticServer } from "./static-server";
 
 export class PCDocument {
   styleSheets = [];
