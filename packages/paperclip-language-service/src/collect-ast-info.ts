@@ -71,7 +71,7 @@ export const collectASTInfo = (
 
   try {
     const map = {
-      colors: getDocumentColors(entryUri, graph, evaluated),
+      colors: getDocumentColors(entryUri, graph),
       links: getDocumentLinks(entryUri, graph),
       definitions: getDocumentDefinitions(entryUri, graph)
     };
