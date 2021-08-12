@@ -94,6 +94,10 @@
       color: red;
     }
   }
+
+  @include a {
+    color: red;
+  }
 </style>
 <div>
   <style>
