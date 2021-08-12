@@ -62,30 +62,22 @@ export const getDocumenAssetPaths = (source: string) => {
 //   }
 // }
 
-// const embedAssets = (
-//   source: string,
-//   serializeFilePath: (value: string) => string
-// ) => {
-//   let newSource = source;
-//   const re = `([\\('"])(file://.*?)([\\)'"])`;
-//   const global = new RegExp(re, "g");
-//   const local = new RegExp(re);
-//   const matches = source.match(global) || [];
+export const embedAssets = (
+  source: string,
+  serializeFilePath: (value: string) => string
+) => {
+  let newSource = source;
+  const re = `([\\('"])(file://.*?)([\\)'"])`;
+  const global = new RegExp(re, "g");
+  const local = new RegExp(re);
+  const matches = source.match(global) || [];
 
-//   for (const match of matches) {
-//     const [, , uri] = match.match(local);
+  const assetPaths = getDocumenAssetPaths(source);
 
-//     // shouldn't happen, but just in case
-//     try {
-//       const pathname = url.fileURLToPath(uri);
-//       if (fs.existsSync(pathname)) {
-//         const newUrl = serializeFilePath(pathname);
-//         newSource = newSource.replace(uri, newUrl);
-//       }
-//     } catch (e) {
-//       console.error(e);
-//     }
-//   }
+  for (const assetPath of assetPaths) {
+    const newUrl = serializeFilePath(assetPath);
+    newSource = newSource.replace(url.pathToFileURL(assetPath).href, newUrl);
+  }
 
-//   return newSource;
-// };
+  return newSource;
+};

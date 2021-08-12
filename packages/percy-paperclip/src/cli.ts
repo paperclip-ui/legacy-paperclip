@@ -18,7 +18,11 @@ import {
   NodeAnnotations,
   EvaluatedDataKind
 } from "paperclip";
-import { getDocumenAssetPaths, getPCDocumentHTML } from "./pc-document";
+import {
+  embedAssets,
+  getDocumenAssetPaths,
+  getPCDocumentHTML
+} from "./pc-document";
 import { createHash } from "crypto";
 import * as pLimit from "p-limit";
 
@@ -125,15 +129,19 @@ export const run = async (
         continue;
       }
 
+      const fixedHTML = embedAssets(html, filePath => {
+        return `http://localhost/${filePath}`;
+      });
+
       const resources = [
         {
           url: "http://localhost",
           root: true,
           mimetype: "text/html",
           sha: createHash("sha256")
-            .update(html, "utf-8")
+            .update(fixedHTML, "utf-8")
             .digest("hex"),
-          content: html
+          content: fixedHTML
         },
         ...getDocumenAssetPaths(html)
           .map(filePath => {
