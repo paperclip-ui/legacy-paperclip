@@ -2,7 +2,9 @@ import PercyClient from "@percy/client";
 import * as glob from "glob";
 import * as path from "path";
 import * as chalk from "chalk";
+import * as mime from "mime";
 import * as url from "url";
+import * as fs from "fs";
 import {
   createEngineDelegate,
   VirtualFragment,
@@ -16,8 +18,7 @@ import {
   NodeAnnotations,
   EvaluatedDataKind
 } from "paperclip";
-import { PCDocument } from "./pc-document";
-import { startStaticServer } from "./static-server";
+import { getDocumenAssetPaths, getPCDocumentHTML } from "./pc-document";
 import { createHash } from "crypto";
 import * as pLimit from "p-limit";
 
@@ -51,7 +52,6 @@ export const run = async (
   const engine = await createEngineDelegate({
     mode: EngineMode.MultiFrame
   });
-  const server = await startStaticServer();
 
   const client = new PercyClient({
     token: process.env.PERCY_TOKEN
@@ -82,6 +82,8 @@ export const run = async (
       ? preview.children
       : [preview]) as VirtualFrame[];
 
+    const includedResources = {};
+
     for (let i = 0, { length } = frames; i < length; i++) {
       const frame = frames[i];
 
@@ -97,14 +99,19 @@ export const run = async (
         kind: VirtualNodeKind.Fragment
       };
 
-      const document = new PCDocument(root, server.allowFile);
       const frameLabel = annotations.frame?.title || `Untitled ${i}`;
 
-      const isDocEmpty = !keepEmpty && isEmpty(document.outerHTML);
+      const html = getPCDocumentHTML(root);
+      const isDocEmpty = !keepEmpty && isEmpty(html);
       const shouldSkip =
         (skipHidden && annotations.frame?.visible === false) ||
         annotations.visualRegresionTest === false ||
         isDocEmpty;
+
+      const data = {
+        frameFilePath: relativePath,
+        frameTitle: frameLabel
+      };
 
       const snapshotName = snapshotNameTemplate.replace(
         /\{(.*?)\}/g,
@@ -118,10 +125,35 @@ export const run = async (
         continue;
       }
 
-      const data = {
-        frameFilePath: relativePath,
-        frameTitle: frameLabel
-      };
+      const resources = [
+        {
+          url: "http://localhost",
+          root: true,
+          mimetype: "text/html",
+          sha: createHash("sha256")
+            .update(html, "utf-8")
+            .digest("hex"),
+          content: html
+        },
+        ...getDocumenAssetPaths(html)
+          .map(filePath => {
+            if (includedResources[filePath]) {
+              return;
+            }
+            includedResources[filePath] = 1;
+            const content = fs.readFileSync(filePath);
+            const mimetype = mime.getType(filePath);
+            return {
+              url: "http://localhost" + filePath,
+              sha: createHash("sha256")
+                .update(fs.readFileSync(filePath))
+                .digest("hex"),
+              mimetype,
+              content
+            };
+          })
+          .filter(Boolean)
+      ];
 
       snapshotPromises.push(
         limit(async () => {
@@ -133,17 +165,7 @@ export const run = async (
               widths: annotations.frame?.width
                 ? [Math.min(annotations.frame.width, MAX_FRAME_WIDTH)]
                 : null,
-              resources: [
-                {
-                  root: true,
-                  url: `http://localhost`,
-                  mimetype: "text/html",
-                  sha: createHash("sha256")
-                    .update(document.outerHTML, "utf-8")
-                    .digest("hex"),
-                  content: document.outerHTML
-                }
-              ]
+              resources
             });
           } catch (e) {
             console.error(chalk.red(e.stack));
@@ -156,10 +178,8 @@ export const run = async (
   await Promise.all(snapshotPromises);
 
   console.info(`Waiting for build to finalize...`);
-
   await client.finalizeBuild(buildId);
   console.info(`Done!`);
-  server.dispose();
 };
 
 const isEmpty = (source: string) => {
