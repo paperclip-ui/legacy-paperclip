@@ -1,3 +1,5 @@
+// Inspiration: https://github.com/percy/cli/blob/43a608c1f49e0e65cc78e00a55a9506c45173da5/packages/cli-upload/src/commands/upload.js
+// https://github.com/percy/cli/blob/43a608c1f49e0e65cc78e00a55a9506c45173da5/packages/cli-upload/src/resources.js
 import PercyClient from "@percy/client";
 import * as glob from "glob";
 import * as path from "path";
@@ -86,8 +88,6 @@ export const run = async (
       ? preview.children
       : [preview]) as VirtualFrame[];
 
-    const includedResources = {};
-
     for (let i = 0, { length } = frames; i < length; i++) {
       const frame = frames[i];
 
@@ -129,13 +129,15 @@ export const run = async (
         continue;
       }
 
+      const assetPaths: Record<string, string> = {};
+
       const fixedHTML = embedAssets(html, filePath => {
-        return `http://localhost/${filePath}`;
+        return (assetPaths[filePath] = "/" + encodeURIComponent(filePath));
       });
 
       const resources = [
         {
-          url: "http://localhost",
+          url: "/",
           root: true,
           mimetype: "text/html",
           sha: createHash("sha256")
@@ -143,16 +145,13 @@ export const run = async (
             .digest("hex"),
           content: fixedHTML
         },
-        ...getDocumenAssetPaths(html)
+        ...Object.keys(assetPaths)
           .map(filePath => {
-            if (includedResources[filePath]) {
-              return;
-            }
-            includedResources[filePath] = 1;
+            const url = assetPaths[filePath];
             const content = fs.readFileSync(filePath);
             const mimetype = mime.getType(filePath);
             return {
-              url: "http://localhost" + filePath,
+              url,
               sha: createHash("sha256")
                 .update(fs.readFileSync(filePath))
                 .digest("hex"),
