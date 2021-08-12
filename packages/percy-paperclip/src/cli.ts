@@ -100,11 +100,14 @@ export const run = async (
       const document = new PCDocument(root, server.allowFile) as any;
       const frameLabel = annotations.frame?.title || `Untitled ${i}`;
 
-      if (skipHidden && annotations.frame?.visible === false) {
+      if (
+        (skipHidden && annotations.frame?.visible === false) ||
+        annotations.visualRegresionTest === false
+      ) {
         console.info(
-          `[${chalk.blue(
-            "ppclp"
-          )}] skip hidden frame "${frameLabel}" - ${chalk.gray(relativePath)}`
+          `[${chalk.blue("ppclp")}] skip frame "${frameLabel}" - ${chalk.gray(
+            relativePath
+          )}`
         );
         continue;
       }
