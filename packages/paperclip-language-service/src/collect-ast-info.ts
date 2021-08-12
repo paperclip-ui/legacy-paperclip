@@ -82,11 +82,7 @@ export const collectASTInfo = (
   }
 };
 
-const getDocumentColors = (
-  uri: string,
-  asts: DependencyGraph,
-  evaluated: Record<string, LoadedData>
-) => {
+const getDocumentColors = (uri: string, asts: DependencyGraph) => {
   const documentAST = asts[uri];
   const { declarations } = getDocumentASTInfo(documentAST.content);
   const colors: ColorInfo[] = [];
@@ -359,7 +355,7 @@ const addDeclarationColors = (
       } = parseColor(colorValue);
 
       allColors.push({
-        value: { red, green, blue, alpha },
+        value: { red: red / 255, green: green / 255, blue: blue / 255, alpha },
         location: { start: colorStart, end: colorStart + color.length }
       });
     } catch (e) {}

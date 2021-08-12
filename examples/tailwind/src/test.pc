@@ -8,7 +8,7 @@
     background: rgb(195, 0, 255);
     padding: 32px;
   </style>
-  <h1>{title}!!!!!!</h1>
+  <h1>{title}</h1>
   <Button>Click me</Button>
 </div>
 
@@ -24,101 +24,3 @@
   </style>
   <Header title="This is a page" onClick={onHeaderClick} />
 </div>
-
-
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />
-<!--
-  @frame { title: "Mobile", width: 328, height: 768, x: 1277, y: -490 }
--->
-<Page />

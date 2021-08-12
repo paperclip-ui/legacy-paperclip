@@ -52,6 +52,10 @@
   </div> || <span>Something else</span>}
 </div>
 
+
+<!--
+  @frame { visible: false }
+-->
 <div a={"b"}
   a={1}
   a={true}
@@ -61,6 +65,10 @@
   a={a && !(b || c)} />
 
 
+
+<!--
+  @frame { visible: false }
+-->
 should have liens before and after
 
 
