@@ -132,6 +132,11 @@ class FrameController {
     this.dispatch(rendererUnounted({ id: this.id }));
   }
   handleEvents = (events: EngineDelegateEvent[] = [], preview: VirtualNode) => {
+    // Happens if window opens with error state
+    if (!preview) {
+      console.error(`Cannot handle events without preview!`);
+      return;
+    }
     if (!events.length) {
       return;
     }

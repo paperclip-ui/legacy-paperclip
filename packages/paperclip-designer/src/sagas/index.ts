@@ -4,7 +4,8 @@ import {
   computeVirtJSObject,
   LoadedPCData,
   VirtNodeSource,
-  nodePathToAry
+  nodePathToAry,
+  EngineDelegateChanged
 } from "paperclip-utils";
 import * as Url from "url";
 import {
@@ -342,15 +343,29 @@ function* handleClientComunication(client, getState, projectDirectory: string) {
     maybeLoadCanvasFile
   );
 
+  // application may have been loaded in an error state, so evaluated data
+  // won't be loaded in this case. When that happens, we need to reload the current
+  // canvas file
+  yield takeEvery([ActionType.ENGINE_DELEGATE_CHANGED], function*() {
+    const state: AppState = yield select(getState);
+    const currUri = state.designer.ui.query.canvasFile;
+
+    if (!state.designer.allLoadedPCFileData[currUri]) {
+      yield call(maybeLoadCanvasFile);
+    }
+  });
+
   function* maybeLoadCanvasFile() {
     const state: AppState = yield select(getState);
     const currUri = state.designer.ui.query.canvasFile;
     if (currUri !== _previousFileUri) {
       _previousFileUri = currUri;
-      yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
-      const result = yield call(openFile.call, { uri: currUri });
-      if (result) {
-        yield put(pcFileLoaded(result));
+      if (currUri) {
+        yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
+        const result = yield call(openFile.call, { uri: currUri });
+        if (result) {
+          yield put(pcFileLoaded(result));
+        }
       }
     }
   }
@@ -594,83 +609,6 @@ function* handleKeyCommands(mount: HTMLElement) {
 
 const isInput = (node: HTMLElement) =>
   /textarea|input/.test(node.tagName.toLowerCase());
-
-// function* handleClipboard(getState: AppStateSelector) {
-//   yield fork(handleCopy, getState);
-//   yield fork(handlePaste, getState);
-// }
-// function* handleCopy(getState: AppStateSelector) {
-//   const ev = eventChannel(emit => {
-//     window.document.addEventListener("copy", emit);
-//     return () => {
-//       window.document.removeEventListener("copy", emit);
-//     };
-//   });
-
-//   yield takeEvery(ev, function*(event: ClipboardEvent) {
-//     if (isInput(event.target as any)) {
-//       return;
-//     }
-
-//     const state: AppState = yield select(getState);
-//     const frames = getSelectedFrames(state.designer);
-
-//     if (!frames.length) {
-//       return;
-//     }
-
-//     const buffer = ["\n"];
-
-//     for (const frame of frames) {
-//       if (!state.shared.documents[frame.source.uri]) {
-//         console.warn(`document content doesn't exist`);
-//         return;
-//       }
-
-//       const start =
-//         frame.annotations?.source.location.start || frame.source.location.start;
-//       const end = frame.source.location.end;
-
-//       buffer.push(
-//         state.shared.documents[frame.source.uri].toString().slice(start, end),
-//         "\n"
-//       );
-//     }
-
-//     event.clipboardData.setData("text/plain", buffer.join("\n"));
-//     event.preventDefault();
-//   });
-// }
-
-// function* handlePaste(getState: AppStateSelector) {
-//   const ev = eventChannel(emit => {
-//     window.document.addEventListener("paste", emit);
-//     return () => {
-//       window.document.removeEventListener("paste", emit);
-//     };
-//   });
-
-//   yield takeEvery(ev, function*(event: ClipboardEvent) {
-//     const state: AppState = yield select(getState);
-//     if (state.designer.readonly) {
-//       return;
-//     }
-//     const content = event.clipboardData.getData("text/plain");
-//     event.preventDefault();
-//     if (content) {
-//       yield put(
-//         pasted({
-//           clipboardData: [
-//             {
-//               type: "text/plain",
-//               content
-//             }
-//           ]
-//         })
-//       );
-//     }
-//   });
-// }
 
 function* handleDocumentEvents() {
   yield fork(function*() {
