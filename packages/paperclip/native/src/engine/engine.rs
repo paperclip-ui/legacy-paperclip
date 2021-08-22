@@ -111,9 +111,8 @@ pub struct Engine {
   pub mode: EngineMode,
   // keeping tabs of
   pub diagnostics: BTreeMap<String, Vec<Diagnostic>>,
-  pub get_lint_config: Option<Box<GetLintConfigResolverFn>>
+  pub get_lint_config: Option<Box<GetLintConfigResolverFn>>,
 }
-
 
 impl Engine {
   pub fn new(
@@ -279,7 +278,7 @@ impl Engine {
             get_lint_config(uri).unwrap_or(LintOptions::nil())
           } else {
             LintOptions::nil()
-          }
+          },
         ))
       })
       .and_then(|lint_diagnostics| {

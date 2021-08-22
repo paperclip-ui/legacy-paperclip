@@ -20,9 +20,9 @@ mod pc;
 
 use crate::pc::runtime::evaluator::EngineMode;
 use crate::pc::runtime::inspect_node_styles::InspectionOptions;
+use crate::pc::runtime::lint::LintOptions;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
-use crate::pc::runtime::lint::{LintOptions};
 use engine::engine::Engine;
 
 #[cfg(feature = "wee_alloc")]
@@ -56,7 +56,7 @@ impl NativeEngine {
     file_exists: js_sys::Function,
     resolve_file: js_sys::Function,
     get_lint_config: js_sys::Function,
-    engine_mode: NativeEngineMode
+    engine_mode: NativeEngineMode,
   ) -> NativeEngine {
     console_error_panic_hook::set_once();
     NativeEngine {
@@ -80,7 +80,11 @@ impl NativeEngine {
         Some(Box::new(move |uri| {
           let this = JsValue::NULL;
           let arg = JsValue::from(uri);
-          get_lint_config.call1(&this, &arg).unwrap().into_serde().unwrap_or(None)
+          get_lint_config
+            .call1(&this, &arg)
+            .unwrap()
+            .into_serde()
+            .unwrap_or(None)
         })),
         match engine_mode {
           NativeEngineMode::SingleFrame => EngineMode::SingleFrame,

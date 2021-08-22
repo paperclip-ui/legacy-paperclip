@@ -15,13 +15,15 @@ use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_
 use super::selector_match::find_one_matching_element;
 use super::virt::Node as VirtNode;
 use crate::base::ast::{ExprSource, ExprTextSource, Location};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 // use crate::core::diagnostics::{Diagnostic, DiagnosticInfo, DiagnosticLevel, DiagnosticSourceInfo};
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
 use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast::{CSSObject, Rule};
-use crate::css::runtime::virt::{CSSSheet, Rule as VirtRule, StyleRule as VirtStyleRule, CSSStyleProperty as VirtCSSStyleProperty};
+use crate::css::runtime::virt::{
+  CSSSheet, CSSStyleProperty as VirtCSSStyleProperty, Rule as VirtRule, StyleRule as VirtStyleRule,
+};
 use crate::pc::ast::PCObject;
 use crate::pc::parser::parse;
 
@@ -48,7 +50,6 @@ pub enum LintWarning {
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LintOptions {
-  
   #[serde(rename = "noUnusedStyles")]
   pub no_unused_styles: Option<bool>,
 
@@ -64,7 +65,7 @@ impl LintOptions {
     LintOptions {
       no_unused_styles: None,
       enforce_vars: None,
-      enforce_previews: None
+      enforce_previews: None,
     }
   }
 }
@@ -145,12 +146,11 @@ fn lint_style_declaration(
   }
 
   // dirty check to ensure that vars are used. This
-  // covers most of our bases. Will need to make this more precise at 
+  // covers most of our bases. Will need to make this more precise at
   // some point.
   if decl.value.contains("var(") || decl.value == "initial" || decl.value == "inherit" {
     return;
   }
-
 
   let expr_option = graph.get_expression_by_id(&decl.source_id);
 
@@ -255,14 +255,8 @@ mod tests {
         "<style>:global(div) { color: var(--some-color); }</style><a />",
         0,
       ),
-      (
-        "<style>:global(div) { padding: initial; }</style><a />",
-        0,
-      ),
-      (
-        "<style>:global(div) { padding: inherit; }</style><a />",
-        0,
-      )
+      ("<style>:global(div) { padding: initial; }</style><a />", 0),
+      ("<style>:global(div) { padding: inherit; }</style><a />", 0),
     ];
 
     for (source, warning_count) in cases.iter() {
