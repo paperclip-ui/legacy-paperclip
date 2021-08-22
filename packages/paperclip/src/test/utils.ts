@@ -38,6 +38,12 @@ export const createMockEngine = (
         resolveFile: (from, to) => {
           return path.join(path.dirname(from), to).replace(/\\/g, "/");
         },
+        getLintConfig: () => {
+          return {
+            noUnusedStyles: true,
+            enforceVars: ["font-family", "padding", "color"]
+          };
+        },
         ...io
       },
       mode

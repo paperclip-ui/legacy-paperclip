@@ -4,7 +4,7 @@ import { URL, fileURLToPath } from "url";
 import * as path from "path";
 import { EngineDelegate, EngineMode } from "../core";
 
-import { resolveImportUri } from "paperclip-utils";
+import { resolveImportUri, resolvePCConfig } from "paperclip-utils";
 
 const existsSyncCaseSensitive = uri => {
   const pathname = fileURLToPath(String(uri));
@@ -43,6 +43,14 @@ const getIOOptions = options => {
         // TRUE boolean flag necessary here to resolve symlinks.
         return resolveFile(from, to);
       },
+      getLintConfig: uri => {
+        const info = resolvePCConfig(fs)(uri);
+        if (!info) {
+          return null;
+        }
+
+        return info[0].lint;
+      },
       mode: EngineMode.SingleFrame
     },
     options.io,
@@ -56,10 +64,11 @@ export const createEngineDelegate = (options = {}, onCrash: any = () => {}) => {
     readFile,
     fileExists,
     resolveFile,
+    getLintConfig,
     mode = EngineMode.SingleFrame
   } = getIOOptions(options || {});
   return new EngineDelegate(
-    NativeEngine.new(readFile, fileExists, resolveFile, mode),
+    NativeEngine.new(readFile, fileExists, resolveFile, getLintConfig, mode),
     readFile,
     onCrash ||
       function(e) {
