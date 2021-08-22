@@ -5,23 +5,28 @@ describe(__filename + "#", () => {
   [
     [
       `shows warning for simple style rule without target`,
-      `<style>div { color: red }</style>`,
+      `<style>div { color2: red }</style>`,
       1
     ],
     [
       `does not display warning for style rule if applied`,
-      `<style>div { color: red }</style><div />`,
+      `<style>div { color2: red }</style><div />`,
       0
     ],
     [
       `shows lint diagnostics if there's a syntax error`,
-      `<style>div { color: red }</style><div>`,
+      `<style>div { bc: 2; }</style><div>`,
       1
     ],
     [
       `works for attribute equalities`,
-      `<style>[href="test"] { color: red }</style><div href="test" />`,
+      `<style>[href="test"] { ab: 1; }</style><div href="test" />`,
       0
+    ],
+    [
+      `works for color props`,
+      `<style>[href="test"] { color: red }</style><div href="test" />`,
+      1
     ]
   ].forEach(([title, source, len]: [string, string, number]) => {
     it(title, () => {

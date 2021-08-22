@@ -5,13 +5,14 @@ export const loadEngineDelegate = async (options, onCrash) => {
   await import("./native/browser/paperclip_bg.wasm");
 
   const { NativeEngine } = await import("./native/browser/paperclip_bg");
-  const { readFile, fileExists, resolveFile } = options.io;
+  const { readFile, fileExists, resolveFile, getLintConfig } = options.io;
 
   return new EngineDelegate(
     NativeEngine.new(
       readFile,
       fileExists,
       resolveFile,
+      getLintConfig,
       options.mode || EngineMode.MultiFrame
     ),
     readFile,

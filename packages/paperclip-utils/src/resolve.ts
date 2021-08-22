@@ -48,18 +48,29 @@ export const resolveImportFile = fs => (
 const readJSONSync = fs => (uri: string) =>
   JSON.parse(fs.readFileSync(uri, "utf8"));
 
+export const resolvePCConfig = fs => (
+  fromPath: string
+): [PaperclipConfig, string] | null => {
+  const configUrl = findPCConfigUrl(fs)(fromPath);
+  if (!configUrl) return null;
+  const uri = new URL(configUrl) as any;
+
+  // need to parse each time in case config changed.
+  return [readJSONSync(fs)(uri), configUrl];
+};
+
 const resolveModule = fs => (
   fromPath: string,
   moduleRelativePath: string,
   resolveOutput: boolean
 ) => {
-  const configUrl = findPCConfigUrl(fs)(fromPath);
-  if (!configUrl) return null;
-
-  const uri = new URL(configUrl) as any;
-
   // need to parse each time in case config changed.
-  const config: PaperclipConfig = readJSONSync(fs)(uri);
+  const [config, configUrl] = resolvePCConfig(fs)(fromPath) || [];
+
+  if (!config) {
+    return null;
+  }
+
   const configPathDir = path.dirname(stripFileProtocol(configUrl));
 
   const moduleFileUrl = url.pathToFileURL(
