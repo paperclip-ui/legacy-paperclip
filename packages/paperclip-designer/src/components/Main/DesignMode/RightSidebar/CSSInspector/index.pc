@@ -446,7 +446,6 @@
       <style>
         display: flex;
         flex: 1;
-        justify-content: space-between;
         grid-column-gap: var(--spacing-2);
         & > * {
           display: inline-block;
@@ -468,19 +467,19 @@
   <style>
     border-top: 1px solid rgb(240, 240, 240);
     display: flex;
-    justify-content: space-between;
     padding: var(--spacing-2) 0px;
     padding-left: calc(var(--spacing-7) + 2px);
     padding-right: var(--spacing-7);
+    grid-column-gap: var(--spacing-5);
     font-size: 0.9em;
     &.disabled {
       color: rgba(0,0,0,0.2);
     }
+    & > * {
+      flex: 1;
+    }
   </style>
-  <span>
-    <span>{selector}&nbsp;</span>
-    <span className="decl-name">{value}</span>
-  </span>
+  <span>{selector}</span>
   <span>{fileName}</span>
 </div>
 
@@ -506,13 +505,10 @@
       <ComputedProperty name="background-color"
         value="orange"
         sources={<fragment />}>
-        <ComputedPropertySource selector="background-color"
-          value="background-color"
-          fileName="atoms.pc" />
+        <ComputedPropertySource selector=".container" fileName="atoms.pc" />
         <ComputedPropertySource disabled
-          selector="background-color"
-          value="background-color"
-          fileName="atoms.pc" />
+          selector={<ScopedElementSelector />}
+          fileName="global.css" />
       </ComputedProperty>
       <ComputedProperty collapsed
         name="box-shadow"

@@ -148,7 +148,13 @@ fn lint_style_declaration(
   // dirty check to ensure that vars are used. This
   // covers most of our bases. Will need to make this more precise at
   // some point.
-  if decl.value.contains("var(") || decl.value == "initial" || decl.value == "inherit" {
+  if decl.value.contains("var(")
+    || decl.value == "0"
+    || decl.value == "0px"
+    || decl.value.contains("transparent")
+    || decl.value.contains("inherit")
+    || decl.value.contains("initial")
+  {
     return;
   }
 
@@ -257,6 +263,8 @@ mod tests {
       ),
       ("<style>:global(div) { padding: initial; }</style><a />", 0),
       ("<style>:global(div) { padding: inherit; }</style><a />", 0),
+      ("<style>:global(div) { padding: 0; }</style><a />", 0),
+      ("<style>:global(div) { padding: 0px; }</style><a />", 0),
     ];
 
     for (source, warning_count) in cases.iter() {
