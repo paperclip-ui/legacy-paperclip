@@ -1,5 +1,9 @@
 <import src="styles/atoms.pc" as="atoms" />
 
+
+<!--
+  @frame { visible: false }
+-->
 <div export
   component
   as="default"
