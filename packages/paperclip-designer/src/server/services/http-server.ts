@@ -9,10 +9,14 @@ import sockjs from "sockjs";
 import express from "express";
 import path from "path";
 import URL from "url";
+import * as http from "http";
+
+export type ExistingServer = { express: express.Express; http: http.Server };
 
 type Options = {
   defaultPort: number;
   localResourceRoots: string[];
+  server?: ExistingServer;
 };
 
 export class SockJSConnection implements BaseEvent {
@@ -41,7 +45,7 @@ export const httpServer = (options: Options) => async (
 };
 
 const init = (
-  { defaultPort, localResourceRoots }: Options,
+  { defaultPort, localResourceRoots, server: existingServer }: Options,
   { events }: ServerKernel
 ) => async () => {
   const port = await getPort({ port: defaultPort });
@@ -51,9 +55,9 @@ const init = (
     events.dispatch(new SockJSConnection(conn));
   });
 
-  const app = express();
+  const app = existingServer ? existingServer.express : express();
 
-  const server = app.listen(port);
+  const server = existingServer ? existingServer.http : app.listen(port);
   io.installHandlers(server, { prefix: "/rt" });
 
   // TODO - move these handlers to

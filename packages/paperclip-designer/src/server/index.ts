@@ -1,5 +1,5 @@
 import { fileWatcherService } from "./services/file-watcher";
-import { httpServer } from "./services/http-server";
+import { ExistingServer, httpServer } from "./services/http-server";
 import { eventLogger } from "./services/event-logger";
 import { rpcService } from "./services/rpc";
 import { postInitService } from "./services/post-init";
@@ -17,6 +17,7 @@ export type ServerOptions = {
   localResourceRoots: string[];
   port?: number;
   cwd?: string;
+  existingServer?: ExistingServer;
   readonly?: boolean;
   openInitial: boolean;
   handleEvent?: (event: BaseEvent) => void;
@@ -32,6 +33,7 @@ export const startServer = ({
   cwd = process.cwd(),
   credentials = {},
   openInitial,
+  existingServer,
   readonly,
   handleEvent,
   revealSource = noop
@@ -41,7 +43,7 @@ export const startServer = ({
   const serviceManager = new ServiceManager(kernel).add(
     fileWatcherService({ cwd }),
     pcEngineService(),
-    httpServer({ defaultPort, localResourceRoots }),
+    httpServer({ defaultPort, localResourceRoots, server: existingServer }),
     eventLogger(),
     postInitService({ openInitial }),
     rpcService({
