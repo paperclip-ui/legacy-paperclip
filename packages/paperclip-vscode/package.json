@@ -1,7 +1,7 @@
 {
   "name": "paperclip-vscode",
   "displayName": "Paperclip",
-  "version": "17.12.0",
+  "version": "17.14.13",
   "electronVersion": "7.1.10",
   "publisher": "crcn",
   "preview": true,
@@ -22,7 +22,7 @@
     "type": "git",
     "url": "https://github.com/crcn/paperclip.git"
   },
-  "main": "lib/client/index.js",
+  "main": "lib/extension/index.js",
   "engines": {
     "vscode": "^1.41.0"
   },
@@ -166,12 +166,14 @@
     "lodash": "^4.17.15",
     "mousetrap": "^1.6.5",
     "p-limit": "^3.0.2",
-    "paperclip": "^17.12.0",
-    "paperclip-autocomplete": "^17.12.0",
-    "paperclip-designer": "^17.12.0",
-    "paperclip-source-writer": "^17.12.0",
-    "paperclip-utils": "^17.12.0",
-    "paperclip-web-renderer": "^17.12.0",
+    "paperclip": "^17.14.13",
+    "paperclip-autocomplete": "^17.14.3",
+    "paperclip-common": "^17.14.6",
+    "paperclip-designer": "^17.14.13",
+    "paperclip-language-service": "^17.14.13",
+    "paperclip-source-writer": "^17.14.13",
+    "paperclip-utils": "^17.14.10",
+    "paperclip-web-renderer": "^17.14.13",
     "vscode-languageclient": "6.0.1",
     "vscode-languageserver": "6.0.1",
     "vscode-languageserver-protocol": "3.15.3",

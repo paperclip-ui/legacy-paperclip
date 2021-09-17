@@ -10,6 +10,7 @@
   className="tools"
   {onClick?}
   {onMouseUp?}
+  {onDoubleClick?}
   {onMouseMove?}
   {onMouseLeave?}
   {onWheel?}>

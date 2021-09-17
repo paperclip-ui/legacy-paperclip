@@ -14,23 +14,26 @@ import {
   mergeBoxes,
   getActiveFrameIndex,
   isExpanded,
-  getPreviewChildren,
   getCurrentPreviewFrameBoxes,
-  updateShared,
   DesignerState,
-  SyncLocationMode
+  SyncLocationMode,
+  pruneDeletedNodes,
+  getActivePCData,
+  getScopedBoxes,
+  Point
 } from "../state";
 import { produce } from "immer";
-import Automerge from "automerge";
+import { compare, applyPatch } from "fast-json-patch";
 import {
   Action,
   ActionType,
+  CanvasMouseUp,
   ExternalActionType,
   LocationChanged,
   RedirectRequested,
   ServerActionType
 } from "../actions";
-import { clamp } from "lodash";
+import { clamp, without } from "lodash";
 import {
   updateAllLoadedData,
   VirtualFrame,
@@ -40,8 +43,14 @@ import {
   NodeAnnotations,
   isPaperclipFile,
   EngineDelegateEventKind,
+  getInstanceAncestor,
   BasicPaperclipActionType,
-  LoadedPCData
+  LoadedPCData,
+  getNodePath,
+  nodePathToAry,
+  getNodeByPath,
+  getNodeAncestors,
+  isInstance
 } from "paperclip-utils";
 import * as path from "path";
 import { actionCreator } from "../actions/base";
@@ -51,6 +60,7 @@ const PAN_X_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const PAN_Y_SENSITIVITY = IS_WINDOWS ? 0.05 : 1;
 const MIN_ZOOM = 0.01;
 const MAX_ZOOM = 6400 / 100;
+const DOUBLE_CLICK_MS = 250;
 
 const normalizeZoom = zoom => {
   return zoom < 1 ? 1 / Math.round(1 / zoom) : Math.round(zoom);
@@ -137,12 +147,13 @@ const selectNode = (
   metaKey: boolean,
   designer: DesignerState
 ) => {
-  return produce(designer, newDesigner => {
+  designer = produce(designer, newDesigner => {
     newDesigner.selectedNodeStyleInspections = [];
     newDesigner.selectedNodeSources = [];
 
     if (nodePath == null) {
       newDesigner.selectedNodePaths = [];
+      newDesigner.scopedElementPath = null;
       return;
     }
     if (shiftKey) {
@@ -150,6 +161,36 @@ const selectNode = (
       newDesigner.selectedNodePaths.push(nodePath);
     } else {
       newDesigner.selectedNodePaths = [nodePath];
+    }
+
+    if (
+      newDesigner.scopedElementPath &&
+      !nodePath.startsWith(newDesigner.scopedElementPath)
+    ) {
+      const preview = getActivePCData(newDesigner).preview;
+      const node = getNodeByPath(nodePath, preview);
+      const instanceAncestor = getInstanceAncestor(node, preview);
+      newDesigner.scopedElementPath =
+        instanceAncestor && getNodePath(instanceAncestor, preview);
+    }
+  });
+
+  if (nodePath) {
+    designer = expandNode(nodePath, designer);
+  }
+
+  return designer;
+};
+
+const expandNode = (nodePath: string, designer: DesignerState) => {
+  const nodePathAry = nodePathToAry(nodePath);
+  return produce(designer, newDesigner => {
+    // can't be empty, so start at 1
+    for (let i = 1, { length } = nodePathAry; i <= length; i++) {
+      const ancestorPath = nodePathAry.slice(0, i).join(".");
+      if (!newDesigner.expandedNodePaths.includes(ancestorPath)) {
+        newDesigner.expandedNodePaths.push(ancestorPath);
+      }
     }
   });
 };
@@ -208,16 +249,52 @@ export const reduceDesigner = (
         designer
       );
     }
+    case ActionType.LAYER_LEAF_CLICKED:
+    case ActionType.NODE_BREADCRUMB_CLICKED: {
+      if (action.payload.metaKey) {
+        return designer;
+      }
+
+      return selectNode(action.payload.nodePath, false, false, designer);
+    }
+    case ActionType.LAYER_EXPAND_TOGGLE_CLICKED: {
+      return produce(designer, newDesigner => {
+        if (newDesigner.expandedNodePaths.includes(action.payload.nodePath)) {
+          newDesigner.expandedNodePaths = without(
+            newDesigner.expandedNodePaths,
+            action.payload.nodePath
+          );
+        } else {
+          newDesigner.expandedNodePaths.push(action.payload.nodePath);
+        }
+      });
+    }
+    case ActionType.NODE_BREADCRUMB_MOUSE_ENTERED: {
+      return produce(designer, newDesigner => {
+        newDesigner.highlightNodePath = action.payload.nodePath;
+      });
+    }
+    case ActionType.NODE_BREADCRUMB_MOUSE_LEFT: {
+      return produce(designer, newDesigner => {
+        newDesigner.highlightNodePath = null;
+      });
+    }
     case ServerActionType.VIRTUAL_NODE_SOURCES_LOADED: {
       return produce(designer, newDesigner => {
         newDesigner.selectedNodeSources = action.payload;
       });
     }
     case ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED: {
+      const diff = compare(
+        designer.selectedNodeStyleInspections,
+        action.payload.map(info => info[1])
+      );
+
       return produce(designer, newDesigner => {
-        newDesigner.selectedNodeStyleInspections = action.payload.map(
-          info => info[1]
-        );
+        newDesigner.selectedNodeStyleInspections = applyPatch(
+          newDesigner.selectedNodeStyleInspections,
+          diff
+        ).newDocument;
       });
     }
     case ActionType.BIRDSEYE_FILTER_CHANGED: {
@@ -306,6 +383,7 @@ export const reduceDesigner = (
       });
 
       designer = maybeCenterCanvas(designer);
+      designer = pruneDeletedNodes(designer);
 
       return designer;
     }
@@ -319,6 +397,7 @@ export const reduceDesigner = (
         newDesigner.pcFileDataVersion++;
       });
       designer = maybeCenterCanvas(designer);
+      designer = pruneDeletedNodes(designer);
       return designer;
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
@@ -360,6 +439,7 @@ export const reduceDesigner = (
       // Don't do this until deselecting can be handled properly
       return produce(designer, newDesigner => {
         newDesigner.selectedNodePaths = [];
+        newDesigner.scopedElementPath = null;
         newDesigner.showBirdseye = false;
       });
     }
@@ -394,11 +474,24 @@ export const reduceDesigner = (
       if (!designer.canvas.transform.x || !designer.canvas.mousePosition?.x) {
         return designer;
       }
+
+      let doubleClicked;
+
+      [designer, doubleClicked] = handleDoubleClick(designer, action);
+
+      if (doubleClicked) {
+        return designer;
+      }
+
       // Don't do this until deselecting can be handled properly
       const nodePath = getNodeInfoAtPoint(
         designer.canvas.mousePosition,
         designer.canvas.transform,
-        designer.boxes,
+        getScopedBoxes(
+          designer.boxes,
+          designer.scopedElementPath,
+          getActivePCData(designer).preview
+        ),
         isExpanded(designer) ? getActiveFrameIndex(designer) : null
       )?.nodePath;
       return selectNode(
@@ -467,7 +560,7 @@ export const reduceDesigner = (
 
     // happens when grid view is requested
     case ServerActionType.ALL_PC_CONTENT_LOADED: {
-      return produce(designer, newDesigner => {
+      designer = produce(designer, newDesigner => {
         newDesigner.loadingBirdseye = false;
         newDesigner.loadedBirdseyeInitially = true;
         newDesigner.allLoadedPCFileData = action.payload;
@@ -477,6 +570,9 @@ export const reduceDesigner = (
         // need to explicitly version the data like so
         newDesigner.pcFileDataVersion++;
       });
+
+      designer = pruneDeletedNodes(designer);
+      return designer;
     }
     case ActionType.RESIZER_MOVED:
     case ActionType.RESIZER_PATH_MOUSE_MOVED: {
@@ -604,9 +700,7 @@ export const reduceDesigner = (
       });
     }
     case ActionType.CANVAS_MOUSE_MOVED: {
-      return produce(designer, newDesigner => {
-        newDesigner.canvas.mousePosition = action.payload;
-      });
+      return highlightNode(designer, action.payload);
     }
     case ActionType.DIR_LOADED: {
       return produce(designer, newDesigner => {
@@ -637,5 +731,61 @@ export const reduceDesigner = (
   return designer;
 };
 
+const handleDoubleClick = (
+  designer: DesignerState,
+  action: CanvasMouseUp
+): [DesignerState, boolean] => {
+  const oldTimestamp = designer.canvasClickTimestamp;
+
+  if (
+    !oldTimestamp ||
+    action.payload.timestamp - oldTimestamp > DOUBLE_CLICK_MS
+  ) {
+    return [
+      produce(designer, newDesigner => {
+        newDesigner.canvasClickTimestamp = action.payload.timestamp;
+      }),
+      false
+    ];
+  }
+  const nodePath = getNodeInfoAtPoint(
+    designer.canvas.mousePosition,
+    designer.canvas.transform,
+    getScopedBoxes(
+      designer.boxes,
+      designer.scopedElementPath,
+      getActivePCData(designer).preview
+    ),
+    isExpanded(designer) ? getActiveFrameIndex(designer) : null
+  )?.nodePath;
+
+  designer = produce(designer, newDesigner => {
+    newDesigner.canvasClickTimestamp = action.payload.timestamp;
+    newDesigner.scopedElementPath = nodePath;
+  });
+
+  designer = highlightNode(designer, designer.canvas.mousePosition!);
+
+  return [designer, true];
+};
+
 const cleanupPath = (pathname: string) =>
   path.normalize(pathname).replace(/\/$/, "");
+
+const highlightNode = (designer: DesignerState, mousePosition: Point) => {
+  return produce(designer, newDesigner => {
+    newDesigner.canvas.mousePosition = mousePosition;
+    const canvas = newDesigner.canvas;
+    const info = getNodeInfoAtPoint(
+      mousePosition,
+      canvas.transform,
+      getScopedBoxes(
+        designer.boxes,
+        designer.scopedElementPath,
+        getActivePCData(designer).preview
+      ),
+      isExpanded(newDesigner) ? getActiveFrameIndex(newDesigner) : null
+    );
+    newDesigner.highlightNodePath = info?.nodePath;
+  });
+};

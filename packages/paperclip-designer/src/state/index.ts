@@ -1,12 +1,19 @@
 import produce from "immer";
-import { isEqual, pick, pickBy } from "lodash";
+import { isEqual, omit, omitBy, pick, pickBy } from "lodash";
 import Automerge from "automerge";
 import {
   computeVirtJSObject,
   ExprSource,
+  getNodeAncestors,
+  getNodeByPath,
+  getNodePath,
+  getTreeNodeMap,
+  isInstance,
+  isNodeParent,
   LoadedPCData,
   memoize,
   NodeAnnotations,
+  nodePathToAry,
   NodeStyleInspection,
   VirtualFrame,
   VirtualNodeKind
@@ -111,6 +118,7 @@ export type VirtualNodeSourceInfo = {
 };
 export type DesignerState = {
   syncLocationMode?: number;
+  canvasClickTimestamp?: number;
   ui: UIState;
   readonly: boolean;
   sharable: boolean;
@@ -129,7 +137,10 @@ export type DesignerState = {
   // rendererElement?: any;
   availableBrowsers: AvailableBrowser[];
   resourceHost: string;
+  highlightNodePath: string;
+  scopedElementPath?: string;
   selectedNodePaths: string[];
+  expandedNodePaths: string[];
   selectedNodeSources: VirtualNodeSourceInfo[];
   selectedNodeStyleInspections: NodeStyleInspection[];
   projectDirectory?: Directory;
@@ -196,12 +207,14 @@ export const INITIAL_STATE: AppState = {
     pcFileDataVersion: 0,
     selectedNodeSources: [],
     selectedNodeStyleInspections: [],
+    expandedNodePaths: [],
     syncLocationMode: SyncLocationMode.Location | SyncLocationMode.Query,
     sharable: true,
     ui: {
       pathname: "",
       query: {}
     },
+    highlightNodePath: null,
     centeredInitial: false,
     mountedRendererIds: [],
     toolsLayerEnabled: true,
@@ -375,6 +388,59 @@ export const getNodeInfoAtPoint = (
   );
 };
 
+export const getScopedBoxes = memoize(
+  (
+    boxes: Record<string, Box>,
+    scopedElementPath: string,
+    root: VirtualNode
+  ) => {
+    const hoverableNodePaths = getHoverableNodePaths(scopedElementPath, root);
+
+    return pick(boxes, hoverableNodePaths);
+  }
+);
+
+const getHoverableNodePaths = memoize(
+  (scopedNodePath: string | undefined, root: VirtualNode) => {
+    const scopedNode = scopedNodePath
+      ? getNodeByPath(scopedNodePath, root)
+      : root;
+    const ancestors = scopedNodePath
+      ? getNodeAncestors(scopedNodePath, root)
+      : [];
+
+    const hoverable: VirtualNode[] = [];
+
+    const scopes = [scopedNode, ...ancestors];
+
+    for (const scope of scopes) {
+      addHoverableChildren(scope, true, hoverable);
+    }
+
+    return hoverable.map(node => getNodePath(node, root));
+  }
+);
+
+const addHoverableChildren = (
+  node: VirtualNode,
+  isScope: boolean,
+  hoverable: VirtualNode[]
+) => {
+  if (!hoverable.includes(node)) {
+    hoverable.push(node);
+  }
+
+  if (isInstance(node) && !isScope) {
+    return;
+  }
+
+  if (isNodeParent(node)) {
+    for (const child of node.children) {
+      addHoverableChildren(child, false, hoverable);
+    }
+  }
+};
+
 export const getFrameBoxes = memoize(
   (boxes: Record<string, Box>, frameIndex: number) => {
     const v = pickBy(boxes, (value: Box, key: string) => {
@@ -408,14 +474,17 @@ const getPreviewFrameBoxes = (preview: VirtualNode) => {
   return frameBoxes;
 };
 
-export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
+export const getCurrentPreview = (designer: DesignerState) => {
   const currentPCData = designer.allLoadedPCFileData[
     designer.ui.query?.canvasFile
   ] as LoadedPCData;
+  return currentPCData?.preview;
+};
 
-  return currentPCData?.preview
-    ? getPreviewFrameBoxes(currentPCData?.preview).filter(Boolean)
-    : [];
+export const getCurrentPreviewFrameBoxes = (designer: DesignerState) => {
+  const preview = getCurrentPreview(designer);
+
+  return preview ? getPreviewFrameBoxes(preview).filter(Boolean) : [];
 };
 
 const getAllFrameBounds = (designer: DesignerState) => {
@@ -529,4 +598,47 @@ export const centerEditorCanvas = (
   });
 
   return designer;
+};
+
+export const getActivePCData = (designer: DesignerState) =>
+  (designer.allLoadedPCFileData[
+    designer.ui.query.canvasFile
+  ] as any) as LoadedPCData;
+
+export const getAppActivePCData = (state: AppState) =>
+  getActivePCData(state.designer);
+export const getSelectedNodePaths = (state: AppState) =>
+  state.designer.selectedNodePaths;
+
+export const getInspectionInfo = (state: AppState) =>
+  state.designer.selectedNodeStyleInspections;
+
+export const pruneDeletedNodes = (designer: DesignerState) => {
+  return produce(designer, newDesigner => {
+    const pruneAry = (ary: string[]) => {
+      let pruned = false;
+      for (let i = ary.length; i--; ) {
+        const nodePath = ary[i];
+        if (!getNodeByPath(nodePath, activePCData?.preview)) {
+          pruned = true;
+          ary.splice(i, 1);
+        }
+      }
+      return pruned;
+    };
+
+    const activePCData = getActivePCData(newDesigner);
+    if (pruneAry(newDesigner.selectedNodePaths)) {
+      newDesigner.selectedNodeStyleInspections = [];
+      newDesigner.selectedNodeSources = [];
+    }
+    pruneAry(newDesigner.expandedNodePaths);
+
+    if (
+      newDesigner.scopedElementPath &&
+      !getNodeByPath(newDesigner.scopedElementPath, activePCData.preview)
+    ) {
+      newDesigner.scopedElementPath = undefined;
+    }
+  });
 };

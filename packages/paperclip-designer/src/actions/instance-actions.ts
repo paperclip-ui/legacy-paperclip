@@ -1,4 +1,4 @@
-import { BaseAction, actionCreator } from "./base";
+import { BaseAction, actionCreator, publicActionCreator } from "./base";
 import { PCMutation } from "paperclip-source-writer";
 import {
   VirtualNode,
@@ -21,7 +21,7 @@ export enum ActionType {
   ZOOM_IN_KEY_PRESSED = "ZOOM_IN_KEY_PRESSED",
   ZOOM_OUT_KEY_PRESSED = "ZOOM_OUT_KEY_PRESSED",
   BIRDSEYE_FILTER_CHANGED = "BIRDSEYE_FILTER_CHANGED",
-  ENV_OPTION_CLICKED = "ENV_OPTION_CLICKED",
+
   BIRDSEYE_TOP_FILTER_BLURRED = "BIRDSEYE_TOP_FILTER_BLURRED",
   RENDERER_UNMOUNTED = "RENDERER_UNMOUNTED",
   PC_FILE_OPENED = "PC_FILE_OPENED",
@@ -31,6 +31,7 @@ export enum ActionType {
   ERROR_BANNER_CLICKED = "ERROR_BANNER_CLICKED",
   CANVAS_MOUSE_LEAVE = "CANVAS_MOUSE_LEAVE",
   CANVAS_MOUSE_UP = "CANVAS_MOUSE_UP",
+  CANVAS_DOUBLE_CLICK = "CANVAS_DOUBLE_CLICK",
   ZOOM_IN_BUTTON_CLICKED = "ZOOM_IN_BUTTON_CLICKED",
   POPOUT_BUTTON_CLICKED = "POPOUT_BUTTON_CLICKED",
   POPOUT_WINDOW_REQUESTED = "POPOUT_WINDOW_REQUESTED",
@@ -43,6 +44,9 @@ export enum ActionType {
   DIR_LOADED = "DIR_LOADED",
   FS_ITEM_CLICKED = "FS_ITEM_CLICKED",
   VIRTUAL_NODES_SELECTED = "VIRTUAL_NODES_SELECTED",
+  NODE_BREADCRUMB_CLICKED = "NODE_BREADCRUMB_CLICKED",
+  NODE_BREADCRUMB_MOUSE_ENTERED = "NODE_BREADCRUMB_MOUSE_ENTERED",
+  NODE_BREADCRUMB_MOUSE_LEFT = "NODE_BREADCRUMB_MOUSE_LEFT",
   CANVAS_PAN_START = "CANVAS_PAN_START",
   CANVAS_PAN_END = "CANVAS_PAN_END",
   CANVAS_PANNED = "CANVAS_PANNED",
@@ -70,6 +74,7 @@ export enum ActionType {
   RESIZER_PATH_MOUSE_STOPPED_MOVING = "RESIZER_PATH_MOUSE_STOPPED_MOVING",
   META_CLICKED = "META_CLICKED",
   PC_VIRT_OBJECT_EDITED = "PC_VIRT_OBJECT_EDITED",
+  SERVER_OPTIONS_LOADED = "SERVER_OPTIONS_LOADED",
 
   ACTION_HANDLED = "ACTION_HANDLED",
   FRAME_TITLE_CHANGED = "FRAME_TITLE_CHANGED",
@@ -77,7 +82,11 @@ export enum ActionType {
   COLLAPSE_FRAME_BUTTON_CLICKED = "COLLAPSE_FRAME_BUTTON_CLICKED",
   VISUAL_EDITOR_INSTANCE_CHANGED = "VISUAL_EDITOR_INSTANCE_CHANGED",
   VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED = "VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED",
-  STYLE_RULE_FILE_NAME_CLICKED = "STYLE_RULE_FILE_NAME_CLICKED"
+  STYLE_RULE_FILE_NAME_CLICKED = "STYLE_RULE_FILE_NAME_CLICKED",
+  LAYER_LEAF_CLICKED = "LAYER_LEAF_CLICKED",
+  LAYER_EXPAND_TOGGLE_CLICKED = "LAYER_EXPAND_TOGGLE_CLICKED",
+  WINDOW_FOCUSED = "WINDOW_FOCUSED",
+  WINDOW_BLURRED = "WINDOW_BLURRED"
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -114,6 +123,33 @@ export type ResizerStoppedMoving = WrappedEvent<
   }
 >;
 
+export type ServerOptionsLoaded = BaseAction<
+  ActionType.SERVER_OPTIONS_LOADED,
+  { localResourceRoots: string[] }
+>;
+
+export type NodeBreadcrumbClicked = BaseAction<
+  ActionType.NODE_BREADCRUMB_CLICKED,
+  {
+    nodePath: string;
+    metaKey: boolean;
+  }
+>;
+
+export type NodeBreadcrumbMouseEntered = BaseAction<
+  ActionType.NODE_BREADCRUMB_MOUSE_ENTERED,
+  {
+    nodePath: string;
+  }
+>;
+
+export type NodeBreadcrumbMouseLeft = BaseAction<
+  ActionType.NODE_BREADCRUMB_MOUSE_LEFT,
+  {
+    nodePath: string;
+  }
+>;
+
 export type GridHotkeyPressed = WrappedEvent<
   MouseEvent,
   ActionType.GRID_HOTKEY_PRESSED
@@ -121,13 +157,6 @@ export type GridHotkeyPressed = WrappedEvent<
 export type GetAllScreensRequested = WrappedEvent<
   MouseEvent,
   ActionType.GET_ALL_SCREENS_REQUESTED
->;
-export type EnvOptionClicked = BaseAction<
-  ActionType.ENV_OPTION_CLICKED,
-  {
-    option: EnvOption;
-    path: string;
-  }
 >;
 export type VirtualNodesSelected = BaseAction<
   ActionType.VIRTUAL_NODES_SELECTED,
@@ -190,6 +219,14 @@ export type LocationChanged = BaseAction<
     pathname: string;
     query: any;
   }
+>;
+export type LayerLeafClicked = BaseAction<
+  ActionType.LAYER_LEAF_CLICKED,
+  { nodePath: string; metaKey: boolean }
+>;
+export type LayerExpandToggleClicked = BaseAction<
+  ActionType.LAYER_EXPAND_TOGGLE_CLICKED,
+  { nodePath: string }
 >;
 export type RedirectRequested = BaseAction<
   ActionType.REDIRECT_REQUESTED,
@@ -279,7 +316,12 @@ export type RendererChanged = BaseAction<
 
 export type CanvasMouseUp = BaseAction<
   ActionType.CANVAS_MOUSE_UP,
-  { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean }
+  { metaKey: boolean; ctrlKey: boolean; shiftKey: boolean; timestamp: number }
+>;
+
+export type CanvasDoubleClick = BaseAction<
+  ActionType.CANVAS_DOUBLE_CLICK,
+  Point
 >;
 
 export type CanvasMouseLeave = BaseAction<
@@ -370,11 +412,20 @@ export const birdseyeFilterChanged = actionCreator<BirdseyeFilterChanged>(
 export const redirectRequest = actionCreator<RedirectRequested>(
   ActionType.REDIRECT_REQUESTED
 );
+export const nodeBreadcrumbClicked = actionCreator<NodeBreadcrumbClicked>(
+  ActionType.NODE_BREADCRUMB_CLICKED
+);
+export const nodeBreadcrumbMouseEntered = actionCreator<
+  NodeBreadcrumbMouseEntered
+>(ActionType.NODE_BREADCRUMB_MOUSE_ENTERED);
+export const nodeBreadcrumbMouseLeft = actionCreator<NodeBreadcrumbMouseLeft>(
+  ActionType.NODE_BREADCRUMB_MOUSE_LEFT
+);
 export const engineDelegateEventsHandled = actionCreator<
   EngineDelegateEventsHandled
 >(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
 export const fileOpened = actionCreator<FileOpened>(ActionType.FILE_OPENED);
-export const errorBannerClicked = actionCreator<ErrorBannerClicked>(
+export const errorBannerClicked = publicActionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
 );
 export const pcFileLoaded = actionCreator<PCFileLoaded>(
@@ -389,11 +440,8 @@ export const collapseFrameButtonClicked = actionCreator<
 export const resizerPathMoved = actionCreator<ResizerPathMoved>(
   ActionType.RESIZER_PATH_MOUSE_MOVED
 );
-export const locationChanged = actionCreator<LocationChanged>(
+export const locationChanged = publicActionCreator<LocationChanged>(
   ActionType.LOCATION_CHANGED
-);
-export const envOptionClicked = actionCreator<EnvOptionClicked>(
-  ActionType.ENV_OPTION_CLICKED
 );
 
 export const virtualStyleDeclarationValueChanged = actionCreator<
@@ -407,6 +455,12 @@ export const styleRuleFileNameClicked = actionCreator<StyleRuleFileNameClicked>(
 export const metaClicked = actionCreator<MetaClicked>(ActionType.META_CLICKED);
 export const resizerPathStoppedMoving = actionCreator<ResizerPathStoppedMoving>(
   ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING
+);
+export const layerLeafClicked = actionCreator<LayerLeafClicked>(
+  ActionType.LAYER_LEAF_CLICKED
+);
+export const layerExpandToggleClicked = actionCreator<LayerExpandToggleClicked>(
+  ActionType.LAYER_EXPAND_TOGGLE_CLICKED
 );
 export const actionHandled = actionCreator<ActionHandled>(
   ActionType.ACTION_HANDLED
@@ -425,6 +479,9 @@ export const rectsCaptured = actionCreator<RectsCaptured>(
 );
 export const canvasMouseUp = actionCreator<CanvasMouseUp>(
   ActionType.CANVAS_MOUSE_UP
+);
+export const canvasDoubleClick = actionCreator<CanvasDoubleClick>(
+  ActionType.CANVAS_DOUBLE_CLICK
 );
 export const canvasMouseLeave = actionCreator<CanvasMouseLeave>(
   ActionType.CANVAS_MOUSE_LEAVE
@@ -504,6 +561,13 @@ export const globalSaveKeyPress = actionCreator<KeyComboPressed<ActionType>>(
   ActionType.GLOBAL_SAVE_KEY_DOWN
 );
 
+export const windowFocused = publicActionCreator<
+  BaseAction<ActionType.WINDOW_FOCUSED>
+>(ActionType.WINDOW_FOCUSED);
+export const windowBlurred = publicActionCreator<
+  BaseAction<ActionType.WINDOW_BLURRED>
+>(ActionType.WINDOW_BLURRED);
+
 export const globalMetaKeyUp = actionCreator<
   KeyComboPressed<ActionType.GLOBAL_META_KEY_UP>
 >(ActionType.GLOBAL_META_KEY_UP);
@@ -532,6 +596,10 @@ export const virtualNodesSelected = actionCreator<VirtualNodesSelected>(
   ActionType.VIRTUAL_NODES_SELECTED
 );
 
+export const serverOptionsLoaded = actionCreator<ServerOptionsLoaded>(
+  ActionType.SERVER_OPTIONS_LOADED
+);
+
 export type InstanceAction =
   // | RendererInitialized
   | RectsCaptured
@@ -539,11 +607,15 @@ export type InstanceAction =
   | ResizerPathMoved
   | VirtualStyleDeclarationValueChanged
   | VirtualNodesSelected
+  | NodeBreadcrumbClicked
   | ResizerPathStoppedMoving
+  | NodeBreadcrumbMouseEntered
+  | NodeBreadcrumbMouseLeft
   | Pasted
   | RendererMounted
   | RedirectRequested
   | RendererUnmounted
+  | ServerOptionsLoaded
   | BirdseyeFilterChanged
   | FrameTitleChanged
   | MetaClicked
@@ -575,9 +647,11 @@ export type InstanceAction =
   | ZoomInButtonClicked
   | ActionHandled
   | StyleRuleFileNameClicked
+  | LayerExpandToggleClicked
+  | LayerLeafClicked
+  | CanvasDoubleClick
   | ZoomInputChanged
   | ClientConnected
-  | EnvOptionClicked
   | FrameTitleClicked
   | EngineDelegateEventsHandled
   | KeyComboPressed<ActionType.GLOBAL_OPTION_KEY_DOWN>
@@ -593,6 +667,8 @@ export type InstanceAction =
   | KeyComboPressed<ActionType.GLOBAL_Y_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_Z_KEY_DOWN>
   | KeyComboPressed<ActionType.GLOBAL_H_KEY_DOWN>
+  | ReturnType<typeof windowFocused>
+  | ReturnType<typeof windowBlurred>
   | EngineErrored
   | ZoomOutButtonClicked
   | DirLoaded

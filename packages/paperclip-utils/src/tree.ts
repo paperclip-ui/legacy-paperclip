@@ -1,4 +1,5 @@
 import { memoize } from "./memo";
+import { nodePathToAry } from "./virt";
 
 // core tree utils
 
@@ -30,8 +31,20 @@ export const getNodePath = memoize(
 );
 
 export const getNodeByPath = memoize(
-  <TNode extends BaseTreeNode>(nodePath: number[], root: TNode) => {
-    return getTreeNodeMap(root)[nodePath.join(".")];
+  <TNode extends BaseTreeNode>(nodePath: string, root: TNode) => {
+    return getTreeNodeMap(root)[nodePath];
+  }
+);
+
+export const getNodeAncestors = memoize(
+  <TNode extends BaseTreeNode>(nodePath: string, root: TNode) => {
+    const pathAry = nodePathToAry(nodePath);
+    const map = getTreeNodeMap(root);
+    const ancestors = [];
+    for (let i = pathAry.length; i--; ) {
+      ancestors.push(getNodeByPath(pathAry.slice(0, i).join("."), root));
+    }
+    return ancestors;
   }
 );
 
@@ -43,7 +56,7 @@ export const containsNode = <TNode extends BaseTreeNode>(
 export const getTreeNodeMap = memoize(
   <TNode extends BaseTreeNode>(
     current: TNode,
-    path = "0"
+    path = ""
   ): Record<string, TNode> => {
     const map: Record<string, TNode> = {
       [path]: current
@@ -52,7 +65,7 @@ export const getTreeNodeMap = memoize(
       Object.assign(
         map,
         ...current.children.map((child, i) =>
-          getTreeNodeMap(child, path + "." + i)
+          getTreeNodeMap(child, path ? path + "." + i : String(i))
         )
       );
     }

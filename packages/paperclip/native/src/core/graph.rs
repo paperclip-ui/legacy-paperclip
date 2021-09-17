@@ -259,10 +259,14 @@ pub enum DependencyContent {
   StyleSheet(css_ast::Sheet),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Serialize, Clone)]
 pub struct Dependency {
   pub uri: String,
+
+  #[serde(rename = "dependencies")]
   pub dependencies: BTreeMap<String, String>,
+
+  #[serde(rename = "dependencyUriMaps")]
   pub dependency_uri_maps: BTreeMap<String, String>,
   pub content: DependencyContent,
 }

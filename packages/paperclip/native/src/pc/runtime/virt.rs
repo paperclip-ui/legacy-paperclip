@@ -32,6 +32,18 @@ impl fmt::Display for Fragment {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ElementInstanceOfInfo {
+  #[serde(rename = "componentName")]
+  pub component_name: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct ElementSourceInfo {
+  #[serde(rename = "instanceOf")]
+  pub instance_of: Option<ElementInstanceOfInfo>,
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Element {
   pub source_id: String,
 
@@ -42,6 +54,36 @@ pub struct Element {
   pub tag_name: String,
   pub attributes: BTreeMap<String, Option<String>>,
   pub children: Vec<Node>,
+
+  #[serde(rename = "sourceInfo")]
+  pub source_info: ElementSourceInfo,
+}
+
+impl Element {
+  pub fn get_annotation(&self, name: &String) -> Option<&js_virt::JsValue> {
+    self.annotations.as_ref().and_then(|annotations| {
+      if let Some(annotation) = annotations.values.get(name) {
+        Some(annotation)
+      } else {
+        None
+      }
+    })
+  }
+  pub fn get_annotation_property_value(
+    &self,
+    annotation_name: &str,
+    property_name: &str,
+  ) -> Option<&js_virt::JsValue> {
+    self
+      .get_annotation(&annotation_name.to_string())
+      .and_then(|ann| {
+        if let js_virt::JsValue::JsObject(object) = ann {
+          object.values.get(property_name)
+        } else {
+          None
+        }
+      })
+  }
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

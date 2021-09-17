@@ -1,12 +1,13 @@
 import { ExprTextSource } from "./base-virt";
 import { VirtJsObject } from "./js-virt";
-import { VirtualNode } from "./virt";
+import { VirtualElementSourceInfo, VirtualNode } from "./virt";
 
 export enum ActionKind {
   ReplaceNode = "ReplaceNode",
   InsertChild = "InsertChild",
   DeleteChild = "DeleteChild",
   SetAttribute = "SetAttribute",
+  SetElementSourceInfo = "SetElementSourceInfo",
   SetAnnotations = "SetAnnotations",
   SourceUriChanged = "SourceUriChanged",
   SetText = "SetText",
@@ -31,6 +32,9 @@ export type SetAttribute = {
   name: string;
   value?: string;
 } & BaseAction<ActionKind.SetAttribute>;
+export type SetElementSourceInfo = {
+  value: VirtualElementSourceInfo;
+} & BaseAction<ActionKind.SetElementSourceInfo>;
 export type SetAnnotations = {
   value?: VirtJsObject;
 } & BaseAction<ActionKind.SetAnnotations>;
@@ -45,6 +49,7 @@ export type Action =
   | ReplaceNode
   | InsertChild
   | DeleteChild
+  | SetElementSourceInfo
   | SetAttribute
   | SetAnnotations
   | SetText

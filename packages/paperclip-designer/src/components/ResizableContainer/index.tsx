@@ -1,13 +1,15 @@
-import React, { MouseEvent, useEffect, useMemo, useState } from "react";
-import { Point } from "../../state";
+import React, { useMemo } from "react";
 import * as styles from "./index.pc";
-import { clamp, throttle } from "lodash";
+import { clamp } from "lodash";
 import { useDragger } from "../../hooks/useDragger";
 import { useCache } from "../../hooks/useCache";
 
 export type ResizableContainerProps = {
   id: string;
+  minSize?: number;
   defaultSize?: number;
+  active?: boolean;
+  scrollable?: boolean;
   maxSize?: number;
   orientation: "left" | "right" | "top" | "bottom";
   children: any;
@@ -18,8 +20,11 @@ const MIN_SIZE = 50;
 
 export const ResizableContainer = ({
   id,
-  defaultSize = 350,
+  minSize = MIN_SIZE,
+  defaultSize = 300,
   maxSize = DEFAULT_MAX_SIZE,
+  scrollable,
+  active = true,
   orientation,
   children
 }: ResizableContainerProps) => {
@@ -30,9 +35,9 @@ export const ResizableContainer = ({
 
   const [size, setSize] = useCache(id, defaultSize);
   const setSize2 = (newSize: number) =>
-    setSize(clamp(newSize, MIN_SIZE, maxSize));
+    setSize(clamp(newSize, minSize, maxSize));
 
-  const { onMouseDown: onBarDown } = useDragger(({ delta }) => {
+  const { dragging, onMouseDown: onBarDown } = useDragger(({ delta }) => {
     if (right) {
       setSize2(size - delta.x);
     } else if (left) {
@@ -45,15 +50,27 @@ export const ResizableContainer = ({
   });
 
   const style = useMemo(() => {
+    if (!active) {
+      return {};
+    }
+
     if (left || right) {
       return { width: size };
     } else {
       return { height: size };
     }
-  }, [size]);
+  }, [active, size]);
 
   return (
-    <styles.default style={style} right={right} onBarDown={onBarDown}>
+    <styles.default
+      disabled={!active}
+      dragging={dragging}
+      scrollable={scrollable}
+      style={style}
+      right={right}
+      bottom={bottom}
+      onBarDown={onBarDown}
+    >
       {children}
     </styles.default>
   );

@@ -99,6 +99,7 @@ pub struct EvalOptions {
 }
 
 type EngineEventListener = dyn Fn(&EngineEvent);
+type GetLintConfigResolverFn = dyn Fn(&String) -> Option<LintOptions>;
 
 pub struct Engine {
   listeners: Vec<Box<EngineEventListener>>,
@@ -110,6 +111,7 @@ pub struct Engine {
   pub mode: EngineMode,
   // keeping tabs of
   pub diagnostics: BTreeMap<String, Vec<Diagnostic>>,
+  pub get_lint_config: Option<Box<GetLintConfigResolverFn>>,
 }
 
 impl Engine {
@@ -117,6 +119,7 @@ impl Engine {
     read_file: Box<FileReaderFn>,
     file_exists: Box<FileExistsFn>,
     resolve_file: Box<FileResolverFn>,
+    get_lint_config: Option<Box<GetLintConfigResolverFn>>,
     mode: EngineMode,
   ) -> Engine {
     let mut engine = Engine {
@@ -124,6 +127,7 @@ impl Engine {
       evaluated_data: BTreeMap::new(),
       needs_reval: BTreeMap::new(),
       vfs: VirtualFileSystem::new(read_file, file_exists, resolve_file),
+      get_lint_config,
       dependency_graph: DependencyGraph::new(),
       diagnostics: BTreeMap::new(),
       mode,
@@ -164,6 +168,10 @@ impl Engine {
       .dependencies
       .get(uri)
       .and_then(|dep| Some(&dep.content))
+  }
+
+  pub fn get_dependency(&self, uri: &String) -> Option<&Dependency> {
+    self.dependency_graph.dependencies.get(uri)
   }
 
   pub async fn load(&mut self, uri: &String) -> Result<(), EngineError> {
@@ -266,10 +274,10 @@ impl Engine {
         Some(lint_pc(
           eval_info,
           &self.dependency_graph,
-          LintOptions {
-            no_unused_css: Some(true),
-            enforce_refs: None,
-            enforce_previews: None,
+          if let Some(get_lint_config) = &self.get_lint_config {
+            get_lint_config(uri).unwrap_or(LintOptions::nil())
+          } else {
+            LintOptions::nil()
           },
         ))
       })
@@ -489,10 +497,60 @@ mod tests {
       Box::new(|_| "".to_string()),
       Box::new(|_| true),
       Box::new(|_, _| Some("".to_string())),
+      None,
       EngineMode::SingleFrame,
     );
 
     let result = block_on(engine.parse_content(&"{'a'}".to_string(), &"".to_string())).unwrap();
+  }
+
+  #[test]
+  fn can_return_source_info_for_various_cases() {
+    let cases = [
+      (
+        "<div />",
+        vec![0],
+        Some(ast::ExprSource {
+          id: "406d2856".to_string(),
+          text_source: Some(ast::ExprTextSource {
+            uri: "/entry.pc".to_string(),
+            location: ast::Location { start: 0, end: 7 },
+          }),
+        }),
+      ),
+      (
+        "{<div />}",
+        vec![0],
+        Some(ast::ExprSource {
+          id: "769346c8".to_string(),
+          text_source: Some(ast::ExprTextSource {
+            uri: "/entry.pc".to_string(),
+            location: ast::Location { start: 1, end: 8 },
+          }),
+        }),
+      ),
+    ];
+
+    for (content, path, output) in &cases {
+      let content = content.to_string();
+
+      let mut engine = Engine::new(
+        Box::new(move |uri| content.to_string()),
+        Box::new(move |uri| true),
+        Box::new(|_, _| Some("".to_string())),
+        None,
+        EngineMode::SingleFrame,
+      );
+
+      block_on(engine.load(&"/entry.pc".to_string()));
+
+      let info = engine.get_virtual_node_source_info(&pc_virt::NodeSource {
+        path: path.clone(),
+        document_uri: "/entry.pc".to_string(),
+      });
+
+      assert_eq!(&info, output);
+    }
   }
 }
 
@@ -507,6 +565,7 @@ pub fn __test__evaluate_pc_files<'a>(
     Box::new(move |uri| f1.get(uri).unwrap().clone()),
     Box::new(move |uri| f2.get(uri) != None),
     Box::new(|_, uri| Some(uri.to_string())),
+    None,
     EngineMode::SingleFrame,
   );
 

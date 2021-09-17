@@ -4,6 +4,12 @@ export type CompilerOptions = {
   [identifier: string]: any;
 };
 
+type LintConfig = {
+  noUnusedStyles?: boolean;
+  enforceVars?: string[];
+  enforcePreviews?: boolean;
+};
+
 export type PaperclipConfig = {
   outputDirectory?: string;
 
@@ -15,4 +21,6 @@ export type PaperclipConfig = {
   compilerOptions: CompilerOptions;
 
   moduleDirectories?: string[];
+
+  lint?: LintConfig;
 };

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
-import { AppStoreContext } from "../../contexts";
-import Automerge from "automerge";
 import { reducer } from "../../reducers";
 import { init } from "../../sagas";
 import { INITIAL_STATE, AppState } from "../../state";
-import { mapValues } from "lodash";
+import { Provider } from "react-redux";
 
 type InitOptions = Partial<{
   compact: boolean;
@@ -64,18 +62,10 @@ export const createAppStore = (
 export const withAppStore = (Child: React.FC) => {
   return props => {
     const { store } = props;
-    const [state, setState] = useState(store.getState());
-
-    useEffect(() => {
-      return store.subscribe(() => {
-        setState(store.getState());
-      });
-    }, [store]);
-
     return (
-      <AppStoreContext.Provider value={{ dispatch: store.dispatch, state }}>
+      <Provider store={store}>
         <Child {...props} />
-      </AppStoreContext.Provider>
+      </Provider>
     );
   };
 };

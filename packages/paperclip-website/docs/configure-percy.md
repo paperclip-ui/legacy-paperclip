@@ -9,14 +9,14 @@ sidebar_label: Percy
 Paperclip integrates with [Percy](https://percy.io) to allow you test for CSS bugs in your Paperclip UI files. To get started, install the NPM module:
 
 ```sh
-npm install percy percy-paperclip --save-dev
+npm install percy-paperclip --save-dev
 ```
 
 Next, grab your percy token, then run the following command in the same directory as your `paperclip.config.json` file:
 
 
 ```sh
-PERCY_TOKEN=[TOKEN] percy exec -- percy-paperclip
+PERCY_TOKEN=[TOKEN] yarn percy-paperclip
 ```
 
 After that, you should see something like this:

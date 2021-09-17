@@ -18,6 +18,7 @@
   {onMouseMove?}
   {onScroll?}
   {onWheelCapture?}
+  data-label="Canvas"
   className="canvas $theme.full-wh">
   <style>
     width: 100%;

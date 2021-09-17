@@ -1,4 +1,9 @@
-import { JsExpression, JsExpressionKind, Reference } from "./js-ast";
+import {
+  JsExpression,
+  JsExpressionKind,
+  Reference,
+  traverseJSExpression
+} from "./js-ast";
 import {
   Sheet,
   traverseSheet,
@@ -389,6 +394,10 @@ export const isComponent = (node: Node): node is Element =>
   hasAttribute("component", node) &&
   hasAttribute(AS_ATTR_NAME, node);
 
+export const isImport = (node: Node): node is Element =>
+  node.nodeKind === NodeKind.Element &&
+  node.tagName === "import" &&
+  hasAttribute("src", node);
 export const getParts = (ast: Node): Element[] =>
   getChildren(ast).filter(isComponent) as Element[];
 
@@ -426,7 +435,7 @@ export const getPCNodeAnnotations = (node: Node, root: Node) => {
   const parent = getParentNode(node, root);
   const prevChild = parent.children[parent.children.indexOf(node) - 1];
 
-  if (prevChild.nodeKind === NodeKind.Comment) {
+  if (prevChild?.nodeKind === NodeKind.Comment) {
     return prevChild;
   }
 
@@ -504,9 +513,20 @@ export const traverseExpression = (
       case NodeKind.Fragment: {
         return traverseExpressions(ast.children, each);
       }
+      case NodeKind.Slot: {
+        return traverseJSExpression(ast.script, each);
+      }
       case NodeKind.StyleElement: {
         return traverseSheet(ast.sheet, each);
       }
+    }
+  } else if (isAttribute(ast)) {
+    if (ast.attrKind === AttributeKind.KeyValueAttribute && ast.value) {
+      return traverseExpression(ast.value, each);
+    }
+  } else if (isAttributeValue(ast)) {
+    if (ast.attrValueKind === AttributeValueKind.Slot) {
+      return traverseJSExpression(ast.script, each);
     }
   }
   return true;

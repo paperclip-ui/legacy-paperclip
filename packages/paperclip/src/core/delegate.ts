@@ -21,7 +21,8 @@ import {
   Diagnostic,
   INJECT_STYLES_TAG_NAME,
   NodeStyleInspection,
-  VirtNodeSource
+  VirtNodeSource,
+  Dependency
 } from "paperclip-utils";
 import { noop } from "./utils";
 
@@ -78,9 +79,11 @@ export class EngineDelegate {
   private _listeners: EngineDelegateEventListener[] = [];
   private _rendered: Record<string, LoadedData> = {};
   private _documents: Record<string, string> = {};
+  private _graph: Record<string, Dependency> = {};
 
   constructor(
     private _native: any,
+    private _readFile: any,
     private _onCrash: (err: any) => void = noop
   ) {
     // only one native listener to for buffer performance
@@ -104,6 +107,10 @@ export class EngineDelegate {
   }
 
   private _onEngineEvent = (event: EngineDelegateEvent) => {
+    if (!this._documents[event.uri]) {
+      this._documents[event.uri] = this._readFile(event.uri);
+    }
+
     if (event.kind === EngineDelegateEventKind.Deleted) {
       delete this._rendered[event.uri];
     } else if (event.kind === EngineDelegateEventKind.Evaluated) {
@@ -182,6 +189,14 @@ export class EngineDelegate {
   getLoadedAst(uri: string): DependencyContent {
     return this._tryCatch(() => this._native.get_loaded_ast(uri));
   }
+  getLoadedDependency(uri: string) {
+    return (
+      this._graph[uri] ||
+      (this._graph[uri] = this._tryCatch(() =>
+        this._native.get_dependency(uri)
+      ))
+    );
+  }
   parseContent(content: string, uri: string) {
     return this._tryCatch(() =>
       mapResult(this._native.parse_content(content, uri))
@@ -200,6 +215,7 @@ export class EngineDelegate {
     if (this._documents[uri] === content) {
       return;
     }
+    this._graph[uri] = undefined;
 
     // only define if successfuly loaded
     this._documents[uri] = content;
@@ -235,6 +251,14 @@ export class EngineDelegate {
   public getAllLoadedData(): Record<string, LoadedData> {
     return this._rendered;
   }
+  public getLoadedGraph(): Record<string, Dependency> {
+    const map = {};
+    for (const uri in this._rendered) {
+      map[uri] = this.getLoadedDependency(uri);
+    }
+    return map;
+  }
+
   reset() {
     this._rendered = {};
     this._documents = {};
@@ -242,6 +266,13 @@ export class EngineDelegate {
   }
 
   open(uri: string): LoadedData {
+    this._graph[uri] = undefined;
+
+    // need to load document so that it's accessible via source writer
+    if (!this._documents[uri]) {
+      this._documents[uri] = this._readFile(uri);
+    }
+
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));
     if (result && result.error) {
       throw result.error;

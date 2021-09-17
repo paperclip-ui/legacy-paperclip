@@ -2,5 +2,28 @@
   "compilerOptions": {
     "name": "paperclip-compiler-react"
   },
-  "sourceDirectory": "./src"
+  "sourceDirectory": "./src",
+  "lint": {
+    "enforceVars": [
+      "font-family",
+      "color",
+      "background",
+      "background-color",
+      "margin",
+      "margin-left",
+      "margin-right",
+      "margin-top",
+      "margin-bottom",
+      "padding",
+      "padding-left",
+      "padding-right",
+      "padding-top",
+      "padding-bottom",
+      "border",
+      "border-left",
+      "border-right",
+      "border-top",
+      "border-bottom"
+    ]
+  }
 }

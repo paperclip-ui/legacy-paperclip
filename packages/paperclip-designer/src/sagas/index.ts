@@ -1,6 +1,12 @@
 import Mousetrap, { addKeycodes } from "mousetrap";
 import SockJSClient from "sockjs-client";
-import { computeVirtJSObject, LoadedPCData } from "paperclip-utils";
+import {
+  computeVirtJSObject,
+  LoadedPCData,
+  VirtNodeSource,
+  nodePathToAry,
+  EngineDelegateChanged
+} from "paperclip-utils";
 import * as Url from "url";
 import {
   fork,
@@ -41,24 +47,52 @@ import {
   globalOptionKeyUp,
   actionHandled,
   redirectRequest,
-  virtualNodesSelected,
-  virtualNodeStylesInspected
+  virtualNodeStylesInspected,
+  NodeBreadcrumbClicked,
+  LayerLeafClicked,
+  allPCContentLoaded,
+  serverOptionsLoaded,
+  ServerOptionsLoaded,
+  dirLoaded,
+  pcFileLoaded,
+  virtualNodeSourcesLoaded,
+  StyleRuleFileNameClicked,
+  windowFocused,
+  windowBlurred
 } from "../actions";
 import {
   AppState,
+  DesignerState,
   getActiveFrameIndex,
+  getActivePCData,
   getFrameFromIndex,
   getNodeInfoAtPoint,
+  getScopedBoxes,
   getSelectedFrames,
   isExpanded,
   SyncLocationMode
 } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
-import { PCMutationActionKind } from "paperclip-source-writer/lib/mutations";
+import {
+  PCMutation,
+  PCMutationActionKind
+} from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { omit } from "lodash";
-import { inspectNodeStyleChannel } from "../rpc/channels";
+import {
+  getAllScreensChannel,
+  inspectNodeStyleChannel,
+  popoutWindowChannel,
+  revealNodeSourceChannel,
+  getServerOptionsChannel,
+  loadDirectoryChannel,
+  openFileChannel,
+  loadVirtualNodeSourcesChannel,
+  revealNodeSourceByIdChannel,
+  editPCSourceChannel,
+  eventsChannel
+} from "../rpc/channels";
 import { sockAdapter } from "../../../paperclip-common";
 
 export type AppStateSelector = (state) => AppState;
@@ -83,6 +117,7 @@ export default function* mainSaga(
   yield fork(handleLocation, getState);
   yield fork(handleActions, getState);
   yield fork(handleVirtualObjectSelected, getState);
+  yield fork(handleAppFocus);
 }
 
 function handleSock(onMessage, onClient) {
@@ -107,14 +142,122 @@ function handleSock(onMessage, onClient) {
   };
 }
 
-function* handleClientChans(client: any) {
+function* handleClientComunication(client, getState, projectDirectory: string) {
   const inspectNodeStyle = inspectNodeStyleChannel(client);
+  const revealNodeSource = revealNodeSourceChannel(client);
+  const popoutWindow = popoutWindowChannel(client);
+  const getAllScreens = getAllScreensChannel(client);
+  const loadDirectory = loadDirectoryChannel(client);
+  const openFile = openFileChannel(client);
+  const loadVirtualNodeSources = loadVirtualNodeSourcesChannel(client);
+  const revealNodeSourceById = revealNodeSourceByIdChannel(client);
+  const editPCSource = editPCSourceChannel(client);
+  const events = eventsChannel(client);
+
+  yield fork(function*() {
+    const chan = eventChannel(emit => {
+      events.listen(async action => {
+        emit(action);
+      });
+      return () => {};
+    });
+    yield takeEvery(chan, function*(action: Action) {
+      if (action["remote"]) {
+        return;
+      }
+      action["remote"] = true;
+      yield put(action);
+    });
+    while (1) {
+      const action = yield take();
+      if (!action["public"] || action["remote"]) {
+        continue;
+      }
+      events.call(action);
+    }
+  });
+
+  yield call(loadDirectory2, projectDirectory, true);
+
+  function* loadDirectory2(path: string, root: boolean) {
+    const dir = yield call(loadDirectory.call, { path });
+    yield put(dirLoaded({ item: dir, isRoot: root }));
+  }
+
+  yield takeEvery(
+    [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
+    function*() {
+      const state: AppState = yield select(getState);
+      if (
+        state.designer.showBirdseye &&
+        !state.designer.loadedBirdseyeInitially
+      ) {
+        yield call(reloadScreens);
+      }
+    }
+  );
+
+  yield takeEvery([ActionType.LOCATION_CHANGED], maybeLoadScreens);
+
+  function* maybeLoadScreens() {
+    const state: AppState = yield select(getState);
+    if (
+      (!state.designer.ui.query.canvasFile ||
+        location.pathname.indexOf("/all") === 0) &&
+      !state.designer.loadedBirdseyeInitially
+    ) {
+      yield call(reloadScreens);
+    }
+  }
+
+  yield fork(maybeLoadScreens);
+
+  function* reloadScreens() {
+    const screens = yield call(getAllScreens.call);
+    yield put(allPCContentLoaded(screens));
+  }
+
+  yield takeEvery(
+    [
+      ActionType.CANVAS_MOUSE_UP,
+      ActionType.FRAME_TITLE_CLICKED,
+      ActionType.ENGINE_DELEGATE_CHANGED
+    ],
+    function*() {
+      const state: AppState = yield select(getState);
+
+      if (!state.designer.selectedNodePaths.length) {
+        return;
+      }
+      const sources = yield call(
+        loadVirtualNodeSources.call,
+        state.designer.selectedNodePaths.map(nodePath => {
+          return {
+            path: nodePath.split(".").map(Number),
+            uri: state.designer.ui.query.canvasFile!
+          };
+        })
+      );
+
+      yield put(virtualNodeSourcesLoaded(sources));
+    }
+  );
+
+  yield throttle(500, [ActionType.LOCATION_CHANGED], function*() {});
+
+  yield takeEvery(ActionType.STYLE_RULE_FILE_NAME_CLICKED, function*({
+    payload: { styleRuleSourceId }
+  }: StyleRuleFileNameClicked) {
+    yield call(revealNodeSourceById.call, styleRuleSourceId);
+  });
 
   yield throttle(
     500,
     [
+      ActionType.NODE_BREADCRUMB_CLICKED,
       ActionType.CANVAS_MOUSE_UP,
       ActionType.FRAME_TITLE_CLICKED,
+      ActionType.LAYER_LEAF_CLICKED,
       ActionType.ENGINE_DELEGATE_CHANGED,
       ActionType.FILE_OPENED
     ],
@@ -127,7 +270,7 @@ function* handleClientChans(client: any) {
       const inspectionInfo = yield call(
         inspectNodeStyle.call,
         state.designer.selectedNodePaths.map(path => ({
-          path: path.split(".").map(Number),
+          path: nodePathToAry(path),
           uri: state.designer.ui.query.canvasFile
         }))
       );
@@ -135,6 +278,167 @@ function* handleClientChans(client: any) {
       yield put(virtualNodeStylesInspected(inspectionInfo));
     }
   );
+
+  yield takeEvery(
+    [ActionType.NODE_BREADCRUMB_CLICKED, ActionType.LAYER_LEAF_CLICKED],
+    function*({
+      payload: { metaKey, nodePath }
+    }: NodeBreadcrumbClicked | LayerLeafClicked) {
+      if (!metaKey) {
+        return;
+      }
+      const state: AppState = yield select();
+      yield call(revealNodeSource.call, {
+        path: nodePathToAry(nodePath),
+        uri: state.designer.ui.query.canvasFile
+      } as VirtNodeSource);
+    }
+  );
+
+  yield takeEvery([ActionType.CANVAS_MOUSE_UP], function*({
+    payload: { metaKey }
+  }: CanvasMouseUp) {
+    if (!metaKey) {
+      return;
+    }
+
+    const state: AppState = yield select(getState);
+
+    const nodeInfo = getNodeInfoAtPoint(
+      state.designer.canvas.mousePosition,
+      state.designer.canvas.transform,
+      getScopedBoxes(
+        state.designer.boxes,
+        state.designer.scopedElementPath,
+        getActivePCData(state.designer).preview
+      ),
+      isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
+    );
+
+    // maybe offscreen
+    if (!nodeInfo) {
+      return;
+    }
+
+    yield call(revealNodeSource.call, {
+      path: nodePathToAry(nodeInfo.nodePath),
+      uri: state.designer.ui.query.canvasFile
+    } as VirtNodeSource);
+  });
+
+  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function*() {
+    yield call(popoutWindow.call, {
+      path: window.location.pathname + window.location.search
+    });
+  });
+
+  let _previousFileUri;
+
+  yield takeEvery(
+    [
+      ActionType.LOCATION_CHANGED,
+      ActionType.CLIENT_CONNECTED,
+      ActionType.FS_ITEM_CLICKED
+    ],
+    maybeLoadCanvasFile
+  );
+
+  // application may have been loaded in an error state, so evaluated data
+  // won't be loaded in this case. When that happens, we need to reload the current
+  // canvas file
+  yield takeEvery([ActionType.ENGINE_DELEGATE_CHANGED], function*() {
+    const state: AppState = yield select(getState);
+    const currUri = state.designer.ui.query.canvasFile;
+
+    if (!state.designer.allLoadedPCFileData[currUri]) {
+      yield call(maybeLoadCanvasFile);
+    }
+  });
+
+  function* maybeLoadCanvasFile() {
+    const state: AppState = yield select(getState);
+    const currUri = state.designer.ui.query.canvasFile;
+    if (currUri !== _previousFileUri) {
+      _previousFileUri = currUri;
+      if (currUri) {
+        yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
+        const result = yield call(openFile.call, { uri: currUri });
+        if (result) {
+          yield put(pcFileLoaded(result));
+        }
+      }
+    }
+  }
+
+  yield takeEvery(
+    [
+      ActionType.RESIZER_STOPPED_MOVING,
+      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
+      ActionType.FRAME_TITLE_CHANGED,
+      ActionType.GLOBAL_H_KEY_DOWN
+    ],
+    function*() {
+      const state: AppState = yield select(getState);
+
+      yield call(
+        editPCSource.call,
+        state.designer.selectedNodePaths.map((info, i) => {
+          const frame = getFrameFromIndex(Number(info), state.designer);
+          return {
+            targetId: state.designer.selectedNodeSources[i].source.sourceId,
+            action: {
+              kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
+              annotations: computeVirtJSObject(frame.annotations)
+            }
+          };
+        }) as PCMutation[]
+      );
+    }
+  );
+
+  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
+    const state: AppState = yield select(getState);
+
+    if (state.designer.selectedNodePaths.length) {
+      yield call(
+        editPCSource.call,
+        state.designer.selectedNodePaths.map((v, index) => {
+          return {
+            targetId: state.designer.selectedNodeSources[index].source.sourceId,
+            action: {
+              kind: PCMutationActionKind.EXPRESSION_DELETED
+            }
+          };
+        }) as PCMutation[]
+      );
+    }
+
+    yield put(globalBackspaceKeySent(null));
+  });
+
+  yield call(maybeLoadCanvasFile);
+}
+
+function* handleClientChans(client: any, getState: any) {
+  const getServerOptions = getServerOptionsChannel(client);
+
+  function* loadServerOptions() {
+    const options = yield call(getServerOptions.call);
+    yield put(serverOptionsLoaded(options));
+  }
+
+  yield takeLatest(ActionType.SERVER_OPTIONS_LOADED, function*({
+    payload: { localResourceRoots }
+  }: ServerOptionsLoaded) {
+    yield fork(
+      handleClientComunication,
+      client,
+      getState,
+      localResourceRoots[0]
+    );
+  });
+
+  yield call(loadServerOptions);
 }
 
 function* handleRenderer(getState: AppStateSelector) {
@@ -162,137 +466,18 @@ function* handleRenderer(getState: AppStateSelector) {
   });
 
   yield takeLatest(ActionType.CLIENT_CONNECTED, function*() {
-    yield call(handleClientChans, _client);
+    yield call(handleClientChans, _client, getState);
   });
 
   yield takeEvery(["FOCUS"], function() {
     window.focus();
   });
-
-  let _previousFileUri;
-
-  yield takeEvery(
-    [
-      ActionType.LOCATION_CHANGED,
-      ActionType.CLIENT_CONNECTED,
-      ActionType.FS_ITEM_CLICKED
-    ],
-    function*() {
-      const state: AppState = yield select(getState);
-      const currUri = state.designer.ui.query.canvasFile;
-      if (currUri !== _previousFileUri) {
-        _previousFileUri = currUri;
-        yield put(fileOpened({ uri: state.designer.ui.query.canvasFile }));
-      }
-    }
-  );
-
-  yield takeEvery(
-    [
-      ActionType.RESIZER_STOPPED_MOVING,
-      ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING,
-      ActionType.FRAME_TITLE_CHANGED,
-      ActionType.GLOBAL_H_KEY_DOWN
-    ],
-    function*() {
-      const state: AppState = yield select(getState);
-      console.log(state.designer.selectedNodeSources);
-
-      yield put(
-        pcVirtObjectEdited({
-          mutations: state.designer.selectedNodePaths.map((info, i) => {
-            const frame = getFrameFromIndex(Number(info), state.designer);
-            return {
-              targetId: state.designer.selectedNodeSources[i].source.sourceId,
-              action: {
-                kind: PCMutationActionKind.ANNOTATIONS_CHANGED,
-                annotations: computeVirtJSObject(frame.annotations)
-              }
-            };
-          })
-        })
-      );
-    }
-  );
-
-  yield takeEvery([ActionType.GLOBAL_BACKSPACE_KEY_PRESSED], function*() {
-    const state: AppState = yield select(getState);
-
-    if (state.designer.readonly) {
-      return;
-    }
-
-    yield put(
-      pcVirtObjectEdited({
-        mutations: state.designer.selectedNodePaths.map(index => {
-          return {
-            targetId: state.designer.selectedNodeSources[index].source.sourceId,
-            action: {
-              kind: PCMutationActionKind.EXPRESSION_DELETED
-            }
-          };
-        })
-      })
-    );
-
-    yield put(globalBackspaceKeySent(null));
-  });
-
-  yield takeEvery(
-    [ActionType.GRID_HOTKEY_PRESSED, ActionType.GRID_BUTTON_CLICKED],
-    function*() {
-      const state: AppState = yield select(getState);
-      if (
-        state.designer.showBirdseye &&
-        !state.designer.loadedBirdseyeInitially
-      ) {
-        yield put(getAllScreensRequested(null));
-      }
-    }
-  );
-
-  yield takeEvery([ActionType.LOCATION_CHANGED], function*() {
-    const state: AppState = yield select(getState);
-    if (
-      (!state.designer.ui.query.canvasFile ||
-        location.pathname.indexOf("/all") === 0) &&
-      !state.designer.loadedBirdseyeInitially
-    ) {
-      yield put(getAllScreensRequested(null));
-    }
-  });
-
-  yield takeEvery(
-    [
-      ActionType.META_CLICKED,
-      ActionType.GLOBAL_Z_KEY_DOWN,
-      ActionType.GLOBAL_Y_KEY_DOWN,
-      ActionType.GLOBAL_SAVE_KEY_DOWN,
-      ActionType.GET_ALL_SCREENS_REQUESTED,
-      ActionType.VIRTUAL_NODES_SELECTED,
-      ActionType.PASTED,
-      ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED,
-      ActionType.STYLE_RULE_FILE_NAME_CLICKED,
-      ActionType.FS_ITEM_CLICKED,
-      ActionType.TITLE_DOUBLE_CLICKED,
-      ActionType.ENV_OPTION_CLICKED,
-      ActionType.ERROR_BANNER_CLICKED,
-      ActionType.LOCATION_CHANGED,
-      ActionType.POPOUT_WINDOW_REQUESTED,
-      ActionType.PC_VIRT_OBJECT_EDITED,
-      ActionType.FILE_OPENED
-    ],
-    function(action: Action) {
-      _client && _client.send(action);
-    }
-  );
 }
 
 function* handleCanvasMouseUp(
   action: CanvasMouseUp,
   getState: AppStateSelector
 ) {
-  yield fork(handleMetaKeyClick, action, getState);
   yield fork(handleSyncFrameToLocation);
 
   const state: AppState = yield select();
@@ -327,45 +512,6 @@ function* handleSyncFrameToLocation() {
         ...state.designer.ui.query,
         frame: nodePath[0]
       }
-    })
-  );
-}
-
-function* handleMetaKeyClick(
-  action: CanvasMouseUp,
-  getState: AppStateSelector
-) {
-  if (!action.payload.metaKey) {
-    return;
-  }
-
-  const state: AppState = yield select(getState);
-
-  const nodeInfo = getNodeInfoAtPoint(
-    state.designer.canvas.mousePosition,
-    state.designer.canvas.transform,
-    state.designer.boxes,
-    isExpanded(state.designer) ? getActiveFrameIndex(state.designer) : null
-  );
-
-  // maybe offscreen
-  if (!nodeInfo) {
-    return;
-  }
-
-  const nodePathParts = nodeInfo.nodePath.split(".").map(Number);
-
-  // const virtualNode = getVirtTarget(
-  //   (state.designer.allLoadedPCFileData[
-  //     state.designer.ui.query.canvasFile
-  //   ] as LoadedPCData).preview,
-  //   nodePathParts
-  // );
-
-  yield put(
-    metaClicked({
-      nodePath: nodePathParts,
-      nodeUri: state.designer.ui.query.canvasFile
     })
   );
 }
@@ -464,83 +610,6 @@ function* handleKeyCommands(mount: HTMLElement) {
 const isInput = (node: HTMLElement) =>
   /textarea|input/.test(node.tagName.toLowerCase());
 
-// function* handleClipboard(getState: AppStateSelector) {
-//   yield fork(handleCopy, getState);
-//   yield fork(handlePaste, getState);
-// }
-// function* handleCopy(getState: AppStateSelector) {
-//   const ev = eventChannel(emit => {
-//     window.document.addEventListener("copy", emit);
-//     return () => {
-//       window.document.removeEventListener("copy", emit);
-//     };
-//   });
-
-//   yield takeEvery(ev, function*(event: ClipboardEvent) {
-//     if (isInput(event.target as any)) {
-//       return;
-//     }
-
-//     const state: AppState = yield select(getState);
-//     const frames = getSelectedFrames(state.designer);
-
-//     if (!frames.length) {
-//       return;
-//     }
-
-//     const buffer = ["\n"];
-
-//     for (const frame of frames) {
-//       if (!state.shared.documents[frame.source.uri]) {
-//         console.warn(`document content doesn't exist`);
-//         return;
-//       }
-
-//       const start =
-//         frame.annotations?.source.location.start || frame.source.location.start;
-//       const end = frame.source.location.end;
-
-//       buffer.push(
-//         state.shared.documents[frame.source.uri].toString().slice(start, end),
-//         "\n"
-//       );
-//     }
-
-//     event.clipboardData.setData("text/plain", buffer.join("\n"));
-//     event.preventDefault();
-//   });
-// }
-
-// function* handlePaste(getState: AppStateSelector) {
-//   const ev = eventChannel(emit => {
-//     window.document.addEventListener("paste", emit);
-//     return () => {
-//       window.document.removeEventListener("paste", emit);
-//     };
-//   });
-
-//   yield takeEvery(ev, function*(event: ClipboardEvent) {
-//     const state: AppState = yield select(getState);
-//     if (state.designer.readonly) {
-//       return;
-//     }
-//     const content = event.clipboardData.getData("text/plain");
-//     event.preventDefault();
-//     if (content) {
-//       yield put(
-//         pasted({
-//           clipboardData: [
-//             {
-//               type: "text/plain",
-//               content
-//             }
-//           ]
-//         })
-//       );
-//     }
-//   });
-// }
-
 function* handleDocumentEvents() {
   yield fork(function*() {
     const chan = eventChannel(emit => {
@@ -619,26 +688,24 @@ function* handleActions(getState: AppStateSelector) {
   }
 }
 
-function* handleVirtualObjectSelected(getState: AppStateSelector) {
-  yield takeEvery(
-    [ActionType.CANVAS_MOUSE_UP, ActionType.FRAME_TITLE_CLICKED],
-    function*() {
-      const state: AppState = yield select(getState);
-      if (!state.designer.selectedNodePaths.length) {
-        return;
-      }
+function* handleVirtualObjectSelected(getState: AppStateSelector) {}
 
-      yield put(
-        virtualNodesSelected({
-          sources: state.designer.selectedNodePaths.map(nodePath => {
-            return {
-              path: nodePath.split(".").map(Number),
-              uri: state.designer.ui.query.canvasFile!
-            };
-          }),
-          screenWidth: window.screenX
-        })
-      );
-    }
-  );
+function* handleAppFocus() {
+  const chan = eventChannel(emit => {
+    document.addEventListener("mouseenter", ev => {
+      if (ev.target === document) {
+        emit(windowFocused(null));
+      }
+    });
+    document.addEventListener("mouseleave", ev => {
+      if (ev.target === document) {
+        emit(windowBlurred(null));
+      }
+    });
+    return () => {};
+  });
+
+  yield takeEvery(chan, function*(event: any) {
+    yield put(event);
+  });
 }

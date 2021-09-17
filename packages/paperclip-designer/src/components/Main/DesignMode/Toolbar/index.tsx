@@ -7,10 +7,10 @@ import {
   birdseyeFilterChanged,
   titleDoubleClicked,
   redirectRequest,
-  zoomInputChanged
+  zoomInputChanged,
+  popoutButtonClicked
 } from "../../../../actions";
 import { useTextInput } from "../../../TextInput";
-import { EnvironmentPopup } from "./EnvironmentPopup";
 import { isExpanded } from "../../../../state";
 
 const WIN_ENV = /^win/i.test(String(window?.navigator?.platform));
@@ -33,7 +33,8 @@ export const Toolbar = () => {
     dispatch(zoomInButtonClicked(null));
   };
   const onPopOutButtonClicked = () => {
-    setShowEnvironmentPopup(!showEnvironmentPopup);
+    // setShowEnvironmentPopup(!showEnvironmentPopup);
+    dispatch(popoutButtonClicked(null));
   };
   const onCollapseButtonClick = useCallback(() => {
     dispatch(
@@ -145,9 +146,6 @@ export const Toolbar = () => {
           </>
         }
       />
-      {showEnvironmentPopup && (
-        <EnvironmentPopup onBlur={onEnvironmentPopupBlur} />
-      )}
     </styles.Container>
   );
 };

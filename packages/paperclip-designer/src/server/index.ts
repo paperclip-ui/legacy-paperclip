@@ -1,64 +1,12 @@
-import * as path from "path";
-import * as fs from "fs";
-
-import sockjs from "sockjs";
-import getPort from "get-port";
-import { createEngineDelegate, EngineDelegate } from "paperclip";
-import * as URL from "url";
-import {
-  dirLoaded,
-  ActionType,
-  FileOpened,
-  FSItemClicked,
-  Action,
-  ExternalAction,
-  pcFileLoaded,
-  instanceChanged,
-  InstanceAction,
-  crashed,
-  allPCContentLoaded,
-  initParamsDefined,
-  ExternalActionType,
-  ConfigChanged,
-  EnvOptionClicked,
-  browserstackBrowsersLoaded,
-  ServerAction,
-  TitleDoubleClicked,
-  VirtualNodesSelected,
-  virtualNodeSourcesLoaded,
-  MetaClicked,
-  revealExpressionSourceRequested,
-  virtualNodeStylesInspected,
-  VirtualStyleDeclarationValueChanged,
-  styleRuleFileNameClicked,
-  StyleRuleFileNameClicked
-} from "../actions";
-import {
-  AvailableBrowser,
-  EnvOption,
-  EnvOptionKind,
-  FSItemKind
-} from "../state";
-import express from "express";
-import { normalize } from "path";
-import { EventEmitter } from "events";
+import { fileWatcherService } from "./services/file-watcher";
+import { httpServer } from "./services/http-server";
+import { eventLogger } from "./services/event-logger";
+import { rpcService } from "./services/rpc";
+import { postInitService } from "./services/post-init";
+import { pcEngineService } from "./services/pc-engine";
+import { BaseEvent, ServiceManager, ServerKernel } from "paperclip-common";
+import { ExprSource } from "paperclip-utils";
 import { noop } from "lodash";
-import { exec } from "child_process";
-import { EngineMode } from "paperclip";
-import { isPaperclipFile } from "paperclip";
-import * as ngrok from "ngrok";
-import * as qs from "querystring";
-import * as bs from "browserstack";
-import {
-  engineDelegateChanged,
-  NodeStyleInspection,
-  StyleRule,
-  VirtNodeSource
-} from "paperclip-utils";
-import { sourceWriterPlugin } from "./plugins/source-writer";
-import { fileWatcherPlugin } from "./plugins/file-watcher";
-import { inspectNodeStyleChannel } from "../rpc/channels";
-import { sockAdapter } from "../../../paperclip-common";
 
 type BrowserstackCredentials = {
   username: string;
@@ -68,388 +16,43 @@ type BrowserstackCredentials = {
 export type ServerOptions = {
   localResourceRoots: string[];
   port?: number;
-  emit?: (action: Action) => void;
   cwd?: string;
   readonly?: boolean;
   openInitial: boolean;
+  handleEvent?: (event: BaseEvent) => void;
+  revealSource?: (source: ExprSource) => void;
   credentials?: {
     browserstack?: BrowserstackCredentials;
   };
 };
 
-export const startServer = async ({
+export const startServer = ({
   port: defaultPort,
   localResourceRoots,
-  emit: emitExternal = noop,
   cwd = process.cwd(),
   credentials = {},
   openInitial,
-  readonly
+  readonly,
+  handleEvent,
+  revealSource = noop
 }: ServerOptions) => {
-  const engine = await createEngineDelegate(
-    {
-      mode: EngineMode.MultiFrame
-    },
-    () => {
-      emitExternal(crashed(null));
-    }
+  const kernel = new ServerKernel();
+
+  const serviceManager = new ServiceManager(kernel).add(
+    fileWatcherService({ cwd }),
+    pcEngineService(),
+    httpServer({ defaultPort, localResourceRoots }),
+    eventLogger(),
+    postInitService({ openInitial }),
+    rpcService({
+      revealSource,
+      localResourceRoots
+    })
   );
 
-  const plugins = [
-    sourceWriterPlugin(engine, emitExternal),
-    fileWatcherPlugin(engine, cwd, emitExternal)
-  ];
-
-  const port = await getPort({ port: defaultPort });
-
-  const io = sockjs.createServer();
-
-  const em = new EventEmitter();
-
-  const openURI = uri => {
-    const localPath = URL.fileURLToPath(uri);
-    if (
-      !localResourceRoots.some(root =>
-        localPath.toLowerCase().includes(root.toLowerCase())
-      )
-    ) {
-      return;
-    }
-
-    const ret = engine.open(uri);
-    return ret;
-  };
-
-  let _browsers: any[];
-
-  const handleChans = conn => {
-    const chanAdapter = sockAdapter(conn);
-
-    inspectNodeStyleChannel(chanAdapter).listen(async sources => {
-      const now = Date.now();
-
-      // TODO - need to pull frame size from virt node source
-      const inspections: Array<[
-        VirtNodeSource,
-        NodeStyleInspection
-      ]> = sources.map(source => [source, engine.inspectNodeStyles(source, 0)]);
-
-      console.log("Inspected in %d ms", Date.now() - now);
-
-      return inspections;
-    });
-  };
-
-  io.on("connection", conn => {
-    let targetUri;
-
-    handleChans(conn);
-
-    const emit = message => {
-      conn.write(JSON.stringify(message));
-    };
-
-    emit(initParamsDefined({ readonly, availableBrowsers: _browsers }));
-
-    const disposeEngineListener = engine.onEvent(event => {
-      emit(engineDelegateChanged(event));
-    });
-
-    const onExternalAction = emit;
-
-    em.on("externalAction", onExternalAction);
-
-    conn.on("data", data => {
-      const action: InstanceAction = JSON.parse(data) as any;
-
-      // pass action handling to plugins
-      for (const handleAction of plugins) {
-        handleAction(action);
-      }
-
-      // LEGACY
-      switch (action.type) {
-        case ActionType.FS_ITEM_CLICKED: {
-          return onFSItemClicked(action);
-        }
-        case ActionType.VIRTUAL_NODES_SELECTED: {
-          return onVirtualNodeSelected(action);
-        }
-        case ActionType.STYLE_RULE_FILE_NAME_CLICKED: {
-          return handleStyleRuleFileNameClicked(action);
-        }
-        case ActionType.FILE_OPENED: {
-          return onFileOpened(action);
-        }
-        case ActionType.META_CLICKED: {
-          return handleMetaClickVirtualNode(action);
-        }
-        case ActionType.GET_ALL_SCREENS_REQUESTED: {
-          return handleGetAllScreens();
-        }
-        case ActionType.ENV_OPTION_CLICKED: {
-          return handleEnvOptionClicked(action);
-        }
-        case ActionType.TITLE_DOUBLE_CLICKED: {
-          return handleTitleDoubleClicked(action);
-        }
-      }
-      emitExternal(instanceChanged({ targetPCFileUri: targetUri, action }));
-    });
-
-    const handleTitleDoubleClicked = (action: TitleDoubleClicked) => {
-      if (action.payload.uri) {
-        exec(`open "${URL.fileURLToPath(action.payload.uri)}"`);
-      }
-    };
-
-    const handleGetAllScreens = async () => {
-      emit(allPCContentLoaded(engine.getAllLoadedData()));
-    };
-
-    let _ngrokUrl;
-
-    const handleEnvOptionClicked = async ({
-      payload: { option, path }
-    }: EnvOptionClicked) => {
-      let host = `http://localhost:${port}`;
-
-      if (option.kind !== EnvOptionKind.Private) {
-        host = _ngrokUrl || (_ngrokUrl = await ngrok.connect(port));
-      }
-
-      let url = host + path;
-
-      if (option.kind === EnvOptionKind.Browserstack) {
-        url = getBrowserstackUrl(url, option);
-      }
-
-      exec(`open "${url}"`);
-    };
-
-    const getBrowserstackUrl = (url: string, option: EnvOption) => {
-      const launchOptions: AvailableBrowser = option.launchOptions;
-
-      const query = {
-        browser: launchOptions.browser,
-        browser_version: launchOptions.browserVersion,
-        scale_to_fit: true,
-        os: launchOptions.os,
-        os_version: launchOptions.osVersion,
-        start: true,
-        local: true,
-        url
-      };
-
-      return `https://live.browserstack.com/dashboard#${qs.stringify(query)}`;
-    };
-
-    const onFSItemClicked = async (action: FSItemClicked) => {
-      if (action.payload.kind === FSItemKind.DIRECTORY) {
-        loadDirectory(action.payload.absolutePath);
-      }
-    };
-
-    const onVirtualNodeSelected = (action: VirtualNodesSelected) => {
-      loadVirtualNodeSources(action.payload.sources);
-    };
-
-    const loadVirtualNodeSources = (virstSources: VirtNodeSource[]) => {
-      const sources = virstSources.map(info => {
-        return {
-          virtualNodePath: info.path,
-          source: engine.getVirtualNodeSourceInfo(info.path, info.uri)
-        };
-      });
-      emit(virtualNodeSourcesLoaded(sources));
-    };
-
-    const onFileOpened = async (action: FileOpened) => {
-      if (/\.pc$/.test(action.payload.uri)) {
-        targetUri = URL.parse(action.payload.uri).href;
-        handleOpen(targetUri);
-      }
-    };
-
-    const handleStyleRuleFileNameClicked = ({
-      payload: { styleRuleSourceId }
-    }: StyleRuleFileNameClicked) => {
-      console.log(
-        styleRuleSourceId,
-        engine.getExpressionById(styleRuleSourceId)
-      );
-      const [uri, expr] = engine.getExpressionById(styleRuleSourceId) as [
-        string,
-        StyleRule
-      ];
-      emitExternal(
-        revealExpressionSourceRequested({
-          sourceId: styleRuleSourceId,
-          textSource: {
-            location: expr.location,
-            uri
-          }
-        })
-      );
-    };
-
-    const handleMetaClickVirtualNode = ({
-      payload: { nodeUri, nodePath }
-    }: MetaClicked) => {
-      const info = engine.getVirtualNodeSourceInfo(nodePath, nodeUri);
-      if (info) {
-        emitExternal(revealExpressionSourceRequested(info));
-      }
-    };
-
-    const handleOpen = (uri: string) => {
-      const data = openURI(uri);
-      const document =
-        engine.getVirtualContent(uri) ||
-        fs.readFileSync(new URL.URL(uri), "utf8");
-      emit(pcFileLoaded({ uri, document, data }));
-    };
-
-    const loadDirectory = (dirPath: string, isRoot = false) => {
-      fs.readdir(dirPath, (err, basenames) => {
-        if (err) {
-          return;
-        }
-
-        emit(
-          dirLoaded({
-            isRoot,
-            item: {
-              absolutePath: dirPath,
-              url: URL.pathToFileURL(dirPath).toString(),
-              kind: FSItemKind.DIRECTORY,
-              name: path.basename(dirPath),
-              children: basenames.map(basename => {
-                const absolutePath = path.join(dirPath, basename);
-                const isDir = fs.lstatSync(absolutePath).isDirectory();
-                return {
-                  absolutePath,
-                  url: URL.pathToFileURL(absolutePath).toString(),
-                  name: basename,
-                  kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
-                  children: isDir ? [] : undefined
-                };
-              })
-            }
-          })
-        );
-      });
-    };
-
-    // load initial since it has highest priority
-    if (localResourceRoots.length) {
-      loadDirectory(localResourceRoots[0], true);
-    }
-
-    conn.on("close", () => {
-      disposeEngineListener();
-      em.off("externalAction", onExternalAction);
-    });
-  });
-
-  const dispatch = (action: ExternalAction | ServerAction) => {
-    em.emit("externalAction", action);
-    if (action.type == ExternalActionType.CONFIG_CHANGED) {
-      handleConfigChanged(action);
-    }
-  };
-
-  let _bsClient;
-
-  const handleConfigChanged = ({ payload }: ConfigChanged) => {
-    maybeInitBrowserstack(payload.browserstackCredentials);
-  };
-
-  const maybeInitBrowserstack = (credentials: any) => {
-    if (!credentials || !credentials.username) {
-      return;
-    }
-    _bsClient = bs.createClient(credentials);
-    console.log("Getting all browserstack browsers");
-    _bsClient.getBrowsers((err, result) => {
-      if (err) {
-        return console.error(`can't load browsers: `, err);
-      }
-
-      const used = {};
-
-      _browsers = result
-        ?.map(browser => ({
-          ...browser,
-          osVersion: browser.os_version,
-          browserVersion: browser.browser_version
-        }))
-        .sort((a, b) => {
-          if (a.browser !== b.browser) {
-            return a.browser > b.browser ? 1 : -1;
-          } else if (a.browserVersion !== b.browserVersion) {
-            return a.browserVersion > b.browserVersion ? -1 : 1;
-          }
-        });
-
-      console.log("loaded %d browsers", _browsers.length);
-
-      dispatch(browserstackBrowsersLoaded(_browsers));
-    });
-  };
-
-  startHTTPServer(port, io, localResourceRoots);
-  maybeInitBrowserstack(credentials?.browserstack);
-
-  console.info(`Listening on port %d`, port);
-
-  if (openInitial) {
-    exec(`open http://localhost:${port}/all`);
+  if (handleEvent) {
+    kernel.events.observe({ handleEvent });
   }
 
-  return {
-    port,
-    engine,
-    dispatch
-  };
-};
-
-const startHTTPServer = (
-  port: number,
-  io: sockjs.Server,
-  localResourceRoots: string[]
-) => {
-  const app = express();
-
-  const server = app.listen(port);
-  io.installHandlers(server, { prefix: "/rt" });
-
-  const distHandler = express.static(path.join(__dirname, "..", "..", "dist"));
-
-  // cors to enable iframe embed
-  app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
-    next();
-  });
-
-  app.use(distHandler);
-  app.use("/canvas", distHandler);
-  app.use("/all", distHandler);
-  app.use("/file/*", (req, res, next) => {
-    const filePath = URL.fileURLToPath(
-      decodeURIComponent(normalize(req.params["0"]))
-    );
-
-    const found = localResourceRoots.some(
-      root => filePath.toLowerCase().indexOf(root.toLowerCase()) === 0
-    );
-    if (!found) {
-      return next();
-    }
-    res.sendFile(filePath);
-  });
+  serviceManager.initialize();
 };

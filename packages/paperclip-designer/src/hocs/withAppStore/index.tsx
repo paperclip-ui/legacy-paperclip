@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
-import { AppStoreContext } from "../../contexts";
+import { Provider } from "react-redux";
 
 import defaultReducer from "../../reducers";
 import defaultSaga from "../../sagas";
@@ -28,18 +28,11 @@ export const withAppStore = (Child: React.FC) => {
 
   return props => {
     init();
-    const [state, setState] = useState(_store.getState());
-
-    useEffect(() => {
-      return _store.subscribe(() => {
-        setState(_store.getState());
-      });
-    }, []);
 
     return (
-      <AppStoreContext.Provider value={{ dispatch: _store.dispatch, state }}>
+      <Provider store={_store}>
         <Child {...props} />
-      </AppStoreContext.Provider>
+      </Provider>
     );
   };
 };

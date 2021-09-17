@@ -20,6 +20,7 @@ mod pc;
 
 use crate::pc::runtime::evaluator::EngineMode;
 use crate::pc::runtime::inspect_node_styles::InspectionOptions;
+use crate::pc::runtime::lint::LintOptions;
 use crate::pc::runtime::virt as pc_virt;
 use ::futures::executor::block_on;
 use engine::engine::Engine;
@@ -54,6 +55,7 @@ impl NativeEngine {
     read_file: js_sys::Function,
     file_exists: js_sys::Function,
     resolve_file: js_sys::Function,
+    get_lint_config: js_sys::Function,
     engine_mode: NativeEngineMode,
   ) -> NativeEngine {
     console_error_panic_hook::set_once();
@@ -75,6 +77,15 @@ impl NativeEngine {
           let arg2 = JsValue::from(relative_path);
           resolve_file.call2(&this, &arg, &arg2).unwrap().as_string()
         }),
+        Some(Box::new(move |uri| {
+          let this = JsValue::NULL;
+          let arg = JsValue::from(uri);
+          get_lint_config
+            .call1(&this, &arg)
+            .unwrap()
+            .into_serde()
+            .unwrap_or(None)
+        })),
         match engine_mode {
           NativeEngineMode::SingleFrame => EngineMode::SingleFrame,
           NativeEngineMode::MultiFrame => EngineMode::MultiFrame,
@@ -120,6 +131,10 @@ impl NativeEngine {
   }
   pub fn get_loaded_ast(&mut self, uri: String) -> JsValue {
     let result = self.target.get_loaded_ast(&uri);
+    JsValue::from_serde(&result).unwrap()
+  }
+  pub fn get_dependency(&mut self, uri: String) -> JsValue {
+    let result = self.target.get_dependency(&uri);
     JsValue::from_serde(&result).unwrap()
   }
   pub fn parse_content(&mut self, content: String, uri: String) -> JsValue {

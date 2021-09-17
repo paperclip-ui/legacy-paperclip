@@ -4,13 +4,18 @@
 <import src="./Birdseye/index.pc" as="Birdseye" />
 <import src="./Canvas/index.pc" as="Canvas" />
 <import src="./RightSidebar/index.pc" as="RightSidebar" />
+<import src="./Footer/index.pc" as="Footer" />
 
 
 
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className="$theme.full-wh {className?}">
+<div export
+  component
+  as="Container"
+  className="$theme.full-wh {className?}"
+  data-label="Design mode Container">
   <style>
     position: relative;
     display: flex;
@@ -25,13 +30,30 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="CanvasContainer" className="$theme.full-wh">
+<div export
+  component
+  as="CanvasContainer"
+  className="$theme.full-wh"
+  data-label="Canvas Container">
   <style>
     display: flex;
     position: relative;
     overflow: hidden;
-    width: 100%;
-    height: 100%;
+    flex: 1;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 326, y: -117 }
+-->
+<div export component as="Center" data-label="Center">
+  <style>
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
   </style>
   {children}
 </div>
@@ -44,8 +66,11 @@
   {showGrid && <Birdseye.Preview {zoom?} />}
   {showEmpty && <Birdseye.PreviewEmpty />}
   {showCanvas && <fragment>
-    <Canvas.Preview />
-    <RightSidebar.Preview />
+    <Center>
+      <Canvas.Preview />
+      <Footer.Preview />
+    </Center>
+    <RightSidebar.Preview {showComputed?} />
   </fragment>}
 </CanvasContainer>
 
@@ -56,7 +81,10 @@
 <Container export component as="Preview" className="$theme.font-default">
   {v2 && <ToolbarV2.Preview {showGrid} {showEnvPopup} />}
   {!v2 && <Toolbar.Preview gridMode {showEnvPopup} />}
-  <CanvasContainerPreview {showCanvas?} {showEmpty?} {showGrid?} />
+  <CanvasContainerPreview {showCanvas?}
+    {showEmpty?}
+    {showGrid?}
+    {showComputed?} />
 </Container>
 
 <!--
@@ -94,7 +122,6 @@
 -->
 <Preview showGrid v2 zoom={1} />
 
-
 <!--
   @frame { title: "Center V2 / Env", width: 1024, height: 768, x: 1073, y: 1621 }
 -->
@@ -112,6 +139,11 @@
 
 
 <!--
-  @frame { title: "Center / Canvas", width: 1394, height: 975, x: 2558, y: 736 }
+  @frame { title: "Center / Canvas / Computed", width: 1266, height: 958, x: 4212, y: 736 }
+-->
+<Preview showCanvas v2 showComputed />
+
+<!--
+  @frame { title: "Center / Canvas", width: 1266, height: 958, x: 2734, y: 736 }
 -->
 <Preview showCanvas v2 />
