@@ -8,6 +8,9 @@
   "directories": {
     "doc": "docs"
   },
+  "engines": {
+    "yarn": "^1.22.1"
+  },
   "workspaces": {
     "packages": [
       "packages/*"
