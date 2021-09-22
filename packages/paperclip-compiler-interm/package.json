@@ -1,0 +1,21 @@
+{
+  "name": "paperclip-compiler-interm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "test": "mocha lib/test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "paperclip": "^17.14.14"
+  },
+  "devDependencies": {
+    "@types/mocha": "^8.0.0",
+    "mocha": "^8.0.1",
+    "chai": "^4.2.0"
+  }
+}
