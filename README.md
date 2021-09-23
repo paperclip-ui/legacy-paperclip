@@ -4,7 +4,7 @@
 <br />
 
 <div style="text-align: left; margin-bottom: 32px;">
-  <img src="assets/logo-outline.png" width="400">
+  <img src="assets/logo-outline-2.png" width="400">
 </div>
 
 <!-- ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨ -->
