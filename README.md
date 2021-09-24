@@ -3,7 +3,9 @@
 
 <br />
 
-<img src="assets/logo.png" width="230">
+<div style="text-align: left; margin-bottom: 32px;">
+  <img src="assets/logo-outline-4.png" width="400">
+</div>
 
 <!-- ✨ **Wanna kick the tires around a bit? Check out the [Playground](http://playground.paperclip.dev)!** ✨ -->
 
