@@ -1,4 +1,4 @@
-import { JsExpression } from "paperclip";
+import { JsExpression, StringAttributeValue } from "paperclip";
 
 export type CSSExports = {
   classNames: string[];
@@ -17,7 +17,7 @@ export enum NodeKind {
   Fragment = "Fragment"
 }
 
-export type BaseNode<TKind extends NodeKind> = {
+type BaseNode<TKind extends NodeKind> = {
   kind: TKind;
 };
 
@@ -28,8 +28,36 @@ export type Component<TKind extends NodeKind> = {
   children: ChildNode[];
 } & BaseNode<TKind>;
 
+export enum AttributeValueKind {
+  String = "String",
+  Script = "Script"
+}
+
+type BaseAttributeValue<TKind extends AttributeValueKind> = {
+  // for className:variant="value"
+  variantPropertyName?: string;
+
+  kind: TKind;
+};
+
+type ScriptAttributeValue = {
+  script: JsExpression;
+} & BaseAttributeValue<AttributeValueKind.Script>;
+
+export type StringAttribteValue = {
+  value: String;
+} & BaseAttributeValue<AttributeValueKind.String>;
+
+export type AttributeValue = ScriptAttributeValue | StringAttributeValue;
+
+export type Attribute = {
+  name: string;
+  values: AttributeValue[];
+};
+
 export type Element = {
   tagName: string;
+  attributes: Attribute[];
   children: ChildNode[];
 } & BaseNode<NodeKind.Element>;
 
