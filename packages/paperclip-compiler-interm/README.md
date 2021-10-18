@@ -2,13 +2,8 @@ Intermittent compiler step.
 
 ```javascript
 import { translateIntermediate } from "paperclip-compiler-interm";
+import { translateReact } from "paperclip-compiler-react";
 
-const json = translateIntermediate(`<div export component as="Component" />`);
-
-
+const interm = translateIntermediate(`<div export component as="Component" />`);
+const output = translateReact(interm);
 ```
-
-
-TODOs:
-
-- [ ] 
