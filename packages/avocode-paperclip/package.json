@@ -1,6 +1,6 @@
 {
   "name": "avocode-paperclip",
-  "version": "17.14.18",
+  "version": "17.14.19",
   "description": "",
   "main": "index.js",
   "scripts": {},
@@ -9,5 +9,5 @@
   "dependencies": {
     "typescript": "^4.2.3"
   },
-  "gitHead": "5e4b8fecbae3a22045ea35dd92fce2204c11d4c8"
+  "gitHead": "ed34237b6303bd9c54fc722776a67247b6df9df2"
 }

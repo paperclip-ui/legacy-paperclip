@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-react",
-  "version": "17.14.18",
+  "version": "17.14.19",
   "description": "React compiler for Paperclip",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -11,7 +11,7 @@
     "crc32": "^0.2.2",
     "html-entities": "^1.2.1",
     "lodash": "^4.17.15",
-    "paperclip": "^17.14.18"
+    "paperclip": "^17.14.19"
   },
   "scripts": {
     "build": "tsc",
@@ -21,7 +21,7 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "5e4b8fecbae3a22045ea35dd92fce2204c11d4c8",
+  "gitHead": "ed34237b6303bd9c54fc722776a67247b6df9df2",
   "devDependencies": {
     "@babel/core": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
