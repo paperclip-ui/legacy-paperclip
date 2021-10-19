@@ -34,7 +34,7 @@ pub fn parse_with_tokenizer<'a>(
 }
 
 fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annotation, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.u16_pos();
   let mut properties: Vec<ast::AnnotationProperty> = vec![];
 
   let mut raw_before = context.tokenizer.eat_whitespace();
@@ -46,7 +46,7 @@ fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annota
 
   Ok(ast::Annotation {
     properties,
-    location: base_ast::Location::new(start, context.tokenizer.utf16_pos),
+    location: base_ast::Location::new(start, context.tokenizer.u16_pos()),
   })
 }
 
@@ -64,7 +64,7 @@ fn parse_text_annotation<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.u16_pos();
 
   let start = context.tokenizer.get_pos();
   let start_u8 = context.tokenizer.get_pos().u8_pos;
@@ -76,7 +76,7 @@ fn parse_text_annotation<'a, 'b>(
   let end = context.tokenizer.get_pos();
   let end_u8 = context.tokenizer.get_pos().u8_pos;
 
-  let buffer = std::str::from_utf8(&context.tokenizer.source[start_u8..end_u8]).unwrap();
+  let buffer = std::str::from_utf8(&context.tokenizer.scanner.source[start_u8..end_u8]).unwrap();
 
   Ok(ast::AnnotationProperty::Text(ast::Text {
     raws: base_ast::BasicRaws::new(raw_before, None),
@@ -89,7 +89,7 @@ fn parse_declaration_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.u16_pos();
 
   context.tokenizer.next_expect(Token::At)?;
   let name = get_buffer(context.tokenizer, |tokenizer| {
@@ -98,7 +98,7 @@ fn parse_declaration_property<'a, 'b>(
   .to_string();
 
   let mut js_tokenizer =
-    JSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+    JSTokenizer::new_from_bytes(&context.tokenizer.scanner.source, context.tokenizer.get_pos());
   let value =
     parse_js_with_tokenizer(&mut js_tokenizer, "".to_string(), context.scope_id.as_str())?;
 
@@ -108,6 +108,6 @@ fn parse_declaration_property<'a, 'b>(
     name,
     raws: base_ast::BasicRaws::new(raw_before, None),
     value,
-    location: base_ast::Location::new(start, context.tokenizer.utf16_pos),
+    location: base_ast::Location::new(start, context.tokenizer.u16_pos()),
   }))
 }

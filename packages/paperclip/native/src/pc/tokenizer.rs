@@ -366,7 +366,6 @@ impl<'a> Tokenizer<'a> {
         })))
       }
       b'\r' | b'\n' => {
-        let pos = self.pos;
         self.scan(|c| -> bool { matches!(c, b'\r' | b'\n') });
         Ok(Token::Whitespace)
       }
