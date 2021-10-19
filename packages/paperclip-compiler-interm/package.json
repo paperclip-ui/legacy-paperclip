@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-interm",
-  "version": "17.14.15",
+  "version": "17.14.16",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "paperclip": "^17.14.15"
+    "paperclip": "^17.14.16"
   },
   "devDependencies": {
     "@types/mocha": "^8.0.0",

@@ -1,6 +1,6 @@
 {
   "name": "paperclip-monaco",
-  "version": "17.14.15",
+  "version": "17.14.16",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -13,11 +13,11 @@
     "color": "^3.1.3",
     "monaco-editor": "^0.21.3",
     "monaco-editor-core": "^0.21.3",
-    "paperclip": "^17.14.15",
-    "paperclip-autocomplete": "^17.14.15",
-    "paperclip-common": "^17.14.15",
-    "paperclip-language-service": "^17.14.15",
-    "paperclip-utils": "^17.14.15",
+    "paperclip": "^17.14.16",
+    "paperclip-autocomplete": "^17.14.16",
+    "paperclip-common": "^17.14.16",
+    "paperclip-language-service": "^17.14.16",
+    "paperclip-utils": "^17.14.16",
     "typescript": "^4.2.3"
   }
 }
