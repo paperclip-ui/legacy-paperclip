@@ -1,6 +1,6 @@
 {
   "name": "paperclip-utils",
-  "version": "17.14.17",
+  "version": "17.14.18",
   "description": "Internal utils for Paperclip",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "path": "^0.12.7",
     "url": "^0.11.0"
   },
-  "gitHead": "2d129453b7c39eba3562561f8c0ee4d7372f6616",
+  "gitHead": "5e4b8fecbae3a22045ea35dd92fce2204c11d4c8",
   "devDependencies": {
     "@types/chokidar": "^2.1.3",
     "@types/glob": "^7.1.3",
@@ -31,6 +31,7 @@
     "chokidar": "^3.4.1",
     "eslint": "^7.4.0",
     "glob": "^7.1.6",
-    "mocha": "^7.2.0"
+    "mocha": "^7.2.0",
+    "typescript": "^4.2.3"
   }
 }

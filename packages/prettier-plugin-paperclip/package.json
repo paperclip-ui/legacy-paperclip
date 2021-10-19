@@ -1,6 +1,6 @@
 {
   "name": "prettier-plugin-paperclip",
-  "version": "17.14.17",
+  "version": "17.14.18",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -13,12 +13,13 @@
   "devDependencies": {
     "@types/node": "^14.11.8",
     "@types/prettier": "^2.1.2",
-    "prettier": "^2.1.2"
+    "prettier": "^2.1.2",
+    "typescript": "^4.2.3"
   },
   "dependencies": {
     "chai": "^4.3.4",
     "mocha": "^8.3.2",
-    "paperclip": "^17.14.17"
+    "paperclip": "^17.14.18"
   },
-  "gitHead": "2d129453b7c39eba3562561f8c0ee4d7372f6616"
+  "gitHead": "5e4b8fecbae3a22045ea35dd92fce2204c11d4c8"
 }

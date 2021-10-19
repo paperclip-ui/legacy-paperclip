@@ -1,6 +1,6 @@
 {
   "name": "figma-paperclip",
-  "version": "17.14.17",
+  "version": "17.14.18",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -25,5 +25,5 @@
     "tinycolor2": "^1.4.2",
     "yargs": "^17.0.1"
   },
-  "gitHead": "2d129453b7c39eba3562561f8c0ee4d7372f6616"
+  "gitHead": "5e4b8fecbae3a22045ea35dd92fce2204c11d4c8"
 }

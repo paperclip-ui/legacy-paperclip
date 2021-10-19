@@ -1,6 +1,6 @@
 {
   "name": "zeplin-paperclip",
-  "version": "17.14.17",
+  "version": "17.14.18",
   "description": "Download Zeplin colors, typography, and spacing to Paperclip",
   "main": "index.js",
   "bin": {
@@ -18,6 +18,7 @@
     "@typescript-eslint/eslint-plugin": "^3.6.1",
     "@typescript-eslint/parser": "^3.6.1",
     "eslint": "^7.4.0",
+    "typescript": "^4.2.3",
     "yargs": "^15.4.0"
   },
   "dependencies": {
@@ -31,5 +32,5 @@
     "p-limit": "^3.0.1",
     "zeplin-extension-style-kit": "^2.0.0"
   },
-  "gitHead": "2d129453b7c39eba3562561f8c0ee4d7372f6616"
+  "gitHead": "5e4b8fecbae3a22045ea35dd92fce2204c11d4c8"
 }
