@@ -1,5 +1,6 @@
-import { expect } from "chai";
+import { EngineDelegate } from "paperclip";
 import { createMockEngine } from "paperclip/lib/test/utils";
+import { IntermediateCompiler } from "..";
 
 [
   [
@@ -7,16 +8,18 @@ import { createMockEngine } from "paperclip/lib/test/utils";
     {
       "/entry.pc": `
         <div>
+          <style>
+            
+          </style>
         </div>
       `
     }
   ]
 ].forEach(([title, source, output]: any) => {
   it(title, () => {
-    const engine = createMockEngine(source);
-    const sheet = engine.open("/entry.pc").sheet;
-    const ast = engine.parseFile("/entry.pc");
-
-    console.log(ast, sheet);
+    const engine: EngineDelegate = createMockEngine(source);
+    const compiler = new IntermediateCompiler(engine);
+    const module = compiler.parseFile("/entry.pc");
+    console.log(module);
   });
 });

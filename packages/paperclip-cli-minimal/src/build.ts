@@ -162,7 +162,11 @@ async function initBuild(
           const basename = path.basename(url.fileURLToPath(cssFilePath));
           writeFileSync(cssFilePath, sheetCode);
 
-          code = `import "./${basename}"\n\n` + code;
+          if (compilerOptions.module === "commonjs") {
+            code = `require("./${basename}");\n\n` + code;
+          } else {
+            code = `import "./${basename}";\n\n` + code;
+          }
         }
 
         writeFileSync(uri.href, code);

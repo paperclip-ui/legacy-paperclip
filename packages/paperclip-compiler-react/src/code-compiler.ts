@@ -55,7 +55,7 @@ import {
   strToClassName,
   pascalCase
 } from "./utils";
-import { add, at, camelCase, isEqual, uniq } from "lodash";
+import { camelCase, uniq } from "lodash";
 import * as path from "path";
 import { Html5Entities } from "html-entities";
 import { ClassNameExport } from "paperclip";

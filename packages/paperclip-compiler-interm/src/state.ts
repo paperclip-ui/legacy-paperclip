@@ -5,7 +5,7 @@ export type CSSExports = {
   keyframes: string[];
 };
 
-export type CSS = {
+export type IntermediateCSS = {
   sheetText: string;
   exports: CSSExports;
 };
@@ -89,7 +89,7 @@ export type IntermediatModule = {
 
   // compiled CSS in this doc -- dev just needs to include generated text
   // wherever and load in the module
-  css: CSS;
+  css: IntermediateCSS;
 
   // assets (svg, jpg, etc) embedded in this doc.
   assets: Asset[];
