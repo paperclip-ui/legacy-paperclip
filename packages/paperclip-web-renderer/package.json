@@ -30,7 +30,8 @@
     "eslint": "^7.4.0",
     "lodash": "^4.17.19",
     "mocha": "^7.0.1",
-    "paperclip": "^17.14.16"
+    "paperclip": "^17.14.16",
+    "typescript": "^4.2.3"
   },
-  "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d"
+  "gitHead": "2d129453b7c39eba3562561f8c0ee4d7372f6616"
 }

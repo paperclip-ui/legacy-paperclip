@@ -12,5 +12,6 @@
   "dependencies": {
     "cssom": "^0.5.0",
     "lodash": "^4.17.21"
-  }
+  },
+  "gitHead": "2d129453b7c39eba3562561f8c0ee4d7372f6616"
 }
