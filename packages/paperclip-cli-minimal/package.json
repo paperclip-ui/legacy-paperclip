@@ -1,6 +1,6 @@
 {
   "name": "paperclip-cli-minimal",
-  "version": "17.14.19",
+  "version": "17.14.21",
   "description": "Minimal command line tool for Paperclip",
   "main": "lib/cli.js",
   "bin": {

@@ -19,6 +19,11 @@ pub struct StringScanner<'a> {
   pub u16_column: usize,
 }
 
+#[derive(Debug)]
+pub enum StringScannerError {
+  EOF
+}
+
 impl<'a> StringScanner<'a> {
   pub fn eat_whitespace(&mut self) -> Option<&'a [u8]> {
     if self.is_eof() {
@@ -27,7 +32,7 @@ impl<'a> StringScanner<'a> {
     let is_whitepace = |c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') };
     let start = self.pos;
 
-    while !self.is_eof() && is_whitepace(self.curr_byte()) {
+    while !self.is_eof() && is_whitepace(self.curr_byte().unwrap()) {
       self.forward(1);
     }
     Some(&self.source[start..self.pos])
@@ -74,8 +79,8 @@ impl<'a> StringScanner<'a> {
     self.pos += pos;
     self.u16_pos += pos;
   }
-  pub fn next_char(&mut self) -> Char<'a> {
-    let c = self.curr_byte();
+  pub fn next_char(&mut self) -> Result<Char<'a>, StringScannerError> {
+    let c = self.curr_byte()?;
     let mut len = 1;
     let mut utf8_step = 1;
 
@@ -94,17 +99,21 @@ impl<'a> StringScanner<'a> {
 
     if len == 1 {
       self.forward(1);
-      Char::Byte(c)
+      Ok(Char::Byte(c))
     } else {
       let utf8_pos = self.u16_pos;
       let buffer = &self.source[self.pos..(self.pos + len)];
       self.forward(len);
       self.u16_pos = utf8_pos + utf8_step;
-      Char::Cluster(buffer)
+      Ok(Char::Cluster(buffer))
     }
   }
-  pub fn curr_byte(&self) -> u8 {
-    self.source[self.pos]
+  pub fn curr_byte(&self) -> Result<u8, StringScannerError> {
+    if self.pos < self.source.len() {
+      Ok(self.source[self.pos])
+    } else {
+      Err(StringScannerError::EOF)
+    }
   }
   pub fn is_eof(&self) -> bool {
     self.pos >= self.source.len()
@@ -119,11 +128,11 @@ impl<'a> StringScanner<'a> {
     self.since(start)
   }
 
-  fn since(&mut self, start: usize) -> &'a str {
+  pub fn since(&mut self, start: usize) -> &'a str {
     std::str::from_utf8(&self.source[start..self.pos]).unwrap()
   }
 
-  fn scan<FF>(&mut self, test: FF)
+  pub fn scan<FF>(&mut self, test: FF)
   where
     FF: Fn(u8) -> bool,
   {

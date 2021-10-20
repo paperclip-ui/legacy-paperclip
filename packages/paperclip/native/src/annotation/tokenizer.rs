@@ -80,7 +80,9 @@ impl<'a> Tokenizer<'a> {
       return Err(ParseError::eof());
     }
 
-    let c = self.scanner.curr_byte();
+    let c = self.scanner.curr_byte().or_else(|_| {
+      Err(ParseError::eof())
+    })?;
 
     match c {
       b'\\' => {
@@ -98,10 +100,16 @@ impl<'a> Tokenizer<'a> {
           matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9')
         })))
       }
-      _ => Ok(match self.scanner.next_char() {
-        Char::Byte(b) => Token::Byte(b),
-        Char::Cluster(chars) => Token::Cluster(chars),
-      }),
+      _ => {
+        let c = self.scanner.next_char().or_else(|_| {
+          Err(ParseError::eof())
+        })?;
+
+        Ok(match c {
+          Char::Byte(b) => Token::Byte(b),
+          Char::Cluster(chars) => Token::Cluster(chars),
+        })
+      }
     }
   }
 
