@@ -1,4 +1,3 @@
-import { exec } from "child_process";
 import { startServer } from "paperclip-designer";
 
 export type ServerOptions = {

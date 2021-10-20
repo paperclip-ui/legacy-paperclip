@@ -169,6 +169,12 @@ async function initBuild(
           }
         }
 
+        if (compilerOptions.module === "commonjs") {
+          code =
+            code +
+            `\n\nObject.defineProperty(exports, "__esModule", { value: true });\n`;
+        }
+
         writeFileSync(uri.href, code);
       } else {
         console.log("Compiling %s", relativePath);

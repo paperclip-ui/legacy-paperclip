@@ -1,5 +1,5 @@
 use crate::base::parser::ParseError;
-use crate::base::string_scanner::{StringScanner, Position as StringScannerPosition, Char};
+use crate::base::string_scanner::{Char, Position as StringScannerPosition, StringScanner};
 use crate::base::tokenizer::{BaseTokenizer, Position};
 
 #[derive(PartialEq, Debug)]
@@ -16,7 +16,7 @@ pub enum Token<'a> {
 }
 
 pub struct Tokenizer<'a> {
-  pub scanner: StringScanner<'a>
+  pub scanner: StringScanner<'a>,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -98,12 +98,10 @@ impl<'a> Tokenizer<'a> {
           matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9')
         })))
       }
-      _ => {
-        Ok(match self.scanner.next_char() {
-          Char::Byte(b) => Token::Byte(b),
-          Char::Cluster(chars) => Token::Cluster(chars)
-        })
-      },
+      _ => Ok(match self.scanner.next_char() {
+        Char::Byte(b) => Token::Byte(b),
+        Char::Cluster(chars) => Token::Cluster(chars),
+      }),
     }
   }
 
@@ -116,12 +114,20 @@ impl<'a> Tokenizer<'a> {
   }
   pub fn new(source: &'a str) -> Tokenizer {
     Tokenizer {
-      scanner: StringScanner::new(source)
+      scanner: StringScanner::new(source),
     }
   }
   pub fn new_from_bytes(source: &'a [u8], pos: Position) -> Tokenizer {
     Tokenizer {
-      scanner: StringScanner::new_from_bytes(source, &StringScannerPosition { u8_pos: pos.u8_pos, u16_pos: pos.u16_pos, u16_line: 0, u16_column: 0 })
+      scanner: StringScanner::new_from_bytes(
+        source,
+        &StringScannerPosition {
+          u8_pos: pos.u8_pos,
+          u16_pos: pos.u16_pos,
+          u16_line: 0,
+          u16_column: 0,
+        },
+      ),
     }
   }
 }

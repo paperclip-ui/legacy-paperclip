@@ -1,15 +1,14 @@
-
 #[derive(Debug)]
 pub struct Position {
   pub u8_pos: usize,
   pub u16_pos: usize,
   pub u16_line: usize,
-  pub u16_column: usize
+  pub u16_column: usize,
 }
 
 pub enum Char<'a> {
   Byte(u8),
-  Cluster(&'a [u8])
+  Cluster(&'a [u8]),
 }
 
 pub struct StringScanner<'a> {
@@ -17,7 +16,7 @@ pub struct StringScanner<'a> {
   pub pos: usize,
   pub u16_pos: usize,
   pub u16_line: usize,
-  pub u16_column: usize
+  pub u16_column: usize,
 }
 
 impl<'a> StringScanner<'a> {
@@ -43,7 +42,7 @@ impl<'a> StringScanner<'a> {
       u8_pos: self.pos,
       u16_pos: self.u16_pos,
       u16_line: 0,
-      u16_column: 0
+      u16_column: 0,
     }
   }
   pub fn set_pos(&mut self, pos: &Position) {
@@ -59,7 +58,7 @@ impl<'a> StringScanner<'a> {
       pos: 0,
       u16_pos: 0,
       u16_line: 0,
-      u16_column: 0
+      u16_column: 0,
     }
   }
   pub fn new_from_bytes(source: &'a [u8], pos: &Position) -> StringScanner<'a> {
@@ -68,7 +67,7 @@ impl<'a> StringScanner<'a> {
       pos: 0,
       u16_pos: 0,
       u16_line: 0,
-      u16_column: 0
+      u16_column: 0,
     }
   }
   pub fn forward(&mut self, pos: usize) {

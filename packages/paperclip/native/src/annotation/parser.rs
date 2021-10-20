@@ -97,8 +97,10 @@ fn parse_declaration_property<'a, 'b>(
   })?
   .to_string();
 
-  let mut js_tokenizer =
-    JSTokenizer::new_from_bytes(&context.tokenizer.scanner.source, context.tokenizer.get_pos());
+  let mut js_tokenizer = JSTokenizer::new_from_bytes(
+    &context.tokenizer.scanner.source,
+    context.tokenizer.get_pos(),
+  );
   let value =
     parse_js_with_tokenizer(&mut js_tokenizer, "".to_string(), context.scope_id.as_str())?;
 
