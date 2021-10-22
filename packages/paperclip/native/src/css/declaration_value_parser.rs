@@ -5,35 +5,35 @@
 
 use super::declaration_value_ast::*;
 use super::tokenizer::{Token, Tokenizer};
-use crate::base::ast::{BasicRaws, Location};
-use crate::base::parser::{get_buffer, ParseError};
-use crate::core::id_generator::generate_seed;
+use crate::base::parser::{ParseError};
+use crate::base::string_scanner::{StringScanner};
 use crate::core::id_generator::IDGenerator;
 
-type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
+type FUntil<'a, 'b> = for<'r> fn(&mut Tokenizer<'a, 'b>) -> Result<bool, ParseError>;
 
-pub struct Context<'a, 'b> {
-  tokenizer: &'b mut Tokenizer<'a>,
+pub struct Context<'a, 'b, 'c> {
+  tokenizer: &'a mut Tokenizer<'b, 'c>,
   id_generator: IDGenerator,
-  until: FUntil<'a>,
+  until: FUntil<'b, 'c>,
 }
 
-impl<'a, 'b> Context<'a, 'b> {
+impl<'a, 'b, 'c>Context<'a, 'b, 'c>{
   pub fn ended(&mut self) -> Result<bool, ParseError> {
-    Ok(self.tokenizer.is_eof() || (self.until)(self.tokenizer)?)
+    Ok(self.tokenizer.scanner.is_eof() || (self.until)(self.tokenizer)?)
   }
 }
 
 // screen and
 pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Expression, ParseError> {
-  let mut tokenizer = Tokenizer::new(&source);
+  let scanner = StringScanner::new(source);
+  let mut tokenizer = Tokenizer::new_from_scanner(&scanner);
   parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
 }
 
-pub fn parse_with_tokenizer<'a>(
-  tokenizer: &mut Tokenizer<'a>,
+pub fn parse_with_tokenizer<'a, 'b>(
+  tokenizer: &mut Tokenizer<'a, 'b>,
   id_seed: &'a str,
-  until: FUntil<'a>,
+  until: FUntil<'a, 'b>,
 ) -> Result<Expression, ParseError> {
   let mut context = Context {
     tokenizer,
@@ -45,7 +45,7 @@ pub fn parse_with_tokenizer<'a>(
 }
 
 // red, blue
-fn parse_expression<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Expression, ParseError> {
+fn parse_expression<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<Expression, ParseError> {
   let mut list = parse_list(context)?;
   if list.items.len() == 1 {
     match list.items.pop().unwrap() {
@@ -58,7 +58,7 @@ fn parse_expression<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Expression,
 }
 
 // red, blue
-fn parse_list<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<List, ParseError> {
+fn parse_list<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<List, ParseError> {
   let mut items: Vec<ListItem> = vec![];
 
   loop {
@@ -68,7 +68,7 @@ fn parse_list<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<List, ParseError>
       break;
     }
 
-    context.tokenizer.eat_whitespace();
+    context.tokenizer.scanner.eat_whitespace();
     if context.tokenizer.peek(1) == Ok(Token::Comma) {
       context.tokenizer.next()?;
     }
@@ -77,7 +77,7 @@ fn parse_list<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<List, ParseError>
   Ok(List { items })
 }
 
-fn parse_list_item<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ListItem, ParseError> {
+fn parse_list_item<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<ListItem, ParseError> {
   let mut parameters: Vec<Value> = vec![];
   while !context.ended()? && context.tokenizer.peek(1)? != Token::Comma {
     parameters.push(parse_value(context)?);
@@ -90,9 +90,9 @@ fn parse_list_item<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ListItem, Pa
   }
 }
 
-fn parse_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Value, ParseError> {
-  context.tokenizer.eat_whitespace();
-  let pos = context.tokenizer.utf16_pos;
+fn parse_value<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<Value, ParseError> {
+  context.tokenizer.scanner.eat_whitespace();
+  let pos = context.tokenizer.scanner.u16_pos;
 
   match context.tokenizer.next()? {
     // 10px, 10%, 10em
@@ -101,7 +101,7 @@ fn parse_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Value, ParseErro
         value: value.to_string(),
       };
 
-      context.tokenizer.eat_whitespace();
+      context.tokenizer.scanner.eat_whitespace();
       if !context.ended()? {
         let next = context.tokenizer.peek(1)?;
 

@@ -386,7 +386,7 @@ impl<'a, 'b> BaseTokenizer<'b> for Tokenizer<'a, 'b> {
     self.next()?;
     Ok(())
   }
-  fn get_source(&self) -> &'a [u8] {
+  fn get_source(&self) -> &'b [u8] {
     self.scanner.source
   }
   fn get_pos(&self) -> usize {

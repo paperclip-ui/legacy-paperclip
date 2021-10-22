@@ -6,35 +6,35 @@
 use super::declaration_value_parser::parse_with_tokenizer as parse_decl_value_with_tokenizer;
 use super::media_ast::*;
 use super::tokenizer::{Token, Tokenizer};
-use crate::base::ast::{BasicRaws, Location};
-use crate::base::parser::{get_buffer, ParseError};
-use crate::core::id_generator::generate_seed;
+use crate::base::string_scanner::{StringScanner};
+use crate::base::parser::{ParseError};
 use crate::core::id_generator::IDGenerator;
 
-type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
+type FUntil<'a, 'b> = for<'r> fn(&mut Tokenizer<'a, 'b>) -> Result<bool, ParseError>;
 
-pub struct Context<'a, 'b> {
-  tokenizer: &'b mut Tokenizer<'a>,
+pub struct Context<'a, 'b, 'c> {
+  tokenizer: &'a mut Tokenizer<'b, 'c>,
   id_generator: IDGenerator,
-  until: FUntil<'a>,
+  until: FUntil<'b, 'c>,
 }
 
-impl<'a, 'b> Context<'a, 'b> {
+impl<'a, 'b, 'c> Context<'a, 'b, 'c>{
   pub fn ended(&mut self) -> Result<bool, ParseError> {
-    Ok(self.tokenizer.is_eof() || (self.until)(self.tokenizer)?)
+    Ok(self.tokenizer.scanner.is_eof() || (self.until)(self.tokenizer)?)
   }
 }
 
 // screen and
 pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<MediaQueryList, ParseError> {
-  let mut tokenizer = Tokenizer::new(&source);
+  let mut scanner = StringScanner::new(&source);
+  let mut tokenizer = Tokenizer::new_from_scanner(&scanner);
   parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
 }
 
-pub fn parse_with_tokenizer<'a>(
-  tokenizer: &mut Tokenizer<'a>,
+pub fn parse_with_tokenizer<'a, 'b>(
+  tokenizer: &mut Tokenizer<'a, 'b>,
   id_seed: &'a str,
-  until: FUntil<'a>,
+  until: FUntil<'a, 'b>,
 ) -> Result<MediaQueryList, ParseError> {
   let mut context = Context {
     tokenizer,
@@ -46,15 +46,15 @@ pub fn parse_with_tokenizer<'a>(
 }
 
 // screen, print, screen and (max-width: 400px)
-fn parse_media_query_list<'a, 'b>(
-  context: &mut Context<'a, 'b>,
+fn parse_media_query_list<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
 ) -> Result<MediaQueryList, ParseError> {
   let mut queries: Vec<MediaQuery> = vec![];
 
   loop {
     queries.push(parse_media_query(context)?);
     if !context.ended()? {
-      context.tokenizer.eat_whitespace();
+      context.tokenizer.scanner.eat_whitespace();
       context.tokenizer.next_expect(Token::Comma)?;
     } else {
       break;
@@ -64,8 +64,8 @@ fn parse_media_query_list<'a, 'b>(
   Ok(MediaQueryList { queries })
 }
 
-fn parse_media_query<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MediaQuery, ParseError> {
-  context.tokenizer.eat_whitespace();
+fn parse_media_query<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<MediaQuery, ParseError> {
+  context.tokenizer.scanner.eat_whitespace();
 
   // only | not
   let only = if let Token::Keyword(keyword) = context.tokenizer.peek(1)? {
@@ -82,9 +82,9 @@ fn parse_media_query<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MediaQuery
     None
   };
 
-  context.tokenizer.eat_whitespace();
+  context.tokenizer.scanner.eat_whitespace();
 
-  let media_pos = context.tokenizer.utf16_pos;
+  let media_pos = context.tokenizer.scanner.u16_pos;
 
   // print, screen, etc
   let media_type = if let Token::Keyword(ident) = context.tokenizer.next()? {
@@ -93,7 +93,7 @@ fn parse_media_query<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MediaQuery
     return Err(ParseError::unexpected_token(media_pos));
   };
 
-  context.tokenizer.eat_whitespace();
+  context.tokenizer.scanner.eat_whitespace();
 
   let and_condition = if !context.ended()? {
     if let Token::Keyword(and) = context.tokenizer.peek(1)? {
@@ -117,10 +117,10 @@ fn parse_media_query<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MediaQuery
   }));
 }
 
-fn parse_media_condition_without_or<'a, 'b>(
-  context: &mut Context<'a, 'b>,
+fn parse_media_condition_without_or<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
 ) -> Result<MediaConditionWithoutOr, ParseError> {
-  context.tokenizer.eat_whitespace();
+  context.tokenizer.scanner.eat_whitespace();
 
   let not = if context.tokenizer.peek(1)? == Token::Keyword("not") {
     context.tokenizer.next()?;
@@ -137,7 +137,7 @@ fn parse_media_condition_without_or<'a, 'b>(
     }));
   }
 
-  context.tokenizer.eat_whitespace();
+  context.tokenizer.scanner.eat_whitespace();
 
   if !context.ended()? {
     Ok(MediaConditionWithoutOr::MediaAnd(MediaCompound {
@@ -151,13 +151,13 @@ fn parse_media_condition_without_or<'a, 'b>(
 
 fn parse_media_condition_rest<'a, 'b, 'c>(
   keyword: &'a str,
-  context: &mut Context<'a, 'b>,
+  context: &mut Context<'a, 'b, 'c>,
 ) -> Result<Vec<MediaInParens>, ParseError> {
   let mut rest: Vec<MediaInParens> = vec![];
   loop {
-    context.tokenizer.eat_whitespace();
+    context.tokenizer.scanner.eat_whitespace();
     context.tokenizer.next_expect(Token::Keyword(keyword))?;
-    context.tokenizer.eat_whitespace();
+    context.tokenizer.scanner.eat_whitespace();
     rest.push(parse_media_in_parens(context)?);
     if context.ended()? {
       break;
@@ -167,10 +167,10 @@ fn parse_media_condition_rest<'a, 'b, 'c>(
   Ok(rest)
 }
 
-fn parse_media_in_parens<'a, 'b>(
-  context: &mut Context<'a, 'b>,
+fn parse_media_in_parens<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
 ) -> Result<MediaInParens, ParseError> {
-  context.tokenizer.eat_whitespace();
+  context.tokenizer.scanner.eat_whitespace();
   if context.tokenizer.peek(1)? == Token::ParenOpen {
     context.tokenizer.next_expect(Token::ParenOpen)?;
     let inner = parse_media_in_parens_inner(context)?;
@@ -181,26 +181,26 @@ fn parse_media_in_parens<'a, 'b>(
   }
 }
 
-fn parse_media_in_parens_inner<'a, 'b>(
-  context: &mut Context<'a, 'b>,
+fn parse_media_in_parens_inner<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
 ) -> Result<MediaInParens, ParseError> {
   let left = parse_media_feature(context)?;
   Ok(MediaInParens::Feature(left))
 }
 
-fn parse_media_feature<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<MediaFeature, ParseError> {
-  context.tokenizer.eat_whitespace();
-  let pos = context.tokenizer.utf16_pos;
+fn parse_media_feature<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<MediaFeature, ParseError> {
+  context.tokenizer.scanner.eat_whitespace();
+  let pos = context.tokenizer.scanner.u16_pos;
   let name = if let Token::Keyword(keyword) = context.tokenizer.next()? {
     keyword.to_string()
   } else {
     return Err(ParseError::unexpected_token(pos));
   };
 
-  context.tokenizer.eat_whitespace();
+  context.tokenizer.scanner.eat_whitespace();
   context.tokenizer.next_expect(Token::Colon)?;
-  context.tokenizer.eat_whitespace();
-  let value = parse_decl_value_with_tokenizer(context.tokenizer, "", |tokenizer| {
+  context.tokenizer.scanner.eat_whitespace();
+  let value = parse_decl_value_with_tokenizer(&mut context.tokenizer, "", |tokenizer| {
     Ok(matches!(
       tokenizer.peek(1)?,
       Token::Whitespace | Token::ParenClose

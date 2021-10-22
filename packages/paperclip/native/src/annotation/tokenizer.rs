@@ -1,6 +1,6 @@
 use crate::base::parser::ParseError;
 use crate::base::string_scanner::{Char, Position as StringScannerPosition, StringScanner};
-use crate::base::tokenizer::{BaseTokenizer};
+use crate::base::tokenizer::BaseTokenizer;
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
@@ -16,7 +16,7 @@ pub enum Token<'a> {
 }
 
 pub struct Tokenizer<'a, 'b> {
-  pub scanner: &'a StringScanner<'b>,
+  pub scanner: &'a mut StringScanner<'b>,
 }
 
 impl<'a, 'b> Tokenizer<'a, 'b> {
@@ -88,8 +88,10 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     match c {
       b'\\' => {
         self.scanner.forward(1); // eat slash
-        let c = self.scanner.curr_byte()
-        .or_else(|_| Err(ParseError::eof()))?;
+        let c = self
+          .scanner
+          .curr_byte()
+          .or_else(|_| Err(ParseError::eof()))?;
         self.scanner.forward(1); // eat escaped
         Ok(Token::Escape(c))
       }
@@ -123,10 +125,8 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
   pub fn is_eof(&mut self) -> bool {
     self.scanner.is_eof()
   }
-  pub fn new_from_scanner(scanner: &'a StringScanner<'b>) -> Tokenizer<'a, 'b> {
-    Tokenizer {
-      scanner: scanner
-    }
+  pub fn new_from_scanner(scanner: &'a mut StringScanner<'b>) -> Tokenizer<'a, 'b> {
+    Tokenizer { scanner: scanner }
   }
 }
 
@@ -138,7 +138,7 @@ impl<'a, 'b> BaseTokenizer<'b> for Tokenizer<'a, 'b> {
     self.next()?;
     Ok(())
   }
-  fn get_source(&self) -> &'a [u8] {
+  fn get_source(&self) -> &'b [u8] {
     self.scanner.source
   }
   fn get_pos(&self) -> usize {

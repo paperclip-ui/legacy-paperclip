@@ -6,7 +6,7 @@ use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tok
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
-use crate::base::string_scanner::{StringScanner};
+use crate::base::string_scanner::StringScanner;
 use crate::base::utils::get_document_id;
 use crate::core::id_generator::IDGenerator;
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
@@ -123,7 +123,7 @@ fn parse_include_declaration<'a, 'b, 'c>(
     _ => {
       // reset pos to ensure text doesn't get chopped (e.g: `{children} text`)
       context.tokenizer.scanner.set_pos(&start);
-      let value = get_buffer(&mut context.tokenizer, |tokenizer| {
+      let value = get_buffer(context.tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
         Ok(
           tok != Token::CurlyOpen
@@ -135,7 +135,9 @@ fn parse_include_declaration<'a, 'b, 'c>(
       .to_string();
 
       if value.len() == 0 {
-        Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos))
+        Err(ParseError::unexpected_token(
+          context.tokenizer.scanner.u16_pos,
+        ))
       } else {
         Ok(pc_ast::Node::Text(pc_ast::ValueObject {
           id: context.id_generator.new_id(),
@@ -182,8 +184,7 @@ fn parse_slot_script<'a, 'b, 'c>(
   id_seed_info_option: Option<(&Vec<String>, usize)>,
 ) -> Result<js_ast::Expression, ParseError> {
   let start = context.tokenizer.scanner.u16_pos;
-  let mut js_tokenizer =
-    JSTokenizer::new_from_scanner(&context.tokenizer.scanner);
+  let mut js_tokenizer = JSTokenizer::new_from_scanner(&context.tokenizer.scanner);
   let id_seed = if let Some((path, index)) = id_seed_info_option {
     format!("{}{}", path.join("-"), index)
   } else {
@@ -218,8 +219,7 @@ pub fn parse_annotation<'a, 'b, 'c>(
   let start = context.tokenizer.scanner.get_pos();
 
   context.tokenizer.next()?; // eat HTML comment open
-  let mut annotation_tokenizer =
-    AnnotationTokenizer::new_from_scanner(&context.tokenizer.scanner);
+  let mut annotation_tokenizer = AnnotationTokenizer::new_from_scanner(&context.tokenizer.scanner);
 
   let annotation = parse_annotation_with_tokenizer(
     &mut annotation_tokenizer,
@@ -233,7 +233,10 @@ pub fn parse_annotation<'a, 'b, 'c>(
     },
   )?;
 
-  context.tokenizer.scanner.set_pos(&annotation_tokenizer.scanner.get_pos());
+  context
+    .tokenizer
+    .scanner
+    .set_pos(&annotation_tokenizer.scanner.get_pos());
 
   context.tokenizer.next()?; // eat -->
 
@@ -318,7 +321,11 @@ fn parse_next_basic_element_parts<'a, 'b, 'c>(
 
       parse_close_tag(tag_name.as_str(), context, start, end)?;
     }
-    _ => return Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos)),
+    _ => {
+      return Err(ParseError::unexpected_token(
+        context.tokenizer.scanner.u16_pos,
+      ))
+    }
   }
 
   let el = pc_ast::Element {
@@ -353,8 +360,7 @@ fn parse_next_style_element_parts<'a, 'b, 'c>(
 ) -> Result<pc_ast::Node, ParseError> {
   context.tokenizer.next_expect(Token::GreaterThan)?; // eat >
   let end = context.tokenizer.scanner.u16_pos;
-  let mut css_tokenizer =
-    CSSTokenizer::new_from_scanner(&context.tokenizer.scanner);
+  let mut css_tokenizer = CSSTokenizer::new_from_scanner(&context.tokenizer.scanner);
 
   let seed = context.id_generator.new_seed();
   let sheet = parse_css_with_tokenizer(
@@ -509,7 +515,9 @@ fn parse_attribute<'a, 'b, 'c>(
   }
 }
 
-fn parse_omit_from_compilation<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<bool, ParseError> {
+fn parse_omit_from_compilation<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
+) -> Result<bool, ParseError> {
   Ok(if context.tokenizer.peek(1)? == Token::Bang {
     context.tokenizer.next()?;
     true
@@ -570,7 +578,9 @@ fn parse_key_value_attribute<'a, 'b, 'c>(
     // Fix https://github.com/crcn/paperclip/issues/306
     // Keep in case we want to turn this back on.
     } else {
-      return Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos));
+      return Err(ParseError::unexpected_token(
+        context.tokenizer.scanner.u16_pos,
+      ));
     }
 
     Ok(pc_ast::Attribute::PropertyBoundAttribute(
@@ -617,7 +627,9 @@ fn parse_key_value_attribute<'a, 'b, 'c>(
       },
     ))
   } else {
-    Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos))
+    Err(ParseError::unexpected_token(
+      context.tokenizer.scanner.u16_pos,
+    ))
   }
 }
 

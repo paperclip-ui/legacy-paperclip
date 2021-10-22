@@ -5,24 +5,24 @@ use crate::base::parser::{get_buffer, ParseError};
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
 use crate::js::tokenizer::{Token as JSToken, Tokenizer as JSTokenizer};
 
-type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
+type FUntil<'a, 'b> = for<'r> fn(&mut Tokenizer<'a, 'b>) -> Result<bool, ParseError>;
 
-pub struct Context<'a, 'b> {
-  tokenizer: &'b mut Tokenizer<'a>,
+pub struct Context<'a, 'b, 'c> {
+  tokenizer: &'a mut Tokenizer<'b, 'c>,
   scope_id: String,
-  until: FUntil<'a>,
+  until: FUntil<'b, 'c>,
 }
 
-impl<'a, 'b> Context<'a, 'b> {
+impl<'a, 'b, 'c> Context<'a, 'b, 'c> {
   pub fn ended(&mut self) -> Result<bool, ParseError> {
     Ok(self.tokenizer.is_eof() || (self.until)(self.tokenizer)?)
   }
 }
 
-pub fn parse_with_tokenizer<'a>(
-  tokenizer: &mut Tokenizer<'a>,
+pub fn parse_with_tokenizer<'a, 'b>(
+  tokenizer: &mut Tokenizer<'a, 'b>,
   scope_id: &String,
-  until: FUntil<'a>,
+  until: FUntil<'a, 'b>,
 ) -> Result<ast::Annotation, ParseError> {
   let mut context = Context {
     tokenizer,
@@ -33,7 +33,7 @@ pub fn parse_with_tokenizer<'a>(
   parse_annotation(&mut context)
 }
 
-fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annotation, ParseError> {
+fn parse_annotation<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<ast::Annotation, ParseError> {
   let start = context.tokenizer.u16_pos();
   let mut properties: Vec<ast::AnnotationProperty> = vec![];
 
@@ -50,8 +50,8 @@ fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annota
   })
 }
 
-fn parse_annotation_property<'a, 'b>(
-  context: &mut Context<'a, 'b>,
+fn parse_annotation_property<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
   match context.tokenizer.peek(1)? {
@@ -60,8 +60,8 @@ fn parse_annotation_property<'a, 'b>(
   }
 }
 
-fn parse_text_annotation<'a, 'b>(
-  context: &mut Context<'a, 'b>,
+fn parse_text_annotation<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
   let start = context.tokenizer.u16_pos();
@@ -85,8 +85,8 @@ fn parse_text_annotation<'a, 'b>(
   }))
 }
 
-fn parse_declaration_property<'a, 'b>(
-  context: &mut Context<'a, 'b>,
+fn parse_declaration_property<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
   let start = context.tokenizer.u16_pos();

@@ -106,9 +106,7 @@ fn parse_node<'a, 'b, 'c>(
 ) -> Result<ast::Expression, ParseError> {
   let seed = context.id_generator.new_seed();
 
-  let mut pc_tokenizer = PCTokenizer::new_from_scanner(
-    &context.tokenizer.scanner
-  );
+  let mut pc_tokenizer = PCTokenizer::new_from_scanner(&context.tokenizer.scanner);
   let mut pc_context = PCContext {
     scope_id: context.scope_id.to_string(),
     tokenizer: &mut pc_tokenizer,

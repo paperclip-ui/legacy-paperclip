@@ -1,6 +1,6 @@
 use crate::base::parser::ParseError;
+use crate::base::string_scanner::{Char, StringScanner};
 use crate::base::tokenizer::{BaseTokenizer, Position};
-use crate::base::string_scanner::{StringScanner, Char};
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
@@ -115,11 +115,10 @@ pub enum Token<'a> {
 }
 
 pub struct Tokenizer<'a, 'b> {
-  pub scanner: &'a StringScanner<'b>
+  pub scanner: &'a mut StringScanner<'b>,
 }
 
 impl<'a, 'b> Tokenizer<'a, 'b> {
-
   pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.scanner.get_pos();
     let mut i = 0;
@@ -169,7 +168,10 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
         if self.scanner.starts_with(b"//") {
           self.scanner.forward(2);
           let start = self.scanner.pos;
-          self.scanner.scan(|c| -> bool { !matches!(c, b'\n' | b'\r') }).or_else(|_| Err(ParseError::eof()))?;
+          self
+            .scanner
+            .scan(|c| -> bool { !matches!(c, b'\n' | b'\r') })
+            .or_else(|_| Err(ParseError::eof()))?;
           let buffer = self.scanner.since(start);
 
           self.scanner.forward(1);
@@ -186,7 +188,9 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
             {
               break;
             }
-            self.scanner.next_char()?;
+            self.scanner.next_char().or_else(|_| {
+              Err(ParseError::eof())
+            })?;
           }
           let buffer = self.scanner.since(start);
 
@@ -353,7 +357,10 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
       }
       b'\\' => {
         self.scanner.forward(1);
-        let c = self.scanner.curr_byte().or_else(|_| Err(ParseError::eof()))?;
+        let c = self
+          .scanner
+          .curr_byte()
+          .or_else(|_| Err(ParseError::eof()))?;
         self.scanner.forward(1);
         Ok(Token::Escape(c))
       }
@@ -371,7 +378,9 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
       }
       b'a'..=b'z' | b'_' | b'A'..=b'Z' => Ok(Token::Keyword(self.search_keyword())),
       b' ' | b'\t' | b'\r' | b'\n' => {
-        self.scanner.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
+        self
+          .scanner
+          .scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
         Ok(Token::Whitespace)
       }
       _ => {
@@ -388,16 +397,14 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     }
   }
 
-
   fn search_keyword(&mut self) -> &'a str {
-    self.scanner.search(|c| -> bool { matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-') })
+    self
+      .scanner
+      .search(|c| -> bool { matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-') })
   }
 
-
-  pub fn new_from_scanner(scanner: &'a StringScanner<'b>) -> Tokenizer<'a, 'b> {
-    Tokenizer {
-      scanner: scanner
-    }
+  pub fn new_from_scanner(scanner: &'a mut StringScanner<'b>) -> Tokenizer<'a, 'b> {
+    Tokenizer { scanner: scanner }
   }
 }
 
