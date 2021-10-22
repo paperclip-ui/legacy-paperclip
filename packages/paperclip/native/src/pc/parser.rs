@@ -6,6 +6,7 @@ use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tok
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
 use crate::base::ast::{BasicRaws, Location};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::base::string_scanner::{StringScanner};
 use crate::base::utils::get_document_id;
 use crate::core::id_generator::IDGenerator;
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
@@ -43,14 +44,17 @@ void elements: [ 'area',
   'wbr' ]
 */
 
-pub fn parse<'a, 'b>(
+pub fn parse<'a, 'b, 'c>(
   source: &'a str,
   source_uri: &'a str,
   id_seed: &'b str,
 ) -> Result<pc_ast::Node, ParseError> {
+  let scanner = StringScanner::new(source);
+  let mut tokenizer = Tokenizer::new_from_scanner(&scanner);
+
   parse_fragment(
     &mut Context {
-      tokenizer: Tokenizer::new(source),
+      tokenizer: &mut tokenizer,
       scope_id: get_document_id(&source_uri.to_string()),
       id_generator: IDGenerator::new(id_seed.to_string()),
     },
@@ -58,44 +62,44 @@ pub fn parse<'a, 'b>(
   )
 }
 
-pub struct Context<'a> {
-  pub tokenizer: Tokenizer<'a>,
+pub struct Context<'a, 'b, 'c> {
+  pub tokenizer: &'a mut Tokenizer<'b, 'c>,
   pub scope_id: String,
   pub id_generator: IDGenerator,
 }
 
-fn parse_fragment<'a>(
-  context: &mut Context<'a>,
+fn parse_fragment<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   path: Vec<String>,
 ) -> Result<pc_ast::Node, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.scanner.u16_pos;
   let mut children: Vec<pc_ast::Node> = vec![];
-  let mut raw_before = context.tokenizer.eat_whitespace();
+  let mut raw_before = context.tokenizer.scanner.eat_whitespace();
 
-  while !context.tokenizer.is_eof() {
+  while !context.tokenizer.scanner.is_eof() {
     let mut child_path = path.clone();
     child_path.push(children.len().to_string());
     children.push(parse_include_declaration(context, child_path, raw_before)?);
-    raw_before = context.tokenizer.eat_whitespace();
+    raw_before = context.tokenizer.scanner.eat_whitespace();
   }
 
   Ok(pc_ast::Node::Fragment(pc_ast::Fragment {
     id: context.id_generator.new_id(),
     children,
-    location: Location::new(start, context.tokenizer.utf16_pos),
+    location: Location::new(start, context.tokenizer.scanner.u16_pos),
   }))
 }
 
-fn parse_include_declaration<'a>(
-  context: &mut Context<'a>,
+fn parse_include_declaration<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   path: Vec<String>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<pc_ast::Node, ParseError> {
-  let start = context.tokenizer.get_pos();
+  let start = context.tokenizer.scanner.get_pos();
 
   // Kinda ick, but cover case where last node is whitespace.
   let token = context.tokenizer.peek_eat_whitespace(1).or_else(|_| {
-    context.tokenizer.set_pos(&start);
+    context.tokenizer.scanner.set_pos(&start);
     context.tokenizer.peek(1)
   })?;
 
@@ -104,8 +108,8 @@ fn parse_include_declaration<'a>(
     Token::LessThan => parse_tag(context, path, raw_before),
     Token::HtmlCommentOpen => parse_annotation(context, raw_before),
     Token::TagClose => {
-      context.tokenizer.eat_whitespace();
-      let start = context.tokenizer.utf16_pos;
+      context.tokenizer.scanner.eat_whitespace();
+      let start = context.tokenizer.scanner.u16_pos;
       context.tokenizer.next_expect(Token::TagClose)?;
       let tag_name = parse_tag_name(context)?;
       context.tokenizer.next_expect(Token::GreaterThan)?;
@@ -113,12 +117,12 @@ fn parse_include_declaration<'a>(
       Err(ParseError::unexpected(
         "Closing tag doesn't have an open tag.".to_string(),
         start,
-        context.tokenizer.utf16_pos,
+        context.tokenizer.scanner.u16_pos,
       ))
     }
     _ => {
       // reset pos to ensure text doesn't get chopped (e.g: `{children} text`)
-      context.tokenizer.set_pos(&start);
+      context.tokenizer.scanner.set_pos(&start);
       let value = get_buffer(&mut context.tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
         Ok(
@@ -131,7 +135,7 @@ fn parse_include_declaration<'a>(
       .to_string();
 
       if value.len() == 0 {
-        Err(ParseError::unexpected_token(context.tokenizer.utf16_pos))
+        Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos))
       } else {
         Ok(pc_ast::Node::Text(pc_ast::ValueObject {
           id: context.id_generator.new_id(),
@@ -146,7 +150,7 @@ fn parse_include_declaration<'a>(
           },
           location: Location {
             start: start.u8_pos,
-            end: context.tokenizer.utf16_pos,
+            end: context.tokenizer.scanner.u16_pos,
           },
         }))
       }
@@ -154,13 +158,13 @@ fn parse_include_declaration<'a>(
   }
 }
 
-fn parse_slot<'a>(
-  context: &mut Context<'a>,
+fn parse_slot<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   path: &Vec<String>,
   raw_before: Option<&'a [u8]>,
   index: usize,
 ) -> Result<pc_ast::Node, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.scanner.u16_pos;
   let omit_from_compilation = parse_omit_from_compilation(context)?;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
   let script = parse_slot_script(context, Some((path, index)))?;
@@ -169,17 +173,17 @@ fn parse_slot<'a>(
     omit_from_compilation,
     raws: BasicRaws::new(raw_before, None),
     script,
-    location: Location::new(start, context.tokenizer.utf16_pos),
+    location: Location::new(start, context.tokenizer.scanner.u16_pos),
   }))
 }
 
-fn parse_slot_script<'a>(
-  context: &mut Context<'a>,
+fn parse_slot_script<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   id_seed_info_option: Option<(&Vec<String>, usize)>,
 ) -> Result<js_ast::Expression, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.scanner.u16_pos;
   let mut js_tokenizer =
-    JSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+    JSTokenizer::new_from_scanner(&context.tokenizer.scanner);
   let id_seed = if let Some((path, index)) = id_seed_info_option {
     format!("{}{}", path.join("-"), index)
   } else {
@@ -192,8 +196,8 @@ fn parse_slot_script<'a>(
     context.scope_id.to_string().as_str(),
   )
   .and_then(|script| {
-    context.tokenizer.set_pos(&js_tokenizer.get_pos());
-    context.tokenizer.eat_whitespace();
+    // context.tokenizer.scanner.set_pos(&js_tokenizer.scanner.get_pos());
+    context.tokenizer.scanner.eat_whitespace();
 
     context.tokenizer.next_expect(Token::CurlyClose)?;
     Ok(script)
@@ -201,21 +205,21 @@ fn parse_slot_script<'a>(
   .or(Err(ParseError::unterminated(
     "Unterminated slot.".to_string(),
     start,
-    context.tokenizer.utf16_pos,
+    context.tokenizer.scanner.u16_pos,
   )));
 
   stmt
 }
 
-pub fn parse_annotation<'a>(
-  context: &mut Context<'a>,
+pub fn parse_annotation<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<pc_ast::Node, ParseError> {
-  let start = context.tokenizer.get_pos();
+  let start = context.tokenizer.scanner.get_pos();
 
   context.tokenizer.next()?; // eat HTML comment open
   let mut annotation_tokenizer =
-    AnnotationTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+    AnnotationTokenizer::new_from_scanner(&context.tokenizer.scanner);
 
   let annotation = parse_annotation_with_tokenizer(
     &mut annotation_tokenizer,
@@ -229,37 +233,37 @@ pub fn parse_annotation<'a>(
     },
   )?;
 
-  context.tokenizer.set_pos(&annotation_tokenizer.get_pos());
+  context.tokenizer.scanner.set_pos(&annotation_tokenizer.scanner.get_pos());
 
   context.tokenizer.next()?; // eat -->
 
   Ok(pc_ast::Node::Comment(pc_ast::Comment {
     id: context.id_generator.new_id(),
     raws: BasicRaws::new(raw_before, None),
-    location: Location::new(start.u16_pos, context.tokenizer.utf16_pos),
+    location: Location::new(start.u16_pos, context.tokenizer.scanner.u16_pos),
     annotation,
   }))
 }
 
-pub fn parse_tag<'a>(
-  context: &mut Context<'a>,
+pub fn parse_tag<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   path: Vec<String>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<pc_ast::Node, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.scanner.u16_pos;
 
   context.tokenizer.next_expect(Token::LessThan)?;
   parse_element(context, raw_before, path, start)
 }
 
-fn parse_element<'a>(
-  context: &mut Context<'a>,
+fn parse_element<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   el_raw_before: Option<&'a [u8]>,
   path: Vec<String>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   let tag_name = parse_tag_name(context)?;
-  let tag_name_end = context.tokenizer.utf16_pos;
+  let tag_name_end = context.tokenizer.scanner.u16_pos;
 
   let attributes = parse_attributes(context, &path)?;
 
@@ -280,41 +284,41 @@ fn parse_element<'a>(
   }
 }
 
-fn parse_next_basic_element_parts<'a>(
+fn parse_next_basic_element_parts<'a, 'b, 'c>(
   tag_name: String,
   tag_name_end: usize,
   attributes: Vec<pc_ast::Attribute>,
   el_raw_before: Option<&'a [u8]>,
-  context: &mut Context<'a>,
+  context: &mut Context<'a, 'b, 'c>,
   path: Vec<String>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   let mut children: Vec<pc_ast::Node> = vec![];
 
-  context.tokenizer.eat_whitespace();
-  let mut end = context.tokenizer.utf16_pos;
+  context.tokenizer.scanner.eat_whitespace();
+  let mut end = context.tokenizer.scanner.u16_pos;
 
   match context.tokenizer.peek(1)? {
     Token::SelfTagClose => {
       context.tokenizer.next()?;
-      end = context.tokenizer.utf16_pos;
+      end = context.tokenizer.scanner.u16_pos;
     }
     Token::GreaterThan => {
       context.tokenizer.next()?;
-      end = context.tokenizer.utf16_pos;
-      let mut raw_before = context.tokenizer.eat_whitespace();
-      while !context.tokenizer.is_eof()
+      end = context.tokenizer.scanner.u16_pos;
+      let mut raw_before = context.tokenizer.scanner.eat_whitespace();
+      while !context.tokenizer.scanner.is_eof()
         && context.tokenizer.peek_eat_whitespace(1)? != Token::TagClose
       {
         let mut child_path = path.clone();
         child_path.push(children.len().to_string());
         children.push(parse_include_declaration(context, child_path, raw_before)?);
-        raw_before = context.tokenizer.eat_whitespace();
+        raw_before = context.tokenizer.scanner.eat_whitespace();
       }
 
       parse_close_tag(tag_name.as_str(), context, start, end)?;
     }
-    _ => return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos)),
+    _ => return Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos)),
   }
 
   let el = pc_ast::Element {
@@ -327,7 +331,7 @@ fn parse_next_basic_element_parts<'a>(
     open_tag_location: Location { start, end },
     location: Location {
       start,
-      end: context.tokenizer.utf16_pos,
+      end: context.tokenizer.scanner.u16_pos,
     },
     tag_name: tag_name.to_string(),
     attributes,
@@ -341,16 +345,16 @@ fn get_element_id(context: &Context, path: Vec<String>) -> String {
   format!("{:x}", crc32::checksum_ieee(buff.as_bytes())).to_string()
 }
 
-fn parse_next_style_element_parts<'a>(
+fn parse_next_style_element_parts<'a, 'b, 'c>(
   attributes: Vec<pc_ast::Attribute>,
   raw_before: Option<&'a [u8]>,
-  context: &mut Context<'a>,
+  context: &mut Context<'a, 'b, 'c>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   context.tokenizer.next_expect(Token::GreaterThan)?; // eat >
-  let end = context.tokenizer.utf16_pos;
+  let end = context.tokenizer.scanner.u16_pos;
   let mut css_tokenizer =
-    CSSTokenizer::new_from_bytes(&context.tokenizer.source, context.tokenizer.get_pos());
+    CSSTokenizer::new_from_scanner(&context.tokenizer.scanner);
 
   let seed = context.id_generator.new_seed();
   let sheet = parse_css_with_tokenizer(
@@ -360,7 +364,7 @@ fn parse_next_style_element_parts<'a>(
       Ok(tokenizer.peek(1)? == CSSToken::Byte(b'<') && tokenizer.peek(2)? == CSSToken::Byte(b'/'))
     },
   )?;
-  context.tokenizer.set_pos(&css_tokenizer.get_pos());
+  // context.tokenizer.scanner.set_pos(&css_tokenizer.scanner.get_pos());
 
   // TODO - assert tokens equal these
   parse_close_tag("style", context, start, end)?;
@@ -370,19 +374,19 @@ fn parse_next_style_element_parts<'a>(
     raws: pc_ast::ElementRaws::new(raw_before.unwrap_or(b"")),
     attributes,
     sheet,
-    location: Location::new(start, context.tokenizer.utf16_pos),
+    location: Location::new(start, context.tokenizer.scanner.u16_pos),
   }))
 }
 
-fn parse_close_tag<'a, 'b>(
+fn parse_close_tag<'a, 'b, 'c>(
   tag_name: &'a str,
-  context: &mut Context<'b>,
+  context: &mut Context<'a, 'b, 'c>,
   start: usize,
   end: usize,
 ) -> Result<(), ParseError> {
-  let end_tag_name_start = context.tokenizer.utf16_pos;
+  let end_tag_name_start = context.tokenizer.scanner.u16_pos;
 
-  context.tokenizer.eat_whitespace();
+  context.tokenizer.scanner.eat_whitespace();
 
   context
     .tokenizer
@@ -400,7 +404,7 @@ fn parse_close_tag<'a, 'b>(
         Err(ParseError::unterminated(
           "Incorrect closing tag.".to_string(),
           end_tag_name_start,
-          context.tokenizer.utf16_pos,
+          context.tokenizer.scanner.u16_pos,
         ))
       } else {
         Ok(())
@@ -419,17 +423,17 @@ fn parse_close_tag<'a, 'b>(
   Ok(())
 }
 
-fn parse_next_script_element_parts<'a>(
+fn parse_next_script_element_parts<'a, 'b, 'c>(
   attributes: Vec<pc_ast::Attribute>,
   raw_before: Option<&'a [u8]>,
-  context: &mut Context<'a>,
+  context: &mut Context<'a, 'b, 'c>,
   path: Vec<String>,
   start: usize,
 ) -> Result<pc_ast::Node, ParseError> {
   context.tokenizer.next_expect(Token::GreaterThan)?; // eat >
-  let end = context.tokenizer.utf16_pos;
+  let end = context.tokenizer.scanner.u16_pos;
 
-  get_buffer(&mut context.tokenizer, |tokenizer| {
+  get_buffer(context.tokenizer, |tokenizer| {
     Ok(tokenizer.peek(1)? != Token::TagClose)
   })?;
 
@@ -449,7 +453,7 @@ fn parse_next_script_element_parts<'a>(
     open_tag_location: Location { start, end },
     location: Location {
       start,
-      end: context.tokenizer.utf16_pos,
+      end: context.tokenizer.scanner.u16_pos,
     },
     tag_name: "script".to_string(),
     attributes,
@@ -457,9 +461,9 @@ fn parse_next_script_element_parts<'a>(
   }))
 }
 
-fn parse_tag_name<'a>(context: &mut Context<'a>) -> Result<String, ParseError> {
+fn parse_tag_name<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<String, ParseError> {
   Ok(
-    get_buffer(&mut context.tokenizer, |tokenizer| {
+    get_buffer(context.tokenizer, |tokenizer| {
       Ok(matches!(
         tokenizer.peek(1)?,
         Token::Word(_)
@@ -474,14 +478,14 @@ fn parse_tag_name<'a>(context: &mut Context<'a>) -> Result<String, ParseError> {
   )
 }
 
-fn parse_attributes<'a>(
-  context: &mut Context<'a>,
+fn parse_attributes<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   path: &Vec<String>,
 ) -> Result<Vec<pc_ast::Attribute>, ParseError> {
   let mut attributes: Vec<pc_ast::Attribute> = vec![];
 
   loop {
-    context.tokenizer.eat_whitespace();
+    context.tokenizer.scanner.eat_whitespace();
     match context.tokenizer.peek(1)? {
       Token::SelfTagClose | Token::GreaterThan => break,
       _ => {
@@ -493,8 +497,8 @@ fn parse_attributes<'a>(
   Ok(attributes)
 }
 
-fn parse_attribute<'a>(
-  context: &mut Context<'a>,
+fn parse_attribute<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   path: &Vec<String>,
   index: usize,
 ) -> Result<pc_ast::Attribute, ParseError> {
@@ -505,7 +509,7 @@ fn parse_attribute<'a>(
   }
 }
 
-fn parse_omit_from_compilation<'a>(context: &mut Context<'a>) -> Result<bool, ParseError> {
+fn parse_omit_from_compilation<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<bool, ParseError> {
   Ok(if context.tokenizer.peek(1)? == Token::Bang {
     context.tokenizer.next()?;
     true
@@ -514,11 +518,11 @@ fn parse_omit_from_compilation<'a>(context: &mut Context<'a>) -> Result<bool, Pa
   })
 }
 
-fn parse_shorthand_attribute<'a>(
-  context: &mut Context<'a>,
+fn parse_shorthand_attribute<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
 ) -> Result<pc_ast::Attribute, ParseError> {
   let omit_from_compilation = parse_omit_from_compilation(context)?;
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.scanner.u16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
   if context.tokenizer.peek(1)? == Token::Spread {
     context.tokenizer.next_expect(Token::Spread)?;
@@ -527,7 +531,7 @@ fn parse_shorthand_attribute<'a>(
       pc_ast::SpreadAttribute {
         omit_from_compilation,
         script,
-        location: Location::new(start, context.tokenizer.utf16_pos),
+        location: Location::new(start, context.tokenizer.scanner.u16_pos),
       },
     ))
   } else {
@@ -535,18 +539,18 @@ fn parse_shorthand_attribute<'a>(
     Ok(pc_ast::Attribute::ShorthandAttribute(
       pc_ast::ShorthandAttribute {
         reference,
-        location: Location::new(start, context.tokenizer.utf16_pos),
+        location: Location::new(start, context.tokenizer.scanner.u16_pos),
       },
     ))
   }
 }
 
-fn parse_key_value_attribute<'a>(
-  context: &mut Context<'a>,
+fn parse_key_value_attribute<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   path: &Vec<String>,
   index: usize,
 ) -> Result<pc_ast::Attribute, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.scanner.u16_pos;
   let name = parse_tag_name(context)?;
 
   if name.len() == 0 {
@@ -566,7 +570,7 @@ fn parse_key_value_attribute<'a>(
     // Fix https://github.com/crcn/paperclip/issues/306
     // Keep in case we want to turn this back on.
     } else {
-      return Err(ParseError::unexpected_token(context.tokenizer.utf16_pos));
+      return Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos));
     }
 
     Ok(pc_ast::Attribute::PropertyBoundAttribute(
@@ -575,7 +579,7 @@ fn parse_key_value_attribute<'a>(
         name,
         binding_name,
         value,
-        location: Location::new(start, context.tokenizer.utf16_pos),
+        location: Location::new(start, context.tokenizer.scanner.u16_pos),
       },
     ))
   } else if context.tokenizer.peek(1)? == Token::Equals {
@@ -587,7 +591,7 @@ fn parse_key_value_attribute<'a>(
         id: context.id_generator.new_id(),
         name,
         value,
-        location: Location::new(start, context.tokenizer.utf16_pos),
+        location: Location::new(start, context.tokenizer.scanner.u16_pos),
       },
     ))
   } else if context.tokenizer.peek(1)? == Token::Whitespace {
@@ -597,7 +601,7 @@ fn parse_key_value_attribute<'a>(
         id: context.id_generator.new_id(),
         name,
         value: None,
-        location: Location::new(start, context.tokenizer.utf16_pos),
+        location: Location::new(start, context.tokenizer.scanner.u16_pos),
       },
     ))
   } else if matches!(
@@ -609,20 +613,20 @@ fn parse_key_value_attribute<'a>(
         id: context.id_generator.new_id(),
         name,
         value: None,
-        location: Location::new(start, context.tokenizer.utf16_pos),
+        location: Location::new(start, context.tokenizer.scanner.u16_pos),
       },
     ))
   } else {
-    Err(ParseError::unexpected_token(context.tokenizer.utf16_pos))
+    Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos))
   }
 }
 
-fn parse_attribute_value<'a>(
-  context: &mut Context<'a>,
+fn parse_attribute_value<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   path: &Vec<String>,
   index: usize,
 ) -> Result<pc_ast::AttributeValue, ParseError> {
-  let pos = context.tokenizer.utf16_pos;
+  let pos = context.tokenizer.scanner.u16_pos;
   let parts: Vec<pc_ast::AttributeDynamicStringPart> = vec![];
 
   match context.tokenizer.peek(1)? {
@@ -632,15 +636,15 @@ fn parse_attribute_value<'a>(
   }
 }
 
-fn parse_attribute_string_value<'a>(
-  context: &mut Context<'a>,
+fn parse_attribute_string_value<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
 ) -> Result<pc_ast::AttributeValue, ParseError> {
-  let pos = context.tokenizer.utf16_pos;
+  let pos = context.tokenizer.scanner.u16_pos;
   let mut parts: Vec<pc_ast::AttributeDynamicStringPart> = vec![];
 
   let quote = context.tokenizer.next()?;
 
-  while !context.tokenizer.is_eof() {
+  while !context.tokenizer.scanner.is_eof() {
     let curr = context.tokenizer.peek(1)?;
 
     if curr == quote {
@@ -649,7 +653,7 @@ fn parse_attribute_string_value<'a>(
 
     if curr == Token::Pierce || curr == Token::Dollar {
       context.tokenizer.next()?; // eat $
-      let class_name = get_buffer(&mut context.tokenizer, |tokenizer| {
+      let class_name = get_buffer(context.tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
         Ok(
           !matches!(
@@ -663,7 +667,7 @@ fn parse_attribute_string_value<'a>(
       parts.push(pc_ast::AttributeDynamicStringPart::ClassNamePierce(
         pc_ast::AttributeDynamicStringClassNamePierce {
           class_name,
-          location: Location::new(pos, context.tokenizer.utf16_pos),
+          location: Location::new(pos, context.tokenizer.scanner.u16_pos),
         },
       ));
     } else if curr == Token::CurlyOpen {
@@ -671,8 +675,8 @@ fn parse_attribute_string_value<'a>(
       let script = parse_slot_script(context, None)?;
       parts.push(pc_ast::AttributeDynamicStringPart::Slot(script));
     } else {
-      let start = context.tokenizer.utf16_pos;
-      let value = get_buffer(&mut context.tokenizer, |tokenizer| {
+      let start = context.tokenizer.scanner.u16_pos;
+      let value = get_buffer(context.tokenizer, |tokenizer| {
         let tok = tokenizer.peek(1)?;
         Ok(!matches!(tok, Token::Pierce | Token::Dollar | Token::CurlyOpen) && tok != quote)
       })?
@@ -680,7 +684,7 @@ fn parse_attribute_string_value<'a>(
       parts.push(pc_ast::AttributeDynamicStringPart::Literal({
         pc_ast::AttributeDynamicStringLiteral {
           value,
-          location: Location::new(start, context.tokenizer.utf16_pos),
+          location: Location::new(start, context.tokenizer.scanner.u16_pos),
         }
       }));
     }
@@ -692,10 +696,10 @@ fn parse_attribute_string_value<'a>(
     .or(Err(ParseError::unterminated(
       "Unterminated string literal.".to_string(),
       pos,
-      context.tokenizer.utf16_pos,
+      context.tokenizer.scanner.u16_pos,
     )))?;
 
-  let location = Location::new(pos + 1, context.tokenizer.utf16_pos - 1);
+  let location = Location::new(pos + 1, context.tokenizer.scanner.u16_pos - 1);
 
   if parts.len() == 0 {
     return Ok(pc_ast::AttributeValue::String(
@@ -728,28 +732,28 @@ fn parse_attribute_string_value<'a>(
   ));
 }
 
-fn parse_attribute_slot<'a>(
-  context: &mut Context<'a>,
+fn parse_attribute_slot<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
   path: &Vec<String>,
   index: usize,
 ) -> Result<pc_ast::AttributeValue, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.scanner.u16_pos;
   context.tokenizer.next_expect(Token::CurlyOpen)?;
   let script = parse_slot_script(context, Some((path, index)))?;
   Ok(pc_ast::AttributeValue::Slot(pc_ast::AttributeSlotValue {
     id: context.id_generator.new_id(),
     script,
-    location: Location::new(start, context.tokenizer.utf16_pos),
+    location: Location::new(start, context.tokenizer.scanner.u16_pos),
   }))
 }
 
-fn parse_attribute_string<'a>(
-  context: &mut Context<'a>,
+fn parse_attribute_string<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
 ) -> Result<pc_ast::AttributeValue, ParseError> {
-  let start = context.tokenizer.utf16_pos;
+  let start = context.tokenizer.scanner.u16_pos;
   let quote = context.tokenizer.next()?;
 
-  get_buffer(&mut context.tokenizer, |tokenizer| {
+  get_buffer(context.tokenizer, |tokenizer| {
     Ok(tokenizer.peek(1)? != quote)
   })
   .and_then(|value| {
@@ -759,14 +763,14 @@ fn parse_attribute_string<'a>(
   .or(Err(ParseError::unterminated(
     "Unterminated string literal.".to_string(),
     start,
-    context.tokenizer.utf16_pos,
+    context.tokenizer.scanner.u16_pos,
   )))
   .and_then(|value| {
     Ok(pc_ast::AttributeValue::String(
       pc_ast::AttributeStringValue {
         id: context.id_generator.new_id(),
         value: value.to_string(),
-        location: Location::new(start + 1, context.tokenizer.utf16_pos - 1),
+        location: Location::new(start + 1, context.tokenizer.scanner.u16_pos - 1),
       },
     ))
   })

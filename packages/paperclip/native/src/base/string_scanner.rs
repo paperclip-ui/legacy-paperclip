@@ -21,7 +21,7 @@ pub struct StringScanner<'a> {
 
 #[derive(Debug)]
 pub enum StringScannerError {
-  EOF
+  EOF,
 }
 
 impl<'a> StringScanner<'a> {
@@ -132,19 +132,24 @@ impl<'a> StringScanner<'a> {
     std::str::from_utf8(&self.source[start..self.pos]).unwrap()
   }
 
-  pub fn scan<FF>(&mut self, test: FF)
+  pub fn scan<FF>(&mut self, test: FF) -> Result<(), StringScannerError>
   where
     FF: Fn(u8) -> bool,
   {
     while !self.is_eof() {
-      let c = self.source[self.pos];
-      self.pos += 1;
-      self.u16_pos += 1;
-      if !test(c) {
-        self.pos -= 1;
-        self.u16_pos -= 1;
-        break;
+      let pos = self.get_pos();
+      let c = self.next_char()?;
+
+      match c {
+        Char::Byte(b) => {
+          if !test(b) {
+            self.set_pos(&pos);
+            break;
+          }
+        }
+        _ => {}
       }
     }
+    Ok(())
   }
 }

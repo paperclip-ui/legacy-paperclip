@@ -1,6 +1,6 @@
 use crate::base::parser::ParseError;
+use crate::base::string_scanner::{Char, Position as ScannerPosition, StringScanner};
 use crate::base::tokenizer::{BaseTokenizer, Position};
-use crate::base::string_scanner::{StringScanner, Char, Position as ScannerPosition};
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
@@ -68,7 +68,6 @@ pub struct Tokenizer<'a, 'b> {
 }
 
 impl<'a, 'b> Tokenizer<'a, 'b> {
-
   pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.scanner.get_pos();
     let mut i = 0;
@@ -117,9 +116,10 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
       return Err(ParseError::eof());
     }
 
-    let c = self.scanner.curr_byte().or_else(|_| {
-      Err(ParseError::eof())
-    })?;
+    let c = self
+      .scanner
+      .curr_byte()
+      .or_else(|_| Err(ParseError::eof()))?;
 
     match c {
       b'&' => {
@@ -221,13 +221,16 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
         })))
       }
       b' ' | b'\t' | b'\r' | b'\n' => {
-        self.scanner.scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
+        self
+          .scanner
+          .scan(|c| -> bool { matches!(c, b' ' | b'\t' | b'\r' | b'\n') });
         Ok(Token::Whitespace)
       }
       _ => {
-        let c = self.scanner.next_char().or_else(|_| {
-          Err(ParseError::eof())
-        })?;
+        let c = self
+          .scanner
+          .next_char()
+          .or_else(|_| Err(ParseError::eof()))?;
 
         Ok(match c {
           Char::Byte(b) => Token::Byte(b),
@@ -238,9 +241,7 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
   }
 
   pub fn new_from_scanner(scanner: &'a StringScanner<'b>) -> Tokenizer<'a, 'b> {
-    Tokenizer {
-      scanner: scanner
-    }
+    Tokenizer { scanner: scanner }
   }
 }
 

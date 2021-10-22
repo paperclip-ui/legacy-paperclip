@@ -97,13 +97,11 @@ fn parse_declaration_property<'a, 'b>(
   })?
   .to_string();
 
-  let mut js_tokenizer = JSTokenizer::new_from_scanner(
-    &context.tokenizer.scanner
-  );
+  let mut js_tokenizer = JSTokenizer::new_from_scanner(&context.tokenizer.scanner);
   let value =
     parse_js_with_tokenizer(&mut js_tokenizer, "".to_string(), context.scope_id.as_str())?;
 
-  context.tokenizer.set_pos(&js_tokenizer.get_pos());
+  // context.tokenizer.set_pos(&js_tokenizer.get_pos());
 
   Ok(ast::AnnotationProperty::Declaration(ast::Declaration {
     name,

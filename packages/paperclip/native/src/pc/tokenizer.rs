@@ -1,6 +1,6 @@
 use crate::base::parser::ParseError;
+use crate::base::string_scanner::{Char, StringScanner};
 use crate::base::tokenizer::{BaseTokenizer, Position};
-use crate::base::string_scanner::{StringScanner, Char};
 
 // TODO - continuation byte
 // inspiration: https://gist.github.com/tommai78101/3631ed1f136b78238e85582f08bdc618
@@ -125,13 +125,12 @@ pub enum Token<'a> {
 }
 
 pub struct Tokenizer<'a, 'b> {
-  pub scanner: &'a StringScanner<'b>
+  pub scanner: &'a StringScanner<'b>,
 }
 
 impl<'a, 'b> Tokenizer<'a, 'b> {
-
   pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
-    let pos = self.get_pos();
+    let pos = self.scanner.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
@@ -142,7 +141,7 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     result
   }
   pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
-    let pos = self.get_pos();
+    let pos = self.scanner.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
@@ -178,9 +177,10 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
       return Err(ParseError::eof());
     }
 
-    let mut c = self.scanner.curr_byte().or_else(|_| {
-      Err(ParseError::eof())
-    })?;
+    let mut c = self
+      .scanner
+      .curr_byte()
+      .or_else(|_| Err(ParseError::eof()))?;
 
     match c {
       b'/' => {
@@ -343,7 +343,9 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
         })))
       }
       b'\r' | b'\n' => {
-        self.scanner.scan(|c| -> bool { matches!(c, b'\r' | b'\n') });
+        self
+          .scanner
+          .scan(|c| -> bool { matches!(c, b'\r' | b'\n') });
         Ok(Token::Whitespace)
       }
       b' ' | b'\t' => {
@@ -351,10 +353,10 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
         Ok(Token::Whitespace)
       }
       _ => {
-        
-        let c = self.scanner.next_char().or_else(|_| {
-          Err(ParseError::eof())
-        })?;
+        let c = self
+          .scanner
+          .next_char()
+          .or_else(|_| Err(ParseError::eof()))?;
 
         Ok(match c {
           Char::Byte(b) => Token::Byte(b),
@@ -364,7 +366,6 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     }
   }
 
-  
   pub fn peek_eat_whitespace_is_eof(&mut self) -> bool {
     let start = self.scanner.get_pos();
     self.scanner.eat_whitespace();
@@ -373,9 +374,7 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     eof
   }
   pub fn new_from_scanner(scanner: &'a StringScanner<'b>) -> Tokenizer<'a, 'b> {
-    Tokenizer {
-      scanner: scanner
-    }
+    Tokenizer { scanner: scanner }
   }
 }
 

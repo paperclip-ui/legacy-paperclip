@@ -1,6 +1,6 @@
 use crate::base::parser::ParseError;
 use crate::base::string_scanner::{Char, Position as StringScannerPosition, StringScanner};
-use crate::base::tokenizer::{BaseTokenizer, Position};
+use crate::base::tokenizer::{BaseTokenizer};
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
@@ -15,11 +15,11 @@ pub enum Token<'a> {
   Cluster(&'a [u8]),
 }
 
-pub struct Tokenizer<'a> {
-  pub scanner: StringScanner<'a>,
+pub struct Tokenizer<'a, 'b> {
+  pub scanner: &'a StringScanner<'b>,
 }
 
-impl<'a> Tokenizer<'a> {
+impl<'a, 'b> Tokenizer<'a, 'b> {
   pub fn eat_whitespace(&mut self) -> Option<&'a [u8]> {
     self.scanner.eat_whitespace()
   }
@@ -32,7 +32,7 @@ impl<'a> Tokenizer<'a> {
     self.scanner.get_pos()
   }
 
-  pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
+  pub fn peek(&mut self, steps: u8) -> Result<Token<'b>, ParseError> {
     let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
@@ -43,7 +43,7 @@ impl<'a> Tokenizer<'a> {
     self.set_pos(&pos);
     result
   }
-  pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
+  pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'b>, ParseError> {
     let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
@@ -56,7 +56,7 @@ impl<'a> Tokenizer<'a> {
     result
   }
 
-  pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'a>, ParseError> {
+  pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'b>, ParseError> {
     let utf16_pos = self.scanner.u16_pos;
     let token = self.next()?;
     if token == expected_token {
@@ -75,19 +75,21 @@ impl<'a> Tokenizer<'a> {
     }
   }
 
-  pub fn next(&mut self) -> Result<Token<'a>, ParseError> {
+  pub fn next(&mut self) -> Result<Token<'b>, ParseError> {
     if self.is_eof() {
       return Err(ParseError::eof());
     }
 
-    let c = self.scanner.curr_byte().or_else(|_| {
-      Err(ParseError::eof())
-    })?;
+    let c = self
+      .scanner
+      .curr_byte()
+      .or_else(|_| Err(ParseError::eof()))?;
 
     match c {
       b'\\' => {
         self.scanner.forward(1); // eat slash
-        let c = self.scanner.curr_byte();
+        let c = self.scanner.curr_byte()
+        .or_else(|_| Err(ParseError::eof()))?;
         self.scanner.forward(1); // eat escaped
         Ok(Token::Escape(c))
       }
@@ -101,9 +103,10 @@ impl<'a> Tokenizer<'a> {
         })))
       }
       _ => {
-        let c = self.scanner.next_char().or_else(|_| {
-          Err(ParseError::eof())
-        })?;
+        let c = self
+          .scanner
+          .next_char()
+          .or_else(|_| Err(ParseError::eof()))?;
 
         Ok(match c {
           Char::Byte(b) => Token::Byte(b),
@@ -120,27 +123,14 @@ impl<'a> Tokenizer<'a> {
   pub fn is_eof(&mut self) -> bool {
     self.scanner.is_eof()
   }
-  pub fn new(source: &'a str) -> Tokenizer {
+  pub fn new_from_scanner(scanner: &'a StringScanner<'b>) -> Tokenizer<'a, 'b> {
     Tokenizer {
-      scanner: StringScanner::new(source),
-    }
-  }
-  pub fn new_from_bytes(source: &'a [u8], pos: Position) -> Tokenizer {
-    Tokenizer {
-      scanner: StringScanner::new_from_bytes(
-        source,
-        &StringScannerPosition {
-          u8_pos: pos.u8_pos,
-          u16_pos: pos.u16_pos,
-          u16_line: 0,
-          u16_column: 0,
-        },
-      ),
+      scanner: scanner
     }
   }
 }
 
-impl<'a> BaseTokenizer<'a> for Tokenizer<'a> {
+impl<'a, 'b> BaseTokenizer<'b> for Tokenizer<'a, 'b> {
   fn is_eof(&self) -> bool {
     self.scanner.is_eof()
   }
@@ -153,29 +143,5 @@ impl<'a> BaseTokenizer<'a> for Tokenizer<'a> {
   }
   fn get_pos(&self) -> usize {
     self.scanner.pos
-  }
-}
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn can_parse_utf8_strings() {
-    // let mut tokenizer = Tokenizer::new(&"🤦🏼‍♂️");
-    // // println!("{}", "👩‍👩‍👦‍👦".len());
-    // assert_eq!(tokenizer.utf16_pos, 0);
-    // println!("{:?}", "👩‍👩‍👦‍👦".len());
-    // println!("{:?}", "👩‍👩‍👦‍👦".encode_utf16().collect::<Vec<u16>>().len());
-    // println!("{:?}", "🤦🏼‍♂️".encode_utf16().collect::<Vec<u16>>().len());
-    // println!("{:?}", "イーブイ".encode_utf16().collect::<Vec<u16>>().len());
-    // assert_eq!(tokenizer.utf16_pos, 1);
-    // panic!("D");
-  }
-
-  fn scan_till_end(tokenizer: &mut Tokenizer) {
-    while !tokenizer.is_eof() {
-      tokenizer.next();
-    }
   }
 }
