@@ -3,7 +3,7 @@ use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast as base_ast;
 use crate::base::parser::{get_buffer, ParseError};
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
-use crate::js::tokenizer::{Tokenizer as JSTokenizer};
+use crate::js::tokenizer::Tokenizer as JSTokenizer;
 
 type FUntil<'a, 'b> = for<'r> fn(&mut Tokenizer<'a, 'b>) -> Result<bool, ParseError>;
 

@@ -34,7 +34,9 @@ pub fn parse_with_tokenizer<'a, 'b>(
   parse_top(&mut context)
 }
 
-fn parse_top<'a, 'b, 'c>(context: &'c mut Context<'a, 'b, 'c>) -> Result<ast::Expression, ParseError> {
+fn parse_top<'a, 'b, 'c>(
+  context: &'c mut Context<'a, 'b, 'c>,
+) -> Result<ast::Expression, ParseError> {
   parse_conjunction(context)
 }
 
@@ -91,7 +93,9 @@ fn parse_expression<'a, 'b, 'c>(
 
   result
 }
-fn parse_not<'a, 'b, 'c>(context: &'c mut Context<'a, 'b, 'c>) -> Result<ast::Expression, ParseError> {
+fn parse_not<'a, 'b, 'c>(
+  context: &'c mut Context<'a, 'b, 'c>,
+) -> Result<ast::Expression, ParseError> {
   let start = context.tokenizer.scanner.u16_pos;
   context.tokenizer.next()?;
   Ok(ast::Expression::Not(ast::Not {

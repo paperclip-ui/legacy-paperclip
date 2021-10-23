@@ -20,7 +20,6 @@ pub struct Tokenizer<'b, 'c> {
 }
 
 impl<'b, 'c> Tokenizer<'b, 'c> {
-
   pub fn u16_pos(&self) -> usize {
     self.scanner.u16_pos
   }

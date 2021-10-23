@@ -1,6 +1,6 @@
 use crate::base::parser::ParseError;
 use crate::base::string_scanner::{Char, StringScanner};
-use crate::base::tokenizer::{BaseTokenizer, Position};
+use crate::base::tokenizer::{BaseTokenizer};
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
@@ -114,11 +114,11 @@ pub enum Token<'a> {
   Cluster(&'a [u8]),
 }
 
-pub struct Tokenizer<'a, 'b> {
-  pub scanner: &'a mut StringScanner<'b>,
+pub struct Tokenizer<'a> {
+  pub scanner: StringScanner<'a>,
 }
 
-impl<'a, 'b> Tokenizer<'a, 'b> {
+impl<'a> Tokenizer<'a> {
   pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.scanner.get_pos();
     let mut i = 0;
@@ -404,12 +404,12 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
       .search(|c| -> bool { matches!(c, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-') })
   }
 
-  pub fn new_from_scanner(scanner: &'a mut StringScanner<'b>) -> Tokenizer<'a, 'b> {
+  pub fn new_from_scanner(scanner: StringScanner<'a>) -> Tokenizer<'a> {
     Tokenizer { scanner: scanner }
   }
 }
 
-impl<'a, 'b> BaseTokenizer<'a> for Tokenizer<'a, 'b> {
+impl<'a> BaseTokenizer<'a> for Tokenizer<'a> {
   fn is_eof(&self) -> bool {
     self.scanner.is_eof()
   }

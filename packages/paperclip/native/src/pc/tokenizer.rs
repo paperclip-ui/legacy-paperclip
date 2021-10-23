@@ -124,11 +124,11 @@ pub enum Token<'a> {
   Cluster(&'a [u8]),
 }
 
-pub struct Tokenizer<'a, 'b> {
-  pub scanner: &'a mut StringScanner<'b>,
+pub struct Tokenizer<'a> {
+  pub scanner: StringScanner<'a>,
 }
 
-impl<'a, 'b> Tokenizer<'a, 'b> {
+impl<'a> Tokenizer<'a> {
   pub fn peek(&mut self, steps: u8) -> Result<Token<'a>, ParseError> {
     let pos = self.scanner.get_pos();
     let mut i = 0;
@@ -373,12 +373,12 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     self.scanner.set_pos(&start);
     eof
   }
-  pub fn new_from_scanner(scanner: &'a mut StringScanner<'b>) -> Tokenizer<'a, 'b> {
+  pub fn new_from_scanner(scanner: StringScanner<'a>) -> Tokenizer<'a> {
     Tokenizer { scanner: scanner }
   }
 }
 
-impl<'a, 'b> BaseTokenizer<'b> for Tokenizer<'a, 'b> {
+impl<'a> BaseTokenizer<'a> for Tokenizer<'a> {
   fn is_eof(&self) -> bool {
     self.scanner.is_eof()
   }
@@ -386,7 +386,7 @@ impl<'a, 'b> BaseTokenizer<'b> for Tokenizer<'a, 'b> {
     self.next()?;
     Ok(())
   }
-  fn get_source(&self) -> &'b [u8] {
+  fn get_source(&self) -> &'a [u8] {
     self.scanner.source
   }
   fn get_pos(&self) -> usize {
