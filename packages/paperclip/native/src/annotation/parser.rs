@@ -3,7 +3,7 @@ use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast as base_ast;
 use crate::base::parser::{get_buffer, ParseError};
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
-use crate::js::tokenizer::{Token as JSToken, Tokenizer as JSTokenizer};
+use crate::js::tokenizer::{Tokenizer as JSTokenizer};
 
 type FUntil<'a, 'b> = for<'r> fn(&mut Tokenizer<'a, 'b>) -> Result<bool, ParseError>;
 
@@ -20,7 +20,7 @@ impl<'a, 'b, 'c> Context<'a, 'b, 'c> {
 }
 
 pub fn parse_with_tokenizer<'a, 'b>(
-  tokenizer: &mut Tokenizer<'a, 'b>,
+  tokenizer: &'b mut Tokenizer<'a, 'b>,
   scope_id: &String,
   until: FUntil<'a, 'b>,
 ) -> Result<ast::Annotation, ParseError> {
@@ -33,11 +33,13 @@ pub fn parse_with_tokenizer<'a, 'b>(
   parse_annotation(&mut context)
 }
 
-fn parse_annotation<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<ast::Annotation, ParseError> {
+fn parse_annotation<'a, 'b, 'c>(
+  context: &'c mut Context<'a, 'b, 'c>,
+) -> Result<ast::Annotation, ParseError> {
   let start = context.tokenizer.u16_pos();
   let mut properties: Vec<ast::AnnotationProperty> = vec![];
 
-  let mut raw_before = context.tokenizer.eat_whitespace();
+  let mut raw_before = context.tokenizer.scanner.eat_whitespace();
 
   while !context.ended()? {
     properties.push(parse_annotation_property(context, raw_before)?);
@@ -51,8 +53,8 @@ fn parse_annotation<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<ast
 }
 
 fn parse_annotation_property<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
-  raw_before: Option<&'a [u8]>,
+  context: &'c mut Context<'a, 'b, 'c>,
+  raw_before: Option<&'c [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
   match context.tokenizer.peek(1)? {
     Token::At => parse_declaration_property(context, raw_before),
@@ -86,8 +88,8 @@ fn parse_text_annotation<'a, 'b, 'c>(
 }
 
 fn parse_declaration_property<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
-  raw_before: Option<&'a [u8]>,
+  context: &'c mut Context<'a, 'b, 'c>,
+  raw_before: Option<&'c [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
   let start = context.tokenizer.u16_pos();
 
@@ -97,7 +99,7 @@ fn parse_declaration_property<'a, 'b, 'c>(
   })?
   .to_string();
 
-  let mut js_tokenizer = JSTokenizer::new_from_scanner(&context.tokenizer.scanner);
+  let mut js_tokenizer = JSTokenizer::new_from_scanner(context.tokenizer.scanner);
   let value =
     parse_js_with_tokenizer(&mut js_tokenizer, "".to_string(), context.scope_id.as_str())?;
 

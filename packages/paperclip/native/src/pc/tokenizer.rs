@@ -125,7 +125,7 @@ pub enum Token<'a> {
 }
 
 pub struct Tokenizer<'a, 'b> {
-  pub scanner: &'a StringScanner<'b>,
+  pub scanner: &'a mut StringScanner<'b>,
 }
 
 impl<'a, 'b> Tokenizer<'a, 'b> {
@@ -373,7 +373,7 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     self.scanner.set_pos(&start);
     eof
   }
-  pub fn new_from_scanner(scanner: &'a StringScanner<'b>) -> Tokenizer<'a, 'b> {
+  pub fn new_from_scanner(scanner: &'a mut StringScanner<'b>) -> Tokenizer<'a, 'b> {
     Tokenizer { scanner: scanner }
   }
 }

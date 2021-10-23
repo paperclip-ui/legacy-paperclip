@@ -5,8 +5,8 @@
 
 use super::declaration_value_ast::*;
 use super::tokenizer::{Token, Tokenizer};
-use crate::base::parser::{ParseError};
-use crate::base::string_scanner::{StringScanner};
+use crate::base::parser::ParseError;
+use crate::base::string_scanner::StringScanner;
 use crate::core::id_generator::IDGenerator;
 
 type FUntil<'a, 'b> = for<'r> fn(&mut Tokenizer<'a, 'b>) -> Result<bool, ParseError>;
@@ -17,7 +17,7 @@ pub struct Context<'a, 'b, 'c> {
   until: FUntil<'b, 'c>,
 }
 
-impl<'a, 'b, 'c>Context<'a, 'b, 'c>{
+impl<'a, 'b, 'c> Context<'a, 'b, 'c> {
   pub fn ended(&mut self) -> Result<bool, ParseError> {
     Ok(self.tokenizer.scanner.is_eof() || (self.until)(self.tokenizer)?)
   }
@@ -26,7 +26,7 @@ impl<'a, 'b, 'c>Context<'a, 'b, 'c>{
 // screen and
 pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<Expression, ParseError> {
   let scanner = StringScanner::new(source);
-  let mut tokenizer = Tokenizer::new_from_scanner(&scanner);
+  let mut tokenizer = Tokenizer::new_from_scanner(&mut scanner);
   parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
 }
 
@@ -45,7 +45,9 @@ pub fn parse_with_tokenizer<'a, 'b>(
 }
 
 // red, blue
-fn parse_expression<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<Expression, ParseError> {
+fn parse_expression<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
+) -> Result<Expression, ParseError> {
   let mut list = parse_list(context)?;
   if list.items.len() == 1 {
     match list.items.pop().unwrap() {

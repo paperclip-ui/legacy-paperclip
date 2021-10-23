@@ -6,8 +6,8 @@
 use super::declaration_value_parser::parse_with_tokenizer as parse_decl_value_with_tokenizer;
 use super::media_ast::*;
 use super::tokenizer::{Token, Tokenizer};
-use crate::base::string_scanner::{StringScanner};
-use crate::base::parser::{ParseError};
+use crate::base::parser::ParseError;
+use crate::base::string_scanner::StringScanner;
 use crate::core::id_generator::IDGenerator;
 
 type FUntil<'a, 'b> = for<'r> fn(&mut Tokenizer<'a, 'b>) -> Result<bool, ParseError>;
@@ -18,7 +18,7 @@ pub struct Context<'a, 'b, 'c> {
   until: FUntil<'b, 'c>,
 }
 
-impl<'a, 'b, 'c> Context<'a, 'b, 'c>{
+impl<'a, 'b, 'c> Context<'a, 'b, 'c> {
   pub fn ended(&mut self) -> Result<bool, ParseError> {
     Ok(self.tokenizer.scanner.is_eof() || (self.until)(self.tokenizer)?)
   }
@@ -27,7 +27,7 @@ impl<'a, 'b, 'c> Context<'a, 'b, 'c>{
 // screen and
 pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<MediaQueryList, ParseError> {
   let mut scanner = StringScanner::new(&source);
-  let mut tokenizer = Tokenizer::new_from_scanner(&scanner);
+  let mut tokenizer = Tokenizer::new_from_scanner(&mut scanner);
   parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
 }
 
@@ -64,7 +64,9 @@ fn parse_media_query_list<'a, 'b, 'c>(
   Ok(MediaQueryList { queries })
 }
 
-fn parse_media_query<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<MediaQuery, ParseError> {
+fn parse_media_query<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
+) -> Result<MediaQuery, ParseError> {
   context.tokenizer.scanner.eat_whitespace();
 
   // only | not
@@ -188,7 +190,9 @@ fn parse_media_in_parens_inner<'a, 'b, 'c>(
   Ok(MediaInParens::Feature(left))
 }
 
-fn parse_media_feature<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<MediaFeature, ParseError> {
+fn parse_media_feature<'a, 'b, 'c>(
+  context: &mut Context<'a, 'b, 'c>,
+) -> Result<MediaFeature, ParseError> {
   context.tokenizer.scanner.eat_whitespace();
   let pos = context.tokenizer.scanner.u16_pos;
   let name = if let Token::Keyword(keyword) = context.tokenizer.next()? {

@@ -6,8 +6,8 @@
 use super::ast::*;
 use super::tokenizer::{Token, Tokenizer};
 use crate::base::ast::{BasicRaws, Location};
-use crate::base::string_scanner::{StringScanner};
 use crate::base::parser::{get_buffer, ParseError};
+use crate::base::string_scanner::StringScanner;
 use crate::core::id_generator::generate_seed;
 use crate::core::id_generator::IDGenerator;
 use cached::proc_macro::cached;
@@ -30,7 +30,7 @@ impl<'a, 'b, 'c> Context<'a, 'b, 'c> {
 
 pub fn parse<'a>(source: &'a str, id_seed: String) -> Result<Sheet, ParseError> {
   let mut scanner = StringScanner::new(source);
-  let mut tokenizer = Tokenizer::new_from_scanner(&scanner);
+  let mut tokenizer = Tokenizer::new_from_scanner(&mut scanner);
   let result = parse_with_tokenizer(&mut tokenizer, id_seed.as_str(), |_token| Ok(false));
   return result;
 }
@@ -163,8 +163,11 @@ fn eat_superfluous<'a, 'b, 'c>(
     }
   }
   Ok(Some(
-    &context.tokenizer.scanner.source
-      [start..std::cmp::min(context.tokenizer.scanner.pos, context.tokenizer.scanner.source.len() - 1)],
+    &context.tokenizer.scanner.source[start
+      ..std::cmp::min(
+        context.tokenizer.scanner.pos,
+        context.tokenizer.scanner.source.len() - 1,
+      )],
   ))
 }
 
@@ -306,7 +309,9 @@ fn parse_at_rule<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<Rule, 
       raw_before,
       context,
     )?)),
-    _ => Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos)),
+    _ => Err(ParseError::unexpected_token(
+      context.tokenizer.scanner.u16_pos,
+    )),
   }
 }
 
@@ -522,7 +527,10 @@ fn parse_pair_selector<'a, 'b, 'c>(
     Selector::Prefixed(PrefixedSelector {
       connector: " ".to_string(),
       postfix_selector: None,
-      location: Location::new(context.tokenizer.scanner.u16_pos, context.tokenizer.scanner.u16_pos),
+      location: Location::new(
+        context.tokenizer.scanner.u16_pos,
+        context.tokenizer.scanner.u16_pos,
+      ),
     })
   } else {
     parse_combo_selector(context)?
@@ -803,9 +811,11 @@ fn parse_attribute_selector<'a, 'b, 'c>(
 
       // ick, but okay.
       operator = Some(
-        std::str::from_utf8(&context.tokenizer.scanner.source[start..context.tokenizer.scanner.u16_pos])
-          .unwrap()
-          .to_string(),
+        std::str::from_utf8(
+          &context.tokenizer.scanner.source[start..context.tokenizer.scanner.u16_pos],
+        )
+        .unwrap()
+        .to_string(),
       );
 
       value = Some(parse_attribute_selector_value(context)?);
@@ -974,7 +984,6 @@ fn is_next_key_value_declaration<'a, 'b, 'c>(
   }
   context.tokenizer.scanner.set_pos(&pos);
 
-
   return Ok((found_colon && found_semicolon) && !(found_curly_open));
 }
 
@@ -1006,7 +1015,9 @@ fn parse_at_declaration<'a, 'b, 'c>(
       }))
     }
     _ => {
-      return Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos));
+      return Err(ParseError::unexpected_token(
+        context.tokenizer.scanner.u16_pos,
+      ));
     }
   }
 }
@@ -1049,7 +1060,9 @@ fn parse_include<'a, 'b, 'c>(
   } else if context.tokenizer.peek(1)? == Token::CurlyOpen {
     parse_declaration_body(context)?
   } else {
-    return Err(ParseError::unexpected_token(context.tokenizer.scanner.u16_pos));
+    return Err(ParseError::unexpected_token(
+      context.tokenizer.scanner.u16_pos,
+    ));
   };
 
   Ok(Include {
@@ -1125,9 +1138,13 @@ fn parse_declaration_value<'a, 'b, 'c>(
         buffer.push_str(format!("{}{}{}", boundary, value, boundary).as_str());
       }
       _ => {
-        buffer.push(context.tokenizer.scanner.curr_byte().or_else(|_| {
-          Err(ParseError::eof())
-        })? as char);
+        buffer.push(
+          context
+            .tokenizer
+            .scanner
+            .curr_byte()
+            .or_else(|_| Err(ParseError::eof()))? as char,
+        );
         context.tokenizer.scanner.forward(1);
       }
     };

@@ -9,7 +9,7 @@ use crate::pc::parser::Context as PCContext;
 use crate::pc::tokenizer::{Token as PCToken, Tokenizer as PCTokenizer};
 
 struct Context<'a, 'b, 'c> {
-  tokenizer: &'b mut Tokenizer<'a, 'c>,
+  tokenizer: &'a mut Tokenizer<'b, 'c>,
   scope_id: String,
   id_generator: IDGenerator,
 }
@@ -17,14 +17,14 @@ struct Context<'a, 'b, 'c> {
 pub fn _parse<'a>(source: &'a str, scope_id: &'a str) -> Result<ast::Expression, ParseError> {
   let scanner = StringScanner::new(source);
 
-  let mut tokenizer = Tokenizer::new_from_scanner(&scanner);
+  let mut tokenizer = Tokenizer::new_from_scanner(&mut scanner);
   parse_with_tokenizer(&mut tokenizer, "".to_string(), scope_id)
 }
 
-pub fn parse_with_tokenizer<'a, 'c>(
-  tokenizer: &mut Tokenizer<'a, 'c>,
+pub fn parse_with_tokenizer<'a, 'b>(
+  tokenizer: &'b mut Tokenizer<'a, 'b>,
   id_seed: String,
-  scope_id: &'c str,
+  scope_id: &'b str,
 ) -> Result<ast::Expression, ParseError> {
   let mut context = Context {
     tokenizer,
@@ -34,12 +34,12 @@ pub fn parse_with_tokenizer<'a, 'c>(
   parse_top(&mut context)
 }
 
-fn parse_top<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<ast::Expression, ParseError> {
+fn parse_top<'a, 'b, 'c>(context: &'c mut Context<'a, 'b, 'c>) -> Result<ast::Expression, ParseError> {
   parse_conjunction(context)
 }
 
 fn parse_conjunction<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+  context: &'c mut Context<'a, 'b, 'c>,
 ) -> Result<ast::Expression, ParseError> {
   context.tokenizer.scanner.eat_whitespace();
   let start = context.tokenizer.scanner.u16_pos;
@@ -72,7 +72,7 @@ fn parse_conjunction<'a, 'b, 'c>(
 }
 
 fn parse_expression<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+  context: &'c mut Context<'a, 'b, 'c>,
 ) -> Result<ast::Expression, ParseError> {
   context.tokenizer.scanner.eat_whitespace();
 
@@ -91,7 +91,7 @@ fn parse_expression<'a, 'b, 'c>(
 
   result
 }
-fn parse_not<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<ast::Expression, ParseError> {
+fn parse_not<'a, 'b, 'c>(context: &'c mut Context<'a, 'b, 'c>) -> Result<ast::Expression, ParseError> {
   let start = context.tokenizer.scanner.u16_pos;
   context.tokenizer.next()?;
   Ok(ast::Expression::Not(ast::Not {
@@ -102,11 +102,11 @@ fn parse_not<'a, 'b, 'c>(context: &mut Context<'a, 'b, 'c>) -> Result<ast::Expre
 }
 
 fn parse_node<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+  context: &'c mut Context<'a, 'b, 'c>,
 ) -> Result<ast::Expression, ParseError> {
   let seed = context.id_generator.new_seed();
 
-  let mut pc_tokenizer = PCTokenizer::new_from_scanner(&context.tokenizer.scanner);
+  let mut pc_tokenizer = PCTokenizer::new_from_scanner(context.tokenizer.scanner);
   let mut pc_context = PCContext {
     scope_id: context.scope_id.to_string(),
     tokenizer: &mut pc_tokenizer,
@@ -184,7 +184,7 @@ fn parse_string<'a, 'b, 'c>(
 }
 
 fn parse_group<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+  context: &'c mut Context<'a, 'b, 'c>,
 ) -> Result<ast::Expression, ParseError> {
   let start = context.tokenizer.scanner.u16_pos;
   context.tokenizer.next()?; // eat (
@@ -200,7 +200,7 @@ fn parse_group<'a, 'b, 'c>(
 }
 
 fn parse_array<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+  context: &'c mut Context<'a, 'b, 'c>,
 ) -> Result<ast::Expression, ParseError> {
   let start = context.tokenizer.scanner.u16_pos;
   context.tokenizer.next_expect(Token::SquareOpen)?;
@@ -227,7 +227,7 @@ fn parse_array<'a, 'b, 'c>(
 }
 
 fn parse_object<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+  context: &'c mut Context<'a, 'b, 'c>,
 ) -> Result<ast::Expression, ParseError> {
   let start = context.tokenizer.scanner.u16_pos;
 
@@ -271,7 +271,7 @@ fn parse_object<'a, 'b, 'c>(
 }
 
 fn parse_boolean<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+  context: &'c mut Context<'a, 'b, 'c>,
 ) -> Result<ast::Expression, ParseError> {
   let pos = context.tokenizer.scanner.u16_pos;
   if let Token::Word(name) = context.tokenizer.next()? {
@@ -353,7 +353,7 @@ fn parse_reference_part<'a, 'b, 'c>(
 }
 
 fn parse_word<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+  context: &'c mut Context<'a, 'b, 'c>,
 ) -> Result<ast::Expression, ParseError> {
   let pos = context.tokenizer.scanner.u16_pos;
   let token = context.tokenizer.peek(1)?;

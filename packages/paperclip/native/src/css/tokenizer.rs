@@ -188,9 +188,10 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
             {
               break;
             }
-            self.scanner.next_char().or_else(|_| {
-              Err(ParseError::eof())
-            })?;
+            self
+              .scanner
+              .next_char()
+              .or_else(|_| Err(ParseError::eof()))?;
           }
           let buffer = self.scanner.since(start);
 

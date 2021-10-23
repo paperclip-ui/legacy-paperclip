@@ -15,14 +15,11 @@ pub enum Token<'a> {
   Cluster(&'a [u8]),
 }
 
-pub struct Tokenizer<'a, 'b> {
-  pub scanner: &'a mut StringScanner<'b>,
+pub struct Tokenizer<'b, 'c> {
+  pub scanner: &'b mut StringScanner<'c>,
 }
 
-impl<'a, 'b> Tokenizer<'a, 'b> {
-  pub fn eat_whitespace(&mut self) -> Option<&'a [u8]> {
-    self.scanner.eat_whitespace()
-  }
+impl<'b, 'c> Tokenizer<'b, 'c> {
 
   pub fn u16_pos(&self) -> usize {
     self.scanner.u16_pos
@@ -32,7 +29,7 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     self.scanner.get_pos()
   }
 
-  pub fn peek(&mut self, steps: u8) -> Result<Token<'b>, ParseError> {
+  pub fn peek(&mut self, steps: u8) -> Result<Token<'c>, ParseError> {
     let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
@@ -43,12 +40,12 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     self.set_pos(&pos);
     result
   }
-  pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'b>, ParseError> {
+  pub fn peek_eat_whitespace(&mut self, steps: u8) -> Result<Token<'c>, ParseError> {
     let pos = self.get_pos();
     let mut i = 0;
     let mut result = Err(ParseError::unknown());
     while i < steps {
-      self.eat_whitespace();
+      self.scanner.eat_whitespace();
       result = self.next();
       i += 1;
     }
@@ -56,7 +53,7 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     result
   }
 
-  pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'b>, ParseError> {
+  pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'c>, ParseError> {
     let utf16_pos = self.scanner.u16_pos;
     let token = self.next()?;
     if token == expected_token {
@@ -75,7 +72,7 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
     }
   }
 
-  pub fn next(&mut self) -> Result<Token<'b>, ParseError> {
+  pub fn next(&mut self) -> Result<Token<'c>, ParseError> {
     if self.is_eof() {
       return Err(ParseError::eof());
     }
@@ -125,7 +122,7 @@ impl<'a, 'b> Tokenizer<'a, 'b> {
   pub fn is_eof(&mut self) -> bool {
     self.scanner.is_eof()
   }
-  pub fn new_from_scanner(scanner: &'a mut StringScanner<'b>) -> Tokenizer<'a, 'b> {
+  pub fn new_from_scanner<'a>(scanner: &'b mut StringScanner<'c>) -> Tokenizer<'b, 'c> {
     Tokenizer { scanner: scanner }
   }
 }
