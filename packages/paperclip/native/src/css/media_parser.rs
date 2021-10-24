@@ -10,31 +10,31 @@ use crate::base::parser::ParseError;
 use crate::base::string_scanner::StringScanner;
 use crate::core::id_generator::IDGenerator;
 
-type FUntil<'a, 'b> = for<'r> fn(&mut Tokenizer<'a, 'b>) -> Result<bool, ParseError>;
+type FUntil<'a> = for<'r> fn(&mut Tokenizer<'a>) -> Result<bool, ParseError>;
 
-pub struct Context<'a, 'b, 'c> {
-  tokenizer: &'a mut Tokenizer<'b, 'c>,
+pub struct Context<'a> {
+  tokenizer: Tokenizer<'a>,
   id_generator: IDGenerator,
-  until: FUntil<'b, 'c>,
+  until: FUntil<'a>,
 }
 
-impl<'a, 'b, 'c> Context<'a, 'b, 'c> {
+impl<'a> Context<'a> {
   pub fn ended(&mut self) -> Result<bool, ParseError> {
-    Ok(self.tokenizer.scanner.is_eof() || (self.until)(self.tokenizer)?)
+    Ok(self.tokenizer.scanner.is_eof() || (self.until)(&mut self.tokenizer)?)
   }
 }
 
 // screen and
 pub fn parse<'a>(source: &'a str, id_seed: &'a str) -> Result<MediaQueryList, ParseError> {
   let mut scanner = StringScanner::new(&source);
-  let mut tokenizer = Tokenizer::new_from_scanner(&mut scanner);
-  parse_with_tokenizer(&mut tokenizer, id_seed, |_token| Ok(false))
+  let mut tokenizer = Tokenizer::new_from_scanner(scanner);
+  parse_with_tokenizer(tokenizer, id_seed, |_token| Ok(false))
 }
 
-pub fn parse_with_tokenizer<'a, 'b>(
-  tokenizer: &mut Tokenizer<'a, 'b>,
+pub fn parse_with_tokenizer<'a>(
+  tokenizer: Tokenizer<'a>,
   id_seed: &'a str,
-  until: FUntil<'a, 'b>,
+  until: FUntil<'a>,
 ) -> Result<MediaQueryList, ParseError> {
   let mut context = Context {
     tokenizer,
@@ -46,8 +46,8 @@ pub fn parse_with_tokenizer<'a, 'b>(
 }
 
 // screen, print, screen and (max-width: 400px)
-fn parse_media_query_list<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+fn parse_media_query_list<'a>(
+  context: &mut Context<'a>,
 ) -> Result<MediaQueryList, ParseError> {
   let mut queries: Vec<MediaQuery> = vec![];
 
@@ -64,8 +64,8 @@ fn parse_media_query_list<'a, 'b, 'c>(
   Ok(MediaQueryList { queries })
 }
 
-fn parse_media_query<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+fn parse_media_query<'a>(
+  context: &mut Context<'a>,
 ) -> Result<MediaQuery, ParseError> {
   context.tokenizer.scanner.eat_whitespace();
 
@@ -119,8 +119,8 @@ fn parse_media_query<'a, 'b, 'c>(
   }));
 }
 
-fn parse_media_condition_without_or<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+fn parse_media_condition_without_or<'a>(
+  context: &mut Context<'a>,
 ) -> Result<MediaConditionWithoutOr, ParseError> {
   context.tokenizer.scanner.eat_whitespace();
 
@@ -151,9 +151,9 @@ fn parse_media_condition_without_or<'a, 'b, 'c>(
   }
 }
 
-fn parse_media_condition_rest<'a, 'b, 'c>(
+fn parse_media_condition_rest<'a>(
   keyword: &'a str,
-  context: &mut Context<'a, 'b, 'c>,
+  context: &mut Context<'a>,
 ) -> Result<Vec<MediaInParens>, ParseError> {
   let mut rest: Vec<MediaInParens> = vec![];
   loop {
@@ -169,8 +169,8 @@ fn parse_media_condition_rest<'a, 'b, 'c>(
   Ok(rest)
 }
 
-fn parse_media_in_parens<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+fn parse_media_in_parens<'a>(
+  context: &mut Context<'a>,
 ) -> Result<MediaInParens, ParseError> {
   context.tokenizer.scanner.eat_whitespace();
   if context.tokenizer.peek(1)? == Token::ParenOpen {
@@ -183,15 +183,15 @@ fn parse_media_in_parens<'a, 'b, 'c>(
   }
 }
 
-fn parse_media_in_parens_inner<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+fn parse_media_in_parens_inner<'a>(
+  context: &mut Context<'a>,
 ) -> Result<MediaInParens, ParseError> {
   let left = parse_media_feature(context)?;
   Ok(MediaInParens::Feature(left))
 }
 
-fn parse_media_feature<'a, 'b, 'c>(
-  context: &mut Context<'a, 'b, 'c>,
+fn parse_media_feature<'a>(
+  context: &mut Context<'a>,
 ) -> Result<MediaFeature, ParseError> {
   context.tokenizer.scanner.eat_whitespace();
   let pos = context.tokenizer.scanner.u16_pos;

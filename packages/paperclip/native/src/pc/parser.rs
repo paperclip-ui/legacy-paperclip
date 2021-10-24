@@ -13,7 +13,7 @@ use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
 use crate::js::ast as js_ast;
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
-use crate::js::tokenizer::{Token as JSToken, Tokenizer as JSTokenizer};
+use crate::js::tokenizer::{Tokenizer as JSTokenizer};
 use crc::crc32;
 use std::str;
 
@@ -184,8 +184,7 @@ fn parse_slot_script<'a>(
   id_seed_info_option: Option<(&Vec<String>, usize)>,
 ) -> Result<js_ast::Expression, ParseError> {
   let start = context.tokenizer.scanner.u16_pos;
-  let mut scanner = context.tokenizer.scanner.clone();
-  let mut js_tokenizer = JSTokenizer::new_from_scanner(&mut scanner);
+  let mut js_tokenizer = JSTokenizer::new_from_scanner(context.tokenizer.scanner.clone());
   let id_seed = if let Some((path, index)) = id_seed_info_option {
     format!("{}{}", path.join("-"), index)
   } else {
@@ -198,7 +197,7 @@ fn parse_slot_script<'a>(
     context.scope_id.to_string().as_str(),
   )
   .and_then(|script| {
-    context.tokenizer.scanner.set_pos(&scanner.get_pos());
+    context.tokenizer.scanner.set_pos(&js_tokenizer.scanner.get_pos());
     context.tokenizer.scanner.eat_whitespace();
 
     context.tokenizer.next_expect(Token::CurlyClose)?;
@@ -221,7 +220,7 @@ pub fn parse_annotation<'a>(
 
   context.tokenizer.next()?; // eat HTML comment open
   let mut scanner = context.tokenizer.scanner.clone();
-  let mut annotation_tokenizer = AnnotationTokenizer::new_from_scanner(&mut scanner);
+  let mut annotation_tokenizer = AnnotationTokenizer::new_from_scanner(scanner);
 
   let annotation = parse_annotation_with_tokenizer(
     &mut annotation_tokenizer,
@@ -235,10 +234,7 @@ pub fn parse_annotation<'a>(
     },
   )?;
 
-  context
-    .tokenizer
-    .scanner
-    .set_pos(&scanner.get_pos());
+  context.tokenizer.scanner.set_pos(&annotation_tokenizer.scanner.get_pos());
 
   context.tokenizer.next()?; // eat -->
 
@@ -362,7 +358,7 @@ fn parse_next_style_element_parts<'a>(
 ) -> Result<pc_ast::Node, ParseError> {
   context.tokenizer.next_expect(Token::GreaterThan)?; // eat >
   let end = context.tokenizer.scanner.u16_pos;
-  let mut css_tokenizer = CSSTokenizer::new_from_scanner(context.tokenizer.scanner);
+  let mut css_tokenizer = CSSTokenizer::new_from_scanner(context.tokenizer.scanner.clone());
 
   let seed = context.id_generator.new_seed();
   let sheet = parse_css_with_tokenizer(
@@ -372,7 +368,7 @@ fn parse_next_style_element_parts<'a>(
       Ok(tokenizer.peek(1)? == CSSToken::Byte(b'<') && tokenizer.peek(2)? == CSSToken::Byte(b'/'))
     },
   )?;
-  // context.tokenizer.scanner.set_pos(&css_tokenizer.scanner.get_pos());
+  context.tokenizer.scanner.set_pos(&css_tokenizer.scanner.get_pos());
 
   // TODO - assert tokens equal these
   parse_close_tag("style", context, start, end)?;
@@ -386,9 +382,9 @@ fn parse_next_style_element_parts<'a>(
   }))
 }
 
-fn parse_close_tag<'a>(
+fn parse_close_tag<'a, 'b>(
   tag_name: &'a str,
-  context: &mut Context<'a>,
+  context: &mut Context<'b>,
   start: usize,
   end: usize,
 ) -> Result<(), ParseError> {
@@ -517,9 +513,7 @@ fn parse_attribute<'a>(
   }
 }
 
-fn parse_omit_from_compilation<'a>(
-  context: &mut Context<'a>,
-) -> Result<bool, ParseError> {
+fn parse_omit_from_compilation<'a>(context: &mut Context<'a>) -> Result<bool, ParseError> {
   Ok(if context.tokenizer.peek(1)? == Token::Bang {
     context.tokenizer.next()?;
     true

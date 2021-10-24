@@ -1,6 +1,6 @@
 use crate::base::parser::ParseError;
 use crate::base::string_scanner::{Char, StringScanner};
-use crate::base::tokenizer::{BaseTokenizer};
+use crate::base::tokenizer::BaseTokenizer;
 
 #[derive(PartialEq, Debug)]
 pub enum Token<'a> {
