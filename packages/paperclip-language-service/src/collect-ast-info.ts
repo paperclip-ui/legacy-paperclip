@@ -146,7 +146,7 @@ const getDocumentDefinitions = (uri: string, graph: DependencyGraph) => {
         sourceUri: instanceUri,
         sourceLocation: component.location,
         sourceDefinitionLocation: component.location,
-        instanceLocation: instance.tagNameSource
+        instanceLocation: instance.tagNameRange
       });
     }
   }

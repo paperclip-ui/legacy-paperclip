@@ -34,7 +34,7 @@ pub fn parse_with_tokenizer<'a, 'b>(
 }
 
 fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annotation, ParseError> {
-  let start = context.tokenizer.u16_pos();
+  let start = context.tokenizer.scanner.get_u16pos();
   let mut properties: Vec<ast::AnnotationProperty> = vec![];
 
   let mut raw_before = context.tokenizer.scanner.eat_whitespace();
@@ -46,7 +46,7 @@ fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annota
 
   Ok(ast::Annotation {
     properties,
-    location: base_ast::Location::new(start, context.tokenizer.u16_pos()),
+    range: base_ast::Range::new(start, context.tokenizer.scanner.get_u16pos()),
   })
 }
 
@@ -64,16 +64,15 @@ fn parse_text_annotation<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'a [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
-  let start = context.tokenizer.u16_pos();
+  let start = context.tokenizer.scanner.get_u16pos();
 
-  let start = context.tokenizer.get_pos();
   let start_u8 = context.tokenizer.get_pos().u8_pos;
 
   // Take everything except @ sign
   while !context.ended()? && context.tokenizer.peek(1)? != Token::At {
     let token = context.tokenizer.next()?;
   }
-  let end = context.tokenizer.get_pos();
+  let end = context.tokenizer.scanner.get_u16pos();
   let end_u8 = context.tokenizer.get_pos().u8_pos;
 
   let buffer = std::str::from_utf8(&context.tokenizer.scanner.source[start_u8..end_u8]).unwrap();
@@ -81,7 +80,7 @@ fn parse_text_annotation<'a, 'b>(
   Ok(ast::AnnotationProperty::Text(ast::Text {
     raws: base_ast::BasicRaws::new(raw_before, None),
     value: buffer.to_string(),
-    location: base_ast::Location::new(start.u16_pos, end.u8_pos),
+    range: start.range_from(end),
   }))
 }
 
@@ -89,7 +88,7 @@ fn parse_declaration_property<'a, 'b>(
   context: &mut Context<'a, 'b>,
   raw_before: Option<&'b [u8]>,
 ) -> Result<ast::AnnotationProperty, ParseError> {
-  let start = context.tokenizer.u16_pos();
+  let start = context.tokenizer.scanner.get_u16pos();
 
   context.tokenizer.next_expect(Token::At)?;
   let name = get_buffer(context.tokenizer, |tokenizer| {
@@ -107,6 +106,6 @@ fn parse_declaration_property<'a, 'b>(
     name,
     raws: base_ast::BasicRaws::new(raw_before, None),
     value,
-    location: base_ast::Location::new(start, context.tokenizer.u16_pos()),
+    range: base_ast::Range::new(start, context.tokenizer.scanner.get_u16pos()),
   }))
 }

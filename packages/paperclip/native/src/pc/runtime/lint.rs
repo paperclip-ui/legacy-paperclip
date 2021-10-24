@@ -14,12 +14,10 @@ use super::evaluator::EvalInfo;
 use super::evaluator::{evaluate as evaluate_pc, EngineMode, __test__evaluate_pc_code};
 use super::selector_match::find_one_matching_element;
 use super::virt::Node as VirtNode;
-use crate::base::ast::{ExprSource, ExprTextSource, Location};
+use crate::base::ast::{ExprSource, ExprTextSource, Range};
 use serde::{Deserialize, Serialize};
 // use crate::core::diagnostics::{Diagnostic, DiagnosticInfo, DiagnosticLevel, DiagnosticSourceInfo};
-use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
-use crate::core::vfs::VirtualFileSystem;
 use crate::css::ast::{CSSObject, Rule};
 use crate::css::runtime::virt::{
   CSSSheet, CSSStyleProperty as VirtCSSStyleProperty, Rule as VirtRule, StyleRule as VirtStyleRule,
@@ -161,13 +159,13 @@ fn lint_style_declaration(
   let expr_option = graph.get_expression_by_id(&decl.source_id);
 
   if let Some((uri, expr)) = expr_option {
-    let expr_location: &Location = expr.get_location();
+    let expr_range: &Range = expr.get_range();
 
     diagnostics.push(LintWarning::UnusedStyleRule(LintWarningInfo::new(
       "Variable needs to be used here",
       &ExprSource::new(
         decl.source_id.as_str(),
-        Some(&ExprTextSource::new(uri, expr_location.clone())),
+        Some(&ExprTextSource::new(uri, expr_range.clone())),
       ),
     )));
   }
@@ -185,12 +183,12 @@ fn lint_unused_style(
     let expr_option = graph.get_expression_by_id(&style_rule.source_id);
 
     if let Some((uri, expr)) = expr_option {
-      let mut expr_location: &Location = expr.get_location();
+      let mut expr_location: &Range = expr.get_range();
 
       // check for :global
       if let PCObject::CSSObject(cssobject) = &expr {
         if let CSSObject::StyleRule(style) = cssobject {
-          expr_location = style.selector.get_location();
+          expr_location = style.selector.get_range();
           if style.selector.is_global() {
             return;
           }
@@ -198,7 +196,7 @@ fn lint_unused_style(
 
         if let CSSObject::Rule(rule) = cssobject {
           if let Rule::Style(style) = rule {
-            expr_location = style.selector.get_location();
+            expr_location = style.selector.get_range();
             if style.selector.is_global() {
               return;
             }

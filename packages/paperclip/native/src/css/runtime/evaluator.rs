@@ -30,9 +30,9 @@ use super::super::super::pc::runtime::evaluator as pc_runtime;
 use super::super::ast;
 use super::export::{ClassNameExport, Exports, KeyframesExport, MixinExport, VarExport};
 use super::virt;
-use crate::base::utils::{get_document_id, get_document_style_public_scope};
+use crate::base::utils::{get_document_style_public_scope};
 
-use crate::base::ast::{ExprTextSource, Location};
+use crate::base::ast::{ExprTextSource, Range};
 use crate::base::runtime::RuntimeError;
 use crate::core::eval::DependencyEvalInfo;
 use crate::core::graph::{Dependency, DependencyContent, DependencyGraph};
@@ -313,7 +313,7 @@ pub fn evaluate<'a>(
     _ => Err(RuntimeError::new(
       "Incorrect file type".to_string(),
       uri,
-      &Location { start: 0, end: 0 },
+      &Range::nil()
     )),
   }
 }
@@ -600,7 +600,7 @@ fn evaluate_keyframes_rule(
     KeyframesExport {
       name: rule.name.to_string(),
       public,
-      source: ExprTextSource::new(context.uri.to_string(), rule.location.clone()),
+      source: ExprTextSource::new(context.uri.to_string(), rule.range.clone()),
     },
   );
 
@@ -659,7 +659,7 @@ fn get_mixin<'a>(
       return Err(RuntimeError::new(
         "Reference not found.".to_string(),
         &context.uri,
-        &inc_part.location,
+        &inc_part.range,
       ));
     }
   };
@@ -788,7 +788,7 @@ fn assert_get_mixin<'a>(
           return Err(RuntimeError::new(
             "This mixin is private.".to_string(),
             context.uri,
-            &iref.parts.last().unwrap().location,
+            &iref.parts.last().unwrap().range,
           ));
         }
       }
@@ -799,7 +799,7 @@ fn assert_get_mixin<'a>(
     return Err(RuntimeError::new(
       "Reference not found.".to_string(),
       context.uri,
-      &iref.parts.last().unwrap().location,
+      &iref.parts.last().unwrap().range,
     ));
   }
 }
@@ -920,7 +920,7 @@ fn evaluate_mixin_rule(expr: &ast::MixinRule, context: &mut Context) -> Result<(
     return Err(RuntimeError::new(
       "This mixin is already declared in the upper scope.".to_string(),
       context.uri,
-      &expr.name.location,
+      &expr.name.range,
     ));
   }
 
@@ -1552,7 +1552,7 @@ fn evaluate_style_key_value_declaration<'a>(
             relative_path, context.uri
           ),
           context.uri,
-          &expr.value_location,
+          &expr.value_range,
         ));
       }
     }
@@ -1564,7 +1564,7 @@ fn evaluate_style_key_value_declaration<'a>(
       VarExport {
         name: expr.name.to_string(),
         value: value.to_string(),
-        source: ExprTextSource::new(context.uri.to_string(), expr.location.clone()),
+        source: ExprTextSource::new(context.uri.to_string(), expr.range.clone()),
       },
     );
   }

@@ -7,7 +7,7 @@ pub trait BaseTokenizer<'a> {
   fn is_eof(&self) -> bool;
   fn skip(&mut self) -> Result<(), ParseError>;
   fn get_pos(&self) -> usize;
-  fn get_source(&self) -> &'a [u8];
+  fn get_range(&self) -> &'a [u8];
 }
 
 #[derive(Debug)]

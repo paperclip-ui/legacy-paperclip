@@ -92,7 +92,7 @@ fn parse_list_item<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ListItem, Pa
 
 fn parse_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Value, ParseError> {
   context.tokenizer.scanner.eat_whitespace();
-  let pos = context.tokenizer.scanner.u16_pos;
+  let pos = context.tokenizer.scanner.get_u16pos();
 
   match context.tokenizer.next()? {
     // 10px, 10%, 10em
@@ -125,7 +125,7 @@ fn parse_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Value, ParseErro
     _ => {}
   }
 
-  return Err(ParseError::unexpected_token(pos));
+  return Err(ParseError::unexpected_token(pos.range_from(context.tokenizer.scanner.get_u16pos())));
 }
 
 #[cfg(test)]

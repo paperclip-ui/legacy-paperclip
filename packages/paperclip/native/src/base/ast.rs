@@ -1,37 +1,19 @@
 use serde::Serialize;
 use std::fmt;
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct Location {
-  pub pos: usize,
-  pub line: usize,
-  pub column: usize,
-}
-
-impl Location {
-  pub fn new(pos: usize, line: usize, column: usize) -> Location {
-    Location { pos, line, column }
-  }
-}
-
-impl fmt::Display for Location {
-  fn fmt(&self, _f: &mut fmt::Formatter) -> fmt::Result {
-    Ok(())
-  }
-}
+use super::string_scanner::U16Position;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Range {
-  pub start: Location,
-  pub end: Location,
+  pub start: U16Position,
+  pub end: U16Position,
 }
 
 impl Range {
-  pub fn new(start: Location, end: Location) -> Range {
+  pub fn new(start: U16Position, end: U16Position) -> Range {
     Range { start, end }
   }
   pub fn nil() -> Range {
-    Range::new(Location::new(0, 0, 0), Location::new(0, 0, 0))
+    Range::new(U16Position::new(0, 0, 0), U16Position::new(0, 0, 0))
   }
 }
 
@@ -44,7 +26,7 @@ pub struct BasicRaws {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ExprTextSource {
   pub uri: String,
-  pub location: Range,
+  pub range: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -68,13 +50,13 @@ impl ExprSource {
 }
 
 impl ExprTextSource {
-  pub fn new(uri: String, location: Range) -> ExprTextSource {
-    ExprTextSource { uri, location }
+  pub fn new(uri: String, range: Range) -> ExprTextSource {
+    ExprTextSource { uri, range }
   }
   pub fn virt(uri: String) -> ExprTextSource {
     ExprTextSource::new(
       uri,
-      Range::new(Location::new(0, 0, 0), Location::new(0, 0, 0)),
+      Range::new(U16Position::new(0, 0, 0), U16Position::new(0, 0, 0)),
     )
   }
 }

@@ -144,12 +144,12 @@ impl<'a> Tokenizer<'a> {
   }
 
   pub fn next_expect(&mut self, expected_token: Token) -> Result<Token<'a>, ParseError> {
-    let pos = self.scanner.pos;
+    let pos = self.scanner.get_u16pos();
     let token = self.next()?;
     if token == expected_token {
       return Ok(token);
     } else {
-      return Err(ParseError::unexpected_token(pos));
+      return Err(ParseError::unexpected_token(pos.range_from(self.scanner.get_u16pos())));
     }
   }
 
@@ -417,7 +417,7 @@ impl<'a> BaseTokenizer<'a> for Tokenizer<'a> {
     self.next()?;
     Ok(())
   }
-  fn get_source(&self) -> &'a [u8] {
+  fn get_range(&self) -> &'a [u8] {
     self.scanner.source
   }
   fn get_pos(&self) -> usize {

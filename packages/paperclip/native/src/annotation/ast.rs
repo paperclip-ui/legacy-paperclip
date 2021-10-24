@@ -5,7 +5,7 @@ use serde::Serialize;
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Annotation {
   pub properties: Vec<AnnotationProperty>,
-  pub location: base_ast::Location,
+  pub range: base_ast::Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -23,12 +23,12 @@ pub struct Declaration {
   pub name: String,
   pub value: js_ast::Expression,
   pub raws: base_ast::BasicRaws,
-  pub location: base_ast::Location,
+  pub range: base_ast::Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Text {
   pub raws: base_ast::BasicRaws,
   pub value: String,
-  pub location: base_ast::Location,
+  pub range: base_ast::Range,
 }

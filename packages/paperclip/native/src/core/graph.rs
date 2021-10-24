@@ -1,5 +1,5 @@
 use super::vfs::VirtualFileSystem;
-use crate::base::ast::{Location, Range};
+use crate::base::ast::{Range};
 use crate::base::parser::ParseError;
 use crate::base::utils::get_document_id;
 use crate::core::id_generator::IDGenerator;
@@ -178,7 +178,7 @@ impl DependencyGraph {
                 let range = match &origin_dep.content {
                   DependencyContent::Node(node) => pc_ast::get_import_by_src(&relative_uri, node)
                     .unwrap()
-                    .open_tag_source
+                    .open_tag_range
                     .clone(),
                   DependencyContent::StyleSheet(_) => {
                     // TODO once imports are working in CSS sheets
@@ -344,8 +344,7 @@ impl<'a> Dependency {
       } else {
         return Err(ParseError::unexpected(
           format!("Unable to resolve path: {} from {}", src, uri),
-          0,
-          0,
+          Range::nil()
         ));
       }
     }

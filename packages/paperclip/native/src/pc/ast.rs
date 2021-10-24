@@ -1,5 +1,5 @@
 use crate::annotation::ast as annotation_ast;
-use crate::base::ast::{BasicRaws, Location, Range};
+use crate::base::ast::{BasicRaws, Range};
 use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
 use serde::Serialize;
@@ -24,13 +24,13 @@ pub struct Element {
   pub id: String,
   pub raws: ElementRaws,
 
-  pub source: Range,
+  pub range: Range,
 
-  #[serde(rename = "openTagSource")]
-  pub open_tag_source: Range,
+  #[serde(rename = "openTagRange")]
+  pub open_tag_range: Range,
 
-  #[serde(rename = "tagNameSource")]
-  pub tag_name_location: Range,
+  #[serde(rename = "tagNameRange")]
+  pub tag_name_range: Range,
 
   #[serde(rename = "tagName")]
   pub tag_name: String,
@@ -42,14 +42,14 @@ pub struct Element {
 pub struct Comment {
   pub id: String,
   pub raws: BasicRaws,
-  pub source: Range,
+  pub range: Range,
   pub annotation: annotation_ast::Annotation,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ValueObject {
   pub id: String,
-  pub source: Range,
+  pub range: Range,
   pub value: String,
   pub raws: BasicRaws,
 }
@@ -74,24 +74,24 @@ pub enum PCObject<'a> {
 }
 
 impl<'a> PCObject<'a> {
-  pub fn get_source(&'a self) -> &'a Range {
+  pub fn get_range(&'a self) -> &'a Range {
     match self {
-      PCObject::Node(node) => node.get_source(),
-      PCObject::CSSObject(css) => css.get_source(),
-      PCObject::JSObject(js) => js.get_source(),
+      PCObject::Node(node) => node.get_range(),
+      PCObject::CSSObject(css) => css.get_range(),
+      PCObject::JSObject(js) => js.get_range(),
     }
   }
 }
 
 impl Node {
-  pub fn get_source(&self) -> &Range {
+  pub fn get_range(&self) -> &Range {
     match self {
-      Node::Text(value) => &value.source,
-      Node::Comment(value) => &value.source,
-      Node::Element(value) => &value.source,
-      Node::Fragment(value) => &value.source,
-      Node::StyleElement(value) => &value.source,
-      Node::Slot(value) => &value.source,
+      Node::Text(value) => &value.range,
+      Node::Comment(value) => &value.range,
+      Node::Element(value) => &value.range,
+      Node::Fragment(value) => &value.range,
+      Node::StyleElement(value) => &value.range,
+      Node::Slot(value) => &value.range,
     }
   }
   pub fn walk<F: FnMut(&Node) -> bool>(&self, each: &mut F) -> bool {
@@ -159,7 +159,7 @@ pub struct Slot {
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
   pub script: js_ast::Expression,
-  pub source: Range,
+  pub range: Range,
   pub raws: BasicRaws,
 }
 
@@ -180,21 +180,21 @@ impl fmt::Display for Node {
 pub struct AttributeStringValue {
   pub id: String,
   pub value: String,
-  pub source: Range,
+  pub range: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeSlotValue {
   pub id: String,
   pub script: js_ast::Expression,
-  pub source: Range,
+  pub range: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringValue {
   pub id: String,
   pub values: Vec<AttributeDynamicStringPart>,
-  pub source: Range,
+  pub range: Range,
 }
 
 impl fmt::Display for AttributeDynamicStringValue {
@@ -232,7 +232,7 @@ pub enum AttributeDynamicStringPart {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AttributeDynamicStringLiteral {
   pub value: String,
-  pub source: Range,
+  pub range: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -240,7 +240,7 @@ pub struct AttributeDynamicStringLiteral {
 pub struct AttributeDynamicStringClassNamePierce {
   #[serde(rename = "className")]
   pub class_name: String,
-  pub source: Range,
+  pub range: Range,
 }
 
 impl fmt::Display for AttributeStringValue {
@@ -309,7 +309,7 @@ pub struct SpreadAttribute {
   #[serde(rename = "omitFromCompilation")]
   pub omit_from_compilation: bool,
   pub script: js_ast::Expression,
-  pub source: Range,
+  pub range: Range,
 }
 
 impl fmt::Display for SpreadAttribute {
@@ -321,7 +321,7 @@ impl fmt::Display for SpreadAttribute {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ShorthandAttribute {
   pub reference: js_ast::Expression,
-  pub source: Range,
+  pub range: Range,
 }
 
 impl ShorthandAttribute {
@@ -351,7 +351,7 @@ pub struct PropertyBoundAttribute {
   #[serde(rename = "bindingName")]
   pub binding_name: String,
   pub name: String,
-  pub source: Range,
+  pub range: Range,
   pub value: Option<AttributeValue>,
 }
 
@@ -370,7 +370,7 @@ impl fmt::Display for PropertyBoundAttribute {
 pub struct KeyValueAttribute {
   pub id: String,
   pub name: String,
-  pub source: Range,
+  pub range: Range,
   pub value: Option<AttributeValue>,
 }
 
@@ -409,7 +409,7 @@ pub struct StyleElement {
   pub raws: ElementRaws,
   pub attributes: Vec<Attribute>,
   pub sheet: css_ast::Sheet,
-  pub source: Range,
+  pub range: Range,
 }
 
 impl fmt::Display for StyleElement {
@@ -424,7 +424,7 @@ impl fmt::Display for StyleElement {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Fragment {
   pub id: String,
-  pub source: Range,
+  pub range: Range,
   pub children: Vec<Node>,
 }
 

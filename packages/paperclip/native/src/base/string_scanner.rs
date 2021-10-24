@@ -1,9 +1,44 @@
+use serde::Serialize;
+use std::fmt;
+use super::ast::{Range};
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct U16Position {
+  pub pos: usize,
+  pub line: usize,
+  pub column: usize
+}
+
+impl U16Position {
+  pub fn new(pos: usize, line: usize, column: usize) -> U16Position {
+    U16Position { pos: pos, line: line, column: column }
+  }
+  pub fn range_from(&self, pos: U16Position) -> Range {
+    Range::new(self.clone(), pos)
+  }
+  pub fn range_to(&self, pos: U16Position) -> Range {
+    Range::new(pos, self.clone())
+  }
+}
+
+
+
 #[derive(Debug)]
 pub struct Position {
   pub u8_pos: usize,
   pub u16_pos: usize,
   pub u16_line: usize,
   pub u16_column: usize,
+}
+
+impl Position {
+  pub fn to_u16(&self) -> U16Position {
+    U16Position { 
+      pos: self.u16_pos,
+      line: self.u16_line,
+      column: self.u16_column
+    }
+  }
 }
 
 pub enum Char<'a> {
@@ -38,7 +73,7 @@ impl<'a> StringScanner<'a> {
     }
     Some(&self.source[start..self.pos])
   }
-
+  
   pub fn starts_with(&mut self, pattern: &[u8]) -> bool {
     self.source[self.pos..].starts_with(pattern)
   }
@@ -49,6 +84,13 @@ impl<'a> StringScanner<'a> {
       u16_pos: self.u16_pos,
       u16_line: 0,
       u16_column: 0,
+    }
+  }
+  pub fn get_u16pos(&self) -> U16Position {
+    U16Position {
+      pos: self.u16_pos,
+      line: self.u16_line,
+      column: self.u16_column
     }
   }
   pub fn set_pos(&mut self, pos: &Position) {
