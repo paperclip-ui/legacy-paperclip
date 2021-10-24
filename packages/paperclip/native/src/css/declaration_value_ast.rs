@@ -1,4 +1,3 @@
-
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]

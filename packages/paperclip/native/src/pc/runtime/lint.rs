@@ -183,12 +183,12 @@ fn lint_unused_style(
     let expr_option = graph.get_expression_by_id(&style_rule.source_id);
 
     if let Some((uri, expr)) = expr_option {
-      let mut expr_location: &Range = expr.get_range();
+      let mut expr_range: &Range = expr.get_range();
 
       // check for :global
       if let PCObject::CSSObject(cssobject) = &expr {
         if let CSSObject::StyleRule(style) = cssobject {
-          expr_location = style.selector.get_range();
+          expr_range = style.selector.get_range();
           if style.selector.is_global() {
             return;
           }
@@ -196,7 +196,7 @@ fn lint_unused_style(
 
         if let CSSObject::Rule(rule) = cssobject {
           if let Rule::Style(style) = rule {
-            expr_location = style.selector.get_range();
+            expr_range = style.selector.get_range();
             if style.selector.is_global() {
               return;
             }
@@ -208,7 +208,7 @@ fn lint_unused_style(
         "Unused style rule in preview",
         &ExprSource::new(
           style_rule.source_id.as_str(),
-          Some(&ExprTextSource::new(uri, expr_location.clone())),
+          Some(&ExprTextSource::new(uri, expr_range.clone())),
         ),
       )));
     }

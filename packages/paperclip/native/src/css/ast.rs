@@ -82,10 +82,10 @@ pub struct KeyValueDeclaration {
   pub range: Range,
   pub raws: BasicRaws,
 
-  #[serde(rename = "nameLocation")]
+  #[serde(rename = "nameRange")]
   pub name_range: Range,
 
-  #[serde(rename = "valueLocation")]
+  #[serde(rename = "valueRange")]
   pub value_range: Range,
 }
 

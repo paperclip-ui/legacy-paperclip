@@ -125,7 +125,9 @@ fn parse_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Value, ParseErro
     _ => {}
   }
 
-  return Err(ParseError::unexpected_token(pos.range_from(context.tokenizer.scanner.get_u16pos())));
+  return Err(ParseError::unexpected_token(
+    pos.range_from(context.tokenizer.scanner.get_u16pos()),
+  ));
 }
 
 #[cfg(test)]

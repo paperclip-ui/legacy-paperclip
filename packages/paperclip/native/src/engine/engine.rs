@@ -388,7 +388,7 @@ impl Engine {
       return Err(RuntimeError::new(
         "dependency not loaded.".to_string(),
         uri,
-        &ast::Range::nil()
+        &ast::Range::nil(),
       ));
     };
 

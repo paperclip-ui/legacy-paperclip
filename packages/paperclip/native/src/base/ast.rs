@@ -1,6 +1,6 @@
+use super::string_scanner::U16Position;
 use serde::Serialize;
 use std::fmt;
-use super::string_scanner::U16Position;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Range {

@@ -88,7 +88,9 @@ fn parse_media_query<'a>(context: &mut Context<'a>) -> Result<MediaQuery, ParseE
   let media_type = if let Token::Keyword(ident) = context.tokenizer.next()? {
     ident
   } else {
-    return Err(ParseError::unexpected_token(media_pos.range_from(context.tokenizer.scanner.get_u16pos())));
+    return Err(ParseError::unexpected_token(
+      media_pos.range_from(context.tokenizer.scanner.get_u16pos()),
+    ));
   };
 
   context.tokenizer.scanner.eat_whitespace();
@@ -188,7 +190,9 @@ fn parse_media_feature<'a>(context: &mut Context<'a>) -> Result<MediaFeature, Pa
   let name = if let Token::Keyword(keyword) = context.tokenizer.next()? {
     keyword.to_string()
   } else {
-    return Err(ParseError::unexpected_token(pos.range_from(context.tokenizer.scanner.get_u16pos())));
+    return Err(ParseError::unexpected_token(
+      pos.range_from(context.tokenizer.scanner.get_u16pos()),
+    ));
   };
 
   context.tokenizer.scanner.eat_whitespace();

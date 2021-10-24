@@ -58,7 +58,9 @@ impl<'a> Tokenizer<'a> {
     if token == expected_token {
       return Ok(token);
     } else {
-      return Err(ParseError::unexpected_token(utf16_pos.range_from(self.scanner.get_u16pos())));
+      return Err(ParseError::unexpected_token(
+        utf16_pos.range_from(self.scanner.get_u16pos()),
+      ));
     }
   }
 
@@ -67,7 +69,9 @@ impl<'a> Tokenizer<'a> {
     if let Token::Word(value) = self.next()? {
       Ok(value.to_string())
     } else {
-      Err(ParseError::unexpected_token(pos.range_from(self.scanner.get_u16pos())))
+      Err(ParseError::unexpected_token(
+        pos.range_from(self.scanner.get_u16pos()),
+      ))
     }
   }
 

@@ -269,7 +269,9 @@ fn parse_boolean<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expressio
     }
   }
 
-  Err(ParseError::unexpected_token(pos.range_from(context.tokenizer.scanner.get_u16pos())))
+  Err(ParseError::unexpected_token(
+    pos.range_from(context.tokenizer.scanner.get_u16pos()),
+  ))
 }
 
 fn token_matches_var_start(token: &Token) -> bool {
@@ -307,7 +309,9 @@ fn parse_reference<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Express
     if token_matches_var_start(&context.tokenizer.peek(1)?) {
       path.push(parse_reference_part(context)?);
     } else {
-      return Err(ParseError::unexpected_token(pos.range_from(context.tokenizer.scanner.get_u16pos())));
+      return Err(ParseError::unexpected_token(
+        pos.range_from(context.tokenizer.scanner.get_u16pos()),
+      ));
     }
   }
   Ok(ast::Expression::Reference(ast::Reference {
@@ -346,7 +350,9 @@ fn parse_word<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Expression, 
     return parse_reference(context);
   }
 
-  Err(ParseError::unexpected_token(pos.range_from(context.tokenizer.scanner.get_u16pos())))
+  Err(ParseError::unexpected_token(
+    pos.range_from(context.tokenizer.scanner.get_u16pos()),
+  ))
 }
 
 #[cfg(test)]

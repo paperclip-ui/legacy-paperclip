@@ -1,5 +1,5 @@
 use super::tokenizer::*;
-use crate::base::ast::{Range};
+use crate::base::ast::Range;
 use crate::base::string_scanner::U16Position;
 use serde::Serialize;
 
@@ -30,7 +30,7 @@ impl ParseError {
     ParseError::new(
       ParseErrorKind::Unexpected,
       "Unexpected token".to_string(),
-      range
+      range,
     )
   }
   pub fn unexpected(message: String, range: Range) -> ParseError {
@@ -43,14 +43,14 @@ impl ParseError {
     ParseError::new(
       ParseErrorKind::EndOfFile,
       "End of file".to_string(),
-      Range::nil()
+      Range::nil(),
     )
   }
   pub fn unknown() -> ParseError {
     ParseError::new(
       ParseErrorKind::Unknown,
       "An unknown error has occurred".to_string(),
-      Range::nil()
+      Range::nil(),
     )
   }
 }

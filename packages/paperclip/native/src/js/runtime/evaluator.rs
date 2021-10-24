@@ -1,6 +1,6 @@
 use super::super::ast;
 use super::virt;
-use crate::base::ast::{Range};
+use crate::base::ast::Range;
 use crate::base::runtime::RuntimeError;
 use crate::pc::ast as pc_ast;
 use crate::pc::runtime::evaluator::{evaluate_node as evaluate_pc_node, Context as PCContext};
@@ -174,7 +174,7 @@ fn evaluate_reference<'a>(
       return Err(RuntimeError {
         uri: context.uri.to_string(),
         message: "Cannot access property of undefined".to_string(),
-        range: Range::nil()
+        range: Range::nil(),
       });
     }
   }

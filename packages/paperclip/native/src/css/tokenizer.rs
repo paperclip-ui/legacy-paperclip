@@ -149,7 +149,9 @@ impl<'a> Tokenizer<'a> {
     if token == expected_token {
       return Ok(token);
     } else {
-      return Err(ParseError::unexpected_token(pos.range_from(self.scanner.get_u16pos())));
+      return Err(ParseError::unexpected_token(
+        pos.range_from(self.scanner.get_u16pos()),
+      ));
     }
   }
 

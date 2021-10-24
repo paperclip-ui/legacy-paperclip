@@ -1,4 +1,4 @@
-use crate::base::ast::{Range};
+use crate::base::ast::Range;
 use crate::pc::ast as pc_ast;
 use serde::Serialize;
 use std::fmt;

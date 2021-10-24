@@ -1,5 +1,5 @@
 use super::vfs::VirtualFileSystem;
-use crate::base::ast::{Range};
+use crate::base::ast::Range;
 use crate::base::parser::ParseError;
 use crate::base::utils::get_document_id;
 use crate::core::id_generator::IDGenerator;
@@ -344,7 +344,7 @@ impl<'a> Dependency {
       } else {
         return Err(ParseError::unexpected(
           format!("Unable to resolve path: {} from {}", src, uri),
-          Range::nil()
+          Range::nil(),
         ));
       }
     }

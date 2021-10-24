@@ -63,7 +63,7 @@ pub fn parse_selector<'a, 'b>(
   } else {
     return Err(ParseError::unexpected(
       format!("Unable to parse selector \"{}\"", selector),
-      Range::nil()
+      Range::nil(),
     ));
   };
 
@@ -176,7 +176,11 @@ fn parse_comment<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
   let buffer = match start_tok {
     Token::LineComment(buffer) => buffer,
     Token::ScriptComment(buffer) => buffer,
-    _ => return Err(ParseError::unexpected_token(start.range_from(context.tokenizer.scanner.get_u16pos()))),
+    _ => {
+      return Err(ParseError::unexpected_token(
+        start.range_from(context.tokenizer.scanner.get_u16pos()),
+      ))
+    }
   };
 
   let pos = context.tokenizer.scanner.get_u16pos();
@@ -242,7 +246,7 @@ fn parse_declaration_body<'a, 'b>(
     .next_expect(Token::CurlyClose)
     .or(Err(ParseError::unterminated(
       "Unterminated bracket.".to_string(),
-      block_start.range_from(context.tokenizer.scanner.get_u16pos())
+      block_start.range_from(context.tokenizer.scanner.get_u16pos()),
     )))?;
 
   let raw_after = context.tokenizer.scanner.eat_whitespace();
@@ -269,7 +273,9 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
           range: Range::new(start, context.tokenizer.scanner.get_u16pos()),
         }))
       } else {
-        Err(ParseError::unexpected_token(start.range_from(context.tokenizer.scanner.get_u16pos())))
+        Err(ParseError::unexpected_token(
+          start.range_from(context.tokenizer.scanner.get_u16pos()),
+        ))
       }
     }
     // "namespace" => {
@@ -306,7 +312,7 @@ fn parse_at_rule<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Rule, ParseErr
       context,
     )?)),
     _ => Err(ParseError::unexpected_token(
-      start.range_from(context.tokenizer.scanner.get_u16pos())
+      start.range_from(context.tokenizer.scanner.get_u16pos()),
     )),
   }
 }
@@ -372,10 +378,7 @@ fn parse_mixin_rule<'a, 'b>(
   eat_superfluous(context)?;
   let name_start = context.tokenizer.scanner.get_u16pos();
   let name = parse_selector_name(context)?.to_string();
-  let name_range = Range::new(
-    name_start,
-    context.tokenizer.scanner.get_u16pos(),
-  );
+  let name_range = Range::new(name_start, context.tokenizer.scanner.get_u16pos());
 
   eat_superfluous(context)?;
   let (declarations, rules, raw_after) = parse_declaration_body(context)?;
@@ -604,7 +607,9 @@ fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selecto
     }
   }
   if selectors.len() == 0 {
-    return Err(ParseError::unexpected_token(pos.range_from(context.tokenizer.scanner.get_u16pos())));
+    return Err(ParseError::unexpected_token(
+      pos.range_from(context.tokenizer.scanner.get_u16pos()),
+    ));
   }
 
   if selectors.len() == 1 {
@@ -717,7 +722,7 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
     Token::Star => {
       context.tokenizer.next()?; // eat *
       Selector::AllSelector(AllSelector {
-        range: pos.range_from(context.tokenizer.scanner.get_u16pos())
+        range: pos.range_from(context.tokenizer.scanner.get_u16pos()),
       })
     }
     Token::Colon => parse_pseudo_element_selector(context)?,
@@ -777,7 +782,9 @@ fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selec
       range: pos.range_from(context.tokenizer.scanner.get_u16pos()),
     }),
     _ => {
-      return Err(ParseError::unexpected_token(pos.range_from(context.tokenizer.scanner.get_u16pos())));
+      return Err(ParseError::unexpected_token(
+        pos.range_from(context.tokenizer.scanner.get_u16pos()),
+      ));
     }
   };
   Ok(selector)
@@ -814,7 +821,11 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
       // do nothing
     }
     _ => {
-      return Err(ParseError::unexpected_token(start.to_u16().range_from(context.tokenizer.scanner.get_u16pos())));
+      return Err(ParseError::unexpected_token(
+        start
+          .to_u16()
+          .range_from(context.tokenizer.scanner.get_u16pos()),
+      ));
     }
   };
 
@@ -824,7 +835,9 @@ fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Sel
     name,
     operator,
     value,
-    range: start.to_u16().range_from(context.tokenizer.scanner.get_u16pos()),
+    range: start
+      .to_u16()
+      .range_from(context.tokenizer.scanner.get_u16pos()),
   }))
 }
 
@@ -1027,7 +1040,9 @@ fn parse_include<'a, 'b>(
       }
       context.tokenizer.next();
     } else {
-      return Err(ParseError::unexpected_token(start.range_from(context.tokenizer.scanner.get_u16pos())));
+      return Err(ParseError::unexpected_token(
+        start.range_from(context.tokenizer.scanner.get_u16pos()),
+      ));
     }
   }
 
@@ -1086,7 +1101,9 @@ fn parse_key_value_declaration<'a, 'b>(
 
     // check for { color: red }, if not, then probably dealing with this: { color: red background: blue; }
     } else if context.tokenizer.peek(1)? != Token::CurlyClose {
-      return Err(ParseError::unexpected_token(cpos.range_from(context.tokenizer.scanner.get_u16pos())));
+      return Err(ParseError::unexpected_token(
+        cpos.range_from(context.tokenizer.scanner.get_u16pos()),
+      ));
     }
 
     let end = context.tokenizer.scanner.get_u16pos();
@@ -1105,7 +1122,9 @@ fn parse_key_value_declaration<'a, 'b>(
       },
     }))
   } else {
-    return Err(ParseError::unexpected_token(start.range_from(context.tokenizer.scanner.get_u16pos())));
+    return Err(ParseError::unexpected_token(
+      start.range_from(context.tokenizer.scanner.get_u16pos()),
+    ));
   }
 }
 
@@ -1282,7 +1301,6 @@ mod tests {
 
     parse(source, "id".to_string()).unwrap();
   }
-
 
   // #[test]
   // fn displays_an_error_for_unterminated_curly_bracket() {

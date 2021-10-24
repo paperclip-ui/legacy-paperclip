@@ -5,9 +5,9 @@ use super::tokenizer::{Token, Tokenizer};
 use crate::annotation::parser::parse_with_tokenizer as parse_annotation_with_tokenizer;
 use crate::annotation::tokenizer::{Token as AnnotationToken, Tokenizer as AnnotationTokenizer};
 use crate::base::ast::{BasicRaws, Range};
-use crate::base::string_scanner::{U16Position};
 use crate::base::parser::{get_buffer, ParseError};
 use crate::base::string_scanner::StringScanner;
+use crate::base::string_scanner::U16Position;
 use crate::base::utils::get_document_id;
 use crate::core::id_generator::IDGenerator;
 use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
@@ -136,7 +136,9 @@ fn parse_include_declaration<'a>(
 
       if value.len() == 0 {
         Err(ParseError::unexpected_token(
-          start.to_u16().range_from(context.tokenizer.scanner.get_u16pos()),
+          start
+            .to_u16()
+            .range_from(context.tokenizer.scanner.get_u16pos()),
         ))
       } else {
         Ok(pc_ast::Node::Text(pc_ast::ValueObject {
@@ -150,7 +152,9 @@ fn parse_include_declaration<'a>(
           } else {
             value.clone()
           },
-          range: start.to_u16().range_from(context.tokenizer.scanner.get_u16pos())
+          range: start
+            .to_u16()
+            .range_from(context.tokenizer.scanner.get_u16pos()),
         }))
       }
     }
@@ -205,7 +209,7 @@ fn parse_slot_script<'a>(
   })
   .or(Err(ParseError::unterminated(
     "Unterminated slot.".to_string(),
-    start.range_from(context.tokenizer.scanner.get_u16pos())
+    start.range_from(context.tokenizer.scanner.get_u16pos()),
   )));
 
   stmt
@@ -276,7 +280,14 @@ fn parse_element<'a>(
   if tag_name == "style" {
     parse_next_style_element_parts(tag_name_range, attributes, el_raw_before, context, start)
   } else if tag_name == "script" {
-    parse_next_script_element_parts(tag_name_range, attributes, el_raw_before, context, path, start)
+    parse_next_script_element_parts(
+      tag_name_range,
+      attributes,
+      el_raw_before,
+      context,
+      path,
+      start,
+    )
   } else {
     parse_next_basic_element_parts(
       tag_name,
@@ -400,7 +411,7 @@ fn parse_close_tag<'a, 'b>(
     .next_expect(Token::TagClose)
     .or(Err(ParseError::unterminated(
       "Unterminated element.".to_string(),
-      start.range_from(end.clone())
+      start.range_from(end.clone()),
     )))?;
 
   parse_tag_name(context)
@@ -409,7 +420,7 @@ fn parse_close_tag<'a, 'b>(
       if tag_name != end_tag_name {
         Err(ParseError::unterminated(
           "Incorrect closing tag.".to_string(),
-          end_tag_name_start.range_from(context.tokenizer.scanner.get_u16pos())
+          end_tag_name_start.range_from(context.tokenizer.scanner.get_u16pos()),
         ))
       } else {
         Ok(())
@@ -421,7 +432,7 @@ fn parse_close_tag<'a, 'b>(
     .next_expect(Token::GreaterThan)
     .or(Err(ParseError::unterminated(
       "Unterminated element.".to_string(),
-      start.range_from(end.clone())
+      start.range_from(end.clone()),
     )))?;
 
   Ok(())
@@ -553,7 +564,9 @@ fn parse_key_value_attribute<'a>(
   let name = parse_tag_name(context)?;
 
   if name.len() == 0 {
-    return Err(ParseError::unexpected_token(start.range_from(context.tokenizer.scanner.get_u16pos())));
+    return Err(ParseError::unexpected_token(
+      start.range_from(context.tokenizer.scanner.get_u16pos()),
+    ));
   }
 
   if context.tokenizer.peek(1)? == Token::Colon {
@@ -570,7 +583,7 @@ fn parse_key_value_attribute<'a>(
     // Keep in case we want to turn this back on.
     } else {
       return Err(ParseError::unexpected_token(
-        start.range_from(context.tokenizer.scanner.get_u16pos())
+        start.range_from(context.tokenizer.scanner.get_u16pos()),
       ));
     }
 
@@ -635,7 +648,9 @@ fn parse_attribute_value<'a>(
   match context.tokenizer.peek(1)? {
     Token::SingleQuote | Token::DoubleQuote => parse_attribute_string_value(context),
     Token::CurlyOpen => parse_attribute_slot(context, path, index),
-    _ => Err(ParseError::unexpected_token(pos.range_from(context.tokenizer.scanner.get_u16pos()))),
+    _ => Err(ParseError::unexpected_token(
+      pos.range_from(context.tokenizer.scanner.get_u16pos()),
+    )),
   }
 }
 
@@ -672,7 +687,7 @@ fn parse_attribute_string_value<'a>(
       parts.push(pc_ast::AttributeDynamicStringPart::ClassNamePierce(
         pc_ast::AttributeDynamicStringClassNamePierce {
           class_name,
-          range: pos.range_from(context.tokenizer.scanner.get_u16pos())
+          range: pos.range_from(context.tokenizer.scanner.get_u16pos()),
         },
       ));
     } else if curr == Token::CurlyOpen {
@@ -702,7 +717,7 @@ fn parse_attribute_string_value<'a>(
     .next_expect(quote)
     .or(Err(ParseError::unterminated(
       "Unterminated string literal.".to_string(),
-      pos.range_from(context.tokenizer.scanner.get_u16pos())
+      pos.range_from(context.tokenizer.scanner.get_u16pos()),
     )))?;
 
   let range = Range::new(inner_value_start_pos, inner_value_end_pos);
@@ -770,7 +785,7 @@ fn parse_attribute_string<'a>(
   })
   .or(Err(ParseError::unterminated(
     "Unterminated string literal.".to_string(),
-    start.range_from(context.tokenizer.scanner.get_u16pos())
+    start.range_from(context.tokenizer.scanner.get_u16pos()),
   )))
   .and_then(|value| {
     Ok(pc_ast::AttributeValue::String(

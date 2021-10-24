@@ -1169,12 +1169,7 @@ fn evaluate_native_element<'a>(
         attributes.insert(name, value_option);
       }
       ast::Attribute::PropertyBoundAttribute(kv_attr) => {
-        assert_attr_slot_restrictions(
-          &element.tag_name,
-          &kv_attr.name,
-          &kv_attr.range,
-          context,
-        )?;
+        assert_attr_slot_restrictions(&element.tag_name, &kv_attr.name, &kv_attr.range, context)?;
         property_bound_attrs.push(kv_attr);
       }
       ast::Attribute::SpreadAttribute(attr) => {
@@ -1199,7 +1194,7 @@ fn evaluate_native_element<'a>(
         let name = sh_attr.get_name().map_err(|message| RuntimeError {
           uri: context.uri.to_string(),
           message: message.to_string(),
-          range: Range::nil()
+          range: Range::nil(),
         })?;
         let actual_name = get_actual_attribute_name(&name);
 
@@ -1827,7 +1822,7 @@ mod tests {
   //     "
   //     <fragment component as='test'>
   //       <div>
-  //         <test a />          
+  //         <test a />
   //       </div>
   //     </fragment>
   //     <preview>
@@ -1857,7 +1852,7 @@ mod tests {
   //     </fragment>
   //     <fragment component as='test'>
   //       <div>
-  //         <test2 />          
+  //         <test2 />
   //       </div>
   //     </fragment>
   //     <preview>
