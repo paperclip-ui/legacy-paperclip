@@ -147,7 +147,7 @@ pub fn evaluate<'a>(
     Err(RuntimeError::new(
       "Incorrect file type".to_string(),
       uri,
-      &Range::nil()
+      &Range::nil(),
     ))
   }
 }

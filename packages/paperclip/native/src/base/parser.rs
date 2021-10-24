@@ -40,14 +40,19 @@ impl ParseError {
     ParseError::new(ParseErrorKind::Unterminated, message, start, end)
   }
   pub fn eof() -> ParseError {
-    ParseError::new(ParseErrorKind::EndOfFile, "End of file".to_string(), Location::new(0, 0, 0), Location::new(1, 0, 1))
+    ParseError::new(
+      ParseErrorKind::EndOfFile,
+      "End of file".to_string(),
+      Location::new(0, 0, 0),
+      Location::new(1, 0, 1),
+    )
   }
   pub fn unknown() -> ParseError {
     ParseError::new(
       ParseErrorKind::Unknown,
       "An unknown error has occurred".to_string(),
       Location::new(0, 0, 0),
-      Location::new(1, 0, 1)
+      Location::new(1, 0, 1),
     )
   }
 }

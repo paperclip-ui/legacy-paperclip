@@ -5,7 +5,7 @@ use std::fmt;
 pub struct Location {
   pub pos: usize,
   pub line: usize,
-  pub column: usize
+  pub column: usize,
 }
 
 impl Location {
@@ -41,7 +41,6 @@ pub struct BasicRaws {
   pub after: String,
 }
 
-
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ExprTextSource {
   pub uri: String,
@@ -73,7 +72,10 @@ impl ExprTextSource {
     ExprTextSource { uri, location }
   }
   pub fn virt(uri: String) -> ExprTextSource {
-    ExprTextSource::new(uri, Range::new(Location::new(0, 0, 0), Location::new(0, 0, 0)))
+    ExprTextSource::new(
+      uri,
+      Range::new(Location::new(0, 0, 0), Location::new(0, 0, 0)),
+    )
   }
 }
 

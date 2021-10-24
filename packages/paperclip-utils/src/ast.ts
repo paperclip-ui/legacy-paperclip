@@ -90,10 +90,10 @@ export type Element = {
   raws: ElementRaws;
 
   // TODO - change this to OpenTag. Don't keep location here
-  openTagLocation: SourceLocation;
+  openTagSource: SourceLocation;
 
   // TODO - change this to ElementTagName. name should go in value
-  tagNameLocation: SourceLocation;
+  tagNameSource: SourceLocation;
   tagName: string;
   attributes: Attribute[];
   value: string;

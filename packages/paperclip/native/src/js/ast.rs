@@ -1,4 +1,4 @@
-use crate::base::ast::Location;
+use crate::base::ast::{Location, Range};
 use crate::pc::ast as pc_ast;
 use serde::Serialize;
 use std::fmt;
@@ -10,10 +10,10 @@ pub enum JSObject<'a> {
 }
 
 impl<'a> JSObject<'a> {
-  pub fn get_location(&'a self) -> &'a Location {
+  pub fn get_source(&'a self) -> &'a Range {
     match self {
-      JSObject::Expression(expr) => expr.get_location(),
-      JSObject::PCObject(expr) => expr.get_location(),
+      JSObject::Expression(expr) => expr.get_source(),
+      JSObject::PCObject(expr) => expr.get_source(),
     }
   }
 }
@@ -53,21 +53,21 @@ impl Expression {
 pub struct Str {
   pub id: String,
   pub value: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Number {
   pub id: String,
   pub value: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Boolean {
   pub id: String,
   pub value: bool,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for Expression {
@@ -88,18 +88,18 @@ impl fmt::Display for Expression {
 }
 
 impl Expression {
-  pub fn get_location(&self) -> &Location {
+  pub fn get_source(&self) -> &Range {
     match self {
-      Expression::Reference(expr) => &expr.location,
-      Expression::Conjunction(expr) => &expr.location,
-      Expression::Group(expr) => &expr.location,
-      Expression::Not(expr) => &expr.location,
-      Expression::Node(expr) => expr.get_location(),
-      Expression::String(expr) => &expr.location,
-      Expression::Boolean(expr) => &expr.location,
-      Expression::Number(expr) => &expr.location,
-      Expression::Array(expr) => &expr.location,
-      Expression::Object(expr) => &expr.location,
+      Expression::Reference(expr) => &expr.source,
+      Expression::Conjunction(expr) => &expr.source,
+      Expression::Group(expr) => &expr.source,
+      Expression::Not(expr) => &expr.source,
+      Expression::Node(expr) => expr.get_source(),
+      Expression::String(expr) => &expr.source,
+      Expression::Boolean(expr) => &expr.source,
+      Expression::Number(expr) => &expr.source,
+      Expression::Array(expr) => &expr.source,
+      Expression::Object(expr) => &expr.source,
     }
   }
   pub fn get_id(&self) -> &String {
@@ -121,7 +121,7 @@ impl Expression {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Group {
   pub id: String,
-  pub location: Location,
+  pub source: Range,
   pub expression: Box<Expression>,
 }
 
@@ -134,7 +134,7 @@ impl fmt::Display for Group {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Not {
   pub id: String,
-  pub location: Location,
+  pub source: Range,
   pub expression: Box<Expression>,
 }
 
@@ -147,7 +147,7 @@ impl fmt::Display for Not {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Conjunction {
   pub id: String,
-  pub location: Location,
+  pub source: Range,
   pub left: Box<Expression>,
   pub operator: ConjunctionOperatorKind,
   pub right: Box<Expression>,
@@ -188,7 +188,7 @@ impl fmt::Display for Conjunction {
 pub struct Array {
   pub id: String,
   pub values: Vec<Expression>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for Array {
@@ -202,7 +202,7 @@ impl fmt::Display for Array {
 pub struct Object {
   pub id: String,
   pub properties: Vec<Property>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for Object {
@@ -235,7 +235,7 @@ impl fmt::Display for Property {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Reference {
   pub id: String,
-  pub location: Location,
+  pub source: Range,
   pub path: Vec<ReferencePart>,
 }
 

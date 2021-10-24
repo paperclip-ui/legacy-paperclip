@@ -20,7 +20,7 @@ impl RuntimeError {
     RuntimeError::new(
       "An unknown error has occurred.".to_string(),
       uri,
-      &ast::Range::new(ast::Location::new(0, 0, 0), ast::Location::new(0, 0, 0))
+      &ast::Range::new(ast::Location::new(0, 0, 0), ast::Location::new(0, 0, 0)),
     )
   }
 }

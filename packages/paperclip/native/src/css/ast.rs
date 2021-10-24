@@ -1,4 +1,4 @@
-use crate::base::ast::{BasicRaws, Location};
+use crate::base::ast::{BasicRaws, Location, Range};
 use serde::Serialize;
 use std::fmt;
 
@@ -12,12 +12,12 @@ pub enum Declaration {
 }
 
 impl Declaration {
-  pub fn get_location(&self) -> &Location {
+  pub fn get_source(&self) -> &Range {
     match self {
-      Declaration::KeyValue(kv) => &kv.location,
-      Declaration::Include(kv) => &kv.location,
-      Declaration::Content(kv) => &kv.location,
-      Declaration::Media(kv) => &kv.location,
+      Declaration::KeyValue(kv) => &kv.source,
+      Declaration::Include(kv) => &kv.source,
+      Declaration::Content(kv) => &kv.source,
+      Declaration::Media(kv) => &kv.source,
     }
   }
 
@@ -64,12 +64,12 @@ pub enum CSSObject<'a> {
 }
 
 impl<'a> CSSObject<'a> {
-  pub fn get_location(&self) -> &Location {
+  pub fn get_source(&self) -> &Range {
     match self {
-      CSSObject::Declaration(decl) => decl.get_location(),
-      CSSObject::Rule(rule) => rule.get_location(),
-      CSSObject::Sheet(rule) => &rule.location,
-      CSSObject::StyleRule(rule) => &rule.location,
+      CSSObject::Declaration(decl) => decl.get_source(),
+      CSSObject::Rule(rule) => rule.get_source(),
+      CSSObject::Sheet(rule) => &rule.source,
+      CSSObject::StyleRule(rule) => &rule.source,
     }
   }
 }
@@ -79,14 +79,14 @@ pub struct KeyValueDeclaration {
   pub id: String,
   pub name: String,
   pub value: String,
-  pub location: Location,
+  pub source: Range,
   pub raws: BasicRaws,
 
   #[serde(rename = "nameLocation")]
-  pub name_location: Location,
+  pub name_source: Range,
 
   #[serde(rename = "valueLocation")]
-  pub value_location: Location,
+  pub value_source: Range,
 }
 
 impl fmt::Display for KeyValueDeclaration {
@@ -100,7 +100,7 @@ impl fmt::Display for KeyValueDeclaration {
 pub struct Content {
   pub id: String,
   pub raws: BasicRaws,
-  pub location: Location,
+  pub source: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -110,7 +110,7 @@ pub struct Include {
   pub mixin_name: IncludeReference,
   pub declarations: Vec<Declaration>,
   pub rules: Vec<StyleRule>,
-  pub location: Location,
+  pub source: Range,
   pub raws: BasicRaws,
 }
 
@@ -145,7 +145,7 @@ impl fmt::Display for Include {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeReference {
   pub parts: Vec<IncludeReferencePart>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for IncludeReference {
@@ -167,7 +167,7 @@ impl fmt::Display for IncludeReference {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IncludeReferencePart {
   pub name: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for IncludeReferencePart {
@@ -182,7 +182,7 @@ pub struct CharsetRule {
   pub id: String,
   pub raws: BasicRaws,
   pub value: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for CharsetRule {
@@ -242,20 +242,20 @@ impl Rule {
       _ => None,
     }
   }
-  pub fn get_location(&self) -> &Location {
+  pub fn get_source(&self) -> &Range {
     match self {
-      Rule::Comment(rule) => &rule.location,
-      Rule::Style(rule) => &rule.location,
-      Rule::Charset(value) => &value.location,
-      Rule::Export(export) => &export.location,
-      Rule::FontFace(rule) => &rule.location,
-      Rule::Media(rule) => &rule.location,
-      Rule::Mixin(rule) => &rule.location,
-      Rule::Include(rule) => &rule.location,
-      Rule::Supports(value) => &value.location,
-      Rule::Keyframes(rule) => &rule.location,
-      Rule::Document(rule) => &rule.location,
-      Rule::Page(rule) => &rule.location,
+      Rule::Comment(rule) => &rule.source,
+      Rule::Style(rule) => &rule.source,
+      Rule::Charset(value) => &value.source,
+      Rule::Export(export) => &export.source,
+      Rule::FontFace(rule) => &rule.source,
+      Rule::Media(rule) => &rule.source,
+      Rule::Mixin(rule) => &rule.source,
+      Rule::Include(rule) => &rule.source,
+      Rule::Supports(value) => &value.source,
+      Rule::Keyframes(rule) => &rule.source,
+      Rule::Document(rule) => &rule.source,
+      Rule::Page(rule) => &rule.source,
     }
   }
 }
@@ -284,7 +284,7 @@ impl fmt::Display for Rule {
 pub struct Comment {
   pub id: String,
   pub value: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for Comment {
@@ -315,7 +315,7 @@ pub struct StyleRule {
   pub selector: Selector,
   pub declarations: Vec<Declaration>,
   pub children: Vec<StyleRule>,
-  pub location: Location,
+  pub source: Range,
   pub raws: BasicRaws,
 }
 
@@ -344,7 +344,7 @@ impl fmt::Display for StyleRule {
 pub struct ChildRuleSelector {
   pub connector: String,
   pub selector: Option<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -352,7 +352,7 @@ pub struct ChildStyleRule {
   pub selectors: Vec<ChildRuleSelector>,
   pub declarations: Vec<Declaration>,
   pub children: Vec<ChildStyleRule>,
-  pub location: Location,
+  pub source: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -360,7 +360,7 @@ pub struct FontFaceRule {
   pub id: String,
   pub declarations: Vec<Declaration>,
   pub raws: BasicRaws,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for FontFaceRule {
@@ -379,7 +379,7 @@ impl fmt::Display for FontFaceRule {
 pub struct ExportRule {
   pub id: String,
   pub rules: Vec<Rule>,
-  pub location: Location,
+  pub source: Range,
   pub raws: BasicRaws,
 }
 
@@ -410,7 +410,7 @@ pub struct ConditionRule {
   pub condition_text: String,
   pub rules: Vec<StyleRule>,
   pub declarations: Vec<Declaration>,
-  pub location: Location,
+  pub source: Range,
   pub raws: BasicRaws,
 }
 
@@ -437,7 +437,7 @@ pub struct MixinRule {
   pub id: String,
   pub name: MixinName,
   pub raws: BasicRaws,
-  pub location: Location,
+  pub source: Range,
   pub declarations: Vec<Declaration>,
   pub rules: Vec<StyleRule>,
 }
@@ -466,7 +466,7 @@ impl MixinRule {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct MixinName {
   pub value: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -474,7 +474,7 @@ pub struct KeyframesRule {
   pub id: String,
   pub name: String,
   pub rules: Vec<KeyframeRule>,
-  pub location: Location,
+  pub source: Range,
   pub raws: BasicRaws,
 }
 
@@ -495,7 +495,7 @@ pub struct KeyframeRule {
   pub key: String,
   pub raws: BasicRaws,
   pub declarations: Vec<Declaration>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for KeyframeRule {
@@ -702,27 +702,27 @@ impl Selector {
 
     return is_global;
   }
-  pub fn get_location(&self) -> &Location {
+  pub fn get_source(&self) -> &Range {
     match self {
-      Selector::Group(selector) => &selector.location,
-      Selector::Combo(selector) => &selector.location,
-      Selector::Prefixed(selector) => &selector.location,
-      Selector::Element(selector) => &selector.location,
-      Selector::Descendent(selector) => &selector.location,
-      Selector::Not(selector) => &selector.location,
-      Selector::SubElement(selector) => &selector.location,
-      Selector::Within(selector) => &selector.location,
-      Selector::Global(selector) => &selector.location,
-      Selector::This(selector) => &selector.location,
-      Selector::Adjacent(selector) => &selector.location,
-      Selector::PseudoElement(selector) => &selector.location,
-      Selector::PseudoParamElement(selector) => &selector.location,
-      Selector::Sibling(selector) => &selector.location,
-      Selector::Child(selector) => &selector.location,
-      Selector::Class(selector) => &selector.location,
-      Selector::Id(selector) => &selector.location,
-      Selector::Attribute(selector) => &selector.location,
-      Selector::AllSelector(selector) => &selector.location,
+      Selector::Group(selector) => &selector.source,
+      Selector::Combo(selector) => &selector.source,
+      Selector::Prefixed(selector) => &selector.source,
+      Selector::Element(selector) => &selector.source,
+      Selector::Descendent(selector) => &selector.source,
+      Selector::Not(selector) => &selector.source,
+      Selector::SubElement(selector) => &selector.source,
+      Selector::Within(selector) => &selector.source,
+      Selector::Global(selector) => &selector.source,
+      Selector::This(selector) => &selector.source,
+      Selector::Adjacent(selector) => &selector.source,
+      Selector::PseudoElement(selector) => &selector.source,
+      Selector::PseudoParamElement(selector) => &selector.source,
+      Selector::Sibling(selector) => &selector.source,
+      Selector::Child(selector) => &selector.source,
+      Selector::Class(selector) => &selector.source,
+      Selector::Id(selector) => &selector.source,
+      Selector::Attribute(selector) => &selector.source,
+      Selector::AllSelector(selector) => &selector.source,
     }
   }
   pub fn get_pseudo_element_name(&self) -> Option<String> {
@@ -775,7 +775,7 @@ pub struct PrefixedSelector {
 
   #[serde(rename = "postfixSelector")]
   pub postfix_selector: Option<Box<Selector>>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for PrefixedSelector {
@@ -793,7 +793,7 @@ impl fmt::Display for PrefixedSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GroupSelector {
   pub selectors: Vec<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for GroupSelector {
@@ -811,7 +811,7 @@ impl fmt::Display for GroupSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ComboSelector {
   pub selectors: Vec<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for ComboSelector {
@@ -830,7 +830,7 @@ impl fmt::Display for ComboSelector {
 pub struct DescendentSelector {
   pub ancestor: Box<Selector>,
   pub descendent: Box<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for DescendentSelector {
@@ -848,7 +848,7 @@ impl fmt::Display for DescendentSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct GlobalSelector {
   pub selector: Box<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for GlobalSelector {
@@ -860,7 +860,7 @@ impl fmt::Display for GlobalSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct SelfSelector {
   pub selector: Option<Box<Selector>>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for SelfSelector {
@@ -878,13 +878,13 @@ impl fmt::Display for SelfSelector {
 pub struct ChildSelector {
   pub parent: Box<Selector>,
   pub child: Box<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct WithinSelector {
   pub selector: Box<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for WithinSelector {
@@ -896,7 +896,7 @@ impl fmt::Display for WithinSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct NotSelector {
   pub selector: Box<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for NotSelector {
@@ -909,7 +909,7 @@ impl fmt::Display for NotSelector {
 pub struct SubElementSelector {
   pub name: String,
   pub selector: Box<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for SubElementSelector {
@@ -941,7 +941,7 @@ pub struct AdjacentSelector {
 
   #[serde(rename = "nextSiblingSelector")]
   pub next_sibling_selector: Box<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for AdjacentSelector {
@@ -962,7 +962,7 @@ pub struct SiblingSelector {
 
   #[serde(rename = "siblingSelector")]
   pub sibling_selector: Box<Selector>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for SiblingSelector {
@@ -981,7 +981,7 @@ impl fmt::Display for SiblingSelector {
 pub struct PseudoElementSelector {
   pub separator: String, // : or ::
   pub name: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 fn stringify_optional_selector(selector: &Option<Box<Selector>>) -> String {
@@ -1004,7 +1004,7 @@ impl fmt::Display for PseudoElementSelector {
 pub struct PseudoParamElementSelector {
   pub name: String,
   pub param: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for PseudoParamElementSelector {
@@ -1019,7 +1019,7 @@ impl fmt::Display for PseudoParamElementSelector {
 pub struct ElementSelector {
   #[serde(rename = "tagName")]
   pub tag_name: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for ElementSelector {
@@ -1034,12 +1034,12 @@ impl fmt::Display for ElementSelector {
 pub struct ClassSelector {
   #[serde(rename = "className")]
   pub class_name: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct AllSelector {
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for AllSelector {
@@ -1059,7 +1059,7 @@ impl fmt::Display for ClassSelector {
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct IdSelector {
   pub id: String,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for IdSelector {
@@ -1075,7 +1075,7 @@ pub struct AttributeSelector {
   pub name: String,
   pub operator: Option<String>,
   pub value: Option<String>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for AttributeSelector {
@@ -1097,7 +1097,7 @@ pub struct Sheet {
   pub raws: BasicRaws,
   pub rules: Vec<Rule>,
   pub declarations: Vec<Declaration>,
-  pub location: Location,
+  pub source: Range,
 }
 
 impl fmt::Display for Sheet {
