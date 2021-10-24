@@ -45,9 +45,7 @@ pub fn parse_with_tokenizer<'a, 'b>(
 }
 
 // red, blue
-fn parse_expression<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<Expression, ParseError> {
+fn parse_expression<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Expression, ParseError> {
   let mut list = parse_list(context)?;
   if list.items.len() == 1 {
     match list.items.pop().unwrap() {

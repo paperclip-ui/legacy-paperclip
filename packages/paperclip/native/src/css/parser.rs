@@ -142,9 +142,7 @@ fn parse_rules_and_declarations<'a, 'b>(
   Ok((rules, declarations))
 }
 
-fn eat_superfluous<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<Option<&'b [u8]>, ParseError> {
+fn eat_superfluous<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Option<&'b [u8]>, ParseError> {
   let start = context.tokenizer.scanner.pos;
 
   if context.ended()? {
@@ -596,9 +594,7 @@ fn parse_next_pair_selector<'a, 'b>(
 }
 
 // div.combo[attr][another]
-fn parse_combo_selector<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<Selector, ParseError> {
+fn parse_combo_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
   let pos = context.tokenizer.scanner.u16_pos;
   let mut selectors = vec![];
   loop {
@@ -716,9 +712,7 @@ fn parse_pseudo_element_selector<'a, 'b>(
   Ok(selector)
 }
 
-fn parse_element_selector<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<Selector, ParseError> {
+fn parse_element_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
   let pos = context.tokenizer.scanner.u16_pos;
   let token = context.tokenizer.peek(1)?;
   let selector: Selector = match token {
@@ -791,9 +785,7 @@ fn parse_element_selector<'a, 'b>(
   Ok(selector)
 }
 
-fn parse_attribute_selector<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<Selector, ParseError> {
+fn parse_attribute_selector<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<Selector, ParseError> {
   let name = parse_attribute_name(context)?.to_string();
   let mut value = None;
 
@@ -877,9 +869,7 @@ fn part_of_selector_name(token: &Token) -> bool {
   }
 }
 
-fn parse_selector_name<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<&'a str, ParseError> {
+fn parse_selector_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
   eat_superfluous(context)?;
   get_buffer(context.tokenizer, |tokenizer| {
     let mut tok = tokenizer.peek(1)?;
@@ -894,9 +884,7 @@ fn parse_selector_name<'a, 'b>(
   })
 }
 
-fn parse_attribute_name<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<&'a str, ParseError> {
+fn parse_attribute_name<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<&'a str, ParseError> {
   get_buffer(context.tokenizer, |tokenizer| {
     let tok = tokenizer.peek(1)?;
     Ok(match tok {
@@ -998,13 +986,11 @@ fn parse_at_declaration<'a, 'b>(
 
   match keyword {
     Token::Keyword("include") => Ok((Declaration::Include(parse_include(context, raw_before)?))),
-    Token::Keyword("media") => Ok(
-      Declaration::Media(parse_condition_rule(
-        "media".to_string(),
-        raw_before,
-        context,
-      )?),
-    ),
+    Token::Keyword("media") => Ok(Declaration::Media(parse_condition_rule(
+      "media".to_string(),
+      raw_before,
+      context,
+    )?)),
     Token::Keyword("content") => {
       context.tokenizer.next_expect(Token::Semicolon);
       let end = context.tokenizer.scanner.u16_pos;
@@ -1124,9 +1110,7 @@ fn parse_key_value_declaration<'a, 'b>(
   }
 }
 
-fn parse_declaration_value<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<String, ParseError> {
+fn parse_declaration_value<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<String, ParseError> {
   let mut buffer = String::new();
   while !context.tokenizer.scanner.is_eof() {
     match context.tokenizer.peek(1)? {

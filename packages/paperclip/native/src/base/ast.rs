@@ -3,25 +3,14 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Location {
-  pub start: usize,
-  pub end: usize,
-}
-
-// impl Eq for Location {
-//   fn eq(&self, other: &Self) -> bool {
-//     self.start == other.start && self.end == other.end
-//   }
-// }
-
-#[derive(Debug, PartialEq, Serialize, Clone)]
-pub struct BasicRaws {
-  pub before: String,
-  pub after: String,
+  pub pos: usize,
+  pub line: usize,
+  pub column: usize
 }
 
 impl Location {
-  pub fn new(start: usize, end: usize) -> Location {
-    Location { start, end }
+  pub fn new(pos: usize, line: usize, column: usize) -> Location {
+    Location { pos, line, column }
   }
 }
 
@@ -32,9 +21,31 @@ impl fmt::Display for Location {
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct Range {
+  pub start: Location,
+  pub end: Location,
+}
+
+impl Range {
+  pub fn new(start: Location, end: Location) -> Range {
+    Range { start, end }
+  }
+  pub fn nil() -> Range {
+    Range::new(Location::new(0, 0, 0), Location::new(0, 0, 0))
+  }
+}
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
+pub struct BasicRaws {
+  pub before: String,
+  pub after: String,
+}
+
+
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct ExprTextSource {
   pub uri: String,
-  pub location: Location,
+  pub location: Range,
 }
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -58,11 +69,11 @@ impl ExprSource {
 }
 
 impl ExprTextSource {
-  pub fn new(uri: String, location: Location) -> ExprTextSource {
+  pub fn new(uri: String, location: Range) -> ExprTextSource {
     ExprTextSource { uri, location }
   }
   pub fn virt(uri: String) -> ExprTextSource {
-    ExprTextSource::new(uri, Location::new(0, 0))
+    ExprTextSource::new(uri, Range::new(Location::new(0, 0, 0), Location::new(0, 0, 0)))
   }
 }
 

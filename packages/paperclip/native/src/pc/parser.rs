@@ -13,7 +13,7 @@ use crate::css::parser::parse_with_tokenizer as parse_css_with_tokenizer;
 use crate::css::tokenizer::{Token as CSSToken, Tokenizer as CSSTokenizer};
 use crate::js::ast as js_ast;
 use crate::js::parser::parse_with_tokenizer as parse_js_with_tokenizer;
-use crate::js::tokenizer::{Tokenizer as JSTokenizer};
+use crate::js::tokenizer::Tokenizer as JSTokenizer;
 use crc::crc32;
 use std::str;
 
@@ -197,7 +197,10 @@ fn parse_slot_script<'a>(
     context.scope_id.to_string().as_str(),
   )
   .and_then(|script| {
-    context.tokenizer.scanner.set_pos(&js_tokenizer.scanner.get_pos());
+    context
+      .tokenizer
+      .scanner
+      .set_pos(&js_tokenizer.scanner.get_pos());
     context.tokenizer.scanner.eat_whitespace();
 
     context.tokenizer.next_expect(Token::CurlyClose)?;
@@ -234,7 +237,10 @@ pub fn parse_annotation<'a>(
     },
   )?;
 
-  context.tokenizer.scanner.set_pos(&annotation_tokenizer.scanner.get_pos());
+  context
+    .tokenizer
+    .scanner
+    .set_pos(&annotation_tokenizer.scanner.get_pos());
 
   context.tokenizer.next()?; // eat -->
 
@@ -368,7 +374,10 @@ fn parse_next_style_element_parts<'a>(
       Ok(tokenizer.peek(1)? == CSSToken::Byte(b'<') && tokenizer.peek(2)? == CSSToken::Byte(b'/'))
     },
   )?;
-  context.tokenizer.scanner.set_pos(&css_tokenizer.scanner.get_pos());
+  context
+    .tokenizer
+    .scanner
+    .set_pos(&css_tokenizer.scanner.get_pos());
 
   // TODO - assert tokens equal these
   parse_close_tag("style", context, start, end)?;

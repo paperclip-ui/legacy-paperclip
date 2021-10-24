@@ -3,7 +3,7 @@ use super::cache::Cache;
 use super::export::{ComponentExport, Exports, Property};
 use super::virt;
 use crate::annotation::ast as annotation_ast;
-use crate::base::ast::{ExprSource, ExprTextSource, Location};
+use crate::base::ast::{ExprSource, ExprTextSource, Location, Range};
 use crate::base::runtime::RuntimeError;
 use crate::base::utils::{get_document_id, get_document_style_public_scope, is_relative_path};
 use crate::core::eval::DependencyEvalInfo;
@@ -102,7 +102,7 @@ pub fn evaluate<'a>(
   let dep: &Dependency = graph.dependencies.get(uri).ok_or(RuntimeError::new(
     "URI not loaded".to_string(),
     uri,
-    &Location { start: 0, end: 0 },
+    &Range::nil(),
   ))?;
 
   if let DependencyContent::Node(node_expr) = &dep.content {
@@ -147,7 +147,7 @@ pub fn evaluate<'a>(
     Err(RuntimeError::new(
       "Incorrect file type".to_string(),
       uri,
-      &Location { start: 0, end: 0 },
+      &Range::nil()
     ))
   }
 }
@@ -169,7 +169,7 @@ fn collect_component_exports<'a>(
           let id = ast::get_attribute_value("as", element).ok_or(RuntimeError::new(
             "As must be present".to_string(),
             context.uri,
-            &Location { start: 0, end: 0 },
+            &Range::nil(),
           ))?;
 
           let properties = collect_node_properties(child);

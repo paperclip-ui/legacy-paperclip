@@ -1,5 +1,5 @@
 use super::tokenizer::*;
-use crate::base::ast::Location;
+use crate::base::ast::{Location, Range};
 use serde::Serialize;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
@@ -14,40 +14,40 @@ pub enum ParseErrorKind {
 pub struct ParseError {
   pub kind: ParseErrorKind,
   pub message: String,
-  pub location: Location,
+  pub location: Range,
 }
 
 impl ParseError {
-  pub fn new(kind: ParseErrorKind, message: String, start: usize, end: usize) -> ParseError {
+  pub fn new(kind: ParseErrorKind, message: String, start: Location, end: Location) -> ParseError {
     ParseError {
       kind,
       message,
-      location: Location { start, end },
+      location: Range { start, end },
     }
   }
-  pub fn unexpected_token(start: usize) -> ParseError {
+  pub fn unexpected_token(start: Location) -> ParseError {
     ParseError::new(
       ParseErrorKind::Unexpected,
       "Unexpected token".to_string(),
       start,
-      start + 1,
+      Location::new(start.pos + 1, start.line, start.column + 1),
     )
   }
-  pub fn unexpected(message: String, start: usize, end: usize) -> ParseError {
+  pub fn unexpected(message: String, start: Location, end: Location) -> ParseError {
     ParseError::new(ParseErrorKind::Unexpected, message, start, end)
   }
-  pub fn unterminated(message: String, start: usize, end: usize) -> ParseError {
+  pub fn unterminated(message: String, start: Location, end: Location) -> ParseError {
     ParseError::new(ParseErrorKind::Unterminated, message, start, end)
   }
   pub fn eof() -> ParseError {
-    ParseError::new(ParseErrorKind::EndOfFile, "End of file".to_string(), 0, 1)
+    ParseError::new(ParseErrorKind::EndOfFile, "End of file".to_string(), Location::new(0, 0, 0), Location::new(1, 0, 1))
   }
   pub fn unknown() -> ParseError {
     ParseError::new(
       ParseErrorKind::Unknown,
       "An unknown error has occurred".to_string(),
-      0,
-      1,
+      Location::new(0, 0, 0),
+      Location::new(1, 0, 1)
     )
   }
 }

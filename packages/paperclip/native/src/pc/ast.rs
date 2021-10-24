@@ -1,5 +1,5 @@
 use crate::annotation::ast as annotation_ast;
-use crate::base::ast::{BasicRaws, Location};
+use crate::base::ast::{BasicRaws, Location, Range};
 use crate::css::ast as css_ast;
 use crate::js::ast as js_ast;
 use serde::Serialize;
@@ -24,13 +24,13 @@ pub struct Element {
   pub id: String,
   pub raws: ElementRaws,
 
-  pub location: Location,
+  pub location: Range,
 
   #[serde(rename = "openTagLocation")]
-  pub open_tag_location: Location,
+  pub open_tag_location: Range,
 
   #[serde(rename = "tagNameLocation")]
-  pub tag_name_location: Location,
+  pub tag_name_location: Range,
 
   #[serde(rename = "tagName")]
   pub tag_name: String,
@@ -74,7 +74,7 @@ pub enum PCObject<'a> {
 }
 
 impl<'a> PCObject<'a> {
-  pub fn get_location(&'a self) -> &'a Location {
+  pub fn get_location(&'a self) -> &'a Range {
     match self {
       PCObject::Node(node) => node.get_location(),
       PCObject::CSSObject(css) => css.get_location(),
@@ -84,7 +84,7 @@ impl<'a> PCObject<'a> {
 }
 
 impl Node {
-  pub fn get_location(&self) -> &Location {
+  pub fn get_location(&self) -> &Range {
     match self {
       Node::Text(value) => &value.location,
       Node::Comment(value) => &value.location,

@@ -38,11 +38,7 @@ impl<'a> StringScanner<'a> {
     }
     Some(&self.source[start..self.pos])
   }
-
-  // pub fn clone(&self) -> StringScanner {
-  //   StringScanner::new_from_bytes(&self.source, &self.get_pos())
-  // }
-
+  
   pub fn starts_with(&mut self, pattern: &[u8]) -> bool {
     self.source[self.pos..].starts_with(pattern)
   }

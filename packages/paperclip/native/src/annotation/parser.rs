@@ -33,9 +33,7 @@ pub fn parse_with_tokenizer<'a, 'b>(
   parse_annotation(&mut context)
 }
 
-fn parse_annotation<'a, 'b>(
-  context: &mut Context<'a, 'b>,
-) -> Result<ast::Annotation, ParseError> {
+fn parse_annotation<'a, 'b>(context: &mut Context<'a, 'b>) -> Result<ast::Annotation, ParseError> {
   let start = context.tokenizer.u16_pos();
   let mut properties: Vec<ast::AnnotationProperty> = vec![];
 
