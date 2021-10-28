@@ -1,19 +1,48 @@
 import { expect } from "chai";
 import { createMockEngine, stringifyLoadResult } from "../utils";
 
-import { noop } from "../../core/utils";
-import { LoadedPCData, stringifyCSSSheet } from "../../core";
-
 describe(__filename + "#", () => {
-  it("displays the correct line & column number for error", async () => {
-    const graph = {
-      "/entry.pc": `
-        <a>
-          blagh
-      `
-    };
-    const engine = await createMockEngine(graph);
-    const text = stringifyLoadResult(await engine.open("/entry.pc"));
-    expect(text).to.eql("<style>[class]._80f4925f_a { color:b; }</style>");
+  [
+    [
+      `<a>`,
+      {
+        errorKind: "Graph",
+        uri: "/entry.pc",
+        info: {
+          kind: "Unterminated",
+          message: "Unterminated element.",
+          range: {
+            start: {
+              pos: 0,
+              line: 1,
+              column: 1
+            },
+            end: {
+              pos: 3,
+              line: 1,
+              column: 4
+            }
+          }
+        }
+      }
+    ]
+  ].forEach(async ([source, expectedError]: [string, string]) => {
+    it(`Displays proper error information for ${source}`, async () => {
+      const graph = {
+        "/entry.pc": source
+      };
+
+      const engine = await createMockEngine(graph);
+
+      let err;
+
+      try {
+        await engine.open("/entry.pc");
+      } catch (e) {
+        err = e;
+      }
+
+      expect(err).to.eql(expectedError);
+    });
   });
 });

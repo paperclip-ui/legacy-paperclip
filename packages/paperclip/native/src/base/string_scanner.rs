@@ -1,6 +1,5 @@
 use super::ast::Range;
 use serde::Serialize;
-use std::fmt;
 
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct U16Position {
@@ -84,8 +83,8 @@ impl<'a> StringScanner<'a> {
     Position {
       u8_pos: self.pos,
       u16_pos: self.u16_pos,
-      u16_line: 0,
-      u16_column: 0,
+      u16_line: self.u16_line,
+      u16_column: self.u16_column,
     }
   }
   pub fn get_u16pos(&self) -> U16Position {
@@ -107,22 +106,27 @@ impl<'a> StringScanner<'a> {
       source: source.as_bytes(),
       pos: 0,
       u16_pos: 0,
-      u16_line: 0,
-      u16_column: 0,
+      u16_line: 1,
+      u16_column: 1,
     }
   }
-  pub fn new_from_bytes(source: &'a [u8], pos: &Position) -> StringScanner<'a> {
-    StringScanner {
-      source: source,
-      pos: 0,
-      u16_pos: 0,
-      u16_line: 0,
-      u16_column: 0,
+  pub fn forward(&mut self, steps: usize) {
+
+    let mut subcol = 0;
+
+    for i in 0..steps {
+      let c = self.source[i];
+      if c == b'\n' || c == b'\r' {
+        subcol = i;
+        self.u16_column = 1;
+        self.u16_line += 1;
+      }
     }
-  }
-  pub fn forward(&mut self, pos: usize) {
-    self.pos += pos;
-    self.u16_pos += pos;
+
+    self.pos += steps;
+    self.u16_pos += steps;
+    self.u16_column += steps - subcol;
+
   }
   pub fn next_char(&mut self) -> Result<Char<'a>, StringScannerError> {
     let c = self.curr_byte()?;
