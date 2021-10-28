@@ -1466,7 +1466,6 @@ describe(__filename + "#", () => {
         { path, uri: "/entry.pc" },
         screenWidth
       );
-      // console.log(JSON.stringify(inspection, null, 2));
 
       expect(inspection).to.eql(result);
     });

@@ -54,7 +54,7 @@ pub struct StringScanner<'a> {
   pub u16_pos: usize,
   pub u16_line: usize,
   pub u16_column: usize,
-  len: usize
+  len: usize,
 }
 
 #[derive(Debug)]
@@ -124,7 +124,6 @@ impl<'a> StringScanner<'a> {
         }
         let c = self.source[i];
         if c == b'\n' || c == b'\r' {
-          
           subcol = i - self.pos;
 
           // reset to zero since it'll be incremented in the proceeding code
