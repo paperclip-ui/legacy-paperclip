@@ -1,36 +1,22 @@
 import { EngineDelegate } from "paperclip";
-import { EventEmitter } from "events";
 import {
-  AnnotationsChanged,
   CSSDeclarationChanged,
   PCMutation,
-  PCMutationAction,
   PCMutationActionKind
 } from "./mutations";
 import {
   ExprTextSource,
-  SourceLocation,
-  VirtJsObject,
-  VirtualElement,
+  StringRange,
   NodeKind,
   Node,
   traverseExpression,
   Expression,
-  Fragment,
   getParentNode,
-  LoadedPCData,
-  getNodeByPath,
   DependencyNodeContent,
   getPCNodeAnnotations,
-  getNodeById,
-  astEmitted,
-  StyleRule
+  getNodeById
 } from "paperclip-utils";
 import { editString } from "./string-editor";
-
-type PCSourceWriterOptions = {
-  engine: EngineDelegate;
-};
 
 export type ContentChange = {
   uri: string;
@@ -71,7 +57,7 @@ export class PCSourceWriter {
       const [uri, targetAst] = engine.getExpressionById(targetId);
       const documentAst = engine.getLoadedAst(uri) as DependencyNodeContent;
 
-      const textSource = { uri, location: targetAst.location };
+      const textSource = { uri, range: targetAst.range };
 
       switch (action.kind) {
         case PCMutationActionKind.ANNOTATIONS_CHANGED: {
@@ -81,7 +67,7 @@ export class PCSourceWriter {
               getPCNodeAnnotations(
                 getNodeById(targetAst.id, documentAst),
                 documentAst
-              )?.location,
+              )?.range,
               action.annotations
             )
           );
@@ -128,16 +114,16 @@ export class PCSourceWriter {
     if (beforeChild && beforeChild.nodeKind === NodeKind.Comment) {
       changes.push({
         uri: exprTextSource.uri,
-        start: beforeChild.location.start,
-        end: beforeChild.location.end,
+        start: beforeChild.range.start.pos,
+        end: beforeChild.range.end.pos,
         value: ""
       });
     }
 
     changes.push({
       uri: exprTextSource.uri,
-      start: exprTextSource.location.start,
-      end: exprTextSource.location.end,
+      start: exprTextSource.range.start.pos,
+      end: exprTextSource.range.end.pos,
       value: ""
     });
 
@@ -150,15 +136,15 @@ export class PCSourceWriter {
   ) {
     return {
       uri: exprTextSource.uri,
-      start: exprTextSource.location.start,
-      end: exprTextSource.location.end,
+      start: exprTextSource.range.start.pos,
+      end: exprTextSource.range.end.pos,
       value: `${action.name}: ${action.value};`
     };
   }
 
   private _getAnnotationChange(
     exprTextSource: ExprTextSource,
-    annottaionsLocation: SourceLocation | null,
+    annotationsRange: StringRange | null,
     annotations: Object | null
   ): ContentChange {
     const buffer = ["<!--\n"];
@@ -193,19 +179,19 @@ export class PCSourceWriter {
     buffer.push("-->");
 
     // insertion - give it some padding
-    if (!annottaionsLocation) {
+    if (!annotationsRange) {
       buffer.unshift("\n");
       buffer.push("\n");
     }
 
     return {
       uri: exprTextSource.uri,
-      start: annottaionsLocation
-        ? annottaionsLocation.start
-        : exprTextSource.location.start,
-      end: annottaionsLocation
-        ? annottaionsLocation.end
-        : exprTextSource.location.start,
+      start: annotationsRange
+        ? annotationsRange.start.pos
+        : exprTextSource.range.start.pos,
+      end: annotationsRange
+        ? annotationsRange.end.pos
+        : exprTextSource.range.start.pos,
 
       // newline may have been clipped off, so re-add if that happens
       value: buffer.join("")
@@ -217,8 +203,8 @@ const getAssocNode = (exprTextSource: ExprTextSource, root: Node): Node => {
   let foundExpr: Expression;
   traverseExpression(root, node => {
     if (
-      node.location.start === exprTextSource.location.start &&
-      node.location.end === exprTextSource.location.end
+      node.range.start.pos === exprTextSource.range.start.pos &&
+      node.range.end.pos === exprTextSource.range.end.pos
     ) {
       foundExpr = node;
       return false;

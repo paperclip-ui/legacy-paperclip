@@ -54,6 +54,7 @@ pub struct StringScanner<'a> {
   pub u16_pos: usize,
   pub u16_line: usize,
   pub u16_column: usize,
+  len: usize
 }
 
 #[derive(Debug)]
@@ -104,6 +105,7 @@ impl<'a> StringScanner<'a> {
   pub fn new(source: &'a str) -> StringScanner<'a> {
     StringScanner {
       source: source.as_bytes(),
+      len: source.len(),
       pos: 0,
       u16_pos: 0,
       u16_line: 1,
@@ -111,22 +113,30 @@ impl<'a> StringScanner<'a> {
     }
   }
   pub fn forward(&mut self, steps: usize) {
-
     let mut subcol = 0;
 
-    for i in 0..steps {
-      let c = self.source[i];
-      if c == b'\n' || c == b'\r' {
-        subcol = i;
-        self.u16_column = 1;
-        self.u16_line += 1;
+    let new_pos = self.pos + steps;
+
+    if new_pos < self.source.len() {
+      for i in self.pos..new_pos {
+        if i == self.len {
+          break;
+        }
+        let c = self.source[i];
+        if c == b'\n' || c == b'\r' {
+          
+          subcol = i - self.pos;
+
+          // reset to zero since it'll be incremented in the proceeding code
+          self.u16_column = 0;
+          self.u16_line += 1;
+        }
       }
     }
 
-    self.pos += steps;
+    self.pos = new_pos;
     self.u16_pos += steps;
     self.u16_column += steps - subcol;
-
   }
   pub fn next_char(&mut self) -> Result<Char<'a>, StringScannerError> {
     let c = self.curr_byte()?;
@@ -151,9 +161,11 @@ impl<'a> StringScanner<'a> {
       Ok(Char::Byte(c))
     } else {
       let utf8_pos = self.u16_pos;
+      let utf8_column = self.u16_column;
       let buffer = &self.source[self.pos..(self.pos + len)];
       self.forward(len);
       self.u16_pos = utf8_pos + utf8_step;
+      self.u16_column = utf8_column + utf8_step;
       Ok(Char::Cluster(buffer))
     }
   }

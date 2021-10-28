@@ -1,4 +1,4 @@
-import { SourceLocation } from "./base-ast";
+import { StringRange } from "./base-ast";
 
 export enum ParseErrorKind {
   EndOfFile = "EndOfFile",
@@ -10,7 +10,7 @@ export enum ParseErrorKind {
 export type ParseError = {
   kind: ParseErrorKind;
   message: string;
-  location: SourceLocation;
+  range: StringRange;
 };
 
 export enum GraphErrorInfoKind {
@@ -24,7 +24,7 @@ export type BaseGraphErrorInfo<TKind extends GraphErrorInfoKind> = {
 
 export type IncludeNotFoundErrorInfo = {
   uri: string;
-  location: SourceLocation;
+  range: StringRange;
   message: string;
 } & BaseGraphErrorInfo<GraphErrorInfoKind.IncludeNotFound>;
 
@@ -40,7 +40,7 @@ export type GraphError = {
 
 export type RuntimeError = {
   uri: string;
-  location: SourceLocation;
+  range: StringRange;
   message: string;
 };
 

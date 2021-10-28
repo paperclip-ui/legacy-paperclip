@@ -1,25 +1,25 @@
 import * as path from "path";
 import url from "url";
-import { SourceLocation } from "paperclip-utils";
+import { StringRange } from "paperclip-utils";
 import chalk from "chalk";
 import dedent from "dedent";
 
 type Details = {
-  location: SourceLocation;
+  range: StringRange;
   message: string;
 };
 
 export const getPrettyMessage = (
-  { location, message }: Details,
+  { range, message }: Details,
   code: string,
   uri: string,
   cwd: string
 ) => {
-  const beforeLines = code.substr(0, location.start).split("\n");
+  const beforeLines = code.substr(0, range.start.pos).split("\n");
   const startLinePrefix = beforeLines[beforeLines.length - 1];
   const startLineNumber = beforeLines.length;
-  const start = code.substr(location.start);
-  const chunk = start.substr(0, location.end - location.start);
+  const start = code.substr(range.start.pos);
+  const chunk = start.substr(0, range.end.pos - range.start.pos);
 
   const highlightedLines =
     startLinePrefix +

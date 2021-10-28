@@ -20,7 +20,7 @@ import { slimCodeEditorChanged } from "../../../actions";
 import { SlimEditor } from "./Slim";
 import { canEditFile } from "../../../state";
 import { active as activatePaperclipExtension } from "paperclip-monaco";
-import { SourceLocation } from "paperclip-utils";
+import { StringRange } from "paperclip-utils";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
@@ -70,7 +70,7 @@ export const CodeMode = () => {
           <Editor
             uri={uri}
             value={code}
-            highlightLocation={state.highlightLocation}
+            highlightRange={state.highlightRange}
             onChange={onChange}
             onMount={onMount}
           />
@@ -91,7 +91,7 @@ export const CodeMode = () => {
 export type EditorProps = {
   uri: string;
   value: string;
-  highlightLocation: SourceLocation;
+  highlightRange: StringRange;
   onChange: (value: string) => void;
   onMount: (editor: any, monaco: any) => void;
 };
@@ -100,7 +100,7 @@ const Editor = ({
   uri,
   value,
   onChange,
-  highlightLocation,
+  highlightRange,
   onMount
 }: EditorProps) => {
   const editorRef = useRef<HTMLDivElement>();
@@ -134,7 +134,7 @@ const Editor = ({
   }, [monaco, editor, uri, value]);
 
   useEffect(() => {
-    if (!highlightLocation) {
+    if (!highlightRange) {
       return;
     }
 
@@ -143,14 +143,14 @@ const Editor = ({
     setTimeout(() => {
       const range = getRange(
         editor.getModel(),
-        highlightLocation.start,
-        highlightLocation.end
+        highlightRange.start.pos,
+        highlightRange.end.pos
       );
       editor.setSelection(range);
 
       editor.revealLine(range.startLineNumber);
     }, 100);
-  }, [highlightLocation]);
+  }, [highlightRange]);
 
   useEffect(() => {
     if (!editorRef.current) {

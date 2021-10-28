@@ -1,5 +1,5 @@
 import { Node, traverseExpression } from "./ast";
-import { SourceLocation } from "./base-ast";
+import { StringRange } from "./base-ast";
 
 export enum JsExpressionKind {
   Node = "Node",
@@ -32,49 +32,49 @@ export enum JsConjunctionOperatorKind {
 
 export type JsConjunction = {
   left: JsExpression;
-  location: SourceLocation;
+  range: StringRange;
   right: JsExpression;
   operator: JsConjunctionOperatorKind;
 } & BaseJsExpression<JsExpressionKind.Conjunction>;
 
 export type JsObject = {
   properties: JsObjectProperty[];
-  location: SourceLocation;
+  range: StringRange;
 } & BaseJsExpression<JsExpressionKind.Object>;
 
 export type JsArray = {
   values: JsExpression[];
-  location: SourceLocation;
+  range: StringRange;
 } & BaseJsExpression<JsExpressionKind.Array>;
 
 export type JsString = {
   value: string;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseJsExpression<JsExpressionKind.String>;
 
 export type JsBoolean = {
   value: boolean;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseJsExpression<JsExpressionKind.Boolean>;
 
 export type JsNot = {
   expression: JsExpression;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseJsExpression<JsExpressionKind.Not>;
 
 export type JsGroup = {
   expression: JsExpression;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseJsExpression<JsExpressionKind.Group>;
 
 export type JsNumber = {
   value: number;
-  location: SourceLocation;
+  range: StringRange;
 } & BaseJsExpression<JsExpressionKind.Number>;
 
 export type Reference = {
   path: ReferencePart[];
-  location: SourceLocation;
+  range: StringRange;
 } & BaseJsExpression<JsExpressionKind.Reference>;
 
 export type ReferencePart = {

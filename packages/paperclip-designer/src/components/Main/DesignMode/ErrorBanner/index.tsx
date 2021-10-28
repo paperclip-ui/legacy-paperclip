@@ -16,8 +16,6 @@ export const ErrorBanner = React.memo(({ error, dispatch }: Props) => {
   const onClick = () => {
     dispatch(errorBannerClicked(error));
   };
-  const location =
-    error.errorKind === EngineErrorKind.Graph ? error.info.location : null;
 
   let message = `${error.message || (error as any).info?.message}`;
 

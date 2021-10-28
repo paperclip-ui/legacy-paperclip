@@ -26,16 +26,14 @@ export class PaperclipMonacoServiceAdapter
       model.uri.path.substr(1)
     );
 
-    return colors.map(({ color, location }) => {
-      const start = model.getPositionAt(location.start);
-      const end = model.getPositionAt(location.end);
+    return colors.map(({ color, range }) => {
       return {
         color,
         range: {
-          startLineNumber: start.lineNumber,
-          startColumn: start.column,
-          endColumn: end.column,
-          endLineNumber: end.lineNumber
+          startLineNumber: range.start.line,
+          startColumn: range.start.column,
+          endColumn: range.end.column,
+          endLineNumber: range.end.line
         }
       };
     });
@@ -77,12 +75,12 @@ export class PaperclipMonacoServiceAdapter
 
     return {
       incomplete: true,
-      suggestions: suggestions.map(({ label, insertText, location }) => {
+      suggestions: suggestions.map(({ label, insertText, range }) => {
         return {
           label,
           kind: languages.CompletionItemKind.Property,
           insertText,
-          range: getRange(model, location.start, location.end)
+          range: getRange(model, range.start.pos, range.end.pos)
         };
       })
     };

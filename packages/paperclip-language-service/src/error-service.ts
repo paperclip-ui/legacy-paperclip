@@ -10,7 +10,7 @@ import {
   GraphErrorEvent,
   LoadedEvent,
   RuntimeErrorEvent,
-  SourceLocation
+  StringRange
 } from "paperclip-utils";
 import { Observable } from "paperclip-common";
 import { EngineDelegate } from "paperclip";
@@ -34,7 +34,7 @@ export interface Diagnostic {
   /**
    * The range at which the message applies
    */
-  location: SourceLocation;
+  range: StringRange;
   /**
    * The diagnostic's severity. Can be omitted. If omitted it is up to the
    * client to interpret diagnostics as error, warning, info or hint.
@@ -126,13 +126,13 @@ export class DiagnosticService {
               return createDiagnostic(
                 DiagnosticSeverity.Error,
                 diag.info.message,
-                diag.info.location
+                diag.info.range
               );
             } else if (diag.errorKind === EngineErrorKind.Runtime) {
               return createDiagnostic(
                 DiagnosticSeverity.Error,
                 diag.message,
-                diag.location
+                diag.range
               );
             }
             return null;
@@ -141,7 +141,7 @@ export class DiagnosticService {
             return createDiagnostic(
               DiagnosticSeverity.Warning,
               diag.message,
-              diag.source.textSource!.location
+              diag.source.textSource!.range
             );
           }
         }
@@ -153,11 +153,11 @@ export class DiagnosticService {
 const createDiagnostic = (
   severity: DiagnosticSeverity,
   message: string,
-  location: SourceLocation
+  range: StringRange
 ) => {
   return {
     severity,
-    location,
+    range,
     message: `${message}`,
     source: "ex"
   };

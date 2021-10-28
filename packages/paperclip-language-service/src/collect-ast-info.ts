@@ -2,7 +2,7 @@ import {
   Sheet,
   LoadedData,
   memoize,
-  SourceLocation,
+  StringRange,
   traverseExpression,
   DependencyContent,
   Node,
@@ -39,19 +39,20 @@ type Color = {
 
 type ColorInfo = {
   value: Color;
-  location: SourceLocation;
+  start: number;
+  end: number;
 };
 
 type DocumentLinkInfo = {
   uri: string;
-  location: SourceLocation;
+  range: StringRange;
 };
 
 export type DefinitionInfo = {
   sourceUri: string;
-  instanceLocation: SourceLocation;
-  sourceLocation: SourceLocation;
-  sourceDefinitionLocation: SourceLocation;
+  instanceRange: StringRange;
+  sourceRange: StringRange;
+  sourceDefinitionRange: StringRange;
 };
 
 const EMPTY = {
@@ -116,7 +117,7 @@ const getDocumentLinks = (
     }
     links.push({
       uri: asts[uri].dependencyUriMaps[src.value],
-      location: src.location
+      range: src.range
     });
   }
 
@@ -144,9 +145,9 @@ const getDocumentDefinitions = (uri: string, graph: DependencyGraph) => {
     if (component) {
       definitions.push({
         sourceUri: instanceUri,
-        sourceLocation: component.location,
-        sourceDefinitionLocation: component.location,
-        instanceLocation: instance.tagNameRange
+        sourceRange: component.range,
+        sourceDefinitionRange: component.range,
+        instanceRange: instance.tagNameRange
       });
     }
   }
@@ -346,7 +347,7 @@ const addDeclarationColors = (
     // in the string -- want to go through each one.
     modelDecl = modelDecl.replace(color, "_".repeat(color.length));
 
-    const colorStart = decl.valueLocation.start + colorIndex;
+    const colorStart = decl.valueRange.start.pos + colorIndex;
 
     try {
       const {
@@ -356,7 +357,8 @@ const addDeclarationColors = (
 
       allColors.push({
         value: { red: red / 255, green: green / 255, blue: blue / 255, alpha },
-        location: { start: colorStart, end: colorStart + color.length }
+        start: colorStart,
+        end: colorStart + color.length
       });
     } catch (e) {}
   }
