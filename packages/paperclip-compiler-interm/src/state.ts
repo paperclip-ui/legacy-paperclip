@@ -1,32 +1,40 @@
 import { JsExpression, StringAttributeValue } from "paperclip";
+import { StringRange } from "paperclip-utils";
 
 export type CSSExports = {
   classNames: string[];
   keyframes: string[];
 };
 
-export type IntermediateCSS = {
+export type IntermCSS = {
   sheetText: string;
   exports: CSSExports;
 };
 
-export enum NodeKind {
+export enum IntermNodeKind {
   Element = "Element",
+  Component = "Component",
   Text = "Text",
   Slot = "Slot",
   Fragment = "Fragment"
 }
 
-type BaseNode<TKind extends NodeKind> = {
+type BaseNode<TKind extends IntermNodeKind> = {
   kind: TKind;
+  range: StringRange;
 };
 
-export type Component<TKind extends NodeKind> = {
-  name: string;
-  id: string;
-  exported: boolean;
-  children: ChildNode[];
+type BaseElement<TKind extends IntermNodeKind> = {
+  tagName: string;
+  attributes: Attribute[];
+  children: BaseNode<any>[];
 } & BaseNode<TKind>;
+
+export type IntermComponent = {
+  as: string; // as attribute
+  namespace?: string; // namespace from import
+  exported: boolean;
+} & BaseElement<IntermNodeKind.Component>;
 
 export enum AttributeValueKind {
   String = "String",
@@ -36,7 +44,6 @@ export enum AttributeValueKind {
 type BaseAttributeValue<TKind extends AttributeValueKind> = {
   // for className:variant="value"
   variantPropertyName?: string;
-
   kind: TKind;
 };
 
@@ -55,27 +62,27 @@ export type Attribute = {
   values: AttributeValue[];
 };
 
-export type Element = {
-  tagName: string;
-  attributes: Attribute[];
-  children: ChildNode[];
-} & BaseNode<NodeKind.Element>;
+export type IntermElement = BaseElement<IntermNodeKind.Element>;
 
-export type Text = {
+export type IntermText = {
   value: string;
-} & BaseNode<NodeKind.Text>;
+} & BaseNode<IntermNodeKind.Text>;
 
-export type Slot = {
+export type IntermSlotNode = {
   script: JsExpression;
-} & BaseNode<NodeKind.Slot>;
+} & BaseNode<IntermNodeKind.Slot>;
 
-export type Fragment = {
-  children: ChildNode[];
-} & BaseNode<NodeKind.Fragment>;
+export type IntermFragment = {
+  children: IntermChildNode[];
+} & BaseNode<IntermNodeKind.Fragment>;
 
-export type ChildNode = Element | Text | Fragment;
+export type IntermChildNode =
+  | IntermElement
+  | IntermText
+  | IntermFragment
+  | IntermSlotNode;
 
-export type Asset = {
+export type IntermAsset = {
   // absolute file path to the asset
   filePath: string;
 
@@ -85,12 +92,12 @@ export type Asset = {
 
 export type IntermediatModule = {
   // exported components
-  components: Component<any>[];
+  components: IntermComponent[];
 
   // compiled CSS in this doc -- dev just needs to include generated text
   // wherever and load in the module
-  css: IntermediateCSS;
+  css: IntermCSS;
 
   // assets (svg, jpg, etc) embedded in this doc.
-  assets: Asset[];
+  assets: IntermAsset[];
 };
