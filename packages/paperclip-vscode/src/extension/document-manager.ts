@@ -89,8 +89,8 @@ export class DocumentManager implements Observer {
             fixFileUrlCasing(textSource.uri)
       ) || (await window.showTextDocument(textDocument, ViewColumn.One));
     editor.selection = new Selection(
-      textDocument.positionAt(textSource.location.start),
-      textDocument.positionAt(textSource.location.end)
+      textDocument.positionAt(textSource.range.start.pos),
+      textDocument.positionAt(textSource.range.end.pos)
     );
     editor.revealRange(editor.selection);
   };

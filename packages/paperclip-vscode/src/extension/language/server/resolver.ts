@@ -112,8 +112,8 @@ export class LanguageRequestResolver {
           return {
             ...diagnostic,
             range: {
-              start: textDocument.positionAt(diagnostic.location.start),
-              end: textDocument.positionAt(diagnostic.location.end)
+              start: textDocument.positionAt(diagnostic.range.start.pos),
+              end: textDocument.positionAt(diagnostic.range.end.pos)
             }
           };
         })
@@ -138,11 +138,11 @@ export class LanguageRequestResolver {
     await this._engineReady;
     const uri = fixFileUrlCasing(params.textDocument.uri);
     const document = this._documents.getDocument(uri);
-    return this._service.getDocumentColors(uri).map(({ value, location }) => {
+    return this._service.getDocumentColors(uri).map(({ value, start, end }) => {
       return {
         range: {
-          start: document.positionAt(location.start),
-          end: document.positionAt(location.end)
+          start: document.positionAt(start),
+          end: document.positionAt(end)
         },
         color: value
       };
@@ -177,18 +177,24 @@ export class LanguageRequestResolver {
       .filter(info => {
         const offset = document.offsetAt(params.position);
         return (
-          offset >= info.instanceLocation.start &&
-          offset <= info.instanceLocation.end
+          offset >= info.instanceRange.start.pos &&
+          offset <= info.instanceRange.end.pos
         );
       })
       .map(
         ({
           sourceUri,
-          instanceLocation: { start: instanceStart, end: instanceEnd },
-          sourceLocation: { start: sourceStart, end: sourceEnd },
-          sourceDefinitionLocation: {
-            start: definitionStart,
-            end: definitionEnd
+          instanceRange: {
+            start: { pos: instanceStart },
+            end: { pos: instanceEnd }
+          },
+          sourceRange: {
+            start: { pos: sourceStart },
+            end: { pos: sourceEnd }
+          },
+          sourceDefinitionRange: {
+            start: { pos: definitionStart },
+            end: { pos: definitionEnd }
           }
         }) => {
           const sourceDocument =

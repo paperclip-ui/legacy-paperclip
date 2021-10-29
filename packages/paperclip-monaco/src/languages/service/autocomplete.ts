@@ -46,11 +46,5 @@ const getAttrValueSuggestions = (
 };
 
 const getClassNameSuggestions = (content: Content): Suggestion[] => {
-  return [
-    {
-      label: "A",
-      insertText: "A",
-      location: { start: 0, end: 10 }
-    }
-  ];
+  return [];
 };

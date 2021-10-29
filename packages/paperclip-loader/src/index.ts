@@ -68,9 +68,8 @@ async function pcLoader(
     info = await engine.open(resourceUrl);
   } catch (e) {
     // eesh 🙈
-    const info =
-      e && e.location ? e : e.info && e.info.location ? e.info : null;
-    if (info && info.location) {
+    const info = e && e.range ? e : e.info && e.info.range ? e.info : null;
+    if (info && info.range) {
       console.error(getPrettyMessage(info, source, resourceUrl, process.cwd()));
     }
 

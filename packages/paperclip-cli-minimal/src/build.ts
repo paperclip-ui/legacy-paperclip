@@ -180,7 +180,7 @@ async function initBuild(
         }
       }
     } catch (e) {
-      if (e.location) {
+      if (e.range) {
         handleError(e, fullPath);
       } else {
         console.log("Err %s", relativePath);

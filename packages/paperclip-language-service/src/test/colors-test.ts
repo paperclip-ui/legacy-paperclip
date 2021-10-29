@@ -24,10 +24,8 @@ describe(__filename + "#", () => {
             blue: 0,
             alpha: 1
           },
-          location: {
-            start: 58,
-            end: 61
-          }
+          start: 58,
+          end: 61
         }
       ]
     ],
@@ -50,10 +48,8 @@ describe(__filename + "#", () => {
             blue: 0,
             alpha: 1
           },
-          location: {
-            start: 58,
-            end: 74
-          }
+          start: 58,
+          end: 74
         }
       ]
     ],
@@ -78,10 +74,8 @@ describe(__filename + "#", () => {
             blue: 1,
             alpha: 1
           },
-          location: {
-            start: 80,
-            end: 84
-          }
+          start: 80,
+          end: 84
         }
       ]
     ],
@@ -106,10 +100,8 @@ describe(__filename + "#", () => {
             blue: 1,
             alpha: 1
           },
-          location: {
-            start: 91,
-            end: 95
-          }
+          start: 91,
+          end: 95
         }
       ]
     ],
@@ -134,10 +126,8 @@ describe(__filename + "#", () => {
             blue: 0,
             alpha: 1
           },
-          location: {
-            start: 90,
-            end: 93
-          }
+          start: 90,
+          end: 93
         }
       ]
     ],
@@ -160,10 +150,8 @@ describe(__filename + "#", () => {
             blue: 0.19607843137254902,
             alpha: 1
           },
-          location: {
-            start: 58,
-            end: 75
-          }
+          start: 58,
+          end: 75
         }
       ]
     ],
@@ -187,10 +175,8 @@ describe(__filename + "#", () => {
             blue: 0,
             alpha: 1
           },
-          location: {
-            start: 56,
-            end: 59
-          }
+          start: 56,
+          end: 59
         },
         {
           value: {
@@ -199,10 +185,8 @@ describe(__filename + "#", () => {
             blue: 0,
             alpha: 1
           },
-          location: {
-            start: 82,
-            end: 90
-          }
+          start: 82,
+          end: 90
         }
       ]
     ],
@@ -231,10 +215,8 @@ describe(__filename + "#", () => {
             blue: 0,
             alpha: 1
           },
-          location: {
-            start: 96,
-            end: 108
-          }
+          start: 96,
+          end: 108
         }
       ]
     ]

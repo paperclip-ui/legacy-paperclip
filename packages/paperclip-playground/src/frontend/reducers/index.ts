@@ -150,7 +150,7 @@ export const reducer = (state: AppState, action: Action) => {
     }
     // case VEActionType.META_CLICKED: {
     //   return produce(state, newState => {
-    //     newState.highlightLocation = action.payload.source.location;
+    //     newState.highlightLocation = action.payload.source.range;
     //     newState.currentCodeFilePath = action.payload.source.uri;
     //   });
     // }

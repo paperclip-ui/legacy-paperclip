@@ -12,7 +12,7 @@ Considerations:
 import { EngineDelegate, getEngineImports } from "paperclip";
 import { Observable } from "paperclip-common";
 import { AutocompleteService } from "./autocomplete";
-import { collectASTInfo } from "./collect-ast-info";
+import { collectASTInfo, ColorInfo } from "./collect-ast-info";
 import { DiagnosticService } from "./error-service";
 
 export class PaperclipLanguageService {
@@ -46,7 +46,7 @@ export class PaperclipLanguageService {
   /**
    */
 
-  getDocumentColors(uri: string) {
+  getDocumentColors(uri: string): ColorInfo[] {
     return this._collectASTInfo(uri).colors;
   }
 

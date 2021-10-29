@@ -26,14 +26,16 @@ export class PaperclipMonacoServiceAdapter
       model.uri.path.substr(1)
     );
 
-    return colors.map(({ color, range }) => {
+    return colors.map(({ color, start, end }) => {
+      const startPos = model.getPositionAt(start);
+      const endPos = model.getPositionAt(end);
       return {
         color,
         range: {
-          startLineNumber: range.start.line,
-          startColumn: range.start.column,
-          endColumn: range.end.column,
-          endLineNumber: range.end.line
+          startLineNumber: startPos.lineNumber,
+          startColumn: startPos.column,
+          endColumn: startPos.column,
+          endLineNumber: endPos.lineNumber
         }
       };
     });

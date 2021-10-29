@@ -126,7 +126,7 @@ impl<'a> StringScanner<'a> {
         if c == b'\n' || c == b'\r' {
           subcol = i - self.pos;
 
-          // reset to zero since it'll be incremented in the proceeding code
+          // reset to zero since it'll be incremented in the proceeding code. This will always be 1
           self.u16_column = 0;
           self.u16_line += 1;
         }

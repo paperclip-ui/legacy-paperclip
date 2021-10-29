@@ -43,7 +43,10 @@ describe(__filename + "#", () => {
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 59, end: 91 },
+      range: {
+        start: { pos: 59, line: 4, column: 25 },
+        end: { pos: 91, line: 5, column: 11 }
+      },
       message: "Unable to resolve file: /not/found.png from /entry.pc"
     });
   });
@@ -108,7 +111,10 @@ describe(__filename + "#", () => {
       expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
-        location: { start: 45, end: 46 },
+        range: {
+          start: { pos: 45, line: 3, column: 22 },
+          end: { pos: 46, line: 3, column: 23 }
+        },
         message: "Reference not found."
       });
     });
@@ -152,7 +158,10 @@ describe(__filename + "#", () => {
       expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
-        location: { start: 87, end: 88 },
+        range: {
+          start: { pos: 87, line: 3, column: 26 },
+          end: { pos: 88, line: 3, column: 27 }
+        },
         message: "Reference not found."
       });
     });
@@ -174,7 +183,10 @@ describe(__filename + "#", () => {
       expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
-        location: { start: 45, end: 48 },
+        range: {
+          start: { pos: 45, line: 3, column: 22 },
+          end: { pos: 48, line: 3, column: 25 }
+        },
         message: "Reference not found."
       });
     });
@@ -198,7 +210,10 @@ describe(__filename + "#", () => {
       expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
-        location: { start: 45, end: 46 },
+        range: {
+          start: { pos: 45, line: 3, column: 22 },
+          end: { pos: 46, line: 3, column: 23 }
+        },
         message: "Reference not found."
       });
     });
@@ -226,7 +241,10 @@ describe(__filename + "#", () => {
       expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
-        location: { start: 87, end: 92 },
+        range: {
+          start: { pos: 87, line: 3, column: 26 },
+          end: { pos: 92, line: 3, column: 31 }
+        },
         message: "This mixin is private."
       });
     });
@@ -253,7 +271,10 @@ describe(__filename + "#", () => {
       expect(err).to.eql({
         errorKind: "Runtime",
         uri: "/entry.pc",
-        location: { start: 98, end: 103 },
+        range: {
+          start: { pos: 98, line: 6, column: 18 },
+          end: { pos: 103, line: 6, column: 23 }
+        },
         message: "This mixin is already declared in the upper scope."
       });
     });
@@ -352,7 +373,10 @@ describe(__filename + "#", () => {
       info: {
         kind: "Unterminated",
         message: "Unterminated element.",
-        location: { start: 0, end: 7 }
+        range: {
+          start: { pos: 0, line: 1, column: 1 },
+          end: { pos: 7, line: 1, column: 8 }
+        }
       }
     });
   });
@@ -373,9 +397,9 @@ describe(__filename + "#", () => {
       value: "test",
       source: {
         uri: "/entry.pc",
-        location: {
-          start: 37,
-          end: 51
+        range: {
+          start: { pos: 37, line: 3, column: 11 },
+          end: { pos: 51, line: 3, column: 25 }
         }
       }
     });
@@ -534,9 +558,9 @@ describe(__filename + "#", () => {
     await engine.open("/entry.pc");
     const ast = (await engine.getLoadedAst("/entry.pc")) as any;
 
-    expect(ast.children[0].sheet.rules[1].location).to.eql({
-      start: 88,
-      end: 111
+    expect(ast.children[0].sheet.rules[1].range).to.eql({
+      start: { pos: 88, line: 7, column: 7 },
+      end: { pos: 111, line: 9, column: 5 }
     });
   });
 
@@ -557,26 +581,43 @@ describe(__filename + "#", () => {
 
     const engine = await createMockEngine(graph);
     const result = await engine.open("/entry.pc");
+
     expect((result as LoadedPCData).exports.style.keyframes).to.eql({
-      b: {
-        name: "b",
-        public: true,
-        source: {
-          uri: "/entry.pc",
-          location: {
-            start: 73,
-            end: 94
-          }
-        }
-      },
       a: {
         name: "a",
         public: false,
         source: {
           uri: "/entry.pc",
-          location: {
-            start: 25,
-            end: 44
+          range: {
+            start: {
+              pos: 25,
+              line: 2,
+              column: 18
+            },
+            end: {
+              pos: 44,
+              line: 5,
+              column: 7
+            }
+          }
+        }
+      },
+      b: {
+        name: "b",
+        public: true,
+        source: {
+          uri: "/entry.pc",
+          range: {
+            start: {
+              pos: 73,
+              line: 6,
+              column: 20
+            },
+            end: {
+              pos: 94,
+              line: 9,
+              column: 7
+            }
           }
         }
       }
@@ -627,10 +668,14 @@ describe(__filename + "#", () => {
     } catch (e) {
       err = e;
     }
+
     expect(err).to.eql({
       errorKind: "Runtime",
       uri: "/entry.pc",
-      location: { start: 63, end: 70 },
+      range: {
+        start: { pos: 63, line: 4, column: 20 },
+        end: { pos: 70, line: 4, column: 27 }
+      },
       message: "Reference not found."
     });
   });
@@ -1578,9 +1623,9 @@ describe(__filename + "#", () => {
       info: {
         kind: "Unexpected",
         message: "Unexpected token",
-        location: {
-          start: 100,
-          end: 101
+        range: {
+          start: { pos: 100, line: 6, column: 25 },
+          end: { pos: 100, line: 6, column: 25 }
         }
       }
     });

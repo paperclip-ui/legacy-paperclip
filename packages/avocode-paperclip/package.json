@@ -3,7 +3,9 @@
   "version": "17.14.19",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build": "echo ''"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

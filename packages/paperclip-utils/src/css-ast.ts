@@ -216,7 +216,7 @@ export type StyleRule = {
 pub struct KeyframeRule {
   pub key: String,
   pub declarations: Vec<Declaration>,
-  pub location: Location,
+  pub range: StringRange,
 }
 */
 
@@ -233,7 +233,7 @@ export type KeyframeRule = {
 pub struct KeyframesRule {
   pub name: String,
   pub rules: Vec<KeyframeRule>,
-  pub location: Location,
+  pub range: StringRange,
 }*/
 
 export type KeyframesRule = {

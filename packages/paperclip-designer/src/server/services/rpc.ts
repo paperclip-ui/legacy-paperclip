@@ -236,7 +236,7 @@ const revealNodeSourceById = (state: State) => async (sourceId: string) => {
   state.options.revealSource({
     sourceId,
     textSource: {
-      location: expr.location,
+      range: expr.range,
       uri
     }
   });

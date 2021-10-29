@@ -16,17 +16,41 @@ describe(__filename + "#", () => {
       [
         {
           sourceUri: "/entry.pc",
-          sourceLocation: {
-            start: 11,
-            end: 38
+          sourceRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 38,
+              line: 2,
+              column: 38
+            }
           },
-          sourceDefinitionLocation: {
-            start: 11,
-            end: 38
+          sourceDefinitionRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 38,
+              line: 2,
+              column: 38
+            }
           },
-          instanceLocation: {
-            start: 50,
-            end: 54
+          instanceRange: {
+            start: {
+              pos: 50,
+              line: 3,
+              column: 12
+            },
+            end: {
+              pos: 54,
+              line: 3,
+              column: 16
+            }
           }
         }
       ]
@@ -43,32 +67,80 @@ describe(__filename + "#", () => {
       [
         {
           sourceUri: "/entry.pc",
-          sourceLocation: {
-            start: 11,
-            end: 38
+          sourceRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 38,
+              line: 2,
+              column: 38
+            }
           },
-          sourceDefinitionLocation: {
-            start: 11,
-            end: 38
+          sourceDefinitionRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 38,
+              line: 2,
+              column: 38
+            }
           },
-          instanceLocation: {
-            start: 50,
-            end: 54
+          instanceRange: {
+            start: {
+              pos: 50,
+              line: 3,
+              column: 12
+            },
+            end: {
+              pos: 54,
+              line: 3,
+              column: 16
+            }
           }
         },
         {
           sourceUri: "/entry.pc",
-          sourceLocation: {
-            start: 49,
-            end: 78
+          sourceRange: {
+            start: {
+              pos: 49,
+              line: 3,
+              column: 11
+            },
+            end: {
+              pos: 78,
+              line: 3,
+              column: 40
+            }
           },
-          sourceDefinitionLocation: {
-            start: 49,
-            end: 78
+          sourceDefinitionRange: {
+            start: {
+              pos: 49,
+              line: 3,
+              column: 11
+            },
+            end: {
+              pos: 78,
+              line: 3,
+              column: 40
+            }
           },
-          instanceLocation: {
-            start: 90,
-            end: 95
+          instanceRange: {
+            start: {
+              pos: 90,
+              line: 4,
+              column: 12
+            },
+            end: {
+              pos: 95,
+              line: 4,
+              column: 17
+            }
           }
         }
       ]
@@ -87,17 +159,41 @@ describe(__filename + "#", () => {
       [
         {
           sourceUri: "/module.pc",
-          sourceLocation: {
-            start: 11,
-            end: 45
+          sourceRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 45,
+              line: 2,
+              column: 45
+            }
           },
-          sourceDefinitionLocation: {
-            start: 11,
-            end: 45
+          sourceDefinitionRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 45,
+              line: 2,
+              column: 45
+            }
           },
-          instanceLocation: {
-            start: 60,
-            end: 69
+          instanceRange: {
+            start: {
+              pos: 60,
+              line: 3,
+              column: 12
+            },
+            end: {
+              pos: 69,
+              line: 3,
+              column: 21
+            }
           }
         }
       ]
@@ -116,17 +212,41 @@ describe(__filename + "#", () => {
       [
         {
           sourceUri: "/module.pc",
-          sourceLocation: {
-            start: 11,
-            end: 48
+          sourceRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 48,
+              line: 2,
+              column: 48
+            }
           },
-          sourceDefinitionLocation: {
-            start: 11,
-            end: 48
+          sourceDefinitionRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 48,
+              line: 2,
+              column: 48
+            }
           },
-          instanceLocation: {
-            start: 60,
-            end: 64
+          instanceRange: {
+            start: {
+              pos: 60,
+              line: 3,
+              column: 12
+            },
+            end: {
+              pos: 64,
+              line: 3,
+              column: 16
+            }
           }
         }
       ]
@@ -145,17 +265,41 @@ describe(__filename + "#", () => {
       [
         {
           sourceUri: "/entry.pc",
-          sourceLocation: {
-            start: 11,
-            end: 38
+          sourceRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 38,
+              line: 2,
+              column: 38
+            }
           },
-          sourceDefinitionLocation: {
-            start: 11,
-            end: 38
+          sourceDefinitionRange: {
+            start: {
+              pos: 11,
+              line: 2,
+              column: 11
+            },
+            end: {
+              pos: 38,
+              line: 2,
+              column: 38
+            }
           },
-          instanceLocation: {
-            start: 51,
-            end: 55
+          instanceRange: {
+            start: {
+              pos: 51,
+              line: 3,
+              column: 13
+            },
+            end: {
+              pos: 55,
+              line: 3,
+              column: 17
+            }
           }
         }
       ]
@@ -169,8 +313,6 @@ describe(__filename + "#", () => {
         engine.getLoadedGraph(),
         engine.getAllLoadedData()
       );
-
-      // console.log(JSON.stringify(info.definitions, null, 2));
 
       expect(info.definitions).to.eql(expectedLinks);
     });

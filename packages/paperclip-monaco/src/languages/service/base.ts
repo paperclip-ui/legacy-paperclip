@@ -8,7 +8,8 @@ export type Color = {
 };
 
 export type ColorInfo = {
-  range: StringRange;
+  start: number;
+  end: number;
   color: Color;
 };
 

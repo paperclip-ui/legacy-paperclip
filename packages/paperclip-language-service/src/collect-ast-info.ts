@@ -28,7 +28,6 @@ import {
 } from "paperclip-utils";
 import { CSS_COLOR_NAME_REGEXP } from "./css-color-names";
 import * as parseColor from "color";
-const EMPTY_ARRAY = [];
 
 type Color = {
   red: number;
@@ -37,7 +36,7 @@ type Color = {
   alpha: number;
 };
 
-type ColorInfo = {
+export type ColorInfo = {
   value: Color;
   start: number;
   end: number;
