@@ -25,7 +25,7 @@ pub enum Token<'a> {
 pub struct Tokenizer<'a> {
   pub source: &'a [u8],
   pub pos: usize,
-  pub utf16_pos: usize
+  pub utf16_pos: usize,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -100,7 +100,7 @@ impl<'a> Tokenizer<'a> {
     Tokenizer {
       source: source.as_bytes(),
       pos: 0,
-      utf16_pos: 0
+      utf16_pos: 0,
     }
   }
 }

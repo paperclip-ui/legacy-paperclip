@@ -130,13 +130,14 @@ const handleKeyValueDeclaration = (
 
     // Color(color)
     // const {color: [r, g, b], valpha: a } = Color(color);
-    const colorStart = declaration.valueLocation.start + colorIndex;
+    const colorStart = declaration.valueRange.start.pos + colorIndex;
 
     const rgba = maybeParseColor(colorValue);
     if (rgba) {
       info.colors.push({
         color: rgba,
-        location: { start: colorStart, end: colorStart + color.length }
+        start: colorStart,
+        end: colorStart + color.length
       });
     }
   }
