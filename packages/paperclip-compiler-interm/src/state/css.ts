@@ -6,4 +6,7 @@ export type CSSExports = {
 export type IntermCSS = {
   sheetText: string;
   exports: CSSExports;
+
+  // TODO
+  sourceMaps?: any;
 };

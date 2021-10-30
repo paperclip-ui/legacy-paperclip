@@ -50,7 +50,8 @@ const translateComponent = (options: IntermediateCompilerOptions) => (
     range: component.range,
     kind: IntermNodeKind.Component,
     attributes: translateAttributes(component),
-    children: translateChildren(options)(component.children)
+    children: translateChildren(options)(component.children),
+    scopeClassNames: []
   };
 };
 
@@ -220,6 +221,7 @@ export const translateElement = (options: IntermediateCompilerOptions) => (
     tagName: element.tagName,
     attributes: translateAttributes(element),
     range: element.range,
+    scopeClassNames: [],
     children: translateChildren(options)(element.children)
   };
 };

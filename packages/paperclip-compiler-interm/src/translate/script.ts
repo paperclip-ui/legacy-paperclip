@@ -1,5 +1,6 @@
 import { Element, JsExpression, JsExpressionKind } from "paperclip-utils";
 import {
+  IntermConjunctionOperator,
   IntermIntermScriptExpressionKind,
   IntermScriptExpression
 } from "../state/script";
@@ -13,7 +14,7 @@ export const translateScript = (options: IntermediateCompilerOptions) => (
     case JsExpressionKind.Group: {
       return {
         kind: IntermIntermScriptExpressionKind.Group,
-        inner: translateScript(script.expression),
+        inner: translateScript(options)(script.expression),
         range: script.range
       };
     }
@@ -34,7 +35,7 @@ export const translateScript = (options: IntermediateCompilerOptions) => (
     case JsExpressionKind.Number: {
       return {
         kind: IntermIntermScriptExpressionKind.Number,
-        value: script.value,
+        value: String(script.value),
         range: script.range
       };
     }
@@ -63,7 +64,7 @@ export const translateScript = (options: IntermediateCompilerOptions) => (
     case JsExpressionKind.Conjunction: {
       return {
         kind: IntermIntermScriptExpressionKind.Conjunction,
-        operator: script.operator,
+        operator: (script.operator as any) as IntermConjunctionOperator,
         left: translateScript(options)(script.left),
         right: translateScript(options)(script.right),
         range: script.range

@@ -36,11 +36,11 @@ export type IntermReference = {
 } & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.Reference>;
 
 export type IntermNumber = {
-  name?: string;
+  value: string;
 } & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.Number>;
 
 export type IntermString = {
-  name?: string;
+  value: string;
 } & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.String>;
 
 export type IntermGroup = {
@@ -67,5 +67,5 @@ export type IntermScriptExpression =
   | IntermNumber
   | IntermBoolean
   | IntermReference
-  | IntermIntermScriptExpression
+  | IntermScriptEelement
   | IntermConjunction;

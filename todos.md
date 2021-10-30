@@ -1,3 +1,10 @@
+Interm compiler TODO:
+
+- attach CSS IDs to elements
+  - identify inject-styles from imports
+  - translate class names
+
+
 tooling MVP:
 
 - ability to insert elements & text

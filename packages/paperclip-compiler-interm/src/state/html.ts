@@ -19,6 +19,7 @@ type BaseElement<TKind extends IntermNodeKind> = {
   attributes: IntermAttribute[];
   namespace?: string;
   children: BaseNode<any>[];
+  scopeClassNames: string[];
 } & BaseNode<TKind>;
 
 export type IntermComponent = {
