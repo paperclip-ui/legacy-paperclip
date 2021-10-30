@@ -5,6 +5,7 @@ import {
   AttributeValueKind,
   DynamicStringAttributeValuePartKind,
   getAttributeStringValue,
+  getStyleScopeId,
   hasAttribute,
   NodeKind,
   Reference,
@@ -24,22 +25,27 @@ import {
   IntermText
 } from "../state";
 import { translateScript } from "./script";
+import { IntermediateCompilerOptions, ModuleContext } from "./options";
 
-// import {  } from "./script";
-
-type IntermediateCompilerOptions = {};
+type Context = {
+  filePath: string;
+  options: IntermediateCompilerOptions;
+};
 
 export const translateComponents = (
   ast: Node,
-  options: IntermediateCompilerOptions
+  options: IntermediateCompilerOptions,
+  filePath: string
 ) => {
   const components = getParts(ast);
+  const context: Context = { filePath, options };
 
-  return components.map(translateComponent(options));
+  return components.map(component => translateComponent(component, context));
 };
 
-const translateComponent = (options: IntermediateCompilerOptions) => (
-  component: Element
+const translateComponent = (
+  component: Element,
+  context: Context
 ): IntermComponent => {
   const as = getAttributeStringValue("as", component);
 
@@ -49,30 +55,43 @@ const translateComponent = (options: IntermediateCompilerOptions) => (
     exported: hasAttribute("export", component),
     range: component.range,
     kind: IntermNodeKind.Component,
-    attributes: translateAttributes(component),
-    children: translateChildren(options)(component.children),
-    scopeClassNames: []
+    scopeClassNames: getScopeClassNames(component, context),
+    attributes: translateAttributes(component, context),
+    children: translateChildren(component.children, context)
   };
 };
 
-const translateChildren = (options: IntermediateCompilerOptions) => (
-  children: Node[]
-): IntermChildNode[] => children.map(translateChild(options)).filter(Boolean);
+const translateChildren = (
+  children: Node[],
+  context: Context
+): IntermChildNode[] =>
+  children.map(child => translateChild(child, context)).filter(Boolean);
 
-const translateChild = (options: IntermediateCompilerOptions) => (
-  node: Node
+const translateChild = (
+  node: Node,
+  context: ModuleContext
 ): IntermChildNode => {
   switch (node.nodeKind) {
     case NodeKind.Text: {
       return translateText(node);
     }
     case NodeKind.Element: {
-      return translateElement(options)(node);
+      return translateElement(node, context);
     }
     case NodeKind.Slot: {
-      return translateSlotNode(options)(node);
+      return translateSlotNode(node, context);
     }
   }
+};
+
+const getScopeClassNames = (element: Element, context: Context) => {
+  const scopeIds = [
+    `_${element.id}`,
+    `_${getStyleScopeId(context.filePath)}`,
+    `_pub-${getStyleScopeId(context.filePath)}`
+  ];
+
+  return scopeIds;
 };
 
 const translateText = (text: Text): IntermText => {
@@ -83,7 +102,7 @@ const translateText = (text: Text): IntermText => {
   };
 };
 
-const translateAttributes = (element: Element) => {
+const translateAttributes = (element: Element, context: Context) => {
   const groups: Record<string, IntermAttribute> = {};
 
   for (const attribute of element.attributes) {
@@ -213,26 +232,24 @@ const maybeAddAttributeValue = (
   group.variants.push(value);
 };
 
-export const translateElement = (options: IntermediateCompilerOptions) => (
-  element: Element
+export const translateElement = (
+  element: Element,
+  context: Context
 ): IntermElement => {
   return {
     kind: IntermNodeKind.Element,
     tagName: element.tagName,
-    attributes: translateAttributes(element),
+    attributes: translateAttributes(element, context),
+    scopeClassNames: getScopeClassNames(element, context),
     range: element.range,
-    scopeClassNames: [],
-    children: translateChildren(options)(element.children)
+    children: translateChildren(element.children, context)
   };
 };
 
-const translateSlotNode = (options: IntermediateCompilerOptions) => (
-  slot: Slot
-): IntermSlotNode => {
-  // console.log(JSON.stringify(slot, null, 2));
+const translateSlotNode = (slot: Slot, context: Context): IntermSlotNode => {
   return {
     kind: IntermNodeKind.Slot,
-    script: translateScript(options)(slot.script),
+    script: translateScript(slot.script, context),
     range: slot.range
   };
 };

@@ -40,6 +40,7 @@ TODOs:
               column: 15
             }
           },
+          scopeClassNames: ["_406d2856", "_80f4925f", "_pub-80f4925f"],
           kind: "Component",
           attributes: [],
           children: []
@@ -67,6 +68,8 @@ TODOs:
           tagName: "div",
           as: "Test",
           exported: true,
+          scopeClassNames: ["_406d2856", "_80f4925f", "_pub-80f4925f"],
+
           range: {
             start: {
               pos: 9,
@@ -138,6 +141,7 @@ TODOs:
         </div>
       `
     },
+
     {
       imports: [],
       components: [
@@ -145,6 +149,7 @@ TODOs:
           tagName: "div",
           as: "Test",
           exported: true,
+          scopeClassNames: ["_406d2856", "_80f4925f", "_pub-80f4925f"],
           range: {
             start: {
               pos: 9,
@@ -222,6 +227,8 @@ TODOs:
         {
           tagName: "div",
           as: "Test",
+          scopeClassNames: ["_406d2856", "_80f4925f", "_pub-80f4925f"],
+
           exported: true,
           range: {
             start: {
@@ -348,6 +355,7 @@ TODOs:
             }
           },
           kind: "Component",
+          scopeClassNames: ["_406d2856", "_80f4925f", "_pub-80f4925f"],
           attributes: [],
           children: [
             {
@@ -509,6 +517,11 @@ TODOs:
                                 kind: "Element",
                                 tagName: "div",
                                 attributes: [],
+                                scopeClassNames: [
+                                  "_3024ebf3",
+                                  "_80f4925f",
+                                  "_pub-80f4925f"
+                                ],
                                 range: {
                                   start: {
                                     pos: 103,
@@ -655,6 +668,7 @@ TODOs:
     const engine: EngineDelegate = createMockEngine(source);
     const compiler = new IntermediateCompiler(engine);
     const module = compiler.parseFile("/entry.pc");
+    console.log(JSON.stringify(module, null, 2));
     expect(module).to.be.eql(output);
   });
 });

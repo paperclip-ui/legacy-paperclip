@@ -5,30 +5,31 @@ import {
   IntermScriptExpression
 } from "../state/script";
 import { translateElement } from "./html";
-import { IntermediateCompilerOptions } from "./options";
+import { ModuleContext } from "./options";
 
-export const translateScript = (options: IntermediateCompilerOptions) => (
-  script: JsExpression
+export const translateScript = (
+  script: JsExpression,
+  context: ModuleContext
 ): IntermScriptExpression => {
   switch (script.jsKind) {
     case JsExpressionKind.Group: {
       return {
         kind: IntermIntermScriptExpressionKind.Group,
-        inner: translateScript(options)(script.expression),
+        inner: translateScript(script.expression, context),
         range: script.range
       };
     }
     case JsExpressionKind.Node: {
       return {
         kind: IntermIntermScriptExpressionKind.Element,
-        element: translateElement(options)(script as Element),
+        element: translateElement(script as Element, context),
         range: script.range
       };
     }
     case JsExpressionKind.Not: {
       return {
         kind: IntermIntermScriptExpressionKind.Not,
-        expression: translateScript(options)(script.expression),
+        expression: translateScript(script.expression, context),
         range: script.range
       };
     }
@@ -65,8 +66,8 @@ export const translateScript = (options: IntermediateCompilerOptions) => (
       return {
         kind: IntermIntermScriptExpressionKind.Conjunction,
         operator: (script.operator as any) as IntermConjunctionOperator,
-        left: translateScript(options)(script.left),
-        right: translateScript(options)(script.right),
+        left: translateScript(script.left, context),
+        right: translateScript(script.right, context),
         range: script.range
       };
     }

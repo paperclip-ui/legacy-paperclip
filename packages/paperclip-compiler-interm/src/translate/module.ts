@@ -18,18 +18,19 @@ export class IntermediateCompiler {
   parseFile(filePath: string): IntermediatModule {
     const { sheet } = this._engine.open(filePath);
     const ast = this._engine.parseFile(filePath);
-    return translateIntermediate(ast, sheet, this.options);
+    return translateIntermediate(ast, sheet, filePath, this.options);
   }
 }
 
 const translateIntermediate = (
   ast: Node,
   sheet: VirtSheet,
+  filePath: string,
   options: IntermediateCompilerOptions
 ): IntermediatModule => {
   return {
     imports: translateImports(ast, options),
-    components: translateComponents(ast, options),
+    components: translateComponents(ast, options, filePath),
     css: translateCSS(sheet, options),
     assets: getAssets(ast, sheet, options)
   };
