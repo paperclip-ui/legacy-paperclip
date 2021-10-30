@@ -318,13 +318,343 @@ TODOs:
       },
       assets: []
     }
+  ],
+  [
+    `Can translate various script nodes`,
+    {
+      "/entry.pc": `
+        <div export component as="Test">
+          {a || b && c? || true || "blah" || -100 || !100 || <div /> }
+        </div>
+      `
+    },
+    {
+      imports: [],
+      components: [
+        {
+          tagName: "div",
+          as: "Test",
+          exported: true,
+          range: {
+            start: {
+              pos: 9,
+              line: 2,
+              column: 9
+            },
+            end: {
+              pos: 127,
+              line: 4,
+              column: 15
+            }
+          },
+          kind: "Component",
+          attributes: [],
+          children: [
+            {
+              kind: "Slot",
+              script: {
+                kind: "Conjunction",
+                operator: "Or",
+                left: {
+                  kind: "Reference",
+                  name: "a",
+                  optional: false,
+                  range: {
+                    start: {
+                      pos: 53,
+                      line: 3,
+                      column: 12
+                    },
+                    end: {
+                      pos: 54,
+                      line: 3,
+                      column: 13
+                    }
+                  }
+                },
+                right: {
+                  kind: "Conjunction",
+                  operator: "And",
+                  left: {
+                    kind: "Reference",
+                    name: "b",
+                    optional: false,
+                    range: {
+                      start: {
+                        pos: 58,
+                        line: 3,
+                        column: 17
+                      },
+                      end: {
+                        pos: 59,
+                        line: 3,
+                        column: 18
+                      }
+                    }
+                  },
+                  right: {
+                    kind: "Conjunction",
+                    operator: "Or",
+                    left: {
+                      kind: "Reference",
+                      name: "c",
+                      optional: true,
+                      range: {
+                        start: {
+                          pos: 63,
+                          line: 3,
+                          column: 22
+                        },
+                        end: {
+                          pos: 65,
+                          line: 3,
+                          column: 24
+                        }
+                      }
+                    },
+                    right: {
+                      kind: "Conjunction",
+                      operator: "Or",
+                      left: {
+                        kind: "Boolean",
+                        value: true,
+                        range: {
+                          start: {
+                            pos: 69,
+                            line: 3,
+                            column: 28
+                          },
+                          end: {
+                            pos: 73,
+                            line: 3,
+                            column: 32
+                          }
+                        }
+                      },
+                      right: {
+                        kind: "Conjunction",
+                        operator: "Or",
+                        left: {
+                          kind: "String",
+                          value: "blah",
+                          range: {
+                            start: {
+                              pos: 77,
+                              line: 3,
+                              column: 36
+                            },
+                            end: {
+                              pos: 83,
+                              line: 3,
+                              column: 42
+                            }
+                          }
+                        },
+                        right: {
+                          kind: "Conjunction",
+                          operator: "Or",
+                          left: {
+                            kind: "Number",
+                            value: "-100",
+                            range: {
+                              start: {
+                                pos: 87,
+                                line: 3,
+                                column: 46
+                              },
+                              end: {
+                                pos: 91,
+                                line: 3,
+                                column: 50
+                              }
+                            }
+                          },
+                          right: {
+                            kind: "Conjunction",
+                            operator: "Or",
+                            left: {
+                              kind: "Not",
+                              expression: {
+                                kind: "Number",
+                                value: "100",
+                                range: {
+                                  start: {
+                                    pos: 96,
+                                    line: 3,
+                                    column: 55
+                                  },
+                                  end: {
+                                    pos: 99,
+                                    line: 3,
+                                    column: 58
+                                  }
+                                }
+                              },
+                              range: {
+                                start: {
+                                  pos: 95,
+                                  line: 3,
+                                  column: 54
+                                },
+                                end: {
+                                  pos: 96,
+                                  line: 3,
+                                  column: 55
+                                }
+                              }
+                            },
+                            right: {
+                              kind: "Element",
+                              element: {
+                                kind: "Element",
+                                tagName: "div",
+                                attributes: [],
+                                range: {
+                                  start: {
+                                    pos: 103,
+                                    line: 3,
+                                    column: 62
+                                  },
+                                  end: {
+                                    pos: 110,
+                                    line: 3,
+                                    column: 69
+                                  }
+                                },
+                                children: []
+                              },
+                              range: {
+                                start: {
+                                  pos: 103,
+                                  line: 3,
+                                  column: 62
+                                },
+                                end: {
+                                  pos: 110,
+                                  line: 3,
+                                  column: 69
+                                }
+                              }
+                            },
+                            range: {
+                              start: {
+                                pos: 95,
+                                line: 3,
+                                column: 54
+                              },
+                              end: {
+                                pos: 110,
+                                line: 3,
+                                column: 69
+                              }
+                            }
+                          },
+                          range: {
+                            start: {
+                              pos: 87,
+                              line: 3,
+                              column: 46
+                            },
+                            end: {
+                              pos: 110,
+                              line: 3,
+                              column: 69
+                            }
+                          }
+                        },
+                        range: {
+                          start: {
+                            pos: 77,
+                            line: 3,
+                            column: 36
+                          },
+                          end: {
+                            pos: 110,
+                            line: 3,
+                            column: 69
+                          }
+                        }
+                      },
+                      range: {
+                        start: {
+                          pos: 69,
+                          line: 3,
+                          column: 28
+                        },
+                        end: {
+                          pos: 110,
+                          line: 3,
+                          column: 69
+                        }
+                      }
+                    },
+                    range: {
+                      start: {
+                        pos: 63,
+                        line: 3,
+                        column: 22
+                      },
+                      end: {
+                        pos: 110,
+                        line: 3,
+                        column: 69
+                      }
+                    }
+                  },
+                  range: {
+                    start: {
+                      pos: 58,
+                      line: 3,
+                      column: 17
+                    },
+                    end: {
+                      pos: 110,
+                      line: 3,
+                      column: 69
+                    }
+                  }
+                },
+                range: {
+                  start: {
+                    pos: 53,
+                    line: 3,
+                    column: 12
+                  },
+                  end: {
+                    pos: 110,
+                    line: 3,
+                    column: 69
+                  }
+                }
+              },
+              range: {
+                start: {
+                  pos: 52,
+                  line: 3,
+                  column: 11
+                },
+                end: {
+                  pos: 112,
+                  line: 3,
+                  column: 71
+                }
+              }
+            }
+          ]
+        }
+      ],
+      css: {
+        sheetText: "",
+        exports: null
+      },
+      assets: []
+    }
   ]
 ].forEach(([title, source, output]: any) => {
   it(title, () => {
     const engine: EngineDelegate = createMockEngine(source);
     const compiler = new IntermediateCompiler(engine);
     const module = compiler.parseFile("/entry.pc");
-    // console.log(JSON.stringify(module, null, 2));
     expect(module).to.be.eql(output);
   });
 });

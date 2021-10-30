@@ -23,6 +23,7 @@ import {
   IntermNodeKind,
   IntermText
 } from "../state";
+import { translateScript } from "./script";
 
 // import {  } from "./script";
 
@@ -211,7 +212,7 @@ const maybeAddAttributeValue = (
   group.variants.push(value);
 };
 
-const translateElement = (options: IntermediateCompilerOptions) => (
+export const translateElement = (options: IntermediateCompilerOptions) => (
   element: Element
 ): IntermElement => {
   return {
@@ -226,9 +227,10 @@ const translateElement = (options: IntermediateCompilerOptions) => (
 const translateSlotNode = (options: IntermediateCompilerOptions) => (
   slot: Slot
 ): IntermSlotNode => {
+  // console.log(JSON.stringify(slot, null, 2));
   return {
     kind: IntermNodeKind.Slot,
-    script: null,
+    script: translateScript(options)(slot.script),
     range: slot.range
   };
 };

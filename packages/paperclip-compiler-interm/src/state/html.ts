@@ -17,6 +17,7 @@ type BaseNode<TKind extends IntermNodeKind> = {
 type BaseElement<TKind extends IntermNodeKind> = {
   tagName: string;
   attributes: IntermAttribute[];
+  namespace?: string;
   children: BaseNode<any>[];
 } & BaseNode<TKind>;
 
