@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "crc32": "^0.2.2",
     "paperclip": "^17.14.19"
   },
   "devDependencies": {

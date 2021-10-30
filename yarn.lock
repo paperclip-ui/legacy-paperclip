@@ -5419,7 +5419,7 @@ cosmiconfig@^7.0.0:
 
 crc32@^0.2.2:
   version "0.2.2"
-  resolved "https://registry.npmjs.org/crc32/-/crc32-0.2.2.tgz#7ad220d6ffdcd119f9fc127a7772cacea390a4ba"
+  resolved "https://registry.yarnpkg.com/crc32/-/crc32-0.2.2.tgz#7ad220d6ffdcd119f9fc127a7772cacea390a4ba"
   integrity sha1-etIg1v/c0Rn5/BJ6d3LKzqOQpLo=
 
 create-ecdh@^4.0.0:
