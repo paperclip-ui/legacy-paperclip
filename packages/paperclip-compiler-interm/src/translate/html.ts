@@ -197,7 +197,18 @@ const maybeAddAttributeValue = (
     groups[name] = { name, variants: [] };
   }
 
-  groups[name].variants.push(value);
+  const group = groups[name];
+
+  // prohibit multiple attributes with the same variant name. E.g: `className="a" className="b"`. In this case, the last one wins.
+  for (let i = group.variants.length; i--; ) {
+    const variant = group.variants[i];
+    if (variant.variantName === value.variantName) {
+      group.variants.splice(i, 1);
+      break;
+    }
+  }
+
+  group.variants.push(value);
 };
 
 const translateElement = (options: IntermediateCompilerOptions) => (
