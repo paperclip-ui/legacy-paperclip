@@ -46,7 +46,8 @@ module.exports = {
     const es6 = compile({ ast, classNames }, fileUri, {});
 
     return babel.transformSync(es6, {
-      presets: ["@babel/env"]
+      presets: ["@babel/env"],
+      configFile: false
     }).code;
   }
 };

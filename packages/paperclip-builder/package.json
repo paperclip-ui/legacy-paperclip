@@ -1,0 +1,25 @@
+{
+  "name": "paperclip-builder",
+  "version": "17.14.19",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "test": "mocha lib/test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crc32": "^0.2.2",
+    "paperclip": "^17.14.19",
+    "paperclip-compiler-interm": "^17.14.19"
+  },
+  "devDependencies": {
+    "@types/mocha": "^8.0.0",
+    "chai": "^4.2.0",
+    "mocha": "^8.0.1",
+    "typescript": "^4.2.3"
+  },
+  "gitHead": "ed34237b6303bd9c54fc722776a67247b6df9df2"
+}
