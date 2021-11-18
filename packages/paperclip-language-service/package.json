@@ -1,6 +1,6 @@
 {
   "name": "paperclip-language-service",
-  "version": "17.14.16",
+  "version": "17.14.20",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,9 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "color": "^4.0.0",
-    "paperclip": "^17.14.16",
-    "paperclip-test-utils": "^17.14.16",
-    "paperclip-utils": "^17.14.16",
+    "paperclip": "^17.14.20",
+    "paperclip-test-utils": "^17.14.20",
+    "paperclip-utils": "^17.14.20",
     "typescript": "^4.2.3"
   },
   "devDependencies": {
