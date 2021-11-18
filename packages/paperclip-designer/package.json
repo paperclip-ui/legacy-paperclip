@@ -21,7 +21,7 @@
     "fast-json-patch": "^3.0.0-1",
     "get-port": "^5.1.1",
     "history": "^4.9.0",
-    "immer": "^7.0.7",
+    "immer": "^9.0.6",
     "lodash": "^4.17.20",
     "mime-types": "^2.1.28",
     "mousetrap": "^1.6.5",

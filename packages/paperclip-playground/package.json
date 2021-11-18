@@ -18,7 +18,7 @@
     "bowser": "^2.11.0",
     "buffer-crc32": "^0.2.13",
     "fast-json-patch": "^3.0.0-1",
-    "immer": "^8.0.0",
+    "immer": "^9.0.6",
     "lodash": "^4.17.20",
     "mime-types": "^2.1.28",
     "monaco-editor": "^0.21.3",
