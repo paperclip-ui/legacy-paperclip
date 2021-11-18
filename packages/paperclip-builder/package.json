@@ -1,6 +1,6 @@
 {
   "name": "paperclip-builder",
-  "version": "17.14.20",
+  "version": "17.14.21",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "crc32": "^0.2.2",
-    "paperclip": "^17.14.19",
+    "paperclip": "^17.14.21",
     "paperclip-compiler-interm": "^17.14.19"
   },
   "devDependencies": {
