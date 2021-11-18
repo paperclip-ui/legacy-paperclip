@@ -8451,20 +8451,15 @@ immer@1.10.0:
   resolved "https://registry.npmjs.org/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
 
-immer@^7.0.7:
-  version "7.0.15"
-  resolved "https://registry.npmjs.org/immer/-/immer-7.0.15.tgz#dc3bc6db87401659d2e737c67a21b227c484a4ad"
-  integrity sha512-yM7jo9+hvYgvdCQdqvhCNRRio0SCXc8xDPzA25SvKWa7b1WVPjLwQs1VYU5JPXjcJPTqAa5NP5dqpORGYBQ2AA==
-
-immer@^8.0.0:
-  version "8.0.1"
-  resolved "https://registry.npmjs.org/immer/-/immer-8.0.1.tgz#9c73db683e2b3975c424fb0572af5889877ae656"
-  integrity sha512-aqXhGP7//Gui2+UrEtvxZxSquQVXTpZ7KDxfCcKAF3Vysvw0CViVaW9RZ1j1xlIYqaaaipBoqdqeibkc18PNvA==
-
 immer@^9.0.5:
   version "9.0.5"
   resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.5.tgz#a7154f34fe7064f15f00554cc94c66cc0bf453ec"
   integrity sha512-2WuIehr2y4lmYz9gaQzetPR2ECniCifk4ORaQbU3g5EalLt+0IVTosEPJ5BoYl/75ky2mivzdRzV8wWgQGOSYQ==
+
+immer@^9.0.6:
+  version "9.0.6"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.6.tgz#7a96bf2674d06c8143e327cbf73539388ddf1a73"
+  integrity sha512-G95ivKpy+EvVAnAab4fVa4YGYn24J1SpEktnJX7JJ45Bd7xqME/SCplFzYFmTbrkwZbQ4xJK1xMTUYBkN6pWsQ==
 
 immutable@^3.8.2:
   version "3.8.2"
@@ -11343,32 +11338,6 @@ paperclip-compiler-interm@^17.14.19:
   integrity sha512-HnEtKVRwAQCxt8bwIf7zS95ZwnXc6ocDtGOyhrnq1zskqp5uqTCNxQtTXB5r3ovGB7izoHNfHUyiqLehvt14SQ==
   dependencies:
     paperclip "^17.14.19"
-
-paperclip-utils@^17.14.19:
-  version "17.14.19"
-  resolved "https://registry.yarnpkg.com/paperclip-utils/-/paperclip-utils-17.14.19.tgz#e06c1ec06ee4f7b41424725f9d0037f315006b85"
-  integrity sha512-VsH/0XRpyonZoZVHdSbSlaor9ZOlWKzLz3WStHRHaUrN+/4tTZLIN8QsM2sEQd3hZeqcOOT5m7ImBTGr8oSQ8w==
-  dependencies:
-    "@types/mocha" "^5.2.7"
-    chai "^4.2.0"
-    crc32 "^0.2.2"
-    events "^3.2.0"
-    html-entities "^1.3.1"
-    lru-cache "^6.0.0"
-    path "^0.12.7"
-    url "^0.11.0"
-
-paperclip@^17.14.19:
-  version "17.14.19"
-  resolved "https://registry.yarnpkg.com/paperclip/-/paperclip-17.14.19.tgz#968b66dfb23794c74dbeaac69a67d8f21bb98714"
-  integrity sha512-ILqC+J3gJJZIJZ0sV2WemTTcTqTCp7hE7CwtPEDJ2ItyQs5nnQzUBae0fBAYlt2sGJsdgnMPN9Im8bsYevHsSA==
-  dependencies:
-    "@types/mocha" "^5.2.7"
-    chai "^4.2.0"
-    crc32 "^0.2.2"
-    mocha "^7.0.1"
-    paperclip-utils "^17.14.19"
-    url "^0.11.0"
 
 parallel-transform@^1.1.0:
   version "1.2.0"
