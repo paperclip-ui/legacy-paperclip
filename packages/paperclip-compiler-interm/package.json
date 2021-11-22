@@ -2,7 +2,7 @@
   "name": "paperclip-compiler-interm",
   "version": "17.14.19",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",

@@ -1,8 +1,9 @@
-import { compile } from "../code-compiler";
+import { compile } from "../code-compiler2";
 import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
 import { getStyleExports } from "paperclip";
+import { IntermediateCompiler } from "paperclip-compiler-interm";
 
 const builtin = {
   react: React
@@ -19,18 +20,14 @@ export const compileModules = async (graph: Record<string, string>) => {
     }
   });
 
+  const intermCompiler = new IntermediateCompiler(engine);
+
   const modules = {};
 
   for (const path in graph) {
-    const result = await engine.open(path);
-    const { sheet } = result;
-    const ast = engine.getLoadedAst(path) as any;
+    const es6 = compile(intermCompiler.parseFile(path));
 
-    const es6 = compile(
-      { ast, sheet, classNames: getStyleExports(result).classNames },
-      path
-    );
-
+    console.log(es6);
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
     const module = new Function(
       `require`,

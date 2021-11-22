@@ -9,7 +9,7 @@ export enum IntermNodeKind {
   Fragment = "Fragment"
 }
 
-type BaseNode<TKind extends IntermNodeKind> = {
+export type IntermBaseNode<TKind extends IntermNodeKind> = {
   kind: TKind;
   range: StringRange;
 };
@@ -18,14 +18,14 @@ type BaseElement<TKind extends IntermNodeKind> = {
   tagName: string;
   attributes: IntermAttribute[];
   namespace?: string;
-  children: BaseNode<any>[];
   scopeClassNames: string[];
-} & BaseNode<TKind>;
+} & IntermBaseNode<TKind>;
 
 export type IntermComponent = {
   as: string; // as attribute
   namespace?: string; // namespace from import
   exported: boolean;
+  children: IntermChildNode[];
 } & BaseElement<IntermNodeKind.Component>;
 
 export enum IntermAttributeValuePartKind {
@@ -66,19 +66,21 @@ export type IntermAttribute = {
   variants: IntermAttributeValue[];
 };
 
-export type IntermElement = BaseElement<IntermNodeKind.Element>;
+export type IntermElement = {
+  children: IntermChildNode[];
+} & BaseElement<IntermNodeKind.Element>;
 
 export type IntermText = {
   value: string;
-} & BaseNode<IntermNodeKind.Text>;
+} & IntermBaseNode<IntermNodeKind.Text>;
 
 export type IntermSlotNode = {
   script: IntermScriptExpression;
-} & BaseNode<IntermNodeKind.Slot>;
+} & IntermBaseNode<IntermNodeKind.Slot>;
 
 export type IntermFragment = {
   children: IntermChildNode[];
-} & BaseNode<IntermNodeKind.Fragment>;
+} & IntermBaseNode<IntermNodeKind.Fragment>;
 
 export type IntermChildNode =
   | IntermElement

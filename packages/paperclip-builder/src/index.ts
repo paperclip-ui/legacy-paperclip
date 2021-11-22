@@ -1,5 +1,8 @@
-import { PaperclipConfig } from "paperclip-utils";
+import * as resolve from "resolve";
+import { PaperclipConfig, PaperclipResourceWatcher } from "paperclip-utils";
 import EventEmitter from "events";
+import { IntermediateCompiler } from "paperclip-compiler-interm";
+import { EngineDelegate } from "paperclip";
 
 export type Options = {
   cwd?: string;
@@ -19,8 +22,60 @@ class BuildProcess {
   }
 }
 
-export const build = (config: PaperclipConfig, options: Options) => {
+/**
+ * Builds from Paperclip config.
+ */
+
+export const buildFromConfig = (config: PaperclipConfig, options: Options) => {
   const em = new EventEmitter();
 
   return new BuildProcess(em);
+};
+
+/**
+ */
+
+export const $$buildFile = (
+  filePath: string,
+  config: PaperclipConfig,
+  options: Options,
+  engine: EngineDelegate
+) => {
+  const compilerModulePath = resolve2(config.compilerOptions.name);
+
+  if (!compilerModulePath) {
+    throw new Error(
+      `Compiler "${config.compilerOptions.name}" couldn\'t be found', compiler);`
+    );
+  }
+  const compiler = require(compilerModulePath);
+
+  if (!compiler || !compiler.compileFile) {
+    throw new Error(
+      `Compiler "${config.compilerOptions.name}" does not export compile function`
+    );
+  }
+
+  const files: Record<string, string> = {};
+
+  const intermCompiler = new IntermediateCompiler(engine);
+  const interm = intermCompiler.parseFile(filePath);
+
+  files[filePath + ".css"] = interm.css.sheetText;
+
+  Object.assign(compiler.compileFile(filePath, interm));
+
+  return files;
+};
+
+const resolve2 = module => {
+  try {
+    return resolve.sync(module, { basedir: process.cwd() });
+  } catch (e) {
+    try {
+      return require.resolve(module);
+    } catch (e) {
+      return null;
+    }
+  }
 };

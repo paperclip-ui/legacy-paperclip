@@ -214,6 +214,10 @@ const maybeAddAttributeValue = (
     return;
   }
 
+  if (name === "className") {
+    name = "class";
+  }
+
   if (!groups[name]) {
     groups[name] = { name, variants: [] };
   }

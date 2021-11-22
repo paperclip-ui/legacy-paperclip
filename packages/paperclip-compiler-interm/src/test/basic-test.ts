@@ -668,7 +668,7 @@ TODOs:
     const engine: EngineDelegate = createMockEngine(source);
     const compiler = new IntermediateCompiler(engine);
     const module = compiler.parseFile("/entry.pc");
-    console.log(JSON.stringify(module, null, 2));
+    // console.log(JSON.stringify(module, null, 2));
     expect(module).to.be.eql(output);
   });
 });
