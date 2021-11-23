@@ -30,7 +30,8 @@ export type IntermComponent = {
 
 export enum IntermAttributeValuePartKind {
   Static = "Static",
-  Dynamic = "Dynamic"
+  Dynamic = "Dynamic",
+  Shorthand = "Shorthand"
 }
 
 type BaseAttributeValuePart<TKind extends IntermAttributeValuePartKind> = {
@@ -42,13 +43,18 @@ export type DynamicAttributeValuePart = {
   script: IntermScriptExpression;
 } & BaseAttributeValuePart<IntermAttributeValuePartKind.Dynamic>;
 
+export type ShorthandAttributeValuePart = {} & BaseAttributeValuePart<
+  IntermAttributeValuePartKind.Shorthand
+>;
+
 export type StaticAttributeValuePart = {
   value: string;
 } & BaseAttributeValuePart<IntermAttributeValuePartKind.Static>;
 
 export type IntermAttributeValuePart =
   | DynamicAttributeValuePart
-  | StaticAttributeValuePart;
+  | StaticAttributeValuePart
+  | ShorthandAttributeValuePart;
 
 export type IntermAttributeValue = {
   range: StringRange;

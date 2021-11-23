@@ -11,6 +11,7 @@ import {
   IntermFragment,
   IntermNodeKind,
   IntermText,
+  ShorthandAttributeValuePart,
   StaticAttributeValuePart
 } from "paperclip-compiler-interm";
 import {
@@ -57,7 +58,9 @@ const compileAttributesInner = (element: IntermElement | IntermComponent) => {
     }
 
     for (const variant of attribute.variants) {
-      let value = variant.parts.map(compileAttributeValue).join(" ");
+      let value = variant.parts
+        .map(compileAttributeValue(attribute.name))
+        .join(" ");
       if (variant.variantName) {
         value = `(${variant.variantName} ? ${value} : "")`;
       }
@@ -74,13 +77,17 @@ const compileAttributesInner = (element: IntermElement | IntermComponent) => {
   return `{${inner.join(", ")}}`;
 };
 
-const compileAttributeValue = (part: IntermAttributeValuePart) => {
+const compileAttributeValue = (name: string) => (
+  part: IntermAttributeValuePart
+) => {
   console.log(part);
   switch (part.kind) {
     case IntermAttributeValuePartKind.Dynamic:
       return compileDynamicAttributePart(part);
     case IntermAttributeValuePartKind.Static:
       return compileStaticAttributePart(part);
+    case IntermAttributeValuePartKind.Shorthand:
+      return compileShorthandAttributePart(name, part);
   }
 };
 
@@ -93,7 +100,7 @@ const compileScript = (script: IntermScriptExpression) => {
     case IntermScriptExpressionKind.String:
       return `"${script.value}"`;
     case IntermScriptExpressionKind.Reference:
-      return script.name;
+      return `props["${script.name}"]`;
     case IntermScriptExpressionKind.Number:
       return script.value;
     case IntermScriptExpressionKind.Not:
@@ -113,6 +120,13 @@ const compileScript = (script: IntermScriptExpression) => {
 
 const compileStaticAttributePart = (part: StaticAttributeValuePart) => {
   return `"${part.value}"`;
+};
+
+const compileShorthandAttributePart = (
+  name: string,
+  part: ShorthandAttributeValuePart
+) => {
+  return `props["${name}"]"`;
 };
 
 const compileFragment = (element: IntermFragment) => {

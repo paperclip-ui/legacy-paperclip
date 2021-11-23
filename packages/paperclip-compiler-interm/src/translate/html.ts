@@ -132,8 +132,7 @@ const translateAttributes = (element: Element, context: Context) => {
             variantName: null,
             parts: [
               {
-                kind: IntermAttributeValuePartKind.Dynamic,
-                script: null,
+                kind: IntermAttributeValuePartKind.Shorthand,
                 range: attribute.reference.range
               }
             ]
