@@ -1,7 +1,7 @@
 import { StringRange } from "paperclip-utils";
 import { IntermElement } from "./html";
 
-export enum IntermIntermScriptExpressionKind {
+export enum IntermScriptExpressionKind {
   Reference = "Reference",
   Conjunction = "Conjunction",
   Number = "Number",
@@ -12,9 +12,7 @@ export enum IntermIntermScriptExpressionKind {
   Element = "Element"
 }
 
-type BaseIntermScriptExpression<
-  TKind extends IntermIntermScriptExpressionKind
-> = {
+type BaseIntermScriptExpression<TKind extends IntermScriptExpressionKind> = {
   kind: TKind;
   range: StringRange;
 };
@@ -28,37 +26,37 @@ export type IntermConjunction = {
   operator: IntermConjunctionOperator;
   left: IntermScriptExpression;
   right: IntermScriptExpression;
-} & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.Conjunction>;
+} & BaseIntermScriptExpression<IntermScriptExpressionKind.Conjunction>;
 
 export type IntermReference = {
   name?: string;
   optional?: boolean;
-} & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.Reference>;
+} & BaseIntermScriptExpression<IntermScriptExpressionKind.Reference>;
 
 export type IntermNumber = {
   value: string;
-} & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.Number>;
+} & BaseIntermScriptExpression<IntermScriptExpressionKind.Number>;
 
 export type IntermString = {
   value: string;
-} & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.String>;
+} & BaseIntermScriptExpression<IntermScriptExpressionKind.String>;
 
 export type IntermGroup = {
   inner: IntermScriptExpression;
-} & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.Group>;
+} & BaseIntermScriptExpression<IntermScriptExpressionKind.Group>;
 
 export type IntermBoolean = {
   value: boolean;
-} & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.Boolean>;
+} & BaseIntermScriptExpression<IntermScriptExpressionKind.Boolean>;
 
 export type IntermNot = {
   expression: IntermScriptExpression;
-} & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.Not>;
+} & BaseIntermScriptExpression<IntermScriptExpressionKind.Not>;
 
 export type IntermScriptEelement = {
-  kind: IntermIntermScriptExpressionKind;
+  kind: IntermScriptExpressionKind;
   element: IntermElement;
-} & BaseIntermScriptExpression<IntermIntermScriptExpressionKind.Element>;
+} & BaseIntermScriptExpression<IntermScriptExpressionKind.Element>;
 
 export type IntermScriptExpression =
   | IntermNot

@@ -13,13 +13,10 @@ import {
   IntermText,
   StaticAttributeValuePart
 } from "paperclip-compiler-interm";
-import { createTranslateContext, TranslateContext } from "./translate-utils";
-import { SourceNode } from "source-map";
-import { DynamicStringAttributeValuePart } from "paperclip-utils";
 import {
   IntermScriptExpressionKind,
   IntermScriptExpression
-} from "../../paperclip-compiler-interm/lib/state/script";
+} from "paperclip-compiler-interm";
 
 export const compile = (interm: IntermediatModule) => {
   const buffer = [];

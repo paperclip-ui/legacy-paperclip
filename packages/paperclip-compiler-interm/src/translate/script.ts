@@ -1,7 +1,7 @@
 import { Element, JsExpression, JsExpressionKind } from "paperclip-utils";
 import {
   IntermConjunctionOperator,
-  IntermIntermScriptExpressionKind,
+  IntermScriptExpressionKind,
   IntermScriptExpression
 } from "../state/script";
 import { translateElement } from "./html";
@@ -14,35 +14,35 @@ export const translateScript = (
   switch (script.jsKind) {
     case JsExpressionKind.Group: {
       return {
-        kind: IntermIntermScriptExpressionKind.Group,
+        kind: IntermScriptExpressionKind.Group,
         inner: translateScript(script.expression, context),
         range: script.range
       };
     }
     case JsExpressionKind.Node: {
       return {
-        kind: IntermIntermScriptExpressionKind.Element,
+        kind: IntermScriptExpressionKind.Element,
         element: translateElement(script as Element, context),
         range: script.range
       };
     }
     case JsExpressionKind.Not: {
       return {
-        kind: IntermIntermScriptExpressionKind.Not,
+        kind: IntermScriptExpressionKind.Not,
         expression: translateScript(script.expression, context),
         range: script.range
       };
     }
     case JsExpressionKind.Number: {
       return {
-        kind: IntermIntermScriptExpressionKind.Number,
+        kind: IntermScriptExpressionKind.Number,
         value: String(script.value),
         range: script.range
       };
     }
     case JsExpressionKind.Reference: {
       return {
-        kind: IntermIntermScriptExpressionKind.Reference,
+        kind: IntermScriptExpressionKind.Reference,
         name: script.path[0].name,
         optional: script.path[0].optional,
         range: script.range
@@ -50,21 +50,21 @@ export const translateScript = (
     }
     case JsExpressionKind.Boolean: {
       return {
-        kind: IntermIntermScriptExpressionKind.Boolean,
+        kind: IntermScriptExpressionKind.Boolean,
         value: script.value,
         range: script.range
       };
     }
     case JsExpressionKind.String: {
       return {
-        kind: IntermIntermScriptExpressionKind.String,
+        kind: IntermScriptExpressionKind.String,
         value: script.value,
         range: script.range
       };
     }
     case JsExpressionKind.Conjunction: {
       return {
-        kind: IntermIntermScriptExpressionKind.Conjunction,
+        kind: IntermScriptExpressionKind.Conjunction,
         operator: (script.operator as any) as IntermConjunctionOperator,
         left: translateScript(script.left, context),
         right: translateScript(script.right, context),
