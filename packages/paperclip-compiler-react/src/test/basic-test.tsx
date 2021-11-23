@@ -34,7 +34,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f  _80f4925f_b _pub-80f4925f_b b">bbb</div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_b _pub-80f4925f_b b">bbb</div>`
       }
     ],
     [

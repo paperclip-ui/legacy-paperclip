@@ -28,9 +28,10 @@ const translateIntermediate = (
   filePath: string,
   options: IntermediateCompilerOptions
 ): IntermediatModule => {
+  const imports: IntermImport[] = translateImports(ast, options);
   return {
-    imports: translateImports(ast, options),
-    components: translateComponents(ast, options, filePath),
+    imports,
+    components: translateComponents(ast, options, filePath, imports),
     css: translateCSS(sheet, options),
     assets: getAssets(ast, sheet, options)
   };

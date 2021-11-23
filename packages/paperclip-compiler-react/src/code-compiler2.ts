@@ -1,15 +1,14 @@
 import {
   DynamicAttributeValuePart,
-  IntermAttribute,
   IntermAttributeValuePart,
   IntermAttributeValuePartKind,
-  IntermBaseNode,
   IntermChildNode,
   IntermComponent,
   IntermediatModule,
   IntermElement,
   IntermFragment,
   IntermNodeKind,
+  IntermSlotNode,
   IntermText,
   ShorthandAttributeValuePart,
   StaticAttributeValuePart
@@ -60,9 +59,9 @@ const compileAttributesInner = (element: IntermElement | IntermComponent) => {
     for (const variant of attribute.variants) {
       let value = variant.parts
         .map(compileAttributeValue(attribute.name))
-        .join(" ");
+        .join(" + ");
       if (variant.variantName) {
-        value = `(${variant.variantName} ? ${value} : "")`;
+        value = or(prop(variant.variantName), `""`);
       }
       atts[attribute.name].push(value);
     }
@@ -77,10 +76,11 @@ const compileAttributesInner = (element: IntermElement | IntermComponent) => {
   return `{${inner.join(", ")}}`;
 };
 
+const prop = (name: string) => `props["${name}"]`;
+
 const compileAttributeValue = (name: string) => (
   part: IntermAttributeValuePart
 ) => {
-  console.log(part);
   switch (part.kind) {
     case IntermAttributeValuePartKind.Dynamic:
       return compileDynamicAttributePart(part);
@@ -100,7 +100,7 @@ const compileScript = (script: IntermScriptExpression) => {
     case IntermScriptExpressionKind.String:
       return `"${script.value}"`;
     case IntermScriptExpressionKind.Reference:
-      return `props["${script.name}"]`;
+      return or(prop(script.name), `""`);
     case IntermScriptExpressionKind.Number:
       return script.value;
     case IntermScriptExpressionKind.Not:
@@ -118,6 +118,8 @@ const compileScript = (script: IntermScriptExpression) => {
   }
 };
 
+const or = (a, b) => `(${a} || ${b})`;
+
 const compileStaticAttributePart = (part: StaticAttributeValuePart) => {
   return `"${part.value}"`;
 };
@@ -126,7 +128,7 @@ const compileShorthandAttributePart = (
   name: string,
   part: ShorthandAttributeValuePart
 ) => {
-  return `props["${name}"]"`;
+  return `(props["${name}"] || "")"`;
 };
 
 const compileFragment = (element: IntermFragment) => {
@@ -136,6 +138,10 @@ const compileFragment = (element: IntermFragment) => {
 
 const compileText = (text: IntermText) => {
   return `"${text.value}"`;
+};
+
+const compileSlot = (slot: IntermSlotNode) => {
+  return compileScript(slot.script);
 };
 
 const compileChildren = (children: IntermChildNode[]) => {
@@ -152,6 +158,9 @@ const compileChildren = (children: IntermChildNode[]) => {
           }
           case IntermNodeKind.Text: {
             return compileText(child);
+          }
+          case IntermNodeKind.Slot: {
+            return compileSlot(child);
           }
         }
       })

@@ -5,6 +5,7 @@ import {
   AttributeValueKind,
   DynamicStringAttributeValuePartKind,
   getAttributeStringValue,
+  getPartIds,
   getStyleScopeId,
   hasAttribute,
   NodeKind,
@@ -22,30 +23,36 @@ import {
   IntermAttributeValuePart,
   IntermAttributeValuePartKind,
   IntermNodeKind,
-  IntermText
+  IntermText,
+  IntermImport
 } from "../state";
 import { translateScript } from "./script";
 import { IntermediateCompilerOptions, ModuleContext } from "./options";
 
-type Context = {
-  filePath: string;
-  options: IntermediateCompilerOptions;
-};
-
 export const translateComponents = (
   ast: Node,
   options: IntermediateCompilerOptions,
-  filePath: string
+  filePath: string,
+  imports: IntermImport[]
 ) => {
   const components = getParts(ast);
-  const context: Context = { filePath, options };
+  const context: ModuleContext = {
+    filePath,
+    options,
+    imports,
+    componentNames: getPartIds(ast),
+    scopeIds: [
+      `_${getStyleScopeId(filePath)}`,
+      `_pub-${getStyleScopeId(filePath)}`
+    ]
+  };
 
   return components.map(component => translateComponent(component, context));
 };
 
 const translateComponent = (
   component: Element,
-  context: Context
+  context: ModuleContext
 ): IntermComponent => {
   const as = getAttributeStringValue("as", component);
 
@@ -63,7 +70,7 @@ const translateComponent = (
 
 const translateChildren = (
   children: Node[],
-  context: Context
+  context: ModuleContext
 ): IntermChildNode[] =>
   children.map(child => translateChild(child, context)).filter(Boolean);
 
@@ -84,12 +91,8 @@ const translateChild = (
   }
 };
 
-const getScopeClassNames = (element: Element, context: Context) => {
-  const scopeIds = [
-    `_${element.id}`,
-    `_${getStyleScopeId(context.filePath)}`,
-    `_pub-${getStyleScopeId(context.filePath)}`
-  ];
+const getScopeClassNames = (element: Element, context: ModuleContext) => {
+  const scopeIds = [`_${element.id}`, ...context.scopeIds];
 
   return scopeIds;
 };
@@ -102,7 +105,7 @@ const translateText = (text: Text): IntermText => {
   };
 };
 
-const translateAttributes = (element: Element, context: Context) => {
+const translateAttributes = (element: Element, context: ModuleContext) => {
   const groups: Record<string, IntermAttribute> = {};
 
   for (const attribute of element.attributes) {
@@ -111,7 +114,12 @@ const translateAttributes = (element: Element, context: Context) => {
         maybeAddAttributeValue(groups, attribute.name, {
           range: attribute.range,
           variantName: null,
-          parts: getAttributeValueParts(attribute.value)
+          parts: getAttributeValueParts(
+            attribute.value,
+            attribute.name,
+            element.tagName,
+            context
+          )
         });
         break;
       }
@@ -119,7 +127,12 @@ const translateAttributes = (element: Element, context: Context) => {
         maybeAddAttributeValue(groups, attribute.name, {
           range: attribute.range,
           variantName: attribute.bindingName,
-          parts: getAttributeValueParts(attribute.value)
+          parts: getAttributeValueParts(
+            attribute.value,
+            attribute.name,
+            element.tagName,
+            context
+          )
         });
         break;
       }
@@ -152,7 +165,10 @@ const translateAttributes = (element: Element, context: Context) => {
 };
 
 const getAttributeValueParts = (
-  value?: AttributeValue
+  value: AttributeValue,
+  attrName: string,
+  tagName: string,
+  context: ModuleContext
 ): IntermAttributeValuePart[] => {
   const parts = [];
   if (!value) {
@@ -163,19 +179,23 @@ const getAttributeValueParts = (
       return value.values.map(part => {
         switch (part.partKind) {
           case DynamicStringAttributeValuePartKind.ClassNamePierce: {
-            throw new Error(`Not implemented yet`);
+            return {
+              kind: IntermAttributeValuePartKind.Static,
+              value: pierceClassName(part.className, context),
+              range: part.range
+            };
           }
           case DynamicStringAttributeValuePartKind.Literal: {
             return {
               kind: IntermAttributeValuePartKind.Static,
-              value: part.value,
+              value: translateValuePart(part.value, attrName, tagName, context),
               range: part.range
             };
           }
           case DynamicStringAttributeValuePartKind.Slot: {
             return {
               kind: IntermAttributeValuePartKind.Dynamic,
-              script: null,
+              script: translateScript(part, context),
               range: part.range
             };
           }
@@ -186,7 +206,7 @@ const getAttributeValueParts = (
       return [
         {
           kind: IntermAttributeValuePartKind.Static,
-          value: value.value,
+          value: translateValuePart(value.value, attrName, tagName, context),
           range: value.range
         }
       ];
@@ -195,12 +215,56 @@ const getAttributeValueParts = (
       return [
         {
           kind: IntermAttributeValuePartKind.Dynamic,
-          script: null,
+          script: translateScript(value.script, context),
           range: value.range
         }
       ];
     }
   }
+};
+
+const translateValuePart = (
+  part: string,
+  attrName: string,
+  elementName: string,
+  context: ModuleContext
+) => {
+  if (!isNativeElement(part, context)) {
+    return part;
+  }
+
+  if (attrName === "class" || attrName === "className") {
+    return part
+      .split(" ")
+      .map(slice => {
+        if (!slice) {
+          return "";
+        }
+        return addScopeIds(slice, context.scopeIds);
+      })
+      .join(" ");
+  }
+
+  return part;
+};
+
+const pierceClassName = (className: string, context: ModuleContext) => {
+  console.log(context);
+  return (
+    context.scopeIds.map(scopeId => `${scopeId}_${className}`).join(" ") +
+    ` ${className}`
+  );
+};
+
+const addScopeIds = (className: string, scopeIds: string[]) => {
+  return (
+    scopeIds.map(scopeId => `${scopeId}_${className}`).join(" ") +
+    ` ${className}`
+  );
+};
+
+const isNativeElement = (tagName: string, context: ModuleContext) => {
+  return !tagName.includes(".") && !context.componentNames.includes(tagName);
 };
 
 const maybeAddAttributeValue = (
@@ -237,7 +301,7 @@ const maybeAddAttributeValue = (
 
 export const translateElement = (
   element: Element,
-  context: Context
+  context: ModuleContext
 ): IntermElement => {
   return {
     kind: IntermNodeKind.Element,
@@ -249,7 +313,10 @@ export const translateElement = (
   };
 };
 
-const translateSlotNode = (slot: Slot, context: Context): IntermSlotNode => {
+const translateSlotNode = (
+  slot: Slot,
+  context: ModuleContext
+): IntermSlotNode => {
   return {
     kind: IntermNodeKind.Slot,
     script: translateScript(slot.script, context),
