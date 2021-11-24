@@ -1,3 +1,4 @@
+import { Inference, ShapeInference } from "paperclip";
 import { NodeKind, StringRange } from "paperclip-utils";
 import { IntermScriptExpression } from "./script";
 
@@ -25,6 +26,7 @@ export type IntermComponent = {
   as: string; // as attribute
   exported: boolean;
   children: IntermNode[];
+  props: ShapeInference;
 } & BaseElement<IntermNodeKind.Component>;
 
 export enum IntermAttributeValuePartKind {

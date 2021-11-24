@@ -133,8 +133,6 @@ const compileAttributeValues = (
     }
 
     const parts = [];
-    {
-    }
     for (const variant of attribute.variants) {
       let value = variant.parts
         .map(compileAttributeValue(attrName, module))

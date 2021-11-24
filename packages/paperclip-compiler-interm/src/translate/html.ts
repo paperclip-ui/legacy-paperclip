@@ -1,4 +1,4 @@
-import { Node, getParts, Element } from "paperclip";
+import { Node, getParts, Element, infer } from "paperclip";
 import {
   AttributeKind,
   AttributeValue,
@@ -64,11 +64,11 @@ const translateComponent = (
 ): IntermComponent => {
   const as = getAttributeStringValue("as", component);
   const { tagName, namespace } = getTagNameParts(component.tagName);
-
   return {
     tagName,
     as,
     namespace,
+    props: infer(component),
     isInstance: !isNativeElement(component.tagName, context),
     scopeClassNames: getScopeClassNames(component, context),
     exported: hasAttribute("export", component),
