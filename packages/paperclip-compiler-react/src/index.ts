@@ -1,8 +1,7 @@
 import { Node, ClassNameExport } from "paperclip";
-import { compile as compileCode } from "./code-compiler";
 import { compile as compileDefinition } from "./definition-compiler";
 import { IntermediatModule } from "paperclip-compiler-interm";
-import { compile as compile2Code } from "./code-compiler2";
+import { compile as compile2Code } from "./code-compiler";
 
 type Options = {
   definition?: boolean;
@@ -24,7 +23,8 @@ export const compile = (
   if (options.definition) {
     return compileDefinition(info, filePath, options);
   } else {
-    return compileCode(info, filePath, options);
+    // return compile2Code(info, filePath, options);
+    return null;
   }
 };
 
