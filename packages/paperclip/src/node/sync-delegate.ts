@@ -60,16 +60,17 @@ const getIOOptions = options => {
 
 // eslint-disable-next-line
 export const createEngineDelegate = (options = {}, onCrash: any = () => {}) => {
+  const io = getIOOptions(options || {});
   const {
     readFile,
     fileExists,
     resolveFile,
     getLintConfig,
     mode = EngineMode.SingleFrame
-  } = getIOOptions(options || {});
+  } = io;
   return new EngineDelegate(
     NativeEngine.new(readFile, fileExists, resolveFile, getLintConfig, mode),
-    readFile,
+    io,
     onCrash ||
       function(e) {
         console.error(e);

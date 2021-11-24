@@ -26,8 +26,6 @@ export const compileModules = async (graph: Record<string, string>) => {
 
   for (const path in graph) {
     const es6 = compile(intermCompiler.parseFile(path));
-
-    console.log(es6);
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
     const module = new Function(
       `require`,

@@ -17,7 +17,7 @@ import {
   IntermElement,
   IntermSlotNode,
   IntermComponent,
-  IntermChildNode,
+  IntermNode,
   IntermAttributeValue,
   IntermAttribute,
   IntermAttributeValuePart,
@@ -42,12 +42,20 @@ export const translateComponents = (
     imports,
     componentNames: getPartIds(ast),
     scopeIds: [
-      `_${getStyleScopeId(filePath)}`,
-      `_pub-${getStyleScopeId(filePath)}`
+      ...getScopes(filePath),
+      ...imports.filter(imp => imp.injectedStyles).map(imp => imp.publicScopeId)
     ]
   };
 
   return components.map(component => translateComponent(component, context));
+};
+
+const getTagNameParts = (tagName: string) => {
+  const parts = tagName.split(".");
+  if (parts.length === 1) {
+    return { tagName: parts[0] };
+  }
+  return { namespace: parts[0], tagName: parts[1] };
 };
 
 const translateComponent = (
@@ -55,14 +63,17 @@ const translateComponent = (
   context: ModuleContext
 ): IntermComponent => {
   const as = getAttributeStringValue("as", component);
+  const { tagName, namespace } = getTagNameParts(component.tagName);
 
   return {
-    tagName: component.tagName,
+    tagName,
     as,
+    namespace,
+    isInstance: !isNativeElement(component.tagName, context),
+    scopeClassNames: getScopeClassNames(component, context),
     exported: hasAttribute("export", component),
     range: component.range,
     kind: IntermNodeKind.Component,
-    scopeClassNames: getScopeClassNames(component, context),
     attributes: translateAttributes(component, context),
     children: translateChildren(component.children, context)
   };
@@ -71,13 +82,10 @@ const translateComponent = (
 const translateChildren = (
   children: Node[],
   context: ModuleContext
-): IntermChildNode[] =>
+): IntermNode[] =>
   children.map(child => translateChild(child, context)).filter(Boolean);
 
-const translateChild = (
-  node: Node,
-  context: ModuleContext
-): IntermChildNode => {
+const translateChild = (node: Node, context: ModuleContext): IntermNode => {
   switch (node.nodeKind) {
     case NodeKind.Text: {
       return translateText(node);
@@ -92,7 +100,14 @@ const translateChild = (
 };
 
 const getScopeClassNames = (element: Element, context: ModuleContext) => {
-  const scopeIds = [`_${element.id}`, ...context.scopeIds];
+  const scopeIds = [`_${element.id}`];
+
+  if (
+    isNativeElement(element.tagName, context) ||
+    isImportedInstance(element.tagName, context)
+  ) {
+    scopeIds.push(...context.scopeIds);
+  }
 
   return scopeIds;
 };
@@ -111,29 +126,41 @@ const translateAttributes = (element: Element, context: ModuleContext) => {
   for (const attribute of element.attributes) {
     switch (attribute.attrKind) {
       case AttributeKind.KeyValueAttribute: {
-        maybeAddAttributeValue(groups, attribute.name, {
-          range: attribute.range,
-          variantName: null,
-          parts: getAttributeValueParts(
-            attribute.value,
-            attribute.name,
-            element.tagName,
-            context
-          )
-        });
+        maybeAddAttributeValue(
+          groups,
+          attribute.name,
+          {
+            range: attribute.range,
+            variantName: null,
+            parts: getAttributeValueParts(
+              attribute.value,
+              attribute.name,
+              element.tagName,
+              context
+            )
+          },
+          element.tagName,
+          context
+        );
         break;
       }
       case AttributeKind.PropertyBoundAttribute: {
-        maybeAddAttributeValue(groups, attribute.name, {
-          range: attribute.range,
-          variantName: attribute.bindingName,
-          parts: getAttributeValueParts(
-            attribute.value,
-            attribute.name,
-            element.tagName,
-            context
-          )
-        });
+        maybeAddAttributeValue(
+          groups,
+          attribute.name,
+          {
+            range: attribute.range,
+            variantName: attribute.bindingName,
+            parts: getAttributeValueParts(
+              attribute.value,
+              attribute.name,
+              element.tagName,
+              context
+            )
+          },
+          element.tagName,
+          context
+        );
         break;
       }
       case AttributeKind.ShorthandAttribute: {
@@ -149,7 +176,9 @@ const translateAttributes = (element: Element, context: ModuleContext) => {
                 range: attribute.reference.range
               }
             ]
-          }
+          },
+          element.tagName,
+          context
         );
         break;
       }
@@ -161,7 +190,7 @@ const translateAttributes = (element: Element, context: ModuleContext) => {
     }
   }
 
-  return Object.values(groups);
+  return groups;
 };
 
 const getAttributeValueParts = (
@@ -223,13 +252,17 @@ const getAttributeValueParts = (
   }
 };
 
+const getScopes = (filePath: string) => {
+  return [`_${getStyleScopeId(filePath)}`, `_pub-${getStyleScopeId(filePath)}`];
+};
+
 const translateValuePart = (
   part: string,
   attrName: string,
   elementName: string,
   context: ModuleContext
 ) => {
-  if (!isNativeElement(part, context)) {
+  if (!isNativeElement(elementName, context)) {
     return part;
   }
 
@@ -249,11 +282,18 @@ const translateValuePart = (
 };
 
 const pierceClassName = (className: string, context: ModuleContext) => {
-  console.log(context);
-  return (
-    context.scopeIds.map(scopeId => `${scopeId}_${className}`).join(" ") +
-    ` ${className}`
-  );
+  let scopeIds: string[] = context.scopeIds;
+
+  const parts = className.split(".");
+
+  if (parts.length === 2) {
+    const imp = context.imports.find(imp => imp.namespace === parts[0]);
+    if (imp) {
+      scopeIds = getScopes(imp.filePath);
+    }
+  }
+
+  return addScopeIds(parts[parts.length - 1], scopeIds);
 };
 
 const addScopeIds = (className: string, scopeIds: string[]) => {
@@ -264,25 +304,36 @@ const addScopeIds = (className: string, scopeIds: string[]) => {
 };
 
 const isNativeElement = (tagName: string, context: ModuleContext) => {
-  return !tagName.includes(".") && !context.componentNames.includes(tagName);
+  return (
+    !isImportedInstance(tagName, context) &&
+    !context.componentNames.includes(tagName)
+  );
+};
+
+const isImportedInstance = (tagName: string, context: ModuleContext) => {
+  return tagName.includes(".");
 };
 
 const maybeAddAttributeValue = (
   groups: Record<string, IntermAttribute>,
   name: string,
-  value: IntermAttributeValue
+  value: IntermAttributeValue,
+  tagName: string,
+  context: ModuleContext
 ) => {
   // skip intermal props
   if (/^(export|component|as)$/.test(name)) {
     return;
   }
 
-  if (name === "className") {
+  const isNative = isNativeElement(tagName, context);
+
+  if (name === "className" && isNative) {
     name = "class";
   }
 
   if (!groups[name]) {
-    groups[name] = { name, variants: [] };
+    groups[name] = { variants: [] };
   }
 
   const group = groups[name];
@@ -290,7 +341,7 @@ const maybeAddAttributeValue = (
   // prohibit multiple attributes with the same variant name. E.g: `className="a" className="b"`. In this case, the last one wins.
   for (let i = group.variants.length; i--; ) {
     const variant = group.variants[i];
-    if (variant.variantName === value.variantName) {
+    if (variant.variantName === value.variantName && name !== "class") {
       group.variants.splice(i, 1);
       break;
     }
@@ -303,11 +354,14 @@ export const translateElement = (
   element: Element,
   context: ModuleContext
 ): IntermElement => {
+  const { tagName, namespace } = getTagNameParts(element.tagName);
   return {
     kind: IntermNodeKind.Element,
-    tagName: element.tagName,
-    attributes: translateAttributes(element, context),
+    namespace,
+    tagName: tagName,
+    isInstance: !isNativeElement(element.tagName, context),
     scopeClassNames: getScopeClassNames(element, context),
+    attributes: translateAttributes(element, context),
     range: element.range,
     children: translateChildren(element.children, context)
   };

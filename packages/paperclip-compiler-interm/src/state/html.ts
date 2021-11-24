@@ -1,12 +1,11 @@
-import { StringRange } from "paperclip-utils";
+import { NodeKind, StringRange } from "paperclip-utils";
 import { IntermScriptExpression } from "./script";
 
 export enum IntermNodeKind {
   Element = "Element",
   Component = "Component",
   Text = "Text",
-  Slot = "Slot",
-  Fragment = "Fragment"
+  Slot = "Slot"
 }
 
 export type IntermBaseNode<TKind extends IntermNodeKind> = {
@@ -16,16 +15,16 @@ export type IntermBaseNode<TKind extends IntermNodeKind> = {
 
 type BaseElement<TKind extends IntermNodeKind> = {
   tagName: string;
-  attributes: IntermAttribute[];
+  attributes: Record<string, IntermAttribute>;
   namespace?: string;
+  isInstance: boolean;
   scopeClassNames: string[];
 } & IntermBaseNode<TKind>;
 
 export type IntermComponent = {
   as: string; // as attribute
-  namespace?: string; // namespace from import
   exported: boolean;
-  children: IntermChildNode[];
+  children: IntermNode[];
 } & BaseElement<IntermNodeKind.Component>;
 
 export enum IntermAttributeValuePartKind {
@@ -57,7 +56,7 @@ export type IntermAttributeValuePart =
   | ShorthandAttributeValuePart;
 
 export type IntermAttributeValue = {
-  range: StringRange;
+  range?: StringRange;
 
   // className:a="b"
   variantName?: string;
@@ -67,13 +66,13 @@ export type IntermAttributeValue = {
 };
 
 export type IntermAttribute = {
-  name: string;
   // value parts - literal or dynamic. Covers className="a {className?}" and such
   variants: IntermAttributeValue[];
 };
 
 export type IntermElement = {
-  children: IntermChildNode[];
+  children: IntermNode[];
+  isInstance: boolean;
 } & BaseElement<IntermNodeKind.Element>;
 
 export type IntermText = {
@@ -84,12 +83,25 @@ export type IntermSlotNode = {
   script: IntermScriptExpression;
 } & IntermBaseNode<IntermNodeKind.Slot>;
 
-export type IntermFragment = {
-  children: IntermChildNode[];
-} & IntermBaseNode<IntermNodeKind.Fragment>;
-
-export type IntermChildNode =
+export type IntermNode =
   | IntermElement
   | IntermText
-  | IntermFragment
+  | IntermComponent
   | IntermSlotNode;
+
+export const traverseIntermNode = (
+  node: IntermNode,
+  each: (descendent: IntermNode) => boolean
+) => {
+  if (each(node) === false) {
+    return;
+  }
+  if (
+    node.kind === IntermNodeKind.Component ||
+    node.kind === IntermNodeKind.Element
+  ) {
+    node.children.forEach(child => {
+      traverseIntermNode(child, each);
+    });
+  }
+};

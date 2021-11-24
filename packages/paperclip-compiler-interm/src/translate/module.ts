@@ -2,7 +2,11 @@ import { EngineDelegate, Node, VirtSheet } from "paperclip";
 import {
   getAttributeStringValue,
   getImports,
-  hasAttribute
+  getStyleScopeId,
+  hasAttribute,
+  isNode,
+  NodeKind,
+  traverseExpression
 } from "paperclip-utils";
 import { IntermediatModule, IntermImport } from "../state";
 import { getAssets } from "./assets";
@@ -18,7 +22,13 @@ export class IntermediateCompiler {
   parseFile(filePath: string): IntermediatModule {
     const { sheet } = this._engine.open(filePath);
     const ast = this._engine.parseFile(filePath);
-    return translateIntermediate(ast, sheet, filePath, this.options);
+    return translateIntermediate(
+      ast,
+      sheet,
+      filePath,
+      this._engine,
+      this.options
+    );
   }
 }
 
@@ -26,9 +36,15 @@ const translateIntermediate = (
   ast: Node,
   sheet: VirtSheet,
   filePath: string,
+  engine: EngineDelegate,
   options: IntermediateCompilerOptions
 ): IntermediatModule => {
-  const imports: IntermImport[] = translateImports(ast, options);
+  const imports: IntermImport[] = translateImports(
+    ast,
+    filePath,
+    engine,
+    options
+  );
   return {
     imports,
     components: translateComponents(ast, options, filePath, imports),
@@ -39,17 +55,44 @@ const translateIntermediate = (
 
 const translateImports = (
   ast: Node,
+  filePath: string,
+  engine: EngineDelegate,
   options: IntermediateCompilerOptions
 ): IntermImport[] => {
   return getImports(ast)
     .map(imp => {
-      if (!hasAttribute("as", imp) || !hasAttribute("src", imp)) {
+      if (!hasAttribute("src", imp)) {
         return null;
       }
 
+      const resolvedFilePath = engine.resolveFile(
+        filePath,
+        getAttributeStringValue("src", imp)
+      );
+
+      const usedTagNames: any = {};
+
+      const namespace = getAttributeStringValue("as", imp);
+
+      traverseExpression(ast, node => {
+        if (
+          isNode(node) &&
+          node.nodeKind === NodeKind.Element &&
+          node.tagName.includes(".")
+        ) {
+          const [tagNamespace, tagName] = node.tagName.split(".");
+          if (tagNamespace === namespace) {
+            usedTagNames[tagName] = 1;
+          }
+        }
+      });
+
       return {
-        src: getAttributeStringValue("src", imp),
-        namespace: getAttributeStringValue("as", imp)
+        filePath: resolvedFilePath,
+        publicScopeId: `_pub-${getStyleScopeId(resolvedFilePath)}`,
+        namespace,
+        usedTagNames: Object.keys(usedTagNames) as string[],
+        injectedStyles: hasAttribute("inject-styles", imp)
       };
     })
     .filter(Boolean);

@@ -3,8 +3,11 @@ import { IntermCSS } from "./css";
 import { IntermComponent } from "./html";
 
 export type IntermImport = {
-  namespace: string;
-  src: string;
+  namespace?: string;
+  publicScopeId: string;
+  filePath: string;
+  usedTagNames: string[];
+  injectedStyles: boolean;
 };
 
 export type IntermediatModule = {

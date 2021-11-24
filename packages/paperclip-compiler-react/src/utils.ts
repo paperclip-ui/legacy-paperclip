@@ -1,6 +1,11 @@
 import { camelCase } from "lodash";
 import * as path from "path";
 import { Element, AS_ATTR_NAME, getAttributeStringValue } from "paperclip";
+import {
+  IntermComponent,
+  IntermediatModule,
+  IntermElement
+} from "paperclip-compiler-interm";
 
 export const RENAME_PROPS = {
   class: "className",
@@ -61,17 +66,14 @@ export const classNameToStyleName = (value: string) => {
   return value.charAt(0).toLowerCase() + value.substr(1);
 };
 
-// export const getClassExportNameMap = (classNames: string[]) => {
-//   const map = {};
-//   for (const className of classNames) {
-//     const mapName = className.replace(/^_.*?_/g, "");
-
-//     if (!map[mapName]) {
-//       map[mapName] = className;
-//     } else {
-//       // combine class names in case they're defined in other imported styles
-//       map[mapName] = map[mapName] + " " + className;
-//     }
-//   }
-//   return map;
-// };
+export const getElementInstanceName = (
+  namespace: string,
+  tagName: string,
+  module: IntermediatModule
+) => {
+  const imp = module.imports.find(imp => imp.namespace === namespace);
+  if (!imp) {
+    return tagName;
+  }
+  return "_" + camelCase(imp.publicScopeId) + "_" + tagName;
+};

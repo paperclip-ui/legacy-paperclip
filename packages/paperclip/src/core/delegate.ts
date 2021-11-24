@@ -83,7 +83,7 @@ export class EngineDelegate {
 
   constructor(
     private _native: any,
-    private _readFile: any,
+    private _io: EngineIO,
     private _onCrash: (err: any) => void = noop
   ) {
     // only one native listener to for buffer performance
@@ -91,6 +91,10 @@ export class EngineDelegate {
 
     this.onEvent(this._onEngineEvent);
     return this;
+  }
+
+  resolveFile(fromPath: string, toPath: string) {
+    return this._io.resolveFile(fromPath, toPath);
   }
 
   onEvent(listener: EngineDelegateEventListener) {
@@ -108,7 +112,7 @@ export class EngineDelegate {
 
   private _onEngineEvent = (event: EngineDelegateEvent) => {
     if (!this._documents[event.uri]) {
-      this._documents[event.uri] = this._readFile(event.uri);
+      this._documents[event.uri] = this._io.readFile(event.uri);
     }
 
     if (event.kind === EngineDelegateEventKind.Deleted) {
@@ -270,7 +274,7 @@ export class EngineDelegate {
 
     // need to load document so that it's accessible via source writer
     if (!this._documents[uri]) {
-      this._documents[uri] = this._readFile(uri);
+      this._documents[uri] = this._io.readFile(uri);
     }
 
     const result = this._tryCatch(() => mapResult(this._native.run(uri)));

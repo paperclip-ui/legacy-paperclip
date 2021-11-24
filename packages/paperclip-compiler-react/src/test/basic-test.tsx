@@ -34,7 +34,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_b _pub-80f4925f_b b">bbb</div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f  _80f4925f_b _pub-80f4925f_b b ">bbb</div>`
       }
     ],
     [
@@ -159,7 +159,7 @@ describe(__filename + "#", () => {
       }
     ],
     [
-      "Applies scope classes when class names dynamic string in component",
+      "Doesn't apply scoped classes when dynamic string applied to component",
       {
         "/entry.pc": `
           <div export component as="Entry" className="{className?}">
@@ -172,58 +172,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ab _pub-80f4925f_ab ab"></div>`
-      }
-    ],
-    [
-      "Applies scope classes when {className?} applied to component",
-      {
-        "/entry.pc": `
-          <div export component as="Entry" {className?}>
-          </div>
-        `
-      },
-      {
-        Entry: {
-          className: "ab"
-        }
-      },
-      {
-        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ab _pub-80f4925f_ab ab"></div>`
-      }
-    ],
-    [
-      "Applies scope classes for className={className?} applied to component",
-      {
-        "/entry.pc": `
-          <div export component as="Entry" className={className?}>
-          </div>
-        `
-      },
-      {
-        Entry: {
-          className: "ab"
-        }
-      },
-      {
-        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ab _pub-80f4925f_ab ab"></div>`
-      }
-    ],
-    [
-      "Applies scope classes for class={className?} applied to component",
-      {
-        "/entry.pc": `
-          <div export component as="Entry" class={className?}>
-          </div>
-        `
-      },
-      {
-        Entry: {
-          className: "ab"
-        }
-      },
-      {
-        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ab _pub-80f4925f_ab ab"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f ab"></div>`
       }
     ],
     [
@@ -272,11 +221,40 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f__9fbc00ce _pub-80f4925f__9fbc00ce _9fbc00ce"></div></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _9fbc00ce"></div></div>`
       }
     ],
+    // [
+    //   "Can apply scoped styles to component instance that already has a class",
+    //   {
+    //     "/entry.pc": `
+
+    //       <div export component as="Test" {className?}>
+    //       </div>
+
+    //       <div export component as="Entry">
+    //         <Test className="another-test">
+    //           <style>
+    //             color: blue;
+    //           </style>
+    //         </Test>
+    //       </div>
+    //     `
+    //   },
+    //   {
+    //     Entry: {}
+    //   },
+    //   {
+    //     Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_another-test _pub-80f4925f_another-test another-test _80f4925f__9fbc00ce _pub-80f4925f__9fbc00ce _9fbc00ce"></div></div>`
+    //   }
+    // ],
+
+    // class names need to be made _explicit_. A DX problem with this is where we're passing
+    // class names within the same doc - the developer needs to prefix with $ in this case. The reason for this
+    // is to ensure that class names _outside_ of the doc aren't accidentally triggering class names within this doc, especially
+    // for JSX.
     [
-      "Can apply scoped styles to component instance that already has a class",
+      "class names applied in the same doc aren't prefixed with scope",
       {
         "/entry.pc": `
 
@@ -296,7 +274,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_another-test _pub-80f4925f_another-test another-test _80f4925f__9fbc00ce _pub-80f4925f__9fbc00ce _9fbc00ce"></div></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _9fbc00ce another-test"></div></div>`
       }
     ],
     [
@@ -314,7 +292,7 @@ describe(__filename + "#", () => {
           </Test>
 
           <div export component as="Entry">
-            <Test2 className="another-test">
+            <Test2 className="$another-test">
               <style>
                 color: blue;
               </style>
@@ -326,7 +304,7 @@ describe(__filename + "#", () => {
         Entry: {}
       },
       {
-        Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_blaaaa _pub-80f4925f_blaaaa blaaaa _80f4925f_another-test _pub-80f4925f_another-test another-test _80f4925f__9dfabe97 _pub-80f4925f__9dfabe97 _9dfabe97 _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0"></div></div>`
+        Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 blaaaa _9dfabe97 _80f4925f_another-test _pub-80f4925f_another-test another-test"></div></div>`
       }
     ],
     [
@@ -507,7 +485,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f _pub-98523c41 _80f4925f_a _pub-80f4925f_a _pub-98523c41_a a _376a18c0 _80f4925f _pub-80f4925f _pub-98523c41 _80f4925f_test _pub-80f4925f_test _pub-98523c41_test test"></div>`
+        Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f _pub-98523c41 _80f4925f_a _pub-80f4925f_a _pub-98523c41_a a _80f4925f_test _pub-80f4925f_test _pub-98523c41_test test"></div>`
       }
     ],
     [
@@ -574,7 +552,7 @@ describe(__filename + "#", () => {
               color: blue;
             </style>
           </div>
-          <Test export component as="Entry" className:active="active">
+          <Test export component as="Entry" className:active="$active">
             <style>
               color: red;
             </style>
@@ -587,7 +565,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _80f4925f_ _pub-80f4925f_  _80f4925f_active _pub-80f4925f_active active _80f4925f__376a18c0 _pub-80f4925f__376a18c0 _376a18c0"></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 _80f4925f_active _pub-80f4925f_active active"></div>`
       }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
