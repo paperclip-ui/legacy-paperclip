@@ -6,6 +6,10 @@ import { IntermediatModule } from "paperclip-compiler-interm";
 export type Context = {
   module: IntermediatModule;
   filePath: string;
+  buffer: any[];
+  lineNumber: number;
+  isNewLine: boolean;
+  indent: string;
 };
 
 export const RENAME_PROPS = {
@@ -78,3 +82,32 @@ export const getElementInstanceName = (
   }
   return "_" + camelCase(imp.publicScopeId) + "_" + tagName;
 };
+
+export const arrayJoin = (buffer: any[], sep: string) =>
+  buffer.reduce((ary, part, index, buffer) => {
+    ary.push(part);
+    if (index !== buffer.length - 1) {
+      ary.push(sep);
+    }
+    return ary;
+  }, []);
+
+export const addBuffer = (buffer: any[], context: Context) => ({
+  ...context,
+  buffer: [
+    ...context.buffer,
+    context.isNewLine ? context.indent.repeat(context.lineNumber) : "",
+    buffer
+  ],
+  isNewLine: buffer.lastIndexOf("\n") === buffer.length - 1
+});
+
+export const startBlock = (context: Context) => ({
+  ...context,
+  lineNumber: context.lineNumber + 1
+});
+
+export const endBlock = (context: Context) => ({
+  ...context,
+  lineNumber: context.lineNumber - 1
+});

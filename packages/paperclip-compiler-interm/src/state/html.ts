@@ -64,7 +64,7 @@ export type IntermAttributeValue = {
   variantName?: string;
 
   // className:a="{aClass?}"
-  parts: IntermAttributeValuePart[];
+  parts?: IntermAttributeValuePart[];
 };
 
 export type IntermAttribute = {

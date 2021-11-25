@@ -19,7 +19,7 @@ import {
   IntermScriptExpressionKind,
   IntermScriptExpression
 } from "paperclip-compiler-interm";
-import { getElementInstanceName } from "./utils";
+import { arrayJoin, getElementInstanceName } from "./utils";
 import { Html5Entities } from "html-entities";
 import { SourceNode } from "source-map";
 import { Context } from "./utils";
@@ -42,8 +42,16 @@ const CAST_STYLE_UTIL = `
 `;
 
 export const compile = (module: IntermediatModule, filePath: string) => {
-  const context: Context = { module, filePath };
-  const buffer: Array<string | SourceNode> = [`import React from "react";`];
+  const context: Context = {
+    module,
+    filePath,
+    buffer: [],
+    lineNumber: 0,
+    isNewLine: true,
+    indent: "  "
+  };
+
+  const buffer: Array<any> = [`import React from "react";`];
   buffer.push(...module.imports.map(translateImport(context)));
   buffer.push(CAST_STYLE_UTIL);
   buffer.push(...module.components.map(compileComponent(context)));
@@ -70,12 +78,12 @@ const translateImport = (context: Context) => (imp: IntermImport) => {
       );
     }
 
-    buffer.push(`, {`, parts.join(","), `}`);
+    buffer.push(`, {`, arrayJoin(parts, ","), `}`);
   }
 
   buffer.push(` from "${imp.filePath}"`);
 
-  return buffer.join("");
+  return buffer;
 };
 
 const compileComponent = (context: Context) => (component: IntermComponent) => {
@@ -106,8 +114,6 @@ const compileElement = (
 
   let tagName;
 
-  let buffer = [];
-
   if (element.tagName === "fragment") {
     tagName = `React.Fragment`;
   } else {
@@ -118,8 +124,6 @@ const compileElement = (
     tagName = [`(`, attributes.tagName, `) || `, tagName];
     attributes = omit(attributes, "tagName");
   }
-
-  console.log(tagName);
 
   return new SourceNode(
     element.range.start.line,
@@ -166,28 +170,41 @@ const compileAttributeValues = (
 
     const parts = [];
     for (const variant of attribute.variants) {
-      let value = variant.parts
-        .map(compileAttributeValue(attrName, context))
-        .join(" + ");
+      if (!variant.parts) {
+        continue;
+      }
+      let value = arrayJoin(
+        variant.parts.map(compileAttributeValue(attrName, context)),
+        " + "
+      );
+
       if (variant.variantName) {
         value = value
-          ? `(${prop(variant.variantName)} ? ${value} : "")`
+          ? [`(`, prop(variant.variantName), " ? ", value, `: "")`]
           : or(prop(variant.variantName), `""`);
       }
-      parts.push(value);
+
+      if (variant.range) {
+        parts.push(
+          new SourceNode(
+            variant.range.start.line,
+            variant.range.start.column,
+            context.filePath,
+            value
+          )
+        );
+      } else {
+        parts.push(value);
+      }
     }
 
-    let value = `${parts.join(`+ " " + `)}`;
+    let value = parts.length ? arrayJoin(parts, `+ " " +`) : `true`;
     if (attrName === "style") {
-      value = `castStyle(${value})`;
-    }
-
-    if (!value) {
-      value = `true`;
+      value = [`castStyle(`, value, `)`];
     }
 
     atts[attrName] = atts[attrName]
-      ? atts[attrName] + ' + " " + ' + value
+      ? [atts[attrName], ' + " " + ', value]
       : value;
   }
 
@@ -198,10 +215,10 @@ const json = (record: Record<string, any>) => {
   const inner = [];
 
   for (const name in record) {
-    inner.push(`"${name}": ${record[name]}`);
+    inner.push([`"`, name, `": `, record[name]]);
   }
 
-  return [`{`, inner.join(", "), `}`];
+  return [`{`, arrayJoin(inner, ", "), `}`];
 };
 
 const prop = (name: string) => `props["${name}"]`;
@@ -223,7 +240,12 @@ const compileDynamicAttributePart = (
   part: DynamicAttributeValuePart,
   context: Context
 ) => {
-  return or(compileScript(part.script, context), `""`);
+  return new SourceNode(
+    part.range.start.line,
+    part.range.start.column,
+    context.filePath,
+    or(compileScript(part.script, context), `""`)
+  );
 };
 
 const CONJ_MAP = {
@@ -254,9 +276,11 @@ const compileScript = (script: IntermScriptExpression, context: Context) => {
       buffer = compileElement(script.element, context);
       break;
     case IntermScriptExpressionKind.Conjunction:
-      buffer = `${compileScript(script.left, context)}${
-        CONJ_MAP[script.operator]
-      }${compileScript(script.right, context)}`;
+      buffer = [
+        compileScript(script.left, context),
+        CONJ_MAP[script.operator],
+        compileScript(script.right, context)
+      ];
       break;
     case IntermScriptExpressionKind.Boolean:
       buffer = String(script.value);
@@ -271,7 +295,7 @@ const compileScript = (script: IntermScriptExpression, context: Context) => {
   );
 };
 
-const or = (a, b) => `(${a} || ${b})`;
+const or = (a, b) => [`(`, a, `|| `, b, `)`];
 
 const compileStaticAttributePart = (
   part: StaticAttributeValuePart,
@@ -313,12 +337,12 @@ const compileSlot = (slot: IntermSlotNode, context: Context) => {
 
 const compileChildren = (children: IntermNode[], context: Context) => {
   if (children.length === 0) {
-    return null;
+    return `null`;
   }
   return (
     "[" +
-    children
-      .map(child => {
+    arrayJoin(
+      children.map(child => {
         switch (child.kind) {
           case IntermNodeKind.Element: {
             return compileElement(child, context);
@@ -330,8 +354,9 @@ const compileChildren = (children: IntermNode[], context: Context) => {
             return compileSlot(child, context);
           }
         }
-      })
-      .join(",") +
+      }),
+      ", "
+    ) +
     "]"
   );
 };

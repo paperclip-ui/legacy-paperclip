@@ -199,9 +199,8 @@ const getAttributeValueParts = (
   tagName: string,
   context: ModuleContext
 ): IntermAttributeValuePart[] => {
-  const parts = [];
   if (!value) {
-    return parts;
+    return null;
   }
   switch (value.attrValueKind) {
     case AttributeValueKind.DyanmicString: {
