@@ -1,8 +1,7 @@
-import { compile } from "../code-compiler2";
+import { compile } from "../code-compiler";
 import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
-import { getStyleExports } from "paperclip";
 import { IntermediateCompiler } from "paperclip-compiler-interm";
 
 const builtin = {

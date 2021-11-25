@@ -19,6 +19,9 @@ import {
   IntermScriptExpression
 } from "paperclip-compiler-interm";
 import { getElementInstanceName } from "./utils";
+import { Html5Entities } from "html-entities";
+
+const entities = new Html5Entities();
 
 const CAST_STYLE_UTIL = `
   const castStyle = (value) => {
@@ -40,7 +43,6 @@ export const compile = (interm: IntermediatModule) => {
   buffer.push(...interm.imports.map(translateImport(interm)));
   buffer.push(CAST_STYLE_UTIL);
   buffer.push(...interm.components.map(compileComponent(interm)));
-
   return buffer.join("");
 };
 
@@ -95,7 +97,13 @@ const compileElement = (
   const children = compileChildren(element.children, module);
   let attributes = compileAttributeValues(element, module);
 
-  let tagName = nativeOrInstanceTag(element, module);
+  let tagName;
+
+  if (element.tagName === "fragment") {
+    tagName = `React.Fragment`;
+  } else {
+    tagName = nativeOrInstanceTag(element, module);
+  }
 
   if (attributes.tagName && !element.isInstance) {
     tagName = `(${attributes.tagName}) || ${tagName}`;
@@ -151,7 +159,7 @@ const compileAttributeValues = (
     }
 
     if (!value) {
-      value = "true";
+      value = `true`;
     }
 
     atts[attrName] = atts[attrName]
@@ -236,7 +244,7 @@ const compileShorthandAttributePart = (name: string) => {
 };
 
 const compileText = (text: IntermText) => {
-  return `"${text.value}"`;
+  return JSON.stringify(entities.decode(text.value));
 };
 
 const compileSlot = (slot: IntermSlotNode, module: IntermediatModule) => {
@@ -244,6 +252,9 @@ const compileSlot = (slot: IntermSlotNode, module: IntermediatModule) => {
 };
 
 const compileChildren = (children: IntermNode[], module: IntermediatModule) => {
+  if (children.length === 0) {
+    return null;
+  }
   return (
     "[" +
     children

@@ -567,6 +567,46 @@ describe(__filename + "#", () => {
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 _80f4925f_active _pub-80f4925f_active active"></div>`
       }
+    ],
+    [
+      "Can render a fragment",
+      {
+        "/entry.pc": `
+          <fragment component as="Test">
+            <span>{children}!</span>
+            <br />
+          </fragment>
+          <Test export component as="Entry">Hello!</Test>
+        `
+      },
+      {
+        Entry: {
+          active: true
+        }
+      },
+      {
+        Entry: `<span class="_9e7e6af9 _80f4925f _pub-80f4925f">Hello!!</span><br class="_e9795a6f _80f4925f _pub-80f4925f"/>`
+      }
+    ],
+    [
+      "Can change tagName of fragment",
+      {
+        "/entry.pc": `
+          <fragment component as="Test" {tagName?}>
+            <span>{children}!</span>
+            <br />
+          </fragment>
+          <Test export component as="Entry" tagName="div">Hello!</Test>
+        `
+      },
+      {
+        Entry: {
+          active: true
+        }
+      },
+      {
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f"><span class="_9e7e6af9 _80f4925f _pub-80f4925f">Hello!!</span><br class="_e9795a6f _80f4925f _pub-80f4925f"/></div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {
