@@ -1,7 +1,7 @@
-import { Node, ClassNameExport } from "paperclip";
-import { compile as compileDefinition } from "./definition-compiler";
 import { IntermediatModule } from "paperclip-compiler-interm";
+import { Node, ClassNameExport } from "paperclip";
 import { compile as compile2Code } from "./code-compiler";
+import { compile as compileDefinition } from "./definition-compiler";
 
 type Options = {
   definition?: boolean;
@@ -34,7 +34,7 @@ export const compileFile = (
   options: Options = {}
 ) => {
   const files = {
-    [filePath + ".js"]: compile2Code(module)
+    [filePath + ".js"]: compile2Code(module, filePath)
   };
 
   return files;

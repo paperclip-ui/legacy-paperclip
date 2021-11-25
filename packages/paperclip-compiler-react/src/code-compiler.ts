@@ -1,17 +1,17 @@
 import {
-  DynamicAttributeValuePart,
-  IntermAttributeValuePart,
-  IntermAttributeValuePartKind,
   IntermNode,
-  IntermComponent,
-  IntermediatModule,
+  IntermText,
+  IntermImport,
   IntermElement,
   IntermNodeKind,
   IntermSlotNode,
-  IntermText,
+  IntermComponent,
+  IntermediatModule,
   StaticAttributeValuePart,
-  IntermImport,
-  IntermConjunctionOperator
+  IntermAttributeValuePart,
+  IntermConjunctionOperator,
+  DynamicAttributeValuePart,
+  IntermAttributeValuePartKind
 } from "paperclip-compiler-interm";
 import { camelCase, omit } from "lodash";
 import {
@@ -20,6 +20,8 @@ import {
 } from "paperclip-compiler-interm";
 import { getElementInstanceName } from "./utils";
 import { Html5Entities } from "html-entities";
+import { SourceNode } from "source-map";
+import { Context } from "./utils";
 
 const entities = new Html5Entities();
 
@@ -38,15 +40,16 @@ const CAST_STYLE_UTIL = `
   };
 `;
 
-export const compile = (interm: IntermediatModule) => {
-  const buffer = [`import React from "react";`];
-  buffer.push(...interm.imports.map(translateImport(interm)));
+export const compile = (module: IntermediatModule, filePath: string) => {
+  const context: Context = { module, filePath };
+  const buffer: Array<string | SourceNode> = [`import React from "react";`];
+  buffer.push(...module.imports.map(translateImport(context)));
   buffer.push(CAST_STYLE_UTIL);
-  buffer.push(...interm.components.map(compileComponent(interm)));
-  return buffer.join("");
+  buffer.push(...module.components.map(compileComponent(context)));
+  return new SourceNode(1, 1, filePath, buffer).toStringWithSourceMap().code;
 };
 
-const translateImport = (interm: IntermediatModule) => (imp: IntermImport) => {
+const translateImport = (context: Context) => (imp: IntermImport) => {
   if (!imp.namespace) {
     return "";
   }
@@ -62,7 +65,7 @@ const translateImport = (interm: IntermediatModule) => (imp: IntermImport) => {
       parts.push(
         tagName +
           " as " +
-          getElementInstanceName(imp.namespace, tagName, interm)
+          getElementInstanceName(imp.namespace, tagName, context)
       );
     }
 
@@ -74,9 +77,7 @@ const translateImport = (interm: IntermediatModule) => (imp: IntermImport) => {
   return buffer.join("");
 };
 
-const compileComponent = (module: IntermediatModule) => (
-  component: IntermComponent
-) => {
+const compileComponent = (context: Context) => (component: IntermComponent) => {
   const buffer = [];
 
   if (component.exported) {
@@ -84,25 +85,30 @@ const compileComponent = (module: IntermediatModule) => (
   }
 
   buffer.push(`function ${component.as}(props) {`);
-  buffer.push("return ", compileElement(component, module));
+  buffer.push("return ", compileElement(component, context));
   buffer.push("}");
 
-  return buffer.join("");
+  return new SourceNode(
+    component.range.start.line,
+    component.range.start.column,
+    context.filePath,
+    buffer
+  );
 };
 
 const compileElement = (
   element: IntermElement | IntermComponent,
-  module: IntermediatModule
+  context: Context
 ) => {
-  const children = compileChildren(element.children, module);
-  let attributes = compileAttributeValues(element, module);
+  const children = compileChildren(element.children, context);
+  let attributes = compileAttributeValues(element, context);
 
   let tagName;
 
   if (element.tagName === "fragment") {
     tagName = `React.Fragment`;
   } else {
-    tagName = nativeOrInstanceTag(element, module);
+    tagName = nativeOrInstanceTag(element, context);
   }
 
   if (attributes.tagName && !element.isInstance) {
@@ -115,10 +121,10 @@ const compileElement = (
 
 const nativeOrInstanceTag = (
   element: IntermElement | IntermComponent,
-  module: IntermediatModule
+  context: Context
 ) => {
   if (element.isInstance) {
-    return getElementInstanceName(element.namespace, element.tagName, module);
+    return getElementInstanceName(element.namespace, element.tagName, context);
   }
 
   return `"${element.tagName}"`;
@@ -126,7 +132,7 @@ const nativeOrInstanceTag = (
 
 const compileAttributeValues = (
   element: IntermElement | IntermComponent,
-  module: IntermediatModule
+  context: Context
 ): Record<string, string> => {
   const atts: Record<string, string> = {};
   atts.className = `"${element.scopeClassNames.join(" ")}"`;
@@ -143,7 +149,7 @@ const compileAttributeValues = (
     const parts = [];
     for (const variant of attribute.variants) {
       let value = variant.parts
-        .map(compileAttributeValue(attrName, module))
+        .map(compileAttributeValue(attrName, context))
         .join(" + ");
       if (variant.variantName) {
         value = value
@@ -182,12 +188,12 @@ const json = (record: Record<string, string>) => {
 
 const prop = (name: string) => `props["${name}"]`;
 
-const compileAttributeValue = (name: string, module: IntermediatModule) => (
+const compileAttributeValue = (name: string, context: Context) => (
   part: IntermAttributeValuePart
 ) => {
   switch (part.kind) {
     case IntermAttributeValuePartKind.Dynamic:
-      return compileDynamicAttributePart(part, module);
+      return compileDynamicAttributePart(part, context);
     case IntermAttributeValuePartKind.Static:
       return compileStaticAttributePart(part);
     case IntermAttributeValuePartKind.Shorthand:
@@ -197,9 +203,9 @@ const compileAttributeValue = (name: string, module: IntermediatModule) => (
 
 const compileDynamicAttributePart = (
   part: DynamicAttributeValuePart,
-  module: IntermediatModule
+  context: Context
 ) => {
-  return or(compileScript(part.script, module), `""`);
+  return or(compileScript(part.script, context), `""`);
 };
 
 const CONJ_MAP = {
@@ -207,30 +213,44 @@ const CONJ_MAP = {
   [IntermConjunctionOperator.Or]: "||"
 };
 
-const compileScript = (
-  script: IntermScriptExpression,
-  module: IntermediatModule
-) => {
+const compileScript = (script: IntermScriptExpression, context: Context) => {
+  let buffer: any;
+
   switch (script.kind) {
     case IntermScriptExpressionKind.String:
-      return `"${script.value}"`;
+      buffer = JSON.stringify(script.value);
+      break;
     case IntermScriptExpressionKind.Reference:
-      return prop(script.name);
+      buffer = prop(script.name);
+      break;
     case IntermScriptExpressionKind.Number:
-      return script.value;
+      buffer = String(script.value);
+      break;
     case IntermScriptExpressionKind.Not:
-      return `!${compileScript(script.expression, module)}`;
+      buffer = ["!", compileScript(script.expression, context)];
+      break;
     case IntermScriptExpressionKind.Group:
-      return `(${compileScript(script.inner, module)})`;
+      buffer = ["(", compileScript(script.inner, context), ")"];
+      break;
     case IntermScriptExpressionKind.Element:
-      return compileElement(script.element, module);
+      buffer = compileElement(script.element, context);
+      break;
     case IntermScriptExpressionKind.Conjunction:
-      return `${compileScript(script.left, module)}${
+      buffer = `${compileScript(script.left, context)}${
         CONJ_MAP[script.operator]
-      }${compileScript(script.right, module)}`;
+      }${compileScript(script.right, context)}`;
+      break;
     case IntermScriptExpressionKind.Boolean:
-      return script.value;
+      buffer = String(script.value);
+      break;
   }
+
+  return new SourceNode(
+    script.range.start.line,
+    script.range.start.column,
+    context.filePath,
+    buffer
+  );
 };
 
 const or = (a, b) => `(${a} || ${b})`;
@@ -247,11 +267,11 @@ const compileText = (text: IntermText) => {
   return JSON.stringify(entities.decode(text.value));
 };
 
-const compileSlot = (slot: IntermSlotNode, module: IntermediatModule) => {
-  return compileScript(slot.script, module);
+const compileSlot = (slot: IntermSlotNode, context: Context) => {
+  return compileScript(slot.script, context);
 };
 
-const compileChildren = (children: IntermNode[], module: IntermediatModule) => {
+const compileChildren = (children: IntermNode[], context: Context) => {
   if (children.length === 0) {
     return null;
   }
@@ -261,13 +281,13 @@ const compileChildren = (children: IntermNode[], module: IntermediatModule) => {
       .map(child => {
         switch (child.kind) {
           case IntermNodeKind.Element: {
-            return compileElement(child, module);
+            return compileElement(child, context);
           }
           case IntermNodeKind.Text: {
             return compileText(child);
           }
           case IntermNodeKind.Slot: {
-            return compileSlot(child, module);
+            return compileSlot(child, context);
           }
         }
       })
