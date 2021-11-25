@@ -11,7 +11,8 @@ import {
   IntermAttributeValuePart,
   IntermConjunctionOperator,
   DynamicAttributeValuePart,
-  IntermAttributeValuePartKind
+  IntermAttributeValuePartKind,
+  ShorthandAttributeValuePart
 } from "paperclip-compiler-interm";
 import { camelCase, omit } from "lodash";
 import {
@@ -105,6 +106,8 @@ const compileElement = (
 
   let tagName;
 
+  let buffer = [];
+
   if (element.tagName === "fragment") {
     tagName = `React.Fragment`;
   } else {
@@ -112,11 +115,26 @@ const compileElement = (
   }
 
   if (attributes.tagName && !element.isInstance) {
-    tagName = `(${attributes.tagName}) || ${tagName}`;
+    tagName = [`(`, attributes.tagName, `) || `, tagName];
     attributes = omit(attributes, "tagName");
   }
 
-  return `React.createElement(${tagName}, ${json(attributes)}, ${children})`;
+  console.log(tagName);
+
+  return new SourceNode(
+    element.range.start.line,
+    element.range.start.column,
+    context.filePath,
+    [
+      `React.createElement(`,
+      tagName,
+      `, `,
+      json(attributes),
+      `, `,
+      children,
+      `)`
+    ]
+  );
 };
 
 const nativeOrInstanceTag = (
@@ -176,14 +194,14 @@ const compileAttributeValues = (
   return atts;
 };
 
-const json = (record: Record<string, string>) => {
+const json = (record: Record<string, any>) => {
   const inner = [];
 
   for (const name in record) {
     inner.push(`"${name}": ${record[name]}`);
   }
 
-  return `{${inner.join(", ")}}`;
+  return [`{`, inner.join(", "), `}`];
 };
 
 const prop = (name: string) => `props["${name}"]`;
@@ -195,9 +213,9 @@ const compileAttributeValue = (name: string, context: Context) => (
     case IntermAttributeValuePartKind.Dynamic:
       return compileDynamicAttributePart(part, context);
     case IntermAttributeValuePartKind.Static:
-      return compileStaticAttributePart(part);
+      return compileStaticAttributePart(part, context);
     case IntermAttributeValuePartKind.Shorthand:
-      return compileShorthandAttributePart(name);
+      return compileShorthandAttributePart(name, part, context);
   }
 };
 
@@ -255,16 +273,38 @@ const compileScript = (script: IntermScriptExpression, context: Context) => {
 
 const or = (a, b) => `(${a} || ${b})`;
 
-const compileStaticAttributePart = (part: StaticAttributeValuePart) => {
-  return `"${part.value}"`;
+const compileStaticAttributePart = (
+  part: StaticAttributeValuePart,
+  context: Context
+) => {
+  return new SourceNode(
+    part.range.start.line,
+    part.range.start.column,
+    context.filePath,
+    `"${part.value}"`
+  );
 };
 
-const compileShorthandAttributePart = (name: string) => {
-  return or(prop(name), `""`);
+const compileShorthandAttributePart = (
+  name: string,
+  part: ShorthandAttributeValuePart,
+  context: Context
+) => {
+  return new SourceNode(
+    part.range.start.line,
+    part.range.start.column,
+    context.filePath,
+    or(prop(name), `""`)
+  );
 };
 
-const compileText = (text: IntermText) => {
-  return JSON.stringify(entities.decode(text.value));
+const compileText = (text: IntermText, context: Context) => {
+  return new SourceNode(
+    text.range.start.line,
+    text.range.start.column,
+    context.filePath,
+    JSON.stringify(entities.decode(text.value))
+  );
 };
 
 const compileSlot = (slot: IntermSlotNode, context: Context) => {
@@ -284,7 +324,7 @@ const compileChildren = (children: IntermNode[], context: Context) => {
             return compileElement(child, context);
           }
           case IntermNodeKind.Text: {
-            return compileText(child);
+            return compileText(child, context);
           }
           case IntermNodeKind.Slot: {
             return compileSlot(child, context);
