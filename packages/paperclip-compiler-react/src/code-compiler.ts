@@ -19,7 +19,12 @@ import {
   IntermScriptExpressionKind,
   IntermScriptExpression
 } from "paperclip-compiler-interm";
-import { arrayJoin, getElementInstanceName } from "./utils";
+import {
+  addBuffer,
+  arrayJoin,
+  createTranslateContext,
+  getElementInstanceName
+} from "./utils";
 import { Html5Entities } from "html-entities";
 import { SourceNode } from "source-map";
 import { Context } from "./utils";
@@ -27,66 +32,72 @@ import { Context } from "./utils";
 const entities = new Html5Entities();
 
 const CAST_STYLE_UTIL = `
-  const castStyle = (value) => {
-    const tov = typeof value;
-    if (tov === "object" || tov !== "string" || !value) return value;
-    return value.trim().split(";").reduce((obj, keyValue) => {
-      const [key, value] = keyValue.split(":");
-      if (!value || value === "undefined") return obj;
-      const trimmedValue = value.trim();
-      if (trimmedValue === "undefined" || !trimmedValue) return obj;
-      obj[key.trim()] = trimmedValue;
-      return obj;
-    }, {});
-  };
-`;
+const castStyle = (value) => {
+  const tov = typeof value;
+  if (tov === "object" || tov !== "string" || !value) return value;
+  return value.trim().split(";").reduce((obj, keyValue) => {
+    const [key, value] = keyValue.split(":");
+    if (!value || value === "undefined") return obj;
+    const trimmedValue = value.trim();
+    if (trimmedValue === "undefined" || !trimmedValue) return obj;
+    obj[key.trim()] = trimmedValue;
+    return obj;
+  }, {});
+};
+`.trim();
 
 export const compile = (module: IntermediatModule, filePath: string) => {
-  const context: Context = {
-    module,
-    filePath,
-    buffer: [],
-    lineNumber: 0,
-    isNewLine: true,
-    indent: "  "
-  };
+  let context: Context = createTranslateContext(module, filePath);
 
-  const buffer: Array<any> = [`import React from "react";`];
-  buffer.push(...module.imports.map(translateImport(context)));
-  buffer.push(CAST_STYLE_UTIL);
-  buffer.push(...module.components.map(compileComponent(context)));
-  return new SourceNode(1, 1, filePath, buffer).toStringWithSourceMap().code;
+  context = addBuffer([`import React from "react";`], context);
+
+  context = translateImports(context);
+  context = addBuffer([CAST_STYLE_UTIL, "\n"], context);
+  context = compileComponents(context);
+
+  return new SourceNode(1, 1, filePath, context.buffer).toStringWithSourceMap()
+    .code;
 };
 
-const translateImport = (context: Context) => (imp: IntermImport) => {
-  if (!imp.namespace) {
-    return "";
-  }
-
-  const buffer = [`import `];
-
-  buffer.push(`_${camelCase(imp.publicScopeId)}`);
-
-  if (imp.usedTagNames.length) {
-    const parts = [];
-
-    for (const tagName of imp.usedTagNames) {
-      parts.push(
-        tagName +
-          " as " +
-          getElementInstanceName(imp.namespace, tagName, context)
-      );
+const translateImports = (context: Context) => {
+  return context.module.imports.reduce((context, imp) => {
+    if (!imp.namespace) {
+      return context;
     }
 
-    buffer.push(`, {`, arrayJoin(parts, ","), `}`);
-  }
+    context = addBuffer([`import `], context);
 
-  buffer.push(` from "${imp.filePath}"`);
+    context = addBuffer([`_${camelCase(imp.publicScopeId)}`], context);
 
-  return buffer;
+    if (imp.usedTagNames.length) {
+      const parts = [];
+
+      for (const tagName of imp.usedTagNames) {
+        parts.push(
+          tagName +
+            " as " +
+            getElementInstanceName(imp.namespace, tagName, context)
+        );
+      }
+
+      context = addBuffer([`, {`, arrayJoin(parts, ","), `}`], context);
+    }
+
+    context = addBuffer([` from "${imp.filePath}"`], context);
+
+    return context;
+  }, context);
 };
 
-const compileComponent = (context: Context) => (component: IntermComponent) => {
+const compileComponents = (context: Context) => {
+  return context.module.components.reduce((context, component) => {
+    context = addBuffer(compileComponent(component, context), context);
+
+    return context;
+  }, context);
+};
+
+const compileComponent = (component: IntermComponent, context: Context) => {
   const buffer = [];
 
   if (component.exported) {

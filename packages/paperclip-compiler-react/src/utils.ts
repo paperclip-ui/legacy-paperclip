@@ -12,6 +12,18 @@ export type Context = {
   indent: string;
 };
 
+export const createTranslateContext = (
+  module: IntermediatModule,
+  filePath: string
+): Context => ({
+  module,
+  filePath,
+  buffer: [],
+  lineNumber: 0,
+  isNewLine: true,
+  indent: "  "
+});
+
 export const RENAME_PROPS = {
   class: "className",
   autofocus: "autoFocus",
@@ -92,7 +104,7 @@ export const arrayJoin = (buffer: any[], sep: string) =>
     return ary;
   }, []);
 
-export const addBuffer = (buffer: any[], context: Context) => ({
+export const addBuffer = (buffer: any, context: Context) => ({
   ...context,
   buffer: [
     ...context.buffer,
