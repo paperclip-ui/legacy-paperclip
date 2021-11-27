@@ -608,6 +608,25 @@ describe(__filename + "#", () => {
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f"><span class="_9e7e6af9 _80f4925f _pub-80f4925f">Hello!!</span><br class="_e9795a6f _80f4925f _pub-80f4925f"/></div>`
       }
+    ],
+    [
+      "Can define class on fragment if tagname is changed",
+      {
+        "/entry.pc": `
+          <fragment component as="Test" {tagName?} {class?}>
+            {children}
+          </fragment>
+          <Test export component as="Entry" tagName="div" class="blah">Hello!</Test>
+        `
+      },
+      {
+        Entry: {
+          active: true
+        }
+      },
+      {
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 blah">Hello!</div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {

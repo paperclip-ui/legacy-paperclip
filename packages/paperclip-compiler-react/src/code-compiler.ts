@@ -159,25 +159,9 @@ const nativeOrInstanceTag = (
 const compileAttributes = (element: InterimElement | InterimComponent) => (
   context: Context
 ) => {
-  context = addBuffer([
-    "{\n",
-    startBlock,
-    `${element.isInstance ? '"class"' : '"className"'}: `,
-    `"${element.scopeClassNames.join(" ")}"`,
-    element.attributes.class &&
-      addBuffer([
-        ` + `,
-        compileAttributeValue(
-          "class",
-          element.attributes.class.variants,
-          conditional =>
-            conditional
-              ? compileConditionalClassNamePart
-              : compileEssentialClassNamePart
-        )
-      ]),
-    ",\n"
-  ])(context);
+  context = addBuffer(["{\n", startBlock])(context);
+
+  context = writeClassAttribute(element)(context);
 
   const omitAttributeNames = ["class"];
 
@@ -206,6 +190,41 @@ const compileAttributes = (element: InterimElement | InterimComponent) => (
   return addBuffer([endBlock, "}"])(context);
 };
 
+const writeClassAttribute = (element: InterimElement | InterimComponent) => (
+  context: Context
+) => {
+  let writeClassValue = addBuffer([
+    `"${element.scopeClassNames.join(" ")}"`,
+    element.attributes.class &&
+      addBuffer([
+        ` + `,
+        compileAttributeValue(
+          "class",
+          element.attributes.class.variants,
+          conditional =>
+            conditional
+              ? compileConditionalClassNamePart
+              : compileEssentialClassNamePart
+        )
+      ])
+  ]);
+
+  if (element.tagName === "fragment") {
+    if (element.attributes.tagName) {
+      const inner = writeClassValue;
+      writeClassValue = addBuffer(["props.tagName", " ? ", inner, " : null"]);
+    } else {
+      return context;
+    }
+  }
+
+  return addBuffer([
+    `${element.isInstance ? '"class"' : '"className"'}: `,
+    writeClassValue,
+    ",\n"
+  ])(context);
+};
+
 const compileConditionalClassNamePart = (inner: ContextWriter) =>
   addBuffer(["(", inner, " ? ", `" " + `, inner, ` : `, `""`, ")"]);
 
@@ -215,7 +234,7 @@ const compileEssentialClassNamePart = (inner: ContextWriter) =>
 const compileAttributeValue = (
   attrName: string,
   variants: InterimAttributeValue[],
-  write: (conditional: boolean) => (nested: ContextWriter) => ContextWriter
+  outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
 ) => (context: Context) => {
   context = writeJoin(variants, context, ` + `, variant => context => {
     if (!variant.parts) {
@@ -227,11 +246,11 @@ const compileAttributeValue = (
         "(",
         prop(variant.variantName),
         " ? ",
-        compileVariantParts(attrName, variant.parts, write),
+        compileVariantParts(attrName, variant.parts, outer),
         ` : "")`
       ])(context);
     } else {
-      context = compileVariantParts(attrName, variant.parts, write)(context);
+      context = compileVariantParts(attrName, variant.parts, outer)(context);
     }
     return context;
   });
@@ -242,7 +261,7 @@ const compileAttributeValue = (
 const compileVariantParts = (
   attrName: string,
   parts: InterimAttributeValuePart[],
-  format: (conditional: boolean) => (write: ContextWriter) => ContextWriter
+  outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
 ) => (context: Context) => {
   if (attrName === "style") {
     context = addBuffer([`castStyle(`])(context);
@@ -252,7 +271,7 @@ const compileVariantParts = (
     parts,
     context,
     " + ",
-    compileAttributeValuePart(attrName, format)
+    compileAttributeValuePart(attrName, outer)
   );
 
   if (attrName === "style") {
@@ -280,12 +299,12 @@ const compileAttributeValuePart = (
 
 const compileDynamicAttributePart = (
   part: DynamicAttributeValuePart,
-  format: (conditional: boolean) => (nested: ContextWriter) => ContextWriter
+  outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
 ) => {
   let write = compileScript(part.script);
-  if (format) {
+  if (outer) {
     const prev = write;
-    write = format(true)(prev);
+    write = outer(true)(prev);
   } else {
     write = addBuffer(["(", write, " || ", '""', ")"]);
   }
@@ -332,18 +351,18 @@ const or = (a, b) => [`(`, a, `|| `, b, `)`];
 
 const compileStaticAttributePart = (
   part: StaticAttributeValuePart,
-  format: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
+  outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
 ) =>
   writeSourceNode(
     part.range?.start,
-    format(false)(addBuffer([JSON.stringify(part.value)]))
+    outer(false)(addBuffer([JSON.stringify(part.value)]))
   );
 
 const compileShorthandAttributePart = (
   name: string,
   part: ShorthandAttributeValuePart,
-  format: (conditional: boolean) => (nested: ContextWriter) => ContextWriter
-) => writeSourceNode(part.range?.start, format(true)(addBuffer([prop(name)])));
+  outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
+) => writeSourceNode(part.range?.start, outer(true)(addBuffer([prop(name)])));
 
 const compileText = (text: InterimText) =>
   addBuffer([

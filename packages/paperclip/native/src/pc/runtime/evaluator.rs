@@ -991,9 +991,7 @@ fn create_component_instance_data<'a>(
     evaluate_children(&instance_element.children, depth, context)?;
 
   if contains_style {
-    let class_name_option = data
-      .values
-      .get("class");
+    let class_name_option = data.values.get("class");
 
     let class_name_value = if let Some(class_name) = class_name_option {
       class_name.to_string()
