@@ -157,11 +157,12 @@ const nativeOrInstanceTag = (
 const compileAttributes = (element: IntermElement | IntermComponent) => (
   context: Context
 ) => {
-  context = addBuffer([`{\n`, startBlock])(context);
-  context = addBuffer([`className: "${element.scopeClassNames.join(" ")}"`])(
-    context
-  );
-  const className = element.attributes.className || element.attributes.class;
+  context = addBuffer([
+    "{\n",
+    startBlock,
+    `className: `,
+    `"${element.scopeClassNames.join(" ")}",`
+  ])(context);
 
   context = writeJoin(
     Object.keys(omit(element.attributes, ["className", "class"])),
