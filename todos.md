@@ -1,7 +1,7 @@
 - MVP
 
 
-Interm compiler TODO:
+Interim compiler TODO:
 
 - attach CSS IDs to elements
   - identify inject-styles from imports

@@ -2,7 +2,7 @@ import { compile } from "../code-compiler";
 import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
-import { IntermediateCompiler } from "paperclip-compiler-interm";
+import { interimCompiler } from "paperclip-compiler-interim";
 
 const builtin = {
   react: React
@@ -19,7 +19,7 @@ export const compileModules = async (graph: Record<string, string>) => {
     }
   });
 
-  const intermCompiler = new IntermediateCompiler(engine);
+  const intermCompiler = new interimCompiler(engine);
 
   const modules = {};
 

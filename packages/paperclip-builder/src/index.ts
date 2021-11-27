@@ -1,7 +1,7 @@
 import * as resolve from "resolve";
 import { PaperclipConfig, PaperclipResourceWatcher } from "paperclip-utils";
 import EventEmitter from "events";
-import { IntermediateCompiler } from "paperclip-compiler-interm";
+import { interimCompiler } from "paperclip-compiler-interim";
 import { EngineDelegate } from "paperclip";
 
 export type Options = {
@@ -58,7 +58,7 @@ export const $$buildFile = (
 
   const files: Record<string, string> = {};
 
-  const intermCompiler = new IntermediateCompiler(engine);
+  const intermCompiler = new interimCompiler(engine);
   const interm = intermCompiler.parseFile(filePath);
 
   files[filePath + ".css"] = interm.css.sheetText;
