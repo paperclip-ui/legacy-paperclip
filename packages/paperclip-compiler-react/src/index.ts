@@ -1,4 +1,4 @@
-import { interimModule } from "paperclip-compiler-interim";
+import { InterimModule } from "paperclip-compiler-interim";
 import { Node, ClassNameExport } from "paperclip";
 import { compile as compile2Code } from "./code-compiler";
 import { compile as compileDefinition } from "./definition-compiler";
@@ -30,7 +30,7 @@ export const compile = (
 
 export const compileFile = (
   filePath: string,
-  module: interimModule,
+  module: InterimModule,
   options: Options = {}
 ) => {
   const files = {

@@ -6,7 +6,7 @@ import {
   InterimNodeKind,
   InterimSlotNode,
   InterimComponent,
-  interimModule,
+  InterimModule,
   StaticAttributeValuePart,
   InterimAttributeValuePart,
   InterimConjunctionOperator,
@@ -16,7 +16,7 @@ import {
   InterimAttribute,
   InterimAttributeValue
 } from "paperclip-compiler-interim";
-import { camelCase, omit } from "lodash";
+import { camelCase, identity, omit } from "lodash";
 import {
   InterimScriptExpressionKind,
   InterimScriptExpression
@@ -30,7 +30,8 @@ import {
   addBuffer,
   wrapSourceNode,
   writeSourceNode,
-  writeJoin
+  writeJoin,
+  ContextWriter
 } from "./utils";
 import { Html5Entities } from "html-entities";
 import { Context } from "./utils";
@@ -54,13 +55,14 @@ function castStyle(value) {
 }
 `.trim();
 
-export const compile = (module: interimModule, filePath: string) =>
+export const compile = (module: InterimModule, filePath: string) =>
   writeSourceNode(
     { line: 1, column: 1, pos: 1 },
     addBuffer([
       `import React from "react";\n\n`,
       translateImports,
       CAST_STYLE_UTIL,
+      "\n\n",
       compileComponents,
       "\n\n"
     ])
@@ -127,7 +129,7 @@ const compileElement = (element: InterimElement | InterimComponent) =>
       tagName = nativeOrInstanceTag(element, context);
     }
 
-    if (element.attributes.tagName) {
+    if (element.attributes.tagName && !element.isInstance) {
       const tagNameStr = tagName;
       tagName = context =>
         addBuffer(["props.tagName || ", tagNameStr])(context);
@@ -160,35 +162,64 @@ const compileAttributes = (element: InterimElement | InterimComponent) => (
   context = addBuffer([
     "{\n",
     startBlock,
-    `className: `,
-    `"${element.scopeClassNames.join(" ")}",`
+    `${element.isInstance ? '"class"' : '"className"'}: `,
+    `"${element.scopeClassNames.join(" ")}"`,
+    element.attributes.class &&
+      addBuffer([
+        ` + `,
+        compileAttributeValue(
+          "class",
+          element.attributes.class.variants,
+          conditional =>
+            conditional
+              ? compileConditionalClassNamePart
+              : compileEssentialClassNamePart
+        )
+      ]),
+    ",\n"
   ])(context);
 
+  const omitAttributeNames = ["class"];
+
+  if (!element.isInstance) {
+    omitAttributeNames.push("tagName");
+  }
+
+  const attrKeys = Object.keys(omit(element.attributes, omitAttributeNames));
+
   context = writeJoin(
-    Object.keys(omit(element.attributes, ["className", "class"])),
+    attrKeys,
     context,
     ",\n",
-    key => context => {
-      context = addBuffer([JSON.stringify(key), ": "])(context);
-      return compileAttributeValue(
-        key,
-        element.attributes[key].variants,
-        context
-      );
-    }
+    key =>
+      addBuffer([
+        addBuffer([JSON.stringify(key), ": "]),
+        compileAttributeValue(
+          key,
+          element.attributes[key].variants,
+          conditional => write => write
+        )
+      ]),
+    true
   );
 
-  return addBuffer(["\n", endBlock, "}"])(context);
+  return addBuffer([endBlock, "}"])(context);
 };
+
+const compileConditionalClassNamePart = (inner: ContextWriter) =>
+  addBuffer(["(", inner, " ? ", `" " + `, inner, ` : `, `""`, ")"]);
+
+const compileEssentialClassNamePart = (inner: ContextWriter) =>
+  addBuffer([`" " + `, inner]);
 
 const compileAttributeValue = (
   attrName: string,
   variants: InterimAttributeValue[],
-  context: Context
-) => {
-  context = writeJoin(variants, context, ` + " " + `, variant => context => {
+  write: (conditional: boolean) => (nested: ContextWriter) => ContextWriter
+) => (context: Context) => {
+  context = writeJoin(variants, context, ` + `, variant => context => {
     if (!variant.parts) {
-      return addBuffer([`true\n`])(context);
+      return addBuffer([`true`])(context);
     }
 
     if (variant.variantName) {
@@ -196,11 +227,11 @@ const compileAttributeValue = (
         "(",
         prop(variant.variantName),
         " ? ",
-        compileVariantParts(attrName, variant.parts),
+        compileVariantParts(attrName, variant.parts, write),
         ` : "")`
       ])(context);
     } else {
-      context = compileVariantParts(attrName, variant.parts)(context);
+      context = compileVariantParts(attrName, variant.parts, write)(context);
     }
     return context;
   });
@@ -210,7 +241,8 @@ const compileAttributeValue = (
 
 const compileVariantParts = (
   attrName: string,
-  parts: InterimAttributeValuePart[]
+  parts: InterimAttributeValuePart[],
+  format: (conditional: boolean) => (write: ContextWriter) => ContextWriter
 ) => (context: Context) => {
   if (attrName === "style") {
     context = addBuffer([`castStyle(`])(context);
@@ -220,7 +252,7 @@ const compileVariantParts = (
     parts,
     context,
     " + ",
-    compileAttributeValuePart(attrName)
+    compileAttributeValuePart(attrName, format)
   );
 
   if (attrName === "style") {
@@ -232,24 +264,34 @@ const compileVariantParts = (
 
 const prop = (name: string) => `props["${name}"]`;
 
-const compileAttributeValuePart = (name: string) => (
-  part: InterimAttributeValuePart
-) => {
+const compileAttributeValuePart = (
+  name: string,
+  format: (conditional: boolean) => (write: ContextWriter) => ContextWriter
+) => (part: InterimAttributeValuePart) => {
   switch (part.kind) {
     case InterimAttributeValuePartKind.Dynamic:
-      return compileDynamicAttributePart(part);
+      return compileDynamicAttributePart(part, format);
     case InterimAttributeValuePartKind.Static:
-      return compileStaticAttributePart(part);
+      return compileStaticAttributePart(part, format);
     case InterimAttributeValuePartKind.Shorthand:
-      return compileShorthandAttributePart(name, part);
+      return compileShorthandAttributePart(name, part, format);
   }
 };
 
-const compileDynamicAttributePart = (part: DynamicAttributeValuePart) =>
-  writeSourceNode(
-    part.range?.start,
-    addBuffer(["(", compileScript(part.script), " || ", '""', ")"])
-  );
+const compileDynamicAttributePart = (
+  part: DynamicAttributeValuePart,
+  format: (conditional: boolean) => (nested: ContextWriter) => ContextWriter
+) => {
+  let write = compileScript(part.script);
+  if (format) {
+    const prev = write;
+    write = format(true)(prev);
+  } else {
+    write = addBuffer(["(", write, " || ", '""', ")"]);
+  }
+
+  return writeSourceNode(part.range?.start, write);
+};
 
 const CONJ_MAP = {
   [InterimConjunctionOperator.And]: "&&",
@@ -288,13 +330,20 @@ const scriptCompiler = (script: InterimScriptExpression) => {
 
 const or = (a, b) => [`(`, a, `|| `, b, `)`];
 
-const compileStaticAttributePart = (part: StaticAttributeValuePart) =>
-  writeSourceNode(part.range?.start, addBuffer([JSON.stringify(part.value)]));
+const compileStaticAttributePart = (
+  part: StaticAttributeValuePart,
+  format: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
+) =>
+  writeSourceNode(
+    part.range?.start,
+    format(false)(addBuffer([JSON.stringify(part.value)]))
+  );
 
 const compileShorthandAttributePart = (
   name: string,
-  part: ShorthandAttributeValuePart
-) => writeSourceNode(part.range?.start, addBuffer([or(prop(name), `""`)]));
+  part: ShorthandAttributeValuePart,
+  format: (conditional: boolean) => (nested: ContextWriter) => ContextWriter
+) => writeSourceNode(part.range?.start, format(true)(addBuffer([prop(name)])));
 
 const compileText = (text: InterimText) =>
   addBuffer([
@@ -316,18 +365,18 @@ const compileChildren = (children: InterimNode[]) => (context: Context) => {
 
   context = addBuffer([`[\n`])(context);
   context = startBlock(context);
-  context = writeJoin(children, context, ", ", child => {
+  context = writeJoin(children, context, ",\n", child => {
     switch (child.kind) {
       case InterimNodeKind.Element: {
-        return addBuffer([compileElement(child), "\n"]);
+        return compileElement(child);
       }
       case InterimNodeKind.Text: {
-        return addBuffer([compileText(child), "\n"]);
+        return compileText(child);
       }
       case InterimNodeKind.Slot: {
-        return addBuffer([compileSlot(child), "\n"]);
+        return compileSlot(child);
       }
     }
   });
-  return addBuffer([endBlock, `]`])(context);
+  return addBuffer([endBlock, `\n`, `]`])(context);
 };

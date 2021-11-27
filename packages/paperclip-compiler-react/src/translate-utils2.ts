@@ -1,7 +1,7 @@
-import { interimModule } from "paperclip-compiler-interim";
+import { InterimModule } from "paperclip-compiler-interim";
 
 export type TranslateContext = {
-  interm: interimModule;
+  interm: InterimModule;
   buffer: string;
   lineNumber: number;
   isNewLine: boolean;
@@ -9,7 +9,7 @@ export type TranslateContext = {
 };
 
 export const createTranslateContext = (
-  interm: interimModule
+  interm: InterimModule
 ): TranslateContext => ({
   interm,
   buffer: "",

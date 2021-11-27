@@ -27,11 +27,11 @@ import {
   InterimImport
 } from "../state";
 import { translateScript } from "./script";
-import { interimCompilerOptions, ModuleContext } from "./options";
+import { InterimCompilerOptions, ModuleContext } from "./options";
 
 export const translateComponents = (
   ast: Node,
-  options: interimCompilerOptions,
+  options: InterimCompilerOptions,
   filePath: string,
   imports: InterimImport[]
 ) => {
@@ -200,9 +200,8 @@ const getAttributeValueParts = (
   tagName: string,
   context: ModuleContext
 ): InterimAttributeValuePart[] => {
-  const parts = [];
   if (!value) {
-    return parts;
+    return null;
   }
   switch (value.attrValueKind) {
     case AttributeValueKind.DyanmicString: {
@@ -267,7 +266,7 @@ const translateValuePart = (
     return part;
   }
 
-  if (attrName === "class" || attrName === "className") {
+  if (attrName === "class") {
     return part
       .split(" ")
       .map(slice => {
@@ -328,10 +327,6 @@ const maybeAddAttributeValue = (
   }
 
   const isNative = isNativeElement(tagName, context);
-
-  if (name === "className" && isNative) {
-    name = "class";
-  }
 
   if (!groups[name]) {
     groups[name] = { variants: [] };

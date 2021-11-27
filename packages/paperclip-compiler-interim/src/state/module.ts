@@ -10,7 +10,7 @@ export type InterimImport = {
   injectedStyles: boolean;
 };
 
-export type interimModule = {
+export type InterimModule = {
   imports: InterimImport[];
 
   // exported components

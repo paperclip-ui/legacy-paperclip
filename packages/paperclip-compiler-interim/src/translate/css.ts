@@ -1,10 +1,10 @@
 import { stringifyCSSSheet, VirtSheet } from "paperclip-utils";
 import { InterimCSS } from "../state";
-import { interimCompilerOptions } from "./options";
+import { InterimCompilerOptions } from "./options";
 
 export const translateCSS = (
   sheet: VirtSheet,
-  options: interimCompilerOptions
+  options: InterimCompilerOptions
 ): InterimCSS => {
   return {
     sheetText: stringifyCSSSheet(sheet),

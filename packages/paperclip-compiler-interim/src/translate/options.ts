@@ -1,9 +1,9 @@
 import { InterimImport } from "..";
 
-export type interimCompilerOptions = {};
+export type InterimCompilerOptions = {};
 export type ModuleContext = {
   filePath: string;
-  options: interimCompilerOptions;
+  options: InterimCompilerOptions;
   componentNames: string[];
   imports: InterimImport[];
   scopeIds: string[];

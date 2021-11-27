@@ -1,12 +1,12 @@
 import { camelCase } from "lodash";
 import * as path from "path";
 import { Element, AS_ATTR_NAME, getAttributeStringValue } from "paperclip";
-import { interimModule } from "paperclip-compiler-interim";
+import { InterimModule } from "paperclip-compiler-interim";
 import { StringPosition, StringRange } from "paperclip-utils";
 import { SourceNode } from "source-map";
 
 export type Context = {
-  module: interimModule;
+  module: InterimModule;
   filePath: string;
   buffer: any[];
   depth: number;
@@ -17,7 +17,7 @@ export type Context = {
 type OutputBuffer = {};
 
 export const createTranslateContext = (
-  module: interimModule,
+  module: InterimModule,
   filePath: string
 ): Context => ({
   module,
@@ -115,7 +115,7 @@ export const addBuffer = (buffer: any[]) => (context: Context): Context =>
     }
 
     if (typeof part === "function") {
-      return part(context);
+      return part(context) || [];
     }
 
     return {
@@ -150,9 +150,11 @@ export const wrapSourceNode = (
   };
 };
 
+export type ContextWriter = (context: Context) => Context;
+
 export const writeSourceNode = (
   pos: StringPosition | undefined,
-  write: (context: Context) => Context
+  write: ContextWriter
 ) => (context: Context) => {
   const initial = context;
   context = write(context);
@@ -166,11 +168,12 @@ export const writeJoin = <TItem>(
   items: TItem[],
   context,
   join: string,
-  write: (item: TItem) => (context: Context) => Context
+  write: (item: TItem) => ContextWriter,
+  trailing = false
 ) =>
   items.reduce((context, item, index, items) => {
     context = write(item)(context);
-    if (index < items.length - 1) {
+    if (index < items.length - 1 || trailing) {
       context = addBuffer([join])(context);
     }
     return context;

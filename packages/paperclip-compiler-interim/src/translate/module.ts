@@ -8,18 +8,18 @@ import {
   NodeKind,
   traverseExpression
 } from "paperclip-utils";
-import { interimModule, InterimImport } from "../state";
+import { InterimModule, InterimImport } from "../state";
 import { getAssets } from "./assets";
 import { translateCSS } from "./css";
 import { translateComponents } from "./html";
-import { interimCompilerOptions } from "./options";
+import { InterimCompilerOptions } from "./options";
 
-export class interimCompiler {
+export class InterimCompiler {
   constructor(
     private _engine: EngineDelegate,
-    readonly options: interimCompilerOptions = {}
+    readonly options: InterimCompilerOptions = {}
   ) {}
-  parseFile(filePath: string): interimModule {
+  parseFile(filePath: string): InterimModule {
     const { sheet } = this._engine.open(filePath);
     const ast = this._engine.parseFile(filePath);
     return translateinterim(ast, sheet, filePath, this._engine, this.options);
@@ -31,8 +31,8 @@ const translateinterim = (
   sheet: VirtSheet,
   filePath: string,
   engine: EngineDelegate,
-  options: interimCompilerOptions
-): interimModule => {
+  options: InterimCompilerOptions
+): InterimModule => {
   const imports: InterimImport[] = translateImports(
     ast,
     filePath,
@@ -51,7 +51,7 @@ const translateImports = (
   ast: Node,
   filePath: string,
   engine: EngineDelegate,
-  options: interimCompilerOptions
+  options: InterimCompilerOptions
 ): InterimImport[] => {
   return getImports(ast)
     .map(imp => {

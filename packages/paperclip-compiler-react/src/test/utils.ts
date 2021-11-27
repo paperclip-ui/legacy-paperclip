@@ -2,7 +2,7 @@ import { compile } from "../code-compiler";
 import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
-import { interimCompiler } from "paperclip-compiler-interim";
+import { InterimCompiler } from "paperclip-compiler-interim";
 
 const builtin = {
   react: React
@@ -19,13 +19,12 @@ export const compileModules = async (graph: Record<string, string>) => {
     }
   });
 
-  const intermCompiler = new interimCompiler(engine);
+  const intermCompiler = new InterimCompiler(engine);
 
   const modules = {};
 
   for (const path in graph) {
     const es6 = compile(intermCompiler.parseFile(path), path);
-    console.log(es6);
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
     const module = new Function(
       `require`,

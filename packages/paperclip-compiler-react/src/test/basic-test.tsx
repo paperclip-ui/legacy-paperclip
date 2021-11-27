@@ -24,7 +24,7 @@ describe(__filename + "#", () => {
     [
       "can render various slots",
       {
-        "/entry.pc": `<div export component as="Entry" className="{className} b" className:test="c">
+        "/entry.pc": `<div export component as="Entry" class="{class} b" class:test="c">
           {message}
         </div>`
       },
@@ -34,7 +34,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f  _80f4925f_b _pub-80f4925f_b b ">bbb</div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f  _80f4925f_b _pub-80f4925f_b b">bbb</div>`
       }
     ],
     [
@@ -42,7 +42,7 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
           <import src="/colors.pc" as="colors" />
-          <div export component as="Entry" className="$colors.text-red"></div>
+          <div export component as="Entry" class="$colors.text-red"></div>
         `,
         "/colors.pc": `
           <style>
@@ -162,7 +162,7 @@ describe(__filename + "#", () => {
       "Doesn't apply scoped classes when dynamic string applied to component",
       {
         "/entry.pc": `
-          <div export component as="Entry" className="{className?}">
+          <div export component as="Entry" class="{className?}">
           </div>
         `
       },
@@ -205,7 +205,7 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
 
-          <div export component as="Test" {className?}>
+          <div export component as="Test" {class?}>
           </div>
 
           <div export component as="Entry">
@@ -258,11 +258,11 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
 
-          <div export component as="Test" {className?}>
+          <div export component as="Test" class={class?}>
           </div>
 
           <div export component as="Entry">
-            <Test className="another-test">
+            <Test class="another-test">
               <style>
                 color: blue;
               </style>
@@ -282,17 +282,17 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
 
-          <div export component as="Test" {className?}>
+          <div export component as="Test" {class?}>
           </div>
 
-          <Test component as="Test2" className="blaaaa {className?}">
+          <Test component as="Test2" class="blaaaa {class?}">
             <style>
               color: orange;
             </style>
           </Test>
 
           <div export component as="Entry">
-            <Test2 className="$another-test">
+            <Test2 class="$another-test">
               <style>
                 color: blue;
               </style>
@@ -300,11 +300,12 @@ describe(__filename + "#", () => {
           </div>
         `
       },
+
       {
         Entry: {}
       },
       {
-        Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 blaaaa _9dfabe97 _80f4925f_another-test _pub-80f4925f_another-test another-test"></div></div>`
+        Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 blaaaa  _9dfabe97 _80f4925f_another-test _pub-80f4925f_another-test another-test"></div></div>`
       }
     ],
     [
@@ -416,7 +417,7 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
           <import src="/module.pc" inject-styles />
-          <div export component as="Entry" className="abb">
+          <div export component as="Entry" class="abb">
           </div>
         `,
         "/module.pc": `
@@ -437,7 +438,7 @@ describe(__filename + "#", () => {
         "/entry.pc": `
           <import src="/a.pc" inject-styles />
           <import src="/b.pc" as="b" />
-          <div export component as="Entry" className="$b.test blah">
+          <div export component as="Entry" class="$b.test blah">
           </div>
         `,
         "/a.pc": `
@@ -458,7 +459,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f _pub-98523c41 _8ae793af_test _pub-8ae793af_test test _80f4925f_blah _pub-80f4925f_blah _pub-98523c41_blah blah"></div>`
+        Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f _pub-98523c41 _8ae793af_test _pub-8ae793af_test test  _80f4925f_blah _pub-80f4925f_blah _pub-98523c41_blah blah"></div>`
       }
     ],
     [
@@ -466,7 +467,7 @@ describe(__filename + "#", () => {
       {
         "/entry.pc": `
           <import src="/a.pc" inject-styles />
-          <div export component as="Entry" className="a" className:test="test">
+          <div export component as="Entry" class="a" class:test="test">
           </div>
         `,
         "/a.pc": `
@@ -526,7 +527,7 @@ describe(__filename + "#", () => {
       "Can define styles on component with prop bound class and no class binding",
       {
         "/entry.pc": `
-          <div export component as="Entry" className:active="active">
+          <div export component as="Entry" class:active="active">
             <style>
               color: red;
             </style>
@@ -540,19 +541,19 @@ describe(__filename + "#", () => {
         }
       },
       {
-        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f "></div>`
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f"></div>`
       }
     ],
     [
       "Can pass propery bound attributes to components",
       {
         "/entry.pc": `
-          <div component as="Test" {className?}>
+          <div component as="Test" {class?}>
             <style>
               color: blue;
             </style>
           </div>
-          <Test export component as="Entry" className:active="$active">
+          <Test export component as="Entry" class:active="$active">
             <style>
               color: red;
             </style>
