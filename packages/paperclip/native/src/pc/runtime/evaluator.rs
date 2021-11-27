@@ -237,7 +237,7 @@ fn collect_node_properties<'a>(node: &ast::Node) -> BTreeMap<String, Property> {
               add_script_property(&spread.script, &mut properties);
             }
 
-            // <a className:b="c" />
+            // <a class:b="c" />
             ast::Attribute::PropertyBoundAttribute(p_attr) => {
               add_property(&p_attr.binding_name, true, &mut properties);
             }
@@ -993,8 +993,7 @@ fn create_component_instance_data<'a>(
   if contains_style {
     let class_name_option = data
       .values
-      .get("className")
-      .or_else(|| data.values.get("class"));
+      .get("class");
 
     let class_name_value = if let Some(class_name) = class_name_option {
       class_name.to_string()
@@ -1018,9 +1017,6 @@ fn create_component_instance_data<'a>(
     data
       .values
       .insert("class".to_string(), new_class_name_value.clone());
-    data
-      .values
-      .insert("className".to_string(), new_class_name_value.clone());
   }
 
   let children: Vec<js_virt::JsValue> = ret_children
@@ -1101,11 +1097,7 @@ fn evaluate_component_instance<'a>(
 }
 
 fn get_actual_attribute_name(name: &String) -> String {
-  if name == "className" {
-    "class".to_string()
-  } else {
-    name.clone()
-  }
+  name.clone()
 }
 
 fn append_attribute<'a>(
@@ -1606,7 +1598,7 @@ fn get_import_sheet<'a>(ev: &'a DependencyEvalInfo) -> &'a css_export::Exports {
 }
 
 fn is_class_attribute_name(name: &String) -> bool {
-  name == "class" || name == "className"
+  name == "class"
 }
 
 fn is_component_instance<'a>(element: &ast::Element, context: &Context<'a>) -> bool {
