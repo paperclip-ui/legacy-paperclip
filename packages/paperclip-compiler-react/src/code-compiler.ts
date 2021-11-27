@@ -117,20 +117,23 @@ const compileComponent = (
       context = addBuffer(["export "], context);
     }
 
-    context = addBuffer([`function ${component.as}(props) {`, "\n"], context);
-    context = startBlock(context);
-    context = addBuffer([`return `], context);
-    context = compileElement(component, context);
-    context = endBlock(context);
-    context = addBuffer(["\n"], context);
-    context = addBuffer(["}\n"], context);
-
+    context = addBuffer(
+      [
+        `function ${component.as}(props) {`,
+        "\n",
+        startBlock,
+        compileElement(component),
+        endBlock,
+        "\n",
+        "}\n"
+      ],
+      context
+    );
     return context;
   });
 
-const compileElement = (
-  element: IntermElement | IntermComponent,
-  context: Context
+const compileElement = (element: IntermElement | IntermComponent) => (
+  contet: Context
 ) => {
   return writeSourceNode(element.range.start, context, context => {
     context = addBuffer([`React.createElement(`], context);
@@ -307,7 +310,7 @@ const compileScript = (script: IntermScriptExpression) => (context: Context) =>
         return addBuffer(["(", compileScript(script.inner), ")"], context);
       }
       case IntermScriptExpressionKind.Element:
-        return compileElement(script.element, context);
+        return compileElement(script.element)(context);
       case IntermScriptExpressionKind.Conjunction: {
         return addBuffer(
           [
@@ -365,7 +368,7 @@ const compileChildren = (children: IntermNode[]) => (context: Context) => {
   context = writeJoin(children, context, ", ", (child, context) => {
     switch (child.kind) {
       case IntermNodeKind.Element: {
-        context = compileElement(child, context);
+        context = compileElement(child)(context);
         context = addBuffer(["\n"], context);
         return context;
       }
