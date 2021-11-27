@@ -181,7 +181,7 @@ const compileAttributes = (element: InterimElement | InterimComponent) => (
         compileAttributeValue(
           key,
           element.attributes[key].variants,
-          conditional => write => write
+          () => write => write
         )
       ]),
     true
