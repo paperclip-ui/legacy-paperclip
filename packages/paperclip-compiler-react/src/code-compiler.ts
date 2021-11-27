@@ -96,11 +96,8 @@ const translateImports = (context: Context) => {
   }, context);
 };
 
-const compileComponents = (context: Context) => {
-  return context.module.components.reduce((context, component) => {
-    return compileComponent(component)(context);
-  }, context);
-};
+const compileComponents = (context: Context) =>
+  writeJoin(context.module.components, context, "\n\n", compileComponent);
 
 const compileComponent = (component: IntermComponent) =>
   writeSourceNode(
@@ -247,12 +244,11 @@ const compileAttributeValuePart = (name: string) => (
   }
 };
 
-const compileDynamicAttributePart = (part: DynamicAttributeValuePart) => {
-  return writeSourceNode(
+const compileDynamicAttributePart = (part: DynamicAttributeValuePart) =>
+  writeSourceNode(
     part.range?.start,
     addBuffer(["(", compileScript(part.script), " || ", '""', ")"])
   );
-};
 
 const CONJ_MAP = {
   [IntermConjunctionOperator.And]: "&&",
