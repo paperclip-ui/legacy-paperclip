@@ -152,9 +152,8 @@ export const wrapSourceNode = (
 
 export const writeSourceNode = (
   pos: StringPosition | undefined,
-  context: Context,
   write: (context: Context) => Context
-) => {
+) => (context: Context) => {
   const initial = context;
   context = write(context);
   if (!pos) {

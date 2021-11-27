@@ -55,19 +55,15 @@ function castStyle(value) {
 `.trim();
 
 export const compile = (module: IntermediatModule, filePath: string) =>
-  writeSourceNode(
-    { line: 1, column: 1, pos: 1 },
-    createTranslateContext(module, filePath),
-    context => {
-      context = addBuffer([`import React from "react";\n\n`])(context);
+  writeSourceNode({ line: 1, column: 1, pos: 1 }, context => {
+    context = addBuffer([`import React from "react";\n\n`])(context);
 
-      context = translateImports(context);
-      context = addBuffer([CAST_STYLE_UTIL, "\n\n"])(context);
-      context = compileComponents(context);
+    context = translateImports(context);
+    context = addBuffer([CAST_STYLE_UTIL, "\n\n"])(context);
+    context = compileComponents(context);
 
-      return context;
-    }
-  ).buffer.join("");
+    return context;
+  })(createTranslateContext(module, filePath)).buffer.join("");
 
 const translateImports = (context: Context) => {
   return context.module.imports.reduce((context, imp) => {
@@ -101,17 +97,13 @@ const translateImports = (context: Context) => {
 
 const compileComponents = (context: Context) => {
   return context.module.components.reduce((context, component) => {
-    return compileComponent(component, context);
+    return compileComponent(component)(context);
   }, context);
 };
 
-const compileComponent = (
-  component: IntermComponent,
-  context: Context
-): Context =>
+const compileComponent = (component: IntermComponent) =>
   writeSourceNode(
     component.range.start,
-    context,
     addBuffer([
       component.exported && "export ",
       `function ${component.as}(props) {`,
@@ -125,10 +117,8 @@ const compileComponent = (
     ])
   );
 
-const compileElement = (element: IntermElement | IntermComponent) => (
-  context: Context
-) => {
-  return writeSourceNode(element.range.start, context, context => {
+const compileElement = (element: IntermElement | IntermComponent) =>
+  writeSourceNode(element.range.start, context => {
     context = addBuffer([`React.createElement(`])(context);
 
     let tagName;
@@ -154,7 +144,6 @@ const compileElement = (element: IntermElement | IntermComponent) => (
       ")"
     ])(context);
   });
-};
 
 const nativeOrInstanceTag = (
   element: IntermElement | IntermComponent,
@@ -247,24 +236,20 @@ const prop = (name: string) => `props["${name}"]`;
 
 const compileAttributeValuePart = (name: string) => (
   part: IntermAttributeValuePart
-) => (context: Context) => {
+) => {
   switch (part.kind) {
     case IntermAttributeValuePartKind.Dynamic:
-      return compileDynamicAttributePart(part, context);
+      return compileDynamicAttributePart(part);
     case IntermAttributeValuePartKind.Static:
-      return compileStaticAttributePart(part, context);
+      return compileStaticAttributePart(part);
     case IntermAttributeValuePartKind.Shorthand:
-      return compileShorthandAttributePart(name, part, context);
+      return compileShorthandAttributePart(name, part);
   }
 };
 
-const compileDynamicAttributePart = (
-  part: DynamicAttributeValuePart,
-  context: Context
-) => {
+const compileDynamicAttributePart = (part: DynamicAttributeValuePart) => {
   return writeSourceNode(
     part.range?.start,
-    context,
     addBuffer(["(", compileScript(part.script), " || ", '""', ")"])
   );
 };
@@ -274,67 +259,54 @@ const CONJ_MAP = {
   [IntermConjunctionOperator.Or]: "||"
 };
 
-const compileScript = (script: IntermScriptExpression) => (context: Context) =>
-  writeSourceNode(script.range.start, context, context => {
-    switch (script.kind) {
-      case IntermScriptExpressionKind.String:
-        return addBuffer([JSON.stringify(script.value)])(context);
-      case IntermScriptExpressionKind.Reference:
-        return addBuffer([prop(script.name)])(context);
-      case IntermScriptExpressionKind.Number:
-        return addBuffer([String(script.value)])(context);
-      case IntermScriptExpressionKind.Not:
-        return addBuffer(["!", compileScript(script.expression)])(context);
-      case IntermScriptExpressionKind.Group: {
-        return addBuffer(["(", compileScript(script.inner), ")"])(context);
-      }
-      case IntermScriptExpressionKind.Element:
-        return compileElement(script.element)(context);
-      case IntermScriptExpressionKind.Conjunction: {
-        return addBuffer([
-          compileScript(script.left),
-          CONJ_MAP[script.operator],
-          compileScript(script.right)
-        ])(context);
-      }
-      case IntermScriptExpressionKind.Boolean:
-        return addBuffer([String(script.value)])(context);
+const compileScript = (script: IntermScriptExpression) =>
+  writeSourceNode(script.range.start, scriptCompiler(script));
+
+const scriptCompiler = (script: IntermScriptExpression) => {
+  switch (script.kind) {
+    case IntermScriptExpressionKind.String:
+      return addBuffer([JSON.stringify(script.value)]);
+    case IntermScriptExpressionKind.Reference:
+      return addBuffer([prop(script.name)]);
+    case IntermScriptExpressionKind.Number:
+      return addBuffer([String(script.value)]);
+    case IntermScriptExpressionKind.Not:
+      return addBuffer(["!", compileScript(script.expression)]);
+    case IntermScriptExpressionKind.Group: {
+      return addBuffer(["(", compileScript(script.inner), ")"]);
     }
-  });
+    case IntermScriptExpressionKind.Element:
+      return compileElement(script.element);
+    case IntermScriptExpressionKind.Conjunction: {
+      return addBuffer([
+        compileScript(script.left),
+        CONJ_MAP[script.operator],
+        compileScript(script.right)
+      ]);
+    }
+    case IntermScriptExpressionKind.Boolean:
+      return addBuffer([String(script.value)]);
+  }
+};
 
 const or = (a, b) => [`(`, a, `|| `, b, `)`];
 
-const compileStaticAttributePart = (
-  part: StaticAttributeValuePart,
-  context: Context
-) =>
-  writeSourceNode(
-    part.range?.start,
-    context,
-    addBuffer([JSON.stringify(part.value)])
-  );
+const compileStaticAttributePart = (part: StaticAttributeValuePart) =>
+  writeSourceNode(part.range?.start, addBuffer([JSON.stringify(part.value)]));
 
 const compileShorthandAttributePart = (
   name: string,
-  part: ShorthandAttributeValuePart,
-  context: Context
-) => {
-  return writeSourceNode(
-    part.range?.start,
-    context,
-    addBuffer([or(prop(name), `""`)])
-  );
-};
+  part: ShorthandAttributeValuePart
+) => writeSourceNode(part.range?.start, addBuffer([or(prop(name), `""`)]));
 
-const compileText = (text: IntermText) => (context: Context) => {
-  context = writeSourceNode(
-    text.range.start,
-    context,
-    addBuffer([JSON.stringify(entities.decode(text.value))])
-  );
-  context = addBuffer(["\n"])(context);
-  return context;
-};
+const compileText = (text: IntermText) =>
+  addBuffer([
+    writeSourceNode(
+      text.range.start,
+      addBuffer([JSON.stringify(entities.decode(text.value))])
+    ),
+    "\n"
+  ]);
 
 const compileSlot = (slot: IntermSlotNode) => (context: Context) => {
   return compileScript(slot.script)(context);
@@ -347,17 +319,16 @@ const compileChildren = (children: IntermNode[]) => (context: Context) => {
 
   context = addBuffer([`[\n`])(context);
   context = startBlock(context);
-  context = writeJoin(children, context, ", ", child => context => {
+  context = writeJoin(children, context, ", ", child => {
     switch (child.kind) {
       case IntermNodeKind.Element: {
-        context = addBuffer(["\n", compileElement(child)])(context);
-        return context;
+        return addBuffer([compileElement(child), "\n"]);
       }
       case IntermNodeKind.Text: {
-        return addBuffer(["\n", compileText(child)])(context);
+        return addBuffer([compileText(child), "\n"]);
       }
       case IntermNodeKind.Slot: {
-        return addBuffer(["\n", compileSlot(child)])(context);
+        return addBuffer([compileSlot(child), "\n"]);
       }
     }
   });
