@@ -627,6 +627,26 @@ describe(__filename + "#", () => {
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 blah">Hello!</div>`
       }
+    ],
+    [
+      "Can render default component",
+      {
+        "/entry.pc": `
+          <import src="/test.pc" as="test" />
+          <test export component as="Entry">ok</test>
+        `,
+        "/test.pc": `
+          <div export component as="default">{children}!</div>
+        `
+      },
+      {
+        Entry: {
+          active: true
+        }
+      },
+      {
+        Entry: `<div class="_d754a2e6 _6bcf0994 _pub-6bcf0994">ok!</div>`
+      }
     ]
   ].forEach(([title, graph, contexts, expected]: any) => {
     it(title, async () => {

@@ -17,7 +17,7 @@ export type InterimBaseNode<TKind extends InterimNodeKind> = {
 type BaseElement<TKind extends InterimNodeKind> = {
   tagName: string;
   attributes: Record<string, InterimAttribute>;
-  namespace?: string;
+  innerTagName?: string; // imp
   isInstance: boolean;
   scopeClassNames: string[];
 } & InterimBaseNode<TKind>;
@@ -26,7 +26,7 @@ export type InterimComponent = {
   as: string; // as attribute
   exported: boolean;
   children: InterimNode[];
-  props: ShapeInference;
+  schema: ShapeInference;
 } & BaseElement<InterimNodeKind.Component>;
 
 export enum InterimAttributeValuePartKind {

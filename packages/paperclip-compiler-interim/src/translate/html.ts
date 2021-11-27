@@ -55,7 +55,7 @@ const getTagNameParts = (tagName: string) => {
   if (parts.length === 1) {
     return { tagName: parts[0] };
   }
-  return { namespace: parts[0], tagName: parts[1] };
+  return { innerTagName: parts[1], tagName: parts[0] };
 };
 
 const translateComponent = (
@@ -63,13 +63,13 @@ const translateComponent = (
   context: ModuleContext
 ): InterimComponent => {
   const as = getAttributeStringValue("as", component);
-  const { tagName, namespace } = getTagNameParts(component.tagName);
+  const { tagName, innerTagName } = getTagNameParts(component.tagName);
 
   return {
     tagName,
     as,
-    namespace,
-    props: infer(component),
+    innerTagName,
+    schema: infer(component),
     isInstance: !isNativeElement(component.tagName, context),
     scopeClassNames: getScopeClassNames(component, context),
     exported: hasAttribute("export", component),
@@ -311,7 +311,10 @@ const isNativeElement = (tagName: string, context: ModuleContext) => {
 };
 
 const isImportedInstance = (tagName: string, context: ModuleContext) => {
-  return tagName.includes(".");
+  return (
+    tagName.includes(".") ||
+    context.imports.find(imp => imp.namespace === tagName)
+  );
 };
 
 const maybeAddAttributeValue = (
@@ -350,10 +353,10 @@ export const translateElement = (
   element: Element,
   context: ModuleContext
 ): InterimElement => {
-  const { tagName, namespace } = getTagNameParts(element.tagName);
+  const { tagName, innerTagName } = getTagNameParts(element.tagName);
   return {
     kind: InterimNodeKind.Element,
-    namespace,
+    innerTagName,
     tagName: tagName,
     isInstance: !isNativeElement(element.tagName, context),
     scopeClassNames: getScopeClassNames(element, context),

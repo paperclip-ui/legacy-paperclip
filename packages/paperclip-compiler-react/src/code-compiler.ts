@@ -28,7 +28,6 @@ import {
   startBlock,
   endBlock,
   addBuffer,
-  wrapSourceNode,
   writeSourceNode,
   writeJoin,
   ContextWriter
@@ -106,7 +105,9 @@ const compileComponent = (component: InterimComponent) =>
     component.range.start,
     addBuffer([
       component.exported && "export ",
-      `function ${component.as}(props) {`,
+      component.as === "default"
+        ? `default function (props) {`
+        : `function ${component.as}(props) {`,
       "\n",
       startBlock,
       "return ",
@@ -150,7 +151,11 @@ const nativeOrInstanceTag = (
   context: Context
 ) => {
   if (element.isInstance) {
-    return getElementInstanceName(element.namespace, element.tagName, context);
+    return getElementInstanceName(
+      element.tagName,
+      element.innerTagName,
+      context
+    );
   }
 
   return `"${element.tagName}"`;

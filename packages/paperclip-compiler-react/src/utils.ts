@@ -88,15 +88,19 @@ export const classNameToStyleName = (value: string) => {
 };
 
 export const getElementInstanceName = (
-  namespace: string,
   tagName: string,
+  innerTagName: string,
   context: Context
 ) => {
-  const imp = context.module.imports.find(imp => imp.namespace === namespace);
+  const imp = context.module.imports.find(imp => imp.namespace === tagName);
   if (!imp) {
     return tagName;
   }
-  return "_" + camelCase(imp.publicScopeId) + "_" + tagName;
+  return (
+    "_" +
+    camelCase(imp.publicScopeId) +
+    (innerTagName ? "_" + innerTagName : "")
+  );
 };
 
 export const arrayJoin = (buffer: any[], sep: string) =>
