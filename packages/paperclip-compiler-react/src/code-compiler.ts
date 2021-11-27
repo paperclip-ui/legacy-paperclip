@@ -159,8 +159,7 @@ const nativeOrInstanceTag = (
 const compileAttributes = (element: IntermElement | IntermComponent) => (
   context: Context
 ) => {
-  context = addBuffer([`{\n`])(context);
-  context = startBlock(context);
+  context = addBuffer([`{\n`, startBlock])(context);
   context = addBuffer([`className: "${element.scopeClassNames.join(" ")}"`])(
     context
   );
