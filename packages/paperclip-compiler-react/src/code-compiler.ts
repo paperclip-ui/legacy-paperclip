@@ -55,15 +55,16 @@ function castStyle(value) {
 `.trim();
 
 export const compile = (module: IntermediatModule, filePath: string) =>
-  writeSourceNode({ line: 1, column: 1, pos: 1 }, context => {
-    context = addBuffer([`import React from "react";\n\n`])(context);
-
-    context = translateImports(context);
-    context = addBuffer([CAST_STYLE_UTIL, "\n\n"])(context);
-    context = compileComponents(context);
-
-    return context;
-  })(createTranslateContext(module, filePath)).buffer.join("");
+  writeSourceNode(
+    { line: 1, column: 1, pos: 1 },
+    addBuffer([
+      `import React from "react";\n\n`,
+      translateImports,
+      CAST_STYLE_UTIL,
+      compileComponents,
+      "\n\n"
+    ])
+  )(createTranslateContext(module, filePath)).buffer.join("");
 
 const translateImports = (context: Context) => {
   return context.module.imports.reduce((context, imp) => {
