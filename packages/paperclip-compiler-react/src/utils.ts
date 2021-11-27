@@ -108,8 +108,12 @@ export const arrayJoin = (buffer: any[], sep: string) =>
     return ary;
   }, []);
 
-export const addBuffer = (buffer: any[], context: Context): Context =>
+export const addBuffer = (buffer: any[]) => (context: Context): Context =>
   buffer.reduce((context, part) => {
+    if (!part) {
+      return context;
+    }
+
     if (typeof part === "function") {
       return part(context);
     }
@@ -163,12 +167,12 @@ export const writeJoin = <TItem>(
   items: TItem[],
   context,
   join: string,
-  write: (item: TItem, context: Context) => Context
+  write: (item: TItem) => (context: Context) => Context
 ) =>
   items.reduce((context, item, index, items) => {
-    context = write(item, context);
+    context = write(item)(context);
     if (index < items.length - 1) {
-      context = addBuffer([join], context);
+      context = addBuffer([join])(context);
     }
     return context;
   }, context);
