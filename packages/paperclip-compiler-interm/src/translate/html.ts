@@ -64,6 +64,7 @@ const translateComponent = (
 ): IntermComponent => {
   const as = getAttributeStringValue("as", component);
   const { tagName, namespace } = getTagNameParts(component.tagName);
+
   return {
     tagName,
     as,
@@ -199,8 +200,9 @@ const getAttributeValueParts = (
   tagName: string,
   context: ModuleContext
 ): IntermAttributeValuePart[] => {
+  const parts = [];
   if (!value) {
-    return null;
+    return parts;
   }
   switch (value.attrValueKind) {
     case AttributeValueKind.DyanmicString: {

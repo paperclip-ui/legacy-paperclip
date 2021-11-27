@@ -2,15 +2,19 @@ import { camelCase } from "lodash";
 import * as path from "path";
 import { Element, AS_ATTR_NAME, getAttributeStringValue } from "paperclip";
 import { IntermediatModule } from "paperclip-compiler-interm";
+import { StringPosition, StringRange } from "paperclip-utils";
+import { SourceNode } from "source-map";
 
 export type Context = {
   module: IntermediatModule;
   filePath: string;
   buffer: any[];
-  lineNumber: number;
+  depth: number;
   isNewLine: boolean;
   indent: string;
 };
+
+type OutputBuffer = {};
 
 export const createTranslateContext = (
   module: IntermediatModule,
@@ -19,7 +23,7 @@ export const createTranslateContext = (
   module,
   filePath,
   buffer: [],
-  lineNumber: 0,
+  depth: 0,
   isNewLine: true,
   indent: "  "
 });
@@ -104,22 +108,71 @@ export const arrayJoin = (buffer: any[], sep: string) =>
     return ary;
   }, []);
 
-export const addBuffer = (buffer: any, context: Context) => ({
-  ...context,
-  buffer: [
-    ...context.buffer,
-    context.isNewLine ? context.indent.repeat(context.lineNumber) : "",
-    buffer
-  ],
-  isNewLine: buffer.lastIndexOf("\n") === buffer.length - 1
-});
+export const addBuffer = (buffer: any[], context: Context): Context =>
+  buffer.reduce((context, part) => {
+    if (typeof part === "function") {
+      return part(context);
+    }
 
-export const startBlock = (context: Context) => ({
-  ...context,
-  lineNumber: context.lineNumber + 1
-});
+    return {
+      ...context,
+      buffer: [
+        ...context.buffer,
+        context.isNewLine ? context.indent.repeat(context.depth) : "",
+        part
+      ],
+      isNewLine:
+        typeof part === "string" && part.lastIndexOf("\n") === part.length - 1
+    };
+  }, context);
 
-export const endBlock = (context: Context) => ({
-  ...context,
-  lineNumber: context.lineNumber - 1
-});
+export const startBlock = (context: Context) => {
+  return { ...context, depth: context.depth + 1 };
+};
+
+export const wrapSourceNode = (
+  pos: StringPosition,
+  fromContext: Context,
+  toContext: Context
+) => {
+  return {
+    ...toContext,
+    buffer: [
+      new SourceNode(pos.line, pos.column, toContext.filePath, [
+        ...toContext.buffer.slice(0, fromContext.buffer.length)
+      ]),
+      ...toContext.buffer.slice(fromContext.buffer.length)
+    ]
+  };
+};
+
+export const writeSourceNode = (
+  pos: StringPosition | undefined,
+  context: Context,
+  write: (context: Context) => Context
+) => {
+  const initial = context;
+  context = write(context);
+  if (!pos) {
+    return context;
+  }
+  return wrapSourceNode(pos, initial, context);
+};
+
+export const writeJoin = <TItem>(
+  items: TItem[],
+  context,
+  join: string,
+  write: (item: TItem, context: Context) => Context
+) =>
+  items.reduce((context, item, index, items) => {
+    context = write(item, context);
+    if (index < items.length - 1) {
+      context = addBuffer([join], context);
+    }
+    return context;
+  }, context);
+
+export const endBlock = (context: Context) => {
+  return { ...context, depth: context.depth - 1 };
+};

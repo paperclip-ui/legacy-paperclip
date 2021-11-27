@@ -24,7 +24,7 @@ describe(__filename + "#", () => {
     [
       "can render various slots",
       {
-        "/entry.pc": `<div export component as="Entry" className="{className} b" className:test="b">
+        "/entry.pc": `<div export component as="Entry" className="{className} b" className:test="c">
           {message}
         </div>`
       },
