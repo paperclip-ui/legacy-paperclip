@@ -54,11 +54,14 @@ function castStyle(value) {
 }
 `.trim();
 
-export const compile = (module: InterimModule, filePath: string) =>
+export const compile = (module: InterimModule, filePath: string, includes: string[]) =>
   writeSourceNode(
     { line: 1, column: 1, pos: 1 },
     addBuffer([
-      `import React from "react";\n\n`,
+      `import React from "react";\n`,
+      writeJoin(includes, "\n", include => addBuffer([
+        `import "${include}";`
+      ]), true),
       translateImports,
       CAST_STYLE_UTIL,
       "\n\n",
@@ -75,7 +78,6 @@ export const translateExportedStyles = addBuffer([
   (context: Context) =>
     writeJoin(
       Object.keys(context.module.css.exports.classNames),
-      context,
       ",",
       key =>
         addBuffer([
@@ -83,7 +85,7 @@ export const translateExportedStyles = addBuffer([
           ": ",
           JSON.stringify(context.module.css.exports.classNames[key])
         ])
-    ),
+    )(context),
   endBlock,
   "\n",
   "};"
@@ -91,9 +93,6 @@ export const translateExportedStyles = addBuffer([
 
 const translateImports = (context: Context) => {
   return context.module.imports.reduce((context, imp) => {
-    if (!imp.namespace) {
-      return context;
-    }
 
     context = addBuffer([`import `, `_${camelCase(imp.publicScopeId)}`])(
       context
@@ -113,14 +112,14 @@ const translateImports = (context: Context) => {
       context = addBuffer([`, {`, arrayJoin(parts, ","), `}`])(context);
     }
 
-    context = addBuffer([` from "${imp.filePath}";`, "\n"])(context);
+    context = addBuffer([` from "${imp.relativePath}";`, "\n"])(context);
 
     return context;
   }, context);
 };
 
 const compileComponents = (context: Context) =>
-  writeJoin(context.module.components, context, "\n\n", compileComponent);
+  writeJoin(context.module.components, "\n\n", compileComponent)(context);
 
 const compileComponent = (component: InterimComponent) => {
   const tagName = component.as === "default" ? "$$Default" : component.as;
@@ -214,7 +213,6 @@ const compileAttributes = (element: InterimElement | InterimComponent) => (
 
   context = writeJoin(
     attrKeys,
-    context,
     ",\n",
     key =>
       addBuffer([
@@ -226,7 +224,7 @@ const compileAttributes = (element: InterimElement | InterimComponent) => (
         )
       ]),
     true
-  );
+  )(context);
 
   return addBuffer([endBlock, "}"])(context);
 };
@@ -276,8 +274,7 @@ const compileAttributeValue = (
   attrName: string,
   variants: InterimAttributeValue[],
   outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
-) => (context: Context) => {
-  context = writeJoin(variants, context, ` + `, variant => context => {
+) => writeJoin(variants, ` + `, variant => context => {
     if (!variant.parts) {
       return addBuffer([`true`])(context);
     }
@@ -296,9 +293,6 @@ const compileAttributeValue = (
     return context;
   });
 
-  return context;
-};
-
 const compileVariantParts = (
   attrName: string,
   parts: InterimAttributeValuePart[],
@@ -310,10 +304,9 @@ const compileVariantParts = (
 
   context = writeJoin(
     parts,
-    context,
     " + ",
     compileAttributeValuePart(attrName, outer)
-  );
+  )(context);
 
   if (attrName === "style") {
     context = addBuffer([`)`])(context);
@@ -388,8 +381,6 @@ const scriptCompiler = (script: InterimScriptExpression) => {
   }
 };
 
-const or = (a, b) => [`(`, a, `|| `, b, `)`];
-
 const compileStaticAttributePart = (
   part: StaticAttributeValuePart,
   outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
@@ -425,7 +416,7 @@ const compileChildren = (children: InterimNode[]) => (context: Context) => {
 
   context = addBuffer([`[\n`])(context);
   context = startBlock(context);
-  context = writeJoin(children, context, ",\n", child => {
+  context = writeJoin(children, ",\n", child => {
     switch (child.kind) {
       case InterimNodeKind.Element: {
         return compileElement(child);
@@ -437,6 +428,7 @@ const compileChildren = (children: InterimNode[]) => (context: Context) => {
         return compileSlot(child);
       }
     }
-  });
+  })(context);
+
   return addBuffer([endBlock, `]`])(context);
 };

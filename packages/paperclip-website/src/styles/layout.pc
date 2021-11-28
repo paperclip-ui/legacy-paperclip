@@ -123,42 +123,42 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 79, y: 156 }
 -->
-<div export component as="C3" className="_col _col3 {className?}">
+<div export component as="C3" class="_col _col3 {class?}">
   {children}
 </div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 62, y: 125 }
 -->
-<div export component as="C6" className="_col _col6 {className?}">
+<div export component as="C6" class="_col _col6 {class?}">
   {children}
 </div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 69, y: 114 }
 -->
-<div export component as="C9" className="_col _col9 {className?}">
+<div export component as="C9" class="_col _col9 {class?}">
   {children}
 </div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 50, y: 77 }
 -->
-<div export component as="C12" className="_col _col12 {className?}">
+<div export component as="C12" class="_col _col12 {class?}">
   {children}
 </div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 48, y: 71 }
 -->
-<div export component as="Row" className="_row {className?}">
+<div export component as="Row" class="_row {class?}">
   {children}
 </div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 73, y: 104 }
 -->
-<div export component as="Container" className="_container {className?}">
+<div export component as="Container" class="_container {class?}">
   {children}
 </div>
 

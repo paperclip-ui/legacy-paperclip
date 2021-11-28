@@ -1,6 +1,6 @@
 {
   "name": "paperclip-web-renderer",
-  "version": "18.0.0",
+  "version": "18.0.2",
   "description": "Internal web renderer for Paperclip designer",
   "main": "index.js",
   "scripts": {
@@ -16,8 +16,8 @@
     "events": "^3.2.0",
     "html-entities": "^1.2.1",
     "immer": "^9.0.5",
-    "paperclip-common": "^18.0.0",
-    "paperclip-utils": "^18.0.0"
+    "paperclip-common": "^18.0.2",
+    "paperclip-utils": "^18.0.2"
   },
   "devDependencies": {
     "@types/cssom": "^0.4.1",
@@ -30,7 +30,7 @@
     "eslint": "^7.4.0",
     "lodash": "^4.17.19",
     "mocha": "^7.0.1",
-    "paperclip": "^18.0.0"
+    "paperclip": "^18.0.2"
   },
   "gitHead": "ed34237b6303bd9c54fc722776a67247b6df9df2"
 }

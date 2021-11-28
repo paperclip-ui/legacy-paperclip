@@ -23,7 +23,7 @@
 <!--
   @frame { visible: false }
 -->
-<div component as="Sample" className="font {className}">
+<div component as="Sample" class="font {class}">
   A quick brown fox jumped over the lazy dog
 </div>
 
@@ -32,10 +32,10 @@
   @frame { title: "Font Family", width: 1024, height: 768, x: 108, y: 125 }
 -->
 <div export component as="default" style="font-family: {fontFamily}">
-  <Sample className="extra-light" />
-  <Sample className="light" />
+  <Sample class="extra-light" />
+  <Sample class="light" />
   <Sample />
-  <Sample className="medium" />
-  <Sample className="bold" />
-  <Sample className="extra-bold" />
+  <Sample class="medium" />
+  <Sample class="bold" />
+  <Sample class="extra-bold" />
 </div>

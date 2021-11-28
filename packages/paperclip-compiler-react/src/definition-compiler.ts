@@ -129,7 +129,7 @@ const translateInference = (property: string, inference: Inference) => {
 };
 
 const translateComponents = (context: Context) =>
-  writeJoin(context.module.components, context, "\n\n", translateComponent);
+  writeJoin(context.module.components, "\n\n", translateComponent)(context);
 const translateComponent = (component: InterimComponent) =>
   addBuffer([
     `type ${component.as}Props = {\n`,
