@@ -1,6 +1,5 @@
 export type CSSExports = {
-  classNames: string[];
-  keyframes: string[];
+  classNames: Record<string, string>;
 };
 
 export type InterimCSS = {

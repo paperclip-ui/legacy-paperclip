@@ -62,10 +62,32 @@ export const compile = (module: InterimModule, filePath: string) =>
       translateImports,
       CAST_STYLE_UTIL,
       "\n\n",
+      translateExportedStyles,
+      "\n\n",
       compileComponents,
       "\n\n"
     ])
   )(createTranslateContext(module, filePath)).buffer.join("");
+
+export const translateExportedStyles = addBuffer([
+  `export const classNames = {\n`,
+  startBlock,
+  (context: Context) =>
+    writeJoin(
+      Object.keys(context.module.css.exports.classNames),
+      context,
+      ",",
+      key =>
+        addBuffer([
+          JSON.stringify(key),
+          ": ",
+          JSON.stringify(context.module.css.exports.classNames[key])
+        ])
+    ),
+  endBlock,
+  "\n",
+  "};"
+]);
 
 const translateImports = (context: Context) => {
   return context.module.imports.reduce((context, imp) => {
