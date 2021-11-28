@@ -308,7 +308,7 @@ describe(__filename + "#", () => {
     });
   });
 
-  it("can use escape key in classname", async () => {
+  it("can use escape key in class", async () => {
     const graph = {
       "/entry.pc": `<style>
         .a\\:b {
@@ -1209,8 +1209,8 @@ describe(__filename + "#", () => {
   it("can nest selectors in :within", async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
-        <div className="test">
+      <div class="variant">
+        <div class="test">
           <style>
             color: red;
             
@@ -1240,8 +1240,8 @@ describe(__filename + "#", () => {
   it("can nest group selectors in :within", async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
-        <div className="test">
+      <div class="variant">
+        <div class="test">
           <style>
             &:within(.variant) {
               &.a, &.b {
@@ -1266,8 +1266,8 @@ describe(__filename + "#", () => {
   it(`:within(:global()) works`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
-        <div className="test">
+      <div class="variant">
+        <div class="test">
           <style>
             &:within(:global(.variant)) {
               color: orange;
@@ -1290,8 +1290,8 @@ describe(__filename + "#", () => {
   it(`nested & works`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
-        <div className="test">
+      <div class="variant">
+        <div class="test">
           <style>
             &:within(.variant) {
               &:empty {
@@ -1318,8 +1318,8 @@ describe(__filename + "#", () => {
   it(`:within works as combo selector`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
-        <div className="test">
+      <div class="variant">
+        <div class="test">
           <style>
             &.variant:within(.light) {
               color: blue;
@@ -1344,8 +1344,8 @@ describe(__filename + "#", () => {
   it(`:self:empty works`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
-        <div className="test">
+      <div class="variant">
+        <div class="test">
           <style>
             :self {
               &:empty {
@@ -1369,7 +1369,7 @@ describe(__filename + "#", () => {
   it(`Can include @media in scoped :style`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
+      <div class="variant">
         <style>
           :self {
               
@@ -1393,7 +1393,7 @@ describe(__filename + "#", () => {
   it(`Can include @media in scoped :style()`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
+      <div class="variant">
         <style>
           :self(:empty) {
             @media screen and (min-width: 100px) {
@@ -1416,7 +1416,7 @@ describe(__filename + "#", () => {
   it(`Can include @media in :within()`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
+      <div class="variant">
         <style>
           &:within(:empty) {
             @media screen and (min-width: 100px) {
@@ -1439,7 +1439,7 @@ describe(__filename + "#", () => {
   it(`Can use & without :self & stay ordered`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
+      <div class="variant">
         <style>
           color: orange;
           &.red {
@@ -1461,7 +1461,7 @@ describe(__filename + "#", () => {
   it(`Can use & without :self`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
+      <div class="variant">
         <style>
           && {
             color: orange;
@@ -1482,7 +1482,7 @@ describe(__filename + "#", () => {
   it(`Single & in scoped styled provides the same specificty`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
+      <div class="variant">
         <style>
           color: orange;
           & {
@@ -1504,7 +1504,7 @@ describe(__filename + "#", () => {
   it(`Can :within within :self`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
+      <div class="variant">
         <style>
           :self(.variant) {
             :within(.blue) {
@@ -1527,7 +1527,7 @@ describe(__filename + "#", () => {
   it(`Can define :within within &`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
+      <div class="variant">
         <style>
           &.variant {
             :within(.blue) {
@@ -1550,7 +1550,7 @@ describe(__filename + "#", () => {
   it(`url vars work`, async () => {
     const graph = {
       "/entry.pc": `
-      <div className="variant">
+      <div class="variant">
         <style>
           div {
             background: url(var(--test));
@@ -1573,7 +1573,7 @@ describe(__filename + "#", () => {
       "/entry.pc": `
         <import src="./styles.css" as="styles" />
 
-        <div className="$styles.test">
+        <div class="$styles.test">
           Hello world
         </div>
       `,
@@ -1807,11 +1807,11 @@ describe(__filename + "#", () => {
     });
   });
 
-  it(`colon can be added on classname`, async () => {
+  it(`colon can be added on class`, async () => {
     const graph = {
       "/entry.pc": `
         <import src="./test.css" as="t" />
-        <div className="$t.test:container $t.sm:p-3.5"></div>
+        <div class="$t.test:container $t.sm:p-3.5"></div>
       `,
       "/test.css": `
         .test\\:container {
@@ -1858,7 +1858,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./test.css" inject-styles />
-        <div className="test"></div>
+        <div class="test"></div>
       `,
       "/test.css": `
         .test {

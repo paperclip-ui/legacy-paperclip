@@ -391,7 +391,7 @@ describe(__filename + "#", () => {
   it("Returns component properties", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" class:a="a" {f} {b} className="{c}">
+        <div component as="Test" class:a="a" {f} {b} class="{c}">
           {d}
           {e?}
           {f?}
@@ -617,12 +617,13 @@ describe(__filename + "#", () => {
     });
   });
 
-  it("Can apply a class to {className?} without needing $", async () => {
+  // we don't want this since it is _implicit_
+  xit("Can apply a class to {class?} without needing $", async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" {className}>
+        <div component as="Test" {class}>
         </div>
-        <Test className="ok" />
+        <Test class="ok" />
       `
     };
 
@@ -634,7 +635,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Can apply a class to className={className?} without needing $`, async () => {
+  xit(`Can apply a class to className={className?} without needing $`, async () => {
     const graph = {
       "/entry.pc": `
         <div component as="Test" className={className?}>
@@ -651,7 +652,7 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Can apply a class to className="a {className?}" without needing $`, async () => {
+  xit(`Can apply a class to className="a {className?}" without needing $`, async () => {
     const graph = {
       "/entry.pc": `
         <div component as="Test" className="a {className?}">
@@ -675,7 +676,7 @@ describe(__filename + "#", () => {
         <module.Test className="$ok" />
       `,
       "/module.pc": `
-        <div export component as="Test" className="a {className?}">
+        <div export component as="Test" class="a {className?}">
         </div>
       `
     };
@@ -719,7 +720,7 @@ describe(__filename + "#", () => {
             color: blue;
           }
         </style>
-        <div className="its_a_match"></div>
+        <div class="its_a_match"></div>
       `
     };
 
@@ -798,7 +799,7 @@ describe(__filename + "#", () => {
   it(`Displays an error if a shadow pierce import is missing`, async () => {
     const graph = {
       "/entry.pc": `
-        <div className="$tw.test">
+        <div class="$tw.test">
           
         </div>
       `
@@ -818,8 +819,8 @@ describe(__filename + "#", () => {
       errorKind: "Runtime",
       uri: "/entry.pc",
       range: {
-        start: { pos: 24, line: 2, column: 24 },
-        end: { pos: 33, line: 2, column: 33 }
+        start: { pos: 20, line: 2, column: 20 },
+        end: { pos: 29, line: 2, column: 29 }
       },
       message: "Reference not found."
     });
@@ -904,7 +905,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw" />
-        <div className="$tw.test">
+        <div class="$tw.test">
           
         </div>
       `,
@@ -930,7 +931,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw" />
-        <div className=">>>tw.test">
+        <div class=">>>tw.test">
           
         </div>
       `,
@@ -955,7 +956,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw" />
-        <div export component as="Test" className="$tw.test">
+        <div export component as="Test" class="$tw.test">
           
         </div>
         <Test />
@@ -985,7 +986,7 @@ describe(__filename + "#", () => {
       `,
       "/module.pc": `
         <import src="./module2.pc" as="tw" />
-        <div export component as="Test" className="$tw.test">
+        <div export component as="Test" class="$tw.test">
         </div>
       `,
       "/module2.pc": `
@@ -1010,7 +1011,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
         <import src="./module.pc" as="tw" />
-        <div export component as="Test" className="$tw.test checkbox">
+        <div export component as="Test" class="$tw.test checkbox">
           
         </div>
         <Test />
@@ -1310,7 +1311,7 @@ describe(__filename + "#", () => {
   it(`Can apply styles to a component`, async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" {className?}>
+        <div component as="Test" {class?}>
 
         </div>
         <Test>
@@ -1331,10 +1332,10 @@ describe(__filename + "#", () => {
   it(`Can apply styles to a component that has a class already defined`, async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" {className?}>
+        <div component as="Test" {class?}>
 
         </div>
-        <Test className="test">
+        <Test class="test">
           <style>
             background: blue;
           </style>
@@ -1352,15 +1353,15 @@ describe(__filename + "#", () => {
   it(`Can apply styles to instance of instance of component`, async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" {className?}>
+        <div component as="Test" {class?}>
 
         </div>
-        <Test component as="Test2" className="test {className?}">
+        <Test component as="Test2" class="test {class?}">
           <style>
             background: blue;
           </style>
         </Test>
-        <Test2 className="test3">
+        <Test2 class="test3">
           <style>
             background: orange;
           </style>
@@ -1528,13 +1529,13 @@ describe(__filename + "#", () => {
   it(`scoped styles can be applied to component instances`, async () => {
     const graph = {
       "/entry.pc": `
-      <span component as="Test" {className?}>
+      <span component as="Test" {class?}>
         <style>
           display: none;
         </style>
       </span>
 
-      <Test component as="Test2" {className?}>
+      <Test component as="Test2" {class?}>
         <style>
           display: block;
           .child {
@@ -1667,10 +1668,10 @@ describe(__filename + "#", () => {
       `<style>._3024ebf3._3024ebf3 { color:blue; } ._188f471f._188f471f { color:red; }</style><div class="_80f4925f _pub-80f4925f"><span class="_80f4925f _pub-80f4925f _3024ebf3"></span><div class="_80f4925f _pub-80f4925f _188f471f"></div></div>`
     );
   });
-  it(`Treats class & className the same`, async () => {
+  xit(`Treats class & className the same`, async () => {
     const graph = {
       "/entry.pc": `
-        <div component as="Test" className:a="a" class="a2">
+        <div component as="Test" class:a="a" class="a2">
         </div>
         <div className="a" />
         <div class="b" />

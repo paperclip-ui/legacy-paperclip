@@ -285,7 +285,7 @@ describe(__filename + "#", () => {
     const graph = {
       "/entry.pc": `
       <div export component as="StyledHeader" 
-        className="StyledHeader"
+        class="StyledHeader"
         {onClick?}
         > 
       </div>
@@ -315,7 +315,7 @@ describe(__filename + "#", () => {
       `
 
   <div export component as="StyledHeader" 
-    className="StyledHeader"
+    class="StyledHeader"
     {onClick?}
     > 
   </div>
@@ -388,11 +388,11 @@ describe(__filename + "#", () => {
     );
   });
 
-  it(`Treats doesn't remove previous className if class is set`, async () => {
+  it(`Treats doesn't remove previous class if class is set`, async () => {
     const graph = {
       "file:///entry.pc": `
         
-        <span className="a">
+        <span class="a">
         </span>
       `
     };
@@ -416,7 +416,7 @@ describe(__filename + "#", () => {
 
     engine.updateVirtualFileContent(
       "file:///entry.pc",
-      `<span className="a" class>
+      `<span class="a" class>
       </span>
     `
     );
@@ -431,7 +431,7 @@ describe(__filename + "#", () => {
 
     engine.updateVirtualFileContent(
       "file:///entry.pc",
-      `<span className:a="a" className="b">
+      `<span class:a="a" class="b">
       </span>
     `
     );
