@@ -6,6 +6,7 @@ export type InterimImport = {
   namespace?: string;
   publicScopeId: string;
   filePath: string;
+  relativePath: string;
   usedTagNames: string[];
   injectedStyles: boolean;
 };

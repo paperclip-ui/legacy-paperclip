@@ -1,6 +1,6 @@
 {
   "name": "paperclip-loader",
-  "version": "18.0.0",
+  "version": "18.0.2",
   "description": "Webpack loader for Paperclip",
   "main": "index.js",
   "scripts": {
@@ -16,10 +16,11 @@
   "dependencies": {
     "@types/node": "^13.7.7",
     "loader-utils": "^1.2.3",
-    "paperclip": "^18.0.0",
-    "paperclip-cli-utils": "^18.0.0",
+    "paperclip": "^18.0.2",
+    "paperclip-cli-utils": "^18.0.2",
     "resolve": "^1.15.1",
-    "webpack-virtual-modules": "^0.4.1"
+    "webpack-virtual-modules": "^0.4.1",
+    "paperclip-compiler-interim": "^18.0.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.6.1",

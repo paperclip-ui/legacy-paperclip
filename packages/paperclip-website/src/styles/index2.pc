@@ -9,7 +9,7 @@
 <!--
   @frame { title: "Desktop / Mobile", width: 487, height: 1279, x: 4318, y: -10 }
 -->
-<div component as="Preview" className="$typography.text-default">
+<div component as="Preview" class="$typography.text-default">
   <div>
     <style>
 
@@ -123,7 +123,7 @@
 <!--
   @frame { title: "Landing 2", width: 1024, height: 1345, x: 223, y: 2371 }
 -->
-<div className="$typography.text-default">
+<div class="$typography.text-default">
   <!-- Center -->
 
   <div>

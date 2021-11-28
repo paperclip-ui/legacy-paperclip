@@ -1,4 +1,4 @@
-import { startServer } from "paperclip-designer";
+// import { startServer } from "paperclip-designer";
 
 export type ServerOptions = {
   port?: number;
@@ -7,17 +7,17 @@ export type ServerOptions = {
 };
 
 export const devStart = async ({ port, cwd, open = true }: ServerOptions) => {
-  await startServer({
-    port,
-    cwd: process.cwd(),
-    localResourceRoots: [cwd],
-    readonly: true,
-    openInitial: open,
-    credentials: {
-      browserstack: {
-        username: process.env.BROWSERSTACK_USERNAME,
-        password: process.env.BROWSERSTACK_PASSWORD
-      }
-    }
-  });
+  // await startServer({
+  //   port,
+  //   cwd: process.cwd(),
+  //   localResourceRoots: [cwd],
+  //   readonly: true,
+  //   openInitial: open,
+  //   credentials: {
+  //     browserstack: {
+  //       username: process.env.BROWSERSTACK_USERNAME,
+  //       password: process.env.BROWSERSTACK_PASSWORD
+  //     }
+  //   }
+  // });
 };

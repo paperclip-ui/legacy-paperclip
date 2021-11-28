@@ -10,10 +10,11 @@ import { InterimCompilerOptions } from "./options";
 export const translateCSS = (
   sheet: VirtSheet,
   exports: PCExports,
-  options: InterimCompilerOptions
+  filePath: string,
+  options: InterimCompilerOptions,
 ): InterimCSS => {
   return {
-    sheetText: stringifyCSSSheet(sheet),
+    sheetText: stringifyCSSSheet(sheet, options.css && options.css(filePath)),
     exports: {
       classNames: (Object as any).fromEntries(
         Object.keys(exports.style.classNames)

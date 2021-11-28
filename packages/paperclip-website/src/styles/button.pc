@@ -37,7 +37,7 @@
 <!--
   @frame { visible: false }
 -->
-<a export component as="Anchor" className="_button {className?}" className:secondary="_button--secondary" className:strong="_button--strong" {href?}>
+<a export component as="Anchor" class="_button {class?} {className?}" class:secondary="_button--secondary" class:strong="_button--strong" {href?}>
   {children}
 </a>
 

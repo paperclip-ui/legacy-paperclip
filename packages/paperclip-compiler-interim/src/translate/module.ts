@@ -1,4 +1,6 @@
 import { EngineDelegate, Node, VirtSheet } from "paperclip";
+import * as path from "path";
+
 import {
   CSSExports,
   getAttributeStringValue,
@@ -52,7 +54,7 @@ const translateinterim = (
   return {
     imports,
     components: translateComponents(ast, options, filePath, imports),
-    css: translateCSS(sheet, exports, options),
+    css: translateCSS(sheet, exports, filePath, options),
     assets: getAssets(ast, sheet, options)
   };
 };
@@ -93,6 +95,7 @@ const translateImports = (
 
       return {
         filePath: resolvedFilePath,
+        relativePath: relative(path.relative(path.dirname(filePath), resolvedFilePath)),
         publicScopeId: `_pub-${getStyleScopeId(resolvedFilePath)}`,
         namespace,
         usedTagNames: Object.keys(usedTagNames) as string[],
@@ -101,3 +104,6 @@ const translateImports = (
     })
     .filter(Boolean);
 };
+
+
+const relative = (path: string) => path.charAt(0) === "." ? path : "./" + path;

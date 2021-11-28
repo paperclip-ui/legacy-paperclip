@@ -170,11 +170,10 @@ export const writeSourceNode = (
 
 export const writeJoin = <TItem>(
   items: TItem[],
-  context,
   join: string,
   write: (item: TItem) => ContextWriter,
   trailing = false
-) =>
+) => (context: Context) =>
   items.reduce((context, item, index, items) => {
     context = write(item)(context);
     if (index < items.length - 1 || trailing) {

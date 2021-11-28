@@ -14,6 +14,7 @@ import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import VirtualModules from "webpack-virtual-modules";
 import { LoadedData, getStyleExports } from "paperclip";
+import { InterimCompiler, InterimModule } from "paperclip-compiler-interim";
 
 let _engine: EngineDelegate;
 
@@ -54,23 +55,29 @@ async function pcLoader(
   }
 
   const engine = await getEngine();
-  const compiler = require(resolve.sync(config.compilerOptions.name, {
+  const interimCompiler = new InterimCompiler(engine, {
+    css: resourceUrl => ({
+      uri: resourceUrl,
+      resolveUrl:
+        resourceProtocol && (url => url.replace("file:", resourceProtocol))
+    })
+  });
+  const targetCompiler = require(resolve.sync(config.compilerOptions.name, {
     basedir: process.cwd()
   }));
-  let info: LoadedData;
-  let ast: any;
+  let interimModule: InterimModule;
 
   try {
     // need to update virtual content to bust the cache
     await engine.updateVirtualFileContent(resourceUrl, source);
-    ast = await engine.parseContent(source, resourceUrl);
-
-    info = await engine.open(resourceUrl);
+    interimModule = interimCompiler.parseFile(resourceUrl);
   } catch (e) {
     // eesh 🙈
     const info = e && e.range ? e : e.info && e.info.range ? e.info : null;
     if (info && info.range) {
       console.error(getPrettyMessage(info, source, resourceUrl, process.cwd()));
+    } else {
+      console.error(e);
     }
 
     return callback(
@@ -78,38 +85,29 @@ async function pcLoader(
     );
   }
 
-  const { sheet } = info;
-
   const styleCache = { ..._loadedStyleFiles };
   _loadedStyleFiles = styleCache;
 
-  let sheetFilePath = url.fileURLToPath(`${resourceUrl}.css`);
-  const sheetFileName = path.basename(sheetFilePath);
 
-  const code = compiler.compile(
-    {
-      ast,
-      classNames: getStyleExports(info).classNames,
-      sheetRelativeFilePath: `./${sheetFileName}`
-    },
+  const {js,...exts} = targetCompiler.compile(
+    interimModule,
     resourceUrl,
     config.compilerOptions
   );
 
-  const sheetCode = stringifyCSSSheet(sheet, {
-    uri: resourceUrl,
-    resolveUrl:
-      resourceProtocol && (url => url.replace("file:", resourceProtocol))
-  });
+  for (const ext in exts) {
+    let filePath = `${resourceUrl}.${ext}`;
 
-  // covers bug with node@10.13.0 where paths aren't stringified correctly (C:/this/path/is/bad)
-  if (process.platform === "win32") {
-    sheetFilePath = sheetFilePath.replace(/\/+/g, "\\");
+    // covers bug with node@10.13.0 where paths aren't stringified correctly (C:/this/path/is/bad)
+    if (process.platform === "win32") {
+      filePath = filePath.replace(/\/+/g, "\\");
+    }
+
+    let fileUrl = url.fileURLToPath(filePath);
+    virtualModules.writeModule(fileUrl, exts[ext]);
   }
 
-  virtualModules.writeModule(sheetFilePath, sheetCode);
-
-  callback(null, code);
+  callback(null, js);
 }
 
 module.exports = function(source: string) {

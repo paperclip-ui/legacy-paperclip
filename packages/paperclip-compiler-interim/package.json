@@ -1,6 +1,6 @@
 {
   "name": "paperclip-compiler-interim",
-  "version": "18.0.0",
+  "version": "18.0.2",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "crc32": "^0.2.2",
-    "paperclip": "^18.0.0"
+    "paperclip": "^18.0.2"
   },
   "devDependencies": {
     "@types/mocha": "^8.0.0",
