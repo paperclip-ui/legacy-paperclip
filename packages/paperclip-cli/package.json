@@ -14,7 +14,7 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "ed34237b6303bd9c54fc722776a67247b6df9df2",
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "dependencies": {
     "@types/inquirer": "^6.5.0",
     "@types/shelljs": "^0.8.8",

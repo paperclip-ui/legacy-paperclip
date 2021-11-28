@@ -23,7 +23,7 @@
   },
   "author": "",
   "license": "MIT",
-  "gitHead": "ed34237b6303bd9c54fc722776a67247b6df9df2",
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "devDependencies": {
     "@babel/core": "^7.10.4",
     "@babel/preset-env": "^7.10.4",

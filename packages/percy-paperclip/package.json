@@ -13,7 +13,7 @@
   },
   "author": "",
   "license": "ISC",
-  "gitHead": "ed34237b6303bd9c54fc722776a67247b6df9df2",
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "devDependencies": {
     "@types/mime": "^2.0.2",
     "@typescript-eslint/eslint-plugin": "^3.6.1",

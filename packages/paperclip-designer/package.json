@@ -10,7 +10,7 @@
   },
   "author": "",
   "license": "GPLv3",
-  "gitHead": "ed34237b6303bd9c54fc722776a67247b6df9df2",
+  "gitHead": "28439bfc22f88290b1a12e4f364bdd19667d715a",
   "dependencies": {
     "automerge": "^0.14.2",
     "browserstack": "^1.6.1",
