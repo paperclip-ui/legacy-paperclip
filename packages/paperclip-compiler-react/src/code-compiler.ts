@@ -122,23 +122,33 @@ const translateImports = (context: Context) => {
 const compileComponents = (context: Context) =>
   writeJoin(context.module.components, context, "\n\n", compileComponent);
 
-const compileComponent = (component: InterimComponent) =>
-  writeSourceNode(
+const compileComponent = (component: InterimComponent) => {
+  const tagName = component.as === "default" ? "$$Default" : component.as;
+
+  return writeSourceNode(
     component.range.start,
     addBuffer([
-      component.exported && "export ",
-      component.as === "default"
-        ? `default function (props) {`
-        : `function ${component.as}(props) {`,
+      `var ${tagName} = React.memo(React.forwardRef(function ${tagName}(props, ref) {`,
       "\n",
       startBlock,
       "return ",
       compileElement(component),
       endBlock,
       "\n",
-      "}\n"
+      "}));\n\n",
+      context => {
+        if (!component.exported) {
+          return context;
+        }
+        if (component.as === "default") {
+          return addBuffer([`export default ${tagName};`])(context);
+        } else {
+          return addBuffer([`export { ${component.as} };`])(context);
+        }
+      }
     ])
   );
+};
 
 const compileElement = (element: InterimElement | InterimComponent) =>
   writeSourceNode(element.range.start, context => {
