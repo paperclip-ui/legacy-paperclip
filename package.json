@@ -39,15 +39,16 @@
     "build": "lerna run build",
     "lint": "lerna run lint",
     "link": "lerna exec -- yarn link",
-    "link:packages": "for PACKAGE in `ls packages`; do cd packages/$PACKAGE; npm link; cd ..; done;",
     "postinstall": "lerna bootstrap",
     "clean": "find ./ -name node_modules -exec rm -rf {} \\;",
+    "publish:local": "for PKG in `ls packages`; do cd packages/$PKG; yalc publish; cd ../..; done;",
+    "push:local": "for PKG in `ls packages`; do cd packages/$PKG; yalc push; cd ../..; done;",
     "clean:hard": "rm -rf yarn.lock && yarn clean",
     "build:watch": "lerna run build:watch --parallel",
     "publish:packages": "lerna publish from-package --yes",
     "publish:marketplace": "lerna run publish:marketplace",
     "publish:documentation": "lerna run publish:documentation",
-    "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --package-lock-only --no-audit && git add packages/*/package-lock.json"
+    "version": "lerna clean --yes && lerna bootstrap --ignore-scripts -- --package-lock-only --no-audit"
   },
   "repository": {
     "type": "git",

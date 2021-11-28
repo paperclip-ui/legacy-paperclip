@@ -1,6 +1,6 @@
 {
   "name": "paperclip-builder",
-  "version": "17.14.21",
+  "version": "18.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,10 +15,10 @@
     "crc32": "^0.2.2",
     "fs-extra": "^10.0.0",
     "glob": "^7.2.0",
-    "paperclip": "^17.14.21",
-    "paperclip-compiler-interim": "^17.14.19",
-    "paperclip-compiler-react": "^17.14.21",
-    "paperclip-utils": "^17.14.21",
+    "paperclip": "^18.0.0",
+    "paperclip-compiler-interim": "^18.0.0",
+    "paperclip-compiler-react": "^18.0.0",
+    "paperclip-utils": "^18.0.0",
     "resolve": "^1.20.0"
   },
   "devDependencies": {
