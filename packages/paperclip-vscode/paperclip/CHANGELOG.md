@@ -1,9 +1,6 @@
-# Change Log
+## 18.0.0
 
-All notable changes to the "paperclip" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+- deprecate `className` in favor of just `class`
+- interim compiler to make it easier to create target compilers
+- include `line` + `column` in AST positions
+- add ability to generate source maps
