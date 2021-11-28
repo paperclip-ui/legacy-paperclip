@@ -3,7 +3,6 @@
   "version": "18.0.2",
   "description": "Visual designer for Paperclip files",
   "main": "lib/index.js",
-  "private": true,
   "scripts": {
     "build2": "yarn build:definitions && tsc && webpack",
     "build2:watch": "concurrently \"webpack --watch\" \"tsc --watch\" \"paperclip-minimal build --write --definition --watch\"",
