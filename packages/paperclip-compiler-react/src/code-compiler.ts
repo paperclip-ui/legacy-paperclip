@@ -208,6 +208,10 @@ const compileAttributes = (element: InterimElement | InterimComponent) => (
 
   const attrKeys = Object.keys(omit(element.attributes, omitAttributeNames));
 
+  if (element.kind === InterimNodeKind.Component) {
+    context = addBuffer([`"ref": ref,\n`])(context);
+  }
+
   context = writeJoin(
     attrKeys,
     context,
@@ -434,5 +438,5 @@ const compileChildren = (children: InterimNode[]) => (context: Context) => {
       }
     }
   });
-  return addBuffer([endBlock, `\n`, `]`])(context);
+  return addBuffer([endBlock, `]`])(context);
 };
