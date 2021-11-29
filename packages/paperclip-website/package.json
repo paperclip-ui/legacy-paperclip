@@ -3,8 +3,8 @@
   "version": "18.0.2",
   "private": true,
   "scripts": {
-    "start": "docusaurus start",
-    "build": "docusaurus build",
+    "start": "ddocusaurus clear && ocusaurus start",
+    "build": "docusaurus clear && docusaurus build",
     "serve": "docusaurus serve",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
