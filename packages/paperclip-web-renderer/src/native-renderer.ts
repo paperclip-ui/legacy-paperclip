@@ -154,7 +154,7 @@ const createNativeFragment = (
   factory: DOMFactory,
   resolveUrl: UrlResolver
 ) => {
-  const nativeFragment = factory.createDocumentFragment();
+  const nativeFragment = factory.createDocumentFragment() as any;
   for (const child of fragment.children) {
     nativeFragment.appendChild(
       createNativeNode(child, factory, resolveUrl, nativeFragment.namespaceURI)

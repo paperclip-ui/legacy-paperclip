@@ -12,7 +12,6 @@
     "html-entities": "^1.2.1",
     "lodash": "^4.17.15",
     "paperclip": "^18.0.2",
-    "paperclip-compiler-interim": "^18.0.2",
     "source-map": "^0.7.3"
   },
   "scripts": {
@@ -38,9 +37,9 @@
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-15": "^1.4.1",
     "enzyme-adapter-react-16": "^1.15.2",
+    "paperclip-compiler-interim": "^18.0.2",
     "eslint": "^7.4.0",
     "mocha": "^8.0.1",
-    "paperclip-compiler-interim": "^17.14.19",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "typescript": "^4.2.3"

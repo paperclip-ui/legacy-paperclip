@@ -95,6 +95,7 @@ async function pcLoader(
     config.compilerOptions
   );
 
+
   for (const ext in exts) {
     let filePath = `${resourceUrl}.${ext}`;
 

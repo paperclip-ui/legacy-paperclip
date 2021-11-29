@@ -13,7 +13,7 @@ export const patchNativeNode = (
   resolveUrl: (url: string) => string
 ) => {
   for (const mutation of mutations) {
-    const target = getTarget(mount, mutation);
+    const target = getTarget(mount, mutation) as any;
     const action = mutation.action;
     switch (action.kind) {
       case ActionKind.DeleteChild: {
@@ -36,7 +36,7 @@ export const patchNativeNode = (
         break;
       }
       case ActionKind.ReplaceNode: {
-        const parent = target.parentNode;
+        const parent = target.parentNode as Element;
         parent.insertBefore(
           createNativeNode(
             action.replacement,

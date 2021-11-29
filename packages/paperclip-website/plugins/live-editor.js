@@ -9,23 +9,9 @@ module.exports = function(context, options) {
       return path.resolve(__dirname, "./theme");
     },
     configureWebpack(config, isServer) {
-      const plugins = [
-        // new CopyPlugin({
-        //   patterns: [
-        //     {
-        //       from: path.resolve(
-        //         __dirname,
-        //         "../../paperclip-playground/standalone-dist"
-        //       ),
-        //       to: ".",
-        //       globOptions: {
-        //         ignore: ["**/index.html"]
-        //       }
-        //     }
-        //   ]
-        // })
-      ];
 
+      const plugins = [];
+      
       if (isServer) {
         plugins.push(
           new webpack.ProvidePlugin({
@@ -36,9 +22,6 @@ module.exports = function(context, options) {
       }
 
       return {
-        node: {
-          fs: "empty"
-        },
         module: {
           rules: [
             {
