@@ -1,11 +1,19 @@
 import * as resolve from "resolve";
-import { PaperclipConfig, PaperclipResourceWatcher } from "paperclip-utils";
+import * as fs from "fs";
+import * as path from "path";
+import * as URL from "url";
+import * as chokidar from "chokidar";
+import { PaperclipConfig, PaperclipResourceWatcher, paperclipSourceGlobPattern, resolvePCConfig } from "paperclip-utils";
 import EventEmitter from "events";
-import { InterimCompiler } from "paperclip-compiler-interim";
-import { EngineDelegate } from "paperclip";
+import { InterimCompiler, InterimModule } from "paperclip-compiler-interim";
+import { createEngineDelegate, EngineDelegate } from "paperclip";
+import { glob } from "glob";
 
-export type Options = {
-  cwd?: string;
+type BaseOptions = {
+  resourceProtocol?: string;
+};
+
+export type BuildDirectoryOptions = BaseOptions & {
   watch?: boolean;
 };
 
@@ -22,60 +30,64 @@ class BuildProcess {
   }
 }
 
+type TargetCompiler = {
+  compile: (module: InterimModule, filePath: string, options: any) => Record<string, string>;
+}
+
+
+export const buildDirectory = async (directory: string, engine: EngineDelegate, options: BuildDirectoryOptions = {}) => {
+  const [config] = resolvePCConfig(fs)(directory);
+
+  const buildFile2 = buildFile(engine, options);
+
+  glob(
+    paperclipSourceGlobPattern(config.sourceDirectory),
+    {
+      cwd: directory
+    },
+    async function(err, filePaths) {
+      filePaths.map(buildFile2);
+    }
+  );
+
+  if (options.watch) {
+    watch(directory, paperclipSourceGlobPattern(config.sourceDirectory), buildFile2);
+  }
+};
+
+
+function watch(cwd, filesGlob, compileFile) {
+  const watcher = chokidar.watch(filesGlob, {
+    cwd: cwd
+  });
+
+  watcher.on("change", compileFile);
+}
+
 /**
  * Builds from Paperclip config.
  */
 
-export const buildFromConfig = (config: PaperclipConfig, options: Options) => {
-  const em = new EventEmitter();
+ export const buildFile = (engine: EngineDelegate, options: BaseOptions = {}) => async (filePath: string) => {
+  const interimCompiler = createInterimCompiler(engine, options);
+  const interimModule = interimCompiler.parseFile(filePath);
 
-  return new BuildProcess(em);
+  const [config, configUrl] = resolvePCConfig(fs)(filePath);
+  const configPath = URL.fileURLToPath(configUrl);
+  const targetCompiler = requireTargetCompiler(path.dirname(configPath), config);
+
+  targetCompiler.compile(interimModule, filePath, config.compilerOptions);
 };
 
-/**
- */
 
-export const $$buildFile = (
-  filePath: string,
-  config: PaperclipConfig,
-  options: Options,
-  engine: EngineDelegate
-) => {
-  const compilerModulePath = resolve2(config.compilerOptions.name);
+const createInterimCompiler = (engine: EngineDelegate, {resourceProtocol}: BaseOptions) => new InterimCompiler(engine, {
+  css: resourceUrl => ({
+    uri: resourceUrl,
+    resolveUrl: resourceProtocol && (url => url.replace("file:", resourceProtocol))
+  })
+});
 
-  if (!compilerModulePath) {
-    throw new Error(
-      `Compiler "${config.compilerOptions.name}" couldn\'t be found', compiler);`
-    );
-  }
-  const compiler = require(compilerModulePath);
+const requireTargetCompiler = (cwd: string, config: PaperclipConfig): TargetCompiler => require(resolve.sync(config.compilerOptions.name, {
+  basedir: cwd
+}));
 
-  if (!compiler || !compiler.compileFile) {
-    throw new Error(
-      `Compiler "${config.compilerOptions.name}" does not export compile function`
-    );
-  }
-
-  const files: Record<string, string> = {};
-
-  const intermCompiler = new InterimCompiler(engine);
-  const interm = intermCompiler.parseFile(filePath);
-
-  files[filePath + ".css"] = interm.css.sheetText;
-
-  Object.assign(compiler.compileFile(filePath, interm));
-
-  return files;
-};
-
-const resolve2 = module => {
-  try {
-    return resolve.sync(module, { basedir: process.cwd() });
-  } catch (e) {
-    try {
-      return require.resolve(module);
-    } catch (e) {
-      return null;
-    }
-  }
-};

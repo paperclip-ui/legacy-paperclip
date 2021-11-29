@@ -2,33 +2,27 @@ import { InterimModule } from "paperclip-compiler-interim";
 import * as path from "path";
 import { Node, ClassNameExport } from "paperclip";
 import { compile as compile2Code } from "./code-compiler";
-// import { compile as compileDefinition } from "./definition-compiler";
+import { compile as compileDefinition } from "./definition-compiler";
 
 type Options = {
-  definition?: boolean;
-  includeCSS?: boolean;
+  importCSS?: boolean;
 };
 
-export const getOutputFilePath = (filePath: string, options: Options = {}) => {
-  if (options.definition) {
-    return filePath + ".d.ts";
-  } else {
-    return filePath + ".js";
-  }
-};
 
 export const compile = (
   module: InterimModule,
   filePath: string,
-  options: Options = {
-  }
+  options: Options = {}
 ) => {
+  const {importCSS = true} = options;
   return {
-    js: compile2Code(module, filePath, options.includeCSS !== false ? [
-      "./" + path.basename(filePath) + ".css"
-    ] : []),
-    css: module.css.sheetText
+    "js": compile2Code(module, filePath, importCSS ? [`./${path.basename(filePath)}.css`]: []),
+
+    // TODO
+    "map": null,
+
+    // TODO
+    "d.ts": null,
+    "css": module.css.sheetText
   };
 };
-
-export const compileFile = compile;

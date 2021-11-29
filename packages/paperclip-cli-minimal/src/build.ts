@@ -16,6 +16,7 @@ import { glob } from "glob";
 import { getPrettyMessage } from "paperclip-cli-utils";
 import { ClassNameExport, stripFileProtocol } from "paperclip";
 import { getStyleExports } from "paperclip-utils";
+import { buildDirectory } from "paperclip-builder";
 
 export type BuildOptions = {
   config: string;

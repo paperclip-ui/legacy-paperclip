@@ -2,7 +2,7 @@
   "name": "paperclip-builder",
   "version": "18.0.2",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "mocha lib/test",
     "build": "tsc",
