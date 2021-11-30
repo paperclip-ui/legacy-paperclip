@@ -23,7 +23,7 @@ export type BuildOptions = {
 
 
 export const build = async (options: BuildOptions) => {
-  console.log(options);
+
   const config = loadConfig(options);
   const engine = createEngineDelegate({})
   const builder = buildDirectory({

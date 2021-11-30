@@ -21,7 +21,6 @@ import {
   AS_ATTR_NAME
 } from "paperclip";
 import {
-  Options,
   RENAME_PROPS,
   getPartClassName,
   createTranslateContext,
@@ -35,8 +34,7 @@ import { InterimComponent, InterimModule } from "paperclip-compiler-interim";
 
 export const compile = (
   module: InterimModule,
-  filePath: string,
-  options: Options = {}
+  filePath: string
 ): string => {
   let context = createTranslateContext(module, filePath);
   return translateRoot(context).buffer.join("");
@@ -59,7 +57,6 @@ const translateDefaultProps = addBuffer([
   startBlock,
   `ref?: any,\n`,
   endBlock,
-  addBuffer,
   `};\n\n`
 ]);
 
@@ -69,14 +66,7 @@ const translateClassNames = (context: Context) => {
     startBlock,
     context => {
       const classNames = context.module.css.exports.classNames;
-      for (const exportName of classNames) {
-        // const info = classNames[exportName];
-
-        // const info = classNames[exportName];
-        // if (!info.public) {
-        //   continue;
-        // }
-
+      for (const exportName in classNames) {
         context = addBuffer([`${JSON.stringify(exportName)}: string,\n`])(
           context
         );
@@ -88,11 +78,6 @@ const translateClassNames = (context: Context) => {
   ])(context);
 
   return context;
-};
-
-const BLACK_LIST_PROPS = {
-  // className: true,
-  // children: true
 };
 
 const DEFAULT_PARAM_TYPE = `any`;
@@ -130,17 +115,18 @@ const translateInference = (property: string, inference: Inference) => {
 
 const translateComponents = (context: Context) =>
   writeJoin(context.module.components, "\n\n", translateComponent)(context);
-const translateComponent = (component: InterimComponent) =>
-  addBuffer([
-    `type ${component.as}Props = {\n`,
+const translateComponent = (component: InterimComponent) => {
+  const name = component.as === "default" ? "$$Default" : component.as;
+  return addBuffer([
+    `type ${name}Props = {\n`,
     startBlock,
     translateComponentProps(component),
     endBlock,
     "}\n\n",
-    component.as === "default"
-      ? `export default Factory<${component.as}Props>;`
-      : `export const ${component.as}: Factory<${component.as}Props>;`
+    `type ${name} = Factory<${name}Props>;\n\n`,
+    component.as === "default" ? `export default ${name};` : `export {${name}};\n\n`
   ]);
+}
 
 const translateComponentProps = (component: InterimComponent) => (
   context: Context
@@ -149,9 +135,6 @@ const translateComponentProps = (component: InterimComponent) => (
 
   for (const key in component.schema.properties) {
     const propName = RENAME_PROPS[key] || key;
-    if (BLACK_LIST_PROPS[propName]) {
-      continue;
-    }
     context = translateProp(key, component.schema.properties[key])(context);
     props[key] = [null];
   }
@@ -163,5 +146,5 @@ const translateProp = (key: string, { value, optional }: ShapeProperty) =>
   addBuffer([
     `${key}${optional ? "?" : ""}: `,
     translateInference(key, value),
-    ",m"
+    ",\n"
   ]);

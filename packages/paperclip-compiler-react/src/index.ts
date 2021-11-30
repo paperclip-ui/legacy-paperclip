@@ -22,7 +22,7 @@ export const compile = (
     "map": null,
 
     // TODO
-    "d.ts": null,
+    "d.ts": compileDefinition(module, filePath),
     "css": module.css.sheetText
   };
 };
