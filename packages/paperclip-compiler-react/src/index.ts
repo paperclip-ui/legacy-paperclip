@@ -15,13 +15,11 @@ export const compile = (
   options: Options = {}
 ) => {
   const {importCSS = true} = options;
+  const {code, map} = compile2Code(module, filePath, importCSS ? [`./${path.basename(filePath)}.css`]: []);
+
   return {
-    "js": compile2Code(module, filePath, importCSS ? [`./${path.basename(filePath)}.css`]: []),
-
-    // TODO
-    "map": null,
-
-    // TODO
+    "js": code,
+    "js.map": map.toString(),
     "d.ts": compileDefinition(module, filePath),
     "css": module.css.sheetText
   };

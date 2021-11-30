@@ -135,16 +135,16 @@ export const startBlock = (context: Context) => {
 
 export const wrapSourceNode = (
   pos: StringPosition,
-  fromContext: Context,
-  toContext: Context
+  bufferStart: number,
+  context: Context
 ) => {
   return {
-    ...toContext,
+    ...context,
     buffer: [
-      new SourceNode(pos.line, pos.column, toContext.filePath, [
-        ...toContext.buffer.slice(0, fromContext.buffer.length)
+      ...context.buffer.slice(0, bufferStart),
+      new SourceNode(pos.line, pos.column, context.filePath, [
+        ...context.buffer.slice(bufferStart)
       ]),
-      ...toContext.buffer.slice(fromContext.buffer.length)
     ]
   };
 };
@@ -155,12 +155,12 @@ export const writeSourceNode = (
   pos: StringPosition | undefined,
   write: ContextWriter
 ) => (context: Context) => {
-  const initial = context;
-  context = write(context);
+  const bufferStart = context.buffer.length;
   if (!pos) {
     return context;
   }
-  return wrapSourceNode(pos, initial, context);
+
+  return wrapSourceNode(pos, bufferStart, write(context));
 };
 
 export const writeJoin = <TItem>(

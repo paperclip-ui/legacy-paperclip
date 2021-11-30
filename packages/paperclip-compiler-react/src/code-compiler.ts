@@ -34,6 +34,7 @@ import {
 } from "./utils";
 import { Html5Entities } from "html-entities";
 import { Context } from "./utils";
+import { SourceNode } from "source-map";
 
 const entities = new Html5Entities();
 
@@ -54,8 +55,8 @@ function castStyle(value) {
 }
 `.trim();
 
-export const compile = (module: InterimModule, filePath: string, includes: string[]) =>
-  writeSourceNode(
+export const compile = (module: InterimModule, filePath: string, includes: string[]) => {
+  const context = writeSourceNode(
     { line: 1, column: 1, pos: 1 },
     addBuffer([
       `import React from "react";\n`,
@@ -70,7 +71,9 @@ export const compile = (module: InterimModule, filePath: string, includes: strin
       compileComponents,
       "\n\n"
     ])
-  )(createTranslateContext(module, filePath)).buffer.join("");
+  )(createTranslateContext(module, filePath));
+  return (context.buffer[0] as SourceNode).toStringWithSourceMap();
+}
 
 export const translateExportedStyles = addBuffer([
   `export const classNames = {\n`,
@@ -78,7 +81,7 @@ export const translateExportedStyles = addBuffer([
   (context: Context) =>
     writeJoin(
       Object.keys(context.module.css.exports.classNames),
-      ",",
+      ",\n",
       key =>
         addBuffer([
           JSON.stringify(key),
@@ -119,7 +122,7 @@ const translateImports = (context: Context) => {
 };
 
 const compileComponents = (context: Context) =>
-  writeJoin(context.module.components, "\n\n", compileComponent)(context);
+  writeJoin(context.module.components, "\n", compileComponent)(context);
 
 const compileComponent = (component: InterimComponent) => {
   const tagName = component.as === "default" ? "$$Default" : component.as;
@@ -134,15 +137,15 @@ const compileComponent = (component: InterimComponent) => {
       compileElement(component),
       endBlock,
       "\n",
-      "}));\n\n",
+      "}));\n",
       context => {
         if (!component.exported) {
           return context;
         }
         if (component.as === "default") {
-          return addBuffer([`export default ${tagName};`])(context);
+          return addBuffer([`export default ${tagName};\n`])(context);
         } else {
-          return addBuffer([`export { ${component.as} };`])(context);
+          return addBuffer([`export { ${component.as} };\n`])(context);
         }
       }
     ])
