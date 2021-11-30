@@ -2,7 +2,7 @@ import { camelCase } from "lodash";
 import * as path from "path";
 import { Element, AS_ATTR_NAME, getAttributeStringValue } from "paperclip";
 import { InterimModule } from "paperclip-compiler-interim";
-import { StringPosition, StringRange } from "paperclip-utils";
+import { StringPosition } from "paperclip-utils";
 import { SourceNode } from "source-map";
 
 export type Context = {
@@ -13,8 +13,6 @@ export type Context = {
   isNewLine: boolean;
   indent: string;
 };
-
-type OutputBuffer = {};
 
 export const createTranslateContext = (
   module: InterimModule,

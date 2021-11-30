@@ -88,13 +88,11 @@ async function pcLoader(
   const styleCache = { ..._loadedStyleFiles };
   _loadedStyleFiles = styleCache;
 
-
   const {js,...exts} = targetCompiler.compile(
     interimModule,
     resourceUrl,
     config.compilerOptions
   );
-
 
   for (const ext in exts) {
     let filePath = `${resourceUrl}.${ext}`;
@@ -104,7 +102,7 @@ async function pcLoader(
       filePath = filePath.replace(/\/+/g, "\\");
     }
 
-    let fileUrl = url.fileURLToPath(filePath);
+    const fileUrl = url.fileURLToPath(filePath);
     virtualModules.writeModule(fileUrl, exts[ext]);
   }
 

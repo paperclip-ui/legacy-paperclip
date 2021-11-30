@@ -36,7 +36,7 @@ export const compile = (
   module: InterimModule,
   filePath: string
 ): string => {
-  let context = createTranslateContext(module, filePath);
+  const context = createTranslateContext(module, filePath);
   return translateRoot(context).buffer.join("");
 };
 
