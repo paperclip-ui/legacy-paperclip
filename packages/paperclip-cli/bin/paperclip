@@ -29,24 +29,23 @@ const fs = require("fs");
 // .argv;
 
 const argv = require("yargs")
-.command("build [file-pattern]", "Compiles paperclip files to target language", yargs => {
+.command("build", "Compiles paperclip files to target language", yargs => {
   yargs
   .option("watch", desc("watch for changes"))
-  .option("drop-pc-extension", desc("Drops PC extension from compiled files"))
   .option("write", desc("Write compiled file"))
-  .option("css", desc("Print CSS for stdout"))
   .option("verbose", desc("Write verbose information"))
   .option("compiler", desc("Language compiler target (default is from paperclip.config.json if found)"))
-  .option("definition", desc("Write typed definition type"))
 }, argv => {
   build({
+    cwd: process.cwd(),
     config: argv.config,
     write: argv.write,
-    watch: argv.watch,
     css: argv.css,
+    watch: argv.watch,
     definition: argv.definition,
-    dropPcExtension: argv.dropPcExtension,
+    targets: argv.targets && argv.targets.split(",").map(v => v.trim()),
     verbose: argv.verbose,
+    dropPcExtension: argv.dropPcExtension,
     compilerName: argv.compiler,
     filePatterns: argv.filePattern
   })

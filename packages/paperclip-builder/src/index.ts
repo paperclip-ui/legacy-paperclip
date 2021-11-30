@@ -1,32 +1,74 @@
-import * as resolve from "resolve";
-import * as fs from "fs";
-import * as path from "path";
-import * as URL from "url";
-import * as chokidar from "chokidar";
-import { PaperclipConfig, PaperclipResourceWatcher, paperclipSourceGlobPattern, resolvePCConfig } from "paperclip-utils";
-import EventEmitter from "events";
-import { InterimCompiler, InterimModule } from "paperclip-compiler-interim";
-import { createEngineDelegate, EngineDelegate } from "paperclip";
+
 import { glob } from "glob";
+import * as URL from "url";
+import * as path from "path";
+import {EventEmitter} from "events";
+import * as resolve from "resolve";
+import * as chokidar from "chokidar";
+import { EngineDelegate } from "paperclip";
+import { InterimCompiler, InterimModule } from "paperclip-compiler-interim";
+import { PaperclipConfig, paperclipSourceGlobPattern } from "paperclip-utils";
 
 type BaseOptions = {
   resourceProtocol?: string;
+  config: PaperclipConfig;
+  cwd: string;
+  filesPattern?: string;
 };
 
 export type BuildDirectoryOptions = BaseOptions & {
   watch?: boolean;
 };
 
-class BuildProcess {
-  constructor(private _em: EventEmitter) {}
-  onFile(cb: (file: string) => void) {
+class DirectoryBuilder {
+  private _em: EventEmitter;
+  constructor(readonly engine: EngineDelegate, readonly options: BuildDirectoryOptions) {
+    this._em = new EventEmitter();
+  }
+  start() {
+    glob(
+      paperclipSourceGlobPattern(this.options.config.sourceDirectory),
+      {
+        cwd: this.options.cwd,
+        absolute: true
+      },
+      async (err, filePaths) => {
+        filePaths.map(this._buildFile);
+        if (this.options.watch) {
+          this._em.emit("end");
+        }
+      }
+    );
+  
+    if (this.options.watch) {
+      watch(this.options.cwd, paperclipSourceGlobPattern(this.options.config.sourceDirectory), this._buildFile);
+    }
+    return this;
+  }
+  _buildFile = async (filePath: string) => {
+    try {
+      const files = await buildFile(filePath, this.engine, this.options);
+      for (const ext in files) {
+        const content = files[ext];
+        if (content) {
+          this._em.emit("file", filePath + "." + ext, content);
+        }
+      }
+    } catch(e) {
+      this._em.emit("error", e, filePath);
+    }
+  }
+  onFile(cb: (file: string, content: string) => void) {
     this._em.on("file", cb);
+    return this;
   }
   onError(cb: (error: Error, file: string) => void) {
     this._em.on("error", cb);
+    return this;
   }
-  onEnd(cb: (file: string) => void) {
+  onEnd(cb: () => void) {
     this._em.on("end", cb);
+    return this;
   }
 }
 
@@ -35,24 +77,8 @@ type TargetCompiler = {
 }
 
 
-export const buildDirectory = async (directory: string, engine: EngineDelegate, options: BuildDirectoryOptions = {}) => {
-  const [config] = resolvePCConfig(fs)(directory);
-
-  const buildFile2 = buildFile(engine, options);
-
-  glob(
-    paperclipSourceGlobPattern(config.sourceDirectory),
-    {
-      cwd: directory
-    },
-    async function(err, filePaths) {
-      filePaths.map(buildFile2);
-    }
-  );
-
-  if (options.watch) {
-    watch(directory, paperclipSourceGlobPattern(config.sourceDirectory), buildFile2);
-  }
+export const buildDirectory = (options: BuildDirectoryOptions, engine: EngineDelegate) => {
+  return new DirectoryBuilder(engine, options);
 };
 
 
@@ -68,15 +94,12 @@ function watch(cwd, filesGlob, compileFile) {
  * Builds from Paperclip config.
  */
 
- export const buildFile = (engine: EngineDelegate, options: BaseOptions = {}) => async (filePath: string) => {
+ export const buildFile = async (filePath: string, engine: EngineDelegate, options: BaseOptions) => {
+  const fileUrl = URL.pathToFileURL(filePath).href;
   const interimCompiler = createInterimCompiler(engine, options);
-  const interimModule = interimCompiler.parseFile(filePath);
-
-  const [config, configUrl] = resolvePCConfig(fs)(filePath);
-  const configPath = URL.fileURLToPath(configUrl);
-  const targetCompiler = requireTargetCompiler(path.dirname(configPath), config);
-
-  targetCompiler.compile(interimModule, filePath, config.compilerOptions);
+  const interimModule = interimCompiler.parseFile(fileUrl);
+  const targetCompiler = requireTargetCompiler(path.dirname(options.cwd), options.config);
+  return targetCompiler.compile(interimModule, fileUrl, options.config.compilerOptions);
 };
 
 

@@ -26,6 +26,12 @@ export class InterimCompiler {
   parseFile(filePath: string): InterimModule {
     const { sheet, exports } = this._engine.open(filePath);
     const ast = this._engine.parseFile(filePath);
+    if (ast.error) {
+      throw ast.error;
+    }
+    if (sheet.error) {
+      throw sheet.error;
+    }
     return translateinterim(
       ast,
       sheet,
