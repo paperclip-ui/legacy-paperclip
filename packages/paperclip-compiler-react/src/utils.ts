@@ -2,11 +2,12 @@ import { camelCase } from "lodash";
 import * as path from "path";
 import { Element, AS_ATTR_NAME, getAttributeStringValue } from "paperclip";
 import { InterimModule } from "paperclip-interim";
-import { StringPosition } from "paperclip-utils";
+import { PaperclipConfig, StringPosition } from "paperclip-utils";
 import { SourceNode } from "source-map";
 
 export type Context = {
   module: InterimModule;
+  config: PaperclipConfig;
   filePath: string;
   buffer: any[];
   depth: number;
@@ -16,10 +17,12 @@ export type Context = {
 
 export const createTranslateContext = (
   module: InterimModule,
-  filePath: string
+  filePath: string,
+  config: PaperclipConfig
 ): Context => ({
   module,
   filePath,
+  config,
   buffer: [],
   depth: 0,
   isNewLine: true,

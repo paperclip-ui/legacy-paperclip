@@ -3,13 +3,13 @@ import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
 import { InterimCompiler } from "paperclip-interim";
-import { isPaperclipFile } from "paperclip-utils";
+import { isPaperclipFile, PaperclipConfig } from "paperclip-utils";
 
 const builtin = {
   react: React
 };
 
-export const compileModules = async (graph: Record<string, string>) => {
+export const compileModules = async (graph: Record<string, string>, config: PaperclipConfig) => {
   const engine = await createEngineDelegate({
     io: {
       readFile: uri => graph[uri],
@@ -26,10 +26,10 @@ export const compileModules = async (graph: Record<string, string>) => {
 
   for (const path in graph) {
     if (!isPaperclipFile(path)) {
-      modules[path] = graph[path];
+      modules[path] = () => graph[path];
       continue;
     }
-    const es6 = compile(intermCompiler.parseFile(path), path, []).code;
+    const es6 = compile(intermCompiler.parseFile(path), path, config, []).code;
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
     const module = new Function(
       `require`,

@@ -13,10 +13,9 @@ import {
   DynamicAttributeValuePart,
   InterimAttributeValuePartKind,
   ShorthandAttributeValuePart,
-  InterimAttribute,
   InterimAttributeValue
 } from "paperclip-interim";
-import { camelCase, identity, omit } from "lodash";
+import { camelCase, omit } from "lodash";
 import {
   InterimScriptExpressionKind,
   InterimScriptExpression
@@ -35,10 +34,11 @@ import {
 import { Html5Entities } from "html-entities";
 import { Context } from "./utils";
 import { SourceNode } from "source-map";
+import { PaperclipConfig, ParseErrorKind } from "paperclip-utils";
 
 const entities = new Html5Entities();
 
-const CAST_STYLE_UTIL = `
+const UTILS = `
 function castStyle(value) {
   var tov = typeof value;
   if (tov === "object" || tov !== "string" || !value) return value;
@@ -53,9 +53,13 @@ function castStyle(value) {
     return obj;
   }, {});
 }
+
+function getDefault(module) {
+  return module.default || module;
+}
 `.trim();
 
-export const compile = (module: InterimModule, filePath: string, includes: string[]) => {
+export const compile = (module: InterimModule, filePath: string, config: PaperclipConfig, includes: string[]) => {
   const context = writeSourceNode(
     { line: 1, column: 1, pos: 1 },
     addBuffer([
@@ -64,14 +68,14 @@ export const compile = (module: InterimModule, filePath: string, includes: strin
         `import "${include}";`
       ]), true),
       translateImports,
-      CAST_STYLE_UTIL,
+      UTILS,
       "\n\n",
       translateExportedStyles,
       "\n\n",
       compileComponents,
       "\n\n"
     ])
-  )(createTranslateContext(module, filePath));
+  )(createTranslateContext(module, filePath, config));
   return (context.buffer[0] as SourceNode).toStringWithSourceMap();
 }
 
@@ -221,6 +225,7 @@ const compileAttributes = (element: InterimElement | InterimComponent) => (
       addBuffer([
         addBuffer([JSON.stringify(key), ": "]),
         compileAttributeValue(
+          element,
           key,
           element.attributes[key].variants,
           () => write => write
@@ -241,6 +246,7 @@ const writeClassAttribute = (element: InterimElement | InterimComponent) => (
       addBuffer([
         ` + `,
         compileAttributeValue(
+          element,
           "class",
           element.attributes.class.variants,
           conditional =>
@@ -274,6 +280,7 @@ const compileEssentialClassNamePart = (inner: ContextWriter) =>
   addBuffer([`" " + `, inner]);
 
 const compileAttributeValue = (
+  element: InterimElement | InterimComponent,
   attrName: string,
   variants: InterimAttributeValue[],
   outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
@@ -287,35 +294,45 @@ const compileAttributeValue = (
         "(",
         prop(variant.variantName),
         " ? ",
-        compileVariantParts(attrName, variant.parts, outer),
+        compileVariantParts(element, attrName, variant.parts, outer),
         ` : "")`
       ])(context);
     } else {
-      context = compileVariantParts(attrName, variant.parts, outer)(context);
+      context = compileVariantParts(element, attrName, variant.parts, outer)(context);
     }
     return context;
   });
 
 const compileVariantParts = (
+  element: InterimElement | InterimComponent,
   attrName: string,
   parts: InterimAttributeValuePart[],
   outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
 ) => (context: Context) => {
-  if (attrName === "style") {
-    context = addBuffer([`castStyle(`])(context);
-  }
 
-  context = writeJoin(
+  let write = writeJoin(
     parts,
     " + ",
     compileAttributeValuePart(attrName, outer)
-  )(context);
+  );
 
   if (attrName === "style") {
-    context = addBuffer([`)`])(context);
+    write = addBuffer([
+      `castStyle(`,
+      write,
+      `)`
+    ]);
   }
 
-  return context;
+  if (attrName === "src" && !element.isInstance && context.config.compilerOptions?.importAssetsAsModules === true && parts.length === 1 && parts[0].kind === InterimAttributeValuePartKind.Static) {
+    write = addBuffer([
+      `getDefault(require(`,
+      write,
+      `))`
+    ]);
+  }
+
+  return write(context);
 };
 
 const prop = (name: string) => `props["${name}"]`;

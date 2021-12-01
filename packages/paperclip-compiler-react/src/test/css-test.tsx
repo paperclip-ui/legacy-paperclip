@@ -29,7 +29,12 @@ describe(__filename + "#", () => {
     ]
   ].forEach(([title, graph, expectedCSS]: any) => {
     it(title, async () => {
-      const modules = await compileModules(graph);
+      const modules = await compileModules(graph, {
+        srcDir: null,
+        compilerOptions: {
+          outDir: null
+        }
+      });
 
       const entry = modules["/entry.pc"]();
 

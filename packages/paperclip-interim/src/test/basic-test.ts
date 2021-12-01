@@ -22,7 +22,7 @@ describe(__filename + "#", () => {
       {
         embedMaxSize: 1000
       },
-      { html: "<style></style> <div></div>" }
+      { html: "<style></style> <img src=/a.svg></img>" }
     ]
   ].forEach(([title, graph, config, expectedOutput]: any) => {
     it(title, () => {

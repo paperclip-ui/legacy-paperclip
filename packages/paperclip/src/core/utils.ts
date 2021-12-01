@@ -107,9 +107,9 @@ const resolveResources = (
   filterFiles: (dir: string) => string[]
 ) => {
   const sourceDir =
-    config.sourceDirectory === "."
+    config.srcDir === "."
       ? cwd
-      : path.join(cwd, config.sourceDirectory);
+      : path.join(cwd, config.srcDir);
   const filePaths = filterFiles(sourceDir);
 
   if (config.moduleDirectories) {
@@ -132,7 +132,7 @@ const resolveResources = (
         );
 
         const moduleSources = filterFiles(
-          path.join(moduleDir, moduleConfig.sourceDirectory)
+          path.join(moduleDir, moduleConfig.srcDir)
         );
 
         filePaths.push(...moduleSources);
@@ -159,7 +159,7 @@ export const resolveAllAssetFiles = findResourcesFromConfig((config, cwd) => {
   // const ext = `+(jpg|jpeg|png|gif|svg)`;
   const exts = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".ttf"];
 
-  // const sourceDir = config.sourceDirectory;
+  // const sourceDir = config.srcDir;
 
   return resolveResources(
     config,
@@ -183,7 +183,7 @@ const getModulePath = (
 ) => {
   const configDir = path.dirname(url.fileURLToPath(configUri));
 
-  const moduleDirectory = path.join(configDir, config.sourceDirectory) + "/";
+  const moduleDirectory = path.join(configDir, config.srcDir) + "/";
 
   if (fullPath.indexOf(moduleDirectory) === 0) {
     const modulePath = fullPath.replace(moduleDirectory, "");

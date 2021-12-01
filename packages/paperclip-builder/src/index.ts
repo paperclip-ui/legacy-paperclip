@@ -28,7 +28,7 @@ class DirectoryBuilder {
   }
   start() {
     glob(
-      paperclipSourceGlobPattern(this.options.config.sourceDirectory),
+      paperclipSourceGlobPattern(this.options.config.srcDir),
       {
         cwd: this.options.cwd,
         absolute: true
@@ -42,7 +42,7 @@ class DirectoryBuilder {
     );
   
     if (this.options.watch) {
-      watch(this.options.cwd, paperclipSourceGlobPattern(this.options.config.sourceDirectory), this._buildFile);
+      watch(this.options.cwd, paperclipSourceGlobPattern(this.options.config.srcDir), this._buildFile);
     }
     return this;
   }

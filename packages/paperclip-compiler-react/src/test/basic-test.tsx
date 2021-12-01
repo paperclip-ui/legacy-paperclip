@@ -17,6 +17,7 @@ describe(__filename + "#", () => {
       {
         HelloWorld: {}
       },
+      {},
       {
         HelloWorld: `<div class="_406d2856 _80f4925f _pub-80f4925f">Hello</div>`
       }
@@ -33,6 +34,7 @@ describe(__filename + "#", () => {
           message: "bbb"
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f  _80f4925f_b _pub-80f4925f_b b">bbb</div>`
       }
@@ -57,6 +59,7 @@ describe(__filename + "#", () => {
       {
         Entry: {}
       },
+      {},
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f _e05e7926_text-red _pub-e05e7926_text-red text-red"></div>`
       }
@@ -74,6 +77,7 @@ describe(__filename + "#", () => {
           children: "b"
         }
       },
+      {},
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f">b</div></div>`
       }
@@ -90,6 +94,7 @@ describe(__filename + "#", () => {
           style: { color: "red" }
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="color:red"></div>`
       }
@@ -106,6 +111,7 @@ describe(__filename + "#", () => {
           style: { color: "red" }
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="color:red"></div>`
       }
@@ -122,6 +128,7 @@ describe(__filename + "#", () => {
           style: "color: red"
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="color:red"></div>`
       }
@@ -138,6 +145,7 @@ describe(__filename + "#", () => {
           color: "red"
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="color:red"></div>`
       }
@@ -154,6 +162,7 @@ describe(__filename + "#", () => {
           a1: "red"
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" style="a:red"></div>`
       }
@@ -171,6 +180,7 @@ describe(__filename + "#", () => {
           className: "ab"
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f ab"></div>`
       }
@@ -196,6 +206,7 @@ describe(__filename + "#", () => {
           tagName2: "h1"
         }
       },
+      {},
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><span class="_406d2856 _80f4925f _pub-80f4925f"></span><h1 class="_406d2856 _80f4925f _pub-80f4925f"></h1><div class="_406d2856 _80f4925f _pub-80f4925f"></div></div>`
       }
@@ -220,6 +231,7 @@ describe(__filename + "#", () => {
       {
         Entry: {}
       },
+      {},
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _9fbc00ce"></div></div>`
       }
@@ -273,6 +285,7 @@ describe(__filename + "#", () => {
       {
         Entry: {}
       },
+      {},
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _9fbc00ce another-test"></div></div>`
       }
@@ -304,6 +317,7 @@ describe(__filename + "#", () => {
       {
         Entry: {}
       },
+      {},
       {
         Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 blaaaa  _9dfabe97 _80f4925f_another-test _pub-80f4925f_another-test another-test"></div></div>`
       }
@@ -326,6 +340,7 @@ describe(__filename + "#", () => {
       {
         Entry: {}
       },
+      {},
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_348c8067 _1d7dbc06 _pub-1d7dbc06">click me!</div></div>`
       }
@@ -354,6 +369,7 @@ describe(__filename + "#", () => {
           show: true
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f"><span class="_3024ebf3 _80f4925f _pub-80f4925f">A</span><span class="_1b09b830 _80f4925f _pub-80f4925f">D</span><span class="_54482ef7 _80f4925f _pub-80f4925f">E</span>0<span class="_667e4c75 _80f4925f _pub-80f4925f">H</span><span class="_7f657d34 _80f4925f _pub-80f4925f">I</span><span class="_f8fd61fb _80f4925f _pub-80f4925f">J</span><span class="_e1e650ba _80f4925f _pub-80f4925f">K</span></div>`
       }
@@ -376,6 +392,7 @@ describe(__filename + "#", () => {
       {
         Test: {}
       },
+      {},
       {
         Test: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_406d2856 _80f4925f _pub-80f4925f" data-a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div class="_406d2856 _80f4925f _pub-80f4925f" data-a="te&#x27;s&#x27;a&#x27;dfds" c="e"></div><div class="_406d2856 _80f4925f _pub-80f4925f" data-a="te&#x27;s&#x27;a&#x27;dfds" c="d"></div><div class="_406d2856 _80f4925f _pub-80f4925f" data-a="true" c="e"></div></div>`
       }
@@ -391,6 +408,7 @@ describe(__filename + "#", () => {
       {
         Entry: {}
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f" allow-1password="no"></div>`
       }
@@ -408,6 +426,7 @@ describe(__filename + "#", () => {
           tagName: "test"
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f"></div>`
       }
@@ -428,6 +447,7 @@ describe(__filename + "#", () => {
           tagName: "test"
         }
       },
+      {},
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f _pub-139cec8e _80f4925f_abb _pub-80f4925f_abb _pub-139cec8e_abb abb"></div>`
       }
@@ -458,6 +478,7 @@ describe(__filename + "#", () => {
           tagName: "test"
         }
       },
+      {},
       {
         Entry: `<div class="_ae63497a _80f4925f _pub-80f4925f _pub-98523c41 _8ae793af_test _pub-8ae793af_test test  _80f4925f_blah _pub-80f4925f_blah _pub-98523c41_blah blah"></div>`
       }
@@ -485,6 +506,7 @@ describe(__filename + "#", () => {
           test: true
         }
       },
+      {},
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f _pub-98523c41 _80f4925f_a _pub-80f4925f_a _pub-98523c41_a a _80f4925f_test _pub-80f4925f_test _pub-98523c41_test test"></div>`
       }
@@ -519,6 +541,7 @@ describe(__filename + "#", () => {
           b: false
         }
       },
+      {},
       {
         Entry: `<div class="_376a18c0 _80f4925f _pub-80f4925f"><div class="_bf0b262 _139cec8e _pub-139cec8e">Hello</div><div class="_bf0b262 _139cec8e _pub-139cec8e">Hello</div><div class="_bf0b262 _139cec8e _pub-139cec8e">Hello</div></div>`
       }
@@ -540,6 +563,7 @@ describe(__filename + "#", () => {
           b: false
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f"></div>`
       }
@@ -565,6 +589,7 @@ describe(__filename + "#", () => {
           active: true
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 _80f4925f_active _pub-80f4925f_active active"></div>`
       }
@@ -585,6 +610,7 @@ describe(__filename + "#", () => {
           active: true
         }
       },
+      {},
       {
         Entry: `<span class="_9e7e6af9 _80f4925f _pub-80f4925f">Hello!!</span><br class="_e9795a6f _80f4925f _pub-80f4925f"/>`
       }
@@ -605,6 +631,7 @@ describe(__filename + "#", () => {
           active: true
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f"><span class="_9e7e6af9 _80f4925f _pub-80f4925f">Hello!!</span><br class="_e9795a6f _80f4925f _pub-80f4925f"/></div>`
       }
@@ -624,6 +651,7 @@ describe(__filename + "#", () => {
           active: true
         }
       },
+      {},
       {
         Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f _376a18c0 blah">Hello!</div>`
       }
@@ -644,13 +672,79 @@ describe(__filename + "#", () => {
           active: true
         }
       },
+      {},
       {
         Entry: `<div class="_d754a2e6 _6bcf0994 _pub-6bcf0994">ok!</div>`
       }
+    ],
+    [
+      "Can embed assets",
+      {
+        "/entry.pc": `
+          <img export component as="Entry" src="/test.svg"></img>
+        `,
+        "/test.svg": "aa"
+      },
+      {
+        Entry: {
+          active: true
+        }
+      },
+      {
+        compilerOptions: {
+          importAssetsAsModules: true
+        }},
+      {
+        Entry: `<img class="_406d2856 _80f4925f _pub-80f4925f" src="aa"/>`
+      }
+    ],
+    [
+      "Leaves src as-is if importAssetsAsModules is undefined",
+      {
+        "/entry.pc": `
+          <img export component as="Entry" src="/test.svg"></img>
+        `,
+        "/test.svg": "aa"
+      },
+      {
+        Entry: {
+          active: true
+        }
+      },
+      {
+        compilerOptions: {
+        }
+      },
+      {
+        Entry: `<img class="_406d2856 _80f4925f _pub-80f4925f" src="/test.svg"/>`
+      }
+    ],
+    [
+      "Does not import asset if src is of instance",
+      {
+        "/entry.pc": `
+          <img export component as="Test" {src?}></img>
+          <Test export component as="Entry" src="/test.svg" />
+        `,
+        "/test.svg": "aa"
+      },
+      {
+        Entry: {
+          active: true
+        }
+      },
+      {
+        compilerOptions: {
+          importAssetsAsModules: true
+        }
+      },
+      {
+        Entry: `<img class="_406d2856 _80f4925f _pub-80f4925f" src="/test.svg"/>`
+      }
     ]
-  ].forEach(([title, graph, contexts, expected]: any) => {
+  ].forEach(([title, graph, contexts, config, expected]: any) => {
     it(title, async () => {
-      const modules = await compileModules(graph);
+      const modules = await compileModules(graph, config);
 
       const entry = modules["/entry.pc"]();
 

@@ -1,7 +1,9 @@
 export type CompilerOptions = {
-  name: string;
-  module?: "es6" | "commonjs";
-  [identifier: string]: any;
+  outDir: string;
+  importAssetsAsModules?: boolean;
+  embedAssetMaxSize?: number;
+  assetOutDir?: string;
+  assetPrefix?: string;
 };
 
 type LintConfig = {
@@ -11,14 +13,10 @@ type LintConfig = {
 };
 
 export type PaperclipConfig = {
-  outputDirectory?: string;
 
-  // drops PC extension, so you're left with *.js instead of *.pc.js
-  dropPcExtension?: boolean;
+  srcDir: string;
 
-  sourceDirectory: string;
-
-  compilerOptions: CompilerOptions;
+  compilerOptions?: CompilerOptions;
 
   moduleDirectories?: string[];
 

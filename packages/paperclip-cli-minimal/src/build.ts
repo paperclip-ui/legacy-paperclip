@@ -34,12 +34,12 @@ export const build = async (options: BuildOptions) => {
 
   const srcDir = path.join(
     options.cwd,
-    config.sourceDirectory
+    config.srcDir
   );
 
   const outDir = path.join(
     options.cwd,
-    config.outputDirectory
+    config.compilerOptions!.outDir
   );
 
   builder.onFile((filePath: string, content: string) => {
@@ -93,17 +93,16 @@ const loadConfig = (options: BuildOptions): PaperclipConfig => {
     // eslint-disable-next-line
   } catch (e) {}
 
-  const sourceDirectory = options.outputDirectory || localConfig.sourceDirectory;
-  const outputDirectory = options.outputDirectory || localConfig.outputDirectory || sourceDirectory;
+  const srcDir = options.outputDirectory || localConfig.srcDir;
+  const outDir = localConfig.compilerOptions?.outDir || srcDir;
 
   return {
     ...localConfig,
     compilerOptions: {
-      ...localConfig.compilerOptions,
-      name: options.compilerName || localConfig.compilerOptions.name,
+      ...(localConfig.compilerOptions || {}),
+      outDir
     },
-    sourceDirectory,
-    outputDirectory,
+    srcDir,
   };
 };
 
