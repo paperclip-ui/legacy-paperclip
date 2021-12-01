@@ -84,9 +84,7 @@ export const root = {
     };
 
     const files = {
-      [srcDir + "/hello-paperclip.pc"]: overwrite
-        ? HELLO_WORLD_CONTENT
-        : null
+      [srcDir + "/hello-paperclip.pc"]: overwrite ? HELLO_WORLD_CONTENT : null
     };
 
     if (!fsa.existsSync(path.join(cwd, "paperclip.config.json"))) {

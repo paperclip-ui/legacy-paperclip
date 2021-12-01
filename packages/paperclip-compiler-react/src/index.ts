@@ -9,13 +9,19 @@ export const compile = (
   filePath: string,
   config: PaperclipConfig
 ) => {
-  
-  const {code, map} = compile2Code(module, filePath, config, config.compilerOptions?.importAssetsAsModules ? [`./${path.basename(filePath)}.css`]: []);
+  const { code, map } = compile2Code(
+    module,
+    filePath,
+    config,
+    config.compilerOptions?.importAssetsAsModules
+      ? [`./${path.basename(filePath)}.css`]
+      : []
+  );
 
   return {
-    "js": code,
+    js: code,
     "js.map": map.toString(),
     "d.ts": compileDefinition(module, filePath, config),
-    "css": module.css.sheetText
+    css: module.css.sheetText
   };
 };

@@ -1,6 +1,6 @@
 <import src="./typography.pc" as="typography" />
 
-<!-- 
+<!--
   TODOS:
   - responsive design
   - integrates with third-party CSS
@@ -19,7 +19,10 @@
     </style>
 
     <!-- BG video -->
-    <video src="./assets/paperclip-fast-demo.mp4" type="video/mp4" loop autoplay>
+    <video src="./assets/paperclip-fast-demo.mp4"
+      type="video/mp4"
+      loop
+      autoplay>
       <style>
         position: absolute;
         min-width: 100%;
@@ -69,18 +72,18 @@
       <!-- Blurb -->
       <div>
         <style>
-            position: absolute;
-            top: 15%;
-            padding: 48px;
-            max-width: 510px;
+          position: absolute;
+          top: 15%;
+          padding: 48px;
+          max-width: 510px;
         </style>
         <h2>
           <style>
             font-size: 42px;
             font-weight: 600;
-            @include typography.text-secondary;
             margin-bottom: 12px;
             line-height: 1.3em;
+            @include typography.text-secondary {}
           </style>
           <!-- Design & code in parallel. -->
           Realtime visual web development
@@ -92,17 +95,14 @@
             font-size: 14px;
           </style>
           <!-- Paperclip is a template language that offers a hybrid approach to building web apps that's faster, safer, and  -->
-          A 
-          A template language that provides a hybrid approach to building UIs that are 
+          A A template language that provides a hybrid approach to building UIs that
+          are
         </span>
       </div>
     </div>
   </div>
 
-  <div>
-    
-    Simple Syntax
-  </div>
+  <div>Simple Syntax</div>
 </div>
 
 <!--
@@ -131,11 +131,10 @@
       width: 80%;
       max-width: 1800px;
       margin: 100px auto;
-
     </style>
 
     <!-- Top -->
-    <div> 
+    <div>
       <style>
         margin-top: 200px;
       </style>
@@ -155,10 +154,15 @@
             margin: 20px 0px;
             font-size: 18px;
           </style>
-          Realtime previews, visual regression testing, and more. Paperclip is a template language that comes with tooling to help you build UIs more quickly & safely. 
+          Realtime previews, visual regression testing, and more. Paperclip is a
+          template language that comes with tooling to help you build UIs more quickly
+          & safely.
         </div>
       </div>
-      <video src="../../static/vid/paperclip-fast-demo.mp4" type="video/mp4" loop autoplay>
+      <video src="../../static/vid/paperclip-fast-demo.mp4"
+        type="video/mp4"
+        loop
+        autoplay>
         <style>
           width: 100%;
           border-radius: 4px;
@@ -171,9 +175,7 @@
       <style>
         margin-top: 100px;
       </style>
-      <h1>
-        Familar syntax that covers just the UI
-      </h1>
+      <h1>Familar syntax that covers just the UI</h1>
 
       <!-- Content -->
       <div>
@@ -181,12 +183,8 @@
           display: flex;
         </style>
 
-        <div>
-          
-        </div>
-        <div>
-          
-        </div>
+        <div />
+        <div />
       </div>
     </div>
 
@@ -195,9 +193,7 @@
       <style>
         margin-top: 40px;
       </style>
-      <h2>
-        Visual Tooling
-      </h2>
+      <h2>Visual Tooling</h2>
 
       <!-- Content -->
       <div>
@@ -205,12 +201,8 @@
           display: flex;
         </style>
 
-        <div>
-          Paperclip comes with visual tooling
-        </div>
-        <div>
-          
-        </div>
+        <div>Paperclip comes with visual tooling</div>
+        <div />
       </div>
     </div>
 
@@ -218,9 +210,7 @@
       <style>
         margin-top: 40px;
       </style>
-      <h2>
-        Visual regression testing
-      </h2>
+      <h2>Visual regression testing</h2>
 
       <!-- Content -->
       <div>
@@ -228,22 +218,16 @@
           display: flex;
         </style>
 
-        <div>
-          Paperclip comes with visual tooling
-        </div>
-        <div>
-          
-        </div>
+        <div>Paperclip comes with visual tooling</div>
+        <div />
       </div>
     </div>
 
-     <div>
+    <div>
       <style>
         margin-top: 40px;
       </style>
-      <h2>
-        Easier cross-browser testing
-      </h2>
+      <h2>Easier cross-browser testing</h2>
 
       <!-- Content -->
       <div>
@@ -251,14 +235,9 @@
           display: flex;
         </style>
 
-        <div>
-          Paperclip comes with visual tooling
-        </div>
-        <div>
-          
-        </div>
+        <div>Paperclip comes with visual tooling</div>
+        <div />
       </div>
     </div>
-
   </div>
 </div>

@@ -11,7 +11,7 @@ export const translateCSS = (
   sheet: VirtSheet,
   exports: PCExports,
   filePath: string,
-  options: InterimCompilerOptions,
+  options: InterimCompilerOptions
 ): InterimCSS => {
   return {
     sheetText: stringifyCSSSheet(sheet),

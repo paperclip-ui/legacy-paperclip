@@ -126,9 +126,11 @@ const translateComponent = (component: InterimComponent) => {
     endBlock,
     "}\n\n",
     `type ${name} = Factory<${name}Props>;\n\n`,
-    component.as === "default" ? `export default ${name};` : `export {${name}};\n\n`
+    component.as === "default"
+      ? `export default ${name};`
+      : `export {${name}};\n\n`
   ]);
-}
+};
 
 const translateComponentProps = (component: InterimComponent) => (
   context: Context

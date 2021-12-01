@@ -74,9 +74,7 @@ const resolveModule = fs => (
   const configPathDir = path.dirname(stripFileProtocol(configUrl));
 
   const moduleFileUrl = url.pathToFileURL(
-    path.normalize(
-      path.join(configPathDir, config.srcDir, moduleRelativePath)
-    )
+    path.normalize(path.join(configPathDir, config.srcDir, moduleRelativePath))
   );
 
   // FIRST look for modules in the sourceDirectory

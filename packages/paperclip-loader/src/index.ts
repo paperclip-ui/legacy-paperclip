@@ -59,17 +59,20 @@ async function pcLoader(
   try {
     // need to update virtual content to bust the cache
     await engine.updateVirtualFileContent(resourceUrl, source);
-    files = await buildFile(resourceUrl, engine, { config: {
-      ...config,
-      compilerOptions: {
-        ...(config.compilerOptions || {}),
-        importAssetsAsModules: true,
+    files = await buildFile(resourceUrl, engine, {
+      config: {
+        ...config,
+        compilerOptions: {
+          ...(config.compilerOptions || {}),
+          importAssetsAsModules: true,
 
-        // leave this stuff up to Webpack
-        embedAssetMaxSize: 0,
-        assetPrefix: null
-      }
-    }, cwd: process.cwd() });
+          // leave this stuff up to Webpack
+          embedAssetMaxSize: 0,
+          assetPrefix: null
+        }
+      },
+      cwd: process.cwd()
+    });
   } catch (e) {
     // eesh 🙈
     const info = e && e.range ? e : e.info && e.info.range ? e.info : null;
@@ -84,8 +87,7 @@ async function pcLoader(
     );
   }
 
-  const {js,...exts} = files;
-
+  const { js, ...exts } = files;
 
   for (const ext in exts) {
     let filePath = `${resourceUrl}.${ext}`;

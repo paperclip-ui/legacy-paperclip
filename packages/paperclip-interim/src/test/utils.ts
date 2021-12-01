@@ -1,7 +1,20 @@
-import { InterimAttribute, InterimAttributeValue, InterimAttributeValuePart, InterimAttributeValuePartKind, InterimComponent, InterimModule, InterimNode, InterimNodeKind } from "..";
+import {
+  InterimAttribute,
+  InterimAttributeValue,
+  InterimAttributeValuePart,
+  InterimAttributeValuePartKind,
+  InterimComponent,
+  InterimModule,
+  InterimNode,
+  InterimNodeKind
+} from "..";
 
 export const stringifyInterimModule = (module: InterimModule) => {
-  const buffer = [`<style>${module.css.sheetText.replace(/[\n\r\t]/g, " ").replace(/\s+/g, " ")}</style>`];
+  const buffer = [
+    `<style>${module.css.sheetText
+      .replace(/[\n\r\t]/g, " ")
+      .replace(/\s+/g, " ")}</style>`
+  ];
 
   buffer.push(...module.components.map(stringifyNode));
 
@@ -9,12 +22,12 @@ export const stringifyInterimModule = (module: InterimModule) => {
 };
 
 export const stringifyNode = (node: InterimNode) => {
-  switch(node.kind) {
+  switch (node.kind) {
     case InterimNodeKind.Element:
     case InterimNodeKind.Component: {
       const buffer = [`<`, node.tagName];
       for (const name in node.attributes) {
-        buffer.push(` ${name}=${stringifyAttribute(node.attributes[name])}`)
+        buffer.push(` ${name}=${stringifyAttribute(node.attributes[name])}`);
       }
       buffer.push(">");
       buffer.push(...node.children.map(stringifyNode));
@@ -30,8 +43,6 @@ export const stringifyNode = (node: InterimNode) => {
   }
 };
 
-
-
 const stringifyAttribute = (attr: InterimAttribute) => {
   return attr.variants.map(variant => {
     const buffer = [];
@@ -44,18 +55,18 @@ const stringifyAttribute = (attr: InterimAttribute) => {
 
     return buffer.join("+");
   });
-}
+};
 
 const stringifyVariantPart = (part: InterimAttributeValuePart) => {
-  switch(part.kind) {
+  switch (part.kind) {
     case InterimAttributeValuePartKind.Dynamic: {
-      return `[SCRIPT]`
-    } 
+      return `[SCRIPT]`;
+    }
     case InterimAttributeValuePartKind.Shorthand: {
-      return `[SELF]`
+      return `[SELF]`;
     }
     case InterimAttributeValuePartKind.Static: {
       return part.value;
     }
   }
-}
+};

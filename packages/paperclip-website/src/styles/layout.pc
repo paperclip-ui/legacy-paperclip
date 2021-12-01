@@ -1,6 +1,6 @@
 <style>
 
-  /* margins */
+
 
   @export {
     @mixin py-6 {
@@ -9,13 +9,13 @@
     }
     ._my-1 {
       margin-top: var(--gap-4);
-      margin-bottom:  var(--gap-4);
+      margin-bottom: var(--gap-4);
     }
     ._py-6 {
       @include py-6;
     }
   }
-  
+
   :global(:root) {
     --gap-inc: 2.2;
     --gap-2: 2px;
@@ -24,13 +24,10 @@
     --gap-5: calc(var(--gap-4) * var(--gap-inc));
     --gap-6: calc(var(--gap-5) * var(--gap-inc));
     --gap-7: calc(var(--gap-6) * var(--gap-inc));
-
-
     --col-gap: var(--gap-5);
   }
 
   @export {
-
     @mixin col-3 {
       width: 33.333%;
     }
@@ -104,8 +101,6 @@
   }
 
 
-  /* misc */
-
   @export {
     @mixin text-center {
       text-align: center;
@@ -123,37 +118,27 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 79, y: 156 }
 -->
-<div export component as="C3" class="_col _col3 {class?}">
-  {children}
-</div>
+<div export component as="C3" class="_col _col3 {class?}">{children}</div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 62, y: 125 }
 -->
-<div export component as="C6" class="_col _col6 {class?}">
-  {children}
-</div>
+<div export component as="C6" class="_col _col6 {class?}">{children}</div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 69, y: 114 }
 -->
-<div export component as="C9" class="_col _col9 {class?}">
-  {children}
-</div>
+<div export component as="C9" class="_col _col9 {class?}">{children}</div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 50, y: 77 }
 -->
-<div export component as="C12" class="_col _col12 {class?}">
-  {children}
-</div>
+<div export component as="C12" class="_col _col12 {class?}">{children}</div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 48, y: 71 }
 -->
-<div export component as="Row" class="_row {class?}">
-  {children}
-</div>
+<div export component as="Row" class="_row {class?}">{children}</div>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 73, y: 104 }
@@ -168,35 +153,19 @@
 -->
 <Container>
   <Row>
-    <C3>
-      3
-    </C3>
-    <C3>
-      3
-    </C3>
-    <C3>
-      3
-    </C3>
+    <C3>3</C3>
+    <C3>3</C3>
+    <C3>3</C3>
   </Row>
   <Row>
-    <C3>
-      3
-    </C3>
-    <C9>
-      9
-    </C9>
+    <C3>3</C3>
+    <C9>9</C9>
   </Row>
   <Row>
-    <C6>
-      6
-    </C6>
-    <C6>
-      6
-    </C6>
+    <C6>6</C6>
+    <C6>6</C6>
   </Row>
   <Row>
-    <C12>
-      12
-    </C12>
+    <C12>12</C12>
   </Row>
 </Container>

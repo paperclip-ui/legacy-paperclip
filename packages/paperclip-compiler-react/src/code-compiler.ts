@@ -59,15 +59,22 @@ function getDefault(module) {
 }
 `.trim();
 
-export const compile = (module: InterimModule, filePath: string, config: PaperclipConfig, includes: string[]) => {
-
+export const compile = (
+  module: InterimModule,
+  filePath: string,
+  config: PaperclipConfig,
+  includes: string[]
+) => {
   const context = writeSourceNode(
     { line: 1, column: 1, pos: 1 },
     addBuffer([
       `import React from "react";\n`,
-      writeJoin(includes, "\n", include => addBuffer([
-        `import "${include}";`
-      ]), true),
+      writeJoin(
+        includes,
+        "\n",
+        include => addBuffer([`import "${include}";`]),
+        true
+      ),
       translateImports,
       UTILS,
       "\n\n",
@@ -78,21 +85,18 @@ export const compile = (module: InterimModule, filePath: string, config: Papercl
     ])
   )(createTranslateContext(module, filePath, config));
   return (context.buffer[0] as SourceNode).toStringWithSourceMap();
-}
+};
 
 export const translateExportedStyles = addBuffer([
   `export const classNames = {\n`,
   startBlock,
   (context: Context) =>
-    writeJoin(
-      Object.keys(context.module.css.exports.classNames),
-      ",\n",
-      key =>
-        addBuffer([
-          JSON.stringify(key),
-          ": ",
-          JSON.stringify(context.module.css.exports.classNames[key])
-        ])
+    writeJoin(Object.keys(context.module.css.exports.classNames), ",\n", key =>
+      addBuffer([
+        JSON.stringify(key),
+        ": ",
+        JSON.stringify(context.module.css.exports.classNames[key])
+      ])
     )(context),
   endBlock,
   "\n",
@@ -101,7 +105,6 @@ export const translateExportedStyles = addBuffer([
 
 const translateImports = (context: Context) => {
   return context.module.imports.reduce((context, imp) => {
-
     context = addBuffer([`import `, `_${camelCase(imp.publicScopeId)}`])(
       context
     );
@@ -285,7 +288,8 @@ const compileAttributeValue = (
   attrName: string,
   variants: InterimAttributeValue[],
   outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
-) => writeJoin(variants, ` + `, variant => context => {
+) =>
+  writeJoin(variants, ` + `, variant => context => {
     if (!variant.parts) {
       return addBuffer([`true`])(context);
     }
@@ -299,7 +303,12 @@ const compileAttributeValue = (
         ` : "")`
       ])(context);
     } else {
-      context = compileVariantParts(element, attrName, variant.parts, outer)(context);
+      context = compileVariantParts(
+        element,
+        attrName,
+        variant.parts,
+        outer
+      )(context);
     }
     return context;
   });
@@ -310,7 +319,6 @@ const compileVariantParts = (
   parts: InterimAttributeValuePart[],
   outer: (conditional: boolean) => (inner: ContextWriter) => ContextWriter
 ) => (context: Context) => {
-
   let write = writeJoin(
     parts,
     " + ",
@@ -318,19 +326,17 @@ const compileVariantParts = (
   );
 
   if (attrName === "style") {
-    write = addBuffer([
-      `castStyle(`,
-      write,
-      `)`
-    ]);
+    write = addBuffer([`castStyle(`, write, `)`]);
   }
 
-  if (attrName === "src" && !element.isInstance && context.config.compilerOptions?.importAssetsAsModules === true && parts.length === 1 && parts[0].kind === InterimAttributeValuePartKind.Static) {
-    write = addBuffer([
-      `getDefault(require(`,
-      write,
-      `))`
-    ]);
+  if (
+    attrName === "src" &&
+    !element.isInstance &&
+    context.config.compilerOptions?.importAssetsAsModules === true &&
+    parts.length === 1 &&
+    parts[0].kind === InterimAttributeValuePartKind.Static
+  ) {
+    write = addBuffer([`getDefault(require(`, write, `))`]);
   }
 
   return write(context);

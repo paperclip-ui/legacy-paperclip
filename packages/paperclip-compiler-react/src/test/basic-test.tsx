@@ -693,7 +693,8 @@ describe(__filename + "#", () => {
       {
         compilerOptions: {
           importAssetsAsModules: true
-        }},
+        }
+      },
       {
         Entry: `<img class="_406d2856 _80f4925f _pub-80f4925f" src="aa"/>`
       }
@@ -712,8 +713,7 @@ describe(__filename + "#", () => {
         }
       },
       {
-        compilerOptions: {
-        }
+        compilerOptions: {}
       },
       {
         Entry: `<img class="_406d2856 _80f4925f _pub-80f4925f" src="/test.svg"/>`

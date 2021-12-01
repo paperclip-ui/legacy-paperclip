@@ -20,10 +20,7 @@ import {
   NodeAnnotations,
   EvaluatedDataKind
 } from "paperclip";
-import {
-  embedAssets,
-  getPCDocumentHTML
-} from "./pc-document";
+import { embedAssets, getPCDocumentHTML } from "./pc-document";
 import { createHash } from "crypto";
 import * as pLimit from "p-limit";
 

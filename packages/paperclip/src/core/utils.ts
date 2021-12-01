@@ -106,10 +106,7 @@ const resolveResources = (
   cwd: string,
   filterFiles: (dir: string) => string[]
 ) => {
-  const sourceDir =
-    config.srcDir === "."
-      ? cwd
-      : path.join(cwd, config.srcDir);
+  const sourceDir = config.srcDir === "." ? cwd : path.join(cwd, config.srcDir);
   const filePaths = filterFiles(sourceDir);
 
   if (config.moduleDirs) {

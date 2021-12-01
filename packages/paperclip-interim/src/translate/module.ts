@@ -101,7 +101,9 @@ const translateImports = (
 
       return {
         filePath: resolvedFilePath,
-        relativePath: relative(path.relative(path.dirname(filePath), resolvedFilePath)),
+        relativePath: relative(
+          path.relative(path.dirname(filePath), resolvedFilePath)
+        ),
         publicScopeId: `_pub-${getStyleScopeId(resolvedFilePath)}`,
         namespace,
         usedTagNames: Object.keys(usedTagNames) as string[],
@@ -111,5 +113,5 @@ const translateImports = (
     .filter(Boolean);
 };
 
-
-const relative = (path: string) => path.charAt(0) === "." ? path : "./" + path;
+const relative = (path: string) =>
+  path.charAt(0) === "." ? path : "./" + path;

@@ -9,9 +9,8 @@ module.exports = function(context, options) {
       return path.resolve(__dirname, "./theme");
     },
     configureWebpack(config, isServer) {
-
       const plugins = [];
-      
+
       if (isServer) {
         plugins.push(
           new webpack.ProvidePlugin({

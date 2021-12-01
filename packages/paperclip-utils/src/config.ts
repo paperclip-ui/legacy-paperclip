@@ -1,5 +1,4 @@
 export type CompilerOptions = {
-
   // where PC files should be compiled to. If undefined, then
   // srcDir is used
   outDir?: string;
@@ -14,12 +13,11 @@ export type CompilerOptions = {
   // will be used
   assetOutDir?: string;
 
-  // prefix for assets, 
+  // prefix for assets,
   assetPrefix?: string;
 };
 
 type LintOptions = {
-
   // flag CSS code that is not currently used
   noUnusedStyles?: boolean;
 
@@ -28,7 +26,6 @@ type LintOptions = {
 };
 
 export type PaperclipConfig = {
-
   // source directory where *.pc files live
   srcDir: string;
 
@@ -37,6 +34,6 @@ export type PaperclipConfig = {
 
   // options for the output settings
   compilerOptions?: CompilerOptions;
-  
+
   lintOptions?: LintOptions;
 };

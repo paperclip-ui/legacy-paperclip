@@ -145,7 +145,7 @@ export const wrapSourceNode = (
       ...context.buffer.slice(0, bufferStart),
       new SourceNode(pos.line, pos.column, context.filePath, [
         ...context.buffer.slice(bufferStart)
-      ]),
+      ])
     ]
   };
 };

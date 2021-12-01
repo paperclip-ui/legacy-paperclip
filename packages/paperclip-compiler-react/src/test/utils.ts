@@ -9,7 +9,10 @@ const builtin = {
   react: React
 };
 
-export const compileModules = async (graph: Record<string, string>, config: PaperclipConfig) => {
+export const compileModules = async (
+  graph: Record<string, string>,
+  config: PaperclipConfig
+) => {
   const engine = await createEngineDelegate({
     io: {
       readFile: uri => graph[uri],
