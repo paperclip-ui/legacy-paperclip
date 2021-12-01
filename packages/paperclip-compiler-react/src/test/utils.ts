@@ -23,7 +23,7 @@ export const compileModules = async (
     }
   });
 
-  const intermCompiler = new InterimCompiler(engine);
+  const intermCompiler = new InterimCompiler(engine, { config });
 
   const modules = {};
 
