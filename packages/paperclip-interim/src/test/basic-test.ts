@@ -29,7 +29,7 @@ describe(__filename + "#", () => {
       const engine = createMockEngine(graph);
       const interim = new InterimCompiler(engine, {
         config: {
-          sourceDirectory: "/"
+          srcDir: "/"
         }
       });
       const module = interim.parseFile("/entry.pc");

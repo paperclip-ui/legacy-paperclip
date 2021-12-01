@@ -18,11 +18,11 @@ packages/
 > ☝ It's important that `paperclip.config.json` is in the same directory as `package.json`, because this is how the Paperclip engine
 identify that this is a Paperclip module.
 
-Going back to your _project's_ `paperclip.config.json` file, add a new `moduleDirectories` property like so:
+Going back to your _project's_ `paperclip.config.json` file, add a new `moduleDirs` property like so:
 
 ```json
 {
-  "moduleDirectories": ["node_modules"]
+  "moduleDirs": ["node_modules"]
 }
 ```
 

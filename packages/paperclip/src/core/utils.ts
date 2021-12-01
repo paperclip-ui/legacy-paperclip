@@ -112,8 +112,8 @@ const resolveResources = (
       : path.join(cwd, config.srcDir);
   const filePaths = filterFiles(sourceDir);
 
-  if (config.moduleDirectories) {
-    for (const modulesDirname of config.moduleDirectories) {
+  if (config.moduleDirs) {
+    for (const modulesDirname of config.moduleDirs) {
       const moduleDirPath = path.join(cwd, modulesDirname);
       const moduleRoots = resolveModuleRoots(moduleDirPath);
       for (const moduleDir of moduleRoots) {
@@ -195,8 +195,8 @@ const getModulePath = (
     }
   }
 
-  if (config.moduleDirectories) {
-    for (const moduleDirectory of config.moduleDirectories) {
+  if (config.moduleDirs) {
+    for (const moduleDirectory of config.moduleDirs) {
       const fullModulePath = path.join(configDir, moduleDirectory);
       if (fullPath.indexOf(fullModulePath) === 0) {
         return fullPath.replace(fullModulePath, "").substr(1);

@@ -4,6 +4,8 @@ title: Configuring Webpack
 sidebar_label: Webpack
 ---
 
+<!-- TODO: #891 -->
+
 Paperclip works with Webpack 4 and 5. To get started, install these dependencies:
 
 ```
@@ -17,12 +19,12 @@ Next, in the same directory as `webpack.config.js`, copy this content to `paperc
   "compilerOptions": {
     "name": "paperclip-compiler-react"
   },
-  "sourceDirectory": "./src"
+  "srcDir": "./src"
 }
 
 ```
 
-> `sourceDirectory` is where your `*.pc` files go. More docs on this config can be found [here](configure-paperclip).
+> `srcDir` is where your `*.pc` files go. More docs on this config can be found [here](configure-paperclip).
 
 Next, update your Webpack config to look something like this:
 

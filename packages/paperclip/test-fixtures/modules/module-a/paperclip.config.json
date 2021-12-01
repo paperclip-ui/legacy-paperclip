@@ -1,4 +1,4 @@
 {
   "compilerOptions": {},
-  "sourceDirectory": "./src"
+  "srcDir": "./src"
 }

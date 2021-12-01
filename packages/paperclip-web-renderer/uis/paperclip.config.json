@@ -1,6 +1,3 @@
 {
-  "compilerOptions": {
-    "name": "paperclip-compiler-html"
-  },
-  "sourceDirectory": "./src"
+  "srcDir": "./src"
 }

@@ -1,9 +1,6 @@
 {
-  "compilerOptions": {
-    "name": "paperclip-compiler-react"
-  },
-  "sourceDirectory": "./src",
-  "lint": {
+  "srcDir": "./src",
+  "lintOptions": {
     "enforceVars": [
       "font-family",
       "color",
