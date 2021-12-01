@@ -49,7 +49,7 @@ const getIOOptions = options => {
           return null;
         }
 
-        return info[0].lint;
+        return info[0].lintOptions;
       },
       mode: EngineMode.SingleFrame
     },
