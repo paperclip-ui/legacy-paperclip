@@ -15,12 +15,12 @@ import {
   ShorthandAttributeValuePart,
   InterimAttribute,
   InterimAttributeValue
-} from "paperclip-compiler-interim";
+} from "paperclip-interim";
 import { camelCase, identity, omit } from "lodash";
 import {
   InterimScriptExpressionKind,
   InterimScriptExpression
-} from "paperclip-compiler-interim";
+} from "paperclip-interim";
 import {
   arrayJoin,
   createTranslateContext,

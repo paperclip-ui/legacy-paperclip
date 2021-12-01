@@ -37,7 +37,7 @@
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-15": "^1.4.1",
     "enzyme-adapter-react-16": "^1.15.2",
-    "paperclip-compiler-interim": "^18.0.2",
+    "paperclip-interim": "^18.0.2",
     "eslint": "^7.4.0",
     "mocha": "^8.0.1",
     "react": "^17.0.1",

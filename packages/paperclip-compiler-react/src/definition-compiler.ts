@@ -30,7 +30,7 @@ import {
   endBlock,
   writeJoin
 } from "./utils";
-import { InterimComponent, InterimModule } from "paperclip-compiler-interim";
+import { InterimComponent, InterimModule } from "paperclip-interim";
 
 export const compile = (
   module: InterimModule,

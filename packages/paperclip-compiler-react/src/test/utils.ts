@@ -2,7 +2,7 @@ import { compile } from "../code-compiler";
 import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
-import { InterimCompiler } from "paperclip-compiler-interim";
+import { InterimCompiler } from "paperclip-interim";
 
 const builtin = {
   react: React

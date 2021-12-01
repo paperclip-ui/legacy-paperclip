@@ -2,11 +2,12 @@
 import { glob } from "glob";
 import * as URL from "url";
 import * as path from "path";
+import * as fs from "fs";
 import {EventEmitter} from "events";
 import * as resolve from "resolve";
 import * as chokidar from "chokidar";
 import { EngineDelegate } from "paperclip";
-import { InterimCompiler, InterimModule } from "paperclip-compiler-interim";
+import { InterimCompiler, InterimModule } from "paperclip-interim";
 import { PaperclipConfig, paperclipSourceGlobPattern } from "paperclip-utils";
 
 type BaseOptions = {
@@ -98,8 +99,10 @@ function watch(cwd, filesGlob, compileFile) {
   const fileUrl = URL.pathToFileURL(filePath).href;
   const interimCompiler = createInterimCompiler(engine, options);
   const interimModule = interimCompiler.parseFile(fileUrl);
-  const targetCompiler = requireTargetCompiler(path.dirname(options.cwd), options.config);
-  return targetCompiler.compile(interimModule, fileUrl, options.config.compilerOptions);
+  const targetCompilers = requireTargetCompilers(options.cwd, options.config);
+  return targetCompilers.reduce((files, compiler) => {
+    return Object.assign(files, compiler.compile(interimModule, fileUrl, options.config.compilerOptions))
+  }, {});
 };
 
 
@@ -110,7 +113,24 @@ const createInterimCompiler = (engine: EngineDelegate, {resourceProtocol}: BaseO
   })
 });
 
-const requireTargetCompiler = (cwd: string, config: PaperclipConfig): TargetCompiler => require(resolve.sync(config.compilerOptions.name, {
-  basedir: cwd
-}));
+const requireTargetCompilers = (cwd: string, config: PaperclipConfig): TargetCompiler[] => {
+
+  const possibleDirs = cwd.split("/").map((part, index, parts) => [...parts.slice(0, index), "node_modules"].join("/"));
+
+  const compilers: Record<string, TargetCompiler> = {};
+
+  for (const possibleDir of possibleDirs) {
+    if (!fs.existsSync(possibleDir)) {
+      continue;
+    }
+
+    for (const moduleName of fs.readdirSync(possibleDir)) {
+      if (/paperclip-compiler-/.test(moduleName) && !compilers[moduleName]) {
+        compilers[moduleName] = require(path.join(possibleDir, moduleName));
+      }
+    }
+  }
+
+  return Object.values(compilers);
+}
 

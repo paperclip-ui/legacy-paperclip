@@ -1,4 +1,4 @@
-import { InterimModule } from "paperclip-compiler-interim";
+import { InterimModule } from "paperclip-interim";
 import * as path from "path";
 import { Node, ClassNameExport } from "paperclip";
 import { compile as compile2Code } from "./code-compiler";

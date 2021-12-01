@@ -1,7 +1,7 @@
 Interimittent compiler step.
 
 ```javascript
-import { InterimCompiler } from "paperclip-compiler-interim";
+import { InterimCompiler } from "paperclip-interim";
 import { translateReact } from "paperclip-compiler-react";
 
 const interm = new InterimCompiler(engine);

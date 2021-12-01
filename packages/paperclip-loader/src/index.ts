@@ -14,7 +14,7 @@ import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import VirtualModules from "webpack-virtual-modules";
 import { LoadedData, getStyleExports } from "paperclip";
-import { InterimCompiler, InterimModule } from "paperclip-compiler-interim";
+import { InterimCompiler, InterimModule } from "paperclip-interim";
 
 let _engine: EngineDelegate;
 
