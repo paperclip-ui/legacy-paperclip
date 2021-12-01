@@ -115,7 +115,7 @@ const createInterimCompiler = (engine: EngineDelegate, {resourceProtocol}: BaseO
 
 const requireTargetCompilers = (cwd: string, config: PaperclipConfig): TargetCompiler[] => {
 
-  const possibleDirs = cwd.split("/").map((part, index, parts) => [...parts.slice(0, index), "node_modules"].join("/"));
+  const possibleDirs = cwd.split("/").map((part, index, parts) => [...parts.slice(0, index), "node_modules"].join("/")).filter(dir => dir !== "node_modules");
 
   const compilers: Record<string, TargetCompiler> = {};
 

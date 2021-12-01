@@ -3,6 +3,7 @@ import { createEngineDelegate } from "paperclip";
 import * as babel from "@babel/core";
 import * as React from "react";
 import { InterimCompiler } from "paperclip-interim";
+import { isPaperclipFile } from "paperclip-utils";
 
 const builtin = {
   react: React
@@ -24,6 +25,10 @@ export const compileModules = async (graph: Record<string, string>) => {
   const modules = {};
 
   for (const path in graph) {
+    if (!isPaperclipFile(path)) {
+      modules[path] = graph[path];
+      continue;
+    }
     const es6 = compile(intermCompiler.parseFile(path), path, []).code;
     const es5 = babel.transformSync(es6, { presets: ["@babel/preset-env"] });
     const module = new Function(

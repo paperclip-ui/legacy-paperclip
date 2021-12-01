@@ -1,9 +1,10 @@
-import { StringifySheetOptions } from "paperclip-utils";
+import { PaperclipConfig, StringifySheetOptions } from "paperclip-utils";
 import { InterimImport } from "..";
 
 export type InterimCompilerOptions = {
-  css?: (url: string) => StringifySheetOptions
+  config: PaperclipConfig;
 };
+
 export type ModuleContext = {
   filePath: string;
   options: InterimCompilerOptions;

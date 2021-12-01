@@ -14,7 +14,7 @@ export const translateCSS = (
   options: InterimCompilerOptions,
 ): InterimCSS => {
   return {
-    sheetText: stringifyCSSSheet(sheet, options.css && options.css(filePath)),
+    sheetText: stringifyCSSSheet(sheet),
     exports: {
       classNames: (Object as any).fromEntries(
         Object.keys(exports.style.classNames)

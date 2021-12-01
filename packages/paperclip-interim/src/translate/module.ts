@@ -21,7 +21,7 @@ import { InterimCompilerOptions } from "./options";
 export class InterimCompiler {
   constructor(
     private _engine: EngineDelegate,
-    readonly options: InterimCompilerOptions = {}
+    readonly options: InterimCompilerOptions
   ) {}
   parseFile(filePath: string): InterimModule {
     const { sheet, exports } = this._engine.open(filePath);
