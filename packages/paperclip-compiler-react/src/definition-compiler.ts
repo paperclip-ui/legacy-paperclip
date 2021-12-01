@@ -31,12 +31,14 @@ import {
   writeJoin
 } from "./utils";
 import { InterimComponent, InterimModule } from "paperclip-interim";
+import { PaperclipConfig } from "paperclip-utils";
 
 export const compile = (
   module: InterimModule,
-  filePath: string
+  filePath: string,
+  config: PaperclipConfig
 ): string => {
-  const context = createTranslateContext(module, filePath);
+  const context = createTranslateContext(module, filePath, config);
   return translateRoot(context).buffer.join("");
 };
 

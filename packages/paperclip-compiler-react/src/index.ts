@@ -1,26 +1,21 @@
 import { InterimModule } from "paperclip-interim";
 import * as path from "path";
-import { Node, ClassNameExport } from "paperclip";
 import { compile as compile2Code } from "./code-compiler";
 import { compile as compileDefinition } from "./definition-compiler";
-
-type Options = {
-  importCSS?: boolean;
-};
-
+import { PaperclipConfig } from "paperclip-utils";
 
 export const compile = (
   module: InterimModule,
   filePath: string,
-  options: Options = {}
+  config: PaperclipConfig
 ) => {
-  const {importCSS = true} = options;
-  const {code, map} = compile2Code(module, filePath, importCSS ? [`./${path.basename(filePath)}.css`]: []);
+  
+  const {code, map} = compile2Code(module, filePath, config, config.compilerOptions?.importAssetsAsModules ? [`./${path.basename(filePath)}.css`]: []);
 
   return {
     "js": code,
     "js.map": map.toString(),
-    "d.ts": compileDefinition(module, filePath),
+    "d.ts": compileDefinition(module, filePath, config),
     "css": module.css.sheetText
   };
 };

@@ -86,6 +86,7 @@ const resolveModule = fs => (
   }
 
   // No bueno? Move onto the module directories then
+  console.log(config);
 
   if (config.moduleDirs) {
     const firstSlashIndex = moduleRelativePath.indexOf("/");

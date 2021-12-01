@@ -22,7 +22,6 @@ import {
 } from "paperclip";
 import {
   embedAssets,
-  getDocumenAssetPaths,
   getPCDocumentHTML
 } from "./pc-document";
 import { createHash } from "crypto";

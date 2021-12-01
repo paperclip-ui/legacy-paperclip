@@ -11,10 +11,8 @@ import { InterimCompiler, InterimModule } from "paperclip-interim";
 import { PaperclipConfig, paperclipSourceGlobPattern } from "paperclip-utils";
 
 type BaseOptions = {
-  resourceProtocol?: string;
   config: PaperclipConfig;
   cwd: string;
-  filesPattern?: string;
 };
 
 export type BuildDirectoryOptions = BaseOptions & {
@@ -74,7 +72,7 @@ class DirectoryBuilder {
 }
 
 type TargetCompiler = {
-  compile: (module: InterimModule, filePath: string, options: any) => Record<string, string>;
+  compile: (module: InterimModule, filePath: string, config: PaperclipConfig, options: any) => Record<string, string>;
 }
 
 
@@ -96,21 +94,18 @@ function watch(cwd, filesGlob, compileFile) {
  */
 
  export const buildFile = async (filePath: string, engine: EngineDelegate, options: BaseOptions) => {
-  const fileUrl = URL.pathToFileURL(filePath).href;
+  const fileUrl = filePath.indexOf("file://") === 0 ? filePath : URL.pathToFileURL(filePath).href;
   const interimCompiler = createInterimCompiler(engine, options);
   const interimModule = interimCompiler.parseFile(fileUrl);
   const targetCompilers = requireTargetCompilers(options.cwd, options.config);
   return targetCompilers.reduce((files, compiler) => {
-    return Object.assign(files, compiler.compile(interimModule, fileUrl, options.config.compilerOptions))
+    return Object.assign(files, compiler.compile(interimModule, fileUrl, options.config, options.config.compilerOptions))
   }, {});
 };
 
 
-const createInterimCompiler = (engine: EngineDelegate, {resourceProtocol}: BaseOptions) => new InterimCompiler(engine, {
-  css: resourceUrl => ({
-    uri: resourceUrl,
-    resolveUrl: resourceProtocol && (url => url.replace("file:", resourceProtocol))
-  })
+const createInterimCompiler = (engine: EngineDelegate, {config}: BaseOptions) => new InterimCompiler(engine, {
+  config
 });
 
 const requireTargetCompilers = (cwd: string, config: PaperclipConfig): TargetCompiler[] => {

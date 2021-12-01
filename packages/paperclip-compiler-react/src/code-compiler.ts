@@ -60,6 +60,7 @@ function getDefault(module) {
 `.trim();
 
 export const compile = (module: InterimModule, filePath: string, config: PaperclipConfig, includes: string[]) => {
+
   const context = writeSourceNode(
     { line: 1, column: 1, pos: 1 },
     addBuffer([

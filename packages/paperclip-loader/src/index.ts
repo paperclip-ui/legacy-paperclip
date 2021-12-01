@@ -13,8 +13,7 @@ import * as path from "path";
 import * as resolve from "resolve";
 import * as loaderUtils from "loader-utils";
 import VirtualModules from "webpack-virtual-modules";
-import { LoadedData, getStyleExports } from "paperclip";
-import { InterimCompiler, InterimModule } from "paperclip-interim";
+import { buildFile } from "paperclip-builder";
 
 let _engine: EngineDelegate;
 
@@ -42,7 +41,7 @@ async function pcLoader(
   this.cacheable();
   const callback = this.async();
 
-  const { resourceProtocol, configFile = PC_CONFIG_FILE_NAME }: Options =
+  const { configFile = PC_CONFIG_FILE_NAME }: Options =
     loaderUtils.getOptions(this) || {};
 
   let config: PaperclipConfig;
@@ -55,22 +54,22 @@ async function pcLoader(
   }
 
   const engine = await getEngine();
-  const interimCompiler = new InterimCompiler(engine, {
-    css: resourceUrl => ({
-      uri: resourceUrl,
-      resolveUrl:
-        resourceProtocol && (url => url.replace("file:", resourceProtocol))
-    })
-  });
-  const targetCompiler = require(resolve.sync(config.compilerOptions.name, {
-    basedir: process.cwd()
-  }));
-  let interimModule: InterimModule;
+  let files: Record<string, string> = {};
 
   try {
     // need to update virtual content to bust the cache
     await engine.updateVirtualFileContent(resourceUrl, source);
-    interimModule = interimCompiler.parseFile(resourceUrl);
+    files = await buildFile(resourceUrl, engine, { config: {
+      ...config,
+      compilerOptions: {
+        ...(config.compilerOptions || {}),
+        importAssetsAsModules: true,
+
+        // leave this stuff up to Webpack
+        embedAssetMaxSize: 0,
+        assetPrefix: null
+      }
+    }, cwd: process.cwd() });
   } catch (e) {
     // eesh 🙈
     const info = e && e.range ? e : e.info && e.info.range ? e.info : null;
@@ -85,14 +84,8 @@ async function pcLoader(
     );
   }
 
-  const styleCache = { ..._loadedStyleFiles };
-  _loadedStyleFiles = styleCache;
+  const {js,...exts} = files;
 
-  const {js,...exts} = targetCompiler.compile(
-    interimModule,
-    resourceUrl,
-    config.compilerOptions
-  );
 
   for (const ext in exts) {
     let filePath = `${resourceUrl}.${ext}`;
