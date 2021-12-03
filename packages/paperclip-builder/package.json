@@ -16,8 +16,8 @@
     "fs-extra": "^10.0.0",
     "glob": "^7.2.0",
     "paperclip": "^18.0.2",
-    "paperclip-interim": "^18.0.2",
     "paperclip-compiler-react": "^18.0.2",
+    "paperclip-interim": "^18.0.2",
     "paperclip-utils": "^18.0.2",
     "resolve": "^1.20.0"
   },

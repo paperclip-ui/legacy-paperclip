@@ -1,6 +1,6 @@
 import { noop } from "lodash";
 import React, { memo, useState } from "react";
-import { useTextInput } from "paperclip-designer/src/components/TextInput";
+import { useTextInput } from "tandem-designer/src/components/TextInput";
 import { Modal } from "../../Modal";
 import * as styles from "./index.pc";
 import crc32 from "crc32";

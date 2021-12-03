@@ -1,6 +1,6 @@
 <import src="frontend/components/Button/index.pc" as="Button" />
-<import src="paperclip-designer/src/styles/utils.pc" as="utils" />
-<import src="paperclip-designer/src/components/Select/index2.pc" as="Select" />
+<import src="tandem-designer/src/styles/utils.pc" as="utils" />
+<import src="tandem-designer/src/components/Select/index2.pc" as="Select" />
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 19, y: 918 }
@@ -33,8 +33,6 @@
   <div>
     <style>
       width: 100%;
-
-      // absolute so that it's centered
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -64,12 +62,15 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="DownloadButton" {onClick} className:highlight="highlight">
+<div export
+  component
+  as="DownloadButton"
+  {onClick}
+  className:highlight="highlight">
   <style>
-      --size: 20px;
+    --size: 20px;
     display: flex;
     align-items: center;
-
     cursor: pointer;
     position: relative;
     transition: 0.2s;
@@ -80,8 +81,8 @@
   </style>
   <i>
     <style>
-      @include utils.mask;
       mask-image: url("./download.svg");
+      @include utils.mask {}
     </style>
   </i>
 </div>
@@ -90,7 +91,16 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="NavAction" {onClick} {title?} className:disabled="disabled" className:hover="hover" className:save="save" className:download="download" className:publish="publish">
+<div export
+  component
+  as="NavAction"
+  {onClick}
+  {title?}
+  className:disabled="disabled"
+  className:hover="hover"
+  className:save="save"
+  className:download="download"
+  className:publish="publish">
   <style>
     color: var(--grey-300);
     font-size: 14px;
@@ -116,8 +126,9 @@
     <style>
       --size: 18px;
       position: relative;
-      @include utils.mask;
-        top: 1px;
+      top: 1px;
+      margin-right: 8px;
+      @include utils.mask {}
       &:within(.save) {
         mask-image: url("./upload.svg");
       }
@@ -128,25 +139,27 @@
         --size: 15px;
         mask-image: url("./share5.svg");
       }
-      margin-right: 8px;
     </style>
   </i>
   {children}
-</div>  
+</div>
 
 
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 63, y: 31 }
 -->
-<div export component as="ShareButton" {onClick} className:highlight="highlight">
+<div export
+  component
+  as="ShareButton"
+  {onClick}
+  className:highlight="highlight">
   <style>
-      --size: 18px;
+    --size: 18px;
     display: flex;
     align-items: center;
     position: relative;
     top: -1px;
-
     cursor: pointer;
     position: relative;
     transition: 0.2s;
@@ -157,8 +170,8 @@
   </style>
   <i>
     <style>
-      @include utils.mask;
       mask-image: url("./share5.svg");
+      @include utils.mask {}
     </style>
   </i>
 </div>
@@ -171,14 +184,14 @@
 <button export component as="LogoutButton" {onClick}>
   <style>
     --size: 18px;
-    @include utils.mask-button;
-    @include utils.mask;
-    & {
-      background: var(--grey-300);
-    }
     cursor: pointer;
     mask-image: url("./logout2.svg");
     margin-left: 14px;
+    @include utils.mask-button {}
+    @include utils.mask {}
+    & {
+      background: var(--grey-300);
+    }
   </style>
 </button>
 
@@ -186,7 +199,13 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="ProfileSelectButton" {className?} {style?} {onClick} className:active="active">
+<div export
+  component
+  as="ProfileSelectButton"
+  {className?}
+  {style?}
+  {onClick}
+  className:active="active">
   <style>
     display: flex;
     align-items: center;
@@ -203,8 +222,8 @@
       margin-left: 7px;
       color: var(--grey-300);
       --size: 7px;
-      @include utils.mask;
       mask-image: url("./arrow-down.svg");
+      @include utils.mask {}
     </style>
   </i>
 </div>
@@ -230,11 +249,17 @@
 <!--
   @frame { visible: false }
 -->
-<i export component as="SaveStatus" className:success="success" className:failed="failed" className:pending="pending">
+<i export
+  component
+  as="SaveStatus"
+  className:success="success"
+  className:failed="failed"
+  className:pending="pending">
   <style>
     --size: 15px;
-    @include utils.mask;
-    @keyframes  spin {
+    margin-left: 14px;
+    @include utils.mask {}
+    @keyframes spin {
       0% {
         transform: rotate(0deg);
       }
@@ -257,7 +282,6 @@
       color: rgb(241, 127, 127);
       mask-image: url("./x2.svg");
     }
-    margin-left: 14px;
   </style>
 </i>
 
@@ -302,62 +326,46 @@
   <Select.MenuItem onClick={onLogoutClick}>
     Log out
     <i>
-
       <style>
         --size: 1em;
-        @include utils.mask;
         color: var(--grey-300);
         cursor: pointer;
         mask-image: url("./logout2.svg");
         margin-left: 14px;
+        @include utils.mask {}
       </style>
     </i>
   </Select.MenuItem>
-  <Select.MenuItem onClick={onMyProjectsClick}>
-    My Projects
-  </Select.MenuItem>
+  <Select.MenuItem onClick={onMyProjectsClick}>My Projects</Select.MenuItem>
 </Select.Menu>
 
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 323, y: -53 }
 -->
-<Toolbar export component as="Preview" 
+<Toolbar export
+  component
+  as="Preview"
   documentName="Untitled"
-  leftControls={<fragment>  
+  leftControls={<fragment>
     {loggedIn && <fragment>
-      <NavAction save>
-        Save as...
-      </NavAction>
-      <NavAction download hover>
-        Download
-      </NavAction>
-      <NavAction disabled publish>
-        Share
-      </NavAction>
-    </fragment> || <Button.Button primary>
-        Log in to save
-      </Button.Button>}
+      <NavAction save>Save as...</NavAction>
+      <NavAction download hover>Download</NavAction>
+      <NavAction disabled publish>Share</NavAction>
+    </fragment> || <Button.Button primary>Log in to save</Button.Button>}
   </fragment>}
-  rightControls={
-    <fragment>
-      {loggedIn && <fragment>
-        <ProfileSelect
-        menu={showLoggedInMenu && <ProfileMenu />}
-        >
+  rightControls={<fragment>
+    {loggedIn && <fragment>
+      <ProfileSelect menu={showLoggedInMenu && <ProfileMenu />}>
         <ProfileSelectButton active={showLoggedInMenu}>
-            <ProfileIcon>
-              <style>
-                background-image: url("./profile.jpg");
-              </style>
-            </ProfileIcon>
-          </ProfileSelectButton>
-        </ProfileSelect>
-        
-        
-      </fragment>}
-    </fragment>
-  } 
-/>
+          <ProfileIcon>
+            <style>
+              background-image: url("./profile.jpg");
+            </style>
+          </ProfileIcon>
+        </ProfileSelectButton>
+      </ProfileSelect>
+    </fragment>}
+  </fragment>} />
 
 
 <!--

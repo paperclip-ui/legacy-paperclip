@@ -1,4 +1,4 @@
-import { Spinner } from "paperclip-designer/src/components/Spinner";
+import { Spinner } from "tandem-designer/src/components/Spinner";
 import { eventNames } from "process";
 import React, { memo, useEffect, useRef, useState } from "react";
 import { shareModalClosed } from "../../../actions";
@@ -6,9 +6,8 @@ import { useAppStore } from "../../../hooks/useAppStore";
 import { useModal, Modal } from "../../Modal";
 import * as styles from "./index.pc";
 
-
 export const ShareModal = memo(() => {
-  const {state, dispatch} = useAppStore();
+  const { state, dispatch } = useAppStore();
   const [copied, setCopied] = useState(false);
 
   const onClose = () => {
@@ -25,22 +24,28 @@ export const ShareModal = memo(() => {
     setCopied(true);
 
     return result;
-  }
+  };
 
   useEffect(() => {
     if (shareInputRef.current && state.shareProjectInfo?.data?.link) {
       shareInputRef.current.value = state.shareProjectInfo?.data?.link;
     }
-  }, [shareInputRef.current, state.shareProjectInfo])
+  }, [shareInputRef.current, state.shareProjectInfo]);
 
   if (!state.shareProjectInfo) {
     return null;
   }
-  
 
-  return <Modal title="Copy this link to share" onClose={onClose}>
-    <styles.Content copied={copied} loading={!state.shareProjectInfo.done}>
-      { state.shareProjectInfo.data && <styles.ShareInput shareInputRef={shareInputRef}  onClick={onCopyClick}  />}
-    </styles.Content>    
-  </Modal>
+  return (
+    <Modal title="Copy this link to share" onClose={onClose}>
+      <styles.Content copied={copied} loading={!state.shareProjectInfo.done}>
+        {state.shareProjectInfo.data && (
+          <styles.ShareInput
+            shareInputRef={shareInputRef}
+            onClick={onCopyClick}
+          />
+        )}
+      </styles.Content>
+    </Modal>
+  );
 });

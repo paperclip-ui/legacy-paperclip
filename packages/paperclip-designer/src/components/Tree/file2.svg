@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="100pt" height="100pt" version="1.1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
- <g>
-  <path d="m60 10v20h20z"/>
-  <path d="m20 10v80h60v-50h-30v-30z"/>
- </g>
-</svg>

@@ -13,7 +13,7 @@ import {
 import { fixFileUrlCasing } from "./utils";
 import { eventHandlers, Observer } from "paperclip-common";
 import { RevealSourceRequested } from "./language/server/events";
-import { PCSourceEdited } from "paperclip-designer/lib/server/services/rpc";
+import { PCSourceEdited } from "tandem-designer/lib/server/services/rpc";
 import { stripFileProtocol } from "paperclip-utils";
 import * as URL from "url";
 

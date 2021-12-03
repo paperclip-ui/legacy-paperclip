@@ -3,9 +3,7 @@
   "version": "18.0.2",
   "description": "",
   "main": "index.js",
-  "bin": {
-    "figma-paperclip": "./bin/figma-paperclip"
-  },
+  "bin": "./bin/figma-paperclip",
   "scripts": {
     "build:watch": "tsc --watch",
     "build": "tsc"

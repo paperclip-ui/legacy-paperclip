@@ -6,8 +6,8 @@ import {
   TextDocumentChanged,
   TextDocumentOpened
 } from "./events";
-import { ActionType, startServer } from "paperclip-designer";
-import { PCEngineInitialized } from "paperclip-designer/lib/server/services/pc-engine";
+import { ActionType, startServer } from "tandem-designer";
+import { PCEngineInitialized } from "tandem-designer/lib/server/services/pc-engine";
 import * as URL from "url";
 import { ExprSource } from "paperclip-utils";
 import { RevealSourceRequested } from "./events";

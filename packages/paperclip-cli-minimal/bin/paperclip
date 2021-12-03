@@ -13,6 +13,7 @@ const argv = require("yargs")
   .option("definition", desc("Write typed definition type"))
 }, argv => {
   build({
+    cwd: process.cwd(),
     config: argv.config,
     write: argv.write,
     css: argv.css,

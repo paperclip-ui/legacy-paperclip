@@ -1,11 +1,11 @@
-import { useTextInput } from "paperclip-designer/src/components/TextInput";
-import { Spinner } from "paperclip-designer/src/components/Spinner";
+import { useTextInput } from "tandem-designer/src/components/TextInput";
+import { Spinner } from "tandem-designer/src/components/Spinner";
 import React, { memo, useState } from "react";
 import { useProjects } from "../../../hooks/resources";
 import * as styles from "./index.pc";
 import { Project } from "../../../state";
 import { useHistory } from "react-router";
-import { useSelect } from "paperclip-designer/src/components/Select";
+import { useSelect } from "tandem-designer/src/components/Select";
 import { useAppStore } from "../../../hooks/useAppStore";
 import {
   deleteProjectConfirmed,

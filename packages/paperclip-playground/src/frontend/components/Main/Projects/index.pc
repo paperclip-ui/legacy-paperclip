@@ -1,10 +1,12 @@
-<import src="paperclip-designer/src/components/Theme/index.pc" as="Theme" />
+<import src="tandem-designer/src/components/Theme/index.pc" as="Theme" />
 <import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
-<import src="paperclip-designer/src/components/TextInput/filter.pc" as="FilterInput" />
-<import src="paperclip-designer/src/components/Spinner/index.pc" as="Spinner" />
-<import src="paperclip-designer/src/styles/utils.pc" as="utils" />
-<import src="paperclip-designer/src/components/Select/index2.pc" as="Select" />
-<import src="paperclip-designer/src/components/TextInput/index.pc" as="TextInput" />
+<import src="tandem-designer/src/components/TextInput/filter.pc"
+  as="FilterInput" />
+<import src="tandem-designer/src/components/Spinner/index.pc" as="Spinner" />
+<import src="tandem-designer/src/styles/utils.pc" as="utils" />
+<import src="tandem-designer/src/components/Select/index2.pc" as="Select" />
+<import src="tandem-designer/src/components/TextInput/index.pc"
+  as="TextInput" />
 <import src="frontend/components/Button/index.pc" as="Button" />
 
 
@@ -34,7 +36,6 @@
       position: relative;
       overflow: hidden;
       box-sizing: border-box;
-
       :global(img) {
         width: 100%;
         border-radius: 4px;
@@ -69,12 +70,9 @@
         </style>
         {lastModified}
       </div>
-    </div>  
-    <div>
-      {moreSelect}
     </div>
+    <div>{moreSelect}</div>
   </div>
-
 </div>
 
 
@@ -82,15 +80,21 @@
 <!--
   @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
 -->
-<FilterInput.FilterTextInput export component as="Filter" {onChange} {filterInputRef} {defaultValue} dark>
-    <style>
-      @include breakpoints.mobile {
-        margin-top: 8px;
-        max-width: 100%;
-        width: 100%;
-      }
-    </style>
-  </FilterInput.FilterTextInput>
+<FilterInput.FilterTextInput export
+  component
+  as="Filter"
+  {onChange}
+  {filterInputRef}
+  {defaultValue}
+  dark>
+  <style>
+    @include breakpoints.mobile {
+      margin-top: 8px;
+      max-width: 100%;
+      width: 100%;
+    }
+  </style>
+</FilterInput.FilterTextInput>
 
 <!--
   @frame { visible: false }
@@ -114,9 +118,7 @@
     My projects
   </div>
 
-  <Button.Button secondary onClick={onCreateClick}>
-    Create
-  </Button.Button>
+  <Button.Button secondary onClick={onCreateClick}>Create</Button.Button>
   {filter?}
 </div>
 
@@ -132,7 +134,6 @@
     grid-column-gap: 16px;
     grid-row-gap: 16px;
     box-sizing: border-box;
-
     @include breakpoints.small {
       grid-template-columns: 1fr 1fr 1fr;
     }
@@ -160,7 +161,7 @@
 <!--
   @frame { visible: false }
 -->
-<Select.Menu export component as="MoreMenu" right round>  
+<Select.Menu export component as="MoreMenu" right round>
   <style>
     min-width: 150px;
   </style>
@@ -178,26 +179,33 @@
   <style>
     --size: 24px;
     visibility: hidden;
-    @include utils.mask;
-    @include utils.mask-button;
     mask-image: url("./more.svg");
     position: relative;
     left: 12px;
+    @include utils.mask {}
+    @include utils.mask-button {}
   </style>
-  
 </button>
 
 
 <!--
   @frame { visible: false }
 -->
-<TextInput export component as="NameInput" {defaultValue?} light autoFocus {onBlur} {onChange} {onKeyPress}>
+<TextInput export
+  component
+  as="NameInput"
+  {defaultValue?}
+  light
+  autoFocus
+  {onBlur}
+  {onChange}
+  {onKeyPress}>
   <style>
     && {
-     border-color: transparent;
-     background: var(--grey-200);
-     color: var(--grey-night-300);
-     height: 22px;
+      border-color: transparent;
+      background: var(--grey-200);
+      color: var(--grey-night-300);
+      height: 22px;
     }
   </style>
 </TextInput>
@@ -226,21 +234,37 @@
   @frame { visible: false }
 -->
 <Container export component as="Preview">
-
   <!-- Title -->
   <Header />
 
   {!loading && <Content>
-    <Project name="My simple project" lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} />
-    <Project name={<NameInput />} hover lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} />
-    <Project name="My simple project" hover lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} moreSelect={<MoreSelect menu={<MoreMenu />}>
-      <MoreButton />
-    </MoreSelect>} />
-    <Project name="My simple project" lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} />
-    <Project name="My simple project" lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} />
-    <Project name="My simple project" lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} />
-    <Project name="My simple project" lastModified="Last Modified: 29 days ago" screenshot={<img src="./image.png" />} />
-  </Content> }
+    <Project name="My simple project"
+      lastModified="Last Modified: 29 days ago"
+      screenshot={<img src="./image.png" />} />
+    <Project name={<NameInput />}
+      hover
+      lastModified="Last Modified: 29 days ago"
+      screenshot={<img src="./image.png" />} />
+    <Project name="My simple project"
+      hover
+      lastModified="Last Modified: 29 days ago"
+      screenshot={<img src="./image.png" />}
+      moreSelect={<MoreSelect menu={<MoreMenu />}>
+        <MoreButton />
+      </MoreSelect>} />
+    <Project name="My simple project"
+      lastModified="Last Modified: 29 days ago"
+      screenshot={<img src="./image.png" />} />
+    <Project name="My simple project"
+      lastModified="Last Modified: 29 days ago"
+      screenshot={<img src="./image.png" />} />
+    <Project name="My simple project"
+      lastModified="Last Modified: 29 days ago"
+      screenshot={<img src="./image.png" />} />
+    <Project name="My simple project"
+      lastModified="Last Modified: 29 days ago"
+      screenshot={<img src="./image.png" />} />
+  </Content>}
 
   {loading && <Content>
     <Spinner />

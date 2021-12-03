@@ -125,10 +125,10 @@ const translateComponent = (component: InterimComponent) => {
     translateComponentProps(component),
     endBlock,
     "}\n\n",
-    `type ${name} = Factory<${name}Props>;\n\n`,
+    `declare const ${name}: Factory<${name}Props>;\n\n`,
     component.as === "default"
       ? `export default ${name};`
-      : `export {${name}};\n\n`
+      : `export { ${name} };\n\n`
   ]);
 };
 

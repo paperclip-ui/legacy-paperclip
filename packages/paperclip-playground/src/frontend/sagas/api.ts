@@ -6,8 +6,8 @@ import {
   ProjectFile
 } from "../state";
 import { call, fork, put, select, takeEvery } from "redux-saga/effects";
-import history from "paperclip-designer/src/dom-history";
-import * as vea from "paperclip-designer/src/actions";
+import history from "tandem-designer/src/dom-history";
+import * as vea from "tandem-designer/src/actions";
 import {
   AccountConnected,
   ActionType,

@@ -9,7 +9,7 @@
     "doc": "docs"
   },
   "engines": {
-    "yarn": "^1.22.1"
+    "yarn": "^3.1.1"
   },
   "workspaces": {
     "packages": [
@@ -26,7 +26,7 @@
     "codecov": "^3.7.1",
     "eslint": "^7.4.0",
     "husky": "^7.0.0",
-    "lerna": "^3.22.1",
+    "lerna": "^4.0.0",
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1",
     "typescript": "^4.2.3"
@@ -36,10 +36,10 @@
   },
   "scripts": {
     "test": "lerna run test",
-    "build": "lerna run build",
+    "build": "yarn workspaces foreach -t run build",
     "lint": "lerna run lint",
-    "link": "lerna exec -- yarn link",
-    "postinstall": "lerna bootstrap",
+    "link-all": "lerna exec -- yarn link",
+    "postinstall2": "yarn workspaces foreach -t run build",
     "clean": "find ./ -name node_modules -exec rm -rf {} \\;",
     "publish:local": "for PKG in `ls packages`; do cd packages/$PKG; yalc publish; cd ../..; done;",
     "push:local": "for PKG in `ls packages`; do cd packages/$PKG; yalc push; cd ../..; done;",
@@ -60,5 +60,6 @@
   "bugs": {
     "url": "https://github.com/crcn/paperclip/issues"
   },
-  "homepage": "https://github.com/crcn/paperclip#readme"
+  "homepage": "https://github.com/crcn/paperclip#readme",
+  "packageManager": "yarn@3.1.1"
 }

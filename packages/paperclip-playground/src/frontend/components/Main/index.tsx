@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useRef, useState } from "react";
-import { MainBase as DesignModeMainBase } from "paperclip-designer/src/components/Main";
-import history from "paperclip-designer/src/dom-history";
+import { MainBase as DesignModeMainBase } from "tandem-designer/src/components/Main";
+import history from "tandem-designer/src/dom-history";
 import { withAppStore } from "../../hocs/withAppStore";
 import { useAppStore } from "../../hooks/useAppStore";
 import { MainToolbar } from "./Toolbar";

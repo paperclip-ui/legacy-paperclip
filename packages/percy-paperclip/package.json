@@ -3,9 +3,7 @@
   "version": "18.0.2",
   "description": "Percy integration for Paperclip",
   "main": "index.js",
-  "bin": {
-    "percy-paperclip": "./bin/percy-paperclip"
-  },
+  "bin": "./bin/percy-paperclip",
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",

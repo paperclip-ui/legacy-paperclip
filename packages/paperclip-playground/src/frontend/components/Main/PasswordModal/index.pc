@@ -1,5 +1,6 @@
 <import src="frontend/components/Modal/index.pc" as="Modal" />
-<import src="paperclip-designer/src/components/TextInput/index.pc" as="TextInput" />
+<import src="tandem-designer/src/components/TextInput/index.pc"
+  as="TextInput" />
 <import src="frontend/components/Button/index.pc" as="Button" />
 
 <div export component as="HeaderTitle">
@@ -35,7 +36,11 @@
       </style>
       {error}
     </div>
-    <TextInput placeholder="Password" type="password" ref={passwordInputRef} onChange={onPasswordChange} autocomplete="off" />
+    <TextInput placeholder="Password"
+      type="password"
+      ref={passwordInputRef}
+      onChange={onPasswordChange}
+      autocomplete="off" />
     <div>
       <style>
         display: flex;
@@ -52,31 +57,27 @@
     </div>
   </form>
   <div>
-
     <style>
       margin-top: 16px;
       font-size: 11px;
       align-items: flex-start;
       color: rgba(0,0,0,0.5);
       text-align: center;
-
       a {
         color: var(--color-blue-100);
         text-decoration: none;
       }
     </style>
-    Don't have it?&nbsp;<a href="https://forms.gle/FATDYcAVUdRVJvQaA">Sign up for early access!</a>
-
+    Don't have it?&nbsp;<a href="https://forms.gle/FATDYcAVUdRVJvQaA">
+      Sign up for early access!
+    </a>
   </div>
 </div>
 
 <Modal.Container export component as="Preview" visible secret className="v2">
-
-  <Modal.Content> 
-
+  <Modal.Content>
     <Modal.Header title={<HeaderTitle />} />
 
     <Content error="Incorrect passsword!" />
   </Modal.Content>
-
 </Modal.Container>

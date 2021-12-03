@@ -1,10 +1,10 @@
 <import src="frontend/components/Modal/index.pc" as="Modal" />
-<import src="paperclip-designer/src/components/TextInput/index.pc" as="TextInput" />
+<import src="tandem-designer/src/components/TextInput/index.pc"
+  as="TextInput" />
 <import src="frontend/components/Button/index.pc" as="Button" />
-<import src="paperclip-designer/src/components/Spinner/index.pc" as="Spinner" />
+<import src="tandem-designer/src/components/Spinner/index.pc" as="Spinner" />
 
-<Modal.Container export component as="ShareModal">
-</Modal.Container>
+<Modal.Container export component as="ShareModal" />
 
 <div export component as="ShareInput" onClick={onClick?}>
   <style>
@@ -38,11 +38,11 @@
   <Spinner>
     <style>
       display: none;
+      top: calc(50% - 15px);
+      left: calc(50% - 15px);
       &:within(.loading) {
         display: block;
       }
-      top: calc(50% - 15px);
-      left: calc(50% - 15px);
     </style>
   </Spinner>
   {children}
@@ -51,18 +51,16 @@
       padding-top: 6px;
       color: var(--color-blue-100);
       font-size: 10px;
-
     </style>
     Copied!
   </div>}
 </div>
 
 <Modal.Container export component as="Preview" visible className="v2">
-  <Modal.Content> 
+  <Modal.Content>
     <Modal.Header title="Copy this link to share " />
     <Content copied>
       <ShareInput value="http://playground.paperclip.dev/s/59bb" />
     </Content>
   </Modal.Content>
-
 </Modal.Container>

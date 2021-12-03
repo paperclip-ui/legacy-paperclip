@@ -171,7 +171,7 @@
     "paperclip": "^18.0.2",
     "paperclip-autocomplete": "^18.0.2",
     "paperclip-common": "^18.0.2",
-    "paperclip-designer": "^18.0.2",
+    "tandem-designer": "^18.0.2",
     "paperclip-language-service": "^18.0.2",
     "paperclip-source-writer": "^18.0.2",
     "paperclip-utils": "^18.0.2",

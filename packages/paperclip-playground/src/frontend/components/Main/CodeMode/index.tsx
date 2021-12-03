@@ -4,7 +4,7 @@ import {
   globalZKeyDown,
   globalYKeyDown,
   globalSaveKeyPress
-} from "paperclip-designer/src/actions";
+} from "tandem-designer/src/actions";
 
 // Can't import, otherwise the react monaco editor breaks :(
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
@@ -20,7 +20,7 @@ import { slimCodeEditorChanged } from "../../../actions";
 import { SlimEditor } from "./Slim";
 import { canEditFile } from "../../../state";
 import { active as activatePaperclipExtension } from "paperclip-monaco";
-import { StringRange } from "paperclip-utils";
+import { SourceLocation } from "paperclip-utils";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
@@ -70,7 +70,7 @@ export const CodeMode = () => {
           <Editor
             uri={uri}
             value={code}
-            highlightRange={state.highlightRange}
+            highlightLocation={state.highlightLocation}
             onChange={onChange}
             onMount={onMount}
           />
@@ -91,7 +91,7 @@ export const CodeMode = () => {
 export type EditorProps = {
   uri: string;
   value: string;
-  highlightRange: StringRange;
+  highlightLocation: SourceLocation;
   onChange: (value: string) => void;
   onMount: (editor: any, monaco: any) => void;
 };
@@ -100,7 +100,7 @@ const Editor = ({
   uri,
   value,
   onChange,
-  highlightRange,
+  highlightLocation,
   onMount
 }: EditorProps) => {
   const editorRef = useRef<HTMLDivElement>();
@@ -134,7 +134,7 @@ const Editor = ({
   }, [monaco, editor, uri, value]);
 
   useEffect(() => {
-    if (!highlightRange) {
+    if (!highlightLocation) {
       return;
     }
 
@@ -143,14 +143,14 @@ const Editor = ({
     setTimeout(() => {
       const range = getRange(
         editor.getModel(),
-        highlightRange.start.pos,
-        highlightRange.end.pos
+        highlightLocation.start,
+        highlightLocation.end
       );
       editor.setSelection(range);
 
       editor.revealLine(range.startLineNumber);
     }, 100);
-  }, [highlightRange]);
+  }, [highlightLocation]);
 
   useEffect(() => {
     if (!editorRef.current) {

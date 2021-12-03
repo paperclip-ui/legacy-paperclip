@@ -1,7 +1,0 @@
-<!--
-  @frame { visible: false, width: 368, height: 539, x: 217, y: 193 }
--->
-<div export component as="ComputedStylePanel">
-  <!-- title -->
-  <div>Computed CSS</div>
-</div>

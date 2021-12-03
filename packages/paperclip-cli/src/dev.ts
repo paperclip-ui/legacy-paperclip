@@ -1,4 +1,4 @@
-// import { startServer } from "paperclip-designer";
+// import { startServer } from "tandem-designer";
 
 export type ServerOptions = {
   port?: number;

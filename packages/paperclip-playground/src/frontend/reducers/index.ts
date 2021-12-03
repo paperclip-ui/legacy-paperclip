@@ -10,15 +10,15 @@ import {
   Action as VEAction,
   ActionType as VEActionType,
   redirectRequest
-} from "paperclip-designer/src/actions";
+} from "tandem-designer/src/actions";
 import { Action, ActionType } from "../actions";
 import produce from "immer";
 
-import veReducer from "paperclip-designer/src/reducers/index";
+import veReducer from "tandem-designer/src/reducers/index";
 import { editString } from "../utils/string-editor";
 import Automerge from "automerge";
-import { updateShared } from "paperclip-designer/src/state";
-import { historyReducer } from "paperclip-designer/src/reducers/history";
+import { updateShared } from "tandem-designer/src/state";
+import { historyReducer } from "tandem-designer/src/reducers/history";
 import mime from "mime-types";
 import { isPaperclipFile } from "paperclip-utils";
 
@@ -150,7 +150,7 @@ export const reducer = (state: AppState, action: Action) => {
     }
     // case VEActionType.META_CLICKED: {
     //   return produce(state, newState => {
-    //     newState.highlightLocation = action.payload.source.range;
+    //     newState.highlightLocation = action.payload.source.location;
     //     newState.currentCodeFilePath = action.payload.source.uri;
     //   });
     // }

@@ -1,7 +1,0 @@
-<div>
-  <style>
-    color: rgb(158, 54, 54);
-    font-size: 72px;
-  </style>
-  blarg
-</div>

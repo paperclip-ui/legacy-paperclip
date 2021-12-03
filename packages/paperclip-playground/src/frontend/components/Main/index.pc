@@ -1,11 +1,11 @@
-<import src="paperclip-designer/src/components/Main/index.pc" as="Main" />
-<import src="paperclip-designer/src/components/Theme/index.pc" as="Theme" />
+<import src="tandem-designer/src/components/Main/index.pc" as="Main" />
+<import src="tandem-designer/src/components/Theme/index.pc" as="Theme" />
 <import src="./CodeMode/index.pc" as="CodeMode" />
 <import src="frontend/components/Theme/breakpoints.pc" as="breakpoints" />
 <import src="./Toolbar/index.pc" as="Toolbar" />
 <import src="./auth/index.pc" as="Auth" />
 <import src="./Projects/index.pc" as="Projects" />
-<import src="paperclip-designer/src/styles/utils.pc" as="utils" />
+<import src="tandem-designer/src/styles/utils.pc" as="utils" />
 <import src="./ShareModal/index.pc" as="ShareModal" />
 <import src="./PasswordModal/index.pc" as="PasswordModal" />
 <import src="./ProjectLoadingModal/index.pc" as="ProjectLoadingModal" />
@@ -22,7 +22,14 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" {className?} {onDrop} {onDragOver?} {onDragEnter?} {onDragLeave}>
+<div export
+  component
+  as="Container"
+  {className?}
+  {onDrop}
+  {onDragOver?}
+  {onDragEnter?}
+  {onDragLeave}>
   <style>
     display: flex;
     height: 100vh;
@@ -58,7 +65,13 @@
 <!--
   @frame { visible: false }
 -->
-<div export component as="FileDrop" className="v2" {onClick} className:visible="visible" className:cantUpload="cant-upload">
+<div export
+  component
+  as="FileDrop"
+  className="v2"
+  {onClick}
+  className:visible="visible"
+  className:cantUpload="cant-upload">
   <style>
     font-family: Open Sans;
     pointer-events: none;
@@ -96,20 +109,19 @@
       <style>
         font-size: 24px;
       </style>
-      Whoops, that won't work. Make sure you're only uploading SVGs & other image files that are under 2 MB
+      Whoops, that won't work. Make sure you're only uploading SVGs & other image
+      files that are under 2 MB
     </div>}
-    {!cantUpload && <div>
-      Drop to upload it!
-    </div>}
+    {!cantUpload && <div>Drop to upload it!</div>}
     <i>
       <style>
         display: block;
         text-align: center;
         --size: 100px;
-        @include utils.mask;
         mask-image: url("./dnd.svg");
+        @include utils.mask {}
         &:within(.cant-upload) {
-        mask-image: url("./big-x.svg");
+          mask-image: url("./big-x.svg");
         }
       </style>
     </i>
@@ -123,7 +135,7 @@
   @frame { visible: false }
 -->
 <div export component as="MediaPreview" className="v2 light">
-  <style> 
+  <style>
     background: var(--grey-100);
     position: relative;
     width: 100%;
@@ -151,13 +163,13 @@
   @frame { visible: false }
 -->
 <Container export component as="Preview" className="v2" {compact?}>
-  {!compact && !showProjects && <Toolbar.Preview  {loggedIn?} />}
+  {!compact && !showProjects && <Toolbar.Preview {loggedIn?} />}
   {showProjects && <Toolbar.Preview loggedIn minimal />}
 
   {showEditor && <EditorContainer {compact?}>
     <CodeMode.Preview {showFileMenu} {showFileOptions} slim />
     <Main.Preview v2 dark designer showGrid />
-  </EditorContainer> }
+  </EditorContainer>}
   {showLoginPrompt && <Auth.Preview />}
   <FileDrop visible={showFileDrop} {cantUpload} />
 
@@ -168,9 +180,9 @@
       {cantPreview && <span>Unable to preview this file</span>}
       {!cantPreview && <img src="./VanillaHappyCat.jpg" />}
     </MediaPreview>
-  </EditorContainer> }
+  </EditorContainer>}
   {showShare && <ShareModal.Preview />}
-  { showPasswordModal && <PasswordModal.Preview />}
+  {showPasswordModal && <PasswordModal.Preview />}
   {showProjectLoading && <ProjectLoadingModal.Preview visible percent="0.5" />}
   {showNoBrowserSupport && <NoBrowserSupportModal.Preview visible />}
 </Container>
@@ -178,40 +190,40 @@
 <!--
   @frame { title: "Initial / auth", width: 1212, height: 768, x: 1843, y: -745 }
 -->
-<Preview showEditor showFileMenu showLoginPrompt  />
+<Preview showEditor showFileMenu showLoginPrompt />
 
 
 <!--
   @frame { title: "Project loading", width: 1212, height: 768, x: 3328, y: -1905 }
 -->
-<Preview showEditor showProjectLoading  />
+<Preview showEditor showProjectLoading />
 
 <!--
   @frame { title: "Incompatible browser", width: 1212, height: 768, x: 1905, y: -1887 }
 -->
-<Preview showEditor showNoBrowserSupport  />
+<Preview showEditor showNoBrowserSupport />
 
 
 <!--
   @frame { title: "Password Modal", width: 1212, height: 768, x: 434, y: -1892 }
 -->
-<Preview showPasswordModal  />
+<Preview showPasswordModal />
 
 
 <!--
   @frame { title: "Projects / Desktop", width: 1219, height: 767, x: 5218, y: 235 }
 -->
-<Preview showFileMenu showProjects loggedIn  />
+<Preview showFileMenu showProjects loggedIn />
 
 <!--
   @frame { title: "Projects / Tablet", width: 458, height: 767, x: 5201, y: 2057 }
 -->
-<Preview  showFileMenu showProjects  />
+<Preview showFileMenu showProjects />
 
 <!--
   @frame { title: "Projects / Small Desktop", width: 981, height: 767, x: 5211, y: 1126 }
 -->
-<Preview showFileMenu showProjects  />
+<Preview showFileMenu showProjects />
 
 
 <!--
@@ -229,32 +241,32 @@
 <!--
   @frame { title: "Logged in / unpreviewable", width: 1216, height: 767, x: 1899, y: 2295 }
 -->
-<Preview showEditor2 cantPreview loggedIn  />
+<Preview showEditor2 cantPreview loggedIn />
 
 <!--
   @frame { title: "Logged in / binary selected", width: 1216, height: 767, x: 481, y: 2290 }
 -->
-<Preview showEditor2 loggedIn  />
+<Preview showEditor2 loggedIn />
 
 
 <!--
   @frame { title: "Logged in / download select", width: 1216, height: 767, x: 457, y: 1264 }
 -->
-<Preview showEditor showDownloadMenu loggedIn  />
+<Preview showEditor showDownloadMenu loggedIn />
 
 
 
 <!--
   @frame { title: "Logged in / Share select", width: 1216, height: 767, x: 1937, y: 1269 }
 -->
-<Preview showEditor showShare loggedIn  />
+<Preview showEditor showShare loggedIn />
 
 
 
 <!--
   @frame { title: "Logged in / file select", width: 1216, height: 767, x: 437, y: 273 }
 -->
-<Preview showEditor showFileMenu loggedIn  />
+<Preview showEditor showFileMenu loggedIn />
 
 
 

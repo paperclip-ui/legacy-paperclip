@@ -27,10 +27,10 @@
     "paperclip": "^18.0.2",
     "paperclip-cli-minimal": "^18.0.2",
     "paperclip-cli-utils": "^18.0.2",
-    "paperclip-designer": "^18.0.2",
     "paperclip-utils": "^18.0.2",
     "resolve": "^1.15.1",
     "shelljs": "^0.8.4",
+    "tandem-designer": "18.0.1",
     "yargs": "^15.1.0"
   },
   "devDependencies": {

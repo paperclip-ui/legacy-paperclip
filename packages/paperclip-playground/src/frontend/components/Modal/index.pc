@@ -1,10 +1,16 @@
-<import src="paperclip-designer/src/components/Theme/index.pc" as="Theme" />
+<import src="tandem-designer/src/components/Theme/index.pc" as="Theme" />
 <!--
   @frame { visible: false }
 -->
-<div export component as="Container" className="v2 $Theme.font-default" className:secret="secret" className:noclose="noclose" className:visible="visible">
-    <style>
-    
+<div export
+  component
+  as="Container"
+  className="v2 $Theme.font-default"
+  className:secret="secret"
+  className:noclose="noclose"
+  className:visible="visible">
+  <style>
+
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -38,22 +44,21 @@
   @frame { visible: false }
 -->
 <div export component as="Content" {className?}>
-
-    <style>
-      background: white;
-      display: inline-block;
-      position: absolute;
-      left: 50%;
-      transform: translate(-50%);
-      border-radius: var(--border-radius);
-      padding: 14px;
-      transition: 0.2s;
-      top: 29%;
-      &:within(.visible) {
-        top: 30%;
-      }
-    </style>
-    {children}
+  <style>
+    background: white;
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    border-radius: var(--border-radius);
+    padding: 14px;
+    transition: 0.2s;
+    top: 29%;
+    &:within(.visible) {
+      top: 30%;
+    }
+  </style>
+  {children}
 </div>
 
 
@@ -79,7 +84,7 @@
       color: inherit;
       cursor: pointer;
       &:within(.secret, .noclose) {
-        display: none
+        display: none;
       }
     </style>
     &times;

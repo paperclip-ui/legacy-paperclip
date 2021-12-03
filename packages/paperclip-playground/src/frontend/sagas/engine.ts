@@ -12,7 +12,7 @@ import {
 import {
   clientConnected,
   ActionType as VEActionType
-} from "paperclip-designer/src/actions";
+} from "tandem-designer/src/actions";
 
 export function* handleEngine() {
   yield fork(startEngine);

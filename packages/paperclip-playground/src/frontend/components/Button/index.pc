@@ -1,15 +1,17 @@
-<import src="paperclip-designer/src/components/Theme/index.pc" as="Theme" />
+<import src="tandem-designer/src/components/Theme/index.pc" as="Theme" />
 
 <!--
   @frame { visible: false }
 -->
-<button export component as="Button" 
-  className="v2 {className?}" 
-  className:hover="hover" 
+<button export
+  component
+  as="Button"
+  className="v2 {className?}"
+  className:hover="hover"
   className:big="big"
-  className:primary="primary" 
-  className:secondary="secondary" 
-  className:secondary2="secondary2" 
+  className:primary="primary"
+  className:secondary="secondary"
+  className:secondary2="secondary2"
   {onClick?}>
   <style>
     white-space: nowrap;
@@ -45,7 +47,7 @@
       }
     }
     &.big {
-          padding: 8px 24px;
+      padding: 8px 24px;
     }
   </style>
   {children}
@@ -68,10 +70,6 @@
   @frame { title: "Primary", width: 171, height: 119, x: 0, y: 0 }
 -->
 <PreviewContainer>
-  <Button primary>
-    Default
-  </Button>
-  <Button primary hover>
-    Hover
-  </Button>
+  <Button primary>Default</Button>
+  <Button primary hover>Hover</Button>
 </PreviewContainer>

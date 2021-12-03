@@ -2,9 +2,9 @@ import React, { memo, useMemo, useRef, useState } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import * as styles from "./index.pc";
 import * as path from "path";
-import TextInput from "paperclip-designer/src/components/TextInput/index.pc";
-import { useTextInput } from "paperclip-designer/src/components/TextInput";
-import { useSelect } from "paperclip-designer/src/components/Select";
+import TextInput from "tandem-designer/src/components/TextInput/index.pc";
+import { useTextInput } from "tandem-designer/src/components/TextInput";
+import { useSelect } from "tandem-designer/src/components/Select";
 
 import {
   fileItemClicked,
@@ -14,7 +14,7 @@ import {
   removeFileClicked,
   syncPanelsClicked
 } from "../../../../actions";
-import { redirectRequest } from "paperclip-designer/src/actions";
+import { redirectRequest } from "tandem-designer/src/actions";
 import { isPaperclipFile } from "paperclip-utils";
 import { canUpload, getNewFilePath } from "../../../../state";
 

@@ -7,7 +7,7 @@ import {
   Observer
 } from "paperclip-common";
 import { LiveWindow, LiveWindowState } from "./live-window";
-import { HTTPServerStarted } from "paperclip-designer/lib/server/services/http-server";
+import { HTTPServerStarted } from "tandem-designer/lib/server/services/http-server";
 import {
   ActionType,
   LocationChanged
