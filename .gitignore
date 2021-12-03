@@ -13,3 +13,14 @@ tmp/
 *.DS_Store
 lerna-debug.log
 paperclip-html.tmLanguage.json
+
+
+
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
