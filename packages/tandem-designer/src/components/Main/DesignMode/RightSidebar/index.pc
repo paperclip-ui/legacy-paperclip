@@ -1,0 +1,12 @@
+<import src="./CSSInspector/index.pc" as="Inspector" />
+<import src="components/ResizableContainer/index.pc" as="ResizableContainer" />
+
+<!--
+  @frame { width: 351, height: 768, x: 0, y: 0 }
+-->
+<ResizableContainer right fixedSize export component as="Preview">
+  <style>
+    min-width: 100px;
+  </style>
+  <Inspector.Preview {showComputed?} />
+</ResizableContainer>

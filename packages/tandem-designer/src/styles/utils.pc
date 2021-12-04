@@ -1,0 +1,21 @@
+<style>
+  @export {
+    @mixin mask {
+      mask-repeat: no-repeat;
+      mask-position: 50%;
+      width: var(--size);
+      height: var(--size);
+      content: "\00a0";
+      display: inline-block;
+      mask-size: var(--size);
+      background: currentColor;
+      @content;
+    }
+    @mixin mask-button {
+      cursor: pointer;
+      color: inherit;
+      border: none;
+      padding: 0;
+    }
+  }
+</style>

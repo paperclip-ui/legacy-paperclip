@@ -1,0 +1,29 @@
+<import src="tandem-design-system/src/atoms.pc" inject-styles />
+<import src="./Breadcrumbs/index.pc" as="Breadcrums" />
+<import src="./Layers/index.pc" as="Layers" />
+<import src="components/ResizableContainer/index.pc" as="ResizableContainer" />
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: -6, y: 247 }
+-->
+<div export component as="Container">
+  <style>
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { width: 304, height: 768, x: 722, y: 0 }
+-->
+<ResizableContainer bottom export component as="Preview" fixedSize>
+  <Container>
+    <Breadcrums.Preview />
+    <Layers.Preview />
+  </Container>
+</ResizableContainer>

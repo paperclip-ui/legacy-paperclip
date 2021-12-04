@@ -1,0 +1,75 @@
+<import src="tandem-design-system/src/atoms.pc" inject-styles as="atoms" />
+
+<style>
+
+  .section {
+    border-bottom: 1px solid var(--border-color);
+    box-sizing: content-box;
+  }
+</style>
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="default"
+  className:flex="flex"
+  className:scrollable="scrollable"
+  className="font-regular">
+  <style>
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    &.flex {
+      flex: 1;
+    }
+  </style>
+  <div>
+    <style>
+      padding: var(--spacing-3) var(--spacing-5);
+      background: var(--background-100);
+      border-bottom: 1px solid var(--border-color);
+    </style>
+    {title}
+  </div>
+  <div>
+    <style>
+      &:within(.scrollable) {
+        overflow: scroll;
+      }
+    </style>
+    {children}
+  </div>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Section" className="section">
+  <style>
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" className="font-regular">
+  <style>
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { title: "Panel", width: 1024, height: 768, x: 0, y: 0 }
+-->
+<Container>
+  <default title="Something like this" />
+  <default title="Something like this" />
+  <default title="Something like this" />
+</Container>

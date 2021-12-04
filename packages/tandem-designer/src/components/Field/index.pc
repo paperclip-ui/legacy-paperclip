@@ -1,0 +1,58 @@
+<import src="components/Select/index.pc" as="Select" />
+<style>
+  .field {
+    display: inline-flex;
+    box-sizing: border-box;
+    align-items: center;
+    &--inline {}
+
+    label {
+      white-space: nowrap;
+      margin-right: 8px;
+    }
+    &--col1 {
+      flex-direction: column;
+      align-content: left;
+      label {
+        margin-bottom: 4px;
+      }
+      & .input {
+        width: 100%;
+      }
+    }
+
+    &--noLabel {
+      label {
+        display: none;
+      }
+    }
+  }
+
+  .input {
+    width: 100%;
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="default"
+  className="field"
+  className:col1="field--col1"
+  className:inline="field--inline"
+  className:noLabel="field--noLabel">
+  <label>{label}</label>
+  <div className="input">{children}</div>
+</div>
+
+<div>{children}</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div>
+  <Select />
+</div>

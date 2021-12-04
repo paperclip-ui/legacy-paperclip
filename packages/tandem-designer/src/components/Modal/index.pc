@@ -1,0 +1,71 @@
+<import src="tandem-design-system/src/atoms.pc" as="atoms" inject-styles />
+<import src="tandem-design-system/src/Button.pc" as="Button" />
+<import src="components/Box/index.pc" as="Box" />
+<import src="tandem-design-system/src/TextInput.pc" as="Input" />
+
+<div export component as="Container" className="font-regular">
+  <style>
+    background: rgba(105, 105, 105, 0.5);
+    width: 100vw;
+    height: 100vh;
+    z-index: 1024;
+    display: flex;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+  </style>
+  <div onClick={onBackgroundClick}>
+    <style>
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: transparent;
+      width: 100%;
+      height: 100%;
+    </style>
+  </div>
+  {children}
+</div>
+
+<div export component as="Content">
+  <style>
+    display: inline-block;
+    min-width: 300px;
+    background: var(--background-100);
+    border-radius: var(--border-radius-2);
+    box-shadow: var(--box-shadow-100);
+    position: absolute;
+    padding: var(--spacing-4);
+    display: flex;
+    flex-direction: column;
+    @include atoms.absolute-center {}
+  </style>
+  {title? && <h3>{title?}</h3>}
+  <div>
+    <style>
+      flex: 1;
+      padding-top: var(--spacing-3);
+      padding-bottom: var(--spacing-6);
+    </style>
+    {children}
+  </div>
+  <div>
+    <style>
+      display: flex;
+      grid-column-gap: var(--spacing-4);
+      justify-content: flex-start;
+    </style>
+    {footer?}
+  </div>
+</div>
+
+
+<Container>
+  <Content title="title"
+    footer={<fragment>
+      <Button secondary>Yes</Button>
+      <Button>No</Button>
+    </fragment>}>
+    <Input placeholder="Something" />
+  </Content>
+</Container>

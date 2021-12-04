@@ -1,0 +1,17 @@
+<import src="./atoms.pc" as="atoms" inject-styles />
+
+<style>
+  :global(body, html) {
+    margin: 0px;
+    padding: 0px;
+  }
+</style>
+
+
+<div export component as="default">
+  <style>
+    width: 100vw;
+    height: 100vh;
+  </style>
+  {children}
+</div>

@@ -1,0 +1,320 @@
+<import src="styles/utils.pc" as="utils" />
+<import src="tandem-design-system/src/atoms.pc" as="atoms" inject-styles />
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="Node"
+  className="node {className?}"
+  style="--depth: {depth}">
+  <style>
+    .leaf {
+      font-size: 12px;
+      padding: 6px 8px;
+      padding-left: calc(var(--spacing-5) + var(--depth) * 8px);
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      white-space: nowrap;
+      :global(i) {
+        flex-shrink: 0;
+        margin-right: 4px;
+      }
+      &:before {
+        --size: 0.7em;
+        @include utils.mask;
+        flex-shrink: 0;
+        margin-right: 3px;
+        background: transparent;
+      }
+      &--hasChildren {
+        &:before {
+          background: currentColor;
+          opacity: 0.4;
+          mask-image: url(./arrow-right.svg);
+        }
+        &--open:before {
+          mask-image: url(./arrow-down.svg);
+        }
+      }
+
+      &--selected {
+        @include atoms.active-bg;
+      }
+      &:hover, &--hovering {
+        @include atoms.hover-bg;
+      }
+      &--alt {}
+    }
+
+    .controls {
+      float: right;
+      display: flex;
+      align-content: flex-end;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      text-align: right;
+      margin-left: 10px;
+    }
+  </style>
+  <div className="leaf"
+    className:alt="leaf--alt"
+    className:hovering="leaf--hovering"
+    className:selected="leaf--selected"
+    className:open="leaf--hasChildren--open"
+    className:hasChildren="leaf--hasChildren"
+    onClick={onLeafClick}>
+    {icon}
+    {leaf}
+    <div className="controls">{controls}</div>
+  </div>
+  <div className="child-nodes">{children}</div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="FileIcon" data-extension={extension?}>
+  <style>
+
+    --size: 1.3em;
+    mask-image: url(./file2.svg);
+    color: var(--icon-color);
+    @include utils.mask {}
+    :self([data-extension=pc]) {
+      --size: 1.2em;
+      padding-right: 1px;
+      color: rgb(169, 240, 111);
+      mask-image: url(./shape-icon.svg);
+    }
+  </style>
+</i>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<i export component as="FolderIcon">
+  <style>
+    --size: 1.4em;
+    color: var(--icon-color);
+    mask-image: url(./folder.svg);
+    @include utils.mask {}
+  </style>
+</i>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Preview">
+  <Node leaf="src"
+    depth="0"
+    icon={<FolderIcon />}
+    hasChildren
+    open>
+    <Node leaf="components"
+      icon={<FolderIcon />}
+      hasChildren
+      depth="1"
+      alt
+      open>
+      <Node leaf="Button.tsx"
+        icon={<FileIcon />}
+        depth="2"
+        isFile />
+      <Node leaf="Button.pc"
+        icon={<FileIcon extension="pc" />}
+        depth="2"
+        selected
+        isFile />
+      <Node leaf="index.tsx"
+        icon={<FileIcon />}
+        depth="2"
+        isFile />
+    </Node>
+    <Node leaf="reducers"
+      icon={<FolderIcon />}
+      hasChildren
+      depth="1"
+      alt
+      open>
+      <Node leaf="main.ts"
+        icon={<FileIcon />}
+        depth="2"
+        hovering
+        isFile />
+    </Node>
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="index.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+    <Node leaf="last.ts"
+      icon={<FileIcon />}
+      depth="1"
+      alt
+      open />
+  </Node>
+</div>

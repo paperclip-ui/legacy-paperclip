@@ -1,0 +1,51 @@
+<import src="./atoms.pc" as="atoms" inject-styles />
+
+<!--
+  @frame { visible: false }
+-->
+<input export
+  component
+  as="default"
+  {disabled?}
+  className="input v2 {className?}"
+  className:dark="dark"
+  className:light="light"
+  {type}
+  {onBlur?}
+  {onFocus?}
+  {onKeyPress?}
+  {onChange?}
+  {placeholder?}
+  {value?}
+  {defaultValue?}
+  {autoComplete?}
+  {autoFocus?}
+  allow-1password="yes">
+  <style>
+
+
+    background: var(--background-50);
+    border: 0;
+    border-radius: var(--border-radius-100);
+    padding: var(--spacing-2) var(--spacing-3);
+    box-sizing: border-box;
+    outline: none;
+    color: var(--text-color);
+    box-sizing: border-box;
+    border: 2px solid var(--background-200);
+    &:within(:global(.dark)), &.dark {
+      background: var(--grey-night-100);
+      border: 2px solid var(--grey-night-300);
+      color: var(--grey-100);
+      font-size: 14px;
+    }
+    &:focus {
+      && {
+        border: 2px solid var(--color-blue-100);
+      }
+    }
+    &::placeholder {
+      color: var(--grey-300);
+    }
+  </style>
+</input>

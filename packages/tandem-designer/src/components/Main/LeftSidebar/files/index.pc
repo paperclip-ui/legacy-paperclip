@@ -1,0 +1,13 @@
+<import src="components/Main/Pane/index.pc" as="Pane" />
+<import src="components/Pane/index.pc" as="Pane2" />
+<import src="components/Tree/index.pc" as="Tree" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<Pane2 export component as="Preview" flex scrollable primary title="Files">
+  <Pane2.Section>
+    <Tree.Preview />
+  </Pane2.Section>
+</Pane2>

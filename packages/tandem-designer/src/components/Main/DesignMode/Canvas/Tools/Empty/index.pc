@@ -1,0 +1,15 @@
+<!--
+  @frame { title: "Empty State", width: 1024, height: 768, x: 0, y: -2 }
+-->
+<div export component as="CTA">
+  <style>
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    text-align: center;
+    color: rgb(182, 182, 182);
+  </style>
+  Document is empty, try writing some HTML
+</div>

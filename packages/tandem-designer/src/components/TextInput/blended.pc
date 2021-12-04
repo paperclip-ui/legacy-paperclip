@@ -1,0 +1,43 @@
+<!--
+  @frame { visible: false }
+-->
+<span export component as="DummySpan" className="font-default">
+  <style>
+    pointer-events: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    white-space: nowrap;
+    visibility: hidden;
+  </style>
+  {children}
+</span>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Container" className:autoResize="auto-resize">
+  <style>
+    position: relative;
+    & :global(input) {
+      line-height: inherit;
+      font-size: inherit;
+      font-family: inherit;
+      letter-spacing: inherit;
+      padding: 0;
+      border: none;
+      outline: none;
+    }
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 85, y: -28 }
+-->
+<Container>
+  <input value="some dummy text" />
+  <DummySpan>some dummy text</DummySpan>
+</Container>

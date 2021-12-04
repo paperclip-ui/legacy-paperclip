@@ -1,0 +1,143 @@
+<import src="tandem-design-system/src/atoms.pc" as="atoms" inject-styles />
+<import src="styles/utils.pc" as="utils" />
+
+<style>
+
+  :root {
+    --border-color: rgb(212, 212, 212);
+    --active-color: rgb(79, 153, 236);
+  }
+</style>
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 146, y: -107 }
+-->
+<div export
+  component
+  as="Breadcrumbs"
+  data-label="Breadcrumbs"
+  className="font-default">
+  <style>
+    display: flex;
+    flex-flow: row;
+    flex-shrink: 0;
+    grid-row-gap: 1px;
+    background: rgba(247, 247, 247);
+    font-size: 14px;
+    overflow-x: auto;
+    position: relative;
+    user-select: none;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="Breadcrumb"
+  {onClick?}
+  {onMouseEnter?}
+  {onMouseLeave?}
+  data-label="Breadcrumb"
+  className:hover="hover"
+  className:active="active">
+  <style>
+    --bg-color: rgb(211, 211, 211);
+    --arrow-size: 15px;
+    flex: 0 0 auto;
+    display: inline-block;
+    padding: var(--spacing-3) var(--spacing-5);
+    background: var(--bg-color);
+    margin-right: 16px;
+    color: grey;
+    cursor: pointer;
+    align-items: center;
+    position: relative;
+    height: 30px;
+    &.hover, &:hover {
+      @include atoms.hover-bg;
+      --bg-color: var(--hover-bg-color);
+    }
+
+    &.active {
+      @include atoms.active-bg;
+      --bg-color: var(--active-bg-color);
+      &:after {
+        display: none;
+      }
+    }
+
+    &:after {
+      top: 0px;
+      content: "";
+      border-left: var(--arrow-size) solid var(--bg-color);
+      border-top: var(--arrow-size) solid transparent;
+      border-bottom: var(--arrow-size) solid transparent;
+      border-right: 0;
+      right: calc(0px - var(--arrow-size));
+      position: absolute;
+    }
+
+    &:before {
+      top: 0px;
+      content: "";
+      border-left: var(--arrow-size) solid transparent;
+      border-top: var(--arrow-size) solid var(--bg-color);
+      border-bottom: var(--arrow-size) solid var(--bg-color);
+      border-right: 0;
+      position: absolute;
+      left: calc(0px - var(--arrow-size));
+    }
+  </style>
+  <style>
+    display: inline-flex;
+  </style>
+  {<div className:instance="instance show" className:text="text show">
+    <style>
+
+      margin-right: var(--spacing-3);
+      visibility: hidden;
+      position: relative;
+      &.instance {
+        mask-image: url("./block.svg");
+      }
+      &.text {
+        mask-image: url("./text.svg");
+        --size: 10px;
+        top: 1px;
+      }
+      @include utils.mask {
+        --size: 13px;
+      }
+      && {
+        width: 0px;
+      }
+      &.show {
+        && {
+          width: var(--size);
+          visibility: visible;
+        }
+      }
+    </style>
+  </div>}
+  {children}
+</div>
+
+
+<!--
+  @frame { width: 1024, height: 768, x: 146, y: -107 }
+-->
+<Breadcrumbs export component as="Preview">
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>span</Breadcrumb>
+  <Breadcrumb instance hover>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb>div</Breadcrumb>
+  <Breadcrumb text active>text</Breadcrumb>
+</Breadcrumbs>

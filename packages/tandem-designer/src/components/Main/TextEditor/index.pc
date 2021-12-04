@@ -1,0 +1,4 @@
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: -1 }
+-->
+<div export component as="TextEditor">Text editor here</div>

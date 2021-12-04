@@ -1,0 +1,582 @@
+<import src="tandem-design-system/src/atoms.pc" as="atoms" inject-styles />
+<import src="styles/utils.pc" as="utils" />
+<import src="components/Pane/index.pc" as="Pane" />
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {}
+
+  .keyword-input {
+    background: var(--keyword-input-background);
+    border: 1px solid rgb(206, 206, 206);
+  }
+
+  .statement {
+    color: rgb(83, 83, 83);
+  }
+
+  .token {
+    color: var(--token-color);
+  }
+
+  .decl-name {
+    color: rgb(66, 164, 255);
+    &:within(.disabled) {
+      color: grey;
+    }
+  }
+
+  .decl-value {
+    color: rgb(226, 84, 207);
+    &:within(.disabled) {
+      color: grey;
+    }
+  }
+</style>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 22, y: 4 }
+-->
+<div component as="StyleRuleIcon" {title} {className?}>
+  <style>
+    opacity: 0.5;
+    position: relative;
+    @include atoms.ease-in {}
+    @include utils.mask {
+      mask-image: url(./earth.svg);
+      --size: 1.4em;
+    }
+  </style>
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<Pane.Section export
+  component
+  as="StyleRule"
+  className="section"
+  className:mediaActive="media-active"
+  className:isGlobal="is-global">
+  <div>
+    <style>
+      padding: var(--spacing-4) var(--spacing-5);
+      display: flex;
+      grid-column-gap: var(--spacing-5);
+      justify-content: space-between;
+      padding-bottom: 0;
+    </style>
+    <div>
+      <span className="statement code" className:boldSelector="bold-selector">
+        <style>
+          &.bold-selector {
+            font-weight: 600;
+          }
+        </style>
+        {selector}
+      </span>&nbsp;<span className="token">&#123;</span>
+    </div>
+    <div>
+      <style>
+        display: flex;
+        grid-column-gap: var(--spacing-4);
+        font-size: 12px;
+        margin-top: 2px;
+        align-items: top;
+      </style>
+      {media && <StyleRuleIcon title={media}>
+        <style>
+          mask-image: url(./phone.svg);
+          --size: 1.1em;
+          top: 2px;
+          &:within(.media-active) {
+            color: rgb(66, 164, 255);
+            opacity: 0.8;
+          }
+        </style>
+      </StyleRuleIcon>}
+
+      {isGlobal && <StyleRuleIcon title="This style rule is global">
+        <style>
+          mask-image: url(./earth.svg);
+          --size: 1.4em;
+        </style>
+      </StyleRuleIcon>}
+      <div onClick={onFileNameClick}>
+        <style>
+          color: rgb(180, 180, 180);
+          text-decoration: underline dotted;
+          cursor: pointer;
+        </style>
+        {fileName}
+      </div>
+    </div>
+  </div>
+  <div>
+    <style>
+      padding-left: var(--spacing-4);
+    </style>
+    {properties}
+  </div>
+  <div>
+    <style>
+      padding: var(--spacing-4) var(--spacing-5);
+      padding-top: 0;
+    </style>
+    <span className="token">&#125;</span>
+  </div>
+</Pane.Section>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="StyleRuleProperty" className:disabled="disabled">
+  <style>
+    display: flex;
+    grid-column-gap: var(--spacing-3);
+    flex-wrap: wrap;
+    grid-row-gap: var(--spacing-2);
+    line-height: var(--spacing-6);
+    padding: 0px var(--spacing-4);
+    &.disabled {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+    &:last-child {
+      border-bottom-color: transparent;
+    }
+    :global(input) {
+      border: none;
+      padding-left: 0;
+      margin: 0;
+      color: inherit;
+    }
+  </style>
+  <div className:boldName="bold-name">
+    <style>
+      white-space: nowrap;
+      &.bold-name {
+        font-weight: 600;
+      }
+    </style>
+    <span className="decl-name code">{name}</span>
+    <span className="token">:</span>
+  </div>
+  <div className="decl-value code" className:boldValue="bold-value">
+    <style>
+      flex: 1;
+      &.bold-value {
+        font-weight: 600;
+      }
+    </style>
+    {value}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<span export
+  component
+  as="Expression"
+  {className?}
+  {style?}
+  className:last="last">
+  <style>
+    & > :global(*) {
+      display: inline;
+    }
+  </style>
+
+  {children}
+  <span className="closing token">
+    <style>
+      display: none;
+    </style>
+  </span>
+</span>
+
+<!--
+  @frame { visible: false }
+-->
+<span export component as="StyleRulePropertyValue" {onClick?}>
+  <style>
+    display: inline-flex;
+    outline: none;
+    flex-wrap: wrap;
+    grid-column-gap: var(--spacing-3);
+    & > :last-child {
+      .closing {
+        display: inline;
+        &:after {
+          margin-left: 0px;
+          content: ";";
+        }
+      }
+    }
+  </style>
+  {children}
+</span>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Expression component as="UnitPart">
+  <span className="keyword-input">
+    <style>
+      border-radius: var(--radius-1);
+      padding: 0 var(--spacing-2);
+    </style>
+    {value}
+  </span>
+</Expression>
+
+
+<!--
+  @frame { visible: false }
+-->
+<span export component as="ScopedElementSelector" className="code">
+  <style>
+    background: rgb(228, 228, 228);
+    padding: 0px var(--spacing-2);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    display: inline-flex;
+  </style>
+  scope
+</span>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<UnitPart component as="KeywordPart" {value} className="keyword-input" />
+
+
+<!--
+  @frame { visible: false }
+-->
+<Expression component as="ColorPropertyPart" style="--value: {value}">
+  <style>
+    display: inline-flex;
+    grid-column-gap: var(--spacing-2);
+    align-items: center;
+  </style>
+  <div>
+    <style>
+      --size: 0.8em;
+      background: var(--value);
+      width: var(--size);
+      height: var(--size);
+      border-radius: var(--radius-1);
+    </style>
+  </div>
+  <div>
+    <style>
+      white-space: nowrap;
+    </style>
+    {value}
+  </div>
+</Expression>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="PanelSection" className="section font-regular">
+  <div>
+    <style>
+      padding: var(--spacing-4) var(--spacing-5);
+      background: rgb(247, 247, 247);
+    </style>
+    {title}
+  </div>
+  <div>{children}</div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Header">
+  <style>
+    padding: var(--spacing-3);
+    border-bottom: 1px solid var(--border-color);
+  </style>
+  <div>
+    <style>
+      position: relative;
+    </style>
+    <div>
+      <style>
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: var(--spacing-3);
+        @include utils.mask {
+          color: rgb(160, 160, 160);
+          --size: 10px;
+          mask-image: url("./filter.svg");
+        }
+      </style>
+    </div>
+    {input}
+  </div>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<input export
+  component
+  as="FilterInput"
+  placeholder="Filter styles..."
+  {onChange}
+  {onBlur}>
+  <style>
+    border-radius: 0px;
+    width: 100%;
+    border: none;
+    outline: #333;
+    background: white;
+    padding: var(--spacing-2) 0px;
+    padding-left: var(--spacing-6);
+  </style>
+</input>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Tabs">
+  <style>
+    border-top: 1px solid rgb(177, 177, 177);
+    border-bottom: 1px solid rgb(206, 206, 206);
+    display: flex;
+    background: rgb(245, 245, 245);
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<button export
+  component
+  as="Tab"
+  className="button-reset"
+  className:active="active">
+  <style>
+    border-top: 2px solid transparent;
+    padding: var(--spacing-3) var(--spacing-4);
+    &.active {
+      border-top: 2px solid rgb(66, 164, 255);
+    }
+  </style>
+  {children}
+</button>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ComputedStyles">
+  <style>
+    border-top: 1px solid rgb(206, 206, 206);
+    & > :nth-child(2n) {
+      background: rgb(247, 247, 247);
+    }
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ComputedProperty" className:collapsed="collapsed">
+  <div>
+    <style>
+      display: flex;
+      align-items: center;
+      padding: var(--spacing-2) var(--spacing-4);
+    </style>
+    <div>
+      <style>
+        --size: 1em;
+        margin-right: var(--spacing-3);
+        &:within(.collapsed) {
+          transform: rotate(-90deg);
+        }
+        @include utils.mask {
+          mask-image: url("assets/chevron.svg");
+        }
+      </style>
+    </div>
+    <div>
+      <style>
+        display: flex;
+        flex: 1;
+        grid-column-gap: var(--spacing-2);
+        & > * {
+          display: inline-block;
+          flex: 1;
+        }
+      </style>
+      <span className="decl-name">{name}</span>
+      <span className="decl-value">{value}</span>
+    </div>
+  </div>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="ComputedPropertySource" className:disabled="disabled">
+  <style>
+    border-top: 1px solid rgb(240, 240, 240);
+    display: flex;
+    padding: var(--spacing-2) 0px;
+    padding-left: calc(var(--spacing-7) + 2px);
+    padding-right: var(--spacing-7);
+    grid-column-gap: var(--spacing-5);
+    font-size: 0.9em;
+    &.disabled {
+      color: rgba(0,0,0,0.2);
+    }
+    & > * {
+      flex: 1;
+    }
+  </style>
+  <span>{selector}</span>
+  <span>{fileName}</span>
+</div>
+
+<!--
+  @frame { visible: false, title: "Inspector", width: 1024, height: 768, x: -18, y: -109 }
+-->
+<Pane.Container export component as="Preview" className="font-regular">
+  <Tabs>
+    <Tab active>Rules</Tab>
+    <Tab>Computed</Tab>
+  </Tabs>
+  {showComputed && <fragment>
+    <Header input={<FilterInput />} />
+    <ComputedStyles>
+      <ComputedProperty collapsed
+        name="display"
+        value="flex"
+        sources={<fragment />} />
+      <ComputedProperty collapsed
+        name="color"
+        value="red"
+        sources={<fragment />} />
+      <ComputedProperty name="background-color"
+        value="orange"
+        sources={<fragment />}>
+        <ComputedPropertySource selector=".Pane.Container"
+          fileName="atoms.pc" />
+        <ComputedPropertySource disabled
+          selector={<ScopedElementSelector />}
+          fileName="global.css" />
+      </ComputedProperty>
+      <ComputedProperty collapsed
+        name="box-shadow"
+        value="0px 0px 1px #FF00FF"
+        sources={<fragment />} />
+    </ComputedStyles>
+  </fragment>}
+
+  {!showComputed && <fragment>
+    <Header input={<FilterInput />} />
+    <Pane title="Element styles">
+      <StyleRule fileName="styles.pc"
+        boldSelector
+        selector=".this-is-a-super-long-selector-to-see-how-it-wraps"
+        properties={<fragment>
+          <StyleRuleProperty name="background-color"
+            value={<StyleRulePropertyValue>
+              <Expression>
+                var(--page-background-color, var(--gray-gray-90))
+              </Expression>
+            </StyleRulePropertyValue>} />
+          <StyleRuleProperty boldName
+            disabled
+            name="font-family"
+            value={<StyleRulePropertyValue>
+              <KeywordPart value="sans-serif" />
+            </StyleRulePropertyValue>} />
+          <StyleRuleProperty name="box-shadow"
+            value={<StyleRulePropertyValue>
+              <UnitPart value="2px" />
+              <UnitPart value="0px" />
+              <UnitPart value="0px" />
+              <ColorPropertyPart value="rgba(0, 0, 0, 0.2)" />
+            </StyleRulePropertyValue>} />
+          <StyleRuleProperty name="box-shadow"
+            value={<StyleRulePropertyValue>
+              <Expression>2px 0px rgba(0, 0, 0, 0.2)</Expression>
+            </StyleRulePropertyValue>} />
+        </fragment>} />
+
+      <StyleRule isGlobal
+        fileName="atoms.pc"
+        media="media screen and (max-width: 500px)"
+        selector="#test"
+        properties={<fragment>
+          <StyleRuleProperty boldValue
+            name="background-color"
+            value={<StyleRulePropertyValue>
+              <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
+            </StyleRulePropertyValue>} />
+          <StyleRuleProperty name="another-background"
+            value={<StyleRulePropertyValue>
+              <ColorPropertyPart value="rgba(255, 150, 0, 0.5)" />
+            </StyleRulePropertyValue>} /><StyleRuleProperty name="box-shadow"
+            value={<StyleRulePropertyValue>
+              <Expression>
+                0px 2px 1px rgba(0, 0, 0, 0.05), 0px 0px 1px rgba(66, 71, 76,
+                0.45)
+              </Expression>
+            </StyleRulePropertyValue>} />
+        </fragment>} />
+
+      <StyleRule fileName="atoms.pc"
+        selector="element"
+        media="screen"
+        mediaActive
+        global
+        properties={<fragment>
+          <StyleRuleProperty name="color"
+            value={<StyleRulePropertyValue>
+              <Expression>inherit</Expression>
+            </StyleRulePropertyValue>} />
+        </fragment>} />
+    </Pane>
+    <Pane title="Inherited styles">
+      <StyleRule fileName="atoms.pc"
+        selector={<fragment>
+          <ScopedElementSelector name="element" />
+          <ScopedElementSelector name="element" />.test
+        </fragment>} />
+    </Pane>
+  </fragment>}
+</Pane.Container>
+
+
+<!--
+  @frame { title: "Inspector", width: 265, height: 900, x: 230, y: -138 }
+-->
+<Preview />

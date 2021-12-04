@@ -1,0 +1,35 @@
+<import src="./atoms.pc" as="atoms" inject-styles />
+
+
+<!--
+  @frame { visible: false }
+-->
+<button export
+  component
+  as="default"
+  {title?}
+  {tagName?}
+  {href?}
+  className="button-base {className?}"
+  className:secondary="secondary"
+  {onClick?}>
+  <style>
+    cursor: pointer;
+    &.secondary {
+      background: var(--background-250);
+    }
+  </style>
+  {children}
+</button>
+
+
+<!--
+  @frame { width: 1024, height: 768, x: -25, y: -35 }
+-->
+<atoms.Preview padded>
+  <style>
+    --gap: var(--spacing-4);
+  </style>
+  <default>Button</default>
+  <default secondary>Button</default>
+</atoms.Preview>

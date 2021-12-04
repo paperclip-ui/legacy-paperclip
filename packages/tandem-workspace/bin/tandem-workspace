@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+const yargs = require("yargs");
+const { start } = require("../lib/server");
+
+yargs.command(
+  "start [project]",
+  `start workspace`,
+  (yargs) => {
+    return yargs
+      .option("port", {
+        default: 8080,
+      })
+      .option("open")
+      .option("autoSave")
+      .option("branch");
+  },
+  ({ project, port, open, autoSave, branch }) => {
+    start({
+      cwd: process.cwd(),
+      openInitial: open,
+      autoSave,
+      http: {
+        port: port,
+      },
+      project,
+      branch,
+    });
+  }
+).argv;

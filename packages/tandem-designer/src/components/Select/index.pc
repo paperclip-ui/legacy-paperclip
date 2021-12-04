@@ -1,0 +1,148 @@
+<import src="tandem-design-system/src/atoms.pc" inject-styles as="atoms" />
+<import src="styles/utils.pc" as="utils" />
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="default"
+  className="button-base {className?}"
+  {onClick?}>
+  <style>
+    padding: var(--spacing-2) var(--spacing-3);
+    user-select: none;
+    cursor: pointer;
+    @include atoms.ease-in {}
+    &:within(.disabled) {
+      cursor: not-allowed;
+    }
+    &:hover {
+      background: var(--background-250);
+      &:within(.disabled) {
+        background: var(--background-200);
+      }
+    }
+  </style>
+
+  <span className="label">{placeholder}</span>
+
+  <i>
+    <style>
+      --size: 1em;
+      mask-image: url("./chevron.svg");
+      color: currentColor;
+      position: relative;
+      @include utils.mask {}
+    </style>
+  </i>
+</div>
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="Container"
+  {onClick}
+  {onBlur}
+  {ref}
+  className="font-default {className?}"
+  className:open="open"
+  className:disabled="disabled">
+  <style>
+    position: relative;
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export
+  component
+  as="MenuItem"
+  {onClick?}
+  className:hover="hover"
+  className:active="active">
+  <style>
+    border-bottom: 1px solid var(--border-color);
+    padding: var(--spacing-2) var(--spacing-3);
+    min-width: 100%;
+    width: max-content;
+    max-width: 150px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    user-select: none;
+    &.active {
+      @include atoms.active-bg;
+    }
+
+    &.hover, &:hover {
+      @include atoms.hover-bg;
+    }
+
+    &:last-child {
+      border-bottom: 0px;
+    }
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Menu" {style?}>
+  <style>
+    position: absolute;
+    z-index: var(--z-index-100);
+    top: calc(100% + var(--spacing-2));
+    background: var(--background-200);
+    border-radius: var(--radius-2);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-100);
+    display: none;
+    &:within(.open) {
+      display: block;
+    }
+  </style>
+  {children}
+</div>
+
+
+
+<!--
+  @frame { title: "<Select />", width: 289, height: 428, x: 0, y: -1 }
+-->
+<div>
+  <style>
+    padding: var(--spacing-6);
+  </style>
+  <Container open>
+    <default placeholder="Master" />
+    <Menu>
+      <MenuItem>dev</MenuItem>
+      <MenuItem>longer item that should ellipsis</MenuItem>
+      <MenuItem hover>sub-branch</MenuItem>
+      <MenuItem>duck</MenuItem>
+      <MenuItem>duck</MenuItem>
+      <MenuItem active>grey duck!</MenuItem>
+      <MenuItem>duck</MenuItem>
+    </Menu>
+  </Container>
+  <div>
+    <style>
+      height: 200px;
+    </style>
+  </div>
+
+  <Container open disabled>
+    <default placeholder="Master" />
+  </Container>
+</div>

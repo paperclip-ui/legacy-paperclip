@@ -1,0 +1,115 @@
+<import src="components/icons/index.pc" as="Icon" />
+<import src="tandem-design-system/src/Button.pc" as="Button" />
+
+<style>
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+
+<!--
+  @frame { visible: false }
+-->
+<Icon.Icon export component as="X">
+  <style>
+    mask-image: url("./x-1.svg");
+    --size: 0.8em;
+    color: rgb(253, 76, 76);
+  </style>
+</Icon.Icon>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 0, y: 0 }
+-->
+<Icon.Icon export component as="Spinner">
+  <style>
+    mask-image: url("./spinner-1.svg");
+    --size: 0.8em;
+    animation: spin 1s infinite linear;
+  </style>
+</Icon.Icon>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 448, y: 3 }
+-->
+<Icon.Icon export component as="Check">
+  <style>
+    mask-image: url("./check-2.svg");
+    --size: 0.8em;
+    color: rgb(95, 175, 19);
+  </style>
+</Icon.Icon>
+
+
+<!--
+  @frame { visible: false, width: 338, height: 147, x: 0, y: 0 }
+-->
+<Button export component as="CommitButton" {onClick} {title}>
+  {children}
+  {loading && <Spinner />}
+  {success && <Check />}
+  {failed && <X />}
+</Button>
+
+
+<!--
+  @frame { width: 306, height: 40, x: 785, y: 2 }
+-->
+<div>
+  <style>
+    display: flex;
+    grid-column-gap: 6px;
+    padding: 6px;
+  </style>
+  <CommitButton loading>Commit</CommitButton>
+  <CommitButton failed>Commit</CommitButton>
+  <CommitButton success>Commit</CommitButton>
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="Header">
+  <style>
+    font-family: Open Sans;
+    display: flex;
+    grid-column-gap: var(--spacing-4);
+    color: rgb(88, 88, 88);
+    align-items: center;
+    padding: var(--spacing-3) var(--spacing-5);
+    background: var(--background-100);
+    border-bottom: 1px solid var(--border-color);
+    justify-content: space-between;
+  </style>
+  {children}
+</div>
+
+
+
+<!--
+  @frame { visible: false }
+-->
+<div export component as="CurrentBranchLabel">
+  <style>
+    opacity: 0.5;
+  </style>
+  {children}
+</div>
+
+<!--
+  @frame { width: 506, height: 265, x: 1892, y: 353 }
+-->
+<Header export component as="Preview">
+  <CommitButton success>Save</CommitButton>
+  <CurrentBranchLabel>Branch: dev</CurrentBranchLabel>
+</Header>

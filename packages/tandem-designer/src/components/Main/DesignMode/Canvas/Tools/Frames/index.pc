@@ -1,0 +1,137 @@
+<import src="tandem-design-system/src/atoms.pc" as="atoms" />
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 1457, y: -176 }
+-->
+<div export
+  component
+  as="FramesContainer"
+  {style?}
+  data-label="Frames container"
+  className="{className?}">
+  <style>
+    width: 100%;
+    height: 100%;
+    position: relative;
+  </style>
+  {children}
+</div>
+
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 668, y: 1081 }
+-->
+<div export component as="Frame" {style?} {className?}>
+  <!-- default dimensions -->
+  <style>
+    position: absolute;
+  </style>
+  {children}
+</div>
+
+
+<!--
+  @frame { visible: false, width: 1024, height: 768, x: 91, y: -1397 }
+-->
+<div export
+  component
+  as="FrameTitle"
+  {onDoubleClick}
+  {style?}
+  {onClick?}
+  {onMouseUp?}
+  className="v2"
+  className:editing="editing"
+  className:hover="hover">
+  <style>
+    transform: translateY(calc(-100% - 6px));
+    position: absolute;
+    user-select: none;
+    top: 0px;
+    left: 0px;
+    text-shadow: 1px 1px white;
+    color: var(--grey-300);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    &:hover, &.hover {
+      .expand-button {
+        visibility: visible;
+      }
+    }
+  </style>
+  <span>
+    <style>
+      cursor: default;
+      white-space: nowrap;
+      overflow: hidden;
+      font-size: 12px;
+      text-overflow: ellipsis;
+      &:within(.editing) {
+        display: none;
+      }
+    </style>
+    {value}
+  </span>
+  <input type="text"
+    {onBlur?}
+    ref={inputRef}
+    autofocus={editing}
+    defaultValue={value}
+    {onKeyPress?}>
+    <style>
+      border: none;
+      display: none;
+      color: inherit;
+      background: transparent;
+      width: 100%;
+      outline: none;
+      &:within(.editing) {
+        display: block;
+      }
+    </style>
+  </input>
+  <i className="expand-button" onClick={onExpandButtonClick}>
+    <style>
+      --size: 14px;
+      flex-shrink: 0;
+      cursor: pointer;
+      background: currentColor;
+      width: var(--size);
+      height: var(--size);
+      display: block;
+      mask-image: url(./expand2.svg);
+      mask-repeat: no-repeat;
+      mask-size: var(--size);
+      mask-position: 50%;
+      visibility: hidden;
+    </style>
+  </i>
+</div>
+
+
+
+<!--
+  @frame { title: "Frame", width: 1024, height: 768, x: -759, y: 1217 }
+-->
+<FramesContainer export component as="Preview">
+  <style>
+    width: 100%;
+    height: 100%;
+  </style>
+  <Frame>
+    <style>
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 400px;
+      transform: translate(-50%, -50%);
+      background: rgb(229, 255, 0);
+    </style>
+    <FrameTitle hover value="Some titlfdsfdsfsd fsdfsd fsd fsd fsd " />
+    <FrameBody />
+  </Frame>
+</FramesContainer>

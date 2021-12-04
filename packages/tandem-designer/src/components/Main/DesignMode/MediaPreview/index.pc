@@ -1,0 +1,20 @@
+<div export component as="default">
+  <style>
+    position: relative;
+    background: rgb(231, 231, 231);
+    display: flex;
+    width: 100%;
+    :global(img) {
+      max-width: calc(100% - 100px);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+  <div>{children}</div>
+</div>
+
+<default export component as="Preview">
+  <img src="./logo-outline-5.png" />
+</default>

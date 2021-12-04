@@ -1,0 +1,18 @@
+{
+  "name": "tandem-design-system",
+  "version": "18.0.1",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "npm run build:definition",
+    "build:definition": "paperclip build --definition --write --targets=d.ts,js,css --verbose",
+    "build:watch": "paperclip build --definition --watch --write"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "paperclip": "^18.0.0",
+    "paperclip-cli": "^18.0.0",
+    "paperclip-compiler-react": "^18.0.0"
+  }
+}
