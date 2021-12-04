@@ -15,7 +15,7 @@ export class Package {
     this._logger.info(`Running install script ⏱`);
     await execa(`yarn`, [`install`, `--silent`], {
       cwd: this._cwd,
-      stdio: "inherit",
+      stdio: "inherit"
     });
     this._logger.info(`Done installing package ✅`);
   }

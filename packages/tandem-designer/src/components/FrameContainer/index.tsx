@@ -26,7 +26,7 @@ export const FrameContainer = memo(
           border: "none",
           background: "white",
           width: "100%",
-          height: "100%",
+          height: "100%"
         });
         iframe.srcdoc = `
       <!doctype html>

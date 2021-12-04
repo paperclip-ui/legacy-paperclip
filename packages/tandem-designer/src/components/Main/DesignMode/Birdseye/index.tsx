@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from "react";
 import { useAppStore } from "../../../../hooks/useAppStore";
 import { FrameContainer } from "../../../FrameContainer";
@@ -24,7 +24,7 @@ import {
   VirtualFrame,
   LoadedData,
   EvaluatedDataKind,
-  LoadedPCData,
+  LoadedPCData
 } from "paperclip-utils";
 import { DEFAULT_FRAME_BOX } from "../../../../state";
 import { useMultipleFrames } from "../Canvas/Frames";
@@ -50,7 +50,7 @@ export const Birdseye = memo(() => {
   const multiFrameState = useMultipleFrames({
     version: state.designer.pcFileDataVersion,
     fileData: getPCFileData(state.designer.allLoadedPCFileData),
-    shouldCollectRects: false,
+    shouldCollectRects: false
   });
 
   // TODO - can't memoize sinze renderer is _mutable_ but immutableFrames is not
@@ -75,7 +75,7 @@ export const Birdseye = memo(() => {
         relativePath,
         filePath,
         fileUri: uri,
-        node: info.preview.children[i],
+        node: info.preview.children[i]
       }))
     );
   }
@@ -111,7 +111,7 @@ export const Birdseye = memo(() => {
 
             return filteredCells
               .slice(start, start + maxRows * columns)
-              .map((frame) => {
+              .map(frame => {
                 return (
                   <Cell
                     uri={frame.fileUri}
@@ -142,7 +142,7 @@ type HeaderProps = {
 const Header = memo(({ filter, onFilter }: HeaderProps) => {
   const { inputProps: filterInputProps } = useTextInput({
     value: filter,
-    onValueChange: onFilter,
+    onValueChange: onFilter
   });
   return (
     <styles.Header>
@@ -177,14 +177,14 @@ const Cell = ({
   frame,
   node,
   relativePath,
-  dispatch,
+  dispatch
 }: CellProps) => {
   const { mountRef, label, frameBox, scale, onClick } = useCell({
     uri,
     relativePath,
     filter,
     frameIndex: index,
-    node,
+    node
   });
 
   return (
@@ -201,7 +201,7 @@ const Cell = ({
           width: frameBox.width,
           height: frameBox.height,
           transform: `scale(${scale})`,
-          transformOrigin: `top left`,
+          transformOrigin: `top left`
         }}
         frame={frame}
       />
@@ -222,7 +222,7 @@ const useCell = ({
   uri,
   frameIndex,
   relativePath,
-  node,
+  node
 }: UseCellProps) => {
   const annotations: NodeAnnotations = node.annotations
     ? computeVirtJSObject(node.annotations)
@@ -256,8 +256,8 @@ const useCell = ({
           ...parts.query,
           canvasFile: uri,
           frame: frameIndex,
-          showAll: undefined,
-        },
+          showAll: undefined
+        }
       })
     );
   }, [frameIndex, uri]);
@@ -288,7 +288,7 @@ const useCell = ({
     visible,
     label,
     onClick,
-    mountRef,
+    mountRef
   };
 };
 
@@ -314,9 +314,12 @@ const getCellInfo = (node: VirtualFrame) => {
 };
 
 const filterCells = (cells: CellFrame[], filter = "") => {
-  const filterParts = filter.toLowerCase().trim().split(" ");
+  const filterParts = filter
+    .toLowerCase()
+    .trim()
+    .split(" ");
 
-  return cells.filter((cell) => {
+  return cells.filter(cell => {
     const info = getCellInfo(cell.node);
 
     let visible = info.visible;
@@ -326,10 +329,10 @@ const filterCells = (cells: CellFrame[], filter = "") => {
       const filterable: string[] = [
         info.label,
         cell.relativePath,
-        ...info.tags,
+        ...info.tags
       ];
 
-      visible = filterParts.every((filterPart) => {
+      visible = filterParts.every(filterPart => {
         for (const filterableItem of filterable) {
           if (filterableItem.toLowerCase().indexOf(filterPart) !== -1) {
             return true;
@@ -344,7 +347,7 @@ const filterCells = (cells: CellFrame[], filter = "") => {
 
 const getPCFileData = memoize(
   (data: Record<string, LoadedData>): Record<string, LoadedPCData> => {
-    return omitBy(data, (value) => {
+    return omitBy(data, value => {
       return value.kind != EvaluatedDataKind.PC;
     }) as Record<string, LoadedPCData>;
   }

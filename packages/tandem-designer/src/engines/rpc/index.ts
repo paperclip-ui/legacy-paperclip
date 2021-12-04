@@ -7,7 +7,7 @@ import { Connection } from "./connection";
 
 export const rpcEngine = ({
   getState,
-  dispatch,
+  dispatch
 }: {
   getState: () => AppState;
   dispatch: Dispatch<Action>;
@@ -41,7 +41,7 @@ export const rpcEngine = ({
   // connection.onOpen(onOpen)
   // const channels = new Channels(connection);
 
-  return (next) => (action) => {
+  return next => action => {
     // handleAction(action);
     return next(action);
   };

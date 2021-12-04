@@ -13,7 +13,7 @@ export function connect(onMessage, onClient) {
     onClient(sockAdapter(client));
   };
 
-  client.onmessage = (message) => {
+  client.onmessage = message => {
     const ev = JSON.parse(message.data);
     onMessage(ev);
   };

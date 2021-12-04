@@ -7,7 +7,7 @@ import { Element } from "./Element";
 import * as styles from "./index.pc";
 import {
   layerExpandToggleClicked,
-  layerLeafClicked,
+  layerLeafClicked
 } from "../../../../../actions";
 import { Node } from "./Node";
 

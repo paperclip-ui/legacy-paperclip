@@ -3,7 +3,7 @@ import { actionCreator, BaseAction } from "./base";
 export enum ExternalActionType {
   OPENED_DOCUMENT = "OPENED_DOCUMENT",
   CONTENT_CHANGED = "CONTENT_CHANGED",
-  CONFIG_CHANGED = "CONFIG_CHANGED",
+  CONFIG_CHANGED = "CONFIG_CHANGED"
 }
 
 type ContentChange = {

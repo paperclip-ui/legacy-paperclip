@@ -6,7 +6,7 @@ export class SocketIo extends EventEmitter {
   constructor(private _server: http.Server) {
     super();
     const io = sockjs.createServer();
-    io.on("connection", (conn) => {
+    io.on("connection", conn => {
       this.emit("connection", conn);
     });
     io.installHandlers(this._server, { prefix: "/rt" });

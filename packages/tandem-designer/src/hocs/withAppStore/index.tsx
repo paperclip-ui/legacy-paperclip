@@ -26,10 +26,10 @@ export const withAppStore = (Child: React.FC) => {
     );
 
     // DEPRECATED
-    sagaMiddleware.run(defaultSaga, document.body, (state) => state);
+    sagaMiddleware.run(defaultSaga, document.body, state => state);
   };
 
-  return (props) => {
+  return props => {
     init();
 
     return (

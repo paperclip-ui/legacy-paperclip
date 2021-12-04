@@ -9,14 +9,14 @@ export const TextInput = ({
   onBlur,
   placeholder,
   onEnterPressed,
-  autoFocus,
+  autoFocus
 }: TextInputProps) => {
   const { inputProps } = useTextInput({
     value,
     onValueChange,
     onBlur,
     onEnterPressed,
-    autoFocus,
+    autoFocus
   });
   return (
     <styles.default type="text" placeholder={placeholder} {...inputProps} />
@@ -50,7 +50,7 @@ export const useTextInput = ({
   onBlur = noop,
   onEscape = noop,
   select = false,
-  autoFocus,
+  autoFocus
 }: UseTextInputProps) => {
   const ref = useRef<HTMLInputElement>();
   const [internalValue, setInternalValue] = useState<string>(value);
@@ -82,7 +82,7 @@ export const useTextInput = ({
     onValueChange(value);
   };
 
-  const onFocus = (e) => {
+  const onFocus = e => {
     if (select) {
       e.target.select();
     }
@@ -107,7 +107,7 @@ export const useTextInput = ({
     onFocus,
     onBlur: onBlur2,
     onKeyPress,
-    defaultValue: internalValue,
+    defaultValue: internalValue
   };
 
   return { inputProps, refValue };

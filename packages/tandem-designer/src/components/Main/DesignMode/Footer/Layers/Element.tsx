@@ -20,7 +20,7 @@ export const Element = React.memo(
     value: element,
     expandedPaths,
     onExpandToggleClick,
-    onLeafClick,
+    onLeafClick
   }: ElementProps) => {
     const attributes = [];
 
@@ -46,7 +46,7 @@ export const Element = React.memo(
         // filter out scopes
         value = value
           .split(" ")
-          .filter((value) => {
+          .filter(value => {
             if (/^_(pub-)?\w+(_|$)/.test(value)) {
               return false;
             }
@@ -115,5 +115,5 @@ const VOID_TAG_NAMES = [
   "param",
   "source",
   "track",
-  "wbr",
+  "wbr"
 ];

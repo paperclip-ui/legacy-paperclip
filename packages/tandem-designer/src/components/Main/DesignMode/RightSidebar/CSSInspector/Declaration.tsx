@@ -12,7 +12,7 @@ export type StyleRuleProps = {
 export const StyleDeclaration = ({
   info,
   onValueChange,
-  filter,
+  filter
 }: StyleRuleProps) => {
   const [editingValue, setEditingValue] = useState(false);
 

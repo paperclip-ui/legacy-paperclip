@@ -23,11 +23,11 @@ export const Select = memo(
       menuStyle,
       onBlur,
       onButtonClick,
-      onClick,
+      onClick
     } = useSelect({ value, disabled });
 
     const currentOption: SelectOption = options.find(
-      (option) => option.value === value
+      option => option.value === value
     );
 
     const onItemClick = (value: any) => {
@@ -48,7 +48,7 @@ export const Select = memo(
           onClick={onButtonClick}
         />
         <styles.Menu style={menuStyle}>
-          {options.map((option) => (
+          {options.map(option => (
             <styles.MenuItem
               key={option.label}
               onClick={() => onItemClick(option.value)}
@@ -86,7 +86,7 @@ export const useSelect = ({ value, disabled }: UseSelectOptions) => {
     });
   };
 
-  const onButtonClick = (event) => {
+  const onButtonClick = event => {
     if (disabled) {
       return;
     }
@@ -99,7 +99,7 @@ export const useSelect = ({ value, disabled }: UseSelectOptions) => {
     setMenuVisible(false);
   };
 
-  const onClick = (event) => {
+  const onClick = event => {
     // there might be click handlers for parents
     event.stopPropagation();
   };
@@ -111,6 +111,6 @@ export const useSelect = ({ value, disabled }: UseSelectOptions) => {
     menuVisible,
     onButtonClick,
     onBlur,
-    ref,
+    ref
   };
 };

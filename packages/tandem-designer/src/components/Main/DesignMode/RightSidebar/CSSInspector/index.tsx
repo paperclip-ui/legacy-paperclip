@@ -17,7 +17,7 @@ export const Inspector2 = React.memo(() => {
 
     const parts = filterText.split(" ");
     return (value: string) =>
-      parts.some((part) => {
+      parts.some(part => {
         return value.includes(part);
       });
   }, [filterText]);
@@ -34,8 +34,8 @@ export const Inspector2 = React.memo(() => {
         <Header onFilterChange={setFilterText} />
         <Pane title="Element styles">
           {inspection.styleRules
-            .filter((rule) => !rule.inherited && filterRule(rule, filter))
-            .map((rule) => {
+            .filter(rule => !rule.inherited && filterRule(rule, filter))
+            .map(rule => {
               return (
                 <StyleRule
                   dispatch={dispatch}
@@ -48,8 +48,8 @@ export const Inspector2 = React.memo(() => {
         </Pane>
         <Pane title="Inherited styles">
           {inspection.styleRules
-            .filter((rule) => rule.inherited && filterRule(rule, filter))
-            .map((rule) => {
+            .filter(rule => rule.inherited && filterRule(rule, filter))
+            .map(rule => {
               return (
                 <StyleRule
                   dispatch={dispatch}
@@ -72,7 +72,7 @@ const filterRule = (
   return (
     !filter ||
     filter(rule.selectorText) ||
-    rule.declarations.some((decl) => {
+    rule.declarations.some(decl => {
       return filter(decl.name) || filter(decl.value);
     })
   );
@@ -85,7 +85,7 @@ type HeaderProps = {
 const Header = React.memo(({ onFilterChange }: HeaderProps) => {
   const { inputProps } = useTextInput({
     onValueChange: onFilterChange,
-    value: "",
+    value: ""
   });
   return <styles.Header input={<styles.FilterInput {...inputProps} />} />;
 });

@@ -4,9 +4,9 @@ export const requestJSON = async (method: string, url: string, body?: any) => {
   const response = await fetch(url, {
     method,
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(body)
   });
 
   const result = await response.json();

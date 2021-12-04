@@ -37,7 +37,7 @@ const prepare = (options: Options) => {
     rpc: new RPC(sock, workspace, vfs, logger),
     designer: new Designer(expressServer, httpServer),
     workspace,
-    logger,
+    logger
   };
 
   addRoutes(kernel);
@@ -55,7 +55,7 @@ const init = async ({ options, workspace }: Kernel) => {
     // only useful for CLI usage
     if (options.openInitial) {
       execa("open", [
-        `http://localhost:${options.http.port}?projectId=${project.id}&showAll=true`,
+        `http://localhost:${options.http.port}?projectId=${project.id}&showAll=true`
       ]);
     }
   }

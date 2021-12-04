@@ -2,7 +2,7 @@ import {
   BaseAction,
   actionCreator,
   publicActionCreator,
-  BaseRequestStateChanged,
+  BaseRequestStateChanged
 } from "./base";
 import { PCMutation } from "paperclip-source-writer";
 import {
@@ -14,7 +14,7 @@ import {
   ExprTextSource,
   Action,
   ExprSource,
-  VirtNodeSource,
+  VirtNodeSource
 } from "paperclip-utils";
 import {
   Box,
@@ -23,7 +23,7 @@ import {
   FSItemKind,
   Point,
   Size,
-  WorkspaceState,
+  WorkspaceState
 } from "../state";
 
 export enum ActionType {
@@ -105,7 +105,7 @@ export enum ActionType {
   LAYER_LEAF_CLICKED = "LAYER_LEAF_CLICKED",
   LAYER_EXPAND_TOGGLE_CLICKED = "LAYER_EXPAND_TOGGLE_CLICKED",
   WINDOW_FOCUSED = "WINDOW_FOCUSED",
-  WINDOW_BLURRED = "WINDOW_BLURRED",
+  WINDOW_BLURRED = "WINDOW_BLURRED"
 }
 
 export type WrappedEvent<T, TType extends ActionType, TPayload = undefined> = {
@@ -217,8 +217,9 @@ export type TitleDoubleClicked = BaseAction<
   { uri: string }
 >;
 
-export type BirdseyeTopFilterBlurred =
-  BaseAction<ActionType.BIRDSEYE_TOP_FILTER_BLURRED>;
+export type BirdseyeTopFilterBlurred = BaseAction<
+  ActionType.BIRDSEYE_TOP_FILTER_BLURRED
+>;
 
 export type PCFileLoaded = BaseAction<
   ActionType.PC_FILE_OPENED,
@@ -276,8 +277,9 @@ export type ExpandFrameButtonClicked = BaseAction<
   }
 >;
 
-export type CollapseFrameButtonClicked =
-  BaseAction<ActionType.COLLAPSE_FRAME_BUTTON_CLICKED>;
+export type CollapseFrameButtonClicked = BaseAction<
+  ActionType.COLLAPSE_FRAME_BUTTON_CLICKED
+>;
 
 export type ResizerPathMoved = WrappedEvent<
   MouseEvent,
@@ -406,8 +408,9 @@ export type ErrorBannerClicked = BaseAction<
 >;
 
 export type ZoomInButtonClicked = BaseAction<ActionType.ZOOM_IN_BUTTON_CLICKED>;
-export type ZoomOutButtonClicked =
-  BaseAction<ActionType.ZOOM_OUT_BUTTON_CLICKED>;
+export type ZoomOutButtonClicked = BaseAction<
+  ActionType.ZOOM_OUT_BUTTON_CLICKED
+>;
 export type ZoomInputChanged = BaseAction<
   ActionType.ZOOM_INPUT_CHANGED,
   { value: number }
@@ -448,15 +451,13 @@ export const branchChanged = actionCreator<BranchChanged>(
   ActionType.BRANCH_CHANGED
 );
 
-export const setBranchRequestStateChanged =
-  actionCreator<SetBranchRequestStateChanged>(
-    ActionType.SET_BRANCH_REQUEST_STATE_CHANGE
-  );
+export const setBranchRequestStateChanged = actionCreator<
+  SetBranchRequestStateChanged
+>(ActionType.SET_BRANCH_REQUEST_STATE_CHANGE);
 
-export const commitRequestStateChanged =
-  actionCreator<CommitRequestStateChanged>(
-    ActionType.COMMIT_REQUEST_STATE_CHANGED
-  );
+export const commitRequestStateChanged = actionCreator<
+  CommitRequestStateChanged
+>(ActionType.COMMIT_REQUEST_STATE_CHANGED);
 
 export const frameTitleClicked = actionCreator<FrameTitleClicked>(
   ActionType.FRAME_TITLE_CLICKED
@@ -482,17 +483,15 @@ export const redirectRequest = actionCreator<RedirectRequested>(
 export const nodeBreadcrumbClicked = actionCreator<NodeBreadcrumbClicked>(
   ActionType.NODE_BREADCRUMB_CLICKED
 );
-export const nodeBreadcrumbMouseEntered =
-  actionCreator<NodeBreadcrumbMouseEntered>(
-    ActionType.NODE_BREADCRUMB_MOUSE_ENTERED
-  );
+export const nodeBreadcrumbMouseEntered = actionCreator<
+  NodeBreadcrumbMouseEntered
+>(ActionType.NODE_BREADCRUMB_MOUSE_ENTERED);
 export const nodeBreadcrumbMouseLeft = actionCreator<NodeBreadcrumbMouseLeft>(
   ActionType.NODE_BREADCRUMB_MOUSE_LEFT
 );
-export const engineDelegateEventsHandled =
-  actionCreator<EngineDelegateEventsHandled>(
-    ActionType.ENGINE_DELEGATE_EVENTS_HANDLED
-  );
+export const engineDelegateEventsHandled = actionCreator<
+  EngineDelegateEventsHandled
+>(ActionType.ENGINE_DELEGATE_EVENTS_HANDLED);
 export const fileOpened = actionCreator<FileOpened>(ActionType.FILE_OPENED);
 export const errorBannerClicked = publicActionCreator<ErrorBannerClicked>(
   ActionType.ERROR_BANNER_CLICKED
@@ -505,10 +504,9 @@ export const fileLoaded = actionCreator<FileLoaded>(ActionType.FILE_LOADED);
 export const expandFrameButtonClicked = actionCreator<ExpandFrameButtonClicked>(
   ActionType.EXPAND_FRAME_BUTTON_CLICKED
 );
-export const collapseFrameButtonClicked =
-  actionCreator<CollapseFrameButtonClicked>(
-    ActionType.COLLAPSE_FRAME_BUTTON_CLICKED
-  );
+export const collapseFrameButtonClicked = actionCreator<
+  CollapseFrameButtonClicked
+>(ActionType.COLLAPSE_FRAME_BUTTON_CLICKED);
 export const resizerPathMoved = actionCreator<ResizerPathMoved>(
   ActionType.RESIZER_PATH_MOUSE_MOVED
 );
@@ -516,10 +514,9 @@ export const locationChanged = publicActionCreator<LocationChanged>(
   ActionType.LOCATION_CHANGED
 );
 
-export const virtualStyleDeclarationValueChanged =
-  actionCreator<VirtualStyleDeclarationValueChanged>(
-    ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED
-  );
+export const virtualStyleDeclarationValueChanged = actionCreator<
+  VirtualStyleDeclarationValueChanged
+>(ActionType.VIRTUAL_STYLE_DECLARATION_VALUE_CHANGED);
 
 export const styleRuleFileNameClicked = actionCreator<StyleRuleFileNameClicked>(
   ActionType.STYLE_RULE_FILE_NAME_CLICKED

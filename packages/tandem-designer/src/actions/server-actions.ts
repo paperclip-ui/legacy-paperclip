@@ -3,7 +3,7 @@ import { ContentChange } from "paperclip-source-writer";
 import {
   ExprSource,
   NodeStyleInspection,
-  VirtNodeSource,
+  VirtNodeSource
 } from "paperclip-utils";
 import { AvailableBrowser, VirtualNodeSourceInfo } from "../state";
 import { actionCreator, BaseAction } from "./base";
@@ -18,7 +18,7 @@ export enum ServerActionType {
   BROWSERSTACK_BROWSERS_LOADED = "INIT_PARAM_BROWSERSTACK_BROWSERS_LOADEDDEFINED",
   PC_SOURCE_EDITED = "PC_SOURCE_EDITED",
   VIRTUAL_NODE_SOURCES_LOADED = "VIRTUAL_NODE_SOURCES_LOADED",
-  VIRTUAL_NODE_STYLES_INSPECTED = "VIRTUAL_NODE_STYLES_INSPECTED",
+  VIRTUAL_NODE_STYLES_INSPECTED = "VIRTUAL_NODE_STYLES_INSPECTED"
 }
 export type InstanceChanged = BaseAction<
   ServerActionType.INSTANCE_CHANGED,
@@ -77,18 +77,16 @@ export const crashed = actionCreator<Crashed>(ServerActionType.CRASHED);
 export const allPCContentLoaded = actionCreator<AllPCContentLoaded>(
   ServerActionType.ALL_PC_CONTENT_LOADED
 );
-export const browserstackBrowsersLoaded =
-  actionCreator<BrowserstackBrowsersLoaded>(
-    ServerActionType.BROWSERSTACK_BROWSERS_LOADED
-  );
+export const browserstackBrowsersLoaded = actionCreator<
+  BrowserstackBrowsersLoaded
+>(ServerActionType.BROWSERSTACK_BROWSERS_LOADED);
 
 /**
  * @deprecated use explicit reveal API instead
  */
-export const revealExpressionSourceRequested =
-  actionCreator<RevealExpressionSourceRequested>(
-    ServerActionType.REVEAL_EXPRESSION_SOURCE_REQUESTED
-  );
+export const revealExpressionSourceRequested = actionCreator<
+  RevealExpressionSourceRequested
+>(ServerActionType.REVEAL_EXPRESSION_SOURCE_REQUESTED);
 
 export const virtualNodeSourcesLoaded = actionCreator<VirtualNodeSourcesLoaded>(
   ServerActionType.VIRTUAL_NODE_SOURCES_LOADED
@@ -96,10 +94,9 @@ export const virtualNodeSourcesLoaded = actionCreator<VirtualNodeSourcesLoaded>(
 export const pcSourceEdited = actionCreator<PCSourceEdited>(
   ServerActionType.PC_SOURCE_EDITED
 );
-export const virtualNodeStylesInspected =
-  actionCreator<VirtualNodeStylesInspected>(
-    ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED
-  );
+export const virtualNodeStylesInspected = actionCreator<
+  VirtualNodeStylesInspected
+>(ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED);
 
 export type ServerAction =
   | InstanceChanged

@@ -7,18 +7,18 @@ import {
   VirtualNodeKind,
   memoize,
   getElementLabel,
-  isInstance,
+  isInstance
 } from "paperclip-utils";
 import {
   getAppActivePCData,
   getInspectionInfo,
-  getSelectedNodePaths,
+  getSelectedNodePaths
 } from "../../../../../state";
 import * as styles from "./index.pc";
 import {
   nodeBreadcrumbClicked,
   nodeBreadcrumbMouseEntered,
-  nodeBreadcrumbMouseLeft,
+  nodeBreadcrumbMouseLeft
 } from "../../../../../actions";
 import { Dispatch } from "redux";
 
@@ -85,7 +85,7 @@ const Breadcrumb = React.memo(
         dispatch(
           nodeBreadcrumbClicked({
             nodePath: path.join("."),
-            metaKey: event.metaKey,
+            metaKey: event.metaKey
           })
         );
       },

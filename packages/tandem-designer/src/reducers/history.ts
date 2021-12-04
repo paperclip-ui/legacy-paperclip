@@ -11,7 +11,7 @@ export const historyReducer = (
   return (state: HistState, action: Action) => {
     switch (action.type) {
       case ActionType.GLOBAL_Z_KEY_DOWN: {
-        return produce(state, (newState) => {
+        return produce(state, newState => {
           const prev = newState.history.past.pop();
           if (prev) {
             newState.history.future.unshift(newState.shared);
@@ -20,7 +20,7 @@ export const historyReducer = (
         });
       }
       case ActionType.GLOBAL_Y_KEY_DOWN: {
-        return produce(state, (newState) => {
+        return produce(state, newState => {
           const next = newState.history.future.shift();
           if (next) {
             newState.history.past.push(newState.shared);
@@ -30,7 +30,7 @@ export const historyReducer = (
       }
       default: {
         if (reset.includes(action.type)) {
-          return produce(mainReducer(state, action), (newState) => {
+          return produce(mainReducer(state, action), newState => {
             newState.history.future = [];
             newState.history.past = [];
           });
@@ -40,7 +40,7 @@ export const historyReducer = (
         let newState = mainReducer(state, action);
         if (newState.shared !== prevState.shared) {
           // TODO - may want to diff this
-          newState = produce(newState, (newerState) => {
+          newState = produce(newState, newerState => {
             newerState.history.past.push(prevState.shared);
             newerState.history.future = [];
 

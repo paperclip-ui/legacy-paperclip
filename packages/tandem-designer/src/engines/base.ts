@@ -18,9 +18,9 @@ export abstract class BaseEngine {
   }
 }
 
-export const createEngineMiddleware = (createEngine) => (store) => {
+export const createEngineMiddleware = createEngine => store => {
   const engine = createEngine(store);
-  return (next) => (action) => {
+  return next => action => {
     engine.onEvent(action);
     return next(action);
   };

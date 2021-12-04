@@ -8,7 +8,7 @@ import {
   ChangeKind,
   EngineDelegateEvent,
   paperclipResourceGlobPattern,
-  isPaperclipFile,
+  isPaperclipFile
 } from "paperclip";
 import * as fs from "fs";
 import * as path from "path";
@@ -121,7 +121,7 @@ export class PaperclipProject {
 
     this._engine = createEngineDelegate(
       {
-        mode: EngineMode.MultiFrame,
+        mode: EngineMode.MultiFrame
       },
       () => {
         this._engine = undefined;
@@ -154,7 +154,7 @@ const readConfig = (cwd: string, logger: Logger) => {
   if (!fs.existsSync(configPath)) {
     logger.warn(`PC config not found, using default values`);
     config = {
-      srcDir: ".",
+      srcDir: "."
     };
   } else {
     config = JSON.parse(fs.readFileSync(configPath, "utf-8"));

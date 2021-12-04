@@ -4,7 +4,7 @@ import { isPaperclipFile } from "paperclip-utils";
 export const PLAIN_TEXT_MIME_TYPES = [
   "text/plain",
   "image/svg+xml",
-  "text/css",
+  "text/css"
 ];
 
 // const ALT_MIME_TYPES = [
@@ -23,7 +23,7 @@ export const MEDIA_MIME_TYPES = [
   "image/gif",
   "image/svg+xml",
   "video/quicktime",
-  "video/mp4",
+  "video/mp4"
 ];
 
 export const isPlainTextFile = (uri: string) => {

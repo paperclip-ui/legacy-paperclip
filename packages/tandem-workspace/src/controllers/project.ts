@@ -141,4 +141,7 @@ const getTemporaryDirectory = (url: string, branch?: string) => {
 };
 
 export const getProjectId = (url: string) =>
-  crypto.createHash("md5").update(url).digest("hex");
+  crypto
+    .createHash("md5")
+    .update(url)
+    .digest("hex");

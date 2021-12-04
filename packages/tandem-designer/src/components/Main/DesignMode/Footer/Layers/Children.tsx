@@ -20,7 +20,7 @@ export const Children = React.memo(
     parent,
     expandedPaths,
     onLeafClick,
-    onExpandToggleClick,
+    onExpandToggleClick
   }: ChildrenProps) => {
     const parentPathAry = nodePathToAry(parentPath);
 

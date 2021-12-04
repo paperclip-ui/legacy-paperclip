@@ -5,7 +5,7 @@ import {
   Point,
   Box,
   roundBox,
-  getScaledPoint,
+  getScaledPoint
 } from "../../../../../../state";
 import * as styles from "./index.pc";
 import { Dispatch } from "redux";
@@ -14,7 +14,7 @@ import {
   resizerMoved,
   resizerPathMoved,
   resizerPathStoppedMoving,
-  resizerStoppedMoving,
+  resizerStoppedMoving
 } from "../../../../../../actions";
 import { startDOMDrag } from "../../../../../../utils";
 import { isEqual } from "lodash";
@@ -61,7 +61,7 @@ export const Selectable = React.memo(
         { x: 100, y: 100 },
         { x: 50, y: 100 },
         { x: 0, y: 100 },
-        { x: 0, y: 50 },
+        { x: 0, y: 50 }
       ];
     }
 
@@ -74,10 +74,10 @@ export const Selectable = React.memo(
       // refreshed outside of this function because DND handlers here.
       let _currentBox = currentBox;
 
-      const wrapActionCreator = (createAction) => (event, info) => {
+      const wrapActionCreator = createAction => (event, info) => {
         const delta = {
           x: info.delta.x / zoom,
-          y: info.delta.y / zoom,
+          y: info.delta.y / zoom
         };
 
         // prevent parent containers from event like mouse click
@@ -119,7 +119,7 @@ export const Selectable = React.memo(
           x,
           y,
           width,
-          height,
+          height
         }));
 
         setCurrentBox(newBounds);
@@ -129,7 +129,7 @@ export const Selectable = React.memo(
             originalBounds: roundBox(bounds),
             newBounds,
             anchor: point,
-            sourceEvent: event,
+            sourceEvent: event
           })
         );
       };
@@ -142,28 +142,28 @@ export const Selectable = React.memo(
       );
     };
 
-    const onMouseDown = (event) => {
+    const onMouseDown = event => {
       if (knobs) {
         const bounds = currentBox;
         const zoom = canvasTransform.z;
 
-        const wrapActionCreator = (createAction) => (event, info) => {
+        const wrapActionCreator = createAction => (event, info) => {
           const delta = {
             x: info.delta.x / zoom,
-            y: info.delta.y / zoom,
+            y: info.delta.y / zoom
           };
           event.stopPropagation();
           const newBounds = roundBox({
             ...bounds,
             x: bounds.x + delta.x,
-            y: bounds.y + delta.y,
+            y: bounds.y + delta.y
           });
           setCurrentBox(newBounds);
           dispatch(
             createAction({
               originalBounds: roundBox(bounds),
               newBounds,
-              sourceEvent: event,
+              sourceEvent: event
             })
           );
         };
@@ -190,7 +190,7 @@ export const Selectable = React.memo(
                 {knobs.map(({ x, y }) => {
                   return (
                     <styles.Knob
-                      onMouseDown={(event) => {
+                      onMouseDown={event => {
                         onKnobMouseDown(event, { x, y });
                       }}
                       key={`${x}-${y}`}
@@ -207,7 +207,7 @@ export const Selectable = React.memo(
             transform: `translateX(${left}px) translateY(${top}px)`,
             width: currentBox.width * canvasTransform.z,
             height: currentBox.height * canvasTransform.z,
-            transformOrigin: `top left`,
+            transformOrigin: `top left`
           }}
         />
       </>

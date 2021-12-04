@@ -24,7 +24,7 @@ export const Node = ({
   isDirectory,
   expanded,
   children,
-  onExpandClick,
+  onExpandClick
 }: NodeProps) => {
   let icon;
 
@@ -49,7 +49,7 @@ export const Node = ({
     >
       {expanded &&
         children({
-          depth: depth + 1,
+          depth: depth + 1
         })}
     </styles.Node>
   );

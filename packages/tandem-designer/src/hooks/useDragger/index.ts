@@ -16,7 +16,7 @@ export function useDragger(onDrag: (props: DragProps) => any) {
     const onMouseMove = throttle((event: any) => {
       requestAnimationFrame(() => {
         onDrag({
-          delta: { x: event.screenX - start.x, y: event.screenY - start.y },
+          delta: { x: event.screenX - start.x, y: event.screenY - start.y }
         });
       });
     }, 30);
@@ -33,6 +33,6 @@ export function useDragger(onDrag: (props: DragProps) => any) {
 
   return {
     dragging,
-    onMouseDown,
+    onMouseDown
   };
 }

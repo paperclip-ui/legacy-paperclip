@@ -11,7 +11,7 @@ import {
   openFileChannel,
   popoutWindowChannel,
   revealNodeSourceByIdChannel,
-  revealNodeSourceChannel,
+  revealNodeSourceChannel
 } from "../../rpc/channels";
 import { Connection } from "./connection";
 

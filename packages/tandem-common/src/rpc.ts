@@ -53,24 +53,24 @@ type Adapter = {
 
 export const workerAdapter = (worker: Window | Worker): Adapter => ({
   onMessage(listener) {
-    return spy(worker, "onmessage", (event) => listener(event.data));
+    return spy(worker, "onmessage", event => listener(event.data));
   },
   send(message) {
     (worker as any).postMessage(message);
-  },
+  }
 });
 
 // sockjs adapter
 export const sockAdapter = (worker: any): Adapter => ({
   onMessage(listener) {
     // is on the server
-    const onMessage = (message) => {
+    const onMessage = message => {
       listener(JSON.parse(message));
     };
 
     // is on the client
     if (!worker.on) {
-      return spy(worker, "onmessage", (event) => {
+      return spy(worker, "onmessage", event => {
         onMessage(event.data);
       });
     }
@@ -83,7 +83,7 @@ export const sockAdapter = (worker: any): Adapter => ({
       worker,
       JSON.stringify(message)
     );
-  },
+  }
 });
 
 export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
@@ -95,7 +95,7 @@ export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
       let id = Math.random();
 
       return new Promise((resolve, reject) => {
-        const onMessage = (message) => {
+        const onMessage = message => {
           if (message.id === id) {
             disposeListener();
             if (message.error) {
@@ -112,19 +112,19 @@ export const remoteChannel = <TRequest, TResponse = void>(name: string) => {
     };
 
     const listen = (call: (payload: any) => Promise<any>) => {
-      const dispose = chan.onMessage(async (message) => {
+      const dispose = chan.onMessage(async message => {
         if (message.name === requestName) {
           try {
             chan.send({
               name: responseName,
               id: message.id,
-              payload: await call(message.payload),
+              payload: await call(message.payload)
             });
           } catch (error) {
             chan.send({
               name: responseName,
               id: message.id,
-              error,
+              error
             });
           }
         }

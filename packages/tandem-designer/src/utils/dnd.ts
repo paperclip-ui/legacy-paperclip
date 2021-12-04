@@ -18,7 +18,7 @@ export const startDOMDrag = (
 
   // slight delay to prevent accidental drag from firing
   // if the user does some other mouse interaction such as a double click.
-  const drag = throttle((event) => {
+  const drag = throttle(event => {
     if (!_started) {
       _started = true;
       onStart && onStart(event);
@@ -27,8 +27,8 @@ export const startDOMDrag = (
     update(event, {
       delta: {
         x: event.clientX - sx,
-        y: event.clientY - sy,
-      },
+        y: event.clientY - sy
+      }
     });
   }, 10);
 
@@ -39,8 +39,8 @@ export const startDOMDrag = (
       stop(event, {
         delta: {
           x: event.clientX - sx,
-          y: event.clientY - sy,
-        },
+          y: event.clientY - sy
+        }
       });
     }
   }

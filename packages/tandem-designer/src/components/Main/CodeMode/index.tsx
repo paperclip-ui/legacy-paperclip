@@ -4,7 +4,7 @@ import {
   globalZKeyDown,
   globalYKeyDown,
   globalSaveKeyPress,
-  codeChanged,
+  codeChanged
 } from "../../../actions";
 
 // Can't import, otherwise the react monaco editor breaks :(
@@ -30,19 +30,16 @@ export const CodeMode = () => {
 
   let content;
 
-  const onChange = (code) => {
+  const onChange = code => {
     dispatch(codeChanged({ value: code }));
   };
   const onMount = (
     editor: monacoEditor.editor.IStandaloneCodeEditor,
     monaco: Monaco
   ) => {
-    editor.addCommand(
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-      function () {
-        dispatch(globalSaveKeyPress(null) as any);
-      }
-    );
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
+      dispatch(globalSaveKeyPress(null) as any);
+    });
   };
 
   // code & uri need to be set at the exact same time so that editor instance
@@ -97,7 +94,7 @@ const Editor = ({
   value,
   onChange,
   highlightLocation,
-  onMount,
+  onMount
 }: EditorProps) => {
   const editorRef = useRef<HTMLDivElement>();
   const [monaco, setMonaco] = useState<Monaco>();
@@ -121,8 +118,8 @@ const Editor = ({
       editor.executeEdits("", [
         {
           range: editor.getModel().getFullModelRange(),
-          text: value,
-        },
+          text: value
+        }
       ]);
 
       editor.pushUndoStop();
@@ -153,7 +150,7 @@ const Editor = ({
       return;
     }
 
-    loadMonaco.init().then((monaco) => {
+    loadMonaco.init().then(monaco => {
       setMonaco(monaco);
 
       // might exist if switching between pages - models are global so we need to dispose.
@@ -173,7 +170,7 @@ const Editor = ({
           value || "",
           undefined,
           monaco.Uri.parse(uri)
-        ),
+        )
       });
 
       monaco.editor.setTheme("vs-dark");
@@ -210,6 +207,6 @@ const getRange = (
     startColumn: sp.column,
     startLineNumber: sp.lineNumber,
     endColumn: ep.column,
-    endLineNumber: ep.lineNumber,
+    endLineNumber: ep.lineNumber
   };
 };

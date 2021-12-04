@@ -8,14 +8,14 @@ export const TextInput = ({
   onBlur,
   placeholder,
   onEnterPressed,
-  autoFocus,
+  autoFocus
 }: TextInputProps) => {
   const { inputProps } = useTextInput({
     value,
     onValueChange,
     onBlur,
     onEnterPressed,
-    autoFocus,
+    autoFocus
   });
   return (
     <styles.default type="text" placeholder={placeholder} {...inputProps} />

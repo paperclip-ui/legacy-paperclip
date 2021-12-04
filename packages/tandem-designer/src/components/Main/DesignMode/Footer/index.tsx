@@ -29,4 +29,4 @@ export const Footer = React.memo(() => {
   );
 });
 
-const identity = (v) => v;
+const identity = v => v;

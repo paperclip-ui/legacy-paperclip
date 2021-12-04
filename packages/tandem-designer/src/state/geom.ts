@@ -64,7 +64,7 @@ export const centerTransformZoom = (
   return {
     x: left,
     y: top,
-    z: nz,
+    z: nz
   };
 };
 
@@ -75,14 +75,14 @@ export const getScaledPoint = (
 ) => {
   return {
     x: (point.x - transform.x) / transform.z + scroll.x,
-    y: (point.y - transform.y) / transform.z + scroll.y,
+    y: (point.y - transform.y) / transform.z + scroll.y
   };
 };
 
 export const addPoint = (point: Point, minus: Point) => {
   return {
     x: point.x + minus.x,
-    y: point.y + minus.y,
+    y: point.y + minus.y
   };
 };
 
@@ -94,10 +94,10 @@ export const mapBox = (
   x: map(bounds.x, "left"),
   y: map(bounds.y, "right"),
   width: map(bounds.width, "width"),
-  height: map(bounds.height, "height"),
+  height: map(bounds.height, "height")
 });
 
-export const roundBox = (bounds: Box) => mapBox(bounds, (v) => Math.round(v));
+export const roundBox = (bounds: Box) => mapBox(bounds, v => Math.round(v));
 
 export const mergeBoxes = (boxes: Box[]) => {
   if (!boxes.length) {
@@ -128,7 +128,7 @@ export const mergeBoxes = (boxes: Box[]) => {
       x: left3,
       y: top3,
       width: right3 - left3,
-      height: bottom3 - top3,
+      height: bottom3 - top3
     };
   }, boxes[0]);
 };

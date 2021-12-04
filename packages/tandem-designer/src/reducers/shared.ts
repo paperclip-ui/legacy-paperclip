@@ -11,7 +11,7 @@ export const sharedReducer = (state: AppState, action: Action) => {
         return state;
       }
       return updateShared(state, {
-        documents: produce(state.shared.documents, (documents) => {
+        documents: produce(state.shared.documents, documents => {
           for (const { rangeOffset, rangeLength, text } of action.payload
             .changes) {
             const doc = String(documents[action.payload.fileUri]);
@@ -20,14 +20,14 @@ export const sharedReducer = (state: AppState, action: Action) => {
               text +
               doc.substr(rangeOffset + rangeLength);
           }
-        }),
+        })
       });
     }
     case ActionType.CODE_CHANGED: {
       return updateShared(state, {
-        documents: produce(state.shared.documents, (documents) => {
+        documents: produce(state.shared.documents, documents => {
           documents[state.designer.ui.query.canvasFile] = action.payload.value;
-        }),
+        })
       });
     }
     case ActionType.FILE_LOADED: {
@@ -35,9 +35,9 @@ export const sharedReducer = (state: AppState, action: Action) => {
         return state;
       }
       return updateShared(state, {
-        documents: produce(state.shared.documents, (documents) => {
+        documents: produce(state.shared.documents, documents => {
           documents[action.payload.uri] = action.payload.document;
-        }),
+        })
       });
     }
   }

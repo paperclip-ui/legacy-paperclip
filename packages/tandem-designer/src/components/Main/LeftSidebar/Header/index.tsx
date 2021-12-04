@@ -36,9 +36,9 @@ const BranchSelect = memo(() => {
 
   return (
     <Select
-      options={branches.map((branch) => ({
+      options={branches.map(branch => ({
         label: branch,
-        value: branch,
+        value: branch
       }))}
       value={branchInfo?.currentBranch}
       onChange={onChange}

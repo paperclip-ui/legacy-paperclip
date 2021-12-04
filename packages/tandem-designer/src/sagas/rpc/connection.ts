@@ -7,7 +7,7 @@ export class Connection {
   private _open: Promise<any>;
 
   constructor() {
-    this._open = new Promise((resolve) => {
+    this._open = new Promise(resolve => {
       this._events.on("open", resolve);
     });
     const client = (this._client = new SockJSClient(
@@ -18,7 +18,7 @@ export class Connection {
       this._events.emit("open");
     };
 
-    client.onmessage = (message) => {
+    client.onmessage = message => {
       this._events.emit("message", JSON.parse(message.data));
     };
   }

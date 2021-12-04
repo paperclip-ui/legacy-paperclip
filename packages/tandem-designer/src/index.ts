@@ -1,2 +1,4 @@
+import * as channels from "./rpc/channels";
+
 export * from "./actions";
-export * as channels from "./rpc/channels";
+export { channels };

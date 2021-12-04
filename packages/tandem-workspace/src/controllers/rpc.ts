@@ -72,14 +72,14 @@ class Connection {
       return {
         uri,
         data: project.openPCFile(uri),
-        document: project.getPCContent(uri),
+        document: project.getPCContent(uri)
       };
     }
 
     return {
       uri,
       data: null,
-      document: isPlainTextFile(uri) ? fs.readFileSync(uri, "utf-8") : null,
+      document: isPlainTextFile(uri) ? fs.readFileSync(uri, "utf-8") : null
     };
   };
   private _commitChanges = async ({ description }) => {
@@ -97,9 +97,9 @@ class Connection {
         branchInfo: {
           branchable: false,
           branches: [],
-          currentBranch: null,
+          currentBranch: null
         },
-        localResourceRoots: [],
+        localResourceRoots: []
       };
     }
 
@@ -109,9 +109,9 @@ class Connection {
       branchInfo: {
         branches: await project.repository.getBranches(),
         branchable: project.isBranchable(),
-        currentBranch: await project.repository.getCurrentBranch(),
+        currentBranch: await project.repository.getCurrentBranch()
       },
-      localResourceRoots: [project.repository.localDirectory],
+      localResourceRoots: [project.repository.localDirectory]
     };
   };
 
@@ -122,7 +122,7 @@ class Connection {
 
     const project = this.getProject();
 
-    this._disposeEngineListener = project.onPCEngineEvent((event) => {
+    this._disposeEngineListener = project.onPCEngineEvent(event => {
       this._events.call(engineDelegateChanged(event));
     });
   }
@@ -145,7 +145,7 @@ class Connection {
           url: URL.pathToFileURL(dirPath).toString(),
           kind: FSItemKind.DIRECTORY,
           name: path.basename(dirPath),
-          children: basenames.map((basename) => {
+          children: basenames.map(basename => {
             const absolutePath = path.join(dirPath, basename);
             const isDir = fs.lstatSync(absolutePath).isDirectory();
             return {
@@ -153,9 +153,9 @@ class Connection {
               url: URL.pathToFileURL(absolutePath).toString(),
               name: basename,
               kind: isDir ? FSItemKind.DIRECTORY : FSItemKind.FILE,
-              children: isDir ? [] : undefined,
+              children: isDir ? [] : undefined
             };
-          }),
+          })
         });
       });
     });

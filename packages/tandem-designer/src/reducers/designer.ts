@@ -20,7 +20,7 @@ import {
   pruneDeletedNodes,
   getActivePCData,
   getScopedBoxes,
-  Point,
+  Point
 } from "../state";
 import { produce } from "immer";
 import { compare, applyPatch } from "fast-json-patch";
@@ -31,7 +31,7 @@ import {
   ExternalActionType,
   LocationChanged,
   RedirectRequested,
-  ServerActionType,
+  ServerActionType
 } from "../actions";
 import { clamp, without } from "lodash";
 import {
@@ -51,7 +51,7 @@ import {
   getNodeByPath,
   getNodeAncestors,
   isInstance,
-  stripFileProtocol,
+  stripFileProtocol
 } from "paperclip-utils";
 import * as path from "path";
 import { actionCreator } from "../actions/base";
@@ -63,12 +63,12 @@ const MIN_ZOOM = 0.01;
 const MAX_ZOOM = 6400 / 100;
 const DOUBLE_CLICK_MS = 250;
 
-const normalizeZoom = (zoom) => {
+const normalizeZoom = zoom => {
   return zoom < 1 ? 1 / Math.round(1 / zoom) : Math.round(zoom);
 };
 
 const clampCanvasTransform = (canvas: Canvas, rects: Record<string, Box>) => {
-  return produce(canvas, (newCanvas) => {
+  return produce(canvas, newCanvas => {
     const w = (canvas.size.width / MIN_ZOOM) * canvas.transform.z;
     const h = (canvas.size.height / MIN_ZOOM) * canvas.transform.z;
 
@@ -86,7 +86,7 @@ const setCanvasZoom = (
 ) => {
   zoom = clamp(zoom, MIN_ZOOM, MAX_ZOOM);
   return clampCanvasTransform(
-    produce(state, (newState) => {
+    produce(state, newState => {
       newState.transform = centerTransformZoom(
         state.transform,
         { x: 0, y: 0, ...state.size },
@@ -94,7 +94,7 @@ const setCanvasZoom = (
         centered
           ? {
               x: state.size.width / 2,
-              y: state.size.height / 2,
+              y: state.size.height / 2
             }
           : state.mousePosition
       );
@@ -109,7 +109,7 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
     ({} as any);
 
   let mergedAnnotations = {
-    ...annotations,
+    ...annotations
   };
 
   for (const key in newAnnotations) {
@@ -122,9 +122,9 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
           typeof newAnnotations[key] === "object" &&
           !Array.isArray(newAnnotations) && {
             ...(annotations[key] || {}),
-            ...newAnnotations[key],
+            ...newAnnotations[key]
           }) ||
-        newAnnotations[key],
+        newAnnotations[key]
     };
   }
 
@@ -134,7 +134,7 @@ const updateAnnotations = (frame: VirtualFrame, newAnnotations: any) => {
       values: {},
 
       // null to indicate insertion
-      source: null,
+      source: null
     };
   }
 
@@ -148,7 +148,7 @@ const selectNode = (
   metaKey: boolean,
   designer: DesignerState
 ) => {
-  designer = produce(designer, (newDesigner) => {
+  designer = produce(designer, newDesigner => {
     newDesigner.selectedNodeStyleInspections = [];
     newDesigner.selectedNodeSources = [];
 
@@ -185,7 +185,7 @@ const selectNode = (
 
 const expandNode = (nodePath: string, designer: DesignerState) => {
   const nodePathAry = nodePathToAry(nodePath);
-  return produce(designer, (newDesigner) => {
+  return produce(designer, newDesigner => {
     // can't be empty, so start at 1
     for (let i = 1, { length } = nodePathAry; i <= length; i++) {
       const ancestorPath = nodePathAry.slice(0, i).join(".");
@@ -205,7 +205,7 @@ const updateBox = (box: Box, oldBox: Box, newBox: Box) => {
     x,
     y,
     width,
-    height,
+    height
   };
 };
 
@@ -236,13 +236,13 @@ const handleLocationChange = (
   { payload }: LocationChanged | RedirectRequested,
   mode: SyncLocationMode
 ) => {
-  return produce(designer, (newDesigner) => {
+  return produce(designer, newDesigner => {
     const oldCanvasFile = newDesigner.ui.query.canvasFile;
 
     if (payload.query && mode & SyncLocationMode.Query) {
       newDesigner.ui.query = {
         ...newDesigner.ui.query,
-        ...(payload.query || {}),
+        ...(payload.query || {})
       };
     }
 
@@ -272,7 +272,7 @@ export const reduceDesigner = (
       return selectNode(action.payload.nodePath, false, false, designer);
     }
     case ActionType.LAYER_EXPAND_TOGGLE_CLICKED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         if (newDesigner.expandedNodePaths.includes(action.payload.nodePath)) {
           newDesigner.expandedNodePaths = without(
             newDesigner.expandedNodePaths,
@@ -284,27 +284,27 @@ export const reduceDesigner = (
       });
     }
     case ActionType.NODE_BREADCRUMB_MOUSE_ENTERED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.highlightNodePath = action.payload.nodePath;
       });
     }
     case ActionType.NODE_BREADCRUMB_MOUSE_LEFT: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.highlightNodePath = null;
       });
     }
     case ServerActionType.VIRTUAL_NODE_SOURCES_LOADED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.selectedNodeSources = action.payload;
       });
     }
     case ServerActionType.VIRTUAL_NODE_STYLES_INSPECTED: {
       const diff = compare(
         designer.selectedNodeStyleInspections,
-        action.payload.map((info) => info[1])
+        action.payload.map(info => info[1])
       );
 
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.selectedNodeStyleInspections = applyPatch(
           newDesigner.selectedNodeStyleInspections,
           diff
@@ -312,18 +312,18 @@ export const reduceDesigner = (
       });
     }
     case ActionType.BIRDSEYE_FILTER_CHANGED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.birdseyeFilter = action.payload.value;
       });
     }
     case ServerActionType.INIT_PARAM_DEFINED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.readonly = action.payload.readonly;
         newDesigner.availableBrowsers = action.payload.availableBrowsers;
       });
     }
     case ServerActionType.BROWSERSTACK_BROWSERS_LOADED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.availableBrowsers = action.payload;
       });
     }
@@ -338,18 +338,18 @@ export const reduceDesigner = (
       );
     }
     case ActionType.GET_ALL_SCREENS_REQUESTED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.showBirdseye = true;
         newDesigner.loadingBirdseye = true;
       });
     }
     case ActionType.RENDERER_MOUNTED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.mountedRendererIds.push(action.payload.id);
       });
     }
     case ActionType.RENDERER_UNMOUNTED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.mountedRendererIds.splice(
           newDesigner.mountedRendererIds.indexOf(action.payload.id),
           1
@@ -358,12 +358,12 @@ export const reduceDesigner = (
       });
     }
     case ActionType.COMMIT_REQUEST_STATE_CHANGED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.commitProjectStatus = action.payload.result;
       });
     }
     case ActionType.SET_BRANCH_REQUEST_STATE_CHANGE: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         if (action.payload.result.loaded && !action.payload.result.error) {
           newDesigner.workspace.branchInfo.currentBranch =
             action.payload.result.data.branchName;
@@ -373,14 +373,14 @@ export const reduceDesigner = (
     case BasicPaperclipActionType.ENGINE_DELEGATE_CHANGED: {
       // delete file
       if (action.payload.kind === EngineDelegateEventKind.Deleted) {
-        designer = produce(designer, (newDesigner) => {
+        designer = produce(designer, newDesigner => {
           delete newDesigner.allLoadedPCFileData[action.payload.uri];
         });
 
         return designer;
       }
 
-      designer = produce(designer, (newDesigner) => {
+      designer = produce(designer, newDesigner => {
         // if centered initially but there were no frames, then the canvas never really centered
         // so flag it do so now.
         if (
@@ -418,13 +418,13 @@ export const reduceDesigner = (
       return minimizeWindow(designer);
     }
     case ActionType.SERVER_OPTIONS_LOADED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.workspace = action.payload;
       });
     }
     case ActionType.FILE_LOADED: {
       if (isPaperclipFile(action.payload.uri)) {
-        designer = produce(designer, (newDesigner) => {
+        designer = produce(designer, newDesigner => {
           newDesigner.allLoadedPCFileData[designer.ui.query.canvasFile] = action
             .payload.data as LoadedPCData;
           newDesigner.pcFileDataVersion++;
@@ -436,7 +436,7 @@ export const reduceDesigner = (
       return designer;
     }
     case ActionType.ENGINE_DELEGATE_EVENTS_HANDLED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.currentEngineEvents[action.payload.id].splice(
           0,
           action.payload.count
@@ -444,7 +444,7 @@ export const reduceDesigner = (
       });
     }
     case ActionType.FS_ITEM_CLICKED: {
-      designer = produce(designer, (newDesigner) => {
+      designer = produce(designer, newDesigner => {
         const i = newDesigner.expandedFilePaths.indexOf(
           action.payload.absolutePath
         );
@@ -461,7 +461,7 @@ export const reduceDesigner = (
       return designer;
     }
     case ActionType.RECTS_CAPTURED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.boxes = mergeBoxesFromClientRects(
           newDesigner.boxes,
           action.payload
@@ -469,19 +469,19 @@ export const reduceDesigner = (
       });
     }
     case ActionType.ENGINE_ERRORED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.currentError = action.payload;
       });
     }
     case ActionType.ERROR_BANNER_CLICKED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.currentError = null;
       });
     }
     case ActionType.GLOBAL_BACKSPACE_KEY_SENT:
     case ActionType.GLOBAL_ESCAPE_KEY_PRESSED: {
       // Don't do this until deselecting can be handled properly
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.selectedNodePaths = [];
         newDesigner.scopedElementPath = null;
         newDesigner.showBirdseye = false;
@@ -489,25 +489,25 @@ export const reduceDesigner = (
     }
     case ActionType.GLOBAL_META_KEY_DOWN: {
       // TODO
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.metaKeyDown = true;
       });
     }
     case ActionType.GLOBAL_META_KEY_UP: {
       // TODO
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.metaKeyDown = false;
       });
     }
     case ActionType.GLOBAL_OPTION_KEY_DOWN: {
       // TODO
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.optionKeyDown = true;
       });
     }
     case ActionType.GLOBAL_OPTION_KEY_UP: {
       // TODO
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.optionKeyDown = false;
       });
     }
@@ -546,7 +546,7 @@ export const reduceDesigner = (
       );
     }
     case ActionType.ZOOM_INPUT_CHANGED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.canvas = setCanvasZoom(
           action.payload.value / 100,
           designer.canvas,
@@ -557,7 +557,7 @@ export const reduceDesigner = (
     }
     case ActionType.ZOOM_IN_KEY_PRESSED:
     case ActionType.ZOOM_IN_BUTTON_CLICKED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.canvas = setCanvasZoom(
           normalizeZoom(designer.canvas.transform.z) * 2,
           designer.canvas,
@@ -567,7 +567,7 @@ export const reduceDesigner = (
     }
     case ActionType.ZOOM_OUT_KEY_PRESSED:
     case ActionType.ZOOM_OUT_BUTTON_CLICKED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.canvas = setCanvasZoom(
           normalizeZoom(designer.canvas.transform.z) / 2,
           designer.canvas,
@@ -576,25 +576,25 @@ export const reduceDesigner = (
       });
     }
     case ActionType.CANVAS_PAN_START: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.canvas.panning = true;
       });
     }
     case ActionType.CANVAS_PAN_END: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.canvas.panning = false;
       });
     }
     case ActionType.RESIZER_STOPPED_MOVING:
     case ActionType.RESIZER_PATH_MOUSE_STOPPED_MOVING: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.resizerMoving = false;
       });
     }
     case ActionType.BIRDSEYE_TOP_FILTER_BLURRED:
     case ActionType.GRID_BUTTON_CLICKED:
     case ActionType.GRID_HOTKEY_PRESSED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.showBirdseye = !newDesigner.showBirdseye;
         if (newDesigner.showBirdseye && !newDesigner.loadedBirdseyeInitially) {
           newDesigner.loadingBirdseye = true;
@@ -604,7 +604,7 @@ export const reduceDesigner = (
 
     // happens when grid view is requested
     case ServerActionType.ALL_PC_CONTENT_LOADED: {
-      designer = produce(designer, (newDesigner) => {
+      designer = produce(designer, newDesigner => {
         newDesigner.loadingBirdseye = false;
         newDesigner.loadedBirdseyeInitially = true;
         newDesigner.allLoadedPCFileData = action.payload;
@@ -620,7 +620,7 @@ export const reduceDesigner = (
     }
     case ActionType.RESIZER_MOVED:
     case ActionType.RESIZER_PATH_MOUSE_MOVED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         newDesigner.resizerMoving = true;
         const frames = getSelectedFrames(newDesigner);
 
@@ -631,7 +631,7 @@ export const reduceDesigner = (
 
         const oldBox = mergeBoxes(
           designer.selectedNodePaths.map(
-            (nodePath) => newDesigner.boxes[nodePath]
+            nodePath => newDesigner.boxes[nodePath]
           )
         );
 
@@ -649,14 +649,14 @@ export const reduceDesigner = (
                 newDesigner.boxes[nodePath],
                 oldBox,
                 action.payload.newBounds
-              ),
+              )
             })
           );
         }
       });
     }
     case ActionType.GLOBAL_H_KEY_DOWN: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         const frames = getSelectedFrames(newDesigner);
 
         for (
@@ -671,15 +671,15 @@ export const reduceDesigner = (
             frame,
             updateAnnotations(frame, {
               frame: {
-                visible: !(annotations.frame?.visible !== false),
-              },
+                visible: !(annotations.frame?.visible !== false)
+              }
             })
           );
         }
       });
     }
     case ActionType.FRAME_TITLE_CHANGED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         const frame = getFrameFromIndex(action.payload.frameIndex, newDesigner);
 
         if (!frame) {
@@ -691,8 +691,8 @@ export const reduceDesigner = (
           frame,
           updateAnnotations(frame, {
             frame: {
-              title: action.payload.value,
-            },
+              title: action.payload.value
+            }
           })
         );
       });
@@ -708,13 +708,13 @@ export const reduceDesigner = (
         metaKey,
         ctrlKey,
         mousePosition,
-        size,
+        size
       } = action.payload;
 
       const delta2X = deltaX * PAN_X_SENSITIVITY;
       const delta2Y = deltaY * PAN_Y_SENSITIVITY;
 
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         const transform = newDesigner.canvas.transform;
 
         if (metaKey || ctrlKey) {
@@ -724,7 +724,7 @@ export const reduceDesigner = (
               x: 0,
               y: 0,
               width: size.width,
-              height: size.height,
+              height: size.height
             },
             clamp(
               transform.z + (transform.z * -deltaY) / ZOOM_SENSITIVITY,
@@ -747,7 +747,7 @@ export const reduceDesigner = (
       return highlightNode(designer, action.payload);
     }
     case ActionType.DIR_LOADED: {
-      return produce(designer, (newDesigner) => {
+      return produce(designer, newDesigner => {
         if (action.payload.isRoot) {
           newDesigner.projectDirectory = action.payload.item;
         } else {
@@ -765,7 +765,7 @@ export const reduceDesigner = (
       });
     }
     case ActionType.CANVAS_RESIZED: {
-      designer = produce(designer, (newDesigner) => {
+      designer = produce(designer, newDesigner => {
         newDesigner.canvas.size = action.payload;
       });
 
@@ -789,10 +789,10 @@ const handleDoubleClick = (
     action.payload.timestamp - oldTimestamp > DOUBLE_CLICK_MS
   ) {
     return [
-      produce(designer, (newDesigner) => {
+      produce(designer, newDesigner => {
         newDesigner.canvasClickTimestamp = action.payload.timestamp;
       }),
-      false,
+      false
     ];
   }
   const nodePath = getNodeInfoAtPoint(
@@ -806,7 +806,7 @@ const handleDoubleClick = (
     isExpanded(designer) ? getActiveFrameIndex(designer) : null
   )?.nodePath;
 
-  designer = produce(designer, (newDesigner) => {
+  designer = produce(designer, newDesigner => {
     newDesigner.canvasClickTimestamp = action.payload.timestamp;
     newDesigner.scopedElementPath = nodePath;
   });
@@ -820,7 +820,7 @@ const cleanupPath = (pathname: string) =>
   path.normalize(pathname).replace(/\/$/, "");
 
 const highlightNode = (designer: DesignerState, mousePosition: Point) => {
-  return produce(designer, (newDesigner) => {
+  return produce(designer, newDesigner => {
     newDesigner.canvas.mousePosition = mousePosition;
     const canvas = newDesigner.canvas;
     const info = getNodeInfoAtPoint(

@@ -18,7 +18,7 @@ export const Node = ({
   onLeafClick,
   onExpandToggleClick,
   expandedPaths,
-  selectedNodePath,
+  selectedNodePath
 }: NodeProps) => {
   if (value.kind === VirtualNodeKind.Text) {
     if (!value.value.trim()) {

@@ -11,8 +11,8 @@ const MIN_ZOOM = 5;
 export const Pixels = ({
   canvas: {
     transform: { z, x, y },
-    size: { width, height },
-  },
+    size: { width, height }
+  }
 }: Props) => {
   if (z < MIN_ZOOM) {
     return null;
@@ -28,7 +28,7 @@ export const Pixels = ({
         backgroundPosition: `${ox}px ${oy}px`,
         transformOrigin: `top left`,
         backgroundImage: `url("data:image/svg+xml;utf8,<svg width='${gridSize}px' height='${gridSize}px' xmlns='http://www.w3.org/2000/svg'><line x1='0' y1='${gridSize}' x2='${gridSize}' y2='${gridSize}' style='stroke: black; stroke-width: ${strokeWidth}px;' /><line x1='${gridSize}' y1='0' x2='${gridSize}' y2='${gridSize}' style='stroke: black; stroke-width: ${strokeWidth}px;' /></svg>")`,
-        backgroundSize: `${gridSize}px`,
+        backgroundSize: `${gridSize}px`
       }}
     />
   );

@@ -14,7 +14,7 @@ export class Connection {
       this._events.emit("open");
     };
 
-    client.onmessage = (message) => {
+    client.onmessage = message => {
       this._events.emit("message", JSON.parse(message.data));
     };
   }

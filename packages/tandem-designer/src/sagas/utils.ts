@@ -4,7 +4,7 @@ import {
   createDataResult,
   createErrorResult,
   createLoadingResult,
-  Result,
+  Result
 } from "../actions/base";
 
 export function takeState(
@@ -25,7 +25,7 @@ export function takeState(
     currentState = cstate;
   }
 
-  return call(function* () {
+  return call(function*() {
     yield call(run);
     yield takeEvery(actionFilter, run);
   });

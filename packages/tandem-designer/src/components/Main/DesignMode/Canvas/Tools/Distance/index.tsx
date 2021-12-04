@@ -6,7 +6,7 @@ import {
   Point,
   Transform,
   Box,
-  boxIntersectsPoint,
+  boxIntersectsPoint
 } from "../../../../../../state";
 import * as styles from "./index.pc";
 import { clamp } from "lodash";
@@ -25,7 +25,7 @@ export const Distance = ({
   from,
   to,
   canvasScroll,
-  canvasTransform,
+  canvasTransform
 }: Props) => {
   const sticks = [];
 
@@ -50,7 +50,7 @@ export const Distance = ({
         style={{
           left: left * canvasTransform.z,
           height: distance * canvasTransform.z - 3,
-          top: ne * canvasTransform.z,
+          top: ne * canvasTransform.z
         }}
       />
     );
@@ -62,7 +62,7 @@ export const Distance = ({
           style={{
             left: right(to) * canvasTransform.z,
             width: (left - right(to)) * canvasTransform.z,
-            top: ne * canvasTransform.z,
+            top: ne * canvasTransform.z
           }}
         />
       );
@@ -74,7 +74,7 @@ export const Distance = ({
           style={{
             left: left * canvasTransform.z,
             width: (to.x - left) * canvasTransform.z,
-            top: ne * canvasTransform.z,
+            top: ne * canvasTransform.z
           }}
         />
       );
@@ -96,7 +96,7 @@ export const Distance = ({
         style={{
           left: left * canvasTransform.z + 3,
           width: distance * canvasTransform.z - 3,
-          top: top * canvasTransform.z,
+          top: top * canvasTransform.z
         }}
       />
     );
@@ -108,7 +108,7 @@ export const Distance = ({
           style={{
             left: (left + distance) * canvasTransform.z,
             height: (top - bottom(to)) * canvasTransform.z,
-            top: bottom(to) * canvasTransform.z,
+            top: bottom(to) * canvasTransform.z
           }}
         />
       );
@@ -121,7 +121,7 @@ export const Distance = ({
           style={{
             left: (left + distance) * canvasTransform.z,
             height: (to.y - top) * canvasTransform.z,
-            top: top * canvasTransform.z,
+            top: top * canvasTransform.z
           }}
         />
       );
@@ -143,7 +143,7 @@ export const Distance = ({
         style={{
           left: left * canvasTransform.z,
           width: distance * canvasTransform.z - 3,
-          top: top * canvasTransform.z,
+          top: top * canvasTransform.z
         }}
       />
     );
@@ -155,7 +155,7 @@ export const Distance = ({
           style={{
             left: left * canvasTransform.z,
             height: (to.y - bottom(from) + from.height / 2) * canvasTransform.z,
-            top: top * canvasTransform.z,
+            top: top * canvasTransform.z
           }}
         />
       );
@@ -168,7 +168,7 @@ export const Distance = ({
           style={{
             left: left * canvasTransform.z,
             height: (top - bottom(to)) * canvasTransform.z,
-            top: bottom(to) * canvasTransform.z,
+            top: bottom(to) * canvasTransform.z
           }}
         />
       );
@@ -190,7 +190,7 @@ export const Distance = ({
         style={{
           top: bottom(from) * canvasTransform.z + 3,
           height: distance * canvasTransform.z - 3,
-          left: left * canvasTransform.z,
+          left: left * canvasTransform.z
         }}
       />
     );
@@ -202,7 +202,7 @@ export const Distance = ({
           style={{
             left: right(to) * canvasTransform.z,
             width: (left - right(to)) * canvasTransform.z,
-            top: (bottom(from) + distance) * canvasTransform.z,
+            top: (bottom(from) + distance) * canvasTransform.z
           }}
         />
       );
@@ -214,7 +214,7 @@ export const Distance = ({
           style={{
             left: left * canvasTransform.z,
             width: (to.x - left) * canvasTransform.z,
-            top: (bottom(from) + distance) * canvasTransform.z,
+            top: (bottom(from) + distance) * canvasTransform.z
           }}
         />
       );
@@ -224,22 +224,20 @@ export const Distance = ({
   return (
     <styles.Container
       style={{
-        transform: `translateX(${
-          -canvasScroll.x * canvasTransform.z + canvasTransform.x
-        }px) translateY(${
-          -canvasScroll.y * canvasTransform.z + canvasTransform.y
-        }px)`,
+        transform: `translateX(${-canvasScroll.x * canvasTransform.z +
+          canvasTransform.x}px) translateY(${-canvasScroll.y *
+          canvasTransform.z +
+          canvasTransform.y}px)`
       }}
     >
       {sticks}
       <styles.ToOutline
         style={{
-          transform: `translateX(${to.x * canvasTransform.z}px) translateY(${
-            to.y * canvasTransform.z
-          }px)`,
+          transform: `translateX(${to.x *
+            canvasTransform.z}px) translateY(${to.y * canvasTransform.z}px)`,
           width: to.width * canvasTransform.z,
           height: to.height * canvasTransform.z,
-          transformOrigin: `top left`,
+          transformOrigin: `top left`
         }}
       />
     </styles.Container>

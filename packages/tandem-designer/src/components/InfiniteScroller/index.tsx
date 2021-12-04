@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from "react";
 import * as styles from "./index.pc";
 
@@ -28,7 +28,7 @@ export const InfiniteScroller = memo(
     minVerticalItems,
     tagName,
     haveMinHeight = true,
-    children,
+    children
   }: InfiniteScrollerProps) => {
     const ref = useRef<HTMLDivElement>();
     const [actualHeight, setActualHeight] = useState<number>(0);
@@ -65,7 +65,7 @@ export const InfiniteScroller = memo(
 
     const resizerStyle = useMemo(() => {
       return {
-        height: scrollHeight,
+        height: scrollHeight
       };
     }, [scrollHeight]);
 
@@ -75,7 +75,7 @@ export const InfiniteScroller = memo(
         top: scrollPosition - offset,
 
         // allows for dynamic height
-        position: "absolute",
+        position: "absolute"
       };
     }, [scrollPosition, itemHeight]);
 
@@ -88,7 +88,7 @@ export const InfiniteScroller = memo(
       <styles.Container
         tagName={tagName}
         style={{
-          minHeight: haveMinHeight ? itemHeight * minVerticalItems : undefined,
+          minHeight: haveMinHeight ? itemHeight * minVerticalItems : undefined
         }}
         ref={ref}
         resizerStyle={resizerStyle}

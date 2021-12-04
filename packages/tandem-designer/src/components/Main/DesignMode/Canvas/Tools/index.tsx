@@ -13,13 +13,13 @@ import {
   LoadedPCData,
   NodeAnnotations,
   VirtualFrame,
-  VirtualNodeKind,
+  VirtualNodeKind
 } from "paperclip-utils";
 import {
   canvasMouseUp,
   canvasMouseLeave,
   canvasMouseMoved,
-  canvasDoubleClick,
+  canvasDoubleClick
 } from "../../../../../actions";
 import { Empty } from "./Empty";
 
@@ -32,23 +32,21 @@ export const Tools = () => {
       selectedNodePaths,
       resizerMoving,
       ui: {
-        query: { canvasFile },
+        query: { canvasFile }
       },
       optionKeyDown,
       allLoadedPCFileData,
-      readonly,
-    },
+      readonly
+    }
   } = state;
   const toolsRef = useRef<HTMLDivElement>();
   const toolsLayerEnabled = !isExpanded(state.designer);
 
-  const getMousePoint = (event) => {
-    const rect: ClientRect = (
-      event.currentTarget as any
-    ).getBoundingClientRect();
+  const getMousePoint = event => {
+    const rect: ClientRect = (event.currentTarget as any).getBoundingClientRect();
     return {
       x: event.pageX - rect.left,
-      y: event.pageY - rect.top,
+      y: event.pageY - rect.top
     };
   };
 
@@ -66,7 +64,7 @@ export const Tools = () => {
           metaKey: event.metaKey,
           ctrlKey: event.ctrlKey,
           shiftKey: event.shiftKey,
-          timestamp: Date.now(),
+          timestamp: Date.now()
         })
       );
     },
@@ -80,7 +78,7 @@ export const Tools = () => {
   document.body.ondblclick;
   const selectedBox =
     selectedNodePaths.length &&
-    mergeBoxes(selectedNodePaths.map((path) => boxes[path]));
+    mergeBoxes(selectedNodePaths.map(path => boxes[path]));
 
   const hoveringBox =
     state.designer.highlightNodePath &&
@@ -92,11 +90,9 @@ export const Tools = () => {
     return null;
   }
 
-  const frames = (
-    virtualNode.preview.kind === VirtualNodeKind.Fragment
-      ? virtualNode.preview.children
-      : [virtualNode.preview]
-  ) as Array<VirtualFrame>;
+  const frames = (virtualNode.preview.kind === VirtualNodeKind.Fragment
+    ? virtualNode.preview.children
+    : [virtualNode.preview]) as Array<VirtualFrame>;
 
   const showEmpty = frames.length === 0;
 
@@ -124,7 +120,7 @@ export const Tools = () => {
           canvasTransform={canvas.transform}
           box={selectedBox}
           showKnobs={
-            selectedNodePaths.every((nodePath) => !nodePath.includes(".")) &&
+            selectedNodePaths.every(nodePath => !nodePath.includes(".")) &&
             !readonly
           }
         />

@@ -8,7 +8,7 @@ export function* handleCanvas(getState: AppStateSelector) {
 }
 
 function* handleToolbar(getState: AppStateSelector) {
-  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function* () {
+  yield takeEvery(ActionType.POPOUT_BUTTON_CLICKED, function*() {
     const state: AppState = yield select(getState);
     yield put(
       popoutWindowRequested({ uri: state.designer.ui.query.canvasFile })

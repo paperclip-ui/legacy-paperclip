@@ -17,7 +17,7 @@ export class Repository {
   async pull(url: string) {
     await execa(`git`, ["pull", this.localDirectory], {
       cwd: this.localDirectory,
-      stdio: "inherit",
+      stdio: "inherit"
     });
   }
 
@@ -35,7 +35,7 @@ export class Repository {
   async addAllChanges() {
     this._logger.info(`Adding all changes`);
     await this._exec(`git`, [`add`, `-A`], {
-      stdio: "inherit",
+      stdio: "inherit"
     });
   }
 
@@ -47,7 +47,7 @@ export class Repository {
     if (await this.hasChanges()) {
     }
     await this._exec(`git`, [`checkout`, branchName], {
-      stdio: "inherit",
+      stdio: "inherit"
     });
   }
 
@@ -65,7 +65,7 @@ export class Repository {
     this._logger.info(`Committing changes: "${description}"`);
     await execa(`git`, [`commit`, `-m`, description], {
       cwd: this.localDirectory,
-      stdio: "inherit",
+      stdio: "inherit"
     });
   }
 
@@ -76,7 +76,7 @@ export class Repository {
     const currentBranch = await this.getCurrentBranch();
     await execa(`git`, [`push`, `origin`, currentBranch], {
       cwd: this.localDirectory,
-      stdio: "inherit",
+      stdio: "inherit"
     });
   }
 
@@ -106,7 +106,7 @@ export class Repository {
     }
 
     await execa(`git`, ["clone", url, this.localDirectory], {
-      stdio: "inherit",
+      stdio: "inherit"
     });
 
     this._logger.info(`Done cloning ${url} ✅`);
@@ -116,7 +116,7 @@ export class Repository {
   private async _exec(command: string, args: any[], options: any = {}) {
     return await execa(command, args, {
       cwd: this.localDirectory,
-      ...options,
+      ...options
     });
   }
 
@@ -127,14 +127,14 @@ export class Repository {
     try {
       // turn off pagination every time
       await execa(`git`, [`config`, `--global`, `pager.branch`, `false`], {
-        cwd: this.localDirectory,
+        cwd: this.localDirectory
       });
     } catch (e) {
       this._logger.info(e.message);
     }
 
     const { stdout } = await execa(`git`, [`branch`], {
-      cwd: this.localDirectory,
+      cwd: this.localDirectory
     });
 
     return stdout.replace(/\*?[^\S\r\n]/g, "").split("\n");
@@ -145,7 +145,7 @@ export class Repository {
 
   async getCurrentBranch() {
     const { stdout } = await execa(`git`, [`branch`, `--show-current`], {
-      cwd: this.localDirectory,
+      cwd: this.localDirectory
     });
     return stdout.trim();
   }

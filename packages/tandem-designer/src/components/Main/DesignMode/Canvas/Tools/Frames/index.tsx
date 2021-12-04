@@ -4,7 +4,7 @@ import {
   computeVirtJSObject,
   VirtualElement,
   VirtualNode,
-  VirtualText,
+  VirtualText
 } from "paperclip-utils";
 import { getFrameBounds } from "paperclip-web-renderer";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
@@ -15,7 +15,7 @@ import {
   expandFrameButtonClicked,
   frameTitleChanged,
   frameTitleClicked,
-  redirectRequest,
+  redirectRequest
 } from "../../../../../../actions";
 import { Transform, UIState } from "../../../../../../state";
 import * as styles from "./index.pc";
@@ -67,7 +67,7 @@ const Frame = memo(
     canvasTransform,
     readonly,
     ui,
-    dispatch,
+    dispatch
   }: FrameProps) => {
     const annotations: NodeAnnotations =
       (frame.annotations && computeVirtJSObject(frame.annotations)) || {};
@@ -82,7 +82,7 @@ const Frame = memo(
         dispatch(
           frameTitleClicked({
             frameIndex: frameIndex,
-            shiftKey: event.shiftKey,
+            shiftKey: event.shiftKey
           })
         );
 
@@ -133,8 +133,8 @@ const Frame = memo(
           query: {
             ...ui.query,
             frame: frameIndex,
-            expanded: true,
-          },
+            expanded: true
+          }
         })
       );
     }, [dispatch, frameIndex, ui.query]);
@@ -146,12 +146,11 @@ const Frame = memo(
           top: 0,
           width: frameBounds.width * canvasTransform.z,
           height: "auto",
-          transform: `translateX(${
-            canvasTransform.x + frameBounds.x * canvasTransform.z
-          }px) translateY(${
-            canvasTransform.y + frameBounds.y * canvasTransform.z
-          }px) translateZ(0)`,
-          transformOrigin: "top left",
+          transform: `translateX(${canvasTransform.x +
+            frameBounds.x *
+              canvasTransform.z}px) translateY(${canvasTransform.y +
+            frameBounds.y * canvasTransform.z}px) translateZ(0)`,
+          transformOrigin: "top left"
         }}
       >
         <styles.FrameTitle

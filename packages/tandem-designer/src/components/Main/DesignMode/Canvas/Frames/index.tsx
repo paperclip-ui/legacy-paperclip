@@ -4,7 +4,7 @@ import {
   FramesRenderer,
   FramesRendererState,
   getFrameBounds,
-  getFrameVirtualNode,
+  getFrameVirtualNode
 } from "paperclip-web-renderer";
 import { memo, useEffect, useMemo } from "react";
 import mime from "mime-types";
@@ -12,7 +12,7 @@ import {
   engineDelegateEventsHandled,
   rectsCaptured,
   rendererMounted,
-  rendererUnounted,
+  rendererUnounted
 } from "../../../../../actions";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import {
@@ -23,7 +23,7 @@ import {
   NodeAnnotations,
   LoadedData,
   EngineDelegateEvent,
-  LoadedPCData,
+  LoadedPCData
 } from "paperclip-utils";
 import * as styles from "./index.pc";
 import { render } from "react-dom";
@@ -42,7 +42,7 @@ export const Frames = memo(({ expandedFrameIndex }: FramesProps) => {
   const { state } = useAppStore();
   const { frames, preview, onFrameLoaded } = useFrames({
     fileUri: state.designer.ui.query.canvasFile,
-    shouldCollectRects: true,
+    shouldCollectRects: true
   });
 
   if (!preview) {
@@ -120,7 +120,7 @@ class FrameController {
     this._renderer.setUrlResolver(resolver);
   }
   _onframeControllerStateChange = (state: FramesRendererState) => {
-    this._store.update((newState) => Object.assign(newState, state));
+    this._store.update(newState => Object.assign(newState, state));
   };
   updatePreview(preview: VirtualNode) {
     this._renderer.setPreview(preview);
@@ -175,7 +175,7 @@ type MultiFrameControllerState = {
 };
 
 const INITIAL_FRAME_CONTROLLER_STATE: MultiFrameControllerState = {
-  frames: {},
+  frames: {}
 };
 
 class MultiFrameController {
@@ -244,10 +244,10 @@ class MultiFrameController {
   }
 
   private _onFrameControllerChange = (rendererState: FrameControllerState) => {
-    this._store.update((newState) => {
+    this._store.update(newState => {
       newState.frames[rendererState.uri] = {
         frames: rendererState.frames,
-        preview: rendererState.preview,
+        preview: rendererState.preview
       };
     });
   };
@@ -256,12 +256,15 @@ class MultiFrameController {
 export const useMultipleFrames = ({
   version,
   fileData,
-  shouldCollectRects,
+  shouldCollectRects
 }: UseFrames2Props) => {
-  const [multiRenderer, setMultiRenderer] =
-    useState<MultiFrameController | null>(null);
-  const [multiFrameState, setMultiFrameState] =
-    useState<MultiFrameControllerState>(INITIAL_FRAME_CONTROLLER_STATE);
+  const [
+    multiRenderer,
+    setMultiRenderer
+  ] = useState<MultiFrameController | null>(null);
+  const [multiFrameState, setMultiFrameState] = useState<
+    MultiFrameControllerState
+  >(INITIAL_FRAME_CONTROLLER_STATE);
   const { dispatch, state } = useAppStore();
   const resolveUrl = useUrlResolver();
 
@@ -290,7 +293,7 @@ export const useMultipleFrames = ({
     multiRenderer,
     fileData,
     state.designer.currentEngineEvents,
-    state.designer.mountedRendererIds,
+    state.designer.mountedRendererIds
   ]);
 
   return multiFrameState;
@@ -304,12 +307,12 @@ const useUrlResolver = () => {
   const {
     state: {
       designer: { resourceHost },
-      shared: { documents },
-    },
+      shared: { documents }
+    }
   } = useAppStore();
 
   return useCallback(
-    (url) => {
+    url => {
       if (/^https?:\/\//.test(url)) {
         return url;
       }
@@ -333,14 +336,15 @@ const useUrlResolver = () => {
 
 export const useFrames = ({
   fileUri,
-  shouldCollectRects = true,
+  shouldCollectRects = true
 }: UseFramesProps) => {
   const { state, dispatch } = useAppStore();
-  const [frameControllerState, setFrameControllerState] =
-    useState<FrameControllerState>({
-      uri: fileUri,
-      frames: [],
-    });
+  const [frameControllerState, setFrameControllerState] = useState<
+    FrameControllerState
+  >({
+    uri: fileUri,
+    frames: []
+  });
   const [controller, setController] = useState<FrameController>();
   const isMounted = Boolean(
     controller?.isMounted(state.designer.mountedRendererIds)
@@ -405,12 +409,12 @@ export const useFrames = ({
     isExpanded(state.designer),
     state.designer.currentEngineEvents,
     state.designer.canvas.size,
-    frameData?.preview,
+    frameData?.preview
   ]);
 
   return {
     ...frameControllerState,
-    onFrameLoaded,
+    onFrameLoaded
   };
 };
 
@@ -442,7 +446,7 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
         left: bounds.x,
         top: bounds.y,
         zIndex: 1,
-        position: "absolute",
+        position: "absolute"
       };
     }
 
@@ -451,7 +455,7 @@ const Frame = memo(({ frame, preview, expanded, onLoad }: FrameProps) => {
       height: bounds.height,
       left: bounds.x,
       top: bounds.y,
-      position: "absolute",
+      position: "absolute"
     };
   }, [preview.annotations, expanded]) as any;
 

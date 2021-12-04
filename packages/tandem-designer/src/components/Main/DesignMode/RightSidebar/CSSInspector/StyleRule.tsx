@@ -6,7 +6,7 @@ import {
   memoize,
   TargetSelectorInfo,
   ClassSelectorInfo,
-  BaseSelectorInfo,
+  BaseSelectorInfo
 } from "paperclip-utils";
 import * as styles from "./index.pc";
 import * as path from "path";
@@ -14,7 +14,7 @@ import { StyleDeclaration } from "./Declaration";
 import { useAppStore } from "../../../../../hooks/useAppStore";
 import {
   styleRuleFileNameClicked,
-  virtualStyleDeclarationValueChanged,
+  virtualStyleDeclarationValueChanged
 } from "../../../../../actions";
 import { SelectorScopeKind } from "paperclip-utils";
 
@@ -35,7 +35,7 @@ export const StyleRule = React.memo(
         virtualStyleDeclarationValueChanged({
           declarationId,
           name,
-          value,
+          value
         })
       );
     };
@@ -43,7 +43,7 @@ export const StyleRule = React.memo(
     const onFileNameClick = () => {
       dispatch(
         styleRuleFileNameClicked({
-          styleRuleSourceId: info.sourceId,
+          styleRuleSourceId: info.sourceId
         })
       );
     };
@@ -63,7 +63,7 @@ export const StyleRule = React.memo(
               key={i}
               filter={filter}
               info={declaration}
-              onValueChange={(value) => {
+              onValueChange={value => {
                 onDeclarationValueChange(
                   declaration.sourceId,
                   declaration.name,
@@ -85,7 +85,7 @@ const isSelectorPartiallyGlobal = memoize((info: SelectorInfo) => {
     // doing guesswork here. This will fail if someone does something like :global([class].div), but
     // I suppose nobody would realistically do that.
     case SelectorInfoKind.Combo: {
-      return !info.selectors.some((selector) => {
+      return !info.selectors.some(selector => {
         return isScopedSelector(selector);
       });
     }
@@ -230,28 +230,28 @@ const generateSelector = memoize((info: SelectorInfo) => {
       return [
         generateSelector(info.left as SelectorInfo),
         " ~ ",
-        generateSelector(info.right as SelectorInfo),
+        generateSelector(info.right as SelectorInfo)
       ];
     }
     case SelectorInfoKind.Adjacent: {
       return [
         generateSelector(info.left as SelectorInfo),
         " + ",
-        generateSelector(info.right as SelectorInfo),
+        generateSelector(info.right as SelectorInfo)
       ];
     }
     case SelectorInfoKind.Descendent: {
       return [
         generateSelector(info.left as SelectorInfo),
         " ",
-        generateSelector(info.right as SelectorInfo),
+        generateSelector(info.right as SelectorInfo)
       ];
     }
     case SelectorInfoKind.Child: {
       return [
         generateSelector(info.left as SelectorInfo),
         " > ",
-        generateSelector(info.right as SelectorInfo),
+        generateSelector(info.right as SelectorInfo)
       ];
     }
     case SelectorInfoKind.All: {

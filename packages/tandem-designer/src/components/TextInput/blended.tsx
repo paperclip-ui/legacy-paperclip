@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import * as styles from "./blended.pc";
 import {
   TextInputProps,
-  useTextInput,
+  useTextInput
 } from "tandem-design-system/src/TextInput";
 
 export const BlendedTextInput = ({
@@ -11,13 +11,13 @@ export const BlendedTextInput = ({
   onValueChange,
   onBlur,
   value,
-  placeholder,
+  placeholder
 }: TextInputProps) => {
   const autoResizeDummyRef = useRef<HTMLSpanElement>();
   const { inputProps, refValue } = useTextInput({
     onValueChange,
     onBlur,
-    value,
+    value
   });
   const [width, setWidth] = useState(0);
 

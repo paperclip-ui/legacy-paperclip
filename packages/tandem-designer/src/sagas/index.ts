@@ -5,7 +5,7 @@ import {
   LoadedPCData,
   VirtNodeSource,
   nodePathToAry,
-  EngineDelegateChanged,
+  EngineDelegateChanged
 } from "paperclip-utils";
 import * as Url from "url";
 import {
@@ -16,7 +16,7 @@ import {
   select,
   call,
   takeLatest,
-  throttle,
+  throttle
 } from "redux-saga/effects";
 import { eventChannel } from "redux-saga";
 import * as qs from "querystring";
@@ -58,7 +58,7 @@ import {
   virtualNodeSourcesLoaded,
   StyleRuleFileNameClicked,
   windowFocused,
-  windowBlurred,
+  windowBlurred
 } from "../actions";
 import {
   AppState,
@@ -70,13 +70,13 @@ import {
   getScopedBoxes,
   getSelectedFrames,
   isExpanded,
-  SyncLocationMode,
+  SyncLocationMode
 } from "../state";
 import { getVirtTarget } from "paperclip-utils";
 import { handleCanvas } from "./canvas";
 import {
   PCMutation,
-  PCMutationActionKind,
+  PCMutationActionKind
 } from "paperclip-source-writer/lib/mutations";
 import history from "../dom-history";
 import { omit } from "lodash";
@@ -90,7 +90,7 @@ import {
   loadVirtualNodeSourcesChannel,
   revealNodeSourceByIdChannel,
   editPCSourceChannel,
-  eventsChannel,
+  eventsChannel
 } from "../rpc/channels";
 import { sockAdapter } from "paperclip-common";
 import { handleRPC } from "./rpc";
@@ -102,12 +102,9 @@ export default function* mainSaga(
   getState: AppStateSelector
 ) {
   yield fork(handleRenderer, getState);
-  yield takeEvery(
-    ActionType.CANVAS_MOUSE_UP,
-    function* (action: CanvasMouseUp) {
-      yield call(handleCanvasMouseUp, action, getState);
-    }
-  );
+  yield takeEvery(ActionType.CANVAS_MOUSE_UP, function*(action: CanvasMouseUp) {
+    yield call(handleCanvasMouseUp, action, getState);
+  });
 
   yield fork(handleRPC);
 
@@ -136,7 +133,7 @@ function handleSock(onMessage, onClient) {
     onClient(sockAdapter(client));
   };
 
-  client.onmessage = (message) => {
+  client.onmessage = message => {
     const ev = JSON.parse(message.data);
     onMessage(ev);
   };
@@ -147,7 +144,7 @@ function handleSock(onMessage, onClient) {
 }
 
 function* handleRenderer(getState: AppStateSelector) {
-  yield takeEvery(["FOCUS"], function () {
+  yield takeEvery(["FOCUS"], function() {
     window.focus();
   });
 }
@@ -188,8 +185,8 @@ function* handleSyncFrameToLocation() {
     redirectRequest({
       query: {
         ...state.designer.ui.query,
-        frame: nodePath[0],
-      },
+        frame: nodePath[0]
+      }
     })
   );
 }
@@ -201,9 +198,9 @@ function* handleKeyCommands(mount: HTMLElement) {
   // the designer to take the whole page.
   const keyBindingMount = state.compact ? mount : document;
   const embedded = state.designer.ui.query.embedded;
-  const chan = eventChannel((emit) => {
+  const chan = eventChannel(emit => {
     const handler = new Mousetrap(keyBindingMount);
-    handler.bind("esc", (e) => {
+    handler.bind("esc", e => {
       if (isInput(e.target)) {
         return;
       }
@@ -254,7 +251,7 @@ function* handleKeyCommands(mount: HTMLElement) {
       emit(zoomOutKeyPressed(null));
       return false;
     });
-    handler.bind("meta+s", (e) => {
+    handler.bind("meta+s", e => {
       emit(globalSaveKeyPress(null));
       if (!embedded) {
         e.preventDefault();
@@ -265,7 +262,7 @@ function* handleKeyCommands(mount: HTMLElement) {
       emit(globalYKeyDown(null));
       return false;
     });
-    handler.bind("backspace", (e) => {
+    handler.bind("backspace", e => {
       if (isInput(e.target)) {
         return;
       }
@@ -289,8 +286,8 @@ const isInput = (node: HTMLElement) =>
   /textarea|input/.test(node.tagName.toLowerCase());
 
 function* handleDocumentEvents() {
-  yield fork(function* () {
-    const chan = eventChannel((emit) => {
+  yield fork(function*() {
+    const chan = eventChannel(emit => {
       document.addEventListener("wheel", emit, { passive: false });
       document.addEventListener("keydown", emit);
       return () => {
@@ -322,18 +319,18 @@ function* handleLocationChanged() {
       protocol: parts.protocol,
       host: parts.host,
       pathname: parts.pathname,
-      query: parts.query,
+      query: parts.query
     })
   );
 }
 
 function* handleLocation(getState: AppStateSelector) {
-  const chan = eventChannel((emit) => {
+  const chan = eventChannel(emit => {
     return history.listen(emit);
   });
 
   yield takeEvery(chan, handleLocationChanged);
-  yield takeEvery(ActionType.REDIRECT_REQUESTED, function* () {
+  yield takeEvery(ActionType.REDIRECT_REQUESTED, function*() {
     const state = yield select(getState);
     const pathname = history.location.pathname;
     const search =
@@ -365,13 +362,13 @@ function* handleActions(getState: AppStateSelector) {
 function* handleVirtualObjectSelected(getState: AppStateSelector) {}
 
 function* handleAppFocus() {
-  const chan = eventChannel((emit) => {
-    document.addEventListener("mouseenter", (ev) => {
+  const chan = eventChannel(emit => {
+    document.addEventListener("mouseenter", ev => {
       if (ev.target === document) {
         emit(windowFocused(null));
       }
     });
-    document.addEventListener("mouseleave", (ev) => {
+    document.addEventListener("mouseleave", ev => {
       if (ev.target === document) {
         emit(windowBlurred(null));
       }
@@ -379,7 +376,7 @@ function* handleAppFocus() {
     return () => {};
   });
 
-  yield takeEvery(chan, function* (event: any) {
+  yield takeEvery(chan, function*(event: any) {
     yield put(event);
   });
 }

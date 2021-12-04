@@ -14,7 +14,7 @@ export default (state: AppState, action: Action) => {
 
   switch (action.type) {
     case ActionType.ACTION_HANDLED: {
-      return produce(state, (newState) => {
+      return produce(state, newState => {
         newState.actions.shift();
       });
     }

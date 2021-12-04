@@ -28,8 +28,8 @@ export class VFS {
   async readFileContent(uri: string) {
     return (
       this._contents[uri] ||
-      new Promise((resolve) => {
-        fs.readFile(URL.fileURLToPath(uri), "utf-8", function (err, result) {
+      new Promise(resolve => {
+        fs.readFile(URL.fileURLToPath(uri), "utf-8", function(err, result) {
           resolve(result);
         });
       })

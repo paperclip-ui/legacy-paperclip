@@ -12,7 +12,7 @@ export const FilesPane = () => {
       fsItemClicked({
         absolutePath,
         url,
-        kind,
+        kind
       })
     );
   };
@@ -20,7 +20,7 @@ export const FilesPane = () => {
   return (
     <paneStyles.default flex scrollable title="Files">
       {state.designer.projectDirectory &&
-        state.designer.projectDirectory.children.map((child) => {
+        state.designer.projectDirectory.children.map(child => {
           return (
             <FSNode
               onLeafClick={onLeafClick}
@@ -49,7 +49,7 @@ const FSNode = ({
   depth,
   selectedFileUri,
   expandedFilePaths,
-  onLeafClick,
+  onLeafClick
 }: FSItemNodeProps) => {
   if (!item) {
     return null;
@@ -71,7 +71,7 @@ const FSNode = ({
     >
       {({ depth }) => {
         if (item.kind === FSItemKind.DIRECTORY) {
-          return item.children.map((child) => (
+          return item.children.map(child => (
             <FSNode
               onLeafClick={onLeafClick}
               selectedFileUri={selectedFileUri}

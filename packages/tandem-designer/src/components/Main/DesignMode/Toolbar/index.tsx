@@ -8,7 +8,7 @@ import {
   titleDoubleClicked,
   redirectRequest,
   zoomInputChanged,
-  popoutButtonClicked,
+  popoutButtonClicked
 } from "../../../../actions";
 import { useTextInput } from "tandem-design-system/src/TextInput";
 import { isExpanded } from "../../../../state";
@@ -18,7 +18,7 @@ const WIN_ENV = /^win/i.test(String(window?.navigator?.platform));
 export const Toolbar = () => {
   const { state, dispatch } = useAppStore();
   const {
-    designer: { canvas, projectDirectory, sharable, readonly, birdseyeFilter },
+    designer: { canvas, projectDirectory, sharable, readonly, birdseyeFilter }
   } = state;
   const expanded = isExpanded(state.designer);
   const [showEnvironmentPopup, setShowEnvironmentPopup] = useState<boolean>();
@@ -41,8 +41,8 @@ export const Toolbar = () => {
       redirectRequest({
         query: {
           ...state.designer.ui.query,
-          expanded: undefined,
-        },
+          expanded: undefined
+        }
       })
     );
   }, [state.designer.ui]);
@@ -60,7 +60,7 @@ export const Toolbar = () => {
     value: birdseyeFilter,
     onValueChange: (value: string) => {
       dispatch(birdseyeFilterChanged({ value }));
-    },
+    }
   });
 
   const onFilterBlur = () => {
@@ -90,9 +90,9 @@ export const Toolbar = () => {
     onEnterPressed() {
       setShowZoomInput(false);
     },
-    onValueChange: (value) => {
+    onValueChange: value => {
       dispatch(zoomInputChanged({ value: Number(value.replace("%", "")) }));
-    },
+    }
   });
 
   return (

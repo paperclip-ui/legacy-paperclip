@@ -26,7 +26,7 @@ export const ResizableContainer = ({
   scrollable,
   active = true,
   orientation,
-  children,
+  children
 }: ResizableContainerProps) => {
   const left = orientation === "left";
   const right = orientation === "right";
