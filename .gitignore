@@ -17,6 +17,7 @@ paperclip-html.tmLanguage.json
 
 
 .yarn/*
+*.map
 .yarn/cache
 !.yarn/patches
 !.yarn/plugins
