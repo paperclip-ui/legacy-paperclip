@@ -1,10 +1,7 @@
 import React, { useLayoutEffect } from "react";
 import { useRef, useState } from "react";
 import * as styles from "./blended.pc";
-import {
-  TextInputProps,
-  useTextInput
-} from "tandem-design-system/src/TextInput";
+import { TextInputProps, useTextInput } from "tandem-design-system";
 
 export const BlendedTextInput = ({
   autoResize,

@@ -58,7 +58,7 @@ module.exports = {
         test: /\.(ts|tsx)?$/,
         loader: "ts-loader",
         include: [path.resolve(__dirname, "src")],
-        exclude: [/node_modules/]
+        exclude: []
       },
       {
         test: /\.pc$/,
