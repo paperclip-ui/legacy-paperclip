@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useState } from "react";
 import * as styles from "./index.pc";
 import { Select } from "../../../Select";
-import { Button } from "tandem-design-system/src";
+import { Button } from "tandem-design-system";
 import { CommitButton } from "./index.pc";
 import { useDispatch, useSelector } from "react-redux";
 import { getBranchInfo, getCommitStatus } from "../../../../state";
