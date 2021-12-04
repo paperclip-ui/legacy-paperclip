@@ -15,6 +15,8 @@ export type Context = {
   indent: string;
 };
 
+const DEFAULT_TAG_NAME = "$$Default";
+
 export const createTranslateContext = (
   module: InterimModule,
   filePath: string,
@@ -90,6 +92,10 @@ export const getElementInstanceName = (
 ) => {
   const imp = context.module.imports.find(imp => imp.namespace === tagName);
   if (!imp) {
+    if (tagName === "default") {
+      return DEFAULT_TAG_NAME;
+    }
+
     return tagName;
   }
   return (

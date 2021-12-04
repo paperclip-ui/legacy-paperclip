@@ -741,6 +741,29 @@ describe(__filename + "#", () => {
       {
         Entry: `<img class="_406d2856 _80f4925f _pub-80f4925f" src="/test.svg"/>`
       }
+    ],
+    [
+      "Can render default components within the same doc",
+      {
+        "/entry.pc": `
+          <div component as="default">Hello</div>
+          <default export component as="Entry" />
+        `,
+        "/test.svg": "aa"
+      },
+      {
+        Entry: {
+          active: true
+        }
+      },
+      {
+        compilerOptions: {
+          importAssetsAsModules: true
+        }
+      },
+      {
+        Entry: `<div class="_406d2856 _80f4925f _pub-80f4925f">Hello</div>`
+      }
     ]
   ].forEach(([title, graph, contexts, config, expected]: any) => {
     it(title, async () => {
