@@ -8,6 +8,7 @@ import {
 
 // Can't import, otherwise the react monaco editor breaks :(
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
+
 import loadMonaco from "@monaco-editor/loader";
 
 export type Monaco = typeof monacoEditor;
@@ -20,7 +21,7 @@ import { slimCodeEditorChanged } from "../../../actions";
 import { SlimEditor } from "./Slim";
 import { canEditFile } from "../../../state";
 import { active as activatePaperclipExtension } from "paperclip-monaco";
-import { SourceLocation } from "paperclip-utils";
+import { StringRange } from "paperclip-utils";
 
 export const CodeMode = () => {
   const { state, dispatch } = useAppStore();
@@ -91,7 +92,7 @@ export const CodeMode = () => {
 export type EditorProps = {
   uri: string;
   value: string;
-  highlightLocation: SourceLocation;
+  highlightLocation: StringRange;
   onChange: (value: string) => void;
   onMount: (editor: any, monaco: any) => void;
 };
@@ -143,8 +144,8 @@ const Editor = ({
     setTimeout(() => {
       const range = getRange(
         editor.getModel(),
-        highlightLocation.start,
-        highlightLocation.end
+        highlightLocation.start.pos,
+        highlightLocation.end.pos
       );
       editor.setSelection(range);
 

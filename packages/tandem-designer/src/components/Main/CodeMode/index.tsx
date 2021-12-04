@@ -20,7 +20,7 @@ import { useAppStore } from "../../../hooks/useAppStore";
 // import { slimCodeEditorChanged } from "../../../actions";
 // import { canEditFile } from "../../../state";
 import { active as activatePaperclipExtension } from "paperclip-monaco";
-import { SourceLocation } from "paperclip-utils";
+import { StringRange } from "paperclip-utils";
 import { isMediaFile, isPlainTextFile } from "tandem-common/lib/mime";
 
 export const CodeMode = () => {
@@ -84,7 +84,7 @@ export const CodeMode = () => {
 export type EditorProps = {
   uri: string;
   value: string;
-  highlightLocation: SourceLocation;
+  highlightLocation: StringRange;
   onChange: (value: string) => void;
   onMount: (editor: any, monaco: any) => void;
 };
@@ -136,8 +136,8 @@ const Editor = ({
     setTimeout(() => {
       const range = getRange(
         editor.getModel(),
-        highlightLocation.start,
-        highlightLocation.end
+        highlightLocation.start.pos,
+        highlightLocation.end.pos
       );
       editor.setSelection(range);
 

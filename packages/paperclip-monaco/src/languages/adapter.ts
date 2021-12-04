@@ -4,7 +4,7 @@ import {
   IRange,
   languages,
   Position
-} from "monaco-editor-core";
+} from "monaco-editor";
 import { Color, IPaperclipEngineInfoProvider } from "./service/base";
 import * as parseColor from "color";
 

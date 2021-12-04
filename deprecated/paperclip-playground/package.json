@@ -12,7 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@monaco-editor/loader": "^1.0.0",
+    "@monaco-editor/loader": "^1.2.0",
     "@monaco-editor/react": "^4.0.0",
     "automerge": "^0.14.2",
     "bowser": "^2.11.0",
@@ -21,7 +21,7 @@
     "immer": "^9.0.6",
     "lodash": "^4.17.20",
     "mime-types": "^2.1.28",
-    "monaco-editor": "^0.21.3",
+    "monaco-editor": "^0.28.1",
     "nodemon": "^2.0.7",
     "paperclip": "^18.0.2",
     "paperclip-monaco": "^18.0.2",

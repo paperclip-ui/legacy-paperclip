@@ -3,9 +3,9 @@ import {
   BaseRequestStateChanged,
   createDataResult,
   createErrorResult,
-  createLoadingResult,
-  Result
+  createLoadingResult
 } from "../actions/base";
+import { Result } from "../state/result";
 
 export function takeState(
   getState: (newState: any) => any,

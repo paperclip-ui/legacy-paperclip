@@ -1,5 +1,8 @@
 {
   "srcDir": "./src",
+  "compilerOptions": {
+    "outDir": "./lib"
+  },
   "lintOptions": {
     "enforceVars": [
       "font-family",

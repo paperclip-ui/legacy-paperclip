@@ -1,5 +1,5 @@
 // import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
-import * as monacoEditor from "monaco-editor-core/esm/vs/editor/editor.api";
+import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import { Options, PaperclipMonacoServiceAdapter } from "./adapter";
 
 export type Monaco = typeof monacoEditor;

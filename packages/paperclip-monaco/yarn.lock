@@ -1323,17 +1323,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor-core@npm:^0.21.3":
-  version: 0.21.3
-  resolution: "monaco-editor-core@npm:0.21.3"
-  checksum: fef1ea88d1bd2b006684063ebde79ece3681aeee06d4dff2ed27a981345a56d574950d6be2334b8b7a42a0478d4aee8d79ca92098537fea9e7cf2ba4b7af2bca
-  languageName: node
-  linkType: hard
-
-"monaco-editor@npm:^0.21.3":
-  version: 0.21.3
-  resolution: "monaco-editor@npm:0.21.3"
-  checksum: 449ffcffd668bb19dd68aba07d26f9d2f63cbcedddfbbecff691648c8d31188f492c0abf492970d942f7d3d648c7ad22b281a52721fdcfb8cc943c7a08f42077
+"monaco-editor@npm:^0.28.1":
+  version: 0.28.1
+  resolution: "monaco-editor@npm:0.28.1"
+  checksum: 4205c12410f154ade2282eee5ad4ca1df1e2ee5e6097e3b18a8606abc535d7ee2f1b54b8ce282db2ba24e8143c6ed4cd06d35dcfb77d457dd9514ca9f0d2e4fd
   languageName: node
   linkType: hard
 
@@ -1551,8 +1544,7 @@ __metadata:
   resolution: "paperclip-monaco@workspace:."
   dependencies:
     color: ^3.1.3
-    monaco-editor: ^0.21.3
-    monaco-editor-core: ^0.21.3
+    monaco-editor: ^0.28.1
     paperclip: ^18.0.2
     paperclip-autocomplete: ^18.0.2
     paperclip-common: ^18.0.2

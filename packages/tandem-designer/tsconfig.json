@@ -4,7 +4,7 @@
     "outDir": "lib",
     "target": "es2020",
     "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "es2022",
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true

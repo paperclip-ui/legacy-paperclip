@@ -6,13 +6,13 @@
   "scripts": {
     "build": "npm run build:definitions && tsc && webpack",
     "build:watch": "concurrently \"webpack --watch\" \"tsc --watch\" \"paperclip-minimal build --write --definition --watch\"",
-    "build:definitions": "paperclip-minimal build --write --definition"
+    "build:definitions": "paperclip-minimal build --write --verbose --targets=d.ts"
   },
   "author": "",
   "license": "GPLv3",
   "gitHead": "51fbf39fb8197bd0012f96ef75fa33b82949600d",
   "dependencies": {
-    "@monaco-editor/loader": "^1.1.1",
+    "@monaco-editor/loader": "^1.2.0",
     "automerge": "^0.14.2",
     "browserstack": "^1.6.1",
     "browserstack-local": "^1.4.8",
